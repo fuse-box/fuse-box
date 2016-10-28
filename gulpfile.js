@@ -46,7 +46,7 @@ gulp.task('npm-publish', function(done) {
         done()
     });
 });
-gulp.task("commit", ["dist"], function() {
+gulp.task("commit", ["dist"], function(done) {
     const readline = require('readline');
 
     const rl = readline.createInterface({
