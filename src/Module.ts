@@ -3,15 +3,42 @@ import * as fs from "fs";
 import * as path from "path";
 
 
-// const appRoot = require("app-root-path");
-// const nodeModulesDir = path.join(appRoot.path, "node_modules");
-// const CACHED_MODULES = new Map<string, Module>();
-
+/**
+ *
+ *
+ * @export
+ * @class Module
+ */
 export class Module {
+    /**
+     *
+     *
+     * @type {string}
+     * @memberOf Module
+     */
     public contents: string;
+    /**
+     *
+     *
+     * @type {string}
+     * @memberOf Module
+     */
     public dir: string;
+    /**
+     *
+     *
+     * @type {Module[]}
+     * @memberOf Module
+     */
     public dependencies: Module[] = [];
 
+    /**
+     * Creates an instance of Module.
+     *
+     * @param {string} [absPath]
+     *
+     * @memberOf Module
+     */
     constructor(public absPath?: string) {
         if (!absPath) {
             return;
@@ -22,10 +49,24 @@ export class Module {
         this.absPath = this.ensureExtension(absPath);
         this.dir = path.dirname(absPath);
     }
+    /**
+     *
+     *
+     * @param {string} dir
+     *
+     * @memberOf Module
+     */
     public setDir(dir: string) {
         this.dir = dir;
     }
 
+    /**
+     *
+     *
+     * @returns {RequireOptions[]}
+     *
+     * @memberOf Module
+     */
     public digest(): RequireOptions[] {
         if (!this.absPath) {
             return [];
@@ -38,7 +79,7 @@ export class Module {
         this.contents = fs.readFileSync(this.absPath).toString();
         // if it's a json
         if (this.absPath.match(/\.json$/)) {
-            // Modify contents so they exports the contents
+            // Modify contents so they exports the json
             this.contents = "module.exports = " + this.contents;
         }
 
@@ -50,6 +91,14 @@ export class Module {
         return [];
     }
 
+    /**
+     *
+     *
+     * @param {string} name
+     * @returns
+     *
+     * @memberOf Module
+     */
     public getAbsolutePathOfModule(name: string) {
         if (path.isAbsolute(name)) {
             return name;
@@ -58,10 +107,26 @@ export class Module {
         return this.ensureExtension(mpath);
     }
 
+    /**
+     *
+     *
+     * @param {Module} module
+     *
+     * @memberOf Module
+     */
     public addDependency(module: Module) {
         this.dependencies.push(module);
     }
 
+    /**
+     *
+     *
+     * @param {Module} [entry]
+     * @param {string} [userRootPath]
+     * @returns
+     *
+     * @memberOf Module
+     */
     public getProjectPath(entry?: Module, userRootPath?: string) {
         let root = userRootPath || path.dirname(entry && entry.absPath ? entry.absPath : this.absPath);
 
@@ -72,6 +137,15 @@ export class Module {
         return input;
     }
 
+    /**
+     *
+     *
+     * @private
+     * @param {string} name
+     * @returns
+     *
+     * @memberOf Module
+     */
     private ensureExtension(name: string) {
 
         if (!name.match(/\.\w{1,}$/)) {

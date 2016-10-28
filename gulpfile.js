@@ -6,10 +6,47 @@ const concat = require('gulp-concat');
 const fs = require('fs');
 const sourcemaps = require('gulp-sourcemaps');
 const runSequence = require('run-sequence');
+const bump = require('gulp-bump');
+const child_process = require('child_process');
+const spawn = child_process.spawn;
 let projectTypings = ts.createProject('src/tsconfig.json');
 let projectCommonjs = ts.createProject('src/tsconfig.json', {
     target: "es6",
 });
+
+gulp.task("publish", function(done) {
+    runSequence('dist', 'increment-version', "commit", 'npm-publish', done);
+})
+
+gulp.task('increment-version', function() {
+    return gulp.src('./package.json')
+        .pipe(bump())
+        .pipe(gulp.dest('./'));
+});
+gulp.task('commit', function(done) {
+    let json = JSON.parse(fs.readFileSync(__dirname + "/package.json").toString());
+    child_process.exec(`git add .; git commit -m "Release ${json.version}"; git push origin master`, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`exec error: ${error}`);
+            return;
+        }
+        console.log(`stdout: ${stdout}`);
+        console.log(`stderr: ${stderr}`);
+        done();
+    });
+});
+gulp.task('npm-publish', function(done) {
+    var publish = spawn('npm', ['publish'], {
+        stdio: 'inherit'
+    })
+    publish.on('close', function(code) {
+        if (code === 8) {
+            gulp.log('Error detected, waiting for changes...');
+        }
+        done()
+    });
+})
+
 
 gulp.task("dist-typings", () => {
     let result = gulp.src('src/**/*.ts')
@@ -39,7 +76,7 @@ gulp.task('build', function() {
     return result.js.pipe(gulp.dest('build/commonjs'));
 });
 
-const spawn = require('child_process').spawn;
+
 let node;
 
 gulp.task('hello', function() {

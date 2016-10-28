@@ -1,24 +1,4 @@
-export declare class PropParser {
-    str: any;
-    excluding: {};
-    including: {};
-    entry: {};
-    private states;
-    private index;
-    private word;
-    constructor(str: any);
-    reset(): void;
-    tokenReady(): void;
-    receive(char: string, last: boolean): void;
-    next(): any;
-    parse(): void;
-    empty(): void;
-    set(...args: any[]): void;
-    clean(...args: any[]): void;
-    has(name: any): boolean;
-    once(name: any): boolean;
-    unset(...args: any[]): void;
-}
+import { PropParser } from "./ArithmeticStringParser";
 export interface IBundleInformation {
     deps: boolean;
     nodeModule?: boolean;
@@ -28,12 +8,15 @@ export declare class BundleData {
     including: Map<string, IBundleInformation>;
     excluding: Map<string, IBundleInformation>;
     entry: string;
+    tmpFolder: string;
     constructor(homeDir: string, including: Map<string, IBundleInformation>, excluding: Map<string, IBundleInformation>, entry?: string);
+    setupTempFolder(tmpFolder: string): void;
+    finalize(): void;
     shouldIgnore(name: string): boolean;
     shouldIgnoreDependencies(name: string): boolean;
     shouldIgnoreNodeModules(asbPath: string): boolean;
 }
 export declare class Arithmetic {
     static parse(str: string): PropParser;
-    static getFiles(parser: PropParser, homeDir: string): Promise<BundleData>;
+    static getFiles(parser: PropParser, virtualFiles: string, homeDir: string): Promise<BundleData>;
 }

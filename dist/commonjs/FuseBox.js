@@ -8,38 +8,6 @@ const appRoot = require("app-root-path");
 const ansi = require("ansi");
 const cursor = ansi(process.stdout);
 const prettysize = require("prettysize");
-class FuseBoxDump {
-    constructor() {
-        this.modules = {};
-    }
-    log(moduleName, file, contents) {
-        if (!this.modules[moduleName]) {
-            this.modules[moduleName] = [];
-        }
-        let byteAmount = Buffer.byteLength(contents, 'utf8');
-        this.modules[moduleName].push({
-            name: file,
-            bytes: byteAmount
-        });
-    }
-    printLog() {
-        let total = 0;
-        for (let name in this.modules) {
-            if (this.modules.hasOwnProperty(name)) {
-                cursor.green().write(name).write("\n").reset();
-                for (let i = 0; i < this.modules[name].length; i++) {
-                    let item = this.modules[name][i];
-                    total += item.bytes;
-                    cursor.grey().write(`  ${item.name} (${prettysize(item.bytes)})`).write("\n").reset();
-                }
-            }
-        }
-        cursor.white().write("-------------").write("\n").reset();
-        cursor.white().write(`Total: ${prettysize(total)}`).write("\n").reset();
-        console.log("");
-    }
-}
-exports.FuseBoxDump = FuseBoxDump;
 class FuseBox {
     constructor(opts) {
         this.opts = opts;
@@ -51,11 +19,17 @@ class FuseBox {
         else {
             this.homeDir = path.isAbsolute(opts.homeDir) ? opts.homeDir : path.join(appRoot.path, opts.homeDir);
         }
+        this.virtualFiles = opts.fileCollection;
     }
     bundle(str, standalone) {
         let parser = Arithmetic_1.Arithmetic.parse(str);
-        return Arithmetic_1.Arithmetic.getFiles(parser, this.homeDir).then(data => {
+        let bundle;
+        return Arithmetic_1.Arithmetic.getFiles(parser, this.virtualFiles, this.homeDir).then(data => {
+            bundle = data;
             return this.process(data, standalone);
+        }).then((contents) => {
+            bundle.finalize();
+            return contents;
         }).catch(e => {
             console.log(e.stack || e);
         });
@@ -89,7 +63,7 @@ class FuseBox {
                 }
                 format() {
                     return {
-                        contents: this.globalContents
+                        contents: this.globalContents,
                     };
                 }
             }
@@ -157,3 +131,35 @@ class FuseBox {
     }
 }
 exports.FuseBox = FuseBox;
+class FuseBoxDump {
+    constructor() {
+        this.modules = {};
+    }
+    log(moduleName, file, contents) {
+        if (!this.modules[moduleName]) {
+            this.modules[moduleName] = [];
+        }
+        let byteAmount = Buffer.byteLength(contents, "utf8");
+        this.modules[moduleName].push({
+            name: file,
+            bytes: byteAmount
+        });
+    }
+    printLog() {
+        let total = 0;
+        for (let name in this.modules) {
+            if (this.modules.hasOwnProperty(name)) {
+                cursor.green().write(name).write("\n").reset();
+                for (let i = 0; i < this.modules[name].length; i++) {
+                    let item = this.modules[name][i];
+                    total += item.bytes;
+                    cursor.grey().write(`  ${item.name} (${prettysize(item.bytes)})`).write("\n").reset();
+                }
+            }
+        }
+        cursor.white().write("-------------").write("\n").reset();
+        cursor.white().write(`Total: ${prettysize(total)}`).write("\n").reset();
+        console.log("");
+    }
+}
+exports.FuseBoxDump = FuseBoxDump;

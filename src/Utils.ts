@@ -1,12 +1,12 @@
 const appRoot = require("app-root-path");
 const esprima = require("esprima");
 const esquery = require("esquery");
-//const simpleTransform = require('jstransform/simple')
 import * as path from "path";
 export interface RequireOptions {
     name: string,
     str: string
 }
+
 /**
  *
  *

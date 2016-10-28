@@ -1,8 +1,7 @@
-import { FuseBox } from './FuseBox';
-
+import { Config } from "./Config";
 import * as path from "path";
 import * as fs from "fs";
-const appRoot = require("app-root-path");
+
 
 /**
  *
@@ -13,7 +12,7 @@ const appRoot = require("app-root-path");
 export class ModuleWrapper {
 
     public static wrapFinal(contents: string, entryPoint: string, standalone: boolean) {
-        let file = `${__dirname}/../../assets/${standalone ? "fusebox" : "local"}.js`;
+        let file = path.join(Config.ASSETS_DIR, standalone ? "FuseBox.js" : "local.js");
         let wrapper = fs.readFileSync(file).toString();
         if (entryPoint) {
             let entryJS = `FuseBox.import("${entryPoint}")`;

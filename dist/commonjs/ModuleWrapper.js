@@ -1,9 +1,10 @@
 "use strict";
+const Config_1 = require("./Config");
+const path = require("path");
 const fs = require("fs");
-const appRoot = require("app-root-path");
 class ModuleWrapper {
     static wrapFinal(contents, entryPoint, standalone) {
-        let file = `${__dirname}/../../assets/${standalone ? "fusebox" : "local"}.js`;
+        let file = path.join(Config_1.Config.ASSETS_DIR, standalone ? "FuseBox.js" : "local.js");
         let wrapper = fs.readFileSync(file).toString();
         if (entryPoint) {
             let entryJS = `FuseBox.import("${entryPoint}")`;

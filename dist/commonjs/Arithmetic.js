@@ -1,151 +1,25 @@
 "use strict";
-const glob = require("glob");
+const ArithmeticStringParser_1 = require("./ArithmeticStringParser");
+const Config_1 = require("./Config");
 const realm_utils_1 = require("realm-utils");
 const path = require("path");
-var STATES;
-(function (STATES) {
-    STATES[STATES["PENDING"] = 0] = "PENDING";
-    STATES[STATES["PLUS"] = 1] = "PLUS";
-    STATES[STATES["MINUS"] = 2] = "MINUS";
-    STATES[STATES["CONSUMING"] = 3] = "CONSUMING";
-    STATES[STATES["EXCLUDING_DEPS"] = 4] = "EXCLUDING_DEPS";
-    STATES[STATES["ENTRY_POINT"] = 5] = "ENTRY_POINT";
-})(STATES || (STATES = {}));
-class PropParser {
-    constructor(str) {
-        this.str = str;
-        this.excluding = {};
-        this.including = {};
-        this.entry = {};
-        this.states = new Set();
-        this.index = -1;
-        this.word = [];
-        this.reset();
-    }
-    reset() {
-        this.empty();
-        this.word = [];
-        this.set(STATES.PENDING);
-        this.set(STATES.PLUS);
-    }
-    tokenReady() {
-        let word = this.word.join("");
-        let isEntry = this.has(STATES.ENTRY_POINT);
-        if (this.has(STATES.EXCLUDING_DEPS)) {
-            if (this.has(STATES.MINUS)) {
-                this.excluding[word] = false;
-            }
-            else {
-                if (isEntry) {
-                    this.entry[word] = false;
-                }
-                this.including[word] = false;
-            }
-        }
-        else {
-            if (this.has(STATES.MINUS)) {
-                this.excluding[word] = true;
-            }
-            else {
-                if (isEntry) {
-                    this.entry[word] = true;
-                }
-                this.including[word] = true;
-            }
-        }
-        return this.reset();
-    }
-    receive(char, last) {
-        if (this.has(STATES.PENDING)) {
-            if (char === "+") {
-                this.set(STATES.PLUS);
-                return;
-            }
-            if (char === "-") {
-                this.unset(STATES.PLUS);
-                this.set(STATES.MINUS);
-                return;
-            }
-            if (char === ">") {
-                this.set(STATES.ENTRY_POINT);
-                return;
-            }
-            if (!char.match(/\s/)) {
-                this.set(STATES.CONSUMING);
-            }
-        }
-        if (this.has(STATES.CONSUMING)) {
-            this.unset(STATES.PENDING);
-            if (char === "[") {
-                this.set(STATES.EXCLUDING_DEPS);
-                return;
-            }
-            if (char === "]") {
-                return this.tokenReady();
-            }
-            if (char.match(/\s/)) {
-                if (!this.has(STATES.EXCLUDING_DEPS)) {
-                    return this.tokenReady();
-                }
-            }
-            else {
-                this.word.push(char);
-            }
-            if (last) {
-                return this.tokenReady();
-            }
-        }
-    }
-    next() {
-        this.index += 1;
-        return this.str[this.index];
-    }
-    parse() {
-        for (let i = 0; i < this.str.length; i++) {
-            this.receive(this.str[i], i === this.str.length - 1);
-        }
-    }
-    empty() {
-        this.states = new Set();
-    }
-    set(...args) {
-        for (let i = 0; i < arguments.length; i++) {
-            let name = arguments[i];
-            if (!this.states.has(name)) {
-                this.states.add(name);
-            }
-        }
-    }
-    clean(...args) {
-        for (let i = 0; i < arguments.length; i++) {
-            let name = arguments[i];
-            this.states.delete(name);
-        }
-    }
-    has(name) {
-        return this.states.has(name);
-    }
-    once(name) {
-        let valid = this.states.has(name);
-        if (valid) {
-            this.states.delete(name);
-        }
-        return valid;
-    }
-    unset(...args) {
-        for (let i = 0; i < arguments.length; i++) {
-            let name = arguments[i];
-            this.states.delete(name);
-        }
-    }
-}
-exports.PropParser = PropParser;
+const fs = require("fs");
+const mkdirp = require("mkdirp");
+const glob = require("glob");
 class BundleData {
     constructor(homeDir, including, excluding, entry) {
         this.homeDir = homeDir;
         this.including = including;
         this.excluding = excluding;
         this.entry = entry;
+    }
+    setupTempFolder(tmpFolder) {
+        this.tmpFolder = tmpFolder;
+    }
+    finalize() {
+        if (this.tmpFolder) {
+            fs.unlinkSync(this.tmpFolder);
+        }
     }
     shouldIgnore(name) {
         return this.excluding.has(name);
@@ -165,11 +39,11 @@ class BundleData {
 exports.BundleData = BundleData;
 class Arithmetic {
     static parse(str) {
-        let parser = new PropParser(str);
+        let parser = new ArithmeticStringParser_1.PropParser(str);
         parser.parse();
         return parser;
     }
-    static getFiles(parser, homeDir) {
+    static getFiles(parser, virtualFiles, homeDir) {
         let collect = (list) => {
             let data = new Map();
             return realm_utils_1.each(list, (withDeps, filePattern) => {
@@ -199,6 +73,22 @@ class Arithmetic {
             });
         };
         return realm_utils_1.chain(class extends realm_utils_1.Chainable {
+            prepareVirtualFiles() {
+                if (virtualFiles) {
+                    this.tempFolder = path.join(Config_1.Config.TEMP_FOLDER, new Date().getTime().toString());
+                    homeDir = this.tempFolder;
+                    mkdirp.sync(this.tempFolder);
+                    return realm_utils_1.each(virtualFiles, (fileContents, fileName) => {
+                        let filePath = path.join(this.tempFolder, fileName);
+                        let fileDir = path.dirname(filePath);
+                        mkdirp.sync(fileDir);
+                        fs.writeFileSync(filePath, fileContents);
+                    });
+                }
+            }
+            setTempFolder() {
+                return this.tempFolder;
+            }
             setIncluding() {
                 return collect(parser.including);
             }
@@ -213,7 +103,11 @@ class Arithmetic {
             }
         }
         ).then(result => {
-            return new BundleData(homeDir, result.including, result.excluding, result.entry);
+            let data = new BundleData(homeDir, result.including, result.excluding, result.entry);
+            if (result.tempFolder) {
+                data.setupTempFolder(result.tempFolder);
+            }
+            return data;
         });
     }
 }

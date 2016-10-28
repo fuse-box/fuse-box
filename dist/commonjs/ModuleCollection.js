@@ -1,12 +1,10 @@
 "use strict";
+const Config_1 = require('./Config');
 const Module_1 = require("./Module");
 const path = require("path");
 const fs = require("fs");
 const realm_utils_1 = require("realm-utils");
 const MODULE_CACHE = {};
-const appRoot = require("app-root-path");
-const NODE_MODULES_DIR = path.join(appRoot.path, "node_modules");
-const LOCAL_LIBS = path.join(__dirname, "../../assets/libs");
 class ModuleCollection {
     constructor(name, entry) {
         this.name = name;
@@ -94,8 +92,8 @@ class ModuleCollection {
         }
     }
     getNodeModuleMainFile(name) {
-        let localLib = path.join(LOCAL_LIBS, name);
-        let modulePath = path.join(NODE_MODULES_DIR, name);
+        let localLib = path.join(Config_1.Config.LOCAL_LIBS, name);
+        let modulePath = path.join(Config_1.Config.NODE_MODULES_DIR, name);
         let readMainFile = (folder) => {
             let packageJSONPath = path.join(folder, "package.json");
             if (fs.existsSync(packageJSONPath)) {

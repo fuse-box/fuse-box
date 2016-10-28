@@ -1,26 +1,58 @@
+import { Config } from './Config';
 import { Module } from "./Module";
 import * as path from "path";
 import * as fs from "fs";
 import { each } from "realm-utils";
-import { BundleData, IBundleInformation } from "./Arithmetic";
+import { BundleData } from "./Arithmetic";
 
 const MODULE_CACHE = {};
 
-const appRoot = require("app-root-path");
-const NODE_MODULES_DIR = path.join(appRoot.path, "node_modules");
-const LOCAL_LIBS = path.join(__dirname, "../../assets/libs");
-
 export class ModuleCollection {
+    /**
+     * All node modules are collected there
+     *
+     * @type {Map<string, ModuleCollection>}
+     * @memberOf ModuleCollection
+     */
     public nodeModules: Map<string, ModuleCollection> = new Map();
-    public dependencies: Map<string, Module> = new Map();
-    public bundle: BundleData;
-    constructor(public name: string, public entry?: Module) {
 
-    }
+    /**
+     * All local dependencies (from require come here)
+     *
+     * @type {Map<string, Module>}
+     * @memberOf ModuleCollection
+     */
+    public dependencies: Map<string, Module> = new Map();
+
+    /**
+     *
+     *
+     * @type {BundleData}
+     * @memberOf ModuleCollection
+     */
+    public bundle: BundleData;
+
+    constructor(public name: string, public entry?: Module) { }
+
+    /**
+     *
+     *
+     * @returns
+     *
+     * @memberOf ModuleCollection
+     */
     public collect() {
         return this.resolve(this.entry);
     }
 
+    /**
+     *
+     *
+     * @param {BundleData} data
+     * @returns {Promise<Module>}
+     *
+     * @memberOf ModuleCollection
+     */
     public collectBundle(data: BundleData): Promise<Module> {
         this.bundle = data;
         // faking entry point
@@ -34,6 +66,14 @@ export class ModuleCollection {
         });
     }
 
+    /**
+     *
+     *
+     * @param {Module} module
+     * @returns
+     *
+     * @memberOf ModuleCollection
+     */
     public resolve(module: Module) {
         let shouldIgnoreDeps = false;
         if (this.bundle) {
@@ -48,6 +88,16 @@ export class ModuleCollection {
             return this.processModule(module, options.name, shouldIgnoreDeps);
         });
     }
+    /**
+     *
+     *
+     * @param {Module} module
+     * @param {string} name
+     * @param {boolean} [shouldIgnoreDeps]
+     * @returns
+     *
+     * @memberOf ModuleCollection
+     */
     public processModule(module: Module, name: string, shouldIgnoreDeps?: boolean) {
 
         let nodeModule = this.getNodeModuleName(name);
@@ -66,20 +116,20 @@ export class ModuleCollection {
                 let targetEntryFile = this.getNodeModuleMainFile(nodeModule);
                 let depCollection;
 
+                // target file was found (in package.json or index.js by default)
                 if (targetEntryFile) {
                     let targetEntry = new Module(targetEntryFile);
-
                     depCollection = new ModuleCollection(nodeModule, targetEntry);
                     this.nodeModules.set(nodeModule, depCollection);
                     return depCollection.collect();
                 } else {
+                    // was not found, but we still register a dummy one
                     depCollection = new ModuleCollection(name);
                     this.nodeModules.set(nodeModule, depCollection);
                 }
             }
         } else {
             let modulePath = module.getAbsolutePathOfModule(name);
-
             if (this.bundle) {
                 if (this.bundle.shouldIgnore(modulePath)) { // make sure we ignore if bundle is set
                     return;
@@ -91,7 +141,6 @@ export class ModuleCollection {
                 let dependency = new Module(modulePath);
                 MODULE_CACHE[modulePath] = dependency;
                 module.addDependency(dependency);
-
                 return this.resolve(dependency);
             }
         }
@@ -130,8 +179,8 @@ export class ModuleCollection {
      * @memberOf ModuleCollection
      */
     private getNodeModuleMainFile(name: string) {
-        let localLib = path.join(LOCAL_LIBS, name);
-        let modulePath = path.join(NODE_MODULES_DIR, name);
+        let localLib = path.join(Config.LOCAL_LIBS, name);
+        let modulePath = path.join(Config.NODE_MODULES_DIR, name);
         let readMainFile = (folder) => {
             // package.json path
             let packageJSONPath = path.join(folder, "package.json");
@@ -155,5 +204,4 @@ export class ModuleCollection {
             return readMainFile(modulePath);
         }
     }
-
 }

@@ -1,295 +1,11 @@
-const glob = require("glob");
+import { PropParser } from "./ArithmeticStringParser";
+import { Config } from "./Config";
 import { each, chain, Chainable } from "realm-utils";
+
 import * as path from "path";
-/**
- *
- *
- * @enum {number}
- */
-enum STATES {
-    /**
-     *
-     */
-    PENDING,
-    /**
-     *
-     */
-    PLUS,
-    /**
-     *
-     */
-    MINUS,
-    /**
-     *
-     */
-    CONSUMING,
-    /**
-     *
-     */
-    EXCLUDING_DEPS,
-    /**
-     *
-     */
-    ENTRY_POINT
-}
-/**
- *
- *
- * @export
- * @class PropParser
- */
-export class PropParser {
-    /**
-     *
-     *
-     *
-     * @memberOf PropParser
-     */
-    public excluding = {};
-    /**
-     *
-     *
-     *
-     * @memberOf PropParser
-     */
-    public including = {};
-    /**
-     *
-     *
-     *
-     * @memberOf PropParser
-     */
-    public entry = {};
-    /**
-     *
-     *
-     * @private
-     *
-     * @memberOf PropParser
-     */
-    private states = new Set<any>();
-    /**
-     *
-     *
-     * @private
-     * @type {*}
-     * @memberOf PropParser
-     */
-    private index: any = -1;
-    /**
-     *
-     *
-     * @private
-     *
-     * @memberOf PropParser
-     */
-    private word = [];
-    /**
-     * Creates an instance of PropParser.
-     *
-     * @param {any} str
-     *
-     * @memberOf PropParser
-     */
-    constructor(public str) {
-        this.reset();
-    }
-    /**
-     *
-     *
-     *
-     * @memberOf PropParser
-     */
-    public reset() {
-        this.empty();
-        this.word = [];
-        this.set(STATES.PENDING);
-        this.set(STATES.PLUS);
-    }
-    /**
-     *
-     *
-     * @returns
-     *
-     * @memberOf PropParser
-     */
-    public tokenReady() {
-        let word = this.word.join("");
-        let isEntry = this.has(STATES.ENTRY_POINT);
-        if (this.has(STATES.EXCLUDING_DEPS)) {
-            if (this.has(STATES.MINUS)) {
-                this.excluding[word] = false;
-            } else {
-                if (isEntry) {
-                    this.entry[word] = false;
-                }
-                this.including[word] = false;
-
-            }
-        } else {
-            if (this.has(STATES.MINUS)) {
-                this.excluding[word] = true;
-            } else {
-                if (isEntry) {
-                    this.entry[word] = true;
-                }
-                this.including[word] = true;
-
-            }
-        }
-        return this.reset();
-    }
-    /**
-     *
-     *
-     * @param {string} char
-     * @param {boolean} last
-     * @returns
-     *
-     * @memberOf PropParser
-     */
-    public receive(char: string, last: boolean) {
-        if (this.has(STATES.PENDING)) {
-            if (char === "+") {
-                this.set(STATES.PLUS);
-                return;
-            }
-            if (char === "-") {
-                this.unset(STATES.PLUS);
-                this.set(STATES.MINUS);
-                return;
-            }
-
-            if (char === ">") {
-                this.set(STATES.ENTRY_POINT);
-                return;
-            }
-            if (!char.match(/\s/)) {
-                this.set(STATES.CONSUMING);
-            }
-        }
-        if (this.has(STATES.CONSUMING)) {
-            this.unset(STATES.PENDING);
-            if (char === "[") {
-                this.set(STATES.EXCLUDING_DEPS);
-                return;
-            }
-            if (char === "]") {
-                return this.tokenReady();
-            }
-            if (char.match(/\s/)) {
-                if (!this.has(STATES.EXCLUDING_DEPS)) {
-                    return this.tokenReady();
-                }
-            } else {
-                this.word.push(char);
-            }
-            if (last) {
-                return this.tokenReady();
-            }
-        }
-
-    }
-
-    /**
-     *
-     *
-     * @returns
-     *
-     * @memberOf PropParser
-     */
-    public next() {
-        this.index += 1;
-        return this.str[this.index];
-    }
-    /**
-     *
-     *
-     *
-     * @memberOf PropParser
-     */
-    public parse() {
-        for (let i = 0; i < this.str.length; i++) {
-            this.receive(this.str[i], i === this.str.length - 1);
-        }
-    }
-    /**
-     *
-     *
-     *
-     * @memberOf PropParser
-     */
-    public empty() {
-        this.states = new Set<any>();
-    }
-    /**
-     *
-     *
-     * @param {any} args
-     *
-     * @memberOf PropParser
-     */
-    public set(...args) {
-        for (let i = 0; i < arguments.length; i++) {
-            let name = arguments[i];
-            if (!this.states.has(name)) {
-                this.states.add(name);
-            }
-        }
-    }
-    /**
-     *
-     *
-     * @param {any} args
-     *
-     * @memberOf PropParser
-     */
-    public clean(...args) {
-        for (let i = 0; i < arguments.length; i++) {
-            let name = arguments[i];
-            this.states.delete(name);
-        }
-    }
-    /**
-     *
-     *
-     * @param {any} name
-     * @returns
-     *
-     * @memberOf PropParser
-     */
-    public has(name) {
-        return this.states.has(name);
-    }
-    /**
-     *
-     *
-     * @param {*} name
-     * @returns
-     *
-     * @memberOf PropParser
-     */
-    public once(name: any) {
-        let valid = this.states.has(name);
-        if (valid) {
-            this.states.delete(name);
-        }
-        return valid;
-    }
-    /**
-     *
-     *
-     * @param {any} args
-     *
-     * @memberOf PropParser
-     */
-    public unset(...args) {
-        for (let i = 0; i < arguments.length; i++) {
-            let name = arguments[i];
-            this.states.delete(name);
-        }
-    }
-}
+import * as fs from "fs";
+const mkdirp = require("mkdirp");
+const glob = require("glob");
 
 export interface IBundleInformation {
     deps: boolean;
@@ -299,11 +15,23 @@ export interface IBundleInformation {
  * BundleData
  */
 export class BundleData {
+    public tmpFolder: string;
+
     constructor(public homeDir: string,
         public including: Map<string, IBundleInformation>,
         public excluding: Map<string, IBundleInformation>, public entry?: string) {
 
     }
+    public setupTempFolder(tmpFolder: string) {
+        this.tmpFolder = tmpFolder;
+    }
+
+    public finalize() {
+        if (this.tmpFolder) {
+            fs.unlinkSync(this.tmpFolder);
+        }
+    }
+
     public shouldIgnore(name: string) {
         return this.excluding.has(name);
     }
@@ -344,7 +72,20 @@ export class Arithmetic {
         return parser;
     }
 
-    public static getFiles(parser: PropParser, homeDir: string) {
+    /**
+     * Get files from a directory
+     * In case of virtualFiles we create a temp folder,
+     * where we write all the contents and start from there
+     *
+     * @static
+     * @param {PropParser} parser
+     * @param {string} fileCollection
+     * @param {string} homeDir
+     * @returns
+     *
+     * @memberOf Arithmetic
+     */
+    public static getFiles(parser: PropParser, virtualFiles: string, homeDir: string) {
 
         let collect = (list) => {
             let data = new Map<string, IBundleInformation>();
@@ -357,7 +98,6 @@ export class Arithmetic {
                     return;
                 }
                 let fp = path.join(homeDir, filePattern);
-
                 if (!filePattern.match(/\.js$/)) {
                     fp += ".js";
                 }
@@ -367,7 +107,6 @@ export class Arithmetic {
                             data.set(files[i], {
                                 deps: withDeps
                             });
-
                         }
                         return resolve();
                     });
@@ -378,6 +117,24 @@ export class Arithmetic {
         }
 
         return chain(class extends Chainable {
+            public tempFolder: string;
+            public prepareVirtualFiles() {
+                if (virtualFiles) {
+                    this.tempFolder = path.join(Config.TEMP_FOLDER, new Date().getTime().toString());
+                    homeDir = this.tempFolder;
+                    mkdirp.sync(this.tempFolder);
+                    return each(virtualFiles, (fileContents, fileName) => {
+                        let filePath = path.join(this.tempFolder, fileName);
+                        let fileDir = path.dirname(filePath);
+                        mkdirp.sync(fileDir);
+                        fs.writeFileSync(filePath, fileContents);
+                    });
+                }
+            }
+            public setTempFolder() {
+                return this.tempFolder;
+            }
+
             public setIncluding() {
                 return collect(parser.including);
             }
@@ -392,9 +149,11 @@ export class Arithmetic {
                 }
             }
         }).then(result => {
-            return new BundleData(homeDir, result.including, result.excluding, result.entry);
+            let data = new BundleData(homeDir, result.including, result.excluding, result.entry);
+            if (result.tempFolder) {
+                data.setupTempFolder(result.tempFolder);
+            }
+            return data;
         });
-
-
     }
 }
