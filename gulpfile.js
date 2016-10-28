@@ -15,7 +15,7 @@ let projectCommonjs = ts.createProject('src/tsconfig.json', {
 });
 
 gulp.task("publish", function(done) {
-    runSequence('dist', 'increment-version', "commit", 'npm-publish', done);
+    runSequence('dist', 'increment-version', "commit-release", 'npm-publish', done);
 })
 
 gulp.task('increment-version', function() {
@@ -23,7 +23,7 @@ gulp.task('increment-version', function() {
         .pipe(bump())
         .pipe(gulp.dest('./'));
 });
-gulp.task('commit', function(done) {
+gulp.task('commit-release', function(done) {
     let json = JSON.parse(fs.readFileSync(__dirname + "/package.json").toString());
     child_process.exec(`git add .; git commit -m "Release ${json.version}" -a; git tag v${json.version}; git push origin master --tags`, (error, stdout, stderr) => {
         if (error) {
@@ -45,7 +45,31 @@ gulp.task('npm-publish', function(done) {
         }
         done()
     });
-})
+});
+gulp.task("commit", ["dist"], function() {
+    const readline = require('readline');
+
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+    rl.question('What are the updates? ', (text) => {
+        // TODO: Log the answer in a database
+        child_process.exec(`git add .; git commit -m "${text}" -a; git push origin master`, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`exec error: ${error}`);
+                return;
+            }
+            console.log(`stdout: ${stdout}`);
+            console.log(`stderr: ${stderr}`);
+            done();
+        });
+
+        rl.close();
+    });
+});
+
 
 
 gulp.task("dist-typings", () => {
