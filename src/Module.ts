@@ -1,4 +1,4 @@
-import { extractRequires, getAbsoluteEntryPath, RequireOptions } from './Utils';
+import { extractRequires, getAbsoluteEntryPath, RequireOptions } from "./Utils";
 import * as fs from "fs";
 import * as path from "path";
 

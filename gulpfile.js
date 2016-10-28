@@ -70,8 +70,6 @@ gulp.task("commit", ["dist"], function(done) {
     });
 });
 
-
-
 gulp.task("dist-typings", () => {
     let result = gulp.src('src/**/*.ts')
         .pipe(projectTypings());

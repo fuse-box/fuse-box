@@ -1,4 +1,4 @@
-import { RequireOptions } from './Utils';
+import { RequireOptions } from "./Utils";
 export declare class Module {
     absPath: string;
     contents: string;

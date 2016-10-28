@@ -6,6 +6,20 @@ const path = require("path");
 const fs = require("fs");
 const mkdirp = require("mkdirp");
 const glob = require("glob");
+const deleteFolderRecursive = (p) => {
+    if (fs.existsSync(p)) {
+        fs.readdirSync(p).forEach((file, index) => {
+            let curPath = path.join(p, file);
+            if (fs.lstatSync(curPath).isDirectory()) {
+                deleteFolderRecursive(curPath);
+            }
+            else {
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(p);
+    }
+};
 class BundleData {
     constructor(homeDir, including, excluding, entry) {
         this.homeDir = homeDir;
@@ -18,7 +32,7 @@ class BundleData {
     }
     finalize() {
         if (this.tmpFolder) {
-            fs.unlinkSync(this.tmpFolder);
+            deleteFolderRecursive(this.tmpFolder);
         }
     }
     shouldIgnore(name) {

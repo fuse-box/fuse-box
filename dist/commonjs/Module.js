@@ -1,5 +1,5 @@
 "use strict";
-const Utils_1 = require('./Utils');
+const Utils_1 = require("./Utils");
 const fs = require("fs");
 const path = require("path");
 class Module {

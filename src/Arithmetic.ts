@@ -7,6 +7,22 @@ import * as fs from "fs";
 const mkdirp = require("mkdirp");
 const glob = require("glob");
 
+
+const deleteFolderRecursive = (p) => {
+    if (fs.existsSync(p)) {
+        fs.readdirSync(p).forEach((file, index) => {
+            let curPath = path.join(p, file);
+            if (fs.lstatSync(curPath).isDirectory()) { // recurse
+                deleteFolderRecursive(curPath);
+            } else { // delete file
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(p);
+    }
+};
+
+
 export interface IBundleInformation {
     deps: boolean;
     nodeModule?: boolean;
@@ -28,7 +44,8 @@ export class BundleData {
 
     public finalize() {
         if (this.tmpFolder) {
-            fs.unlinkSync(this.tmpFolder);
+
+            deleteFolderRecursive(this.tmpFolder);
         }
     }
 
