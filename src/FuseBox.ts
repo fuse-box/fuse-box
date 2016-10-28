@@ -160,6 +160,7 @@ export class FuseBox {
                         });
                     });
                 }
+
                 /**
                  *
                  *
@@ -234,6 +235,7 @@ export class FuseBox {
                 return ModuleWrapper.wrapModule(collection.name, cnt.join("\n"), entryPoint);
             });
         }
+
         return collectionResources(entry).then(result => {
             return ModuleWrapper.wrapModule(collection.name, cnt.join("\n"), entry.getProjectPath());
         });

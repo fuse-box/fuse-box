@@ -25,7 +25,7 @@ gulp.task('increment-version', function() {
 });
 gulp.task('commit', function(done) {
     let json = JSON.parse(fs.readFileSync(__dirname + "/package.json").toString());
-    child_process.exec(`git add .; git commit -m "Release ${json.version}" -a; git push origin master`, (error, stdout, stderr) => {
+    child_process.exec(`git add .; git commit -m "Release ${json.version}" -a; git tag v${json.version}; git push origin master --tags`, (error, stdout, stderr) => {
         if (error) {
             console.error(`exec error: ${error}`);
             return;
