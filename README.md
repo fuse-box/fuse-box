@@ -1,4 +1,8 @@
-# Readme
+# FuseBox - A Bundle that does it right
+
+> The library is under heavy development.
+
+
 ```js
 let fuseBox = new FuseBox({
     homeDir: "test/fixtures/cases/case1"
@@ -13,6 +17,22 @@ fuseBox.bundle("[**/*.js]", true).then(content => {
 })
 ```
 
+## Using with virtual file structure
+You can provide a virtual structure, in this case `homeDir` will be ignored, and a collection will be used. Due to the library node-glob limitations, FuseBox creates a corresponding structure in the file system (in .tmp) folder. It goes with absolutely the same approach as `homeDir` (it's just shifted)
+
+You can use it to with gulp, or any other build systems, where files are ephemeral e.g streams.
+```js
+let fuseBox = new FuseBox({
+    fileCollection: {
+        "index.js": "require('./foo/bar.js')",
+        "foo/bar.js": "require('../hello.js')",
+        "hello.js": "",
+    }
+});
+fuseBox.bundle("> index.js **/*.js", true).then(content => {
+    fs.writeFileSync("./out.js", content);
+})
+```
 
 ### Cases
 
