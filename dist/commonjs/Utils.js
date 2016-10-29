@@ -17,8 +17,10 @@ function extractRequires(contents, transform) {
                 name = name + "index.js";
             }
             else {
-                if (!name.match(/.js/)) {
-                    name = name + ".js";
+                if (!name.match(/^([a-z].*)$/)) {
+                    if (!name.match(/.js/)) {
+                        name = name + ".js";
+                    }
                 }
             }
             results.push({ name: name });

@@ -1,4 +1,4 @@
-var coreJS = require('core-js');
+var coreJS = require('./foo');
 console.log(coreJS);
 //var chars = new RegExp(`ªµºÀ-ÖØ-öø`);
 // var input = 'const getMessage = () => "Hello World";';

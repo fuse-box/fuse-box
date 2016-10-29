@@ -29,8 +29,10 @@ export function extractRequires(contents: string, transform: boolean): RequireOp
             if (name.match(/\/$/)) {
                 name = name + "index.js";
             } else {
-                if (!name.match(/.js/)) {
-                    name = name + ".js";
+                if (!name.match(/^([a-z].*)$/)) { // make sure it's not a node_module
+                    if (!name.match(/.js/)) {
+                        name = name + ".js";
+                    }
                 }
             }
             results.push({ name: name });
