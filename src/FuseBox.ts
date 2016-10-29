@@ -43,6 +43,8 @@ export class FuseBox {
      */
     public virtualFiles: any;
 
+    private printLogs: boolean = true;
+
     /**
      * Creates an instance of FuseBox.
      *
@@ -56,6 +58,9 @@ export class FuseBox {
             this.homeDir = appRoot.path;
         } else {
             this.homeDir = path.isAbsolute(opts.homeDir) ? opts.homeDir : path.join(appRoot.path, opts.homeDir);
+        }
+        if (opts.logs) {
+            this.printLogs = opts.logs;
         }
         // In case of additional resources (or resourses to use with gulp)
         this.virtualFiles = opts.fileCollection;
@@ -173,9 +178,14 @@ export class FuseBox {
                 }
 
             }).then(result => {
-                this.dump.printLog();
+                if (this.printLogs) {
+                    this.dump.printLog();
+                }
                 return ModuleWrapper.wrapFinal(result.contents, bundleData.entry, standalone);
-
+                // return {
+                //     dump: this.dump,
+                //     contents: ModuleWrapper.wrapFinal(result.contents, bundleData.entry, standalone)
+                // };
             });
         })
     }
@@ -306,7 +316,7 @@ export class FuseBoxDump {
         let byteAmount = Buffer.byteLength(contents, "utf8");
         this.modules[moduleName].push({
             name: file,
-            bytes: byteAmount
+            bytes: byteAmount,
         });
     }
 

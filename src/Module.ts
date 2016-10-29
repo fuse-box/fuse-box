@@ -129,8 +129,8 @@ export class Module {
      */
     public getProjectPath(entry?: Module, userRootPath?: string) {
         let root = userRootPath || path.dirname(entry && entry.absPath ? entry.absPath : this.absPath);
-
         let input = this.absPath;
+        input = input.replace(/\\/, "/");
         input = input.replace(root, "");
         input = input.replace(/^\/|\\/, "");
         input = input.replace(/\\/g, "/");

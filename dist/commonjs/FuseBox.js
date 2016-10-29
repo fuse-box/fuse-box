@@ -12,12 +12,16 @@ class FuseBox {
     constructor(opts) {
         this.opts = opts;
         this.dump = new FuseBoxDump();
+        this.printLogs = true;
         opts = opts || {};
         if (!opts.homeDir) {
             this.homeDir = appRoot.path;
         }
         else {
             this.homeDir = path.isAbsolute(opts.homeDir) ? opts.homeDir : path.join(appRoot.path, opts.homeDir);
+        }
+        if (opts.logs) {
+            this.printLogs = opts.logs;
         }
         this.virtualFiles = opts.fileCollection;
     }
@@ -68,7 +72,9 @@ class FuseBox {
                 }
             }
             ).then(result => {
-                this.dump.printLog();
+                if (this.printLogs) {
+                    this.dump.printLog();
+                }
                 return ModuleWrapper_1.ModuleWrapper.wrapFinal(result.contents, bundleData.entry, standalone);
             });
         });
@@ -142,7 +148,7 @@ class FuseBoxDump {
         let byteAmount = Buffer.byteLength(contents, "utf8");
         this.modules[moduleName].push({
             name: file,
-            bytes: byteAmount
+            bytes: byteAmount,
         });
     }
     printLog() {

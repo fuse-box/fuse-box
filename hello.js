@@ -10,6 +10,6 @@ let fuseBox = new FuseBox({
         "hello.js": "",
     }
 });
-fuseBox.bundle("> index.js **/*.js", true).then(content => {
-    fs.writeFileSync("./out.js", content);
+fuseBox.bundle("> index.js **/*.js", true).then(data => {
+    fs.writeFileSync("./out.js", data.content);
 })
