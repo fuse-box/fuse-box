@@ -131,14 +131,14 @@ export class Module {
         let root = userRootPath || path.dirname(entry && entry.absPath ? entry.absPath : this.absPath);
         let input = this.absPath;
         input = input.replace(/\\/g, "/");
-        root = root.replace(/\\/g, "/");
+        root = root.replace(/\\/g, "/");//
         input = input.replace(root, "");
         input = input.replace(/^\/|\\/, "");
         return input;
     }
 
     /**
-     *
+     * stuff.some.boo.bar -> to test
      *
      * @private
      * @param {string} name
@@ -156,7 +156,6 @@ export class Module {
                 // gotta try folder
                 let folderIndex = `${name}/index.js`;
                 if (fs.existsSync(folderIndex)) {
-
                     return folderIndex;
                 }
             }

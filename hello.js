@@ -4,12 +4,13 @@ const fs = require("fs");
 
 let fuseBox = new FuseBox({
     homeDir: "test/fixtures/cases/case1",
-    fileCollection: {
-        "index.js": "require('./foo/bar.js')",
-        "foo/bar.js": "require('../hello.js')",
-        "hello.js": "",
-    }
+    // fileCollection: {
+    //     "index.js": "require('./foo/bar.js')",
+    //     "foo/bar.js": "require('../hello.js')",
+    //     "hello.js": "",
+    // }
 });
-fuseBox.bundle("> index.js **/*.js", true).then(data => {
-    fs.writeFileSync("./out.js", data.content);
+fuseBox.bundle(">index.js", true).then(data => {
+    fs.writeFile("./out.js", data, function(err) {
+    });
 })

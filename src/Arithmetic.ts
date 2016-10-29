@@ -129,6 +129,7 @@ export class Arithmetic {
                     });
                 });
             }).then(x => {
+
                 return data;
             });
         }

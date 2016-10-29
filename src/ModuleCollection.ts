@@ -130,6 +130,7 @@ export class ModuleCollection {
             }
         } else {
             let modulePath = module.getAbsolutePathOfModule(name);
+
             if (this.bundle) {
                 if (this.bundle.shouldIgnore(modulePath)) { // make sure we ignore if bundle is set
                     return;
