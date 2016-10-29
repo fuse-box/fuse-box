@@ -6,6 +6,7 @@ export declare class FuseBox {
     dump: FuseBoxDump;
     virtualFiles: any;
     private printLogs;
+    private timeStart;
     constructor(opts: any);
     bundle(str: string, standalone?: boolean): Promise<string | void>;
     process(bundleData: BundleData, standalone?: boolean): Promise<string>;
@@ -15,5 +16,5 @@ export declare class FuseBox {
 export declare class FuseBoxDump {
     modules: {};
     log(moduleName: string, file: string, contents: string): void;
-    printLog(): void;
+    printLog(endTime: any): void;
 }

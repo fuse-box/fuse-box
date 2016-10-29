@@ -5,6 +5,7 @@ const ModuleCollection_1 = require("./ModuleCollection");
 const path = require("path");
 const realm_utils_1 = require("realm-utils");
 const appRoot = require("app-root-path");
+const prettyTime = require("pretty-time");
 const ansi = require("ansi");
 const cursor = ansi(process.stdout);
 const prettysize = require("prettysize");
@@ -13,6 +14,7 @@ class FuseBox {
         this.opts = opts;
         this.dump = new FuseBoxDump();
         this.printLogs = true;
+        this.timeStart = process.hrtime();
         opts = opts || {};
         if (!opts.homeDir) {
             this.homeDir = appRoot.path;
@@ -25,6 +27,7 @@ class FuseBox {
         }
         this.virtualFiles = opts.fileCollection;
     }
+    ;
     bundle(str, standalone) {
         let parser = Arithmetic_1.Arithmetic.parse(str);
         let bundle;
@@ -73,7 +76,7 @@ class FuseBox {
             }
             ).then(result => {
                 if (this.printLogs) {
-                    this.dump.printLog();
+                    this.dump.printLog(this.timeStart);
                 }
                 return ModuleWrapper_1.ModuleWrapper.wrapFinal(result.contents, bundleData.entry, standalone);
             });
@@ -151,7 +154,7 @@ class FuseBoxDump {
             bytes: byteAmount,
         });
     }
-    printLog() {
+    printLog(endTime) {
         let total = 0;
         for (let name in this.modules) {
             if (this.modules.hasOwnProperty(name)) {
@@ -164,7 +167,8 @@ class FuseBoxDump {
             }
         }
         cursor.white().write("-------------").write("\n").reset();
-        cursor.white().write(`Total: ${prettysize(total)}`).write("\n").reset();
+        cursor.white()
+            .write(`Total: ${prettysize(total)} in ${prettyTime(process.hrtime(endTime))}`).write("\n").reset();
         console.log("");
     }
 }

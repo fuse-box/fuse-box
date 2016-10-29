@@ -5,7 +5,7 @@ import { ModuleCollection } from "./ModuleCollection";
 import * as path from "path";
 import { each, chain, Chainable } from "realm-utils";
 const appRoot = require("app-root-path");
-
+const prettyTime = require("pretty-time");
 const ansi = require("ansi");
 const cursor = ansi(process.stdout);
 const prettysize = require("prettysize");
@@ -45,6 +45,9 @@ export class FuseBox {
 
     private printLogs: boolean = true;
 
+
+    private timeStart;;
+
     /**
      * Creates an instance of FuseBox.
      *
@@ -53,6 +56,8 @@ export class FuseBox {
      * @memberOf FuseBox
      */
     constructor(public opts: any) {
+        this.timeStart = process.hrtime();
+
         opts = opts || {};
         if (!opts.homeDir) {
             this.homeDir = appRoot.path;
@@ -83,6 +88,7 @@ export class FuseBox {
             return this.process(data, standalone);
         }).then((contents) => {
             bundle.finalize(); // Clean up temp folder if required
+
             return contents;
         }).catch(e => {
             console.log(e.stack || e);
@@ -179,7 +185,7 @@ export class FuseBox {
 
             }).then(result => {
                 if (this.printLogs) {
-                    this.dump.printLog();
+                    this.dump.printLog(this.timeStart)
                 }
                 return ModuleWrapper.wrapFinal(result.contents, bundleData.entry, standalone);
                 // return {
@@ -326,7 +332,7 @@ export class FuseBoxDump {
      *
      * @memberOf FuseBoxDump
      */
-    public printLog() {
+    public printLog(endTime: any) {
         let total = 0;
         for (let name in this.modules) {
             if (this.modules.hasOwnProperty(name)) {
@@ -339,7 +345,10 @@ export class FuseBoxDump {
             }
         }
         cursor.white().write("-------------").write("\n").reset();
-        cursor.white().write(`Total: ${prettysize(total)}`).write("\n").reset();
+        cursor.white()
+            .write(`Total: ${prettysize(total)} in ${prettyTime(process.hrtime(endTime))}`).write("\n").reset();
+
+
         console.log("");
     }
 }
