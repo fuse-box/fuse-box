@@ -1,20 +1,14 @@
+import { FuseBoxDump } from "./Dump";
 import { BundleData } from "./Arithmetic";
-import { ModuleCollection } from "./ModuleCollection";
 export declare class FuseBox {
     opts: any;
     homeDir: string;
     dump: FuseBoxDump;
     virtualFiles: any;
     private printLogs;
+    private collectionSource;
     private timeStart;
     constructor(opts: any);
     bundle(str: string, standalone?: boolean): Promise<string | void>;
     process(bundleData: BundleData, standalone?: boolean): Promise<string>;
-    getCollectionSource(collection: ModuleCollection, depsOnly?: boolean, entryPoint?: string): Promise<string>;
-    collectNodeModules(defaultCollection: ModuleCollection): Promise<Map<string, ModuleCollection>>;
-}
-export declare class FuseBoxDump {
-    modules: {};
-    log(moduleName: string, file: string, contents: string): void;
-    printLog(endTime: any): void;
 }

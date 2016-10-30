@@ -1,10 +1,28 @@
 "use strict";
-const Config_1 = require('./Config');
+const Utils_1 = require('./Utils');
+const ModuleCache_1 = require('./ModuleCache');
 const Module_1 = require("./Module");
-const path = require("path");
-const fs = require("fs");
 const realm_utils_1 = require("realm-utils");
 const MODULE_CACHE = {};
+class CacheCollection {
+    static get(cache) {
+        let root = new ModuleCollection(cache.name);
+        root.setCachedContent(cache.cache);
+        let collectDeps = (rootCollection, item) => {
+            for (let depName in item.deps) {
+                if (item.deps.hasOwnProperty(depName)) {
+                    let nestedCache = item.deps[depName];
+                    let nestedCollection = new ModuleCollection(nestedCache.name);
+                    nestedCollection.setCachedContent(nestedCache.cache);
+                    rootCollection.nodeModules.set(nestedCache.name, nestedCollection);
+                    collectDeps(nestedCollection, nestedCache);
+                }
+            }
+        };
+        collectDeps(root, cache);
+        return root;
+    }
+}
 class ModuleCollection {
     constructor(name, entry) {
         this.name = name;
@@ -15,13 +33,16 @@ class ModuleCollection {
     collect() {
         return this.resolve(this.entry);
     }
+    setCachedContent(content) {
+        this.cachedContent = content;
+    }
     collectBundle(data) {
         this.bundle = data;
         let module = new Module_1.Module();
         module.setDir(data.homeDir);
         return realm_utils_1.each(data.including, (withDeps, modulePath) => {
             return this.processModule(module, modulePath);
-        }).then(x => {
+        }).then(data => {
             return module;
         });
     }
@@ -50,7 +71,13 @@ class ModuleCollection {
                 }
             }
             if (!this.nodeModules.has(nodeModule)) {
-                let targetEntryFile = this.getNodeModuleMainFile(nodeModule);
+                let cachedDeps = ModuleCache_1.cache.getValidCachedDependencies(nodeModule);
+                if (cachedDeps) {
+                    let cached = CacheCollection.get(cachedDeps);
+                    this.nodeModules.set(nodeModule, cached);
+                    return;
+                }
+                let targetEntryFile = Utils_1.getPackageInformation(nodeModule).entry;
                 let depCollection;
                 if (targetEntryFile) {
                     let targetEntry = new Module_1.Module(targetEntryFile);
@@ -89,32 +116,6 @@ class ModuleCollection {
         let matched = name.match(/^([a-z].*)$/);
         if (matched) {
             return name.split("/")[0];
-        }
-    }
-    getNodeModuleMainFile(name) {
-        let localLib = path.join(Config_1.Config.LOCAL_LIBS, name);
-        let modulePath = path.join(Config_1.Config.NODE_MODULES_DIR, name);
-        let readMainFile = (folder) => {
-            let packageJSONPath = path.join(folder, "package.json");
-            if (fs.existsSync(packageJSONPath)) {
-                let json = JSON.parse(fs.readFileSync(packageJSONPath).toString());
-                if (json.main) {
-                    let entryFile = path.join(folder, json.main);
-                    return entryFile;
-                }
-                else {
-                    return path.join(folder, "index.js");
-                }
-            }
-            else {
-                return path.join(folder, "index.js");
-            }
-        };
-        if (fs.existsSync(localLib)) {
-            return readMainFile(localLib);
-        }
-        else {
-            return readMainFile(modulePath);
         }
     }
 }

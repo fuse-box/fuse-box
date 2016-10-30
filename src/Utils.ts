@@ -1,10 +1,51 @@
+import { Config } from './Config';
 const appRoot = require("app-root-path");
 const esprima = require("esprima");
 const esquery = require("esquery");
 import * as path from "path";
+import * as fs from "fs";
 export interface RequireOptions {
     name: string,
     str: string
+}
+export interface IPackageInformation {
+    entry: string;
+    version: string
+}
+export function getPackageInformation(name: string): IPackageInformation {
+
+    let localLib = path.join(Config.LOCAL_LIBS, name);
+    let modulePath = path.join(Config.NODE_MODULES_DIR, name);
+    let readMainFile = (folder) => {
+        // package.json path
+        let packageJSONPath = path.join(folder, "package.json");
+        if (fs.existsSync(packageJSONPath)) {
+            // read contents
+            let json: any = require(packageJSONPath);
+            // Getting an entry point
+            if (json.main) {
+                return {
+                    entry: path.join(folder, json.main),
+                    version: json.version,
+                };
+            } else {
+                return {
+                    entry: path.join(folder, "index.js"),
+                    version: "0.0.0",
+                }
+            }
+        } else {
+            return {
+                entry: path.join(folder, "index.js"),
+                version: "0.0.0"
+            }
+        }
+    };
+    if (fs.existsSync(localLib)) {
+        return readMainFile(localLib);
+    } else {
+        return readMainFile(modulePath);
+    }
 }
 
 /**

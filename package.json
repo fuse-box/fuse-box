@@ -36,7 +36,7 @@
     "run-sequence": "^1.2.2",
     "should": "^11.1.0",
     "typescript": "^2.0.3",
-    "wires-reactive": "^1.0.3"
+    "wires-reactive": "^1.1.1"
   },
   "dependencies": {
     "@types/node": "^6.0.45",
@@ -49,6 +49,7 @@
     "mkdirp": "^0.5.1",
     "pretty-time": "^0.2.0",
     "prettysize": "0.0.3",
-    "realm-utils": "^1.0.5"
+    "realm-utils": "^1.0.5",
+    "wires-reactive": "^1.1.3"
   }
 }

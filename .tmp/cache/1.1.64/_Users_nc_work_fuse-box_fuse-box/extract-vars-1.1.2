@@ -1,0 +1,324 @@
+FuseBox.module("extract-vars", function(___scope___){
+___scope___.file("index.js", function(exports, require, module, __filename, __dirname){
+"use strict";
+require("fuse-box-testcase2");
+var Digger_1 = require("./Digger");
+exports.dig = Digger_1.dig;
+
+});
+___scope___.file("Digger.js", function(exports, require, module, __filename, __dirname){
+"use strict";
+var ReserverdVariableDefinition_1 = require("./rules/collection/ReserverdVariableDefinition");
+var TokenRules_1 = require("./rules/TokenRules");
+var ValidCharacter_1 = require("./rules/ValidCharacter");
+var ParserState_1 = require("./ParserState");
+var States_1 = require("./States");
+var Digger = (function () {
+    function Digger() {
+        this.variables = [];
+        this.state = new ParserState_1.ParserState();
+        this.ignoreNext = false;
+        this.rules = new TokenRules_1.TokenRules(this.state, [
+            new ReserverdVariableDefinition_1.ReserverdVariableDefinition(),
+        ]);
+        this.state.set(States_1.States.PENDING_FOR_VARIABLE);
+    }
+    Digger.prototype.consumeVariable = function (char) {
+        this.latest = this.latest || [];
+        this.latest.push(char);
+    };
+    Digger.prototype.cancelCurrentVariable = function () {
+        this.latest = null;
+        this.state.set(States_1.States.PENDING_FOR_VARIABLE);
+        this.state.unset(States_1.States.CONSUMING_VARIABLE);
+    };
+    Digger.prototype.cancelLatest = function () {
+        if (!this.state.has(States_1.States.TOKEN_PERSISTED)) {
+            this.variables.pop();
+        }
+    };
+    Digger.prototype.accept = function (token) {
+        return this.rules.verify(token);
+    };
+    Digger.prototype.consumeString = function (char) {
+        this.consumingString = char;
+    };
+    Digger.prototype.ignoreUntilNot = function (char) {
+        this.ignoredUntilNot = char;
+    };
+    Digger.prototype.finalizeVariable = function () {
+        if (this.latest) {
+            var tokenName = this.latest.join("");
+            this.cancelCurrentVariable();
+            if (this.accept(tokenName)) {
+                if (!this.state.once(States_1.States.CANCEL_NEXT_TOKEN)) {
+                    if (ValidCharacter_1.VariableCharacters.validVariableStart(tokenName[0])) {
+                        this.variables.push(tokenName);
+                    }
+                    this.state.unset(States_1.States.TOKEN_PERSISTED);
+                }
+            }
+        }
+    };
+    Digger.prototype.receive = function (char, end) {
+        if (this.ignoreNext) {
+            this.ignoreNext = false;
+            return;
+        }
+        if (char === "\\") {
+            this.ignoreNext = true;
+            return;
+        }
+        if (this.state.once(States_1.States.EXPECT_ASSIGNING)) {
+            if (char !== "=") {
+                this.cancelLatest();
+                this.state.set(States_1.States.CANCEL_NEXT_TOKEN);
+            }
+        }
+        if (this.state.once(States_1.States.CANCEL_PREV_TOKEN)) {
+            this.cancelLatest();
+        }
+        if (this.ignoredUntilNot) {
+            if (this.ignoredUntilNot !== char) {
+                delete this.ignoredUntilNot;
+            }
+            else {
+                return;
+            }
+        }
+        if (this.consumingString) {
+            if (this.consumingString === char) {
+                delete this.consumingString;
+            }
+            return;
+        }
+        if (this.state.has(States_1.States.PENDING_FOR_VARIABLE)) {
+            if (ValidCharacter_1.VariableCharacters.isValid(char)) {
+                this.state.unset(States_1.States.PENDING_FOR_VARIABLE);
+                this.state.set(States_1.States.CONSUMING_VARIABLE);
+            }
+        }
+        if (this.state.has(States_1.States.CONSUMING_VARIABLE)) {
+            if (!ValidCharacter_1.VariableCharacters.isValid(char)) {
+                if (char === "(") {
+                    return this.cancelCurrentVariable();
+                }
+                if (!ValidCharacter_1.VariableCharacters.hasStringQuotes(char)) {
+                    this.finalizeVariable();
+                }
+                else {
+                    this.consumeVariable(char);
+                }
+            }
+            else {
+                this.consumeVariable(char);
+                if (end) {
+                    return this.finalizeVariable();
+                }
+            }
+            return;
+        }
+        if (char === ":") {
+            return this.state.set(States_1.States.CANCEL_PREV_TOKEN);
+        }
+        if (char === "=") {
+            this.ignoreUntilNot(char);
+            return this.state.set(States_1.States.EXPECT_ASSIGNING);
+        }
+        if (char === "'" || char === "\"" || char === "`") {
+            this.state.set(States_1.States.TOKEN_PERSISTED);
+            return this.consumeString(char);
+        }
+    };
+    Digger.prototype.getVariables = function () {
+        return this.variables.filter(function (varname) {
+            var isValid = ValidCharacter_1.VariableCharacters.isValid(varname);
+            return isValid;
+        });
+    };
+    return Digger;
+}());
+exports.dig = function (expression) {
+    var digger = new Digger();
+    for (var i = 0; i < expression.length; i++) {
+        digger.receive(expression[i], i === expression.length - 1);
+    }
+    var vars = digger.getVariables();
+    return digger.variables;
+};
+
+});
+___scope___.file("rules/collection/ReserverdVariableDefinition.js", function(exports, require, module, __filename, __dirname){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var TokenRule_1 = require("../TokenRule");
+var States_1 = require("../../States");
+var ReserverdVariableDefinition = (function (_super) {
+    __extends(ReserverdVariableDefinition, _super);
+    function ReserverdVariableDefinition() {
+        _super.apply(this, arguments);
+    }
+    ReserverdVariableDefinition.prototype.getTokens = function () {
+        return ["let", "var", "const"];
+    };
+    ReserverdVariableDefinition.prototype.process = function (state, token) {
+        state.set(States_1.States.TOKEN_PERSISTED);
+        state.set(States_1.States.CANCEL_NEXT_TOKEN);
+        return false;
+    };
+    return ReserverdVariableDefinition;
+}(TokenRule_1.TokenRule));
+exports.ReserverdVariableDefinition = ReserverdVariableDefinition;
+
+});
+___scope___.file("rules/TokenRule.js", function(exports, require, module, __filename, __dirname){
+"use strict";
+var TokenRule = (function () {
+    function TokenRule() {
+    }
+    TokenRule.prototype.getTokens = function () {
+        return [];
+    };
+    TokenRule.prototype.belongs = function (token) {
+        var tokens = this.getTokens();
+        return tokens.indexOf(token) > -1;
+    };
+    TokenRule.prototype.process = function (state, token) {
+        return true;
+    };
+    return TokenRule;
+}());
+exports.TokenRule = TokenRule;
+
+});
+___scope___.file("States.js", function(exports, require, module, __filename, __dirname){
+"use strict";
+(function (States) {
+    States[States["PENDING_FOR_VARIABLE"] = 0] = "PENDING_FOR_VARIABLE";
+    States[States["READY_FOR_CONSUMING"] = 1] = "READY_FOR_CONSUMING";
+    States[States["CONSUMING_VARIABLE"] = 2] = "CONSUMING_VARIABLE";
+    States[States["CANCEL_NEXT_TOKEN"] = 3] = "CANCEL_NEXT_TOKEN";
+    States[States["CANCEL_PREV_TOKEN"] = 4] = "CANCEL_PREV_TOKEN";
+    States[States["TOKEN_PERSISTED"] = 5] = "TOKEN_PERSISTED";
+    States[States["STRING_CONSUMING"] = 6] = "STRING_CONSUMING";
+    States[States["STRING_CONSUMED"] = 7] = "STRING_CONSUMED";
+    States[States["EXPECT_ASSIGNING"] = 8] = "EXPECT_ASSIGNING";
+    States[States["VARIABLE_DECLARATION_SET"] = 9] = "VARIABLE_DECLARATION_SET";
+})(exports.States || (exports.States = {}));
+var States = exports.States;
+
+});
+___scope___.file("rules/TokenRules.js", function(exports, require, module, __filename, __dirname){
+"use strict";
+var TokenRules = (function () {
+    function TokenRules(state, rules) {
+        this.state = state;
+        this.rules = rules;
+    }
+    TokenRules.prototype.verify = function (token) {
+        var _this = this;
+        var verified = true;
+        this.rules.forEach(function (rule) {
+            if (rule.belongs(token)) {
+                verified = rule.process(_this.state, token);
+            }
+        });
+        return verified;
+    };
+    return TokenRules;
+}());
+exports.TokenRules = TokenRules;
+
+});
+___scope___.file("rules/ValidCharacter.js", function(exports, require, module, __filename, __dirname){
+"use strict";
+var alphabet = "abcdefghijklmnopqrstuvwxyz";
+var VALID_VARIABLE_CHARS = "" + alphabet + alphabet.toUpperCase() + "$._[]1234567890";
+var VALID_VARIABLE_START = "" + alphabet + alphabet.toUpperCase() + "$_";
+var QUOTES = '`"\'';
+var VariableCharacters = (function () {
+    function VariableCharacters() {
+    }
+    VariableCharacters.isValid = function (char) {
+        return VALID_VARIABLE_CHARS.indexOf(char) > -1;
+    };
+    ;
+    VariableCharacters.validVariableStart = function (char) {
+        return VALID_VARIABLE_START.indexOf(char) > -1;
+    };
+    VariableCharacters.isValidVariable = function (varname) {
+        for (var i = 0; i < varname.length; i++) {
+            if (VALID_VARIABLE_CHARS.indexOf(varname[i]) < 0) {
+                return false;
+            }
+        }
+        return true;
+    };
+    VariableCharacters.hasStringQuotes = function (char) {
+        var chars = ["'", "\""];
+        return chars.indexOf(char) > -1;
+    };
+    return VariableCharacters;
+}());
+exports.VariableCharacters = VariableCharacters;
+
+});
+___scope___.file("ParserState.js", function(exports, require, module, __filename, __dirname){
+"use strict";
+var ParserState = (function () {
+    function ParserState() {
+        this.states = new Set();
+    }
+    ParserState.prototype.set = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i - 0] = arguments[_i];
+        }
+        for (var i = 0; i < arguments.length; i++) {
+            var name_1 = arguments[i];
+            if (!this.states.has(name_1)) {
+                this.states.add(name_1);
+            }
+        }
+    };
+    ParserState.prototype.clean = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i - 0] = arguments[_i];
+        }
+        for (var i = 0; i < arguments.length; i++) {
+            var name_2 = arguments[i];
+            this.states.delete(name_2);
+        }
+    };
+    ParserState.prototype.has = function (name) {
+        return this.states.has(name);
+    };
+    ParserState.prototype.once = function (name) {
+        var valid = this.states.has(name);
+        if (valid) {
+            this.states.delete(name);
+        }
+        return valid;
+    };
+    ParserState.prototype.unset = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i - 0] = arguments[_i];
+        }
+        for (var i = 0; i < arguments.length; i++) {
+            var name_3 = arguments[i];
+            this.states.delete(name_3);
+        }
+    };
+    return ParserState;
+}());
+exports.ParserState = ParserState;
+
+});
+return ___scope___.entry("index.js")
+})

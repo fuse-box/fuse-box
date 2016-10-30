@@ -71,12 +71,14 @@ export class Module {
         if (!this.absPath) {
             return [];
         }
+
         if (!fs.existsSync(this.absPath)) {
             console.warn("File ", this.absPath, "Does not exist");
             this.contents = "";
             return [];
         }
         this.contents = fs.readFileSync(this.absPath).toString();
+
         // if it's a json
         if (this.absPath.match(/\.json$/)) {
             // Modify contents so they exports the json

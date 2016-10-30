@@ -1,3 +1,6 @@
+import { runInThisContext } from 'vm';
+import { getPackageInformation } from './Utils';
+import { cache } from './ModuleCache';
 import { Config } from './Config';
 import { Module } from "./Module";
 import * as path from "path";
@@ -7,7 +10,29 @@ import { BundleData } from "./Arithmetic";
 
 const MODULE_CACHE = {};
 
+class CacheCollection {
+    public static get(cache: any): ModuleCollection {
+        let root = new ModuleCollection(cache.name);
+        root.setCachedContent(cache.cache);
+        let collectDeps = (rootCollection: ModuleCollection, item: any) => {
+            for (let depName in item.deps) {
+                if (item.deps.hasOwnProperty(depName)) {
+                    let nestedCache = item.deps[depName];
+                    let nestedCollection = new ModuleCollection(nestedCache.name);
+                    nestedCollection.setCachedContent(nestedCache.cache);
+                    rootCollection.nodeModules.set(nestedCache.name, nestedCollection);
+                    collectDeps(nestedCollection, nestedCache);
+                }
+            }
+        }
+        collectDeps(root, cache);
+        return root;
+    }
+}
+
 export class ModuleCollection {
+
+    public cachedContent;
     /**
      * All node modules are collected there
      *
@@ -16,6 +41,7 @@ export class ModuleCollection {
      */
     public nodeModules: Map<string, ModuleCollection> = new Map();
 
+    public version: string;
     /**
      * All local dependencies (from require come here)
      *
@@ -45,6 +71,11 @@ export class ModuleCollection {
         return this.resolve(this.entry);
     }
 
+    public setCachedContent(content: string) {
+        this.cachedContent = content;
+    }
+
+
     /**
      *
      *
@@ -61,9 +92,9 @@ export class ModuleCollection {
 
         return each(data.including, (withDeps, modulePath) => {
             return this.processModule(module, modulePath);
-        }).then(x => {
+        }).then(data => {
             return module;
-        });
+        })
     }
 
     /**
@@ -111,9 +142,17 @@ export class ModuleCollection {
                     return;
                 }
             }
+
             // just collecting node modules names
             if (!this.nodeModules.has(nodeModule)) {
-                let targetEntryFile = this.getNodeModuleMainFile(nodeModule);
+                let cachedDeps = cache.getValidCachedDependencies(nodeModule);
+                if (cachedDeps) {
+                    let cached = CacheCollection.get(cachedDeps);
+                    this.nodeModules.set(nodeModule, cached);
+                    return;
+                }
+
+                let targetEntryFile = getPackageInformation(nodeModule).entry;
                 let depCollection;
 
                 // target file was found (in package.json or index.js by default)
@@ -169,40 +208,4 @@ export class ModuleCollection {
         }
     }
 
-    /**
-     *
-     * Trying to get main file of a module
-     * We check for local folder first (custom libraries like pth )
-     * @private
-     * @param {string} name
-     * @returns
-     *
-     * @memberOf ModuleCollection
-     */
-    private getNodeModuleMainFile(name: string) {
-        let localLib = path.join(Config.LOCAL_LIBS, name);
-        let modulePath = path.join(Config.NODE_MODULES_DIR, name);
-        let readMainFile = (folder) => {
-            // package.json path
-            let packageJSONPath = path.join(folder, "package.json");
-            if (fs.existsSync(packageJSONPath)) {
-                // read contents
-                let json: any = JSON.parse(fs.readFileSync(packageJSONPath).toString());
-                // Getting an entry point
-                if (json.main) {
-                    let entryFile = path.join(folder, json.main);
-                    return entryFile;
-                } else {
-                    return path.join(folder, "index.js");
-                }
-            } else {
-                return path.join(folder, "index.js");
-            }
-        };
-        if (fs.existsSync(localLib)) {
-            return readMainFile(localLib);
-        } else {
-            return readMainFile(modulePath);
-        }
-    }
 }

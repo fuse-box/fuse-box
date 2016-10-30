@@ -1,3 +1,7 @@
+import { moduleCollector } from "./ModuleCollector";
+import { FuseBoxDump } from "./Dump";
+import { CollectionSource } from "./CollectionSource";
+import { cache } from "./ModuleCache";
 import { Arithmetic, BundleData } from "./Arithmetic";
 import { ModuleWrapper } from "./ModuleWrapper";
 import { Module } from "./Module";
@@ -5,10 +9,7 @@ import { ModuleCollection } from "./ModuleCollection";
 import * as path from "path";
 import { each, chain, Chainable } from "realm-utils";
 const appRoot = require("app-root-path");
-const prettyTime = require("pretty-time");
-const ansi = require("ansi");
-const cursor = ansi(process.stdout);
-const prettysize = require("prettysize");
+
 
 
 /**
@@ -45,6 +46,7 @@ export class FuseBox {
 
     private printLogs: boolean = true;
 
+    private collectionSource: CollectionSource;
 
     private timeStart;;
 
@@ -57,7 +59,7 @@ export class FuseBox {
      */
     constructor(public opts: any) {
         this.timeStart = process.hrtime();
-
+        this.collectionSource = new CollectionSource(this.dump);
         opts = opts || {};
         if (!opts.homeDir) {
             this.homeDir = appRoot.path;
@@ -83,6 +85,7 @@ export class FuseBox {
     public bundle(str: string, standalone?: boolean) {
         let parser = Arithmetic.parse(str);
         let bundle: BundleData;
+
         return Arithmetic.getFiles(parser, this.virtualFiles, this.homeDir).then(data => {
             bundle = data;
             return this.process(data, standalone);
@@ -144,6 +147,7 @@ export class FuseBox {
                  * @returns
                  */
                 public setDefaultCollection() {
+
                     let defaultCollection = new ModuleCollection("default", module);
                     return defaultCollection;
                 }
@@ -153,7 +157,7 @@ export class FuseBox {
                  * @returns
                  */
                 public addDefaultContents() {
-                    return self.getCollectionSource(this.defaultCollection, true).then(cnt => {
+                    return self.collectionSource.get(this.defaultCollection, true).then(cnt => {
                         this.globalContents.push(cnt);
                     });
                 }
@@ -163,11 +167,16 @@ export class FuseBox {
                  * @returns
                  */
                 public setNodeModules() {
-                    return self.collectNodeModules(bundleCollection).then(nodeModules => {
-                        return each(nodeModules, (collection, name) => {
-                            return self.getCollectionSource(collection).then(cnt => {
+                    return moduleCollector(bundleCollection).then(data => {
+                        return each(data.collections, (collection, name) => {
+                            return self.collectionSource.get(collection).then(cnt => {
+                                cache.set(name, cnt);
                                 this.globalContents.push(cnt);
                             });
+                        }).then(() => {
+                            // here we store node_module project requirements
+                            // for caching
+                            cache.storeLocalDependencies(data.projectModules);
                         });
                     });
                 }
@@ -185,170 +194,14 @@ export class FuseBox {
 
             }).then(result => {
                 if (this.printLogs) {
-                    this.dump.printLog(this.timeStart)
+                    this.dump.printLog(this.timeStart);
                 }
-                return ModuleWrapper.wrapFinal(result.contents, bundleData.entry, standalone);
+                return ModuleWrapper.wrapFinal(result.contents.join("\n"), bundleData.entry, standalone);
                 // return {
                 //     dump: this.dump,
                 //     contents: ModuleWrapper.wrapFinal(result.contents, bundleData.entry, standalone)
                 // };
             });
-        })
-    }
-
-    /**
-     *
-     *
-     * @param {ModuleCollection} collection
-     * @param {boolean} [depsOnly]
-     * @param {string} [entryPoint]
-     * @returns {Promise<string>}
-     *
-     * @memberOf FuseBox
-     */
-    public getCollectionSource(collection: ModuleCollection, depsOnly?: boolean, entryPoint?: string): Promise<string> {
-        let entry: Module = collection.entry;
-
-        if (!entry) {
-            return new Promise((resolve, reject) => {
-                return resolve(ModuleWrapper.wrapModule(collection.name, "", collection.name));
-            });
-        }
-        let visited: any = {};
-        let cnt = [];
-        /**
-         *
-         *
-         * @param {Module} module
-         * @param {string} [projectPath]
-         * @returns
-         */
-        let collectionResources = (module: Module, projectPath?: string) => {
-
-            return new Promise((resolve, reject) => {
-                if (!module) {
-                    return resolve();
-                }
-                let rpath = module.getProjectPath(entry, entry.dir);
-
-                if (!visited[rpath]) {
-                    visited[rpath] = true;
-                    let content = ModuleWrapper.wrapGeneric(rpath, module.contents);
-                    this.dump.log(collection.name, rpath, content);
-                    cnt.push(content);
-                    return each(module.dependencies, dep => {
-                        return collectionResources(dep);
-                    }).then(resolve).catch(reject);
-                }
-                return resolve();
-            });
-        };
-
-        if (depsOnly) { // bundle might not have an entry point. Instead we just process dependencies
-            return each(entry.dependencies, dep => {
-                return collectionResources(dep, entry.dir);
-            }).then(result => {
-                return ModuleWrapper.wrapModule(collection.name, cnt.join("\n"), entryPoint);
-            });
-        }
-
-        return collectionResources(entry).then(result => {
-            return ModuleWrapper.wrapModule(collection.name, cnt.join("\n"), entry.getProjectPath());
         });
-    }
-
-
-    /**
-     *
-     *
-     * @param {ModuleCollection} defaultCollection
-     * @returns {Promise<Map<string, ModuleCollection>>}
-     *
-     * @memberOf FuseBox
-     */
-    public collectNodeModules(defaultCollection: ModuleCollection): Promise<Map<string, ModuleCollection>> {
-        let modules: Map<string, ModuleCollection> = new Map();
-        /**
-         *
-         *
-         * @param {Map<string, ModuleCollection>} nodeModules
-         * @returns
-         */
-        let collect = (nodeModules: Map<string, ModuleCollection>) => {
-            return each(nodeModules, (collection, name) => {
-                if (!modules.has(name)) {
-                    modules.set(name, collection);
-                    if (collection.nodeModules.size > 0) {
-                        return new Promise((resolve, reject) => {
-                            process.nextTick(() => {
-                                return resolve(collect(collection.nodeModules));
-                            });
-                        });
-                    }
-                }
-            });
-        };
-        return collect(defaultCollection.nodeModules).then(x => modules);
-    }
-}
-
-/**
- *
- *
- * @export
- * @class FuseBoxDump
- */
-export class FuseBoxDump {
-    /**
-     *
-     *
-     *
-     * @memberOf FuseBoxDump
-     */
-    public modules = {};
-    /**
-     *
-     *
-     * @param {string} moduleName
-     * @param {string} file
-     * @param {string} contents
-     *
-     * @memberOf FuseBoxDump
-     */
-    public log(moduleName: string, file: string, contents: string) {
-        if (!this.modules[moduleName]) {
-            this.modules[moduleName] = [];
-        }
-        let byteAmount = Buffer.byteLength(contents, "utf8");
-        this.modules[moduleName].push({
-            name: file,
-            bytes: byteAmount,
-        });
-    }
-
-    /**
-     *
-     *
-     *
-     * @memberOf FuseBoxDump
-     */
-    public printLog(endTime: any) {
-        let total = 0;
-        for (let name in this.modules) {
-            if (this.modules.hasOwnProperty(name)) {
-                cursor.green().write(name).write("\n").reset();
-                for (let i = 0; i < this.modules[name].length; i++) {
-                    let item = this.modules[name][i];
-                    total += item.bytes;
-                    cursor.grey().write(`  ${item.name} (${prettysize(item.bytes)})`).write("\n").reset();
-                }
-            }
-        }
-        cursor.white().write("-------------").write("\n").reset();
-        cursor.white()
-            .write(`Total: ${prettysize(total)} in ${prettyTime(process.hrtime(endTime))}`).write("\n").reset();
-
-
-        console.log("");
     }
 }
