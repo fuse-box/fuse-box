@@ -11,7 +11,7 @@ export class ModuleCache {
 
     constructor() {
         this.cacheFolder = path.join(Config.TEMP_FOLDER, "cache",
-            Config.FUSEBOX_VERSION, Config.PROJECT_FOLDER.replace(/\/|\\/g, "_"));
+            Config.FUSEBOX_VERSION, encodeURIComponent(Config.PROJECT_FOLDER));
         mkdirp.sync(this.cacheFolder);
         this.cacheFile = path.join(this.cacheFolder, "deps.json");
         if (fs.existsSync(this.cacheFile)) {

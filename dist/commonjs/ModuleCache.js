@@ -7,7 +7,7 @@ const mkdirp = require("mkdirp");
 class ModuleCache {
     constructor() {
         this.cachedDeps = {};
-        this.cacheFolder = path.join(Config_1.Config.TEMP_FOLDER, "cache", Config_1.Config.FUSEBOX_VERSION, Config_1.Config.PROJECT_FOLDER.replace(/\/|\\/g, "_"));
+        this.cacheFolder = path.join(Config_1.Config.TEMP_FOLDER, "cache", Config_1.Config.FUSEBOX_VERSION, encodeURIComponent(Config_1.Config.PROJECT_FOLDER));
         mkdirp.sync(this.cacheFolder);
         this.cacheFile = path.join(this.cacheFolder, "deps.json");
         if (fs.existsSync(this.cacheFile)) {
