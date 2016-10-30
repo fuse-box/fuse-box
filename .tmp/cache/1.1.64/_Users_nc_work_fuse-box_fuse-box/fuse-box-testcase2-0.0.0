@@ -1,6 +1,0 @@
-FuseBox.module("fuse-box-testcase2", function(___scope___){
-___scope___.file("index.js", function(exports, require, module, __filename, __dirname){
-
-});
-return ___scope___.entry("index.js")
-})

@@ -7,3 +7,4 @@ yarn.lock
 build/
 out.js
 .DS_Store
+.tmp/
