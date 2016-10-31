@@ -141,12 +141,12 @@ export class ModuleCollection {
 
             // just collecting node modules names
             if (!this.nodeModules.has(nodeModule)) {
-                //let cachedDeps = cache.getValidCachedDependencies(nodeModule);
-                // if (cachedDeps) {
-                //     let cached = CacheCollection.get(cachedDeps);
-                //     this.nodeModules.set(nodeModule, cached);
-                //     return;
-                // }
+                let cachedDeps = cache.getValidCachedDependencies(nodeModule);
+                if (cachedDeps) {
+                    let cached = CacheCollection.get(cachedDeps);
+                    this.nodeModules.set(nodeModule, cached);
+                    return;
+                }
 
                 let targetEntryFile = getPackageInformation(nodeModule).entry;
                 let depCollection;
