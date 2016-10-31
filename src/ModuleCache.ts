@@ -31,7 +31,7 @@ export class ModuleCache {
                 item.cache = fs.readFileSync(targetName).toString();
                 for (let depName in item.deps) {
                     if (item.deps.hasOwnProperty(depName)) {
-                        let nested = item.deps[depName]
+                        let nested = item.deps[depName];
                         collectDeps(nested);
                     }
                 }

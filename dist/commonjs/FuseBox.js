@@ -64,7 +64,6 @@ class FuseBox {
                     return ModuleCollector_1.moduleCollector(bundleCollection).then(data => {
                         return realm_utils_1.each(data.collections, (collection, name) => {
                             return self.collectionSource.get(collection).then(cnt => {
-                                ModuleCache_1.cache.set(name, cnt);
                                 this.globalContents.push(cnt);
                             });
                         }).then(() => {
