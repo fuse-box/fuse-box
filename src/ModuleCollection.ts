@@ -1,10 +1,6 @@
-import { runInThisContext } from 'vm';
-import { getPackageInformation } from './Utils';
-import { cache } from './ModuleCache';
-import { Config } from './Config';
+import { getPackageInformation } from "./Utils";
+import { cache } from "./ModuleCache";
 import { Module } from "./Module";
-import * as path from "path";
-import * as fs from "fs";
 import { each } from "realm-utils";
 import { BundleData } from "./Arithmetic";
 

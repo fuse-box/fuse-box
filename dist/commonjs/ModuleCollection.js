@@ -1,6 +1,6 @@
 "use strict";
-const Utils_1 = require('./Utils');
-const ModuleCache_1 = require('./ModuleCache');
+const Utils_1 = require("./Utils");
+const ModuleCache_1 = require("./ModuleCache");
 const Module_1 = require("./Module");
 const realm_utils_1 = require("realm-utils");
 const MODULE_CACHE = {};

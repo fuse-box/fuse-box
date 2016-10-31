@@ -5,13 +5,21 @@ const esprima = require("esprima");
 const esquery = require("esquery");
 const path = require("path");
 const fs = require("fs");
+let PACKAGE_JSON_CACHE = {};
 function getPackageInformation(name) {
     let localLib = path.join(Config_1.Config.LOCAL_LIBS, name);
     let modulePath = path.join(Config_1.Config.NODE_MODULES_DIR, name);
     let readMainFile = (folder) => {
         let packageJSONPath = path.join(folder, "package.json");
         if (fs.existsSync(packageJSONPath)) {
-            let json = require(packageJSONPath);
+            let json;
+            if (PACKAGE_JSON_CACHE[packageJSONPath]) {
+                json = PACKAGE_JSON_CACHE[packageJSONPath];
+            }
+            else {
+                json = JSON.parse(fs.readFileSync(packageJSONPath).toString());
+                PACKAGE_JSON_CACHE[packageJSONPath] = json;
+            }
             if (json.main) {
                 return {
                     entry: path.join(folder, json.main),

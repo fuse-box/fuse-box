@@ -12,6 +12,7 @@ export interface IPackageInformation {
     entry: string;
     version: string
 }
+let PACKAGE_JSON_CACHE = {};
 export function getPackageInformation(name: string): IPackageInformation {
 
     let localLib = path.join(Config.LOCAL_LIBS, name);
@@ -21,7 +22,14 @@ export function getPackageInformation(name: string): IPackageInformation {
         let packageJSONPath = path.join(folder, "package.json");
         if (fs.existsSync(packageJSONPath)) {
             // read contents
-            let json: any = require(packageJSONPath);
+            let json: any;
+            if (PACKAGE_JSON_CACHE[packageJSONPath]) {
+                json = PACKAGE_JSON_CACHE[packageJSONPath]
+            } else {
+                json = JSON.parse(fs.readFileSync(packageJSONPath).toString())// require(packageJSONPath);
+                PACKAGE_JSON_CACHE[packageJSONPath] = json;
+            }
+
             // Getting an entry point
             if (json.main) {
                 return {
