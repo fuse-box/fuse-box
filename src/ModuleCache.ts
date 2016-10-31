@@ -59,12 +59,15 @@ export class ModuleCache {
     }
 
     public set(name: string, contents: string) {
-        let info = getPackageInformation(name);
+        return new Promise((resolve, reject) => {
+            let info = getPackageInformation(name);
         let version = info.version;
         let targetName = path.join(this.cacheFolder, `${name}-${version}`);
-        fs.writeFile(targetName, contents, (err) =>{
-            //console.log(targetName, err)
+        fs.writeFile(targetName, contents, (err) => {
+           return resolve();
         });
+        });
+
     }
 }
 export let cache = new ModuleCache();

@@ -1,5 +1,5 @@
-import { getPackageInformation } from "./Utils";
-import { cache } from "./ModuleCache";
+import { cache } from './ModuleCache';
+import { getPackageInformation, IPackageInformation } from "./Utils";
 import { Module } from "./Module";
 import { each } from "realm-utils";
 import { BundleData } from "./Arithmetic";
@@ -29,6 +29,8 @@ class CacheCollection {
 export class ModuleCollection {
 
     public cachedContent;
+
+    public packageInfo: IPackageInformation;
     /**
      * All node modules are collected there
      *
@@ -147,14 +149,15 @@ export class ModuleCollection {
                     this.nodeModules.set(nodeModule, cached);
                     return;
                 }
+                let packageInfo = getPackageInformation(nodeModule);
 
-                let targetEntryFile = getPackageInformation(nodeModule).entry;
-                let depCollection;
-
+                let targetEntryFile = packageInfo.entry;
+                let depCollection: ModuleCollection;
                 // target file was found (in package.json or index.js by default)
                 if (targetEntryFile) {
                     let targetEntry = new Module(targetEntryFile);
                     depCollection = new ModuleCollection(nodeModule, targetEntry);
+                    depCollection.packageInfo = packageInfo;
                     this.nodeModules.set(nodeModule, depCollection);
                     return depCollection.collect();
                 } else {
@@ -164,8 +167,7 @@ export class ModuleCollection {
                 }
             }
         } else {
-            let modulePath = module.getAbsolutePathOfModule(name);
-
+            let modulePath = module.getAbsolutePathOfModule(name, this.packageInfo);
             if (this.bundle) {
                 if (this.bundle.shouldIgnore(modulePath)) { // make sure we ignore if bundle is set
                     return;

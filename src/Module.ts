@@ -1,4 +1,5 @@
-import { extractRequires, getAbsoluteEntryPath, RequireOptions } from "./Utils";
+import { extractRequires, getAbsoluteEntryPath, RequireOptions, IPackageInformation } from "./Utils";
+
 import * as fs from "fs";
 import * as path from "path";
 
@@ -101,12 +102,16 @@ export class Module {
      *
      * @memberOf Module
      */
-    public getAbsolutePathOfModule(name: string) {
+    public getAbsolutePathOfModule(name: string, packageInfo?: IPackageInformation) {
         if (path.isAbsolute(name)) {
             return name;
         }
         let mpath = path.join(this.dir, name);
-        return this.ensureExtension(mpath);
+        let target = this.ensureExtension(mpath);
+        if (packageInfo && !fs.existsSync(target)) {
+            return packageInfo.entry;
+        }
+        return target;
     }
 
     /**

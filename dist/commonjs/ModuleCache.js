@@ -52,10 +52,13 @@ class ModuleCache {
         fs.writeFileSync(this.cacheFile, JSON.stringify(projectModules));
     }
     set(name, contents) {
-        let info = Utils_1.getPackageInformation(name);
-        let version = info.version;
-        let targetName = path.join(this.cacheFolder, `${name}-${version}`);
-        fs.writeFile(targetName, contents, (err) => {
+        return new Promise((resolve, reject) => {
+            let info = Utils_1.getPackageInformation(name);
+            let version = info.version;
+            let targetName = path.join(this.cacheFolder, `${name}-${version}`);
+            fs.writeFile(targetName, contents, (err) => {
+                return resolve();
+            });
         });
     }
 }

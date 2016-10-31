@@ -1,4 +1,4 @@
-import { RequireOptions } from "./Utils";
+import { RequireOptions, IPackageInformation } from "./Utils";
 export declare class Module {
     absPath: string;
     contents: string;
@@ -7,7 +7,7 @@ export declare class Module {
     constructor(absPath?: string);
     setDir(dir: string): void;
     digest(): RequireOptions[];
-    getAbsolutePathOfModule(name: string): string;
+    getAbsolutePathOfModule(name: string, packageInfo?: IPackageInformation): string;
     addDependency(module: Module): void;
     getProjectPath(entry?: Module, userRootPath?: string): string;
     private ensureExtension(name);

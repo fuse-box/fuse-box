@@ -37,12 +37,16 @@ class Module {
         }
         return [];
     }
-    getAbsolutePathOfModule(name) {
+    getAbsolutePathOfModule(name, packageInfo) {
         if (path.isAbsolute(name)) {
             return name;
         }
         let mpath = path.join(this.dir, name);
-        return this.ensureExtension(mpath);
+        let target = this.ensureExtension(mpath);
+        if (packageInfo && !fs.existsSync(target)) {
+            return packageInfo.entry;
+        }
+        return target;
     }
     addDependency(module) {
         this.dependencies.push(module);

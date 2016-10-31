@@ -7,6 +7,7 @@ import { ModuleWrapper } from "./ModuleWrapper";
 import { Module } from "./Module";
 import { ModuleCollection } from "./ModuleCollection";
 import * as path from "path";
+import * as fs from "fs";
 import { each, chain, Chainable } from "realm-utils";
 const appRoot = require("app-root-path");
 
@@ -48,7 +49,9 @@ export class FuseBox {
 
     private collectionSource: CollectionSource;
 
-    private timeStart;;
+    private timeStart;
+
+    private useCache = true;
 
     /**
      * Creates an instance of FuseBox.
@@ -68,6 +71,9 @@ export class FuseBox {
         }
         if (opts.logs) {
             this.printLogs = opts.logs;
+        }
+        if (opts.cache !== undefined) {
+            this.useCache = opts.cache;
         }
         // In case of additional resources (or resourses to use with gulp)
         this.virtualFiles = opts.fileCollection;
@@ -170,13 +176,18 @@ export class FuseBox {
                     return moduleCollector(bundleCollection).then(data => {
                         return each(data.collections, (collection, name) => {
                             return self.collectionSource.get(collection).then(cnt => {
-                                cache.set(name, cnt);
                                 this.globalContents.push(cnt);
+
+                                if (!collection.cachedContent && self.useCache) {
+                                    cache.set(name, cnt);
+                                }
                             });
                         }).then(() => {
-                            // here we store node_module project requirements
-                            // for caching
-                            cache.storeLocalDependencies(data.projectModules);
+                            if (self.useCache) {
+                                // here we store node_module project requirements
+                                // for caching
+                                cache.storeLocalDependencies(data.projectModules);
+                            }
                         });
                     });
                 }
@@ -193,10 +204,12 @@ export class FuseBox {
                 }
 
             }).then(result => {
+                let contents = result.contents.join("\n");
+                //fs.writeFileSync(appRoot.path + "out.js", contents);
                 if (this.printLogs) {
                     this.dump.printLog(this.timeStart);
                 }
-                return ModuleWrapper.wrapFinal(result.contents.join("\n"), bundleData.entry, standalone);
+                return ModuleWrapper.wrapFinal(contents, bundleData.entry, standalone);
                 // return {
                 //     dump: this.dump,
                 //     contents: ModuleWrapper.wrapFinal(result.contents, bundleData.entry, standalone)

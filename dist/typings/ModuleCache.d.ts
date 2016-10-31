@@ -5,6 +5,6 @@ export declare class ModuleCache {
     constructor();
     getValidCachedDependencies(name: string): any;
     storeLocalDependencies(projectModules: any): void;
-    set(name: string, contents: string): void;
+    set(name: string, contents: string): Promise<{}>;
 }
 export declare let cache: ModuleCache;

@@ -1,6 +1,6 @@
 "use strict";
+const ModuleCache_1 = require('./ModuleCache');
 const Utils_1 = require("./Utils");
-const ModuleCache_1 = require("./ModuleCache");
 const Module_1 = require("./Module");
 const realm_utils_1 = require("realm-utils");
 const MODULE_CACHE = {};
@@ -77,11 +77,13 @@ class ModuleCollection {
                     this.nodeModules.set(nodeModule, cached);
                     return;
                 }
-                let targetEntryFile = Utils_1.getPackageInformation(nodeModule).entry;
+                let packageInfo = Utils_1.getPackageInformation(nodeModule);
+                let targetEntryFile = packageInfo.entry;
                 let depCollection;
                 if (targetEntryFile) {
                     let targetEntry = new Module_1.Module(targetEntryFile);
                     depCollection = new ModuleCollection(nodeModule, targetEntry);
+                    depCollection.packageInfo = packageInfo;
                     this.nodeModules.set(nodeModule, depCollection);
                     return depCollection.collect();
                 }
@@ -92,7 +94,7 @@ class ModuleCollection {
             }
         }
         else {
-            let modulePath = module.getAbsolutePathOfModule(name);
+            let modulePath = module.getAbsolutePathOfModule(name, this.packageInfo);
             if (this.bundle) {
                 if (this.bundle.shouldIgnore(modulePath)) {
                     return;

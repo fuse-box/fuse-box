@@ -36,6 +36,18 @@
             }
             return newParts.join("/") || (newParts.length ? "/" : ".");
         }
+        var ensureExtension = function(name) {
+            var matched = name.match(/\.(\w{1,})$/);
+            if (matched) {
+                var ext = matched[1];
+                let allowed = ["json", "xml", "js"];
+                if (allowed.indexOf(ext) === -1) {
+                    return name + ".js";
+                }
+                return name;
+            }
+            return name + ".js";
+        }
 
         return {
             evaluate: function(moduleName, customPath) {
@@ -66,6 +78,7 @@
                             fn: fn
                         }
                     },
+
                     evaluate: function(_target, base) {
                         var entryName = _target ? pathJoin(base || "/", _target) : collection.entry;
                         if (!entryName) {
@@ -75,9 +88,8 @@
                         if (entryName[0] === "/") {
                             entryName = entryName.slice(1, entryName.length)
                         }
-                        if (!entryName.match(/\.js$/)) {
-                            entryName = entryName + ".js";
-                        }
+
+                        entryName = ensureExtension(entryName);
                         var entry = collection.files[entryName];
                         if (!entry) {
                             throw new Error("File " + entryName + " was not found upon request")

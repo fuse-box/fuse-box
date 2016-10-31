@@ -14,6 +14,7 @@ class FuseBox {
         this.opts = opts;
         this.dump = new Dump_1.FuseBoxDump();
         this.printLogs = true;
+        this.useCache = true;
         this.timeStart = process.hrtime();
         this.collectionSource = new CollectionSource_1.CollectionSource(this.dump);
         opts = opts || {};
@@ -26,9 +27,11 @@ class FuseBox {
         if (opts.logs) {
             this.printLogs = opts.logs;
         }
+        if (opts.cache !== undefined) {
+            this.useCache = opts.cache;
+        }
         this.virtualFiles = opts.fileCollection;
     }
-    ;
     bundle(str, standalone) {
         let parser = Arithmetic_1.Arithmetic.parse(str);
         let bundle;
@@ -64,11 +67,15 @@ class FuseBox {
                     return ModuleCollector_1.moduleCollector(bundleCollection).then(data => {
                         return realm_utils_1.each(data.collections, (collection, name) => {
                             return self.collectionSource.get(collection).then(cnt => {
-                                ModuleCache_1.cache.set(name, cnt);
                                 this.globalContents.push(cnt);
+                                if (!collection.cachedContent && self.useCache) {
+                                    ModuleCache_1.cache.set(name, cnt);
+                                }
                             });
                         }).then(() => {
-                            ModuleCache_1.cache.storeLocalDependencies(data.projectModules);
+                            if (self.useCache) {
+                                ModuleCache_1.cache.storeLocalDependencies(data.projectModules);
+                            }
                         });
                     });
                 }
@@ -79,10 +86,11 @@ class FuseBox {
                 }
             }
             ).then(result => {
+                let contents = result.contents.join("\n");
                 if (this.printLogs) {
                     this.dump.printLog(this.timeStart);
                 }
-                return ModuleWrapper_1.ModuleWrapper.wrapFinal(result.contents.join("\n"), bundleData.entry, standalone);
+                return ModuleWrapper_1.ModuleWrapper.wrapFinal(contents, bundleData.entry, standalone);
             });
         });
     }

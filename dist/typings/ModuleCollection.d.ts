@@ -1,9 +1,11 @@
+import { IPackageInformation } from "./Utils";
 import { Module } from "./Module";
 import { BundleData } from "./Arithmetic";
 export declare class ModuleCollection {
     name: string;
     entry: Module;
     cachedContent: any;
+    packageInfo: IPackageInformation;
     nodeModules: Map<string, ModuleCollection>;
     version: string;
     dependencies: Map<string, Module>;
