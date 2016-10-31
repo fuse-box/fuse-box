@@ -176,7 +176,7 @@ export class FuseBox {
                         }).then(() => {
                             // here we store node_module project requirements
                             // for caching
-                            //cache.storeLocalDependencies(data.projectModules);
+                            cache.storeLocalDependencies(data.projectModules);
                         });
                     });
                 }

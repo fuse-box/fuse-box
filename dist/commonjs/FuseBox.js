@@ -2,6 +2,7 @@
 const ModuleCollector_1 = require("./ModuleCollector");
 const Dump_1 = require("./Dump");
 const CollectionSource_1 = require("./CollectionSource");
+const ModuleCache_1 = require("./ModuleCache");
 const Arithmetic_1 = require("./Arithmetic");
 const ModuleWrapper_1 = require("./ModuleWrapper");
 const ModuleCollection_1 = require("./ModuleCollection");
@@ -66,6 +67,7 @@ class FuseBox {
                                 this.globalContents.push(cnt);
                             });
                         }).then(() => {
+                            ModuleCache_1.cache.storeLocalDependencies(data.projectModules);
                         });
                     });
                 }
