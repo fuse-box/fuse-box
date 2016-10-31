@@ -170,13 +170,13 @@ export class FuseBox {
                     return moduleCollector(bundleCollection).then(data => {
                         return each(data.collections, (collection, name) => {
                             return self.collectionSource.get(collection).then(cnt => {
-                                cache.set(name, cnt);
+                                //cache.set(name, cnt);
                                 this.globalContents.push(cnt);
                             });
                         }).then(() => {
                             // here we store node_module project requirements
                             // for caching
-                            cache.storeLocalDependencies(data.projectModules);
+                            //cache.storeLocalDependencies(data.projectModules);
                         });
                     });
                 }

@@ -1,6 +1,5 @@
 "use strict";
 const Utils_1 = require("./Utils");
-const ModuleCache_1 = require("./ModuleCache");
 const Module_1 = require("./Module");
 const realm_utils_1 = require("realm-utils");
 const MODULE_CACHE = {};
@@ -71,12 +70,6 @@ class ModuleCollection {
                 }
             }
             if (!this.nodeModules.has(nodeModule)) {
-                let cachedDeps = ModuleCache_1.cache.getValidCachedDependencies(nodeModule);
-                if (cachedDeps) {
-                    let cached = CacheCollection.get(cachedDeps);
-                    this.nodeModules.set(nodeModule, cached);
-                    return;
-                }
                 let targetEntryFile = Utils_1.getPackageInformation(nodeModule).entry;
                 let depCollection;
                 if (targetEntryFile) {
