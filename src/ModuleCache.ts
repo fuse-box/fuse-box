@@ -62,7 +62,7 @@ export class ModuleCache {
         let info = getPackageInformation(name);
         let version = info.version;
         let targetName = path.join(this.cacheFolder, `${name}-${version}`);
-        fs.writeFileSync(targetName, contents);
+        //fs.writeFileSync(targetName, contents);
     }
 }
 export let cache = new ModuleCache();

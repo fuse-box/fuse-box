@@ -55,7 +55,6 @@ class ModuleCache {
         let info = Utils_1.getPackageInformation(name);
         let version = info.version;
         let targetName = path.join(this.cacheFolder, `${name}-${version}`);
-        fs.writeFileSync(targetName, contents);
     }
 }
 exports.ModuleCache = ModuleCache;
