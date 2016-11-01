@@ -32,7 +32,7 @@ export class Module {
      * @memberOf Module
      */
     public dependencies: Module[] = [];
-
+    public packageInfo: IPackageInformation;
     /**
      * Creates an instance of Module.
      *
@@ -59,6 +59,10 @@ export class Module {
      */
     public setDir(dir: string) {
         this.dir = dir;
+    }
+
+    public setPackage(info: IPackageInformation) {
+        this.packageInfo = info;
     }
 
     /**
@@ -135,7 +139,13 @@ export class Module {
      * @memberOf Module
      */
     public getProjectPath(entry?: Module, userRootPath?: string) {
-        let root = userRootPath || path.dirname(entry && entry.absPath ? entry.absPath : this.absPath);
+
+        let root = userRootPath || this.dir ?
+            this.dir : path.dirname(entry && entry.absPath ? entry.absPath : this.absPath);
+
+        if (this.packageInfo) {
+            root = this.packageInfo.root;
+        }
         let input = this.absPath;
         input = input.replace(/\\/g, "/");
         root = root.replace(/\\/g, "/");//

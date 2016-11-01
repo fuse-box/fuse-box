@@ -36,8 +36,8 @@ export class CollectionSource {
                 if (!module) {
                     return resolve();
                 }
-                let rpath = module.getProjectPath(entry, entry.dir);
 
+                let rpath = module.getProjectPath(entry, projectPath || entry.dir);
                 if (!visited[rpath]) {
                     visited[rpath] = true;
                     let content = ModuleWrapper.wrapGeneric(rpath, module.contents);
@@ -59,7 +59,7 @@ export class CollectionSource {
             });
         }
 
-        return collectionResources(entry).then(result => {
+        return collectionResources(entry).then(() => {
             return ModuleWrapper.wrapModule(collection.name, cnt.join("\n"), entry.getProjectPath());
         });
     }

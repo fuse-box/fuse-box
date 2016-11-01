@@ -22,12 +22,14 @@ function getPackageInformation(name) {
             }
             if (json.main) {
                 return {
+                    root: folder,
                     entry: path.join(folder, json.main),
                     version: json.version,
                 };
             }
             else {
                 return {
+                    root: folder,
                     entry: path.join(folder, "index.js"),
                     version: "0.0.0",
                 };
@@ -35,6 +37,7 @@ function getPackageInformation(name) {
         }
         else {
             return {
+                root: folder,
                 entry: path.join(folder, "index.js"),
                 version: "0.0.0"
             };
@@ -74,6 +77,20 @@ function extractRequires(contents, transform) {
     return results;
 }
 exports.extractRequires = extractRequires;
+function getNodeModuleName(name) {
+    if (!name) {
+        return;
+    }
+    let matched = name.match(/^([a-z].*)$/);
+    if (matched) {
+        let data = name.split(/\/(.+)?/);
+        return {
+            name: data[0],
+            target: data[1],
+        };
+    }
+}
+exports.getNodeModuleName = getNodeModuleName;
 function getAbsoluteEntryPath(entry) {
     if (entry[0] === "/") {
         return path.dirname(entry);

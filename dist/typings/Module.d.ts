@@ -4,8 +4,10 @@ export declare class Module {
     contents: string;
     dir: string;
     dependencies: Module[];
+    packageInfo: IPackageInformation;
     constructor(absPath?: string);
     setDir(dir: string): void;
+    setPackage(info: IPackageInformation): void;
     digest(): RequireOptions[];
     getAbsolutePathOfModule(name: string, packageInfo?: IPackageInformation): string;
     addDependency(module: Module): void;

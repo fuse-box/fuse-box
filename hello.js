@@ -4,7 +4,7 @@ const fs = require("fs");
 
 let fuseBox = new FuseBox({
     homeDir: "test/fixtures/cases/case1",
-    cache : true,
+    //cache: true,
     // fileCollection: {
     //     "index.js": "require('./foo/bar.js')",
     //     "foo/bar.js": "require('../hello.js')",
@@ -12,6 +12,5 @@ let fuseBox = new FuseBox({
     // }
 });
 fuseBox.bundle(">index.js", true).then(data => {
-    fs.writeFile("./out.js", data, function(err) {
-    });
+    fs.writeFile("./out.js", data, function(err) {});
 })

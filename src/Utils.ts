@@ -10,7 +10,8 @@ export interface RequireOptions {
 }
 export interface IPackageInformation {
     entry: string;
-    version: string
+    version: string;
+    root : string;
 }
 let PACKAGE_JSON_CACHE = {};
 export function getPackageInformation(name: string): IPackageInformation {
@@ -33,17 +34,20 @@ export function getPackageInformation(name: string): IPackageInformation {
             // Getting an entry point
             if (json.main) {
                 return {
+                    root: folder,
                     entry: path.join(folder, json.main),
                     version: json.version,
                 };
             } else {
                 return {
+                    root: folder,
                     entry: path.join(folder, "index.js"),
                     version: "0.0.0",
                 }
             }
         } else {
             return {
+                root: folder,
                 entry: path.join(folder, "index.js"),
                 version: "0.0.0"
             }
@@ -90,6 +94,34 @@ export function extractRequires(contents: string, transform: boolean): RequireOp
     return results;
 }
 
+export interface INodeModuleRequire {
+    name: string;
+    target?: string;
+}
+/* getNodeModuleName
+    * GEtting a real module name
+    * Sometimes a require statement might contain
+    * require(lodash/map)
+    * In this case we interested only in "lodash" part
+    *
+    * @param {string} name
+    * @returns {string}
+    *
+    * @memberOf ModuleCollection
+    */
+export function getNodeModuleName(name: string): INodeModuleRequire {
+    if (!name) {
+        return;
+    }
+    let matched = name.match(/^([a-z].*)$/);
+    if (matched) {
+        let data = name.split(/\/(.+)?/);
+        return {
+            name: data[0],
+            target: data[1],
+        }
+    }
+}
 
 export function getAbsoluteEntryPath(entry: string): string {
     if (entry[0] === "/") {

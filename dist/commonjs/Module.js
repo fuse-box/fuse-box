@@ -18,6 +18,9 @@ class Module {
     setDir(dir) {
         this.dir = dir;
     }
+    setPackage(info) {
+        this.packageInfo = info;
+    }
     digest() {
         if (!this.absPath) {
             return [];
@@ -52,7 +55,11 @@ class Module {
         this.dependencies.push(module);
     }
     getProjectPath(entry, userRootPath) {
-        let root = userRootPath || path.dirname(entry && entry.absPath ? entry.absPath : this.absPath);
+        let root = userRootPath || this.dir ?
+            this.dir : path.dirname(entry && entry.absPath ? entry.absPath : this.absPath);
+        if (this.packageInfo) {
+            root = this.packageInfo.root;
+        }
         let input = this.absPath;
         input = input.replace(/\\/g, "/");
         root = root.replace(/\\/g, "/");

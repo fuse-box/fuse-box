@@ -1,4 +1,5 @@
 "use strict";
+const path = require('path');
 const ModuleCache_1 = require('./ModuleCache');
 const Utils_1 = require("./Utils");
 const Module_1 = require("./Module");
@@ -30,6 +31,12 @@ class ModuleCollection {
         this.nodeModules = new Map();
         this.dependencies = new Map();
     }
+    setPackageInfo(info) {
+        this.packageInfo = info;
+        if (this.entry) {
+            this.entry.setPackage(info);
+        }
+    }
     collect() {
         return this.resolve(this.entry);
     }
@@ -59,9 +66,37 @@ class ModuleCollection {
             return this.processModule(module, options.name, shouldIgnoreDeps);
         });
     }
+    addRootFile(info) {
+        let modulePath = path.join(this.packageInfo.root, info.target);
+        let module = new Module_1.Module(modulePath);
+        module.setDir(this.packageInfo.root);
+        this.entry.addDependency(module);
+        return this.resolve(module);
+    }
+    addProjectFile(module, name) {
+        let modulePath = module.getAbsolutePathOfModule(name, this.packageInfo);
+        if (this.bundle) {
+            if (this.bundle.shouldIgnore(modulePath)) {
+                return;
+            }
+        }
+        if (MODULE_CACHE[modulePath]) {
+            module.addDependency(MODULE_CACHE[modulePath]);
+        }
+        else {
+            let dependency = new Module_1.Module(modulePath);
+            if (this.packageInfo) {
+                dependency.setPackage(this.packageInfo);
+            }
+            MODULE_CACHE[modulePath] = dependency;
+            module.addDependency(dependency);
+            return this.resolve(dependency);
+        }
+    }
     processModule(module, name, shouldIgnoreDeps) {
-        let nodeModule = this.getNodeModuleName(name);
-        if (nodeModule) {
+        let moduleInfo = Utils_1.getNodeModuleName(name);
+        if (moduleInfo) {
+            let nodeModule = moduleInfo.name;
             if (shouldIgnoreDeps) {
                 return;
             }
@@ -72,52 +107,34 @@ class ModuleCollection {
             }
             if (!this.nodeModules.has(nodeModule)) {
                 let cachedDeps = ModuleCache_1.cache.getValidCachedDependencies(nodeModule);
-                if (cachedDeps) {
-                    let cached = CacheCollection.get(cachedDeps);
-                    this.nodeModules.set(nodeModule, cached);
-                    return;
-                }
                 let packageInfo = Utils_1.getPackageInformation(nodeModule);
                 let targetEntryFile = packageInfo.entry;
                 let depCollection;
                 if (targetEntryFile) {
                     let targetEntry = new Module_1.Module(targetEntryFile);
                     depCollection = new ModuleCollection(nodeModule, targetEntry);
-                    depCollection.packageInfo = packageInfo;
+                    depCollection.setPackageInfo(packageInfo);
                     this.nodeModules.set(nodeModule, depCollection);
-                    return depCollection.collect();
+                    return depCollection.collect().then(() => {
+                        if (moduleInfo.target) {
+                            return depCollection.addRootFile(moduleInfo);
+                        }
+                    });
                 }
                 else {
                     depCollection = new ModuleCollection(name);
                     this.nodeModules.set(nodeModule, depCollection);
                 }
             }
-        }
-        else {
-            let modulePath = module.getAbsolutePathOfModule(name, this.packageInfo);
-            if (this.bundle) {
-                if (this.bundle.shouldIgnore(modulePath)) {
-                    return;
+            else {
+                let depCollection = this.nodeModules.get(nodeModule);
+                if (moduleInfo.target) {
+                    return depCollection.addRootFile(moduleInfo);
                 }
             }
-            if (MODULE_CACHE[modulePath]) {
-                module.addDependency(MODULE_CACHE[modulePath]);
-            }
-            else {
-                let dependency = new Module_1.Module(modulePath);
-                MODULE_CACHE[modulePath] = dependency;
-                module.addDependency(dependency);
-                return this.resolve(dependency);
-            }
         }
-    }
-    getNodeModuleName(name) {
-        if (!name) {
-            return;
-        }
-        let matched = name.match(/^([a-z].*)$/);
-        if (matched) {
-            return name.split("/")[0];
+        else {
+            return this.addProjectFile(module, name);
         }
     }
 }

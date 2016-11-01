@@ -24,6 +24,7 @@
     "@types/node": "^6.0.41",
     "cheerio": "^0.22.0",
     "fuse-box-testcase1": "^1.0.0",
+    "fuse-box-testcase3": "^1.0.3",
     "gulp": "^3.9.1",
     "gulp-bump": "^2.4.0",
     "gulp-concat": "^2.6.0",

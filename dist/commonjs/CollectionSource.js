@@ -25,7 +25,7 @@ class CollectionSource {
                 if (!module) {
                     return resolve();
                 }
-                let rpath = module.getProjectPath(entry, entry.dir);
+                let rpath = module.getProjectPath(entry, projectPath || entry.dir);
                 if (!visited[rpath]) {
                     visited[rpath] = true;
                     let content = ModuleWrapper_1.ModuleWrapper.wrapGeneric(rpath, module.contents);
@@ -45,7 +45,7 @@ class CollectionSource {
                 return ModuleWrapper_1.ModuleWrapper.wrapModule(collection.name, cnt.join("\n"));
             });
         }
-        return collectionResources(entry).then(result => {
+        return collectionResources(entry).then(() => {
             return ModuleWrapper_1.ModuleWrapper.wrapModule(collection.name, cnt.join("\n"), entry.getProjectPath());
         });
     }

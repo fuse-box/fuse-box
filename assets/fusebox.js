@@ -60,9 +60,10 @@
                     return mod.cache;
                 }
             },
-            import: function(userPath) {
-                if (modules["default"]) {
-                    let mod = modules["default"];
+            import: function(userPath, packageName) {
+                packageName = packageName || "default";
+                if (modules[packageName]) {
+                    let mod = modules[packageName];
                     return mod.scope.evaluate(userPath);
                 }
             },
@@ -78,9 +79,9 @@
                             fn: fn
                         }
                     },
-
                     evaluate: function(_target, base) {
                         var entryName = _target ? pathJoin(base || "/", _target) : collection.entry;
+
                         if (!entryName) {
                             return;
                         }
@@ -88,23 +89,35 @@
                         if (entryName[0] === "/") {
                             entryName = entryName.slice(1, entryName.length)
                         }
+                        if (entryName === ".") {
+                            entryName = collection.entry;
+                        }
 
                         entryName = ensureExtension(entryName);
                         var entry = collection.files[entryName];
-                        if (!entry) {
-                            throw new Error("File " + entryName + " was not found upon request")
+                        if (entry.isLoading) {
+                            console.warn("Circular dependency detected!");
+                            return;
                         }
-
+                        if (!entry) {
+                            let msg = ["File " + entryName + " was not found upon request"];
+                            msg.push("In module '" + moduleName + "'");
+                            throw new Error(msg.join("\n"))
+                        }
                         if (entry.cache) {
                             return entry.cache;
                         }
                         var locals = {};
                         var self = this;
+                        entry.isLoading = true;
                         locals.exports = {};
                         locals.require = function(target) {
                             var _module = getNodeModuleName(target);
                             if (_module) {
                                 var _moduleName = _module[0];
+                                if (_module[1]) {
+                                    return FuseBox.import(_module[1], _module[0]);
+                                }
                                 return FuseBox.evaluate(_moduleName);
                             } else {
                                 var baseDir = getFileDirectory(entryName);
@@ -116,6 +129,7 @@
                         entry.fn.apply(this, args);
                         var res = locals.module.exports;
                         entry.cache = res;
+                        entry.isLoading = false;
                         return res;
                     },
                     entry: function(name) {

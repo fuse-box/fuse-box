@@ -1,5 +1,9 @@
+import { timingSafeEqual } from 'crypto';
+import { CollectionSource } from './CollectionSource';
+import * as path from 'path';
 import { cache } from './ModuleCache';
-import { getPackageInformation, IPackageInformation } from "./Utils";
+import { getPackageInformation, IPackageInformation, getNodeModuleName, INodeModuleRequire } from "./Utils";
+
 import { Module } from "./Module";
 import { each } from "realm-utils";
 import { BundleData } from "./Arithmetic";
@@ -39,7 +43,21 @@ export class ModuleCollection {
      */
     public nodeModules: Map<string, ModuleCollection> = new Map();
 
-    public version: string;
+
+
+
+    /**
+     * Root Collections
+     * Sometimes people go crazy and do that
+     * require("node-module/dist/foo.js")
+     *
+     * I guess that's not thier fault, it's a packaging fault
+     * So we store all the individual calls
+     *
+     * @type {Module}
+     * @memberOf ModuleCollection
+     */
+    public rootCollections: Map<string, ModuleCollection>;
     /**
      * All local dependencies (from require come here)
      *
@@ -47,6 +65,7 @@ export class ModuleCollection {
      * @memberOf ModuleCollection
      */
     public dependencies: Map<string, Module> = new Map();
+
 
     /**
      *
@@ -58,6 +77,13 @@ export class ModuleCollection {
 
     constructor(public name: string, public entry?: Module) { }
 
+
+    public setPackageInfo(info: IPackageInformation) {
+        this.packageInfo = info;
+        if (this.entry) {
+            this.entry.setPackage(info);
+        }
+    }
     /**
      *
      *
@@ -92,7 +118,7 @@ export class ModuleCollection {
             return this.processModule(module, modulePath);
         }).then(data => {
             return module;
-        })
+        });
     }
 
     /**
@@ -111,12 +137,44 @@ export class ModuleCollection {
             }
             shouldIgnoreDeps = this.bundle.shouldIgnoreNodeModules(module.absPath);
         }
-
         let requires = module.digest();
         return each(requires, options => {
             return this.processModule(module, options.name, shouldIgnoreDeps);
         });
     }
+
+    public addRootFile(info: INodeModuleRequire) {
+
+        let modulePath = path.join(this.packageInfo.root, info.target);
+        let module = new Module(modulePath);
+        module.setDir(this.packageInfo.root);
+
+        this.entry.addDependency(module);
+        return this.resolve(module);
+    }
+
+    public addProjectFile(module: Module, name: string) {
+
+        let modulePath = module.getAbsolutePathOfModule(name, this.packageInfo);
+
+        if (this.bundle) {
+            if (this.bundle.shouldIgnore(modulePath)) { // make sure we ignore if bundle is set
+                return;
+            }
+        }
+        if (MODULE_CACHE[modulePath]) {
+            module.addDependency(MODULE_CACHE[modulePath]);
+        } else {
+            let dependency = new Module(modulePath);
+            if (this.packageInfo) {
+                dependency.setPackage(this.packageInfo);
+            }
+            MODULE_CACHE[modulePath] = dependency;
+            module.addDependency(dependency);
+            return this.resolve(dependency);
+        }
+    }
+
     /**
      *
      *
@@ -128,10 +186,10 @@ export class ModuleCollection {
      * @memberOf ModuleCollection
      */
     public processModule(module: Module, name: string, shouldIgnoreDeps?: boolean) {
+        let moduleInfo = getNodeModuleName(name);
+        if (moduleInfo) {
 
-        let nodeModule = this.getNodeModuleName(name);
-        if (nodeModule) {
-
+            let nodeModule = moduleInfo.name;
             if (shouldIgnoreDeps) {
                 return;
             }
@@ -141,69 +199,50 @@ export class ModuleCollection {
                 }
             }
 
+
             // just collecting node modules names
             if (!this.nodeModules.has(nodeModule)) {
                 let cachedDeps = cache.getValidCachedDependencies(nodeModule);
-                if (cachedDeps) {
-                    let cached = CacheCollection.get(cachedDeps);
-                    this.nodeModules.set(nodeModule, cached);
-                    return;
-                }
+                // if (cachedDeps) {
+                //     let cached = CacheCollection.get(cachedDeps);
+                //     this.nodeModules.set(nodeModule, cached);
+                //     console.log('here!!');
+                //     return;
+                // }
                 let packageInfo = getPackageInformation(nodeModule);
 
                 let targetEntryFile = packageInfo.entry;
                 let depCollection: ModuleCollection;
                 // target file was found (in package.json or index.js by default)
                 if (targetEntryFile) {
+
                     let targetEntry = new Module(targetEntryFile);
                     depCollection = new ModuleCollection(nodeModule, targetEntry);
-                    depCollection.packageInfo = packageInfo;
+                    depCollection.setPackageInfo( packageInfo);
                     this.nodeModules.set(nodeModule, depCollection);
-                    return depCollection.collect();
+                    return depCollection.collect().then(() => {
+                        // hanlde addition target if require
+                        // e.g require("my-lib/dist/hello.js")
+                        if (moduleInfo.target) {
+                            return depCollection.addRootFile(moduleInfo);
+                        }
+                    });
                 } else {
                     // was not found, but we still register a dummy one
                     depCollection = new ModuleCollection(name);
                     this.nodeModules.set(nodeModule, depCollection);
                 }
-            }
-        } else {
-            let modulePath = module.getAbsolutePathOfModule(name, this.packageInfo);
-            if (this.bundle) {
-                if (this.bundle.shouldIgnore(modulePath)) { // make sure we ignore if bundle is set
-                    return;
+            } else {
+                let depCollection = this.nodeModules.get(nodeModule);
+                if (moduleInfo.target) {
+                    return depCollection.addRootFile(moduleInfo);
                 }
             }
-            if (MODULE_CACHE[modulePath]) {
-                module.addDependency(MODULE_CACHE[modulePath]);
-            } else {
-                let dependency = new Module(modulePath);
-                MODULE_CACHE[modulePath] = dependency;
-                module.addDependency(dependency);
-                return this.resolve(dependency);
-            }
+
+        } else {
+            return this.addProjectFile(module, name);
         }
     }
 
-    /**
-     * getNodeModuleName
-     * GEtting a real module name
-     * Sometimes a require statement might contain
-     * require(lodash/map)
-     * In this case we interested only in "lodash" part
-     *
-     * @param {string} name
-     * @returns {string}
-     *
-     * @memberOf ModuleCollection
-     */
-    public getNodeModuleName(name: string): string {
-        if (!name) {
-            return;
-        }
-        let matched = name.match(/^([a-z].*)$/);
-        if (matched) {
-            return name.split("/")[0];
-        }
-    }
 
 }
