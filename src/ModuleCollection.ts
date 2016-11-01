@@ -203,12 +203,12 @@ export class ModuleCollection {
             // just collecting node modules names
             if (!this.nodeModules.has(nodeModule)) {
                 let cachedDeps = cache.getValidCachedDependencies(nodeModule);
-                // if (cachedDeps) {
-                //     let cached = CacheCollection.get(cachedDeps);
-                //     this.nodeModules.set(nodeModule, cached);
-                //     console.log('here!!');
-                //     return;
-                // }
+                if (cachedDeps) {
+                    let cached = CacheCollection.get(cachedDeps);
+                    this.nodeModules.set(nodeModule, cached);
+                    console.log('here!!');
+                    return;
+                }
                 let packageInfo = getPackageInformation(nodeModule);
 
                 let targetEntryFile = packageInfo.entry;
@@ -218,7 +218,7 @@ export class ModuleCollection {
 
                     let targetEntry = new Module(targetEntryFile);
                     depCollection = new ModuleCollection(nodeModule, targetEntry);
-                    depCollection.setPackageInfo( packageInfo);
+                    depCollection.setPackageInfo(packageInfo);
                     this.nodeModules.set(nodeModule, depCollection);
                     return depCollection.collect().then(() => {
                         // hanlde addition target if require

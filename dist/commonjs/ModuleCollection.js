@@ -107,6 +107,12 @@ class ModuleCollection {
             }
             if (!this.nodeModules.has(nodeModule)) {
                 let cachedDeps = ModuleCache_1.cache.getValidCachedDependencies(nodeModule);
+                if (cachedDeps) {
+                    let cached = CacheCollection.get(cachedDeps);
+                    this.nodeModules.set(nodeModule, cached);
+                    console.log('here!!');
+                    return;
+                }
                 let packageInfo = Utils_1.getPackageInformation(nodeModule);
                 let targetEntryFile = packageInfo.entry;
                 let depCollection;
