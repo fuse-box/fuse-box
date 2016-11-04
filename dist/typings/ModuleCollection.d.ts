@@ -1,16 +1,17 @@
 import { IPackageInformation, INodeModuleRequire } from "./Utils";
+import { WorkFlowContext } from "./WorkFlowContext";
 import { Module } from "./Module";
 import { BundleData } from "./Arithmetic";
 export declare class ModuleCollection {
+    context: WorkFlowContext;
     name: string;
     entry: Module;
     cachedContent: any;
     packageInfo: IPackageInformation;
     nodeModules: Map<string, ModuleCollection>;
-    rootCollections: Map<string, ModuleCollection>;
-    dependencies: Map<string, Module>;
     bundle: BundleData;
-    constructor(name: string, entry?: Module);
+    entryResolved: boolean;
+    constructor(context: WorkFlowContext, name: string, entry?: Module);
     setPackageInfo(info: IPackageInformation): void;
     collect(): any;
     setCachedContent(content: string): void;

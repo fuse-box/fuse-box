@@ -17,6 +17,23 @@ class FuseBoxDump {
             bytes: byteAmount,
         });
     }
+    error(moduleName, file, error) {
+        if (!this.modules[moduleName]) {
+            this.modules[moduleName] = [];
+        }
+        this.modules[moduleName].push({
+            name: file,
+            error: error
+        });
+    }
+    warn(moduleName, warning) {
+        if (!this.modules[moduleName]) {
+            this.modules[moduleName] = [];
+        }
+        this.modules[moduleName].push({
+            warning: warning
+        });
+    }
     printLog(endTime) {
         let total = 0;
         for (let name in this.modules) {
@@ -24,8 +41,16 @@ class FuseBoxDump {
                 cursor.green().write(name).write("\n").reset();
                 for (let i = 0; i < this.modules[name].length; i++) {
                     let item = this.modules[name][i];
-                    total += item.bytes;
-                    cursor.grey().write(`  ${item.name} (${prettysize(item.bytes)})`).write("\n").reset();
+                    if (item.warning) {
+                        cursor.yellow().write(`  ${item.warning}`).write("\n").reset();
+                    }
+                    else if (item.error) {
+                        cursor.red().write(`  ${item.name} - ${item.error}`).write("\n").reset();
+                    }
+                    else {
+                        total += item.bytes;
+                        cursor.grey().write(`  ${item.name} (${prettysize(item.bytes)})`).write("\n").reset();
+                    }
                 }
             }
         }

@@ -1,12 +1,12 @@
 "use strict";
-const Config_1 = require('./Config');
+const Config_1 = require("./Config");
 const appRoot = require("app-root-path");
 const esprima = require("esprima");
 const esquery = require("esquery");
 const path = require("path");
 const fs = require("fs");
 let PACKAGE_JSON_CACHE = {};
-function getPackageInformation(name) {
+function getPackageInformation(name, parent) {
     let localLib = path.join(Config_1.Config.LOCAL_LIBS, name);
     let modulePath = path.join(Config_1.Config.NODE_MODULES_DIR, name);
     let readMainFile = (folder) => {
@@ -22,6 +22,7 @@ function getPackageInformation(name) {
             }
             if (json.main) {
                 return {
+                    name: name,
                     root: folder,
                     entry: path.join(folder, json.main),
                     version: json.version,
@@ -29,6 +30,7 @@ function getPackageInformation(name) {
             }
             else {
                 return {
+                    name: name,
                     root: folder,
                     entry: path.join(folder, "index.js"),
                     version: "0.0.0",
@@ -37,12 +39,21 @@ function getPackageInformation(name) {
         }
         else {
             return {
+                name: name,
                 root: folder,
                 entry: path.join(folder, "index.js"),
                 version: "0.0.0"
             };
         }
     };
+    if (parent) {
+        if (parent.root) {
+            let nestedNodeModule = path.join(parent.root, "node_modules", name);
+            if (fs.existsSync(nestedNodeModule)) {
+                return readMainFile(nestedNodeModule);
+            }
+        }
+    }
     if (fs.existsSync(localLib)) {
         return readMainFile(localLib);
     }
@@ -51,7 +62,31 @@ function getPackageInformation(name) {
     }
 }
 exports.getPackageInformation = getPackageInformation;
-function extractRequires(contents, transform) {
+function ensureRelativePath(name, absPath) {
+    if (name.match(/\/$/)) {
+        return path.join(name, "index.js");
+    }
+    else {
+        if (!name.match(/^([a-z].*)$/)) {
+            if (!name.match(/.js$/)) {
+                let folderDir = path.join(path.dirname(absPath), name, "index.js");
+                if (fs.existsSync(folderDir)) {
+                    let startsWithDot = name[0] === ".";
+                    name = path.join(name, "/", "index.js");
+                    if (startsWithDot) {
+                        name = `./${name}`;
+                    }
+                }
+                else {
+                    name = name + ".js";
+                }
+            }
+        }
+    }
+    return name;
+}
+exports.ensureRelativePath = ensureRelativePath;
+function extractRequires(contents, absPath) {
     let ast = esprima.parse(contents);
     let matches = esquery(ast, "CallExpression[callee.name=\"require\"]");
     let results = [];
@@ -67,7 +102,17 @@ function extractRequires(contents, transform) {
             else {
                 if (!name.match(/^([a-z].*)$/)) {
                     if (!name.match(/.js/)) {
-                        name = name + ".js";
+                        let folderDir = path.join(path.dirname(absPath), name, "index.js");
+                        if (fs.existsSync(folderDir)) {
+                            let startsWithDot = name[0] === ".";
+                            name = path.join(name, "/", "index.js");
+                            if (startsWithDot) {
+                                name = `./${name}`;
+                            }
+                        }
+                        else {
+                            name = name + ".js";
+                        }
                     }
                 }
             }
@@ -98,8 +143,3 @@ function getAbsoluteEntryPath(entry) {
     return path.join(appRoot.path, entry);
 }
 exports.getAbsoluteEntryPath = getAbsoluteEntryPath;
-function getWorkspaceDir(entry) {
-    let p = getAbsoluteEntryPath(entry);
-    return path.dirname(p);
-}
-exports.getWorkspaceDir = getWorkspaceDir;

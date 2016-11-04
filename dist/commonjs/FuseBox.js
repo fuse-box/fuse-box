@@ -1,6 +1,6 @@
 "use strict";
+const WorkflowContext_1 = require("./WorkflowContext");
 const ModuleCollector_1 = require("./ModuleCollector");
-const Dump_1 = require("./Dump");
 const CollectionSource_1 = require("./CollectionSource");
 const ModuleCache_1 = require("./ModuleCache");
 const Arithmetic_1 = require("./Arithmetic");
@@ -12,30 +12,27 @@ const appRoot = require("app-root-path");
 class FuseBox {
     constructor(opts) {
         this.opts = opts;
-        this.dump = new Dump_1.FuseBoxDump();
-        this.printLogs = true;
-        this.useCache = true;
+        this.context = new WorkflowContext_1.WorkFlowContext();
         this.timeStart = process.hrtime();
-        this.collectionSource = new CollectionSource_1.CollectionSource(this.dump);
+        this.collectionSource = new CollectionSource_1.CollectionSource(this.context);
         opts = opts || {};
-        if (!opts.homeDir) {
-            this.homeDir = appRoot.path;
+        let homeDir = appRoot.path;
+        if (opts.homeDir) {
+            homeDir = path.isAbsolute(opts.homeDir) ? opts.homeDir : path.join(appRoot.path, opts.homeDir);
         }
-        else {
-            this.homeDir = path.isAbsolute(opts.homeDir) ? opts.homeDir : path.join(appRoot.path, opts.homeDir);
-        }
+        this.context.setHomeDir(homeDir);
         if (opts.logs) {
-            this.printLogs = opts.logs;
+            this.context.setPrintLogs(opts.logs);
         }
         if (opts.cache !== undefined) {
-            this.useCache = opts.cache;
+            this.context.setUseCache(opts.cache);
         }
         this.virtualFiles = opts.fileCollection;
     }
     bundle(str, standalone) {
         let parser = Arithmetic_1.Arithmetic.parse(str);
         let bundle;
-        return Arithmetic_1.Arithmetic.getFiles(parser, this.virtualFiles, this.homeDir).then(data => {
+        return Arithmetic_1.Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
             bundle = data;
             return this.process(data, standalone);
         }).then((contents) => {
@@ -46,7 +43,7 @@ class FuseBox {
         });
     }
     process(bundleData, standalone) {
-        let bundleCollection = new ModuleCollection_1.ModuleCollection("default");
+        let bundleCollection = new ModuleCollection_1.ModuleCollection(this.context, "default");
         let self = this;
         return bundleCollection.collectBundle(bundleData).then(module => {
             return realm_utils_1.chain(class extends realm_utils_1.Chainable {
@@ -55,7 +52,7 @@ class FuseBox {
                     this.globalContents = [];
                 }
                 setDefaultCollection() {
-                    let defaultCollection = new ModuleCollection_1.ModuleCollection("default", module);
+                    let defaultCollection = new ModuleCollection_1.ModuleCollection(self.context, "default", module);
                     return defaultCollection;
                 }
                 addDefaultContents() {
@@ -68,12 +65,12 @@ class FuseBox {
                         return realm_utils_1.each(data.collections, (collection, name) => {
                             return self.collectionSource.get(collection).then(cnt => {
                                 this.globalContents.push(cnt);
-                                if (!collection.cachedContent && self.useCache) {
+                                if (!collection.cachedContent && self.context.useCache) {
                                     ModuleCache_1.cache.set(name, cnt);
                                 }
                             });
                         }).then(() => {
-                            if (self.useCache) {
+                            if (self.context.useCache) {
                                 ModuleCache_1.cache.storeLocalDependencies(data.projectModules);
                             }
                         });
@@ -87,8 +84,8 @@ class FuseBox {
             }
             ).then(result => {
                 let contents = result.contents.join("\n");
-                if (this.printLogs) {
-                    this.dump.printLog(this.timeStart);
+                if (this.context.printLogs) {
+                    self.context.dump.printLog(this.timeStart);
                 }
                 return ModuleWrapper_1.ModuleWrapper.wrapFinal(contents, bundleData.entry, standalone);
             });

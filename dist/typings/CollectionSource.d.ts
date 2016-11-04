@@ -1,7 +1,7 @@
-import { FuseBoxDump } from "./Dump";
+import { WorkFlowContext } from "./WorkflowContext";
 import { ModuleCollection } from "./ModuleCollection";
 export declare class CollectionSource {
-    dump: FuseBoxDump;
-    constructor(dump: FuseBoxDump);
+    context: WorkFlowContext;
+    constructor(context: WorkFlowContext);
     get(collection: ModuleCollection, depsOnly?: boolean): any;
 }

@@ -1,9 +1,10 @@
-import { timingSafeEqual } from 'crypto';
-import { CollectionSource } from './CollectionSource';
-import * as path from 'path';
-import { cache } from './ModuleCache';
-import { getPackageInformation, IPackageInformation, getNodeModuleName, INodeModuleRequire } from "./Utils";
 
+import * as fs from 'fs';
+import * as path from "path";
+import { cache } from "./ModuleCache";
+import { getPackageInformation,
+        ensureRelativePath,  IPackageInformation, getNodeModuleName, INodeModuleRequire } from "./Utils";
+import { WorkFlowContext } from "./WorkFlowContext";
 import { Module } from "./Module";
 import { each } from "realm-utils";
 import { BundleData } from "./Arithmetic";
@@ -11,14 +12,14 @@ import { BundleData } from "./Arithmetic";
 const MODULE_CACHE = {};
 
 class CacheCollection {
-    public static get(cache: any): ModuleCollection {
-        let root = new ModuleCollection(cache.name);
+    public static get(context: WorkFlowContext, cache: any): ModuleCollection {
+        let root = new ModuleCollection(context, cache.name);
         root.setCachedContent(cache.cache);
         let collectDeps = (rootCollection: ModuleCollection, item: any) => {
             for (let depName in item.deps) {
                 if (item.deps.hasOwnProperty(depName)) {
                     let nestedCache = item.deps[depName];
-                    let nestedCollection = new ModuleCollection(nestedCache.name);
+                    let nestedCollection = new ModuleCollection(context, nestedCache.name);
                     nestedCollection.setCachedContent(nestedCache.cache);
                     rootCollection.nodeModules.set(nestedCache.name, nestedCollection);
                     collectDeps(nestedCollection, nestedCache);
@@ -43,30 +44,6 @@ export class ModuleCollection {
      */
     public nodeModules: Map<string, ModuleCollection> = new Map();
 
-
-
-
-    /**
-     * Root Collections
-     * Sometimes people go crazy and do that
-     * require("node-module/dist/foo.js")
-     *
-     * I guess that's not thier fault, it's a packaging fault
-     * So we store all the individual calls
-     *
-     * @type {Module}
-     * @memberOf ModuleCollection
-     */
-    public rootCollections: Map<string, ModuleCollection>;
-    /**
-     * All local dependencies (from require come here)
-     *
-     * @type {Map<string, Module>}
-     * @memberOf ModuleCollection
-     */
-    public dependencies: Map<string, Module> = new Map();
-
-
     /**
      *
      *
@@ -75,7 +52,9 @@ export class ModuleCollection {
      */
     public bundle: BundleData;
 
-    constructor(public name: string, public entry?: Module) { }
+    public entryResolved = false;
+
+    constructor(public context: WorkFlowContext, public name: string, public entry?: Module) { }
 
 
     public setPackageInfo(info: IPackageInformation) {
@@ -92,7 +71,12 @@ export class ModuleCollection {
      * @memberOf ModuleCollection
      */
     public collect() {
-        return this.resolve(this.entry);
+
+
+        return this.resolve(this.entry).then(result => {
+            this.entryResolved = true;
+            return result;
+        });
     }
 
     public setCachedContent(content: string) {
@@ -111,12 +95,13 @@ export class ModuleCollection {
     public collectBundle(data: BundleData): Promise<Module> {
         this.bundle = data;
         // faking entry point
-        let module = new Module();
+        let module = new Module(this.context);
         module.setDir(data.homeDir); // setting a home directory for a module (even though it does not have a file)
 
         return each(data.including, (withDeps, modulePath) => {
             return this.processModule(module, modulePath);
         }).then(data => {
+
             return module;
         });
     }
@@ -143,11 +128,15 @@ export class ModuleCollection {
         });
     }
 
+
     public addRootFile(info: INodeModuleRequire) {
 
         let modulePath = path.join(this.packageInfo.root, info.target);
-        let module = new Module(modulePath);
-        module.setDir(this.packageInfo.root);
+
+        let module = new Module(this.context, modulePath);
+        let fileRootDirectory = path.join(this.packageInfo.root, path.dirname(info.target));
+        module.setDir(fileRootDirectory);
+        module.setPackage(this.packageInfo);
 
         this.entry.addDependency(module);
         return this.resolve(module);
@@ -155,7 +144,22 @@ export class ModuleCollection {
 
     public addProjectFile(module: Module, name: string) {
 
-        let modulePath = module.getAbsolutePathOfModule(name, this.packageInfo);
+        let modulePath; // module.getAbsolutePathOfModule(name, this.packageInfo);
+        if (path.isAbsolute(name)) {
+            modulePath = name;
+        } else {
+
+            let relativePath = ensureRelativePath(name, module.absPath);
+            console.log(relativePath);
+            modulePath = path.join(path.dirname(module.absPath), relativePath);
+
+            // if (!fs.existsSync(modulePath) && this.entry && this.entry.absPath) {
+            //     this.context.dump.warn(this.name,
+            //         `${name} : ${modulePath} (not found) -> Refering to index -> ${this.entry.absPath}`);
+            //     modulePath = this.entry.absPath;
+
+            // }
+        }
 
         if (this.bundle) {
             if (this.bundle.shouldIgnore(modulePath)) { // make sure we ignore if bundle is set
@@ -165,10 +169,10 @@ export class ModuleCollection {
         if (MODULE_CACHE[modulePath]) {
             module.addDependency(MODULE_CACHE[modulePath]);
         } else {
-            let dependency = new Module(modulePath);
-            if (this.packageInfo) {
-                dependency.setPackage(this.packageInfo);
-            }
+            let dependency = new Module(this.context, modulePath);
+
+            dependency.setDir(path.dirname(modulePath));
+            dependency.setPackage(this.packageInfo);
             MODULE_CACHE[modulePath] = dependency;
             module.addDependency(dependency);
             return this.resolve(dependency);
@@ -186,10 +190,12 @@ export class ModuleCollection {
      * @memberOf ModuleCollection
      */
     public processModule(module: Module, name: string, shouldIgnoreDeps?: boolean) {
+
         let moduleInfo = getNodeModuleName(name);
         if (moduleInfo) {
 
             let nodeModule = moduleInfo.name;
+
             if (shouldIgnoreDeps) {
                 return;
             }
@@ -199,50 +205,93 @@ export class ModuleCollection {
                 }
             }
 
-
-            // just collecting node modules names
-            if (!this.nodeModules.has(nodeModule)) {
-                let cachedDeps = cache.getValidCachedDependencies(nodeModule);
-                if (cachedDeps) {
-                    let cached = CacheCollection.get(cachedDeps);
-                    this.nodeModules.set(nodeModule, cached);
-                    console.log('here!!');
-                    return;
+            if (!this.context.hasNodeModule(nodeModule)) {
+                if (this.context.useCache) {
+                    let cachedDeps = cache.getValidCachedDependencies(nodeModule);
+                    if (cachedDeps) {
+                        let cached = CacheCollection.get(this.context, cachedDeps);
+                        this.nodeModules.set(nodeModule, cached);
+                        return;
+                    }
                 }
-                let packageInfo = getPackageInformation(nodeModule);
+                let packageInfo = getPackageInformation(nodeModule, this.packageInfo);
 
+                let targetEntry = new Module(this.context, packageInfo.entry);
+
+                let collection = new ModuleCollection(this.context, nodeModule, targetEntry);
+                collection.setPackageInfo(packageInfo);
+                this.context.addNodeModule(nodeModule, collection);
+                this.nodeModules.set(nodeModule, collection);
+                // If it's a partial request
+                if (moduleInfo.target) {
+                    return collection.addRootFile(moduleInfo);
+                } else {
+
+                    return collection.collect();
+                }
+            } else {
+                let collection = this.context.getNodeModule(nodeModule);
+                this.nodeModules.set(nodeModule, collection);
+                if (moduleInfo.target) {
+                    return collection.addRootFile(moduleInfo);
+                } else {
+
+                    if (!collection.entryResolved) {
+
+                        return collection.collect();
+                    }
+                }
+            }
+
+            /*
+            // just collecting node modules names
+            if (!this.context.hasNodeModule(nodeModule)) {
+                if (this.context.useCache) {
+                    let cachedDeps = cache.getValidCachedDependencies(nodeModule);
+                    if (cachedDeps) {
+                        let cached = CacheCollection.get(this.context, cachedDeps);
+                        this.nodeModules.set(nodeModule, cached);
+                        return;
+                    }
+                }
+                let packageInfo = getPackageInformation(nodeModule, this.packageInfo);
                 let targetEntryFile = packageInfo.entry;
                 let depCollection: ModuleCollection;
                 // target file was found (in package.json or index.js by default)
                 if (targetEntryFile) {
 
-                    let targetEntry = new Module(targetEntryFile);
-                    depCollection = new ModuleCollection(nodeModule, targetEntry);
+                    let targetEntry = new Module(this.context, targetEntryFile);
+                    depCollection = new ModuleCollection(this.context, nodeModule, targetEntry);
                     depCollection.setPackageInfo(packageInfo);
+                    this.context.addNodeModule(nodeModule, depCollection);
                     this.nodeModules.set(nodeModule, depCollection);
                     return depCollection.collect().then(() => {
                         // hanlde addition target if require
                         // e.g require("my-lib/dist/hello.js")
                         if (moduleInfo.target) {
+
                             return depCollection.addRootFile(moduleInfo);
                         }
                     });
                 } else {
                     // was not found, but we still register a dummy one
-                    depCollection = new ModuleCollection(name);
+                    depCollection = new ModuleCollection(this.context, name);
+                    this.context.addNodeModule(nodeModule, depCollection);
                     this.nodeModules.set(nodeModule, depCollection);
                 }
             } else {
-                let depCollection = this.nodeModules.get(nodeModule);
+                let depCollection = this.context.getNodeModule(nodeModule);
                 if (moduleInfo.target) {
                     return depCollection.addRootFile(moduleInfo);
                 }
-            }
+            }*/
+
+
 
         } else {
+            //console.log("ADD", name, module.absPath);
             return this.addProjectFile(module, name);
         }
     }
-
 
 }

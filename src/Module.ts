@@ -1,3 +1,4 @@
+import { WorkFlowContext } from './WorkflowContext';
 import { extractRequires, getAbsoluteEntryPath, RequireOptions, IPackageInformation } from "./Utils";
 
 import * as fs from "fs";
@@ -25,6 +26,9 @@ export class Module {
      * @memberOf Module
      */
     public dir: string;
+
+    public nodeModuleDir: string;
+
     /**
      *
      *
@@ -33,6 +37,8 @@ export class Module {
      */
     public dependencies: Module[] = [];
     public packageInfo: IPackageInformation;
+
+    public isLoaded = false;
     /**
      * Creates an instance of Module.
      *
@@ -40,7 +46,7 @@ export class Module {
      *
      * @memberOf Module
      */
-    constructor(public absPath?: string) {
+    constructor(public context: WorkFlowContext, public absPath?: string) {
         if (!absPath) {
             return;
         }
@@ -61,6 +67,10 @@ export class Module {
         this.dir = dir;
     }
 
+    public setNodeModuleDir(dir: string) {
+        this.nodeModuleDir = dir;
+    }
+
     public setPackage(info: IPackageInformation) {
         this.packageInfo = info;
     }
@@ -78,12 +88,13 @@ export class Module {
         }
 
         if (!fs.existsSync(this.absPath)) {
-            console.warn("File ", this.absPath, "Does not exist");
+            this.context.dump.error(this.packageInfo.name, this.absPath, "Not found");
             this.contents = "";
             return [];
         }
-        this.contents = fs.readFileSync(this.absPath).toString();
 
+        this.contents = fs.readFileSync(this.absPath).toString();
+        this.isLoaded = true;
         // if it's a json
         if (this.absPath.match(/\.json$/)) {
             // Modify contents so they exports the json
@@ -92,7 +103,7 @@ export class Module {
 
         // extract dependencies in case of a javascript file
         if (this.absPath.match(/\.js$/)) {
-            let reqs = extractRequires(this.contents, true);
+            let reqs = extractRequires(this.contents, path.join(this.absPath));
             return reqs;
         }
         return [];
@@ -110,8 +121,12 @@ export class Module {
         if (path.isAbsolute(name)) {
             return name;
         }
+
+        //console.log(name, this.dir);
+
         let mpath = path.join(this.dir, name);
         let target = this.ensureExtension(mpath);
+
         if (packageInfo && !fs.existsSync(target)) {
             return packageInfo.entry;
         }
@@ -126,6 +141,7 @@ export class Module {
      * @memberOf Module
      */
     public addDependency(module: Module) {
+
         this.dependencies.push(module);
     }
 
@@ -140,12 +156,10 @@ export class Module {
      */
     public getProjectPath(entry?: Module, userRootPath?: string) {
 
-        let root = userRootPath || this.dir ?
-            this.dir : path.dirname(entry && entry.absPath ? entry.absPath : this.absPath);
+        // let root = userRootPath ? userRootPath:  this.dir ? this.dir : (this.packageInfo ?
+        //   this.packageInfo.root : entry.dir);
 
-        if (this.packageInfo) {
-            root = this.packageInfo.root;
-        }
+        let root = this.packageInfo ? this.packageInfo.root : userRootPath;
         let input = this.absPath;
         input = input.replace(/\\/g, "/");
         root = root.replace(/\\/g, "/");//

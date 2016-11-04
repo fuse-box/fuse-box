@@ -1,4 +1,8 @@
 "use strict";
+var WorkflowContext_1 = require("./WorkflowContext");
+exports.WorkFlowContext = WorkflowContext_1.WorkFlowContext;
+var PathMaster_1 = require("./PathMaster");
+exports.PathMaster = PathMaster_1.PathMaster;
 var Arithmetic_1 = require("./Arithmetic");
 exports.Arithmetic = Arithmetic_1.Arithmetic;
 var ModuleCollection_1 = require("./ModuleCollection");

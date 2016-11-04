@@ -1,4 +1,4 @@
-import { ModuleCollection } from './ModuleCollection';
+import { ModuleCollection } from "./ModuleCollection";
 import { each } from "realm-utils";
 
 export interface INodeModulesCollection {
@@ -19,7 +19,7 @@ export let moduleCollector = (defaultCollection: ModuleCollection): Promise<INod
     let collect = (nodeModules: Map<string, ModuleCollection>, root) => {
         return each(nodeModules, (collection, name) => {
             let currentRoot = {};
-                root[name] = { deps: currentRoot };
+            root[name] = { deps: currentRoot };
             if (!modules.has(name)) {
                 modules.set(name, collection);
 

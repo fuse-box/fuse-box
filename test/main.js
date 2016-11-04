@@ -10,7 +10,7 @@ let getCollection = (files) => {
 }
 
 describe("A simple case on directory case-a without npm deps", () => {
-    it("Should work", (done) => {
+    /*it("Should work", (done) => {
         var fb = getCollection({
             "index.js": `require("./foo/bar.js")`,
             "foo/bar.js": ""
@@ -21,6 +21,6 @@ describe("A simple case on directory case-a without npm deps", () => {
             console.log(result);
             done();
         });
-    });
+    });*/
 
 })

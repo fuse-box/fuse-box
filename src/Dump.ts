@@ -38,6 +38,26 @@ export class FuseBoxDump {
         });
     }
 
+    public error(moduleName: string, file: string, error: string) {
+        if (!this.modules[moduleName]) {
+            this.modules[moduleName] = [];
+        }
+
+        this.modules[moduleName].push({
+            name: file,
+            error: error
+        });
+    }
+
+    public warn(moduleName: string, warning: string) {
+        if (!this.modules[moduleName]) {
+            this.modules[moduleName] = [];
+        }
+
+        this.modules[moduleName].push({
+            warning: warning
+        });
+    }
     /**
      *
      *
@@ -51,8 +71,15 @@ export class FuseBoxDump {
                 cursor.green().write(name).write("\n").reset();
                 for (let i = 0; i < this.modules[name].length; i++) {
                     let item = this.modules[name][i];
-                    total += item.bytes;
-                    cursor.grey().write(`  ${item.name} (${prettysize(item.bytes)})`).write("\n").reset();
+                    if (item.warning) {
+                        cursor.yellow().write(`  ${item.warning}`).write("\n").reset();
+                    } else if (item.error) {
+                        cursor.red().write(`  ${item.name} - ${item.error}`).write("\n").reset();
+                    } else {
+                        total += item.bytes;
+                        cursor.grey().write(`  ${item.name} (${prettysize(item.bytes)})`).write("\n").reset();
+                    }
+
                 }
             }
         }

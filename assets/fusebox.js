@@ -50,21 +50,21 @@
         }
 
         return {
-            evaluate: function(moduleName, customPath) {
+            evaluate: function(moduleName, customPath, parent) {
                 if (modules[moduleName]) {
                     let mod = modules[moduleName];
                     if (mod.cache) {
                         return mod.cache;
                     }
-                    mod.cache = mod.scope.evaluate(customPath);
+                    mod.cache = mod.scope.evaluate(customPath, null, parent);
                     return mod.cache;
                 }
             },
-            import: function(userPath, packageName) {
+            import: function(userPath, packageName, parent) {
                 packageName = packageName || "default";
                 if (modules[packageName]) {
                     let mod = modules[packageName];
-                    return mod.scope.evaluate(userPath);
+                    return mod.scope.evaluate(userPath, null, parent);
                 }
             },
             module: function(moduleName, fn) {
@@ -79,36 +79,37 @@
                             fn: fn
                         }
                     },
-                    evaluate: function(_target, base) {
+                    evaluate: function(_target, base, parent) {
+
                         var entryName = _target ? pathJoin(base || "/", _target) : collection.entry;
 
                         if (!entryName) {
                             return;
                         }
                         // verify endings and stuff
-                        if (entryName[0] === "/") {
-                            entryName = entryName.slice(1, entryName.length)
-                        }
-                        if (entryName === ".") {
-                            entryName = collection.entry;
+                        if (entryName[0] === "/") { entryName = entryName.slice(1, entryName.length) }
+                        if (entryName === ".") { entryName = collection.entry; }
+                        var entry = collection.files[ensureExtension(entryName)];
+                        if (!entry) { // try folder (index.js)
+                            var slash = !entryName.match(/\/$/) ? "/" : "";
+                            entryName = entryName + slash + "index.js";
+                            entry = collection.files[entryName]
                         }
 
-                        entryName = ensureExtension(entryName);
-                        var entry = collection.files[entryName];
-                        if (entry.isLoading) {
-                            console.warn("Circular dependency detected!");
-                            return;
-                        }
                         if (!entry) {
                             let msg = ["File " + entryName + " was not found upon request"];
-                            msg.push("In module '" + moduleName + "'");
-                            throw new Error(msg.join("\n"))
+                            msg.push("Module: '" + moduleName + "'");
+                            msg.push("File: '" + parent + "'");
+                            throw msg.join("\n");
+                        }
+                        if (entry.isLoading) {
+                            return entry.locals.module.exports;
                         }
                         if (entry.cache) {
                             return entry.cache;
                         }
-                        var locals = {};
                         var self = this;
+                        var locals = entry.locals = {};
                         entry.isLoading = true;
                         locals.exports = {};
                         locals.require = function(target) {
@@ -116,12 +117,12 @@
                             if (_module) {
                                 var _moduleName = _module[0];
                                 if (_module[1]) {
-                                    return FuseBox.import(_module[1], _module[0]);
+                                    return FuseBox.import(_module[1], _module[0], entryName);
                                 }
-                                return FuseBox.evaluate(_moduleName);
+                                return FuseBox.evaluate(_moduleName, null, entryName);
                             } else {
                                 var baseDir = getFileDirectory(entryName);
-                                return self.evaluate(target, baseDir);
+                                return self.evaluate(target, baseDir, entryName);
                             }
                         }
                         locals.module = { exports: locals.exports }

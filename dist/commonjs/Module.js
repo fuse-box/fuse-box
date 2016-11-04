@@ -3,9 +3,11 @@ const Utils_1 = require("./Utils");
 const fs = require("fs");
 const path = require("path");
 class Module {
-    constructor(absPath) {
+    constructor(context, absPath) {
+        this.context = context;
         this.absPath = absPath;
         this.dependencies = [];
+        this.isLoaded = false;
         if (!absPath) {
             return;
         }
@@ -18,6 +20,9 @@ class Module {
     setDir(dir) {
         this.dir = dir;
     }
+    setNodeModuleDir(dir) {
+        this.nodeModuleDir = dir;
+    }
     setPackage(info) {
         this.packageInfo = info;
     }
@@ -26,16 +31,17 @@ class Module {
             return [];
         }
         if (!fs.existsSync(this.absPath)) {
-            console.warn("File ", this.absPath, "Does not exist");
+            this.context.dump.error(this.packageInfo.name, this.absPath, "Not found");
             this.contents = "";
             return [];
         }
         this.contents = fs.readFileSync(this.absPath).toString();
+        this.isLoaded = true;
         if (this.absPath.match(/\.json$/)) {
             this.contents = "module.exports = " + this.contents;
         }
         if (this.absPath.match(/\.js$/)) {
-            let reqs = Utils_1.extractRequires(this.contents, true);
+            let reqs = Utils_1.extractRequires(this.contents, path.join(this.absPath));
             return reqs;
         }
         return [];
@@ -55,11 +61,7 @@ class Module {
         this.dependencies.push(module);
     }
     getProjectPath(entry, userRootPath) {
-        let root = userRootPath || this.dir ?
-            this.dir : path.dirname(entry && entry.absPath ? entry.absPath : this.absPath);
-        if (this.packageInfo) {
-            root = this.packageInfo.root;
-        }
+        let root = this.packageInfo ? this.packageInfo.root : userRootPath;
         let input = this.absPath;
         input = input.replace(/\\/g, "/");
         root = root.replace(/\\/g, "/");

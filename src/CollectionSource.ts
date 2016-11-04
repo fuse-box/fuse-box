@@ -1,16 +1,17 @@
+import { WorkFlowContext } from "./WorkflowContext";
 import { FuseBoxDump } from "./Dump";
 import { ModuleWrapper } from "./ModuleWrapper";
 import { ModuleCollection } from "./ModuleCollection";
 import { Module } from "./Module";
 import { each } from "realm-utils";
 export class CollectionSource {
-    constructor(public dump: FuseBoxDump) {
+    constructor(public context: WorkFlowContext) {
 
     }
     public get(collection: ModuleCollection, depsOnly?: boolean) {
         if (collection.cachedContent) {
             return new Promise((resolve, reject) => {
-                this.dump.log(collection.name, "[cached]", collection.cachedContent);
+                this.context.dump.log(collection.name, "[cached]", collection.cachedContent);
                 return resolve(collection.cachedContent);
             });
         }
@@ -38,12 +39,17 @@ export class CollectionSource {
                 }
 
                 let rpath = module.getProjectPath(entry, projectPath || entry.dir);
+
                 if (!visited[rpath]) {
                     visited[rpath] = true;
-                    let content = ModuleWrapper.wrapGeneric(rpath, module.contents);
-                    this.dump.log(collection.name, rpath, content);
-                    cnt.push(content);
+                    if (module.isLoaded) {
+                        let content = ModuleWrapper.wrapGeneric(rpath, module.contents);
+                        cnt.push(content);
+                        this.context.dump.log(collection.name, rpath, content);
+                    }
+
                     return each(module.dependencies, dep => {
+
                         return collectionResources(dep);
                     }).then(resolve).catch(reject);
                 }
@@ -53,6 +59,7 @@ export class CollectionSource {
 
         if (depsOnly) { // bundle might not have an entry point. Instead we just process dependencies
             return each(entry.dependencies, dep => {
+
                 return collectionResources(dep, entry.dir);
             }).then(result => {
                 return ModuleWrapper.wrapModule(collection.name, cnt.join("\n"));
@@ -60,7 +67,8 @@ export class CollectionSource {
         }
 
         return collectionResources(entry).then(() => {
-            return ModuleWrapper.wrapModule(collection.name, cnt.join("\n"), entry.getProjectPath());
+            return ModuleWrapper.wrapModule(collection.name, cnt.join("\n"), entry.isLoaded
+                ? entry.getProjectPath() : undefined);
         });
     }
 }

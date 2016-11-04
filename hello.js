@@ -4,7 +4,7 @@ const fs = require("fs");
 
 let fuseBox = new FuseBox({
     homeDir: "test/fixtures/cases/case1",
-    //cache: true,
+    cache: false,
     // fileCollection: {
     //     "index.js": "require('./foo/bar.js')",
     //     "foo/bar.js": "require('../hello.js')",
