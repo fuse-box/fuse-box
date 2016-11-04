@@ -150,7 +150,7 @@ export class ModuleCollection {
         } else {
 
             let relativePath = ensureRelativePath(name, module.absPath);
-            console.log(relativePath);
+
             modulePath = path.join(path.dirname(module.absPath), relativePath);
 
             // if (!fs.existsSync(modulePath) && this.entry && this.entry.absPath) {

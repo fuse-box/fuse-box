@@ -86,7 +86,6 @@ class ModuleCollection {
         }
         else {
             let relativePath = Utils_1.ensureRelativePath(name, module.absPath);
-            console.log(relativePath);
             modulePath = path.join(path.dirname(module.absPath), relativePath);
         }
         if (this.bundle) {
