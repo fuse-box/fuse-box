@@ -42,7 +42,6 @@ class Module {
         }
         if (this.absPath.match(/\.js$/)) {
             let reqs = Utils_1.extractRequires(this.contents, path.join(this.absPath));
-            return reqs;
         }
         return [];
     }

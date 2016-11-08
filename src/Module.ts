@@ -1,3 +1,4 @@
+import { PathMaster, IPathInformation } from './PathMaster';
 import { WorkFlowContext } from './WorkflowContext';
 import { extractRequires, getAbsoluteEntryPath, RequireOptions, IPackageInformation } from "./Utils";
 
@@ -28,6 +29,10 @@ export class Module {
     public dir: string;
 
     public nodeModuleDir: string;
+
+    public pm : PathMaster;
+
+    public info : IPathInformation;
 
     /**
      *
@@ -104,7 +109,8 @@ export class Module {
         // extract dependencies in case of a javascript file
         if (this.absPath.match(/\.js$/)) {
             let reqs = extractRequires(this.contents, path.join(this.absPath));
-            return reqs;
+
+           // return reqs;
         }
         return [];
     }

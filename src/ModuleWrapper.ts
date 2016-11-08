@@ -22,8 +22,12 @@ export class ModuleWrapper {
         return wrapper;
     }
 
-    public static wrapModule(name: string, content: string, entry?: string) {
-        return `FuseBox.module("${name}", function(___scope___){
+    public static wrapModule(name: string, conflictingVersions: Map<string, string>, content: string, entry?: string) {
+        let conflictingSource = {};
+        conflictingVersions.forEach((version, libname) => {
+            conflictingSource[libname] = version; 
+        });
+        return `FuseBox.module("${name}", ${JSON.stringify(conflictingSource)}, function(___scope___){
 ${content}
 ${entry ? 'return ___scope___.entry("' + entry + '")' : ""}
 })`;

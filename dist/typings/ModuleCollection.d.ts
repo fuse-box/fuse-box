@@ -1,4 +1,5 @@
-import { IPackageInformation, INodeModuleRequire } from "./Utils";
+import { File } from './File';
+import { PathMaster } from './PathMaster';
 import { WorkFlowContext } from "./WorkFlowContext";
 import { Module } from "./Module";
 import { BundleData } from "./Arithmetic";
@@ -6,18 +7,16 @@ export declare class ModuleCollection {
     context: WorkFlowContext;
     name: string;
     entry: Module;
-    cachedContent: any;
-    packageInfo: IPackageInformation;
     nodeModules: Map<string, ModuleCollection>;
+    dependencies: Map<string, File>;
     bundle: BundleData;
     entryResolved: boolean;
+    pm: PathMaster;
+    entryFile: File;
+    conflictingVersions: Map<string, string>;
     constructor(context: WorkFlowContext, name: string, entry?: Module);
-    setPackageInfo(info: IPackageInformation): void;
-    collect(): any;
-    setCachedContent(content: string): void;
+    setupEntry(file: File): void;
+    resolveEntry(): any;
     collectBundle(data: BundleData): Promise<Module>;
-    resolve(module: Module): any;
-    addRootFile(info: INodeModuleRequire): any;
-    addProjectFile(module: Module, name: string): any;
-    processModule(module: Module, name: string, shouldIgnoreDeps?: boolean): any;
+    resolve(file: File): any;
 }

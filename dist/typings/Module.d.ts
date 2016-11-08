@@ -1,3 +1,4 @@
+import { PathMaster, IPathInformation } from './PathMaster';
 import { WorkFlowContext } from './WorkflowContext';
 import { RequireOptions, IPackageInformation } from "./Utils";
 export declare class Module {
@@ -6,6 +7,8 @@ export declare class Module {
     contents: string;
     dir: string;
     nodeModuleDir: string;
+    pm: PathMaster;
+    info: IPathInformation;
     dependencies: Module[];
     packageInfo: IPackageInformation;
     isLoaded: boolean;

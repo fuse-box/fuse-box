@@ -1,19 +1,38 @@
+import { IPackageInformation, IPathInformation } from './PathMaster';
 import { WorkFlowContext } from "./WorkflowContext";
 export interface INodeModuleRequire {
     name: string;
     target?: string;
 }
-export interface PathInformation {
+export interface IPathInformation {
     isNodeModule: boolean;
     nodeModuleName?: string;
-    nodeModulePartialOriginal?: string;
+    nodeModuleInfo?: IPackageInformation;
+    nodeModuleExplicitOriginal?: string;
+    absDir?: string;
+    fuseBoxPath?: string;
     absPath?: string;
+}
+export interface IPackageInformation {
+    name: string;
+    entry: string;
+    version: string;
+    root: string;
+    entryRoot: string;
+    custom: boolean;
+    customBelongsTo?: string;
 }
 export declare class PathMaster {
     context: WorkFlowContext;
-    moduleRoot: string;
-    constructor(context: WorkFlowContext, moduleRoot?: string);
-    resolve(name: string, root: string): PathInformation;
+    rootPackagePath: string;
+    allowedExtension: Set<string>;
+    constructor(context: WorkFlowContext, rootPackagePath?: string);
+    init(name: string): IPathInformation;
+    resolve(name: string, root: string, rootEntryLimit?: string): IPathInformation;
+    getFuseBoxPath(name: string, root: string): string;
+    getAbsolutePath(name: string, root: string, rootEntryLimit?: string): string;
+    getParentFolderName(): string;
     private ensureFolderAndExtensions(name, root);
     private getNodeModuleInfo(name);
+    private getNodeModuleInformation(name);
 }

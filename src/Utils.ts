@@ -111,9 +111,7 @@ export function ensureRelativePath(name: string, absPath: string) {
  * @param {string} contents
  * @returns
  */
-export function extractRequires(contents: string, absPath: string): RequireOptions[] {
-
-
+export function extractRequires(contents: string, absPath: string): string[] {
     let ast = esprima.parse(contents);
     let matches = esquery(ast, "CallExpression[callee.name=\"require\"]");
     let results = [];
@@ -123,32 +121,7 @@ export function extractRequires(contents: string, absPath: string): RequireOptio
             if (!name) {
                 return;
             }
-            // If we have it explicit here, we assume that we are refering to a folder
-            if (name.match(/\/$/)) {
-                // require("./foo/") becomes ./foo/index.js
-                name = name + "index.js";
-            } else {
-                if (!name.match(/^([a-z].*)$/)) { // make sure it's not a node_module
-
-                    if (!name.match(/.js/)) {
-                        let folderDir = path.join(path.dirname(absPath), name, "index.js");
-                        if (fs.existsSync(folderDir)) {
-                            let startsWithDot = name[0] === "."; // After transformation we need to bring the dot back
-                            name = path.join(name, "/", "index.js"); // detecting a real relative path
-                            if (startsWithDot) {
-                                // making sure we are not modifying it and converting to
-                                // what can be take for node_module
-                                // For example: ./foo if a folder, becomes "foo/index.js",
-                                // whereas foo can be interpreted as node_module
-                                name = `./${name}`;
-                            }
-                        } else {
-                            name = name + ".js";
-                        }
-                    }
-                }
-            }
-            results.push({ name: name });
+            results.push(name);
         }
     });
     return results;

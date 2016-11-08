@@ -13,8 +13,12 @@ class ModuleWrapper {
         wrapper = wrapper.split("// contents").join(contents);
         return wrapper;
     }
-    static wrapModule(name, content, entry) {
-        return `FuseBox.module("${name}", function(___scope___){
+    static wrapModule(name, conflictingVersions, content, entry) {
+        let conflictingSource = {};
+        conflictingVersions.forEach((version, libname) => {
+            conflictingSource[libname] = version;
+        });
+        return `FuseBox.module("${name}", ${JSON.stringify(conflictingSource)}, function(___scope___){
 ${content}
 ${entry ? 'return ___scope___.entry("' + entry + '")' : ""}
 })`;

@@ -1,6 +1,6 @@
 {
   "name": "fuse-box",
-  "version": "1.1.77",
+  "version": "1.1.78",
   "description": "Fuse-Box a bundle just does it right",
   "typings": "./dist/typings/index.d.ts",
   "main": "dist/commonjs/index.js",
@@ -22,7 +22,7 @@
   "homepage": "https://github.com/fuse-box/fuse-box#readme",
   "devDependencies": {
     "@types/node": "^6.0.41",
-    "cheerio": "^0.22.0",
+    "cheerio": "0.22.0",
     "fuse-box-testcase1": "^1.0.0",
     "fuse-box-testcase3": "^1.0.3",
     "gulp": "^3.9.1",

@@ -5,10 +5,10 @@
 // var path = require("path")
 // var buffer = require("buffer")
 // var acorn = require('acorn')
-//var tern = require('tern')
+// var tern = require('tern')
 //require("babel-runtime")
-// var babylon = require('babylon')
-console.log(require('babel-generator'));
+//var babylon = require('babylon')
+
 // require("babel-types")
 // console.log(require('core-js'));
 
@@ -34,15 +34,19 @@ console.log(require('babel-generator'));
 // console.log($.html());
 
 
+// var tern = require('tern')
+//var babylon = require('babylon')
+var generator = require('babel-generator')
+console.log(generator);
+//require("htmlparser2")
 
-
-
+//require("./foo");
 //console.log(path.join("a", "b"));
 // var asyncWatch = require("async-watch")
 // var asyncWatch = require("async-watch")
 // var asyncWatch = require("async-watch")
 // console.log("asyncWatch", asyncWatch);
-// var r = require("wires-reactive")
+//var r = require("wires-reactive")
 //require("fuse-box-testcase1")
 //console.log(coreJS);
 //var chars = new RegExp(`ªµºÀ-ÖØ-öø`);

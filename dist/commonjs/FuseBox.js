@@ -1,8 +1,7 @@
 "use strict";
+const PathMaster_1 = require('./PathMaster');
 const WorkflowContext_1 = require("./WorkflowContext");
-const ModuleCollector_1 = require("./ModuleCollector");
 const CollectionSource_1 = require("./CollectionSource");
-const ModuleCache_1 = require("./ModuleCache");
 const Arithmetic_1 = require("./Arithmetic");
 const ModuleWrapper_1 = require("./ModuleWrapper");
 const ModuleCollection_1 = require("./ModuleCollection");
@@ -44,6 +43,7 @@ class FuseBox {
     }
     process(bundleData, standalone) {
         let bundleCollection = new ModuleCollection_1.ModuleCollection(this.context, "default");
+        bundleCollection.pm = new PathMaster_1.PathMaster(this.context, bundleData.homeDir);
         let self = this;
         return bundleCollection.collectBundle(bundleData).then(module => {
             return realm_utils_1.chain(class extends realm_utils_1.Chainable {
@@ -52,27 +52,17 @@ class FuseBox {
                     this.globalContents = [];
                 }
                 setDefaultCollection() {
-                    let defaultCollection = new ModuleCollection_1.ModuleCollection(self.context, "default", module);
-                    return defaultCollection;
+                    return bundleCollection;
                 }
                 addDefaultContents() {
-                    return self.collectionSource.get(this.defaultCollection, true).then(cnt => {
+                    return self.collectionSource.get(this.defaultCollection).then(cnt => {
                         this.globalContents.push(cnt);
                     });
                 }
-                setNodeModules() {
-                    return ModuleCollector_1.moduleCollector(bundleCollection).then(data => {
-                        return realm_utils_1.each(data.collections, (collection, name) => {
-                            return self.collectionSource.get(collection).then(cnt => {
-                                this.globalContents.push(cnt);
-                                if (!collection.cachedContent && self.context.useCache) {
-                                    ModuleCache_1.cache.set(name, cnt);
-                                }
-                            });
-                        }).then(() => {
-                            if (self.context.useCache) {
-                                ModuleCache_1.cache.storeLocalDependencies(data.projectModules);
-                            }
+                addNodeModule() {
+                    return realm_utils_1.each(self.context.nodeModules, (collection) => {
+                        return self.collectionSource.get(collection).then(cnt => {
+                            this.globalContents.push(cnt);
                         });
                     });
                 }
@@ -84,6 +74,7 @@ class FuseBox {
             }
             ).then(result => {
                 let contents = result.contents.join("\n");
+                console.log("");
                 if (this.context.printLogs) {
                     self.context.dump.printLog(this.timeStart);
                 }

@@ -1,3 +1,4 @@
+import { PathMaster } from './PathMaster';
 import { WorkFlowContext } from "./WorkflowContext";
 import { moduleCollector } from "./ModuleCollector";
 import { CollectionSource } from "./CollectionSource";
@@ -21,22 +22,9 @@ const appRoot = require("app-root-path");
  */
 export class FuseBox {
 
-
-
-    /**
-     * If set, home folder is ignored and we use the object as references to files
-     *
-     * @type {*}
-     * @memberOf FuseBox
-     */
     public virtualFiles: any;
-
-
     private collectionSource: CollectionSource;
-
     private timeStart;
-
-
     private context: WorkFlowContext;
 
     /**
@@ -66,15 +54,6 @@ export class FuseBox {
         this.virtualFiles = opts.fileCollection;
     }
 
-    /**
-     * Start Arithmetic bundling
-     *
-     * @param {string} str
-     * @param {boolean} [standalone]
-     * @returns
-     *
-     * @memberOf FuseBox
-     */
     public bundle(str: string, standalone?: boolean) {
         let parser = Arithmetic.parse(str);
         let bundle: BundleData;
@@ -91,75 +70,37 @@ export class FuseBox {
         });
     }
 
-    /**
-     *
-     *
-     * @param {BundleData} bundleData
-     * @param {boolean} [standalone]
-     * @returns
-     *
-     * @memberOf FuseBox
-     */
     public process(bundleData: BundleData, standalone?: boolean) {
         let bundleCollection = new ModuleCollection(this.context, "default");
+
+        bundleCollection.pm = new PathMaster(this.context, bundleData.homeDir);
         let self = this;
         return bundleCollection.collectBundle(bundleData).then(module => {
 
             return chain(class extends Chainable {
-                /**
-                 *
-                 *
-                 * @type {Module}
-                 */
                 public entry: Module;
-                /**
-                 *
-                 *
-                 * @type {ModuleCollection}
-                 */
                 public defaultCollection: ModuleCollection;
-                /**
-                 *
-                 *
-                 * @type {Map<string, ModuleCollection>}
-                 */
                 public nodeModules: Map<string, ModuleCollection>;
-                /**
-                 *
-                 *
-                 * @type {string}
-                 */
                 public defaultContents: string;
-                /**
-                 *
-                 */
                 public globalContents = [];
-
-                /**
-                 *
-                 *
-                 * @returns
-                 */
                 public setDefaultCollection() {
-
-                    let defaultCollection = new ModuleCollection(self.context, "default", module);
-                    return defaultCollection;
+                    return bundleCollection;
                 }
-                /**
-                 *
-                 *
-                 * @returns
-                 */
+
                 public addDefaultContents() {
-                    return self.collectionSource.get(this.defaultCollection, true).then(cnt => {
+                    return self.collectionSource.get(this.defaultCollection).then(cnt => {
                         this.globalContents.push(cnt);
                     });
                 }
-                /**
-                 *
-                 *
-                 * @returns
-                 */
+
+                public addNodeModule() {
+                    return each(self.context.nodeModules, (collection: ModuleCollection) => {
+                        return self.collectionSource.get(collection).then(cnt => {
+                            this.globalContents.push(cnt);
+                        });
+                    });
+                }
+                /*
                 public setNodeModules() {
                     return moduleCollector(bundleCollection).then(data => {
                         return each(data.collections, (collection, name) => {
@@ -178,13 +119,8 @@ export class FuseBox {
                             }
                         });
                     });
-                }
+                }*/
 
-                /**
-                 *
-                 *
-                 * @returns
-                 */
                 public format() {
                     return {
                         contents: this.globalContents,
@@ -193,7 +129,7 @@ export class FuseBox {
 
             }).then(result => {
                 let contents = result.contents.join("\n");
-                //fs.writeFileSync(appRoot.path + "out.js", contents);
+                console.log("");
                 if (this.context.printLogs) {
                     self.context.dump.printLog(this.timeStart);
                 }

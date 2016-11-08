@@ -96,27 +96,7 @@ function extractRequires(contents, absPath) {
             if (!name) {
                 return;
             }
-            if (name.match(/\/$/)) {
-                name = name + "index.js";
-            }
-            else {
-                if (!name.match(/^([a-z].*)$/)) {
-                    if (!name.match(/.js/)) {
-                        let folderDir = path.join(path.dirname(absPath), name, "index.js");
-                        if (fs.existsSync(folderDir)) {
-                            let startsWithDot = name[0] === ".";
-                            name = path.join(name, "/", "index.js");
-                            if (startsWithDot) {
-                                name = `./${name}`;
-                            }
-                        }
-                        else {
-                            name = name + ".js";
-                        }
-                    }
-                }
-            }
-            results.push({ name: name });
+            results.push(name);
         }
     });
     return results;

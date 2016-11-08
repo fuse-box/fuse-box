@@ -67,7 +67,7 @@
                     return mod.scope.evaluate(userPath, null, parent);
                 }
             },
-            module: function(moduleName, fn) {
+            module: function(moduleName, customVersions, fn) {
                 if (modules[moduleName]) {
                     return fn(modules[moduleName].scope)
                 }
@@ -116,8 +116,12 @@
                             var _module = getNodeModuleName(target);
                             if (_module) {
                                 var _moduleName = _module[0];
+                                if (customVersions[_moduleName]) {
+                                    _moduleName = _moduleName + "@" + customVersions[_moduleName];
+                                }
                                 if (_module[1]) {
-                                    return FuseBox.import(_module[1], _module[0], entryName);
+
+                                    return FuseBox.import(_module[1], _moduleName, entryName);
                                 }
                                 return FuseBox.evaluate(_moduleName, null, entryName);
                             } else {

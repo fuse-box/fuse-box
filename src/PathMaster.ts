@@ -1,50 +1,152 @@
+import { IPackageInformation, IPathInformation } from './PathMaster';
+import { IncomingMessage } from 'http';
+
 import { WorkFlowContext } from "./WorkflowContext";
 import * as path from "path";
 import * as fs from "fs";
+import { Config } from "./Config";
 const NODE_MODULE = /^([a-z].*)$/;
 export interface INodeModuleRequire {
     name: string;
     target?: string;
 }
 
-export interface PathInformation {
+export interface IPathInformation {
     isNodeModule: boolean;
     nodeModuleName?: string;
-    nodeModulePartialOriginal?: string;
+    nodeModuleInfo?: IPackageInformation;
+    nodeModuleExplicitOriginal?: string;
+    absDir?: string;
+    fuseBoxPath?: string;
     absPath?: string;
+}
 
+export interface IPackageInformation {
+    name: string;
+    entry: string;
+    version: string;
+    root: string;
+    entryRoot: string,
+    custom: boolean;
+    customBelongsTo?: string;
 }
 /**
  * PathMaster
  */
 export class PathMaster {
-    constructor(public context: WorkFlowContext, public moduleRoot?: string) { }
+    public allowedExtension: Set<string>
+    = new Set([".js", ".json", ".xml", ".css"]);
 
+    constructor(public context: WorkFlowContext, public rootPackagePath?: string) { }
 
-    public resolve(name: string, root: string): PathInformation {
-        let data = <PathInformation>{};
+    public init(name: string) {
+        return this.resolve(name, this.rootPackagePath);
+    }
+
+    public resolve(name: string, root: string, rootEntryLimit?: string): IPathInformation {
+
+        let data = <IPathInformation>{};
+
         data.isNodeModule = NODE_MODULE.test(name);
+        // if (name.indexOf("lodash") > -1) {
+        //     console.log(">>", name, data.isNodeModule);
+        // }
         if (data.isNodeModule) {
+
             let info = this.getNodeModuleInfo(name);
             data.nodeModuleName = info.name;
-            data.nodeModulePartialOriginal = info.target;
+
+            // A trick to avoid one nasty situation
+            // Imagine lodash@1.0.0 that is set as a custom depedency for 2 libraries
+            // We need to make sure there, that we use one source (either or)
+            // We don't want to take modules from 2 different places (in case if versions match) 
+            let nodeModuleInfo = this.getNodeModuleInformation(info.name);
+            let cachedInfo = this.context.getLibInfo(nodeModuleInfo.name, nodeModuleInfo.version);
+            if (cachedInfo) { // Modules has been defined already
+                data.nodeModuleInfo = cachedInfo;
+            } else {
+                data.nodeModuleInfo = nodeModuleInfo; // First time that module is mentioned
+                // Caching module information
+                // Which will override paths
+                this.context.setLibInfo(nodeModuleInfo.name, nodeModuleInfo.version, nodeModuleInfo);
+            }
+
+            if (info.target) {
+                // Explicit require from a libary e.g "lodash/dist/each" -> "dist/each"
+                data.absPath = this.getAbsolutePath(info.target, data.nodeModuleInfo.root);
+                data.absDir = path.dirname(data.absPath);
+                data.nodeModuleExplicitOriginal = info.target;
+            } else {
+                data.absPath = data.nodeModuleInfo.entry;
+                data.absDir = data.nodeModuleInfo.root;
+            }
+            if (data.absPath) {
+                data.fuseBoxPath = this.getFuseBoxPath(data.absPath, data.nodeModuleInfo.root);
+            }
+
         } else {
             if (root) {
-                let url = this.ensureFolderAndExtensions(name, root);
+                data.absPath = this.getAbsolutePath(name, root, rootEntryLimit);
+                data.absDir = path.dirname(data.absPath);
 
-                url = path.resolve(root, url);
-
-                data.absPath = url;
+                data.fuseBoxPath = this.getFuseBoxPath(data.absPath, this.rootPackagePath);
             }
         }
+
         return data;
     }
 
+    public getFuseBoxPath(name: string, root: string) {
+        if (!root) {
+            return;
+        }
+        name = name.replace(/\\/g, "/");
+        root = root.replace(/\\/g, "/");
+        name = name.replace(root, "").replace(/^\/|\\/, "");
+        return name;
+    }
 
-    private ensureFolderAndExtensions(name : string, root : string) {
-        if (!name.match(/.js$/)) {
+    /**
+     * Make sure that all extensions are in place
+     * Returns a valid absolute path
+     *
+     * @param {string} name
+     * @param {string} root
+     * @returns
+     *
+     * @memberOf PathMaster
+     */
+    public getAbsolutePath(name: string, root: string, rootEntryLimit?: string) {
+        let url = this.ensureFolderAndExtensions(name, root);
+        let result = path.resolve(root, url);
+        // Fixing node_modules package .json limits.
+        if (rootEntryLimit && name.match(/\.\.\/$/)) {
+            if (result.indexOf(path.dirname(rootEntryLimit)) < 0) {
+                return rootEntryLimit;
+            }
+        }
 
-            let folderDir = path.join(path.dirname(root), name, "index.js");
+        return result;
+    }
+
+    public getParentFolderName(): string {
+        if (this.rootPackagePath) {
+            let s = this.rootPackagePath.split(/\/|\\/g);
+
+            return s[s.length - 1];
+        }
+        return "";
+    }
+
+
+    private ensureFolderAndExtensions(name: string, root: string) {
+        let ext = path.extname(name);
+        if (!this.allowedExtension.has(ext)) {
+            if (/\/$/.test(name)) {
+                return `${name}index.js`;
+            }
+            let folderDir = path.join(root, name, "index.js");
+
             if (fs.existsSync(folderDir)) {
                 let startsWithDot = name[0] === "."; // After transformation we need to bring the dot back
                 name = path.join(name, "/", "index.js"); // detecting a real relative path
@@ -61,11 +163,69 @@ export class PathMaster {
         }
         return name;
     }
+
+
+
     private getNodeModuleInfo(name: string): INodeModuleRequire {
         let data = name.split(/\/(.+)?/);
         return {
             name: data[0],
             target: data[1],
         };
+    }
+
+    private getNodeModuleInformation(name: string): IPackageInformation {
+        let localLib = path.join(Config.LOCAL_LIBS, name);
+        let modulePath = path.join(Config.NODE_MODULES_DIR, name);
+        let readMainFile = (folder, isCustom: boolean) => {
+            // package.json path
+            let packageJSONPath = path.join(folder, "package.json");
+            if (fs.existsSync(packageJSONPath)) {
+                // read contents
+                let json: any = require(packageJSONPath);
+                // Getting an entry point
+                let entryFile;
+                let entryRoot;
+                if (json.main) {
+                    entryFile = path.join(folder, json.main);
+                } else {
+                    entryFile = path.join(folder, "index.js");
+                }
+
+                entryRoot = path.dirname(entryFile);
+                return {
+                    name: name,
+                    custom: isCustom,
+                    root: folder,
+                    entryRoot: entryRoot,
+                    entry: entryFile,
+                    version: json.version,
+                };
+            }
+            let defaultEntry = path.join(folder, "index.js");
+            let entryFile = fs.existsSync(defaultEntry) ? defaultEntry : undefined;
+            let defaultEntryRoot = entryFile ? path.dirname(entryFile) : undefined;
+
+            return {
+                name: name,
+                custom: isCustom,
+                root: folder,
+                entry: entryFile,
+                entryRoot: defaultEntryRoot,
+                version: "0.0.0",
+            };
+        };
+
+        if (this.rootPackagePath) {// handle a conflicting library
+            let nestedNodeModule = path.join(this.rootPackagePath, "node_modules", name);
+            if (fs.existsSync(nestedNodeModule)) {
+                return readMainFile(nestedNodeModule, true);
+            }
+        }
+        if (fs.existsSync(localLib)) {
+            return readMainFile(localLib, false);
+        } else {
+            return readMainFile(modulePath, false);
+        }
     }
 }

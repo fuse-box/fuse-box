@@ -10,7 +10,7 @@ export interface IPackageInformation {
 }
 export declare function getPackageInformation(name: string, parent?: IPackageInformation): IPackageInformation;
 export declare function ensureRelativePath(name: string, absPath: string): string;
-export declare function extractRequires(contents: string, absPath: string): RequireOptions[];
+export declare function extractRequires(contents: string, absPath: string): string[];
 export interface INodeModuleRequire {
     name: string;
     target?: string;
