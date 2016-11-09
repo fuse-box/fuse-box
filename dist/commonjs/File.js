@@ -1,7 +1,24 @@
 "use strict";
-const Utils_1 = require('./Utils');
 const fs = require("fs");
 const path = require("path");
+const esprima = require("esprima");
+const esquery = require("esquery");
+function extractRequires(contents, absPath) {
+    let ast = esprima.parse(contents);
+    let matches = esquery(ast, "CallExpression[callee.name=\"require\"]");
+    let results = [];
+    matches.map(item => {
+        if (item.arguments.length > 0) {
+            let name = item.arguments[0].value;
+            if (!name) {
+                return;
+            }
+            results.push(name);
+        }
+    });
+    return results;
+}
+exports.extractRequires = extractRequires;
 class File {
     constructor(context, info) {
         this.context = context;
@@ -25,7 +42,7 @@ class File {
             this.contents = "module.exports = " + this.contents;
         }
         if (this.absPath.match(/\.js$/)) {
-            let reqs = Utils_1.extractRequires(this.contents, path.join(this.absPath));
+            let reqs = extractRequires(this.contents, path.join(this.absPath));
             return reqs;
         }
         return [];

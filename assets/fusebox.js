@@ -5,7 +5,7 @@
         var modules = isBrowser ? (window.__npm__ = window.__npm__ || {}) : {};
         var getNodeModuleName = function(name) {
             if (!name) { return; }
-            let matched = name.match(/^([a-z].*)$/);
+            var matched = name.match(/^([a-z].*)$/);
             if (matched) {
                 return name.split(/\/(.+)?/);
             }
@@ -40,7 +40,7 @@
             var matched = name.match(/\.(\w{1,})$/);
             if (matched) {
                 var ext = matched[1];
-                let allowed = ["json", "xml", "js"];
+                var allowed = ["json", "xml", "js"];
                 if (allowed.indexOf(ext) === -1) {
                     return name + ".js";
                 }
@@ -52,7 +52,7 @@
         return {
             evaluate: function(moduleName, customPath, parent) {
                 if (modules[moduleName]) {
-                    let mod = modules[moduleName];
+                    var mod = modules[moduleName];
                     if (mod.cache) {
                         return mod.cache;
                     }
@@ -63,7 +63,7 @@
             import: function(userPath, packageName, parent) {
                 packageName = packageName || "default";
                 if (modules[packageName]) {
-                    let mod = modules[packageName];
+                    var mod = modules[packageName];
                     return mod.scope.evaluate(userPath, null, parent);
                 }
             },
@@ -80,9 +80,7 @@
                         }
                     },
                     evaluate: function(_target, base, parent) {
-
                         var entryName = _target ? pathJoin(base || "/", _target) : collection.entry;
-
                         if (!entryName) {
                             return;
                         }
@@ -95,9 +93,8 @@
                             entryName = entryName + slash + "index.js";
                             entry = collection.files[entryName]
                         }
-
                         if (!entry) {
-                            let msg = ["File " + entryName + " was not found upon request"];
+                            var msg = ["File " + entryName + " was not found upon request"];
                             msg.push("Module: '" + moduleName + "'");
                             msg.push("File: '" + parent + "'");
                             throw msg.join("\n");
@@ -145,6 +142,8 @@
             }
         }
     })();
-    // contents
-    // entry
+    // this will be replace with the contents (if bundled)
+    window.contents;
+    // entry comes here
+    window.entry;
 })();

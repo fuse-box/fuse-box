@@ -1,12 +1,10 @@
-import { File } from './File';
-import { PathMaster } from './PathMaster';
+import { File } from "./File";
+import { PathMaster } from "./PathMaster";
 import { WorkFlowContext } from "./WorkFlowContext";
-import { Module } from "./Module";
 import { BundleData } from "./Arithmetic";
 export declare class ModuleCollection {
     context: WorkFlowContext;
     name: string;
-    entry: Module;
     nodeModules: Map<string, ModuleCollection>;
     dependencies: Map<string, File>;
     bundle: BundleData;
@@ -14,9 +12,9 @@ export declare class ModuleCollection {
     pm: PathMaster;
     entryFile: File;
     conflictingVersions: Map<string, string>;
-    constructor(context: WorkFlowContext, name: string, entry?: Module);
+    constructor(context: WorkFlowContext, name: string);
     setupEntry(file: File): void;
-    resolveEntry(): any;
-    collectBundle(data: BundleData): Promise<Module>;
-    resolve(file: File): any;
+    resolveEntry(shouldIgnoreDeps?: boolean): any;
+    collectBundle(data: BundleData): Promise<ModuleCollection>;
+    resolve(file: File, shouldIgnoreDeps?: boolean): any;
 }

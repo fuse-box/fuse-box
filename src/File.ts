@@ -1,14 +1,32 @@
-import { RequireOptions, extractRequires} from './Utils';
 import { WorkFlowContext } from "./WorkflowContext";
 import { IPathInformation } from "./PathMaster";
 import * as fs from "fs";
 import * as path from "path";
+const esprima = require("esprima");
+const esquery = require("esquery");
+
+export function extractRequires(contents: string, absPath: string): string[] {
+    let ast = esprima.parse(contents);
+    let matches = esquery(ast, "CallExpression[callee.name=\"require\"]");
+    let results = [];
+    matches.map(item => {
+        if (item.arguments.length > 0) {
+            let name = item.arguments[0].value;
+            if (!name) {
+                return;
+            }
+            results.push(name);
+        }
+    });
+    return results;
+}
+
 export class File {
-    public absPath : string;
-    public contents : string;
-    public isLoaded  = false;
+    public absPath: string;
+    public contents: string;
+    public isLoaded = false;
     public isNodeModuleEntry = false;
-    constructor( public context : WorkFlowContext, public info : IPathInformation) {
+    constructor(public context: WorkFlowContext, public info: IPathInformation) {
         this.absPath = info.absPath;
     }
 

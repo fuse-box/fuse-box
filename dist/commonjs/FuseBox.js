@@ -1,5 +1,5 @@
 "use strict";
-const PathMaster_1 = require('./PathMaster');
+const PathMaster_1 = require("./PathMaster");
 const WorkflowContext_1 = require("./WorkflowContext");
 const CollectionSource_1 = require("./CollectionSource");
 const Arithmetic_1 = require("./Arithmetic");
@@ -59,7 +59,7 @@ class FuseBox {
                         this.globalContents.push(cnt);
                     });
                 }
-                addNodeModule() {
+                addNodeModules() {
                     return realm_utils_1.each(self.context.nodeModules, (collection) => {
                         return self.collectionSource.get(collection).then(cnt => {
                             this.globalContents.push(cnt);

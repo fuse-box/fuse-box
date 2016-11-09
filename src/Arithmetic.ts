@@ -36,6 +36,7 @@ export class BundleData {
     constructor(public homeDir: string,
         public including: Map<string, IBundleInformation>,
         public excluding: Map<string, IBundleInformation>, public entry?: string) {
+            
 
     }
     public setupTempFolder(tmpFolder: string) {

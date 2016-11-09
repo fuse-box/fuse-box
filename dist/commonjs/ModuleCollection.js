@@ -1,30 +1,11 @@
 "use strict";
-const File_1 = require('./File');
-const PathMaster_1 = require('./PathMaster');
+const File_1 = require("./File");
+const PathMaster_1 = require("./PathMaster");
 const realm_utils_1 = require("realm-utils");
-const appRoot = require("app-root-path");
-class CacheCollection {
-    static get(context, cache) {
-        let root = new ModuleCollection(context, cache.name);
-        let collectDeps = (rootCollection, item) => {
-            for (let depName in item.deps) {
-                if (item.deps.hasOwnProperty(depName)) {
-                    let nestedCache = item.deps[depName];
-                    let nestedCollection = new ModuleCollection(context, nestedCache.name);
-                    rootCollection.nodeModules.set(nestedCache.name, nestedCollection);
-                    collectDeps(nestedCollection, nestedCache);
-                }
-            }
-        };
-        collectDeps(root, cache);
-        return root;
-    }
-}
 class ModuleCollection {
-    constructor(context, name, entry) {
+    constructor(context, name) {
         this.context = context;
         this.name = name;
-        this.entry = entry;
         this.nodeModules = new Map();
         this.dependencies = new Map();
         this.entryResolved = false;
@@ -37,10 +18,10 @@ class ModuleCollection {
         file.isNodeModuleEntry = true;
         this.entryFile = file;
     }
-    resolveEntry() {
+    resolveEntry(shouldIgnoreDeps) {
         if (this.entryFile && !this.entryResolved) {
             this.entryResolved = true;
-            return this.resolve(this.entryFile);
+            return this.resolve(this.entryFile, shouldIgnoreDeps);
         }
     }
     collectBundle(data) {
@@ -49,11 +30,22 @@ class ModuleCollection {
             let file = new File_1.File(this.context, this.pm.init(modulePath));
             return this.resolve(file);
         }).then(x => {
-            return module;
+            return this;
         });
     }
-    resolve(file) {
+    resolve(file, shouldIgnoreDeps) {
+        if (this.bundle) {
+            if (this.bundle.excluding.has(file.info.absDir)) {
+                return;
+            }
+            if (shouldIgnoreDeps === undefined) {
+                shouldIgnoreDeps = this.bundle.shouldIgnoreNodeModules(file.info.absPath);
+            }
+        }
         if (file.info.isNodeModule) {
+            if (shouldIgnoreDeps || this.bundle && this.bundle.shouldIgnore(file.info.nodeModuleName)) {
+                return;
+            }
             let info = file.info.nodeModuleInfo;
             let collection;
             let moduleName = info.custom ?
@@ -75,8 +67,8 @@ class ModuleCollection {
             }
             this.nodeModules.set(moduleName, collection);
             return file.info.nodeModuleExplicitOriginal
-                ? collection.resolve(new File_1.File(this.context, collection.pm.init(file.info.absPath)))
-                : collection.resolveEntry();
+                ? collection.resolve(new File_1.File(this.context, collection.pm.init(file.info.absPath)), shouldIgnoreDeps)
+                : collection.resolveEntry(shouldIgnoreDeps);
         }
         else {
             if (this.dependencies.has(file.absPath)) {
@@ -88,7 +80,7 @@ class ModuleCollection {
             if (this.entryFile && this.entryFile.isNodeModuleEntry) {
                 fileLimitPath = this.entryFile.info.absPath;
             }
-            return realm_utils_1.each(dependencies, name => this.resolve(new File_1.File(this.context, this.pm.resolve(name, file.info.absDir, fileLimitPath))));
+            return realm_utils_1.each(dependencies, name => this.resolve(new File_1.File(this.context, this.pm.resolve(name, file.info.absDir, fileLimitPath)), shouldIgnoreDeps));
         }
     }
 }

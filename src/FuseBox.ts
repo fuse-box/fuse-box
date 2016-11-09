@@ -1,18 +1,12 @@
-import { PathMaster } from './PathMaster';
+import { PathMaster } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
-import { moduleCollector } from "./ModuleCollector";
 import { CollectionSource } from "./CollectionSource";
-import { cache } from "./ModuleCache";
 import { Arithmetic, BundleData } from "./Arithmetic";
 import { ModuleWrapper } from "./ModuleWrapper";
-import { Module } from "./Module";
 import { ModuleCollection } from "./ModuleCollection";
 import * as path from "path";
-import * as fs from "fs";
 import { each, chain, Chainable } from "realm-utils";
 const appRoot = require("app-root-path");
-
-
 
 /**
  *
@@ -45,10 +39,10 @@ export class FuseBox {
         }
         this.context.setHomeDir(homeDir);
         if (opts.logs) {
-            this.context.setPrintLogs(opts.logs)
+            this.context.setPrintLogs(opts.logs);
         }
         if (opts.cache !== undefined) {
-            this.context.setUseCache(opts.cache)
+            this.context.setUseCache(opts.cache);
         }
         // In case of additional resources (or resourses to use with gulp)
         this.virtualFiles = opts.fileCollection;
@@ -78,7 +72,6 @@ export class FuseBox {
         return bundleCollection.collectBundle(bundleData).then(module => {
 
             return chain(class extends Chainable {
-                public entry: Module;
                 public defaultCollection: ModuleCollection;
                 public nodeModules: Map<string, ModuleCollection>;
                 public defaultContents: string;
@@ -93,33 +86,13 @@ export class FuseBox {
                     });
                 }
 
-                public addNodeModule() {
+                public addNodeModules() {
                     return each(self.context.nodeModules, (collection: ModuleCollection) => {
                         return self.collectionSource.get(collection).then(cnt => {
                             this.globalContents.push(cnt);
                         });
                     });
                 }
-                /*
-                public setNodeModules() {
-                    return moduleCollector(bundleCollection).then(data => {
-                        return each(data.collections, (collection, name) => {
-                            return self.collectionSource.get(collection).then(cnt => {
-                                this.globalContents.push(cnt);
-
-                                if (!collection.cachedContent && self.context.useCache) {
-                                    cache.set(name, cnt);
-                                }
-                            });
-                        }).then(() => {
-                            if (self.context.useCache) {
-                                // here we store node_module project requirements
-                                // for caching
-                                cache.storeLocalDependencies(data.projectModules);
-                            }
-                        });
-                    });
-                }*/
 
                 public format() {
                     return {

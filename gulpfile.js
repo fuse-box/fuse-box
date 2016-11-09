@@ -9,6 +9,7 @@ const runSequence = require('run-sequence');
 const bump = require('gulp-bump');
 const child_process = require('child_process');
 const spawn = child_process.spawn;
+const uglify = require('gulp-uglify');
 let projectTypings = ts.createProject('src/tsconfig.json');
 let projectCommonjs = ts.createProject('src/tsconfig.json', {
     target: "es6",
@@ -46,7 +47,7 @@ gulp.task('npm-publish', function(done) {
         done()
     });
 });
-gulp.task("commit", ["dist"], function(done) {
+gulp.task("commit", ["dist", "minify-frontend"], function(done) {
     const readline = require('readline');
 
     const rl = readline.createInterface({
@@ -113,11 +114,19 @@ gulp.task('hello', function() {
     });
 });
 
+gulp.task("minify-frontend", function() {
+    return gulp.src("assets/fusebox.js")
+        .pipe(uglify({ preserveComments: "license" }))
+        .pipe(rename("fusebox.min.js")).pipe(gulp.dest("assets/"))
+});
 
 gulp.task('watch', ['build'], function() {
     gulp.watch(['assets/**/*.js'], () => {
-        runSequence('hello');
+        runSequence("minify-frontend", 'hello');
     });
+    // gulp.watch(['assets/**/*.js'], () => {
+    //     runSequence('hello');
+    // });
 
     gulp.watch(['src/**/*.ts'], () => {
         runSequence('build');

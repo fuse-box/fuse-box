@@ -1,7 +1,6 @@
-import * as fs from 'fs';
+/*import * as fs from 'fs';
 import { Config } from "./Config";
 import * as path from "path";
-import { getPackageInformation } from "./Utils";
 const mkdirp = require("mkdirp");
 
 export class ModuleCache {
@@ -71,3 +70,4 @@ export class ModuleCache {
     }
 }
 export let cache = new ModuleCache();
+*/

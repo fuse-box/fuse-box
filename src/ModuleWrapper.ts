@@ -12,13 +12,13 @@ import * as fs from "fs";
 export class ModuleWrapper {
 
     public static wrapFinal(contents: string, entryPoint: string, standalone: boolean) {
-        let file = path.join(Config.ASSETS_DIR, standalone ? "FuseBox.js" : "local.js");
+        let file = path.join(Config.ASSETS_DIR, standalone ? "fusebox.min.js" : "local.js");
         let wrapper = fs.readFileSync(file).toString();
         if (entryPoint) {
             let entryJS = `FuseBox.import("${entryPoint}")`;
-            wrapper = wrapper.split("// entry").join(entryJS);
+            wrapper = wrapper.split("window.entry").join(entryJS);
         }
-        wrapper = wrapper.split("// contents").join(contents);
+        wrapper = wrapper.split("window.contents").join(contents);
         return wrapper;
     }
 

@@ -6,13 +6,13 @@
 // var buffer = require("buffer")
 // var acorn = require('acorn')
 // var tern = require('tern')
-//require("babel-runtime")
-//var babylon = require('babylon')
+
+// var babylon = require('babylon')
 
 // require("babel-types")
 // console.log(require('core-js'));
 
-//require("core-js")
+// require("core-js")
 // require("acorn/dist/walk")
 // let loose = require("acorn/dist/acorn_loose")
 // console.log(require("acorn"));
@@ -35,20 +35,35 @@
 
 
 // var tern = require('tern')
-//var babylon = require('babylon')
-var generator = require('babel-generator')
-console.log(generator);
-//require("htmlparser2")
+
+// var generator = require('babel-generator')
+// console.log(generator);
+// require("htmlparser2")
 
 //require("./foo");
 //console.log(path.join("a", "b"));
 // var asyncWatch = require("async-watch")
 // var asyncWatch = require("async-watch")
-// var asyncWatch = require("async-watch")
-// console.log("asyncWatch", asyncWatch);
-//var r = require("wires-reactive")
+
+
+var r = require("wires-reactive")
+var asyncWatch = require("async-watch")
+console.log("reactive", r);
+console.log("asyncWatch", asyncWatch);
+
 //require("fuse-box-testcase1")
 //console.log(coreJS);
 //var chars = new RegExp(`ªµºÀ-ÖØ-öø`);
 // var input = 'const getMessage = () => "Hello World";';
 // var output = (0, _babelStandalone.transform)(input, { presets: ['es2015'] }).code;
+
+
+
+// var generator = require('babel-generator')
+// console.log(generator);
+// var babylon = require('babylon')
+// const code = 'class Example {}';
+// const ast = babylon.parse(code);
+
+// const output = generator.default(ast, {}, code);
+// console.log(output);
