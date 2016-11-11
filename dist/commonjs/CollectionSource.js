@@ -5,6 +5,11 @@ class CollectionSource {
         this.context = context;
     }
     get(collection) {
+        if (collection.cachedContent) {
+            return new Promise((resolve, reject) => {
+                return resolve(collection.cachedContent);
+            });
+        }
         let cnt = [];
         collection.dependencies.forEach(file => {
             this.context.dump.log(collection.name, file.info.fuseBoxPath, file.contents);

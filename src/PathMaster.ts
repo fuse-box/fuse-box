@@ -1,6 +1,4 @@
 import { IPackageInformation, IPathInformation } from './PathMaster';
-import { IncomingMessage } from 'http';
-
 import { WorkFlowContext } from "./WorkflowContext";
 import * as path from "path";
 import * as fs from "fs";
@@ -132,7 +130,6 @@ export class PathMaster {
     public getParentFolderName(): string {
         if (this.rootPackagePath) {
             let s = this.rootPackagePath.split(/\/|\\/g);
-
             return s[s.length - 1];
         }
         return "";

@@ -5,7 +5,13 @@ import { ModuleCollection } from "./ModuleCollection";
 export class CollectionSource {
     constructor(public context: WorkFlowContext) { }
 
-    public get(collection: ModuleCollection) {
+    public get(collection: ModuleCollection): Promise<string> {
+        if (collection.cachedContent) {
+            return new Promise((resolve, reject) => {
+                return resolve(collection.cachedContent);
+            });
+
+        }
         let cnt = [];
         collection.dependencies.forEach(file => {
             this.context.dump.log(collection.name, file.info.fuseBoxPath, file.contents);

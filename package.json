@@ -23,6 +23,7 @@
   "devDependencies": {
     "@types/node": "^6.0.41",
     "cheerio": "0.22.0",
+    "fuse-box-test-using-old-version": "^1.0.0",
     "fuse-box-testcase1": "^1.0.0",
     "fuse-box-testcase3": "^1.0.3",
     "gulp": "^3.9.1",
@@ -45,8 +46,10 @@
     "ansi": "^0.3.1",
     "app-root-path": "^2.0.1",
     "buffer": "^5.0.0",
+    "char-spinner": "^1.0.1",
     "esprima": "^3.1.0",
     "esquery": "^0.4.0",
+    "fuse-box-test-rogue-files": "^2.0.0",
     "glob": "^7.1.1",
     "mkdirp": "^0.5.1",
     "pretty-time": "^0.2.0",

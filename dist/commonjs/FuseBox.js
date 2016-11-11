@@ -12,7 +12,6 @@ class FuseBox {
     constructor(opts) {
         this.opts = opts;
         this.context = new WorkflowContext_1.WorkFlowContext();
-        this.timeStart = process.hrtime();
         this.collectionSource = new CollectionSource_1.CollectionSource(this.context);
         opts = opts || {};
         let homeDir = appRoot.path;
@@ -21,7 +20,6 @@ class FuseBox {
         }
         this.context.setHomeDir(homeDir);
         if (opts.logs) {
-            this.context.setPrintLogs(opts.logs);
         }
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);
@@ -55,16 +53,23 @@ class FuseBox {
                     return bundleCollection;
                 }
                 addDefaultContents() {
-                    return self.collectionSource.get(this.defaultCollection).then(cnt => {
+                    return self.collectionSource.get(this.defaultCollection).then((cnt) => {
+                        self.context.log.echoCollection(this.defaultCollection, cnt);
                         this.globalContents.push(cnt);
                     });
                 }
                 addNodeModules() {
                     return realm_utils_1.each(self.context.nodeModules, (collection) => {
-                        return self.collectionSource.get(collection).then(cnt => {
+                        return self.collectionSource.get(collection).then((cnt) => {
+                            self.context.log.echoCollection(collection, cnt);
+                            if (!collection.cachedName) {
+                                self.context.cache.set(collection.info, cnt);
+                            }
                             this.globalContents.push(cnt);
                         });
                     });
+                }
+                buildNodeModulesCache() {
                 }
                 format() {
                     return {
@@ -76,7 +81,7 @@ class FuseBox {
                 let contents = result.contents.join("\n");
                 console.log("");
                 if (this.context.printLogs) {
-                    self.context.dump.printLog(this.timeStart);
+                    self.context.log.end();
                 }
                 return ModuleWrapper_1.ModuleWrapper.wrapFinal(contents, bundleData.entry, standalone);
             });

@@ -1,6 +1,6 @@
 "use strict";
-const ansi = require("ansi");
 const prettyTime = require("pretty-time");
+const ansi = require("ansi");
 const cursor = ansi(process.stdout);
 const prettysize = require("prettysize");
 class FuseBoxDump {

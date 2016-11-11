@@ -1,6 +1,8 @@
 "use strict";
+const Log_1 = require("./Log");
 const Dump_1 = require("./Dump");
-const readline = require('readline');
+const ModuleCache_1 = require("./ModuleCache");
+const readline = require("readline");
 class WorkFlowContext {
     constructor() {
         this.dump = new Dump_1.FuseBoxDump();
@@ -8,6 +10,8 @@ class WorkFlowContext {
         this.libPaths = new Map();
         this.printLogs = true;
         this.useCache = true;
+        this.cache = new ModuleCache_1.ModuleCache(this);
+        this.log = new Log_1.Log();
     }
     setHomeDir(dir) {
         this.homeDir = dir;

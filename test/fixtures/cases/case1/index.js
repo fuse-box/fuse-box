@@ -1,3 +1,7 @@
+// require("./bar.js")
+// var foo = require("fuse-box-testcase3/dist/foo")
+// require("fuse-box-testcase3");
+
 // var CodeMirror = require('codemirror')
 // var cheerio = require('cheerio');
 // var babel = require('babel-standalone');
@@ -24,7 +28,6 @@
 //require("fuse-box-testcase3/dist/bar")
 //var bar = require("fuse-box-testcase3")
 
-// var foo = require("fuse-box-testcase3/dist/foo")
 //console.log("hello", bar);
 
 // var cheerio = require("cheerio");
@@ -42,14 +45,16 @@
 
 //require("./foo");
 //console.log(path.join("a", "b"));
-// var asyncWatch = require("async-watch")
-// var asyncWatch = require("async-watch")
 
-
-var r = require("wires-reactive")
 var asyncWatch = require("async-watch")
-console.log("reactive", r);
-console.log("asyncWatch", asyncWatch);
+var reactive = require("wires-reactive")
+
+
+// var some = require("fuse-box-test-using-old-version");
+// var newFancy = require("fuse-box-test-rogue-files");
+// var stuff = require("fuse-box-test-rogue-files/dist/some");
+// //var reactive = require("wires-reactive");
+// var asyncWatch = require("async-watch")
 
 //require("fuse-box-testcase1")
 //console.log(coreJS);

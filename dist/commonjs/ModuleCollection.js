@@ -3,13 +3,17 @@ const File_1 = require("./File");
 const PathMaster_1 = require("./PathMaster");
 const realm_utils_1 = require("realm-utils");
 class ModuleCollection {
-    constructor(context, name) {
+    constructor(context, name, info) {
         this.context = context;
         this.name = name;
+        this.info = info;
         this.nodeModules = new Map();
         this.dependencies = new Map();
         this.entryResolved = false;
+        this.cached = false;
         this.conflictingVersions = new Map();
+        this.toBeResolved = [];
+        this.delayedResolve = false;
     }
     setupEntry(file) {
         if (this.dependencies.has(file.info.absPath)) {
@@ -26,12 +30,41 @@ class ModuleCollection {
     }
     collectBundle(data) {
         this.bundle = data;
+        this.delayedResolve = true;
         return realm_utils_1.each(data.including, (withDeps, modulePath) => {
             let file = new File_1.File(this.context, this.pm.init(modulePath));
             return this.resolve(file);
         }).then(x => {
-            return this;
+            return this.context.cache.resolve(this.toBeResolved);
+        }).then(toResolve => {
+            return realm_utils_1.each(toResolve, (file) => this.resolveNodeModule(file));
+        }).then(() => {
+            return this.context.cache.buildMap(this);
         });
+    }
+    resolveNodeModule(file) {
+        let info = file.info.nodeModuleInfo;
+        let collection;
+        let moduleName = info.custom ?
+            `${info.name}@${info.version}` : info.name;
+        if (!this.context.hasNodeModule(moduleName)) {
+            collection = new ModuleCollection(this.context, moduleName, info);
+            collection.pm = new PathMaster_1.PathMaster(this.context, info.root);
+            if (info.entry) {
+                collection.setupEntry(new File_1.File(this.context, collection.pm.init(info.entry)));
+            }
+            this.context.addNodeModule(moduleName, collection);
+        }
+        else {
+            collection = this.context.getNodeModule(moduleName);
+        }
+        if (info.custom) {
+            this.conflictingVersions.set(info.name, info.version);
+        }
+        this.nodeModules.set(moduleName, collection);
+        return file.info.nodeModuleExplicitOriginal
+            ? collection.resolve(new File_1.File(this.context, collection.pm.init(file.info.absPath)))
+            : collection.resolveEntry();
     }
     resolve(file, shouldIgnoreDeps) {
         if (this.bundle) {
@@ -46,29 +79,9 @@ class ModuleCollection {
             if (shouldIgnoreDeps || this.bundle && this.bundle.shouldIgnore(file.info.nodeModuleName)) {
                 return;
             }
-            let info = file.info.nodeModuleInfo;
-            let collection;
-            let moduleName = info.custom ?
-                `${info.name}@${info.version}` : info.name;
-            if (!this.context.hasNodeModule(moduleName)) {
-                collection = new ModuleCollection(this.context, moduleName);
-                collection.pm = new PathMaster_1.PathMaster(this.context, info.root);
-                if (info.entry) {
-                    collection.setupEntry(new File_1.File(this.context, collection.pm.init(info.entry)));
-                }
-                this.context.spinStart(`Resolve ${moduleName}`);
-                this.context.addNodeModule(moduleName, collection);
-            }
-            else {
-                collection = this.context.getNodeModule(moduleName);
-            }
-            if (info.custom) {
-                this.conflictingVersions.set(info.name, info.version);
-            }
-            this.nodeModules.set(moduleName, collection);
-            return file.info.nodeModuleExplicitOriginal
-                ? collection.resolve(new File_1.File(this.context, collection.pm.init(file.info.absPath)), shouldIgnoreDeps)
-                : collection.resolveEntry(shouldIgnoreDeps);
+            return this.delayedResolve
+                ? this.toBeResolved.push(file)
+                : this.resolveNodeModule(file);
         }
         else {
             if (this.dependencies.has(file.absPath)) {

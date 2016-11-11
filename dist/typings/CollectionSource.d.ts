@@ -3,5 +3,5 @@ import { ModuleCollection } from "./ModuleCollection";
 export declare class CollectionSource {
     context: WorkFlowContext;
     constructor(context: WorkFlowContext);
-    get(collection: ModuleCollection): Promise<{}>;
+    get(collection: ModuleCollection): Promise<string>;
 }

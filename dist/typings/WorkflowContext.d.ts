@@ -1,6 +1,8 @@
-import { IPackageInformation } from './PathMaster';
+import { Log } from "./Log";
+import { IPackageInformation } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
 import { FuseBoxDump } from "./Dump";
+import { ModuleCache } from "./ModuleCache";
 export declare class WorkFlowContext {
     dump: FuseBoxDump;
     nodeModules: Map<string, ModuleCollection>;
@@ -8,6 +10,8 @@ export declare class WorkFlowContext {
     homeDir: string;
     printLogs: boolean;
     useCache: boolean;
+    cache: ModuleCache;
+    log: Log;
     setHomeDir(dir: string): void;
     setLibInfo(name: string, version: string, info: IPackageInformation): Map<string, IPackageInformation>;
     getLibInfo(name: string, version: string): IPackageInformation;

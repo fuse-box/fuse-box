@@ -8,6 +8,9 @@ import * as path from "path";
 import { each, chain, Chainable } from "realm-utils";
 const appRoot = require("app-root-path");
 
+
+
+
 /**
  *
  *
@@ -30,7 +33,6 @@ export class FuseBox {
      */
     constructor(public opts: any) {
         this.context = new WorkFlowContext();
-        this.timeStart = process.hrtime();
         this.collectionSource = new CollectionSource(this.context);
         opts = opts || {};
         let homeDir = appRoot.path;
@@ -39,7 +41,7 @@ export class FuseBox {
         }
         this.context.setHomeDir(homeDir);
         if (opts.logs) {
-            this.context.setPrintLogs(opts.logs);
+
         }
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);
@@ -81,17 +83,26 @@ export class FuseBox {
                 }
 
                 public addDefaultContents() {
-                    return self.collectionSource.get(this.defaultCollection).then(cnt => {
+                    return self.collectionSource.get(this.defaultCollection).then((cnt: string) => {
+                        self.context.log.echoCollection(this.defaultCollection, cnt);
                         this.globalContents.push(cnt);
                     });
                 }
 
                 public addNodeModules() {
                     return each(self.context.nodeModules, (collection: ModuleCollection) => {
-                        return self.collectionSource.get(collection).then(cnt => {
+                        return self.collectionSource.get(collection).then((cnt: string) => {
+                            self.context.log.echoCollection(collection, cnt);
+                            if (!collection.cachedName) {
+                                self.context.cache.set(collection.info, cnt);
+                            }
                             this.globalContents.push(cnt);
                         });
                     });
+                }
+
+                public buildNodeModulesCache() {
+                    //console.log(this.defaultCollection.nodeModules);
                 }
 
                 public format() {
@@ -104,7 +115,7 @@ export class FuseBox {
                 let contents = result.contents.join("\n");
                 console.log("");
                 if (this.context.printLogs) {
-                    self.context.dump.printLog(this.timeStart);
+                    self.context.log.end();
                 }
                 return ModuleWrapper.wrapFinal(contents, bundleData.entry, standalone);
                 // return {

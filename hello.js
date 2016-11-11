@@ -13,4 +13,6 @@ let fuseBox = new FuseBox({
 });
 fuseBox.bundle(">index.js", true).then(data => {
     fs.writeFile("./out.js", data, function(err) {});
+}).catch(e => {
+    console.log(e);
 })
