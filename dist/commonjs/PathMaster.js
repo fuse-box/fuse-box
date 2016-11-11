@@ -7,7 +7,7 @@ class PathMaster {
     constructor(context, rootPackagePath) {
         this.context = context;
         this.rootPackagePath = rootPackagePath;
-        this.allowedExtension = new Set([".js", ".json", ".xml", ".css"]);
+        this.allowedExtension = new Set([".js", ".json", ".xml", ".css", ".html"]);
     }
     init(name) {
         return this.resolve(name, this.rootPackagePath);

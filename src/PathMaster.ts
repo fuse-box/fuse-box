@@ -33,7 +33,7 @@ export interface IPackageInformation {
  */
 export class PathMaster {
     public allowedExtension: Set<string>
-    = new Set([".js", ".json", ".xml", ".css"]);
+    = new Set([".js", ".json", ".xml", ".css", ".html"]);
 
     constructor(public context: WorkFlowContext, public rootPackagePath?: string) { }
 
@@ -155,7 +155,9 @@ export class PathMaster {
                     name = `./${name}`;
                 }
             } else {
+
                 name = name + ".js";
+
             }
         }
         return name;

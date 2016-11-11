@@ -45,7 +45,10 @@ class File {
             let reqs = extractRequires(this.contents, path.join(this.absPath));
             return reqs;
         }
-        return [];
+        else {
+            this.contents = "module.exports = " + JSON.stringify(this.contents);
+            return [];
+        }
     }
 }
 exports.File = File;

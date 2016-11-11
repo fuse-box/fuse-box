@@ -52,7 +52,9 @@ export class File {
         if (this.absPath.match(/\.js$/)) {
             let reqs = extractRequires(this.contents, path.join(this.absPath));
             return reqs;
+        } else {
+            this.contents = "module.exports = " + JSON.stringify(this.contents);
+            return [];
         }
-        return [];
     }
 }

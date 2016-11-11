@@ -25,31 +25,6 @@ export class ModuleCache {
         }
     }
 
-
-    // public getValidCachedDependencies(name: string) {
-
-    //     let packageInfo = getPackageInformation(name);
-    //     if (!this.cachedDeps[name]) {
-    //         return false;
-    //     }
-    //     if (this.cachedDeps[name].version === packageInfo.version) {
-    //         let parentItems = this.cachedDeps[name];
-    //         let collectDeps = (item) => {
-    //             let targetName = path.join(this.cacheFolder, `${item.name}-${item.version}`);
-    //             item.cache = fs.readFileSync(targetName).toString();
-    //             for (let depName in item.deps) {
-    //                 if (item.deps.hasOwnProperty(depName)) {
-    //                     let nested = item.deps[depName];
-    //                     collectDeps(nested);
-    //                 }
-    //             }
-    //         }
-    //         collectDeps(parentItems);
-    //         return this.cachedDeps[name];
-    //     }
-    //     return false;
-    // }
-
     public resolve(files: File[]): Promise<File[]> {
         let through: File[] = [];
         let valid4Caching = [];
