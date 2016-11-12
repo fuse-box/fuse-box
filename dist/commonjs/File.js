@@ -41,6 +41,10 @@ class File {
         if (this.absPath.match(/\.json$/)) {
             this.contents = "module.exports = " + this.contents;
         }
+        if (this.absPath.match(/\.html$/)) {
+            this.contents = "module.exports.default = " + JSON.stringify(this.contents) + ";";
+            return [];
+        }
         if (this.absPath.match(/\.js$/)) {
             let reqs = extractRequires(this.contents, path.join(this.absPath));
             return reqs;

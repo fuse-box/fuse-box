@@ -48,6 +48,12 @@ export class File {
             // Modify contents so they exports the json
             this.contents = "module.exports = " + this.contents;
         }
+        // if it's html
+        if (this.absPath.match(/\.html$/)) {
+            // Modify contents so they exports the html
+            this.contents = "module.exports.default = " + JSON.stringify(this.contents) + ";";
+            return [];
+        }
         // extract dependencies in case of a javascript file
         if (this.absPath.match(/\.js$/)) {
             let reqs = extractRequires(this.contents, path.join(this.absPath));
