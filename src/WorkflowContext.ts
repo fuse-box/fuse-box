@@ -1,10 +1,14 @@
 import { Log } from "./Log";
 import { IPackageInformation } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
-
 import { ModuleCache } from "./ModuleCache";
-
 const readline = require("readline");
+
+
+export interface Plugin {
+    test: RegExp;
+    transform: { (data: any) };
+}
 
 /**
  * WorkFlowContext
@@ -16,6 +20,7 @@ export class WorkFlowContext {
     public libPaths: Map<string, IPackageInformation> = new Map();
     public homeDir: string;
     public printLogs = true;
+    public plugins: Plugin[];
     public useCache = true;
     public cache = new ModuleCache(this);
     public log: Log;

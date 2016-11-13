@@ -1,11 +1,12 @@
-import { WorkFlowContext } from "./WorkflowContext";
+import { WorkFlowContext, Plugin } from "./WorkflowContext";
 import { IPathInformation } from "./PathMaster";
 import * as fs from "fs";
 import * as path from "path";
 const esprima = require("esprima");
 const esquery = require("esquery");
+import { utils } from "realm-utils";
 
-export function extractRequires(contents: string, absPath: string): string[] {
+export function extractRequires(contents: string, absPath: string) {
     let ast = esprima.parse(contents);
     let matches = esquery(ast, "CallExpression[callee.name=\"require\"]");
     let results = [];
@@ -18,7 +19,10 @@ export function extractRequires(contents: string, absPath: string): string[] {
             results.push(name);
         }
     });
-    return results;
+    return {
+        requires: results,
+        ast: ast
+    };
 }
 
 export class File {
@@ -34,6 +38,29 @@ export class File {
         let name = this.absPath;
         name = name.replace(/\\/g, "/");
         return name;
+    }
+
+    public tryPlugins(_ast?: any) {
+
+        if (this.context.plugins) {
+            let target: Plugin;
+            let index = 0;
+            while (!target && index < this.context.plugins.length) {
+                let plugin = this.context.plugins[index];
+                if (plugin.test.test(this.absPath)) {
+                    target = plugin;
+                }
+                index++;
+            }
+            // Found target plugin
+            if (target) {
+                // call tranformation callback
+                if (utils.isFunction(target.transform)) {
+
+                    target.transform.apply(this, [this, _ast]);
+                }
+            }
+        }
     }
 
 
@@ -54,19 +81,24 @@ export class File {
         if (this.absPath.match(/\.json$/)) {
             // Modify contents so they exports the json
             this.contents = "module.exports = " + this.contents;
+            this.tryPlugins();
+            return [];
         }
         // if it's html
         if (this.absPath.match(/\.html$/)) {
             // Modify contents so they exports the html
             this.contents = "module.exports.default = " + JSON.stringify(this.contents) + ";";
+            this.tryPlugins();
             return [];
         }
         // extract dependencies in case of a javascript file
         if (this.absPath.match(/\.js$/)) {
-            let reqs = extractRequires(this.contents, path.join(this.absPath));
-            return reqs;
+            let data = extractRequires(this.contents, path.join(this.absPath));
+            this.tryPlugins(data.ast);
+            return data.requires;
         } else {
             this.contents = "module.exports = " + JSON.stringify(this.contents);
+            this.tryPlugins();
             return [];
         }
     }

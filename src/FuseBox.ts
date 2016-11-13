@@ -39,6 +39,9 @@ export class FuseBox {
         if (opts.homeDir) {
             homeDir = path.isAbsolute(opts.homeDir) ? opts.homeDir : path.join(appRoot.path, opts.homeDir);
         }
+        if (opts.plugins) {
+            this.context.plugins = opts.plugins;
+        }
         this.context.setHomeDir(homeDir);
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);
@@ -97,10 +100,6 @@ export class FuseBox {
                             this.globalContents.push(cnt);
                         });
                     });
-                }
-
-                public buildNodeModulesCache() {
-                    //console.log(this.defaultCollection.nodeModules);
                 }
 
                 public format() {

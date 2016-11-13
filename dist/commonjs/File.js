@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const esprima = require("esprima");
 const esquery = require("esquery");
+const realm_utils_1 = require("realm-utils");
 function extractRequires(contents, absPath) {
     let ast = esprima.parse(contents);
     let matches = esquery(ast, "CallExpression[callee.name=\"require\"]");
@@ -16,7 +17,10 @@ function extractRequires(contents, absPath) {
             results.push(name);
         }
     });
-    return results;
+    return {
+        requires: results,
+        ast: ast
+    };
 }
 exports.extractRequires = extractRequires;
 class File {
@@ -32,6 +36,24 @@ class File {
         name = name.replace(/\\/g, "/");
         return name;
     }
+    tryPlugins(_ast) {
+        if (this.context.plugins) {
+            let target;
+            let index = 0;
+            while (!target && index < this.context.plugins.length) {
+                let plugin = this.context.plugins[index];
+                if (plugin.test.test(this.absPath)) {
+                    target = plugin;
+                }
+                index++;
+            }
+            if (target) {
+                if (realm_utils_1.utils.isFunction(target.transform)) {
+                    target.transform.apply(this, [this, _ast]);
+                }
+            }
+        }
+    }
     consume() {
         if (!this.absPath) {
             return [];
@@ -44,17 +66,22 @@ class File {
         this.isLoaded = true;
         if (this.absPath.match(/\.json$/)) {
             this.contents = "module.exports = " + this.contents;
+            this.tryPlugins();
+            return [];
         }
         if (this.absPath.match(/\.html$/)) {
             this.contents = "module.exports.default = " + JSON.stringify(this.contents) + ";";
+            this.tryPlugins();
             return [];
         }
         if (this.absPath.match(/\.js$/)) {
-            let reqs = extractRequires(this.contents, path.join(this.absPath));
-            return reqs;
+            let data = extractRequires(this.contents, path.join(this.absPath));
+            this.tryPlugins(data.ast);
+            return data.requires;
         }
         else {
             this.contents = "module.exports = " + JSON.stringify(this.contents);
+            this.tryPlugins();
             return [];
         }
     }
