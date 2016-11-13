@@ -4,15 +4,17 @@
 <head>
     <title></title>
 </head>
-
+<script type="text/javascript" charset="utf-8" src="./assets/fusebox.min.js"></script>
+<script>
+    FuseBox.dynamic("custom/foo.js", 'module.exports = {stuff : "hello"}');
+    // var s = document.createElement("style");
+    // s.innerHTML = "body { background-color:red !important; }";
+    // document.getElementsByTagName("head")[0].appendChild(s);
+</script>
 <script type="text/javascript" charset="utf-8" src="out.js"></script>
 
 
-<script>
-    var s = document.createElement("style");
-    s.innerHTML = "body { background-color:red !important; }";
-    document.getElementsByTagName("head")[0].appendChild(s);
-</script>
+
 
 
 <body>

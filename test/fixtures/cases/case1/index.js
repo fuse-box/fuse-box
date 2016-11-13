@@ -22,19 +22,21 @@
 // console.log(require("acorn"));
 // console.log(require("acorn"));
 
+var dynamicPath = "./custom/foo.js";
 
+console.log(require(dynamicPath));
 // var f3 = require("fuse-box-testcase1");
 // console.log(f3.getBar());
 //require("fuse-box-testcase3/dist/bar")
 //var bar = require("fuse-box-testcase3")
-
+require("./bar");
 //console.log("hello", bar);
 
-var cheerio = require("cheerio");
-let $ = cheerio.load('<h2 class="title">Hello world</h2>')
-$('h2.title').text('Hello there!')
-$('h2').addClass('welcome')
-console.log($.html());
+// var cheerio = require("cheerio");
+// let $ = cheerio.load('<h2 class="title">Hello world</h2>')
+// $('h2.title').text('Hello there!')
+// $('h2').addClass('welcome')
+// console.log($.html());
 
 
 // var tern = require('tern')

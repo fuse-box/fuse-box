@@ -60,6 +60,14 @@
                     return mod.cache;
                 }
             },
+            dynamic: function(userPath, str) {
+                this.module("default", {}, function(___scope___) {
+                    ___scope___.file(userPath, function(exports, require, module, __filename, __dirname) {
+                        var res = new Function('exports', 'require', 'module', '__filename', '__dirname', str);
+                        res(exports, require, module, __filename, __dirname);
+                    });
+                });
+            },
             import: function(userPath, packageName, parent) {
                 packageName = packageName || "default";
                 if (modules[packageName]) {

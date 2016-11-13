@@ -9,7 +9,7 @@ let fuseBox = new FuseBox({
     modulesFolder: "test/fixtures/modules",
     plugins: [build.HTMLPlugin, build.JSONPlugin]
 });
-fuseBox.bundle("**/*.*(js|html) > index.js", true).then(data => {
+fuseBox.bundle("**/*.*(js|html) >index.js", false).then(data => {
     fs.writeFile("./out.js", data, function(err) {});
 }).catch(e => {
     console.log(e);
