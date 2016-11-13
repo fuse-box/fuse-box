@@ -1,7 +1,6 @@
 import { Log } from "./Log";
 import { IPackageInformation } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
-import { FuseBoxDump } from "./Dump";
 
 import { ModuleCache } from "./ModuleCache";
 
@@ -11,7 +10,7 @@ const readline = require("readline");
  * WorkFlowContext
  */
 export class WorkFlowContext {
-    public dump: FuseBoxDump = new FuseBoxDump();
+
 
     public nodeModules: Map<string, ModuleCollection> = new Map();
     public libPaths: Map<string, IPackageInformation> = new Map();
@@ -19,13 +18,16 @@ export class WorkFlowContext {
     public printLogs = true;
     public useCache = true;
     public cache = new ModuleCache(this);
-    public log = new Log();
+    public log: Log;
 
+    public reset() {
+        this.log = new Log();
+        this.nodeModules = new Map();
+        this.libPaths = new Map();
+    }
     public setHomeDir(dir: string) {
         this.homeDir = dir;
     }
-
-
 
     public setLibInfo(name: string, version: string, info: IPackageInformation) {
         let key = `${name}@${version}`;

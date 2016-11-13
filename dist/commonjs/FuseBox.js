@@ -19,14 +19,13 @@ class FuseBox {
             homeDir = path.isAbsolute(opts.homeDir) ? opts.homeDir : path.join(appRoot.path, opts.homeDir);
         }
         this.context.setHomeDir(homeDir);
-        if (opts.logs) {
-        }
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);
         }
         this.virtualFiles = opts.fileCollection;
     }
     bundle(str, standalone) {
+        this.context.reset();
         let parser = Arithmetic_1.Arithmetic.parse(str);
         let bundle;
         return Arithmetic_1.Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {

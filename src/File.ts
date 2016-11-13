@@ -43,7 +43,7 @@ export class File {
         }
 
         if (!fs.existsSync(this.info.absDir)) {
-            this.context.dump.error(this.info.fuseBoxPath, this.absPath, "Not found");
+
             this.contents = "";
             return [];
         }

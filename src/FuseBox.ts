@@ -40,9 +40,6 @@ export class FuseBox {
             homeDir = path.isAbsolute(opts.homeDir) ? opts.homeDir : path.join(appRoot.path, opts.homeDir);
         }
         this.context.setHomeDir(homeDir);
-        if (opts.logs) {
-
-        }
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);
         }
@@ -51,6 +48,7 @@ export class FuseBox {
     }
 
     public bundle(str: string, standalone?: boolean) {
+        this.context.reset();
         let parser = Arithmetic.parse(str);
         let bundle: BundleData;
 
