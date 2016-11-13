@@ -1,5 +1,5 @@
-import { HTMLPlugin } from './plugins/HTMLplugin';
-import { JSONPlugin } from './plugins/JSONPlugin';
+import { HTMLPlugin } from "./plugins/HTMLplugin";
+import { JSONPlugin } from "./plugins/JSONplugin";
 import { PathMaster } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
 import { CollectionSource } from "./CollectionSource";
