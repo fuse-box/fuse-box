@@ -11,7 +11,7 @@ let fuseBox = new FuseBox({
     //     "hello.js": "",
     // }
 });
-fuseBox.bundle("**/*.js - woo.js", true).then(data => {
+fuseBox.bundle("**/*.html", true).then(data => {
     fs.writeFile("./out.js", data, function(err) {});
 }).catch(e => {
     console.log(e);

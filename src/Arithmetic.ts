@@ -123,7 +123,8 @@ export class Arithmetic {
                     return;
                 }
                 let fp = path.join(homeDir, filePattern);
-                if (!filePattern.match(/\.js$/)) {
+                let extname = path.extname(fp);
+                if (!extname && !filePattern.match(/\.js$/)) {
                     fp += ".js";
                 }
                 return new Promise((resolve, reject) => {
