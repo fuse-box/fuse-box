@@ -43,13 +43,13 @@
 // console.log(generator);
 // require("htmlparser2")
 
-//require("./foo");
+require("./foo");
 //console.log(path.join("a", "b"));
 
-var asyncWatch = require("async-watch")
-var reactive = require("wires-reactive")
-let html = require("./my.html")
-console.log(html);
+// var asyncWatch = require("async-watch")
+// var reactive = require("wires-reactive")
+// let html = require("./my.html")
+// console.log(html);
 
 // var some = require("fuse-box-test-using-old-version");
 // var newFancy = require("fuse-box-test-rogue-files");

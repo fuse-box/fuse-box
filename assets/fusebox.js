@@ -76,6 +76,7 @@
                 collection.scope = {
                     file: function(name, fn) {
                         collection.files[name] = {
+                            name: name,
                             fn: fn
                         }
                     },
@@ -93,6 +94,7 @@
                             entryName = entryName + slash + "index.js";
                             entry = collection.files[entryName]
                         }
+
                         if (!entry) {
                             var msg = ["File " + entryName + " was not found upon request"];
                             msg.push("Module: '" + moduleName + "'");
@@ -126,8 +128,10 @@
                                 return self.evaluate(target, baseDir, entryName);
                             }
                         }
-                        locals.module = { exports: locals.exports }
-                        var args = [locals.exports, locals.require, locals.module];
+                        locals.module = { exports: locals.exports };
+                        var __filename = "./" + entry.name;
+                        var __dirname = __filename.substring(0, __filename.lastIndexOf("/") + 1);
+                        var args = [locals.exports, locals.require, locals.module, __filename, __dirname];
                         entry.fn.apply(this, args);
                         var res = locals.module.exports;
                         entry.cache = res;
