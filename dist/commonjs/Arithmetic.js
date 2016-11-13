@@ -30,6 +30,12 @@ class BundleData {
     setupTempFolder(tmpFolder) {
         this.tmpFolder = tmpFolder;
     }
+    fileBlackListed(file) {
+        return this.excluding.has(file.getCrossPlatormPath());
+    }
+    fileWhiteListed(file) {
+        return this.including.has(file.getCrossPlatormPath());
+    }
     finalize() {
         if (this.tmpFolder) {
             deleteFolderRecursive(this.tmpFolder);

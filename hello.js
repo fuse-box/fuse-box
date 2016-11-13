@@ -3,7 +3,7 @@ const FuseBox = build.FuseBox;
 const fs = require("fs");
 
 let fuseBox = new FuseBox({
-    homeDir: "test/fixtures/cases/case1",
+    homeDir: "test/fixtures/cases/case2",
     cache: false,
     // fileCollection: {
     //     "index.js": "require('./foo/bar.js')",
@@ -11,7 +11,7 @@ let fuseBox = new FuseBox({
     //     "hello.js": "",
     // }
 });
-fuseBox.bundle(">index.js", true).then(data => {
+fuseBox.bundle("**/*.js - woo.js", true).then(data => {
     fs.writeFile("./out.js", data, function(err) {});
 }).catch(e => {
     console.log(e);

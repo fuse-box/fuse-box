@@ -113,11 +113,11 @@ export class ModuleCollection {
 
     public resolve(file: File, shouldIgnoreDeps?: boolean) {
         if (this.bundle) {
-            if (this.bundle.excluding.has(file.info.absDir)) {
+            if (this.bundle.fileBlackListed(file)) {
                 return;
             }
             if (shouldIgnoreDeps === undefined) {
-                shouldIgnoreDeps = this.bundle.shouldIgnoreNodeModules(file.info.absPath);
+                shouldIgnoreDeps = this.bundle.shouldIgnoreNodeModules(file.getCrossPlatormPath());
             }
         }
         if (file.info.isNodeModule) {

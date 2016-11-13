@@ -21,7 +21,7 @@ export class FuseBox {
 
     public virtualFiles: any;
     private collectionSource: CollectionSource;
-    private timeStart;
+
     private context: WorkFlowContext;
 
     /**

@@ -1,7 +1,7 @@
 import { PropParser } from "./ArithmeticStringParser";
 import { Config } from "./Config";
 import { each, chain, Chainable } from "realm-utils";
-
+import { File } from "./File";
 import * as path from "path";
 import * as fs from "fs";
 const mkdirp = require("mkdirp");
@@ -36,11 +36,18 @@ export class BundleData {
     constructor(public homeDir: string,
         public including: Map<string, IBundleInformation>,
         public excluding: Map<string, IBundleInformation>, public entry?: string) {
-            
-
     }
+
+
     public setupTempFolder(tmpFolder: string) {
         this.tmpFolder = tmpFolder;
+    }
+
+    public fileBlackListed(file: File) {
+        return this.excluding.has(file.getCrossPlatormPath());
+    }
+    public fileWhiteListed(file: File) {
+        return this.including.has(file.getCrossPlatormPath());
     }
 
     public finalize() {

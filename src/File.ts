@@ -30,6 +30,13 @@ export class File {
         this.absPath = info.absPath;
     }
 
+    public getCrossPlatormPath() {
+        let name = this.absPath;
+        name = name.replace(/\\/g, "/");
+        return name;
+    }
+
+
     public consume(): string[] {
         if (!this.absPath) {
             return [];

@@ -9,5 +9,6 @@ export declare class File {
     isLoaded: boolean;
     isNodeModuleEntry: boolean;
     constructor(context: WorkFlowContext, info: IPathInformation);
+    getCrossPlatormPath(): string;
     consume(): string[];
 }

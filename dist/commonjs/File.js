@@ -27,6 +27,11 @@ class File {
         this.isNodeModuleEntry = false;
         this.absPath = info.absPath;
     }
+    getCrossPlatormPath() {
+        let name = this.absPath;
+        name = name.replace(/\\/g, "/");
+        return name;
+    }
     consume() {
         if (!this.absPath) {
             return [];
