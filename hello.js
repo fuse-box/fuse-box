@@ -7,11 +7,10 @@ const TestPlugin = {
     test: /sub\/.*\.js$/,
     transform: (file, ast) => {
         file.contents = `${file.contents}
-          for( var item in module.exports ){
-              var obj = module.exports[item];
-              if( obj.___prototype___ && obj.___prototype___.stuff){
-                  obj.___prototype___.stuff = "hello world"
-              }
+          for (var item in module.exports) { var obj = module.exports[item];
+                if (obj.constructor && obj.constructor.prototype) {
+                    obj.prototype.hello = "hello world"
+                }
           }
         `
     }
