@@ -30,11 +30,11 @@
 
 //console.log("hello", bar);
 
-// var cheerio = require("cheerio");
-// let $ = cheerio.load('<h2 class="title">Hello world</h2>')
-// $('h2.title').text('Hello there!')
-// $('h2').addClass('welcome')
-// console.log($.html());
+var cheerio = require("cheerio");
+let $ = cheerio.load('<h2 class="title">Hello world</h2>')
+$('h2.title').text('Hello there!')
+$('h2').addClass('welcome')
+console.log($.html());
 
 
 // var tern = require('tern')
@@ -45,6 +45,7 @@
 // let hello = require("hello");
 // console.log(hello);
 require("./foo");
+
 //console.log(require("hello"));
 //console.log(path.join("a", "b"));
 

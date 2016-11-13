@@ -1,3 +1,5 @@
+import { HTMLPlugin } from './plugins/HTMLplugin';
+import { JSONPlugin } from './plugins/JSONPlugin';
 import { PathMaster } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
 import { CollectionSource } from "./CollectionSource";
@@ -44,9 +46,9 @@ export class FuseBox {
                 path.isAbsolute(opts.modulesFolder)
                     ? opts.modulesFolder : path.join(appRoot.path, opts.modulesFolder);
         }
-        if (opts.plugins) {
-            this.context.plugins = opts.plugins;
-        }
+
+        this.context.plugins = opts.plugins || [HTMLPlugin, JSONPlugin];
+
         this.context.setHomeDir(homeDir);
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);

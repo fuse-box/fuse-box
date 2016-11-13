@@ -68,38 +68,19 @@ export class File {
         if (!this.absPath) {
             return [];
         }
-
         if (!fs.existsSync(this.info.absDir)) {
-
             this.contents = "";
             return [];
         }
-
         this.contents = fs.readFileSync(this.info.absPath).toString();
         this.isLoaded = true;
-        // if it's a json
-        if (this.absPath.match(/\.json$/)) {
-            // Modify contents so they exports the json
-            this.contents = "module.exports = " + this.contents;
-            this.tryPlugins();
-            return [];
-        }
-        // if it's html
-        if (this.absPath.match(/\.html$/)) {
-            // Modify contents so they exports the html
-            this.contents = "module.exports.default = " + JSON.stringify(this.contents) + ";";
-            this.tryPlugins();
-            return [];
-        }
-        // extract dependencies in case of a javascript file
+
         if (this.absPath.match(/\.js$/)) {
             let data = extractRequires(this.contents, path.join(this.absPath));
             this.tryPlugins(data.ast);
             return data.requires;
-        } else {
-            this.contents = "module.exports = " + JSON.stringify(this.contents);
-            this.tryPlugins();
-            return [];
         }
+        this.tryPlugins();
+        return [];
     }
 }

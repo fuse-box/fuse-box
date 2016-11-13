@@ -22,10 +22,14 @@ export interface IPackageInformation {
     custom: boolean;
     customBelongsTo?: string;
 }
+export declare class AllowedExtenstions {
+    static list: Set<string>;
+    static add(name: string): void;
+    static has(name: any): boolean;
+}
 export declare class PathMaster {
     context: WorkFlowContext;
     rootPackagePath: string;
-    allowedExtension: Set<string>;
     constructor(context: WorkFlowContext, rootPackagePath?: string);
     init(name: string): IPathInformation;
     resolve(name: string, root: string, rootEntryLimit?: string): IPathInformation;

@@ -1,4 +1,6 @@
 "use strict";
+const HTMLplugin_1 = require('./plugins/HTMLplugin');
+const JSONPlugin_1 = require('./plugins/JSONPlugin');
 const PathMaster_1 = require("./PathMaster");
 const WorkflowContext_1 = require("./WorkflowContext");
 const CollectionSource_1 = require("./CollectionSource");
@@ -23,9 +25,7 @@ class FuseBox {
                 path.isAbsolute(opts.modulesFolder)
                     ? opts.modulesFolder : path.join(appRoot.path, opts.modulesFolder);
         }
-        if (opts.plugins) {
-            this.context.plugins = opts.plugins;
-        }
+        this.context.plugins = opts.plugins || [HTMLplugin_1.HTMLPlugin, JSONPlugin_1.JSONPlugin];
         this.context.setHomeDir(homeDir);
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);

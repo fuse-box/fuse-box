@@ -1,7 +1,7 @@
 import { File } from "./File";
 import { PathMaster, IPackageInformation } from "./PathMaster";
 import { WorkFlowContext } from "./WorkFlowContext";
-import { each } from "realm-utils";
+import { each, utils } from "realm-utils";
 import { BundleData } from "./Arithmetic";
 
 
@@ -153,14 +153,17 @@ export class ModuleCollection {
     }
 
     /**
-     * 
-     * 
-     * 
+     * Init plugins
+     * Call "init" plugins with context
+     * Inject dependencies as well
      * @memberOf ModuleCollection
      */
-    public injectPluginDependencies() {
+    public initPlugins() {
         if (this.context.plugins) {
             this.context.plugins.forEach(plugin => {
+                if (utils.isFunction(plugin.init)) {
+                    plugin.init(this.context);
+                }
                 if (plugin.dependencies) {
                     plugin.dependencies.forEach(mod => {
                         this.toBeResolved.push(
@@ -168,7 +171,7 @@ export class ModuleCollection {
                         );
                     });
                 }
-            })
+            });
         }
     }
 
@@ -183,7 +186,8 @@ export class ModuleCollection {
     public collectBundle(data: BundleData): Promise<ModuleCollection> {
         this.bundle = data;
         this.delayedResolve = true;
-        this.injectPluginDependencies();
+        this.initPlugins();
+
         // faking entry point
         return each(data.including, (withDeps, modulePath) => {
             let file = new File(this.context, this.pm.init(modulePath));

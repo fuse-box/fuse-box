@@ -1,5 +1,6 @@
 "use strict";
 const Log_1 = require("./Log");
+const PathMaster_1 = require("./PathMaster");
 const ModuleCache_1 = require("./ModuleCache");
 const readline = require("readline");
 class WorkFlowContext {
@@ -14,6 +15,9 @@ class WorkFlowContext {
         this.log = new Log_1.Log();
         this.nodeModules = new Map();
         this.libPaths = new Map();
+    }
+    allowExtension(ext) {
+        PathMaster_1.AllowedExtenstions.add(ext);
     }
     setHomeDir(dir) {
         this.homeDir = dir;

@@ -1,14 +1,16 @@
+import { File } from './File';
 import { Log } from "./Log";
-import { IPackageInformation } from "./PathMaster";
+import { IPackageInformation, AllowedExtenstions } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "./ModuleCache";
 const readline = require("readline");
 
 
 export interface Plugin {
-    test: RegExp;
+    test?: RegExp;
     dependencies?: string[];
-    transform: { (data: any) };
+    init: { (context: WorkFlowContext) };
+    transform: { (file: File, ast?: any) };
 }
 
 /**
@@ -31,6 +33,10 @@ export class WorkFlowContext {
         this.log = new Log();
         this.nodeModules = new Map();
         this.libPaths = new Map();
+    }
+
+    public allowExtension(ext: string) {
+        AllowedExtenstions.add(ext);
     }
     public setHomeDir(dir: string) {
         this.homeDir = dir;

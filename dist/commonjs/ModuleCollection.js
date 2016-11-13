@@ -28,9 +28,12 @@ class ModuleCollection {
             return this.resolve(this.entryFile, shouldIgnoreDeps);
         }
     }
-    injectPluginDependencies() {
+    initPlugins() {
         if (this.context.plugins) {
             this.context.plugins.forEach(plugin => {
+                if (realm_utils_1.utils.isFunction(plugin.init)) {
+                    plugin.init(this.context);
+                }
                 if (plugin.dependencies) {
                     plugin.dependencies.forEach(mod => {
                         this.toBeResolved.push(new File_1.File(this.context, this.pm.init(mod)));
@@ -42,7 +45,7 @@ class ModuleCollection {
     collectBundle(data) {
         this.bundle = data;
         this.delayedResolve = true;
-        this.injectPluginDependencies();
+        this.initPlugins();
         return realm_utils_1.each(data.including, (withDeps, modulePath) => {
             let file = new File_1.File(this.context, this.pm.init(modulePath));
             return this.resolve(file);

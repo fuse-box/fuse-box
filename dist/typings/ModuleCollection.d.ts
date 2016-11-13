@@ -22,7 +22,7 @@ export declare class ModuleCollection {
     constructor(context: WorkFlowContext, name: string, info?: IPackageInformation);
     setupEntry(file: File): void;
     resolveEntry(shouldIgnoreDeps?: boolean): any;
-    injectPluginDependencies(): void;
+    initPlugins(): void;
     collectBundle(data: BundleData): Promise<ModuleCollection>;
     resolveNodeModule(file: File): any;
     resolve(file: File, shouldIgnoreDeps?: boolean): any;

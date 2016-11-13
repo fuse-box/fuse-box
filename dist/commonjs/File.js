@@ -64,26 +64,13 @@ class File {
         }
         this.contents = fs.readFileSync(this.info.absPath).toString();
         this.isLoaded = true;
-        if (this.absPath.match(/\.json$/)) {
-            this.contents = "module.exports = " + this.contents;
-            this.tryPlugins();
-            return [];
-        }
-        if (this.absPath.match(/\.html$/)) {
-            this.contents = "module.exports.default = " + JSON.stringify(this.contents) + ";";
-            this.tryPlugins();
-            return [];
-        }
         if (this.absPath.match(/\.js$/)) {
             let data = extractRequires(this.contents, path.join(this.absPath));
             this.tryPlugins(data.ast);
             return data.requires;
         }
-        else {
-            this.contents = "module.exports = " + JSON.stringify(this.contents);
-            this.tryPlugins();
-            return [];
-        }
+        this.tryPlugins();
+        return [];
     }
 }
 exports.File = File;
