@@ -5,27 +5,129 @@ import { each } from "realm-utils";
 import { BundleData } from "./Arithmetic";
 
 
+/**
+ * 
+ * 
+ * @export
+ * @class ModuleCollection
+ */
 export class ModuleCollection {
+    /**
+     * 
+     * 
+     * @type {Map<string, ModuleCollection>}
+     * @memberOf ModuleCollection
+     */
     public nodeModules: Map<string, ModuleCollection> = new Map();
+    /**
+     * 
+     * 
+     * @type {Map<string, File>}
+     * @memberOf ModuleCollection
+     */
     public dependencies: Map<string, File> = new Map();
+    /**
+     * 
+     * 
+     * @type {BundleData}
+     * @memberOf ModuleCollection
+     */
     public bundle: BundleData;
+    /**
+     * 
+     * 
+     * 
+     * @memberOf ModuleCollection
+     */
     public entryResolved = false;
+    /**
+     * 
+     * 
+     * @type {PathMaster}
+     * @memberOf ModuleCollection
+     */
     public pm: PathMaster;
+    /**
+     * 
+     * 
+     * @type {File}
+     * @memberOf ModuleCollection
+     */
     public entryFile: File;
 
+    /**
+     * 
+     * 
+     * 
+     * @memberOf ModuleCollection
+     */
     public cached = false;
+    /**
+     * 
+     * 
+     * @type {string}
+     * @memberOf ModuleCollection
+     */
     public cachedContent: string;
+    /**
+     * 
+     * 
+     * @type {string}
+     * @memberOf ModuleCollection
+     */
     public cachedName: string;
+    /**
+     * 
+     * 
+     * @type {string}
+     * @memberOf ModuleCollection
+     */
     public cacheFile: string;
 
 
+    /**
+     * 
+     * 
+     * @type {Map<string, string>}
+     * @memberOf ModuleCollection
+     */
     public conflictingVersions: Map<string, string> = new Map();
 
+    /**
+     * 
+     * 
+     * @private
+     * @type {File[]}
+     * @memberOf ModuleCollection
+     */
     private toBeResolved: File[] = [];
+    /**
+     * 
+     * 
+     * @private
+     * 
+     * @memberOf ModuleCollection
+     */
     private delayedResolve = false;
 
+    /**
+     * Creates an instance of ModuleCollection.
+     * 
+     * @param {WorkFlowContext} context
+     * @param {string} name
+     * @param {IPackageInformation} [info]
+     * 
+     * @memberOf ModuleCollection
+     */
     constructor(public context: WorkFlowContext, public name: string, public info?: IPackageInformation) { }
 
+    /**
+     * 
+     * 
+     * @param {File} file
+     * 
+     * @memberOf ModuleCollection
+     */
     public setupEntry(file: File) {
         if (this.dependencies.has(file.info.absPath)) {
             this.dependencies.set(file.info.absPath, file);
@@ -35,6 +137,14 @@ export class ModuleCollection {
     }
 
 
+    /**
+     * 
+     * 
+     * @param {boolean} [shouldIgnoreDeps]
+     * @returns
+     * 
+     * @memberOf ModuleCollection
+     */
     public resolveEntry(shouldIgnoreDeps?: boolean) {
         if (this.entryFile && !this.entryResolved) {
             this.entryResolved = true;
@@ -43,16 +153,37 @@ export class ModuleCollection {
     }
 
     /**
-     *
-     *
+     * 
+     * 
+     * 
+     * @memberOf ModuleCollection
+     */
+    public injectPluginDependencies() {
+        if (this.context.plugins) {
+            this.context.plugins.forEach(plugin => {
+                if (plugin.dependencies) {
+                    plugin.dependencies.forEach(mod => {
+                        this.toBeResolved.push(
+                            new File(this.context, this.pm.init(mod))
+                        );
+                    });
+                }
+            })
+        }
+    }
+
+    /**
+     * 
+     * 
      * @param {BundleData} data
-     * @returns {Promise<Module>}
-     *
+     * @returns {Promise<ModuleCollection>}
+     * 
      * @memberOf ModuleCollection
      */
     public collectBundle(data: BundleData): Promise<ModuleCollection> {
         this.bundle = data;
         this.delayedResolve = true;
+        this.injectPluginDependencies();
         // faking entry point
         return each(data.including, (withDeps, modulePath) => {
             let file = new File(this.context, this.pm.init(modulePath));
@@ -66,6 +197,14 @@ export class ModuleCollection {
         });
     }
 
+    /**
+     * 
+     * 
+     * @param {File} file
+     * @returns
+     * 
+     * @memberOf ModuleCollection
+     */
     public resolveNodeModule(file: File) {
         let info = file.info.nodeModuleInfo;
         let collection: ModuleCollection;
@@ -111,6 +250,15 @@ export class ModuleCollection {
             : collection.resolveEntry();
     }
 
+    /**
+     * 
+     * 
+     * @param {File} file
+     * @param {boolean} [shouldIgnoreDeps]
+     * @returns
+     * 
+     * @memberOf ModuleCollection
+     */
     public resolve(file: File, shouldIgnoreDeps?: boolean) {
         if (this.bundle) {
             if (this.bundle.fileBlackListed(file)) {

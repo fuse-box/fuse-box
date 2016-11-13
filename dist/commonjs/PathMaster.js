@@ -139,6 +139,12 @@ class PathMaster {
                 version: "0.0.0",
             };
         };
+        if (this.context.customModulesFolder) {
+            let customFolder = path.join(this.context.customModulesFolder, name);
+            if (fs.existsSync(customFolder)) {
+                return readMainFile(customFolder, false);
+            }
+        }
         if (this.rootPackagePath) {
             let nestedNodeModule = path.join(this.rootPackagePath, "node_modules", name);
             if (fs.existsSync(nestedNodeModule)) {

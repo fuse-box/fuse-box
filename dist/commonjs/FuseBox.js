@@ -18,6 +18,11 @@ class FuseBox {
         if (opts.homeDir) {
             homeDir = path.isAbsolute(opts.homeDir) ? opts.homeDir : path.join(appRoot.path, opts.homeDir);
         }
+        if (opts.modulesFolder) {
+            this.context.customModulesFolder =
+                path.isAbsolute(opts.modulesFolder)
+                    ? opts.modulesFolder : path.join(appRoot.path, opts.modulesFolder);
+        }
         if (opts.plugins) {
             this.context.plugins = opts.plugins;
         }

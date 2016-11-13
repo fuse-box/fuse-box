@@ -4,6 +4,7 @@ import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "./ModuleCache";
 export interface Plugin {
     test: RegExp;
+    dependencies?: string[];
     transform: {
         (data: any);
     };
@@ -16,6 +17,7 @@ export declare class WorkFlowContext {
     plugins: Plugin[];
     useCache: boolean;
     cache: ModuleCache;
+    customModulesFolder: string;
     log: Log;
     reset(): void;
     setHomeDir(dir: string): void;

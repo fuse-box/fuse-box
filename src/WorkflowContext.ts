@@ -7,6 +7,7 @@ const readline = require("readline");
 
 export interface Plugin {
     test: RegExp;
+    dependencies?: string[];
     transform: { (data: any) };
 }
 
@@ -23,6 +24,7 @@ export class WorkFlowContext {
     public plugins: Plugin[];
     public useCache = true;
     public cache = new ModuleCache(this);
+    public customModulesFolder: string;
     public log: Log;
 
     public reset() {

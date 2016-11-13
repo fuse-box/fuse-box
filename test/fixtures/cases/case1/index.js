@@ -42,8 +42,10 @@
 // var generator = require('babel-generator')
 // console.log(generator);
 // require("htmlparser2")
-
+// let hello = require("hello");
+// console.log(hello);
 require("./foo");
+//console.log(require("hello"));
 //console.log(path.join("a", "b"));
 
 // var asyncWatch = require("async-watch")
