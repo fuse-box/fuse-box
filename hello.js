@@ -7,7 +7,7 @@ const fs = require("fs");
 let fuseBox = new FuseBox({
     homeDir: "test/fixtures/cases/case1",
     modulesFolder: "test/fixtures/modules",
-    plugins: [build.HTMLPlugin, build.JSONPlugin]
+    plugins: [build.HTMLPlugin, build.JSONPlugin, build.CSSPlugin]
 });
 //fuseBox.bundle("**/*.*(js|html) >index.js", false).then(data => {
 

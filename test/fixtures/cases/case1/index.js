@@ -56,9 +56,7 @@
 // console.log(hello);
 //require("./foo");
 require("~/sub/hello.js");
-
-//console.log(require("hello"));
-//console.log(path.join("a", "b"));
+console.log(1);
 
 // var asyncWatch = require("async-watch")
 // var reactive = require("wires-reactive")
@@ -76,7 +74,7 @@ require("~/sub/hello.js");
 //var chars = new RegExp(`ªµºÀ-ÖØ-öø`);
 // var input = 'const getMessage = () => "Hello World";';
 // var output = (0, _babelStandalone.transform)(input, { presets: ['es2015'] }).code;
-
+require("./test.css");
 
 
 // var generator = require('babel-generator')

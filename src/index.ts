@@ -1,7 +1,7 @@
+export { CSSPlugin } from "./plugins/CSSplugin";
 export { BabelPlugin } from "./plugins/BabelPlugin";
 export { HTMLPlugin } from "./plugins/HTMLplugin";
 export { JSONPlugin } from "./plugins/JSONplugin";
-
 export { WorkFlowContext } from "./WorkflowContext";
 export { PathMaster } from "./PathMaster";
 export { Arithmetic } from "./Arithmetic";

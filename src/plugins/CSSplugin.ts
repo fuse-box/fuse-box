@@ -1,6 +1,6 @@
-import {File} from "../File";
-import {WorkFlowContext} from "./../WorkflowContext";
-import {Plugin} from "../WorkflowContext";
+import { File } from "../File";
+import { WorkFlowContext } from "./../WorkflowContext";
+import { Plugin } from "../WorkflowContext";
 
 /**
  *
@@ -37,17 +37,17 @@ export class FuseBoxCSSPlugin implements Plugin {
      * @memberOf FuseBoxCSSPlugin
      */
     public transform(file: File) {
-        if (typeof window !== `undefined`) {
-            file.contents = JSON.stringify(file.contents);
-            file.contents = `
-var exists = document.getElementById(__filename);
+        file.contents = `
+if (typeof window !== 'undefined') {
+var styleId = encodeURIComponent(__filename);
+var exists = document.getElementById(styleId);
 if (!exists) {
     var s = document.createElement("style");
-    s.id = __filename;
-    s.innerHTML =${file.contents};
+    s.id = styleId;
+    s.innerHTML =${JSON.stringify(file.contents)};
     document.getElementsByTagName("head")[0].appendChild(s);
-}`
-        }
+}}`;
+
     }
 }
 
