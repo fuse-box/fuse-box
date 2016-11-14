@@ -60,6 +60,14 @@
                     return mod.cache;
                 }
             },
+            dynamic: function(userPath, str) {
+                this.module("default", {}, function(___scope___) {
+                    ___scope___.file(userPath, function(exports, require, module, __filename, __dirname) {
+                        var res = new Function('exports', 'require', 'module', '__filename', '__dirname', str);
+                        res(exports, require, module, __filename, __dirname);
+                    });
+                });
+            },
             import: function(userPath, packageName, parent) {
                 packageName = packageName || "default";
                 if (modules[packageName]) {
@@ -76,6 +84,7 @@
                 collection.scope = {
                     file: function(name, fn) {
                         collection.files[name] = {
+                            name: name,
                             fn: fn
                         }
                     },
@@ -93,6 +102,7 @@
                             entryName = entryName + slash + "index.js";
                             entry = collection.files[entryName]
                         }
+
                         if (!entry) {
                             var msg = ["File " + entryName + " was not found upon request"];
                             msg.push("Module: '" + moduleName + "'");
@@ -126,8 +136,10 @@
                                 return self.evaluate(target, baseDir, entryName);
                             }
                         }
-                        locals.module = { exports: locals.exports }
-                        var args = [locals.exports, locals.require, locals.module];
+                        locals.module = { exports: locals.exports };
+                        var __filename = "./" + entry.name;
+                        var __dirname = __filename.substring(0, __filename.lastIndexOf("/") + 1);
+                        var args = [locals.exports, locals.require, locals.module, __filename, __dirname];
                         entry.fn.apply(this, args);
                         var res = locals.module.exports;
                         entry.cache = res;

@@ -1,3 +1,5 @@
+import { HTMLPlugin } from "./plugins/HTMLplugin";
+import { JSONPlugin } from "./plugins/JSONplugin";
 import { PathMaster } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
 import { CollectionSource } from "./CollectionSource";
@@ -21,7 +23,7 @@ export class FuseBox {
 
     public virtualFiles: any;
     private collectionSource: CollectionSource;
-    private timeStart;
+
     private context: WorkFlowContext;
 
     /**
@@ -39,10 +41,15 @@ export class FuseBox {
         if (opts.homeDir) {
             homeDir = path.isAbsolute(opts.homeDir) ? opts.homeDir : path.join(appRoot.path, opts.homeDir);
         }
-        this.context.setHomeDir(homeDir);
-        if (opts.logs) {
-
+        if (opts.modulesFolder) {
+            this.context.customModulesFolder =
+                path.isAbsolute(opts.modulesFolder)
+                    ? opts.modulesFolder : path.join(appRoot.path, opts.modulesFolder);
         }
+
+        this.context.plugins = opts.plugins || [HTMLPlugin, JSONPlugin];
+
+        this.context.setHomeDir(homeDir);
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);
         }
@@ -51,6 +58,7 @@ export class FuseBox {
     }
 
     public bundle(str: string, standalone?: boolean) {
+        this.context.reset();
         let parser = Arithmetic.parse(str);
         let bundle: BundleData;
 
@@ -99,10 +107,6 @@ export class FuseBox {
                             this.globalContents.push(cnt);
                         });
                     });
-                }
-
-                public buildNodeModulesCache() {
-                    //console.log(this.defaultCollection.nodeModules);
                 }
 
                 public format() {

@@ -35,12 +35,17 @@ export class ModuleCache {
             if (!cached) {
                 through.push(file);
             } else {
+
                 if (cached.version !== info.version || cached.files.indexOf(file.info.fuseBoxPath) === -1) {
+
                     through.push(file);
                     let index = valid4Caching.indexOf(key);
                     if (index === -1) { valid4Caching.splice(index, 1); }
                 } else {
-                    if (valid4Caching.indexOf(key) === -1) { valid4Caching.push(key); }
+
+                    if (valid4Caching.indexOf(key) === -1) {
+                        valid4Caching.push(key);
+                    }
                 }
             }
         });
@@ -54,6 +59,7 @@ export class ModuleCache {
                 collection.cachedName = key;
                 collection.cacheFile = path.join(this.cacheFolder, key);
                 operations.push(new Promise((resolve, reject) => {
+
                     fs.readFile(collection.cacheFile, (err, result) => {
                         collection.cachedContent = result.toString();
                         return resolve();
@@ -67,6 +73,7 @@ export class ModuleCache {
             }
         }
         valid4Caching.forEach(key => {
+
             getAllRequired(key, this.cachedDeps.tree[key]);
         });
         return Promise.all(operations).then(() => {

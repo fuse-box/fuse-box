@@ -1,4 +1,6 @@
 "use strict";
+const HTMLplugin_1 = require("./plugins/HTMLplugin");
+const JSONplugin_1 = require("./plugins/JSONplugin");
 const PathMaster_1 = require("./PathMaster");
 const WorkflowContext_1 = require("./WorkflowContext");
 const CollectionSource_1 = require("./CollectionSource");
@@ -18,15 +20,20 @@ class FuseBox {
         if (opts.homeDir) {
             homeDir = path.isAbsolute(opts.homeDir) ? opts.homeDir : path.join(appRoot.path, opts.homeDir);
         }
-        this.context.setHomeDir(homeDir);
-        if (opts.logs) {
+        if (opts.modulesFolder) {
+            this.context.customModulesFolder =
+                path.isAbsolute(opts.modulesFolder)
+                    ? opts.modulesFolder : path.join(appRoot.path, opts.modulesFolder);
         }
+        this.context.plugins = opts.plugins || [HTMLplugin_1.HTMLPlugin, JSONplugin_1.JSONPlugin];
+        this.context.setHomeDir(homeDir);
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);
         }
         this.virtualFiles = opts.fileCollection;
     }
     bundle(str, standalone) {
+        this.context.reset();
         let parser = Arithmetic_1.Arithmetic.parse(str);
         let bundle;
         return Arithmetic_1.Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
@@ -68,8 +75,6 @@ class FuseBox {
                             this.globalContents.push(cnt);
                         });
                     });
-                }
-                buildNodeModulesCache() {
                 }
                 format() {
                     return {

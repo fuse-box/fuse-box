@@ -12,7 +12,6 @@ class CollectionSource {
         }
         let cnt = [];
         collection.dependencies.forEach(file => {
-            this.context.dump.log(collection.name, file.info.fuseBoxPath, file.contents);
             let content = ModuleWrapper_1.ModuleWrapper.wrapGeneric(file.info.fuseBoxPath, file.contents);
             cnt.push(content);
         });

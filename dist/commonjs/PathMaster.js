@@ -3,11 +3,22 @@ const path = require("path");
 const fs = require("fs");
 const Config_1 = require("./Config");
 const NODE_MODULE = /^([a-z].*)$/;
+class AllowedExtenstions {
+    static add(name) {
+        if (!this.list.has(name)) {
+            this.list.add(name);
+        }
+    }
+    static has(name) {
+        return this.list.has(name);
+    }
+}
+AllowedExtenstions.list = new Set([".js", ".json", ".xml", ".css", ".html"]);
+exports.AllowedExtenstions = AllowedExtenstions;
 class PathMaster {
     constructor(context, rootPackagePath) {
         this.context = context;
         this.rootPackagePath = rootPackagePath;
-        this.allowedExtension = new Set([".js", ".json", ".xml", ".css", ".html"]);
     }
     init(name) {
         return this.resolve(name, this.rootPackagePath);
@@ -77,7 +88,7 @@ class PathMaster {
     }
     ensureFolderAndExtensions(name, root) {
         let ext = path.extname(name);
-        if (!this.allowedExtension.has(ext)) {
+        if (!AllowedExtenstions.has(ext)) {
             if (/\/$/.test(name)) {
                 return `${name}index.js`;
             }
@@ -139,6 +150,12 @@ class PathMaster {
                 version: "0.0.0",
             };
         };
+        if (this.context.customModulesFolder) {
+            let customFolder = path.join(this.context.customModulesFolder, name);
+            if (fs.existsSync(customFolder)) {
+                return readMainFile(customFolder, false);
+            }
+        }
         if (this.rootPackagePath) {
             let nestedNodeModule = path.join(this.rootPackagePath, "node_modules", name);
             if (fs.existsSync(nestedNodeModule)) {

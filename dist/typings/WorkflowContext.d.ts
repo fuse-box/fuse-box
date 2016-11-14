@@ -1,17 +1,30 @@
+import { File } from './File';
 import { Log } from "./Log";
 import { IPackageInformation } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
-import { FuseBoxDump } from "./Dump";
 import { ModuleCache } from "./ModuleCache";
+export interface Plugin {
+    test?: RegExp;
+    dependencies?: string[];
+    init: {
+        (context: WorkFlowContext);
+    };
+    transform: {
+        (file: File, ast?: any);
+    };
+}
 export declare class WorkFlowContext {
-    dump: FuseBoxDump;
     nodeModules: Map<string, ModuleCollection>;
     libPaths: Map<string, IPackageInformation>;
     homeDir: string;
     printLogs: boolean;
+    plugins: Plugin[];
     useCache: boolean;
     cache: ModuleCache;
+    customModulesFolder: string;
     log: Log;
+    reset(): void;
+    allowExtension(ext: string): void;
     setHomeDir(dir: string): void;
     setLibInfo(name: string, version: string, info: IPackageInformation): Map<string, IPackageInformation>;
     getLibInfo(name: string, version: string): IPackageInformation;

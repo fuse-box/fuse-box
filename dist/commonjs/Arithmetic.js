@@ -30,6 +30,12 @@ class BundleData {
     setupTempFolder(tmpFolder) {
         this.tmpFolder = tmpFolder;
     }
+    fileBlackListed(file) {
+        return this.excluding.has(file.getCrossPlatormPath());
+    }
+    fileWhiteListed(file) {
+        return this.including.has(file.getCrossPlatormPath());
+    }
     finalize() {
         if (this.tmpFolder) {
             deleteFolderRecursive(this.tmpFolder);
@@ -69,7 +75,8 @@ class Arithmetic {
                     return;
                 }
                 let fp = path.join(homeDir, filePattern);
-                if (!filePattern.match(/\.js$/)) {
+                let extname = path.extname(fp);
+                if (!extname && !filePattern.match(/\.js$/)) {
                     fp += ".js";
                 }
                 return new Promise((resolve, reject) => {

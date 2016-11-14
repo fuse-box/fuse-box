@@ -28,9 +28,24 @@ class ModuleCollection {
             return this.resolve(this.entryFile, shouldIgnoreDeps);
         }
     }
+    initPlugins() {
+        if (this.context.plugins) {
+            this.context.plugins.forEach(plugin => {
+                if (realm_utils_1.utils.isFunction(plugin.init)) {
+                    plugin.init(this.context);
+                }
+                if (plugin.dependencies) {
+                    plugin.dependencies.forEach(mod => {
+                        this.toBeResolved.push(new File_1.File(this.context, this.pm.init(mod)));
+                    });
+                }
+            });
+        }
+    }
     collectBundle(data) {
         this.bundle = data;
         this.delayedResolve = true;
+        this.initPlugins();
         return realm_utils_1.each(data.including, (withDeps, modulePath) => {
             let file = new File_1.File(this.context, this.pm.init(modulePath));
             return this.resolve(file);
@@ -68,11 +83,11 @@ class ModuleCollection {
     }
     resolve(file, shouldIgnoreDeps) {
         if (this.bundle) {
-            if (this.bundle.excluding.has(file.info.absDir)) {
+            if (this.bundle.fileBlackListed(file)) {
                 return;
             }
             if (shouldIgnoreDeps === undefined) {
-                shouldIgnoreDeps = this.bundle.shouldIgnoreNodeModules(file.info.absPath);
+                shouldIgnoreDeps = this.bundle.shouldIgnoreNodeModules(file.getCrossPlatormPath());
             }
         }
         if (file.info.isNodeModule) {

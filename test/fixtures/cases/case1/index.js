@@ -22,12 +22,14 @@
 // console.log(require("acorn"));
 // console.log(require("acorn"));
 
+var dynamicPath = "./custom/foo.js";
 
+console.log(require(dynamicPath));
 // var f3 = require("fuse-box-testcase1");
 // console.log(f3.getBar());
 //require("fuse-box-testcase3/dist/bar")
 //var bar = require("fuse-box-testcase3")
-
+require("./bar");
 //console.log("hello", bar);
 
 // var cheerio = require("cheerio");
@@ -42,14 +44,17 @@
 // var generator = require('babel-generator')
 // console.log(generator);
 // require("htmlparser2")
+// let hello = require("hello");
+// console.log(hello);
+require("./foo");
 
-//require("./foo");
+//console.log(require("hello"));
 //console.log(path.join("a", "b"));
 
-var asyncWatch = require("async-watch")
-var reactive = require("wires-reactive")
-let html = require("./my.html")
-console.log(html);
+// var asyncWatch = require("async-watch")
+// var reactive = require("wires-reactive")
+// let html = require("./my.html")
+// console.log(html);
 
 // var some = require("fuse-box-test-using-old-version");
 // var newFancy = require("fuse-box-test-rogue-files");

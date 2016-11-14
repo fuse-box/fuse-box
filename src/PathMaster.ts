@@ -28,12 +28,24 @@ export interface IPackageInformation {
     custom: boolean;
     customBelongsTo?: string;
 }
+
+export class AllowedExtenstions {
+    public static list: Set<string> = new Set([".js", ".json", ".xml", ".css", ".html"]);
+    public static add(name: string) {
+        if (!this.list.has(name)) {
+            this.list.add(name);
+        }
+    }
+
+    public static has(name) {
+        return this.list.has(name);
+    }
+}
 /**
  * PathMaster
  */
 export class PathMaster {
-    public allowedExtension: Set<string>
-    = new Set([".js", ".json", ".xml", ".css", ".html"]);
+
 
     constructor(public context: WorkFlowContext, public rootPackagePath?: string) { }
 
@@ -138,7 +150,7 @@ export class PathMaster {
 
     private ensureFolderAndExtensions(name: string, root: string) {
         let ext = path.extname(name);
-        if (!this.allowedExtension.has(ext)) {
+        if (!AllowedExtenstions.has(ext)) {
             if (/\/$/.test(name)) {
                 return `${name}index.js`;
             }
@@ -214,6 +226,13 @@ export class PathMaster {
                 version: "0.0.0",
             };
         };
+
+        if (this.context.customModulesFolder) {
+            let customFolder = path.join(this.context.customModulesFolder, name);
+            if (fs.existsSync(customFolder)) {
+                return readMainFile(customFolder, false);
+            }
+        }
 
         if (this.rootPackagePath) {// handle a conflicting library
             let nestedNodeModule = path.join(this.rootPackagePath, "node_modules", name);
