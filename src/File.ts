@@ -7,7 +7,7 @@ const esquery = require("esquery");
 import { utils } from "realm-utils";
 
 export function extractRequires(contents: string, absPath: string) {
-    let ast = esprima.parse(contents);
+    let ast = esprima.parse(contents, { sourceType: "module" });
     let matches = esquery(ast, "CallExpression[callee.name=\"require\"]");
     let results = [];
     matches.map(item => {
@@ -56,8 +56,7 @@ export class File {
             if (target) {
                 // call tranformation callback
                 if (utils.isFunction(target.transform)) {
-
-                    target.transform.apply(this, [this, _ast]);
+                    target.transform.apply(target, [this, _ast]);
                 }
             }
         }

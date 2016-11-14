@@ -25,6 +25,8 @@
 
 
 require("./sub/hello.js");
+let a = "./sub/hello2.js"
+require(a);
 
 // var dynamicPath = "./custom/foo.js";
 

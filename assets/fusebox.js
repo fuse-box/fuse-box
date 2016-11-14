@@ -99,14 +99,18 @@
                         var entry = collection.files[ensureExtension(entryName)];
                         if (!entry) { // try folder (index.js)
                             var slash = !entryName.match(/\/$/) ? "/" : "";
-                            entryName = entryName + slash + "index.js";
-                            entry = collection.files[entryName]
+                            entry = collection.files[entryName + slash + "index.js"]
                         }
 
                         if (!entry) {
                             var msg = ["File " + entryName + " was not found upon request"];
+
                             msg.push("Module: '" + moduleName + "'");
                             msg.push("File: '" + parent + "'");
+                            msg.push("Base: '" + (base || "./") + "'");
+                            msg.push("File map:");
+                            msg.push("\t" + Object.keys(collection.files).join("\n\t"));
+
                             throw msg.join("\n");
                         }
                         if (entry.isLoading) {
