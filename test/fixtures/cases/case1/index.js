@@ -24,9 +24,8 @@
 
 
 
-require("./sub/hello.js");
-let a = "./sub/hello2.js"
-require(a);
+//require("~/sub/hello.js");
+
 
 // var dynamicPath = "./custom/foo.js";
 
@@ -38,7 +37,7 @@ require(a);
 // console.log(f3.getBar());
 //require("fuse-box-testcase3/dist/bar")
 //var bar = require("fuse-box-testcase3")
-require("./bar");
+//require("./bar");
 //console.log("hello", bar);
 
 // var cheerio = require("cheerio");
@@ -55,7 +54,8 @@ require("./bar");
 // require("htmlparser2")
 // let hello = require("hello");
 // console.log(hello);
-require("./foo");
+//require("./foo");
+require("~/sub/hello.js");
 
 //console.log(require("hello"));
 //console.log(path.join("a", "b"));
