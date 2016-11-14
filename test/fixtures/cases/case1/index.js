@@ -22,9 +22,16 @@
 // console.log(require("acorn"));
 // console.log(require("acorn"));
 
-var dynamicPath = "./custom/foo.js";
 
-console.log(require(dynamicPath));
+
+require("./sub/hello.js");
+
+// var dynamicPath = "./custom/foo.js";
+
+// console.log(require(dynamicPath));
+
+
+
 // var f3 = require("fuse-box-testcase1");
 // console.log(f3.getBar());
 //require("fuse-box-testcase3/dist/bar")

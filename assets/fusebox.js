@@ -127,11 +127,13 @@
                                     _moduleName = _moduleName + "@" + customVersions[_moduleName];
                                 }
                                 if (_module[1]) {
-
                                     return FuseBox.import(_module[1], _moduleName, entryName);
                                 }
                                 return FuseBox.evaluate(_moduleName, null, entryName);
                             } else {
+                                if (target[0] === "~") {
+                                    return self.evaluate(target.slice(2, target.length));
+                                }
                                 var baseDir = getFileDirectory(entryName);
                                 return self.evaluate(target, baseDir, entryName);
                             }

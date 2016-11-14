@@ -21,6 +21,7 @@ describe("PathMaster", () => {
     });
 
 
+
     it("Should detect node module", () => {
         let result = pm.resolve("foo/lib");
         result.isNodeModule.should.be.equal(true);
@@ -180,9 +181,28 @@ describe("PathMaster", () => {
     });
 
     it("Should not go beyond the limits", () => {
-        console.log(getTestFolder("./"));
         let result = pm.resolve("../", getTestFolder("./"), getTestFolder("./") + "index.js");
-        console.log(result);
+        result.fuseBoxPath.should.equal("index.js")
+    });
+
+    it("Should resolve tilda path (on folder)", () => {
+        let result = pm.resolve("~/foo", getTestFolder("./bar/data.json"));
+        testFolderShouldEqual(result.absPath, "path-test/foo/index.js")
+        result.fuseBoxPath.should.equal("foo/index.js");
+    });
+
+    it("Should resolve tilda file (on file without ext)", () => {
+        let result = pm.resolve("~/some", getTestFolder("./bar/data.json"));
+
+        testFolderShouldEqual(result.absPath, "path-test/some.js")
+        result.fuseBoxPath.should.equal("some.js");
+    });
+
+    it("Should resolve tilda file (on file with ext)", () => {
+        let result = pm.resolve("~/some.js", getTestFolder("./bar/data.json"));
+
+        testFolderShouldEqual(result.absPath, "path-test/some.js")
+        result.fuseBoxPath.should.equal("some.js");
     });
 
 

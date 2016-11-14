@@ -88,11 +88,16 @@ class PathMaster {
     }
     ensureFolderAndExtensions(name, root) {
         let ext = path.extname(name);
+        if (name[0] === "~" && name[1] === "/" && this.rootPackagePath) {
+            name = "." + name.slice(1, name.length);
+            name = path.join(this.rootPackagePath, name);
+        }
         if (!AllowedExtenstions.has(ext)) {
             if (/\/$/.test(name)) {
                 return `${name}index.js`;
             }
-            let folderDir = path.join(root, name, "index.js");
+            let folderDir = path.isAbsolute(name) ? path.join(name, "index.js")
+                : path.join(root, name, "index.js");
             if (fs.existsSync(folderDir)) {
                 let startsWithDot = name[0] === ".";
                 name = path.join(name, "/", "index.js");
@@ -101,7 +106,9 @@ class PathMaster {
                 }
             }
             else {
-                name = name + ".js";
+                if (!ext) {
+                    name += ".js";
+                }
             }
         }
         return name;
