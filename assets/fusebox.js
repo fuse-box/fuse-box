@@ -40,8 +40,7 @@
             var matched = name.match(/\.(\w{1,})$/);
             if (matched) {
                 var ext = matched[1];
-                var allowed = ["json", "xml", "js", "html"];
-                if (allowed.indexOf(ext) === -1) {
+                if (!ext) {
                     return name + ".js";
                 }
                 return name;
