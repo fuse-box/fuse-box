@@ -9,7 +9,7 @@ export class Log {
     private spinnerInterval: any;
     private timeStart = process.hrtime();
     private totalSize = 0;
-    constructor() { }
+    constructor(public printLog: boolean) { }
 
     public startSpinning() {
         this.spinnerInterval = spinner({
@@ -22,6 +22,9 @@ export class Log {
     }
 
     public echoDefaultCollection(collection: ModuleCollection, contents: string, printFiles?: boolean) {
+        if (!this.printLog) {
+            return;
+        }
         let bytes = Buffer.byteLength(contents, "utf8");
         let size = prettysize(bytes);
         this.totalSize += bytes;
@@ -37,6 +40,9 @@ export class Log {
     }
 
     public echoCollection(collection: ModuleCollection, contents: string, printFiles?: boolean) {
+        if (!this.printLog) {
+            return;
+        }
         let bytes = Buffer.byteLength(contents, "utf8");
         let size = prettysize(bytes);
         this.totalSize += bytes;
@@ -48,6 +54,9 @@ export class Log {
     }
 
     public end() {
+        if (!this.printLog) {
+            return;
+        }
         let took = process.hrtime(this.timeStart)
         cursor.write("\n")
             .brightBlack().write(`    --------------\n`)

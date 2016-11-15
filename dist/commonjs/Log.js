@@ -5,7 +5,8 @@ const cursor = ansi(process.stdout);
 const prettysize = require("prettysize");
 const prettyTime = require("pretty-time");
 class Log {
-    constructor() {
+    constructor(printLog) {
+        this.printLog = printLog;
         this.timeStart = process.hrtime();
         this.totalSize = 0;
     }
@@ -18,6 +19,9 @@ class Log {
         clearInterval(this.spinnerInterval);
     }
     echoDefaultCollection(collection, contents, printFiles) {
+        if (!this.printLog) {
+            return;
+        }
         let bytes = Buffer.byteLength(contents, "utf8");
         let size = prettysize(bytes);
         this.totalSize += bytes;
@@ -31,6 +35,9 @@ class Log {
         cursor.reset();
     }
     echoCollection(collection, contents, printFiles) {
+        if (!this.printLog) {
+            return;
+        }
         let bytes = Buffer.byteLength(contents, "utf8");
         let size = prettysize(bytes);
         this.totalSize += bytes;
@@ -41,6 +48,9 @@ class Log {
             .write("\n").reset();
     }
     end() {
+        if (!this.printLog) {
+            return;
+        }
         let took = process.hrtime(this.timeStart);
         cursor.write("\n")
             .brightBlack().write(`    --------------\n`)

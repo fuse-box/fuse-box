@@ -50,7 +50,10 @@ export class FuseBox {
         this.context.plugins = opts.plugins || [HTMLPlugin, JSONPlugin];
         if (opts.cache !== undefined) {
             this.context.useCache = opts.cache ? true : false;
-            
+        }
+
+        if (opts.log !== undefined) {
+            this.context.doLog = opts.log ? true : false;
         }
         this.context.setHomeDir(homeDir);
         if (opts.cache !== undefined) {
@@ -120,10 +123,7 @@ export class FuseBox {
 
             }).then(result => {
                 let contents = result.contents.join("\n");
-                console.log("");
-                if (this.context.printLogs) {
-                    self.context.log.end();
-                }
+                self.context.log.end();
                 return ModuleWrapper.wrapFinal(contents, bundleData.entry, standalone);
                 // return {
                 //     dump: this.dump,

@@ -7,11 +7,12 @@ const fs = require("fs");
 let fuseBox = new FuseBox({
     homeDir: "test/fixtures/cases/case1",
     modulesFolder: "test/fixtures/modules",
-    cache: true,
+    cache: false,
     plugins: [build.HTMLPlugin, build.JSONPlugin, new build.CSSPlugin({ minify: true })]
 });
 //fuseBox.bundle("**/*.*(js|html) >index.js", false).then(data => {
 
+//setInterval(() => {
 fuseBox.bundle(">index.js", true).then(data => {
     fs.writeFile("./out.js", data, function(err) {
         if (err) {
@@ -21,3 +22,5 @@ fuseBox.bundle(">index.js", true).then(data => {
 }).catch(e => {
     console.log(e);
 })
+
+//}, 1000)

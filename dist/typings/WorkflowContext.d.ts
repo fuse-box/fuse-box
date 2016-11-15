@@ -20,6 +20,7 @@ export declare class WorkFlowContext {
     printLogs: boolean;
     plugins: Plugin[];
     useCache: boolean;
+    doLog: boolean;
     cache: ModuleCache;
     customModulesFolder: string;
     log: Log;

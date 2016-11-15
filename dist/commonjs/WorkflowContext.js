@@ -9,10 +9,11 @@ class WorkFlowContext {
         this.libPaths = new Map();
         this.printLogs = true;
         this.useCache = true;
+        this.doLog = true;
         this.cache = new ModuleCache_1.ModuleCache(this);
     }
     reset() {
-        this.log = new Log_1.Log();
+        this.log = new Log_1.Log(this.doLog);
         this.nodeModules = new Map();
         this.libPaths = new Map();
     }

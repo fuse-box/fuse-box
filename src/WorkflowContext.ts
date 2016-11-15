@@ -25,12 +25,13 @@ export class WorkFlowContext {
     public printLogs = true;
     public plugins: Plugin[];
     public useCache = true;
+    public doLog = true;
     public cache = new ModuleCache(this);
     public customModulesFolder: string;
     public log: Log;
 
     public reset() {
-        this.log = new Log();
+        this.log = new Log(this.doLog);
         this.nodeModules = new Map();
         this.libPaths = new Map();
     }

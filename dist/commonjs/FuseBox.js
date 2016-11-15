@@ -29,6 +29,9 @@ class FuseBox {
         if (opts.cache !== undefined) {
             this.context.useCache = opts.cache ? true : false;
         }
+        if (opts.log !== undefined) {
+            this.context.doLog = opts.log ? true : false;
+        }
         this.context.setHomeDir(homeDir);
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);
@@ -87,10 +90,7 @@ class FuseBox {
             }
             ).then(result => {
                 let contents = result.contents.join("\n");
-                console.log("");
-                if (this.context.printLogs) {
-                    self.context.log.end();
-                }
+                self.context.log.end();
                 return ModuleWrapper_1.ModuleWrapper.wrapFinal(contents, bundleData.entry, standalone);
             });
         });
