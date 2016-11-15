@@ -37,17 +37,19 @@ export class FuseBoxCSSPlugin implements Plugin {
      * @memberOf FuseBoxCSSPlugin
      */
     public transform(file: File) {
-        if (typeof window !== `undefined`) {
-            file.contents = JSON.stringify(file.contents);
-            file.contents = `
-var exists = document.getElementById(__filename);
-if (!exists) {
-    var s = document.createElement("style");
-    s.id = __filename;
-    s.innerHTML =${file.contents};
-    document.getElementsByTagName("head")[0].appendChild(s);
-}`
-        }
+        file.contents = JSON.stringify(file.contents);
+        file.contents = `if (typeof window !== 'undefined') {
+    var styleId = __filename.replace(/[\.\/]+/g, "-");
+    if(styleId.charAt(0) === '-' ) styleId = styleId.substring(1);
+    var exists = document.getElementById(styleId);
+    if (!exists) {
+        var s = document.createElement("style");
+        s.id = styleId;
+        s.innerHTML =${file.contents};
+        document.getElementsByTagName("head")[0].appendChild(s);
+    }
+}
+`
     }
 }
 
