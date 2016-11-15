@@ -58,10 +58,10 @@
 require("~/sub/hello.js");
 console.log(1);
 
-// var asyncWatch = require("async-watch")
-// var reactive = require("wires-reactive")
-// let html = require("./my.html")
-// console.log(html);
+var asyncWatch = require("async-watch")
+var reactive = require("wires-reactive")
+    // let html = require("./my.html")
+    // console.log(html);
 
 // var some = require("fuse-box-test-using-old-version");
 // var newFancy = require("fuse-box-test-rogue-files");

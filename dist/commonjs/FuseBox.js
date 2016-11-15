@@ -61,7 +61,7 @@ class FuseBox {
                 }
                 addDefaultContents() {
                     return self.collectionSource.get(this.defaultCollection).then((cnt) => {
-                        self.context.log.echoCollection(this.defaultCollection, cnt);
+                        self.context.log.echoDefaultCollection(this.defaultCollection, cnt);
                         this.globalContents.push(cnt);
                     });
                 }

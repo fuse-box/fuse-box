@@ -17,7 +17,20 @@ class Log {
     stopSpinning() {
         clearInterval(this.spinnerInterval);
     }
-    echoCollection(collection, contents) {
+    echoDefaultCollection(collection, contents, printFiles) {
+        let bytes = Buffer.byteLength(contents, "utf8");
+        let size = prettysize(bytes);
+        this.totalSize += bytes;
+        cursor.brightBlack().write(`└──`)
+            .green().write(` ${collection.cachedName || collection.name}`)
+            .yellow().write(` (${collection.dependencies.size} files,  ${size})`);
+        cursor.write("\n");
+        collection.dependencies.forEach(file => {
+            cursor.brightBlack().write(`      ${file.info.fuseBoxPath}`).write("\n");
+        });
+        cursor.reset();
+    }
+    echoCollection(collection, contents, printFiles) {
         let bytes = Buffer.byteLength(contents, "utf8");
         let size = prettysize(bytes);
         this.totalSize += bytes;
@@ -29,7 +42,7 @@ class Log {
     }
     end() {
         let took = process.hrtime(this.timeStart);
-        cursor
+        cursor.write("\n")
             .brightBlack().write(`    --------------\n`)
             .yellow().write(`    Size: ${prettysize(this.totalSize)} \n`)
             .yellow().write(`    Time: ${prettyTime(took, 'ms')}`)

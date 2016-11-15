@@ -6,6 +6,7 @@ export declare class Log {
     constructor();
     startSpinning(): void;
     stopSpinning(): void;
-    echoCollection(collection: ModuleCollection, contents: string): void;
+    echoDefaultCollection(collection: ModuleCollection, contents: string, printFiles?: boolean): void;
+    echoCollection(collection: ModuleCollection, contents: string, printFiles?: boolean): void;
     end(): void;
 }

@@ -92,7 +92,7 @@ export class FuseBox {
 
                 public addDefaultContents() {
                     return self.collectionSource.get(this.defaultCollection).then((cnt: string) => {
-                        self.context.log.echoCollection(this.defaultCollection, cnt);
+                        self.context.log.echoDefaultCollection(this.defaultCollection, cnt);
                         this.globalContents.push(cnt);
                     });
                 }

@@ -11,7 +11,7 @@ let fuseBox = new FuseBox({
 });
 //fuseBox.bundle("**/*.*(js|html) >index.js", false).then(data => {
 
-fuseBox.bundle(">index.js", false).then(data => {
+fuseBox.bundle(">index.js", true).then(data => {
     fs.writeFile("./out.js", data, function(err) {
         if (err) {
             console.log(err);
