@@ -9,7 +9,7 @@ import { Plugin } from "../WorkflowContext";
  * @class FuseBoxCSSPlugin
  * @implements {Plugin}
  */
-export class FuseBoxCSSPlugin implements Plugin {
+export class CSSPlugin implements Plugin {
     /**
      *
      *
@@ -18,7 +18,14 @@ export class FuseBoxCSSPlugin implements Plugin {
      */
     public test: RegExp = /\.css$/;
     public dependencies = ["fsb-default-css-plugin"];
+    private minify = false;
 
+    constructor(opts: any) {
+        opts = opts || {};
+        if (opts.minify !== undefined) {
+            this.minify = opts.minify;
+        }
+    }
     /**
      *
      *
@@ -38,9 +45,9 @@ export class FuseBoxCSSPlugin implements Plugin {
      * @memberOf FuseBoxCSSPlugin
      */
     public transform(file: File) {
-        let contents = file.contents.replace(/\s{2,}/g, " ").replace(/\t|\r|\n/g, "").trim();
+        let contents = this.minify ?
+            file.contents.replace(/\s{2,}/g, " ").replace(/\t|\r|\n/g, "").trim() : file.contents;
         file.contents = `require("fsb-default-css-plugin")(__filename, ${JSON.stringify(contents)} );`;
     }
 }
 
-export const CSSPlugin = new FuseBoxCSSPlugin();
