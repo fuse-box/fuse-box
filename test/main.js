@@ -5,7 +5,8 @@ const FuseBox = build.FuseBox;
 let getCollection = (files) => {
     return new FuseBox({
         log: true,
-        fileCollection: files
+        cache: false,
+        files: files
     });
 }
 

@@ -50,7 +50,7 @@ class ModuleCollection {
             let file = new File_1.File(this.context, this.pm.init(modulePath));
             return this.resolve(file);
         }).then(x => {
-            return this.context.cache.resolve(this.toBeResolved);
+            return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
         }).then(toResolve => {
             return realm_utils_1.each(toResolve, (file) => this.resolveNodeModule(file));
         }).then(() => {

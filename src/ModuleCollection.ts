@@ -193,8 +193,10 @@ export class ModuleCollection {
             let file = new File(this.context, this.pm.init(modulePath));
             return this.resolve(file);
         }).then(x => {
-            return this.context.cache.resolve(this.toBeResolved);
+            
+            return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
         }).then(toResolve => {
+            
             return each(toResolve, (file: File) => this.resolveNodeModule(file));
         }).then(() => {
             return this.context.cache.buildMap(this);

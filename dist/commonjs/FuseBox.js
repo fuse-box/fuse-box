@@ -26,11 +26,14 @@ class FuseBox {
                     ? opts.modulesFolder : path.join(appRoot.path, opts.modulesFolder);
         }
         this.context.plugins = opts.plugins || [HTMLplugin_1.HTMLPlugin, JSONplugin_1.JSONPlugin];
+        if (opts.cache !== undefined) {
+            this.context.useCache = opts.cache ? true : false;
+        }
         this.context.setHomeDir(homeDir);
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);
         }
-        this.virtualFiles = opts.fileCollection;
+        this.virtualFiles = opts.files;
     }
     bundle(str, standalone) {
         this.context.reset();

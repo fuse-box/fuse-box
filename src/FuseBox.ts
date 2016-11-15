@@ -48,13 +48,16 @@ export class FuseBox {
         }
 
         this.context.plugins = opts.plugins || [HTMLPlugin, JSONPlugin];
-
+        if (opts.cache !== undefined) {
+            this.context.useCache = opts.cache ? true : false;
+            
+        }
         this.context.setHomeDir(homeDir);
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);
         }
         // In case of additional resources (or resourses to use with gulp)
-        this.virtualFiles = opts.fileCollection;
+        this.virtualFiles = opts.files;
     }
 
     public bundle(str: string, standalone?: boolean) {
