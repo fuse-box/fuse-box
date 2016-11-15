@@ -2,21 +2,14 @@
 class FuseBoxCSSPlugin {
     constructor() {
         this.test = /\.css$/;
+        this.dependencies = ["fsb-default-css-plugin"];
     }
     init(context) {
         context.allowExtension(".css");
     }
     transform(file) {
-        file.contents = `
-if (typeof window !== 'undefined') {
-var styleId = encodeURIComponent(__filename);
-var exists = document.getElementById(styleId);
-if (!exists) {
-    var s = document.createElement("style");
-    s.id = styleId;
-    s.innerHTML =${JSON.stringify(file.contents)};
-    document.getElementsByTagName("head")[0].appendChild(s);
-}}`;
+        let contents = file.contents.replace(/\s{2,}/g, " ").replace(/\t|\r|\n/g, "").trim();
+        file.contents = `require("fsb-default-css-plugin")(__filename, ${JSON.stringify(contents)} );`;
     }
 }
 exports.FuseBoxCSSPlugin = FuseBoxCSSPlugin;

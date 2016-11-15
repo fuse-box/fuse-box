@@ -3,6 +3,7 @@ import { WorkFlowContext } from "./../WorkflowContext";
 import { Plugin } from "../WorkflowContext";
 export declare class FuseBoxCSSPlugin implements Plugin {
     test: RegExp;
+    dependencies: string[];
     init(context: WorkFlowContext): void;
     transform(file: File): void;
 }
