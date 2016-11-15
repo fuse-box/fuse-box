@@ -87,17 +87,6 @@ describe("Generic requires", (done) => {
         }).catch(done);
     });
 
-    it("Should handle circular dependency", (done) => {
-        getTestEnv({
-            "a.js": `exports.a = 1; require("./b")`,
-            "b.js": `exports.b = require("./a")`,
-        }, "**/*.js").then(root => {
-            let result = root.FuseBox.import("b");
-            result.should.deepEqual({ b: { a: 1 } });
-            done();
-        }).catch(done);
-    });
-
     it("Should require a folder", (done) => {
         getTestEnv({
             "index.js": `exports.foo = require("./foo")`,
