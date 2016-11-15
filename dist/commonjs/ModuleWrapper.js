@@ -4,14 +4,18 @@ const path = require("path");
 const fs = require("fs");
 class ModuleWrapper {
     static wrapFinal(contents, entryPoint, standalone) {
-        let file = path.join(Config_1.Config.ASSETS_DIR, standalone ? "fusebox.min.js" : "local.js");
-        let wrapper = fs.readFileSync(file).toString();
-        if (entryPoint) {
-            let entryJS = `FuseBox.import("${entryPoint}")`;
-            wrapper = wrapper.split("window.entry").join(entryJS);
+        let userContents = ["(function(){\n"];
+        if (standalone) {
+            let fuseboxLibFile = path.join(Config_1.Config.ASSETS_DIR, standalone ? "fusebox.min.js" : "local.js");
+            let wrapper = fs.readFileSync(fuseboxLibFile).toString();
+            userContents.push(wrapper);
         }
-        wrapper = wrapper.split("window.contents").join(contents);
-        return wrapper;
+        userContents.push("\n" + contents);
+        if (entryPoint) {
+            userContents.push(`\nFuseBox.import("${entryPoint}")`);
+        }
+        userContents.push("})()");
+        return userContents.join('');
     }
     static wrapModule(name, conflictingVersions, content, entry) {
         let conflictingSource = {};

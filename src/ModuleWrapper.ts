@@ -12,20 +12,27 @@ import * as fs from "fs";
 export class ModuleWrapper {
 
     public static wrapFinal(contents: string, entryPoint: string, standalone: boolean) {
-        let file = path.join(Config.ASSETS_DIR, standalone ? "fusebox.min.js" : "local.js");
-        let wrapper = fs.readFileSync(file).toString();
-        if (entryPoint) {
-            let entryJS = `FuseBox.import("${entryPoint}")`;
-            wrapper = wrapper.split("window.entry").join(entryJS);
+
+
+        let userContents = ["(function(){\n"];
+        if (standalone) {
+            let fuseboxLibFile = path.join(Config.ASSETS_DIR, standalone ? "fusebox.min.js" : "local.js");
+            let wrapper = fs.readFileSync(fuseboxLibFile).toString();
+            userContents.push(wrapper);
         }
-        wrapper = wrapper.split("window.contents").join(contents);
-        return wrapper;
+        userContents.push("\n" + contents);
+
+        if (entryPoint) {
+            userContents.push(`\nFuseBox.import("${entryPoint}")`);
+        }
+        userContents.push("})()");
+        return userContents.join('');
     }
 
     public static wrapModule(name: string, conflictingVersions: Map<string, string>, content: string, entry?: string) {
         let conflictingSource = {};
         conflictingVersions.forEach((version, libname) => {
-            conflictingSource[libname] = version; 
+            conflictingSource[libname] = version;
         });
         return `FuseBox.module("${name}", ${JSON.stringify(conflictingSource)}, function(___scope___){
 ${content}

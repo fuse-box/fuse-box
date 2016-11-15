@@ -116,7 +116,9 @@ gulp.task('hello', function() {
 
 gulp.task("minify-frontend", function() {
     return gulp.src("assets/fusebox.js")
-        .pipe(uglify({ preserveComments: "all" }))
+        .pipe(uglify({
+            preserveComments: "all"
+        }))
         .pipe(rename("fusebox.min.js")).pipe(gulp.dest("assets/"))
 });
 
