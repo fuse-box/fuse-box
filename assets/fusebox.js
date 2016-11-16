@@ -72,8 +72,11 @@ var FuseBox = __root__.FuseBox = (function() {
             return modules[moduleName].files[name] !== undefined;
         },
         intercept: function(name, mask, fn) {
-            $interceptors[name] = $interceptors[name] || [];
-            $interceptors[name].push({ mask: mask, fn: fn });
+            var names = [].concat(name);
+            for (var i = 0; i < names.length; i++) {
+                $interceptors[names[i]] = $interceptors[names[i]] || [];
+                $interceptors[names[i]].push({ mask: mask, fn: fn });
+            }
         },
         import: function(userPath, packageName, parent) {
             packageName = packageName || "default";
@@ -152,7 +155,7 @@ var FuseBox = __root__.FuseBox = (function() {
                     locals.module = { exports: locals.exports };
                     var __filename = "./" + entry.name;
                     var __dirname = __filename.substring(0, __filename.lastIndexOf("/") + 1);
-                    var args = [locals.exports, locals.require, locals.module, __filename, __dirname];
+                    var args = [locals.exports, locals.require, locals.module, __filename, __dirname, moduleName];
                     entry.fn.apply(this, args);
                     var res = locals.module.exports;
                     // Call require interceptors 
