@@ -2,6 +2,7 @@ var __root__ = this;
 var FuseBox = __root__.FuseBox = (function() {
     var isBrowser = typeof window !== "undefined";
     var modules = isBrowser ? (window.__npm__ = window.__npm__ || {}) : {};
+    var $interceptors = isBrowser ? (window.__interceptors__ = window.__interceptors__ || {}) : {};
     var getNodeModuleName = function(name) {
         if (!name) { return; }
         var matched = name.match(/^([a-z].*)$/);
@@ -66,6 +67,10 @@ var FuseBox = __root__.FuseBox = (function() {
                 });
             });
         },
+        intercept: function(name, mask, fn) {
+            $interceptors[name] = $interceptors[name] || [];
+            $interceptors[name].push({ mask: mask, fn: fn });
+        },
         import: function(userPath, packageName, parent) {
             packageName = packageName || "default";
             if (modules[packageName]) {
@@ -87,6 +92,7 @@ var FuseBox = __root__.FuseBox = (function() {
                     }
                 },
                 evaluate: function(_target, base, parent) {
+
                     var entryName = _target ? pathJoin(base || "/", _target) : collection.entry;
                     if (!entryName) {
                         return;
@@ -145,6 +151,13 @@ var FuseBox = __root__.FuseBox = (function() {
                     var args = [locals.exports, locals.require, locals.module, __filename, __dirname];
                     entry.fn.apply(this, args);
                     var res = locals.module.exports;
+                    // Call require interceptors 
+                    if ($interceptors[moduleName]) {
+                        for (var i = 0; i < $interceptors[moduleName].length; i++) {
+                            var item = $interceptors[moduleName][i];
+                            if (item.mask.test(__filename)) { item.fn(locals); }
+                        }
+                    }
                     entry.cache = res;
                     entry.isLoading = false;
                     return res;

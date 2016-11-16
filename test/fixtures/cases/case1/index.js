@@ -5,7 +5,9 @@
 
 // console.log(require(dynamicPath));
 
-
+FuseBox.intercept("default", /\.js$/, (locals) => {
+    //console.log(locals);
+});
 
 // var f3 = require("fuse-box-testcase1");
 // console.log(f3.getBar());
@@ -48,7 +50,7 @@ var asyncWatch = require("async-watch")
 //var chars = new RegExp(`ªµºÀ-ÖØ-öø`);
 // var input = 'const getMessage = () => "Hello World";';
 // var output = (0, _babelStandalone.transform)(input, { presets: ['es2015'] }).code;
-require("./test.css");
+//require("./test.css");
 
 
 // var generator = require('babel-generator')
