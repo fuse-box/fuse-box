@@ -108,7 +108,9 @@ class ModuleCollection {
             if (this.entryFile && this.entryFile.isNodeModuleEntry) {
                 fileLimitPath = this.entryFile.info.absPath;
             }
-            return realm_utils_1.each(dependencies, name => this.resolve(new File_1.File(this.context, this.pm.resolve(name, file.info.absDir, fileLimitPath)), shouldIgnoreDeps));
+            return realm_utils_1.each(dependencies, name => {
+                return this.resolve(new File_1.File(this.context, this.pm.resolve(name, file.info.absDir, fileLimitPath)), shouldIgnoreDeps);
+            });
         }
     }
 }

@@ -88,7 +88,7 @@ class PathMaster {
     }
     ensureFolderAndExtensions(name, root) {
         let ext = path.extname(name);
-        if (name[0] === "~" && (name[1] === "/" || name[1] === "\\") && this.rootPackagePath) {
+        if (name[0] === "~" && name[1] === "/" && this.rootPackagePath) {
             name = "." + name.slice(1, name.length);
             name = path.join(this.rootPackagePath, name);
         }
@@ -106,9 +106,7 @@ class PathMaster {
                 }
             }
             else {
-                if (!ext) {
-                    name += ".js";
-                }
+                name += ".js";
             }
         }
         return name;
@@ -167,6 +165,12 @@ class PathMaster {
             let nestedNodeModule = path.join(this.rootPackagePath, "node_modules", name);
             if (fs.existsSync(nestedNodeModule)) {
                 return readMainFile(nestedNodeModule, true);
+            }
+            else {
+                let upperNodeModule = path.join(this.rootPackagePath, "../", name);
+                if (fs.existsSync(upperNodeModule)) {
+                    return readMainFile(upperNodeModule, true);
+                }
             }
         }
         if (fs.existsSync(localLib)) {

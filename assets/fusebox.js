@@ -40,6 +40,10 @@ var FuseBox = __root__.FuseBox = (function() {
         var matched = name.match(/\.(\w{1,})$/);
         if (matched) {
             var ext = matched[1];
+            // Adding extension if none was found
+            // Might ignore the case of weird convention like this:
+            // modules/core.object.define (core-js)
+            // Will be handled differently afterwards
             if (!ext) {
                 return name + ".js";
             }
@@ -99,22 +103,29 @@ var FuseBox = __root__.FuseBox = (function() {
                     }
                 },
                 evaluate: function(_target, base, parent) {
-
                     var entryName = _target ? pathJoin(base || "/", _target) : collection.entry;
                     if (!entryName) {
                         return;
                     }
                     if (entryName[0] === "/") { entryName = entryName.slice(1, entryName.length) }
                     if (entryName === ".") { entryName = collection.entry; }
+                    var validName = entryName;
                     var entry = collection.files[ensureExtension(entryName)];
                     if (!entry) {
-                        var slash = !entryName.match(/\/$/) ? "/" : "";
-                        entry = collection.files[entryName + slash + "index.js"]
+                        // As the last resort try adding .js here
+                        // Some people has a weird convention naming files like this:
+                        // modules/core.object.define (core-js)
+                        validName = entryName + ".js"
+                        entry = collection.files[validName];
+                        if (!entry) {
+                            var slash = !entryName.match(/\/$/) ? "/" : "";
+                            validName = entryName + slash + "index.js";
+                            entry = collection.files[validName];
+                        }
                     }
 
                     if (!entry) {
                         var msg = ["File " + entryName + " was not found upon request"];
-
                         msg.push("Module: '" + moduleName + "'");
                         msg.push("File: '" + parent + "'");
                         msg.push("Base: '" + (base || "./") + "'");
@@ -144,7 +155,7 @@ var FuseBox = __root__.FuseBox = (function() {
                             if (target[0] === "~") {
                                 return self.evaluate(target.slice(2, target.length));
                             }
-                            var baseDir = getFileDirectory(entryName);
+                            var baseDir = getFileDirectory(validName);
                             return self.evaluate(target, baseDir, entryName);
                         }
                     }

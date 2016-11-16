@@ -58,9 +58,7 @@ export class PathMaster {
         let data = <IPathInformation>{};
 
         data.isNodeModule = NODE_MODULE.test(name);
-        // if (name.indexOf("lodash") > -1) {
-        //     console.log(">>", name, data.isNodeModule);
-        // }
+
         if (data.isNodeModule) {
 
             let info = this.getNodeModuleInfo(name);
@@ -96,7 +94,9 @@ export class PathMaster {
 
         } else {
             if (root) {
+
                 data.absPath = this.getAbsolutePath(name, root, rootEntryLimit);
+
                 data.absDir = path.dirname(data.absPath);
 
                 data.fuseBoxPath = this.getFuseBoxPath(data.absPath, this.rootPackagePath);
@@ -129,13 +129,13 @@ export class PathMaster {
     public getAbsolutePath(name: string, root: string, rootEntryLimit?: string) {
         let url = this.ensureFolderAndExtensions(name, root);
         let result = path.resolve(root, url);
+     
         // Fixing node_modules package .json limits.
         if (rootEntryLimit && name.match(/\.\.\/$/)) {
             if (result.indexOf(path.dirname(rootEntryLimit)) < 0) {
                 return rootEntryLimit;
             }
         }
-
         return result;
     }
 
@@ -151,7 +151,7 @@ export class PathMaster {
     private ensureFolderAndExtensions(name: string, root: string) {
         let ext = path.extname(name);
 
-        if (name[0] === "~" && (name[1] === "/" || name[1] === "\\") && this.rootPackagePath) {
+        if (name[0] === "~" && name[1] === "/" && this.rootPackagePath) {
             name = "." + name.slice(1, name.length);
             name = path.join(this.rootPackagePath, name);
         }
@@ -174,9 +174,9 @@ export class PathMaster {
                 }
             } else {
 
-                if (!ext) {
-                    name += ".js";
-                }
+                // if (!ext) {
+                name += ".js";
+                //}
 
             }
         }
@@ -243,9 +243,16 @@ export class PathMaster {
         }
 
         if (this.rootPackagePath) {// handle a conflicting library
+            
             let nestedNodeModule = path.join(this.rootPackagePath, "node_modules", name);
             if (fs.existsSync(nestedNodeModule)) {
                 return readMainFile(nestedNodeModule, true);
+            } else {
+                // climb up (sometimes it can be in a parent)
+                let upperNodeModule = path.join(this.rootPackagePath, "../", name);
+                if (fs.existsSync(upperNodeModule)) {
+                    return readMainFile(upperNodeModule, true);
+                }
             }
         }
         if (fs.existsSync(localLib)) {

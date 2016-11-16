@@ -67,7 +67,9 @@ export class File {
         if (!this.absPath) {
             return [];
         }
-        if (!fs.existsSync(this.info.absDir)) {
+        if (!fs.existsSync(this.info.absPath)) {
+
+            console.log("NO", this.info.absPath);
             this.contents = "";
             return [];
         }
@@ -76,6 +78,7 @@ export class File {
 
         if (this.absPath.match(/\.js$/)) {
             let data = extractRequires(this.contents, path.join(this.absPath));
+
             this.tryPlugins(data.ast);
             return data.requires;
         }

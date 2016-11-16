@@ -193,10 +193,10 @@ export class ModuleCollection {
             let file = new File(this.context, this.pm.init(modulePath));
             return this.resolve(file);
         }).then(x => {
-            
+
             return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
         }).then(toResolve => {
-            
+
             return each(toResolve, (file: File) => this.resolveNodeModule(file));
         }).then(() => {
             return this.context.cache.buildMap(this);
@@ -293,6 +293,7 @@ export class ModuleCollection {
             // Consuming file 
             // Here we read it and return a list of require statements
             let dependencies = file.consume();
+            // console.log("DEP", file.absPath);
             this.dependencies.set(file.absPath, file);
             let fileLimitPath;
             // Checking for the limits
@@ -302,10 +303,10 @@ export class ModuleCollection {
             }
 
             // Process file dependencies recursively
-            return each(dependencies, name =>
-                this.resolve(new File(this.context,
-                    this.pm.resolve(name, file.info.absDir, fileLimitPath)), shouldIgnoreDeps)
-            );
+            return each(dependencies, name => {
+                return this.resolve(new File(this.context,
+                    this.pm.resolve(name, file.info.absDir, fileLimitPath)), shouldIgnoreDeps);
+            });
         }
     }
 }

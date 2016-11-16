@@ -4,11 +4,12 @@
 // var dynamicPath = "./custom/foo.js";
 
 // console.log(require(dynamicPath));
-
-FuseBox.intercept(["default", "cheerio"], /\.js$/, (exports, require, module, filename, dirname, moduleName) => {
-    console.log(moduleName);
-    FuseBox.exists(moduleName, "bar.js")
-});
+// var generator = require('cheerio')
+// console.log(generator);
+// FuseBox.intercept(["default", "cheerio"], /\.js$/, (exports, require, module, filename, dirname, moduleName) => {
+//     console.log(moduleName);
+//     FuseBox.exists(moduleName, "bar.js")
+// });
 
 
 // var f3 = require("fuse-box-testcase1");
@@ -24,28 +25,30 @@ FuseBox.intercept(["default", "cheerio"], /\.js$/, (exports, require, module, fi
 // $('h2').addClass('welcome')
 // console.log($.html());
 
+//console.log(require("core-js/library/fn/symbol"));
 
+console.log(require("babel-generator"));
+//console.log(require("core-js"));
 // var tern = require('tern')
 
-// var generator = require('babel-generator')
-// console.log(generator);
+
 // require("htmlparser2")
 // let hello = require("hello");
 // console.log(hello);
 //require("./foo");
-require("~/sub/hello.js");
+// require("~/sub/hello.js");
 
 
-var asyncWatch = require("async-watch")
-var reactive = require("wires-reactive")
-    // let html = require("./my.html")
-    // console.log(html);
+// var asyncWatch = require("async-watch")
+// var reactive = require("wires-reactive")
+// let html = require("./my.html")
+// console.log(html);
 
 // var some = require("fuse-box-test-using-old-version");
 // var newFancy = require("fuse-box-test-rogue-files");
 // var stuff = require("fuse-box-test-rogue-files/dist/some");
-var reactive = require("wires-reactive");
-var asyncWatch = require("async-watch")
+// var reactive = require("wires-reactive");
+// var asyncWatch = require("async-watch")
 
 //require("fuse-box-testcase1")
 //console.log(coreJS);
@@ -55,8 +58,8 @@ var asyncWatch = require("async-watch")
 //require("./test.css");
 
 
-// var generator = require('babel-generator')
-// console.log(generator);
+//var generator = require('babel-runtime')
+//console.log(generator);
 // var babylon = require('babylon')
 // const code = 'class Example {}';
 // const ast = babylon.parse(code);
