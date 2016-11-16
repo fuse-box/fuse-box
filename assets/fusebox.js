@@ -67,6 +67,10 @@ var FuseBox = __root__.FuseBox = (function() {
                 });
             });
         },
+        exists: function(moduleName, name) {
+            if (!modules[moduleName]) return;
+            return modules[moduleName].files[name] !== undefined;
+        },
         intercept: function(name, mask, fn) {
             $interceptors[name] = $interceptors[name] || [];
             $interceptors[name].push({ mask: mask, fn: fn });

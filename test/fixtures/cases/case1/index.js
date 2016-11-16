@@ -7,7 +7,9 @@
 
 FuseBox.intercept("default", /\.js$/, () => {
     console.log(arguments);
+    FuseBox.exists("default", "bar.js")
 });
+
 
 // var f3 = require("fuse-box-testcase1");
 // console.log(f3.getBar());
