@@ -62,8 +62,8 @@ var FuseBox = __root__.FuseBox = (function() {
         dynamic: function(userPath, str) {
             this.module("default", {}, function(___scope___) {
                 ___scope___.file(userPath, function(exports, require, module, __filename, __dirname) {
-                    var res = new Function('exports', 'require', 'module', '__filename', '__dirname', str);
-                    res(exports, require, module, __filename, __dirname);
+                    var res = new Function('exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
+                    res(exports, require, module, __filename, __dirname, __root__);
                 });
             });
         },
@@ -137,12 +137,8 @@ var FuseBox = __root__.FuseBox = (function() {
                         var _module = getNodeModuleName(target);
                         if (_module) {
                             var _moduleName = _module[0];
-                            if (customVersions[_moduleName]) {
-                                _moduleName = _moduleName + "@" + customVersions[_moduleName];
-                            }
-                            if (_module[1]) {
-                                return FuseBox.import(_module[1], _moduleName, entryName);
-                            }
+                            if (customVersions[_moduleName]) { _moduleName = _moduleName + "@" + customVersions[_moduleName]; }
+                            if (_module[1]) { return FuseBox.import(_module[1], _moduleName, entryName); }
                             return FuseBox.evaluate(_moduleName, null, entryName);
                         } else {
                             if (target[0] === "~") {

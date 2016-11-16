@@ -7,7 +7,7 @@
 
 FuseBox.intercept(["default", "cheerio"], /\.js$/, (exports, require, module, filename, dirname, moduleName) => {
     console.log(moduleName);
-    FuseBox.exists("default", "bar.js")
+    FuseBox.exists(moduleName, "bar.js")
 });
 
 
