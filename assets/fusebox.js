@@ -155,7 +155,7 @@ var FuseBox = __root__.FuseBox = (function() {
                     if ($interceptors[moduleName]) {
                         for (var i = 0; i < $interceptors[moduleName].length; i++) {
                             var item = $interceptors[moduleName][i];
-                            if (item.mask.test(__filename)) { item.fn(locals); }
+                            if (item.mask.test(__filename)) { item.fn.apply(undefined, args); }
                         }
                     }
                     entry.cache = res;

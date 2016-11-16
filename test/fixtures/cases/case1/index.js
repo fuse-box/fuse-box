@@ -5,8 +5,8 @@
 
 // console.log(require(dynamicPath));
 
-FuseBox.intercept("default", /\.js$/, (locals) => {
-    //console.log(locals);
+FuseBox.intercept("default", /\.js$/, () => {
+    console.log(arguments);
 });
 
 // var f3 = require("fuse-box-testcase1");
