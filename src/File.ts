@@ -68,8 +68,6 @@ export class File {
             return [];
         }
         if (!fs.existsSync(this.info.absPath)) {
-
-            console.log("NO", this.info.absPath);
             this.contents = "";
             return [];
         }
