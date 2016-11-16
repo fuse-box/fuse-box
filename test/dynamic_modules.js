@@ -76,12 +76,12 @@ describe("Dynamic modules", (done) => {
     it("Dynamic module should have access to the scope using tilde (without ext)", (done) => {
         getTestEnv({
             "index.js": `
-            FuseBox.dynamic("hello/world.js", "__root__.itworks = require('~/foo')")`,
+            FuseBox.dynamic("hello/world.js", "module.exports = require('~/foo')")`,
             "foo.js": `module.exports = {foo : "bar"}`,
         }, "**/*.js").then(root => {
             root.FuseBox.import("index");
-            root.FuseBox.import("hello/world");
-            root.itworks.should.deepEqual({ foo: "bar" })
+            let res = root.FuseBox.import("hello/world");
+            res.should.deepEqual({ foo: "bar" })
             done();
         }).catch(done);
     });
@@ -89,12 +89,12 @@ describe("Dynamic modules", (done) => {
     it("Dynamic module should have access to the scope using tilde (with ext)", (done) => {
         getTestEnv({
             "index.js": `
-            FuseBox.dynamic("hello/world.js", "__root__.itworks = require('~/foo.js')")`,
+            FuseBox.dynamic("hello/world.js", "module.exports = require('~/foo.js')")`,
             "foo.js": `module.exports = {foo : "bar"}`,
         }, "**/*.js").then(root => {
             root.FuseBox.import("index");
-            root.FuseBox.import("hello/world");
-            root.itworks.should.deepEqual({ foo: "bar" })
+            let res = root.FuseBox.import("hello/world");
+            res.should.deepEqual({ foo: "bar" })
             done();
         }).catch(done);
     });
@@ -102,13 +102,13 @@ describe("Dynamic modules", (done) => {
     it("Dynamic module can be overriden", (done) => {
         getTestEnv({
             "index.js": `
-            FuseBox.dynamic("hello/world.js", "__root__.itworks = require('~/foo.js')")`,
+            FuseBox.dynamic("hello/world.js", "module.exports = require('~/foo.js')")`,
             "foo.js": `module.exports = {foo : "bar"}`,
         }, "**/*.js").then(root => {
             root.FuseBox.import("index");
-            root.FuseBox.dynamic("hello/world.js", "__root__.itworks = {'yes' : true}")
-            root.FuseBox.import("hello/world");
-            root.itworks.should.deepEqual({ yes: true })
+            root.FuseBox.dynamic("hello/world.js", "module.exports = {'yes' : true}")
+            let res = root.FuseBox.import("hello/world");
+            res.should.deepEqual({ yes: true })
             done();
         }).catch(done);
     });
@@ -116,7 +116,7 @@ describe("Dynamic modules", (done) => {
     it("FuseBox.exists should return true on dynamic module", (done) => {
         getTestEnv({
             "index.js": `
-            FuseBox.dynamic("hello/world.js", "__root__.itworks = require('~/foo.js')")`,
+            FuseBox.dynamic("hello/world.js", "module.exports = require('~/foo.js')")`,
             "foo.js": `module.exports = {foo : "bar"}`,
         }, "**/*.js").then(root => {
             root.FuseBox.import("index");
