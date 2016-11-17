@@ -10,14 +10,25 @@ class CollectionSource {
                 return resolve(collection.cachedContent);
             });
         }
-        let cnt = [];
-        collection.dependencies.forEach(file => {
-            let content = ModuleWrapper_1.ModuleWrapper.wrapGeneric(file.info.fuseBoxPath, file.contents);
-            cnt.push(content);
-        });
-        return new Promise((resolve, reject) => {
+        return this.resolveFiles(collection.dependencies).then(cnt => {
             let entryFile = collection.entryFile;
-            return resolve(ModuleWrapper_1.ModuleWrapper.wrapModule(collection.name, collection.conflictingVersions, cnt.join("\n"), entryFile ? entryFile.info.fuseBoxPath : ""));
+            return ModuleWrapper_1.ModuleWrapper.wrapModule(collection.name, collection.conflictingVersions, cnt.join("\n"), entryFile ? entryFile.info.fuseBoxPath : "");
+        });
+    }
+    resolveFiles(files) {
+        let cnt = [];
+        let promises = [];
+        files.forEach(file => {
+            file.resolving.forEach(p => {
+                promises.push(p);
+            });
+        });
+        return Promise.all(promises).then(() => {
+            files.forEach(file => {
+                let content = ModuleWrapper_1.ModuleWrapper.wrapGeneric(file.info.fuseBoxPath, file.contents);
+                cnt.push(content);
+            });
+            return cnt;
         });
     }
 }

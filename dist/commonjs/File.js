@@ -1,20 +1,31 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
-const esprima = require("esprima");
 const esquery = require("esquery");
 const realm_utils_1 = require("realm-utils");
+const acorn = require("acorn");
+require("acorn-es7")(acorn);
 function extractRequires(contents, absPath) {
-    let ast = esprima.parse(contents, { sourceType: "module" });
-    let matches = esquery(ast, "CallExpression[callee.name=\"require\"]");
+    let ast = acorn.parse(contents, {
+        sourceType: "module",
+        tolerant: true,
+        ecmaVersion: 7,
+        plugins: { es7: true },
+    });
+    let matches = esquery(ast, "CallExpression[callee.name=\"require\"],ImportDeclaration[source.type=\"Literal\"]");
     let results = [];
     matches.map(item => {
-        if (item.arguments.length > 0) {
-            let name = item.arguments[0].value;
-            if (!name) {
-                return;
+        if (item.arguments) {
+            if (item.arguments[0]) {
+                let name = item.arguments[0].value;
+                if (!name) {
+                    return;
+                }
+                results.push(name);
             }
-            results.push(name);
+        }
+        if (item.source) {
+            results.push(item.source.value);
         }
     });
     return {
@@ -29,6 +40,7 @@ class File {
         this.info = info;
         this.isLoaded = false;
         this.isNodeModuleEntry = false;
+        this.resolving = [];
         this.absPath = info.absPath;
     }
     getCrossPlatormPath() {
@@ -49,7 +61,10 @@ class File {
             }
             if (target) {
                 if (realm_utils_1.utils.isFunction(target.transform)) {
-                    target.transform.apply(target, [this, _ast]);
+                    let response = target.transform.apply(target, [this, _ast]);
+                    if (realm_utils_1.utils.isPromise(response)) {
+                        this.resolving.push(response);
+                    }
                 }
             }
         }

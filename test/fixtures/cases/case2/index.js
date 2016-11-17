@@ -1,5 +1,10 @@
-//require("~/sub/hello.js");
-//console.log(require("babel-generator"));
+import { foo } from "./foo";
+import * as path from "path";
+
+
+class A {
+
+}
 
 
 // var dynamicPath = "./custom/foo.js";

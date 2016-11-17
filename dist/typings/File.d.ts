@@ -11,6 +11,7 @@ export declare class File {
     contents: string;
     isLoaded: boolean;
     isNodeModuleEntry: boolean;
+    resolving: Promise<any>[];
     constructor(context: WorkFlowContext, info: IPathInformation);
     getCrossPlatormPath(): string;
     tryPlugins(_ast?: any): void;
