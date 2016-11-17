@@ -1,9 +1,10 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
-const esquery = require("esquery");
 const realm_utils_1 = require("realm-utils");
 const acorn = require("acorn");
+const ASTQ = require("astq");
+let astq = new ASTQ();
 require("acorn-es7")(acorn);
 function extractRequires(contents, absPath) {
     let ast = acorn.parse(contents, {
@@ -12,7 +13,14 @@ function extractRequires(contents, absPath) {
         ecmaVersion: 7,
         plugins: { es7: true },
     });
-    let matches = esquery(ast, "CallExpression[callee.name=\"require\"],ImportDeclaration[source.type=\"Literal\"]");
+    let matches = [];
+    matches = astq.query(ast, `// CallExpression[/Identifier[@name=="require"]], / ImportDeclaration[/Literal]`);
+    let processVariables = [];
+    let processDefined = astq.query(ast, `// VariableDeclarator/Identifier[@name=="process"]`);
+    if (!processDefined.length) {
+        processVariables = astq.query(ast, `// MemberExpression/Identifier[@name=="process"]`);
+    }
+    let extra = [];
     let results = [];
     matches.map(item => {
         if (item.arguments) {
@@ -28,7 +36,12 @@ function extractRequires(contents, absPath) {
             results.push(item.source.value);
         }
     });
+    if (processVariables.length) {
+        results.push("process");
+        extra.push("process");
+    }
     return {
+        extra: extra,
         requires: results,
         ast: ast
     };
@@ -81,6 +94,13 @@ class File {
         this.isLoaded = true;
         if (this.absPath.match(/\.js$/)) {
             let data = extractRequires(this.contents, path.join(this.absPath));
+            if (data.extra.length) {
+                let code = [];
+                data.extra.forEach(expr => {
+                    code.push(`var ${expr} = require("${expr}");`);
+                });
+                this.contents = `${code.join("\n")}${this.contents}`;
+            }
             this.tryPlugins(data.ast);
             return data.requires;
         }

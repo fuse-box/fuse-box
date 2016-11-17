@@ -1,3 +1,4 @@
+import * as process from 'process';
 import { WorkFlowContext } from "./WorkflowContext";
 import { IPackageInformation } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
@@ -5,6 +6,7 @@ import * as fs from "fs";
 import { File } from "./File"
 import { Config } from "./Config";
 import * as path from "path";
+import { each } from "realm-utils";
 const mkdirp = require("mkdirp");
 
 export class ModuleCache {
@@ -84,7 +86,7 @@ export class ModuleCache {
     public buildMap(rootCollection: ModuleCollection) {
         let json = this.cachedDeps;
         let traverse = (modules: Map<string, ModuleCollection>, root: any) => {
-            modules.forEach(collection => {
+            return each(modules, (collection: ModuleCollection) => {
                 let dependencies = {};
                 let flatFiles;
                 if (collection.cached) {
@@ -110,11 +112,17 @@ export class ModuleCache {
                     name: collection.info.name,
                     version: collection.info.version,
                 };
-                return traverse(collection.nodeModules, dependencies);
+                return new Promise((resolve, reject) => {
+                    //  console.log(collection.nodeModules);
+                    return resolve(traverse(collection.nodeModules, dependencies));
+
+                });
+
             });
         }
-        traverse(rootCollection.nodeModules, json.tree);
-        fs.writeFile(this.cacheFile, JSON.stringify(json, undefined, 2));
+        traverse(rootCollection.nodeModules, json.tree).then(() => {
+            fs.writeFile(this.cacheFile, JSON.stringify(json, undefined, 2));
+        });
     }
 
 

@@ -1,6 +1,6 @@
 {
   "name": "fuse-box",
-  "version": "1.2.29",
+  "version": "1.2.30",
   "description": "Fuse-Box a bundle just does it right",
   "typings": "./dist/typings/index.d.ts",
   "main": "dist/commonjs/index.js",
@@ -47,6 +47,7 @@
     "acorn-es7": "^0.1.0",
     "ansi": "^0.3.1",
     "app-root-path": "^2.0.1",
+    "astq": "^1.8.0",
     "buffer": "^5.0.0",
     "char-spinner": "^1.0.1",
     "esquery": "^0.4.0",

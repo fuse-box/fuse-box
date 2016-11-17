@@ -3,6 +3,7 @@ const ModuleCollection_1 = require("./ModuleCollection");
 const fs = require("fs");
 const Config_1 = require("./Config");
 const path = require("path");
+const realm_utils_1 = require("realm-utils");
 const mkdirp = require("mkdirp");
 class ModuleCache {
     constructor(context) {
@@ -78,7 +79,7 @@ class ModuleCache {
     buildMap(rootCollection) {
         let json = this.cachedDeps;
         let traverse = (modules, root) => {
-            modules.forEach(collection => {
+            return realm_utils_1.each(modules, (collection) => {
                 let dependencies = {};
                 let flatFiles;
                 if (collection.cached) {
@@ -103,11 +104,14 @@ class ModuleCache {
                     name: collection.info.name,
                     version: collection.info.version,
                 };
-                return traverse(collection.nodeModules, dependencies);
+                return new Promise((resolve, reject) => {
+                    return resolve(traverse(collection.nodeModules, dependencies));
+                });
             });
         };
-        traverse(rootCollection.nodeModules, json.tree);
-        fs.writeFile(this.cacheFile, JSON.stringify(json, undefined, 2));
+        traverse(rootCollection.nodeModules, json.tree).then(() => {
+            fs.writeFile(this.cacheFile, JSON.stringify(json, undefined, 2));
+        });
     }
     set(info, contents) {
         return new Promise((resolve, reject) => {

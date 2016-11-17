@@ -1,6 +1,7 @@
 import { WorkFlowContext } from "./WorkflowContext";
 import { IPathInformation } from "./PathMaster";
 export declare function extractRequires(contents: string, absPath: string): {
+    extra: any[];
     requires: any[];
     ast: any;
 };

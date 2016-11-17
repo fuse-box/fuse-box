@@ -1,12 +1,17 @@
+import * as process from 'process';
 import { WorkFlowContext, Plugin } from "./WorkflowContext";
 import { IPathInformation } from "./PathMaster";
 import * as fs from "fs";
 import * as path from "path";
-
-const esquery = require("esquery");
 import { utils } from "realm-utils";
+
+//const esquery = require("esquery");
 const acorn = require("acorn");
+const ASTQ = require("astq");
+let astq = new ASTQ()
 require("acorn-es7")(acorn);
+
+
 export function extractRequires(contents: string, absPath: string) {
     let ast = acorn.parse(contents, {
         sourceType: "module",
@@ -14,11 +19,23 @@ export function extractRequires(contents: string, absPath: string) {
         ecmaVersion: 7,
         plugins: { es7: true },
     });
-    let matches = esquery(ast, "CallExpression[callee.name=\"require\"],ImportDeclaration[source.type=\"Literal\"]");
+    // console.log(JSON.stringify(ast, null, 2));
+    let matches = [];
+    matches = astq.query(ast, `// CallExpression[/Identifier[@name=="require"]], / ImportDeclaration[/Literal]`);
+    //matches = esquery(ast, "CallExpression[callee.name=\"require\"],ImportDeclaration[source.type=\"Literal\"]");
+    let processVariables = [];
+    let processDefined = astq.query(ast, `// VariableDeclarator/Identifier[@name=="process"]`);
+    if (!processDefined.length) {
+        processVariables = astq.query(ast, `// MemberExpression/Identifier[@name=="process"]`);
+    }
+
+    let extra = [];
     let results = [];
     matches.map(item => {
+
         if (item.arguments) {
             if (item.arguments[0]) {
+
                 let name = item.arguments[0].value;
                 if (!name) {
                     return;
@@ -27,10 +44,18 @@ export function extractRequires(contents: string, absPath: string) {
             }
         }
         if (item.source) {
+
             results.push(item.source.value);
         }
     });
+
+    if (processVariables.length) {
+
+        results.push("process");
+        extra.push("process");
+    }
     return {
+        extra: extra,
         requires: results,
         ast: ast
     };
@@ -92,7 +117,13 @@ export class File {
 
         if (this.absPath.match(/\.js$/)) {
             let data = extractRequires(this.contents, path.join(this.absPath));
-
+            if (data.extra.length) {
+                let code = [];
+                data.extra.forEach(expr => {
+                    code.push(`var ${expr} = require("${expr}");`);
+                });
+                this.contents = `${code.join("\n")}${this.contents}`
+            }
             this.tryPlugins(data.ast);
             return data.requires;
         }
