@@ -30,7 +30,6 @@ export function extractRequires(contents: string, absPath: string) {
             results.push(item.source.value);
         }
     });
-
     return {
         requires: results,
         ast: ast

@@ -23,6 +23,7 @@ export declare class WorkFlowContext {
     doLog: boolean;
     cache: ModuleCache;
     customModulesFolder: string;
+    globals: string[];
     log: Log;
     reset(): void;
     allowExtension(ext: string): void;

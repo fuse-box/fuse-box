@@ -3,7 +3,7 @@ const Config_1 = require("./Config");
 const path = require("path");
 const fs = require("fs");
 class ModuleWrapper {
-    static wrapFinal(contents, entryPoint, standalone) {
+    static wrapFinal(context, contents, entryPoint, standalone) {
         let userContents = ["(function(){\n"];
         if (standalone) {
             let fuseboxLibFile = path.join(Config_1.Config.ASSETS_DIR, standalone ? "fusebox.min.js" : "local.js");
@@ -11,11 +11,24 @@ class ModuleWrapper {
             userContents.push(wrapper);
         }
         userContents.push("\n" + contents);
+        if (context.globals.length > 0) {
+            let data = [];
+            context.globals.forEach(name => {
+                if (name === "default" && entryPoint) {
+                    data.push(`default/` + entryPoint);
+                    entryPoint = undefined;
+                }
+                else {
+                    data.push(name);
+                }
+            });
+            userContents.push(`\nFuseBox.expose(${JSON.stringify(data)})`);
+        }
         if (entryPoint) {
             userContents.push(`\nFuseBox.import("${entryPoint}")`);
         }
         userContents.push("})()");
-        return userContents.join('');
+        return userContents.join("");
     }
     static wrapModule(name, conflictingVersions, content, entry) {
         let conflictingSource = {};

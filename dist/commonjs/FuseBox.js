@@ -32,6 +32,9 @@ class FuseBox {
         if (opts.log !== undefined) {
             this.context.doLog = opts.log ? true : false;
         }
+        if (opts.globals) {
+            this.context.globals = [].concat(opts.globals);
+        }
         this.context.setHomeDir(homeDir);
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);
@@ -91,7 +94,7 @@ class FuseBox {
             ).then(result => {
                 let contents = result.contents.join("\n");
                 self.context.log.end();
-                return ModuleWrapper_1.ModuleWrapper.wrapFinal(contents, bundleData.entry, standalone);
+                return ModuleWrapper_1.ModuleWrapper.wrapFinal(this.context, contents, bundleData.entry, standalone);
             });
         });
     }

@@ -89,6 +89,21 @@ var FuseBox = __root__.FuseBox = (function() {
                 return mod.scope.evaluate(userPath, null, parent);
             }
         },
+        expose: function(collections) {
+            for (var i = 0; i < collections.length; i++) {
+                var data = collections[i].split("/");
+                var mName = data[0];
+                if (modules[mName]) {
+                    var entryName = data[1] || modules[mName].entry;
+                    var exposed = FuseBox.import(entryName, mName);
+                    if (typeof exposed === "object") {
+                        for (var key in exposed) {
+                            __root__[key] = exposed[key];
+                        }
+                    }
+                }
+            }
+        },
         module: function(moduleName, customVersions, fn) {
             if (modules[moduleName]) {
                 return fn(modules[moduleName].scope)

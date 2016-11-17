@@ -14,7 +14,10 @@ export class CollectionSource {
         }
         return this.resolveFiles(collection.dependencies).then(cnt => {
             let entryFile = collection.entryFile;
-            return ModuleWrapper.wrapModule(collection.name, collection.conflictingVersions, cnt.join("\n"),
+            return ModuleWrapper.wrapModule(
+                collection.name,
+                collection.conflictingVersions,
+                cnt.join("\n"),
                 entryFile ? entryFile.info.fuseBoxPath : "");
         });
         /*

@@ -28,6 +28,7 @@ export class WorkFlowContext {
     public doLog = true;
     public cache = new ModuleCache(this);
     public customModulesFolder: string;
+    public globals: string[] = [];
     public log: Log;
 
     public reset() {

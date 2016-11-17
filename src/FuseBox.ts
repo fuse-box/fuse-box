@@ -55,6 +55,11 @@ export class FuseBox {
         if (opts.log !== undefined) {
             this.context.doLog = opts.log ? true : false;
         }
+
+        if (opts.globals) {
+            this.context.globals = [].concat(opts.globals);
+        }
+
         this.context.setHomeDir(homeDir);
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);
@@ -124,7 +129,7 @@ export class FuseBox {
             }).then(result => {
                 let contents = result.contents.join("\n");
                 self.context.log.end();
-                return ModuleWrapper.wrapFinal(contents, bundleData.entry, standalone);
+                return ModuleWrapper.wrapFinal(this.context, contents, bundleData.entry, standalone);
                 // return {
                 //     dump: this.dump,
                 //     contents: ModuleWrapper.wrapFinal(result.contents, bundleData.entry, standalone)
