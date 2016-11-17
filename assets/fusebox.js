@@ -91,7 +91,7 @@ var FuseBox = __root__.FuseBox = (function() {
         },
         expose: function(collections) {
             for (var i = 0; i < collections.length; i++) {
-                var data = collections[i].split("/");
+                var data = collections[i].split(/\/(.+)?/);
                 var mName = data[0];
                 if (modules[mName]) {
                     var entryName = data[1] || modules[mName].entry;

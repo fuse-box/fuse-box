@@ -1,6 +1,6 @@
 //require("~/sub/hello.js");
 //console.log(require("babel-generator"));
-
+exports.hello = 1;
 
 // var dynamicPath = "./custom/foo.js";
 
