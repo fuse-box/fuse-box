@@ -50,7 +50,6 @@ export function extractRequires(contents: string, absPath: string) {
     });
 
     if (processVariables.length) {
-
         results.push("process");
         extra.push("process");
     }

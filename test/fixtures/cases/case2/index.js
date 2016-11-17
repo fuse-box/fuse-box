@@ -7,4 +7,4 @@
 //  //var prc = require("process")
 //console.log(process.env);
 //var a = process.env.dosm();
-var babelCore = require("babel-core");
+console.log(require("babel-core"));

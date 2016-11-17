@@ -119,8 +119,6 @@ class PathMaster {
         };
     }
     getNodeModuleInformation(name) {
-        let localLib = path.join(Config_1.Config.LOCAL_LIBS, name);
-        let modulePath = path.join(Config_1.Config.NODE_MODULES_DIR, name);
         let readMainFile = (folder, isCustom) => {
             let packageJSONPath = path.join(folder, "package.json");
             if (fs.existsSync(packageJSONPath)) {
@@ -155,6 +153,8 @@ class PathMaster {
                 version: "0.0.0",
             };
         };
+        let localLib = path.join(Config_1.Config.LOCAL_LIBS, name);
+        let modulePath = path.join(Config_1.Config.NODE_MODULES_DIR, name);
         if (this.context.customModulesFolder) {
             let customFolder = path.join(this.context.customModulesFolder, name);
             if (fs.existsSync(customFolder)) {
@@ -169,7 +169,8 @@ class PathMaster {
             else {
                 let upperNodeModule = path.join(this.rootPackagePath, "../", name);
                 if (fs.existsSync(upperNodeModule)) {
-                    return readMainFile(upperNodeModule, true);
+                    let isCustom = path.dirname(this.rootPackagePath) !== Config_1.Config.NODE_MODULES_DIR;
+                    return readMainFile(upperNodeModule, isCustom);
                 }
             }
         }

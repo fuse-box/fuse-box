@@ -129,7 +129,7 @@ export class PathMaster {
     public getAbsolutePath(name: string, root: string, rootEntryLimit?: string) {
         let url = this.ensureFolderAndExtensions(name, root);
         let result = path.resolve(root, url);
-     
+
         // Fixing node_modules package .json limits.
         if (rootEntryLimit && name.match(/\.\.\/$/)) {
             if (result.indexOf(path.dirname(rootEntryLimit)) < 0) {
@@ -194,8 +194,7 @@ export class PathMaster {
     }
 
     private getNodeModuleInformation(name: string): IPackageInformation {
-        let localLib = path.join(Config.LOCAL_LIBS, name);
-        let modulePath = path.join(Config.NODE_MODULES_DIR, name);
+
         let readMainFile = (folder, isCustom: boolean) => {
             // package.json path
             let packageJSONPath = path.join(folder, "package.json");
@@ -234,6 +233,8 @@ export class PathMaster {
                 version: "0.0.0",
             };
         };
+        let localLib = path.join(Config.LOCAL_LIBS, name);
+        let modulePath = path.join(Config.NODE_MODULES_DIR, name);
 
         if (this.context.customModulesFolder) {
             let customFolder = path.join(this.context.customModulesFolder, name);
@@ -243,7 +244,7 @@ export class PathMaster {
         }
 
         if (this.rootPackagePath) {// handle a conflicting library
-            
+
             let nestedNodeModule = path.join(this.rootPackagePath, "node_modules", name);
             if (fs.existsSync(nestedNodeModule)) {
                 return readMainFile(nestedNodeModule, true);
@@ -251,7 +252,8 @@ export class PathMaster {
                 // climb up (sometimes it can be in a parent)
                 let upperNodeModule = path.join(this.rootPackagePath, "../", name);
                 if (fs.existsSync(upperNodeModule)) {
-                    return readMainFile(upperNodeModule, true);
+                    let isCustom = path.dirname(this.rootPackagePath) !== Config.NODE_MODULES_DIR;
+                    return readMainFile(upperNodeModule, isCustom);
                 }
             }
         }
