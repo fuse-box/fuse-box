@@ -17,7 +17,7 @@ class FileAST {
         this.ast = acorn.parse(this.file.contents, {
             sourceType: "module",
             tolerant: true,
-            ecmaVersion: 7,
+            ecmaVersion: 8,
             plugins: { es7: true },
         });
     }

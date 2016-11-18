@@ -1,4 +1,6 @@
 "use strict";
+var BabelPlugin_1 = require('./plugins/BabelPlugin');
+exports.BabelPlugin = BabelPlugin_1.BabelPlugin;
 var CSSplugin_1 = require("./plugins/CSSplugin");
 exports.CSSPlugin = CSSplugin_1.CSSPlugin;
 var HTMLplugin_1 = require("./plugins/HTMLplugin");

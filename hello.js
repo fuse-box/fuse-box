@@ -2,7 +2,7 @@ const build = require("./build/commonjs/index.js");
 
 const FuseBox = build.FuseBox;
 const fs = require("fs");
-
+//new build.BabelPlugin(),
 
 let fuseBox = new FuseBox({
     homeDir: "test/fixtures/cases/case2",

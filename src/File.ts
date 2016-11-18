@@ -69,7 +69,7 @@ export class File {
         if (this.absPath.match(/\.js$/)) {
             let fileAst = new FileAST(this);
             fileAst.consume();
-            this.tryPlugins(fileAst);
+            this.tryPlugins(fileAst.ast);
             return fileAst.dependencies;
         }
         this.tryPlugins();
