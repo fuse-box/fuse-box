@@ -1,10 +1,5 @@
 import { WorkFlowContext } from "./WorkflowContext";
 import { IPathInformation } from "./PathMaster";
-export declare function extractRequires(contents: string, absPath: string): {
-    extra: any[];
-    requires: any[];
-    ast: any;
-};
 export declare class File {
     context: WorkFlowContext;
     info: IPathInformation;
@@ -12,9 +7,11 @@ export declare class File {
     contents: string;
     isLoaded: boolean;
     isNodeModuleEntry: boolean;
+    headerContent: string[];
     resolving: Promise<any>[];
     constructor(context: WorkFlowContext, info: IPathInformation);
     getCrossPlatormPath(): string;
     tryPlugins(_ast?: any): void;
+    addHeaderContent(str: string): void;
     consume(): string[];
 }

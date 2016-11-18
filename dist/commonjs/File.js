@@ -1,52 +1,7 @@
 "use strict";
+const FileAST_1 = require('./FileAST');
 const fs = require("fs");
-const path = require("path");
 const realm_utils_1 = require("realm-utils");
-const acorn = require("acorn");
-const ASTQ = require("astq");
-let astq = new ASTQ();
-require("acorn-es7")(acorn);
-function extractRequires(contents, absPath) {
-    let ast = acorn.parse(contents, {
-        sourceType: "module",
-        tolerant: true,
-        ecmaVersion: 7,
-        plugins: { es7: true },
-    });
-    let matches = [];
-    matches = astq.query(ast, `// CallExpression[/Identifier[@name=="require"]], / ImportDeclaration[/Literal]`);
-    let processVariables = [];
-    let processDefined = astq.query(ast, `// VariableDeclarator/Identifier[@name=="process"]`);
-    if (!processDefined.length) {
-        processVariables = astq.query(ast, `// MemberExpression/Identifier[@name=="process"]`);
-    }
-    let extra = [];
-    let results = [];
-    matches.map(item => {
-        if (item.arguments) {
-            if (item.arguments[0]) {
-                let name = item.arguments[0].value;
-                if (!name) {
-                    return;
-                }
-                results.push(name);
-            }
-        }
-        if (item.source) {
-            results.push(item.source.value);
-        }
-    });
-    if (processVariables.length) {
-        results.push("process");
-        extra.push("process");
-    }
-    return {
-        extra: extra,
-        requires: results,
-        ast: ast
-    };
-}
-exports.extractRequires = extractRequires;
 class File {
     constructor(context, info) {
         this.context = context;
@@ -82,6 +37,12 @@ class File {
             }
         }
     }
+    addHeaderContent(str) {
+        if (!this.headerContent) {
+            this.headerContent = [];
+        }
+        this.headerContent.push(str);
+    }
     consume() {
         if (!this.absPath) {
             return [];
@@ -93,16 +54,10 @@ class File {
         this.contents = fs.readFileSync(this.info.absPath).toString();
         this.isLoaded = true;
         if (this.absPath.match(/\.js$/)) {
-            let data = extractRequires(this.contents, path.join(this.absPath));
-            if (data.extra.length) {
-                let code = [];
-                data.extra.forEach(expr => {
-                    code.push(`var ${expr} = require("${expr}");`);
-                });
-                this.contents = `${code.join("\n")}${this.contents}`;
-            }
-            this.tryPlugins(data.ast);
-            return data.requires;
+            let fileAst = new FileAST_1.FileAST(this);
+            fileAst.consume();
+            this.tryPlugins(fileAst);
+            return fileAst.dependencies;
         }
         this.tryPlugins();
         return [];

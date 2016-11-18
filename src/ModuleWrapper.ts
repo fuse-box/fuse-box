@@ -1,3 +1,4 @@
+import { File } from './File';
 import { WorkFlowContext } from "./WorkflowContext";
 import { Config } from "./Config";
 import * as path from "path";
@@ -63,9 +64,9 @@ ${entry ? 'return ___scope___.entry("' + entry + '")' : ""}
      *
      * @memberOf ModuleWrapper
      */
-    public static wrapGeneric(name: string, content: string) {
-        let fn = `___scope___.file("${name}", function(exports, require, module, __filename, __dirname){
-${content}
+    public static wrapFile(file: File) {
+        let fn = `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){ 
+${file.headerContent ? file.headerContent.join("\n") : ""}${file.contents}
 });`;
         return fn;
     }

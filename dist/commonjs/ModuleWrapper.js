@@ -40,9 +40,9 @@ ${content}
 ${entry ? 'return ___scope___.entry("' + entry + '")' : ""}
 })`;
     }
-    static wrapGeneric(name, content) {
-        let fn = `___scope___.file("${name}", function(exports, require, module, __filename, __dirname){
-${content}
+    static wrapFile(file) {
+        let fn = `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){ 
+${file.headerContent ? file.headerContent.join("\n") : ""}${file.contents}
 });`;
         return fn;
     }

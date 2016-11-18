@@ -43,7 +43,7 @@ export class CollectionSource {
         });
         return Promise.all(promises).then(() => {
             files.forEach(file => {
-                let content = ModuleWrapper.wrapGeneric(file.info.fuseBoxPath, file.contents);
+                let content = ModuleWrapper.wrapFile(file);
                 cnt.push(content);
             });
             return cnt;
