@@ -11,6 +11,7 @@ class WorkFlowContext {
         this.useCache = true;
         this.doLog = true;
         this.cache = new ModuleCache_1.ModuleCache(this);
+        this.tsConfig = {};
         this.tsMode = false;
         this.globals = [];
     }

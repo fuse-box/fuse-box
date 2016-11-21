@@ -22,6 +22,7 @@ export declare class WorkFlowContext {
     useCache: boolean;
     doLog: boolean;
     cache: ModuleCache;
+    tsConfig: {};
     customModulesFolder: string;
     tsMode: boolean;
     globals: string[];

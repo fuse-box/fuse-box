@@ -44,6 +44,10 @@ export class FuseBox {
                     ? opts.modulesFolder : path.join(appRoot.path, opts.modulesFolder);
         }
 
+        if (opts.tsConfig) {
+            this.context.tsConfig = opts.tsConfig;
+        }
+
         this.context.plugins = opts.plugins || [HTMLPlugin, JSONPlugin];
         if (opts.cache !== undefined) {
             this.context.useCache = opts.cache ? true : false;

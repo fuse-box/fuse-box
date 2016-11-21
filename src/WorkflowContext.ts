@@ -27,6 +27,7 @@ export class WorkFlowContext {
     public useCache = true;
     public doLog = true;
     public cache = new ModuleCache(this);
+    public tsConfig = {};
     public customModulesFolder: string;
     public tsMode = false;
     public globals: string[] = [];

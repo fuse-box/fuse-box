@@ -5,7 +5,7 @@ const fs = require("fs");
 //new build.BabelPlugin(),
 
 let fuseBox = new FuseBox({
-    homeDir: "dist/commonjs",
+    homeDir: "test/fixtures/cases/ts",
     //modulesFolder: "test/fixtures/modules",
     cache: false,
     //plugins: [build.HTMLPlugin, build.JSONPlugin, new build.CSSPlugin({ minify: true })]
@@ -14,7 +14,7 @@ let fuseBox = new FuseBox({
 
 
 
-fuseBox.bundle(">index.js", true).then(data => {
+fuseBox.bundle(">index.ts", true).then(data => {
     fs.writeFile("./out.js", data, function(err) {
         if (err) {
             console.log(err);
