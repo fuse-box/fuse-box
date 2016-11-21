@@ -11,6 +11,9 @@ class ModuleWrapper {
             userContents.push(wrapper);
         }
         userContents.push("\n" + contents);
+        if (context.tsMode) {
+            entryPoint = context.convert2typescript(entryPoint);
+        }
         if (context.globals.length > 0) {
             let data = [];
             context.globals.forEach(name => {

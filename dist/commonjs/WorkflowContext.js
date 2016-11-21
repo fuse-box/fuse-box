@@ -11,6 +11,7 @@ class WorkFlowContext {
         this.useCache = true;
         this.doLog = true;
         this.cache = new ModuleCache_1.ModuleCache(this);
+        this.tsMode = false;
         this.globals = [];
     }
     reset() {
@@ -29,6 +30,9 @@ class WorkFlowContext {
         if (!this.libPaths.has(key)) {
             return this.libPaths.set(key, info);
         }
+    }
+    convert2typescript(name) {
+        return name.replace(/\.ts$/, ".js");
     }
     getLibInfo(name, version) {
         let key = `${name}@${version}`;

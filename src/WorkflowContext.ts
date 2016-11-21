@@ -28,6 +28,7 @@ export class WorkFlowContext {
     public doLog = true;
     public cache = new ModuleCache(this);
     public customModulesFolder: string;
+    public tsMode = false;
     public globals: string[] = [];
     public log: Log;
 
@@ -49,6 +50,10 @@ export class WorkFlowContext {
         if (!this.libPaths.has(key)) {
             return this.libPaths.set(key, info);
         }
+    }
+
+    public convert2typescript(name: string) {
+        return name.replace(/\.ts$/, ".js");
     }
     public getLibInfo(name: string, version: string): IPackageInformation {
         let key = `${name}@${version}`;

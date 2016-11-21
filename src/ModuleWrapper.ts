@@ -14,8 +14,6 @@ import * as fs from "fs";
 export class ModuleWrapper {
 
     public static wrapFinal(context: WorkFlowContext, contents: string, entryPoint: string, standalone: boolean) {
-
-
         let userContents = ["(function(){\n"];
         if (standalone) {
             let fuseboxLibFile = path.join(Config.ASSETS_DIR, standalone ? "fusebox.min.js" : "local.js");
@@ -23,6 +21,9 @@ export class ModuleWrapper {
             userContents.push(wrapper);
         }
         userContents.push("\n" + contents);
+        if (context.tsMode) {
+            entryPoint = context.convert2typescript(entryPoint);
+        }
         // Handle globals
         if (context.globals.length > 0) {
             let data = [];

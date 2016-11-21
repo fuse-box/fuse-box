@@ -43,6 +43,7 @@ class FuseBox {
     }
     bundle(str, standalone) {
         this.context.reset();
+        this.context.log.startSpinning();
         let parser = Arithmetic_1.Arithmetic.parse(str);
         let bundle;
         return Arithmetic_1.Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
@@ -58,6 +59,10 @@ class FuseBox {
     process(bundleData, standalone) {
         let bundleCollection = new ModuleCollection_1.ModuleCollection(this.context, "default");
         bundleCollection.pm = new PathMaster_1.PathMaster(this.context, bundleData.homeDir);
+        if (bundleData.typescriptMode) {
+            this.context.tsMode = true;
+            bundleCollection.pm.setTypeScriptMode();
+        }
         let self = this;
         return bundleCollection.collectBundle(bundleData).then(module => {
             return realm_utils_1.chain(class extends realm_utils_1.Chainable {
@@ -92,6 +97,7 @@ class FuseBox {
                 }
             }
             ).then(result => {
+                this.context.log.stopSpinning();
                 let contents = result.contents.join("\n");
                 self.context.log.end();
                 return ModuleWrapper_1.ModuleWrapper.wrapFinal(this.context, contents, bundleData.entry, standalone);

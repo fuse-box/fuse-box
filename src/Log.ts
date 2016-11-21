@@ -12,6 +12,7 @@ export class Log {
     constructor(public printLog: boolean) { }
 
     public startSpinning() {
+
         this.spinnerInterval = spinner({
             string: "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏",
         });

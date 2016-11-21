@@ -10,9 +10,6 @@ import * as path from "path";
 import { each, chain, Chainable } from "realm-utils";
 const appRoot = require("app-root-path");
 
-
-
-
 /**
  *
  *
@@ -68,12 +65,16 @@ export class FuseBox {
         this.virtualFiles = opts.files;
     }
 
+
     public bundle(str: string, standalone?: boolean) {
         this.context.reset();
+
+        this.context.log.startSpinning();
         let parser = Arithmetic.parse(str);
         let bundle: BundleData;
 
         return Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
+
             bundle = data;
             return this.process(data, standalone);
         }).then((contents) => {
@@ -87,8 +88,14 @@ export class FuseBox {
 
     public process(bundleData: BundleData, standalone?: boolean) {
         let bundleCollection = new ModuleCollection(this.context, "default");
-
         bundleCollection.pm = new PathMaster(this.context, bundleData.homeDir);
+
+        // swiching on typescript compiler
+        if (bundleData.typescriptMode) {
+            this.context.tsMode = true;
+            bundleCollection.pm.setTypeScriptMode();
+        }
+
         let self = this;
         return bundleCollection.collectBundle(bundleData).then(module => {
 
@@ -127,6 +134,7 @@ export class FuseBox {
                 }
 
             }).then(result => {
+                this.context.log.stopSpinning();
                 let contents = result.contents.join("\n");
                 self.context.log.end();
                 return ModuleWrapper.wrapFinal(this.context, contents, bundleData.entry, standalone);

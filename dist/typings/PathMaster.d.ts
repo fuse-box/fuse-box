@@ -30,8 +30,10 @@ export declare class AllowedExtenstions {
 export declare class PathMaster {
     context: WorkFlowContext;
     rootPackagePath: string;
+    private tsMode;
     constructor(context: WorkFlowContext, rootPackagePath?: string);
     init(name: string): IPathInformation;
+    setTypeScriptMode(): void;
     resolve(name: string, root: string, rootEntryLimit?: string): IPathInformation;
     getFuseBoxPath(name: string, root: string): string;
     getAbsolutePath(name: string, root: string, rootEntryLimit?: string): string;

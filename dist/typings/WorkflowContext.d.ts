@@ -23,12 +23,14 @@ export declare class WorkFlowContext {
     doLog: boolean;
     cache: ModuleCache;
     customModulesFolder: string;
+    tsMode: boolean;
     globals: string[];
     log: Log;
     reset(): void;
     allowExtension(ext: string): void;
     setHomeDir(dir: string): void;
     setLibInfo(name: string, version: string, info: IPackageInformation): Map<string, IPackageInformation>;
+    convert2typescript(name: string): string;
     getLibInfo(name: string, version: string): IPackageInformation;
     setPrintLogs(printLogs: any): void;
     setUseCache(useCache: boolean): void;

@@ -13,15 +13,19 @@ class AllowedExtenstions {
         return this.list.has(name);
     }
 }
-AllowedExtenstions.list = new Set([".js", ".json", ".xml", ".css", ".html"]);
+AllowedExtenstions.list = new Set([".js", ".ts", ".json", ".xml", ".css", ".html"]);
 exports.AllowedExtenstions = AllowedExtenstions;
 class PathMaster {
     constructor(context, rootPackagePath) {
         this.context = context;
         this.rootPackagePath = rootPackagePath;
+        this.tsMode = false;
     }
     init(name) {
         return this.resolve(name, this.rootPackagePath);
+    }
+    setTypeScriptMode() {
+        this.tsMode = true;
     }
     resolve(name, root, rootEntryLimit) {
         let data = {};
@@ -67,6 +71,9 @@ class PathMaster {
         name = name.replace(/\\/g, "/");
         root = root.replace(/\\/g, "/");
         name = name.replace(root, "").replace(/^\/|\\/, "");
+        if (this.tsMode) {
+            name = this.context.convert2typescript(name);
+        }
         return name;
     }
     getAbsolutePath(name, root, rootEntryLimit) {
@@ -88,25 +95,26 @@ class PathMaster {
     }
     ensureFolderAndExtensions(name, root) {
         let ext = path.extname(name);
+        let fileExt = this.tsMode ? ".ts" : ".js";
         if (name[0] === "~" && name[1] === "/" && this.rootPackagePath) {
             name = "." + name.slice(1, name.length);
             name = path.join(this.rootPackagePath, name);
         }
         if (!AllowedExtenstions.has(ext)) {
             if (/\/$/.test(name)) {
-                return `${name}index.js`;
+                return `${name}index${fileExt}`;
             }
-            let folderDir = path.isAbsolute(name) ? path.join(name, "index.js")
-                : path.join(root, name, "index.js");
+            let folderDir = path.isAbsolute(name) ? path.join(name, `index${fileExt}`)
+                : path.join(root, name, `index${fileExt}`);
             if (fs.existsSync(folderDir)) {
                 let startsWithDot = name[0] === ".";
-                name = path.join(name, "/", "index.js");
+                name = path.join(name, "/", `index${fileExt}`);
                 if (startsWithDot) {
                     name = `./${name}`;
                 }
             }
             else {
-                name += ".js";
+                name += fileExt;
             }
         }
         return name;

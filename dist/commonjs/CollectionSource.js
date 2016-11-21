@@ -4,7 +4,7 @@ class CollectionSource {
     constructor(context) {
         this.context = context;
     }
-    get(collection) {
+    get(collection, withSourceMaps = false) {
         if (collection.cachedContent) {
             return new Promise((resolve, reject) => {
                 return resolve(collection.cachedContent);

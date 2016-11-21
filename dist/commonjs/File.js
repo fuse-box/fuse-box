@@ -8,11 +8,15 @@ class File {
         this.info = info;
         this.isLoaded = false;
         this.isNodeModuleEntry = false;
+        this.isTypeScript = false;
         this.resolving = [];
         this.absPath = info.absPath;
     }
     getCrossPlatormPath() {
         let name = this.absPath;
+        if (!name) {
+            return;
+        }
         name = name.replace(/\\/g, "/");
         return name;
     }
@@ -53,6 +57,20 @@ class File {
         }
         this.contents = fs.readFileSync(this.info.absPath).toString();
         this.isLoaded = true;
+        if (this.absPath.match(/\.ts$/)) {
+            const ts = require("typescript");
+            let result = ts.transpileModule(this.contents, {
+                compilerOptions: {
+                    module: ts.ModuleKind.CommonJS,
+                    sourceMap: true,
+                }
+            });
+            this.contents = result.outputText;
+            let fileAst = new FileAST_1.FileAST(this);
+            fileAst.consume();
+            this.tryPlugins(fileAst.ast);
+            return fileAst.dependencies;
+        }
         if (this.absPath.match(/\.js$/)) {
             let fileAst = new FileAST_1.FileAST(this);
             fileAst.consume();
