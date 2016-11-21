@@ -147,7 +147,6 @@ mtime : ${stats.mtime.getTime()}
         let required = [];
         let operations: Promise<any>[] = [];
 
-    ]
         /**
          * 
          * 
