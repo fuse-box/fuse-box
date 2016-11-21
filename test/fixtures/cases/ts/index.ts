@@ -1,7 +1,10 @@
+import { World } from './lib/World';
 import { Foo } from "./Foo";
 
-import * as babelCore from "babel-core";
-console.log(babelCore);
+//import "babel-core";
+
+let world = new World();
+
 /**
  * Hello
  */

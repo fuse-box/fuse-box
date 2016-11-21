@@ -15,4 +15,5 @@ export declare class File {
     tryPlugins(_ast?: any): void;
     addHeaderContent(str: string): void;
     consume(): string[];
+    private handleTypescript();
 }

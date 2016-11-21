@@ -59,6 +59,7 @@ export class File {
         this.headerContent.push(str);
     }
 
+
     public consume(): string[] {
         if (!this.absPath) {
             return [];
@@ -69,19 +70,9 @@ export class File {
         }
         this.contents = fs.readFileSync(this.info.absPath).toString();
         this.isLoaded = true;
+
         if (this.absPath.match(/\.ts$/)) {
-            const ts = require("typescript");
-            let tsConfig: any = this.context.tsConfig || {};
-            tsConfig.module = ts.ModuleKind.CommonJS;
-            tsConfig.sourceMap = true;
-            let result = ts.transpileModule(this.contents, {
-                compilerOptions: tsConfig
-            });
-            this.contents = result.outputText;
-            let fileAst = new FileAST(this);
-            fileAst.consume();
-            this.tryPlugins(fileAst.ast);
-            return fileAst.dependencies;
+            return this.handleTypescript();
         }
 
         if (this.absPath.match(/\.js$/)) {
@@ -92,5 +83,32 @@ export class File {
         }
         this.tryPlugins();
         return [];
+    }
+
+    private handleTypescript() {
+        let cached = this.context.cache.getStaticCache(this);
+        if (cached) {
+            this.contents = cached.contents;
+            this.tryPlugins();
+            return cached.dependencies;
+        }
+
+        const ts = require("typescript");
+        let tsConfig: any = this.context.tsConfig || {};
+        tsConfig.module = ts.ModuleKind.CommonJS;
+        tsConfig.sourceMap = true;
+        let result = ts.transpileModule(this.contents, {
+            compilerOptions: tsConfig,
+        });
+
+        this.contents = result.outputText;
+
+        // consuming transpiled javascript
+        let fileAst = new FileAST(this);
+        fileAst.consume();
+
+        this.context.cache.writeStaticCache(this, fileAst.dependencies, "");
+        this.tryPlugins(fileAst.ast);
+        return fileAst.dependencies;
     }
 }
