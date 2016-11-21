@@ -1,6 +1,7 @@
 import { Foo } from "./Foo";
 
-
+import * as babelCore from "babel-core";
+console.log(babelCore);
 /**
  * Hello
  */

@@ -2,7 +2,7 @@ import { File } from "../File";
 import { WorkFlowContext } from "./../WorkflowContext";
 import { Plugin } from "../WorkflowContext";
 
-const babelCore = require("babel-core");
+
 /**
  * 
  * 
@@ -37,10 +37,11 @@ export class BabelPlugin implements Plugin {
      * @memberOf FuseBoxHTMLPlugin
      */
     public transform(file: File, ast: any) {
+        const babelCore = require("babel-core");
         return new Promise((resolve, reject) => {
             let result = babelCore.transform(file.contents, {
                 presets: ["es2015"],
-                plugins : ["add-module-exports"]
+                plugins: ["add-module-exports"]
             });
             file.contents = result.code;
             return resolve();

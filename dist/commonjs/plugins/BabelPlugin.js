@@ -1,5 +1,4 @@
 "use strict";
-const babelCore = require("babel-core");
 class BabelPlugin {
     constructor() {
         this.test = /\.js$/;
@@ -8,6 +7,7 @@ class BabelPlugin {
         this.context = context;
     }
     transform(file, ast) {
+        const babelCore = require("babel-core");
         return new Promise((resolve, reject) => {
             let result = babelCore.transform(file.contents, {
                 presets: ["es2015"],
