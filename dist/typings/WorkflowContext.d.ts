@@ -45,6 +45,7 @@ export declare class WorkFlowContext {
     hasNodeModule(name: string): boolean;
     addNodeModule(name: string, collection: ModuleCollection): void;
     getTypeScriptConfig(): any;
+    ensureUserPath(userPath: string): string;
     writeOutput(): void;
     getNodeModule(name: string): ModuleCollection;
 }

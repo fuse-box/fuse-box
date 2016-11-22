@@ -6,6 +6,7 @@ const Log_1 = require("./Log");
 const PathMaster_1 = require("./PathMaster");
 const ModuleCache_1 = require("./ModuleCache");
 const appRoot = require("app-root-path");
+const mkdirp = require("mkdirp");
 class WorkFlowContext {
     constructor() {
         this.nodeModules = new Map();
@@ -77,20 +78,23 @@ class WorkFlowContext {
         }
         return this.tsConfig;
     }
+    ensureUserPath(userPath) {
+        if (!path.isAbsolute(userPath)) {
+            userPath = path.join(appRoot.path, userPath);
+        }
+        let dir = path.dirname(userPath);
+        mkdirp.sync(dir);
+        return userPath;
+    }
     writeOutput() {
         let res = this.source.getResult();
         if (this.sourceMapConfig && this.sourceMapConfig.outFile) {
-            let outFile = this.sourceMapConfig.outFile;
-            if (!path.isAbsolute(outFile)) {
-                outFile = path.join(appRoot.path, outFile);
-            }
-            fs.writeFile(outFile, res.sourceMap);
+            let target = this.ensureUserPath(this.sourceMapConfig.outFile);
+            fs.writeFile(target, res.sourceMap);
         }
         if (this.outFile) {
-            if (!path.isAbsolute(this.outFile)) {
-                this.outFile = path.join(appRoot.path, this.outFile);
-            }
-            fs.writeFile(this.outFile, res.content);
+            let target = this.ensureUserPath(this.outFile);
+            fs.writeFile(target, res.content);
         }
     }
     getNodeModule(name) {
