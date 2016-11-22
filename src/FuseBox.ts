@@ -4,7 +4,6 @@ import { PathMaster } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
 import { CollectionSource } from "./CollectionSource";
 import { Arithmetic, BundleData } from "./Arithmetic";
-import { ModuleWrapper } from "./ModuleWrapper";
 import { ModuleCollection } from "./ModuleCollection";
 import * as path from "path";
 import { each, chain, Chainable } from "realm-utils";
