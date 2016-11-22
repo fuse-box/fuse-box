@@ -26,7 +26,7 @@ class File {
             let index = 0;
             while (!target && index < this.context.plugins.length) {
                 let plugin = this.context.plugins[index];
-                if (plugin.test.test(this.absPath)) {
+                if (plugin.test && plugin.test.test(this.absPath)) {
                     target = plugin;
                 }
                 index++;

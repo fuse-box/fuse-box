@@ -52,8 +52,23 @@ class FuseBox {
         }
         this.virtualFiles = opts.files;
     }
+    triggerStart() {
+        this.context.plugins.forEach(plugin => {
+            if (realm_utils_1.utils.isFunction(plugin.prepend)) {
+                plugin.prepend(this.context);
+            }
+        });
+    }
+    triggerEnd() {
+        this.context.plugins.forEach(plugin => {
+            if (realm_utils_1.utils.isFunction(plugin.append)) {
+                plugin.append(this.context);
+            }
+        });
+    }
     bundle(str, standalone) {
         this.context.reset();
+        this.triggerStart();
         let parser = Arithmetic_1.Arithmetic.parse(str);
         let bundle;
         return Arithmetic_1.Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
@@ -107,6 +122,7 @@ class FuseBox {
             }
             ).then(result => {
                 self.context.log.end();
+                this.triggerEnd();
                 self.context.source.finalize(bundleData);
                 this.context.writeOutput();
                 return self.context.source.getResult();

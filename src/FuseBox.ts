@@ -6,7 +6,7 @@ import { CollectionSource } from "./CollectionSource";
 import { Arithmetic, BundleData } from "./Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";
 import * as path from "path";
-import { each, chain, Chainable } from "realm-utils";
+import { each, utils, chain, Chainable } from "realm-utils";
 const appRoot = require("app-root-path");
 
 /**
@@ -79,14 +79,28 @@ export class FuseBox {
         this.virtualFiles = opts.files;
     }
 
+    public triggerStart() {
+        this.context.plugins.forEach(plugin => {
+            if (utils.isFunction(plugin.prepend)) {
+                plugin.prepend(this.context);
+            }
+        });
+    }
+
+    public triggerEnd() {
+        this.context.plugins.forEach(plugin => {
+            if (utils.isFunction(plugin.append)) {
+                plugin.append(this.context);
+            }
+        });
+    }
+
 
     public bundle(str: string, standalone?: boolean) {
         this.context.reset();
-
-
+        this.triggerStart();
         let parser = Arithmetic.parse(str);
         let bundle: BundleData;
-
         return Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
 
             bundle = data;
@@ -148,6 +162,7 @@ export class FuseBox {
 
             }).then(result => {
                 self.context.log.end();
+                this.triggerEnd();
                 self.context.source.finalize(bundleData);
                 this.context.writeOutput();
                 return self.context.source.getResult();
