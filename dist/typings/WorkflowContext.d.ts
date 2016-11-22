@@ -1,4 +1,5 @@
-import { File } from './File';
+import { BundleSource } from "./BundleSource";
+import { File } from "./File";
 import { Log } from "./Log";
 import { IPackageInformation } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
@@ -22,10 +23,14 @@ export declare class WorkFlowContext {
     useCache: boolean;
     doLog: boolean;
     cache: ModuleCache;
-    tsConfig: {};
+    tsConfig: any;
     customModulesFolder: string;
     tsMode: boolean;
     globals: string[];
+    standaloneBundle: boolean;
+    source: BundleSource;
+    sourceMapConfig: any;
+    outFile: string;
     log: Log;
     reset(): void;
     allowExtension(ext: string): void;
@@ -37,6 +42,7 @@ export declare class WorkFlowContext {
     setUseCache(useCache: boolean): void;
     hasNodeModule(name: string): boolean;
     addNodeModule(name: string, collection: ModuleCollection): void;
-    spinStart(title: string): void;
+    getTypeScriptConfig(): any;
+    writeOutput(): void;
     getNodeModule(name: string): ModuleCollection;
 }

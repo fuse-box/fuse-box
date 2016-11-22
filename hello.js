@@ -1,25 +1,19 @@
 const build = require("./build/commonjs/index.js");
-
+//global.Promise = require('bluebird')
 const FuseBox = build.FuseBox;
 const fs = require("fs");
 //new build.BabelPlugin(),
-
+//process.setMaxListeners(20);
 let fuseBox = new FuseBox({
     homeDir: "test/fixtures/cases/ts",
-    //modulesFolder: "test/fixtures/modules",
+    sourceMap: {
+        bundleReference: "./sourcemaps.js.map",
+        outFile: "sourcemaps.js.map",
+    },
     cache: true,
+    outFile: "./out.js",
+    //modulesFolder: "test/fixtures/modules",
     //plugins: [build.HTMLPlugin, build.JSONPlugin, new build.CSSPlugin({ minify: true })]
 });
-//fuseBox.bundle("**/*.*(js|html) >index.js", false).then(data => {
 
-
-
-fuseBox.bundle(">index.ts", true).then(data => {
-    fs.writeFile("./out.js", data, function(err) {
-        if (err) {
-            console.log(err);
-        }
-    });
-}).catch(e => {
-    console.log(e);
-})
+fuseBox.bundle(">index.ts");

@@ -39,7 +39,7 @@ class ModuleCache {
         let stats = fs.statSync(file.absPath);
         let data = `module.exports = { contents : ${JSON.stringify(file.contents)}, 
 dependencies : ${JSON.stringify(dependencies)}, 
-sourcemaps : ${JSON.stringify(sourcemaps)},
+sourceMap : ${JSON.stringify(sourcemaps || {})},
 mtime : ${stats.mtime.getTime()}
 };`;
         fs.writeFileSync(dest, data);

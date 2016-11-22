@@ -1,9 +1,12 @@
-import { File } from './File';
+import * as path from 'path';
+import * as fs from 'fs';
+import { BundleSource } from "./BundleSource";
+import { File } from "./File";
 import { Log } from "./Log";
 import { IPackageInformation, AllowedExtenstions } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "./ModuleCache";
-const readline = require("readline");
+const appRoot = require("app-root-path");
 
 
 export interface Plugin {
@@ -27,14 +30,20 @@ export class WorkFlowContext {
     public useCache = true;
     public doLog = true;
     public cache = new ModuleCache(this);
-    public tsConfig = {};
+    public tsConfig: any;
     public customModulesFolder: string;
     public tsMode = false;
     public globals: string[] = [];
+    public standaloneBundle: boolean = true;
+    public source: BundleSource;
+    public sourceMapConfig: any;
+    public outFile: string;
+
     public log: Log;
 
     public reset() {
         this.log = new Log(this.doLog);
+        this.source = new BundleSource(this);
         this.nodeModules = new Map();
         this.libPaths = new Map();
     }
@@ -79,9 +88,45 @@ export class WorkFlowContext {
         this.nodeModules.set(name, collection);
     }
 
-    public spinStart(title: string) {
-        readline.cursorTo(process.stdout, 0);
-        process.stdout.write(`${title}`);
+    public getTypeScriptConfig() {
+        if (this.tsConfig) {
+            return this.tsConfig;
+        }
+        let url = path.join(this.homeDir, "tsconfig.json");
+        if (fs.existsSync(url)) {
+            this.tsConfig = require(url);
+        } else {
+            this.tsConfig = {
+                compilerOptions: {}
+            };
+        }
+        this.tsConfig.compilerOptions.module = "commonjs";
+        if (this.sourceMapConfig) {
+            this.tsConfig.compilerOptions.sourceMap = true;
+            this.tsConfig.compilerOptions.inlineSources = true;
+        }
+        return this.tsConfig;
+    }
+
+    public writeOutput() {
+        let res = this.source.getResult();
+
+        // Writing sourcemaps
+        if (this.sourceMapConfig && this.sourceMapConfig.outFile) {
+            let outFile = this.sourceMapConfig.outFile;
+            if (!path.isAbsolute(outFile)) {
+                outFile = path.join(appRoot.path, outFile);
+            }
+            fs.writeFile(outFile, res.sourceMap);
+        }
+
+        // writing target
+        if (this.outFile) {
+            if (!path.isAbsolute(this.outFile)) {
+                this.outFile = path.join(appRoot.path, this.outFile);
+            }
+            fs.writeFile(this.outFile, res.content);
+        }
     }
 
     public getNodeModule(name: string): ModuleCollection {

@@ -1,5 +1,4 @@
 import { ModuleCollection } from './ModuleCollection';
-const spinner = require("char-spinner");
 const ansi = require("ansi");
 const cursor = ansi(process.stdout);
 const prettysize = require("prettysize");
@@ -11,16 +10,6 @@ export class Log {
     private totalSize = 0;
     constructor(public printLog: boolean) { }
 
-    public startSpinning() {
-
-        this.spinnerInterval = spinner({
-            string: "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏",
-        });
-    }
-
-    public stopSpinning() {
-        clearInterval(this.spinnerInterval);
-    }
 
     public echoDefaultCollection(collection: ModuleCollection, contents: string, printFiles?: boolean) {
         if (!this.printLog) {

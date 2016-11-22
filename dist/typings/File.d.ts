@@ -9,6 +9,7 @@ export declare class File {
     isNodeModuleEntry: boolean;
     headerContent: string[];
     isTypeScript: boolean;
+    sourceMap: any;
     resolving: Promise<any>[];
     constructor(context: WorkFlowContext, info: IPathInformation);
     getCrossPlatormPath(): string;

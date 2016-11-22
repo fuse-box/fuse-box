@@ -5,7 +5,6 @@ const PathMaster_1 = require("./PathMaster");
 const WorkflowContext_1 = require("./WorkflowContext");
 const CollectionSource_1 = require("./CollectionSource");
 const Arithmetic_1 = require("./Arithmetic");
-const ModuleWrapper_1 = require("./ModuleWrapper");
 const ModuleCollection_1 = require("./ModuleCollection");
 const path = require("path");
 const realm_utils_1 = require("realm-utils");
@@ -38,6 +37,15 @@ class FuseBox {
         if (opts.globals) {
             this.context.globals = [].concat(opts.globals);
         }
+        if (opts.standaloneBundle !== undefined) {
+            this.context.standaloneBundle = opts.standaloneBundle;
+        }
+        if (opts.sourceMap) {
+            this.context.sourceMapConfig = opts.sourceMap;
+        }
+        if (opts.outFile) {
+            this.context.outFile = opts.outFile;
+        }
         this.context.setHomeDir(homeDir);
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);
@@ -46,7 +54,6 @@ class FuseBox {
     }
     bundle(str, standalone) {
         this.context.reset();
-        this.context.log.startSpinning();
         let parser = Arithmetic_1.Arithmetic.parse(str);
         let bundle;
         return Arithmetic_1.Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
@@ -79,7 +86,6 @@ class FuseBox {
                 addDefaultContents() {
                     return self.collectionSource.get(this.defaultCollection).then((cnt) => {
                         self.context.log.echoDefaultCollection(this.defaultCollection, cnt);
-                        this.globalContents.push(cnt);
                     });
                 }
                 addNodeModules() {
@@ -100,10 +106,9 @@ class FuseBox {
                 }
             }
             ).then(result => {
-                this.context.log.stopSpinning();
-                let contents = result.contents.join("\n");
                 self.context.log.end();
-                return ModuleWrapper_1.ModuleWrapper.wrapFinal(this.context, contents, bundleData.entry, standalone);
+                self.context.source.finalize(bundleData);
+                return this.context.writeOutput();
             });
         });
     }

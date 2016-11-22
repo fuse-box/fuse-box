@@ -8,11 +8,13 @@ describe("Generic requires", (done) => {
             "index.js": `require("./foo/bar.js");`,
             "foo/bar.js": "module.exports = {bar : 1}",
         }, "**/*.js").then(root => {
+
             let result = root.FuseBox.import("foo/bar");
             result.should.deepEqual({ bar: 1 });
             done();
         }).catch(done);
     });
+
 
     it("Case 2 should import 3 files", (done) => {
         getTestEnv({
@@ -180,4 +182,5 @@ describe("Generic requires", (done) => {
             done();
         }).catch(done);
     });
+
 })

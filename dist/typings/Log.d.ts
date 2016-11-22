@@ -5,8 +5,6 @@ export declare class Log {
     private timeStart;
     private totalSize;
     constructor(printLog: boolean);
-    startSpinning(): void;
-    stopSpinning(): void;
     echoDefaultCollection(collection: ModuleCollection, contents: string, printFiles?: boolean): void;
     echoCollection(collection: ModuleCollection, contents: string, printFiles?: boolean): void;
     end(): void;

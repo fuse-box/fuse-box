@@ -1,8 +1,11 @@
 "use strict";
+const path = require('path');
+const fs = require('fs');
+const BundleSource_1 = require("./BundleSource");
 const Log_1 = require("./Log");
 const PathMaster_1 = require("./PathMaster");
 const ModuleCache_1 = require("./ModuleCache");
-const readline = require("readline");
+const appRoot = require("app-root-path");
 class WorkFlowContext {
     constructor() {
         this.nodeModules = new Map();
@@ -11,12 +14,13 @@ class WorkFlowContext {
         this.useCache = true;
         this.doLog = true;
         this.cache = new ModuleCache_1.ModuleCache(this);
-        this.tsConfig = {};
         this.tsMode = false;
         this.globals = [];
+        this.standaloneBundle = true;
     }
     reset() {
         this.log = new Log_1.Log(this.doLog);
+        this.source = new BundleSource_1.BundleSource(this);
         this.nodeModules = new Map();
         this.libPaths = new Map();
     }
@@ -53,9 +57,41 @@ class WorkFlowContext {
     addNodeModule(name, collection) {
         this.nodeModules.set(name, collection);
     }
-    spinStart(title) {
-        readline.cursorTo(process.stdout, 0);
-        process.stdout.write(`${title}`);
+    getTypeScriptConfig() {
+        if (this.tsConfig) {
+            return this.tsConfig;
+        }
+        let url = path.join(this.homeDir, "tsconfig.json");
+        if (fs.existsSync(url)) {
+            this.tsConfig = require(url);
+        }
+        else {
+            this.tsConfig = {
+                compilerOptions: {}
+            };
+        }
+        this.tsConfig.compilerOptions.module = "commonjs";
+        if (this.sourceMapConfig) {
+            this.tsConfig.compilerOptions.sourceMap = true;
+            this.tsConfig.compilerOptions.inlineSources = true;
+        }
+        return this.tsConfig;
+    }
+    writeOutput() {
+        let res = this.source.getResult();
+        if (this.sourceMapConfig && this.sourceMapConfig.outFile) {
+            let outFile = this.sourceMapConfig.outFile;
+            if (!path.isAbsolute(outFile)) {
+                outFile = path.join(appRoot.path, outFile);
+            }
+            fs.writeFile(outFile, res.sourceMap);
+        }
+        if (this.outFile) {
+            if (!path.isAbsolute(this.outFile)) {
+                this.outFile = path.join(appRoot.path, this.outFile);
+            }
+            fs.writeFile(this.outFile, res.content);
+        }
     }
     getNodeModule(name) {
         return this.nodeModules.get(name);

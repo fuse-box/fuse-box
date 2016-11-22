@@ -61,6 +61,17 @@ export class FuseBox {
             this.context.globals = [].concat(opts.globals);
         }
 
+        if (opts.standaloneBundle !== undefined) {
+            this.context.standaloneBundle = opts.standaloneBundle;
+        }
+
+        if (opts.sourceMap) {
+            this.context.sourceMapConfig = opts.sourceMap;
+        }
+
+        if (opts.outFile) {
+            this.context.outFile = opts.outFile;
+        }
         this.context.setHomeDir(homeDir);
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);
@@ -73,7 +84,7 @@ export class FuseBox {
     public bundle(str: string, standalone?: boolean) {
         this.context.reset();
 
-        this.context.log.startSpinning();
+
         let parser = Arithmetic.parse(str);
         let bundle: BundleData;
 
@@ -115,7 +126,6 @@ export class FuseBox {
                 public addDefaultContents() {
                     return self.collectionSource.get(this.defaultCollection).then((cnt: string) => {
                         self.context.log.echoDefaultCollection(this.defaultCollection, cnt);
-                        this.globalContents.push(cnt);
                     });
                 }
 
@@ -138,14 +148,10 @@ export class FuseBox {
                 }
 
             }).then(result => {
-                this.context.log.stopSpinning();
-                let contents = result.contents.join("\n");
                 self.context.log.end();
-                return ModuleWrapper.wrapFinal(this.context, contents, bundleData.entry, standalone);
-                // return {
-                //     dump: this.dump,
-                //     contents: ModuleWrapper.wrapFinal(result.contents, bundleData.entry, standalone)
-                // };
+                self.context.source.finalize(bundleData);
+                return this.context.writeOutput()
+
             });
         });
     }

@@ -1,5 +1,4 @@
 "use strict";
-const spinner = require("char-spinner");
 const ansi = require("ansi");
 const cursor = ansi(process.stdout);
 const prettysize = require("prettysize");
@@ -9,14 +8,6 @@ class Log {
         this.printLog = printLog;
         this.timeStart = process.hrtime();
         this.totalSize = 0;
-    }
-    startSpinning() {
-        this.spinnerInterval = spinner({
-            string: "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏",
-        });
-    }
-    stopSpinning() {
-        clearInterval(this.spinnerInterval);
     }
     echoDefaultCollection(collection, contents, printFiles) {
         if (!this.printLog) {

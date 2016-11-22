@@ -70,23 +70,29 @@ class File {
         return [];
     }
     handleTypescript() {
-        let cached = this.context.cache.getStaticCache(this);
-        if (cached) {
-            this.contents = cached.contents;
-            this.tryPlugins();
-            return cached.dependencies;
+        if (this.context.useCache) {
+            let cached = this.context.cache.getStaticCache(this);
+            if (cached) {
+                this.sourceMap = cached.sourceMap;
+                this.contents = cached.contents;
+                this.tryPlugins();
+                return cached.dependencies;
+            }
         }
         const ts = require("typescript");
-        let tsConfig = this.context.tsConfig || {};
-        tsConfig.module = ts.ModuleKind.CommonJS;
-        tsConfig.sourceMap = true;
-        let result = ts.transpileModule(this.contents, {
-            compilerOptions: tsConfig,
-        });
+        let result = ts.transpileModule(this.contents, this.context.getTypeScriptConfig());
+        if (result.sourceMapText && this.context.sourceMapConfig) {
+            let jsonSourceMaps = JSON.parse(result.sourceMapText);
+            jsonSourceMaps.file = this.info.fuseBoxPath;
+            jsonSourceMaps.sources = [this.info.fuseBoxPath.replace(/\.js$/, ".ts")];
+            this.sourceMap = JSON.stringify(jsonSourceMaps);
+        }
         this.contents = result.outputText;
         let fileAst = new FileAST_1.FileAST(this);
         fileAst.consume();
-        this.context.cache.writeStaticCache(this, fileAst.dependencies, "");
+        if (this.context.useCache) {
+            this.context.cache.writeStaticCache(this, fileAst.dependencies, this.sourceMap);
+        }
         this.tryPlugins(fileAst.ast);
         return fileAst.dependencies;
     }
