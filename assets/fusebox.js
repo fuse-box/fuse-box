@@ -162,7 +162,7 @@ var FuseBox = __root__.FuseBox = (function() {
                     locals.require = function(target) {
                         var _module = getNodeModuleName(target);
                         if (_module) {
-                            // fix for nodejs
+                            // fix for nodejs.
                             if (!isBrowser) {
                                 return require(target);
                             }
