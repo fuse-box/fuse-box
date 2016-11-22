@@ -14,8 +14,8 @@ export interface Plugin {
     dependencies?: string[];
     init: { (context: WorkFlowContext) };
     transform: { (file: File, ast?: any) };
-    prepend?(context: WorkFlowContext);
-    append?(context: WorkFlowContext);
+    bundleStart?(context: WorkFlowContext);
+    bundleEnd?(context: WorkFlowContext);
 }
 
 /**

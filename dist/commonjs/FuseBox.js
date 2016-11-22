@@ -54,15 +54,15 @@ class FuseBox {
     }
     triggerStart() {
         this.context.plugins.forEach(plugin => {
-            if (realm_utils_1.utils.isFunction(plugin.prepend)) {
-                plugin.prepend(this.context);
+            if (realm_utils_1.utils.isFunction(plugin.bundleStart)) {
+                plugin.bundleStart(this.context);
             }
         });
     }
     triggerEnd() {
         this.context.plugins.forEach(plugin => {
-            if (realm_utils_1.utils.isFunction(plugin.append)) {
-                plugin.append(this.context);
+            if (realm_utils_1.utils.isFunction(plugin.bundleEnd)) {
+                plugin.bundleEnd(this.context);
             }
         });
     }

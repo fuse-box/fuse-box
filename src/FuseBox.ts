@@ -81,16 +81,16 @@ export class FuseBox {
 
     public triggerStart() {
         this.context.plugins.forEach(plugin => {
-            if (utils.isFunction(plugin.prepend)) {
-                plugin.prepend(this.context);
+            if (utils.isFunction(plugin.bundleStart)) {
+                plugin.bundleStart(this.context);
             }
         });
     }
 
     public triggerEnd() {
         this.context.plugins.forEach(plugin => {
-            if (utils.isFunction(plugin.append)) {
-                plugin.append(this.context);
+            if (utils.isFunction(plugin.bundleEnd)) {
+                plugin.bundleEnd(this.context);
             }
         });
     }

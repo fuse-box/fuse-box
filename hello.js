@@ -3,8 +3,11 @@ const build = require("./build/commonjs/index.js");
 const FuseBox = build.FuseBox;
 const fs = require("fs");
 const testPlugin = {
-    append: (context) => {
-        context.source.addContent("console.log('i am appended')");
+    bundleEnd: (context) => {
+
+    },
+    bundleStart: (context) => {
+        context.source.addContent("console.log('i am at start')");
     }
 }
 let fuseBox = new FuseBox({

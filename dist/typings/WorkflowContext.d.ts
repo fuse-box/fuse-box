@@ -13,8 +13,8 @@ export interface Plugin {
     transform: {
         (file: File, ast?: any);
     };
-    prepend?(context: WorkFlowContext): any;
-    append?(context: WorkFlowContext): any;
+    bundleStart?(context: WorkFlowContext): any;
+    bundleEnd?(context: WorkFlowContext): any;
 }
 export declare class WorkFlowContext {
     nodeModules: Map<string, ModuleCollection>;
