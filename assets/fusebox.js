@@ -162,6 +162,10 @@ var FuseBox = __root__.FuseBox = (function() {
                     locals.require = function(target) {
                         var _module = getNodeModuleName(target);
                         if (_module) {
+                            // fix for nodejs
+                            if (!isBrowser) {
+                                return require(target);
+                            }
                             var _moduleName = _module[0];
                             if (customVersions[_moduleName]) { _moduleName = _moduleName + "@" + customVersions[_moduleName]; }
                             if (_module[1]) { return FuseBox.import(_module[1], _moduleName, entryName); }
