@@ -5,6 +5,6 @@ export declare class FuseBox {
     private collectionSource;
     private context;
     constructor(opts: any);
-    bundle(str: string, standalone?: boolean): Promise<void>;
-    process(bundleData: BundleData, standalone?: boolean): Promise<void>;
+    bundle(str: string, standalone?: boolean): Promise<any>;
+    process(bundleData: BundleData, standalone?: boolean): Promise<any>;
 }

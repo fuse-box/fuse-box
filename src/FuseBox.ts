@@ -150,7 +150,8 @@ export class FuseBox {
             }).then(result => {
                 self.context.log.end();
                 self.context.source.finalize(bundleData);
-                return this.context.writeOutput()
+                this.context.writeOutput();
+                return self.context.source.getResult();
 
             });
         });
