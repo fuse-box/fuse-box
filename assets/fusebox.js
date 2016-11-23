@@ -1,6 +1,10 @@
 var __root__ = this;
+var isBrowser = typeof window !== "undefined";
+if (!isBrowser) {
+    __root__ = module.exports;
+}
 var FuseBox = __root__.FuseBox = (function() {
-    var isBrowser = typeof window !== "undefined";
+
     var modules = isBrowser ? (window.__npm__ = window.__npm__ || {}) : {};
     var $interceptors = isBrowser ? (window.__interceptors__ = window.__interceptors__ || {}) : {};
     var getNodeModuleName = function(name) {
@@ -89,6 +93,14 @@ var FuseBox = __root__.FuseBox = (function() {
                 return mod.scope.evaluate(userPath, null, parent);
             }
         },
+        loadURL: function(url) {
+            if (isBrowser) {
+                script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = url;
+                document.getElementsByTagName('head')[0].appendChild(script);
+            }
+        },
         expose: function(collections) {
             for (var i = 0; i < collections.length; i++) {
                 var data = collections[i].split(/\/(.+)?/);
@@ -160,6 +172,10 @@ var FuseBox = __root__.FuseBox = (function() {
                     entry.isLoading = true;
                     locals.exports = {};
                     locals.require = function(target) {
+                        // handle remote files
+                        // if (target.match(/^http(s)?:/)) {
+                        //     return FuseBox.loadURL(target);
+                        // }
                         var _module = getNodeModuleName(target);
                         if (_module) {
                             // fix for nodejs.

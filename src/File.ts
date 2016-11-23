@@ -7,89 +7,20 @@ import { utils } from "realm-utils";
 
 
 
-/**
- * 
- * 
- * @export
- * @class File
- */
 export class File {
-    /**
-     * 
-     * 
-     * @type {string}
-     * @memberOf File
-     */
     public absPath: string;
-    /**
-     * 
-     * 
-     * @type {string}
-     * @memberOf File
-     */
     public contents: string;
-    /**
-     * 
-     * 
-     * 
-     * @memberOf File
-     */
     public isLoaded = false;
-    /**
-     * 
-     * 
-     * 
-     * @memberOf File
-     */
     public isNodeModuleEntry = false;
-    /**
-     * 
-     * 
-     * @type {string[]}
-     * @memberOf File
-     */
     public headerContent: string[];
-    /**
-     * 
-     * 
-     * 
-     * @memberOf File
-     */
     public isTypeScript = false;
-    /**
-     * 
-     * 
-     * @type {*}
-     * @memberOf File
-     */
     public sourceMap: any;
-    /**
-     * 
-     * 
-     * @type {Promise<any>[]}
-     * @memberOf File
-     */
     public resolving: Promise<any>[] = [];
-
-    /**
-     * Creates an instance of File.
-     * 
-     * @param {WorkFlowContext} context
-     * @param {IPathInformation} info
-     * 
-     * @memberOf File
-     */
     constructor(public context: WorkFlowContext, public info: IPathInformation) {
+
         this.absPath = info.absPath;
     }
 
-    /**
-     * 
-     * 
-     * @returns
-     * 
-     * @memberOf File
-     */
     public getCrossPlatormPath() {
         let name = this.absPath;
         if (!name) {
@@ -99,13 +30,6 @@ export class File {
         return name;
     }
 
-    /**
-     * 
-     * 
-     * @param {*} [_ast]
-     * 
-     * @memberOf File
-     */
     public tryPlugins(_ast?: any) {
         if (this.context.plugins) {
             let target: Plugin;
@@ -130,13 +54,6 @@ export class File {
             }
         }
     }
-    /**
-     * 
-     * 
-     * @param {string} str
-     * 
-     * @memberOf File
-     */
     public addHeaderContent(str: string) {
         if (!this.headerContent) {
             this.headerContent = [];
@@ -145,14 +62,10 @@ export class File {
     }
 
 
-    /**
-     * 
-     * 
-     * @returns {string[]}
-     * 
-     * @memberOf File
-     */
     public consume(): string[] {
+        if (this.info.isRemoteFile) {
+            return [];
+        }
         if (!this.absPath) {
             return [];
         }
@@ -177,14 +90,6 @@ export class File {
         return [];
     }
 
-    /**
-     * 
-     * 
-     * @private
-     * @returns
-     * 
-     * @memberOf File
-     */
     private handleTypescript() {
         if (this.context.useCache) {
             let cached = this.context.cache.getStaticCache(this);

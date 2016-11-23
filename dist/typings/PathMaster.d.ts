@@ -5,6 +5,8 @@ export interface INodeModuleRequire {
     target?: string;
 }
 export interface IPathInformation {
+    isRemoteFile?: boolean;
+    remoteURL?: string;
     isNodeModule: boolean;
     nodeModuleName?: string;
     nodeModuleInfo?: IPackageInformation;

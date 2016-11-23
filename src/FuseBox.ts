@@ -166,7 +166,6 @@ export class FuseBox {
                 self.context.source.finalize(bundleData);
                 this.context.writeOutput();
                 return self.context.source.getResult();
-
             });
         });
     }

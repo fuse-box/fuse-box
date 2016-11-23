@@ -48,6 +48,9 @@ class File {
         this.headerContent.push(str);
     }
     consume() {
+        if (this.info.isRemoteFile) {
+            return [];
+        }
         if (!this.absPath) {
             return [];
         }

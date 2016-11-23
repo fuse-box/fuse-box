@@ -1,3 +1,4 @@
+
 import { IPackageInformation, IPathInformation } from './PathMaster';
 import { WorkFlowContext } from "./WorkflowContext";
 import * as path from "path";
@@ -10,6 +11,8 @@ export interface INodeModuleRequire {
 }
 
 export interface IPathInformation {
+    isRemoteFile?: boolean;
+    remoteURL?: string;
     isNodeModule: boolean;
     nodeModuleName?: string;
     nodeModuleInfo?: IPackageInformation;
@@ -62,6 +65,12 @@ export class PathMaster {
 
         let data = <IPathInformation>{};
 
+        // if (name.match(/^http(s)?:/)) {
+        //     data.isRemoteFile = true;
+        //     data.remoteURL = name;
+        //     data.absPath = name;
+        //     return data;
+        // }
         data.isNodeModule = NODE_MODULE.test(name);
 
         if (data.isNodeModule) {

@@ -17,6 +17,7 @@ let fuseBox = new FuseBox({
         outFile: "sourcemaps.js.map",
     },
     cache: true,
+    globals: ["default"],
     outFile: "./out.js",
     plugins: [testPlugin]
         //modulesFolder: "test/fixtures/modules",
