@@ -1,5 +1,5 @@
+export { BabelPlugin } from './plugins/BabelPlugin';
 export { CSSPlugin } from "./plugins/CSSplugin";
-export { BabelPlugin } from "./plugins/BabelPlugin";
 export { HTMLPlugin } from "./plugins/HTMLplugin";
 export { JSONPlugin } from "./plugins/JSONplugin";
 export { WorkFlowContext } from "./WorkflowContext";

@@ -3,5 +3,6 @@ import { ModuleCollection } from "./ModuleCollection";
 export declare class CollectionSource {
     context: WorkFlowContext;
     constructor(context: WorkFlowContext);
-    get(collection: ModuleCollection): Promise<string>;
+    get(collection: ModuleCollection, withSourceMaps?: boolean): Promise<string>;
+    private resolveFiles(files);
 }

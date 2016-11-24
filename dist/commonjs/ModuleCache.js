@@ -3,6 +3,7 @@ const ModuleCollection_1 = require("./ModuleCollection");
 const fs = require("fs");
 const Config_1 = require("./Config");
 const path = require("path");
+const realm_utils_1 = require("realm-utils");
 const mkdirp = require("mkdirp");
 class ModuleCache {
     constructor(context) {
@@ -12,11 +13,36 @@ class ModuleCache {
             flat: {}
         };
         this.cacheFolder = path.join(Config_1.Config.TEMP_FOLDER, "cache", Config_1.Config.FUSEBOX_VERSION, encodeURIComponent(Config_1.Config.PROJECT_FOLDER));
+        this.staticCacheFolder = path.join(this.cacheFolder, "static");
+        mkdirp.sync(this.staticCacheFolder);
         mkdirp.sync(this.cacheFolder);
         this.cacheFile = path.join(this.cacheFolder, "deps.json");
         if (fs.existsSync(this.cacheFile)) {
             this.cachedDeps = require(this.cacheFile);
         }
+    }
+    getStaticCache(file) {
+        let stats = fs.statSync(file.absPath);
+        let fileName = encodeURIComponent(file.info.fuseBoxPath);
+        let dest = path.join(this.staticCacheFolder, fileName);
+        if (fs.existsSync(dest)) {
+            let data = require(dest);
+            if (data.mtime !== stats.mtime.getTime()) {
+                return;
+            }
+            return data;
+        }
+    }
+    writeStaticCache(file, dependencies, sourcemaps) {
+        let fileName = encodeURIComponent(file.info.fuseBoxPath);
+        let dest = path.join(this.staticCacheFolder, fileName);
+        let stats = fs.statSync(file.absPath);
+        let data = `module.exports = { contents : ${JSON.stringify(file.contents)}, 
+dependencies : ${JSON.stringify(dependencies)}, 
+sourceMap : ${JSON.stringify(sourcemaps || {})},
+mtime : ${stats.mtime.getTime()}
+};`;
+        fs.writeFileSync(dest, data);
     }
     resolve(files) {
         let through = [];
@@ -78,7 +104,7 @@ class ModuleCache {
     buildMap(rootCollection) {
         let json = this.cachedDeps;
         let traverse = (modules, root) => {
-            modules.forEach(collection => {
+            return realm_utils_1.each(modules, (collection) => {
                 let dependencies = {};
                 let flatFiles;
                 if (collection.cached) {
@@ -103,11 +129,14 @@ class ModuleCache {
                     name: collection.info.name,
                     version: collection.info.version,
                 };
-                return traverse(collection.nodeModules, dependencies);
+                return new Promise((resolve, reject) => {
+                    return resolve(traverse(collection.nodeModules, dependencies));
+                });
             });
         };
-        traverse(rootCollection.nodeModules, json.tree);
-        fs.writeFile(this.cacheFile, JSON.stringify(json, undefined, 2));
+        traverse(rootCollection.nodeModules, json.tree).then(() => {
+            fs.writeFile(this.cacheFile, JSON.stringify(json, undefined, 2));
+        });
     }
     set(info, contents) {
         return new Promise((resolve, reject) => {

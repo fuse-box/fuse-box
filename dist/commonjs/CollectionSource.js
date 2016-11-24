@@ -1,23 +1,35 @@
 "use strict";
-const ModuleWrapper_1 = require("./ModuleWrapper");
 class CollectionSource {
     constructor(context) {
         this.context = context;
     }
-    get(collection) {
+    get(collection, withSourceMaps = false) {
         if (collection.cachedContent) {
             return new Promise((resolve, reject) => {
+                this.context.source.addContent(collection.cachedContent);
                 return resolve(collection.cachedContent);
             });
         }
-        let cnt = [];
-        collection.dependencies.forEach(file => {
-            let content = ModuleWrapper_1.ModuleWrapper.wrapGeneric(file.info.fuseBoxPath, file.contents);
-            cnt.push(content);
+        this.context.source.startCollection(collection);
+        return this.resolveFiles(collection.dependencies).then(cnt => {
+            return this.context.source.endCollection(collection);
         });
-        return new Promise((resolve, reject) => {
-            let entryFile = collection.entryFile;
-            return resolve(ModuleWrapper_1.ModuleWrapper.wrapModule(collection.name, collection.conflictingVersions, cnt.join("\n"), entryFile ? entryFile.info.fuseBoxPath : ""));
+    }
+    resolveFiles(files) {
+        let cnt = [];
+        let promises = [];
+        files.forEach(file => {
+            file.resolving.forEach(p => {
+                promises.push(p);
+            });
+        });
+        return Promise.all(promises).then(() => {
+            files.forEach(file => {
+                if (!file.info.isRemoteFile) {
+                    this.context.source.addFile(file);
+                }
+            });
+            return cnt;
         });
     }
 }

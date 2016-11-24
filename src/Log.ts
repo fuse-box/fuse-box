@@ -1,27 +1,39 @@
-import { ModuleCollection } from './ModuleCollection';
-const spinner = require("char-spinner");
+import { ModuleCollection } from "./ModuleCollection";
 const ansi = require("ansi");
 const cursor = ansi(process.stdout);
 const prettysize = require("prettysize");
 const prettyTime = require("pretty-time");
 
 export class Log {
-    private spinnerInterval: any;
     private timeStart = process.hrtime();
     private totalSize = 0;
-    constructor() { }
+    constructor(public printLog: boolean) { }
 
-    public startSpinning() {
-        this.spinnerInterval = spinner({
-            string: "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏",
+
+    public echoDefaultCollection(collection: ModuleCollection, contents: string, printFiles?: boolean) {
+        if (!this.printLog) {
+            return;
+        }
+        let bytes = Buffer.byteLength(contents, "utf8");
+        let size = prettysize(bytes);
+        this.totalSize += bytes;
+        cursor.brightBlack().write(`└──`)
+            .green().write(` ${collection.cachedName || collection.name}`)
+            .yellow().write(` (${collection.dependencies.size} files,  ${size})`)
+
+        cursor.write("\n")
+        collection.dependencies.forEach(file => {
+            if (!file.info.isRemoteFile) {
+                cursor.brightBlack().write(`      ${file.info.fuseBoxPath}`).write("\n")
+            }
         });
+        cursor.reset();
     }
 
-    public stopSpinning() {
-        clearInterval(this.spinnerInterval);
-    }
-
-    public echoCollection(collection: ModuleCollection, contents: string) {
+    public echoCollection(collection: ModuleCollection, contents: string, printFiles?: boolean) {
+        if (!this.printLog) {
+            return;
+        }
         let bytes = Buffer.byteLength(contents, "utf8");
         let size = prettysize(bytes);
         this.totalSize += bytes;
@@ -33,11 +45,14 @@ export class Log {
     }
 
     public end() {
+        if (!this.printLog) {
+            return;
+        }
         let took = process.hrtime(this.timeStart)
-        cursor
+        cursor.write("\n")
             .brightBlack().write(`    --------------\n`)
             .yellow().write(`    Size: ${prettysize(this.totalSize)} \n`)
-            .yellow().write(`    Time: ${prettyTime(took, 'ms')}`)
+            .yellow().write(`    Time: ${prettyTime(took, "ms")}`)
             .write("\n")
             .brightBlack().write(`    --------------\n`)
             .write("\n").reset();

@@ -21,8 +21,9 @@ const deleteFolderRecursive = (p) => {
     }
 };
 class BundleData {
-    constructor(homeDir, including, excluding, entry) {
+    constructor(homeDir, typescriptMode, including, excluding, entry) {
         this.homeDir = homeDir;
+        this.typescriptMode = typescriptMode;
         this.including = including;
         this.excluding = excluding;
         this.entry = entry;
@@ -64,6 +65,7 @@ class Arithmetic {
         return parser;
     }
     static getFiles(parser, virtualFiles, homeDir) {
+        let tsMode = false;
         let collect = (list) => {
             let data = new Map();
             return realm_utils_1.each(list, (withDeps, filePattern) => {
@@ -76,6 +78,9 @@ class Arithmetic {
                 }
                 let fp = path.join(homeDir, filePattern);
                 let extname = path.extname(fp);
+                if (extname === ".ts") {
+                    tsMode = true;
+                }
                 if (!extname && !filePattern.match(/\.js$/)) {
                     fp += ".js";
                 }
@@ -124,7 +129,7 @@ class Arithmetic {
             }
         }
         ).then(result => {
-            let data = new BundleData(homeDir, result.including, result.excluding, result.entry);
+            let data = new BundleData(homeDir, tsMode, result.including, result.excluding, result.entry);
             if (result.tempFolder) {
                 data.setupTempFolder(result.tempFolder);
             }

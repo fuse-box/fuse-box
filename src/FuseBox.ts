@@ -4,14 +4,10 @@ import { PathMaster } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
 import { CollectionSource } from "./CollectionSource";
 import { Arithmetic, BundleData } from "./Arithmetic";
-import { ModuleWrapper } from "./ModuleWrapper";
 import { ModuleCollection } from "./ModuleCollection";
 import * as path from "path";
-import { each, chain, Chainable } from "realm-utils";
+import { each, utils, chain, Chainable } from "realm-utils";
 const appRoot = require("app-root-path");
-
-
-
 
 /**
  *
@@ -47,22 +43,66 @@ export class FuseBox {
                     ? opts.modulesFolder : path.join(appRoot.path, opts.modulesFolder);
         }
 
-        this.context.plugins = opts.plugins || [HTMLPlugin, JSONPlugin];
+        if (opts.tsConfig) {
+            this.context.tsConfig = opts.tsConfig;
+        }
 
+        this.context.plugins = opts.plugins || [HTMLPlugin, JSONPlugin];
+        if (opts.cache !== undefined) {
+            this.context.useCache = opts.cache ? true : false;
+        }
+
+        if (opts.log !== undefined) {
+            this.context.doLog = opts.log ? true : false;
+        }
+
+        if (opts.globals) {
+            this.context.globals = [].concat(opts.globals);
+        }
+
+        if (opts.standaloneBundle !== undefined) {
+            this.context.standaloneBundle = opts.standaloneBundle;
+        }
+
+        if (opts.sourceMap) {
+            this.context.sourceMapConfig = opts.sourceMap;
+        }
+
+        if (opts.outFile) {
+            this.context.outFile = opts.outFile;
+        }
         this.context.setHomeDir(homeDir);
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);
         }
         // In case of additional resources (or resourses to use with gulp)
-        this.virtualFiles = opts.fileCollection;
+        this.virtualFiles = opts.files;
     }
+
+    public triggerStart() {
+        this.context.plugins.forEach(plugin => {
+            if (utils.isFunction(plugin.bundleStart)) {
+                plugin.bundleStart(this.context);
+            }
+        });
+    }
+
+    public triggerEnd() {
+        this.context.plugins.forEach(plugin => {
+            if (utils.isFunction(plugin.bundleEnd)) {
+                plugin.bundleEnd(this.context);
+            }
+        });
+    }
+
 
     public bundle(str: string, standalone?: boolean) {
         this.context.reset();
+        this.triggerStart();
         let parser = Arithmetic.parse(str);
         let bundle: BundleData;
-
         return Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
+
             bundle = data;
             return this.process(data, standalone);
         }).then((contents) => {
@@ -76,8 +116,14 @@ export class FuseBox {
 
     public process(bundleData: BundleData, standalone?: boolean) {
         let bundleCollection = new ModuleCollection(this.context, "default");
-
         bundleCollection.pm = new PathMaster(this.context, bundleData.homeDir);
+
+        // swiching on typescript compiler
+        if (bundleData.typescriptMode) {
+            this.context.tsMode = true;
+            bundleCollection.pm.setTypeScriptMode();
+        }
+
         let self = this;
         return bundleCollection.collectBundle(bundleData).then(module => {
 
@@ -92,8 +138,7 @@ export class FuseBox {
 
                 public addDefaultContents() {
                     return self.collectionSource.get(this.defaultCollection).then((cnt: string) => {
-                        self.context.log.echoCollection(this.defaultCollection, cnt);
-                        this.globalContents.push(cnt);
+                        self.context.log.echoDefaultCollection(this.defaultCollection, cnt);
                     });
                 }
 
@@ -116,16 +161,11 @@ export class FuseBox {
                 }
 
             }).then(result => {
-                let contents = result.contents.join("\n");
-                console.log("");
-                if (this.context.printLogs) {
-                    self.context.log.end();
-                }
-                return ModuleWrapper.wrapFinal(contents, bundleData.entry, standalone);
-                // return {
-                //     dump: this.dump,
-                //     contents: ModuleWrapper.wrapFinal(result.contents, bundleData.entry, standalone)
-                // };
+                self.context.log.end();
+                this.triggerEnd();
+                self.context.source.finalize(bundleData);
+                this.context.writeOutput();
+                return self.context.source.getResult();
             });
         });
     }

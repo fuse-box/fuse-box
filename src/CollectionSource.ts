@@ -1,26 +1,37 @@
 import { WorkFlowContext } from "./WorkflowContext";
-import { ModuleWrapper } from "./ModuleWrapper";
 import { ModuleCollection } from "./ModuleCollection";
-
+import { File } from "./File";
 export class CollectionSource {
     constructor(public context: WorkFlowContext) { }
 
-    public get(collection: ModuleCollection): Promise<string> {
+    public get(collection: ModuleCollection, withSourceMaps: boolean = false): Promise<string> {
         if (collection.cachedContent) {
             return new Promise((resolve, reject) => {
+                this.context.source.addContent(collection.cachedContent);
                 return resolve(collection.cachedContent);
             });
-
         }
+        this.context.source.startCollection(collection);
+        return this.resolveFiles(collection.dependencies).then(cnt => {
+            return this.context.source.endCollection(collection);
+        });
+
+    }
+    private resolveFiles(files: Map<string, File>) {
         let cnt = [];
-        collection.dependencies.forEach(file => {
-            let content = ModuleWrapper.wrapGeneric(file.info.fuseBoxPath, file.contents);
-            cnt.push(content);
+        let promises: Promise<any>[] = [];
+        files.forEach(file => {
+            file.resolving.forEach(p => {
+                promises.push(p);
+            });
         });
-        return new Promise((resolve, reject) => {
-            let entryFile = collection.entryFile;
-            return resolve(ModuleWrapper.wrapModule(collection.name, collection.conflictingVersions, cnt.join("\n"),
-                entryFile ? entryFile.info.fuseBoxPath : ""));
-        });
+        return Promise.all(promises).then(() => {
+            files.forEach(file => {
+                if (!file.info.isRemoteFile) {
+                    this.context.source.addFile(file);
+                }
+            });
+            return cnt;
+        })
     }
 }

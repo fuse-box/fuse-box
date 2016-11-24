@@ -13,18 +13,28 @@ class AllowedExtenstions {
         return this.list.has(name);
     }
 }
-AllowedExtenstions.list = new Set([".js", ".json", ".xml", ".css", ".html"]);
+AllowedExtenstions.list = new Set([".js", ".ts", ".json", ".xml", ".css", ".html"]);
 exports.AllowedExtenstions = AllowedExtenstions;
 class PathMaster {
     constructor(context, rootPackagePath) {
         this.context = context;
         this.rootPackagePath = rootPackagePath;
+        this.tsMode = false;
     }
     init(name) {
         return this.resolve(name, this.rootPackagePath);
     }
+    setTypeScriptMode() {
+        this.tsMode = true;
+    }
     resolve(name, root, rootEntryLimit) {
         let data = {};
+        if (/^(http(s)?:|\/\/)/.test(name)) {
+            data.isRemoteFile = true;
+            data.remoteURL = name;
+            data.absPath = name;
+            return data;
+        }
         data.isNodeModule = NODE_MODULE.test(name);
         if (data.isNodeModule) {
             let info = this.getNodeModuleInfo(name);
@@ -67,6 +77,9 @@ class PathMaster {
         name = name.replace(/\\/g, "/");
         root = root.replace(/\\/g, "/");
         name = name.replace(root, "").replace(/^\/|\\/, "");
+        if (this.tsMode) {
+            name = this.context.convert2typescript(name);
+        }
         return name;
     }
     getAbsolutePath(name, root, rootEntryLimit) {
@@ -88,27 +101,26 @@ class PathMaster {
     }
     ensureFolderAndExtensions(name, root) {
         let ext = path.extname(name);
-        if (name[0] === "~" && (name[1] === "/" || name[1] === "\\") && this.rootPackagePath) {
+        let fileExt = this.tsMode ? ".ts" : ".js";
+        if (name[0] === "~" && name[1] === "/" && this.rootPackagePath) {
             name = "." + name.slice(1, name.length);
             name = path.join(this.rootPackagePath, name);
         }
         if (!AllowedExtenstions.has(ext)) {
             if (/\/$/.test(name)) {
-                return `${name}index.js`;
+                return `${name}index${fileExt}`;
             }
-            let folderDir = path.isAbsolute(name) ? path.join(name, "index.js")
-                : path.join(root, name, "index.js");
+            let folderDir = path.isAbsolute(name) ? path.join(name, `index${fileExt}`)
+                : path.join(root, name, `index${fileExt}`);
             if (fs.existsSync(folderDir)) {
                 let startsWithDot = name[0] === ".";
-                name = path.join(name, "/", "index.js");
+                name = path.join(name, "/", `index${fileExt}`);
                 if (startsWithDot) {
                     name = `./${name}`;
                 }
             }
             else {
-                if (!ext) {
-                    name += ".js";
-                }
+                name += fileExt;
             }
         }
         return name;
@@ -121,8 +133,6 @@ class PathMaster {
         };
     }
     getNodeModuleInformation(name) {
-        let localLib = path.join(Config_1.Config.LOCAL_LIBS, name);
-        let modulePath = path.join(Config_1.Config.NODE_MODULES_DIR, name);
         let readMainFile = (folder, isCustom) => {
             let packageJSONPath = path.join(folder, "package.json");
             if (fs.existsSync(packageJSONPath)) {
@@ -157,6 +167,8 @@ class PathMaster {
                 version: "0.0.0",
             };
         };
+        let localLib = path.join(Config_1.Config.LOCAL_LIBS, name);
+        let modulePath = path.join(Config_1.Config.NODE_MODULES_DIR, name);
         if (this.context.customModulesFolder) {
             let customFolder = path.join(this.context.customModulesFolder, name);
             if (fs.existsSync(customFolder)) {
@@ -167,6 +179,13 @@ class PathMaster {
             let nestedNodeModule = path.join(this.rootPackagePath, "node_modules", name);
             if (fs.existsSync(nestedNodeModule)) {
                 return readMainFile(nestedNodeModule, true);
+            }
+            else {
+                let upperNodeModule = path.join(this.rootPackagePath, "../", name);
+                if (fs.existsSync(upperNodeModule)) {
+                    let isCustom = path.dirname(this.rootPackagePath) !== Config_1.Config.NODE_MODULES_DIR;
+                    return readMainFile(upperNodeModule, isCustom);
+                }
             }
         }
         if (fs.existsSync(localLib)) {

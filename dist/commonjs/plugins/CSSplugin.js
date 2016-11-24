@@ -1,23 +1,21 @@
 "use strict";
-class FuseBoxCSSPlugin {
-    constructor() {
+class CSSPlugin {
+    constructor(opts) {
         this.test = /\.css$/;
+        this.dependencies = ["fsb-default-css-plugin"];
+        this.minify = false;
+        opts = opts || {};
+        if (opts.minify !== undefined) {
+            this.minify = opts.minify;
+        }
     }
     init(context) {
         context.allowExtension(".css");
     }
     transform(file) {
-        file.contents = `
-if (typeof window !== 'undefined') {
-var styleId = encodeURIComponent(__filename);
-var exists = document.getElementById(styleId);
-if (!exists) {
-    var s = document.createElement("style");
-    s.id = styleId;
-    s.innerHTML =${JSON.stringify(file.contents)};
-    document.getElementsByTagName("head")[0].appendChild(s);
-}}`;
+        let contents = this.minify ?
+            file.contents.replace(/\s{2,}/g, " ").replace(/\t|\r|\n/g, "").trim() : file.contents;
+        file.contents = `require("fsb-default-css-plugin")(__filename, ${JSON.stringify(contents)} );`;
     }
 }
-exports.FuseBoxCSSPlugin = FuseBoxCSSPlugin;
-exports.CSSPlugin = new FuseBoxCSSPlugin();
+exports.CSSPlugin = CSSPlugin;

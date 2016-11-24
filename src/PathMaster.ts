@@ -1,3 +1,4 @@
+
 import { IPackageInformation, IPathInformation } from './PathMaster';
 import { WorkFlowContext } from "./WorkflowContext";
 import * as path from "path";
@@ -10,6 +11,8 @@ export interface INodeModuleRequire {
 }
 
 export interface IPathInformation {
+    isRemoteFile?: boolean;
+    remoteURL?: string;
     isNodeModule: boolean;
     nodeModuleName?: string;
     nodeModuleInfo?: IPackageInformation;
@@ -30,7 +33,7 @@ export interface IPackageInformation {
 }
 
 export class AllowedExtenstions {
-    public static list: Set<string> = new Set([".js", ".json", ".xml", ".css", ".html"]);
+    public static list: Set<string> = new Set([".js", ".ts", ".json", ".xml", ".css", ".html"]);
     public static add(name: string) {
         if (!this.list.has(name)) {
             this.list.add(name);
@@ -46,6 +49,7 @@ export class AllowedExtenstions {
  */
 export class PathMaster {
 
+    private tsMode = false;
 
     constructor(public context: WorkFlowContext, public rootPackagePath?: string) { }
 
@@ -53,14 +57,22 @@ export class PathMaster {
         return this.resolve(name, this.rootPackagePath);
     }
 
+    public setTypeScriptMode() {
+        this.tsMode = true;
+    }
+
     public resolve(name: string, root: string, rootEntryLimit?: string): IPathInformation {
 
         let data = <IPathInformation>{};
 
+        if (/^(http(s)?:|\/\/)/.test(name)) {
+            data.isRemoteFile = true;
+            data.remoteURL = name;
+            data.absPath = name;
+            return data;
+        }
         data.isNodeModule = NODE_MODULE.test(name);
-        // if (name.indexOf("lodash") > -1) {
-        //     console.log(">>", name, data.isNodeModule);
-        // }
+
         if (data.isNodeModule) {
 
             let info = this.getNodeModuleInfo(name);
@@ -98,7 +110,6 @@ export class PathMaster {
             if (root) {
                 data.absPath = this.getAbsolutePath(name, root, rootEntryLimit);
                 data.absDir = path.dirname(data.absPath);
-
                 data.fuseBoxPath = this.getFuseBoxPath(data.absPath, this.rootPackagePath);
             }
         }
@@ -113,6 +124,9 @@ export class PathMaster {
         name = name.replace(/\\/g, "/");
         root = root.replace(/\\/g, "/");
         name = name.replace(root, "").replace(/^\/|\\/, "");
+        if (this.tsMode) {
+            name = this.context.convert2typescript(name);
+        }
         return name;
     }
 
@@ -129,13 +143,13 @@ export class PathMaster {
     public getAbsolutePath(name: string, root: string, rootEntryLimit?: string) {
         let url = this.ensureFolderAndExtensions(name, root);
         let result = path.resolve(root, url);
+
         // Fixing node_modules package .json limits.
         if (rootEntryLimit && name.match(/\.\.\/$/)) {
             if (result.indexOf(path.dirname(rootEntryLimit)) < 0) {
                 return rootEntryLimit;
             }
         }
-
         return result;
     }
 
@@ -150,21 +164,21 @@ export class PathMaster {
 
     private ensureFolderAndExtensions(name: string, root: string) {
         let ext = path.extname(name);
-
-        if (name[0] === "~" && (name[1] === "/" || name[1] === "\\") && this.rootPackagePath) {
+        let fileExt = this.tsMode ? ".ts" : ".js";
+        if (name[0] === "~" && name[1] === "/" && this.rootPackagePath) {
             name = "." + name.slice(1, name.length);
             name = path.join(this.rootPackagePath, name);
         }
         if (!AllowedExtenstions.has(ext)) {
             if (/\/$/.test(name)) {
-                return `${name}index.js`;
+                return `${name}index${fileExt}`;
             }
-            let folderDir = path.isAbsolute(name) ? path.join(name, "index.js")
-                : path.join(root, name, "index.js");
+            let folderDir = path.isAbsolute(name) ? path.join(name, `index${fileExt}`)
+                : path.join(root, name, `index${fileExt}`);
 
             if (fs.existsSync(folderDir)) {
                 let startsWithDot = name[0] === "."; // After transformation we need to bring the dot back
-                name = path.join(name, "/", "index.js"); // detecting a real relative path
+                name = path.join(name, "/", `index${fileExt}`); // detecting a real relative path
                 if (startsWithDot) {
                     // making sure we are not modifying it and converting to
                     // what can be take for node_module
@@ -173,11 +187,7 @@ export class PathMaster {
                     name = `./${name}`;
                 }
             } else {
-
-                if (!ext) {
-                    name += ".js";
-                }
-
+                name += fileExt;
             }
         }
         return name;
@@ -194,8 +204,7 @@ export class PathMaster {
     }
 
     private getNodeModuleInformation(name: string): IPackageInformation {
-        let localLib = path.join(Config.LOCAL_LIBS, name);
-        let modulePath = path.join(Config.NODE_MODULES_DIR, name);
+
         let readMainFile = (folder, isCustom: boolean) => {
             // package.json path
             let packageJSONPath = path.join(folder, "package.json");
@@ -234,6 +243,8 @@ export class PathMaster {
                 version: "0.0.0",
             };
         };
+        let localLib = path.join(Config.LOCAL_LIBS, name);
+        let modulePath = path.join(Config.NODE_MODULES_DIR, name);
 
         if (this.context.customModulesFolder) {
             let customFolder = path.join(this.context.customModulesFolder, name);
@@ -243,9 +254,17 @@ export class PathMaster {
         }
 
         if (this.rootPackagePath) {// handle a conflicting library
+
             let nestedNodeModule = path.join(this.rootPackagePath, "node_modules", name);
             if (fs.existsSync(nestedNodeModule)) {
                 return readMainFile(nestedNodeModule, true);
+            } else {
+                // climb up (sometimes it can be in a parent)
+                let upperNodeModule = path.join(this.rootPackagePath, "../", name);
+                if (fs.existsSync(upperNodeModule)) {
+                    let isCustom = path.dirname(this.rootPackagePath) !== Config.NODE_MODULES_DIR;
+                    return readMainFile(upperNodeModule, isCustom);
+                }
             }
         }
         if (fs.existsSync(localLib)) {

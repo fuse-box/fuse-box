@@ -2,6 +2,7 @@ import { File } from "../File";
 import { WorkFlowContext } from "./../WorkflowContext";
 import { Plugin } from "../WorkflowContext";
 
+
 /**
  * 
  * 
@@ -16,9 +17,8 @@ export class BabelPlugin implements Plugin {
      * @type {RegExp}
      * @memberOf FuseBoxHTMLPlugin
      */
-
-
-    constructor(public test: RegExp, public opts?: any) { }
+    public test: RegExp = /\.js$/;
+    public context: WorkFlowContext;
     /**
      * 
      * 
@@ -27,7 +27,7 @@ export class BabelPlugin implements Plugin {
      * @memberOf FuseBoxHTMLPlugin
      */
     public init(context: WorkFlowContext) {
-        context.allowExtension(".html");
+        this.context = context;
     }
     /**
      * 
@@ -36,14 +36,15 @@ export class BabelPlugin implements Plugin {
      * 
      * @memberOf FuseBoxHTMLPlugin
      */
-    public transform(file: File) {
-        let babel = require("babel-core");
-        const result = babel.transform(file.contents, this.opts || {});
-        console.log(result.code);
-        // result.code; // Generated code
-        // result.map; // Sourcemap
-        // result.ast; // AST
-        file.contents = result.code;
+    public transform(file: File, ast: any) {
+        const babelCore = require("babel-core");
+        return new Promise((resolve, reject) => {
+            let result = babelCore.transform(file.contents, {
+                presets: ["es2015"],
+                plugins: ["add-module-exports"]
+            });
+            file.contents = result.code;
+            return resolve();
+        });
     }
 };
-

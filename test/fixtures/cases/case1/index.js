@@ -1,36 +1,16 @@
-// require("./bar.js")
-// var foo = require("fuse-box-testcase3/dist/foo")
-// require("fuse-box-testcase3");
-
-// var CodeMirror = require('codemirror')
-// var cheerio = require('cheerio');
-// var babel = require('babel-standalone');
-// var coreJS = require('core-js');
-// var path = require("path")
-// var buffer = require("buffer")
-// var acorn = require('acorn')
-// var tern = require('tern')
-
-// var babylon = require('babylon')
-
-// require("babel-types")
-// console.log(require('core-js'));
-
-// require("core-js")
-// require("acorn/dist/walk")
-// let loose = require("acorn/dist/acorn_loose")
-// console.log(require("acorn"));
-// console.log(require("acorn"));
-
-
-
 //require("~/sub/hello.js");
-
+//console.log(require("babel-generator"));
+exports.hello = 1;
 
 // var dynamicPath = "./custom/foo.js";
 
 // console.log(require(dynamicPath));
-
+// var generator = require('cheerio')
+// console.log(generator);
+// FuseBox.intercept(["default", "cheerio"], /\.js$/, (exports, require, module, filename, dirname, moduleName) => {
+//     console.log(moduleName);
+//     FuseBox.exists(moduleName, "bar.js")
+// });
 
 
 // var f3 = require("fuse-box-testcase1");
@@ -46,17 +26,19 @@
 // $('h2').addClass('welcome')
 // console.log($.html());
 
+//console.log(require("core-js/library/fn/symbol"));
 
+
+//console.log(require("core-js"));
 // var tern = require('tern')
 
-// var generator = require('babel-generator')
-// console.log(generator);
+
 // require("htmlparser2")
 // let hello = require("hello");
 // console.log(hello);
 //require("./foo");
-require("~/sub/hello.js");
-console.log(1);
+// require("~/sub/hello.js");
+
 
 // var asyncWatch = require("async-watch")
 // var reactive = require("wires-reactive")
@@ -66,7 +48,7 @@ console.log(1);
 // var some = require("fuse-box-test-using-old-version");
 // var newFancy = require("fuse-box-test-rogue-files");
 // var stuff = require("fuse-box-test-rogue-files/dist/some");
-// //var reactive = require("wires-reactive");
+// var reactive = require("wires-reactive");
 // var asyncWatch = require("async-watch")
 
 //require("fuse-box-testcase1")
@@ -74,11 +56,11 @@ console.log(1);
 //var chars = new RegExp(`ªµºÀ-ÖØ-öø`);
 // var input = 'const getMessage = () => "Hello World";';
 // var output = (0, _babelStandalone.transform)(input, { presets: ['es2015'] }).code;
-require("./test.css");
+//require("./test.css");
 
 
-// var generator = require('babel-generator')
-// console.log(generator);
+//var generator = require('babel-runtime')
+//console.log(generator);
 // var babylon = require('babylon')
 // const code = 'class Example {}';
 // const ast = babylon.parse(code);

@@ -1,8 +1,8 @@
 "use strict";
+var BabelPlugin_1 = require('./plugins/BabelPlugin');
+exports.BabelPlugin = BabelPlugin_1.BabelPlugin;
 var CSSplugin_1 = require("./plugins/CSSplugin");
 exports.CSSPlugin = CSSplugin_1.CSSPlugin;
-var BabelPlugin_1 = require("./plugins/BabelPlugin");
-exports.BabelPlugin = BabelPlugin_1.BabelPlugin;
 var HTMLplugin_1 = require("./plugins/HTMLplugin");
 exports.HTMLPlugin = HTMLplugin_1.HTMLPlugin;
 var JSONplugin_1 = require("./plugins/JSONplugin");
