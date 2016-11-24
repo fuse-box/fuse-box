@@ -17,7 +17,7 @@ class FileAST {
         this.ast = acorn.parse(this.file.contents, {
             sourceType: "module",
             tolerant: true,
-            ecmaVersion: 7,
+            ecmaVersion: 8,
             plugins: { es7: true },
         });
     }
@@ -37,6 +37,18 @@ class FileAST {
                 this.dependencies.push(item.source.value);
             }
         });
+    }
+    extractStreamVariables() {
+        let streamisDefined = astq.query(this.ast, `// VariableDeclarator/Identifier[@name=="stream"]`);
+        if (streamisDefined.length) {
+            return;
+        }
+        let result = astq.query(this.ast, `// MemberExpression/Identifier[@name=="stream"]`);
+        if (!result.length) {
+            return;
+        }
+        this.dependencies.push("stream");
+        this.file.addHeaderContent(`var stream = require("stream");`);
     }
     processNodejsVariables() {
         let processIsDefined = astq.query(this.ast, `// VariableDeclarator/Identifier[@name=="process"]`);

@@ -1,7 +1,7 @@
 {
   "name": "fuse-box",
-  "version": "1.2.32",
-  "description": "Fuse-Box a bundle just does it right",
+  "version": "1.2.50",
+  "description": "Fuse-Box a bundler just does it right",
   "typings": "./dist/typings/index.d.ts",
   "main": "dist/commonjs/index.js",
   "directories": {
@@ -49,13 +49,12 @@
     "app-root-path": "^2.0.1",
     "astq": "^1.8.0",
     "buffer": "^5.0.0",
-    "char-spinner": "^1.0.1",
-    "esquery": "^0.4.0",
-    "fuse-box-test-rogue-files": "^2.0.0",
+    "concat-with-sourcemaps": "^1.0.4",
     "glob": "^7.1.1",
     "mkdirp": "^0.5.1",
     "pretty-time": "^0.2.0",
     "prettysize": "0.0.3",
-    "realm-utils": "^1.0.5"
+    "realm-utils": "^1.0.5",
+    "request": "^2.79.0"
   }
 }

@@ -1,25 +1,14 @@
-import { ModuleCollection } from './ModuleCollection';
-const spinner = require("char-spinner");
+import { ModuleCollection } from "./ModuleCollection";
 const ansi = require("ansi");
 const cursor = ansi(process.stdout);
 const prettysize = require("prettysize");
 const prettyTime = require("pretty-time");
 
 export class Log {
-    private spinnerInterval: any;
     private timeStart = process.hrtime();
     private totalSize = 0;
     constructor(public printLog: boolean) { }
 
-    public startSpinning() {
-        this.spinnerInterval = spinner({
-            string: "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏",
-        });
-    }
-
-    public stopSpinning() {
-        clearInterval(this.spinnerInterval);
-    }
 
     public echoDefaultCollection(collection: ModuleCollection, contents: string, printFiles?: boolean) {
         if (!this.printLog) {
@@ -34,7 +23,9 @@ export class Log {
 
         cursor.write("\n")
         collection.dependencies.forEach(file => {
-            cursor.brightBlack().write(`      ${file.info.fuseBoxPath}`).write("\n")
+            if (!file.info.isRemoteFile) {
+                cursor.brightBlack().write(`      ${file.info.fuseBoxPath}`).write("\n")
+            }
         });
         cursor.reset();
     }
@@ -61,7 +52,7 @@ export class Log {
         cursor.write("\n")
             .brightBlack().write(`    --------------\n`)
             .yellow().write(`    Size: ${prettysize(this.totalSize)} \n`)
-            .yellow().write(`    Time: ${prettyTime(took, 'ms')}`)
+            .yellow().write(`    Time: ${prettyTime(took, "ms")}`)
             .write("\n")
             .brightBlack().write(`    --------------\n`)
             .write("\n").reset();

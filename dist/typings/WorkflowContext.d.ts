@@ -1,4 +1,5 @@
-import { File } from './File';
+import { BundleSource } from "./BundleSource";
+import { File } from "./File";
 import { Log } from "./Log";
 import { IPackageInformation } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
@@ -12,6 +13,8 @@ export interface Plugin {
     transform: {
         (file: File, ast?: any);
     };
+    bundleStart?(context: WorkFlowContext): any;
+    bundleEnd?(context: WorkFlowContext): any;
 }
 export declare class WorkFlowContext {
     nodeModules: Map<string, ModuleCollection>;
@@ -22,18 +25,27 @@ export declare class WorkFlowContext {
     useCache: boolean;
     doLog: boolean;
     cache: ModuleCache;
+    tsConfig: any;
     customModulesFolder: string;
+    tsMode: boolean;
     globals: string[];
+    standaloneBundle: boolean;
+    source: BundleSource;
+    sourceMapConfig: any;
+    outFile: string;
     log: Log;
     reset(): void;
     allowExtension(ext: string): void;
     setHomeDir(dir: string): void;
     setLibInfo(name: string, version: string, info: IPackageInformation): Map<string, IPackageInformation>;
+    convert2typescript(name: string): string;
     getLibInfo(name: string, version: string): IPackageInformation;
     setPrintLogs(printLogs: any): void;
     setUseCache(useCache: boolean): void;
     hasNodeModule(name: string): boolean;
     addNodeModule(name: string, collection: ModuleCollection): void;
-    spinStart(title: string): void;
+    getTypeScriptConfig(): any;
+    ensureUserPath(userPath: string): string;
+    writeOutput(): void;
     getNodeModule(name: string): ModuleCollection;
 }

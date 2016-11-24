@@ -52,6 +52,7 @@ export class FileAST {
     public consume() {
         this.parse();
         this.processNodejsVariables();
+        //this.extractStreamVariables();
         this.processDependencies();
     }
 
@@ -66,8 +67,9 @@ export class FileAST {
         this.ast = acorn.parse(this.file.contents, {
             sourceType: "module",
             tolerant: true,
-            ecmaVersion: 7,
+            ecmaVersion: 8,
             plugins: { es7: true },
+
         });
     }
 
@@ -96,6 +98,24 @@ export class FileAST {
         });
     }
 
+    private extractStreamVariables() {
+        // Making sure we are not adding it where a definition of "process"" has been seen;
+        // For example var process = {} will not add "process"" as a dependency
+        // Otherwise we will go into an infinite loop
+        let streamisDefined = astq.query(this.ast, `// VariableDeclarator/Identifier[@name=="stream"]`);
+        if (streamisDefined.length) {
+            return;
+        }
+        // Lookup for "process"" mention
+        let result = astq.query(this.ast, `// MemberExpression/Identifier[@name=="stream"]`);
+        if (!result.length) {
+            return;
+        }
+
+        this.dependencies.push("stream");
+        // This will be added later at wrap time
+        this.file.addHeaderContent(`var stream = require("stream");`);
+    }
     /**
      * Process additional conditions
      * For example "process" variables
@@ -105,8 +125,8 @@ export class FileAST {
      * @memberOf FileAST
      */
     private processNodejsVariables() {
-        // Making sure we are not adding it where a definition of process was seen;
-        // For example var process = {} will not add "process"" a a dependency
+        // Making sure we are not adding it where a definition of "process"" has been seen;
+        // For example var process = {} will not add "process"" as a dependency
         // Otherwise we will go into an infinite loop
         let processIsDefined = astq.query(this.ast, `// VariableDeclarator/Identifier[@name=="process"]`);
         if (processIsDefined.length) {

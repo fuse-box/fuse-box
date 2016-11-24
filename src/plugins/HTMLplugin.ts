@@ -35,6 +35,7 @@ export class FuseBoxHTMLPlugin implements Plugin {
      * @memberOf FuseBoxHTMLPlugin
      */
     public transform(file: File) {
+
         file.contents = `module.exports.default =  ${JSON.stringify(file.contents)}`;
     }
 };

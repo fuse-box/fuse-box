@@ -8,12 +8,17 @@ exports.getTestEnv = (files, str, done) => {
             cache: false,
             files: files
         });
-        fsb.bundle(str, true).then(str => {
+        fsb.bundle(str).then(data => {
 
             let scope = {};
+            let str = data.content.toString()
             str = str.replace(/var __root__=this,/, "")
-            let fn = new Function("__root__", str);
-            fn(scope);
+
+            let fn = new Function("__root__", "window", str);
+            //console.log(str);
+
+            fn(scope, {});
+
             return resolve(scope);
         });
     });

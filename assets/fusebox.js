@@ -1,6 +1,10 @@
 var __root__ = this;
+var isBrowser = typeof window !== "undefined";
+if (!isBrowser) {
+    __root__ = module.exports;
+}
 var FuseBox = __root__.FuseBox = (function() {
-    var isBrowser = typeof window !== "undefined";
+
     var modules = isBrowser ? (window.__npm__ = window.__npm__ || {}) : {};
     var $interceptors = isBrowser ? (window.__interceptors__ = window.__interceptors__ || {}) : {};
     var getNodeModuleName = function(name) {
@@ -89,6 +93,24 @@ var FuseBox = __root__.FuseBox = (function() {
                 return mod.scope.evaluate(userPath, null, parent);
             }
         },
+        loadURL: function(url) {
+            if (isBrowser) {
+                var head = document.getElementsByTagName('head')[0];
+                var target;
+                if (/\.css$/.test(url)) {
+                    target = document.createElement('link');
+                    target.rel = 'stylesheet';
+                    target.type = 'text/css';
+                    target.href = url;
+                } else {
+                    target = document.createElement('script');
+                    target.type = 'text/javascript';
+                    target.src = url;
+                    target.async = true;
+                }
+                head.insertBefore(target, head.firstChild);
+            }
+        },
         expose: function(collections) {
             for (var i = 0; i < collections.length; i++) {
                 var data = collections[i].split(/\/(.+)?/);
@@ -160,8 +182,17 @@ var FuseBox = __root__.FuseBox = (function() {
                     entry.isLoading = true;
                     locals.exports = {};
                     locals.require = function(target) {
+                        //handle remote files
+
+                        if (/^(http(s)?:|\/\/)/.test(target)) {
+                            return FuseBox.loadURL(target);
+                        }
                         var _module = getNodeModuleName(target);
                         if (_module) {
+                            // fix for nodejs.
+                            if (!isBrowser) {
+                                return require(target);
+                            }
                             var _moduleName = _module[0];
                             if (customVersions[_moduleName]) { _moduleName = _moduleName + "@" + customVersions[_moduleName]; }
                             if (_module[1]) { return FuseBox.import(_module[1], _moduleName, entryName); }

@@ -33,9 +33,12 @@ export interface IBundleInformation {
 export class BundleData {
     public tmpFolder: string;
 
-    constructor(public homeDir: string,
+    constructor(public homeDir: string, public typescriptMode: boolean,
         public including: Map<string, IBundleInformation>,
-        public excluding: Map<string, IBundleInformation>, public entry?: string) {
+        public excluding: Map<string, IBundleInformation>,
+        public entry?: string
+
+    ) {
     }
 
 
@@ -82,6 +85,7 @@ export class BundleData {
  * @class Arithmetic
  */
 export class Arithmetic {
+
     /**
      *
      *
@@ -97,6 +101,8 @@ export class Arithmetic {
         return parser;
     }
 
+
+
     /**
      * Get files from a directory
      * In case of virtualFiles we create a temp folder,
@@ -111,7 +117,7 @@ export class Arithmetic {
      * @memberOf Arithmetic
      */
     public static getFiles(parser: PropParser, virtualFiles: string, homeDir: string) {
-
+        let tsMode = false;
         let collect = (list) => {
             let data = new Map<string, IBundleInformation>();
             return each(list, (withDeps, filePattern) => {
@@ -122,8 +128,14 @@ export class Arithmetic {
                     });
                     return;
                 }
+
                 let fp = path.join(homeDir, filePattern);
                 let extname = path.extname(fp);
+
+                // Switching to typescript mode
+                if (extname === ".ts") {
+                    tsMode = true;
+                }
                 if (!extname && !filePattern.match(/\.js$/)) {
                     fp += ".js";
                 }
@@ -138,7 +150,6 @@ export class Arithmetic {
                     });
                 });
             }).then(x => {
-
                 return data;
             });
         }
@@ -176,7 +187,7 @@ export class Arithmetic {
                 }
             }
         }).then(result => {
-            let data = new BundleData(homeDir, result.including, result.excluding, result.entry);
+            let data = new BundleData(homeDir, tsMode, result.including, result.excluding, result.entry);
             if (result.tempFolder) {
                 data.setupTempFolder(result.tempFolder);
             }

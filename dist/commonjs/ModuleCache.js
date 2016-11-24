@@ -13,11 +13,36 @@ class ModuleCache {
             flat: {}
         };
         this.cacheFolder = path.join(Config_1.Config.TEMP_FOLDER, "cache", Config_1.Config.FUSEBOX_VERSION, encodeURIComponent(Config_1.Config.PROJECT_FOLDER));
+        this.staticCacheFolder = path.join(this.cacheFolder, "static");
+        mkdirp.sync(this.staticCacheFolder);
         mkdirp.sync(this.cacheFolder);
         this.cacheFile = path.join(this.cacheFolder, "deps.json");
         if (fs.existsSync(this.cacheFile)) {
             this.cachedDeps = require(this.cacheFile);
         }
+    }
+    getStaticCache(file) {
+        let stats = fs.statSync(file.absPath);
+        let fileName = encodeURIComponent(file.info.fuseBoxPath);
+        let dest = path.join(this.staticCacheFolder, fileName);
+        if (fs.existsSync(dest)) {
+            let data = require(dest);
+            if (data.mtime !== stats.mtime.getTime()) {
+                return;
+            }
+            return data;
+        }
+    }
+    writeStaticCache(file, dependencies, sourcemaps) {
+        let fileName = encodeURIComponent(file.info.fuseBoxPath);
+        let dest = path.join(this.staticCacheFolder, fileName);
+        let stats = fs.statSync(file.absPath);
+        let data = `module.exports = { contents : ${JSON.stringify(file.contents)}, 
+dependencies : ${JSON.stringify(dependencies)}, 
+sourceMap : ${JSON.stringify(sourcemaps || {})},
+mtime : ${stats.mtime.getTime()}
+};`;
+        fs.writeFileSync(dest, data);
     }
     resolve(files) {
         let through = [];

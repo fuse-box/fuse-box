@@ -7,5 +7,6 @@ export declare class FileAST {
     consume(): void;
     private parse();
     private processDependencies();
+    private extractStreamVariables();
     private processNodejsVariables();
 }

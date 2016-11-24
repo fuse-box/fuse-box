@@ -6,11 +6,12 @@ export interface IBundleInformation {
 }
 export declare class BundleData {
     homeDir: string;
+    typescriptMode: boolean;
     including: Map<string, IBundleInformation>;
     excluding: Map<string, IBundleInformation>;
     entry: string;
     tmpFolder: string;
-    constructor(homeDir: string, including: Map<string, IBundleInformation>, excluding: Map<string, IBundleInformation>, entry?: string);
+    constructor(homeDir: string, typescriptMode: boolean, including: Map<string, IBundleInformation>, excluding: Map<string, IBundleInformation>, entry?: string);
     setupTempFolder(tmpFolder: string): void;
     fileBlackListed(file: File): boolean;
     fileWhiteListed(file: File): boolean;

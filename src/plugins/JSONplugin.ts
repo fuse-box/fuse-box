@@ -35,6 +35,7 @@ export class FuseBoxJSONPlugin implements Plugin {
      * @memberOf FuseBoxHTMLPlugin
      */
     public transform(file: File) {
+
         file.contents = `module.exports = ${file.contents || {}};`;
     }
 };

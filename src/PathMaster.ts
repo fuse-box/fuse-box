@@ -1,3 +1,4 @@
+
 import { IPackageInformation, IPathInformation } from './PathMaster';
 import { WorkFlowContext } from "./WorkflowContext";
 import * as path from "path";
@@ -10,6 +11,8 @@ export interface INodeModuleRequire {
 }
 
 export interface IPathInformation {
+    isRemoteFile?: boolean;
+    remoteURL?: string;
     isNodeModule: boolean;
     nodeModuleName?: string;
     nodeModuleInfo?: IPackageInformation;
@@ -30,7 +33,7 @@ export interface IPackageInformation {
 }
 
 export class AllowedExtenstions {
-    public static list: Set<string> = new Set([".js", ".json", ".xml", ".css", ".html"]);
+    public static list: Set<string> = new Set([".js", ".ts", ".json", ".xml", ".css", ".html"]);
     public static add(name: string) {
         if (!this.list.has(name)) {
             this.list.add(name);
@@ -46,6 +49,7 @@ export class AllowedExtenstions {
  */
 export class PathMaster {
 
+    private tsMode = false;
 
     constructor(public context: WorkFlowContext, public rootPackagePath?: string) { }
 
@@ -53,10 +57,20 @@ export class PathMaster {
         return this.resolve(name, this.rootPackagePath);
     }
 
+    public setTypeScriptMode() {
+        this.tsMode = true;
+    }
+
     public resolve(name: string, root: string, rootEntryLimit?: string): IPathInformation {
 
         let data = <IPathInformation>{};
 
+        if (/^(http(s)?:|\/\/)/.test(name)) {
+            data.isRemoteFile = true;
+            data.remoteURL = name;
+            data.absPath = name;
+            return data;
+        }
         data.isNodeModule = NODE_MODULE.test(name);
 
         if (data.isNodeModule) {
@@ -94,11 +108,8 @@ export class PathMaster {
 
         } else {
             if (root) {
-
                 data.absPath = this.getAbsolutePath(name, root, rootEntryLimit);
-
                 data.absDir = path.dirname(data.absPath);
-
                 data.fuseBoxPath = this.getFuseBoxPath(data.absPath, this.rootPackagePath);
             }
         }
@@ -113,6 +124,9 @@ export class PathMaster {
         name = name.replace(/\\/g, "/");
         root = root.replace(/\\/g, "/");
         name = name.replace(root, "").replace(/^\/|\\/, "");
+        if (this.tsMode) {
+            name = this.context.convert2typescript(name);
+        }
         return name;
     }
 
@@ -150,21 +164,21 @@ export class PathMaster {
 
     private ensureFolderAndExtensions(name: string, root: string) {
         let ext = path.extname(name);
-
+        let fileExt = this.tsMode ? ".ts" : ".js";
         if (name[0] === "~" && name[1] === "/" && this.rootPackagePath) {
             name = "." + name.slice(1, name.length);
             name = path.join(this.rootPackagePath, name);
         }
         if (!AllowedExtenstions.has(ext)) {
             if (/\/$/.test(name)) {
-                return `${name}index.js`;
+                return `${name}index${fileExt}`;
             }
-            let folderDir = path.isAbsolute(name) ? path.join(name, "index.js")
-                : path.join(root, name, "index.js");
+            let folderDir = path.isAbsolute(name) ? path.join(name, `index${fileExt}`)
+                : path.join(root, name, `index${fileExt}`);
 
             if (fs.existsSync(folderDir)) {
                 let startsWithDot = name[0] === "."; // After transformation we need to bring the dot back
-                name = path.join(name, "/", "index.js"); // detecting a real relative path
+                name = path.join(name, "/", `index${fileExt}`); // detecting a real relative path
                 if (startsWithDot) {
                     // making sure we are not modifying it and converting to
                     // what can be take for node_module
@@ -173,11 +187,7 @@ export class PathMaster {
                     name = `./${name}`;
                 }
             } else {
-
-                // if (!ext) {
-                name += ".js";
-                //}
-
+                name += fileExt;
             }
         }
         return name;

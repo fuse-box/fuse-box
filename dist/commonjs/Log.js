@@ -1,5 +1,4 @@
 "use strict";
-const spinner = require("char-spinner");
 const ansi = require("ansi");
 const cursor = ansi(process.stdout);
 const prettysize = require("prettysize");
@@ -9,14 +8,6 @@ class Log {
         this.printLog = printLog;
         this.timeStart = process.hrtime();
         this.totalSize = 0;
-    }
-    startSpinning() {
-        this.spinnerInterval = spinner({
-            string: "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏",
-        });
-    }
-    stopSpinning() {
-        clearInterval(this.spinnerInterval);
     }
     echoDefaultCollection(collection, contents, printFiles) {
         if (!this.printLog) {
@@ -30,7 +21,9 @@ class Log {
             .yellow().write(` (${collection.dependencies.size} files,  ${size})`);
         cursor.write("\n");
         collection.dependencies.forEach(file => {
-            cursor.brightBlack().write(`      ${file.info.fuseBoxPath}`).write("\n");
+            if (!file.info.isRemoteFile) {
+                cursor.brightBlack().write(`      ${file.info.fuseBoxPath}`).write("\n");
+            }
         });
         cursor.reset();
     }
@@ -55,7 +48,7 @@ class Log {
         cursor.write("\n")
             .brightBlack().write(`    --------------\n`)
             .yellow().write(`    Size: ${prettysize(this.totalSize)} \n`)
-            .yellow().write(`    Time: ${prettyTime(took, 'ms')}`)
+            .yellow().write(`    Time: ${prettyTime(took, "ms")}`)
             .write("\n")
             .brightBlack().write(`    --------------\n`)
             .write("\n").reset();

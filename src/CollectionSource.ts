@@ -1,36 +1,20 @@
 import { WorkFlowContext } from "./WorkflowContext";
-import { ModuleWrapper } from "./ModuleWrapper";
 import { ModuleCollection } from "./ModuleCollection";
 import { File } from "./File";
 export class CollectionSource {
     constructor(public context: WorkFlowContext) { }
 
-    public get(collection: ModuleCollection): Promise<string> {
+    public get(collection: ModuleCollection, withSourceMaps: boolean = false): Promise<string> {
         if (collection.cachedContent) {
             return new Promise((resolve, reject) => {
+                this.context.source.addContent(collection.cachedContent);
                 return resolve(collection.cachedContent);
             });
-
         }
+        this.context.source.startCollection(collection);
         return this.resolveFiles(collection.dependencies).then(cnt => {
-            let entryFile = collection.entryFile;
-            return ModuleWrapper.wrapModule(
-                collection.name,
-                collection.conflictingVersions,
-                cnt.join("\n"),
-                entryFile ? entryFile.info.fuseBoxPath : "");
+            return this.context.source.endCollection(collection);
         });
-        /*
-        let cnt = [];
-        collection.dependencies.forEach(file => {
-            let content = ModuleWrapper.wrapGeneric(file.info.fuseBoxPath, file.contents);
-            cnt.push(content);
-        });
-        return new Promise((resolve, reject) => {
-            let entryFile = collection.entryFile;
-            return resolve(ModuleWrapper.wrapModule(collection.name, collection.conflictingVersions, cnt.join("\n"),
-                entryFile ? entryFile.info.fuseBoxPath : ""));
-        });*/
 
     }
     private resolveFiles(files: Map<string, File>) {
@@ -43,8 +27,9 @@ export class CollectionSource {
         });
         return Promise.all(promises).then(() => {
             files.forEach(file => {
-                let content = ModuleWrapper.wrapFile(file);
-                cnt.push(content);
+                if (!file.info.isRemoteFile) {
+                    this.context.source.addFile(file);
+                }
             });
             return cnt;
         })

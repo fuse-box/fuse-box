@@ -8,10 +8,13 @@ export declare class File {
     isLoaded: boolean;
     isNodeModuleEntry: boolean;
     headerContent: string[];
+    isTypeScript: boolean;
+    sourceMap: any;
     resolving: Promise<any>[];
     constructor(context: WorkFlowContext, info: IPathInformation);
     getCrossPlatormPath(): string;
     tryPlugins(_ast?: any): void;
     addHeaderContent(str: string): void;
     consume(): string[];
+    private handleTypescript();
 }

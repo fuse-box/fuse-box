@@ -45,6 +45,7 @@ export class CSSPlugin implements Plugin {
      * @memberOf FuseBoxCSSPlugin
      */
     public transform(file: File) {
+
         let contents = this.minify ?
             file.contents.replace(/\s{2,}/g, " ").replace(/\t|\r|\n/g, "").trim() : file.contents;
         file.contents = `require("fsb-default-css-plugin")(__filename, ${JSON.stringify(contents)} );`;

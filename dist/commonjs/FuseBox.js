@@ -5,7 +5,6 @@ const PathMaster_1 = require("./PathMaster");
 const WorkflowContext_1 = require("./WorkflowContext");
 const CollectionSource_1 = require("./CollectionSource");
 const Arithmetic_1 = require("./Arithmetic");
-const ModuleWrapper_1 = require("./ModuleWrapper");
 const ModuleCollection_1 = require("./ModuleCollection");
 const path = require("path");
 const realm_utils_1 = require("realm-utils");
@@ -25,6 +24,9 @@ class FuseBox {
                 path.isAbsolute(opts.modulesFolder)
                     ? opts.modulesFolder : path.join(appRoot.path, opts.modulesFolder);
         }
+        if (opts.tsConfig) {
+            this.context.tsConfig = opts.tsConfig;
+        }
         this.context.plugins = opts.plugins || [HTMLplugin_1.HTMLPlugin, JSONplugin_1.JSONPlugin];
         if (opts.cache !== undefined) {
             this.context.useCache = opts.cache ? true : false;
@@ -35,14 +37,38 @@ class FuseBox {
         if (opts.globals) {
             this.context.globals = [].concat(opts.globals);
         }
+        if (opts.standaloneBundle !== undefined) {
+            this.context.standaloneBundle = opts.standaloneBundle;
+        }
+        if (opts.sourceMap) {
+            this.context.sourceMapConfig = opts.sourceMap;
+        }
+        if (opts.outFile) {
+            this.context.outFile = opts.outFile;
+        }
         this.context.setHomeDir(homeDir);
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);
         }
         this.virtualFiles = opts.files;
     }
+    triggerStart() {
+        this.context.plugins.forEach(plugin => {
+            if (realm_utils_1.utils.isFunction(plugin.bundleStart)) {
+                plugin.bundleStart(this.context);
+            }
+        });
+    }
+    triggerEnd() {
+        this.context.plugins.forEach(plugin => {
+            if (realm_utils_1.utils.isFunction(plugin.bundleEnd)) {
+                plugin.bundleEnd(this.context);
+            }
+        });
+    }
     bundle(str, standalone) {
         this.context.reset();
+        this.triggerStart();
         let parser = Arithmetic_1.Arithmetic.parse(str);
         let bundle;
         return Arithmetic_1.Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
@@ -58,6 +84,10 @@ class FuseBox {
     process(bundleData, standalone) {
         let bundleCollection = new ModuleCollection_1.ModuleCollection(this.context, "default");
         bundleCollection.pm = new PathMaster_1.PathMaster(this.context, bundleData.homeDir);
+        if (bundleData.typescriptMode) {
+            this.context.tsMode = true;
+            bundleCollection.pm.setTypeScriptMode();
+        }
         let self = this;
         return bundleCollection.collectBundle(bundleData).then(module => {
             return realm_utils_1.chain(class extends realm_utils_1.Chainable {
@@ -71,7 +101,6 @@ class FuseBox {
                 addDefaultContents() {
                     return self.collectionSource.get(this.defaultCollection).then((cnt) => {
                         self.context.log.echoDefaultCollection(this.defaultCollection, cnt);
-                        this.globalContents.push(cnt);
                     });
                 }
                 addNodeModules() {
@@ -92,9 +121,11 @@ class FuseBox {
                 }
             }
             ).then(result => {
-                let contents = result.contents.join("\n");
                 self.context.log.end();
-                return ModuleWrapper_1.ModuleWrapper.wrapFinal(this.context, contents, bundleData.entry, standalone);
+                this.triggerEnd();
+                self.context.source.finalize(bundleData);
+                this.context.writeOutput();
+                return self.context.source.getResult();
             });
         });
     }

@@ -293,7 +293,7 @@ export class ModuleCollection {
             // Consuming file 
             // Here we read it and return a list of require statements
             let dependencies = file.consume();
-            // console.log("DEP", file.absPath);
+
             this.dependencies.set(file.absPath, file);
             let fileLimitPath;
             // Checking for the limits
