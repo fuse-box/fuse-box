@@ -29,6 +29,12 @@ class PathMaster {
     }
     resolve(name, root, rootEntryLimit) {
         let data = {};
+        if (/^(http(s)?:|\/\/)/.test(name)) {
+            data.isRemoteFile = true;
+            data.remoteURL = name;
+            data.absPath = name;
+            return data;
+        }
         data.isNodeModule = NODE_MODULE.test(name);
         if (data.isNodeModule) {
             let info = this.getNodeModuleInfo(name);

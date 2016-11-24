@@ -21,7 +21,9 @@ class Log {
             .yellow().write(` (${collection.dependencies.size} files,  ${size})`);
         cursor.write("\n");
         collection.dependencies.forEach(file => {
-            cursor.brightBlack().write(`      ${file.info.fuseBoxPath}`).write("\n");
+            if (!file.info.isRemoteFile) {
+                cursor.brightBlack().write(`      ${file.info.fuseBoxPath}`).write("\n");
+            }
         });
         cursor.reset();
     }
@@ -46,7 +48,7 @@ class Log {
         cursor.write("\n")
             .brightBlack().write(`    --------------\n`)
             .yellow().write(`    Size: ${prettysize(this.totalSize)} \n`)
-            .yellow().write(`    Time: ${prettyTime(took, 'ms')}`)
+            .yellow().write(`    Time: ${prettyTime(took, "ms")}`)
             .write("\n")
             .brightBlack().write(`    --------------\n`)
             .write("\n").reset();

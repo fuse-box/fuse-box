@@ -100,6 +100,9 @@ export class BundleSource {
      * @memberOf BundleSource
      */
     public addFile(file: File) {
+        if (file.info.isRemoteFile) {
+            return;
+        }
         this.collectionSource.add(null,
             `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){ 
 ${file.headerContent ? file.headerContent.join("\n") : ""}`);

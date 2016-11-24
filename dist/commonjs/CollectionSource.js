@@ -25,7 +25,9 @@ class CollectionSource {
         });
         return Promise.all(promises).then(() => {
             files.forEach(file => {
-                this.context.source.addFile(file);
+                if (!file.info.isRemoteFile) {
+                    this.context.source.addFile(file);
+                }
             });
             return cnt;
         });

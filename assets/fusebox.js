@@ -95,10 +95,20 @@ var FuseBox = __root__.FuseBox = (function() {
         },
         loadURL: function(url) {
             if (isBrowser) {
-                script = document.createElement('script');
-                script.type = 'text/javascript';
-                script.src = url;
-                document.getElementsByTagName('head')[0].appendChild(script);
+                var head = document.getElementsByTagName('head')[0];
+                var target;
+                if (/\.css$/.test(url)) {
+                    target = document.createElement('link');
+                    target.rel = 'stylesheet';
+                    target.type = 'text/css';
+                    target.href = url;
+                } else {
+                    target = document.createElement('script');
+                    target.type = 'text/javascript';
+                    target.src = url;
+                    target.async = true;
+                }
+                head.insertBefore(target, head.firstChild);
             }
         },
         expose: function(collections) {
@@ -172,10 +182,11 @@ var FuseBox = __root__.FuseBox = (function() {
                     entry.isLoading = true;
                     locals.exports = {};
                     locals.require = function(target) {
-                        // handle remote files
-                        // if (target.match(/^http(s)?:/)) {
-                        //     return FuseBox.loadURL(target);
-                        // }
+                        //handle remote files
+
+                        if (/^(http(s)?:|\/\/)/.test(target)) {
+                            return FuseBox.loadURL(target);
+                        }
                         var _module = getNodeModuleName(target);
                         if (_module) {
                             // fix for nodejs.

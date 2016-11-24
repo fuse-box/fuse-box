@@ -65,12 +65,12 @@ export class PathMaster {
 
         let data = <IPathInformation>{};
 
-        // if (name.match(/^http(s)?:/)) {
-        //     data.isRemoteFile = true;
-        //     data.remoteURL = name;
-        //     data.absPath = name;
-        //     return data;
-        // }
+        if (/^(http(s)?:|\/\/)/.test(name)) {
+            data.isRemoteFile = true;
+            data.remoteURL = name;
+            data.absPath = name;
+            return data;
+        }
         data.isNodeModule = NODE_MODULE.test(name);
 
         if (data.isNodeModule) {

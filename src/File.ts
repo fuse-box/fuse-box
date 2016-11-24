@@ -107,6 +107,7 @@ export class File {
             let jsonSourceMaps = JSON.parse(result.sourceMapText);
             jsonSourceMaps.file = this.info.fuseBoxPath;
             jsonSourceMaps.sources = [this.info.fuseBoxPath.replace(/\.js$/, ".ts")];
+            result.outputText = result.outputText.replace("//# sourceMappingURL=module.js.map", "")
             this.sourceMap = JSON.stringify(jsonSourceMaps);
         }
 

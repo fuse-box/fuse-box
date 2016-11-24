@@ -2,14 +2,7 @@ const build = require("./build/commonjs/index.js");
 //global.Promise = require('bluebird')
 const FuseBox = build.FuseBox;
 const fs = require("fs");
-const testPlugin = {
-    bundleEnd: (context) => {
 
-    },
-    bundleStart: (context) => {
-        context.source.addContent("console.log('i am at start')");
-    }
-}
 let fuseBox = new FuseBox({
     homeDir: "test/fixtures/cases/ts",
     sourceMap: {
@@ -19,9 +12,9 @@ let fuseBox = new FuseBox({
     cache: true,
     globals: ["default"],
     outFile: "./out.js",
-    plugins: [testPlugin]
-        //modulesFolder: "test/fixtures/modules",
-        //plugins: [build.HTMLPlugin, build.JSONPlugin, new build.CSSPlugin({ minify: true })]
+
+    //modulesFolder: "test/fixtures/modules",
+    //plugins: [build.HTMLPlugin, build.JSONPlugin, new build.CSSPlugin({ minify: true })]
 });
 
-fuseBox.bundle(">index.ts");
+fuseBox.bundle(">index.ts [**/*.ts]");
