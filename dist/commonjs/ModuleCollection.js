@@ -82,6 +82,7 @@ class ModuleCollection {
             : collection.resolveEntry();
     }
     resolve(file, shouldIgnoreDeps) {
+        file.collection = this;
         if (this.bundle) {
             if (this.bundle.fileBlackListed(file)) {
                 return;
@@ -102,13 +103,13 @@ class ModuleCollection {
             if (this.dependencies.has(file.absPath)) {
                 return;
             }
-            let dependencies = file.consume();
+            file.consume();
             this.dependencies.set(file.absPath, file);
             let fileLimitPath;
             if (this.entryFile && this.entryFile.isNodeModuleEntry) {
                 fileLimitPath = this.entryFile.info.absPath;
             }
-            return realm_utils_1.each(dependencies, name => {
+            return realm_utils_1.each(file.analysis.dependencies, name => {
                 return this.resolve(new File_1.File(this.context, this.pm.resolve(name, file.info.absDir, fileLimitPath)), shouldIgnoreDeps);
             });
         }

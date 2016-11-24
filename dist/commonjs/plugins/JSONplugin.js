@@ -7,6 +7,7 @@ class FuseBoxJSONPlugin {
         context.allowExtension(".json");
     }
     transform(file) {
+        file.loadContents();
         file.contents = `module.exports = ${file.contents || {}};`;
     }
 }

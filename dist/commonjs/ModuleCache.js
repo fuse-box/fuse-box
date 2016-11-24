@@ -33,12 +33,12 @@ class ModuleCache {
             return data;
         }
     }
-    writeStaticCache(file, dependencies, sourcemaps) {
+    writeStaticCache(file, sourcemaps) {
         let fileName = encodeURIComponent(file.info.fuseBoxPath);
         let dest = path.join(this.staticCacheFolder, fileName);
         let stats = fs.statSync(file.absPath);
         let data = `module.exports = { contents : ${JSON.stringify(file.contents)}, 
-dependencies : ${JSON.stringify(dependencies)}, 
+dependencies : ${JSON.stringify(file.analysis.dependencies)}, 
 sourceMap : ${JSON.stringify(sourcemaps || {})},
 mtime : ${stats.mtime.getTime()}
 };`;

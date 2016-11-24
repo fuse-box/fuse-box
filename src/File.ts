@@ -1,4 +1,5 @@
-import { FileAST } from './FileAST';
+import { ModuleCollection } from './ModuleCollection';
+import { FileAnalysis } from './FileAnalysis';
 import { WorkFlowContext, Plugin } from "./WorkflowContext";
 import { IPathInformation } from "./PathMaster";
 import * as fs from "fs";
@@ -12,9 +13,11 @@ export class File {
     public contents: string;
     public isLoaded = false;
     public isNodeModuleEntry = false;
+    public collection: ModuleCollection;
     public headerContent: string[];
     public isTypeScript = false;
     public sourceMap: any;
+    public analysis: FileAnalysis = new FileAnalysis(this);
     public resolving: Promise<any>[] = [];
     constructor(public context: WorkFlowContext, public info: IPathInformation) {
 
@@ -61,33 +64,34 @@ export class File {
         this.headerContent.push(str);
     }
 
+    public loadContents() {
+        this.contents = fs.readFileSync(this.info.absPath).toString();
+        this.isLoaded = true;
+    }
 
-    public consume(): string[] {
+
+    public consume() {
         if (this.info.isRemoteFile) {
-            return [];
+            return;
         }
         if (!this.absPath) {
-            return [];
+            return;
         }
         if (!fs.existsSync(this.info.absPath)) {
             this.contents = "";
-            return [];
+            return;
         }
-        this.contents = fs.readFileSync(this.info.absPath).toString();
-        this.isLoaded = true;
-
-        if (this.absPath.match(/\.ts$/)) {
+        if (/\.ts(x)?$/.test(this.absPath)) {
             return this.handleTypescript();
         }
 
-        if (this.absPath.match(/\.js$/)) {
-            let fileAst = new FileAST(this);
-            fileAst.consume();
-            this.tryPlugins(fileAst.ast);
-            return fileAst.dependencies;
+        if (/\.js(x)?$/.test(this.absPath)) {
+            this.loadContents();
+            this.analysis.process();
+            this.tryPlugins();
+            return;
         }
         this.tryPlugins();
-        return [];
     }
 
     private handleTypescript() {
@@ -96,11 +100,13 @@ export class File {
             if (cached) {
                 this.sourceMap = cached.sourceMap;
                 this.contents = cached.contents;
+                this.analysis.dependencies = cached.dependencies;
                 this.tryPlugins();
-                return cached.dependencies;
+                return;
             }
         }
         const ts = require("typescript");
+        this.loadContents();
         let result = ts.transpileModule(this.contents, this.context.getTypeScriptConfig());
 
         if (result.sourceMapText && this.context.sourceMapConfig) {
@@ -112,13 +118,12 @@ export class File {
         }
 
         this.contents = result.outputText;
+
         // consuming transpiled javascript
-        let fileAst = new FileAST(this);
-        fileAst.consume();
+        this.analysis.process();
         if (this.context.useCache) {
-            this.context.cache.writeStaticCache(this, fileAst.dependencies, this.sourceMap);
+            this.context.cache.writeStaticCache(this, this.sourceMap);
         }
-        this.tryPlugins(fileAst.ast);
-        return fileAst.dependencies;
+        this.tryPlugins();
     }
 }

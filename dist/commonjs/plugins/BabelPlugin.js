@@ -1,19 +1,47 @@
 "use strict";
+let babelCore;
 class BabelPlugin {
-    constructor() {
-        this.test = /\.js$/;
+    constructor(opts) {
+        this.test = /(\.js|\.jsx)$/;
+        this.config = {};
+        opts = opts || {};
+        if (opts.config !== undefined) {
+            this.config = opts.config;
+        }
+        if (opts.test !== undefined) {
+            this.test = opts.test;
+        }
     }
     init(context) {
         this.context = context;
+        context.allowExtension(".jsx");
     }
     transform(file, ast) {
-        const babelCore = require("babel-core");
         return new Promise((resolve, reject) => {
-            let result = babelCore.transform(file.contents, {
-                presets: ["es2015"],
-                plugins: ["add-module-exports"]
-            });
-            file.contents = result.code;
+            if (!babelCore) {
+                babelCore = require("babel-core");
+            }
+            if (this.context.useCache) {
+                let cached = this.context.cache.getStaticCache(file);
+                if (cached) {
+                    if (cached.sourceMap) {
+                        file.sourceMap = cached.sourceMap;
+                    }
+                    file.contents = cached.contents;
+                    return resolve();
+                }
+            }
+            let result = babelCore.transform(file.contents, this.config);
+            if (result.map && file.collection.name === "default") {
+                file.contents = result.code;
+                let sm = result.map;
+                sm.file = file.info.fuseBoxPath;
+                sm.sources = [file.info.fuseBoxPath];
+                file.sourceMap = JSON.stringify(sm);
+            }
+            if (this.context.useCache) {
+                this.context.cache.writeStaticCache(file, file.sourceMap);
+            }
             return resolve();
         });
     }

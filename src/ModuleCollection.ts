@@ -266,6 +266,7 @@ export class ModuleCollection {
      * @memberOf ModuleCollection
      */
     public resolve(file: File, shouldIgnoreDeps?: boolean) {
+        file.collection = this;
         if (this.bundle) {
             if (this.bundle.fileBlackListed(file)) {
                 return;
@@ -292,7 +293,7 @@ export class ModuleCollection {
 
             // Consuming file 
             // Here we read it and return a list of require statements
-            let dependencies = file.consume();
+            file.consume();
 
             this.dependencies.set(file.absPath, file);
             let fileLimitPath;
@@ -303,7 +304,7 @@ export class ModuleCollection {
             }
 
             // Process file dependencies recursively
-            return each(dependencies, name => {
+            return each(file.analysis.dependencies, name => {
                 return this.resolve(new File(this.context,
                     this.pm.resolve(name, file.info.absDir, fileLimitPath)), shouldIgnoreDeps);
             });

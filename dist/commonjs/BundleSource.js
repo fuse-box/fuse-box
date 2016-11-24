@@ -18,7 +18,13 @@ class BundleSource {
     }
     startCollection(collection) {
         this.collectionSource = new Concat(true, collection.name, "\n");
-        this.collectionSource.add(null, `FuseBox.module("${collection.name}", ${JSON.stringify(collection.conflictingVersions)}, function(___scope___){`);
+        let conflicting = {};
+        if (collection.conflictingVersions) {
+            collection.conflictingVersions.forEach((version, name) => {
+                conflicting[name] = version;
+            });
+        }
+        this.collectionSource.add(null, `FuseBox.module("${collection.name}", ${JSON.stringify(conflicting)}, function(___scope___){`);
     }
     endCollection(collection) {
         let entry = collection.entryFile ? collection.entryFile.info.fuseBoxPath : "";
@@ -26,7 +32,8 @@ class BundleSource {
             this.collectionSource.add(null, `return ___scope___.entry("${entry}");`);
         }
         this.collectionSource.add(null, "});");
-        this.concat.add(collection.name, this.collectionSource.content, this.collectionSource.sourceMap);
+        let key = collection.info ? `${collection.info.name}@${collection.info.version}` : "default";
+        this.concat.add(`packages/${key}`, this.collectionSource.content, this.collectionSource.sourceMap);
         return this.collectionSource.content.toString();
     }
     addContent(data) {

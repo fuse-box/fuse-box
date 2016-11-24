@@ -2,9 +2,10 @@ import { File } from "./File";
 
 const acorn = require("acorn");
 const ASTQ = require("astq");
-let astq = new ASTQ();
 
+let astq = new ASTQ();
 require("acorn-es7")(acorn);
+require("acorn-jsx/inject")(acorn);
 
 /**
  * Makes static analysis on the code
@@ -15,7 +16,7 @@ require("acorn-es7")(acorn);
  * @export
  * @class FileAST
  */
-export class FileAST {
+export class FileAnalysis {
 
     /**
      * Acorn AST
@@ -49,7 +50,7 @@ export class FileAST {
      * 
      * @memberOf FileAST
      */
-    public consume() {
+    public process() {
         this.parse();
         this.processNodejsVariables();
         //this.extractStreamVariables();
@@ -68,7 +69,8 @@ export class FileAST {
             sourceType: "module",
             tolerant: true,
             ecmaVersion: 8,
-            plugins: { es7: true },
+            plugins: { es7: true, jsx: true },
+            jsx: { allowNamespacedObjects: true }
 
         });
     }

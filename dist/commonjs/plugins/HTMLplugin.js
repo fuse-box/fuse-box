@@ -7,6 +7,7 @@ class FuseBoxHTMLPlugin {
         context.allowExtension(".html");
     }
     transform(file) {
+        file.loadContents();
         file.contents = `module.exports.default =  ${JSON.stringify(file.contents)}`;
     }
 }

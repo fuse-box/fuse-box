@@ -1,3 +1,4 @@
+import { resolveCname } from 'dns';
 import { Hello } from './../test/fixtures/cases/ts/Hello';
 import { BundleData } from './Arithmetic';
 import { ModuleCollection } from "./ModuleCollection";
@@ -61,8 +62,15 @@ export class BundleSource {
      */
     public startCollection(collection: ModuleCollection) {
         this.collectionSource = new Concat(true, collection.name, "\n");
+        let conflicting = {};
+        if (collection.conflictingVersions) {
+            collection.conflictingVersions.forEach((version, name) => {
+                conflicting[name] = version;
+            });
+        }
+
         this.collectionSource.add(null, `FuseBox.module("${collection.name}", ${JSON.stringify(
-            collection.conflictingVersions)}, function(___scope___){`);
+            conflicting)}, function(___scope___){`);
     }
 
     /**
@@ -78,7 +86,9 @@ export class BundleSource {
             this.collectionSource.add(null, `return ___scope___.entry("${entry}");`);
         }
         this.collectionSource.add(null, "});");
-        this.concat.add(collection.name, this.collectionSource.content, this.collectionSource.sourceMap);
+
+        let key = collection.info ? `${collection.info.name}@${collection.info.version}` : "default";
+        this.concat.add(`packages/${key}`, this.collectionSource.content, this.collectionSource.sourceMap);
         return this.collectionSource.content.toString();
     }
 
@@ -106,7 +116,6 @@ export class BundleSource {
         this.collectionSource.add(null,
             `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){ 
 ${file.headerContent ? file.headerContent.join("\n") : ""}`);
-
         this.collectionSource.add(null, file.contents, file.sourceMap);
         this.collectionSource.add(null, "});");
     }

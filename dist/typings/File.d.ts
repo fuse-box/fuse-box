@@ -1,3 +1,5 @@
+import { ModuleCollection } from './ModuleCollection';
+import { FileAnalysis } from './FileAnalysis';
 import { WorkFlowContext } from "./WorkflowContext";
 import { IPathInformation } from "./PathMaster";
 export declare class File {
@@ -7,14 +9,17 @@ export declare class File {
     contents: string;
     isLoaded: boolean;
     isNodeModuleEntry: boolean;
+    collection: ModuleCollection;
     headerContent: string[];
     isTypeScript: boolean;
     sourceMap: any;
+    analysis: FileAnalysis;
     resolving: Promise<any>[];
     constructor(context: WorkFlowContext, info: IPathInformation);
     getCrossPlatormPath(): string;
     tryPlugins(_ast?: any): void;
     addHeaderContent(str: string): void;
-    consume(): string[];
+    loadContents(): void;
+    consume(): void;
     private handleTypescript();
 }

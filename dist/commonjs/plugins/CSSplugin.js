@@ -13,6 +13,7 @@ class CSSPlugin {
         context.allowExtension(".css");
     }
     transform(file) {
+        file.loadContents();
         let contents = this.minify ?
             file.contents.replace(/\s{2,}/g, " ").replace(/\t|\r|\n/g, "").trim() : file.contents;
         file.contents = `require("fsb-default-css-plugin")(__filename, ${JSON.stringify(contents)} );`;
