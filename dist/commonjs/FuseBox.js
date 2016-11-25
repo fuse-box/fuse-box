@@ -43,6 +43,9 @@ class FuseBox {
         if (opts.sourceMap) {
             this.context.sourceMapConfig = opts.sourceMap;
         }
+        if (opts.ignoreGlobal) {
+            this.context.ignoreGlobal = opts.ignoreGlobal;
+        }
         if (opts.outFile) {
             this.context.outFile = opts.outFile;
         }

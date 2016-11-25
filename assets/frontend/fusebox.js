@@ -1,12 +1,9 @@
 (function(__root__){ var $isBrowser = typeof window !== "undefined";
-var $fsbx = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {}) : {};
+var $fsbx = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
+    : global["$fsbx"] = global["$fsbx"] || {};
 var $packages = $fsbx.p = $fsbx.p || {};
 var $getNodeModuleName = function (name) {
-    if (!name) {
-        return;
-    }
-    var matched = name.match(/^([a-z].*)$/);
-    return matched ? name.split(/\/(.+)?/) : undefined;
+    return name ? /^([a-z].*)$/.test(name) ? name.split(/\/(.+)?/) : false : false;
 };
 var $pathJoin = function () {
     var string = [];

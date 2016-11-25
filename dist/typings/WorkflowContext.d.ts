@@ -17,6 +17,7 @@ export interface Plugin {
     bundleEnd?(context: WorkFlowContext): any;
 }
 export declare class WorkFlowContext {
+    ignoreGlobal: string[];
     nodeModules: Map<string, ModuleCollection>;
     libPaths: Map<string, IPackageInformation>;
     homeDir: string;
@@ -43,6 +44,7 @@ export declare class WorkFlowContext {
     setPrintLogs(printLogs: any): void;
     setUseCache(useCache: boolean): void;
     hasNodeModule(name: string): boolean;
+    isGlobalyIgnored(name: string): boolean;
     addNodeModule(name: string, collection: ModuleCollection): void;
     getTypeScriptConfig(): any;
     ensureUserPath(userPath: string): string;

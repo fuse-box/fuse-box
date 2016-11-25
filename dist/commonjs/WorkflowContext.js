@@ -9,6 +9,7 @@ const appRoot = require("app-root-path");
 const mkdirp = require("mkdirp");
 class WorkFlowContext {
     constructor() {
+        this.ignoreGlobal = [];
         this.nodeModules = new Map();
         this.libPaths = new Map();
         this.printLogs = true;
@@ -54,6 +55,9 @@ class WorkFlowContext {
     }
     hasNodeModule(name) {
         return this.nodeModules.has(name);
+    }
+    isGlobalyIgnored(name) {
+        return this.ignoreGlobal.indexOf(name) > -1;
     }
     addNodeModule(name, collection) {
         this.nodeModules.set(name, collection);

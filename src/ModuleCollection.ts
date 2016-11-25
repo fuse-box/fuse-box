@@ -275,7 +275,12 @@ export class ModuleCollection {
                 shouldIgnoreDeps = this.bundle.shouldIgnoreNodeModules(file.getCrossPlatormPath());
             }
         }
+
         if (file.info.isNodeModule) {
+            if (this.context.isGlobalyIgnored(file.info.nodeModuleName)) {
+                return;
+            }
+
             // Check if a module needs to ignored
             // It could be defined previosly (as in exluding all dependencies)
             // Of an explict exclusion

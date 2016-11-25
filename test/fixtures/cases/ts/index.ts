@@ -1,7 +1,7 @@
 
 
-
-
+import "fs";
+console.log(process.env);
 export let boo = { hello: "world" };
 export var s = 1111;
 export var shit = `world`;

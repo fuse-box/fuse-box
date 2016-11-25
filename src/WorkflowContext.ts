@@ -30,6 +30,8 @@ export interface Plugin {
      * @memberOf Plugin
      */
     dependencies?: string[];
+
+
     /**
      * 
      * 
@@ -73,7 +75,7 @@ export interface Plugin {
  */
 export class WorkFlowContext {
 
-
+    public ignoreGlobal: string[] = [];
     /**
      * 
      * 
@@ -305,6 +307,10 @@ export class WorkFlowContext {
      */
     public hasNodeModule(name: string) {
         return this.nodeModules.has(name);
+    }
+
+    public isGlobalyIgnored(name: string) {
+        return this.ignoreGlobal.indexOf(name) > -1;
     }
 
     /**

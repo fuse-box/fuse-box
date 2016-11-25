@@ -92,6 +92,9 @@ class ModuleCollection {
             }
         }
         if (file.info.isNodeModule) {
+            if (this.context.isGlobalyIgnored(file.info.nodeModuleName)) {
+                return;
+            }
             if (shouldIgnoreDeps || this.bundle && this.bundle.shouldIgnore(file.info.nodeModuleName)) {
                 return;
             }
