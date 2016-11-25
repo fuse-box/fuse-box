@@ -1,6 +1,6 @@
 {
   "name": "fuse-box",
-  "version": "1.2.51",
+  "version": "1.2.52",
   "description": "Fuse-Box a bundler just does it right",
   "typings": "./dist/typings/index.d.ts",
   "main": "dist/commonjs/index.js",
@@ -34,6 +34,7 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^3.0.1",
     "gulp-uglify": "^2.0.0",
+    "gulp-wrap": "^0.13.0",
     "mocha": "^3.1.0",
     "rollup": "^0.36.3",
     "run-sequence": "^1.2.2",

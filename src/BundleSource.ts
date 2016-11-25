@@ -35,7 +35,7 @@ export class BundleSource {
 
     private collectionSource: any;
 
-    public currentCollection = [];
+
     /**
      * Creates an instance of BundleSource.
      * 
@@ -88,7 +88,8 @@ export class BundleSource {
         this.collectionSource.add(null, "});");
 
         let key = collection.info ? `${collection.info.name}@${collection.info.version}` : "default";
-        this.concat.add(`packages/${key}`, this.collectionSource.content, this.collectionSource.sourceMap);
+        this.concat.add(`packages/${key}`,
+            this.collectionSource.content, key === "default" ? this.collectionSource.sourceMap : undefined);
         return this.collectionSource.content.toString();
     }
 

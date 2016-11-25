@@ -7,7 +7,6 @@ class BundleSource {
     constructor(context) {
         this.context = context;
         this.standalone = false;
-        this.currentCollection = [];
         this.concat = new Concat(true, "", "\n");
         this.concat.add(null, "(function(){");
         if (context.standaloneBundle) {
@@ -33,7 +32,7 @@ class BundleSource {
         }
         this.collectionSource.add(null, "});");
         let key = collection.info ? `${collection.info.name}@${collection.info.version}` : "default";
-        this.concat.add(`packages/${key}`, this.collectionSource.content, this.collectionSource.sourceMap);
+        this.concat.add(`packages/${key}`, this.collectionSource.content, key === "default" ? this.collectionSource.sourceMap : undefined);
         return this.collectionSource.content.toString();
     }
     addContent(data) {

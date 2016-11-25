@@ -1,5 +1,5 @@
 "use strict";
-const FileAnalysis_1 = require('./FileAnalysis');
+const FileAnalysis_1 = require("./FileAnalysis");
 const fs = require("fs");
 const realm_utils_1 = require("realm-utils");
 class File {

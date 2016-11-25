@@ -1,5 +1,5 @@
-import { ModuleCollection } from './ModuleCollection';
-import { FileAnalysis } from './FileAnalysis';
+import { ModuleCollection } from "./ModuleCollection";
+import { FileAnalysis } from "./FileAnalysis";
 import { WorkFlowContext } from "./WorkflowContext";
 import { IPathInformation } from "./PathMaster";
 export declare class File {

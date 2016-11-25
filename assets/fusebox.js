@@ -5,7 +5,7 @@ if (!isBrowser) {
 }
 var FuseBox = __root__.FuseBox = (function() {
 
-    var modules = isBrowser ? (window.__npm__ = window.__npm__ || {}) : {};
+    var modules = isBrowser ? (window.__npm__ = window.__npm__ || {}) : global.__fsbx__mods = global.__fsbx__mods || {};
     var $interceptors = isBrowser ? (window.__interceptors__ = window.__interceptors__ || {}) : {};
     var getNodeModuleName = function(name) {
         if (!name) { return; }

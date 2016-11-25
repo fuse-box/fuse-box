@@ -1,5 +1,6 @@
-const gulp = require('gulp');
+const gulp = require("gulp")
 const rename = require("gulp-rename");
+
 const replace = require("gulp-replace");
 const ts = require('gulp-typescript');
 const concat = require('gulp-concat');
@@ -9,11 +10,32 @@ const runSequence = require('run-sequence');
 const bump = require('gulp-bump');
 const child_process = require('child_process');
 const spawn = child_process.spawn;
+const wrap = require("gulp-wrap");
 const uglify = require('gulp-uglify');
+
 let projectTypings = ts.createProject('src/tsconfig.json');
 let projectCommonjs = ts.createProject('src/tsconfig.json', {
     target: "es6",
 });
+
+let projectFrontend = ts.createProject('src-frontend/tsconfig.json', {
+
+});
+gulp.task("src-frontend", () => {
+    return gulp.src("src-frontend/**/*.ts")
+        .pipe(projectFrontend()).js
+        .pipe(wrap('(function(__root__){ <%= contents %> \n__root__["FuseBox"] = FuseBox } )(this)'))
+        .pipe(rename("fusebox.js"))
+        .pipe(gulp.dest('assets/frontend'))
+
+    .pipe(rename("fusebox.min.js"))
+
+
+    .pipe(uglify())
+
+    .pipe(gulp.dest('assets/frontend'))
+
+})
 
 gulp.task("publish", function(done) {
     runSequence('dist', 'increment-version', "commit-release", 'npm-publish', done);
@@ -120,9 +142,13 @@ gulp.task("minify-frontend", function() {
         .pipe(rename("fusebox.min.js")).pipe(gulp.dest("assets/"))
 });
 
-gulp.task('watch', ['build'], function() {
-    gulp.watch(['assets/**/*.js'], () => {
-        runSequence("minify-frontend", 'hello');
+gulp.task('watch', ['build', 'src-frontend'], function() {
+    // gulp.watch(['assets/**/*.js'], () => {
+    //     runSequence("minify-frontend", 'hello');
+    // });
+
+    gulp.watch(['src-frontend/**/*.ts'], () => {
+        runSequence("src-frontend");
     });
     // gulp.watch(['assets/**/*.js'], () => {
     //     runSequence('hello');

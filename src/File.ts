@@ -1,9 +1,8 @@
-import { ModuleCollection } from './ModuleCollection';
-import { FileAnalysis } from './FileAnalysis';
+import { ModuleCollection } from "./ModuleCollection";
+import { FileAnalysis } from "./FileAnalysis";
 import { WorkFlowContext, Plugin } from "./WorkflowContext";
 import { IPathInformation } from "./PathMaster";
 import * as fs from "fs";
-import * as path from "path";
 import { utils } from "realm-utils";
 
 
@@ -27,7 +26,7 @@ export class File {
     public getCrossPlatormPath() {
         let name = this.absPath;
         if (!name) {
-            return
+            return;
         }
         name = name.replace(/\\/g, "/");
         return name;

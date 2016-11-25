@@ -1,7 +1,6 @@
 
 
-let cheerio = require("cheerio")
-console.log(cheerio, "");
+
 
 export let boo = { hello: "world" };
 export var s = 1111;
