@@ -50,7 +50,7 @@ class FileAnalysis {
             return;
         }
         this.dependencies.push("stream");
-        this.file.addHeaderContent(`if ( typeof window === "undefined" ) { var stream = require("stream"); }`);
+        this.file.addHeaderContent(`if ( typeof window !== "undefined" ) { var stream = require("stream"); }`);
     }
     processNodejsVariables() {
         let processIsDefined = astq.query(this.ast, `// VariableDeclarator/Identifier[@name=="process"]`);
@@ -62,7 +62,7 @@ class FileAnalysis {
             return;
         }
         this.dependencies.push("process");
-        this.file.addHeaderContent(`if ( typeof window === "undefined" ) { var process = require("process"); }`);
+        this.file.addHeaderContent(`if ( typeof window !== "undefined" ) { var process = require("process"); }`);
     }
 }
 exports.FileAnalysis = FileAnalysis;
