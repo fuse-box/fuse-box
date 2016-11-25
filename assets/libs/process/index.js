@@ -1,5 +1,10 @@
 // From https://github.com/defunctzombie/node-process/blob/master/browser.js
 // shim for using process in browser
+if (typeof window === "undefined") {
+    module.exports = global.process;
+    return;
+}
+
 
 var productionEnv = false; //require('@system-env').production;
 

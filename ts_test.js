@@ -9,7 +9,7 @@ let fuseBox = new FuseBox({
         bundleReference: "./sourcemaps.js.map",
         outFile: "sourcemaps.js.map",
     },
-    ignoreGlobal: ["fs", "process"],
+
     cache: true,
     globals: ["default"],
     outFile: "./out.js",
