@@ -213,7 +213,7 @@ var FuseBox = __root__.FuseBox = (function() {
                     var __filename = "./" + entry.name;
                     var __dirname = __filename.substring(0, __filename.lastIndexOf("/") + 1);
                     var args = [locals.exports, locals.require, locals.module, __filename, __dirname, moduleName];
-                    entry.fn.apply(this, args);
+                    entry.fn.apply(__root__, args);
                     var res = locals.module.exports;
                     // Call require interceptors 
                     if ($interceptors[moduleName]) {
