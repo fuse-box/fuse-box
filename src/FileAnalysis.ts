@@ -142,6 +142,7 @@ export class FileAnalysis {
 
         this.dependencies.push("process");
         // This will be added later at wrap time
-        this.file.addHeaderContent(`var process = require("process");`);
+
+        this.file.addHeaderContent(`if ( typeof window === "undefined" ) { var process = require("process"); }`);
     }
 }

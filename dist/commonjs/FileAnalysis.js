@@ -62,7 +62,7 @@ class FileAnalysis {
             return;
         }
         this.dependencies.push("process");
-        this.file.addHeaderContent(`var process = require("process");`);
+        this.file.addHeaderContent(`if ( typeof window === "undefined" ) { var process = require("process"); }`);
     }
 }
 exports.FileAnalysis = FileAnalysis;
