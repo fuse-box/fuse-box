@@ -116,7 +116,7 @@ export class FileAnalysis {
 
         this.dependencies.push("stream");
         // This will be added later at wrap time
-        this.file.addHeaderContent(`var stream = require("stream");`);
+        this.file.addHeaderContent(`if ( typeof window === "undefined" ) { var stream = require("stream"); }`);
     }
     /**
      * Process additional conditions

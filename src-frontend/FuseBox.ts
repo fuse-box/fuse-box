@@ -1,7 +1,8 @@
 const $isBrowser = typeof window !== "undefined";
 
 // A runtime storage for Fusebox
-const $fsbx = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {}) : {};
+const $fsbx = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
+    : global["$fsbx"] = global["$fsbx"] || {}; // in case of nodejs
 
 // All packages are here
 // Used to reference to the outside world
@@ -17,9 +18,7 @@ const $packages = $fsbx.p = $fsbx.p || {};
  * @returns
  */
 const $getNodeModuleName = (name) => {
-    if (!name) { return; }
-    var matched = name.match(/^([a-z].*)$/);
-    return matched ? name.split(/\/(.+)?/) : undefined;
+    return name ? /^([a-z].*)$/.test(name) ? name.split(/\/(.+)?/) : false : false
 }
 
 /**
