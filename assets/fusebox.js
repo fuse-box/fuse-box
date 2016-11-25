@@ -189,12 +189,16 @@ var FuseBox = __root__.FuseBox = (function() {
                         }
                         var _module = getNodeModuleName(target);
                         if (_module) {
-                            // fix for nodejs.
-                            if (!isBrowser) {
-                                return require(target);
-                            }
                             var _moduleName = _module[0];
                             if (customVersions[_moduleName]) { _moduleName = _moduleName + "@" + customVersions[_moduleName]; }
+
+                            if (!modules[_moduleName]) {
+                                // fix for nodejs.
+                                if (!isBrowser) {
+                                    return require(target);
+                                }
+                            }
+
                             if (_module[1]) { return FuseBox.import(_module[1], _moduleName, entryName); }
                             return FuseBox.evaluate(_moduleName, null, entryName);
                         } else {
