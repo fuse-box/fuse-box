@@ -10,32 +10,51 @@ let fuseBox = new FuseBox({
 });
 ```
 
-### Example
-true/false - standalone
-```js
-fuseBox.bundle("[**/*.js]", true).then(content => {
+### Example1: Bundle typescript!
 
-})
-```
-
-## Using with virtual file structure
-You can provide a virtual structure, in this case `homeDir` will be ignored, and a collection will be used. Due to the library node-glob limitations, FuseBox creates a corresponding structure in the file system (in .tmp) folder. It goes with absolutely the same approach as `homeDir` (it's just shifted)
-
-You can use it to with gulp, or any other build systems, where files are ephemeral e.g streams.
 ```js
 let fuseBox = new FuseBox({
-    fileCollection: {
-        "index.js": "require('./foo/bar.js')",
-        "foo/bar.js": "require('../hello.js')",
-        "hello.js": "",
-    }
+    homeDir: "test/fixtures/cases/ts",
+    sourceMap: {
+        bundleReference: "./sourcemaps.js.map",
+        outFile: "sourcemaps.js.map",
+    },
+
+    cache: true,
+    globals: ["default"],
+    outFile: "./out.js",
 });
-fuseBox.bundle("> index.js **/*.js", true).then(content => {
-    fs.writeFileSync("./out.js", content);
-})
+
+fuseBox.bundle(">index.ts");
 ```
 
-### Cases
+
+### Bundle react app!
+```js
+let fuseBox = new FuseBox({
+    cache: false,
+    homeDir: "test/fixtures/cases/react-demo",
+    sourceMap: {
+        bundleReference: "./sourcemaps.js.map",
+        outFile: "sourcemaps.js.map",
+    },
+    outFile: "./out.js",
+    plugins: [build.SVGPlugin, new build.CSSPlugin(), new build.BabelPlugin({
+        test: /\.jsx$/,
+        config: {
+            sourceMaps: true,
+            presets: ["es2015"],
+            plugins: [
+                ["transform-react-jsx"]
+            ],
+        }
+    })]
+});
+
+fuseBox.bundle(">index.jsx +react-dom");
+```
+
+### Arithmetic options
 
 
 `> index.js [**/*.js]` - Bundle everything without dependencies, and execute index.js
