@@ -1,6 +1,7 @@
 # FuseBox - A Bundle that does it right
 
-> The library is under heavy development.
+> The library is under heavy development. We are getting there. Documentation is coming soon.
+> FuseBox beats any bundler/loader (webpack, jspm) by performance and convenience, and bundles any library on the Internet without additional configuration. So please, be be patient
 
 
 ```js
