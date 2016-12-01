@@ -6,7 +6,7 @@ if (!isBrowser) {
 var FuseBox = __root__.FuseBox = (function() {
 
     var modules = isBrowser ? (window.__npm__ = window.__npm__ || {}) : global.__fsbx__mods = global.__fsbx__mods || {};
-    var $interceptors = isBrowser ? (window.__interceptors__ = window.__interceptors__ || {}) : {};
+    var $interceptors = isBrowser ? (window.__interceptors__ = window.__interceptors__ || {}) : global.__fsbx__ic = global.__fsbx__ic || {};
     var getNodeModuleName = function(name) {
         if (!name) { return; }
         var matched = name.match(/^([a-z].*)$/);

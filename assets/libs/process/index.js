@@ -2,12 +2,7 @@
 // shim for using process in browser
 if (typeof window === "undefined") {
     module.exports = global.process;
-    //return;
 } else {
-
-
-
-
     var productionEnv = false; //require('@system-env').production;
 
     var process = module.exports = {};
