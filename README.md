@@ -93,9 +93,14 @@ globals: { default: "myLib", "wires-reactive": "Reactive" }
 Whereas key is the name of a package, and value is an alias that groups exports.
 "default" is your current project. Please, note, that in order to expose your default package, a bundle must have an entry point.
 
-e.g
+Full example:
 
 ```js
+let fuseBox = new FuseBox({
+    homeDir: "test/fixtures/cases/case1",
+    globals: { default: "myLib"},
+    outFile: "./out.js"
+});
 fuseBox.bundle(">index.js");
 ```
 
