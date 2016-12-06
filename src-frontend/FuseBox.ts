@@ -111,6 +111,9 @@ const $getRef = (name, opts: any) => {
     }
 
     let pkg = $packages[pkg_name];
+    if (!pkg) {
+        throw `Package was not found "${pkg_name}"`;
+    }
     if (!name) {
         name = "./" + pkg.s.entry;
     }

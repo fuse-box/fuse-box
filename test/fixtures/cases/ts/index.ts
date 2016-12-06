@@ -1,9 +1,5 @@
 
-import { Watch } from "wires-reactive";
- 
-Watch.template({ scope: {} }, "hello {{name}}", () => {
 
-});
 export class TestStuff {
     constructor() { }
 

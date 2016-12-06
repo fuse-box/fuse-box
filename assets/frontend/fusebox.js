@@ -85,6 +85,9 @@ var $getRef = function (name, opts) {
         basePath = "./";
     }
     var pkg = $packages[pkg_name];
+    if (!pkg) {
+        throw "Package was not found \"" + pkg_name + "\"";
+    }
     if (!name) {
         name = "./" + pkg.s.entry;
     }
