@@ -108,13 +108,15 @@ class FuseBox {
                 }
                 addNodeModules() {
                     return realm_utils_1.each(self.context.nodeModules, (collection) => {
-                        return self.collectionSource.get(collection).then((cnt) => {
-                            self.context.log.echoCollection(collection, cnt);
-                            if (!collection.cachedName) {
-                                self.context.cache.set(collection.info, cnt);
-                            }
-                            this.globalContents.push(cnt);
-                        });
+                        if (!collection.info.missing) {
+                            return self.collectionSource.get(collection).then((cnt) => {
+                                self.context.log.echoCollection(collection, cnt);
+                                if (!collection.cachedName) {
+                                    self.context.cache.set(collection.info, cnt);
+                                }
+                                this.globalContents.push(cnt);
+                            });
+                        }
                     });
                 }
                 format() {

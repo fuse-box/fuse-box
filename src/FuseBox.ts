@@ -148,13 +148,15 @@ export class FuseBox {
 
                 public addNodeModules() {
                     return each(self.context.nodeModules, (collection: ModuleCollection) => {
-                        return self.collectionSource.get(collection).then((cnt: string) => {
-                            self.context.log.echoCollection(collection, cnt);
-                            if (!collection.cachedName) {
-                                self.context.cache.set(collection.info, cnt);
-                            }
-                            this.globalContents.push(cnt);
-                        });
+                        if (!collection.info.missing) {
+                            return self.collectionSource.get(collection).then((cnt: string) => {
+                                self.context.log.echoCollection(collection, cnt);
+                                if (!collection.cachedName) {
+                                    self.context.cache.set(collection.info, cnt);
+                                }
+                                this.globalContents.push(cnt);
+                            });
+                        }
                     });
                 }
 

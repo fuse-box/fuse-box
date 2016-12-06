@@ -72,7 +72,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         }
         this.concat.add(null, "})");
         if (context.standaloneBundle) {
-            let fuseboxLibFile = path.join(Config_1.Config.ASSETS_DIR, "frontend", "fusebox.js");
+            let fuseboxLibFile = path.join(Config_1.Config.ASSETS_DIR, "frontend", "fusebox.min.js");
             let wrapper = fs.readFileSync(fuseboxLibFile).toString();
             this.concat.add(null, `(${wrapper})`);
         }

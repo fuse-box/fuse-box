@@ -17,6 +17,7 @@ export interface IPathInformation {
 }
 export interface IPackageInformation {
     name: string;
+    missing?: boolean;
     entry: string;
     version: string;
     root: string;

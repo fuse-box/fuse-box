@@ -5,6 +5,9 @@ __root__ = !$isBrowser ? module.exports : __root__;
 const $fsbx = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
     : global["$fsbx"] = global["$fsbx"] || {}; // in case of nodejs
 
+if (!$isBrowser) {
+    global["require"] = require;
+}
 // All packages are here
 // Used to reference to the outside world
 const $packages = $fsbx.p = $fsbx.p || {};
@@ -111,8 +114,13 @@ const $getRef = (name, opts: any) => {
     }
 
     let pkg = $packages[pkg_name];
+
     if (!pkg) {
-        throw `Package was not found "${pkg_name}"`;
+        if ($isBrowser) {
+            throw `Package was not found "${pkg_name}"`;
+        } else {
+            return [require(pkg_name), 0];
+        }
     }
     if (!name) {
         name = "./" + pkg.s.entry;
@@ -161,10 +169,14 @@ const $import = (name: string, opts: any = {}) => {
     if (/^(http(s)?:|\/\/)/.test(name)) {
         return $loadURL(name);
     }
-    let [file, pkg_name, pkgCustomVersions, filePath, validPath] = $getRef(name, opts);
 
+
+    let [file, pkg_name, pkgCustomVersions, filePath, validPath] = $getRef(name, opts);
+    if (pkg_name === 0) {
+        return file;
+    }
     if (!file) {
-        throw `File not found ${filePath}`;
+        throw `File not found ${name}`;
     }
     if (file.locals && file.locals.module) {
         return file.locals.module.exports;

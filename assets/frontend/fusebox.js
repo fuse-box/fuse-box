@@ -2,6 +2,9 @@
 __root__ = !$isBrowser ? module.exports : __root__;
 var $fsbx = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
     : global["$fsbx"] = global["$fsbx"] || {};
+if (!$isBrowser) {
+    global["require"] = require;
+}
 var $packages = $fsbx.p = $fsbx.p || {};
 var $events = $fsbx.e = $fsbx.e || {};
 var $getNodeModuleName = function (name) {
@@ -86,7 +89,12 @@ var $getRef = function (name, opts) {
     }
     var pkg = $packages[pkg_name];
     if (!pkg) {
-        throw "Package was not found \"" + pkg_name + "\"";
+        if ($isBrowser) {
+            throw "Package was not found \"" + pkg_name + "\"";
+        }
+        else {
+            return [require(pkg_name), 0];
+        }
     }
     if (!name) {
         name = "./" + pkg.s.entry;
@@ -122,8 +130,11 @@ var $import = function (name, opts) {
         return $loadURL(name);
     }
     var _a = $getRef(name, opts), file = _a[0], pkg_name = _a[1], pkgCustomVersions = _a[2], filePath = _a[3], validPath = _a[4];
+    if (pkg_name === 0) {
+        return file;
+    }
     if (!file) {
-        throw "File not found " + filePath;
+        throw "File not found " + name;
     }
     if (file.locals && file.locals.module) {
         return file.locals.module.exports;

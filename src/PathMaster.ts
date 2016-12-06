@@ -24,6 +24,7 @@ export interface IPathInformation {
 
 export interface IPackageInformation {
     name: string;
+    missing?: boolean;
     entry: string;
     version: string;
     root: string;
@@ -225,6 +226,7 @@ export class PathMaster {
                     name: name,
                     custom: isCustom,
                     root: folder,
+                    missing: false,
                     entryRoot: entryRoot,
                     entry: entryFile,
                     version: json.version,
@@ -233,9 +235,10 @@ export class PathMaster {
             let defaultEntry = path.join(folder, "index.js");
             let entryFile = fs.existsSync(defaultEntry) ? defaultEntry : undefined;
             let defaultEntryRoot = entryFile ? path.dirname(entryFile) : undefined;
-
+            let packageExists = fs.existsSync(folder);
             return {
                 name: name,
+                missing: !packageExists,
                 custom: isCustom,
                 root: folder,
                 entry: entryFile,

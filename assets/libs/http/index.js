@@ -1,5 +1,5 @@
 if (typeof window === "undefined") {
-    module.exports = global.require("stream");
+    module.exports = global.require("http");
 } else {
     module.exports = {}
 }
