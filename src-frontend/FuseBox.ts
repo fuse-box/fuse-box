@@ -1,4 +1,5 @@
 declare let __root__: any;
+
 const $isBrowser = typeof window !== "undefined";
 __root__ = !$isBrowser ? module.exports : __root__;
 // A runtime storage for Fusebox
@@ -119,15 +120,13 @@ const $getRef = (name, opts: any) => {
         if ($isBrowser) {
             throw `Package was not found "${pkg_name}"`;
         } else {
+            // Return "real" node module 
             return [require(pkg_name), 0];
         }
     }
     if (!name) {
         name = "./" + pkg.s.entry;
     }
-
-    if (!pkg) { return; } // package not found
-
 
     let filePath = $pathJoin(basePath, name);
     // Try first adding .js if missing
@@ -172,11 +171,11 @@ const $import = (name: string, opts: any = {}) => {
 
 
     let [file, pkg_name, pkgCustomVersions, filePath, validPath] = $getRef(name, opts);
-    if (pkg_name === 0) {
+    if (pkg_name === 0) { // Check for nodejs module
         return file;
     }
     if (!file) {
-        throw `File not found ${name}`;
+        throw `File not found ${validPath}`;
     }
     if (file.locals && file.locals.module) {
         return file.locals.module.exports;

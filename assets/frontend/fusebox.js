@@ -99,9 +99,6 @@ var $getRef = function (name, opts) {
     if (!name) {
         name = "./" + pkg.s.entry;
     }
-    if (!pkg) {
-        return;
-    }
     var filePath = $pathJoin(basePath, name);
     var validPath = $ensureExtension(filePath);
     var file = pkg.f[validPath];
@@ -134,7 +131,7 @@ var $import = function (name, opts) {
         return file;
     }
     if (!file) {
-        throw "File not found " + name;
+        throw "File not found " + validPath;
     }
     if (file.locals && file.locals.module) {
         return file.locals.module.exports;
