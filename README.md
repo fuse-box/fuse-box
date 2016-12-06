@@ -21,7 +21,7 @@ let fuseBox = new FuseBox({
     },
 
     cache: true,
-    globals: ["default"],
+    globals: {defaut : "myLib"},
     outFile: "./out.js",
 });
 
@@ -84,3 +84,24 @@ It is not recommended, however, if you want to play god, you can use that functi
 ### Export from bundle
 
 You can easily export any library from your bundle to window/module.exports accordingly.
+Simply add this property:
+
+```js
+globals: { default: "myLib", "wires-reactive": "Reactive" }
+```
+
+Whereas key is the name of a package, and value is an alias that groups exports.
+"default" is your current project. Please, note, that in order to expose your default package, a bundle must have an entry point.
+
+Full example:
+
+```js
+let fuseBox = new FuseBox({
+    homeDir: "test/fixtures/cases/case1",
+    globals: { default: "myLib"},
+    outFile: "./out.js"
+});
+fuseBox.bundle(">index.js");
+```
+
+
