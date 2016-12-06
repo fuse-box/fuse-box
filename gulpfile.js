@@ -157,6 +157,6 @@ gulp.task('watch', ['build', 'src-frontend'], function() {
     });
 });
 
-gulp.task('dist', ['dist-typings', 'dist-commonjs'], function() {
+gulp.task('dist', ['dist-typings', 'dist-commonjs', "src-frontend"], function() {
 
 });
