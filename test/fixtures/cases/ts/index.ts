@@ -1,10 +1,25 @@
 
+import { Watch } from "wires-reactive";
+ 
+Watch.template({ scope: {} }, "hello {{name}}", () => {
 
-import "fs";
-console.log(process.env);
-export let boo = { hello: "world" };
-export var s = 1111;
-export var shit = `world`;
+});
+export class TestStuff {
+    constructor() { }
+
+
+    public name() {
+
+    }
+}
+
+
+// export let boo = { hello: "world" };
+// export var s = 1111;
+// export var shit = `world`;
+
+// let hello = new Hello();
+// console.log(hello);
+
 //console.log(hello.getName());
 //console.log(hello.getFoo());
-console.log("here11");

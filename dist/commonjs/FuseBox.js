@@ -35,9 +35,9 @@ class FuseBox {
             this.context.doLog = opts.log ? true : false;
         }
         if (opts.globals) {
-            this.context.globals = [].concat(opts.globals);
+            this.context.globals = opts.globals;
         }
-        if (opts.standaloneBundle !== undefined) {
+        if (opts.standalone !== undefined) {
             this.context.standaloneBundle = opts.standaloneBundle;
         }
         if (opts.sourceMap) {

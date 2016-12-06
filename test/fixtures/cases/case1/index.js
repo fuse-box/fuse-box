@@ -1,7 +1,10 @@
 //require("~/sub/hello.js");
 //console.log(require("babel-generator"));
-exports.hello = 1;
+console.log(require("core-js/library/fn/symbol"));
+require("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css");
 
+exports.foo = 1;
+exports.bar = 2;
 // var dynamicPath = "./custom/foo.js";
 
 // console.log(require(dynamicPath));
@@ -24,6 +27,7 @@ exports.hello = 1;
 // let $ = cheerio.load('<h2 class="title">Hello world</h2>')
 // $('h2.title').text('Hello there!')
 // $('h2').addClass('welcome')
+
 // console.log($.html());
 
 //console.log(require("core-js/library/fn/symbol"));
@@ -42,6 +46,7 @@ exports.hello = 1;
 
 // var asyncWatch = require("async-watch")
 // var reactive = require("wires-reactive")
+// console.log(reactive);
 // let html = require("./my.html")
 // console.log(html);
 

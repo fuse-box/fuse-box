@@ -1,6 +1,6 @@
 {
   "name": "fuse-box",
-  "version": "1.2.65",
+  "version": "1.2.66",
   "description": "Fuse-Box a bundler just does it right",
   "typings": "./dist/typings/index.d.ts",
   "main": "dist/commonjs/index.js",
@@ -36,6 +36,7 @@
     "gulp-uglify": "^2.0.0",
     "gulp-wrap": "^0.13.0",
     "mocha": "^3.1.0",
+    "reflect-metadata": "^0.1.8",
     "rollup": "^0.36.3",
     "run-sequence": "^1.2.2",
     "should": "^11.1.0",
@@ -43,7 +44,7 @@
     "wires-reactive": "^1.1.1"
   },
   "dependencies": {
-    "@types/node": "^6.0.45",
+    "@types/node": "^6.0.51",
     "acorn": "^4.0.3",
     "acorn-es7": "^0.1.0",
     "acorn-jsx": "^3.0.1",

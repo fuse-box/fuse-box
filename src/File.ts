@@ -6,7 +6,6 @@ import * as fs from "fs";
 import { utils } from "realm-utils";
 
 
-
 export class File {
     public absPath: string;
     public contents: string;
@@ -105,6 +104,7 @@ export class File {
             }
         }
         const ts = require("typescript");
+
         this.loadContents();
         let result = ts.transpileModule(this.contents, this.context.getTypeScriptConfig());
 

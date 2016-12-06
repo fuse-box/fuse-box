@@ -17,7 +17,6 @@ class WorkFlowContext {
         this.doLog = true;
         this.cache = new ModuleCache_1.ModuleCache(this);
         this.tsMode = false;
-        this.globals = [];
         this.standaloneBundle = true;
     }
     reset() {

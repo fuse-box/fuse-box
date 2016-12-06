@@ -159,7 +159,7 @@ export class WorkFlowContext {
      * @type {string[]}
      * @memberOf WorkFlowContext
      */
-    public globals: string[] = [];
+    public globals: any;
     /**
      * 
      * 

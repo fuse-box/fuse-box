@@ -8,8 +8,7 @@ describe("Generic requires", (done) => {
             "index.js": `require("./foo/bar.js");`,
             "foo/bar.js": "module.exports = {bar : 1}",
         }, "**/*.js").then(root => {
-
-            let result = root.FuseBox.import("foo/bar");
+            let result = root.FuseBox.import("./foo/bar");
             result.should.deepEqual({ bar: 1 });
             done();
         }).catch(done);
@@ -23,7 +22,7 @@ describe("Generic requires", (done) => {
             "foo/hello.js": "module.exports = {bar : 1}",
         }, "**/*.js").then(root => {
 
-            let result = root.FuseBox.import("index");
+            let result = root.FuseBox.import("./index");
             result.should.deepEqual({ hello: { bar: 1 } });
             done();
         }).catch(done);
@@ -46,7 +45,7 @@ describe("Generic requires", (done) => {
             "foo/bar.js": "module.exports = require('./hello.js')",
             "foo/hello.js": "module.exports = {bar : 1}",
         }, "**/*.js").then(root => {
-            let result = root.FuseBox.import("foo/bar.js");
+            let result = root.FuseBox.import("./foo/bar.js");
             result.should.deepEqual({ bar: 1 });
             done();
         }).catch(done);
@@ -58,7 +57,7 @@ describe("Generic requires", (done) => {
             "foo/bar.js": "module.exports = require('~/foo/hello.js')",
             "foo/hello.js": "module.exports = {bar : 1}",
         }, "**/*.js").then(root => {
-            let result = root.FuseBox.import("foo/bar.js");
+            let result = root.FuseBox.import("./foo/bar.js");
             result.should.deepEqual({ bar: 1 });
             done();
         }).catch(done);
@@ -70,7 +69,7 @@ describe("Generic requires", (done) => {
             "foo/bar.js": "module.exports = require('~/foo/hello.js')",
             "foo/hello.js": "exports.bar = 2",
         }, "**/*.js").then(root => {
-            let result = root.FuseBox.import("foo/bar.js");
+            let result = root.FuseBox.import("./foo/bar.js");
             result.should.deepEqual({ bar: 2 });
             done();
         }).catch(done);
@@ -80,10 +79,10 @@ describe("Generic requires", (done) => {
         getTestEnv({
             "index.js": `var a = 0; a++; exports.counter = a;`,
         }, "**/*.js").then(root => {
-            let result = root.FuseBox.import("index");
+            let result = root.FuseBox.import("./index");
             result.should.deepEqual({ counter: 1 });
 
-            let result2 = root.FuseBox.import("index");
+            let result2 = root.FuseBox.import("./index");
             result2.should.deepEqual({ counter: 1 });
             done();
         }).catch(done);
@@ -94,7 +93,7 @@ describe("Generic requires", (done) => {
             "index.js": `exports.foo = require("./foo")`,
             "foo/index.js": `module.exports = {bar : 10}`,
         }, "**/*.js").then(root => {
-            let result = root.FuseBox.import("index");
+            let result = root.FuseBox.import("./index");
             result.should.deepEqual({ foo: { bar: 10 } });
             done();
         }).catch(done);
@@ -106,7 +105,7 @@ describe("Generic requires", (done) => {
             "foo/index.js": `module.exports = require("~/bar")`,
             "bar/index.js": `module.exports = {bar : 20}`,
         }, "**/*.js").then(root => {
-            let result = root.FuseBox.import("index");
+            let result = root.FuseBox.import("./index");
             result.should.deepEqual({ foo: { bar: 20 } });
             done();
         }).catch(done);
@@ -118,7 +117,7 @@ describe("Generic requires", (done) => {
             "foo/index.js": `module.exports = require("~/bar/index")`,
             "bar/index.js": `module.exports = {bar : 20}`,
         }, "**/*.js").then(root => {
-            let result = root.FuseBox.import("index");
+            let result = root.FuseBox.import("./index");
             result.should.deepEqual({ foo: { bar: 20 } });
             done();
         }).catch(done);
@@ -130,7 +129,7 @@ describe("Generic requires", (done) => {
             "foo/index.js": `module.exports = require("~/bar/index.js")`,
             "bar/index.js": `module.exports = {bar : 20}`,
         }, "**/*.js").then(root => {
-            let result = root.FuseBox.import("index");
+            let result = root.FuseBox.import("./index");
             result.should.deepEqual({ foo: { bar: 20 } });
             done();
         }).catch(done);
@@ -142,7 +141,7 @@ describe("Generic requires", (done) => {
             "foo/index.js": `module.exports = require("../bar")`,
             "bar/index.js": `module.exports = {bar : 30}`,
         }, "**/*.js").then(root => {
-            let result = root.FuseBox.import("index");
+            let result = root.FuseBox.import("./index");
             result.should.deepEqual({ foo: { bar: 30 } });
             done();
         }).catch(done);
@@ -154,7 +153,7 @@ describe("Generic requires", (done) => {
             "foo/index.js": `module.exports = require("../bar/index")`,
             "bar/index.js": `module.exports = {bar : 30}`,
         }, "**/*.js").then(root => {
-            let result = root.FuseBox.import("index");
+            let result = root.FuseBox.import("./index");
             result.should.deepEqual({ foo: { bar: 30 } });
             done();
         }).catch(done);
@@ -166,7 +165,7 @@ describe("Generic requires", (done) => {
             "foo/index.js": `module.exports = require("../bar/index.js")`,
             "bar/index.js": `module.exports = {bar : 30}`,
         }, "**/*.js").then(root => {
-            let result = root.FuseBox.import("index");
+            let result = root.FuseBox.import("./index");
             result.should.deepEqual({ foo: { bar: 30 } });
             done();
         }).catch(done);
@@ -174,10 +173,10 @@ describe("Generic requires", (done) => {
 
     it("Should handle circular dependency", (done) => {
         getTestEnv({
-            "a.js": `exports.a = 1; require("./b")`,
+            "a.js": `exports.a = 1; require("./b");`,
             "b.js": `exports.b = require("./a")`,
         }, "**/*.js").then(root => {
-            let result = root.FuseBox.import("b");
+            let result = root.FuseBox.import("./b");
             result.should.deepEqual({ b: { a: 1 } });
             done();
         }).catch(done);

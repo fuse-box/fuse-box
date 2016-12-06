@@ -29,7 +29,7 @@ export declare class WorkFlowContext {
     tsConfig: any;
     customModulesFolder: string;
     tsMode: boolean;
-    globals: string[];
+    globals: any;
     standaloneBundle: boolean;
     source: BundleSource;
     sourceMapConfig: any;

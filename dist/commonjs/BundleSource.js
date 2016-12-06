@@ -8,12 +8,7 @@ class BundleSource {
         this.context = context;
         this.standalone = false;
         this.concat = new Concat(true, "", "\n");
-        this.concat.add(null, "(function(){");
-        if (context.standaloneBundle) {
-            let fuseboxLibFile = path.join(Config_1.Config.ASSETS_DIR, "fusebox.min.js");
-            let wrapper = fs.readFileSync(fuseboxLibFile).toString();
-            this.concat.add(null, wrapper);
-        }
+        this.concat.add(null, "(function(FuseBox){");
     }
     startCollection(collection) {
         this.collectionSource = new Concat(true, collection.name, "\n");
@@ -23,12 +18,12 @@ class BundleSource {
                 conflicting[name] = version;
             });
         }
-        this.collectionSource.add(null, `FuseBox.module("${collection.name}", ${JSON.stringify(conflicting)}, function(___scope___){`);
+        this.collectionSource.add(null, `FuseBox.pkg("${collection.name}", ${JSON.stringify(conflicting)}, function(___scope___){`);
     }
     endCollection(collection) {
         let entry = collection.entryFile ? collection.entryFile.info.fuseBoxPath : "";
         if (entry) {
-            this.collectionSource.add(null, `return ___scope___.entry("${entry}");`);
+            this.collectionSource.add(null, `return ___scope___.entry = "${entry}";`);
         }
         this.collectionSource.add(null, "});");
         let key = collection.info ? `${collection.info.name}@${collection.info.version}` : "default";
@@ -55,23 +50,35 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
                 entry = this.context.convert2typescript(entry);
             }
         }
-        if (context.globals.length > 0) {
+        if (context.globals) {
             let data = [];
-            context.globals.forEach(name => {
-                if (name === "default" && entry) {
-                    data.push(`default/` + entry);
-                    entry = undefined;
+            for (let key in context.globals) {
+                if (context.globals.hasOwnProperty(key)) {
+                    let alias = context.globals[key];
+                    let item = {};
+                    item.alias = alias;
+                    item.pkg = key;
+                    if (key === "default" && entry) {
+                        item.entry = entry;
+                        entry = undefined;
+                    }
+                    data.push(item);
                 }
-                else {
-                    data.push(name);
-                }
-            });
+            }
             this.concat.add(null, `FuseBox.expose(${JSON.stringify(data)})`);
         }
         if (entry) {
-            this.concat.add(null, `\nFuseBox.import("${entry}")`);
+            this.concat.add(null, `\nFuseBox.import("./${entry}")`);
         }
-        this.concat.add(null, "})();");
+        this.concat.add(null, "})");
+        if (context.standaloneBundle) {
+            let fuseboxLibFile = path.join(Config_1.Config.ASSETS_DIR, "frontend", "fusebox.min.js");
+            let wrapper = fs.readFileSync(fuseboxLibFile).toString();
+            this.concat.add(null, `(${wrapper})`);
+        }
+        else {
+            this.concat.add(null, "()");
+        }
         if (this.context.sourceMapConfig) {
             if (this.context.sourceMapConfig.bundleReference) {
                 this.concat.add(null, `//# sourceMappingURL=${this.context.sourceMapConfig.bundleReference}`);

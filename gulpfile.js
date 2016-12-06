@@ -24,16 +24,14 @@ let projectFrontend = ts.createProject('src-frontend/tsconfig.json', {
 gulp.task("src-frontend", () => {
     return gulp.src("src-frontend/**/*.ts")
         .pipe(projectFrontend()).js
-        .pipe(wrap('(function(__root__){ <%= contents %> \n__root__["FuseBox"] = FuseBox } )(this)'))
+        .pipe(wrap('(function(__root__){ <%= contents %> \nreturn __root__["FuseBox"] = FuseBox; } )(this)'))
         .pipe(rename("fusebox.js"))
         .pipe(gulp.dest('assets/frontend'))
-
-    .pipe(rename("fusebox.min.js"))
-
-
-    .pipe(uglify())
-
-    .pipe(gulp.dest('assets/frontend'))
+        .pipe(rename("fusebox.min.js"))
+        .pipe(uglify())
+        .pipe(replace(/;$/, ""))
+        .pipe(replace(/^\!/, ""))
+        .pipe(gulp.dest('assets/frontend'))
 
 })
 
@@ -148,7 +146,7 @@ gulp.task('watch', ['build', 'src-frontend'], function() {
     // });
 
     gulp.watch(['src-frontend/**/*.ts'], () => {
-        runSequence("src-frontend");
+        runSequence("src-frontend", "hello");
     });
     // gulp.watch(['assets/**/*.js'], () => {
     //     runSequence('hello');
