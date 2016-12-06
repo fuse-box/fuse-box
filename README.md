@@ -80,3 +80,7 @@ FuseBox.on("after-import", (exports, require, module, __filename, __dirname, pkg
 ```
 
 It is not recommended, however, if you want to play god, you can use that functionlity.
+
+### Export from bundle
+
+You can easily export any library from your bundle to window/module.exports accordingly.
