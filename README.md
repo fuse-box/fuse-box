@@ -64,3 +64,19 @@ fuseBox.bundle(">index.jsx +react-dom");
 `**/*.js` - Bundle everything with dependencies
 
 `**/*.js -path` - Bundle everything with dependencies except for path
+
+
+
+### FuseBox events
+
+It is possible to intercept require statements. You can catch "before-import" and "after-import" events like so:
+
+```
+FuseBox.on("before-import", (exports, require, module, __filename, __dirname, pkg) => {                
+});
+
+FuseBox.on("after-import", (exports, require, module, __filename, __dirname, pkg) => {                
+});
+```
+
+It is not recommended, however, if you want to play god, you can use that functionlity.
