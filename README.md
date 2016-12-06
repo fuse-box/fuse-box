@@ -21,7 +21,7 @@ let fuseBox = new FuseBox({
     },
 
     cache: true,
-    globals: ["default"],
+    globals: {defaut : "myLib"},
     outFile: "./out.js",
 });
 
