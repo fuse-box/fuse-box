@@ -4,6 +4,31 @@
 > FuseBox beats any bundler/loader (webpack, jspm) by performance and convenience, and bundles any library on the Internet without additional configuration. So please, be be patient
 
 
+# Loader API
+
+FuseBox bundle works in both environment. Essentially, it does not matter where you run. FuseBox will persist itself in browser window, or nodejs globals.
+
+## Import
+Import is 100% compatible with commonjs specification. You can require folders, skip file extensions (fusebox will guess it).
+```js
+FuseBox.import("./foo/bar");
+```
+Requre external packages will work  as well
+
+```js
+FuseBox.import("fs");
+```
+
+Please, not, that some libraries like "fs" are faked on browser. Meaning that it won't spit an error, but won't work as expected on server for known reasons.
+Nodejs environment, however, will get authentic "fs" module. (Concerns http, net, tty e.t.c )
+
+
+
+
+
+
+
+
 ```js
 let fuseBox = new FuseBox({
     homeDir: "test/fixtures/cases/case1"
