@@ -22,6 +22,26 @@ FuseBox.import("fs");
 Please, not, that some libraries like "fs" are faked on browser. Meaning that it won't spit an error, but won't work as expected on server for known reasons.
 Nodejs environment, however, will get authentic "fs" module. (Concerns http, net, tty e.t.c )
 
+## Exists
+
+You check wether a module (file) exists in scope.
+```js
+FuseBox.exists("./index")
+```
+
+## Event binding
+
+It is possible to intercept require statements. Use "on" method.
+
+```
+FuseBox.on("before-import", (exports, require, module, __filename, __dirname, pkg) => {                
+});
+
+FuseBox.on("after-import", (exports, require, module, __filename, __dirname, pkg) => {                
+});
+```
+2 events are available at the moment "before-import" and "after-import", Provides commonjs environment (+ package name) in the callback. "require" function is "homie" and respects file location.
+
 
 
 
