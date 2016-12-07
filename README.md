@@ -54,7 +54,7 @@ FuseBox bundle works in both environment. Essentially, it does not matter where 
 Every bundle contains a 3k footer with FuseBox API, It is less than 3KB minified (1,4KB gzipped).  
 
 
-### Import
+## Import
 Import is 100% compatible with commonjs specification. You can require folders, skip file extensions (fusebox will guess it).
 ```js
 FuseBox.import("./foo/bar");
@@ -68,14 +68,14 @@ FuseBox.import("fs");
 Please, not, that some libraries like "fs" are faked on browser. Meaning that it won't spit an error, but won't work as expected on server for known reasons.
 Nodejs environment, however, will get authentic "fs" module. (Concerns http, net, tty e.t.c )
 
-### Exists
+## Exists
 
 You check wether a module (file) exists in scope.
 ```js
 FuseBox.exists("./index")
 ```
 
-### Event binding
+## Event binding
 
 It is possible to intercept require statements. Use "on" method.
 
@@ -89,7 +89,7 @@ FuseBox.on("after-import", (exports, require, module, __filename, __dirname, pkg
 2 events are available at the moment "before-import" and "after-import", Provides commonjs environment (+ package name) in the callback. "require" function is "homie" and respects file location.
 
 
-### Dynamic
+## Dynamic
 
 Like SystemJS FuseBox provides a hacky way of create a dynamic module from string. After it has been initialized it shared 100% the same environment and behaves accordingly.
 
