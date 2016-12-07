@@ -4,5 +4,4 @@ node_js:
 
 install:
   - npm install
-  - gulp build
   - npm install babel-generator babylon cheerio
