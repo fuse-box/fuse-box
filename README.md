@@ -43,7 +43,14 @@ FuseBox.on("after-import", (exports, require, module, __filename, __dirname, pkg
 2 events are available at the moment "before-import" and "after-import", Provides commonjs environment (+ package name) in the callback. "require" function is "homie" and respects file location.
 
 
+## Dynamic
 
+Like SystemJS FuseBox provides a hacky way of create a dynamic module from string. After it has been initialized it shared 100% the same environment and behaves accordingly.
+
+```
+FuseBox.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}; require('./foo')")
+```
+A bundle can reference "stuff/boo.js" once a dynamic module was initialized.
 
 
 
