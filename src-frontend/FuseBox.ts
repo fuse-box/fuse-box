@@ -1,6 +1,7 @@
 declare let __root__: any;
 
-const $isBrowser = typeof window !== "undefined";
+const $isBrowser = typeof window !== "undefined" && window.navigator;
+
 __root__ = !$isBrowser ? module.exports : __root__;
 // A runtime storage for Fusebox
 const $fsbx = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
@@ -13,7 +14,35 @@ if (!$isBrowser) {
 // Used to reference to the outside world
 const $packages = $fsbx.p = $fsbx.p || {};
 
+// A list of custom events
+// For example "after-import"
 const $events = $fsbx.e = $fsbx.e || {};
+
+
+/**
+ * Reference interface
+ * Contain information about user import;
+ * Having FuseBox.import("./foo/bar") makes analysis on the string
+ * Detects if it's package or not, explicit references are given as well
+ * 
+ * 
+ * @interface IReference
+ */
+interface IReference {
+    file?: any;
+    // serverReference is a result of nodejs require statement
+    // In case if module is not in a bundle
+    serverReference?: string;
+    // Current package name
+    pkgName?: string;
+    // Custom version to take into a consideration
+    versions?: any;
+    // User path
+    filePath?: string;
+    // Converted valid path (with extension)
+    // That can be recognized by FuseBox
+    validPath?: string;
+}
 
 /** 
  * $getNodeModuleName
@@ -27,6 +56,7 @@ const $getNodeModuleName = (name) => {
     return name ? /^([a-z].*)$/.test(name) ? name.split(/\/(.+)?/) : false : false
 }
 
+// Gets file directory
 const $getDir = (filePath: string) => {
     return filePath.substring(0, filePath.lastIndexOf('/')) || "./";
 }
@@ -37,7 +67,7 @@ const $getDir = (filePath: string) => {
  * @param {any} name
  * @returns
  */
-const $pathJoin = function (...string): string {
+const $pathJoin = function(...string): string {
     let parts = [];
     for (let i = 0, l = arguments.length; i < l; i++) {
         parts = parts.concat(arguments[i].split("/"));
@@ -91,7 +121,8 @@ const $loadURL = (url: string) => {
     }
 }
 
-const $getRef = (name, opts: any) => {
+
+const $getRef = (name, opts: any): IReference => {
     let basePath = opts.path || "./";
     let pkg_name = opts.pkg || "default";
     let nodeModule = $getNodeModuleName(name);
@@ -121,7 +152,9 @@ const $getRef = (name, opts: any) => {
             throw `Package was not found "${pkg_name}"`;
         } else {
             // Return "real" node module 
-            return [require(pkg_name), 0];
+            return {
+                serverReference: require(pkg_name)
+            }
         }
     }
     if (!name) {
@@ -143,8 +176,13 @@ const $getRef = (name, opts: any) => {
             file = pkg.f[validPath];
         }
     }
-
-    return [file, pkg_name, pkg.v, filePath, validPath]
+    return {
+        file: file,
+        pkgName: pkg_name,
+        versions: pkg.v,
+        filePath: filePath,
+        validPath: validPath
+    }
 }
 
 
@@ -170,13 +208,17 @@ const $import = (name: string, opts: any = {}) => {
     }
 
 
-    let [file, pkg_name, pkgCustomVersions, filePath, validPath] = $getRef(name, opts);
-    if (pkg_name === 0) { // Check for nodejs module
-        return file;
+    let ref = $getRef(name, opts);
+    if (ref.serverReference) {
+        return ref.serverReference;
     }
+    let file = ref.file;
     if (!file) {
-        throw `File not found ${validPath}`;
+        throw `File not found ${ref.validPath}`;
     }
+    let validPath = ref.validPath;
+    let pkgName = ref.pkgName;
+
     if (file.locals && file.locals.module) {
         return file.locals.module.exports;
     }
@@ -187,9 +229,9 @@ const $import = (name: string, opts: any = {}) => {
     locals.exports = {};
     locals.module = { exports: locals.exports };
     locals.require = (name: string) => {
-        return $import(name, { pkg: pkg_name, path: __dirname, v: pkgCustomVersions });
+        return $import(name, { pkg: pkgName, path: __dirname, v: ref.versions });
     }
-    let args = [locals.module.exports, locals.require, locals.module, validPath, __dirname, pkg_name];
+    let args = [locals.module.exports, locals.require, locals.module, validPath, __dirname, pkgName];
     $trigger("before-import", args);
     file.fn.apply(0, args);
     $trigger("after-import", args);
@@ -202,7 +244,13 @@ const $import = (name: string, opts: any = {}) => {
  * @class FuseBox
  */
 class FuseBox {
+    public static get isBrowser() {
+        return $isBrowser !== undefined;
+    }
 
+    public static get isServer() {
+        return !$isBrowser;
+    }
     /**
      * 
      * 
@@ -231,8 +279,8 @@ class FuseBox {
      * @memberOf FuseBox
      */
     public static exists(path: string) {
-        let [file] = $getRef(path, {});
-        return file !== undefined;
+        let ref = $getRef(path, {});
+        return ref.file !== undefined;
     }
 
     public static expose(obj: any) {
@@ -259,8 +307,8 @@ class FuseBox {
      * @memberOf FuseBox
      */
     public static dynamic(path: string, str: string) {
-        this.pkg("default", {}, function (___scope___) {
-            ___scope___.file(path, function (exports, require, module, __filename, __dirname) {
+        this.pkg("default", {}, function(___scope___) {
+            ___scope___.file(path, function(exports, require, module, __filename, __dirname) {
                 var res = new Function('exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
                 res(exports, require, module, __filename, __dirname, __root__);
             });

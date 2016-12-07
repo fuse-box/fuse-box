@@ -1,4 +1,4 @@
-(function(__root__){ var $isBrowser = typeof window !== "undefined";
+(function(__root__){ var $isBrowser = typeof window !== "undefined" && window.navigator;
 __root__ = !$isBrowser ? module.exports : __root__;
 var $fsbx = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
     : global["$fsbx"] = global["$fsbx"] || {};
@@ -93,7 +93,9 @@ var $getRef = function (name, opts) {
             throw "Package was not found \"" + pkg_name + "\"";
         }
         else {
-            return [require(pkg_name), 0];
+            return {
+                serverReference: require(pkg_name)
+            };
         }
     }
     if (!name) {
@@ -110,7 +112,13 @@ var $getRef = function (name, opts) {
             file = pkg.f[validPath];
         }
     }
-    return [file, pkg_name, pkg.v, filePath, validPath];
+    return {
+        file: file,
+        pkgName: pkg_name,
+        versions: pkg.v,
+        filePath: filePath,
+        validPath: validPath
+    };
 };
 var $trigger = function (name, args) {
     var e = $events[name];
@@ -126,13 +134,16 @@ var $import = function (name, opts) {
     if (/^(http(s)?:|\/\/)/.test(name)) {
         return $loadURL(name);
     }
-    var _a = $getRef(name, opts), file = _a[0], pkg_name = _a[1], pkgCustomVersions = _a[2], filePath = _a[3], validPath = _a[4];
-    if (pkg_name === 0) {
-        return file;
+    var ref = $getRef(name, opts);
+    if (ref.serverReference) {
+        return ref.serverReference;
     }
+    var file = ref.file;
     if (!file) {
-        throw "File not found " + validPath;
+        throw "File not found " + ref.validPath;
     }
+    var validPath = ref.validPath;
+    var pkgName = ref.pkgName;
     if (file.locals && file.locals.module) {
         return file.locals.module.exports;
     }
@@ -142,9 +153,9 @@ var $import = function (name, opts) {
     locals.exports = {};
     locals.module = { exports: locals.exports };
     locals.require = function (name) {
-        return $import(name, { pkg: pkg_name, path: __dirname, v: pkgCustomVersions });
+        return $import(name, { pkg: pkgName, path: __dirname, v: ref.versions });
     };
-    var args = [locals.module.exports, locals.require, locals.module, validPath, __dirname, pkg_name];
+    var args = [locals.module.exports, locals.require, locals.module, validPath, __dirname, pkgName];
     $trigger("before-import", args);
     file.fn.apply(0, args);
     $trigger("after-import", args);
@@ -153,6 +164,20 @@ var $import = function (name, opts) {
 var FuseBox = (function () {
     function FuseBox() {
     }
+    Object.defineProperty(FuseBox, "isBrowser", {
+        get: function () {
+            return $isBrowser !== undefined;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(FuseBox, "isServer", {
+        get: function () {
+            return !$isBrowser;
+        },
+        enumerable: true,
+        configurable: true
+    });
     FuseBox.import = function (name, opts) {
         return $import(name, opts);
     };
@@ -161,8 +186,8 @@ var FuseBox = (function () {
         $events[name].push(fn);
     };
     FuseBox.exists = function (path) {
-        var file = $getRef(path, {})[0];
-        return file !== undefined;
+        var ref = $getRef(path, {});
+        return ref.file !== undefined;
     };
     FuseBox.expose = function (obj) {
         for (var key in obj) {
