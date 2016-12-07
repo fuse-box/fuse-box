@@ -1,4 +1,4 @@
-const build = require("../../build/commonjs/index.js");
+const build = require(`../../${process.env.TRAVIS ? "dist" : "build"}/commonjs/index.js`);
 const FuseBox = build.FuseBox;
 const fs = require("fs");
 
