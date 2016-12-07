@@ -1,4 +1,4 @@
-const build = require("../build/commonjs/index.js");
+const build = require(`../${process.env.TRAVIS ? "dist" : "build"}/commonjs/index.js`);
 const should = require("should");
 const appRoot = require("app-root-path");
 const path = require("path");
