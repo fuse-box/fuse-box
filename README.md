@@ -107,7 +107,7 @@ let fuseBox = new FuseBox({
     homeDir: "test/fixtures/cases/case1"
 });
 ```
-## Examples
+# Examples
 
 ## Example1: Bundle typescript!
 
