@@ -6,22 +6,103 @@ import * as fs from "fs";
 import { utils } from "realm-utils";
 
 
+/**
+ * 
+ * 
+ * @export
+ * @class File
+ */
 export class File {
+    /**
+     * 
+     * 
+     * @type {string}
+     * @memberOf File
+     */
     public absPath: string;
+    /**
+     * 
+     * 
+     * @type {string}
+     * @memberOf File
+     */
     public contents: string;
+    /**
+     * 
+     * 
+     * 
+     * @memberOf File
+     */
     public isLoaded = false;
+    /**
+     * 
+     * 
+     * 
+     * @memberOf File
+     */
     public isNodeModuleEntry = false;
+    /**
+     * 
+     * 
+     * @type {ModuleCollection}
+     * @memberOf File
+     */
     public collection: ModuleCollection;
+    /**
+     * 
+     * 
+     * @type {string[]}
+     * @memberOf File
+     */
     public headerContent: string[];
+    /**
+     * 
+     * 
+     * 
+     * @memberOf File
+     */
     public isTypeScript = false;
+    /**
+     * 
+     * 
+     * @type {*}
+     * @memberOf File
+     */
     public sourceMap: any;
+    /**
+     * 
+     * 
+     * @type {FileAnalysis}
+     * @memberOf File
+     */
     public analysis: FileAnalysis = new FileAnalysis(this);
+    /**
+     * 
+     * 
+     * @type {Promise<any>[]}
+     * @memberOf File
+     */
     public resolving: Promise<any>[] = [];
+    /**
+     * Creates an instance of File.
+     * 
+     * @param {WorkFlowContext} context
+     * @param {IPathInformation} info
+     * 
+     * @memberOf File
+     */
     constructor(public context: WorkFlowContext, public info: IPathInformation) {
 
         this.absPath = info.absPath;
     }
 
+    /**
+     * 
+     * 
+     * @returns
+     * 
+     * @memberOf File
+     */
     public getCrossPlatormPath() {
         let name = this.absPath;
         if (!name) {
@@ -31,6 +112,13 @@ export class File {
         return name;
     }
 
+    /**
+     * 
+     * 
+     * @param {*} [_ast]
+     * 
+     * @memberOf File
+     */
     public tryPlugins(_ast?: any) {
         if (this.context.plugins) {
             let target: Plugin;
@@ -55,6 +143,13 @@ export class File {
             }
         }
     }
+    /**
+     * 
+     * 
+     * @param {string} str
+     * 
+     * @memberOf File
+     */
     public addHeaderContent(str: string) {
         if (!this.headerContent) {
             this.headerContent = [];
@@ -62,12 +157,25 @@ export class File {
         this.headerContent.push(str);
     }
 
+    /**
+     * 
+     * 
+     * 
+     * @memberOf File
+     */
     public loadContents() {
         this.contents = fs.readFileSync(this.info.absPath).toString();
         this.isLoaded = true;
     }
 
 
+    /**
+     * 
+     * 
+     * @returns
+     * 
+     * @memberOf File
+     */
     public consume() {
         if (this.info.isRemoteFile) {
             return;
@@ -92,6 +200,14 @@ export class File {
         this.tryPlugins();
     }
 
+    /**
+     * 
+     * 
+     * @private
+     * @returns
+     * 
+     * @memberOf File
+     */
     private handleTypescript() {
         if (this.context.useCache) {
             let cached = this.context.cache.getStaticCache(this);
