@@ -98,15 +98,12 @@ FuseBox.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}; require('
 ```
 A bundle can reference "stuff/boo.js" once a dynamic module was initialized.
 
-
-
-
-
 ```js
 let fuseBox = new FuseBox({
     homeDir: "test/fixtures/cases/case1"
 });
 ```
+
 # Examples
 
 ## Example1: Bundle typescript!
@@ -126,7 +123,6 @@ let fuseBox = new FuseBox({
 
 fuseBox.bundle(">index.ts");
 ```
-
 
 
 ## Bundle react app!
