@@ -8,7 +8,7 @@
         "test": "test"
     },
     "scripts": {
-        "test": "./node_modules/mocha/bin/mocha"
+        "test": "TRAVIS=true ./node_modules/mocha/bin/mocha"
     },
     "repository": {
         "type": "git",
