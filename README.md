@@ -3,10 +3,56 @@
 > The library is under heavy development. We are getting there. Documentation is coming soon.
 > FuseBox beats any bundler/loader (webpack, jspm) by performance and convenience, and bundles any library on the Internet without additional configuration. So please, be be patient
 
+# Bundler
+
+You can bundle any library without extra condiguration. (babel-core, cheerio, etc) 
+So a confuguration is minimalist. All node modules (at least the most cricial ones) will be bundled for browser (Buffer, path e.t.c) So you don't need to stress about whether you bundle will work in browser. IT WILL.
+
+# Common Config
+
+```js
+let fuseBox = new FuseBox({
+    homeDir: "src/",
+    sourceMap: {
+         bundleReference: "./sourcemaps.js.map",
+         outFile: "sourcemaps.js.map",
+    },
+    globals: { default: "myLib"},
+    outFile: "./out.js"
+});
+fuseBox.bundle(">index.ts");
+```
+
+### Export from bundle
+
+You can easily export any library from your bundle to window/module.exports accordingly.
+Simply add this property:
+
+```js
+globals: { default: "myLib", "wires-reactive": "Reactive" }
+```
+
+Whereas key is the name of a package, and value is an alias that groups exports.
+"default" is your current project. Please, note, that in order to expose your default package, a bundle must have an entry point.
+
+Full example:
+
+```js
+let fuseBox = new FuseBox({
+    homeDir: "test/fixtures/cases/case1",
+    globals: { default: "myLib"},
+    outFile: "./out.js"
+});
+fuseBox.bundle(">index.js");
+```
+
 
 # Loader API
 
 FuseBox bundle works in both environment. Essentially, it does not matter where you run. FuseBox will persist itself in browser window, or nodejs globals.
+
+Every bundle contains a 3k footer with FuseBox API, It is less than 3KB minified (1,4KB gzipped).  
+
 
 ## Import
 Import is 100% compatible with commonjs specification. You can require folders, skip file extensions (fusebox will guess it).
@@ -133,27 +179,6 @@ FuseBox.on("after-import", (exports, require, module, __filename, __dirname, pkg
 
 It is not recommended, however, if you want to play god, you can use that functionlity.
 
-### Export from bundle
 
-You can easily export any library from your bundle to window/module.exports accordingly.
-Simply add this property:
-
-```js
-globals: { default: "myLib", "wires-reactive": "Reactive" }
-```
-
-Whereas key is the name of a package, and value is an alias that groups exports.
-"default" is your current project. Please, note, that in order to expose your default package, a bundle must have an entry point.
-
-Full example:
-
-```js
-let fuseBox = new FuseBox({
-    homeDir: "test/fixtures/cases/case1",
-    globals: { default: "myLib"},
-    outFile: "./out.js"
-});
-fuseBox.bundle(">index.js");
-```
 
 
