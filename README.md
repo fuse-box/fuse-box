@@ -3,12 +3,12 @@
 > The library is under heavy development. We are getting there. Documentation is coming soon.
 > FuseBox beats any bundler/loader (webpack, jspm) by performance and convenience, and bundles any library on the Internet without additional configuration. So please, be be patient
 
-# Bundler
+## Bundler
 
 You can bundle any library without extra condiguration. (babel-core, cheerio, etc) 
 So a confuguration is minimalist. All node modules (at least the most cricial ones) will be bundled for browser (Buffer, path e.t.c) So you don't need to stress about whether you bundle will work in browser. IT WILL.
 
-# Common Config
+### Common Config
 
 ```js
 let fuseBox = new FuseBox({
@@ -47,7 +47,7 @@ fuseBox.bundle(">index.js");
 ```
 
 
-# Loader API
+## Loader API
 
 FuseBox bundle works in both environment. Essentially, it does not matter where you run. FuseBox will persist itself in browser window, or nodejs globals.
 
@@ -126,6 +126,7 @@ let fuseBox = new FuseBox({
 fuseBox.bundle(">index.ts");
 ```
 
+## Examples
 
 ### Bundle react app!
 ```js
