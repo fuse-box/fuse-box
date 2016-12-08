@@ -181,7 +181,7 @@ It is not recommended, however, if you want to play god, you can use that functi
 
 
 
-# Premade plugins
+# Built-in plugins
 
 Fusebox contains premade plugins, that should help you to get started. 
 
@@ -203,9 +203,12 @@ __extends | Generic typescript helper
 __generator | Generic typescript helper
 __param | Generic typescript helper
 
+If you spot an error, or a missing helper, please, submit an issue, or a pull request. I you feel inpatient enough, you can always create your own plugin, based on this class [code](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/TypeScriptHelpers.ts)
+
 ### Using the plugin
 
-Example:
+Simple add TypeScriptHelpers to your plugin list. No further configuration required. FuseBox will take care of everything else. To avoid unnecessary AST (which is heavy) this plugin does a simple RegExp, and tests for declarations. It is absolutely safe, and your code is not modified in any way. 
+
 ```
 const fsbx = require("fuse-box");
 let fuseBox = new fsbx.FuseBox({
