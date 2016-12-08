@@ -3,7 +3,7 @@ declare let __root__: any;
 const $isBrowser = typeof window !== "undefined" && window.navigator;
 
 // Patching global variable
-if (!$isBrowser) {
+if ($isBrowser) {
     window["global"] = window;
 }
 

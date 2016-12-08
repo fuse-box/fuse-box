@@ -1,5 +1,5 @@
 (function(__root__){ var $isBrowser = typeof window !== "undefined" && window.navigator;
-if (!$isBrowser) {
+if ($isBrowser) {
     window["global"] = window;
 }
 __root__ = !$isBrowser ? module.exports : __root__;
