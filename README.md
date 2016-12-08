@@ -204,3 +204,30 @@ __generator | Generic typescript helper
 __param | Generic typescript helper
 
  
+### Additional meta data in the decorator
+
+You can have access to the entire environment of a file, using reflect-metadata. Make sure you have it installed first
+
+```
+npm install reflect-metadata
+```
+
+Than, include it in your entry point
+
+```
+import "reflect-metadata";
+```
+
+Now, you can access "commonjs" variables via fusebox metadata property
+
+```
+export function testDecorator() {
+    return function (target, key: string, descriptor: PropertyDescriptor) {
+        Reflect.getMetadata("fusebox:__filename", target, key);
+        Reflect.getMetadata("fusebox:__dirname", target, key);
+        Reflect.getMetadata("fusebox:require", target, key); // Local "require" function
+        Reflect.getMetadata("fusebox:module", target, key);
+        Reflect.getMetadata("fusebox:exports", target, key);
+    }
+}
+```
