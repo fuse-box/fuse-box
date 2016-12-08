@@ -79,6 +79,7 @@ export class ModuleCache {
      * @memberOf ModuleCache
      */
     public getStaticCache(file: File) {
+
         let stats = fs.statSync(file.absPath);
         let fileName = encodeURIComponent(file.info.fuseBoxPath);
         let dest = path.join(this.staticCacheFolder, fileName);
@@ -160,7 +161,8 @@ mtime : ${stats.mtime.getTime()}
                 let collection = new ModuleCollection(this.context, json.name);
                 collection.cached = true;
                 collection.cachedName = key;
-                collection.cacheFile = path.join(this.cacheFolder, key);
+                collection.cacheFile = path.join(this.cacheFolder, encodeURIComponent(key));
+
                 operations.push(new Promise((resolve, reject) => {
 
                     fs.readFile(collection.cacheFile, (err, result) => {
@@ -270,7 +272,9 @@ mtime : ${stats.mtime.getTime()}
      */
     public set(info: IPackageInformation, contents: string) {
         return new Promise((resolve, reject) => {
-            let targetName = path.join(this.cacheFolder, `${info.name}@${info.version}`);
+
+            let targetName = path.join(this.cacheFolder, encodeURIComponent(`${info.name}@${info.version}`));
+
             fs.writeFile(targetName, contents, (err) => {
                 return resolve();
             });

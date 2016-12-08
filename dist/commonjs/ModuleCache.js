@@ -76,7 +76,7 @@ mtime : ${stats.mtime.getTime()}
                 let collection = new ModuleCollection_1.ModuleCollection(this.context, json.name);
                 collection.cached = true;
                 collection.cachedName = key;
-                collection.cacheFile = path.join(this.cacheFolder, key);
+                collection.cacheFile = path.join(this.cacheFolder, encodeURIComponent(key));
                 operations.push(new Promise((resolve, reject) => {
                     fs.readFile(collection.cacheFile, (err, result) => {
                         collection.cachedContent = result.toString();
@@ -140,7 +140,7 @@ mtime : ${stats.mtime.getTime()}
     }
     set(info, contents) {
         return new Promise((resolve, reject) => {
-            let targetName = path.join(this.cacheFolder, `${info.name}@${info.version}`);
+            let targetName = path.join(this.cacheFolder, encodeURIComponent(`${info.name}@${info.version}`));
             fs.writeFile(targetName, contents, (err) => {
                 return resolve();
             });
