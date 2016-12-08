@@ -78,10 +78,17 @@ mtime : ${stats.mtime.getTime()}
                 collection.cachedName = key;
                 collection.cacheFile = path.join(this.cacheFolder, encodeURIComponent(key));
                 operations.push(new Promise((resolve, reject) => {
-                    fs.readFile(collection.cacheFile, (err, result) => {
-                        collection.cachedContent = result.toString();
+                    if (fs.existsSync(collection.cacheFile)) {
+                        fs.readFile(collection.cacheFile, (err, result) => {
+                            collection.cachedContent = result.toString();
+                            return resolve();
+                        });
+                    }
+                    else {
+                        collection.cachedContent = "";
+                        console.warn(`${collection.cacheFile} was not found`);
                         return resolve();
-                    });
+                    }
                 }));
                 this.context.addNodeModule(collection.cachedName, collection);
                 required.push(key);
