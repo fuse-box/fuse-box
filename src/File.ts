@@ -231,7 +231,7 @@ export class File {
             result.outputText = result.outputText.replace("//# sourceMappingURL=module.js.map", "")
             this.sourceMap = JSON.stringify(jsonSourceMaps);
         }
-
+        //console.log(result.outputText);
         this.contents = result.outputText;
 
         // consuming transpiled javascript

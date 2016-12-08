@@ -205,6 +205,14 @@ describe("PathMaster", () => {
         result.fuseBoxPath.should.equal("some.js");
     });
 
+    it("Should handle sub module with @ operator", () => {
+        let result = pm.resolve("@angular/core", getTestFolder("./bar/data.json"));
+        result.nodeModuleName.should.equal("@angular/core");
+        result.fuseBoxPath.should.equal("bundles/core.umd.js");
+    });
+
+
+
 
 
 

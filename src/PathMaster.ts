@@ -4,7 +4,7 @@ import { WorkFlowContext } from "./WorkflowContext";
 import * as path from "path";
 import * as fs from "fs";
 import { Config } from "./Config";
-const NODE_MODULE = /^([a-z].*)$/;
+const NODE_MODULE = /^([a-z@].*)$/;
 export interface INodeModuleRequire {
     name: string;
     target?: string;
@@ -96,7 +96,7 @@ export class PathMaster {
 
             if (info.target) {
                 // Explicit require from a libary e.g "lodash/dist/each" -> "dist/each"
-                data.absPath = this.getAbsolutePath(info.target, data.nodeModuleInfo.root);
+                data.absPath = this.getAbsolutePath(info.target, data.nodeModuleInfo.root, undefined, true);
                 data.absDir = path.dirname(data.absPath);
                 data.nodeModuleExplicitOriginal = info.target;
             } else {
@@ -141,8 +141,8 @@ export class PathMaster {
      *
      * @memberOf PathMaster
      */
-    public getAbsolutePath(name: string, root: string, rootEntryLimit?: string) {
-        let url = this.ensureFolderAndExtensions(name, root);
+    public getAbsolutePath(name: string, root: string, rootEntryLimit?: string, explicit = false) {
+        let url = this.ensureFolderAndExtensions(name, root, explicit);
         let result = path.resolve(root, url);
 
         // Fixing node_modules package .json limits.
@@ -163,9 +163,10 @@ export class PathMaster {
     }
 
 
-    private ensureFolderAndExtensions(name: string, root: string) {
+    private ensureFolderAndExtensions(name: string, root: string, explicit = false) {
         let ext = path.extname(name);
-        let fileExt = this.tsMode ? ".ts" : ".js";
+        let fileExt = this.tsMode && !explicit ? ".ts" : ".js";
+
         if (name[0] === "~" && name[1] === "/" && this.rootPackagePath) {
             name = "." + name.slice(1, name.length);
             name = path.join(this.rootPackagePath, name);
@@ -197,6 +198,15 @@ export class PathMaster {
 
 
     private getNodeModuleInfo(name: string): INodeModuleRequire {
+        // Handle scope requires
+        if (name[0] === "@") {
+            let s = name.split("/");
+            let target = s.splice(2, s.length).join("/");
+            return {
+                name: `${s[0]}/${s[1]}`,
+                target: target || undefined,
+            };
+        }
         let data = name.split(/\/(.+)?/);
         return {
             name: data[0],

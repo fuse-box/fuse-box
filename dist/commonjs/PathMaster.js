@@ -2,7 +2,7 @@
 const path = require("path");
 const fs = require("fs");
 const Config_1 = require("./Config");
-const NODE_MODULE = /^([a-z].*)$/;
+const NODE_MODULE = /^([a-z@].*)$/;
 class AllowedExtenstions {
     static add(name) {
         if (!this.list.has(name)) {
@@ -49,7 +49,7 @@ class PathMaster {
                 this.context.setLibInfo(nodeModuleInfo.name, nodeModuleInfo.version, nodeModuleInfo);
             }
             if (info.target) {
-                data.absPath = this.getAbsolutePath(info.target, data.nodeModuleInfo.root);
+                data.absPath = this.getAbsolutePath(info.target, data.nodeModuleInfo.root, undefined, true);
                 data.absDir = path.dirname(data.absPath);
                 data.nodeModuleExplicitOriginal = info.target;
             }
@@ -82,8 +82,8 @@ class PathMaster {
         }
         return name;
     }
-    getAbsolutePath(name, root, rootEntryLimit) {
-        let url = this.ensureFolderAndExtensions(name, root);
+    getAbsolutePath(name, root, rootEntryLimit, explicit = false) {
+        let url = this.ensureFolderAndExtensions(name, root, explicit);
         let result = path.resolve(root, url);
         if (rootEntryLimit && name.match(/\.\.\/$/)) {
             if (result.indexOf(path.dirname(rootEntryLimit)) < 0) {
@@ -99,9 +99,9 @@ class PathMaster {
         }
         return "";
     }
-    ensureFolderAndExtensions(name, root) {
+    ensureFolderAndExtensions(name, root, explicit = false) {
         let ext = path.extname(name);
-        let fileExt = this.tsMode ? ".ts" : ".js";
+        let fileExt = this.tsMode && !explicit ? ".ts" : ".js";
         if (name[0] === "~" && name[1] === "/" && this.rootPackagePath) {
             name = "." + name.slice(1, name.length);
             name = path.join(this.rootPackagePath, name);
@@ -126,6 +126,14 @@ class PathMaster {
         return name;
     }
     getNodeModuleInfo(name) {
+        if (name[0] === "@") {
+            let s = name.split("/");
+            let target = s.splice(2, s.length).join("/");
+            return {
+                name: `${s[0]}/${s[1]}`,
+                target: target || undefined,
+            };
+        }
         let data = name.split(/\/(.+)?/);
         return {
             name: data[0],
