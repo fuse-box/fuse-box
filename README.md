@@ -203,7 +203,18 @@ __extends | Generic typescript helper
 __generator | Generic typescript helper
 __param | Generic typescript helper
 
- 
+### Using the plugin
+
+Example:
+```
+const fsbx = require("fuse-box");
+let fuseBox = new fsbx.FuseBox({
+    homeDir: "test/fixtures/cases/ts",
+    outFile: "./out.js",
+    plugins: [fsbx.TypeScriptHelpers]
+});
+
+```
 ### Additional meta data in the decorator
 
 You can have access to the entire environment of a file, using reflect-metadata. Make sure you have it installed first
