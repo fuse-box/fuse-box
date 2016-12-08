@@ -108,7 +108,7 @@ class FuseBox {
                 }
                 addNodeModules() {
                     return realm_utils_1.each(self.context.nodeModules, (collection) => {
-                        if (!collection.info.missing) {
+                        if (!collection.info || !collection.info.missing) {
                             return self.collectionSource.get(collection).then((cnt) => {
                                 self.context.log.echoCollection(collection, cnt);
                                 if (!collection.cachedName) {
@@ -124,8 +124,7 @@ class FuseBox {
                         contents: this.globalContents,
                     };
                 }
-            }
-            ).then(result => {
+            }).then(result => {
                 self.context.log.end();
                 this.triggerEnd();
                 self.context.source.finalize(bundleData);

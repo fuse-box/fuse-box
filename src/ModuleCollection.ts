@@ -200,7 +200,7 @@ export class ModuleCollection {
             return each(toResolve, (file: File) => this.resolveNodeModule(file));
         }).then(() => {
             return this.context.cache.buildMap(this);
-        });
+        })
     }
 
     /**

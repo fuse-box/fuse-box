@@ -1,7 +1,8 @@
 {
     "compilerOptions": {
-        "target": "es6",
+        "target": "es5",
         "module": "commonjs",
+        "lib": ["dom", "es2015.promise", "es5"],
         "moduleResolution": "node",
         "isolatedModules": false,
         "jsx": "react",
@@ -14,6 +15,7 @@
         "noLib": false,
         "ourDir": "build/",
         "preserveConstEnums": true,
+        "noEmitHelpers": true,
         "suppressImplicitAnyIndexErrors": true
     },
     "exclude": [],

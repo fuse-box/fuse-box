@@ -1,4 +1,6 @@
 "use strict";
+var TypeScriptHelpers_1 = require("./plugins/TypeScriptHelpers");
+exports.TypeScriptHelpers = TypeScriptHelpers_1.TypeScriptHelpers;
 var SVGPlugin_1 = require("./plugins/SVGPlugin");
 exports.SVGPlugin = SVGPlugin_1.SVGPlugin;
 var BabelPlugin_1 = require("./plugins/BabelPlugin");

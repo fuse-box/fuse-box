@@ -22,5 +22,5 @@ export declare class BundleData {
 }
 export declare class Arithmetic {
     static parse(str: string): PropParser;
-    static getFiles(parser: PropParser, virtualFiles: string, homeDir: string): Promise<BundleData>;
+    static getFiles(parser: PropParser, virtualFiles: string, homeDir: string): Promise<any>;
 }

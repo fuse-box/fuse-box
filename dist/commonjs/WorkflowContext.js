@@ -1,6 +1,6 @@
 "use strict";
-const path = require('path');
-const fs = require('fs');
+const path = require("path");
+const fs = require("fs");
 const BundleSource_1 = require("./BundleSource");
 const Log_1 = require("./Log");
 const PathMaster_1 = require("./PathMaster");
