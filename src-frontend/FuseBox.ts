@@ -2,6 +2,11 @@ declare let __root__: any;
 
 const $isBrowser = typeof window !== "undefined" && window.navigator;
 
+// Patching global variable
+if (!$isBrowser) {
+    window["global"] = window;
+}
+
 __root__ = !$isBrowser ? module.exports : __root__;
 // A runtime storage for Fusebox
 const $fsbx = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})

@@ -1,4 +1,7 @@
 (function(__root__){ var $isBrowser = typeof window !== "undefined" && window.navigator;
+if (!$isBrowser) {
+    window["global"] = window;
+}
 __root__ = !$isBrowser ? module.exports : __root__;
 var $fsbx = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
     : global["$fsbx"] = global["$fsbx"] || {};
