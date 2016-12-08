@@ -146,7 +146,7 @@ gulp.task('watch', ['build', 'src-frontend'], function() {
     // });
 
     gulp.watch(['src-frontend/**/*.ts'], () => {
-        runSequence("src-frontend", "hello");
+        runSequence("src-frontend");
     });
     // gulp.watch(['assets/**/*.js'], () => {
     //     runSequence('hello');

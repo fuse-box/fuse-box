@@ -53,7 +53,14 @@ interface IReference {
  * @returns
  */
 const $getNodeModuleName = (name) => {
-    return name ? /^([a-z].*)$/.test(name) ? name.split(/\/(.+)?/) : false : false
+    if (/^([@a-z].*)$/.test(name)) {
+        if (name[0] === "@") {
+            let s = name.split("/");
+            let target = s.splice(2, s.length).join("/");
+            return [`${s[0]}/${s[1]}`, target || undefined];
+        }
+        return name.split(/\/(.+)?/);
+    }
 }
 
 // Gets file directory
@@ -67,7 +74,7 @@ const $getDir = (filePath: string) => {
  * @param {any} name
  * @returns
  */
-const $pathJoin = function(...string): string {
+const $pathJoin = function (...string): string {
     let parts = [];
     for (let i = 0, l = arguments.length; i < l; i++) {
         parts = parts.concat(arguments[i].split("/"));
@@ -307,8 +314,8 @@ class FuseBox {
      * @memberOf FuseBox
      */
     public static dynamic(path: string, str: string) {
-        this.pkg("default", {}, function(___scope___) {
-            ___scope___.file(path, function(exports, require, module, __filename, __dirname) {
+        this.pkg("default", {}, function (___scope___) {
+            ___scope___.file(path, function (exports, require, module, __filename, __dirname) {
                 var res = new Function('exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
                 res(exports, require, module, __filename, __dirname, __root__);
             });

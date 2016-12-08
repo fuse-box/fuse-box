@@ -8,7 +8,14 @@ if (!$isBrowser) {
 var $packages = $fsbx.p = $fsbx.p || {};
 var $events = $fsbx.e = $fsbx.e || {};
 var $getNodeModuleName = function (name) {
-    return name ? /^([a-z].*)$/.test(name) ? name.split(/\/(.+)?/) : false : false;
+    if (/^([@a-z].*)$/.test(name)) {
+        if (name[0] === "@") {
+            var s = name.split("/");
+            var target = s.splice(2, s.length).join("/");
+            return [s[0] + "/" + s[1], target || undefined];
+        }
+        return name.split(/\/(.+)?/);
+    }
 };
 var $getDir = function (filePath) {
     return filePath.substring(0, filePath.lastIndexOf('/')) || "./";
