@@ -1,33 +1,19 @@
-import { NgModule }      from '@angular/core';
-console.log(NgModule);
-// import { testDecorator } from './TestDecorator';
-// import "reflect-metadata";
+import "reflect-metadata";
+import { testDecorator, testDecorator2 } from './TestDecorator';
 
 
+@testDecorator()
+class MyClass {
+    constructor(parameters) {
 
-// /**
-//  * Foo
-//  */
-// class Foo {
-//     constructor(parameters) {
+    }
 
-//     }
-// }
-// /**
-//  * MyClass
-//  */
-// class MyClass extends Foo {
-//     constructor(parameters) {
-//         super(parameters);
-//     }
-//     @testDecorator()
-//     public hello() {
+    public hello() {
 
-//     }
+    }
 
-//     public a()
-//     {
-        
-//     }
-// }
+    public a() {
+
+    }
+}
 
