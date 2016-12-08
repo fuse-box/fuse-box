@@ -218,7 +218,7 @@ let fuseBox = new fsbx.FuseBox({
 });
 
 ```
-### Additional meta data in the decorator
+### Extended metadata properties 
 
 You can have access to the entire environment of a file, using reflect-metadata. Make sure you have it installed first
 
