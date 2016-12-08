@@ -181,4 +181,26 @@ It is not recommended, however, if you want to play god, you can use that functi
 
 
 
+# Premade plugins
 
+Fusebox contains premade plugins, that should help you to get started. 
+
+
+## Typescript helpers
+
+A very handy plugin, adds required typescript functions to the bundle. Please, note, that it adds only the ones that are actually used. So you won't be seeing unnecessary code.
+
+Please, check this [list](https://github.com/fuse-box/fuse-box/tree/master/assets/libs/fuse-typescript-helpers)
+
+Available helpers:
+
+Name | Description
+------------ | -------------
+__assign | Generic typescript helper
+__awaiter | Generic typescript helper
+__decorator | Generic typescript helper + additional fusebox meta data patched
+__extends | Generic typescript helper
+__generator | Generic typescript helper
+__param | Generic typescript helper
+
+ 
