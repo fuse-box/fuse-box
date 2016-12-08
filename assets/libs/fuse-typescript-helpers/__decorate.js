@@ -3,13 +3,15 @@ var __fsbx_decorate = function(localArguments) {
         var c = arguments.length,
             r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
             d;
-        decorators.push(
-            __metadata("fusebox:exports", localArguments[0]),
-            __metadata("fusebox:require", localArguments[1]),
-            __metadata("fusebox:module", localArguments[2]),
-            __metadata("fusebox:__filename", localArguments[3]),
-            __metadata("fusebox:__dirname", localArguments[4])
-        )
+        if (decorators && decorators.push) {
+            decorators.push(
+                __metadata("fusebox:exports", localArguments[0]),
+                __metadata("fusebox:require", localArguments[1]),
+                __metadata("fusebox:module", localArguments[2]),
+                __metadata("fusebox:__filename", localArguments[3]),
+                __metadata("fusebox:__dirname", localArguments[4])
+            )
+        }
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
         else
             for (var i = decorators.length - 1; i >= 0; i--)
