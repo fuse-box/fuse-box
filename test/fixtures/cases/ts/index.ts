@@ -1,19 +1,19 @@
 import "reflect-metadata";
-import { testDecorator, testDecorator2 } from './TestDecorator';
+import "zone.js";
+// import { testDecorator, testDecorator2 } from './TestDecorator';
 
 
-@testDecorator()
-class MyClass {
-    constructor(parameters) {
+// @testDecorator()
+// class MyClass {
+//     constructor(parameters) {
 
-    }
+//     }
 
-    public hello() {
+//     public hello() {
 
-    }
+//     }
 
-    public a() {
+//     public a() {
 
-    }
-}
-
+//     }
+// }

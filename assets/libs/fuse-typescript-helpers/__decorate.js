@@ -3,6 +3,7 @@ var __fsbx_decorate = function(localArguments) {
         var c = arguments.length,
             r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
             d;
+
         if (decorators && decorators.push) {
             decorators.push(
                 __metadata("fusebox:exports", localArguments[0]),

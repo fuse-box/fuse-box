@@ -11,7 +11,7 @@ let fuseBox = new FuseBox({
     //     bundleReference: "./sourcemaps.js.map",
     //     outFile: "sourcemaps.js.map",
     // },
-    cache: true,
+    cache: false,
     //globals: { default: "myLib", "wires-reactive": "Reactive" },
     outFile: "./out.js",
 
