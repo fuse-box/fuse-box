@@ -1,14 +1,37 @@
 [![Build Status](https://travis-ci.org/fuse-box/fuse-box.svg?branch=master)](https://travis-ci.org/fuse-box/fuse-box)
   
 # FuseBox
+> The library is under heavy development. We are getting there.
 
-> The library is under heavy development. We are getting there. Documentation is coming soon.
-> FuseBox beats any bundler/loader (webpack, jspm) by performance and convenience, and bundles any library on the Internet without additional configuration. So please, be be patient
+# Introduction
 
-## Bundler
+FusBox is a bundler/module loader that combines the power of webpack and JSPM. It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convinient to develop. You get one file out with sourcemaps. 
 
-You can bundle any library without extra condiguration. (babel-core, cheerio, etc) 
-So a confuguration is minimalist. All node modules (at least the most cricial ones) will be bundled for browser (Buffer, path e.t.c) So you don't need to stress about whether you bundle will work in browser. IT WILL.
+## Why fusebox?
+
+### Bundle anything without an extra effort
+You have an npm library in mind? You can bundle it without any extra configuration. babel-core with all plugins? No problem, fusebox takes care of everything you need.
+
+All node modules (at least the most cricial ones) will be bundled for browser (Buffer, path e.t.c) So you don't need to stress about whether you bundle will work in browser. IT WILL.
+
+### It is blazing fast
+
+Fusebox is super fast. 50ms for a regular project, 100ms for a big project to re-bundle. It applies agressive but responsible module caching, which makes it fly.
+
+### Built-in typescript support.
+
+FuseBox is written in typescript, so i could not just proceed without a seemless typescript intergration. In fact you don't need to configure anything! Just point it to a typescript file, and FuseBox will do the rest.
+
+```js
+fuseBox.bundle(">index.ts");
+```
+
+### Arithmetic instructions
+
+### Extensive plugins
+
+Have an idea in mind? Just develop a plugin, it's extremely easy to make one. 
+
 
 # Common Config
 
