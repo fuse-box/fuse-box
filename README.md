@@ -7,6 +7,12 @@
 
 FusBox is a bundler/module loader that combines the power of webpack and JSPM. It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convinient to develop. You get one file out with sourcemaps. 
 
+Say no to painful "get started", say no to huge configs. Fuse it all!
+
+[angular2-example](https://github.com/fuse-box/angular2-example) 50ms to build!
+
+[react-example](https://github.com/fuse-box/react-example) 50ms to build
+
 ## Why fusebox?
 
 ### Bundle anything without an extra effort
