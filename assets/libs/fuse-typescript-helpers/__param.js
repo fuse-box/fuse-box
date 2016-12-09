@@ -1,3 +1,3 @@
-var __param = function(paramIndex, decorator) {
+FuseBox.global("__param", function(paramIndex, decorator) {
     return function(target, key) { decorator(target, key, paramIndex); }
-};
+});

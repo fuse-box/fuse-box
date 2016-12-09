@@ -263,6 +263,16 @@ class FuseBox {
     public static get isServer() {
         return !$isBrowser;
     }
+
+    public static global(key : string, obj? : any)
+    {
+        let target = $isBrowser ? window : global;
+        if( obj === undefined){
+            return target[key]; 
+        }
+        target[key] = obj;
+    }
+
     /**
      * 
      * 

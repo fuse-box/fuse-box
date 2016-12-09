@@ -1,4 +1,4 @@
-var __fsbx_decorate = function(localArguments) {
+FuseBox.global("__fsbx_decorate", function(localArguments) {
     return function(decorators, target, key, desc) {
         var c = arguments.length,
             r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
@@ -19,9 +19,8 @@ var __fsbx_decorate = function(localArguments) {
                 if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
         return c > 3 && r && Object.defineProperty(target, key, r), r;
     };
-}
+});
 
-
-var __metadata = (this && this.__metadata) || function(k, v) {
+FuseBox.global("__metadata", function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
+});

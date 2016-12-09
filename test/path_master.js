@@ -1,29 +1,29 @@
-const build = require(`../${process.env.TRAVIS ? "dist" : "build"}/commonjs/index.js`);
-const should = require("should");
-const appRoot = require("app-root-path");
-const path = require("path");
-const WorkFlowContext = build.WorkFlowContext;
-const PathMaster = build.PathMaster;
-const testFolder = path.join(appRoot.path, "test/fixtures/path-test");
-const getTestFolder = (name) => {
-    return path.join(testFolder, name)
-}
-const testFolderShouldEqual = (a, b) => {
-    let matched = a.indexOf(b) === a.length - b.length;
-    if (!matched) {
-        throw new Error(`${a} is not ${b}`);
-    }
-}
-describe("PathMaster", () => {
-    let pm;
-    before(() => {
-        pm = new PathMaster(new WorkFlowContext(), testFolder)
-    });
+const build = require("./build/commonjs/index.js");
+//global.Promise = require('bluebird')
+const FuseBox = build.FuseBox;
+const fs = require("fs");
 
+let fuseBox = new FuseBox({
+    cache: false,
+    homeDir: "test/fixtures/cases/react-demo",
+    sourceMap: {
+        bundleReference: "./sourcemaps.js.map",
+        outFile: "sourcemaps.js.map",
+    },
+    outFile: "./out.js",
+    plugins: [build.SVGPlugin, new build.CSSPlugin(), new build.BabelPlugin({
+        test: /\.jsx$/,
+        config: {
+            sourceMaps: true,
+            presets: ["es2015"],
+            plugins: [
+                ["transform-react-jsx"]
+            ],
+        }
+    })]
+});
 
-
-    it("Should detect node module", () => {
-        let result = pm.resolve("foo/lib");
+fuseBox.bundle(">index.jsx +react-dom");");
         result.isNodeModule.should.be.equal(true);
     });
 

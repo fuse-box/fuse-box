@@ -188,6 +188,13 @@ var FuseBox = (function () {
         enumerable: true,
         configurable: true
     });
+    FuseBox.global = function (key, obj) {
+        var target = $isBrowser ? window : global;
+        if (obj === undefined) {
+            return target[key];
+        }
+        target[key] = obj;
+    };
     FuseBox.import = function (name, opts) {
         return $import(name, opts);
     };
