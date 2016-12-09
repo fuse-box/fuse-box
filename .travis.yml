@@ -4,4 +4,4 @@ node_js:
 
 install:
   - npm install
-  - npm install babel-generator babylon cheerio
+  - npm install babel-generator babylon cheerio @angular/core
