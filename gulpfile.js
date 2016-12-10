@@ -157,6 +157,13 @@ gulp.task('watch', ['build', 'src-frontend'], function() {
     });
 });
 
+
+gulp.task('uglify-test', function() {
+    return gulp.src("./out.js")
+        .pipe(uglify())
+        .pipe(rename("out.min.js")).pipe(gulp.dest("./"))
+});
+
 gulp.task('dist', ['dist-typings', 'dist-commonjs', "src-frontend"], function() {
 
 });
