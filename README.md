@@ -75,6 +75,8 @@ FuseBox appends a very tiny API footer that makes magic happen. The library does
 });
 ```
 
+It behaves exactly the same in browser and on server, including circular dependencies resolution. Surely, it works in node as well.
+
 
 # Common Config
 
