@@ -34,6 +34,24 @@ fuseBox.bundle(">index.ts");
 
 ### Arithmetic instructions
 
+With arithmetic instructions you can explicitely define which files go to the bundle, which files skip external dependencies.
+
+For example.
+```js
+fuseBox.bundle(">index.ts [lib/**/*.ts]");
+```
+
+In this case you will get everything that is required in index, as well as everything that lies under lib/ folder with one condition - any external libraries will be ignored. 
+
+`> index.js [**/*.js]` - Bundle everything without dependencies, and execute index.js
+
+`[**/*.js]` - Bundle everything without dependencies
+
+`**/*.js` - Bundle everything with dependencies
+
+`**/*.js -path` - Bundle everything with dependencies except for path
+
+
 ### Extensive plugins
 
 Have an idea in mind? Just develop a plugin, it's extremely easy to make one. 
@@ -135,62 +153,9 @@ let fuseBox = new FuseBox({
 });
 ```
 
-# Examples
-
-## Example1: Bundle typescript!
-
-```js
-let fuseBox = new FuseBox({
-    homeDir: "test/fixtures/cases/ts",
-    sourceMap: {
-        bundleReference: "./sourcemaps.js.map",
-        outFile: "sourcemaps.js.map",
-    },
-
-    cache: true,
-    globals: {defaut : "myLib"},
-    outFile: "./out.js",
-});
-
-fuseBox.bundle(">index.ts");
-```
 
 
-## Bundle react app!
-```js
-let fuseBox = new FuseBox({
-    cache: false,
-    homeDir: "test/fixtures/cases/react-demo",
-    sourceMap: {
-        bundleReference: "./sourcemaps.js.map",
-        outFile: "sourcemaps.js.map",
-    },
-    outFile: "./out.js",
-    plugins: [build.SVGPlugin, new build.CSSPlugin(), new build.BabelPlugin({
-        test: /\.jsx$/,
-        config: {
-            sourceMaps: true,
-            presets: ["es2015"],
-            plugins: [
-                ["transform-react-jsx"]
-            ],
-        }
-    })]
-});
 
-fuseBox.bundle(">index.jsx +react-dom");
-```
-
-## Arithmetic options
-
-
-`> index.js [**/*.js]` - Bundle everything without dependencies, and execute index.js
-
-`[**/*.js]` - Bundle everything without dependencies
-
-`**/*.js` - Bundle everything with dependencies
-
-`**/*.js -path` - Bundle everything with dependencies except for path
 
 
 
