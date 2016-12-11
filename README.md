@@ -24,6 +24,29 @@ All node modules (at least the most cricial ones) will be bundled for browser (B
 
 Fusebox is super fast. 50ms for a regular project, 100ms for a big project to re-bundle. It applies agressive but responsible module caching, which makes it fly.
 
+Check this benchmark:
+
+1200 files to require once
+
+|         |            |
+| ------------- |:-------------:| 
+| FuseBox      | 0.326s |
+| Webpack      | 1.376s |
+
+
+1000 files to require / 10 times
+
+|         |            |
+| ------------- |:-------------:| 
+| FuseBox      | 2.796s |
+| Webpack      | 13.837s |
+
+
+
+1000
+Webpack
+FuseBox
+
 ### Built-in typescript support.
 
 FuseBox is written in typescript, so i could not just proceed without a seemless typescript intergration. In fact you don't need to configure anything! Just point it to a typescript file, and FuseBox will do the rest.
