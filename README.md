@@ -54,7 +54,23 @@ In this case you will get everything that is required in index, as well as every
 
 ### Extensive plugins
 
-Have an idea in mind? Just develop a plugin, it's extremely easy to make one. 
+Have an idea in mind? Just develop a plugin, it's extremely easy to make one. Besides, we have a few plugins, that will help you get started.
+
+## How FuseBox works?!
+
+The idea of FuseBox was born, when started struggling with webpack. It is slow, and it did not deliver required functionlity. On other hand jspm did what i wanted, but still it was not something i would go for. So i decided to combine both and create my own version.
+
+Behind the scenes, fusebox uses acorn to make static analisys on your code, extracing require statements and es6 imports. So, as long as it is valid javascript es5 or es6, you will get your code bundled with no plugins required. 
+
+FuseBox uses agressive caching for your modules. It knows when a file is modified. It knows exactly which version of npm lib you are using, as well as explicit requires like `require('lodash/each')`
+
+FuseBox appends a very tiny API footer that makes magic happen. The library does not modify your source code, it creates 100% compatible [commonjs wrapper](https://nodejs.org/api/modules.html#modules_the_module_wrapper)
+
+```js
+(function (exports, require, module, __filename, __dirname) {
+// Your module code actually lives in here
+});
+```
 
 
 # Common Config
