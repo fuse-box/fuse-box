@@ -58,12 +58,15 @@ Have an idea in mind? Just develop a plugin, it's extremely easy to make one. Be
 
 ## How FuseBox works?!
 
-The idea of FuseBox was born, when started struggling with webpack. It is slow, and it did not deliver required functionlity. On other hand jspm did what i wanted, but still it was not something i would go for. So i decided to combine both and create my own version.
+The idea of FuseBox was born, when started struggling with webpack. It is slow, and it did not deliver required functionlity. On other hand jspm did what i wanted, but still it was not something i would go for. So i decided to combine both and create my own version that has power of both bundlers combined. 
 
-Behind the scenes, fusebox uses acorn to make static analisys on your code, extracing require statements and es6 imports. So, as long as it is valid javascript es5 or es6, you will get your code bundled with no plugins required. 
+### Static analisys (acorn)
+Behind the scenes, fusebox uses acorn to make static analisys on your code, extracting require statements and es6 imports. So, as long as it is a valid javascript es5 or es6, you will get your code bundled with no plugins required. 
 
+### Aggressive npm caching
 FuseBox uses agressive caching for your modules. It knows when a file is modified. It knows exactly which version of npm lib you are using, as well as explicit requires like `require('lodash/each')`
 
+### Nodejs ecosystem and lifecycle in the browser
 FuseBox appends a very tiny API footer that makes magic happen. The library does not modify your source code, it creates 100% compatible [commonjs wrapper](https://nodejs.org/api/modules.html#modules_the_module_wrapper)
 
 ```js
