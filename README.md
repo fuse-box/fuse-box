@@ -5,7 +5,7 @@
 
 # Introduction
 
-FusBox is a bundler/module loader that combines the power of webpack and JSPM. It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convinient to develop. You get one file out with sourcemaps. 
+FusBox is a bundler/module loader that combines the power of webpack and JSPM. It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convenient to develop.
 
 Say no to painful "get started", say no to huge configs. Fuse it all!
 
@@ -18,11 +18,11 @@ Say no to painful "get started", say no to huge configs. Fuse it all!
 ### Bundle anything without an extra effort
 You have an npm library in mind? You can bundle it without any extra configuration. babel-core with all plugins? No problem, fusebox takes care of everything you need.
 
-All node modules (at least the most cricial ones) will be bundled for browser (Buffer, path e.t.c) So you don't need to stress about whether you bundle will work in browser. IT WILL.
+All node modules (at least the most critical ones) will be bundled for browser (Buffer, path e.t.c) So you don't need to stress about whether you bundle will work in the browser. IT WILL.
 
 ### It is blazing fast
 
-Fusebox is super fast. 50ms for a regular project, 100ms for a big project to re-bundle. It applies agressive but responsible module caching, which makes it fly.
+Fusebox is super fast. 50ms for a regular project, 100ms for a big project to re-bundle. It applies aggressive but responsible module caching, which makes it fly.
 
 Check this benchmark:
 
@@ -49,7 +49,7 @@ FuseBox
 
 ### Built-in typescript support.
 
-FuseBox is written in typescript, so i could not just proceed without a seemless typescript intergration. In fact you don't need to configure anything! Just point it to a typescript file, and FuseBox will do the rest.
+FuseBox is written in typescript, so I could not just proceed without a seamless typescript intergration. In fact, you don't need to configure anything! Just point it to a typescript file, and FuseBox will do the rest.
 
 ```js
 fuseBox.bundle(">index.ts");
@@ -57,14 +57,14 @@ fuseBox.bundle(">index.ts");
 
 ### Arithmetic instructions
 
-With arithmetic instructions you can explicitely define which files go to the bundle, which files skip external dependencies.
+With arithmetic instructions you can explicitly define which files go to the bundle, which files skip external dependencies.
 
 For example.
 ```js
 fuseBox.bundle(">index.ts [lib/**/*.ts]");
 ```
 
-In this case you will get everything that is required in index, as well as everything that lies under lib/ folder with one condition - any external libraries will be ignored. 
+In this case, you will get everything that is required in the index, as well as everything that lies under lib/ folder with one condition - any external libraries will be ignored. 
 
 `> index.js [**/*.js]` - Bundle everything without dependencies, and execute index.js
 
@@ -74,16 +74,16 @@ In this case you will get everything that is required in index, as well as every
 
 `**/*.js -path` - Bundle everything with dependencies except for path
 
-
+ 
 ### Extensive plugins
 
-Have an idea in mind? Just develop a plugin, it's extremely easy to make one. Besides, we have a few plugins, that will help you get started.
+Have an idea in mind? Just develop a plugin, it's extremely easy to make one. Besides, we have [a few plugins](built-in-plugins), that will help you get started. Want to develop one? Read-up [here](#plugin-api)
 
 ## How FuseBox works?!
 
-The idea of FuseBox was born, when started struggling with webpack. It is slow, and it did not deliver required functionlity. On other hand jspm did what i wanted, but still it was not something i would go for. So i decided to combine both and create my own version that has power of both bundlers combined. 
+The idea of FuseBox was born, when started struggling with webpack. It is slow, and it did not deliver required functionality. On another hand, jspm did what I wanted, but still it was not something I would go for. So I decided to combine both and create my own version that has a power of both bundlers combined. 
 
-### Static analisys (acorn)
+### Static analysis (acorn)
 Behind the scenes, fusebox uses acorn to make static analisys on your code, extracting require statements and es6 imports. So, as long as it is a valid javascript es5 or es6, you will get your code bundled with no plugins required. 
 
 ### Aggressive npm caching
@@ -101,20 +101,35 @@ FuseBox appends a very tiny API footer that makes magic happen. The library does
 It behaves exactly the same in browser and on server, including circular dependencies resolution. Surely, it works in node as well.
 
 
-# Common Config
+# Fuse it all
+
+## Anything
+
+The concept of FuseBox is simple. Bundle anything with minimum configuration. You can point your files to a typescript file or to a javascript file. It will understand `es6` import statements as well. You need, however, use [BabelPlugin](#babel-plugin) to transpile it.
+
+
+## Typescript
+
+Typescript does not require any external plugin or configuration. Make sure you have typescript compiler installed
+
+```bash
+npm install typescript --save-dev
+```
+
+Now let's define a simple configuration
 
 ```js
-let fuseBox = new FuseBox({
+FuseBox.init({
     homeDir: "src/",
     sourceMap: {
          bundleReference: "./sourcemaps.js.map",
          outFile: "sourcemaps.js.map",
     },
-    globals: { default: "myLib"},
     outFile: "./out.js"
-});
-fuseBox.bundle(">index.ts");
+}).bundle(">index.ts");
 ```
+
+FuseBox automatically switches to a typescript mode and compiles your files. Place `tsconfig.json` in your `homeDir`. It will be loaded automatically. For your own convenience add [Typescript helpers](#typescript-helpers) plugin.
 
 ## Export from bundle
 
@@ -125,24 +140,34 @@ Simply add this property:
 globals: { default: "myLib", "wires-reactive": "Reactive" }
 ```
 
-Whereas key is the name of a package, and value is an alias that groups exports.
+Whereas key is the name of a package and value is an alias that groups exports.
 "default" is your current project. Please, note, that in order to expose your default package, a bundle must have an entry point.
 
 Full example:
 
 ```js
-let fuseBox = new FuseBox({
-    homeDir: "test/fixtures/cases/case1",
+FuseBox.init({
+    homeDir: "src/",
     globals: { default: "myLib"},
     outFile: "./out.js"
-});
-fuseBox.bundle(">index.js");
+}).bundle(">index.js");
 ```
+
+## Point to the root
+You can use `~` symbol to point to your project's path in order to solve `../../../../../utils` mess.
+
+```js
+// es5
+require("~/lib/utils")
+// es6
+import * as utils from "~/lib/utils";
+```
+
 
 
 # Loader API
 
-FuseBox bundle works in both environment. Essentially, it does not matter where you run. FuseBox will persist itself in browser window, or nodejs globals.
+FuseBox bundle works in both environments. Essentially, it does not matter where you run. FuseBox will persist itself in browser window, or nodejs globals.
 
 Every bundle contains a 3k footer with FuseBox API, It is less than 3KB minified (1,4KB gzipped).  
 
@@ -184,24 +209,12 @@ FuseBox.on("after-import", (exports, require, module, __filename, __dirname, pkg
 
 ## Dynamic
 
-Like SystemJS FuseBox provides a hacky way of create a dynamic module from string. After it has been initialized it shared 100% the same environment and behaves accordingly.
+Like SystemJS FuseBox provides a hacky way of creating a dynamic module from a string. After it has been initialized it shared 100% the same environment and behaves accordingly.
 
 ```
 FuseBox.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}; require('./foo')")
 ```
 A bundle can reference "stuff/boo.js" once a dynamic module was initialized.
-
-```js
-let fuseBox = new FuseBox({
-    homeDir: "test/fixtures/cases/case1"
-});
-```
-
-
-
-
-
-
 
 ## FuseBox events
 
@@ -215,7 +228,7 @@ FuseBox.on("after-import", (exports, require, module, __filename, __dirname, pkg
 });
 ```
 
-It is not recommended, however, if you want to play god, you can use that functionlity.
+It is not recommended, however, if you want to play god, you can use that functionality.
 
 
 
@@ -223,10 +236,87 @@ It is not recommended, however, if you want to play god, you can use that functi
 
 Fusebox contains premade plugins, that should help you to get started. 
 
+## CSS Plugin
+
+It's very to start working css files You have 2 options, you either bundle the contents or serve files. A decision can be made at build time.
+
+For example:
+```
+plugins: [
+    fsbx.CSSPlugin({
+        minify: true
+    })
+]
+```
+
+In this case, all css files will be bundled.
+
+But if you define "serve" option with a callback, all files will be filtered through it. A callback is expected to return a string with a browser path. If you return "undefined" or *NOT* a string, that file will be bundled as if no option was specified.
+
+All css files will be served by server.
+```
+plugins: [
+    fsbx.CSSPlugin({
+        minify: true,
+        serve: path => `./${path}`
+    })
+]
+```
+
+All files will be served except for "styles.css" (contents will be included in the bundle)
+```
+plugins: [
+    fsbx.CSSPlugin({
+        minify: true,
+        serve: path => path === "styles.css` ? 0 : ./${path}`
+    })
+]
+```
+
+## HTML Plugin
+
+Add HTMLPlugin like so:
+```
+plugins: [
+  fsbx.HTMLPlugin({ useDefault: false })
+]
+```
+
+Toggle `useDefault` to make html files export strings as `default` property.
+For example with `useDefault: true` you will be able to import HTML files like so :
+
+```
+import tpl from "~/views/file.html"
+```
+
+## Babel plugin
+
+You can use babel plugin to transpile your code. 
+Make sure you have `babel-core` installed
+
+```bash
+npm install babel-core babel-preset-es2015 babel-plugin-transform-react-jsx
+```
+For example. to transpile JSX, you can use this configuration. 
+```
+ plugins: [
+    fsbx.BabelPlugin({
+        test: /\.jsx$/,
+        config: {
+            sourceMaps: true,
+            presets: ["es2015"],
+            plugins: [
+                ["transform-react-jsx"]
+            ]
+        }
+    })
+]
+```
+Note, that if you want to have sourcemaps in place, set `sourceMaps` to true. Read sourcemaps section for better understanding how sourcemaps are defined.
 
 ## Typescript helpers
 
-A very handy plugin, adds required typescript functions to the bundle. Please, note, that it adds only the ones that are actually used. So you won't be seeing unnecessary code.
+A very handy plugin, adds required typescript functions to the bundle. Please, note, that it adds only the ones that are actually used. So you won't be seeing an unnecessary code.
 
 Please, check this [list](https://github.com/fuse-box/fuse-box/tree/master/assets/libs/fuse-typescript-helpers)
 
@@ -241,7 +331,7 @@ __extends | Generic typescript helper
 __generator | Generic typescript helper
 __param | Generic typescript helper
 
-If you spot an error, or a missing helper, please, submit an issue, or a pull request. I you feel inpatient enough, you can always create your own plugin, based on this class [code](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/TypeScriptHelpers.ts)
+If you spot an error or a missing helper, please, submit an issue, or a pull request. If you feel impatient enough, you can always create your own plugin, based on this class [code](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/TypeScriptHelpers.ts)
 
 ### Using the plugin
 
@@ -249,7 +339,7 @@ Simple add TypeScriptHelpers to your plugin list. No further configuration requi
 
 ```
 const fsbx = require("fuse-box");
-let fuseBox = new fsbx.FuseBox({
+let fuseBox = fsbx.FuseBox.init({
     homeDir: "test/fixtures/cases/ts",
     outFile: "./out.js",
     plugins: [fsbx.TypeScriptHelpers()]
@@ -283,3 +373,39 @@ export function testDecorator() {
     }
 }
 ```
+
+# Sourcemaps
+
+Sourcemaps in FuseBox are enabled by adding this property to a fusebox init configuration
+
+```js
+sourceMap: {
+  bundleReference: "sourcemaps.js.map",
+  outFile: "sourcemaps.js.map",
+}
+```
+`bundleReference` speaks for itself. This line will be added to the bundle. For example `//# sourceMappingURL=./sourcemaps.js.map`. If your client is not able to read them, make sure that the path is reachable. 
+
+Sourcemaps currently work with [typescript](#typescript) and [BabelPlugin](#babel-plugin)
+
+# Plugin API
+
+Let's take a look a plugin's interface first
+
+```typescript
+interface Plugin {
+    test?: RegExp;
+    dependencies?: string[];
+    init: { (context: WorkFlowContext) };
+    transform: { (file: File) };
+    bundleStart?(context: WorkFlowContext);
+    bundleEnd?(context: WorkFlowContext);
+}
+```
+
+### test [RegExp]
+
+Defining `test` will filter files into your plugin. For example `\.js$ `
+
+
+
