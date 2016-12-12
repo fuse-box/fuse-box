@@ -266,6 +266,22 @@ plugins: [
 ]
 ```
 
+## HTML Plugin
+
+Add HTMLPlugin like so:
+```
+plugins: [
+  fsbx.HTMLPlugin({ useDefault: false })
+]
+```
+
+It toggle `useDefault` to make html files export template as `default` property.
+For example with `useDefault: true` you will be able to import html files like so :
+
+```
+import tpl from "~/views/file.html"
+```
+
 ## Babel plugin
 
 You can use babel plugin to transpile your code. 
