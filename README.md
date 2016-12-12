@@ -103,9 +103,16 @@ It behaves exactly the same in browser and on server, including circular depende
 
 # Fuse it all
 
+## Anything
+
+The concept of FuseBox is simple. Bundle anything with minimum configuration. You can point your files to a typescript file or to a javascript file. It will understand `es6` import statements as well. You need, however use [BabelPlugin](#babel-plugin) to transpile it.
+
+
+
+
 ## Typescript
 
-Typescript does not require any external plugin or configuration. Make sure you have typescript compiled installed
+Typescript does not require any external plugin or configuration. Make sure you have typescript compiler installed
 
 ```bash
 npm install typescript --save-dev
@@ -114,18 +121,19 @@ npm install typescript --save-dev
 Now let's define a simple configuration
 
 ```js
-let fuseBox = new FuseBox({
+FuseBox.init({
     homeDir: "src/",
     sourceMap: {
          bundleReference: "./sourcemaps.js.map",
          outFile: "sourcemaps.js.map",
     },
     outFile: "./out.js"
-});
-fuseBox.bundle(">index.ts");
+}).bundle(">index.ts");
 ```
 
-FuseBox automatically switches to typescript mode, and compiles your files. Place `tsconfig.json` in your `homeDir`. It will be loaded automatically. For your own convenience add [Typescript helpers](#typescript-helpers) plugin.
+FuseBox automatically switches to a typescript mode, and compiles your files. Place `tsconfig.json` in your `homeDir`. It will be loaded automatically. For your own convenience add [Typescript helpers](#typescript-helpers) plugin.
+
+
 
 ## Export from bundle
 
@@ -142,12 +150,11 @@ Whereas key is the name of a package, and value is an alias that groups exports.
 Full example:
 
 ```js
-let fuseBox = new FuseBox({
+FuseBox.init({
     homeDir: "test/fixtures/cases/case1",
     globals: { default: "myLib"},
     outFile: "./out.js"
-});
-fuseBox.bundle(">index.js");
+}).bundle(">index.js");
 ```
 
 
@@ -201,12 +208,6 @@ Like SystemJS FuseBox provides a hacky way of create a dynamic module from strin
 FuseBox.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}; require('./foo')")
 ```
 A bundle can reference "stuff/boo.js" once a dynamic module was initialized.
-
-```js
-let fuseBox = new FuseBox({
-    homeDir: "test/fixtures/cases/case1"
-});
-```
 
 ## FuseBox events
 
@@ -315,7 +316,7 @@ Simple add TypeScriptHelpers to your plugin list. No further configuration requi
 
 ```
 const fsbx = require("fuse-box");
-let fuseBox = new fsbx.FuseBox({
+let fuseBox = fsbx.FuseBox.init({
     homeDir: "test/fixtures/cases/ts",
     outFile: "./out.js",
     plugins: [fsbx.TypeScriptHelpers()]
@@ -362,6 +363,6 @@ sourceMap: {
 ```
 `bundleReference` speaks for itself. This line will be added to the bundle. For example `//# sourceMappingURL=./sourcemaps.js.map`. If your client is not able to read them, make sure that the path is reachable. 
 
-Sourcemaps currently work with `typescript` and [BabelPlugin](#babel-plugin)
+Sourcemaps currently work with [typescript](#typescript) and [BabelPlugin](#babel-plugin)
 
 
