@@ -23,6 +23,7 @@ export class FuseBoxHTMLPlugin implements Plugin {
      * @memberOf FuseBoxHTMLPlugin
      */
     public test: RegExp = /\.html$/;
+
     /**
      * 
      * 

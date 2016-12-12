@@ -13,6 +13,7 @@ import { utils } from "realm-utils";
  * @class File
  */
 export class File {
+    public notFound: boolean;
     /**
      * 
      * 
@@ -184,7 +185,8 @@ export class File {
             return;
         }
         if (!fs.existsSync(this.info.absPath)) {
-            this.contents = "";
+            this.notFound = true;
+            //this.contents = "";
             return;
         }
         if (/\.ts(x)?$/.test(this.absPath)) {

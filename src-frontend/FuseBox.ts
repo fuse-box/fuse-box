@@ -1,6 +1,4 @@
 declare let __root__: any;
-
-
 const $isBrowser = typeof window !== "undefined" && window.navigator;
 
 // Patching global variable
@@ -80,7 +78,7 @@ const $getDir = (filePath: string) => {
  * @param {any} name
  * @returns
  */
-const $pathJoin = function (...string): string {
+const $pathJoin = function(...string): string {
     let parts = [];
     for (let i = 0, l = arguments.length; i < l; i++) {
         parts = parts.concat(arguments[i].split("/"));
@@ -208,7 +206,7 @@ const $async = (file: string, cb) => {
     if ($isBrowser) {
         var xmlhttp;
         xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
+        xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 let contentType = xmlhttp.getResponseHeader("Content-Type");
                 let content = xmlhttp.responseText;
@@ -264,10 +262,13 @@ const $import = (name: string, opts: any = {}) => {
 
     if (!file) {
         // If options are set to explicitely bypass errors
-        if (opts.bpe) {
-            return undefined;
-        }
-        throw `File not found ${ref.validPath}`;
+        let asyncMode = typeof opts === "function";
+        return $async(name, (result) => {
+            if (asyncMode) {
+                return opts(result)
+            }
+        })
+        //throw `File not found ${ref.validPath}`;
     }
     let validPath = ref.validPath;
     let pkgName = ref.pkgName;
@@ -281,8 +282,12 @@ const $import = (name: string, opts: any = {}) => {
 
     locals.exports = {};
     locals.module = { exports: locals.exports };
-    locals.require = (name: string) => {
-        return $import(name, { pkg: pkgName, path: __dirname, v: ref.versions });
+    locals.require = (name: string, optionalCallback: any) => {
+        return $import(name, {
+            pkg: pkgName,
+            path: __dirname,
+            v: ref.versions
+        });
     }
     let args = [locals.module.exports, locals.require, locals.module, validPath, __dirname, pkgName];
     $trigger("before-import", args);
@@ -323,16 +328,7 @@ class FuseBox {
      * @memberOf FuseBox
      */
     public static import(name: string, opts: any) {
-        let asyncMode = typeof opts === "function";
-        // In case of async mode
-        // Pass "bpe" which means "BypassErrors"
-        let result = $import(name, asyncMode ? {
-            bpe: true
-        } : opts);
-        if (asyncMode) {
-            result ? opts(result) : $async(name, opts);
-        }
-        return result;
+        return $import(name, opts);
     }
 
     public static on(name: string, fn: any) {
@@ -378,8 +374,8 @@ class FuseBox {
      * @memberOf FuseBox
      */
     public static dynamic(path: string, str: string) {
-        this.pkg("default", {}, function (___scope___) {
-            ___scope___.file(path, function (exports, require, module, __filename, __dirname) {
+        this.pkg("default", {}, function(___scope___) {
+            ___scope___.file(path, function(exports, require, module, __filename, __dirname) {
                 var res = new Function('exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
                 res(exports, require, module, __filename, __dirname, __root__);
             });

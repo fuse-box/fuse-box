@@ -178,10 +178,12 @@ var $import = function (name, opts) {
     }
     var file = ref.file;
     if (!file) {
-        if (opts.bpe) {
-            return undefined;
-        }
-        throw "File not found " + ref.validPath;
+        var asyncMode_1 = typeof opts === "function";
+        return $async(name, function (result) {
+            if (asyncMode_1) {
+                return opts(result);
+            }
+        });
     }
     var validPath = ref.validPath;
     var pkgName = ref.pkgName;
@@ -193,8 +195,12 @@ var $import = function (name, opts) {
     var __dirname = $getDir(validPath);
     locals.exports = {};
     locals.module = { exports: locals.exports };
-    locals.require = function (name) {
-        return $import(name, { pkg: pkgName, path: __dirname, v: ref.versions });
+    locals.require = function (name, optionalCallback) {
+        return $import(name, {
+            pkg: pkgName,
+            path: __dirname,
+            v: ref.versions
+        });
     };
     var args = [locals.module.exports, locals.require, locals.module, validPath, __dirname, pkgName];
     $trigger("before-import", args);
@@ -227,14 +233,7 @@ var FuseBox = (function () {
         target[key] = obj;
     };
     FuseBox.import = function (name, opts) {
-        var asyncMode = typeof opts === "function";
-        var result = $import(name, asyncMode ? {
-            bpe: true
-        } : opts);
-        if (asyncMode) {
-            result ? opts(result) : $async(name, opts);
-        }
-        return result;
+        return $import(name, opts);
     };
     FuseBox.on = function (name, fn) {
         $events[name] = $events[name] || [];

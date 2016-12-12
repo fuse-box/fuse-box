@@ -1,9 +1,10 @@
+
 import "reflect-metadata";
 
 import { testDecorator, testDecorator2 } from './TestDecorator';
 
+require("./foo.txt");
 
-require("./styles.css");
 @testDecorator()
 class MyClass {
     constructor(parameters) {

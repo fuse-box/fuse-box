@@ -7,10 +7,10 @@ const fs = require("fs");
 
 let fuseBox = FuseBox.init({
     homeDir: "test/fixtures/cases/ts",
-    sourceMap: {
-        bundleReference: "./sourcemaps.js.map",
-        outFile: "sourcemaps.js.map",
-    },
+    // sourceMap: {
+    //     bundleReference: "./sourcemaps.js.map",
+    //     outFile: "sourcemaps.js.map",
+    // },
     cache: false,
     //globals: { default: "myLib", "wires-reactive": "Reactive" },
     outFile: "./out.js",

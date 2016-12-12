@@ -104,7 +104,7 @@ export class BundleSource {
      * @memberOf BundleSource
      */
     public addFile(file: File) {
-        if (file.info.isRemoteFile) {
+        if (file.info.isRemoteFile || file.notFound) {
             return;
         }
         this.collectionSource.add(null,
