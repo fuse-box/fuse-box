@@ -351,6 +351,6 @@ sourceMap: {
 ```
 `bundleReference` speaks for itself. This line will be added to the bundle. For example `//# sourceMappingURL=./sourcemaps.js.map`. If your client is not able to read them, make sure that the path is reachable. 
 
-Sourcemaps currently work with `typescript` and [BabelPlugin](babel-plugin)
+Sourcemaps currently work with `typescript` and [BabelPlugin](#babel-plugin)
 
 
