@@ -1,5 +1,6 @@
 declare let __root__: any;
 
+
 const $isBrowser = typeof window !== "undefined" && window.navigator;
 
 // Patching global variable
@@ -197,6 +198,39 @@ const $getRef = (name, opts: any): IReference => {
     }
 }
 
+/**
+ * $async
+ * Async request 
+ * Makes it possible to request files asynchronously
+ * 
+ */
+const $async = (file: string, cb) => {
+    if ($isBrowser) {
+        var xmlhttp;
+        xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                let contentType = xmlhttp.getResponseHeader("Content-Type");
+                let content = xmlhttp.responseText;
+                if (/json/.test(contentType)) {
+                    content = `module.exports = ${content}`;
+                } else {
+                    if (!/javascript/.test(contentType)) {
+                        content = `module.exports = ${JSON.stringify(content)}`;
+                    }
+                }
+                let normalized = $pathJoin("./", file);
+                FuseBox.dynamic(normalized, content);
+                cb(FuseBox.import(file, {}));
+            }
+        }
+        xmlhttp.open("GET", file, true);
+        xmlhttp.send();
+    } else {
+        return cb(global["require"](file));
+    }
+}
+
 
 const $trigger = (name: string, args: any) => {
     let e = $events[name];
@@ -225,7 +259,14 @@ const $import = (name: string, opts: any = {}) => {
         return ref.serverReference;
     }
     let file = ref.file;
+
+    // If target if not found 
+
     if (!file) {
+        // If options are set to explicitely bypass errors
+        if (opts.bpe) {
+            return undefined;
+        }
         throw `File not found ${ref.validPath}`;
     }
     let validPath = ref.validPath;
@@ -264,11 +305,10 @@ class FuseBox {
         return !$isBrowser;
     }
 
-    public static global(key : string, obj? : any)
-    {
+    public static global(key: string, obj?: any) {
         let target = $isBrowser ? window : global;
-        if( obj === undefined){
-            return target[key]; 
+        if (obj === undefined) {
+            return target[key];
         }
         target[key] = obj;
     }
@@ -283,7 +323,16 @@ class FuseBox {
      * @memberOf FuseBox
      */
     public static import(name: string, opts: any) {
-        return $import(name, opts);
+        let asyncMode = typeof opts === "function";
+        // In case of async mode
+        // Pass "bpe" which means "BypassErrors"
+        let result = $import(name, asyncMode ? {
+            bpe: true
+        } : opts);
+        if (asyncMode) {
+            result ? opts(result) : $async(name, opts);
+        }
+        return result;
     }
 
     public static on(name: string, fn: any) {

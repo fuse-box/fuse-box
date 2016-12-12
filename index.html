@@ -16,6 +16,10 @@
     <h1>Hello</h1>
     <script>
         FuseBox.dynamic("custom/foo.js", 'module.exports = {stuff : "hello"}');
+        FuseBox.import("./foo.txt", (result) => {
+            console.log("result", result);
+
+        });
         // var s = document.createElement("style");
         // s.innerHTML = "body { background-color:red !important; }";
         // document.getElementsByTagName("head")[0].appendChild(s);

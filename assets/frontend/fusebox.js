@@ -130,6 +130,34 @@ var $getRef = function (name, opts) {
         validPath: validPath
     };
 };
+var $async = function (file, cb) {
+    if ($isBrowser) {
+        var xmlhttp;
+        xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                var contentType = xmlhttp.getResponseHeader("Content-Type");
+                var content = xmlhttp.responseText;
+                if (/json/.test(contentType)) {
+                    content = "module.exports = " + content;
+                }
+                else {
+                    if (!/javascript/.test(contentType)) {
+                        content = "module.exports = " + JSON.stringify(content);
+                    }
+                }
+                var normalized = $pathJoin("./", file);
+                FuseBox.dynamic(normalized, content);
+                cb(FuseBox.import(file, {}));
+            }
+        };
+        xmlhttp.open("GET", file, true);
+        xmlhttp.send();
+    }
+    else {
+        return cb(global["require"](file));
+    }
+};
 var $trigger = function (name, args) {
     var e = $events[name];
     if (e) {
@@ -150,6 +178,9 @@ var $import = function (name, opts) {
     }
     var file = ref.file;
     if (!file) {
+        if (opts.bpe) {
+            return undefined;
+        }
         throw "File not found " + ref.validPath;
     }
     var validPath = ref.validPath;
@@ -196,7 +227,14 @@ var FuseBox = (function () {
         target[key] = obj;
     };
     FuseBox.import = function (name, opts) {
-        return $import(name, opts);
+        var asyncMode = typeof opts === "function";
+        var result = $import(name, asyncMode ? {
+            bpe: true
+        } : opts);
+        if (asyncMode) {
+            result ? opts(result) : $async(name, opts);
+        }
+        return result;
     };
     FuseBox.on = function (name, fn) {
         $events[name] = $events[name] || [];
