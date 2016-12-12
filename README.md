@@ -77,7 +77,7 @@ In this case, you will get everything that is required in the index, as well as 
  
 ### Extensive plugins
 
-Have an idea in mind? Just develop a plugin, it's extremely easy to make one. Besides, we have [a few plugins](built-in-plugins), that will help you get started. Want to develop one? Read-up [here](PLUGINS.md)
+Have an idea in mind? Just develop a plugin, it's extremely easy to make one. Besides, we have [a few plugins](built-in-plugins), that will help you get started. Want to develop one? Read-up [here](#plugin-api)
 
 ## How FuseBox works?!
 
@@ -387,5 +387,25 @@ sourceMap: {
 `bundleReference` speaks for itself. This line will be added to the bundle. For example `//# sourceMappingURL=./sourcemaps.js.map`. If your client is not able to read them, make sure that the path is reachable. 
 
 Sourcemaps currently work with [typescript](#typescript) and [BabelPlugin](#babel-plugin)
+
+# Plugin API
+
+Let's take a look a plugin's interface first
+
+```typescript
+interface Plugin {
+    test?: RegExp;
+    dependencies?: string[];
+    init: { (context: WorkFlowContext) };
+    transform: { (file: File) };
+    bundleStart?(context: WorkFlowContext);
+    bundleEnd?(context: WorkFlowContext);
+}
+```
+
+### test [RegExp]
+
+Defining `test` will filter files into your plugin. For example `\.js$ `
+
 
 
