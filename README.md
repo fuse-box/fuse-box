@@ -230,10 +230,10 @@ It's very to start working css files You have 2 options, you either bundle the c
 For example:
 ```
 plugins: [
-        fsbx.CSSPlugin({
-            minify: true
-        })
-    ]
+    fsbx.CSSPlugin({
+        minify: true
+    })
+]
 ```
 
 In this case, all css files will be bundled.
@@ -243,11 +243,11 @@ But if you define "serve" option with a callback, all files will be filtered thr
 All css files will be served by server.
 ```
 plugins: [
-        fsbx.CSSPlugin({
-            minify: true,
-            serve: path => `./${path}`
-        })
-    ]
+    fsbx.CSSPlugin({
+        minify: true,
+        serve: path => `./${path}`
+    })
+]
 ```
 
 All files will be served except for "styles.css" (contents will be included into the bundle)
