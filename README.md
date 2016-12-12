@@ -197,12 +197,6 @@ let fuseBox = new FuseBox({
 });
 ```
 
-
-
-
-
-
-
 ## FuseBox events
 
 It is possible to intercept require statements. You can catch "before-import" and "after-import" events like so:
@@ -259,6 +253,31 @@ plugins: [
     })
 ]
 ```
+
+## Babel plugin
+
+You can use babel plugin to transpile your code. 
+Make sure you have `babel-core` installed
+
+```bash
+npm install babel-core babel-preset-es2015 babel-plugin-transform-react-jsx
+```
+For example. to transpile JSX, you can use this configuration. 
+```
+ plugins: [
+    fsbx.BabelPlugin({
+        test: /\.jsx$/,
+        config: {
+            sourceMaps: true,
+            presets: ["es2015"],
+            plugins: [
+                ["transform-react-jsx"]
+            ]
+        }
+    })
+]
+```
+Note, that if you want to have sourcemaps in place, set `sourceMaps` to true. Read sourcemaps section for better understanding how sourcemaps are defined.
 
 ## Typescript helpers
 
@@ -319,3 +338,19 @@ export function testDecorator() {
     }
 }
 ```
+
+# Sourcemaps
+
+Sourcemaps in FuseBox are enabled by adding this property to a fusebox init configuration
+
+```js
+sourceMap: {
+  bundleReference: "sourcemaps.js.map",
+  outFile: "sourcemaps.js.map",
+}
+```
+`bundleReference` speaks for itself. This line will be added to the bundle. For example `//# sourceMappingURL=./sourcemaps.js.map`. If your client is not able to read them, make sure that the path is reachable. 
+
+Sourcemaps currently work with `typescript` and [BabelPlugin](babel-plugin)
+
+
