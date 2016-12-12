@@ -101,7 +101,17 @@ FuseBox appends a very tiny API footer that makes magic happen. The library does
 It behaves exactly the same in browser and on server, including circular dependencies resolution. Surely, it works in node as well.
 
 
-# Common Config
+# Fuse it all
+
+## Typescript
+
+Typescript does not require any external plugin or configuration. Make sure you have typescript compiled installed
+
+```bash
+npm install typescript --save-dev
+```
+
+Now let's define a simple configuration
 
 ```js
 let fuseBox = new FuseBox({
@@ -110,11 +120,12 @@ let fuseBox = new FuseBox({
          bundleReference: "./sourcemaps.js.map",
          outFile: "sourcemaps.js.map",
     },
-    globals: { default: "myLib"},
     outFile: "./out.js"
 });
 fuseBox.bundle(">index.ts");
 ```
+
+FuseBox automatically switches to typescript mode, and compiles your files. Place `tsconfig.json` in your `homeDir`. It will be loaded automatically. For your own convenience add [Typescript helpers](#typescript-helpers) plugin.
 
 ## Export from bundle
 
