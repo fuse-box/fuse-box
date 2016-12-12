@@ -39,7 +39,7 @@ export class SVGSimplePlugin implements Plugin {
         let content = file.contents;
         content = content.replace(/"/g, "'");
         content = content.replace(/\s+/g, " ");
-        content = content.replace(/[{}\|\\\^~\[\]`"<>#%]/g,  (match) => {
+        content = content.replace(/[{}\|\\\^~\[\]`"<>#%]/g, (match) => {
             return "%" + match[0].charCodeAt(0).toString(16).toUpperCase();
         });
         let data = "data:image/svg+xml;charset=utf8," + content.trim();
@@ -47,4 +47,6 @@ export class SVGSimplePlugin implements Plugin {
     }
 };
 
-export const SVGPlugin = new SVGSimplePlugin();
+export const SVGPlugin = () => {
+    return new SVGSimplePlugin();
+};

@@ -1,6 +1,6 @@
 "use strict";
 let babelCore;
-class BabelPlugin {
+class BabelPluginClass {
     constructor(opts) {
         this.test = /(\.js|\.jsx)$/;
         this.config = {};
@@ -46,5 +46,8 @@ class BabelPlugin {
         });
     }
 }
-exports.BabelPlugin = BabelPlugin;
+exports.BabelPluginClass = BabelPluginClass;
 ;
+exports.BabelPlugin = (opts) => {
+    return new BabelPluginClass(opts);
+};

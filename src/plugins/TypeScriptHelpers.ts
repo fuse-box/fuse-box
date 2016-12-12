@@ -81,4 +81,6 @@ export class TypeScriptHelpersClass implements Plugin {
     }
 }
 
-export let TypeScriptHelpers = new TypeScriptHelpersClass({});
+export let TypeScriptHelpers = () => {
+    return new TypeScriptHelpersClass({});
+}

@@ -6,4 +6,4 @@ export declare class SVGSimplePlugin implements Plugin {
     init(context: WorkFlowContext): void;
     transform(file: File): void;
 }
-export declare const SVGPlugin: SVGSimplePlugin;
+export declare const SVGPlugin: () => SVGSimplePlugin;

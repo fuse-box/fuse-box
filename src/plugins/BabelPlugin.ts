@@ -11,7 +11,7 @@ let babelCore;
  * @class FuseBoxHTMLPlugin
  * @implements {Plugin}
  */
-export class BabelPlugin implements Plugin {
+export class BabelPluginClass implements Plugin {
 
 
     /**
@@ -93,4 +93,7 @@ export class BabelPlugin implements Plugin {
     }
 };
 
+export const BabelPlugin = (opts: any) => {
+    return new BabelPluginClass(opts);
+}
 

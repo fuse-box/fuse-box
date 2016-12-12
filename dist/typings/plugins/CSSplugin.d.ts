@@ -1,7 +1,7 @@
 import { File } from "../File";
 import { WorkFlowContext } from "./../WorkflowContext";
 import { Plugin } from "../WorkflowContext";
-export declare class CSSPlugin implements Plugin {
+export declare class CSSPluginClass implements Plugin {
     test: RegExp;
     dependencies: string[];
     private minify;
@@ -9,3 +9,4 @@ export declare class CSSPlugin implements Plugin {
     init(context: WorkFlowContext): void;
     transform(file: File): void;
 }
+export declare const CSSPlugin: (opts: any) => CSSPluginClass;

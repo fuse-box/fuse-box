@@ -10,4 +10,4 @@ export declare class TypeScriptHelpersClass implements Plugin {
     bundleEnd(context: WorkFlowContext): void;
     transform(file: File): void;
 }
-export declare let TypeScriptHelpers: TypeScriptHelpersClass;
+export declare let TypeScriptHelpers: () => TypeScriptHelpersClass;

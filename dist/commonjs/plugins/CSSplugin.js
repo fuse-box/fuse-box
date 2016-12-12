@@ -1,5 +1,5 @@
 "use strict";
-class CSSPlugin {
+class CSSPluginClass {
     constructor(opts) {
         this.test = /\.css$/;
         this.dependencies = ["fsb-default-css-plugin"];
@@ -19,4 +19,7 @@ class CSSPlugin {
         file.contents = `require("fsb-default-css-plugin")(__filename, ${JSON.stringify(contents)} );`;
     }
 }
-exports.CSSPlugin = CSSPlugin;
+exports.CSSPluginClass = CSSPluginClass;
+exports.CSSPlugin = (opts) => {
+    return new CSSPluginClass(opts);
+};

@@ -17,7 +17,7 @@ let fuseBox = new FuseBox({
 
     //modulesFolder: "test/fixtures/modules",
     //plugins: [new build.TypeScriptHelpers(), build.JSONPlugin, new build.CSSPlugin({ minify: true })]
-    plugins: [build.TypeScriptHelpers]
+    plugins: [build.TypeScriptHelpers()]
 });
 
 

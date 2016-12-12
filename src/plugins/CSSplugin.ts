@@ -9,7 +9,7 @@ import { Plugin } from "../WorkflowContext";
  * @class FuseBoxCSSPlugin
  * @implements {Plugin}
  */
-export class CSSPlugin implements Plugin {
+export class CSSPluginClass implements Plugin {
     /**
      *
      *
@@ -52,3 +52,6 @@ export class CSSPlugin implements Plugin {
     }
 }
 
+export const CSSPlugin = (opts: any) => {
+    return new CSSPluginClass(opts)
+}

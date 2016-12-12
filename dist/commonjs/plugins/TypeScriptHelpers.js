@@ -43,4 +43,6 @@ class TypeScriptHelpersClass {
     }
 }
 exports.TypeScriptHelpersClass = TypeScriptHelpersClass;
-exports.TypeScriptHelpers = new TypeScriptHelpersClass({});
+exports.TypeScriptHelpers = () => {
+    return new TypeScriptHelpersClass({});
+};

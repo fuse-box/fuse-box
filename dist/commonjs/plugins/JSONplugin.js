@@ -13,4 +13,6 @@ class FuseBoxJSONPlugin {
 }
 exports.FuseBoxJSONPlugin = FuseBoxJSONPlugin;
 ;
-exports.JSONPlugin = new FuseBoxJSONPlugin();
+exports.JSONPlugin = () => {
+    return new FuseBoxJSONPlugin();
+};

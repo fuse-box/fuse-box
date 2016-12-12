@@ -20,4 +20,6 @@ class SVGSimplePlugin {
 }
 exports.SVGSimplePlugin = SVGSimplePlugin;
 ;
-exports.SVGPlugin = new SVGSimplePlugin();
+exports.SVGPlugin = () => {
+    return new SVGSimplePlugin();
+};
