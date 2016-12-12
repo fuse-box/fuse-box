@@ -2,6 +2,7 @@ import { BundleData } from "./Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";
 export declare class FuseBox {
     opts: any;
+    static init(opts?: any): FuseBox;
     virtualFiles: any;
     private collectionSource;
     private context;

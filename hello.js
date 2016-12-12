@@ -5,7 +5,7 @@ const watch = require("watch");
 const FuseBox = build.FuseBox;
 const fs = require("fs");
 
-let fuseBox = new FuseBox({
+let fuseBox = FuseBox.init({
     homeDir: "test/fixtures/cases/ts",
     // sourceMap: {
     //     bundleReference: "./sourcemaps.js.map",
@@ -17,7 +17,13 @@ let fuseBox = new FuseBox({
 
     //modulesFolder: "test/fixtures/modules",
     //plugins: [new build.TypeScriptHelpers(), build.JSONPlugin, new build.CSSPlugin({ minify: true })]
-    plugins: [build.TypeScriptHelpers()]
+    plugins: [
+        build.TypeScriptHelpers(),
+        build.CSSPlugin({
+            minify: true,
+            serve: path => `./${path}`
+        })
+    ]
 });
 
 

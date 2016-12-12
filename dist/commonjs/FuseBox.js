@@ -55,6 +55,9 @@ class FuseBox {
         }
         this.virtualFiles = opts.files;
     }
+    static init(opts) {
+        return new FuseBox(opts);
+    }
     triggerStart() {
         this.context.plugins.forEach(plugin => {
             if (realm_utils_1.utils.isFunction(plugin.bundleStart)) {

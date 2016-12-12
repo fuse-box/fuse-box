@@ -17,10 +17,16 @@ const appRoot = require("app-root-path");
  */
 export class FuseBox {
 
+
+    public static init(opts?: any) {
+        return new FuseBox(opts);
+    }
     public virtualFiles: any;
+
     private collectionSource: CollectionSource;
 
     private context: WorkFlowContext;
+
 
     /**
      * Creates an instance of FuseBox.
@@ -175,4 +181,6 @@ export class FuseBox {
             });
         });
     }
+
+
 }

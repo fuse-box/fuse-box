@@ -1,7 +1,10 @@
+import * as fs from "fs";
+import * as path from "path";
+import { Config } from "./../Config";
 import { File } from "../File";
 import { WorkFlowContext } from "./../WorkflowContext";
 import { Plugin } from "../WorkflowContext";
-
+import { utils } from "realm-utils";
 /**
  *
  *
@@ -19,12 +22,18 @@ export class CSSPluginClass implements Plugin {
     public test: RegExp = /\.css$/;
     public dependencies = ["fsb-default-css-plugin"];
     private minify = false;
+    private serve: any;
 
     constructor(opts: any) {
         opts = opts || {};
         if (opts.minify !== undefined) {
             this.minify = opts.minify;
         }
+
+        if (opts.serve !== undefined) {
+            this.serve = opts.serve;
+        }
+
     }
     /**
      *
@@ -37,6 +46,11 @@ export class CSSPluginClass implements Plugin {
         context.allowExtension(".css");
     }
 
+    public bundleStart(context: WorkFlowContext) {
+        let lib = path.join(Config.LOCAL_LIBS, "fsbx-default-css-plugin", "index.js")
+        context.source.addContent(fs.readFileSync(lib).toString());
+    }
+
     /**
      *
      *
@@ -46,9 +60,24 @@ export class CSSPluginClass implements Plugin {
      */
     public transform(file: File) {
         file.loadContents();
-        let contents = this.minify ?
-            file.contents.replace(/\s{2,}/g, " ").replace(/\t|\r|\n/g, "").trim() : file.contents;
-        file.contents = `require("fsb-default-css-plugin")(__filename, ${JSON.stringify(contents)} );`;
+        let contents = "";
+        let filePath = file.info.fuseBoxPath;
+        if (this.serve) {
+
+            if (utils.isFunction(this.serve)) {
+                let userResult = this.serve(file.info.fuseBoxPath, file);
+                if (utils.isString(userResult)) {
+                    filePath = userResult;
+                }
+            }
+            contents = `__fsbx_css("${filePath}")`;
+        } else {
+            let cssContent = this.minify ?
+                file.contents.replace(/\s{2,}/g, " ").replace(/\t|\r|\n/g, "").trim() : file.contents;
+            contents = `__fsbx_css("${filePath}", ${JSON.stringify(cssContent)})`;
+        }
+
+        file.contents = contents;
     }
 }
 
