@@ -62,21 +62,24 @@ export class CSSPluginClass implements Plugin {
         file.loadContents();
         let contents = "";
         let filePath = file.info.fuseBoxPath;
+        let serve = false;
         if (this.serve) {
-
             if (utils.isFunction(this.serve)) {
                 let userResult = this.serve(file.info.fuseBoxPath, file);
                 if (utils.isString(userResult)) {
                     filePath = userResult;
+                    serve = true;
                 }
             }
+
+        }
+        if (serve) {
             contents = `__fsbx_css("${filePath}")`;
         } else {
             let cssContent = this.minify ?
                 file.contents.replace(/\s{2,}/g, " ").replace(/\t|\r|\n/g, "").trim() : file.contents;
             contents = `__fsbx_css("${filePath}", ${JSON.stringify(cssContent)})`;
         }
-
         file.contents = contents;
     }
 }

@@ -27,13 +27,17 @@ class CSSPluginClass {
         file.loadContents();
         let contents = "";
         let filePath = file.info.fuseBoxPath;
+        let serve = false;
         if (this.serve) {
             if (realm_utils_1.utils.isFunction(this.serve)) {
                 let userResult = this.serve(file.info.fuseBoxPath, file);
                 if (realm_utils_1.utils.isString(userResult)) {
                     filePath = userResult;
+                    serve = true;
                 }
             }
+        }
+        if (serve) {
             contents = `__fsbx_css("${filePath}")`;
         }
         else {
