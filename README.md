@@ -223,6 +223,41 @@ It is not recommended, however, if you want to play god, you can use that functi
 
 Fusebox contains premade plugins, that should help you to get started. 
 
+## CSS Plugin
+
+It's very to start working css files You have 2 options, you either bundle the contents, or serve. A decision can be made at build time.
+
+For example:
+```
+plugins: [
+        fsbx.CSSPlugin({
+            minify: true
+        })
+    ]
+```
+
+In this case, all css files will be bundled.
+But if you define "serve" option with a callback, all files will be filtered through it. A callback is expected to return a string with a server path. If you return undefined file will be bundled as if no option was specified.
+
+All css files will be served from server.
+```
+plugins: [
+        fsbx.CSSPlugin({
+            minify: true,
+            serve: path => `./${path}`
+        })
+    ]
+```
+
+All files will be served except for "styles.css" (contents will be included into the bundle)
+```
+plugins: [
+    fsbx.CSSPlugin({
+        minify: true,
+        serve: path => path === "styles.css` ? 0 : ./${path}`
+    })
+]
+```
 
 ## Typescript helpers
 
