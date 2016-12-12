@@ -153,7 +153,7 @@ FuseBox.init({
 }).bundle(">index.js");
 ```
 
-## Point to projects' path
+## Point to the root
 You can use `~` symbol to point to your project's path in order to solve `../../../../../utils` mess.
 
 ```js
