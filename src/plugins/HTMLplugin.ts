@@ -50,7 +50,7 @@ export class FuseBoxHTMLPlugin implements Plugin {
     }
 };
 
-export const HTMLPlugin = (opts) => {
+export const HTMLPlugin = (opts?: any) => {
     return new FuseBoxHTMLPlugin(opts);
 };
 

@@ -8,4 +8,4 @@ export declare class FuseBoxHTMLPlugin implements Plugin {
     init(context: WorkFlowContext): void;
     transform(file: File): void;
 }
-export declare const HTMLPlugin: (opts: any) => FuseBoxHTMLPlugin;
+export declare const HTMLPlugin: (opts?: any) => FuseBoxHTMLPlugin;

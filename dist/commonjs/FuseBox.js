@@ -27,7 +27,7 @@ class FuseBox {
         if (opts.tsConfig) {
             this.context.tsConfig = opts.tsConfig;
         }
-        this.context.plugins = opts.plugins || [HTMLplugin_1.HTMLPlugin, JSONplugin_1.JSONPlugin];
+        this.context.plugins = opts.plugins || [HTMLplugin_1.HTMLPlugin(), JSONplugin_1.JSONPlugin()];
         if (opts.cache !== undefined) {
             this.context.useCache = opts.cache ? true : false;
         }
