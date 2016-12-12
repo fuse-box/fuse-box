@@ -24,6 +24,29 @@ All node modules (at least the most cricial ones) will be bundled for browser (B
 
 Fusebox is super fast. 50ms for a regular project, 100ms for a big project to re-bundle. It applies agressive but responsible module caching, which makes it fly.
 
+Check this benchmark:
+
+1200 files to require once
+
+|         |            |
+| ------------- |:-------------:| 
+| FuseBox      | 0.326s |
+| Webpack      | 1.376s |
+
+
+1000 files to require / 10 times
+
+|         |            |
+| ------------- |:-------------:| 
+| FuseBox      | 2.796s |
+| Webpack      | 13.837s |
+
+
+
+1000
+Webpack
+FuseBox
+
 ### Built-in typescript support.
 
 FuseBox is written in typescript, so i could not just proceed without a seemless typescript intergration. In fact you don't need to configure anything! Just point it to a typescript file, and FuseBox will do the rest.
@@ -34,9 +57,48 @@ fuseBox.bundle(">index.ts");
 
 ### Arithmetic instructions
 
+With arithmetic instructions you can explicitely define which files go to the bundle, which files skip external dependencies.
+
+For example.
+```js
+fuseBox.bundle(">index.ts [lib/**/*.ts]");
+```
+
+In this case you will get everything that is required in index, as well as everything that lies under lib/ folder with one condition - any external libraries will be ignored. 
+
+`> index.js [**/*.js]` - Bundle everything without dependencies, and execute index.js
+
+`[**/*.js]` - Bundle everything without dependencies
+
+`**/*.js` - Bundle everything with dependencies
+
+`**/*.js -path` - Bundle everything with dependencies except for path
+
+
 ### Extensive plugins
 
-Have an idea in mind? Just develop a plugin, it's extremely easy to make one. 
+Have an idea in mind? Just develop a plugin, it's extremely easy to make one. Besides, we have a few plugins, that will help you get started.
+
+## How FuseBox works?!
+
+The idea of FuseBox was born, when started struggling with webpack. It is slow, and it did not deliver required functionlity. On other hand jspm did what i wanted, but still it was not something i would go for. So i decided to combine both and create my own version that has power of both bundlers combined. 
+
+### Static analisys (acorn)
+Behind the scenes, fusebox uses acorn to make static analisys on your code, extracting require statements and es6 imports. So, as long as it is a valid javascript es5 or es6, you will get your code bundled with no plugins required. 
+
+### Aggressive npm caching
+FuseBox uses agressive caching for your modules. It knows when a file is modified. It knows exactly which version of npm lib you are using, as well as explicit requires like `require('lodash/each')`
+
+### Nodejs ecosystem and lifecycle in the browser
+FuseBox appends a very tiny API footer that makes magic happen. The library does not modify your source code, it creates 100% compatible [commonjs wrapper](https://nodejs.org/api/modules.html#modules_the_module_wrapper)
+
+```js
+(function (exports, require, module, __filename, __dirname) {
+// Your module code actually lives in here
+});
+```
+
+It behaves exactly the same in browser and on server, including circular dependencies resolution. Surely, it works in node as well.
 
 
 # Common Config
@@ -135,62 +197,9 @@ let fuseBox = new FuseBox({
 });
 ```
 
-# Examples
-
-## Example1: Bundle typescript!
-
-```js
-let fuseBox = new FuseBox({
-    homeDir: "test/fixtures/cases/ts",
-    sourceMap: {
-        bundleReference: "./sourcemaps.js.map",
-        outFile: "sourcemaps.js.map",
-    },
-
-    cache: true,
-    globals: {defaut : "myLib"},
-    outFile: "./out.js",
-});
-
-fuseBox.bundle(">index.ts");
-```
 
 
-## Bundle react app!
-```js
-let fuseBox = new FuseBox({
-    cache: false,
-    homeDir: "test/fixtures/cases/react-demo",
-    sourceMap: {
-        bundleReference: "./sourcemaps.js.map",
-        outFile: "sourcemaps.js.map",
-    },
-    outFile: "./out.js",
-    plugins: [build.SVGPlugin, new build.CSSPlugin(), new build.BabelPlugin({
-        test: /\.jsx$/,
-        config: {
-            sourceMaps: true,
-            presets: ["es2015"],
-            plugins: [
-                ["transform-react-jsx"]
-            ],
-        }
-    })]
-});
 
-fuseBox.bundle(">index.jsx +react-dom");
-```
-
-## Arithmetic options
-
-
-`> index.js [**/*.js]` - Bundle everything without dependencies, and execute index.js
-
-`[**/*.js]` - Bundle everything without dependencies
-
-`**/*.js` - Bundle everything with dependencies
-
-`**/*.js -path` - Bundle everything with dependencies except for path
 
 
 
