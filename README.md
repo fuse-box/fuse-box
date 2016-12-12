@@ -74,10 +74,10 @@ In this case, you will get everything that is required in the index, as well as 
 
 `**/*.js -path` - Bundle everything with dependencies except for path
 
-
+ 
 ### Extensive plugins
 
-Have an idea in mind? Just develop a plugin, it's extremely easy to make one. Besides, we have a few plugins, that will help you get started.
+Have an idea in mind? Just develop a plugin, it's extremely easy to make one. Besides, we have [a few plugins](built-in-plugins), that will help you get started. Want to develop one? Read-up [here](PLUGINS.md)
 
 ## How FuseBox works?!
 
