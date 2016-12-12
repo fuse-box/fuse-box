@@ -192,17 +192,20 @@ var $import = function (name, opts) {
     }
     var locals = file.locals = {};
     var __filename = name;
-    var __dirname = $getDir(validPath);
+    var fuseBoxDirname = $getDir(validPath);
     locals.exports = {};
     locals.module = { exports: locals.exports };
     locals.require = function (name, optionalCallback) {
         return $import(name, {
             pkg: pkgName,
-            path: __dirname,
+            path: fuseBoxDirname,
             v: ref.versions
         });
     };
-    var args = [locals.module.exports, locals.require, locals.module, validPath, __dirname, pkgName];
+    locals.require.main = {
+        filename: $isBrowser ? "./" : global["require"].main.filename
+    };
+    var args = [locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName];
     $trigger("before-import", args);
     file.fn.apply(0, args);
     $trigger("after-import", args);

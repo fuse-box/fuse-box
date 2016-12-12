@@ -60,7 +60,7 @@ class File {
             return;
         }
         if (!fs.existsSync(this.info.absPath)) {
-            this.contents = "";
+            this.notFound = true;
             return;
         }
         if (/\.ts(x)?$/.test(this.absPath)) {

@@ -247,6 +247,7 @@ const $trigger = (name: string, args: any) => {
  */
 const $import = (name: string, opts: any = {}) => {
     // Test for external URLS  
+    
     if (/^(http(s)?:|\/\/)/.test(name)) {
         return $loadURL(name);
     }
@@ -267,7 +268,7 @@ const $import = (name: string, opts: any = {}) => {
             if (asyncMode) {
                 return opts(result)
             }
-        })
+        });
         //throw `File not found ${ref.validPath}`;
     }
     let validPath = ref.validPath;
@@ -278,18 +279,22 @@ const $import = (name: string, opts: any = {}) => {
     }
     let locals: any = file.locals = {};
     let __filename = name;
-    let __dirname = $getDir(validPath);
+    let fuseBoxDirname = $getDir(validPath);
 
     locals.exports = {};
     locals.module = { exports: locals.exports };
     locals.require = (name: string, optionalCallback: any) => {
         return $import(name, {
             pkg: pkgName,
-            path: __dirname,
+            path: fuseBoxDirname,
             v: ref.versions
         });
     }
-    let args = [locals.module.exports, locals.require, locals.module, validPath, __dirname, pkgName];
+    locals.require.main = {
+        filename : $isBrowser ? "./" : global["require"].main.filename
+    }
+    
+    let args = [locals.module.exports, locals.require, locals.module, validPath,fuseBoxDirname , pkgName];
     $trigger("before-import", args);
     file.fn.apply(0, args);
     $trigger("after-import", args);

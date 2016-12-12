@@ -5,6 +5,7 @@ import { IPathInformation } from "./PathMaster";
 export declare class File {
     context: WorkFlowContext;
     info: IPathInformation;
+    notFound: boolean;
     absPath: string;
     contents: string;
     isLoaded: boolean;
