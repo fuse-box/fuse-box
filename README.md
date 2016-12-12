@@ -225,7 +225,7 @@ Fusebox contains premade plugins, that should help you to get started.
 
 ## CSS Plugin
 
-It's very to start working css files You have 2 options, you either bundle the contents, or serve. A decision can be made at build time.
+It's very to start working css files You have 2 options, you either bundle the contents, or serve files. A decision can be made at build time.
 
 For example:
 ```
@@ -237,9 +237,10 @@ plugins: [
 ```
 
 In this case, all css files will be bundled.
-But if you define "serve" option with a callback, all files will be filtered through it. A callback is expected to return a string with a server path. If you return undefined file will be bundled as if no option was specified.
 
-All css files will be served from server.
+But if you define "serve" option with a callback, all files will be filtered through it. A callback is expected to return a string with a server path. If you return "undefined" or *NOT* a string, file will be bundled as if no option was specified.
+
+All css files will be served by server.
 ```
 plugins: [
         fsbx.CSSPlugin({
