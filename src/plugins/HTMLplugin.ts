@@ -10,6 +10,12 @@ import { Plugin } from "../WorkflowContext";
  * @implements {Plugin}
  */
 export class FuseBoxHTMLPlugin implements Plugin {
+    private useDefault = true;
+    constructor(opts: any = {}) {
+        if (opts.useDefault !== undefined) {
+            this.useDefault = opts.useDefault;
+        }
+    }
     /**
      * 
      * 
@@ -36,8 +42,15 @@ export class FuseBoxHTMLPlugin implements Plugin {
      */
     public transform(file: File) {
         file.loadContents();
-        file.contents = `module.exports.default =  ${JSON.stringify(file.contents)}`;
+        if (this.useDefault) {
+            file.contents = `module.exports.default =  ${JSON.stringify(file.contents)}`;
+        } else {
+            file.contents = `module.exports =  ${JSON.stringify(file.contents)}`;
+        }
     }
 };
 
-export const HTMLPlugin = new FuseBoxHTMLPlugin();
+export const HTMLPlugin = (opts) => {
+    return new FuseBoxHTMLPlugin(opts);
+};
+
