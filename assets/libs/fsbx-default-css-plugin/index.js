@@ -11,7 +11,6 @@ var __fsbx_css = function(__filename, contents) {
             s.innerHTML = contents;
         } else {
             s.rel = "stylesheet";
-            console.log(__filename);
             s.href = __filename;
         }
         document.getElementsByTagName("head")[0].appendChild(s);
