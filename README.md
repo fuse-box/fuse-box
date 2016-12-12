@@ -252,7 +252,7 @@ const fsbx = require("fuse-box");
 let fuseBox = new fsbx.FuseBox({
     homeDir: "test/fixtures/cases/ts",
     outFile: "./out.js",
-    plugins: [fsbx.TypeScriptHelpers]
+    plugins: [fsbx.TypeScriptHelpers()]
 });
 
 ```
