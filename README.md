@@ -5,7 +5,7 @@
 
 # Introduction
 
-FusBox is a bundler/module loader that combines the power of webpack and JSPM. It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convinient to develop. You get one file out with sourcemaps. 
+FusBox is a bundler/module loader that combines the power of webpack and JSPM. It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convenient to develop.
 
 Say no to painful "get started", say no to huge configs. Fuse it all!
 
@@ -251,7 +251,7 @@ plugins: [
 
 In this case, all css files will be bundled.
 
-But if you define "serve" option with a callback, all files will be filtered through it. A callback is expected to return a string with a server path. If you return "undefined" or *NOT* a string, file will be bundled as if no option was specified.
+But if you define "serve" option with a callback, all files will be filtered through it. A callback is expected to return a string with a browser path. If you return "undefined" or *NOT* a string, that file will be bundled as if no option was specified.
 
 All css files will be served by server.
 ```
@@ -282,7 +282,7 @@ plugins: [
 ]
 ```
 
-It toggle `useDefault` to make html files export template as `default` property.
+It toggle `useDefault` to make html files export strings as `default` property.
 For example with `useDefault: true` you will be able to import html files like so :
 
 ```
