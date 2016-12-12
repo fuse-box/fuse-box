@@ -108,8 +108,6 @@ It behaves exactly the same in browser and on server, including circular depende
 The concept of FuseBox is simple. Bundle anything with minimum configuration. You can point your files to a typescript file or to a javascript file. It will understand `es6` import statements as well. You need, however use [BabelPlugin](#babel-plugin) to transpile it.
 
 
-
-
 ## Typescript
 
 Typescript does not require any external plugin or configuration. Make sure you have typescript compiler installed
@@ -133,8 +131,6 @@ FuseBox.init({
 
 FuseBox automatically switches to a typescript mode, and compiles your files. Place `tsconfig.json` in your `homeDir`. It will be loaded automatically. For your own convenience add [Typescript helpers](#typescript-helpers) plugin.
 
-
-
 ## Export from bundle
 
 You can easily export any library from your bundle to window/module.exports accordingly.
@@ -151,11 +147,22 @@ Full example:
 
 ```js
 FuseBox.init({
-    homeDir: "test/fixtures/cases/case1",
+    homeDir: "src/",
     globals: { default: "myLib"},
     outFile: "./out.js"
 }).bundle(">index.js");
 ```
+
+## Point to projects' path
+You can use `~` symbol to point to your project's path in order to solve `../../../../../utils` mess.
+
+```js
+// es5
+require("~/lib/utils")
+// es6
+import * as utils from "~/lib/utils";
+```
+
 
 
 # Loader API
