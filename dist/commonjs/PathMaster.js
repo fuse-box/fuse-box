@@ -13,8 +13,8 @@ class AllowedExtenstions {
         return this.list.has(name);
     }
 }
-exports.AllowedExtenstions = AllowedExtenstions;
 AllowedExtenstions.list = new Set([".js", ".ts", ".json", ".xml", ".css", ".html"]);
+exports.AllowedExtenstions = AllowedExtenstions;
 class PathMaster {
     constructor(context, rootPackagePath) {
         this.context = context;

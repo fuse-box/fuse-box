@@ -12,11 +12,11 @@
 
 <body>
     <div id="root"></div>
-    <script type="text/javascript" charset="utf-8" src="out.js"></script>
-    <h1>Hello</h1>
+    <script type="text/javascript" charset="utf-8" src="out.js?a=1"></script>
+
     <script>
         FuseBox.dynamic("custom/foo.js", 'module.exports = {stuff : "hello"}');
-
+        console.log(1);
         // var s = document.createElement("style");
         // s.innerHTML = "body { background-color:red !important; }";
         // document.getElementsByTagName("head")[0].appendChild(s);

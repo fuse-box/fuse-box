@@ -233,7 +233,12 @@ const $async = (file: string, cb) => {
 const $trigger = (name: string, args: any) => {
     let e = $events[name];
     if (e) {
-        for (let i in e) { e[i].apply(null, args) };
+        for (let i in e) { 
+            let res = e[i].apply(null, args);
+            if( res === false){
+                return false;
+            } 
+        };
     }
 }
 
@@ -259,11 +264,14 @@ const $import = (name: string, opts: any = {}) => {
     }
     let file = ref.file;
 
-    // If target if not found 
+     
 
     if (!file) {
-        // If options are set to explicitely bypass errors
         let asyncMode = typeof opts === "function";
+        let processStopped = $trigger("async", [name, opts]);
+        if( processStopped === false){
+            return;
+        }
         return $async(name, (result) => {
             if (asyncMode) {
                 return opts(result)

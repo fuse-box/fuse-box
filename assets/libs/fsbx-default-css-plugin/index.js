@@ -17,6 +17,9 @@ var __fsbx_css = function(__filename, contents) {
     }
 }
 
-// FuseBox.on("before-import", function(){
-
-// })
+FuseBox.on("async", function(name) {
+    if (/\.css$/.test(name)) {
+        __fsbx_css(name);
+        return false;
+    }
+});
