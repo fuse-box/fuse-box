@@ -16,3 +16,9 @@ var __fsbx_css = function(__filename, contents) {
         document.getElementsByTagName("head")[0].appendChild(s);
     }
 }
+FuseBox.on("async", function(name) {
+    if (/\.css$/.test(name)) {
+        __fsbx_css(name);
+        return false;
+    }
+});

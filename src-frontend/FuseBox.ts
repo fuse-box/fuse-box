@@ -78,7 +78,7 @@ const $getDir = (filePath: string) => {
  * @param {any} name
  * @returns
  */
-const $pathJoin = function(...string): string {
+const $pathJoin = function (...string): string {
     let parts = [];
     for (let i = 0, l = arguments.length; i < l; i++) {
         parts = parts.concat(arguments[i].split("/"));
@@ -206,7 +206,7 @@ const $async = (file: string, cb) => {
     if ($isBrowser) {
         var xmlhttp;
         xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
+        xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 let contentType = xmlhttp.getResponseHeader("Content-Type");
                 let content = xmlhttp.responseText;
@@ -233,7 +233,12 @@ const $async = (file: string, cb) => {
 const $trigger = (name: string, args: any) => {
     let e = $events[name];
     if (e) {
-        for (let i in e) { e[i].apply(null, args) };
+        for (let i in e) {
+            let res = e[i].apply(null, args);
+            if (res === false) {
+                return false;
+            }
+        };
     }
 }
 
@@ -247,6 +252,7 @@ const $trigger = (name: string, args: any) => {
  */
 const $import = (name: string, opts: any = {}) => {
     // Test for external URLS  
+
     if (/^(http(s)?:|\/\/)/.test(name)) {
         return $loadURL(name);
     }
@@ -258,16 +264,19 @@ const $import = (name: string, opts: any = {}) => {
     }
     let file = ref.file;
 
-    // If target if not found 
+
 
     if (!file) {
-        // If options are set to explicitely bypass errors
         let asyncMode = typeof opts === "function";
+        let processStopped = $trigger("async", [name, opts]);
+        if (processStopped === false) {
+            return;
+        }
         return $async(name, (result) => {
             if (asyncMode) {
                 return opts(result)
             }
-        })
+        });
         //throw `File not found ${ref.validPath}`;
     }
     let validPath = ref.validPath;
@@ -278,18 +287,22 @@ const $import = (name: string, opts: any = {}) => {
     }
     let locals: any = file.locals = {};
     let __filename = name;
-    let __dirname = $getDir(validPath);
+    let fuseBoxDirname = $getDir(validPath);
 
     locals.exports = {};
     locals.module = { exports: locals.exports };
     locals.require = (name: string, optionalCallback: any) => {
         return $import(name, {
             pkg: pkgName,
-            path: __dirname,
+            path: fuseBoxDirname,
             v: ref.versions
         });
     }
-    let args = [locals.module.exports, locals.require, locals.module, validPath, __dirname, pkgName];
+    locals.require.main = {
+        filename: $isBrowser ? "./" : global["require"].main.filename
+    }
+
+    let args = [locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName];
     $trigger("before-import", args);
     file.fn.apply(0, args);
     $trigger("after-import", args);
@@ -374,8 +387,8 @@ class FuseBox {
      * @memberOf FuseBox
      */
     public static dynamic(path: string, str: string) {
-        this.pkg("default", {}, function(___scope___) {
-            ___scope___.file(path, function(exports, require, module, __filename, __dirname) {
+        this.pkg("default", {}, function (___scope___) {
+            ___scope___.file(path, function (exports, require, module, __filename, __dirname) {
                 var res = new Function('exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
                 res(exports, require, module, __filename, __dirname, __root__);
             });

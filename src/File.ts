@@ -186,7 +186,6 @@ export class File {
         }
         if (!fs.existsSync(this.info.absPath)) {
             this.notFound = true;
-            //this.contents = "";
             return;
         }
         if (/\.ts(x)?$/.test(this.absPath)) {

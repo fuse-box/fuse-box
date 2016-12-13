@@ -3,7 +3,7 @@ import "reflect-metadata";
 
 import { testDecorator, testDecorator2 } from './TestDecorator';
 
-require("./foo.txt");
+require("./foo.css");
 
 @testDecorator()
 class MyClass {

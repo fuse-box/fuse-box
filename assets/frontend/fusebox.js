@@ -26,7 +26,7 @@ var $getDir = function (filePath) {
 var $pathJoin = function () {
     var string = [];
     for (var _i = 0; _i < arguments.length; _i++) {
-        string[_i - 0] = arguments[_i];
+        string[_i] = arguments[_i];
     }
     var parts = [];
     for (var i = 0, l = arguments.length; i < l; i++) {
@@ -162,7 +162,10 @@ var $trigger = function (name, args) {
     var e = $events[name];
     if (e) {
         for (var i in e) {
-            e[i].apply(null, args);
+            var res = e[i].apply(null, args);
+            if (res === false) {
+                return false;
+            }
         }
         ;
     }
@@ -179,6 +182,10 @@ var $import = function (name, opts) {
     var file = ref.file;
     if (!file) {
         var asyncMode_1 = typeof opts === "function";
+        var processStopped = $trigger("async", [name, opts]);
+        if (processStopped === false) {
+            return;
+        }
         return $async(name, function (result) {
             if (asyncMode_1) {
                 return opts(result);
@@ -192,17 +199,20 @@ var $import = function (name, opts) {
     }
     var locals = file.locals = {};
     var __filename = name;
-    var __dirname = $getDir(validPath);
+    var fuseBoxDirname = $getDir(validPath);
     locals.exports = {};
     locals.module = { exports: locals.exports };
     locals.require = function (name, optionalCallback) {
         return $import(name, {
             pkg: pkgName,
-            path: __dirname,
+            path: fuseBoxDirname,
             v: ref.versions
         });
     };
-    var args = [locals.module.exports, locals.require, locals.module, validPath, __dirname, pkgName];
+    locals.require.main = {
+        filename: $isBrowser ? "./" : global["require"].main.filename
+    };
+    var args = [locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName];
     $trigger("before-import", args);
     file.fn.apply(0, args);
     $trigger("after-import", args);

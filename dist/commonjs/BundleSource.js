@@ -34,7 +34,7 @@ class BundleSource {
         this.concat.add(null, data);
     }
     addFile(file) {
-        if (file.info.isRemoteFile) {
+        if (file.info.isRemoteFile || file.notFound) {
             return;
         }
         this.collectionSource.add(null, `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){ 

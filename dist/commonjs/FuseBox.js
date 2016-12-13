@@ -1,5 +1,4 @@
 "use strict";
-const HTMLplugin_1 = require("./plugins/HTMLplugin");
 const JSONplugin_1 = require("./plugins/JSONplugin");
 const PathMaster_1 = require("./PathMaster");
 const WorkflowContext_1 = require("./WorkflowContext");
@@ -27,7 +26,7 @@ class FuseBox {
         if (opts.tsConfig) {
             this.context.tsConfig = opts.tsConfig;
         }
-        this.context.plugins = opts.plugins || [HTMLplugin_1.HTMLPlugin(), JSONplugin_1.JSONPlugin()];
+        this.context.plugins = opts.plugins || [JSONplugin_1.JSONPlugin()];
         if (opts.cache !== undefined) {
             this.context.useCache = opts.cache ? true : false;
         }
