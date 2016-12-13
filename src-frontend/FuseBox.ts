@@ -78,7 +78,7 @@ const $getDir = (filePath: string) => {
  * @param {any} name
  * @returns
  */
-const $pathJoin = function (...string): string {
+const $pathJoin = function(...string): string {
     let parts = [];
     for (let i = 0, l = arguments.length; i < l; i++) {
         parts = parts.concat(arguments[i].split("/"));
@@ -206,7 +206,7 @@ const $async = (file: string, cb) => {
     if ($isBrowser) {
         var xmlhttp;
         xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
+        xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 let contentType = xmlhttp.getResponseHeader("Content-Type");
                 let content = xmlhttp.responseText;
@@ -225,11 +225,18 @@ const $async = (file: string, cb) => {
         xmlhttp.open("GET", file, true);
         xmlhttp.send();
     } else {
-        return cb(global["require"](file));
+        if (/\.(js|json)$/.test(file)) {
+            return cb(global["require"](file));
+        } return cb("");
     }
 }
 
 
+/**
+ * Trigger events
+ * If a registered callback returns "false"
+ * We break the loop
+ */
 const $trigger = (name: string, args: any) => {
     let e = $events[name];
     if (e) {
@@ -387,8 +394,8 @@ class FuseBox {
      * @memberOf FuseBox
      */
     public static dynamic(path: string, str: string) {
-        this.pkg("default", {}, function (___scope___) {
-            ___scope___.file(path, function (exports, require, module, __filename, __dirname) {
+        this.pkg("default", {}, function(___scope___) {
+            ___scope___.file(path, function(exports, require, module, __filename, __dirname) {
                 var res = new Function('exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
                 res(exports, require, module, __filename, __dirname, __root__);
             });

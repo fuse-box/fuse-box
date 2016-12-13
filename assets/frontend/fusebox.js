@@ -155,7 +155,10 @@ var $async = function (file, cb) {
         xmlhttp.send();
     }
     else {
-        return cb(global["require"](file));
+        if (/\.(js|json)$/.test(file)) {
+            return cb(global["require"](file));
+        }
+        return cb("");
     }
 };
 var $trigger = function (name, args) {

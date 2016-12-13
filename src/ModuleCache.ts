@@ -59,7 +59,9 @@ export class ModuleCache {
      */
     constructor(public context: WorkFlowContext) {
         this.cacheFolder = path.join(Config.TEMP_FOLDER, "cache",
-            Config.FUSEBOX_VERSION, encodeURIComponent(Config.PROJECT_FOLDER));
+            Config.FUSEBOX_VERSION,
+            encodeURIComponent(`${Config.PROJECT_FOLDER}${context.outFile || ""}`));
+
 
         this.staticCacheFolder = path.join(this.cacheFolder, "static");
         mkdirp.sync(this.staticCacheFolder);

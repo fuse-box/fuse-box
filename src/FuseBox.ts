@@ -87,6 +87,8 @@ export class FuseBox {
         }
         // In case of additional resources (or resourses to use with gulp)
         this.virtualFiles = opts.files;
+
+        this.context.initCache();
     }
 
     public triggerStart() {

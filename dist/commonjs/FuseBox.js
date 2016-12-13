@@ -53,6 +53,7 @@ class FuseBox {
             this.context.setUseCache(opts.cache);
         }
         this.virtualFiles = opts.files;
+        this.context.initCache();
     }
     static init(opts) {
         return new FuseBox(opts);

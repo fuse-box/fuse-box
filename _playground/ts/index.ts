@@ -1,1 +1,1 @@
-require("./foo.css")
+require(`./foo.css`);

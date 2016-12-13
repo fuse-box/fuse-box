@@ -15,9 +15,11 @@ class WorkFlowContext {
         this.printLogs = true;
         this.useCache = true;
         this.doLog = true;
-        this.cache = new ModuleCache_1.ModuleCache(this);
         this.tsMode = false;
         this.standaloneBundle = true;
+    }
+    initCache() {
+        this.cache = new ModuleCache_1.ModuleCache(this);
     }
     reset() {
         this.log = new Log_1.Log(this.doLog);

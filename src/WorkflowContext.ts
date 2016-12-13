@@ -131,7 +131,7 @@ export class WorkFlowContext {
      * 
      * @memberOf WorkFlowContext
      */
-    public cache = new ModuleCache(this);
+    public cache: ModuleCache;
     /**
      * 
      * 
@@ -197,6 +197,10 @@ export class WorkFlowContext {
      */
     public log: Log;
 
+
+    public initCache() {
+        this.cache = new ModuleCache(this);
+    }
     /**
      * 
      * 

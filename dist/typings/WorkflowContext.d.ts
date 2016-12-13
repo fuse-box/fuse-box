@@ -35,6 +35,7 @@ export declare class WorkFlowContext {
     sourceMapConfig: any;
     outFile: string;
     log: Log;
+    initCache(): void;
     reset(): void;
     allowExtension(ext: string): void;
     setHomeDir(dir: string): void;

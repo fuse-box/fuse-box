@@ -12,7 +12,7 @@ class ModuleCache {
             tree: {},
             flat: {}
         };
-        this.cacheFolder = path.join(Config_1.Config.TEMP_FOLDER, "cache", Config_1.Config.FUSEBOX_VERSION, encodeURIComponent(Config_1.Config.PROJECT_FOLDER));
+        this.cacheFolder = path.join(Config_1.Config.TEMP_FOLDER, "cache", Config_1.Config.FUSEBOX_VERSION, encodeURIComponent(`${Config_1.Config.PROJECT_FOLDER}${context.outFile || ""}`));
         this.staticCacheFolder = path.join(this.cacheFolder, "static");
         mkdirp.sync(this.staticCacheFolder);
         mkdirp.sync(this.cacheFolder);

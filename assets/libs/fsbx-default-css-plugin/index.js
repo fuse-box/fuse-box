@@ -1,4 +1,7 @@
 var __fsbx_css = function(__filename, contents) {
+    if (FuseBox.isServer) {
+        return;
+    }
     var styleId = __filename.replace(/[\.\/]+/g, "-");
     if (styleId.charAt(0) === '-') styleId = styleId.substring(1);
     var exists = document.getElementById(styleId);
@@ -17,6 +20,9 @@ var __fsbx_css = function(__filename, contents) {
     }
 }
 FuseBox.on("async", function(name) {
+    if (FuseBox.isServer) {
+        return;
+    }
     if (/\.css$/.test(name)) {
         __fsbx_css(name);
         return false;
