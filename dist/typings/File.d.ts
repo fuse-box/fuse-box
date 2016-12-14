@@ -6,6 +6,7 @@ export declare class File {
     context: WorkFlowContext;
     info: IPathInformation;
     isFuseBoxBundle: boolean;
+    alternativeContent: string;
     notFound: boolean;
     absPath: string;
     contents: string;

@@ -28,6 +28,7 @@ class FileAnalysis {
             processDeclared: false,
             processRequired: false,
             fuseBoxBundle: false,
+            fuseBoxMain: undefined
         };
         traverse(this.ast, {
             pre: (node, parent, prop, idx) => {
@@ -40,8 +41,14 @@ class FileAnalysis {
                     if (parent.type === "CallExpression") {
                         if (node.object && node.object.type === "Identifier" && node.object.name === "FuseBox") {
                             if (node.property && node.property.type === "Identifier") {
-                                if (node.property.name === "pkg") {
-                                    out.fuseBoxBundle = true;
+                                if (node.property.name === "main") {
+                                    if (parent.arguments) {
+                                        let f = parent.arguments[0];
+                                        if (f && f.type === "Literal") {
+                                            out.fuseBoxMain = f.value;
+                                            out.fuseBoxBundle = true;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -80,6 +87,9 @@ class FileAnalysis {
             this.file.isFuseBoxBundle = true;
             this.removeFuseBoxApiFromBundle();
             this.dependencies = [];
+            if (out.fuseBoxMain) {
+                this.file.alternativeContent = `module.exports = FuseBox.import("${out.fuseBoxMain}")`;
+            }
         }
     }
     removeFuseBoxApiFromBundle() {

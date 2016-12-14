@@ -16,6 +16,16 @@ export class File {
 
     public isFuseBoxBundle = false;
 
+    /**
+     * In order to keep bundle in a bundle
+     * We can't destory the original contents
+     * But instead we add additional property that will override bundle file contents
+     * 
+     * @type {string}
+     * @memberOf FileAnalysis
+     */
+    public alternativeContent: string;
+
     public notFound: boolean;
     /**
      * 

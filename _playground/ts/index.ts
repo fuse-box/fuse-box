@@ -1,3 +1,4 @@
-console.log("all good");
-import * as myLib from "myLib";
-console.log("sheei", myLib);
+
+import * as myLib from "./foo.js";
+console.log(myLib);
+//console.log("sheei", myLib);

@@ -46,7 +46,7 @@ class BundleSource {
         }
         this.collectionSource.add(null, `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){ 
 ${file.headerContent ? file.headerContent.join("\n") : ""}`);
-        this.collectionSource.add(null, file.contents, file.sourceMap);
+        this.collectionSource.add(null, file.alternativeContent || file.contents, file.sourceMap);
         this.collectionSource.add(null, "});");
     }
     finalize(bundleData) {
@@ -57,6 +57,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
                 entry = this.context.convert2typescript(entry);
             }
         }
+        let mainEntry;
         if (context.globals) {
             let data = [];
             for (let key in context.globals) {
@@ -66,16 +67,20 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
                     item.alias = alias;
                     item.pkg = key;
                     if (key === context.defaultPackageName && entry) {
-                        item.pkg = `${key}/${entry}`;
+                        mainEntry = item.pkg = `${key}/${entry}`;
                         entry = undefined;
                     }
                     data.push(item);
                 }
             }
-            this.concat.add(null, `FuseBox.expose(${JSON.stringify(data)})`);
+            this.concat.add(null, `FuseBox.expose(${JSON.stringify(data)});`);
         }
         if (entry) {
-            this.concat.add(null, `\nFuseBox.import("${context.defaultPackageName}/${entry}")`);
+            mainEntry = `${context.defaultPackageName}/${entry}`;
+            this.concat.add(null, `\nFuseBox.import("${mainEntry}");`);
+        }
+        if (mainEntry) {
+            this.concat.add(null, `FuseBox.main("${mainEntry}");`);
         }
         this.concat.add(null, "})");
         if (context.standaloneBundle) {

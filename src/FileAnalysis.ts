@@ -24,6 +24,8 @@ export class FileAnalysis {
      */
     public ast: any;
 
+
+
     /**
      * A list of dependencies 
      * 
@@ -78,6 +80,7 @@ export class FileAnalysis {
             processDeclared: false,
             processRequired: false,
             fuseBoxBundle: false,
+            fuseBoxMain: undefined
         }
         traverse(this.ast, {
             pre: (node, parent, prop, idx) => {
@@ -91,8 +94,16 @@ export class FileAnalysis {
                     if (parent.type === "CallExpression") {
                         if (node.object && node.object.type === "Identifier" && node.object.name === "FuseBox") {
                             if (node.property && node.property.type === "Identifier") {
-                                if (node.property.name === "pkg") {
-                                    out.fuseBoxBundle = true;
+
+                                // Extraing main file name from a bundle
+                                if (node.property.name === "main") {
+                                    if (parent.arguments) {
+                                        let f = parent.arguments[0];
+                                        if (f && f.type === "Literal") {
+                                            out.fuseBoxMain = f.value;
+                                            out.fuseBoxBundle = true;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -133,6 +144,9 @@ export class FileAnalysis {
             this.file.isFuseBoxBundle = true;
             this.removeFuseBoxApiFromBundle();
             this.dependencies = [];
+            if (out.fuseBoxMain) {
+                this.file.alternativeContent = `module.exports = FuseBox.import("${out.fuseBoxMain}")`
+            }
         }
     }
 

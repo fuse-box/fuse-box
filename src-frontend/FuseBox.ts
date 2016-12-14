@@ -370,6 +370,8 @@ class FuseBox {
         return ref.file !== undefined;
     }
 
+    public static main() { }
+
     public static expose(obj: any) {
         for (let key in obj) {
             let data = obj[key];

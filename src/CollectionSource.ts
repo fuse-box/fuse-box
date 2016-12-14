@@ -35,11 +35,11 @@ export class CollectionSource {
             files.forEach(file => {
                 if (file.isFuseBoxBundle) {
                     this.context.source.addContentToCurrentCollection(file.contents);
-                } else {
-                    if (!file.info.isRemoteFile) {
-                        filtered.push(file);
-                    }
                 }
+                if (!file.info.isRemoteFile) {
+                    filtered.push(file);
+                }
+
             });
             return filtered;
         })

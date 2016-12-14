@@ -256,6 +256,7 @@ var FuseBox = (function () {
         var ref = $getRef(path, {});
         return ref.file !== undefined;
     };
+    FuseBox.main = function () { };
     FuseBox.expose = function (obj) {
         for (var key in obj) {
             var data = obj[key];

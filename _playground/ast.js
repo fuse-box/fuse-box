@@ -23,7 +23,8 @@ var out = {
     requires: [],
     processDeclared: false,
     processRequired: false,
-    fuseBoxBundle: false
+    fuseBoxBundle: false,
+    fuseBoxMain: null,
 }
 traverse(ast, {
     pre: function(node, parent, prop, idx) {
@@ -36,7 +37,16 @@ traverse(ast, {
             }
             if (parent.type === "CallExpression") {
                 if (node.object && node.object.type === "Identifier" && node.object.name === "FuseBox") {
+
                     if (node.property && node.property.type === "Identifier") {
+                        if (node.property.name === "main") {
+                            if (parent.arguments) {
+                                let f = parent.arguments[0];
+                                if (f && f.type === "Literal") {
+                                    out.fuseBoxMain = f.value;
+                                }
+                            }
+                        }
                         if (node.property.name === "pkg") {
                             out.fuseBoxBundle = true;
                         }
@@ -84,5 +94,5 @@ if (ast.type == "Program") {
 }
 //console.log(ast);
 let js = escodegen.generate(astWithoutFooter);
-console.log(js);
-//console.log(out);
+//console.log(js);
+console.log(out);
