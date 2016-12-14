@@ -27,6 +27,9 @@ class FuseBox {
             this.context.tsConfig = opts.tsConfig;
         }
         this.context.plugins = opts.plugins || [JSONplugin_1.JSONPlugin()];
+        if (opts.package) {
+            this.context.defaultPackageName = opts.package;
+        }
         if (opts.cache !== undefined) {
             this.context.useCache = opts.cache ? true : false;
         }
@@ -88,7 +91,7 @@ class FuseBox {
         });
     }
     process(bundleData, standalone) {
-        let bundleCollection = new ModuleCollection_1.ModuleCollection(this.context, "default");
+        let bundleCollection = new ModuleCollection_1.ModuleCollection(this.context, this.context.defaultPackageName);
         bundleCollection.pm = new PathMaster_1.PathMaster(this.context, bundleData.homeDir);
         if (bundleData.typescriptMode) {
             this.context.tsMode = true;

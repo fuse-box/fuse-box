@@ -75,6 +75,20 @@ export interface Plugin {
  */
 export class WorkFlowContext {
 
+    /**
+     * 
+     * 
+     * 
+     * @memberOf WorkFlowContext
+     */
+    public defaultPackageName = "default";
+
+    /**
+     * 
+     * 
+     * @type {string[]}
+     * @memberOf WorkFlowContext
+     */
     public ignoreGlobal: string[] = [];
     /**
      * 

@@ -17,6 +17,7 @@ export interface Plugin {
     bundleEnd?(context: WorkFlowContext): any;
 }
 export declare class WorkFlowContext {
+    defaultPackageName: string;
     ignoreGlobal: string[];
     nodeModules: Map<string, ModuleCollection>;
     libPaths: Map<string, IPackageInformation>;

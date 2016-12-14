@@ -9,6 +9,7 @@ const appRoot = require("app-root-path");
 const mkdirp = require("mkdirp");
 class WorkFlowContext {
     constructor() {
+        this.defaultPackageName = "default";
         this.ignoreGlobal = [];
         this.nodeModules = new Map();
         this.libPaths = new Map();

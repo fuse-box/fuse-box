@@ -6,6 +6,7 @@ class File {
     constructor(context, info) {
         this.context = context;
         this.info = info;
+        this.isFuseBoxBundle = false;
         this.isLoaded = false;
         this.isNodeModuleEntry = false;
         this.isTypeScript = false;

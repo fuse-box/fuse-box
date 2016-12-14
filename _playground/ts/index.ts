@@ -1,6 +1,3 @@
-require(`./foo.css`);
-const path = require("path");
-console.log(path.dirname(process.cwd()));
-console.log(path.join("a", "b", "c"));
-export let foo = "hello";
-
+console.log("all good");
+import * as myLib from "myLib";
+console.log("sheei", myLib);

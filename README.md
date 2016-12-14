@@ -30,7 +30,7 @@ Check this benchmark:
 
 |         |            |
 | ------------- |:-------------:| 
-| FuseBox      | 0.326s |
+| FuseBox      | 0.234s |
 | Webpack      | 1.376s |
 
 
@@ -38,8 +38,8 @@ Check this benchmark:
 
 |         |            |
 | ------------- |:-------------:| 
-| FuseBox      | 2.796s |
-| Webpack      | 13.837s |
+| FuseBox      | 2.257s |
+| Webpack      | 13.591s |
 
 
 

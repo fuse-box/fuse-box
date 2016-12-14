@@ -13,6 +13,7 @@ let ast = acorn.parse(fs.readFileSync(__dirname + "/file.js").toString(), {
 
 });
 
+const escodegen = require("escodegen");
 
 
 var traverse = require("ast-traverse");
@@ -63,4 +64,25 @@ traverse(ast, {
         }
     }
 });
-console.log(out);
+let astWithoutFooter;
+if (ast.type == "Program") {
+    let first = ast.body[0];
+    if (first && first.type === "ExpressionStatement") {
+        let expression = first.expression;
+        if (expression.type === "CallExpression") {
+            let callee = expression.callee;
+            if (callee.type === "FunctionExpression") {
+                if (callee.params && callee.params[0]) {
+                    let param1 = callee.params[0];
+                    if (param1.type === "Identifier" && param1.name === "FuseBox") {
+                        astWithoutFooter = callee.body;
+                    }
+                }
+            }
+        }
+    }
+}
+//console.log(ast);
+let js = escodegen.generate(astWithoutFooter);
+console.log(js);
+//console.log(out);

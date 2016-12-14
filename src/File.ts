@@ -13,6 +13,9 @@ import { utils } from "realm-utils";
  * @class File
  */
 export class File {
+
+    public isFuseBoxBundle = false;
+
     public notFound: boolean;
     /**
      * 

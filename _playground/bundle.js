@@ -14,8 +14,9 @@ let fuseBox = FuseBox.init({
     cache: false,
     //globals: { default: "myLib", "wires-reactive": "Reactive" },
     outFile: "_playground/_build/out.js",
-
-    //modulesFolder: "test/fixtures/modules",
+    //package: "myLib",
+    //globals: { myLib: "myLib" },
+    modulesFolder: "_playground/npm",
     //plugins: [new build.TypeScriptHelpers(), build.JSONPlugin, new build.CSSPlugin({ minify: true })]
     plugins: [
         build.TypeScriptHelpers(),

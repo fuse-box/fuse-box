@@ -54,8 +54,17 @@ export class BundleSource {
      * 
      * @memberOf BundleSource
      */
-    public startCollection(collection: ModuleCollection) {
+    public createCollection(collection: ModuleCollection) {
         this.collectionSource = new Concat(true, collection.name, "\n");
+    }
+
+    public addContentToCurrentCollection(data: string) {
+        if (this.collectionSource) {
+
+            this.collectionSource.add(null, data);
+        }
+    }
+    public startCollection(collection: ModuleCollection) {
         let conflicting = {};
         if (collection.conflictingVersions) {
             collection.conflictingVersions.forEach((version, name) => {
@@ -85,6 +94,8 @@ export class BundleSource {
             this.collectionSource.content, key === "default" ? this.collectionSource.sourceMap : undefined);
         return this.collectionSource.content.toString();
     }
+
+
 
     /**
      * 
@@ -141,8 +152,8 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
                     let item: any = {};
                     item.alias = alias;
                     item.pkg = key;
-                    if (key === "default" && entry) {
-                        item.entry = entry;
+                    if (key === context.defaultPackageName && entry) {
+                        item.pkg = `${key}/${entry}`;
                         entry = undefined;
                     }
                     data.push(item);
@@ -152,7 +163,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         }
 
         if (entry) {
-            this.concat.add(null, `\nFuseBox.import("./${entry}")`);
+            this.concat.add(null, `\nFuseBox.import("${context.defaultPackageName}/${entry}")`);
         }
         this.concat.add(null, "})");
 

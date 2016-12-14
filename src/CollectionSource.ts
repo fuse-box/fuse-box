@@ -11,13 +11,18 @@ export class CollectionSource {
                 return resolve(collection.cachedContent);
             });
         }
-        this.context.source.startCollection(collection);
-        return this.resolveFiles(collection.dependencies).then(cnt => {
+        this.context.source.createCollection(collection);
+        return this.resolveFiles(collection.dependencies).then(files => {
+
+            this.context.source.startCollection(collection);
+            files.forEach(f => {
+                this.context.source.addFile(f);
+            });
             return this.context.source.endCollection(collection);
         });
 
     }
-    private resolveFiles(files: Map<string, File>) {
+    private resolveFiles(files: Map<string, File>): Promise<File[]> {
         let cnt = [];
         let promises: Promise<any>[] = [];
         files.forEach(file => {
@@ -26,12 +31,17 @@ export class CollectionSource {
             });
         });
         return Promise.all(promises).then(() => {
+            let filtered: File[] = [];
             files.forEach(file => {
-                if (!file.info.isRemoteFile) {
-                    this.context.source.addFile(file);
+                if (file.isFuseBoxBundle) {
+                    this.context.source.addContentToCurrentCollection(file.contents);
+                } else {
+                    if (!file.info.isRemoteFile) {
+                        filtered.push(file);
+                    }
                 }
             });
-            return cnt;
+            return filtered;
         })
     }
 }

@@ -54,6 +54,10 @@ export class FuseBox {
         }
 
         this.context.plugins = opts.plugins || [JSONPlugin()];
+
+        if (opts.package) {
+            this.context.defaultPackageName = opts.package;
+        }
         if (opts.cache !== undefined) {
             this.context.useCache = opts.cache ? true : false;
         }
@@ -127,7 +131,7 @@ export class FuseBox {
     }
 
     public process(bundleData: BundleData, standalone?: boolean) {
-        let bundleCollection = new ModuleCollection(this.context, "default");
+        let bundleCollection = new ModuleCollection(this.context, this.context.defaultPackageName);
         bundleCollection.pm = new PathMaster(this.context, bundleData.homeDir);
 
         // swiching on typescript compiler

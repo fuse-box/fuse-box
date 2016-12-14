@@ -1,6 +1,7 @@
 "use strict";
 const acorn = require("acorn");
 const traverse = require("ast-traverse");
+const escodegen = require("escodegen");
 require("acorn-es7")(acorn);
 require("acorn-jsx/inject")(acorn);
 class FileAnalysis {
@@ -76,7 +77,33 @@ class FileAnalysis {
             }
         }
         if (out.fuseBoxBundle) {
+            this.file.isFuseBoxBundle = true;
+            this.removeFuseBoxApiFromBundle();
             this.dependencies = [];
+        }
+    }
+    removeFuseBoxApiFromBundle() {
+        let ast = this.ast;
+        let modifiedAst;
+        if (ast.type === "Program") {
+            let first = ast.body[0];
+            if (first && first.type === "ExpressionStatement") {
+                let expression = first.expression;
+                if (expression.type === "CallExpression") {
+                    let callee = expression.callee;
+                    if (callee.type === "FunctionExpression") {
+                        if (callee.params && callee.params[0]) {
+                            let param1 = callee.params[0];
+                            if (param1.type === "Identifier" && param1.name === "FuseBox") {
+                                modifiedAst = callee.body;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (modifiedAst) {
+            this.file.contents = `(function()${escodegen.generate(modifiedAst)})();`;
         }
     }
 }

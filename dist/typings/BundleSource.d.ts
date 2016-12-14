@@ -8,6 +8,8 @@ export declare class BundleSource {
     private concat;
     private collectionSource;
     constructor(context: WorkFlowContext);
+    createCollection(collection: ModuleCollection): void;
+    addContentToCurrentCollection(data: string): void;
     startCollection(collection: ModuleCollection): void;
     endCollection(collection: ModuleCollection): any;
     addContent(data: string): void;

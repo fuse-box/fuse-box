@@ -7,4 +7,5 @@ export declare class FileAnalysis {
     process(): void;
     private parse();
     private analyze();
+    private removeFuseBoxApiFromBundle();
 }

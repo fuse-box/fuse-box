@@ -10,8 +10,15 @@ class BundleSource {
         this.concat = new Concat(true, "", "\n");
         this.concat.add(null, "(function(FuseBox){");
     }
-    startCollection(collection) {
+    createCollection(collection) {
         this.collectionSource = new Concat(true, collection.name, "\n");
+    }
+    addContentToCurrentCollection(data) {
+        if (this.collectionSource) {
+            this.collectionSource.add(null, data);
+        }
+    }
+    startCollection(collection) {
         let conflicting = {};
         if (collection.conflictingVersions) {
             collection.conflictingVersions.forEach((version, name) => {
@@ -58,8 +65,8 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
                     let item = {};
                     item.alias = alias;
                     item.pkg = key;
-                    if (key === "default" && entry) {
-                        item.entry = entry;
+                    if (key === context.defaultPackageName && entry) {
+                        item.pkg = `${key}/${entry}`;
                         entry = undefined;
                     }
                     data.push(item);
@@ -68,7 +75,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             this.concat.add(null, `FuseBox.expose(${JSON.stringify(data)})`);
         }
         if (entry) {
-            this.concat.add(null, `\nFuseBox.import("./${entry}")`);
+            this.concat.add(null, `\nFuseBox.import("${context.defaultPackageName}/${entry}")`);
         }
         this.concat.add(null, "})");
         if (context.standaloneBundle) {

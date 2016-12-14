@@ -78,7 +78,7 @@ const $getDir = (filePath: string) => {
  * @param {any} name
  * @returns
  */
-const $pathJoin = function(...string): string {
+const $pathJoin = function (...string): string {
     let parts = [];
     for (let i = 0, l = arguments.length; i < l; i++) {
         parts = parts.concat(arguments[i].split("/"));
@@ -206,7 +206,7 @@ const $async = (file: string, cb) => {
     if ($isBrowser) {
         var xmlhttp;
         xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
+        xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 let contentType = xmlhttp.getResponseHeader("Content-Type");
                 let content = xmlhttp.responseText;
@@ -373,12 +373,7 @@ class FuseBox {
     public static expose(obj: any) {
         for (let key in obj) {
             let data = obj[key];
-            let exposed;
-            if (data.entry) {
-                exposed = $import("./" + data.entry);
-            } else {
-                exposed = $import(data.pkg);
-            }
+            let exposed = $import(data.pkg);
             __root__[data.alias] = exposed;
         }
     }
@@ -394,8 +389,8 @@ class FuseBox {
      * @memberOf FuseBox
      */
     public static dynamic(path: string, str: string) {
-        this.pkg("default", {}, function(___scope___) {
-            ___scope___.file(path, function(exports, require, module, __filename, __dirname) {
+        this.pkg("default", {}, function (___scope___) {
+            ___scope___.file(path, function (exports, require, module, __filename, __dirname) {
                 var res = new Function('exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
                 res(exports, require, module, __filename, __dirname, __root__);
             });

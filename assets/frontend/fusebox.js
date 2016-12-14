@@ -259,13 +259,7 @@ var FuseBox = (function () {
     FuseBox.expose = function (obj) {
         for (var key in obj) {
             var data = obj[key];
-            var exposed = void 0;
-            if (data.entry) {
-                exposed = $import("./" + data.entry);
-            }
-            else {
-                exposed = $import(data.pkg);
-            }
+            var exposed = $import(data.pkg);
             __root__[data.alias] = exposed;
         }
     };
