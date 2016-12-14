@@ -164,6 +164,26 @@ import * as utils from "~/lib/utils";
 ```
 
 
+# A bundle in a bundle in a bundle
+
+Yes! You can do that!
+
+Super powers of FuseBox allow to do that without code redundancy. A footer will be removed, and 2 bundles will be fused together, keeping only one shared Fusebox API.
+
+Only one thing you need to consider before that - packaging.
+
+You current project is called "default" This is by design. All dynamic modules will register themselves into it automatically. 
+If you want to require a bundle it must have a different namespace. Unless you want to keep is shared. Add `package` property to the initializer:
+
+```js
+FuseBox.init({
+    homeDir: "src/",
+    package : "myLib",
+    outFile: "./out.js"
+}).bundle(">index.js");
+```
+
+
 
 # Loader API
 
