@@ -2,7 +2,7 @@
 if ($isBrowser) {
     window["global"] = window;
 }
-__root__ = !$isBrowser ? module.exports : __root__;
+__root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports : __root__;
 var $fsbx = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
     : global["$fsbx"] = global["$fsbx"] || {};
 if (!$isBrowser) {
@@ -256,7 +256,9 @@ var FuseBox = (function () {
         var ref = $getRef(path, {});
         return ref.file !== undefined;
     };
-    FuseBox.main = function () { };
+    FuseBox.main = function (name) {
+        return FuseBox.import(name, {});
+    };
     FuseBox.expose = function (obj) {
         for (var key in obj) {
             var data = obj[key];
@@ -267,8 +269,8 @@ var FuseBox = (function () {
     FuseBox.dynamic = function (path, str) {
         this.pkg("default", {}, function (___scope___) {
             ___scope___.file(path, function (exports, require, module, __filename, __dirname) {
-                var res = new Function('exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
-                res(exports, require, module, __filename, __dirname, __root__);
+                var res = new Function('__fbx__dnm__', 'exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
+                res(true, exports, require, module, __filename, __dirname, __root__);
             });
         });
     };

@@ -1,12 +1,17 @@
 declare let __root__: any;
+declare let __fbx__dnm__: any;
+
 const $isBrowser = typeof window !== "undefined" && window.navigator;
 
 // Patching global variable
 if ($isBrowser) {
     window["global"] = window;
 }
+// Set root
+// __fbx__dnm__ is a variable that is used in dynamic imports
+// In order for dynamic imports to work, we need to switch window to module.exports
+__root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports : __root__;
 
-__root__ = !$isBrowser ? module.exports : __root__;
 // A runtime storage for Fusebox
 const $fsbx = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
     : global["$fsbx"] = global["$fsbx"] || {}; // in case of nodejs
@@ -370,7 +375,9 @@ class FuseBox {
         return ref.file !== undefined;
     }
 
-    public static main() { }
+    public static main(name: string) {
+        return FuseBox.import(name, {});
+    }
 
     public static expose(obj: any) {
         for (let key in obj) {
@@ -393,8 +400,8 @@ class FuseBox {
     public static dynamic(path: string, str: string) {
         this.pkg("default", {}, function (___scope___) {
             ___scope___.file(path, function (exports, require, module, __filename, __dirname) {
-                var res = new Function('exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
-                res(exports, require, module, __filename, __dirname, __root__);
+                var res = new Function('__fbx__dnm__', 'exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
+                res(true, exports, require, module, __filename, __dirname, __root__);
             });
         });
     }
