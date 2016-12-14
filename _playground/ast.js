@@ -1,11 +1,6 @@
 const acorn = require("acorn");
-const path = require("path");
-console.log(path.dirname(process.cwd()));
-
-const ASTQ = require("astq");
 const fs = require("fs");
 
-let astq = new ASTQ();
 require("acorn-es7")(acorn);
 require("acorn-jsx/inject")(acorn);
 
@@ -17,61 +12,55 @@ let ast = acorn.parse(fs.readFileSync(__dirname + "/file.js").toString(), {
     jsx: { allowNamespacedObjects: true }
 
 });
-let q = `
-    // CallExpression[/Identifier[@name=="require"]], 
-    / ImportDeclaration[/Literal],
-    // VariableDeclarator/Identifier[@name=="process"], 
-    // MemberExpression/Identifier[@name=="process"]
 
-`
+
 
 var traverse = require("ast-traverse");
 
 // print AST node types, pre-order (node first, then its children) 
+var out = {
+    requires: [],
+    processDeclared: false,
+    processRequired: false,
+    fuseBoxBundle: false
+}
 traverse(ast, {
     pre: function(node, parent, prop, idx) {
-        //console.log(node);
-        if (node.type === "Identifier") {
-            // require("./foo.js");
-            if (node.name === "require") {
-                if (parent.type === "CallExpression") {
-                    if (parent.callee && parent.callee.name) {
-                        if (parent.callee.name === "require" && parent.arguments) {
-                            let arg1 = parent.arguments[0];
-                            if (arg1) {
-                                if (arg1.type === "Literal") {
-                                    console.log(arg1.value);
-                                }
-                            }
 
+        if (node.type === "MemberExpression") {
+            if (node.object && node.object.type === "Identifier") {
+                if (node.object.name === "process") {
+                    out.processRequired = true;
+                }
+            }
+            if (parent.type === "CallExpression") {
+                if (node.object && node.object.type === "Identifier" && node.object.name === "FuseBox") {
+                    if (node.property && node.property.type === "Identifier") {
+                        if (node.property.name === "pkg") {
+                            out.fuseBoxBundle = true;
                         }
                     }
                 }
             }
         }
-        //console.log(node, prop);
-
+        if (node.type === "VariableDeclarator") {
+            if (node.id && node.id.type === "Identifier" && node.id.name === "process") {
+                out.processDeclared = true;
+            }
+        }
+        if (node.type === "ImportDeclaration") {
+            if (node.source && node.source.type === "Literal") {
+                out.requires.push(node.source.value);
+            }
+        }
+        if (node.type === "CallExpression") {
+            if (node.callee.type === "Identifier" && node.callee.name === "require") {
+                let arg1 = node.arguments[0];
+                if (arg1.type === "Literal") {
+                    out.requires.push(arg1.value);
+                }
+            }
+        }
     }
 });
-console.log();
-
-// let matches = astq.query(ast, q);
-
-// console.log(JSON.stringify(ast, 2, 2));
-// console.log(matches[0].prototype);
-// matches.map(item => {
-//     //console.log("GOT", item.parent());
-//     // if (item.name === "process") {
-//     //     console.log(item);
-//     // }
-//     // // es5 require
-//     // if (item.arguments) {
-//     //     if (item.arguments[0]) {
-//     //         let name = item.arguments[0].value;
-//     //         if (!name) { return; }
-//     //         console.log(name);
-//     //     }
-//     // }
-//     // // es6 import
-//     // if (item.source) { console.log(item.source.value) }
-// });
+console.log(out);

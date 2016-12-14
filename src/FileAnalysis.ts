@@ -1,9 +1,6 @@
 import { File } from "./File";
-
 const acorn = require("acorn");
-const ASTQ = require("astq");
-
-let astq = new ASTQ();
+const traverse = require("ast-traverse");
 require("acorn-es7")(acorn);
 require("acorn-jsx/inject")(acorn);
 
@@ -52,10 +49,10 @@ export class FileAnalysis {
      */
     public process() {
         this.parse();
-        this.processNodejsVariables();
-        //this.extractStreamVariables();
-        this.processDependencies();
+        this.analyze();
     }
+
+
 
     /**
      * 
@@ -71,78 +68,68 @@ export class FileAnalysis {
             ecmaVersion: 8,
             plugins: { es7: true, jsx: true },
             jsx: { allowNamespacedObjects: true }
-
         });
     }
 
-    /**
-     * Extract dependencies
-     * 
-     * @private
-     * 
-     * @memberOf FileAST
-     */
-    private processDependencies() {
-        let matches = astq.query(this.ast,
-            `// CallExpression[/Identifier[@name=="require"]], / ImportDeclaration[/Literal]`);
+    private analyze() {
+        let out = {
+            requires: [],
+            processDeclared: false,
+            processRequired: false,
+            fuseBoxBundle: false,
+        }
+        traverse(this.ast, {
+            pre: (node, parent, prop, idx) => {
 
-        matches.map(item => {
-            // es5 require
-            if (item.arguments) {
-                if (item.arguments[0]) {
-                    let name = item.arguments[0].value;
-                    if (!name) { return; }
-                    this.dependencies.push(name);
+                if (node.type === "MemberExpression") {
+                    if (node.object && node.object.type === "Identifier") {
+                        if (node.object.name === "process") {
+                            out.processRequired = true;
+                        }
+                    }
+                    if (parent.type === "CallExpression") {
+                        if (node.object && node.object.type === "Identifier" && node.object.name === "FuseBox") {
+                            if (node.property && node.property.type === "Identifier") {
+                                if (node.property.name === "pkg") {
+                                    out.fuseBoxBundle = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (node.type === "VariableDeclarator") {
+                    if (node.id && node.id.type === "Identifier" && node.id.name === "process") {
+                        out.processDeclared = true;
+                    }
+                }
+                if (node.type === "ImportDeclaration") {
+                    if (node.source && node.source.type === "Literal") {
+                        out.requires.push(node.source.value);
+                    }
+                }
+                if (node.type === "CallExpression") {
+                    if (node.callee.type === "Identifier" && node.callee.name === "require") {
+                        let arg1 = node.arguments[0];
+                        if (arg1.type === "Literal") {
+                            out.requires.push(arg1.value);
+                        }
+                    }
                 }
             }
-            // es6 import
-            if (item.source) { this.dependencies.push(item.source.value); }
         });
-    }
-
-    private extractStreamVariables() {
-        // Making sure we are not adding it where a definition of "process"" has been seen;
-        // For example var process = {} will not add "process"" as a dependency
-        // Otherwise we will go into an infinite loop
-        let streamisDefined = astq.query(this.ast, `// VariableDeclarator/Identifier[@name=="stream"]`);
-        if (streamisDefined.length) {
-            return;
-        }
-        // Lookup for "process"" mention
-        let result = astq.query(this.ast, `// MemberExpression/Identifier[@name=="stream"]`);
-        if (!result.length) {
-            return;
+        out.requires.forEach(name => {
+            this.dependencies.push(name);
+        });
+        if (!out.processDeclared) {
+            if (out.processRequired) {
+                this.dependencies.push("process");
+                this.file.addHeaderContent(`var process = require("process");`);
+            }
         }
 
-        this.dependencies.push("stream");
-        // This will be added later at wrap time
-        this.file.addHeaderContent(`if ( typeof window !== "undefined" ) { var stream = require("stream"); }`);
-    }
-    /**
-     * Process additional conditions
-     * For example "process" variables
-     * 
-     * @private
-     * 
-     * @memberOf FileAST
-     */
-    private processNodejsVariables() {
-        // Making sure we are not adding it where a definition of "process"" has been seen;
-        // For example var process = {} will not add "process"" as a dependency
-        // Otherwise we will go into an infinite loop
-        let processIsDefined = astq.query(this.ast, `// VariableDeclarator/Identifier[@name=="process"]`);
-        if (processIsDefined.length) {
-            return;
+        // Reset all dependencies if a fusebox bundle spotted
+        if (out.fuseBoxBundle) {
+            this.dependencies = [];
         }
-        // Lookup for "process"" mention
-        let result = astq.query(this.ast, `// MemberExpression/Identifier[@name=="process"]`);
-        if (!result.length) {
-            return;
-        }
-
-        this.dependencies.push("process");
-        // This will be added later at wrap time
-
-        this.file.addHeaderContent(`var process = require("process");`);
     }
 }

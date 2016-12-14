@@ -1,7 +1,6 @@
 "use strict";
 const acorn = require("acorn");
-const ASTQ = require("astq");
-let astq = new ASTQ();
+const traverse = require("ast-traverse");
 require("acorn-es7")(acorn);
 require("acorn-jsx/inject")(acorn);
 class FileAnalysis {
@@ -11,8 +10,7 @@ class FileAnalysis {
     }
     process() {
         this.parse();
-        this.processNodejsVariables();
-        this.processDependencies();
+        this.analyze();
     }
     parse() {
         this.ast = acorn.parse(this.file.contents, {
@@ -23,46 +21,63 @@ class FileAnalysis {
             jsx: { allowNamespacedObjects: true }
         });
     }
-    processDependencies() {
-        let matches = astq.query(this.ast, `// CallExpression[/Identifier[@name=="require"]], / ImportDeclaration[/Literal]`);
-        matches.map(item => {
-            if (item.arguments) {
-                if (item.arguments[0]) {
-                    let name = item.arguments[0].value;
-                    if (!name) {
-                        return;
+    analyze() {
+        let out = {
+            requires: [],
+            processDeclared: false,
+            processRequired: false,
+            fuseBoxBundle: false,
+        };
+        traverse(this.ast, {
+            pre: (node, parent, prop, idx) => {
+                if (node.type === "MemberExpression") {
+                    if (node.object && node.object.type === "Identifier") {
+                        if (node.object.name === "process") {
+                            out.processRequired = true;
+                        }
                     }
-                    this.dependencies.push(name);
+                    if (parent.type === "CallExpression") {
+                        if (node.object && node.object.type === "Identifier" && node.object.name === "FuseBox") {
+                            if (node.property && node.property.type === "Identifier") {
+                                if (node.property.name === "pkg") {
+                                    out.fuseBoxBundle = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (node.type === "VariableDeclarator") {
+                    if (node.id && node.id.type === "Identifier" && node.id.name === "process") {
+                        out.processDeclared = true;
+                    }
+                }
+                if (node.type === "ImportDeclaration") {
+                    if (node.source && node.source.type === "Literal") {
+                        out.requires.push(node.source.value);
+                    }
+                }
+                if (node.type === "CallExpression") {
+                    if (node.callee.type === "Identifier" && node.callee.name === "require") {
+                        let arg1 = node.arguments[0];
+                        if (arg1.type === "Literal") {
+                            out.requires.push(arg1.value);
+                        }
+                    }
                 }
             }
-            if (item.source) {
-                this.dependencies.push(item.source.value);
-            }
         });
-    }
-    extractStreamVariables() {
-        let streamisDefined = astq.query(this.ast, `// VariableDeclarator/Identifier[@name=="stream"]`);
-        if (streamisDefined.length) {
-            return;
+        out.requires.forEach(name => {
+            this.dependencies.push(name);
+        });
+        if (!out.processDeclared) {
+            if (out.processRequired) {
+                this.dependencies.push("process");
+                this.file.addHeaderContent(`var process = require("process");`);
+            }
         }
-        let result = astq.query(this.ast, `// MemberExpression/Identifier[@name=="stream"]`);
-        if (!result.length) {
-            return;
+        if (out.fuseBoxBundle) {
+            this.dependencies = [];
         }
-        this.dependencies.push("stream");
-        this.file.addHeaderContent(`if ( typeof window !== "undefined" ) { var stream = require("stream"); }`);
-    }
-    processNodejsVariables() {
-        let processIsDefined = astq.query(this.ast, `// VariableDeclarator/Identifier[@name=="process"]`);
-        if (processIsDefined.length) {
-            return;
-        }
-        let result = astq.query(this.ast, `// MemberExpression/Identifier[@name=="process"]`);
-        if (!result.length) {
-            return;
-        }
-        this.dependencies.push("process");
-        this.file.addHeaderContent(`var process = require("process");`);
     }
 }
 exports.FileAnalysis = FileAnalysis;

@@ -1,5 +1,6 @@
-require("foo");
-// // import * as path from "path";
+// import * as path2 from "path";
+// FuseBox.pkg("default", {}, function(___scope___) {
 
-// var process = {}
-// console.log(process.env);
+// });
+//var process = module.exports;
+//console.log(process.env);

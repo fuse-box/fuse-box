@@ -6,7 +6,5 @@ export declare class FileAnalysis {
     constructor(file: File);
     process(): void;
     private parse();
-    private processDependencies();
-    private extractStreamVariables();
-    private processNodejsVariables();
+    private analyze();
 }
