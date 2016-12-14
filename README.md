@@ -221,24 +221,10 @@ Nodejs environment, however, will get authentic "fs" module. (Concerns http, net
 
 ## Exists
 
-You check wether a module (file) exists in scope.
+You can check wether a module (file) exists in scope.
 ```js
 FuseBox.exists("./index")
 ```
-
-## Event binding
-
-It is possible to intercept require statements. Use "on" method.
-
-```
-FuseBox.on("before-import", (exports, require, module, __filename, __dirname, pkg) => {                
-});
-
-FuseBox.on("after-import", (exports, require, module, __filename, __dirname, pkg) => {                
-});
-```
-2 events are available at the moment "before-import" and "after-import", Provides commonjs environment (+ package name) in the callback. "require" function is "homie" and respects file location.
-
 
 ## Dynamic
 
@@ -306,9 +292,10 @@ plugins: [
 ]
 ```
 
+On top of that a css file will added to DOM upon request if not found in the bundle.
+
 ## HTML Plugin
 
-Add HTMLPlugin like so:
 ```
 plugins: [
   fsbx.HTMLPlugin({ useDefault: false })
