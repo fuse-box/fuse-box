@@ -1,11 +1,12 @@
 [![Build Status](https://travis-ci.org/fuse-box/fuse-box.svg?branch=master)](https://travis-ci.org/fuse-box/fuse-box)
   
 # FuseBox
+
 > The library is under heavy development. We are getting there.
 
-# Introduction
+## A heroic bundler, that just does it right
 
-FusBox is a bundler/module loader that combines the power of webpack and JSPM. It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convenient to develop.
+FuseBox is a bundler/module loader that combines the power of webpack and JSPM. It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convenient to develop. It requires zero configuration to bundle such monsters like `babel-core`, it will compile and bundle your typescript project within a fraction of a second when offering a comprehensive loader API.
 
 * Say no to painful "get started"!
 * Say no to huge configs!
@@ -63,6 +64,7 @@ Whatever you tempted mind would want - you can get it all here. Apply hacks, int
 
 Have an idea in mind? Just develop a plugin, it's extremely easy to make one. Besides, we have [a few plugins](built-in-plugins), that will help you get started. Want to develop one? Read-up [here](#plugin-api)
 
+
 ## How FuseBox works?!
 
 The idea of FuseBox was born, when started struggling with webpack. It is slow, and it did not deliver required functionality. On another hand, jspm did what I wanted, but still it was not something I would go for. So I decided to combine both and create my own version that has a power of both bundlers combined. 
@@ -85,16 +87,18 @@ FuseBox appends a very tiny API footer that makes magic happen. The library does
 It behaves exactly the same in browser and on server, including circular dependencies resolution. Surely, it works in node as well.
 
 
-# Fuse it all
+# Let's Fuse
 
-## Anything
+## Simplicity is the key
 
-The concept of FuseBox is simple. Bundle anything with minimum configuration. You can point your files to a typescript file or to a javascript file. It will understand `es6` import statements as well. You need, however, use [BabelPlugin](#babel-plugin) to transpile it.
+The concept of FuseBox is simple. Bundle anything for frontend and server without a headache. No configuration required!
+
+You can point your files to a typescript file or to a javascript file. It will understand `es6` import statements as well. You need, however, use [BabelPlugin](#babel-plugin) to transpile it.
 
 
 ## Typescript
 
-Typescript does not require any external plugin or configuration. Make sure you have typescript compiler installed
+Typescript does not require any external plugin or configuration. Just make sure you have typescript compiler installed
 
 ```bash
 npm install typescript --save-dev
@@ -154,7 +158,7 @@ In this case, you will get everything that is required in the index, as well as 
 
 `**/*.js` - Bundle everything with dependencies
 
-`**/*.js -path` - Bundle everything with dependencies except for path
+`**/*.js -path` - Bundle everything with dependencies except for module path
 
 # A bundle in a bundle in a bundle
 
