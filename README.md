@@ -15,9 +15,9 @@ FuseBox is a bundler/module loader that combines the power of webpack and JSPM. 
 
 Let's FUSE
 
-[angular2-example](https://github.com/fuse-box/angular2-example) 50ms to build!
+[angular2-example](https://github.com/fuse-box/angular2-example) 50ms to re-bundle!
 
-[react-example](https://github.com/fuse-box/react-example) 50ms to build
+[react-example](https://github.com/fuse-box/react-example) 50ms to re-bundle!
 
 ## Why fusebox?
 
