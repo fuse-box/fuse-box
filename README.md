@@ -31,7 +31,7 @@ Fusebox is super fast. 50ms for a regular project, 100ms for a big project to re
 
 Check this benchmark:
 
-1200 files to require once
+1200 files to bundle
 
 |         |            |
 | ------------- |:-------------:| 
@@ -39,18 +39,13 @@ Check this benchmark:
 | Webpack      | 1.376s |
 
 
-1000 files to require / 10 times
+1000 files to bundle / 10 times
 
 |         |            |
 | ------------- |:-------------:| 
 | FuseBox      | 2.257s |
 | Webpack      | 13.591s |
 
-
-
-1000
-Webpack
-FuseBox
 
 ### Built-in typescript support.
 
@@ -60,25 +55,9 @@ FuseBox is written in typescript, so I could not just proceed without a seamless
 fuseBox.bundle(">index.ts");
 ```
 
-### Arithmetic instructions
+### Comprehensive Loader API
 
-With arithmetic instructions you can explicitly define which files go to the bundle, which files skip external dependencies.
-
-For example.
-```js
-fuseBox.bundle(">index.ts [lib/**/*.ts]");
-```
-
-In this case, you will get everything that is required in the index, as well as everything that lies under lib/ folder with one condition - any external libraries will be ignored. 
-
-`> index.js [**/*.js]` - Bundle everything without dependencies, and execute index.js
-
-`[**/*.js]` - Bundle everything without dependencies
-
-`**/*.js` - Bundle everything with dependencies
-
-`**/*.js -path` - Bundle everything with dependencies except for path
-
+Whatever you tempted mind would want - you can get it all here. Apply hacks, intercept require statements, use an amazing dynamic module loading, and many many other neat features!
  
 ### Extensive plugins
 
@@ -158,16 +137,24 @@ FuseBox.init({
 }).bundle(">index.js");
 ```
 
-## Point to the root
-You can use `~` symbol to point to your project's path in order to solve `../../../../../utils` mess.
+## Arithmetic
 
+With arithmetic instructions you can explicitly define which files go to the bundle, which files skip external dependencies.
+
+For example.
 ```js
-// es5
-require("~/lib/utils")
-// es6
-import * as utils from "~/lib/utils";
+fuseBox.bundle(">index.ts [lib/**/*.ts]");
 ```
 
+In this case, you will get everything that is required in the index, as well as everything that lies under lib/ folder with one condition - any external libraries will be ignored. 
+
+`> index.js [**/*.js]` - Bundle everything without dependencies, and execute index.js
+
+`[**/*.js]` - Bundle everything without dependencies
+
+`**/*.js` - Bundle everything with dependencies
+
+`**/*.js -path` - Bundle everything with dependencies except for path
 
 # A bundle in a bundle in a bundle
 
@@ -202,7 +189,7 @@ FuseBox sniffs its own creations and restructures the code accordingly.
 
 FuseBox bundle works in both environments. Essentially, it does not matter where you run. FuseBox will persist itself in browser window, or nodejs globals.
 
-Every bundle contains a 3k footer with FuseBox API, It is less than 3KB minified (1,4KB gzipped).  
+Every bundle contains a 3.7k footer with FuseBox API, It is less than 3KB minified (1,4KB gzipped).  
 
 
 ## Import
@@ -216,8 +203,18 @@ Requre external packages will work  as well
 FuseBox.import("fs");
 ```
 
-Please, not, that some libraries like "fs" are faked on browser. Meaning that it won't spit an error, but won't work as expected on server for known reasons.
+Please, not, that some libraries like "fs" are faked in browser. Meaning that it won't spit an error, but won't work as expected on server for known reasons.
 Nodejs environment, however, will get authentic "fs" module. (Concerns http, net, tty e.t.c )
+
+## Lazy import
+
+FuseBox offers lazy module loading via ajax. The way it works is that FuseBox check for a module available in bundle, if it's not found it tries to make HTTP request. It respects runtime plugin hooks and other fusebox bundles as well.
+```
+FuseBox.import("./myfile.js", (moduleExports) => {
+});
+```
+
+Respectively, one can require a css file that was not bundled. Having the [CSSPlugin](#css-plugin) installed will result in appending filepath to the body head.
 
 ## Exists
 
@@ -249,7 +246,15 @@ FuseBox.on("after-import", (exports, require, module, __filename, __dirname, pkg
 
 It is not recommended, however, if you want to play god, you can use that functionality.
 
+## Point to the root
+You can use `~` symbol to point to your project's path in order to solve `../../../../../utils` mess.
 
+```js
+// es5
+require("~/lib/utils")
+// es6
+import * as utils from "~/lib/utils";
+```
 
 # Built-in plugins
 
