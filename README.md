@@ -8,14 +8,12 @@
 
 ## A heroic bundler, that just does it right
 
-FuseBox is a bundler/module loader that combines the power of webpack and JSPM. It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convenient to develop. It requires zero configuration to bundle such monsters like `babel-core`, it will compile and bundle your typescript project within a fraction of a second when offering a comprehensive loader API.
+FuseBox is a bundler/module loader that combines the power of webpack, JSPM and SystemJS. It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convenient to develop. It requires zero configuration to bundle such monsters like `babel-core`, it will compile and bundle your typescript project within a fraction of a second when offering a comprehensive loader API.
 
 * Say no to painful "get started"!
 * Say no to huge configs!
 * Say no to heavy boilerplates!
 * Say no to waiting for your code to rebundle!
-
-Let's FUSE
 
 [angular2-example](https://github.com/fuse-box/angular2-example) 50ms to re-bundle!
 
@@ -24,9 +22,11 @@ Let's FUSE
 ## Why fusebox?
 
 ### Bundle anything without an extra effort
-You have an npm library in mind? You can bundle it without any extra configuration. babel-core with all plugins? No problem, fusebox takes care of everything you need.
+You have an npm library in mind? You can bundle it without any extra configuration. babel-core with all plugins? No problem, fusebox will take care of everything you need.
 
 All node modules (at least the most critical ones) will be bundled for browser (Buffer, path e.t.c) So you don't need to stress about whether you bundle will work in the browser. IT WILL.
+
+There is nothing that cannot be fused. Create a 3 liner config and bundle some heavy project! Do conventional import statements, use shared bundles, hack API, create crazy plugins!
 
 ### It is blazing fast
 
@@ -189,7 +189,17 @@ import * as myLib from "./bundles/myLib.js"
 
 FuseBox sniffs its own creations and restructures the code accordingly.
 
+## Local npm packages
 
+You probably would want to test a package some day, or just have an abstraction on top of you code. For that, you can use `modulesFolder` property. It behaives exactly the same like another npm module, just in a custom folder. 
+
+```
+FuseBox.init({
+    modulesFolder: "src/modules"
+})
+```
+
+You local `npm` will have the highest priority. In essenence, you can override fusebox's [path](https://github.com/fuse-box/fuse-box/blob/master/assets/libs/path/index.js) of [fs](https://github.com/fuse-box/fuse-box/blob/master/assets/libs/fs/index.js) module if you like. Customize you packages in your own manner!
 
 # Loader API
 
