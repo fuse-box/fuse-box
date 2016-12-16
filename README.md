@@ -27,7 +27,7 @@ FuseBox will take care of __ALL__ nodejs depedendencies. We offer a comprehensiv
 
 There is nothing that cannot be fused. Create a 3 liner config and bundle some heavy project! Do conventional import statements, use shared bundles, hack API, create crazy plugins!
 
-And bundle it fast. Jaw-drapping fast. I am serious. 
+And bundle it fast. Jaw-dropping fast. I am serious. 
 
 ### It is blazing fast
 
@@ -53,7 +53,7 @@ Check this [benchmark](https://github.com/fuse-box/benchmark):
 
 ### Built-in typescript support.
 
-FuseBox is written in typescript, so I could not just proceed without a seamless typescript intergration. In fact, you don't need to configure anything! Just point it to a typescript file, and FuseBox will do the rest.
+FuseBox is written in typescript, so I could not just proceed without a seamless typescript integration. In fact, you don't need to configure anything! Just point it to a typescript file, and FuseBox will do the rest.
 
 ```js
 fuseBox.bundle(">index.ts");
@@ -65,7 +65,7 @@ Whatever you tempted mind would want - you can get it all here. Apply hacks, int
  
 ### Extensive plugins
 
-Have an idea in mind? Just develop a plugin, it's extremely easy to make one. Besides, we have [a few plugins](#built-in-plugins), that will help you get started. Want to develop one? Read-up [here](#plugin-api)
+Have an idea in mind? Just develop a plugin, it's extremely easy to make one. Besides, we have [a few plugins](#built-in-plugins), that will help you get started. Want to develop one? Read up [here](#plugin-api)
 
 
 ## How FuseBox works?!
@@ -73,10 +73,10 @@ Have an idea in mind? Just develop a plugin, it's extremely easy to make one. Be
 The idea of FuseBox was born, when started struggling with webpack. It is slow, and it did not deliver required functionality. On another hand, jspm did what I wanted, but still it was not something I would go for. So I decided to combine both and create my own version that has a power of both bundlers combined. 
 
 ### Static analysis (acorn)
-Behind the scenes, fusebox uses acorn to make static analisys on your code, extracting require statements and es6 imports. So, as long as it is a valid javascript es5 or es6, you will get your code bundled with no plugins required. 
+Behind the scenes, fusebox uses acorn to make static analysis on your code, extracting require statements and es6 imports. So, as long as it is a valid javascript es5 or es6, you will get your code bundled with no plugins required. 
 
 ### Aggressive npm caching
-FuseBox uses agressive caching for your modules. It knows when a file is modified. It knows exactly which version of npm lib you are using, as well as explicit requires like `require('lodash/each')`
+FuseBox does aggressive caching for your modules. It knows when a file is modified. It knows exactly which version of npm lib you are using, as well as explicit requires like `require('lodash/each')`
 
 ### Nodejs ecosystem and lifecycle in the browser
 FuseBox appends a very tiny API footer that makes magic happen. The library does not modify your source code, it creates 100% compatible [commonjs wrapper](https://nodejs.org/api/modules.html#modules_the_module_wrapper)
@@ -99,7 +99,7 @@ It does even more than that! Some improvements like [tilde](#point-to-the-root) 
 
 ## Simplicity is the key
 
-The concept of FuseBox is simple. Bundle anything for frontend and server without a headache. No configuration required! However if you like to get your hands dirty, and create your own custom stuff - off you go - FuseBox is very flexible.
+The concept of FuseBox is simple. Bundle anything for frontend and server without a headache. No configuration required! However, if you like to get your hands dirty, and create your own custom stuff - off you go - FuseBox is very flexible.
 
 You can point your files to a typescript file or to a javascript file. It will understand `es6` import statements as well. You need, however, use [BabelPlugin](#babel-plugin) to transpile it.
 
@@ -153,7 +153,7 @@ FuseBox.init({
 
 Embrace the power of arithmetic! 
 
-With arithmetic instructions you can explicitly define which files go to the bundle, which files skip external dependencies.
+With arithmetic instructions, you can explicitly define which files go to the bundle, which files skip external dependencies.
 
 For example.
 ```js
@@ -176,11 +176,11 @@ In this case, you will get everything that is required in the index, as well as 
 
 Yes! You can do that!
 
-Super powers of FuseBox allow to do that without code redundancy. An API of a second bundle will be removed, and 2 bundles will be fused together, keeping only one shared Fusebox API.
+Super powers of FuseBox allow doing that without code redundancy. An API of a second bundle will be removed, and 2 bundles will be fused together, keeping only one shared Fusebox API.
 
 Only one thing you need to consider before that - packaging.
 
-You current project is called "default" This is by design. All dynamic modules will register themselves into it automatically. 
+Your current project is called "default" This is by design. All dynamic modules will register themselves into it automatically. 
 If you want to require a bundle it must have a different namespace. Unless you want to keep is shared. Add `package` property to the initializer:
 
 ```js
@@ -201,7 +201,7 @@ FuseBox sniffs its own creations and restructures the code accordingly.
 
 ## Local npm packages
 
-You probably would want to test a package some day, or just have an abstraction on top of you code. For that, you can use `modulesFolder` property. It behaives exactly the same like another npm module, just in a custom folder. 
+You probably would want to test a package some day, or just have an abstraction on top of your code. For that, you can use `modulesFolder` property. It behaves exactly the same like another npm module, just in a custom folder. 
 
 ```
 FuseBox.init({
@@ -209,15 +209,15 @@ FuseBox.init({
 })
 ```
 
-You local `npm` will have the highest priority. In essenence, you can override fusebox's [path](https://github.com/fuse-box/fuse-box/blob/master/assets/libs/path/index.js) of [fs](https://github.com/fuse-box/fuse-box/blob/master/assets/libs/fs/index.js) module if you like. Customize you packages in your own manner!
+You local `npm` will have the highest priority. In essence, you can override fusebox's [path](https://github.com/fuse-box/fuse-box/blob/master/assets/libs/path/index.js) of [fs](https://github.com/fuse-box/fuse-box/blob/master/assets/libs/fs/index.js) module if you like. Customize you packages in your own manner!
 
 # Loader API
 
 ## How the loader works?
 
-Well, it's pure magic - nodejs wrapper for browser. FuseBox wrapper provides 100% compatible nodejs ecosystem,  having `virtual files` and `virtual packages`. Everything is regisered and shared by the API. It means, that you can have two script tags that will fuse and merge each other.
+Well, it's pure magic - nodejs wrapper for browser. FuseBox wrapper provides 100% compatible nodejs ecosystem,  having `virtual files` and `virtual packages`. Everything is registered and shared by the API. It means, that you can have two script tags that will fuse and merge each other.
 
-Plugins inject dependant packages/javascript code, that becomes a part of FuseBox loader. In principal, a plugin might work at build time and runtime, which unfolds some crazy optimisation possibilities. 
+Plugins inject dependent packages/javascript code, that becomes a part of FuseBox loader. In principal, a plugin might work at build time and runtime, which unfolds some crazy optimisation possibilities. 
 
 FuseBox bundle works in both environments. Essentially, it does not matter where you run it. FuseBox will persist itself in browser window, or nodejs globals.
 
@@ -250,7 +250,7 @@ Respectively, one can require a css file that was not bundled. Having the [CSSPl
 
 ## Exists
 
-You can check wether a module (file) exists in scope.
+You can check whether a module (file) exists in scope.
 ```js
 FuseBox.exists("./index")
 ```
@@ -305,7 +305,7 @@ plugins: [
 ]
 ```
 
-In this case, all css files will be bundled.
+In this case, all CSS files will be bundled.
 
 But if you define "serve" option with a callback, all files will be filtered through it. A callback is expected to return a string with a browser path. If you return "undefined" or *NOT* a string, that file will be bundled as if no option was specified.
 
@@ -329,7 +329,7 @@ plugins: [
 ]
 ```
 
-On top of that a css file will added to DOM upon request if not found in the bundle.
+On top of that a CSS file will added to DOM upon request if not found in the bundle.
 
 ## HTML Plugin
 
@@ -339,7 +339,7 @@ plugins: [
 ]
 ```
 
-Toggle `useDefault` to make html files export strings as `default` property.
+Toggle `useDefault` to make HTML files export strings as `default` property.
 For example with `useDefault: true` you will be able to import HTML files like so :
 
 ```
