@@ -503,6 +503,12 @@ It's always good to have everything in place. File watcher, uglifying, productio
 
 Something that many people love, coming to fusebox
 
+## To improve
+
+* Error reporting
+* Caching 
+At this very moment caching works fairly well, if you get an issue related to caching, please find a way to reproduce it. (You can remove `.fusebox` folder from your project to clean the cache)
+
 
 # Contacts
 
