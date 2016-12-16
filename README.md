@@ -93,7 +93,7 @@ It behaves exactly the same in browser and on server, including circular depende
 
 ## Simplicity is the key
 
-The concept of FuseBox is simple. Bundle anything for frontend and server without a headache. No configuration required!
+The concept of FuseBox is simple. Bundle anything for frontend and server without a headache. No configuration required! However if you like to get your hands dirty, and create your own custom stuff - off you go - FuseBox is very flexible.
 
 You can point your files to a typescript file or to a javascript file. It will understand `es6` import statements as well. You need, however, use [BabelPlugin](#babel-plugin) to transpile it.
 
