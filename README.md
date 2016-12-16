@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/fuse-box/fuse-box.svg?branch=master)](https://travis-ci.org/fuse-box/fuse-box)
-  
+
+[![Fusebox-bundler](https://badges.gitter.im/owner/repo.png)](https://gitter.im/fusebox-bundler/Lobby)
+
 # FuseBox
 
 > The library is under heavy development. We are getting there. The API is stable. Documentation is in progress.
