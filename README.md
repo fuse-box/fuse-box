@@ -3,7 +3,7 @@
 # FuseBox
 
 > The library is under heavy development. We are getting there. The API is stable. Documentation is in progress.
-> Join and start a revolution ;-)
+> Join now!
 
 ## A heroic bundler, that just does it right
 
