@@ -64,7 +64,7 @@ Whatever you tempted mind would want - you can get it all here. Apply hacks, int
  
 ### Extensive plugins
 
-Have an idea in mind? Just develop a plugin, it's extremely easy to make one. Besides, we have [a few plugins](built-in-plugins), that will help you get started. Want to develop one? Read-up [here](#plugin-api)
+Have an idea in mind? Just develop a plugin, it's extremely easy to make one. Besides, we have [a few plugins](#built-in-plugins), that will help you get started. Want to develop one? Read-up [here](#plugin-api)
 
 
 ## How FuseBox works?!
