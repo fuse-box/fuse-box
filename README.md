@@ -3,21 +3,18 @@
 
 # FuseBox
 
-> The library is under heavy development. We are getting there. The API is stable. Documentation is in progress.
-> Join now! FuseBox is open for testing! Submit an issue, or poke me here `window.atob("c2t5cGU6bmNoYW5nZWQ=")`
+> We are getting there. The API is stable. Documentation is in progress.
+> Join now! FuseBox is now open for testing!
 
 ## A heroic bundler, that just does it right
 
-FuseBox is a bundler/module loader that combines the power of webpack, JSPM and SystemJS. It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convenient to develop. It requires zero configuration to bundle such monsters like `babel-core`, it will compile and bundle your typescript project within a fraction of a second when offering a comprehensive loader API.
+FuseBox is a bundler/module loader that combines the power of webpack, JSPM and SystemJS. It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convenient to develop. It requires zero configuration to bundle such monsters like `babel-core`, it will compile and bundle your typescript project within a fraction of a second when offering a comprehensive loader API. It is packed with features, and unfolds limitless possibilities of extending the API.
 
-* Say no to painful "get started"!
-* Say no to huge configs!
-* Say no to heavy boilerplates!
-* Say no to waiting for your code to rebundle!
+Start fusing!
 
-[angular2-example](https://github.com/fuse-box/angular2-example) 50ms to re-bundle!
+[angular2-example](https://github.com/fuse-box/angular2-example) 50ms to fuse!
 
-[react-example](https://github.com/fuse-box/react-example) 50ms to re-bundle!
+[react-example](https://github.com/fuse-box/react-example) 50ms to fuse!
 
 ## Why fusebox?
 
