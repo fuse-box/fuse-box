@@ -371,6 +371,28 @@ For example. to transpile JSX, you can use this configuration.
 ```
 Note, that if you want to have sourcemaps in place, set `sourceMaps` to true. Read sourcemaps section for better understanding how sourcemaps are defined.
 
+
+## JSON plugin
+
+How is it without a JSON plugin?
+
+```
+plugins: [
+    fsbx.JSONPlugin()
+]
+```
+
+## SVG Plugin
+
+React lovers, [here it is](https://github.com/fuse-box/react-example/blob/master/gulpfile.js#L17). Plain a simple.
+
+```
+plugins: [
+    fsbx.SVGPlugin()
+]
+```
+
+
 ## Typescript helpers
 
 A very handy plugin, adds required typescript functions to the bundle. Please, note, that it adds only the ones that are actually used. So you won't be seeing an unnecessary code.
