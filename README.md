@@ -4,7 +4,7 @@
 # FuseBox
 
 > The library is under heavy development. We are getting there. The API is stable. Documentation is in progress.
-> Join now!
+> Join now! FuseBox is open for testing! Submit an issue, or poke me here `window.atob("c2t5cGU6bmNoYW5nZWQ=")`
 
 ## A heroic bundler, that just does it right
 
