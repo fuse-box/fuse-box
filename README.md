@@ -154,6 +154,8 @@ FuseBox.init({
 
 ## Arithmetic
 
+Embrace the power of arithmetic! 
+
 With arithmetic instructions you can explicitly define which files go to the bundle, which files skip external dependencies.
 
 For example.
@@ -164,6 +166,8 @@ fuseBox.bundle(">index.ts [lib/**/*.ts]");
 In this case, you will get everything that is required in the index, as well as everything that lies under lib/ folder with one condition - any external libraries will be ignored. 
 
 `> index.js [**/*.js]` - Bundle everything without dependencies, and execute index.js
+
+`[lib/*.js] +path +fs` - Bundle all files in lib folder, ignore node modules except for path an fs
 
 `[**/*.js]` - Bundle everything without dependencies
 
