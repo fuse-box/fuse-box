@@ -374,7 +374,7 @@ Note, that if you want to have sourcemaps in place, set `sourceMaps` to true. Re
 
 ## JSON plugin
 
-How is it without a JSON plugin?
+How is it all shiny and without a JSON plugin?
 
 ```
 plugins: [
