@@ -469,18 +469,17 @@ Be patient! __Documentation is in progress__
 
 # Upcoming features
 
-* Backend encapsulation / Bridges
+## Backend encapsulation / Bridges
 
-A real exciting concept, in which frontend code shares only the interface of a backend class. Calling a bridged class on client will result in seamless ajax / socket call to the backend. Having this will allow you to encapsulate OR remove sensetive code from public access.
+Exciting concept, in which frontend code shares only the interface of a backend class. Calling a bridged class on client will result in seamless ajax / socket call to the backend. Having this will allow you to encapsulate sensitive information from public access without sacrificing code readability.
 
-* Task runner
+## Task runner
 
-It's always good to have everything in place. File watcher, uglifying, production buildes. All should here. 
+It's always good to have everything in place. File watcher, uglifying, production buildes.
 
-* Dev server and HOT module reload
+## Dev server and HOT module reload
 
 Something that many people love, coming to fusebox
-
 
 
 # Contacts
