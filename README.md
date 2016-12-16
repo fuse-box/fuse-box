@@ -384,7 +384,7 @@ plugins: [
 
 ## SVG Plugin
 
-React lovers, [here it is](https://github.com/fuse-box/react-example/blob/master/gulpfile.js#L17). Plain a simple.
+React lovers, [here it is](https://github.com/fuse-box/react-example/blob/master/gulpfile.js#L17). Plain simple.
 
 ```
 plugins: [
