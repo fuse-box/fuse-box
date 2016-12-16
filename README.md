@@ -471,11 +471,11 @@ Be patient! __Documentation is in progress__
 
 ## Backend encapsulation / Bridges
 
-Exciting concept, in which frontend code shares only the interface of a backend class. Calling a bridged class on client will result in seamless ajax / socket call to the backend. Having this will allow you to encapsulate sensitive information from public access without sacrificing code readability.
+An exciting concept, in which frontend code shares only the interface of a backend class. Calling a bridged class on client will result in seamless ajax / socket call to the backend. Having this will allow you to encapsulate sensitive information from public access without sacrificing code readability.
 
 ## Task runner
 
-It's always good to have everything in place. File watcher, uglifying, production buildes.
+It's always good to have everything in place. File watcher, uglifying, production builds.
 
 ## Dev server and HOT module reload
 
