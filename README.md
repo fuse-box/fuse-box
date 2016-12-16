@@ -92,6 +92,11 @@ FuseBox appends a very tiny API footer that makes magic happen. The library does
 
 It behaves exactly the same in browser and on server, including circular dependencies resolution. Surely, it works in node as well.
 
+### Full npm compatibility
+
+When developing FuseBox we took it real serious. The bundler supports everything that require/import statement does. Scoped repositories, partial requires, *extension probing*,  __conflicting versions__! Yep, if you have 2 libraries that use different version of lodash, FuseBox will resolve it. And bundle both (i would not use these libs tho, but still serious business)
+
+It does even more than that! Some improvements like [tilde](#point-to-the-root) `~` support, to make your life easier, lazy loading. `FuseBox.import("./file_not_in_a_bundle.js", (module) => {})`. And yes, it works on server.
 
 # Let's Fuse
 
