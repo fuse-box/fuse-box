@@ -31,7 +31,7 @@ All node modules (at least the most critical ones) will be bundled for browser (
 
 Fusebox is super fast. 50ms for a regular project, 100ms for a big project to re-bundle. It applies aggressive but responsible module caching, which makes it fly.
 
-Check this benchmark:
+Check this [benchmark](https://github.com/fuse-box/benchmark):
 
 1200 files to bundle
 
