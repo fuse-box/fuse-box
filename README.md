@@ -203,9 +203,15 @@ You local `npm` will have the highest priority. In essenence, you can override f
 
 # Loader API
 
-FuseBox bundle works in both environments. Essentially, it does not matter where you run. FuseBox will persist itself in browser window, or nodejs globals.
+## How the loader works?
 
-Every bundle contains a 3.7k footer with FuseBox API, It is less than 3KB minified (1,4KB gzipped).  
+Well, it's pure magic - nodejs wrapper for browser. FuseBox wrapper provides 100% compatible nodejs ecosystem,  having `virtual files` and `virtual packages`. Everything is regisered and shared by the API. It means, that you can have two script tags that will fuse and merge each other.
+
+Plugins inject dependant packages/javascript code, that becomes a part of FuseBox loader. In principal, a plugin might work at build time and runtime, which unfolds some crazy optimisation possibilities. 
+
+FuseBox bundle works in both environments. Essentially, it does not matter where you run it. FuseBox will persist itself in browser window, or nodejs globals.
+
+Every bundle contains a 3.7k footer with FuseBox API (1,6KB gzipped).  
 
 
 ## Import
