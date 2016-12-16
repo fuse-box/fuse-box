@@ -465,14 +465,31 @@ interface Plugin {
 Defining `test` will filter files into your plugin. For example `\.js$ `
 
 
-__Documentation is in progress__
+Be patient! __Documentation is in progress__
+
+# Upcoming features
+
+* Backend encapsulation / Bridges
+
+A real exciting concept, in which frontend code shares only the interface of a backend class. Calling a bridged class on client will result in seamless ajax / socket call to the backend. Having this will allow you to encapsulate OR remove sensetive code from public access.
+
+* Task runner
+
+It's always good to have everything in place. File watcher, uglifying, production buildes. All should here. 
+
+* Dev server and HOT module reload
+
+Something that many people love, coming to fusebox
 
 
-# Wanna chat?
-I love opensource and i am open for ideas, critisim, or just a chat
+
+# Contacts
+
+I love opensource and i am listening to people.
+Feel like you can help? Or, maybe you just got some crazy ideas? Let me know, all right?
 
 Thow a message at me here: window.atob("c2t5cGU6bmNoYW5nZWQ=")
 
-If you like the idea, support the project by staring the repository. Much obliged. 
+And If you like the idea, support the project by staring the repository. Much obliged. 
 
 Peace to everybody.
