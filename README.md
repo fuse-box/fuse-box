@@ -464,4 +464,14 @@ interface Plugin {
 Defining `test` will filter files into your plugin. For example `\.js$ `
 
 
+__Documentation is in progress__
 
+
+# Wanna chat?
+I love opensource and i am open for ideas, critisim, or just a chat
+
+Thow a message at me here: window.atob("c2t5cGU6bmNoYW5nZWQ=")
+
+If you like the idea, support the project by staring the repository. Much obliged. 
+
+Peace to everybody.
