@@ -24,13 +24,17 @@ FuseBox is a bundler/module loader that combines the power of webpack, JSPM and 
 ### Bundle anything without an extra effort
 You have an npm library in mind? You can bundle it without any extra configuration. babel-core with all plugins? No problem, fusebox will take care of everything you need.
 
-All node modules (at least the most critical ones) will be bundled for browser (Buffer, path e.t.c) So you don't need to stress about whether you bundle will work in the browser. IT WILL.
+*Typescript*! Oh! We love typescript. You know what you need to do, to start transpiling and bundling typescript at the same time? `Change .js to .ts` Are you ready?
+
+FuseBox will take care of *ALL* nodejs depedendencies. We offer a comprehensive list of nodejs modules for browser out of the box. No worries, no matter what are you trying to bundle. It will work. 
 
 There is nothing that cannot be fused. Create a 3 liner config and bundle some heavy project! Do conventional import statements, use shared bundles, hack API, create crazy plugins!
 
+And bundle it fast. Jaw-drapping fast. I am serious. 
+
 ### It is blazing fast
 
-Fusebox is super fast. 50ms for a regular project, 100ms for a big project to re-bundle. It applies aggressive but responsible module caching, which makes it fly.
+It takes 50ms for a regular project, 100ms for a big project to re-bundle. It applies aggressive but responsible module caching, which makes it fly.
 
 Check this [benchmark](https://github.com/fuse-box/benchmark):
 
