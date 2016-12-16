@@ -87,7 +87,7 @@ FuseBox appends a very tiny API footer that makes magic happen. The library does
 });
 ```
 
-It behaves exactly the same in browser and on server, including circular dependencies resolution. Surely, it works in node as well.
+It behaves exactly the same in browser and on server, including circular dependency resolution. As if nothing changed. You run your server code, just in browser. Nothing stops from just bundle it for server! 
 
 ### Full npm compatibility
 
