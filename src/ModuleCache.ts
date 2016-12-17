@@ -127,11 +127,14 @@ mtime : ${stats.mtime.getTime()}
     public resolve(files: File[]): Promise<File[]> {
         let through: File[] = [];
         let valid4Caching = [];
+
         files.forEach(file => {
             let info = file.info.nodeModuleInfo;
+
             let key = `${info.name}@${info.version}`;
             let cached = this.cachedDeps.flat[key];
             if (!cached) {
+
                 through.push(file);
             } else {
 
@@ -139,9 +142,10 @@ mtime : ${stats.mtime.getTime()}
 
                     through.push(file);
                     let index = valid4Caching.indexOf(key);
-                    if (index === -1) { valid4Caching.splice(index, 1); }
+                    if (index !== -1) {
+                        valid4Caching.splice(index, 1);
+                    }
                 } else {
-
                     if (valid4Caching.indexOf(key) === -1) {
                         valid4Caching.push(key);
                     }
@@ -185,8 +189,8 @@ mtime : ${stats.mtime.getTime()}
                 }
             }
         }
-        valid4Caching.forEach(key => {
 
+        valid4Caching.forEach(key => {
             getAllRequired(key, this.cachedDeps.tree[key]);
         });
         return Promise.all(operations).then(() => {
