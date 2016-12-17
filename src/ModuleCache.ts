@@ -264,7 +264,7 @@ mtime : ${stats.mtime.getTime()}
             });
         }
         traverse(rootCollection.nodeModules, json.tree).then(() => {
-            fs.writeFile(this.cacheFile, JSON.stringify(json, undefined, 2));
+            fs.writeFile(this.cacheFile, JSON.stringify(json, undefined, 2), () => { });
         });
     }
 
