@@ -68,7 +68,7 @@ Whatever you tempted mind would want - you can get it all here. Apply hacks, int
 Have an idea in mind? Just develop a plugin, it's extremely easy to make one. Besides, we have [a few plugins](#built-in-plugins), that will help you get started. Want to develop one? Read up [here](#plugin-api)
 
 
-## How FuseBox works?!
+## How does FuseBox work?!
 
 The idea of FuseBox was born, when started struggling with webpack. It is slow, and it did not deliver the required functionality. On another hand, jspm did what I wanted, but still it was not something I would go for. So I decided to combine both and create my own version that has the power of both bundlers combined. 
 
