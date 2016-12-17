@@ -513,7 +513,8 @@ __Help wanted!__
 
 There are so many features to implemented, so many bugs to fix. (Let's find them first)
 * More tests required
-The most critical tests are in place, but there are so many edge cases that i did not have time to cover with tests. Would be cool to launch some tests in browser
+
+The most critical tests are in place, but there are so many edge cases and i did not have time to cover it all. Would be cool to launch some tests in browser
 
 
 
