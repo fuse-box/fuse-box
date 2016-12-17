@@ -34,7 +34,7 @@ export interface IPackageInformation {
 }
 
 export class AllowedExtenstions {
-    public static list: Set<string> = new Set([".js", ".ts", ".json", ".xml", ".css", ".html"]);
+    public static list: Set<string> = new Set([".js", ".ts", ".tsx", ".json", ".xml", ".css", ".html"]);
     public static add(name: string) {
         if (!this.list.has(name)) {
             this.list.add(name);
