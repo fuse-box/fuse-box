@@ -70,8 +70,6 @@ Have an idea in mind? Just develop a plugin, it's extremely easy to make one. Be
 
 ## How does FuseBox work?!
 
-The idea of FuseBox was born, when started struggling with webpack. It is slow, and it did not deliver the required functionality. On another hand, jspm did what I wanted, but still it was not something I would go for. So I decided to combine both and create my own version that has the power of both bundlers combined. 
-
 ### Static analysis (acorn)
 Behind the scenes, fusebox uses acorn to make static analysis on your code, extracting require statements and es6 imports. So, as long as it is a valid javascript es5 or es6, you will get your code bundled with no plugins required. 
 
