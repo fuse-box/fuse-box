@@ -8,7 +8,7 @@
 
 ## A heroic bundler, that just does it right
 
-FuseBox is a bundler/module loader that combines the power of webpack, JSPM and SystemJS. It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convenient to develop. It requires zero configuration to bundle such monsters like `babel-core`, it will compile and bundle your typescript project within a fraction of a second when offering a comprehensive loader API. It is packed with features, and unfolds limitless possibilities of extending the API.
+FuseBox is a bundler/module loader that combines the power of webpack, JSPM and SystemJS. It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convenient for developers. It requires zero configuration to bundle such monsters like `babel-core`, it will compile and bundle your typescript project within a fraction of a second, yet offering a comprehensive loader API. It is packed with features, and unfolds limitless possibilities of extending the API.
 
 Start fusing!
 
@@ -27,7 +27,7 @@ FuseBox will take care of __ALL__ nodejs depedendencies. We offer a comprehensiv
 
 There is nothing that cannot be fused. Create a 3 liner config and bundle some heavy project! Do conventional import statements, use shared bundles, hack API, create crazy plugins!
 
-And bundle it fast. Jaw-dropping fast. I am serious. 
+And bundle it fast. Jaw-dropping fast.
 
 ### It is blazing fast
 
@@ -70,7 +70,7 @@ Have an idea in mind? Just develop a plugin, it's extremely easy to make one. Be
 
 ## How FuseBox works?!
 
-The idea of FuseBox was born, when started struggling with webpack. It is slow, and it did not deliver required functionality. On another hand, jspm did what I wanted, but still it was not something I would go for. So I decided to combine both and create my own version that has a power of both bundlers combined. 
+The idea of FuseBox was born, when started struggling with webpack. It is slow, and it did not deliver the required functionality. On another hand, jspm did what I wanted, but still it was not something I would go for. So I decided to combine both and create my own version that has the power of both bundlers combined. 
 
 ### Static analysis (acorn)
 Behind the scenes, fusebox uses acorn to make static analysis on your code, extracting require statements and es6 imports. So, as long as it is a valid javascript es5 or es6, you will get your code bundled with no plugins required. 
@@ -91,9 +91,9 @@ It behaves exactly the same in browser and on server, including circular depende
 
 ### Full npm compatibility
 
-When developing FuseBox we took it real serious. The bundler supports everything that require/import statement does. Scoped repositories, partial requires, *extension probing*,  __conflicting versions__! Yep, if you have 2 libraries that use different version of lodash, FuseBox will resolve it. And bundle both (i would not use these libs tho, but still serious business)
+The bundler supports everything that require/import statement does. Scoped repositories, partial requires, *extension probing*,  __conflicting versions__! Yep, if you have 2 libraries that use different version of lodash, FuseBox will resolve it. And bundle both (i would not use these libs tho, but still serious business)
 
-It does even more than that! Some improvements like [tilde](#point-to-the-root) `~` support, to make your life easier, lazy loading. `FuseBox.import("./file_not_in_a_bundle.js", (module) => {})`. And yes, it works on server.
+It does even more than that! Some improvements like [tilde](#point-to-the-root) `~` support, to make your life easier, lazy loading. `FuseBox.import("./file_not_in_a_bundle.js", (module) => {})`. And yes, it works on the server.
 
 # Let's Fuse
 
@@ -101,12 +101,12 @@ It does even more than that! Some improvements like [tilde](#point-to-the-root) 
 
 The concept of FuseBox is simple. Bundle anything for frontend and server without a headache. No configuration required! However, if you like to get your hands dirty, and create your own custom stuff - off you go - FuseBox is very flexible.
 
-You can point your files to a typescript file or to a javascript file. It will understand `es6` import statements as well. You need, however, use [BabelPlugin](#babel-plugin) to transpile it.
+You can point your files to a typescript file or to a javascript file. It will understand `es6` import statements as well. Use [BabelPlugin](#babel-plugin) or the [Typescript Helpers](#typescript-helpers)  to transpile it.
 
 
 ## Typescript
 
-Typescript does not require any external plugin or configuration. Just make sure you have typescript compiler installed
+Typescript does not require any external plugin or configuration. Just make sure you have the typescript compiler installed.
 
 ```bash
 npm install typescript --save-dev
@@ -229,13 +229,13 @@ Import is 100% compatible with commonjs specification. You can require folders, 
 ```js
 FuseBox.import("./foo/bar");
 ```
-Requre external packages will work  as well
+Require external packages will work  as well
 
 ```js
 FuseBox.import("fs");
 ```
 
-Please, not, that some libraries like "fs" are faked in browser. Meaning that it won't spit an error, but won't work as expected on server for known reasons.
+Please note that some libraries like "fs" are faked in the browser. Meaning that it won't spit out an error, but won't work as expected on the server for known reasons.
 Nodejs environment, however, will get authentic "fs" module. (Concerns http, net, tty e.t.c )
 
 ## Lazy import
@@ -276,7 +276,7 @@ FuseBox.on("after-import", (exports, require, module, __filename, __dirname, pkg
 });
 ```
 
-It is not recommended, however, if you want to play god, you can use that functionality.
+However, it is not recommended. But if you want to play god, you can use that functionality.
 
 ## Point to the root
 You can use `~` symbol to point to your project's path in order to solve `../../../../../utils` mess.
@@ -294,7 +294,7 @@ Fusebox contains premade plugins, that should help you to get started.
 
 ## CSS Plugin
 
-It's very to start working css files You have 2 options, you either bundle the contents or serve files. A decision can be made at build time.
+It's very easy to start working with css files. You have 2 options, you either bundle the contents or serve the files. A decision that can be made at build time.
 
 For example:
 ```
@@ -374,7 +374,7 @@ Note, that if you want to have sourcemaps in place, set `sourceMaps` to true. Re
 
 ## JSON plugin
 
-How is it all shiny and without a JSON plugin?
+Of course, it can't be all shiny without a JSON plug in, can it?
 
 ```
 plugins: [
@@ -384,7 +384,7 @@ plugins: [
 
 ## SVG Plugin
 
-React lovers, [here it is](https://github.com/fuse-box/react-example/blob/master/gulpfile.js#L17). Plain simple.
+React lovers, [here it is](https://github.com/fuse-box/react-example/blob/master/gulpfile.js#L17). Plain and simple.
 
 ```
 plugins: [
@@ -395,7 +395,7 @@ plugins: [
 
 ## Typescript helpers
 
-A very handy plugin, adds required typescript functions to the bundle. Please, note, that it adds only the ones that are actually used. So you won't be seeing an unnecessary code.
+A very handy plugin, adds required typescript functions to the bundle. Please note that it adds only the ones that are actually used. So you won't be seeing an unnecessary code.
 
 Please, check this [list](https://github.com/fuse-box/fuse-box/tree/master/assets/libs/fuse-typescript-helpers)
 
@@ -414,7 +414,7 @@ If you spot an error or a missing helper, please, submit an issue, or a pull req
 
 ### Using the plugin
 
-Simple add TypeScriptHelpers to your plugin list. No further configuration required. FuseBox will take care of everything else. To avoid unnecessary AST (which is heavy) this plugin does a simple RegExp, and tests for declarations. It is absolutely safe, and your code is not modified in any way. 
+Simply add TypeScriptHelpers to your plugin list. No further configuration required. FuseBox will take care of everything else. To avoid unnecessary AST (which is heavy) this plugin does a simple RegExp, and tests for declarations. It is absolutely safe, and your code is not modified in any way. 
 
 ```
 const fsbx = require("fuse-box");
@@ -433,7 +433,7 @@ You can have access to the entire environment of a file, using reflect-metadata.
 npm install reflect-metadata
 ```
 
-Than, include it in your entry point
+Then, include it in your entry point
 
 ```
 import "reflect-metadata";
