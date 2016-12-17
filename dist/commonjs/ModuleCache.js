@@ -58,7 +58,7 @@ mtime : ${stats.mtime.getTime()}
                 if (cached.version !== info.version || cached.files.indexOf(file.info.fuseBoxPath) === -1) {
                     through.push(file);
                     let index = valid4Caching.indexOf(key);
-                    if (index === -1) {
+                    if (index !== -1) {
                         valid4Caching.splice(index, 1);
                     }
                 }
