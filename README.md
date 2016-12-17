@@ -517,6 +517,6 @@ Feel like you can help? Or, maybe you just got some crazy ideas? Let me know, al
 
 Thow a message at me here: window.atob("c2t5cGU6bmNoYW5nZWQ=")
 
-And If you like the idea, support the project by staring the repository. Much obliged. 
+And If you like the idea, support the project by starring the repository. Much obliged. 
 
 Peace to everybody.
