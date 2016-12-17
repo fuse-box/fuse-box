@@ -509,6 +509,13 @@ Something that many people love, coming to fusebox
 * Caching 
 At this very moment caching works fairly well, if you get an issue related to caching, please find a way to reproduce it. (You can remove `.fusebox` folder from your project to clean the cache)
 
+__Help wanted!__
+
+There are so many features to implemented, so many bugs to fix. (Let's find them first)
+* More tests required
+The most critical tests are in place, but there are so many edge cases that i did not have time to cover with tests. Would be cool to launch some tests in browser
+
+
 
 # Contacts
 
