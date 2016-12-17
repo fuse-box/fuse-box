@@ -74,7 +74,7 @@ describe("Node modules and exports", (done) => {
                 "index.js": `module.exports = require("http")`
             }
         }, "> index.js").then(data => {
-            data.myLib.createClient.should.be.ok;
+            data.myLib.request.should.be.ok;
             done();
         }).catch(done);
     });
