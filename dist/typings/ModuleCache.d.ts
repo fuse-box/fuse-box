@@ -10,7 +10,7 @@ export declare class ModuleCache {
     private cachedDeps;
     constructor(context: WorkFlowContext);
     getStaticCache(file: File): any;
-    writeStaticCache(file: File, dependencies: any, sourcemaps: string): void;
+    writeStaticCache(file: File, sourcemaps: string): void;
     resolve(files: File[]): Promise<File[]>;
     buildMap(rootCollection: ModuleCollection): void;
     set(info: IPackageInformation, contents: string): Promise<{}>;

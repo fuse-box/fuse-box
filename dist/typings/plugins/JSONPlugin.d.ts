@@ -6,4 +6,4 @@ export declare class FuseBoxJSONPlugin implements Plugin {
     init(context: WorkFlowContext): void;
     transform(file: File): void;
 }
-export declare const JSONPlugin: FuseBoxJSONPlugin;
+export declare const JSONPlugin: (opts?: any) => FuseBoxJSONPlugin;

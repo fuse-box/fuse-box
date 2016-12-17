@@ -59,7 +59,9 @@ export class ModuleCache {
      */
     constructor(public context: WorkFlowContext) {
         this.cacheFolder = path.join(Config.TEMP_FOLDER, "cache",
-            Config.FUSEBOX_VERSION, encodeURIComponent(Config.PROJECT_FOLDER));
+            Config.FUSEBOX_VERSION,
+            encodeURIComponent(`${Config.PROJECT_FOLDER}${context.outFile || ""}`));
+
 
         this.staticCacheFolder = path.join(this.cacheFolder, "static");
         mkdirp.sync(this.staticCacheFolder);
@@ -79,6 +81,7 @@ export class ModuleCache {
      * @memberOf ModuleCache
      */
     public getStaticCache(file: File) {
+
         let stats = fs.statSync(file.absPath);
         let fileName = encodeURIComponent(file.info.fuseBoxPath);
         let dest = path.join(this.staticCacheFolder, fileName);
@@ -100,13 +103,13 @@ export class ModuleCache {
      * 
      * @memberOf ModuleCache
      */
-    public writeStaticCache(file: File, dependencies, sourcemaps: string) {
+    public writeStaticCache(file: File, sourcemaps: string) {
 
         let fileName = encodeURIComponent(file.info.fuseBoxPath);
         let dest = path.join(this.staticCacheFolder, fileName);
         let stats: any = fs.statSync(file.absPath);
         let data = `module.exports = { contents : ${JSON.stringify(file.contents)}, 
-dependencies : ${JSON.stringify(dependencies)}, 
+dependencies : ${JSON.stringify(file.analysis.dependencies)}, 
 sourceMap : ${JSON.stringify(sourcemaps || {})},
 mtime : ${stats.mtime.getTime()}
 };`;
@@ -160,13 +163,20 @@ mtime : ${stats.mtime.getTime()}
                 let collection = new ModuleCollection(this.context, json.name);
                 collection.cached = true;
                 collection.cachedName = key;
-                collection.cacheFile = path.join(this.cacheFolder, key);
-                operations.push(new Promise((resolve, reject) => {
+                collection.cacheFile = path.join(this.cacheFolder, encodeURIComponent(key));
 
-                    fs.readFile(collection.cacheFile, (err, result) => {
-                        collection.cachedContent = result.toString();
+                operations.push(new Promise((resolve, reject) => {
+                    if (fs.existsSync(collection.cacheFile)) {
+                        fs.readFile(collection.cacheFile, (err, result) => {
+                            collection.cachedContent = result.toString();
+                            return resolve();
+                        });
+                    } else {
+                        collection.cachedContent = "";
+                        console.warn(`${collection.cacheFile} was not found`);
                         return resolve();
-                    });
+                    }
+
                 }));
                 this.context.addNodeModule(collection.cachedName, collection);
                 required.push(key);
@@ -270,7 +280,9 @@ mtime : ${stats.mtime.getTime()}
      */
     public set(info: IPackageInformation, contents: string) {
         return new Promise((resolve, reject) => {
-            let targetName = path.join(this.cacheFolder, `${info.name}@${info.version}`);
+
+            let targetName = path.join(this.cacheFolder, encodeURIComponent(`${info.name}@${info.version}`));
+
             fs.writeFile(targetName, contents, (err) => {
                 return resolve();
             });

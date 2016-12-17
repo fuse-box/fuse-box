@@ -12,7 +12,7 @@ class ModuleCache {
             tree: {},
             flat: {}
         };
-        this.cacheFolder = path.join(Config_1.Config.TEMP_FOLDER, "cache", Config_1.Config.FUSEBOX_VERSION, encodeURIComponent(Config_1.Config.PROJECT_FOLDER));
+        this.cacheFolder = path.join(Config_1.Config.TEMP_FOLDER, "cache", Config_1.Config.FUSEBOX_VERSION, encodeURIComponent(`${Config_1.Config.PROJECT_FOLDER}${context.outFile || ""}`));
         this.staticCacheFolder = path.join(this.cacheFolder, "static");
         mkdirp.sync(this.staticCacheFolder);
         mkdirp.sync(this.cacheFolder);
@@ -33,12 +33,12 @@ class ModuleCache {
             return data;
         }
     }
-    writeStaticCache(file, dependencies, sourcemaps) {
+    writeStaticCache(file, sourcemaps) {
         let fileName = encodeURIComponent(file.info.fuseBoxPath);
         let dest = path.join(this.staticCacheFolder, fileName);
         let stats = fs.statSync(file.absPath);
         let data = `module.exports = { contents : ${JSON.stringify(file.contents)}, 
-dependencies : ${JSON.stringify(dependencies)}, 
+dependencies : ${JSON.stringify(file.analysis.dependencies)}, 
 sourceMap : ${JSON.stringify(sourcemaps || {})},
 mtime : ${stats.mtime.getTime()}
 };`;
@@ -76,12 +76,19 @@ mtime : ${stats.mtime.getTime()}
                 let collection = new ModuleCollection_1.ModuleCollection(this.context, json.name);
                 collection.cached = true;
                 collection.cachedName = key;
-                collection.cacheFile = path.join(this.cacheFolder, key);
+                collection.cacheFile = path.join(this.cacheFolder, encodeURIComponent(key));
                 operations.push(new Promise((resolve, reject) => {
-                    fs.readFile(collection.cacheFile, (err, result) => {
-                        collection.cachedContent = result.toString();
+                    if (fs.existsSync(collection.cacheFile)) {
+                        fs.readFile(collection.cacheFile, (err, result) => {
+                            collection.cachedContent = result.toString();
+                            return resolve();
+                        });
+                    }
+                    else {
+                        collection.cachedContent = "";
+                        console.warn(`${collection.cacheFile} was not found`);
                         return resolve();
-                    });
+                    }
                 }));
                 this.context.addNodeModule(collection.cachedName, collection);
                 required.push(key);
@@ -140,7 +147,7 @@ mtime : ${stats.mtime.getTime()}
     }
     set(info, contents) {
         return new Promise((resolve, reject) => {
-            let targetName = path.join(this.cacheFolder, `${info.name}@${info.version}`);
+            let targetName = path.join(this.cacheFolder, encodeURIComponent(`${info.name}@${info.version}`));
             fs.writeFile(targetName, contents, (err) => {
                 return resolve();
             });

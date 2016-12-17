@@ -17,6 +17,8 @@ export interface Plugin {
     bundleEnd?(context: WorkFlowContext): any;
 }
 export declare class WorkFlowContext {
+    defaultPackageName: string;
+    ignoreGlobal: string[];
     nodeModules: Map<string, ModuleCollection>;
     libPaths: Map<string, IPackageInformation>;
     homeDir: string;
@@ -28,12 +30,13 @@ export declare class WorkFlowContext {
     tsConfig: any;
     customModulesFolder: string;
     tsMode: boolean;
-    globals: string[];
+    globals: any;
     standaloneBundle: boolean;
     source: BundleSource;
     sourceMapConfig: any;
     outFile: string;
     log: Log;
+    initCache(): void;
     reset(): void;
     allowExtension(ext: string): void;
     setHomeDir(dir: string): void;
@@ -43,6 +46,7 @@ export declare class WorkFlowContext {
     setPrintLogs(printLogs: any): void;
     setUseCache(useCache: boolean): void;
     hasNodeModule(name: string): boolean;
+    isGlobalyIgnored(name: string): boolean;
     addNodeModule(name: string, collection: ModuleCollection): void;
     getTypeScriptConfig(): any;
     ensureUserPath(userPath: string): string;

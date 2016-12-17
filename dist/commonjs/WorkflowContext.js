@@ -1,6 +1,6 @@
 "use strict";
-const path = require('path');
-const fs = require('fs');
+const path = require("path");
+const fs = require("fs");
 const BundleSource_1 = require("./BundleSource");
 const Log_1 = require("./Log");
 const PathMaster_1 = require("./PathMaster");
@@ -9,15 +9,18 @@ const appRoot = require("app-root-path");
 const mkdirp = require("mkdirp");
 class WorkFlowContext {
     constructor() {
+        this.defaultPackageName = "default";
+        this.ignoreGlobal = [];
         this.nodeModules = new Map();
         this.libPaths = new Map();
         this.printLogs = true;
         this.useCache = true;
         this.doLog = true;
-        this.cache = new ModuleCache_1.ModuleCache(this);
         this.tsMode = false;
-        this.globals = [];
         this.standaloneBundle = true;
+    }
+    initCache() {
+        this.cache = new ModuleCache_1.ModuleCache(this);
     }
     reset() {
         this.log = new Log_1.Log(this.doLog);
@@ -54,6 +57,9 @@ class WorkFlowContext {
     }
     hasNodeModule(name) {
         return this.nodeModules.has(name);
+    }
+    isGlobalyIgnored(name) {
+        return this.ignoreGlobal.indexOf(name) > -1;
     }
     addNodeModule(name, collection) {
         this.nodeModules.set(name, collection);

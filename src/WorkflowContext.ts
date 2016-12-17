@@ -30,6 +30,8 @@ export interface Plugin {
      * @memberOf Plugin
      */
     dependencies?: string[];
+
+
     /**
      * 
      * 
@@ -73,7 +75,21 @@ export interface Plugin {
  */
 export class WorkFlowContext {
 
+    /**
+     * 
+     * 
+     * 
+     * @memberOf WorkFlowContext
+     */
+    public defaultPackageName = "default";
 
+    /**
+     * 
+     * 
+     * @type {string[]}
+     * @memberOf WorkFlowContext
+     */
+    public ignoreGlobal: string[] = [];
     /**
      * 
      * 
@@ -129,7 +145,7 @@ export class WorkFlowContext {
      * 
      * @memberOf WorkFlowContext
      */
-    public cache = new ModuleCache(this);
+    public cache: ModuleCache;
     /**
      * 
      * 
@@ -157,7 +173,7 @@ export class WorkFlowContext {
      * @type {string[]}
      * @memberOf WorkFlowContext
      */
-    public globals: string[] = [];
+    public globals: any;
     /**
      * 
      * 
@@ -195,6 +211,10 @@ export class WorkFlowContext {
      */
     public log: Log;
 
+
+    public initCache() {
+        this.cache = new ModuleCache(this);
+    }
     /**
      * 
      * 
@@ -305,6 +325,10 @@ export class WorkFlowContext {
      */
     public hasNodeModule(name: string) {
         return this.nodeModules.has(name);
+    }
+
+    public isGlobalyIgnored(name: string) {
+        return this.ignoreGlobal.indexOf(name) > -1;
     }
 
     /**

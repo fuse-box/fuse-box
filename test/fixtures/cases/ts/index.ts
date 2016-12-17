@@ -1,31 +1,21 @@
-import "//ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js";
-import "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css";
 
-//import { World } from './lib/World';
-//import { Foo } from "./Foo";
+import "reflect-metadata";
 
-// import { Watch } from "wires-reactive";
+import { testDecorator, testDecorator2 } from './TestDecorator';
 
-// console.log(Watch);
+require("./foo.css");
 
-// let world = new World();
+@testDecorator()
+class MyClass {
+    constructor(parameters) {
 
-// /**
-//  * Hello
-//  */
-// class Hello {
-//     public getFoo(): Foo {
-//         return new Foo();
-//     }
-//     public getName(): string {
-//         return "hello";
-//     }
+    }
 
-// }
-// let hello = new Hello();
-export let boo = { hello: "world" };
-export var s = 1111;
-export var shit = `world`;
-//console.log(hello.getName());
-//console.log(hello.getFoo());
-console.log("here");
+    public hello() {
+
+    }
+
+    public a() {
+
+    }
+}

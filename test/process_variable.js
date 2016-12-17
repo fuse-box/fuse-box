@@ -10,7 +10,7 @@ describe("Process variable must be handled with care", (done) => {
                 exports.process = process;
             `,
         }, "**/*.js").then(root => {
-            let result = root.FuseBox.import("index");
+            let result = root.FuseBox.import("./index");
             result.should.deepEqual({ process: {} });
             done();
         }).catch(done);
@@ -23,7 +23,7 @@ describe("Process variable must be handled with care", (done) => {
                 exports.process = process.env;
             `,
         }, "**/*.js").then(root => {
-            let result = root.FuseBox.import("index");
+            let result = root.FuseBox.import("./index");
             result.should.deepEqual({ process: { NODE_ENV: 'development' } });
             done();
         }).catch(done);

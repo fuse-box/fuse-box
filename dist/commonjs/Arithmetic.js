@@ -127,8 +127,7 @@ class Arithmetic {
                     return keys[0];
                 }
             }
-        }
-        ).then(result => {
+        }).then(result => {
             let data = new BundleData(homeDir, tsMode, result.including, result.excluding, result.entry);
             if (result.tempFolder) {
                 data.setupTempFolder(result.tempFolder);

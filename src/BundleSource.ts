@@ -1,4 +1,4 @@
-import { Hello } from './../test/fixtures/cases/ts/Hello';
+
 import { BundleData } from './Arithmetic';
 import { ModuleCollection } from "./ModuleCollection";
 import { WorkFlowContext } from "./WorkFlowContext";
@@ -34,7 +34,7 @@ export class BundleSource {
 
     private collectionSource: any;
 
-    public currentCollection = [];
+
     /**
      * Creates an instance of BundleSource.
      * 
@@ -44,12 +44,7 @@ export class BundleSource {
      */
     constructor(public context: WorkFlowContext) {
         this.concat = new Concat(true, "", "\n");
-        this.concat.add(null, "(function(){");
-        if (context.standaloneBundle) {
-            let fuseboxLibFile = path.join(Config.ASSETS_DIR, "fusebox.min.js");
-            let wrapper = fs.readFileSync(fuseboxLibFile).toString();
-            this.concat.add(null, wrapper);
-        }
+        this.concat.add(null, "(function(FuseBox){");
     }
 
     /**
@@ -59,10 +54,25 @@ export class BundleSource {
      * 
      * @memberOf BundleSource
      */
-    public startCollection(collection: ModuleCollection) {
+    public createCollection(collection: ModuleCollection) {
         this.collectionSource = new Concat(true, collection.name, "\n");
-        this.collectionSource.add(null, `FuseBox.module("${collection.name}", ${JSON.stringify(
-            collection.conflictingVersions)}, function(___scope___){`);
+    }
+
+    public addContentToCurrentCollection(data: string) {
+        if (this.collectionSource) {
+
+            this.collectionSource.add(null, data);
+        }
+    }
+    public startCollection(collection: ModuleCollection) {
+        let conflicting = {};
+        if (collection.conflictingVersions) {
+            collection.conflictingVersions.forEach((version, name) => {
+                conflicting[name] = version;
+            });
+        }
+        this.collectionSource.add(null, `FuseBox.pkg("${collection.name}", ${JSON.stringify(
+            conflicting)}, function(___scope___){`);
     }
 
     /**
@@ -75,12 +85,17 @@ export class BundleSource {
     public endCollection(collection: ModuleCollection) {
         let entry = collection.entryFile ? collection.entryFile.info.fuseBoxPath : "";
         if (entry) {
-            this.collectionSource.add(null, `return ___scope___.entry("${entry}");`);
+            this.collectionSource.add(null, `return ___scope___.entry = "${entry}";`);
         }
         this.collectionSource.add(null, "});");
-        this.concat.add(collection.name, this.collectionSource.content, this.collectionSource.sourceMap);
+
+        let key = collection.info ? `${collection.info.name}@${collection.info.version}` : "default";
+        this.concat.add(`packages/${key}`,
+            this.collectionSource.content, key === "default" ? this.collectionSource.sourceMap : undefined);
         return this.collectionSource.content.toString();
     }
+
+
 
     /**
      * 
@@ -100,14 +115,13 @@ export class BundleSource {
      * @memberOf BundleSource
      */
     public addFile(file: File) {
-        if (file.info.isRemoteFile) {
+        if (file.info.isRemoteFile || file.notFound) {
             return;
         }
         this.collectionSource.add(null,
             `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){ 
 ${file.headerContent ? file.headerContent.join("\n") : ""}`);
-
-        this.collectionSource.add(null, file.contents, file.sourceMap);
+        this.collectionSource.add(null, file.alternativeContent || file.contents, file.sourceMap);
         this.collectionSource.add(null, "});");
     }
 
@@ -128,25 +142,43 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
                 entry = this.context.convert2typescript(entry);
             }
         }
+        let mainEntry;
 
         // Handle globals
-        if (context.globals.length > 0) {
+        if (context.globals) {
             let data = [];
-            context.globals.forEach(name => {
-                if (name === "default" && entry) {
-                    data.push(`default/` + entry);
-                    entry = undefined;
-                } else {
-                    data.push(name);
+            for (let key in context.globals) {
+                if (context.globals.hasOwnProperty(key)) {
+                    let alias = context.globals[key];
+                    let item: any = {};
+                    item.alias = alias;
+                    item.pkg = key;
+                    if (key === context.defaultPackageName && entry) {
+                        mainEntry = item.pkg = `${key}/${entry}`;
+                        entry = undefined;
+                    }
+                    data.push(item);
                 }
-            });
-            this.concat.add(null, `FuseBox.expose(${JSON.stringify(data)})`)
+            }
+            this.concat.add(null, `FuseBox.expose(${JSON.stringify(data)});`);
         }
 
         if (entry) {
-            this.concat.add(null, `\nFuseBox.import("${entry}")`);
+            mainEntry = `${context.defaultPackageName}/${entry}`;
+            this.concat.add(null, `\nFuseBox.import("${mainEntry}");`);
         }
-        this.concat.add(null, "})();");
+        if (mainEntry) {
+            this.concat.add(null, `FuseBox.main("${mainEntry}");`);
+        }
+        this.concat.add(null, "})");
+
+        if (context.standaloneBundle) {
+            let fuseboxLibFile = path.join(Config.ASSETS_DIR, "frontend", "fusebox.min.js");
+            let wrapper = fs.readFileSync(fuseboxLibFile).toString();
+            this.concat.add(null, `(${wrapper})`);
+        } else {
+            this.concat.add(null, "()");
+        }
         if (this.context.sourceMapConfig) {
             if (this.context.sourceMapConfig.bundleReference) {
                 this.concat.add(null, `//# sourceMappingURL=${this.context.sourceMapConfig.bundleReference}`);

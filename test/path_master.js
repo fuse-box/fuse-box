@@ -1,4 +1,4 @@
-const build = require("../build/commonjs/index.js");
+const build = require(`../${process.env.TRAVIS ? "dist" : "build"}/commonjs/index.js`);
 const should = require("should");
 const appRoot = require("app-root-path");
 const path = require("path");
@@ -204,6 +204,14 @@ describe("PathMaster", () => {
         testFolderShouldEqual(result.absPath, "path-test/some.js")
         result.fuseBoxPath.should.equal("some.js");
     });
+
+    it("Should handle sub module with @ operator", () => {
+        let result = pm.resolve("@angular/core", getTestFolder("./bar/data.json"));
+        result.nodeModuleName.should.equal("@angular/core");
+        result.fuseBoxPath.should.equal("bundles/core.umd.js");
+    });
+
+
 
 
 

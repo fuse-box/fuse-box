@@ -1,35 +1,138 @@
-import { FileAST } from './FileAST';
+import { ModuleCollection } from "./ModuleCollection";
+import { FileAnalysis } from "./FileAnalysis";
 import { WorkFlowContext, Plugin } from "./WorkflowContext";
 import { IPathInformation } from "./PathMaster";
 import * as fs from "fs";
-import * as path from "path";
 import { utils } from "realm-utils";
 
 
-
+/**
+ * 
+ * 
+ * @export
+ * @class File
+ */
 export class File {
+
+    public isFuseBoxBundle = false;
+
+    /**
+     * In order to keep bundle in a bundle
+     * We can't destory the original contents
+     * But instead we add additional property that will override bundle file contents
+     * 
+     * @type {string}
+     * @memberOf FileAnalysis
+     */
+    public alternativeContent: string;
+
+    public notFound: boolean;
+    /**
+     * 
+     * 
+     * @type {string}
+     * @memberOf File
+     */
     public absPath: string;
+    /**
+     * 
+     * 
+     * @type {string}
+     * @memberOf File
+     */
     public contents: string;
+    /**
+     * 
+     * 
+     * 
+     * @memberOf File
+     */
     public isLoaded = false;
+    /**
+     * 
+     * 
+     * 
+     * @memberOf File
+     */
     public isNodeModuleEntry = false;
+    /**
+     * 
+     * 
+     * @type {ModuleCollection}
+     * @memberOf File
+     */
+    public collection: ModuleCollection;
+    /**
+     * 
+     * 
+     * @type {string[]}
+     * @memberOf File
+     */
     public headerContent: string[];
+    /**
+     * 
+     * 
+     * 
+     * @memberOf File
+     */
     public isTypeScript = false;
+    /**
+     * 
+     * 
+     * @type {*}
+     * @memberOf File
+     */
     public sourceMap: any;
+    /**
+     * 
+     * 
+     * @type {FileAnalysis}
+     * @memberOf File
+     */
+    public analysis: FileAnalysis = new FileAnalysis(this);
+    /**
+     * 
+     * 
+     * @type {Promise<any>[]}
+     * @memberOf File
+     */
     public resolving: Promise<any>[] = [];
+    /**
+     * Creates an instance of File.
+     * 
+     * @param {WorkFlowContext} context
+     * @param {IPathInformation} info
+     * 
+     * @memberOf File
+     */
     constructor(public context: WorkFlowContext, public info: IPathInformation) {
 
         this.absPath = info.absPath;
     }
 
+    /**
+     * 
+     * 
+     * @returns
+     * 
+     * @memberOf File
+     */
     public getCrossPlatormPath() {
         let name = this.absPath;
         if (!name) {
-            return
+            return;
         }
         name = name.replace(/\\/g, "/");
         return name;
     }
 
+    /**
+     * 
+     * 
+     * @param {*} [_ast]
+     * 
+     * @memberOf File
+     */
     public tryPlugins(_ast?: any) {
         if (this.context.plugins) {
             let target: Plugin;
@@ -54,6 +157,13 @@ export class File {
             }
         }
     }
+    /**
+     * 
+     * 
+     * @param {string} str
+     * 
+     * @memberOf File
+     */
     public addHeaderContent(str: string) {
         if (!this.headerContent) {
             this.headerContent = [];
@@ -61,46 +171,71 @@ export class File {
         this.headerContent.push(str);
     }
 
-
-    public consume(): string[] {
-        if (this.info.isRemoteFile) {
-            return [];
-        }
-        if (!this.absPath) {
-            return [];
-        }
-        if (!fs.existsSync(this.info.absPath)) {
-            this.contents = "";
-            return [];
-        }
+    /**
+     * 
+     * 
+     * 
+     * @memberOf File
+     */
+    public loadContents() {
         this.contents = fs.readFileSync(this.info.absPath).toString();
         this.isLoaded = true;
+    }
 
-        if (this.absPath.match(/\.ts$/)) {
+
+    /**
+     * 
+     * 
+     * @returns
+     * 
+     * @memberOf File
+     */
+    public consume() {
+        if (this.info.isRemoteFile) {
+            return;
+        }
+        if (!this.absPath) {
+            return;
+        }
+        if (!fs.existsSync(this.info.absPath)) {
+            this.notFound = true;
+            return;
+        }
+        if (/\.ts(x)?$/.test(this.absPath)) {
             return this.handleTypescript();
         }
 
-        if (this.absPath.match(/\.js$/)) {
-            let fileAst = new FileAST(this);
-            fileAst.consume();
-            this.tryPlugins(fileAst.ast);
-            return fileAst.dependencies;
+        if (/\.js(x)?$/.test(this.absPath)) {
+            this.loadContents();
+            this.analysis.process();
+            this.tryPlugins();
+            return;
         }
         this.tryPlugins();
-        return [];
     }
 
+    /**
+     * 
+     * 
+     * @private
+     * @returns
+     * 
+     * @memberOf File
+     */
     private handleTypescript() {
         if (this.context.useCache) {
             let cached = this.context.cache.getStaticCache(this);
             if (cached) {
                 this.sourceMap = cached.sourceMap;
                 this.contents = cached.contents;
+                this.analysis.dependencies = cached.dependencies;
                 this.tryPlugins();
-                return cached.dependencies;
+                return;
             }
         }
         const ts = require("typescript");
+
+        this.loadContents();
         let result = ts.transpileModule(this.contents, this.context.getTypeScriptConfig());
 
         if (result.sourceMapText && this.context.sourceMapConfig) {
@@ -110,15 +245,14 @@ export class File {
             result.outputText = result.outputText.replace("//# sourceMappingURL=module.js.map", "")
             this.sourceMap = JSON.stringify(jsonSourceMaps);
         }
-
+        //console.log(result.outputText);
         this.contents = result.outputText;
+
         // consuming transpiled javascript
-        let fileAst = new FileAST(this);
-        fileAst.consume();
+        this.analysis.process();
         if (this.context.useCache) {
-            this.context.cache.writeStaticCache(this, fileAst.dependencies, this.sourceMap);
+            this.context.cache.writeStaticCache(this, this.sourceMap);
         }
-        this.tryPlugins(fileAst.ast);
-        return fileAst.dependencies;
+        this.tryPlugins();
     }
 }

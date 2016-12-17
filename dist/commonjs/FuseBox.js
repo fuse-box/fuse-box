@@ -1,5 +1,4 @@
 "use strict";
-const HTMLplugin_1 = require("./plugins/HTMLplugin");
 const JSONplugin_1 = require("./plugins/JSONplugin");
 const PathMaster_1 = require("./PathMaster");
 const WorkflowContext_1 = require("./WorkflowContext");
@@ -27,7 +26,10 @@ class FuseBox {
         if (opts.tsConfig) {
             this.context.tsConfig = opts.tsConfig;
         }
-        this.context.plugins = opts.plugins || [HTMLplugin_1.HTMLPlugin, JSONplugin_1.JSONPlugin];
+        this.context.plugins = opts.plugins || [JSONplugin_1.JSONPlugin()];
+        if (opts.package) {
+            this.context.defaultPackageName = opts.package;
+        }
         if (opts.cache !== undefined) {
             this.context.useCache = opts.cache ? true : false;
         }
@@ -35,13 +37,16 @@ class FuseBox {
             this.context.doLog = opts.log ? true : false;
         }
         if (opts.globals) {
-            this.context.globals = [].concat(opts.globals);
+            this.context.globals = opts.globals;
         }
-        if (opts.standaloneBundle !== undefined) {
+        if (opts.standalone !== undefined) {
             this.context.standaloneBundle = opts.standaloneBundle;
         }
         if (opts.sourceMap) {
             this.context.sourceMapConfig = opts.sourceMap;
+        }
+        if (opts.ignoreGlobal) {
+            this.context.ignoreGlobal = opts.ignoreGlobal;
         }
         if (opts.outFile) {
             this.context.outFile = opts.outFile;
@@ -51,6 +56,10 @@ class FuseBox {
             this.context.setUseCache(opts.cache);
         }
         this.virtualFiles = opts.files;
+        this.context.initCache();
+    }
+    static init(opts) {
+        return new FuseBox(opts);
     }
     triggerStart() {
         this.context.plugins.forEach(plugin => {
@@ -82,7 +91,7 @@ class FuseBox {
         });
     }
     process(bundleData, standalone) {
-        let bundleCollection = new ModuleCollection_1.ModuleCollection(this.context, "default");
+        let bundleCollection = new ModuleCollection_1.ModuleCollection(this.context, this.context.defaultPackageName);
         bundleCollection.pm = new PathMaster_1.PathMaster(this.context, bundleData.homeDir);
         if (bundleData.typescriptMode) {
             this.context.tsMode = true;
@@ -105,13 +114,15 @@ class FuseBox {
                 }
                 addNodeModules() {
                     return realm_utils_1.each(self.context.nodeModules, (collection) => {
-                        return self.collectionSource.get(collection).then((cnt) => {
-                            self.context.log.echoCollection(collection, cnt);
-                            if (!collection.cachedName) {
-                                self.context.cache.set(collection.info, cnt);
-                            }
-                            this.globalContents.push(cnt);
-                        });
+                        if (!collection.info || !collection.info.missing) {
+                            return self.collectionSource.get(collection).then((cnt) => {
+                                self.context.log.echoCollection(collection, cnt);
+                                if (!collection.cachedName) {
+                                    self.context.cache.set(collection.info, cnt);
+                                }
+                                this.globalContents.push(cnt);
+                            });
+                        }
                     });
                 }
                 format() {
@@ -119,8 +130,7 @@ class FuseBox {
                         contents: this.globalContents,
                     };
                 }
-            }
-            ).then(result => {
+            }).then(result => {
                 self.context.log.end();
                 this.triggerEnd();
                 self.context.source.finalize(bundleData);

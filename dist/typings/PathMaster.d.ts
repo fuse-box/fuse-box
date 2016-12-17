@@ -17,6 +17,7 @@ export interface IPathInformation {
 }
 export interface IPackageInformation {
     name: string;
+    missing?: boolean;
     entry: string;
     version: string;
     root: string;
@@ -38,9 +39,9 @@ export declare class PathMaster {
     setTypeScriptMode(): void;
     resolve(name: string, root: string, rootEntryLimit?: string): IPathInformation;
     getFuseBoxPath(name: string, root: string): string;
-    getAbsolutePath(name: string, root: string, rootEntryLimit?: string): string;
+    getAbsolutePath(name: string, root: string, rootEntryLimit?: string, explicit?: boolean): string;
     getParentFolderName(): string;
-    private ensureFolderAndExtensions(name, root);
+    private ensureFolderAndExtensions(name, root, explicit?);
     private getNodeModuleInfo(name);
     private getNodeModuleInformation(name);
 }

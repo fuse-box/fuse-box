@@ -9,3 +9,7 @@ out.js
 .DS_Store
 .tmp/
 .idea/
+sourcemaps.js.map
+foo.js
+eee.js
+.fusebox
