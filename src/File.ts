@@ -106,7 +106,6 @@ export class File {
      * @memberOf File
      */
     constructor(public context: WorkFlowContext, public info: IPathInformation) {
-
         this.absPath = info.absPath;
     }
 
@@ -226,6 +225,7 @@ export class File {
         if (this.context.useCache) {
             let cached = this.context.cache.getStaticCache(this);
             if (cached) {
+                this.isLoaded = true;
                 this.sourceMap = cached.sourceMap;
                 this.contents = cached.contents;
                 this.analysis.dependencies = cached.dependencies;

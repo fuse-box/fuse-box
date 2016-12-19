@@ -96,11 +96,11 @@ class WorkFlowContext {
         let res = this.source.getResult();
         if (this.sourceMapConfig && this.sourceMapConfig.outFile) {
             let target = this.ensureUserPath(this.sourceMapConfig.outFile);
-            fs.writeFile(target, res.sourceMap);
+            fs.writeFile(target, res.sourceMap, () => { });
         }
         if (this.outFile) {
             let target = this.ensureUserPath(this.outFile);
-            fs.writeFile(target, res.content);
+            fs.writeFile(target, res.content, () => { });
         }
     }
     getNodeModule(name) {

@@ -84,11 +84,11 @@ class FileAnalysis {
             }
         }
         if (out.fuseBoxBundle) {
+            this.dependencies = [];
             this.file.isFuseBoxBundle = true;
             this.removeFuseBoxApiFromBundle();
-            this.dependencies = [];
             if (out.fuseBoxMain) {
-                this.file.alternativeContent = `module.exports = FuseBox.import("${out.fuseBoxMain}")`;
+                this.file.alternativeContent = `module.exports = require("${out.fuseBoxMain}")`;
             }
         }
     }

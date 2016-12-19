@@ -139,13 +139,15 @@ export class FileAnalysis {
             }
         }
 
-        // Reset all dependencies if a fusebox bundle spotted
+
         if (out.fuseBoxBundle) {
-            this.file.isFuseBoxBundle = true;
-            this.removeFuseBoxApiFromBundle();
+            // Reset all dependencies if a fusebox bundle is spotted
             this.dependencies = [];
+            this.file.isFuseBoxBundle = true;
+            // No need in extra footers
+            this.removeFuseBoxApiFromBundle();
             if (out.fuseBoxMain) {
-                this.file.alternativeContent = `module.exports = FuseBox.import("${out.fuseBoxMain}")`
+                this.file.alternativeContent = `module.exports = require("${out.fuseBoxMain}")`
             }
         }
     }

@@ -52,7 +52,9 @@ class ModuleCollection {
         }).then(x => {
             return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
         }).then(toResolve => {
-            return realm_utils_1.each(toResolve, (file) => this.resolveNodeModule(file));
+            return realm_utils_1.each(toResolve, (file) => {
+                return this.resolveNodeModule(file);
+            });
         }).then(() => {
             return this.context.cache.buildMap(this);
         });

@@ -197,10 +197,12 @@ export class ModuleCollection {
             return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
         }).then(toResolve => {
 
-            return each(toResolve, (file: File) => this.resolveNodeModule(file));
+            return each(toResolve, (file: File) => {
+                return this.resolveNodeModule(file);
+            });
         }).then(() => {
             return this.context.cache.buildMap(this);
-        })
+        });
     }
 
     /**
@@ -212,6 +214,7 @@ export class ModuleCollection {
      * @memberOf ModuleCollection
      */
     public resolveNodeModule(file: File) {
+
         let info = file.info.nodeModuleInfo;
         let collection: ModuleCollection;
 
@@ -235,6 +238,7 @@ export class ModuleCollection {
         } else {
             collection = this.context.getNodeModule(moduleName);
         }
+
 
         // If we are using a custom version 
         // THe source output should know about.
@@ -266,6 +270,7 @@ export class ModuleCollection {
      * @memberOf ModuleCollection
      */
     public resolve(file: File, shouldIgnoreDeps?: boolean) {
+
         file.collection = this;
         if (this.bundle) {
             if (this.bundle.fileBlackListed(file)) {
@@ -277,7 +282,9 @@ export class ModuleCollection {
         }
 
         if (file.info.isNodeModule) {
+
             if (this.context.isGlobalyIgnored(file.info.nodeModuleName)) {
+
                 return;
             }
 
@@ -287,6 +294,7 @@ export class ModuleCollection {
             if (shouldIgnoreDeps || this.bundle && this.bundle.shouldIgnore(file.info.nodeModuleName)) {
                 return;
             }
+
             // If a collection a primary one (project "default")
             // We would like to collect dependencies first and resolve them later
             // In order to understand what is cached

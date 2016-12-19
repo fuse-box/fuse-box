@@ -5,7 +5,9 @@ export class CollectionSource {
     constructor(public context: WorkFlowContext) { }
 
     public get(collection: ModuleCollection, withSourceMaps: boolean = false): Promise<string> {
+
         if (collection.cachedContent) {
+
             return new Promise((resolve, reject) => {
                 this.context.source.addContent(collection.cachedContent);
                 return resolve(collection.cachedContent);

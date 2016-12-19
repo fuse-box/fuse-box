@@ -11,7 +11,7 @@ let fuseBox = FuseBox.init({
     //     bundleReference: "./sourcemaps.js.map",
     //     outFile: "sourcemaps.js.map",
     // },
-    cache: false,
+    cache: true,
     //globals: { default: "myLib", "wires-reactive": "Reactive" },
     outFile: "_playground/_build/out.js",
     //package: "myLib",
