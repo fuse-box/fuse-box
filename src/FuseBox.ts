@@ -8,7 +8,7 @@ import { ModuleCollection } from "./ModuleCollection";
 import * as path from "path";
 import { each, utils, chain, Chainable } from "realm-utils";
 const appRoot = require("app-root-path");
-
+const watch = require("watch");
 /**
  *
  *
@@ -112,22 +112,22 @@ export class FuseBox {
     }
 
 
-    public bundle(str: string, standalone?: boolean) {
-        this.context.reset();
-        this.triggerStart();
-        let parser = Arithmetic.parse(str);
-        let bundle: BundleData;
-        return Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
-
-            bundle = data;
-            return this.process(data, standalone);
-        }).then((contents) => {
-            bundle.finalize(); // Clean up temp folder if required
-
-            return contents;
-        }).catch(e => {
-            console.log(e.stack || e);
-        });
+    /**
+     * Make  a Bundle 
+     * 
+     * @param {string} str
+     * @param {boolean} [daemon] string to a daemon (watching)
+     * 
+     * @memberOf FuseBox
+     */
+    public bundle(str: string, daemon?: boolean) {
+        if (daemon) {
+            watch.watchTree(this.context.homeDir, { interval: 0.2 }, () => {
+                this.initiateBundle(str);
+            });
+        } else {
+            return this.initiateBundle(str);
+        }
     }
 
     public process(bundleData: BundleData, standalone?: boolean) {
@@ -188,5 +188,21 @@ export class FuseBox {
         });
     }
 
+    private initiateBundle(str: string) {
+        this.context.reset();
+        this.triggerStart();
+        let parser = Arithmetic.parse(str);
+        let bundle: BundleData;
+        return Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
 
+            bundle = data;
+            return this.process(data);
+        }).then((contents) => {
+            bundle.finalize(); // Clean up temp folder if required
+
+            return contents;
+        }).catch(e => {
+            console.log(e.stack || e);
+        });
+    }
 }

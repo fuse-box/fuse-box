@@ -24,6 +24,9 @@ export class FileAnalysis {
      */
     public ast: any;
 
+    private wasAnalysed = false;
+    private skipAnalysis = false;
+
 
 
     /**
@@ -43,19 +46,25 @@ export class FileAnalysis {
      */
     constructor(public file: File) { }
 
-
-    /**
-     * Consuming contents with analysis
-     * 
-     * 
-     * @memberOf FileAST
-     */
-    public process() {
-        this.parse();
-        this.analyze();
+    public astIsLoaded(): boolean {
+        return this.ast !== undefined;
     }
 
 
+    /**
+     * Loads an AST
+     * 
+     * @param {*} ast
+     * 
+     * @memberOf FileAnalysis
+     */
+    public loadAst(ast: any) {
+        this.ast = ast;
+    }
+
+    public skip() {
+        this.skipAnalysis = true;
+    }
 
     /**
      * 
@@ -64,7 +73,7 @@ export class FileAnalysis {
      * 
      * @memberOf FileAST
      */
-    private parse() {
+    public parseUsingAcorn() {
         this.ast = acorn.parse(this.file.contents, {
             sourceType: "module",
             tolerant: true,
@@ -74,14 +83,25 @@ export class FileAnalysis {
         });
     }
 
-    private analyze() {
+    public analyze() {
+        // We don't want to make analysis 2 times
+        if (this.wasAnalysed || this.skipAnalysis) {
+            return;
+        }
+
+
         let out = {
             requires: [],
             processDeclared: false,
             processRequired: false,
             fuseBoxBundle: false,
             fuseBoxMain: undefined
+        };
+
+        let isString = (node) => {
+            return node.type === "Literal" || node.type === "StringLiteral";
         }
+
         traverse(this.ast, {
             pre: (node, parent, prop, idx) => {
 
@@ -99,7 +119,7 @@ export class FileAnalysis {
                                 if (node.property.name === "main") {
                                     if (parent.arguments) {
                                         let f = parent.arguments[0];
-                                        if (f && f.type === "Literal") {
+                                        if (f && isString(f)) {
                                             out.fuseBoxMain = f.value;
                                             out.fuseBoxBundle = true;
                                         }
@@ -115,14 +135,15 @@ export class FileAnalysis {
                     }
                 }
                 if (node.type === "ImportDeclaration") {
-                    if (node.source && node.source.type === "Literal") {
+                    if (node.source && isString(node.source)) {
                         out.requires.push(node.source.value);
                     }
                 }
                 if (node.type === "CallExpression") {
+
                     if (node.callee.type === "Identifier" && node.callee.name === "require") {
                         let arg1 = node.arguments[0];
-                        if (arg1.type === "Literal") {
+                        if (isString(arg1)) {
                             out.requires.push(arg1.value);
                         }
                     }
@@ -150,6 +171,7 @@ export class FileAnalysis {
                 this.file.alternativeContent = `module.exports = require("${out.fuseBoxMain}")`
             }
         }
+        this.wasAnalysed = true;
     }
 
     /**

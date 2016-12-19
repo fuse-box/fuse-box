@@ -20,8 +20,9 @@ export class BabelPluginClass implements Plugin {
      * @type {RegExp}
      * @memberOf FuseBoxHTMLPlugin
      */
-    public test: RegExp = /(\.js|\.jsx)$/;
+    public test: RegExp = /\.js(x)?$/;
     public context: WorkFlowContext;
+    private limit2project: boolean = true;
 
     private config: any = {};
 
@@ -32,6 +33,9 @@ export class BabelPluginClass implements Plugin {
         }
         if (opts.test !== undefined) {
             this.test = opts.test;
+        }
+        if (opts.test !== undefined) {
+            this.limit2project = opts.limit2project;
         }
     }
 
@@ -60,36 +64,44 @@ export class BabelPluginClass implements Plugin {
      */
     public transform(file: File, ast: any) {
 
+        if (!babelCore) {
+            babelCore = require("babel-core");
+        }
+        if (this.context.useCache) {
 
-        return new Promise((resolve, reject) => {
-            if (!babelCore) {
-                babelCore = require("babel-core");
-            }
-            if (this.context.useCache) {
-
-                let cached = this.context.cache.getStaticCache(file);
-                if (cached) {
-                    if (cached.sourceMap) {
-                        file.sourceMap = cached.sourceMap;
-                    }
-                    file.contents = cached.contents;
-                    return resolve();
+            let cached = this.context.cache.getStaticCache(file);
+            if (cached) {
+                if (cached.sourceMap) {
+                    file.sourceMap = cached.sourceMap;
                 }
+                file.analysis.skip();
+                file.analysis.dependencies = cached.dependencies;
+                file.contents = cached.contents;
+                return;
             }
-            let result = babelCore.transform(file.contents, this.config);
-            if (result.map && file.collection.name === "default") {
-                file.contents = result.code;
-                let sm = result.map;
-                sm.file = file.info.fuseBoxPath;
-                sm.sources = [file.info.fuseBoxPath];
-                file.sourceMap = JSON.stringify(sm);
-            }
+        }
+
+        let result = babelCore.transform(file.contents, this.config);
+
+        // By default we would want to limit the babel 
+        // And use acorn instead (it's faster)
+        let pass = result.map
+            && (this.limit2project && file.collection.name === "default");
+
+        if (pass) {
+
+            file.analysis.loadAst(result.ast);
+            file.analysis.analyze();
+            file.contents = result.code;
+            let sm = result.map;
+            sm.file = file.info.fuseBoxPath;
+            sm.sources = [file.info.fuseBoxPath];
+            file.sourceMap = JSON.stringify(sm);
 
             if (this.context.useCache) {
                 this.context.cache.writeStaticCache(file, file.sourceMap);
             }
-            return resolve();
-        });
+        }
     }
 };
 
