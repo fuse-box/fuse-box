@@ -356,7 +356,7 @@ For example. to transpile JSX, you can use this configuration.
 ```
  plugins: [
     fsbx.BabelPlugin({
-        test: /\.jsx$/,
+        test: /\.jsx$/, // test is optional
         config: {
             sourceMaps: true,
             presets: ["es2015"],
@@ -367,6 +367,9 @@ For example. to transpile JSX, you can use this configuration.
     })
 ]
 ```
+
+`limit2project` set to true, to use this plugin across an entire project (including other modules like npm)
+
 Note, that if you want to have sourcemaps in place, set `sourceMaps` to true. Read sourcemaps section for better understanding how sourcemaps are defined.
 
 
