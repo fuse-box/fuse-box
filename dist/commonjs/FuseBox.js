@@ -8,6 +8,7 @@ const ModuleCollection_1 = require("./ModuleCollection");
 const path = require("path");
 const realm_utils_1 = require("realm-utils");
 const appRoot = require("app-root-path");
+const watch = require("watch");
 class FuseBox {
     constructor(opts) {
         this.opts = opts;
@@ -75,20 +76,15 @@ class FuseBox {
             }
         });
     }
-    bundle(str, standalone) {
-        this.context.reset();
-        this.triggerStart();
-        let parser = Arithmetic_1.Arithmetic.parse(str);
-        let bundle;
-        return Arithmetic_1.Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
-            bundle = data;
-            return this.process(data, standalone);
-        }).then((contents) => {
-            bundle.finalize();
-            return contents;
-        }).catch(e => {
-            console.log(e.stack || e);
-        });
+    bundle(str, daemon) {
+        if (daemon) {
+            watch.watchTree(this.context.homeDir, { interval: 0.2 }, () => {
+                this.initiateBundle(str);
+            });
+        }
+        else {
+            return this.initiateBundle(str);
+        }
     }
     process(bundleData, standalone) {
         let bundleCollection = new ModuleCollection_1.ModuleCollection(this.context, this.context.defaultPackageName);
@@ -137,6 +133,21 @@ class FuseBox {
                 this.context.writeOutput();
                 return self.context.source.getResult();
             });
+        });
+    }
+    initiateBundle(str) {
+        this.context.reset();
+        this.triggerStart();
+        let parser = Arithmetic_1.Arithmetic.parse(str);
+        let bundle;
+        return Arithmetic_1.Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
+            bundle = data;
+            return this.process(data);
+        }).then((contents) => {
+            bundle.finalize();
+            return contents;
+        }).catch(e => {
+            console.log(e.stack || e);
         });
     }
 }

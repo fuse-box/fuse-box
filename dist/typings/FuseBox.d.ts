@@ -9,6 +9,7 @@ export declare class FuseBox {
     constructor(opts: any);
     triggerStart(): void;
     triggerEnd(): void;
-    bundle(str: string, standalone?: boolean): Promise<any>;
+    bundle(str: string, daemon?: boolean): Promise<any>;
     process(bundleData: BundleData, standalone?: boolean): Promise<ModuleCollection>;
+    private initiateBundle(str);
 }

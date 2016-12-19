@@ -53,6 +53,12 @@ class File {
         this.contents = fs.readFileSync(this.info.absPath).toString();
         this.isLoaded = true;
     }
+    makeAnalysis() {
+        if (!this.analysis.astIsLoaded()) {
+            this.analysis.parseUsingAcorn();
+        }
+        this.analysis.analyze();
+    }
     consume() {
         if (this.info.isRemoteFile) {
             return;
@@ -69,8 +75,8 @@ class File {
         }
         if (/\.js(x)?$/.test(this.absPath)) {
             this.loadContents();
-            this.analysis.process();
             this.tryPlugins();
+            this.makeAnalysis();
             return;
         }
         this.tryPlugins();
@@ -98,7 +104,7 @@ class File {
             this.sourceMap = JSON.stringify(jsonSourceMaps);
         }
         this.contents = result.outputText;
-        this.analysis.process();
+        this.makeAnalysis();
         if (this.context.useCache) {
             this.context.cache.writeStaticCache(this, this.sourceMap);
         }
