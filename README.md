@@ -499,7 +499,7 @@ It's always good to have everything in place. File watcher, uglifying, productio
 
 ## Dev server and HOT module reload
 
-Something that many people love, coming to fusebox
+Something that many people love, coming soon to fusebox
 
 ## To improve
 
@@ -509,7 +509,7 @@ At this very moment caching works fairly well, if you get an issue related to ca
 
 __Help wanted!__
 
-There are so many features to implemented, so many bugs to fix. (Let's find them first)
+There are so many features to be implemented, so many bugs to fix. (Let's find them first)
 * More tests required
 
 The most critical tests are in place, but there are so many edge cases and i did not have time to cover it all. Would be cool to launch some tests in browser
