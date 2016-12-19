@@ -482,8 +482,26 @@ interface Plugin {
 
 ### test [RegExp]
 
-Defining `test` will filter files into your plugin. For example `\.js$ `
+Defining `test` will filter files into your plugin. For example `\.js$`
+If spefified you plugin's `transform` will get  triggered upon tranformation. It's optional.
 
+### dependencies
+
+`dependencies` a list of npm dependencies your plugin might require.  For example [this case](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/CSSplugin.ts#L23)
+
+### init
+
+Happens when a plugin is initilized. Good places, to reset your states.
+
+### transform
+
+`transform` if your plugin has a `test` property, fusebox will trigger tranform method sending [file](https://github.com/fuse-box/fuse-box/blob/master/src/File.ts) as a first argument.
+
+### bundleStart
+Happens on bundle start. A good place to inject your custom code here. For example [here](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/CSSplugin.ts#L50)
+
+### bundleEnd
+All files are bundled.
 
 Be patient! __Documentation is in progress__
 
@@ -499,7 +517,7 @@ It's always good to have everything in place. File watcher, uglifying, productio
 
 ## Dev server and HOT module reload
 
-Something that many people love, coming to fusebox
+Something that many people love, coming soon to fusebox
 
 ## To improve
 
@@ -509,7 +527,7 @@ At this very moment caching works fairly well, if you get an issue related to ca
 
 __Help wanted!__
 
-There are so many features to implemented, so many bugs to fix. (Let's find them first)
+There are so many features to be implemented, so many bugs to fix. (Let's find them first)
 * More tests required
 
 The most critical tests are in place, but there are so many edge cases and i did not have time to cover it all. Would be cool to launch some tests in browser
