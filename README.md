@@ -18,6 +18,7 @@ Start fusing!
 
 ## Recent updates
 * v1.3.16 Prints a pretty stacktrace instead of unreadable acorn exceptions.
+
 ## Why fusebox?
 
 ### Bundle anything without an extra effort
