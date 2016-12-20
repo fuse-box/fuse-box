@@ -16,6 +16,9 @@ Start fusing!
 
 [react-example](https://github.com/fuse-box/react-example) 50ms to fuse!
 
+## Recent updates
+* v1.3.16 Prints a pretty stacktrace instead of unreadable acorn exceptions.
+
 ## Why fusebox?
 
 ### Bundle anything without an extra effort
