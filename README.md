@@ -17,6 +17,7 @@ Start fusing!
 [react-example](https://github.com/fuse-box/react-example) 50ms to fuse!
 
 ## Recent updates
+* v1.3.17 Added [wildcard import](#wildcard-import) support
 * v1.3.16 Prints a pretty stacktrace instead of unreadable acorn exceptions.
 
 ## Why fusebox?
@@ -238,6 +239,39 @@ FuseBox.import("fs");
 
 Please note that some libraries like "fs" are faked in the browser. Meaning that it won't spit out an error, but won't work as expected on the server for known reasons.
 Nodejs environment, however, will get authentic "fs" module. (Concerns http, net, tty e.t.c )
+
+## Wildcard import
+With wildcard imports `*` you can require all files that match a particular pattern. A wildcard with no default extension will fallback to `.js`.
+For example
+
+```
+FuseBox.import("./batch/*")
+```
+
+Would result in:
+
+```
+{ "batch/a.js" : {}, "batch/b.js" : {} }
+```
+Whereas `a.js` and  `b.js` are files in folder `batch`
+
+You can requires all json files for example:
+
+```
+FuseBox.import("./batch/*.json")
+```
+
+Or that match a particular pattern
+
+```
+FuseBox.import("./batch/*-component")
+```
+
+See [tests](https://github.com/fuse-box/fuse-box/blob/master/test/wildcard_imports.js#L4)
+
+
+
+
 
 ## Lazy import
 
