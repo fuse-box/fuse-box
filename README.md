@@ -248,20 +248,21 @@ For example
 FuseBox.import("./batch/*")
 ```
 
-Would result in:
+Will result in:
 
 ```
 { "batch/a.js" : {}, "batch/b.js" : {} }
 ```
+
 Whereas `a.js` and  `b.js` are files in folder `batch`
 
-You can requires all json files for example:
+You can requires all JSON files for example:
 
 ```
 FuseBox.import("./batch/*.json")
 ```
 
-Or that match a particular pattern
+Or match a particular pattern
 
 ```
 FuseBox.import("./batch/*-component")
