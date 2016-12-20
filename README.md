@@ -256,7 +256,7 @@ Will result in:
 
 Whereas `a.js` and  `b.js` are files in folder `batch`
 
-You can requires all JSON files for example:
+You can require all JSON files for example:
 
 ```
 FuseBox.import("./batch/*.json")
