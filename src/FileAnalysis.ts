@@ -1,3 +1,4 @@
+import { PrettyError } from './PrettyError';
 import { File } from "./File";
 const acorn = require("acorn");
 const traverse = require("ast-traverse");
@@ -74,13 +75,17 @@ export class FileAnalysis {
      * @memberOf FileAST
      */
     public parseUsingAcorn() {
-        this.ast = acorn.parse(this.file.contents, {
-            sourceType: "module",
-            tolerant: true,
-            ecmaVersion: 8,
-            plugins: { es7: true, jsx: true },
-            jsx: { allowNamespacedObjects: true }
-        });
+        try {
+            this.ast = acorn.parse(this.file.contents, {
+                sourceType: "module",
+                tolerant: true,
+                ecmaVersion: 8,
+                plugins: { es7: true, jsx: true },
+                jsx: { allowNamespacedObjects: true }
+            });
+        } catch (err) {
+            return PrettyError.errorWithContents(err, this.file);
+        }
     }
 
     public analyze() {

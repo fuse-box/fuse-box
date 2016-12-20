@@ -1,4 +1,5 @@
 "use strict";
+const PrettyError_1 = require("./PrettyError");
 const acorn = require("acorn");
 const traverse = require("ast-traverse");
 const escodegen = require("escodegen");
@@ -21,13 +22,18 @@ class FileAnalysis {
         this.skipAnalysis = true;
     }
     parseUsingAcorn() {
-        this.ast = acorn.parse(this.file.contents, {
-            sourceType: "module",
-            tolerant: true,
-            ecmaVersion: 8,
-            plugins: { es7: true, jsx: true },
-            jsx: { allowNamespacedObjects: true }
-        });
+        try {
+            this.ast = acorn.parse(this.file.contents, {
+                sourceType: "module",
+                tolerant: true,
+                ecmaVersion: 8,
+                plugins: { es7: true, jsx: true },
+                jsx: { allowNamespacedObjects: true }
+            });
+        }
+        catch (err) {
+            return PrettyError_1.PrettyError.errorWithContents(err, this.file);
+        }
     }
     analyze() {
         if (this.wasAnalysed || this.skipAnalysis) {
