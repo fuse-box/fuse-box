@@ -51,6 +51,8 @@ interface IReference {
     // Converted valid path (with extension)
     // That can be recognized by FuseBox
     validPath?: string;
+    // Require with wildcards (e.g import("/lib/*"))
+    wildcard?: string;
 }
 
 /** 
@@ -179,9 +181,14 @@ const $getRef = (name, opts: any): IReference => {
 
     let filePath = $pathJoin(basePath, name);
     // Try first adding .js if missing
-    let validPath = $ensureExtension(filePath)
+    let validPath = $ensureExtension(filePath);
     let file = pkg.f[validPath];
-    if (!file) {
+    let wildcard;
+    // Probing for wildcard
+    if (!file && /\*/.test(validPath)) {
+        wildcard = validPath;
+    }
+    if (!file && !wildcard) {
         // try folder index.js
         validPath = $pathJoin(filePath, "/", "index.js");
         file = pkg.f[validPath];
@@ -192,8 +199,12 @@ const $getRef = (name, opts: any): IReference => {
             file = pkg.f[validPath];
         }
     }
+
+
+
     return {
         file: file,
+        wildcard: wildcard,
         pkgName: pkg_name,
         versions: pkg.v,
         filePath: filePath,
@@ -276,7 +287,25 @@ const $import = (name: string, opts: any = {}) => {
     }
     let file = ref.file;
 
+    // Wild card reference
+    if (ref.wildcard) {
+        // Prepare wildcard regexp
+        let safeRegEx: RegExp = new RegExp(ref.wildcard
+            .replace(/\*/g, "@")
+            .replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&")
+            .replace(/@/g, "[a-z0-9$_-]+"));
 
+        let pkg = $packages[ref.pkgName];
+        if (pkg) {
+            let batch = {};
+            for (let n in pkg.f) {
+                if (safeRegEx.test(n)) {
+                    batch[n] = $import(`${ref.pkgName}/${n}`);
+                }
+            }
+            return batch;
+        }
+    }
 
     if (!file) {
         let asyncMode = typeof opts === "function";

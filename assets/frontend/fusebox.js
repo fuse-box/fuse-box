@@ -114,7 +114,11 @@ var $getRef = function (name, opts) {
     var filePath = $pathJoin(basePath, name);
     var validPath = $ensureExtension(filePath);
     var file = pkg.f[validPath];
-    if (!file) {
+    var wildcard;
+    if (!file && /\*/.test(validPath)) {
+        wildcard = validPath;
+    }
+    if (!file && !wildcard) {
         validPath = $pathJoin(filePath, "/", "index.js");
         file = pkg.f[validPath];
         if (!file) {
@@ -124,6 +128,7 @@ var $getRef = function (name, opts) {
     }
     return {
         file: file,
+        wildcard: wildcard,
         pkgName: pkg_name,
         versions: pkg.v,
         filePath: filePath,
@@ -183,6 +188,22 @@ var $import = function (name, opts) {
         return ref.serverReference;
     }
     var file = ref.file;
+    if (ref.wildcard) {
+        var safeRegEx = new RegExp(ref.wildcard
+            .replace(/\*/g, "@")
+            .replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&")
+            .replace(/@/g, "[a-z0-9$_-]+"));
+        var pkg = $packages[ref.pkgName];
+        if (pkg) {
+            var batch = {};
+            for (var n in pkg.f) {
+                if (safeRegEx.test(n)) {
+                    batch[n] = $import(ref.pkgName + "/" + n);
+                }
+            }
+            return batch;
+        }
+    }
     if (!file) {
         var asyncMode_1 = typeof opts === "function";
         var processStopped = $trigger("async", [name, opts]);
