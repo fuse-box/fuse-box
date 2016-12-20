@@ -1,4 +1,1 @@
-
-import "bar"
-import "foo"
-console.log(1);
+import "./hello.js"
