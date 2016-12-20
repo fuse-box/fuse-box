@@ -34,7 +34,7 @@ export class BabelPluginClass implements Plugin {
         if (opts.test !== undefined) {
             this.test = opts.test;
         }
-        if (opts.test !== undefined) {
+        if (opts.limit2project !== undefined) {
             this.limit2project = opts.limit2project;
         }
     }

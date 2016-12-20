@@ -7,7 +7,7 @@ const fs = require("fs");
 //npm install babel-core babel-preset-latest
 let fuseBox = FuseBox.init({
     homeDir: "_playground/babel",
-    cache: true,
+    cache: false,
     outFile: "_playground/_build/out.js",
 
 
@@ -26,4 +26,4 @@ let fuseBox = FuseBox.init({
     ]
 });
 
-fuseBox.bundle(">index.js", true);
+fuseBox.bundle(">index.js +react-dom", true);
