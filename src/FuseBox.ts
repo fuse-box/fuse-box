@@ -1,6 +1,6 @@
 import { JSONPlugin } from "./plugins/JSONplugin";
 import { PathMaster } from "./PathMaster";
-import { WorkFlowContext } from "./WorkflowContext";
+import { Plugin, WorkFlowContext } from './WorkflowContext';
 import { CollectionSource } from "./CollectionSource";
 import { Arithmetic, BundleData } from "./Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";
@@ -8,6 +8,62 @@ import * as path from "path";
 import { each, utils, chain, Chainable } from "realm-utils";
 const appRoot = require("app-root-path");
 const watch = require("watch");
+
+export class PluginChain {
+    private test: RegExp;
+    private extension: string;
+    private plugins: Array<Plugin>;
+
+    constructor(extension: string) {
+        this.extension = extension;
+        this.plugins = [];
+    }
+
+    init(context: WorkFlowContext) {
+        console.log(this.extension)
+        context.allowExtension(this.extension);
+    }
+
+    forTest(test: RegExp) {
+        this.test = test;
+        return this;
+    }
+
+    add(plugin: Plugin) {
+        this.plugins.push(plugin);
+        return this;
+    }
+
+    bundleStart(context: WorkFlowContext) {
+        // Not sure about this - I've assumed that the first plugin in the "stack"
+        // will take responsability for adding bundleStart content?
+        let plugin = this.plugins[0];
+
+        if (utils.isFunction(plugin.bundleStart)) {
+            plugin.bundleStart(context);
+        }
+    }
+
+    transform(file, ast?): Promise<void> {
+        return this.plugins.reduce((chain: Promise<void>, plugin) => {
+            if (utils.isFunction(plugin.transform)) {
+                return chain.then(() => plugin.transform.apply(plugin, [file, ast]));
+            }
+        }, Promise.resolve());
+    }
+
+    bundleEnd(context: WorkFlowContext) {
+        // Not sure about this - I've assumed that the first plugin in the "stack"
+        // will take responsability for adding bundleEnd content?
+        let plugin = this.plugins[0];
+
+        if (utils.isFunction(plugin.bundleEnd)) {
+            plugin.bundleEnd(context);
+        }
+    }
+}
+
+
 /**
  *
  *
@@ -20,6 +76,11 @@ export class FuseBox {
     public static init(opts?: any) {
         return new FuseBox(opts);
     }
+
+    public static chain(name: string): PluginChain {
+        return new PluginChain(name);
+    }
+
     public virtualFiles: any;
 
     private collectionSource: CollectionSource;

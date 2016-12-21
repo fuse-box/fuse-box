@@ -19,12 +19,13 @@ let fuseBox = FuseBox.init({
     modulesFolder: "_playground/npm",
     //plugins: [new build.TypeScriptHelpers(), build.JSONPlugin, new build.CSSPlugin({ minify: true })]
     plugins: [
+        FuseBox.chain('.less').forTest(/\.less$/).add(build.LESSPlugin({})).add(build.CSSPlugin({})),
         build.TypeScriptHelpers(),
         build.JSONPlugin(),
-        build.CSSPlugin({
-            minify: true
-                // serve: path => `./${path}`
-        })
+        // build.CSSPlugin({
+        //     minify: true
+        //         // serve: path => `./${path}`
+        // })
     ]
 });
 

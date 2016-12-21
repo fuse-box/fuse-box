@@ -13,7 +13,7 @@
         "noImplicitUseStrict": false,
         "removeComments": true,
         "noLib": false,
-        "ourDir": "build/",
+        "outDir": "build/",
         "preserveConstEnums": true,
         "noEmitHelpers": true,
         "suppressImplicitAnyIndexErrors": true

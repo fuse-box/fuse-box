@@ -1,7 +1,9 @@
+import { LESSPlugin } from './plugins/LESSPlugin';
 export { TypeScriptHelpers } from "./plugins/TypeScriptHelpers";
 export { SVGPlugin } from "./plugins/SVGPlugin";
 export { BabelPlugin } from "./plugins/BabelPlugin";
 
+export { LESSPlugin } from "./plugins/LESSPlugin";
 export { CSSPlugin } from "./plugins/CSSplugin";
 export { HTMLPlugin } from "./plugins/HTMLplugin";
 export { JSONPlugin } from "./plugins/JSONplugin";

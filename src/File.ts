@@ -1,3 +1,5 @@
+import * as console from 'console';
+import { PluginChain } from './FuseBox';
 import { ModuleCollection } from "./ModuleCollection";
 import { FileAnalysis } from "./FileAnalysis";
 import { WorkFlowContext, Plugin } from "./WorkflowContext";
@@ -140,6 +142,8 @@ export class File {
                 let plugin = this.context.plugins[index];
                 if (plugin.test && plugin.test.test(this.absPath)) {
                     target = plugin;
+
+                    console.log(target.test, target['name']);
                 }
                 index++;
             }
@@ -177,7 +181,10 @@ export class File {
      * @memberOf File
      */
     public loadContents() {
-        this.contents = fs.readFileSync(this.info.absPath).toString();
+        if (!this.contents) {
+            this.contents = fs.readFileSync(this.info.absPath).toString();
+        }
+        
         this.isLoaded = true;
     }
 

@@ -60,6 +60,9 @@ export class CSSPluginClass implements Plugin {
      */
     public transform(file: File) {
         file.loadContents();
+
+        console.log('CSS', file.contents);
+
         let contents = "";
         let filePath = file.info.fuseBoxPath;
         let serve = false;
