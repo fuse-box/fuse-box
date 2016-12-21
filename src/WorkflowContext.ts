@@ -1,5 +1,5 @@
-import * as path from 'path';
-import * as fs from 'fs';
+import * as path from "path";
+import * as fs from "fs";
 import { BundleSource } from "./BundleSource";
 import { File } from "./File";
 import { Log } from "./Log";
@@ -210,6 +210,7 @@ export class WorkFlowContext {
      * @memberOf WorkFlowContext
      */
     public log: Log;
+
 
 
     public initCache() {

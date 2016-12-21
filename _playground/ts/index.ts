@@ -1,6 +1,3 @@
-import "./hello.js"
+import "./styles.css"
 import "./less/styles.less";
-declare const FuseBox: any;
-
-let results = FuseBox.import("./batch/*")
-console.log(results, "   ");
+console.log(1);

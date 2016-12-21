@@ -11,7 +11,7 @@ let fuseBox = FuseBox.init({
     //     bundleReference: "./sourcemaps.js.map",
     //     outFile: "sourcemaps.js.map",
     // },
-    cache: true,
+    cache: false,
     //globals: { default: "myLib", "wires-reactive": "Reactive" },
     outFile: "_playground/_build/out.js",
     //package: "myLib",
@@ -29,4 +29,4 @@ let fuseBox = FuseBox.init({
     ]
 });
 
-fuseBox.bundle(">index.ts + ./batch/**.*", true);
+fuseBox.bundle(">index.ts");
