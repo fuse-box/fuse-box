@@ -1,6 +1,6 @@
 import { JSONPlugin } from "./plugins/JSONplugin";
 import { PathMaster } from "./PathMaster";
-import { Plugin, WorkFlowContext } from './WorkflowContext';
+import { WorkFlowContext } from './WorkflowContext';
 import { CollectionSource } from "./CollectionSource";
 import { Arithmetic, BundleData } from "./Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";

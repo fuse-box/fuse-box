@@ -1,5 +1,3 @@
-import * as console from 'console';
-
 import { IPackageInformation, IPathInformation } from './PathMaster';
 import { WorkFlowContext } from "./WorkflowContext";
 import * as path from "path";

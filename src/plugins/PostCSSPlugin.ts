@@ -1,4 +1,3 @@
-import * as console from 'console';
 import { PluginChain } from '../PluginChain';
 import { File } from "../File";
 import { WorkFlowContext } from "./../WorkflowContext";

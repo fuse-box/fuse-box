@@ -9,7 +9,7 @@ export class ChainPluginClass {
         this.test = test;
         this.plugins = plugins;
     }
-    
+
     add(plugin: Plugin) {
         this.plugins.push(plugin);
         return this;
@@ -17,15 +17,10 @@ export class ChainPluginClass {
 
     bundleStart(context: WorkFlowContext) {
         // Get the first plugin that has a bundleStart - this should take priority
-        let length = this.plugins.length;
+        let plugin = this.plugins.find(plugin => utils.isFunction(plugin.bundleStart));
 
-        while (length--) {
-            let plugin = this.plugins[length];
-
-            if (utils.isFunction(plugin.bundleStart)) {
-                plugin.bundleStart(context);
-                break;
-            }
+        if (plugin) {
+            plugin.bundleStart(context);
         }
     }
 
@@ -41,15 +36,10 @@ export class ChainPluginClass {
 
     bundleEnd(context: WorkFlowContext) {
         // Get the first plugin that has a bundleEnd - this should take priority
-        let length = this.plugins.length;
+        let plugin = this.plugins.find(plugin => utils.isFunction(plugin.bundleEnd));
 
-        while (length--) {
-            let plugin = this.plugins[length];
-
-            if (utils.isFunction(plugin.bundleEnd)) {
-                plugin.bundleEnd(context);
-                break;
-            }
+        if (plugin) {
+            plugin.bundleEnd(context);
         }
     }
 }
