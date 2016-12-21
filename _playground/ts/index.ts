@@ -1,4 +1,6 @@
 
-import "bar"
-import "foo"
-console.log(1);
+import "./hello.js"
+declare const FuseBox: any;
+
+let results = FuseBox.import("./batch/*")
+console.log(results, "   ");

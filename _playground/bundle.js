@@ -20,6 +20,7 @@ let fuseBox = FuseBox.init({
     //plugins: [new build.TypeScriptHelpers(), build.JSONPlugin, new build.CSSPlugin({ minify: true })]
     plugins: [
         build.TypeScriptHelpers(),
+        build.JSONPlugin(),
         build.CSSPlugin({
             minify: true
                 // serve: path => `./${path}`
@@ -27,4 +28,4 @@ let fuseBox = FuseBox.init({
     ]
 });
 
-fuseBox.bundle(">index.ts");
+fuseBox.bundle(">index.ts + ./batch/**.*", true);

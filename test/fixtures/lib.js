@@ -11,6 +11,7 @@ exports.getTestEnv = (files, str, done) => {
         let fsb = new FuseBox({
             log: false,
             cache: false,
+            plugins: [build.JSONPlugin()],
             //  standalone: false,
             files: files
         });

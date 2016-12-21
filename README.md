@@ -16,6 +16,10 @@ Start fusing!
 
 [react-example](https://github.com/fuse-box/react-example) 50ms to fuse!
 
+## Recent updates
+* v1.3.17 Added [wildcard import](#wildcard-import) support
+* v1.3.16 Prints a pretty stacktrace instead of unreadable acorn exceptions.
+
 ## Why fusebox?
 
 ### Bundle anything without an extra effort
@@ -236,6 +240,40 @@ FuseBox.import("fs");
 Please note that some libraries like "fs" are faked in the browser. Meaning that it won't spit out an error, but won't work as expected on the server for known reasons.
 Nodejs environment, however, will get authentic "fs" module. (Concerns http, net, tty e.t.c )
 
+## Wildcard import
+With wildcard imports `*` you can require all files that match a particular pattern. A wildcard with no default extension will fallback to `.js`.
+For example
+
+```
+FuseBox.import("./batch/*")
+```
+
+Will result in:
+
+```
+{ "batch/a.js" : {}, "batch/b.js" : {} }
+```
+
+Whereas `a.js` and  `b.js` are files in folder `batch`
+
+You can require all JSON files for example:
+
+```
+FuseBox.import("./batch/*.json")
+```
+
+Or match a particular pattern
+
+```
+FuseBox.import("./batch/*-component")
+```
+
+See [tests](https://github.com/fuse-box/fuse-box/blob/master/test/wildcard_imports.js#L4)
+
+
+
+
+
 ## Lazy import
 
 FuseBox offers lazy module loading via ajax. The way it works is that FuseBox check for a module available in bundle, if it's not found it tries to make HTTP request. It respects runtime plugin hooks and other fusebox bundles as well.
@@ -356,7 +394,7 @@ For example. to transpile JSX, you can use this configuration.
 ```
  plugins: [
     fsbx.BabelPlugin({
-        test: /\.jsx$/,
+        test: /\.jsx$/, // test is optional
         config: {
             sourceMaps: true,
             presets: ["es2015"],
@@ -367,6 +405,9 @@ For example. to transpile JSX, you can use this configuration.
     })
 ]
 ```
+
+`limit2project` set to true, to use this plugin across an entire project (including other modules like npm)
+
 Note, that if you want to have sourcemaps in place, set `sourceMaps` to true. Read sourcemaps section for better understanding how sourcemaps are defined.
 
 
@@ -482,8 +523,26 @@ interface Plugin {
 
 ### test [RegExp]
 
-Defining `test` will filter files into your plugin. For example `\.js$ `
+Defining `test` will filter files into your plugin. For example `\.js$`
+If spefified you plugin's `transform` will get  triggered upon tranformation. It's optional.
 
+### dependencies
+
+`dependencies` a list of npm dependencies your plugin might require.  For example [this case](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/CSSplugin.ts#L23)
+
+### init
+
+Happens when a plugin is initilized. Good places, to reset your states.
+
+### transform
+
+`transform` if your plugin has a `test` property, fusebox will trigger tranform method sending [file](https://github.com/fuse-box/fuse-box/blob/master/src/File.ts) as a first argument.
+
+### bundleStart
+Happens on bundle start. A good place to inject your custom code here. For example [here](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/CSSplugin.ts#L50)
+
+### bundleEnd
+All files are bundled.
 
 Be patient! __Documentation is in progress__
 

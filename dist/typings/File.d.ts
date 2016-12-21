@@ -23,6 +23,7 @@ export declare class File {
     tryPlugins(_ast?: any): void;
     addHeaderContent(str: string): void;
     loadContents(): void;
+    makeAnalysis(): void;
     consume(): void;
     private handleTypescript();
 }

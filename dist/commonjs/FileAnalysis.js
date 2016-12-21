@@ -1,4 +1,5 @@
 "use strict";
+const PrettyError_1 = require("./PrettyError");
 const acorn = require("acorn");
 const traverse = require("ast-traverse");
 const escodegen = require("escodegen");
@@ -7,28 +8,46 @@ require("acorn-jsx/inject")(acorn);
 class FileAnalysis {
     constructor(file) {
         this.file = file;
+        this.wasAnalysed = false;
+        this.skipAnalysis = false;
         this.dependencies = [];
     }
-    process() {
-        this.parse();
-        this.analyze();
+    astIsLoaded() {
+        return this.ast !== undefined;
     }
-    parse() {
-        this.ast = acorn.parse(this.file.contents, {
-            sourceType: "module",
-            tolerant: true,
-            ecmaVersion: 8,
-            plugins: { es7: true, jsx: true },
-            jsx: { allowNamespacedObjects: true }
-        });
+    loadAst(ast) {
+        this.ast = ast;
+    }
+    skip() {
+        this.skipAnalysis = true;
+    }
+    parseUsingAcorn() {
+        try {
+            this.ast = acorn.parse(this.file.contents, {
+                sourceType: "module",
+                tolerant: true,
+                ecmaVersion: 8,
+                plugins: { es7: true, jsx: true },
+                jsx: { allowNamespacedObjects: true }
+            });
+        }
+        catch (err) {
+            return PrettyError_1.PrettyError.errorWithContents(err, this.file);
+        }
     }
     analyze() {
+        if (this.wasAnalysed || this.skipAnalysis) {
+            return;
+        }
         let out = {
             requires: [],
             processDeclared: false,
             processRequired: false,
             fuseBoxBundle: false,
             fuseBoxMain: undefined
+        };
+        let isString = (node) => {
+            return node.type === "Literal" || node.type === "StringLiteral";
         };
         traverse(this.ast, {
             pre: (node, parent, prop, idx) => {
@@ -44,7 +63,7 @@ class FileAnalysis {
                                 if (node.property.name === "main") {
                                     if (parent.arguments) {
                                         let f = parent.arguments[0];
-                                        if (f && f.type === "Literal") {
+                                        if (f && isString(f)) {
                                             out.fuseBoxMain = f.value;
                                             out.fuseBoxBundle = true;
                                         }
@@ -60,14 +79,14 @@ class FileAnalysis {
                     }
                 }
                 if (node.type === "ImportDeclaration") {
-                    if (node.source && node.source.type === "Literal") {
+                    if (node.source && isString(node.source)) {
                         out.requires.push(node.source.value);
                     }
                 }
                 if (node.type === "CallExpression") {
                     if (node.callee.type === "Identifier" && node.callee.name === "require") {
                         let arg1 = node.arguments[0];
-                        if (arg1.type === "Literal") {
+                        if (isString(arg1)) {
                             out.requires.push(arg1.value);
                         }
                     }
@@ -91,6 +110,7 @@ class FileAnalysis {
                 this.file.alternativeContent = `module.exports = require("${out.fuseBoxMain}")`;
             }
         }
+        this.wasAnalysed = true;
     }
     removeFuseBoxApiFromBundle() {
         let ast = this.ast;

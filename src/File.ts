@@ -181,6 +181,13 @@ export class File {
         this.isLoaded = true;
     }
 
+    public makeAnalysis() {
+        if (!this.analysis.astIsLoaded()) {
+            this.analysis.parseUsingAcorn();
+        }
+        this.analysis.analyze();
+    }
+
 
     /**
      * 
@@ -206,8 +213,8 @@ export class File {
 
         if (/\.js(x)?$/.test(this.absPath)) {
             this.loadContents();
-            this.analysis.process();
             this.tryPlugins();
+            this.makeAnalysis();
             return;
         }
         this.tryPlugins();
@@ -245,11 +252,10 @@ export class File {
             result.outputText = result.outputText.replace("//# sourceMappingURL=module.js.map", "")
             this.sourceMap = JSON.stringify(jsonSourceMaps);
         }
-        //console.log(result.outputText);
         this.contents = result.outputText;
 
         // consuming transpiled javascript
-        this.analysis.process();
+        this.makeAnalysis();
         if (this.context.useCache) {
             this.context.cache.writeStaticCache(this, this.sourceMap);
         }
