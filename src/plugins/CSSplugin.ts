@@ -1,3 +1,4 @@
+import { PluginChain } from './../PluginChain';
 import * as fs from "fs";
 import * as path from "path";
 import { Config } from "./../Config";
@@ -51,6 +52,10 @@ export class CSSPluginClass implements Plugin {
         context.source.addContent(fs.readFileSync(lib).toString());
     }
 
+    public onStyleChain(chain: PluginChain) {
+        this.modify(chain.file);
+    }
+
     /**
      *
      *
@@ -60,6 +65,10 @@ export class CSSPluginClass implements Plugin {
      */
     public transform(file: File) {
         file.loadContents();
+        this.modify(file);
+    }
+
+    private modify(file: File) {
         let contents = "";
         let filePath = file.info.fuseBoxPath;
         let serve = false;
@@ -71,7 +80,6 @@ export class CSSPluginClass implements Plugin {
                     serve = true;
                 }
             }
-
         }
         if (serve) {
             contents = `__fsbx_css("${filePath}")`;
