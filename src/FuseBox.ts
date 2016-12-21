@@ -8,7 +8,6 @@ import * as path from "path";
 import { each, utils, chain, Chainable } from "realm-utils";
 const appRoot = require("app-root-path");
 const watch = require("watch");
-const DEFAULT_EXTENSIONS = ['.ts', '.js', '.jsx', '.html', '.xml', '.json', '.css'];
 
 /**
  *
