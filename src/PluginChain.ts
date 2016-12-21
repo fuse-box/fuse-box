@@ -11,7 +11,7 @@ export class PluginChain {
         this.methodName = `on${methodName.charAt(0).toUpperCase() + methodName.slice(1)}Chain`;
     }
 
-    public setContent(context: WorkFlowContext) {
+    public setContext(context: WorkFlowContext) {
         this.context = context;
     }
 }

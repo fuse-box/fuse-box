@@ -164,9 +164,7 @@ export class File {
 
                 // Let tranformation resolve (if it's async)
                 this.resolving.push(new Promise((resolve, reject) => {
-
                     tranformationResult.then(res => {
-                        console.log("all good");
                         if (res instanceof PluginChain) {
                             this.chainPlugins(index, res);
                         }
@@ -288,7 +286,7 @@ export class File {
     }
 
     private chainPlugins(start: number, chain: PluginChain) {
-        chain.setContent(this.context);
+        chain.setContext(this.context);
         let total = this.context.plugins.length;
         for (let i = start; i < total; i++) {
             let plugin = this.context.plugins[i];
