@@ -38,7 +38,6 @@ export declare class WorkFlowContext {
     log: Log;
     initCache(): void;
     reset(): void;
-    allowExtension(ext: string): void;
     setHomeDir(dir: string): void;
     setLibInfo(name: string, version: string, info: IPackageInformation): Map<string, IPackageInformation>;
     convert2typescript(name: string): string;

@@ -1,4 +1,3 @@
-import { PluginChain } from './FuseBox';
 import { ModuleCollection } from "./ModuleCollection";
 import { FileAnalysis } from "./FileAnalysis";
 import { WorkFlowContext, Plugin } from "./WorkflowContext";
@@ -126,12 +125,6 @@ export class File {
         return name;
     }
 
-    public createChain(name: string, file: File, opts?: any) {
-        return new PluginChain(name, file, opts);
-    }
-
-
-
     /**
      * 
      * 
@@ -147,35 +140,19 @@ export class File {
                 let plugin = this.context.plugins[index];
                 if (plugin.test && plugin.test.test(this.absPath)) {
                     target = plugin;
-
-                    console.log(target.test, target['name']);
                 }
                 index++;
             }
-            let tranformationResult;
+
             // Found target plugin
             if (target) {
                 // call tranformation callback
                 if (utils.isFunction(target.transform)) {
-                    tranformationResult = target.transform.apply(target, [this, _ast]);
-
-                }
-            }
-
-            if (utils.isPromise(tranformationResult)) {
-
-                // Let tranformation resolve (if it's async)
-                this.resolving.push(new Promise((resolve, reject) => {
-                    tranformationResult.then(res => {
-                        if (res instanceof PluginChain) {
-                            this.chainPlugins(index, res);
-                        }
-                        return resolve(res);
-                    }).catch(reject);
-                }));
-            } else {
-                if (tranformationResult instanceof PluginChain) {
-                    this.chainPlugins(index, tranformationResult);
+                    let response = target.transform.apply(target, [this, _ast]);
+                    // Tranformation can be async
+                    if (utils.isPromise(response)) {
+                        this.resolving.push(response);
+                    }
                 }
             }
         }
@@ -204,7 +181,7 @@ export class File {
         if (!this.contents) {
             this.contents = fs.readFileSync(this.info.absPath).toString();
         }
-        
+
         this.isLoaded = true;
     }
 
@@ -288,16 +265,5 @@ export class File {
             this.context.cache.writeStaticCache(this, this.sourceMap);
         }
         this.tryPlugins();
-    }
-
-    private chainPlugins(start: number, chain: PluginChain) {
-        chain.setContext(this.context);
-        let total = this.context.plugins.length;
-        for (let i = start; i < total; i++) {
-            let plugin = this.context.plugins[i];
-            if (utils.isFunction(plugin[chain.methodName])) {
-                plugin[chain.methodName](chain);
-            }
-        }
     }
 }
