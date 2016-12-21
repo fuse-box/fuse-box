@@ -268,6 +268,11 @@ Or match a particular pattern
 FuseBox.import("./batch/*-component")
 ```
 
+Note that you can use all of the above with `require` statement too.
+
+```
+require("./batch/*")
+```
 See [tests](https://github.com/fuse-box/fuse-box/blob/master/test/wildcard_imports.js#L4)
 
 
