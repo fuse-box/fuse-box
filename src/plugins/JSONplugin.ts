@@ -20,16 +20,6 @@ export class FuseBoxJSONPlugin implements Plugin {
     /**
      * 
      * 
-     * @param {WorkFlowContext} context
-     * 
-     * @memberOf FuseBoxHTMLPlugin
-     */
-    public init(context: WorkFlowContext) {
-        context.allowExtension(".json");
-    }
-    /**
-     * 
-     * 
      * @param {File} file
      * 
      * @memberOf FuseBoxHTMLPlugin

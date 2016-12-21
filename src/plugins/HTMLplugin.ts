@@ -23,17 +23,7 @@ export class FuseBoxHTMLPlugin implements Plugin {
      * @memberOf FuseBoxHTMLPlugin
      */
     public test: RegExp = /\.html$/;
-
-    /**
-     * 
-     * 
-     * @param {WorkFlowContext} context
-     * 
-     * @memberOf FuseBoxHTMLPlugin
-     */
-    public init(context: WorkFlowContext) {
-        context.allowExtension(".html");
-    }
+    
     /**
      * 
      * 

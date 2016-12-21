@@ -1,3 +1,4 @@
+import * as console from 'console';
 
 import { IPackageInformation, IPathInformation } from './PathMaster';
 import { WorkFlowContext } from "./WorkflowContext";
@@ -171,6 +172,7 @@ export class PathMaster {
             name = "." + name.slice(1, name.length);
             name = path.join(this.rootPackagePath, name);
         }
+
         if (!AllowedExtenstions.has(ext)) {
             if (/\/$/.test(name)) {
                 return `${name}index${fileExt}`;

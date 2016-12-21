@@ -20,16 +20,6 @@ export class SVGSimplePlugin implements Plugin {
     /**
      * 
      * 
-     * @param {WorkFlowContext} context
-     * 
-     * @memberOf FuseBoxHTMLPlugin
-     */
-    public init(context: WorkFlowContext) {
-        context.allowExtension(".svg");
-    }
-    /**
-     * 
-     * 
      * @param {File} file
      * 
      * @memberOf FuseBoxHTMLPlugin

@@ -1,3 +1,4 @@
+import * as console from 'console';
 
 import { BundleData } from './Arithmetic';
 import { ModuleCollection } from "./ModuleCollection";

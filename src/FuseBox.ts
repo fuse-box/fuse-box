@@ -8,61 +8,7 @@ import * as path from "path";
 import { each, utils, chain, Chainable } from "realm-utils";
 const appRoot = require("app-root-path");
 const watch = require("watch");
-
-export class PluginChain {
-    private test: RegExp;
-    private extension: string;
-    private plugins: Array<Plugin>;
-
-    constructor(extension: string) {
-        this.extension = extension;
-        this.plugins = [];
-    }
-
-    init(context: WorkFlowContext) {
-        console.log(this.extension)
-        context.allowExtension(this.extension);
-    }
-
-    forTest(test: RegExp) {
-        this.test = test;
-        return this;
-    }
-
-    add(plugin: Plugin) {
-        this.plugins.push(plugin);
-        return this;
-    }
-
-    bundleStart(context: WorkFlowContext) {
-        // Not sure about this - I've assumed that the first plugin in the "stack"
-        // will take responsability for adding bundleStart content?
-        let plugin = this.plugins[0];
-
-        if (utils.isFunction(plugin.bundleStart)) {
-            plugin.bundleStart(context);
-        }
-    }
-
-    transform(file, ast?): Promise<void> {
-        return this.plugins.reduce((chain: Promise<void>, plugin) => {
-            if (utils.isFunction(plugin.transform)) {
-                return chain.then(() => plugin.transform.apply(plugin, [file, ast]));
-            }
-        }, Promise.resolve());
-    }
-
-    bundleEnd(context: WorkFlowContext) {
-        // Not sure about this - I've assumed that the first plugin in the "stack"
-        // will take responsability for adding bundleEnd content?
-        let plugin = this.plugins[0];
-
-        if (utils.isFunction(plugin.bundleEnd)) {
-            plugin.bundleEnd(context);
-        }
-    }
-}
-
+const DEFAULT_EXTENSIONS = ['.ts', '.js', '.jsx', '.html', '.xml', '.json', '.css'];
 
 /**
  *
@@ -72,13 +18,8 @@ export class PluginChain {
  */
 export class FuseBox {
 
-
     public static init(opts?: any) {
         return new FuseBox(opts);
-    }
-
-    public static chain(name: string): PluginChain {
-        return new PluginChain(name);
     }
 
     public virtualFiles: any;
@@ -86,7 +27,6 @@ export class FuseBox {
     private collectionSource: CollectionSource;
 
     private context: WorkFlowContext;
-
 
     /**
      * Creates an instance of FuseBox.
@@ -114,6 +54,10 @@ export class FuseBox {
         }
 
         this.context.plugins = opts.plugins || [JSONPlugin()];
+
+        if (opts.extensions) {
+            this.context.setAllowExtensions(opts.extensions);
+        }
 
         if (opts.package) {
             this.context.defaultPackageName = opts.package;
