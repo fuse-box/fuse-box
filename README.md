@@ -389,7 +389,7 @@ Install less first.
 ```
 npm install less --save-dev
 ```
-Less plugin should be chained to the CSSPlugin like so:
+Less plugin should be chained along the with the CSSPlugin
 
 ```
 plugins:[
@@ -408,7 +408,7 @@ Install libraries first
 npm install precss postcss --save-dev
 ```
 
-PostCSSPlugin plugin should be chained to the CSSPlugin like so:
+PostCSS should be chained along the with the CSSPlugin
 
 ```
 const precss = require("precss");
