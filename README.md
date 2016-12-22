@@ -12,7 +12,7 @@ FuseBox is a bundler/module loader that combines the power of webpack, JSPM and 
 
 Start fusing!
 
-[angular2-example](https://github.com/fuse-box/angular2-example) 50ms to fuse!
+[Angular2 + less](https://github.com/fuse-box/angular2-example) 50ms to fuse!
 
 [react-example](https://github.com/fuse-box/react-example) 50ms to fuse!
 
@@ -389,11 +389,11 @@ Install less first.
 ```
 npm install less --save-dev
 ```
-Less plugin should be chained to the CSSPlugin like so:
+Less plugin should be chained along the with the CSSPlugin
 
 ```
 plugins:[
-  [/.less$/, fsbx.LESSPlugin(), fsbx.CSSPlugin()]
+  [fsbx.LESSPlugin(), fsbx.CSSPlugin()]
 ],
 ```
 
@@ -408,7 +408,7 @@ Install libraries first
 npm install precss postcss --save-dev
 ```
 
-PostCSSPlugin plugin should be chained to the CSSPlugin like so:
+PostCSS should be chained along the with the CSSPlugin
 
 ```
 const precss = require("precss");
@@ -416,7 +416,7 @@ const POST_CSS_PLUGINS = [precss()];
 
 
 plugins:[
-  [/.css$/, fsbx.PostCSSPlugin(POST_CSS_PLUGINS), fsbx.CSSPlugin()],
+  [fsbx.PostCSSPlugin(POST_CSS_PLUGINS), fsbx.CSSPlugin()],
 ],
 ```
 

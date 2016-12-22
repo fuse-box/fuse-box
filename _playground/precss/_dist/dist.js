@@ -45,15 +45,15 @@ __fsbx_css("style.styl", "body {\n  width: 960px;\n  background-color: #ccc;\n}\
 });
 ___scope___.file("style2.styl", function(exports, require, module, __filename, __dirname){ 
 
-__fsbx_css("style2.styl", ".selector {\n  width: 960px;\n  background-color: #ccc;\n}\n")
+__fsbx_css("style2.styl", ".selector {\n  width: 960px;\n  background-color: #ccc;\n  background-image: url(\"./img.jpg\");\n}\n")
 });
 ___scope___.file("style.less", function(exports, require, module, __filename, __dirname){ 
 
-__fsbx_css("style.less", "body {\n  width: 960px;\n  background-color: #ccc;\n}\n")
+__fsbx_css("style.less", "@c1 : #ccc;\nbody {\n  width: 960px;\n  background-color: ;\n}\n")
 });
 ___scope___.file("style2.less", function(exports, require, module, __filename, __dirname){ 
 
-__fsbx_css("style2.less", "body {\n  width: 960px;\n  background-color: #ccc;\n}\n")
+__fsbx_css("style2.less", "@c1 : #ccc;\nbody {\n  width: 960px;\n  background-color: ;\n}\n")
 });
 });
 

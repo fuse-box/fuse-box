@@ -146,6 +146,7 @@ export class File {
     public tryPlugins(_ast?: any) {
         if (this.context.plugins) {
             let target: Plugin;
+            let pluginArray;
             let index = 0;
             while (!target && index < this.context.plugins.length) {
                 let item = this.context.plugins[index];
@@ -155,7 +156,7 @@ export class File {
                     // check for the first item ( it might be a RegExp)
                     if (el instanceof RegExp) {
                         itemTest = el;
-                        item.splice(0, 1);
+                        pluginArray = item.slice(1);
                     } else {
                         itemTest = el.test;
                     }
@@ -168,15 +169,14 @@ export class File {
                 index++;
             }
 
-            if (Array.isArray(target)) {
-                this.asyncResolve(each(target, plugin => {
-                    if (utils.isFunction(plugin.transform)) {
-                        return plugin.transform.apply(plugin, [this]);
-                    }
-                }));
-            } else {
-                if (target) {
-                    // call tranformation callback
+            if (target) {
+                if (pluginArray) {
+                    this.asyncResolve(each(pluginArray, plugin => {
+                        if (utils.isFunction(plugin.transform)) {
+                            return plugin.transform.apply(plugin, [this]);
+                        }
+                    }));
+                } else {
                     if (utils.isFunction(target.transform)) {
                         this.asyncResolve(target.transform.apply(target, [this]));
                     }

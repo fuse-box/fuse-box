@@ -20,7 +20,7 @@ let fuseBox = FuseBox.init({
     //globals: { myLib: "myLib" },
     //plugins: [new build.TypeScriptHelpers(), build.JSONPlugin, new build.CSSPlugin({ minify: true })]
     plugins: [
-        [/^style\d?\.styl$/, StylusPlugin({}), build.CSSPlugin({})],
+        [/style\d?\.styl$/, StylusPlugin({}), build.CSSPlugin({})],
         [LESSPlugin({}), build.CSSPlugin({})]
         // [/^style-dup\.styl$/, StylusPlugin({})]
     ]
