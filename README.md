@@ -393,7 +393,7 @@ Less plugin should be chained to the CSSPlugin like so:
 
 ```
 plugins:[
-  [/.less$/, fsbx.LESSPlugin(), fsbx.CSSPlugin()]
+  [fsbx.LESSPlugin(), fsbx.CSSPlugin()]
 ],
 ```
 
@@ -416,7 +416,7 @@ const POST_CSS_PLUGINS = [precss()];
 
 
 plugins:[
-  [/.css$/, fsbx.PostCSSPlugin(POST_CSS_PLUGINS), fsbx.CSSPlugin()],
+  [fsbx.PostCSSPlugin(POST_CSS_PLUGINS), fsbx.CSSPlugin()],
 ],
 ```
 
