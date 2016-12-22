@@ -1,4 +1,5 @@
 "use strict";
+const Utils_1 = require("./Utils");
 const path = require("path");
 const fs = require("fs");
 const Config_1 = require("./Config");
@@ -34,6 +35,11 @@ class PathMaster {
             data.remoteURL = name;
             data.absPath = name;
             return data;
+        }
+        if (/\?/.test(name)) {
+            let paramsSplit = name.split(/\?(.+)/);
+            name = paramsSplit[0];
+            data.params = Utils_1.parseQuery(paramsSplit[1]);
         }
         data.isNodeModule = NODE_MODULE.test(name);
         if (data.isNodeModule) {

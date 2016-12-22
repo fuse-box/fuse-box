@@ -9,6 +9,7 @@ export declare class File {
     isFuseBoxBundle: boolean;
     alternativeContent: string;
     notFound: boolean;
+    params: Map<string, string>;
     absPath: string;
     contents: string;
     isLoaded: boolean;

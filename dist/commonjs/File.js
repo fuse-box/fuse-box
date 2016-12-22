@@ -13,6 +13,9 @@ class File {
         this.isTypeScript = false;
         this.analysis = new FileAnalysis_1.FileAnalysis(this);
         this.resolving = [];
+        if (info.params) {
+            this.params = info.params;
+        }
         this.absPath = info.absPath;
     }
     getCrossPlatormPath() {
@@ -32,7 +35,6 @@ class File {
     tryPlugins(_ast) {
         if (this.context.plugins) {
             let target;
-            let pluginArray;
             let index = 0;
             while (!target && index < this.context.plugins.length) {
                 let item = this.context.plugins[index];

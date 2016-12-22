@@ -7,8 +7,12 @@ class CSSPluginClass {
     constructor(opts) {
         this.test = /\.css$/;
         this.dependencies = ["fsb-default-css-plugin"];
+        this.raw = false;
         this.minify = false;
         opts = opts || {};
+        if (opts.raw !== undefined) {
+            this.raw = opts.raw;
+        }
         if (opts.minify !== undefined) {
             this.minify = opts.minify;
         }
@@ -25,12 +29,14 @@ class CSSPluginClass {
     }
     transform(file) {
         file.loadContents();
-        this.modify(file);
-    }
-    modify(file) {
         let contents;
         let filePath = file.info.fuseBoxPath;
         let serve = false;
+        if (file.params && file.params.get("raw") !== undefined) {
+            let cssContent = (this.minify) ? this.minifyContents(file.contents) : file.contents;
+            file.contents = `exports.default = ${JSON.stringify(cssContent)};`;
+            return;
+        }
         if (this.serve) {
             if (realm_utils_1.utils.isFunction(this.serve)) {
                 let userResult = this.serve(file.info.fuseBoxPath, file);
@@ -44,11 +50,13 @@ class CSSPluginClass {
             contents = `__fsbx_css("${filePath}")`;
         }
         else {
-            let cssContent = this.minify ?
-                file.contents.replace(/\s{2,}/g, " ").replace(/\t|\r|\n/g, "").trim() : file.contents;
+            let cssContent = this.minify ? this.minifyContents(file.contents) : file.contents;
             contents = `__fsbx_css("${filePath}", ${JSON.stringify(cssContent)})`;
         }
         file.contents = contents;
+    }
+    minifyContents(contents) {
+        return contents.replace(/\s{2,}/g, " ").replace(/\t|\r|\n/g, "").trim();
     }
 }
 exports.CSSPluginClass = CSSPluginClass;

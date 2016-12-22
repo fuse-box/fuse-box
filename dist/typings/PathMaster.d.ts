@@ -13,6 +13,7 @@ export interface IPathInformation {
     nodeModuleExplicitOriginal?: string;
     absDir?: string;
     fuseBoxPath?: string;
+    params?: Map<string, string>;
     absPath?: string;
 }
 export interface IPackageInformation {
