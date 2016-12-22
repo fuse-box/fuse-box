@@ -22,8 +22,8 @@ const fuseBox = FuseBox.init({
         build.TypeScriptHelpers(),
         build.JSONPlugin(),
 
-        [/.less$/, build.LESSPlugin(), build.CSSPlugin()],
-        [/.css$/, build.PostCSS(POST_CSS_PLUGINS), build.CSSPlugin()],
+        [build.LESSPlugin(), build.CSSPlugin()],
+        [build.PostCSS(POST_CSS_PLUGINS), build.CSSPlugin()],
 
 
         //build.ChainPlugin(/.less$/, [build.LESSPlugin(), build.CSSPlugin()]),

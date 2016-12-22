@@ -156,7 +156,6 @@ export class File {
                     // check for the first item ( it might be a RegExp)
                     if (el instanceof RegExp) {
                         itemTest = el;
-                        pluginArray = item.slice(1);
                     } else {
                         itemTest = el.test;
                     }
@@ -170,8 +169,8 @@ export class File {
             }
 
             if (target) {
-                if (pluginArray) {
-                    this.asyncResolve(each(pluginArray, plugin => {
+                if (Array.isArray(target)) {
+                    this.asyncResolve(each(target, plugin => {
                         if (utils.isFunction(plugin.transform)) {
                             return plugin.transform.apply(plugin, [this]);
                         }
