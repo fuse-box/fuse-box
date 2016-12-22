@@ -384,6 +384,46 @@ plugins: [
 
 On top of that a CSS file will added to DOM upon request if not found in the bundle.
 
+## LessPlugin
+Install less first.
+```
+npm install less --save-dev
+```
+Less plugin should be chained to the CSSPlugin like so:
+
+```
+plugins:[
+  [/.less$/, fsbx.LESSPlugin(), fsbx.CSSPlugin()]
+],
+```
+
+> We still need to figure out what to do with sourcemaps. Be patient!
+
+
+
+## PostCSSPlugin
+Install libraries first
+
+```
+npm install precss postcss --save-dev
+```
+
+PostCSSPlugin plugin should be chained to the CSSPlugin like so:
+
+```
+const precss = require("precss");
+const POST_CSS_PLUGINS = [precss()];
+
+
+plugins:[
+  [/.css$/, fsbx.PostCSSPlugin(POST_CSS_PLUGINS), fsbx.CSSPlugin()],
+],
+```
+
+> We still need to figure out what to do with sourcemaps. Be patient!
+
+
+
 ## HTML Plugin
 
 ```
