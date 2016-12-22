@@ -4,7 +4,7 @@ const watch = require("watch");
 const FuseBox = build.FuseBox;
 const fs = require("fs");
 
-const PreCSSPlugin = require('../dist/commonjs/plugins/PreCSSPlugin').PreCSSPlugin;
+const StylusPlugin = require('../dist/commonjs/plugins/StylusPlugin').StylusPlugin;
 
 let fuseBox = FuseBox.init({
     homeDir: "_playground/precss",
@@ -19,9 +19,9 @@ let fuseBox = FuseBox.init({
     //globals: { myLib: "myLib" },
     //plugins: [new build.TypeScriptHelpers(), build.JSONPlugin, new build.CSSPlugin({ minify: true })]
     plugins: [
-        [PreCSSPlugin({})],
-        [PreCSSPlugin({type: 'stylus'})],
-        [PreCSSPlugin({type: 'sass'})]
+        [StylusPlugin({}), build.CSSPlugin({})],
+        /*[PreCSSPlugin({type: 'stylus'})],
+        [PreCSSPlugin({type: 'sass'})]*/
     ]
 });
 

@@ -1,4 +1,34 @@
 (function(FuseBox){
+var __fsbx_css = function(__filename, contents) {
+    if (FuseBox.isServer) {
+        return;
+    }
+    var styleId = __filename.replace(/[\.\/]+/g, "-");
+    if (styleId.charAt(0) === '-') styleId = styleId.substring(1);
+    var exists = document.getElementById(styleId);
+    if (!exists) {
+        //<link href="//fonts.googleapis.com/css?family=Covered+By+Your+Grace" rel="stylesheet" type="text/css">
+        var s = document.createElement(contents ? "style" : "link");
+        s.id = styleId;
+        s.type = "text/css";
+        if (contents) {
+            s.innerHTML = contents;
+        } else {
+            s.rel = "stylesheet";
+            s.href = __filename;
+        }
+        document.getElementsByTagName("head")[0].appendChild(s);
+    }
+}
+FuseBox.on("async", function(name) {
+    if (FuseBox.isServer) {
+        return;
+    }
+    if (/\.css$/.test(name)) {
+        __fsbx_css(name);
+        return false;
+    }
+});
 FuseBox.pkg("default", {}, function(___scope___){
 ___scope___.file("index.js", function(exports, require, module, __filename, __dirname){ 
 
@@ -6,13 +36,9 @@ require('./style.styl');
 require('./style.less');
 require('./style.scss');
 });
-___scope___.file("style.less", function(exports, require, module, __filename, __dirname){ 
+___scope___.file("style.styl", function(exports, require, module, __filename, __dirname){ 
 
-body {
-  width: 960px;
-  background-color: #ccc;
-}
-
+__fsbx_css("style.styl", "body {\n  width: 960px;\n  background-color: #ccc;\n}\n")
 });
 });
 
