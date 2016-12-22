@@ -23,8 +23,14 @@ class CSSPluginClass {
         let lib = path.join(Config_1.Config.LOCAL_LIBS, "fsbx-default-css-plugin", "index.js");
         context.source.addContent(fs.readFileSync(lib).toString());
     }
+    onStyleChain(chain) {
+        this.modify(chain.file);
+    }
     transform(file) {
         file.loadContents();
+        this.modify(file);
+    }
+    modify(file) {
         let contents = "";
         let filePath = file.info.fuseBoxPath;
         let serve = false;

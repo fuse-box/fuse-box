@@ -1,4 +1,6 @@
 "use strict";
+var PostCSSPlugin_1 = require("./plugins/PostCSSPlugin");
+exports.PostCSS = PostCSSPlugin_1.PostCSS;
 var TypeScriptHelpers_1 = require("./plugins/TypeScriptHelpers");
 exports.TypeScriptHelpers = TypeScriptHelpers_1.TypeScriptHelpers;
 var SVGPlugin_1 = require("./plugins/SVGPlugin");

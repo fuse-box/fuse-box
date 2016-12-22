@@ -1,4 +1,5 @@
 "use strict";
+const PluginChain_1 = require("./PluginChain");
 const FileAnalysis_1 = require("./FileAnalysis");
 const fs = require("fs");
 const realm_utils_1 = require("realm-utils");
@@ -22,6 +23,9 @@ class File {
         name = name.replace(/\\/g, "/");
         return name;
     }
+    createChain(name, file, opts) {
+        return new PluginChain_1.PluginChain(name, file, opts);
+    }
     tryPlugins(_ast) {
         if (this.context.plugins) {
             let target;
@@ -33,12 +37,25 @@ class File {
                 }
                 index++;
             }
+            let tranformationResult;
             if (target) {
                 if (realm_utils_1.utils.isFunction(target.transform)) {
-                    let response = target.transform.apply(target, [this, _ast]);
-                    if (realm_utils_1.utils.isPromise(response)) {
-                        this.resolving.push(response);
-                    }
+                    tranformationResult = target.transform.apply(target, [this, _ast]);
+                }
+            }
+            if (realm_utils_1.utils.isPromise(tranformationResult)) {
+                this.resolving.push(new Promise((resolve, reject) => {
+                    tranformationResult.then(res => {
+                        if (res instanceof PluginChain_1.PluginChain) {
+                            this.chainPlugins(index, res);
+                        }
+                        return resolve(res);
+                    }).catch(reject);
+                }));
+            }
+            else {
+                if (tranformationResult instanceof PluginChain_1.PluginChain) {
+                    this.chainPlugins(index, tranformationResult);
                 }
             }
         }
@@ -109,6 +126,16 @@ class File {
             this.context.cache.writeStaticCache(this, this.sourceMap);
         }
         this.tryPlugins();
+    }
+    chainPlugins(start, chain) {
+        chain.setContext(this.context);
+        let total = this.context.plugins.length;
+        for (let i = start; i < total; i++) {
+            let plugin = this.context.plugins[i];
+            if (realm_utils_1.utils.isFunction(plugin[chain.methodName])) {
+                plugin[chain.methodName](chain);
+            }
+        }
     }
 }
 exports.File = File;
