@@ -305,6 +305,17 @@ FuseBox.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}; require('
 ```
 A bundle can reference "stuff/boo.js" once a dynamic module was initialized.
 
+You can retrieve hello as below:
+```
+require("~/stuff/boo").hello
+```
+or
+
+```
+require("~/stuff/boo.js").hello
+```
+
+
 ## FuseBox events
 
 It is possible to intercept require statements. You can catch "before-import" and "after-import" events like so:

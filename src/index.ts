@@ -1,6 +1,8 @@
+export { PostCSS } from "./plugins/PostCSSPlugin";
 export { TypeScriptHelpers } from "./plugins/TypeScriptHelpers";
 export { SVGPlugin } from "./plugins/SVGPlugin";
 export { BabelPlugin } from "./plugins/BabelPlugin";
+
 
 export { CSSPlugin } from "./plugins/CSSplugin";
 export { HTMLPlugin } from "./plugins/HTMLplugin";
