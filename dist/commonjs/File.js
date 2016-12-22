@@ -32,6 +32,7 @@ class File {
     tryPlugins(_ast) {
         if (this.context.plugins) {
             let target;
+            let pluginArray;
             let index = 0;
             while (!target && index < this.context.plugins.length) {
                 let item = this.context.plugins[index];
@@ -40,7 +41,7 @@ class File {
                     let el = item[0];
                     if (el instanceof RegExp) {
                         itemTest = el;
-                        item.splice(0, 1);
+                        pluginArray = item.slice(1);
                     }
                     else {
                         itemTest = el.test;
@@ -54,15 +55,15 @@ class File {
                 }
                 index++;
             }
-            if (Array.isArray(target)) {
-                this.asyncResolve(realm_utils_1.each(target, plugin => {
-                    if (realm_utils_1.utils.isFunction(plugin.transform)) {
-                        return plugin.transform.apply(plugin, [this]);
-                    }
-                }));
-            }
-            else {
-                if (target) {
+            if (target) {
+                if (pluginArray) {
+                    this.asyncResolve(realm_utils_1.each(pluginArray, plugin => {
+                        if (realm_utils_1.utils.isFunction(plugin.transform)) {
+                            return plugin.transform.apply(plugin, [this]);
+                        }
+                    }));
+                }
+                else {
                     if (realm_utils_1.utils.isFunction(target.transform)) {
                         this.asyncResolve(target.transform.apply(target, [this]));
                     }
