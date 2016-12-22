@@ -17,7 +17,7 @@ export class StylusPluginClass implements Plugin {
 		context.allowExtension('.styl');
 	}
 
-	public transform (file: File): Promise<File> {
+	public transform (file: File): Promise<any> {
 		file.loadContents();
 
 		if (!stylus) stylus = require('stylus');
