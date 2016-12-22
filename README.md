@@ -17,6 +17,7 @@ Start fusing!
 [react-example](https://github.com/fuse-box/react-example) 50ms to fuse!
 
 ## Recent updates
+* 1.3.21 Require options introduced. Added [StylusPlugin](#stylusplugin), Raw style options for CSSPlugin (big thanks to _kai_ and _shepless_),
 * v1.3.18-1.3.21 PluginChains introduced! Added [PostCSSPlugin](#postcssplugin) [LESSPlugin](#lessplugin) (thanks shepless)
 * v1.3.17 Added [wildcard import](#wildcard-import) support
 * v1.3.16 Prints a pretty stacktrace instead of unreadable acorn exceptions.
@@ -383,6 +384,18 @@ plugins: [
 ```
 
 On top of that a CSS file will added to DOM upon request if not found in the bundle.
+
+Add `?raw` to your file in require statement to export a raw string.This is useful for Angular2 who wants inlined styles in their [components](https://angular.io/docs/ts/latest/api/core/index/Component-decorator.html)
+
+Like this:
+
+````
+@Component({
+ selector: 'greet', 
+ template: 'Hello {{name}}!', 
+ styles: require("./style.less?raw")
+})
+```
 
 ## LessPlugin
 Install less first.
