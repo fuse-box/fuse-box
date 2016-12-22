@@ -298,7 +298,7 @@ FuseBox.exists("./index")
 
 ## Dynamic
 
-Like SystemJS FuseBox provides a hacky way of creating a dynamic module from a string. After it has been initialized it shared 100% the same environment and behaves accordingly.
+Like SystemJS FuseBox provides a hacky way of creating a dynamic module from a string. After it has been initialized it shares 100% the same environment and behaves accordingly.
 
 ```
 FuseBox.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}; require('./foo')")
