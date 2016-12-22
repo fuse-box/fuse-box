@@ -179,6 +179,12 @@ const $getRef = (name, opts: any): IReference => {
         name = "./" + pkg.s.entry;
     }
 
+    // get rid of options
+    if (name.indexOf("?") > -1) {
+        let paramsSplit = name.split(/\?(.+)/);
+        name = paramsSplit[0];
+    }
+
     let filePath = $pathJoin(basePath, name);
     // Try first adding .js if missing
     let validPath = $ensureExtension(filePath);
@@ -274,13 +280,11 @@ const $trigger = (name: string, args: any) => {
  * @returns
  */
 const $import = (name: string, opts: any = {}) => {
-    // Test for external URLS  
 
+    // Test for external URLS  
     if (/^(http(s)?:|\/\/)/.test(name)) {
         return $loadURL(name);
     }
-
-
     let ref = $getRef(name, opts);
     if (ref.serverReference) {
         return ref.serverReference;

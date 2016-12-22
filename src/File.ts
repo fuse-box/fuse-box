@@ -28,6 +28,8 @@ export class File {
     public alternativeContent: string;
 
     public notFound: boolean;
+
+    public params: Map<string, string>;
     /**
      * 
      * 
@@ -107,6 +109,9 @@ export class File {
      * @memberOf File
      */
     constructor(public context: WorkFlowContext, public info: IPathInformation) {
+        if (info.params) {
+            this.params = info.params;
+        }
         this.absPath = info.absPath;
     }
 
@@ -146,7 +151,6 @@ export class File {
     public tryPlugins(_ast?: any) {
         if (this.context.plugins) {
             let target: Plugin;
-            let pluginArray;
             let index = 0;
             while (!target && index < this.context.plugins.length) {
                 let item = this.context.plugins[index];

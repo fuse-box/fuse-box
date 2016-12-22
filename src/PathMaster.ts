@@ -1,3 +1,4 @@
+import { parseQuery } from './Utils';
 import { IPackageInformation, IPathInformation } from './PathMaster';
 import { WorkFlowContext } from "./WorkflowContext";
 import * as path from "path";
@@ -18,6 +19,7 @@ export interface IPathInformation {
     nodeModuleExplicitOriginal?: string;
     absDir?: string;
     fuseBoxPath?: string;
+    params?: Map<string, string>;
     absPath?: string;
 }
 
@@ -70,6 +72,12 @@ export class PathMaster {
             data.remoteURL = name;
             data.absPath = name;
             return data;
+        }
+
+        if (/\?/.test(name)) {
+            let paramsSplit = name.split(/\?(.+)/);
+            name = paramsSplit[0];
+            data.params = parseQuery(paramsSplit[1]);
         }
         data.isNodeModule = NODE_MODULE.test(name);
 

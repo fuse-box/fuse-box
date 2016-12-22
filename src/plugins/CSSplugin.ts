@@ -54,10 +54,9 @@ export class CSSPluginClass implements Plugin {
     }
 
     public bundleStart(context: WorkFlowContext) {
-        if (!this.raw) {
-            let lib = path.join(Config.LOCAL_LIBS, "fsbx-default-css-plugin", "index.js")
-            context.source.addContent(fs.readFileSync(lib).toString());
-        }
+
+        let lib = path.join(Config.LOCAL_LIBS, "fsbx-default-css-plugin", "index.js")
+        context.source.addContent(fs.readFileSync(lib).toString());
     }
 
     /**
@@ -74,7 +73,7 @@ export class CSSPluginClass implements Plugin {
         let filePath = file.info.fuseBoxPath;
         let serve = false;
 
-        if (this.raw) {
+        if (file.params && file.params.get("raw") !== undefined) {
             let cssContent = (this.minify) ? this.minifyContents(file.contents) : file.contents;
             file.contents = `exports.default = ${JSON.stringify(cssContent)};`;
             return;
