@@ -1,11 +1,12 @@
-const build = require("./../build/commonjs/index.js");
-const watch = require("watch");
-
-//global.Promise = require('bluebird')
-const FuseBox = build.FuseBox;
 const fs = require("fs");
+const watch = require("watch");
+const precss = require("precss");
+const build = require("./../build/commonjs/index.js");
+const FuseBox = build.FuseBox;
+const POST_CSS_PLUGINS = [precss()];
 
-let fuseBox = FuseBox.init({
+const fuseBox = FuseBox.init({
+    extensions: ['.less'],
     homeDir: "_playground/ts",
     // sourceMap: {
     //     bundleReference: "./sourcemaps.js.map",
@@ -17,15 +18,14 @@ let fuseBox = FuseBox.init({
     //package: "myLib",
     //globals: { myLib: "myLib" },
     modulesFolder: "_playground/npm",
-    //plugins: [new build.TypeScriptHelpers(), build.JSONPlugin, new build.CSSPlugin({ minify: true })]
     plugins: [
         build.TypeScriptHelpers(),
         build.JSONPlugin(),
-        build.PostCSS([require("precss")()]),
-        build.CSSPlugin({
-            minify: true
-                // serve: path => `./${path}`
-        })
+        build.ChainPlugin(/.less$/, [build.LESSPlugin(), build.CSSPlugin()]),
+        build.ChainPlugin(/.css$/, [build.PostCSSPlugin(POST_CSS_PLUGINS), build.CSSPlugin({
+            minify: true,
+            serve: path => `./${path}`
+        })])
     ]
 });
 

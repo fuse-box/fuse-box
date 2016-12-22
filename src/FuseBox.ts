@@ -1,6 +1,6 @@
 import { JSONPlugin } from "./plugins/JSONplugin";
 import { PathMaster } from "./PathMaster";
-import { WorkFlowContext } from "./WorkflowContext";
+import { WorkFlowContext } from './WorkflowContext';
 import { CollectionSource } from "./CollectionSource";
 import { Arithmetic, BundleData } from "./Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";
@@ -8,6 +8,7 @@ import * as path from "path";
 import { each, utils, chain, Chainable } from "realm-utils";
 const appRoot = require("app-root-path");
 const watch = require("watch");
+
 /**
  *
  *
@@ -16,16 +17,15 @@ const watch = require("watch");
  */
 export class FuseBox {
 
-
     public static init(opts?: any) {
         return new FuseBox(opts);
     }
+
     public virtualFiles: any;
 
     private collectionSource: CollectionSource;
 
     private context: WorkFlowContext;
-
 
     /**
      * Creates an instance of FuseBox.
@@ -53,6 +53,10 @@ export class FuseBox {
         }
 
         this.context.plugins = opts.plugins || [JSONPlugin()];
+
+        if (opts.extensions) {
+            this.context.setAllowExtensions(opts.extensions);
+        }
 
         if (opts.package) {
             this.context.defaultPackageName = opts.package;
