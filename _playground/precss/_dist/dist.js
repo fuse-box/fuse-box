@@ -33,12 +33,27 @@ FuseBox.pkg("default", {}, function(___scope___){
 ___scope___.file("index.js", function(exports, require, module, __filename, __dirname){ 
 
 require('./style.styl');
+require('./style2.styl');
+
 require('./style.less');
-require('./style.scss');
+require('./style2.less');
+
 });
 ___scope___.file("style.styl", function(exports, require, module, __filename, __dirname){ 
 
 __fsbx_css("style.styl", "body {\n  width: 960px;\n  background-color: #ccc;\n}\n")
+});
+___scope___.file("style2.styl", function(exports, require, module, __filename, __dirname){ 
+
+__fsbx_css("style2.styl", ".selector {\n  width: 960px;\n  background-color: #ccc;\n}\n")
+});
+___scope___.file("style.less", function(exports, require, module, __filename, __dirname){ 
+
+__fsbx_css("style.less", "body {\n  width: 960px;\n  background-color: #ccc;\n}\n")
+});
+___scope___.file("style2.less", function(exports, require, module, __filename, __dirname){ 
+
+__fsbx_css("style2.less", "body {\n  width: 960px;\n  background-color: #ccc;\n}\n")
 });
 });
 

@@ -17,7 +17,7 @@ class StylusPluginClass {
                 if (err)
                     return rej(err);
                 file.contents = css;
-                return res(file);
+                return res(true);
             });
         });
     }

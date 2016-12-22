@@ -28,7 +28,7 @@ export class StylusPluginClass implements Plugin {
 
 				file.contents = css;
 
-				return res(file);
+				return res(true);
 			});
 		});
 	}

@@ -1,3 +1,5 @@
 require('./style.styl');
+require('./style2.styl');
+
 require('./style.less');
-require('./style.scss');
+require('./style2.less');

@@ -40,7 +40,6 @@ class File {
                     let el = item[0];
                     if (el instanceof RegExp) {
                         itemTest = el;
-                        item.splice(0, 1);
                     }
                     else {
                         itemTest = el.test;
