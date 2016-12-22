@@ -12,7 +12,7 @@ FuseBox is a bundler/module loader that combines the power of webpack, JSPM and 
 
 Start fusing!
 
-[angular2-example](https://github.com/fuse-box/angular2-example) 50ms to fuse!
+[Angular2 + less](https://github.com/fuse-box/angular2-example) 50ms to fuse!
 
 [react-example](https://github.com/fuse-box/react-example) 50ms to fuse!
 
