@@ -12,11 +12,12 @@ FuseBox is a bundler/module loader that combines the power of webpack, JSPM and 
 
 Start fusing!
 
-[angular2-example](https://github.com/fuse-box/angular2-example) 50ms to fuse!
+[Angular2 + less](https://github.com/fuse-box/angular2-example) 50ms to fuse!
 
 [react-example](https://github.com/fuse-box/react-example) 50ms to fuse!
 
 ## Recent updates
+* v1.3.18 PluginChains introduced! Added [PostCSSPlugin](#postcssplugin) [LESSPlugin](#lessplugin) (thanks shepless)
 * v1.3.17 Added [wildcard import](#wildcard-import) support
 * v1.3.16 Prints a pretty stacktrace instead of unreadable acorn exceptions.
 
@@ -382,6 +383,46 @@ plugins: [
 ```
 
 On top of that a CSS file will added to DOM upon request if not found in the bundle.
+
+## LessPlugin
+Install less first.
+```
+npm install less --save-dev
+```
+Less plugin should be chained along the with the CSSPlugin
+
+```
+plugins:[
+  [fsbx.LESSPlugin(), fsbx.CSSPlugin()]
+],
+```
+
+> We still need to figure out what to do with sourcemaps. Be patient!
+
+
+
+## PostCSSPlugin
+Install libraries first
+
+```
+npm install precss postcss --save-dev
+```
+
+PostCSS should be chained along the with the CSSPlugin
+
+```
+const precss = require("precss");
+const POST_CSS_PLUGINS = [precss()];
+
+
+plugins:[
+  [fsbx.PostCSSPlugin(POST_CSS_PLUGINS), fsbx.CSSPlugin()],
+],
+```
+
+> We still need to figure out what to do with sourcemaps. Be patient!
+
+
 
 ## HTML Plugin
 
