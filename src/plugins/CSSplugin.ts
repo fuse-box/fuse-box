@@ -22,11 +22,17 @@ export class CSSPluginClass implements Plugin {
      */
     public test: RegExp = /\.css$/;
     public dependencies = ["fsb-default-css-plugin"];
+    private raw = false;
     private minify = false;
     private serve: any;
 
     constructor(opts: any) {
         opts = opts || {};
+
+        if (opts.raw !== undefined) {
+            this.raw = opts.raw;
+        }
+
         if (opts.minify !== undefined) {
             this.minify = opts.minify;
         }
@@ -48,8 +54,10 @@ export class CSSPluginClass implements Plugin {
     }
 
     public bundleStart(context: WorkFlowContext) {
-        let lib = path.join(Config.LOCAL_LIBS, "fsbx-default-css-plugin", "index.js")
-        context.source.addContent(fs.readFileSync(lib).toString());
+        if (!this.raw) {
+            let lib = path.join(Config.LOCAL_LIBS, "fsbx-default-css-plugin", "index.js")
+            context.source.addContent(fs.readFileSync(lib).toString());
+        }
     }
 
     /**
@@ -61,13 +69,17 @@ export class CSSPluginClass implements Plugin {
      */
     public transform(file: File) {
         file.loadContents();
-        this.modify(file);
-    }
 
-    private modify(file: File) {
         let contents;
         let filePath = file.info.fuseBoxPath;
         let serve = false;
+
+        if (this.raw) {
+            let cssContent = (this.minify) ? this.minifyContents(file.contents) : file.contents;
+            file.contents = `exports.default = ${JSON.stringify(cssContent)};`;
+            return;
+        }
+
         if (this.serve) {
             if (utils.isFunction(this.serve)) {
                 let userResult = this.serve(file.info.fuseBoxPath, file);
@@ -80,11 +92,15 @@ export class CSSPluginClass implements Plugin {
         if (serve) {
             contents = `__fsbx_css("${filePath}")`;
         } else {
-            let cssContent = this.minify ?
-                file.contents.replace(/\s{2,}/g, " ").replace(/\t|\r|\n/g, "").trim() : file.contents;
+            let cssContent = this.minify ? this.minifyContents(file.contents) : file.contents;
             contents = `__fsbx_css("${filePath}", ${JSON.stringify(cssContent)})`;
         }
+
         file.contents = contents;
+    }
+
+    private minifyContents(contents) {
+        return contents.replace(/\s{2,}/g, " ").replace(/\t|\r|\n/g, "").trim();
     }
 }
 

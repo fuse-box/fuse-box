@@ -22,14 +22,16 @@ const fuseBox = FuseBox.init({
         build.TypeScriptHelpers(),
         build.JSONPlugin(),
 
-        [build.LESSPlugin(), build.CSSPlugin()],
-        [build.PostCSS(POST_CSS_PLUGINS), build.CSSPlugin()],
+        // Only process none "raw" less files
+        [/^(?!.*raw).*\.less$/, build.LESSPlugin(), build.CSSPlugin()],
 
+        // Only process "raw" less files
+        [/\.raw.less$/, build.LESSPlugin(), build.CSSPlugin({
+            raw: true
+        })],
 
-        //build.ChainPlugin(/.less$/, [build.LESSPlugin(), build.CSSPlugin()]),
-        // build.ChainPlugin(/.css$/, [build.PostCSS(POST_CSS_PLUGINS), build.CSSPlugin({
-        //     minify: true
-        // })])
+        // All other CSS files
+        [build.PostCSS(POST_CSS_PLUGINS), build.CSSPlugin()]
     ]
 });
 
