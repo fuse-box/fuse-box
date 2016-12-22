@@ -21,12 +21,16 @@ const fuseBox = FuseBox.init({
     plugins: [
         build.TypeScriptHelpers(),
         build.JSONPlugin(),
-        build.ChainPlugin(/.less$/, [build.LESSPlugin(), build.CSSPlugin()]),
-        build.ChainPlugin(/.css$/, [build.PostCSSPlugin(POST_CSS_PLUGINS), build.CSSPlugin({
-            minify: true,
-            serve: path => `./${path}`
-        })])
+
+        [/.less$/, build.LESSPlugin(), build.CSSPlugin()],
+        [/.css$/, build.PostCSS(POST_CSS_PLUGINS), build.CSSPlugin()],
+
+
+        //build.ChainPlugin(/.less$/, [build.LESSPlugin(), build.CSSPlugin()]),
+        // build.ChainPlugin(/.css$/, [build.PostCSS(POST_CSS_PLUGINS), build.CSSPlugin({
+        //     minify: true
+        // })])
     ]
 });
 
-fuseBox.bundle(">index.ts");
+fuseBox.bundle(">index.ts", true);

@@ -38,7 +38,7 @@ export interface Plugin {
      * @type {{ (context: WorkFlowContext) }}
      * @memberOf Plugin
      */
-    init?: { (context: WorkFlowContext) };
+    init: { (context: WorkFlowContext) };
     /**
      * 
      * 
@@ -211,10 +211,11 @@ export class WorkFlowContext {
      */
     public log: Log;
 
+
+
     public initCache() {
         this.cache = new ModuleCache(this);
     }
-
     /**
      * 
      * 
@@ -229,16 +230,15 @@ export class WorkFlowContext {
     }
 
     /**
-         * 
-         * 
-         * @param {string} ext
-         * 
-         * @memberOf WorkFlowContext
-         */
-    public setAllowExtensions(extensions: Array<string>) {
-        extensions.forEach(extension => AllowedExtenstions.add(extension));
+     * 
+     * 
+     * @param {string} ext
+     * 
+     * @memberOf WorkFlowContext
+     */
+    public allowExtension(ext: string) {
+        AllowedExtenstions.add(ext);
     }
-
     /**
      * 
      * 

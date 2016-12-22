@@ -51,6 +51,7 @@ export class BabelPluginClass implements Plugin {
      */
     public init(context: WorkFlowContext) {
         this.context = context;
+        context.allowExtension(".jsx");
     }
 
 

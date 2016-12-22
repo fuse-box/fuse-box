@@ -36,14 +36,39 @@ export class CSSPluginClass implements Plugin {
         }
 
     }
+    /**
+     *
+     *
+     * @param {WorkFlowContext} context
+     *
+     * @memberOf FuseBoxCSSPlugin
+     */
+    public init(context: WorkFlowContext) {
+        context.allowExtension(".css");
+    }
 
     public bundleStart(context: WorkFlowContext) {
         let lib = path.join(Config.LOCAL_LIBS, "fsbx-default-css-plugin", "index.js")
         context.source.addContent(fs.readFileSync(lib).toString());
     }
 
+    public onStyleChain(chain: PluginChain) {
+        this.modify(chain.file);
+    }
+
+    /**
+     *
+     *
+     * @param {File} file
+     *
+     * @memberOf FuseBoxCSSPlugin
+     */
     public transform(file: File) {
         file.loadContents();
+        this.modify(file);
+    }
+
+    private modify(file: File) {
         let contents = "";
         let filePath = file.info.fuseBoxPath;
         let serve = false;
