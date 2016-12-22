@@ -36,6 +36,7 @@ export declare class WorkFlowContext {
     sourceMapConfig: any;
     outFile: string;
     log: Log;
+    pluginTriggers: Map<string, Set<String>>;
     initCache(): void;
     reset(): void;
     allowExtension(ext: string): void;
@@ -52,4 +53,8 @@ export declare class WorkFlowContext {
     ensureUserPath(userPath: string): string;
     writeOutput(): void;
     getNodeModule(name: string): ModuleCollection;
+    triggerPluginsMethodOnce(name: string, args: any, fn?: {
+        (plugin: Plugin);
+    }): void;
+    private pluginRequiresTriggering(cls, method);
 }

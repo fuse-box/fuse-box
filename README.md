@@ -17,6 +17,7 @@ Start fusing!
 [react-example](https://github.com/fuse-box/react-example) 50ms to fuse!
 
 ## Recent updates
+* v1.3.18 PluginChains introduced! Added [PostCSSPlugin](#postcssplugin) [LESSPlugin](#lessplugin) (thanks shepless)
 * v1.3.17 Added [wildcard import](#wildcard-import) support
 * v1.3.16 Prints a pretty stacktrace instead of unreadable acorn exceptions.
 
@@ -298,12 +299,23 @@ FuseBox.exists("./index")
 
 ## Dynamic
 
-Like SystemJS FuseBox provides a hacky way of creating a dynamic module from a string. After it has been initialized it shared 100% the same environment and behaves accordingly.
+Like SystemJS FuseBox provides a hacky way of creating a dynamic module from a string. After it has been initialized it shares 100% the same environment and behaves accordingly.
 
 ```
 FuseBox.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}; require('./foo')")
 ```
 A bundle can reference "stuff/boo.js" once a dynamic module was initialized.
+
+You can retrieve hello as below:
+```
+require("~/stuff/boo").hello
+```
+or
+
+```
+require("~/stuff/boo.js").hello
+```
+
 
 ## FuseBox events
 
@@ -371,6 +383,46 @@ plugins: [
 ```
 
 On top of that a CSS file will added to DOM upon request if not found in the bundle.
+
+## LessPlugin
+Install less first.
+```
+npm install less --save-dev
+```
+Less plugin should be chained to the CSSPlugin like so:
+
+```
+plugins:[
+  [/.less$/, fsbx.LESSPlugin(), fsbx.CSSPlugin()]
+],
+```
+
+> We still need to figure out what to do with sourcemaps. Be patient!
+
+
+
+## PostCSSPlugin
+Install libraries first
+
+```
+npm install precss postcss --save-dev
+```
+
+PostCSSPlugin plugin should be chained to the CSSPlugin like so:
+
+```
+const precss = require("precss");
+const POST_CSS_PLUGINS = [precss()];
+
+
+plugins:[
+  [/.css$/, fsbx.PostCSSPlugin(POST_CSS_PLUGINS), fsbx.CSSPlugin()],
+],
+```
+
+> We still need to figure out what to do with sourcemaps. Be patient!
+
+
 
 ## HTML Plugin
 

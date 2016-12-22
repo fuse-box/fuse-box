@@ -4,7 +4,7 @@ import { FileAnalysis } from "./FileAnalysis";
 import { WorkFlowContext, Plugin } from "./WorkflowContext";
 import { IPathInformation } from "./PathMaster";
 import * as fs from "fs";
-import { utils } from "realm-utils";
+import { utils, each } from "realm-utils";
 
 
 /**
@@ -130,6 +130,10 @@ export class File {
         return new PluginChain(name, file, opts);
     }
 
+    public asyncResolve(promise: Promise<any>) {
+        this.resolving.push(promise);
+    }
+
 
 
     /**
@@ -144,36 +148,38 @@ export class File {
             let target: Plugin;
             let index = 0;
             while (!target && index < this.context.plugins.length) {
-                let plugin = this.context.plugins[index];
-                if (plugin.test && plugin.test.test(this.absPath)) {
-                    target = plugin;
+                let item = this.context.plugins[index];
+                let itemTest: RegExp;
+                if (Array.isArray(item)) {
+                    let el = item[0];
+                    // check for the first item ( it might be a RegExp)
+                    if (el instanceof RegExp) {
+                        itemTest = el;
+                        item.splice(0, 1);
+                    } else {
+                        itemTest = el.test;
+                    }
+                } else {
+                    itemTest = item.test;
+                }
+                if (itemTest && itemTest.test(this.absPath)) {
+                    target = item;
                 }
                 index++;
             }
-            let tranformationResult;
-            // Found target plugin
-            if (target) {
-                // call tranformation callback
-                if (utils.isFunction(target.transform)) {
-                    tranformationResult = target.transform.apply(target, [this, _ast]);
 
-                }
-            }
-
-            if (utils.isPromise(tranformationResult)) {
-
-                // Let tranformation resolve (if it's async)
-                this.resolving.push(new Promise((resolve, reject) => {
-                    tranformationResult.then(res => {
-                        if (res instanceof PluginChain) {
-                            this.chainPlugins(index, res);
-                        }
-                        return resolve(res);
-                    }).catch(reject);
+            if (Array.isArray(target)) {
+                this.asyncResolve(each(target, plugin => {
+                    if (utils.isFunction(plugin.transform)) {
+                        return plugin.transform.apply(plugin, [this]);
+                    }
                 }));
             } else {
-                if (tranformationResult instanceof PluginChain) {
-                    this.chainPlugins(index, tranformationResult);
+                if (target) {
+                    // call tranformation callback
+                    if (utils.isFunction(target.transform)) {
+                        this.asyncResolve(target.transform.apply(target, [this]));
+                    }
                 }
             }
         }
@@ -199,6 +205,10 @@ export class File {
      * @memberOf File
      */
     public loadContents() {
+        if (this.isLoaded) {
+            return;
+        }
+
         this.contents = fs.readFileSync(this.info.absPath).toString();
         this.isLoaded = true;
     }
@@ -241,6 +251,9 @@ export class File {
             return;
         }
         this.tryPlugins();
+        if (!this.isLoaded) {
+            throw { message: `File contents for ${this.absPath} were not loaded. Missing a plugin?` }
+        }
     }
 
     /**

@@ -52,10 +52,6 @@ export class CSSPluginClass implements Plugin {
         context.source.addContent(fs.readFileSync(lib).toString());
     }
 
-    public onStyleChain(chain: PluginChain) {
-        this.modify(chain.file);
-    }
-
     /**
      *
      *
@@ -69,7 +65,7 @@ export class CSSPluginClass implements Plugin {
     }
 
     private modify(file: File) {
-        let contents = "";
+        let contents;
         let filePath = file.info.fuseBoxPath;
         let serve = false;
         if (this.serve) {

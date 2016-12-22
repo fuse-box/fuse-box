@@ -26,36 +26,46 @@ class File {
     createChain(name, file, opts) {
         return new PluginChain_1.PluginChain(name, file, opts);
     }
+    asyncResolve(promise) {
+        this.resolving.push(promise);
+    }
     tryPlugins(_ast) {
         if (this.context.plugins) {
             let target;
             let index = 0;
             while (!target && index < this.context.plugins.length) {
-                let plugin = this.context.plugins[index];
-                if (plugin.test && plugin.test.test(this.absPath)) {
-                    target = plugin;
+                let item = this.context.plugins[index];
+                let itemTest;
+                if (Array.isArray(item)) {
+                    let el = item[0];
+                    if (el instanceof RegExp) {
+                        itemTest = el;
+                        item.splice(0, 1);
+                    }
+                    else {
+                        itemTest = el.test;
+                    }
+                }
+                else {
+                    itemTest = item.test;
+                }
+                if (itemTest && itemTest.test(this.absPath)) {
+                    target = item;
                 }
                 index++;
             }
-            let tranformationResult;
-            if (target) {
-                if (realm_utils_1.utils.isFunction(target.transform)) {
-                    tranformationResult = target.transform.apply(target, [this, _ast]);
-                }
-            }
-            if (realm_utils_1.utils.isPromise(tranformationResult)) {
-                this.resolving.push(new Promise((resolve, reject) => {
-                    tranformationResult.then(res => {
-                        if (res instanceof PluginChain_1.PluginChain) {
-                            this.chainPlugins(index, res);
-                        }
-                        return resolve(res);
-                    }).catch(reject);
+            if (Array.isArray(target)) {
+                this.asyncResolve(realm_utils_1.each(target, plugin => {
+                    if (realm_utils_1.utils.isFunction(plugin.transform)) {
+                        return plugin.transform.apply(plugin, [this]);
+                    }
                 }));
             }
             else {
-                if (tranformationResult instanceof PluginChain_1.PluginChain) {
-                    this.chainPlugins(index, tranformationResult);
+                if (target) {
+                    if (realm_utils_1.utils.isFunction(target.transform)) {
+                        this.asyncResolve(target.transform.apply(target, [this]));
+                    }
                 }
             }
         }
@@ -67,6 +77,9 @@ class File {
         this.headerContent.push(str);
     }
     loadContents() {
+        if (this.isLoaded) {
+            return;
+        }
         this.contents = fs.readFileSync(this.info.absPath).toString();
         this.isLoaded = true;
     }
@@ -97,6 +110,9 @@ class File {
             return;
         }
         this.tryPlugins();
+        if (!this.isLoaded) {
+            throw { message: `File contents for ${this.absPath} were not loaded. Missing a plugin?` };
+        }
     }
     handleTypescript() {
         if (this.context.useCache) {

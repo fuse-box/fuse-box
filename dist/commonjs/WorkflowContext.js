@@ -5,6 +5,7 @@ const BundleSource_1 = require("./BundleSource");
 const Log_1 = require("./Log");
 const PathMaster_1 = require("./PathMaster");
 const ModuleCache_1 = require("./ModuleCache");
+const realm_utils_1 = require("realm-utils");
 const appRoot = require("app-root-path");
 const mkdirp = require("mkdirp");
 class WorkFlowContext {
@@ -26,6 +27,7 @@ class WorkFlowContext {
         this.log = new Log_1.Log(this.doLog);
         this.source = new BundleSource_1.BundleSource(this);
         this.nodeModules = new Map();
+        this.pluginTriggers = new Map();
         this.libPaths = new Map();
     }
     allowExtension(ext) {
@@ -105,6 +107,45 @@ class WorkFlowContext {
     }
     getNodeModule(name) {
         return this.nodeModules.get(name);
+    }
+    triggerPluginsMethodOnce(name, args, fn) {
+        this.plugins.forEach(plugin => {
+            if (Array.isArray(plugin)) {
+                plugin.forEach(p => {
+                    if (realm_utils_1.utils.isFunction(p[name])) {
+                        if (this.pluginRequiresTriggering(p, name)) {
+                            p[name].apply(p, args);
+                            if (fn) {
+                                fn(p);
+                            }
+                        }
+                    }
+                });
+            }
+            if (realm_utils_1.utils.isFunction(plugin[name])) {
+                if (this.pluginRequiresTriggering(plugin, name)) {
+                    plugin[name].apply(plugin, args);
+                    if (fn) {
+                        fn(plugin);
+                    }
+                }
+            }
+        });
+    }
+    pluginRequiresTriggering(cls, method) {
+        if (!cls.constructor) {
+            return true;
+        }
+        let name = cls.constructor.name;
+        if (!this.pluginTriggers.has(name)) {
+            this.pluginTriggers.set(name, new Set());
+        }
+        let items = this.pluginTriggers.get(name);
+        if (!items.has(method)) {
+            items.add(method);
+            return true;
+        }
+        return false;
     }
 }
 exports.WorkFlowContext = WorkFlowContext;

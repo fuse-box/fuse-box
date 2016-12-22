@@ -159,20 +159,15 @@ export class ModuleCollection {
      * @memberOf ModuleCollection
      */
     public initPlugins() {
-        if (this.context.plugins) {
-            this.context.plugins.forEach(plugin => {
-                if (utils.isFunction(plugin.init)) {
-                    plugin.init(this.context);
-                }
-                if (plugin.dependencies) {
-                    plugin.dependencies.forEach(mod => {
-                        this.toBeResolved.push(
-                            new File(this.context, this.pm.init(mod))
-                        );
-                    });
-                }
-            });
-        }
+        this.context.triggerPluginsMethodOnce("init", [this.context], (plugin) => {
+            if (plugin.dependencies) {
+                plugin.dependencies.forEach(mod => {
+                    this.toBeResolved.push(
+                        new File(this.context, this.pm.init(mod))
+                    );
+                });
+            }
+        });
     }
 
     /**

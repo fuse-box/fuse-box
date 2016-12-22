@@ -63,18 +63,10 @@ class FuseBox {
         return new FuseBox(opts);
     }
     triggerStart() {
-        this.context.plugins.forEach(plugin => {
-            if (realm_utils_1.utils.isFunction(plugin.bundleStart)) {
-                plugin.bundleStart(this.context);
-            }
-        });
+        this.context.triggerPluginsMethodOnce("bundleStart", [this.context]);
     }
     triggerEnd() {
-        this.context.plugins.forEach(plugin => {
-            if (realm_utils_1.utils.isFunction(plugin.bundleEnd)) {
-                plugin.bundleEnd(this.context);
-            }
-        });
+        this.context.triggerPluginsMethodOnce("bundleEnd", [this.context]);
     }
     bundle(str, daemon) {
         if (daemon) {

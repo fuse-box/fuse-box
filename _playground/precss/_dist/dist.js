@@ -6,27 +6,12 @@ require('./style.styl');
 require('./style.less');
 require('./style.scss');
 });
-___scope___.file("style.styl", function(exports, require, module, __filename, __dirname){ 
-
-body {
-  width: 960px;
-  background-color: #ccc;
-}
-
-});
 ___scope___.file("style.less", function(exports, require, module, __filename, __dirname){ 
 
 body {
   width: 960px;
   background-color: #ccc;
 }
-
-});
-___scope___.file("style.scss", function(exports, require, module, __filename, __dirname){ 
-
-body {
-  width: 960px;
-  background-color: #ccc; }
 
 });
 });

@@ -1,4 +1,3 @@
-
 import { IPackageInformation, IPathInformation } from './PathMaster';
 import { WorkFlowContext } from "./WorkflowContext";
 import * as path from "path";
@@ -143,6 +142,7 @@ export class PathMaster {
      */
     public getAbsolutePath(name: string, root: string, rootEntryLimit?: string, explicit = false) {
         let url = this.ensureFolderAndExtensions(name, root, explicit);
+        //console.log("url", url);
         let result = path.resolve(root, url);
 
         // Fixing node_modules package .json limits.
@@ -171,10 +171,19 @@ export class PathMaster {
             name = "." + name.slice(1, name.length);
             name = path.join(this.rootPackagePath, name);
         }
+
         if (!AllowedExtenstions.has(ext)) {
+
             if (/\/$/.test(name)) {
                 return `${name}index${fileExt}`;
             }
+            let wantedFile = path.isAbsolute(name) ? name : path.join(root, name);
+
+            // if (fs.existsSync(wantedFile)) {
+            //     console.log(name);
+            //     return wantedFile;
+            // }
+
             let folderDir = path.isAbsolute(name) ? path.join(name, `index${fileExt}`)
                 : path.join(root, name, `index${fileExt}`);
 

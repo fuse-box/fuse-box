@@ -1,2 +1,2 @@
 import "./styles.css"
-console.log(1);
+import "./less/styles.less";

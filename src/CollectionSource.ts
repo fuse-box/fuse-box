@@ -44,6 +44,6 @@ export class CollectionSource {
 
             });
             return filtered;
-        })
+        });
     }
 }

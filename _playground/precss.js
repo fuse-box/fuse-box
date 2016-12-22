@@ -19,9 +19,9 @@ let fuseBox = FuseBox.init({
     //globals: { myLib: "myLib" },
     //plugins: [new build.TypeScriptHelpers(), build.JSONPlugin, new build.CSSPlugin({ minify: true })]
     plugins: [
-        PreCSSPlugin({}),
-        PreCSSPlugin({type: 'stylus'}),
-        PreCSSPlugin({type: 'sass'})
+        [PreCSSPlugin({})],
+        [PreCSSPlugin({type: 'stylus'})],
+        [PreCSSPlugin({type: 'sass'})]
     ]
 });
 

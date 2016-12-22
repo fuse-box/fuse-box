@@ -29,18 +29,13 @@ class ModuleCollection {
         }
     }
     initPlugins() {
-        if (this.context.plugins) {
-            this.context.plugins.forEach(plugin => {
-                if (realm_utils_1.utils.isFunction(plugin.init)) {
-                    plugin.init(this.context);
-                }
-                if (plugin.dependencies) {
-                    plugin.dependencies.forEach(mod => {
-                        this.toBeResolved.push(new File_1.File(this.context, this.pm.init(mod)));
-                    });
-                }
-            });
-        }
+        this.context.triggerPluginsMethodOnce("init", [this.context], (plugin) => {
+            if (plugin.dependencies) {
+                plugin.dependencies.forEach(mod => {
+                    this.toBeResolved.push(new File_1.File(this.context, this.pm.init(mod)));
+                });
+            }
+        });
     }
     collectBundle(data) {
         this.bundle = data;
