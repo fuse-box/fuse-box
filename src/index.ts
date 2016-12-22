@@ -1,3 +1,4 @@
+export { StylusPlugin } from "./plugins/StylusPlugin";
 export { PostCSS } from "./plugins/PostCSSPlugin";
 export { TypeScriptHelpers } from "./plugins/TypeScriptHelpers";
 export { SVGPlugin } from "./plugins/SVGPlugin";

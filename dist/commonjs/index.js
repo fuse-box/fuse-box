@@ -1,4 +1,6 @@
 "use strict";
+var StylusPlugin_1 = require("./plugins/StylusPlugin");
+exports.StylusPlugin = StylusPlugin_1.StylusPlugin;
 var PostCSSPlugin_1 = require("./plugins/PostCSSPlugin");
 exports.PostCSS = PostCSSPlugin_1.PostCSS;
 var TypeScriptHelpers_1 = require("./plugins/TypeScriptHelpers");
