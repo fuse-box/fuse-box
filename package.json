@@ -61,5 +61,10 @@
         "realm-utils": "^1.0.6",
         "request": "^2.79.0",
         "watch": "^1.0.1"
+    },
+    "peerDependencies": {
+        "less": "*",
+        "babel-core": "*",
+        "postcss": "*"
     }
 }
