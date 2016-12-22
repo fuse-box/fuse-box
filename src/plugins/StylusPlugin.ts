@@ -5,7 +5,16 @@ import { Plugin } from '../WorkflowContext';
 
 let stylus;
 
+/**
+ * @export
+ * @class StylusPluginClass
+ * @implements {Plugin}
+ */
 export class StylusPluginClass implements Plugin {
+	/**
+	 * @type {RegExp}
+	 * @memberOf StylusPlugin
+	 */
 	public test: RegExp = /\.styl$/;
 	public options: any;
 
@@ -28,7 +37,7 @@ export class StylusPluginClass implements Plugin {
 
 				file.contents = css;
 
-				return res(true);
+				return res(css);
 			});
 		});
 	}
