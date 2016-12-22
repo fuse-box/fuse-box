@@ -44,6 +44,7 @@ class File {
                         pluginArray = item.slice(1);
                     }
                     else {
+                        pluginArray = item;
                         itemTest = el.test;
                     }
                 }

@@ -158,6 +158,7 @@ export class File {
                         itemTest = el;
                         pluginArray = item.slice(1);
                     } else {
+                        pluginArray = item;
                         itemTest = el.test;
                     }
                 } else {
