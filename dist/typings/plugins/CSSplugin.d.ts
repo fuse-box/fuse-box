@@ -10,5 +10,6 @@ export declare class CSSPluginClass implements Plugin {
     init(context: WorkFlowContext): void;
     bundleStart(context: WorkFlowContext): void;
     transform(file: File): void;
+    private modify(file);
 }
 export declare const CSSPlugin: (opts: any) => CSSPluginClass;

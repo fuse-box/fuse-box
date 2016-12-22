@@ -25,7 +25,10 @@ class CSSPluginClass {
     }
     transform(file) {
         file.loadContents();
-        let contents = "";
+        this.modify(file);
+    }
+    modify(file) {
+        let contents;
         let filePath = file.info.fuseBoxPath;
         let serve = false;
         if (this.serve) {

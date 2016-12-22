@@ -110,6 +110,7 @@ class PathMaster {
             if (/\/$/.test(name)) {
                 return `${name}index${fileExt}`;
             }
+            let wantedFile = path.isAbsolute(name) ? name : path.join(root, name);
             let folderDir = path.isAbsolute(name) ? path.join(name, `index${fileExt}`)
                 : path.join(root, name, `index${fileExt}`);
             if (fs.existsSync(folderDir)) {

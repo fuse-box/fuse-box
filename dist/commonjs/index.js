@@ -1,10 +1,16 @@
 "use strict";
+var PostCSSPlugin_1 = require("./plugins/PostCSSPlugin");
+exports.PostCSS = PostCSSPlugin_1.PostCSS;
 var TypeScriptHelpers_1 = require("./plugins/TypeScriptHelpers");
 exports.TypeScriptHelpers = TypeScriptHelpers_1.TypeScriptHelpers;
 var SVGPlugin_1 = require("./plugins/SVGPlugin");
 exports.SVGPlugin = SVGPlugin_1.SVGPlugin;
 var BabelPlugin_1 = require("./plugins/BabelPlugin");
 exports.BabelPlugin = BabelPlugin_1.BabelPlugin;
+var ChainPlugin_1 = require("./plugins/ChainPlugin");
+exports.ChainPlugin = ChainPlugin_1.ChainPlugin;
+var LESSPlugin_1 = require("./plugins/LESSPlugin");
+exports.LESSPlugin = LESSPlugin_1.LESSPlugin;
 var CSSplugin_1 = require("./plugins/CSSplugin");
 exports.CSSPlugin = CSSplugin_1.CSSPlugin;
 var HTMLplugin_1 = require("./plugins/HTMLplugin");
