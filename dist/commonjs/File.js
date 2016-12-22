@@ -41,10 +41,8 @@ class File {
                     let el = item[0];
                     if (el instanceof RegExp) {
                         itemTest = el;
-                        pluginArray = item.slice(1);
                     }
                     else {
-                        pluginArray = item;
                         itemTest = el.test;
                     }
                 }
@@ -57,8 +55,8 @@ class File {
                 index++;
             }
             if (target) {
-                if (pluginArray) {
-                    this.asyncResolve(realm_utils_1.each(pluginArray, plugin => {
+                if (Array.isArray(target)) {
+                    this.asyncResolve(realm_utils_1.each(target, plugin => {
                         if (realm_utils_1.utils.isFunction(plugin.transform)) {
                             return plugin.transform.apply(plugin, [this]);
                         }
