@@ -95,19 +95,11 @@ export class FuseBox {
     }
 
     public triggerStart() {
-        this.context.plugins.forEach(plugin => {
-            if (utils.isFunction(plugin.bundleStart)) {
-                plugin.bundleStart(this.context);
-            }
-        });
+        this.context.triggerPluginsMethodOnce("bundleStart", [this.context]);
     }
 
     public triggerEnd() {
-        this.context.plugins.forEach(plugin => {
-            if (utils.isFunction(plugin.bundleEnd)) {
-                plugin.bundleEnd(this.context);
-            }
-        });
+        this.context.triggerPluginsMethodOnce("bundleEnd", [this.context]);
     }
 
 

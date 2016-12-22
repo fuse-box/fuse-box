@@ -142,6 +142,7 @@ export class PathMaster {
      */
     public getAbsolutePath(name: string, root: string, rootEntryLimit?: string, explicit = false) {
         let url = this.ensureFolderAndExtensions(name, root, explicit);
+        //console.log("url", url);
         let result = path.resolve(root, url);
 
         // Fixing node_modules package .json limits.
@@ -172,9 +173,17 @@ export class PathMaster {
         }
 
         if (!AllowedExtenstions.has(ext)) {
+
             if (/\/$/.test(name)) {
                 return `${name}index${fileExt}`;
             }
+            let wantedFile = path.isAbsolute(name) ? name : path.join(root, name);
+
+            // if (fs.existsSync(wantedFile)) {
+            //     console.log(name);
+            //     return wantedFile;
+            // }
+
             let folderDir = path.isAbsolute(name) ? path.join(name, `index${fileExt}`)
                 : path.join(root, name, `index${fileExt}`);
 

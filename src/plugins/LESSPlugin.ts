@@ -1,7 +1,7 @@
 import { File } from "../File";
 import { WorkFlowContext } from "./../WorkflowContext";
 import { Plugin } from "../WorkflowContext";
-import * as less from "less";
+let less;
 
 /**
  * @export
@@ -20,6 +20,10 @@ export class LESSPluginClass implements Plugin {
         this.options = options || {};
     }
 
+    public init(context: WorkFlowContext) {
+        context.allowExtension(".less");
+    }
+
     /**
      * @param {File} file
      * @memberOf LESSPluginClass
@@ -27,6 +31,9 @@ export class LESSPluginClass implements Plugin {
     public transform(file: File) {
         file.loadContents();
 
+        if (!less) {
+            less = require("less");
+        }
         return less.render(file.contents, this.options).then(output => {
             file.contents = output.css;
         });

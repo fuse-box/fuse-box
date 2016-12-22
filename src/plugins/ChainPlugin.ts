@@ -1,5 +1,5 @@
 import { WorkFlowContext, Plugin } from '../WorkflowContext';
-import { utils } from "realm-utils";
+import { utils, each } from "realm-utils";
 
 export class ChainPluginClass {
     private test: RegExp;
@@ -10,31 +10,34 @@ export class ChainPluginClass {
         this.plugins = plugins;
     }
 
-    add(plugin: Plugin) {
+    public add(plugin: Plugin) {
         this.plugins.push(plugin);
         return this;
     }
 
-    bundleStart(context: WorkFlowContext) {
+    public bundleStart(context: WorkFlowContext) {
         // Get the first plugin that has a bundleStart - this should take priority
         let plugin = this.plugins.find(plugin => utils.isFunction(plugin.bundleStart));
-
         if (plugin) {
             plugin.bundleStart(context);
         }
     }
 
-    transform(file, ast?): Promise<void> {
-        return this.plugins.reduce((chain: Promise<void>, plugin) => {
-            if (!utils.isFunction(plugin.transform)) {
-                return Promise.resolve();
-            }
+    public transform(file): Promise<void> {
+        // reduce? might it help here?
+        // each resolves promises in a waterfall
+        return each(this.plugins, (plugin) => {
 
-            return chain.then(() => plugin.transform.apply(plugin, [file, ast]));
-        }, Promise.resolve());
+            if (utils.isFunction(plugin.initialize)) {
+                return plugin.initialize.apply(plugin, [file.context]);
+            }
+            if (utils.isFunction(plugin.transform)) {
+                return plugin.transform.apply(plugin, [file]);
+            }
+        });
     }
 
-    bundleEnd(context: WorkFlowContext) {
+    public bundleEnd(context: WorkFlowContext) {
         // Get the first plugin that has a bundleEnd - this should take priority
         let plugin = this.plugins.find(plugin => utils.isFunction(plugin.bundleEnd));
 
