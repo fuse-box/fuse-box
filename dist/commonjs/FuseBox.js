@@ -62,11 +62,17 @@ class FuseBox {
     static init(opts) {
         return new FuseBox(opts);
     }
+    triggerPre() {
+        this.context.triggerPluginsMethodOnce("preBundle", [this.context]);
+    }
     triggerStart() {
         this.context.triggerPluginsMethodOnce("bundleStart", [this.context]);
     }
     triggerEnd() {
         this.context.triggerPluginsMethodOnce("bundleEnd", [this.context]);
+    }
+    triggerPost() {
+        this.context.triggerPluginsMethodOnce("postBundle", [this.context]);
     }
     bundle(str, daemon) {
         if (daemon) {
@@ -122,6 +128,7 @@ class FuseBox {
                 self.context.log.end();
                 this.triggerEnd();
                 self.context.source.finalize(bundleData);
+                this.triggerPost();
                 this.context.writeOutput();
                 return self.context.source.getResult();
             });
@@ -129,6 +136,8 @@ class FuseBox {
     }
     initiateBundle(str) {
         this.context.reset();
+        this.triggerPre();
+        this.context.source.init();
         this.triggerStart();
         let parser = Arithmetic_1.Arithmetic.parse(str);
         let bundle;

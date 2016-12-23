@@ -7,16 +7,14 @@ import { ModuleCache } from "./ModuleCache";
 export interface Plugin {
     test?: RegExp;
     dependencies?: string[];
-    init: {
+    init?: {
         (context: WorkFlowContext);
     };
-    transform: {
+    transform?: {
         (file: File, ast?: any);
     };
-    preBundle?(context: WorkflowContext): any;
     bundleStart?(context: WorkFlowContext): any;
     bundleEnd?(context: WorkFlowContext): any;
-    postBundle?(context: WorkFlowContext): any;
 }
 export declare class WorkFlowContext {
     defaultPackageName: string;

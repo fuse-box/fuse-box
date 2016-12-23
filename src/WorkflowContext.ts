@@ -39,14 +39,14 @@ export interface Plugin {
      * @type {{ (context: WorkFlowContext) }}
      * @memberOf Plugin
      */
-    init: { (context: WorkFlowContext) };
+    init?: { (context: WorkFlowContext) };
     /**
      * 
      * 
      * @type {{ (file: File, ast?: any) }}
      * @memberOf Plugin
      */
-    transform: { (file: File, ast?: any) };
+    transform?: { (file: File, ast?: any) };
     /**
      * 
      * 

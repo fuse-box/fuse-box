@@ -19,10 +19,6 @@ export class BannerPluginClass implements Plugin {
         this.banner = banner || '';
     }
 
-    public init(context: WorkFlowContext) {
-        context.allowExtension(".js");
-    }
-
     public preBundle(context: WorkFlowContext) {
         context.source.addContent(this.banner);
     }
