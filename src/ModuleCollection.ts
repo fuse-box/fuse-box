@@ -1,6 +1,6 @@
 import { File } from "./File";
 import { PathMaster, IPackageInformation } from "./PathMaster";
-import { WorkFlowContext } from "./WorkFlowContext";
+import { WorkFlowContext } from "./WorkflowContext";
 import { each, utils } from "realm-utils";
 import { BundleData } from "./Arithmetic";
 
