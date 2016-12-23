@@ -7,9 +7,15 @@ FuseBox is a bundler/module loader that combines the power of webpack, JSPM and 
 
 Join [gitter channel](https://gitter.im/fusebox-bundler/Lobb), we are active!
 
-Start fusing!
 
-[Angular2 + less](https://github.com/fuse-box/angular2-example) 50ms to fuse!
+## Exampes
+
+### Angular + less
+
+Learn how [easy it]((https://github.com/fuse-box/angular2-example)) is to fuse angular with `less` in __50ms__!
+
+
+### React
 
 [react-example](https://github.com/fuse-box/react-example) 50ms to fuse!
 
