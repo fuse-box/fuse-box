@@ -4,7 +4,7 @@
 # FuseBox
 
 > We are getting there. The API is stable. Documentation is in progress.
-> Join now! FuseBox is now open for testing!
+> Join [gitter channel](https://gitter.im/fusebox-bundler/Lobb), we are active!
 
 ## A heroic bundler, that just does it right
 
@@ -17,6 +17,7 @@ Start fusing!
 [react-example](https://github.com/fuse-box/react-example) 50ms to fuse!
 
 ## Recent updates
+* 1.3.24 Added [BannerPlugin](#bannerplugin) (shepless)
 * 1.3.21-23 Require options introduced. Added [StylusPlugin](#stylusplugin), Raw style options for CSSPlugin (big thanks to _kai_ and _shepless_),
 * v1.3.18-1.3.21 PluginChains introduced! Added [PostCSSPlugin](#postcssplugin) [LESSPlugin](#lessplugin) (thanks shepless)
 * v1.3.17 Added [wildcard import](#wildcard-import) support
@@ -509,6 +510,14 @@ plugins: [
 ]
 ```
 
+## BannerPlugin
+Add anything at the top of your bundle.
+```
+plugins: [
+    // Add a banner to bundle output
+    fxbx.BannerPlugin('// Hey this is my banner! Copyright 2016!')
+]
+```
 
 ## Typescript helpers
 
