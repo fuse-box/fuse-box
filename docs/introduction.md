@@ -24,7 +24,7 @@ Start fusing!
 * v1.3.17 Added [wildcard import](#wildcard-import) support
 * v1.3.16 Prints a pretty stacktrace instead of unreadable acorn exceptions.
 
-# Features
+# Why?
 
 ## Effortless bundling
 You have an npm library in mind? You can bundle it without any extra configuration. babel-core with all plugins? No problem, fusebox will take care of everything you need.
@@ -68,7 +68,6 @@ fuseBox.bundle(">index.ts");
 ```
 
 ## Comprehensive Loader API
-
 
 Whatever you tempted mind would want - you can get it all here. Apply hacks, intercept require statements, use an amazing dynamic module loading, and many many other neat features!
  
