@@ -3,10 +3,30 @@ import { File } from '../File';
 import { WorkFlowContext } from '../WorkflowContext';
 import { Plugin } from '../WorkflowContext';
 
+/**
+ * @export
+ * @class RawPluginClass
+ * @implements {Plugin}
+ */
 export class RawPluginClass implements Plugin {
+	/**
+	 * @type {RegExp}
+	 * @memberOf RawPluginClass
+	 */
 	public test: RegExp = /.*/;
+	public extensions: Array<string> | string;
 
-	init (context: WorkFlowContext): void {}
+	constructor (options: any) {
+		if ('extensions' in (options || {})) this.extensions = options.extensions;
+	}
+
+	init (context: WorkFlowContext) {
+		if (Array.isArray(this.extensions)) {
+			return this.extensions.forEach(ext => context.allowExtension(ext));
+		}
+
+		return this.extensions !== undefined && context.allowExtension(this.extensions);
+	}
 
 	transform (file: File) {
 		file.loadContents();
@@ -15,6 +35,6 @@ export class RawPluginClass implements Plugin {
 	}
 }
 
-export const RawPlugin = () => {
-	return new RawPluginClass();
+export const RawPlugin = (options) => {
+	return new RawPluginClass(options);
 }

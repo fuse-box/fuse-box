@@ -16,7 +16,6 @@ exports.getTestEnv = (files, str, done, plugins) => {
             files: files
         });
         fsb.bundle(str).then(data => {
-
             let scope = {
                 navigator: 1
             };
