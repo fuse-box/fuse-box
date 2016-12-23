@@ -40,4 +40,19 @@ FuseBox.init({
   outFile : "./build/bundle.js",
   cache : true
 })
+```
+
+## Custom modules folder
+
+You probably would want to test a package some day, or just have an abstraction on top of your code. For that, you can use `modulesFolder` property. It behaves exactly the same like another npm module, just in a custom folder. 
+
+```
+FuseBox.init({
+    modulesFolder: "src/modules"
+})
+```
+
+You local `npm` will have the highest priority. In essence, you can override fusebox's [path](https://github.com/fuse-box/fuse-box/blob/master/assets/libs/path/index.js) of [fs](https://github.com/fuse-box/fuse-box/blob/master/assets/libs/fs/index.js) module if you like. Customize you packages in your own manner!
+
+> test
 
