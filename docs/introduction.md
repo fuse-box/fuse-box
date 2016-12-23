@@ -11,10 +11,11 @@ Join [gitter channel](https://gitter.im/fusebox-bundler/Lobb), we are active!
 
 ## Installation
 
-FuseBox comes with all required packages. 
 ```bash
 npm install fuse-box --save-dev
 ```
+
+FuseBox has many plugins in place to help you get started. All you need to do is install `fuse-box` from npm.
 
 ## Exampes
 
