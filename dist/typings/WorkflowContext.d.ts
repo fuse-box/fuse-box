@@ -13,8 +13,10 @@ export interface Plugin {
     transform: {
         (file: File, ast?: any);
     };
+    preBundle?(context: WorkflowContext): any;
     bundleStart?(context: WorkFlowContext): any;
     bundleEnd?(context: WorkFlowContext): any;
+    postBundle?(context: WorkFlowContext): any;
 }
 export declare class WorkFlowContext {
     defaultPackageName: string;
