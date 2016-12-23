@@ -9,6 +9,12 @@ FuseBox is a bundler/module loader that combines the power of webpack, JSPM and 
 
 Join [gitter channel](https://gitter.im/fusebox-bundler/Lobb), we are active!
 
+## Installation
+
+FuseBox comes with all required packages. 
+```bash
+npm install fuse-box --save-dev
+```
 
 ## Exampes
 
