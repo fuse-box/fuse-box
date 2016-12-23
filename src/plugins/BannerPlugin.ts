@@ -1,7 +1,6 @@
 import { File } from "../File";
 import { WorkFlowContext } from "./../WorkflowContext";
 import { Plugin } from "../WorkflowContext";
-let less;
 
 /**
  * @export
@@ -30,5 +29,5 @@ export class BannerPluginClass implements Plugin {
 }
 
 export const BannerPlugin = (banner: string) => {
-    return new BannerPluginClass(banner)
+    return new BannerPluginClass(banner);
 }
