@@ -94,6 +94,10 @@ export class FuseBox {
         this.context.initCache();
     }
 
+     public triggerPre() {
+        this.context.triggerPluginsMethodOnce("preBundle", [this.context]);
+    }
+
     public triggerStart() {
         this.context.triggerPluginsMethodOnce("bundleStart", [this.context]);
     }
@@ -101,6 +105,11 @@ export class FuseBox {
     public triggerEnd() {
         this.context.triggerPluginsMethodOnce("bundleEnd", [this.context]);
     }
+
+    public triggerPost() {
+        this.context.triggerPluginsMethodOnce("postBundle", [this.context]);
+    }
+
 
 
     /**
@@ -173,6 +182,7 @@ export class FuseBox {
                 self.context.log.end();
                 this.triggerEnd();
                 self.context.source.finalize(bundleData);
+                this.triggerPost();
                 this.context.writeOutput();
                 return self.context.source.getResult();
             });
@@ -181,6 +191,8 @@ export class FuseBox {
 
     private initiateBundle(str: string) {
         this.context.reset();
+        this.triggerPre();
+        this.context.source.init();
         this.triggerStart();
         let parser = Arithmetic.parse(str);
         let bundle: BundleData;
