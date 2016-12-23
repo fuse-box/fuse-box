@@ -6,7 +6,7 @@
 # FuseBox
 
 > We are getting there. The API is stable. Documentation is in progress.
-> Join [gitter channel](https://gitter.im/fusebox-bundler/Lobb), we are active!
+> Join [gitter channel](https://gitter.im/fusebox-bundler/Lobby), we are active!
 
 ## A heroic bundler, that just does it right
 
