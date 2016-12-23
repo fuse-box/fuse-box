@@ -1,10 +1,10 @@
 [![Build Status](https://travis-ci.org/fuse-box/fuse-box.svg?branch=master)](https://travis-ci.org/fuse-box/fuse-box)
-[![Fusebox-bundler](https://badges.gitter.im/owner/repo.png)](https://gitter.im/fusebox-bundler/Lobby)
+[![Fusebox-bundler](https://img.shields.io/badge/gitter-join%20chat%20%E2%86%92-brightgreen.svg)](https://gitter.im/fusebox-bundler/Lobby)
 
 # FuseBox
 
 > We are getting there. The API is stable. Documentation is in progress.
-> Join now! FuseBox is now open for testing!
+> Join [gitter channel](https://gitter.im/fusebox-bundler/Lobb), we are active!
 
 ## A heroic bundler, that just does it right
 
