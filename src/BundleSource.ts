@@ -43,6 +43,14 @@ export class BundleSource {
      */
     constructor(public context: WorkFlowContext) {
         this.concat = new Concat(true, "", "\n");
+    }
+
+    /**
+     *
+     * 
+     * @memberOf BundleSource
+     */
+    public init() {
         this.concat.add(null, "(function(FuseBox){");
     }
 

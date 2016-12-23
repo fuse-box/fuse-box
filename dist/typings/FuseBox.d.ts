@@ -7,8 +7,10 @@ export declare class FuseBox {
     private collectionSource;
     private context;
     constructor(opts: any);
+    triggerPre(): void;
     triggerStart(): void;
     triggerEnd(): void;
+    triggerPost(): void;
     bundle(str: string, daemon?: boolean): Promise<any>;
     process(bundleData: BundleData, standalone?: boolean): Promise<ModuleCollection>;
     private initiateBundle(str);

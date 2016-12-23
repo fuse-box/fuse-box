@@ -7,10 +7,10 @@ import { ModuleCache } from "./ModuleCache";
 export interface Plugin {
     test?: RegExp;
     dependencies?: string[];
-    init: {
+    init?: {
         (context: WorkFlowContext);
     };
-    transform: {
+    transform?: {
         (file: File, ast?: any);
     };
     bundleStart?(context: WorkFlowContext): any;

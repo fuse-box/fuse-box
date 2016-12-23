@@ -8,6 +8,8 @@ class BundleSource {
         this.context = context;
         this.standalone = false;
         this.concat = new Concat(true, "", "\n");
+    }
+    init() {
         this.concat.add(null, "(function(FuseBox){");
     }
     createCollection(collection) {

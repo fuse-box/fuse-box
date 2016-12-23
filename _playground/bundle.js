@@ -25,10 +25,11 @@ const fuseBox = FuseBox.init({
         // process them all ;-)
         [build.LESSPlugin(), build.CSSPlugin()],
 
-
-
         // All other CSS files
-        [build.PostCSS(POST_CSS_PLUGINS), build.CSSPlugin()]
+        [build.PostCSS(POST_CSS_PLUGINS), build.CSSPlugin()],
+
+        // Add a banner to bundle output
+        build.BannerPlugin('// Hey this is my banner! Copyright 2016!')
     ]
 });
 

@@ -17,7 +17,8 @@ Start fusing!
 [react-example](https://github.com/fuse-box/react-example) 50ms to fuse!
 
 ## Recent updates
-* 1.3.21 Require options introduced. Added [StylusPlugin](#stylusplugin), Raw style options for CSSPlugin (big thanks to _kai_ and _shepless_),
+* 1.3.24 Added [BannerPlugin](#bannerplugin) (shepless)
+* 1.3.21-23 Require options introduced. Added [StylusPlugin](#stylusplugin), Raw style options for CSSPlugin (big thanks to _kai_ and _shepless_),
 * v1.3.18-1.3.21 PluginChains introduced! Added [PostCSSPlugin](#postcssplugin) [LESSPlugin](#lessplugin) (thanks shepless)
 * v1.3.17 Added [wildcard import](#wildcard-import) support
 * v1.3.16 Prints a pretty stacktrace instead of unreadable acorn exceptions.
@@ -397,6 +398,8 @@ Like this:
 })
 ```
 
+
+
 ## LessPlugin
 Install less first.
 ```
@@ -436,6 +439,12 @@ plugins:[
 > We still need to figure out what to do with sourcemaps. Be patient!
 
 
+## StylusPlugin
+```
+plugins:[
+  [fsbx.StylusPlugin(), fsbx.CSSPlugin()]
+],
+```
 
 ## HTML Plugin
 
@@ -501,6 +510,14 @@ plugins: [
 ]
 ```
 
+## BannerPlugin
+Add anything at the top of your bundle.
+```
+plugins: [
+    // Add a banner to bundle output
+    fxbx.BannerPlugin('// Hey this is my banner! Copyright 2016!')
+]
+```
 
 ## Typescript helpers
 

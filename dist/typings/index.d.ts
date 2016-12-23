@@ -1,3 +1,4 @@
+export { StylusPlugin } from "./plugins/StylusPlugin";
 export { PostCSS } from "./plugins/PostCSSPlugin";
 export { TypeScriptHelpers } from "./plugins/TypeScriptHelpers";
 export { SVGPlugin } from "./plugins/SVGPlugin";
@@ -7,6 +8,7 @@ export { LESSPlugin } from "./plugins/LESSPlugin";
 export { CSSPlugin } from "./plugins/CSSplugin";
 export { HTMLPlugin } from "./plugins/HTMLplugin";
 export { JSONPlugin } from "./plugins/JSONplugin";
+export { BannerPlugin } from "./plugins/BannerPlugin";
 export { WorkFlowContext } from "./WorkflowContext";
 export { PathMaster } from "./PathMaster";
 export { Arithmetic } from "./Arithmetic";

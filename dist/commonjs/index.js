@@ -1,4 +1,6 @@
 "use strict";
+var StylusPlugin_1 = require("./plugins/StylusPlugin");
+exports.StylusPlugin = StylusPlugin_1.StylusPlugin;
 var PostCSSPlugin_1 = require("./plugins/PostCSSPlugin");
 exports.PostCSS = PostCSSPlugin_1.PostCSS;
 var TypeScriptHelpers_1 = require("./plugins/TypeScriptHelpers");
@@ -17,6 +19,8 @@ var HTMLplugin_1 = require("./plugins/HTMLplugin");
 exports.HTMLPlugin = HTMLplugin_1.HTMLPlugin;
 var JSONplugin_1 = require("./plugins/JSONplugin");
 exports.JSONPlugin = JSONplugin_1.JSONPlugin;
+var BannerPlugin_1 = require("./plugins/BannerPlugin");
+exports.BannerPlugin = BannerPlugin_1.BannerPlugin;
 var WorkflowContext_1 = require("./WorkflowContext");
 exports.WorkFlowContext = WorkflowContext_1.WorkFlowContext;
 var PathMaster_1 = require("./PathMaster");
