@@ -13,12 +13,10 @@ Join [gitter channel](https://gitter.im/fusebox-bundler/Lobb), we are active!
 ## Exampes
 
 ### Angular + less
-
 Learn how [easy it](https://github.com/fuse-box/angular2-example) is to fuse angular with `less` in __50ms__!
 
 
 ### React
-
 [react-example](https://github.com/fuse-box/react-example) 50ms to fuse!
 
 ## Changelog
