@@ -57,3 +57,14 @@ You local `npm` will have the highest priority. In essence, you can override fus
 You don't need to create `package.json` - `index.js` will work just fine. It will be [cached](#cache) like any other npm module with version `0.0.0`, so remember to toggle cache property in the config
 
 
+## Package name
+You default package name is `default`, You don't need to changed if you are not planning on having isolated bundles. 
+Any bundle added as a script tag will share `default` package, keep that in mind. If you want to release a package (say to npm), you probably would want to customise it:
+
+
+```
+FuseBox.init({
+    package: "mySuperLib"
+})
+```
+
