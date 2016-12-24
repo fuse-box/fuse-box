@@ -59,7 +59,9 @@ You don't need to create `package.json` - `index.js` will work just fine. It wil
 
 ## Package name
 You default package name is `default`, You don't need to changed if you are not planning on having isolated bundles. 
-Any bundle added as a script tag will share `default` package, keep that in mind. If you want to release a package (say to npm), you probably would want to customise it:
+Any bundle added as a script tag will share `default` package, keep that in mind. If you want to release a package (say to npm), you probably would want set a different name (to avoid scope collision)
+
+It's imperative having a __unique name__ (matching an npm package) when publishing a bundle to NPM.
 
 
 ```
@@ -67,4 +69,32 @@ FuseBox.init({
     package: "mySuperLib"
 })
 ```
+
+## Global variables
+
+You can expose your package variables to `window` (in browser) and `exports`in node respectively. 
+
+```
+FuseBox.init({
+    globals: { default: "mySuperLib" },
+})
+```
+
+Whereas key is the name of a package and value is an alias that groups exports. "default" is your current project. Please, note, that in order to expose your default package, a bundle must have an [entry point](#entry-point)
+
+## List of plugins
+
+`plugins` option expects an array of plugins, See [Plugin API](#plugin-api)
+```
+FuseBox.init({
+    plugins:[
+        build.TypeScriptHelpers(),
+        build.JSONPlugin(),
+        [build.LESSPlugin(), build.CSSPlugin()],
+    ]
+})
+```
+
+
+
 
