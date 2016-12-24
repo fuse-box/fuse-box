@@ -1,4 +1,3 @@
-import { PluginChain } from '../PluginChain';
 import { File } from '../File';
 import { WorkFlowContext } from '../WorkflowContext';
 import { Plugin } from '../WorkflowContext';
@@ -13,7 +12,7 @@ let stylus;
 export class StylusPluginClass implements Plugin {
 	/**
 	 * @type {RegExp}
-	 * @memberOf StylusPlugin
+	 * @memberOf StylusPluginClass
 	 */
 	public test: RegExp = /\.styl$/;
 	public options: any;
