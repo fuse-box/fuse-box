@@ -4,7 +4,7 @@ const StylusPlugin = require('../dist/commonjs/plugins/StylusPlugin').StylusPlug
 const RawPlugin = require('../dist/commonjs/plugins/RawPlugin').RawPlugin;
 
 describe('StylusPlugin', () => {
-	it('test #1', done => {
+	it('Should return compiled css', done => {
 		getTestEnv({
 			'style.styl': `
 				body

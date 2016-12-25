@@ -3,6 +3,8 @@ const Utils_1 = require("./Utils");
 const path = require("path");
 const fs = require("fs");
 const Config_1 = require("./Config");
+const Utils_2 = require("./Utils");
+const BUILTIN_NODE_MODULES = Utils_2.getBuiltInNodeModules();
 const NODE_MODULE = /^([a-z@].*)$/;
 class AllowedExtenstions {
     static add(name) {
@@ -200,7 +202,7 @@ class PathMaster {
             }
             else {
                 let upperNodeModule = path.join(this.rootPackagePath, "../", name);
-                if (fs.existsSync(upperNodeModule)) {
+                if (fs.existsSync(upperNodeModule) && BUILTIN_NODE_MODULES.indexOf(name) === -1) {
                     let isCustom = path.dirname(this.rootPackagePath) !== Config_1.Config.NODE_MODULES_DIR;
                     return readMainFile(upperNodeModule, isCustom);
                 }

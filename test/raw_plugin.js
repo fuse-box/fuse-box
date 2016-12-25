@@ -9,19 +9,7 @@ this is
 `
 
 describe('RawPlugin', () => {
-	it('test #1', done => {
-		getTestEnv({
-			'file.raw': rawFile
-		}, '>file.raw', null, [RawPlugin({extensions: '.raw'})]).then(root => {
-			let result = root.FuseBox.import('./file.raw');
-			
-			result.should.equal('\nthis is\n\traw\n\t\tcontent\n');
-			
-			done();
-		}).catch(done);
-	});
-
-	it('test #2', done => {
+	it('Should return wrapped file content', done => {
 		getTestEnv({
 			'entry.js': `
 				require('./file1.raw');

@@ -14,7 +14,11 @@ export class RawPluginClass implements Plugin {
 	 * @memberOf RawPluginClass
 	 */
 	public test: RegExp = /.*/;
-	public extensions: Array<string> | string;
+	/**
+	 * @type {Array<string>}
+	 * @memberOf RawPluginClass
+	 */
+	public extensions: Array<string>;
 
 	constructor (options: any) {
 		if ('extensions' in (options || {})) this.extensions = options.extensions;
@@ -24,8 +28,6 @@ export class RawPluginClass implements Plugin {
 		if (Array.isArray(this.extensions)) {
 			return this.extensions.forEach(ext => context.allowExtension(ext));
 		}
-
-		return this.extensions !== undefined && context.allowExtension(this.extensions);
 	}
 
 	transform (file: File) {

@@ -6,7 +6,7 @@ const BannerPlugin = require('../dist/commonjs/plugins/BannerPlugin').BannerPlug
 const banner = `/** This is my header for bundle. */`;
 
 describe('BannerPlugin', () => {
-	it('test #1', done => {
+	it(`Should call 'context.source.addContent' with right banner param`, done => {
 		const bannerPluginInst = BannerPlugin(banner);
 
 		let addContentSpy;

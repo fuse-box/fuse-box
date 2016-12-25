@@ -1,7 +1,7 @@
 const build = require(`../../${process.env.TRAVIS ? "dist" : "build"}/commonjs/index.js`);
-const FuseBox = build.FuseBox;
 const fs = require("fs");
 
+const FuseBox = build.FuseBox;
 
 const mkdirp = require("mkdirp");
 const appRoot = require("app-root-path");

@@ -9,7 +9,6 @@ class RawPluginClass {
         if (Array.isArray(this.extensions)) {
             return this.extensions.forEach(ext => context.allowExtension(ext));
         }
-        return this.extensions !== undefined && context.allowExtension(this.extensions);
     }
     transform(file) {
         file.loadContents();

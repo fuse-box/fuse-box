@@ -4,6 +4,9 @@ import { WorkFlowContext } from "./WorkflowContext";
 import * as path from "path";
 import * as fs from "fs";
 import { Config } from "./Config";
+import { getBuiltInNodeModules } from './Utils';
+
+const BUILTIN_NODE_MODULES = getBuiltInNodeModules();
 const NODE_MODULE = /^([a-z@].*)$/;
 export interface INodeModuleRequire {
     name: string;
@@ -291,7 +294,7 @@ export class PathMaster {
             } else {
                 // climb up (sometimes it can be in a parent)
                 let upperNodeModule = path.join(this.rootPackagePath, "../", name);
-                if (fs.existsSync(upperNodeModule)) {
+                if (fs.existsSync(upperNodeModule) && BUILTIN_NODE_MODULES.indexOf(name) === -1) {
                     let isCustom = path.dirname(this.rootPackagePath) !== Config.NODE_MODULES_DIR;
                     return readMainFile(upperNodeModule, isCustom);
                 }
