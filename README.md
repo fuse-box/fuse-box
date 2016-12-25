@@ -188,15 +188,7 @@ Super powers of FuseBox allow doing that without code redundancy. An API of a se
 Only one thing you need to consider before that - packaging.
 
 Your current project is called "default" This is by design. All dynamic modules will register themselves into it automatically. 
-If you want to require a bundle it must have a different namespace. Unless you want to keep is shared. Add `package` property to the initializer:
-
-```js
-FuseBox.init({
-    homeDir: "src/",
-    package : "myLib",
-    outFile: "./bundles/myLib.js"
-}).bundle(">index.js");
-```
+If you want to require a bundle it must have a different namespace. Unless you want to keep is shared. Read up on [package configuration](#package-name), for better understanding
 
 Bundle your first package, then make sure you master bundle does not have the same name (otherwise they will share filename scopes) and require it like any other file
 
