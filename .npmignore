@@ -4,10 +4,14 @@ node_modules/
 .vscode/
 yarn.lock
 build/
-dist/
+src/
 .DS_Store
 .tmp/
 .idea/
+docs/
+src-frontend/
+test/
 sourcemaps.js.map
 .fusebox
 _dist
+_playground/
