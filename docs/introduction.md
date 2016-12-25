@@ -17,7 +17,7 @@ npm install fuse-box --save-dev
 
 FuseBox has many plugins in place to help you get started. All you need to do is install `fuse-box` from npm.
 
-## Exampes
+## Sample projects
 
 Learn how [easy it](https://github.com/fuse-box/angular2-example) is to fuse angular with `less` in __50ms__!
 
