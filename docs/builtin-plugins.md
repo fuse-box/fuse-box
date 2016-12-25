@@ -32,7 +32,7 @@ plugins: [
 ```
 
 All files will be served except for "styles.css" (contents will be included in the bundle)
-```js
+```
 plugins: [
     fsbx.CSSPlugin({
         minify: true,
