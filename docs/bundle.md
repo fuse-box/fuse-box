@@ -1,6 +1,6 @@
 # Bundle
 
-## Arithmetic approach
+## Arithmetic instructions
 
 FuseBox uses arithmetic approach to bundling. 
 
