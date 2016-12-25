@@ -6,7 +6,8 @@ import * as fs from "fs";
 import { Config } from "./Config";
 import { getBuiltInNodeModules } from './Utils';
 
-const BUILTIN_NODE_MODULES = getBuiltInNodeModules();
+//const BUILTIN_NODE_MODULES = getBuiltInNodeModules();
+
 const NODE_MODULE = /^([a-z@].*)$/;
 export interface INodeModuleRequire {
     name: string;
@@ -188,13 +189,6 @@ export class PathMaster {
             if (/\/$/.test(name)) {
                 return `${name}index${fileExt}`;
             }
-            let wantedFile = path.isAbsolute(name) ? name : path.join(root, name);
-
-            // if (fs.existsSync(wantedFile)) {
-            //     console.log(name);
-            //     return wantedFile;
-            // }
-
             let folderDir = path.isAbsolute(name) ? path.join(name, `index${fileExt}`)
                 : path.join(root, name, `index${fileExt}`);
 
@@ -279,6 +273,9 @@ export class PathMaster {
         let localLib = path.join(Config.LOCAL_LIBS, name);
         let modulePath = path.join(Config.NODE_MODULES_DIR, name);
 
+        if (fs.existsSync(localLib)) {
+            return readMainFile(localLib, false);
+        }
         if (this.context.customModulesFolder) {
             let customFolder = path.join(this.context.customModulesFolder, name);
             if (fs.existsSync(customFolder)) {
@@ -294,16 +291,14 @@ export class PathMaster {
             } else {
                 // climb up (sometimes it can be in a parent)
                 let upperNodeModule = path.join(this.rootPackagePath, "../", name);
-                if (fs.existsSync(upperNodeModule) && BUILTIN_NODE_MODULES.indexOf(name) === -1) {
+                if (fs.existsSync(upperNodeModule)) {
                     let isCustom = path.dirname(this.rootPackagePath) !== Config.NODE_MODULES_DIR;
                     return readMainFile(upperNodeModule, isCustom);
                 }
             }
         }
-        if (fs.existsSync(localLib)) {
-            return readMainFile(localLib, false);
-        } else {
-            return readMainFile(modulePath, false);
-        }
+
+        return readMainFile(modulePath, false);
+
     }
 }

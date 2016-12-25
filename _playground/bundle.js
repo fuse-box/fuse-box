@@ -6,7 +6,6 @@ const FuseBox = build.FuseBox;
 const POST_CSS_PLUGINS = [precss()];
 
 const fuseBox = FuseBox.init({
-    extensions: ['.less'],
     homeDir: "_playground/ts",
     // sourceMap: {
     //     bundleReference: "./sourcemaps.js.map",
