@@ -2,7 +2,7 @@
 
 ## Arithmetic instructions
 
-FuseBox uses arithmetic approach to bundling. 
+FuseBox uses arithmetic approach to bundling. We don't support anything else, as this approach is the most simple and flexible.
 
 ```
 let fuse = FuseBox.init({
@@ -14,8 +14,8 @@ let fuse = FuseBox.init({
 fuse.bundle(">index.js");
 ```
 
-`>` symbols means `entry point`. If you want your bundle to be executed once loaded, just add `>` in front of your main file. 
-Make sure you keep an extension as you can point to a typescript file.
+If you want a bundle to be executed on load, add `>` in front of your entry file. 
+Make sure to keep the extension as you can point to a typescript file. In case your bundle serves as an individual library, you would not want to make an automatic execution.
 
 With arithmetic instructions, you can explicitly define which files go to the bundle, which files skip external dependencies.
 
