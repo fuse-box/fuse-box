@@ -6,6 +6,7 @@ const fs = require("fs");
 
 const StylusPlugin = require('../dist/commonjs/plugins/StylusPlugin').StylusPlugin;
 const LESSPlugin = require('../dist/commonjs/plugins/LESSPlugin').LESSPlugin;
+const RawPlugin = require('../dist/commonjs/plugins/RawPlugin').RawPlugin;
 
 let fuseBox = FuseBox.init({
     homeDir: "_playground/precss",
@@ -21,7 +22,8 @@ let fuseBox = FuseBox.init({
     //plugins: [new build.TypeScriptHelpers(), build.JSONPlugin, new build.CSSPlugin({ minify: true })]
     plugins: [
         [/style\d?\.styl$/, StylusPlugin({}), build.CSSPlugin({})],
-        [LESSPlugin({}), build.CSSPlugin({})]
+        [LESSPlugin({}), build.CSSPlugin({})],
+        [/\.raw$/, RawPlugin({extensions: ['.raw']})]
         // [/^style-dup\.styl$/, StylusPlugin({})]
     ]
 });

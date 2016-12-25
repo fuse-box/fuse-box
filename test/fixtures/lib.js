@@ -1,22 +1,21 @@
 const build = require(`../../${process.env.TRAVIS ? "dist" : "build"}/commonjs/index.js`);
-const FuseBox = build.FuseBox;
 const fs = require("fs");
 
+const FuseBox = build.FuseBox;
 
 const mkdirp = require("mkdirp");
 const appRoot = require("app-root-path");
 const path = require("path");
-exports.getTestEnv = (files, str, done) => {
+exports.getTestEnv = (files, str, done, plugins) => {
     return new Promise((resolve, reject) => {
         let fsb = new FuseBox({
             log: false,
             cache: false,
-            plugins: [build.JSONPlugin()],
+            plugins: plugins || [build.JSONPlugin()],
             //  standalone: false,
             files: files
         });
         fsb.bundle(str).then(data => {
-
             let scope = {
                 navigator: 1
             };

@@ -1,3 +1,8 @@
+const MBLACKLIST = [
+    'freelist',
+    'sys'
+];
+
 export function camelCase(str: string) {
     let DEFAULT_REGEX = /[-_]+(.)?/g;
     function toUpper(match, group1) {
@@ -14,4 +19,12 @@ export function parseQuery(qstr) {
         query.set(decodeURIComponent(b[0]), decodeURIComponent(b[1] || ""));
     }
     return query;
+}
+
+export function getBuiltInNodeModules(): Array<string> {
+   const process: any = global.process;
+
+    return Object.keys(process.binding('natives')).filter(m => {
+        return !/^_|^internal|\//.test(m) && MBLACKLIST.indexOf(m) === -1;
+    });
 }
