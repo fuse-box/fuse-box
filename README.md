@@ -346,7 +346,7 @@ Fusebox contains premade plugins, that should help you to get started.
 It's very easy to start working with css files. You have 2 options, you either bundle the contents or serve the files. A decision that can be made at build time.
 
 For example:
-```
+```js
 plugins: [
     fsbx.CSSPlugin({
         minify: true
@@ -359,7 +359,7 @@ In this case, all CSS files will be bundled.
 But if you define "serve" option with a callback, all files will be filtered through it. A callback is expected to return a string with a browser path. If you return "undefined" or *NOT* a string, that file will be bundled as if no option was specified.
 
 All css files will be served by server.
-```
+```js
 plugins: [
     fsbx.CSSPlugin({
         minify: true,
