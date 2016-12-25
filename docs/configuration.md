@@ -11,7 +11,7 @@ FuseBox.init({ /* you config is here */ })
 
 ## Home directory
 
-That's your source folder, you don't need to provide an absolute path it will check it automatically and concat with your project folder.
+That's your source folder, you don't need to provide an absolute path, it will check it automatically and concat with your project folder.
 
 ```js
 FuseBox.init({ 
@@ -58,7 +58,7 @@ You don't need to create `package.json` - `index.js` will work just fine. It wil
 
 
 ## Package name
-You default package name is `default`, You don't need to changed if you are not planning on having isolated bundles. 
+You default package name is `default`, You don't need to change it if you are not planning on having isolated bundles. 
 Any bundle added as a script tag will share `default` package, keep that in mind. If you want to release a package (say to npm), you probably would want set a different name (to avoid scope collision)
 
 It's imperative having a __unique name__ (matching an npm package) when publishing a bundle to NPM.
