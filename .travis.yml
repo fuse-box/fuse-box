@@ -4,4 +4,5 @@ node_js:
 
 install:
   - npm install
+  - gulp dist
   - npm install babel-generator babylon cheerio @angular/core stylus less postcss
