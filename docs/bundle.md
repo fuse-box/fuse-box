@@ -38,3 +38,28 @@ In this case, you will get everything that is required in the index, as well as 
 `**/*.js` - Bundle everything with dependencies
 
 `**/*.js -path` - Bundle everything with dependencies except for module path
+
+## Bundle in a bundle
+
+Super powers of FuseBox allow doing that without code redundancy. An API of a second bundle will be removed, and 2 bundles will be fused together, keeping only one shared Fusebox API.
+
+Only one thing you need to consider before that - packaging.
+
+Your current project is called "default" This is by design. All dynamic modules will register themselves into it automatically. 
+If you want to require a bundle it must have a different namespace. Unless you want to keep is shared. Add `package` property to the initializer:
+
+```js
+FuseBox.init({
+    homeDir: "src/",
+    package : "myLib",
+    outFile: "./bundles/myLib.js"
+}).bundle(">index.js");
+```
+
+Bundle your first package, then make sure you master bundle does not have the same name (otherwise they will share filename scopes) and require it like any other file
+
+```
+import * as myLib from "./bundles/myLib.js"
+```
+
+FuseBox sniffs its own creations and restructures the code accordingly.
