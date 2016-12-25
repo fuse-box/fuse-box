@@ -55,3 +55,37 @@ FuseBox.import("./batch/*-component")
 ```
 
 Note that you can use all of the above with `require` statement too.
+
+```
+require("~/stuff/boo").hello
+```
+or
+
+```
+require("~/stuff/boo.js").hello
+```
+
+
+## FuseBox events
+
+It is possible to intercept require statements. You can catch "before-import" and "after-import" events like so:
+
+```
+FuseBox.on("before-import", (exports, require, module, __filename, __dirname, pkg) => {                
+});
+
+FuseBox.on("after-import", (exports, require, module, __filename, __dirname, pkg) => {                
+});
+```
+
+However, it is not recommended. But if you want to play god, you can use that functionality.
+
+## Point to the root
+You can use `~` symbol to point to your project's path in order to solve `../../../../../utils` mess.
+
+```js
+// es5
+require("~/lib/utils")
+// es6
+import * as utils from "~/lib/utils";
+```
