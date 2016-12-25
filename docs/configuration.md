@@ -82,6 +82,20 @@ FuseBox.init({
 
 Whereas key is the name of a package and value is an alias that groups exports. "default" is your current project. Please, note, that in order to expose your default package, a bundle must have an [entry point](#entry-point)
 
+## Sourcemaps
+
+Sourcemaps in FuseBox are enabled by adding this property to a fusebox init configuration
+
+```js
+sourceMap: {
+  bundleReference: "sourcemaps.js.map",
+  outFile: "sourcemaps.js.map",
+}
+```
+`bundleReference` speaks for itself. This line will be added to the bundle. For example `//# sourceMappingURL=./sourcemaps.js.map`. If your client is not able to read them, make sure that the path is reachable. 
+
+Sourcemaps currently work with [typescript](#typescript) and [BabelPlugin](#babel-plugin)
+
 ## List of plugins
 
 `plugins` option expects an array of plugins, See [Plugin API](#plugin-api)
