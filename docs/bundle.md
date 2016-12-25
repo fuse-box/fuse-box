@@ -51,7 +51,7 @@ If you want to require a bundle it must have a different namespace. Unless you w
 
 Bundle your first package, then make sure you master bundle does not have the same name (otherwise they will share filename scopes) and require it like any other file
 
-```
+```js
 import * as myLib from "./bundles/myLib.js"
 ```
 
