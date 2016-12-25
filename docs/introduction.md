@@ -9,7 +9,7 @@ FuseBox is a bundler/module loader that combines the power of webpack, JSPM and 
 
 It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convenient for developers. It requires zero configuration to bundle such monsters like `babel-core`.
 
-FuseBox loves __typescript__, and does not require any additional configuration. It will compile and bundle your code withing a fraction of a second, yet offering a comprehensive loader API. 
+FuseBox loves __typescript__, and does not require any additional configuration. It will compile and bundle your code within a fraction of a second, yet offering a comprehensive loader API. 
 
 It is packed with features, and unfolds limitless possibilities of extending the API.
 
