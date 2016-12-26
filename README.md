@@ -15,7 +15,7 @@ FuseBox loves __typescript__, and does not require any additional configuration.
 
 It is packed with features, and unfolds limitless possibilities of extending the API.
 
-[Offical documentation](http://fuse-box.org/) / Submit an [issue](https://github.com/fuse-box/fuse-box/issues/new) / Make [documentation](https://github.com/fuse-box/fuse-box/tree/master/docs) better / Join [gitter channel](https://gitter.im/fusebox-bundler/Lobby)
+[Offical documentation](http://fuse-box.org/) / Submit an [issue](https://github.com/fuse-box/fuse-box/issues/new) / Make [documentation](https://github.com/fuse-box/fuse-box/tree/master/docs) better / Join [gitter channel](https://gitter.im/fusebox-bundler/Lobby) we are active!
 
 
 ## Installation
@@ -26,8 +26,7 @@ npm install fuse-box --save-dev
 
 FuseBox has many plugins in place to help you get started. All you need to do is install `fuse-box` from npm.
 
-## Sample projects
+## Try it now!
 
-Learn how [easy it](https://github.com/fuse-box/angular2-example) is to fuse angular with `less` in __50ms__!
-
+Learn how [easy it is](https://github.com/fuse-box/angular2-example) to fuse angular with `less` in __50ms__!
 [react-example](https://github.com/fuse-box/react-example) 50ms to fuse!
