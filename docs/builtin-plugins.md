@@ -46,7 +46,7 @@ On top of that a CSS file will added to DOM upon request if not found in the bun
 
 
 
-## LessPlugin
+## Less Plugin
 Install less first.
 ```bash
 npm install less --save-dev
@@ -91,6 +91,17 @@ plugins:[
   [fsbx.StylusPlugin(), fsbx.CSSPlugin()]
 ],
 ```
+
+## Raw Plugin
+
+Make files export text data
+
+```js
+plugins:[
+ [/\.raw$/, RawPlugin({extensions: ['.raw']})]
+],
+```
+
 
 ## SassPlugin
 ```bash
