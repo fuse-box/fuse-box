@@ -17,10 +17,10 @@ let fuseBox = FuseBox.init({
         fsbx.BabelPlugin({
             config: {
                 sourceMaps: true,
-                presets: ["latest", "stage-0"],
-                // plugins: [
-                //     ["transform-react-jsx"]
-                // ]
+                presets: ["es2015", "stage-0", "react"],
+                plugins: [
+                    ["transform-react-jsx"]
+                ]
             }
         })
     ]

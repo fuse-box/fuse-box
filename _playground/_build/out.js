@@ -1,4 +1,3 @@
-// Hey this is my banner! Copyright 2016!
 (function(FuseBox){
 var __fsbx_css = function(__filename, contents) {
     if (FuseBox.isServer) {
@@ -34,23 +33,31 @@ FuseBox.pkg("default", {}, function(___scope___){
 ___scope___.file("index.js", function(exports, require, module, __filename, __dirname){ 
 
 "use strict";
-require("./styles.css");
-require("./less/styles.less");
-const rawStyles = require("./less/styles.raw.less?raw");
-document.querySelector('.style-example').innerHTML += rawStyles.default;
 
+var _foo = require("./lib/foo");
+
+var _foo2 = _interopRequireDefault(_foo);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+console.log("my lib", _foo2.default);
 });
-___scope___.file("styles.css", function(exports, require, module, __filename, __dirname){ 
+___scope___.file("lib/foo/index.js", function(exports, require, module, __filename, __dirname){ 
 
-__fsbx_css("styles.css", "body {\n    background: #056ef0;\n}")
-});
-___scope___.file("less/styles.less", function(exports, require, module, __filename, __dirname){ 
+"use strict";
 
-__fsbx_css("less/styles.less", "html,\nbody {\n  background-color: #EEE;\n  color: #333;\n  font-family: Tahoma;\n}\nhtml .fuse-box,\nbody .fuse-box {\n  color: blue;\n}\nhtml .style-example,\nbody .style-example {\n  background: #000;\n  color: #FFF;\n  padding: 10px;\n}\n")
-});
-___scope___.file("less/styles.raw.less", function(exports, require, module, __filename, __dirname){ 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-exports.default = ".raw-style {\n  color: pink;\n}\n";
+//import Foo from "./foo";
+
+var a = function a() {
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+                args[_key] = arguments[_key];
+        }
+
+        return _extends({}, args, { hello: 1 });
+};
+//export default Foo;
 });
 });
 
