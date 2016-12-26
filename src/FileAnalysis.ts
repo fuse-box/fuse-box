@@ -1,7 +1,7 @@
-import { PrettyError } from './PrettyError';
+import { ASTTraverse } from "./ASTTraverse";
+import { PrettyError } from "./PrettyError";
 import { File } from "./File";
 const acorn = require("acorn");
-const traverse = require("ast-traverse");
 const escodegen = require("escodegen");
 require("acorn-es7")(acorn);
 require("acorn-jsx/inject")(acorn);
@@ -107,7 +107,8 @@ export class FileAnalysis {
             return node.type === "Literal" || node.type === "StringLiteral";
         }
 
-        traverse(this.ast, {
+
+        ASTTraverse.traverse(this.ast, {
             pre: (node, parent, prop, idx) => {
 
                 if (node.type === "MemberExpression") {

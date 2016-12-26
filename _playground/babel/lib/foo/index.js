@@ -1,3 +1,6 @@
-import Foo from "./foo";
+//import Foo from "./foo";
 
-export default Foo;
+let a = function(...args) {
+        return {...args, hello: 1 }
+    }
+    //export default Foo;
