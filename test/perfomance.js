@@ -2,19 +2,22 @@ const should = require("should");
 const build = require(`../${process.env.TRAVIS ? "dist" : "build"}/commonjs/index.js`);
 const FuseBox = build.FuseBox;
 
-function runFuse (options, str) {
-	options = Object.assign({
-		log: false,
-		cache: false,
-		plugins: [build.JSONPlugin()],
-	}, options);
+const options = {
+	log: false,
+	cache: false,
+	plugins: [build.JSONPlugin()],
+};
+
+function runFuse (opts, str) {
+	options.files = opts.files
 
 	return new FuseBox(options).bundle(str);
 }
 
-function test (n, plugins) {
+function test (fN, iN) {
 	const files = {};
-	const range = [...Array(n).keys()];
+	const range = [...Array(fN).keys()];
+	const itterations = [...Array(iN || 1).keys()];
 
 	range.reduceRight((prev, cur, idx, array) => {
 		if (idx + 1 === array.length - 1) {
@@ -27,24 +30,31 @@ function test (n, plugins) {
 	});
 
 	const startTime = new Date().getTime();
-	return runFuse({files}, '**/*.js').then(root => {
+	return itterations.reduce((prev, cur) => {
+		return prev.then(() => {
+			return runFuse({files}, '**/*.js');
+		});
+	}, Promise.resolve(true)).then(() => {
 		return new Date().getTime() - startTime;
 	});
 }
 
 const data = [
-	[10, 70],
-	[100, 120],
-	[1000, 1000],
-	[2000, 2200]
+	/** [files, maxTime, itteration] */
+	[10, 100],
+	[100, 150],
+	[1000, 1500],
+	[2000, 2500],
+	[10, 12000, 1000],
+	[1200, 12000, 10]
 ];
 
 describe('Perfomance test', function () {
-	this.timeout(10000);
+	this.timeout(10000 * 10);
 
 	data.forEach(value => {
-		it(`Should create an assembly from ${value[0]} files of less than ${value[1]} ms`, () => {
-			return test(value[0]).then(diff => {
+		it(`Should create an assembly from ${value[0]} files${value[2] ? ' ' + value[2] + ' times' : ''} of less than ${value[1]} ms`, () => {
+			return test(value[0], value[2]).then(diff => {
 				should.equal(diff <= value[1], true, `Actual diff: ${diff}`);
 
 				return true;
