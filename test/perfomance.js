@@ -50,7 +50,7 @@ const data = [
 ];
 
 describe('Perfomance test', function () {
-	this.timeout(10000 * 10);
+	this.timeout(20000);
 
 	data.forEach(value => {
 		it(`Should create an assembly from ${value[0]} files${value[2] ? ' ' + value[2] + ' times' : ''} of less than ${value[1]} ms`, () => {
