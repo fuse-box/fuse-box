@@ -1,7 +1,7 @@
 # Changelog
 
 
-| Version number        | Changes                 |
+| Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
 | 1.3.25            | Fixed a critical bug with native dependencies. Added RawPlugin + tests (thanks _kai_) |
 | 1.3.21 - 23         | Require options introduced. Added [StylusPlugin](#stylusplugin), Raw style options for CSSPlugin (big thanks to _kai_ and _shepless_) |
