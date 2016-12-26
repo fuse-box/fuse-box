@@ -30,3 +30,19 @@ FuseBox has many plugins in place to help you get started. All you need to do is
 
 Learn how [easy it is](https://github.com/fuse-box/angular2-example) to fuse angular with `less` in __50ms__!
 [react-example](https://github.com/fuse-box/react-example) 50ms to fuse!
+
+Check this [benchmark](https://github.com/fuse-box/benchmark):
+__1200 files to bundle__
+
+|         |            |
+| ------------- |:-------------:| 
+| FuseBox      | __0.234s__ |
+| Webpack      | 1.376s |
+
+
+__1000 files to bundle / 10 times__
+
+|         |            |
+| ------------- |:-------------:| 
+| FuseBox      | __2.257s__ |
+| Webpack      | 13.591s |
