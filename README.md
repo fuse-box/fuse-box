@@ -13,7 +13,7 @@ FuseBox loves __typescript__, and does not require any additional configuration.
 
 It is packed with features, and unfolds limitless possibilities of extending the API.
 
-Join [gitter channel](https://gitter.im/fusebox-bundler/Lobb), we are active! / [Offical Doc](http://fuse-box.org/) / Submit an [issue](https://github.com/fuse-box/fuse-box/issues/new) / Make [documentation](https://github.com/fuse-box/fuse-box/tree/master/docs) better
+[Offical Doc](http://fuse-box.org/) / Submit an [issue](https://github.com/fuse-box/fuse-box/issues/new) / Make [documentation](https://github.com/fuse-box/fuse-box/tree/master/docs) better / Join [gitter channel](https://gitter.im/fusebox-bundler/Lobby)
 
 
 ## Installation
