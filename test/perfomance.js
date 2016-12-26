@@ -39,7 +39,7 @@ const data = [
 	[2000, 2200]
 ];
 
-describe('Pefomance test', function () {
+describe('Perfomance test', function () {
 	this.timeout(10000);
 
 	data.forEach(value => {
