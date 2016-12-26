@@ -92,6 +92,18 @@ plugins:[
 ],
 ```
 
+## SassPlugin
+```bash
+npm install node-sass
+```
+
+Usage:
+```js
+plugins:[
+  [fsbx.SassPlugin({ /* options */ })]
+],
+```
+
 ## HTML Plugin
 
 ```js
