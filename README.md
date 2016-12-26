@@ -46,3 +46,16 @@ __1000 files to bundle / 10 times__
 | ------------- |:-------------:| 
 | FuseBox      | __2.257s__ |
 | Webpack      | 13.591s |
+
+## All your need to compile and bundle typescript
+
+```
+FuseBox.init({
+    homeDir: "src/",
+    sourceMap: {
+         bundleReference: "./sourcemaps.js.map",
+         outFile: "sourcemaps.js.map",
+    },
+    outFile: "./out.js"
+}).bundle(">index.ts");
+```
