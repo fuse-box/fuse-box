@@ -111,10 +111,6 @@ var $getRef = function (name, opts) {
     if (!name) {
         name = "./" + pkg.s.entry;
     }
-    if (name.indexOf("?") > -1) {
-        var paramsSplit = name.split(/\?(.+)/);
-        name = paramsSplit[0];
-    }
     var filePath = $pathJoin(basePath, name);
     var validPath = $ensureExtension(filePath);
     var file = pkg.f[validPath];

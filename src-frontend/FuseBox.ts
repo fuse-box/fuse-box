@@ -180,10 +180,10 @@ const $getRef = (name, opts: any): IReference => {
     }
 
     // get rid of options
-    if (name.indexOf("?") > -1) {
-        let paramsSplit = name.split(/\?(.+)/);
-        name = paramsSplit[0];
-    }
+    // if (name.indexOf("?") > -1) {
+    //     let paramsSplit = name.split(/\?(.+)/);
+    //     name = paramsSplit[0];
+    // }
 
     let filePath = $pathJoin(basePath, name);
     // Try first adding .js if missing

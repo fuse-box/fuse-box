@@ -78,11 +78,11 @@ export class PathMaster {
             return data;
         }
 
-        if (/\?/.test(name)) {
-            let paramsSplit = name.split(/\?(.+)/);
-            name = paramsSplit[0];
-            data.params = parseQuery(paramsSplit[1]);
-        }
+        // if (/\?/.test(name)) {
+        //     let paramsSplit = name.split(/\?(.+)/);
+        //     name = paramsSplit[0];
+        //     data.params = parseQuery(paramsSplit[1]);
+        // }
         data.isNodeModule = NODE_MODULE.test(name);
 
         if (data.isNodeModule) {

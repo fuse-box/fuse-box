@@ -43,17 +43,6 @@ plugins: [
 
 On top of that a CSS file will added to DOM upon request if not found in the bundle.
 
-Add `?raw` to your file in require statement to export a raw string.This is useful for Angular2 who wants inlined styles in their [components](https://angular.io/docs/ts/latest/api/core/index/Component-decorator.html)
-
-Like this:
-
-```js
-@Component({
- selector: 'greet', 
- template: 'Hello {{name}}!', 
- styles: require("./style.less?raw")
-})
-```
 
 
 

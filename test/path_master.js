@@ -211,15 +211,15 @@ describe("PathMaster", () => {
         result.fuseBoxPath.should.equal("bundles/core.umd.js");
     });
 
-    it("Should extract options with value", () => {
-        let result = pm.resolve("./hello.js?raw=1", getTestFolder("./bar/data.json"));
+    // it("Should extract options with value", () => {
+    //     let result = pm.resolve("./hello.js?raw=1", getTestFolder("./bar/data.json"));
 
-        result.params.get("raw").should.equal("1");
-    });
+    //     result.params.get("raw").should.equal("1");
+    // });
 
-    it("Should extract options without a value", () => {
-        let result = pm.resolve("./hello.js?raw", getTestFolder("./bar/data.json"));
+    // it("Should extract options without a value", () => {
+    //     let result = pm.resolve("./hello.js?raw", getTestFolder("./bar/data.json"));
 
-        result.params.get("raw").should.equal("");
-    });
+    //     result.params.get("raw").should.equal("");
+    // });
 });

@@ -73,11 +73,11 @@ export class CSSPluginClass implements Plugin {
         let filePath = file.info.fuseBoxPath;
         let serve = false;
 
-        if (file.params && file.params.get("raw") !== undefined) {
-            let cssContent = (this.minify) ? this.minifyContents(file.contents) : file.contents;
-            file.contents = `exports.default = ${JSON.stringify(cssContent)};`;
-            return;
-        }
+        // if (file.params && file.params.get("raw") !== undefined) {
+        //     let cssContent = (this.minify) ? this.minifyContents(file.contents) : file.contents;
+        //     file.contents = `exports.default = ${JSON.stringify(cssContent)};`;
+        //     return;
+        // }
 
         if (this.serve) {
             if (utils.isFunction(this.serve)) {
