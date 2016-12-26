@@ -6,7 +6,7 @@ const BannerPlugin = require('../dist/commonjs/plugins/BannerPlugin').BannerPlug
 const banner = `/** This is my header for bundle. */`;
 
 describe('BannerPlugin', () => {
-	it(`Should call 'context.source.addContent' with right banner param`, done => {
+	it(`Should call 'context.source.addContent' with right banner param`, () => {
 		const bannerPluginInst = BannerPlugin(banner);
 
 		let addContentSpy;
@@ -21,14 +21,15 @@ describe('BannerPlugin', () => {
 			context.source.addContent.restore();
 		});
 
-		getTestEnv({
+		return getTestEnv({
 			'entry.js': ''
 		}, '>entry.js', null, [bannerPluginInst]).then(root => {
 			addContentSpy.called.should.equal(true);
 			addContentSpy.calledWith(banner).should.equal(true);
 
 			addContentSpy.reset();
-			done();
-		}).catch(done);
+
+			return true;
+		});
 	});
 });
