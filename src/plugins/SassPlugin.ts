@@ -1,6 +1,6 @@
-import { File } from '../File';
-import { WorkFlowContext } from '../WorkflowContext';
-import { Plugin } from '../WorkflowContext';
+import { File } from "../File";
+import { WorkFlowContext } from "../WorkflowContext";
+import { Plugin } from "../WorkflowContext";
 
 let sass;
 
@@ -10,34 +10,32 @@ let sass;
  * @implements {Plugin}
  */
 export class SassPluginClass implements Plugin {
-	/**
-	 * @type {RegExp}
-	 * @memberOf SassPlugin
-	 */
+
 	public test: RegExp = /\.scss$/;
 	public options: any;
 
-	constructor (options: any) {
+	constructor(options: any) {
 		this.options = options || {};
 	}
 
-	public init (context: WorkFlowContext) {
-		context.allowExtension('.scss');
+	public init(context: WorkFlowContext) {
+		context.allowExtension(".scss");
 	}
 
-	public transform (file: File): Promise<any> {
+	public transform(file: File): Promise<any> {
 		file.loadContents();
 
-		if (!sass) sass = require('node-sass');
+		if (!sass) sass = require("node-sass");
 
-		const options = Object.assign({data: file.contents}, this.options);
+		const options = Object.assign({
+			data: file.contents,
+			includePaths: [file.info.absDir],
+		}, this.options);
 
 		return new Promise((res, rej) => {
 			return sass.render(options, (err, result) => {
 				if (err) return rej(err);
-
 				file.contents = result.css.toString();
-
 				return res(file.contents);
 			});
 		});
@@ -47,3 +45,4 @@ export class SassPluginClass implements Plugin {
 export const SassPlugin = (options: any) => {
 	return new SassPluginClass(options);
 }
+	;
