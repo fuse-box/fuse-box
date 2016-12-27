@@ -19,6 +19,27 @@ plugins: [
 
 In this case, all CSS files will be bundled.
 
+### Write contents to a different file
+
+Combine this module with something else, and you will see real magic happen.
+```
+plugins: [
+    [
+        fsbx.SassPlugin({ outputStyle: 'compressed' }),
+        fsbx.CSSPlugin({ write: true })
+    ]
+]
+```
+* It will create an according file - `./main.scss` becomes `build/main.css` (your [outFile](#out-file) folder + project path) 
+* Will create `main.css.map` and it will do mappping too, ff sourcemaps are attached
+* It will automatically append filename to the head (and serve it)
+
+Check how it works [here](https://github.com/fuse-box/angular2-example)
+
+> Note - we are still working on the CSS plugins. Be patient. Customisations are coming soon.
+
+### Serving file
+
 But if you define "serve" option with a callback, all files will be filtered through it. A callback is expected to return a string with a browser path. If you return "undefined" or *NOT* a string, that file will be bundled as if no option was specified.
 
 All css files will be served by server.
@@ -42,25 +63,6 @@ plugins: [
 ```
 
 On top of that a CSS file will added to DOM upon request if not found in the bundle.
-
-### Write contents to a different file
-
-Combine this module with something else, and you will see real magic happen.
-```
-plugins: [
-    [
-        fsbx.SassPlugin({ outputStyle: 'compressed' }),
-        fsbx.CSSPlugin({ write: true })
-    ]
-]
-```
-* It will create an according file, `./main.scss` becomes `build/main.css` (your [outFile](#out-file) folder + project path) 
-* It sourcemaps attached it will create `main.css.map` and it will do mappping too
-* It will automatically append filename to the head
-
-Check how it works [here](https://github.com/fuse-box/angular2-example)
-
-> Note - we are still working on the CSS plugins. Be patient. Customisations are coming soon.
 
 ## Less Plugin
 Install less first.
