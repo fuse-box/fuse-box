@@ -54,8 +54,8 @@ plugins: [
     ]
 ]
 ```
-* It will create an according file, ./main.scss becomes build/main.css (your [outFile](#out-file) folder + project path) 
-* It sourcemaps attached it will create main.css.map and it will do mappping too
+* It will create an according file, `./main.scss` becomes `build/main.css` (your [outFile](#out-file) folder + project path) 
+* It sourcemaps attached it will create `main.css.map` and it will do mappping too
 * It will automatically append filename to the head
 
 Check how it works [here](https://github.com/fuse-box/angular2-example)
