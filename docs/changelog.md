@@ -3,6 +3,7 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.3.28-31         | CSSPlugin supports sourcemaps and writing
 | 1.3.27            | SassPlugin added (__kai__)
 | 1.3.27            | Removed options from files (aaa.js?foo)
 | 1.3.25            | Fixed a critical bug with native dependencies. Added RawPlugin + tests (thanks __kai__) |
