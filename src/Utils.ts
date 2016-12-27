@@ -1,6 +1,11 @@
+import * as path from "path";
+const appRoot = require("app-root-path");
+
+const mkdirp = require("mkdirp");
+
 const MBLACKLIST = [
-    'freelist',
-    'sys'
+    "freelist",
+    "sys"
 ];
 
 export function camelCase(str: string) {
@@ -20,11 +25,32 @@ export function parseQuery(qstr) {
     }
     return query;
 }
+export function ensureUserPath(userPath: string) {
+    if (!path.isAbsolute(userPath)) {
+        userPath = path.join(appRoot.path, userPath);
+    }
+    let dir = path.dirname(userPath);
+    mkdirp.sync(dir);
+    return userPath;
+}
 
+
+export function replaceExt(npath, ext): string {
+    if (typeof npath !== "string") {
+        return npath;
+    }
+
+    if (npath.length === 0) {
+        return npath;
+    }
+
+    let nFileName = path.basename(npath, path.extname(npath)) + ext;
+    return path.join(path.dirname(npath), nFileName);
+}
 export function getBuiltInNodeModules(): Array<string> {
-   const process: any = global.process;
+    const process: any = global.process;
 
-    return Object.keys(process.binding('natives')).filter(m => {
+    return Object.keys(process.binding("natives")).filter(m => {
         return !/^_|^internal|\//.test(m) && MBLACKLIST.indexOf(m) === -1;
     });
 }
