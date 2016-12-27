@@ -43,8 +43,20 @@ plugins: [
 
 On top of that a CSS file will added to DOM upon request if not found in the bundle.
 
+### Write contents to a different file
 
-
+Combine this module with something else, and you will see real magic happen.
+```
+plugins: [
+    [
+        fsbx.SassPlugin({ outputStyle: 'compressed' }),
+        fsbx.CSSPlugin({ write: true })
+    ]
+]
+```
+* It Will create according file, i you had ./main.scss it will create build/main.css (your outFile folder) 
+* It sourcemaps attached it will create main.css.map and it will do mappping too
+* It will automatically append filename to the head
 
 ## Less Plugin
 Install less first.
