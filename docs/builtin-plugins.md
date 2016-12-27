@@ -54,9 +54,11 @@ plugins: [
     ]
 ]
 ```
-* It Will create according file, i you had ./main.scss it will create build/main.css (your outFile folder) 
+* It will create an according file, ./main.scss becomes build/main.css (your outFile folder + project path) 
 * It sourcemaps attached it will create main.css.map and it will do mappping too
 * It will automatically append filename to the head
+
+Check how it works [here](https://github.com/fuse-box/angular2-example)
 
 ## Less Plugin
 Install less first.
