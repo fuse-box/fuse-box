@@ -34,22 +34,12 @@ FuseBox.pkg("default", {}, function(___scope___){
 ___scope___.file("index.js", function(exports, require, module, __filename, __dirname){ 
 
 "use strict";
-require("./styles.css");
 require("./test.scss");
-require("./less/styles.less");
 
-});
-___scope___.file("styles.css", function(exports, require, module, __filename, __dirname){ 
-
-__fsbx_css("styles.css", "body {\n    background: #056ef0;\n}")
 });
 ___scope___.file("test.scss", function(exports, require, module, __filename, __dirname){ 
 
 __fsbx_css("test.css")
-});
-___scope___.file("less/styles.less", function(exports, require, module, __filename, __dirname){ 
-
-__fsbx_css("less/styles.less", "html,\nbody {\n  background-color: #EEE;\n  color: #333;\n  font-family: Tahoma;\n}\nhtml .fuse-box,\nbody .fuse-box {\n  color: blue;\n}\nhtml .style-example,\nbody .style-example {\n  background: #000;\n  color: #FFF;\n  padding: 10px;\n}\n")
 });
 });
 

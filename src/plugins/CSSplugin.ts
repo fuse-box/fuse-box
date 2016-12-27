@@ -106,8 +106,10 @@ export class CSSPluginClass implements Plugin {
                     initialContents += `\n/*# sourceMappingURL=${sourceMapFile} */`;
 
                     let souceMapPath = ensureUserPath(path.join(base, sourceMapFile));
+                    let initialSourceMap = file.sourceMap;
+                    file.sourceMap = undefined;
                     tasks.push(new Promise((resolve, reject) => {
-                        fs.writeFile(souceMapPath, file.sourceMap, (err, res) => {
+                        fs.writeFile(souceMapPath, initialSourceMap, (err, res) => {
                             if (err) {
                                 return reject(err);
                             }
