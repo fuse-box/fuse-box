@@ -28,7 +28,7 @@ FuseBox has many plugins in place to help you get started. All you need to do is
 
 ## Try it now!
 
-Check a marvellous TODO app built on the latest [ng2+sass](https://github.com/fuse-box/angular2-example). Fuse it in a fraction of second! (50-80ms)
+Check a [marvellous TODO app](https://fuse-box.github.io/angular2-example/) built on the latest [ng2+sass](https://github.com/fuse-box/angular2-example). Fuse it in a fraction of second! (50-80ms)
 [react-example](https://github.com/fuse-box/react-example) 50ms!
 
 Check this [benchmark](https://github.com/fuse-box/benchmark):
