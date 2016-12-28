@@ -12,11 +12,6 @@ import * as UglifyJs from "uglify-js";
  */
 export class UglifyJSPluginClass implements Plugin {
 	/**
-	 * @type {RegExp}
-	 * @memberOf UglifyJSPluginClass
-	 */
-	public test: RegExp = /\.js$/;
-	/**
 	 * @type {any}
 	 * @memberOf UglifyJSPluginClass
 	 */
