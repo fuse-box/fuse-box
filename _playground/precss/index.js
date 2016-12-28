@@ -8,3 +8,4 @@ require('./file.raw');*/
 
 require('./a')();
 require('./b')();
+require('./mod/c')();
