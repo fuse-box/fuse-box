@@ -20,7 +20,7 @@ exports.getTestEnv = (files, str, done, plugins) => {
                 navigator: 1
             };
             let str = data.content.toString();
-            str = str.replace(/\(this\)\)$/, "(__root__))");
+            str = str.replace(/\(this\)\);?$/, "(__root__))");
             let fn = new Function("window", "__root__", str);
             fn(scope, scope);
             return resolve(scope);

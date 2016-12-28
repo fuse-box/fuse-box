@@ -42,7 +42,7 @@ export class BundleSource {
      * @memberOf BundleSource
      */
     constructor(public context: WorkFlowContext) {
-        this.concat = new Concat(true, "", "\n");
+        this.reset();
     }
 
     /**
@@ -52,6 +52,10 @@ export class BundleSource {
      */
     public init() {
         this.concat.add(null, "(function(FuseBox){");
+    }
+
+    public reset () {
+        this.concat = new Concat(true, "", "\n");
     }
 
     /**
