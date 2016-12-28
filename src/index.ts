@@ -9,6 +9,7 @@ export { CSSPlugin } from "./plugins/CSSplugin";
 export { HTMLPlugin } from "./plugins/HTMLplugin";
 export { JSONPlugin } from "./plugins/JSONplugin";
 export { BannerPlugin } from "./plugins/BannerPlugin";
+export { SassPlugin } from "./plugins/SassPlugin";
 
 export { WorkFlowContext } from "./WorkflowContext";
 export { PathMaster } from "./PathMaster";

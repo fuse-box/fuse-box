@@ -14,6 +14,8 @@ describe('StylusPlugin', () => {
 			let result = root.FuseBox.import('./style.styl');
 			
 			result.should.equal('body {\n  color: #fff;\n}\n');
+			
+			return true
 		});
 	});
 });

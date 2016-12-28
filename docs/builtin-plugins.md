@@ -19,6 +19,27 @@ plugins: [
 
 In this case, all CSS files will be bundled.
 
+### Write contents to a different file
+
+Combine this module with something else, and you will see real magic happen.
+```
+plugins: [
+    [
+        fsbx.SassPlugin({ outputStyle: 'compressed' }),
+        fsbx.CSSPlugin({ write: true })
+    ]
+]
+```
+* It will create an according file - `./main.scss` becomes `build/main.css` (your [outFile](#out-file) folder + project path) 
+* Will create `main.css.map` and it will do mappping too, ff sourcemaps are attached
+* It will automatically append filename to the head (and serve it)
+
+Check how it works [here](https://github.com/fuse-box/angular2-example)
+
+> Note - we are still working on the CSS plugins. Be patient. Customisations are coming soon.
+
+### Serving file
+
 But if you define "serve" option with a callback, all files will be filtered through it. A callback is expected to return a string with a browser path. If you return "undefined" or *NOT* a string, that file will be bundled as if no option was specified.
 
 All css files will be served by server.
@@ -43,10 +64,7 @@ plugins: [
 
 On top of that a CSS file will added to DOM upon request if not found in the bundle.
 
-
-
-
-## LessPlugin
+## Less Plugin
 Install less first.
 ```bash
 npm install less --save-dev
@@ -89,6 +107,29 @@ plugins:[
 ```js
 plugins:[
   [fsbx.StylusPlugin(), fsbx.CSSPlugin()]
+],
+```
+
+## Raw Plugin
+
+Make files export text data
+
+```js
+plugins:[
+ [/\.raw$/, RawPlugin({extensions: ['.raw']})]
+],
+```
+
+
+## SassPlugin
+```bash
+npm install node-sass
+```
+
+Usage:
+```js
+plugins:[
+  [fsbx.SassPlugin({ /* options */ })]
 ],
 ```
 

@@ -23,6 +23,8 @@ describe('RawPlugin', () => {
 
 			fileRaw1.should.equal('\nthis is\n\traw\n\t\tcontent\n');
 			fileRaw2.should.equal('\nthis is\n\traw\n\t\tcontent\n');
+
+			return true;
 		});
 	});
 });

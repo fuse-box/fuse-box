@@ -30,6 +30,8 @@ describe('BannerPlugin', () => {
 			addContentSpy.reset();
 
 			(code.match(new RegExp(banner.replace(/(\/|\*)/g, '\\$1'))) !== null).should.equal(true);
+
+			return true;
 		});
 	});
 });
