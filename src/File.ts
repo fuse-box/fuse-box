@@ -216,9 +216,9 @@ export class File {
         this.isLoaded = true;
     }
 
-    public makeAnalysis() {
+    public makeAnalysis(parserOptions?: any) {
         if (!this.analysis.astIsLoaded()) {
-            this.analysis.parseUsingAcorn();
+            this.analysis.parseUsingAcorn(parserOptions);
         }
         this.analysis.analyze();
     }
