@@ -4,18 +4,16 @@ const StylusPlugin = require('../dist/commonjs/plugins/StylusPlugin').StylusPlug
 const RawPlugin = require('../dist/commonjs/plugins/RawPlugin').RawPlugin;
 
 describe('StylusPlugin', () => {
-	it('Should return compiled css', done => {
-		getTestEnv({
+	it('Should return compiled css', () => {
+		return getTestEnv({
 			'style.styl': `
 				body
 					color white
 			`
-		}, '>style.styl', null, [[StylusPlugin({}), RawPlugin()]]).then(root => {
+		}, '>style.styl', {plugins: [[StylusPlugin({}), RawPlugin()]]}).then(root => {
 			let result = root.FuseBox.import('./style.styl');
 			
 			result.should.equal('body {\n  color: #fff;\n}\n');
-			
-			done();
-		}).catch(done);
+		});
 	});
 });

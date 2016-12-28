@@ -1,56 +1,59 @@
-import { File } from '../File';
-import { WorkFlowContext } from '../WorkflowContext';
-import { Plugin } from '../WorkflowContext';
+import { File } from "../File";
+import { WorkFlowContext } from "../WorkflowContext";
+import { Plugin } from "../WorkflowContext";
+import { BundleSource } from '../BundleSource';
 
-import * as UglifyJs from 'uglify-js';
+import * as UglifyJs from "uglify-js";
 
+/**
+ * @export
+ * @class UglifyJSPluginClass
+ * @implements {Plugin}
+ */
 export class UglifyJSPluginClass implements Plugin {
+	/**
+	 * @type {RegExp}
+	 * @memberOf UglifyJSPluginClass
+	 */
 	public test: RegExp = /\.js$/;
+	/**
+	 * @type {any}
+	 * @memberOf UglifyJSPluginClass
+	 */
 	public options: any;
 
 	constructor (options: any) {
 		this.options = options || {};
 	}
 
-	transform (file: File) {
-		file.loadContents();
-		file.makeAnalysis();
+	postBundle (context) {
+		const mainOptions:any = {
+			fromString: true
+		};
 
-		let uAst = UglifyJs.AST_Node.from_mozilla_ast(file.analysis.ast);
-		
-		uAst.figure_out_scope();
-		uAst = uAst.transform(UglifyJs.Compressor({}));
-
-		uAst.figure_out_scope();
-		uAst.compute_char_frequency();
-		uAst.mangle_names();
-
-		const sourceMap = UglifyJs.SourceMap({
-			file: file.info.fuseBoxPath,
-			root: file.context.homeDir
-		});
-		const stream = UglifyJs.OutputStream({
-			source_map: sourceMap,
-		});
-		uAst.print(stream);
-
-		const code = stream.toString();
-
-		file.contents = code;
-	}
-
-	/*postBundle (context) {
-		const options = Object.assign({}, this.options, {fromString: true});
 		const concat = context.source.getResult();
 		const source = concat.content.toString();
 		const sourceMap = concat.sourceMap;
-		const result = compressor.minify(source, options);
 
-		context.source.reset();
+		const newSource = new BundleSource(context);
+		context.source = newSource;
 
 		const newConcat = context.source.getResult();
-		newConcat.add(null, result.code, sourceMap);
-	}*/
+
+		if ("sourceMapConfig" in context) {
+			if (context.sourceMapConfig.bundleReference) {
+				mainOptions.inSourceMap = JSON.parse(sourceMap);
+				mainOptions.outSourceMap = context.sourceMapConfig.bundleReference;
+			}
+		}
+
+		const result = UglifyJs.minify(source, {
+			...this.options,
+			...mainOptions
+		});
+
+		newConcat.add(null, result.code, result.map || sourceMap);
+	}
 }
 
 export const UglifyJSPlugin = (options: any) => {

@@ -42,7 +42,7 @@ export class BundleSource {
      * @memberOf BundleSource
      */
     constructor(public context: WorkFlowContext) {
-        this.reset();
+        this.concat = new Concat(true, "", "\n");
     }
 
     /**
@@ -52,10 +52,6 @@ export class BundleSource {
      */
     public init() {
         this.concat.add(null, "(function(FuseBox){");
-    }
-
-    public reset () {
-        this.concat = new Concat(true, "", "\n");
     }
 
     /**
@@ -191,6 +187,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         } else {
             this.concat.add(null, "()");
         }
+
         if (this.context.sourceMapConfig) {
             if (this.context.sourceMapConfig.bundleReference) {
                 this.concat.add(null, `//# sourceMappingURL=${this.context.sourceMapConfig.bundleReference}`);

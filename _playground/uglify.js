@@ -12,6 +12,7 @@ let fuseBox = FuseBox.init({
         bundleReference: "./sourcemaps.js.map",
         outFile: "_playground/uglify/_dist/sourcemaps.js.map",
     },
+    globals: { default: "mySuperLib" },
     cache: false,
     outFile: "_playground/uglify/_dist/dist.js",
     plugins: [
