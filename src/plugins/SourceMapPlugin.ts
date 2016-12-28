@@ -17,6 +17,11 @@ export class SourceMapPluginClass implements Plugin {
 	 */
 	public test: RegExp = /\.js$/;
 	/**
+	 * @type {string}
+	 * @memberOf SourceMapPluginClass
+	 */
+	public ext: string = ".js";
+	/**
 	 * @type {WorkFlowContext}
 	 * @memberOf SourceMapPluginClass
 	 */
@@ -26,12 +31,13 @@ export class SourceMapPluginClass implements Plugin {
 		options = options || {};
 
 		if ('test' in options) this.test = options.test;
+		if ('ext' in options) this.ext = options.ext;
 	}
 
 	init(context: WorkFlowContext) {
 		this.context = context;
 
-		context.allowExtension(".js");
+		context.allowExtension(this.ext);
 	}
 
 	transform(file: File) {

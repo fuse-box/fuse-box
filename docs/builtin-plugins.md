@@ -206,6 +206,13 @@ plugins: [
 ]
 ```
 
+## SourceMapPlugin
+```js
+plugins: [
+    fxbx.SourceMapPlugin()
+]
+```
+
 ## Typescript helpers
 
 A very handy plugin, adds required typescript functions to the bundle. Please note that it adds only the ones that are actually used. So you won't be seeing an unnecessary code.
