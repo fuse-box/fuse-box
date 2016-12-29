@@ -3,6 +3,7 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.3.33            | Various fixes from PRs, few new plugins added
 | 1.3.32            | Added [UglifyJsPlugin](#uglifyjsplugin)
 | 1.3.28-31         | CSSPlugin supports sourcemaps and writing
 | 1.3.27            | SassPlugin added (__kai__)
