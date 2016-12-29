@@ -1,6 +1,7 @@
 const should = require('should');
 const getTestEnv = require('./fixtures/lib').getTestEnv;
-const RawPlugin = require('../dist/commonjs/plugins/RawPlugin').RawPlugin;
+const build = require(`../${process.env.TRAVIS ? "dist" : "build"}/commonjs/index.js`);
+const RawPlugin = build.RawPlugin;
 
 const rawFile = `
 this is
@@ -17,7 +18,7 @@ describe('RawPlugin', () => {
 			`,
 			'file1.raw': rawFile,
 			'file2.onemoreraw': rawFile
-		}, '>entry.js', null, [[/raw$/, RawPlugin({extensions: ['.raw', '.onemoreraw']})]]).then(root => {
+		}, '>entry.js', {plugins: [[/raw$/, RawPlugin({extensions: ['.raw', '.onemoreraw']})]]}).then(root => {
 			const fileRaw1 = root.FuseBox.import('./file1.raw');
 			const fileRaw2 = root.FuseBox.import('./file2.onemoreraw');
 

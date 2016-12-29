@@ -11,7 +11,7 @@ let fuseBox = FuseBox.init({
     outFile: "_playground/_build/out.js",
     sourceMaps: {
         bundleReference: "out.js.map",
-        outFile: "_playground/_build/out.js.map",
+        outFile: "_playground/_build/out.js.map"
     },
 
     plugins: [

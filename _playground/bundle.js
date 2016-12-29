@@ -31,6 +31,8 @@ const fuseBox = FuseBox.init({
 
         // Add a banner to bundle output
         build.BannerPlugin('// Hey this is my banner! Copyright 2016!')
+
+        //build.UglifyJSPlugin()
     ]
 });
 

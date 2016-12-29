@@ -187,6 +187,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         } else {
             this.concat.add(null, "()");
         }
+
         if (this.context.sourceMapConfig) {
             if (this.context.sourceMapConfig.bundleReference) {
                 this.concat.add(null, `//# sourceMappingURL=${this.context.sourceMapConfig.bundleReference}`);

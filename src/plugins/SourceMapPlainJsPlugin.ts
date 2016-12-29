@@ -7,23 +7,23 @@ import * as SourceMap from "source-map";
 
 /**
  * @export
- * @class SourceMapPluginClass
+ * @class SourceMapPlainJsPluginClass
  * @implements {Plugin}
  */
-export class SourceMapPluginClass implements Plugin {
+export class SourceMapPlainJsPluginClass implements Plugin {
 	/**
 	 * @type {RegExp}
-	 * @memberOf SourceMapPluginClass
+	 * @memberOf SourceMapPlainJsPluginClass
 	 */
 	public test: RegExp = /\.js$/;
 	/**
 	 * @type {string}
-	 * @memberOf SourceMapPluginClass
+	 * @memberOf SourceMapPlainJsPluginClass
 	 */
 	public ext: string = ".js";
 	/**
 	 * @type {WorkFlowContext}
-	 * @memberOf SourceMapPluginClass
+	 * @memberOf SourceMapPlainJsPluginClass
 	 */
 	private context: WorkFlowContext;
 
@@ -96,6 +96,6 @@ export class SourceMapPluginClass implements Plugin {
 	}
 }
 
-export const SourceMapPlugin = (options?:any) => {
-	return new SourceMapPluginClass(options);
+export const SourceMapPlainJsPlugin = (options?:any) => {
+	return new SourceMapPlainJsPluginClass(options);
 }

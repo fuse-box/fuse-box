@@ -1,7 +1,8 @@
 const should = require('should');
 const sinon = require('sinon');
 const getTestEnv = require('./fixtures/lib').getTestEnv;
-const BannerPlugin = require('../dist/commonjs/plugins/BannerPlugin').BannerPlugin;
+const build = require(`../${process.env.TRAVIS ? "dist" : "build"}/commonjs/index.js`);
+const BannerPlugin = build.BannerPlugin;
 
 const banner = `/** This is my header for bundle. */`;
 
@@ -23,11 +24,15 @@ describe('BannerPlugin', () => {
 
 		return getTestEnv({
 			'entry.js': ''
-		}, '>entry.js', null, [bannerPluginInst]).then(root => {
+		}, '>entry.js', {plugins: [bannerPluginInst]}, true).then((concat) => {
+			const code = concat.content.toString();
+
 			addContentSpy.called.should.equal(true);
 			addContentSpy.calledWith(banner).should.equal(true);
 
 			addContentSpy.reset();
+
+			(code.match(new RegExp(banner.replace(/(\/|\*)/g, '\\$1'))) !== null).should.equal(true);
 
 			return true;
 		});

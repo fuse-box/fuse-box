@@ -206,10 +206,24 @@ plugins: [
 ]
 ```
 
-## SourceMapPlugin
+## UglifyJSPlugin
+Compresses your code by [UglifyJS2](https://github.com/mishoo/UglifyJS2)
 ```js
 plugins: [
-    fxbx.SourceMapPlugin()
+    // [options] - UglifyJS2 options
+    fxbx.UglifyJSPlugin(options)
+]
+```
+
+## SourceMapPlainJsPlugin
+`npm i source-map`
+```js
+sourceMap: {
+  bundleReference: "sourcemaps.js.map",
+  outFile: "sourcemaps.js.map",
+},
+plugins: [
+    fsbx.SourceMapPlainJsPlugin();
 ]
 ```
 
