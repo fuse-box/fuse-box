@@ -10,6 +10,7 @@ export { HTMLPlugin } from "./plugins/HTMLplugin";
 export { JSONPlugin } from "./plugins/JSONplugin";
 export { BannerPlugin } from "./plugins/BannerPlugin";
 export { SassPlugin } from "./plugins/SassPlugin";
+export { UglifyJSPlugin } from "./plugins/UglifyJSPlugin";
 
 export { WorkFlowContext } from "./WorkflowContext";
 export { PathMaster } from "./PathMaster";

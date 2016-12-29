@@ -23,11 +23,13 @@ describe('BannerPlugin', () => {
 
 		return getTestEnv({
 			'entry.js': ''
-		}, '>entry.js', null, [bannerPluginInst]).then(root => {
+		}, '>entry.js', {plugins: [bannerPluginInst]}, true).then((code) => {
 			addContentSpy.called.should.equal(true);
 			addContentSpy.calledWith(banner).should.equal(true);
 
 			addContentSpy.reset();
+
+			(code.match(new RegExp(banner.replace(/(\/|\*)/g, '\\$1'))) !== null).should.equal(true);
 
 			return true;
 		});

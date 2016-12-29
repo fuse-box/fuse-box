@@ -15,9 +15,9 @@ describe('SassPlugin', () => {
     it('Should return compiled css', () => {
         return getTestEnv({
             'style.scss': file
-        }, '>style.scss', null, [
+        }, '>style.scss', {plugins: [
             [SassPlugin({}), RawPlugin()]
-        ]).then(root => {
+        ]}).then(root => {
             let result = root.FuseBox.import('./style.scss');
 
             result.should.equal(`body {

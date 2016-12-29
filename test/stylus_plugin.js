@@ -10,7 +10,7 @@ describe('StylusPlugin', () => {
 				body
 					color white
 			`
-		}, '>style.styl', null, [[StylusPlugin({}), RawPlugin()]]).then(root => {
+		}, '>style.styl', {plugins: [[StylusPlugin({}), RawPlugin()]]}).then(root => {
 			let result = root.FuseBox.import('./style.styl');
 			
 			result.should.equal('body {\n  color: #fff;\n}\n');

@@ -9,7 +9,10 @@ let fuseBox = FuseBox.init({
     homeDir: "_playground/babel",
     cache: false,
     outFile: "_playground/_build/out.js",
-
+    sourceMap: {
+      bundleReference: "out.js.map",
+      outFile: "_playground/_build/out.js.map",
+    },
 
     plugins: [
         fsbx.SVGPlugin(),
@@ -17,13 +20,10 @@ let fuseBox = FuseBox.init({
         fsbx.BabelPlugin({
             config: {
                 sourceMaps: true,
-                presets: ["es2015", "stage-0", "react"],
-                plugins: [
-                    ["transform-react-jsx"]
-                ]
+                presets: ["es2015"]
             }
         })
     ]
 });
 
-fuseBox.bundle(">index.js +react-dom", true);
+fuseBox.bundle(">index.js");

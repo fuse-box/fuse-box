@@ -206,6 +206,15 @@ plugins: [
 ]
 ```
 
+## UglifyJSPlugin
+Compresses your code by [UglifyJS2](https://github.com/mishoo/UglifyJS2)
+```js
+plugins: [
+    // [options] - UglifyJS2 options
+    fxbx.UglifyJSPlugin(options)
+]
+```
+
 ## Typescript helpers
 
 A very handy plugin, adds required typescript functions to the bundle. Please note that it adds only the ones that are actually used. So you won't be seeing an unnecessary code.

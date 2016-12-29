@@ -67,6 +67,7 @@
         "babel-core": "*",
         "postcss": "*",
         "stylus": "*",
-        "node-sass": "*"
+        "node-sass": "*",
+        "uglify-js": "*"
     }
 }
