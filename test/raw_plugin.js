@@ -1,6 +1,7 @@
 const should = require('should');
 const getTestEnv = require('./fixtures/lib').getTestEnv;
-const RawPlugin = require('../dist/commonjs/plugins/RawPlugin').RawPlugin;
+const build = require(`../${process.env.TRAVIS ? "dist" : "build"}/commonjs/index.js`);
+const RawPlugin = build.RawPlugin;
 
 const rawFile = `
 this is

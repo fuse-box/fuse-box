@@ -9,14 +9,12 @@ let fuseBox = FuseBox.init({
     homeDir: "_playground/babel",
     cache: false,
     outFile: "_playground/_build/out.js",
-    sourceMap: {
-      bundleReference: "out.js.map",
-      outFile: "_playground/_build/out.js.map",
+    sourceMaps: {
+        bundleReference: "out.js.map",
+        outFile: "_playground/_build/out.js.map"
     },
 
     plugins: [
-        fsbx.SVGPlugin(),
-        fsbx.CSSPlugin(),
         fsbx.BabelPlugin({
             config: {
                 sourceMaps: true,

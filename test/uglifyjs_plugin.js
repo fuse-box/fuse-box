@@ -1,6 +1,8 @@
 const should = require('should');
 const getTestEnv = require('./fixtures/lib').getTestEnv;
-const UglifyJSPlugin = require('../dist/commonjs/plugins/UglifyJSPlugin').UglifyJSPlugin;
+const build = require(`../${process.env.TRAVIS ? "dist" : "build"}/commonjs/index.js`);
+
+const UglifyJSPlugin = build.UglifyJSPlugin;
 
 const file = `
 var longVar = 'str1';

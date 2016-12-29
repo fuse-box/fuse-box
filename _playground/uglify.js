@@ -16,7 +16,8 @@ let fuseBox = FuseBox.init({
     cache: false,
     outFile: "_playground/uglify/_dist/dist.js",
     plugins: [
-        UglifyJSPlugin()
+        UglifyJSPlugin(),
+        build.SourceMapPlainJsPlugin()
     ]
 });
 

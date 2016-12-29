@@ -1,7 +1,8 @@
 const should = require('should');
+const build = require(`../${process.env.TRAVIS ? "dist" : "build"}/commonjs/index.js`);
 const getTestEnv = require('./fixtures/lib').getTestEnv;
-const SassPlugin = require('../dist/commonjs/plugins/SassPlugin').SassPlugin;
-const RawPlugin = require('../dist/commonjs/plugins/RawPlugin').RawPlugin;
+const SassPlugin = build.SassPlugin;
+const RawPlugin = build.RawPlugin;
 
 const file = `
 $c1: #ccc;

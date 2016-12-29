@@ -215,6 +215,18 @@ plugins: [
 ]
 ```
 
+## SourceMapPlainJsPlugin
+`npm i source-map`
+```js
+sourceMap: {
+  bundleReference: "sourcemaps.js.map",
+  outFile: "sourcemaps.js.map",
+},
+plugins: [
+    fsbx.SourceMapPlainJsPlugin();
+]
+```
+
 ## Typescript helpers
 
 A very handy plugin, adds required typescript functions to the bundle. Please note that it adds only the ones that are actually used. So you won't be seeing an unnecessary code.

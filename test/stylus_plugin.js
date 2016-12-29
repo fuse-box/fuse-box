@@ -1,7 +1,9 @@
 const should = require('should');
+const build = require(`../${process.env.TRAVIS ? "dist" : "build"}/commonjs/index.js`);
+
 const getTestEnv = require('./fixtures/lib').getTestEnv;
-const StylusPlugin = require('../dist/commonjs/plugins/StylusPlugin').StylusPlugin;
-const RawPlugin = require('../dist/commonjs/plugins/RawPlugin').RawPlugin;
+const StylusPlugin = build.StylusPlugin;
+const RawPlugin = build.RawPlugin;
 
 describe('StylusPlugin', () => {
 	it('Should return compiled css', () => {

@@ -74,15 +74,15 @@ export class FileAnalysis {
      * 
      * @memberOf FileAST
      */
-    public parseUsingAcorn() {
+    public parseUsingAcorn(options?: any) {
         try {
-            this.ast = acorn.parse(this.file.contents, {
+            this.ast = acorn.parse(this.file.contents, {...options || {}, ...{
                 sourceType: "module",
                 tolerant: true,
                 ecmaVersion: 8,
                 plugins: { es7: true, jsx: true },
                 jsx: { allowNamespacedObjects: true }
-            });
+            }});
         } catch (err) {
             return PrettyError.errorWithContents(err, this.file);
         }

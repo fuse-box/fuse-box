@@ -68,6 +68,7 @@
         "postcss": "*",
         "stylus": "*",
         "node-sass": "*",
-        "uglify-js": "*"
+        "uglify-js": "*",
+        "source-map": "*"
     }
 }
