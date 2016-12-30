@@ -4,6 +4,7 @@
     "description": "Fuse-Box a bundler just does it right",
     "typings": "./dist/typings/index.d.ts",
     "main": "dist/commonjs/index.js",
+    "types": "dist/typings/index.ts",
     "directories": {
         "test": "test"
     },
