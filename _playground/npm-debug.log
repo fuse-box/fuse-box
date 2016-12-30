@@ -1,0 +1,30 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'publish' ]
+2 info using npm@3.9.6
+3 info using node@v6.9.1
+4 verbose publish [ '.' ]
+5 silly cache add args [ '.', null ]
+6 verbose cache add spec .
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: '.',
+7 silly cache add   scope: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '.',
+7 silly cache add   spec: '/Users/nc/work/fuse-box/fuse-box/_playground',
+7 silly cache add   type: 'local' }
+8 error addLocal Could not install /Users/nc/work/fuse-box/fuse-box/_playground
+9 verbose stack Error: EISDIR: illegal operation on a directory, read
+9 verbose stack     at Error (native)
+10 verbose cwd /Users/nc/work/fuse-box/fuse-box/_playground
+11 error Darwin 15.0.0
+12 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "publish"
+13 error node v6.9.1
+14 error npm  v3.9.6
+15 error code EISDIR
+16 error errno -21
+17 error syscall read
+18 error eisdir EISDIR: illegal operation on a directory, read
+19 error eisdir This is most likely not a problem with npm itself
+19 error eisdir and is related to npm not being able to find a package.json in
+19 error eisdir a package you are trying to install.
+20 verbose exit [ -21, true ]
