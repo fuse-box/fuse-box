@@ -187,6 +187,15 @@ export class PathMaster {
 
 
     private ensureFolderAndExtensions(name: string, root: string, explicit = false) {
+        // Would be great to list a folder and prob for a file.
+        // So, let's say, user did not specify an extension
+        // So we list a folder, get something like this:
+        // .
+        // target.jsx
+        // target.tsx
+        // target.ts
+        // In case of tsMode we choose target.ts if available
+        //      if target.ts is missing, we choose target.tsx and so on
 
         let ext = path.extname(name);
         let fileExt = this.tsMode && !explicit ? ".ts" : ".js";
