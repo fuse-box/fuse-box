@@ -65,6 +65,14 @@ or
 require("~/stuff/boo.js").hello
 ```
 
+## Remove
+You can completely remove a module from memory. 
+
+```
+FuseBox.remove("./foo")
+```
+
+
 
 ## FuseBox events
 
