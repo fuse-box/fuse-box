@@ -1,12 +1,9 @@
-import { parseQuery } from './Utils';
-import { IPackageInformation, IPathInformation } from './PathMaster';
+import { ensurePublicExtension, replaceExt } from "./Utils";
+import { IPackageInformation, IPathInformation } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
 import * as path from "path";
 import * as fs from "fs";
 import { Config } from "./Config";
-import { getBuiltInNodeModules } from './Utils';
-
-//const BUILTIN_NODE_MODULES = getBuiltInNodeModules();
 
 const NODE_MODULE = /^([a-z@].*)$/;
 export interface INodeModuleRequire {
@@ -137,7 +134,7 @@ export class PathMaster {
         root = root.replace(/\\/g, "/");
         name = name.replace(root, "").replace(/^\/|\\/, "");
         if (this.tsMode) {
-            name = this.context.convert2typescript(name);
+            name = ensurePublicExtension(name);
         }
         return name;
     }
@@ -154,8 +151,22 @@ export class PathMaster {
      */
     public getAbsolutePath(name: string, root: string, rootEntryLimit?: string, explicit = false) {
         let url = this.ensureFolderAndExtensions(name, root, explicit);
-        //console.log("url", url);
+
+
         let result = path.resolve(root, url);
+
+        // A check for tsx
+        // Simple a hack..
+        // ensureFolderAndExtensions needs to be re-writted
+        // We should list a folder and pick matching file
+        if (this.tsMode) {
+            if (!fs.existsSync(result)) {
+                let tsxVersion = replaceExt(result, ".tsx");
+                if (fs.existsSync(tsxVersion)) {
+                    return tsxVersion;
+                }
+            }
+        }
 
         // Fixing node_modules package .json limits.
         if (rootEntryLimit && name.match(/\.\.\/$/)) {
@@ -176,6 +187,7 @@ export class PathMaster {
 
 
     private ensureFolderAndExtensions(name: string, root: string, explicit = false) {
+
         let ext = path.extname(name);
         let fileExt = this.tsMode && !explicit ? ".ts" : ".js";
 
@@ -206,6 +218,8 @@ export class PathMaster {
                 name += fileExt;
             }
         }
+
+
         return name;
     }
 

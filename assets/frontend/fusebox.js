@@ -125,6 +125,9 @@ var $getRef = function (name, opts) {
             validPath = filePath + ".js";
             file = pkg.f[validPath];
         }
+        if (!file) {
+            file = pkg.f[filePath + ".jsx"];
+        }
     }
     return {
         file: file,

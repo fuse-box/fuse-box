@@ -47,6 +47,19 @@ export function replaceExt(npath, ext): string {
     let nFileName = path.basename(npath, path.extname(npath)) + ext;
     return path.join(path.dirname(npath), nFileName);
 }
+
+export function ensurePublicExtension(url: string) {
+    let ext = path.extname(url);
+    if (ext === ".ts") {
+        url = replaceExt(url, ".js");
+    }
+    if (ext === ".tsx") {
+        url = replaceExt(url, ".jsx");
+    }
+    return url;
+}
+
+
 export function getBuiltInNodeModules(): Array<string> {
     const process: any = global.process;
 

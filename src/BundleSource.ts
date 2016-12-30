@@ -1,10 +1,11 @@
+import { ensurePublicExtension, replaceExt } from './Utils';
 import { BundleData } from './Arithmetic';
 import { ModuleCollection } from "./ModuleCollection";
 import { WorkFlowContext } from "./WorkflowContext";
 import { Config } from "./Config";
 import { File } from "./File";
-import * as path from "path";
-import * as fs from "fs";
+import * as path from 'path';
+import * as fs from 'fs';
 
 const Concat = require("concat-with-sourcemaps");
 
@@ -146,9 +147,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         let entry = bundleData.entry;
         let context = this.context;
         if (entry) {
-            if (this.context.tsMode) {
-                entry = this.context.convert2typescript(entry);
-            }
+            entry = ensurePublicExtension(entry);
         }
         let mainEntry;
 

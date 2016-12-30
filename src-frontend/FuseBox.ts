@@ -204,9 +204,13 @@ const $getRef = (name, opts: any): IReference => {
             validPath = filePath + ".js";
             file = pkg.f[validPath];
         }
+        // if file is not found STILL
+        // then we can try JSX
+        if (!file) {
+            // try for JSX one last time
+            file = pkg.f[filePath + ".jsx"];
+        }
     }
-
-
 
     return {
         file: file,
