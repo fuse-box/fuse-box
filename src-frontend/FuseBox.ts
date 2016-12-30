@@ -412,6 +412,21 @@ class FuseBox {
         return ref.file !== undefined;
     }
 
+    /**
+     * Removing a module
+     * @static
+     * @param {string} path
+     * 
+     * @memberOf FuseBox
+     */
+    public static remove(path: string) {
+        let ref = $getRef(path, {});
+        let pkg = $packages[ref.pkgName];
+        if (pkg && pkg.f[ref.validPath]) {
+            delete pkg.f[ref.validPath];
+        }
+    }
+
     public static main(name: string) {
         return FuseBox.import(name, {});
     }

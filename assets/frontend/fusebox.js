@@ -280,6 +280,13 @@ var FuseBox = (function () {
         var ref = $getRef(path, {});
         return ref.file !== undefined;
     };
+    FuseBox.remove = function (path) {
+        var ref = $getRef(path, {});
+        var pkg = $packages[ref.pkgName];
+        if (pkg && pkg.f[ref.validPath]) {
+            delete pkg.f[ref.validPath];
+        }
+    };
     FuseBox.main = function (name) {
         return FuseBox.import(name, {});
     };
