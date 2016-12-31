@@ -5,9 +5,7 @@ const FuseBox = build.FuseBox;
 const fs = require("fs");
 
 const StylusPlugin = require('../dist/commonjs/plugins/StylusPlugin').StylusPlugin;
-const LESSPlugin = require('../dist/commonjs/plugins/LESSPlugin').LESSPlugin;
 const RawPlugin = require('../dist/commonjs/plugins/RawPlugin').RawPlugin;
-const SourceMapPlugin = require('../dist/commonjs/plugins/SourceMapPlugin').SourceMapPlugin;
 
 let fuseBox = FuseBox.init({
     homeDir: "_playground/precss",
@@ -22,11 +20,11 @@ let fuseBox = FuseBox.init({
     //globals: { myLib: "myLib" },
     //plugins: [new build.TypeScriptHelpers(), build.JSONPlugin, new build.CSSPlugin({ minify: true })]
     plugins: [
-        // [/style\d?\.styl$/, StylusPlugin({}), build.CSSPlugin({})],
-        // [LESSPlugin({}), build.CSSPlugin({})],
+        [/style\d?\.styl$/, StylusPlugin({}), build.CSSPlugin({write: true})],
+        [build.SassPlugin(), build.CSSPlugin({write: true})],
+        [build.LESSPlugin(), build.CSSPlugin({write: true})]
         // [/\.raw$/, RawPlugin({extensions: ['.raw']})]
         // [/^style-dup\.styl$/, StylusPlugin({})]
-        SourceMapPlugin()
     ]
 });
 
