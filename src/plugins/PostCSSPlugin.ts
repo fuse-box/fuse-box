@@ -1,4 +1,3 @@
-import { PluginChain } from '../PluginChain';
 import { File } from "../File";
 import { WorkFlowContext } from "./../WorkflowContext";
 import { Plugin } from "../WorkflowContext";
@@ -43,7 +42,7 @@ export class PostCSSPluginClass implements Plugin {
      *
      * @memberOf FuseBoxCSSPlugin
      */
-    public transform(file: File): Promise<PluginChain> {
+    public transform(file: File) {
         file.loadContents();
         if (!postcss) {
             postcss = require("postcss");
@@ -51,18 +50,12 @@ export class PostCSSPluginClass implements Plugin {
         return new Promise((resolve, reject) => {
             return postcss(this.processors).process(file.contents).then(result => {
                 file.contents = result.css;
-                // what are we going to do with sourcemaps?
-                // What about caching?
-
-                // Resolve styling chain
-                // All plugins that have onStyleChain will get triggered
-                return resolve(file.createChain("style", file));
             });
         });
 
     }
 }
 
-export const PostCSS = (processors? : any, opts?: any) => {
+export const PostCSS = (processors?: any, opts?: any) => {
     return new PostCSSPluginClass(processors, opts);
 }

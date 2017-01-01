@@ -1,5 +1,4 @@
 import { ensureUserPath, replaceExt } from '../Utils';
-import { PluginChain } from "./../PluginChain";
 import * as fs from "fs";
 import * as path from "path";
 import { Config } from "./../Config";

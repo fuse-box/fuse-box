@@ -1,4 +1,3 @@
-import { PluginChain } from './PluginChain';
 import { ModuleCollection } from "./ModuleCollection";
 import { FileAnalysis } from "./FileAnalysis";
 import { WorkFlowContext, Plugin } from "./WorkflowContext";
@@ -131,15 +130,10 @@ export class File {
         return name;
     }
 
-    public createChain(name: string, file: File, opts?: any) {
-        return new PluginChain(name, file, opts);
-    }
 
     public asyncResolve(promise: Promise<any>) {
         this.resolving.push(promise);
     }
-
-
 
     /**
      * 
@@ -301,14 +295,5 @@ export class File {
         this.tryPlugins();
     }
 
-    private chainPlugins(start: number, chain: PluginChain) {
-        chain.setContext(this.context);
-        let total = this.context.plugins.length;
-        for (let i = start; i < total; i++) {
-            let plugin = this.context.plugins[i];
-            if (utils.isFunction(plugin[chain.methodName])) {
-                plugin[chain.methodName](chain);
-            }
-        }
-    }
+
 }

@@ -1,4 +1,3 @@
-import { PluginChain } from '../PluginChain';
 import { File } from '../File';
 import { WorkFlowContext } from '../WorkflowContext';
 import { Plugin } from '../WorkflowContext';
@@ -20,17 +19,17 @@ export class RawPluginClass implements Plugin {
 	 */
 	public extensions: Array<string>;
 
-	constructor (options: any) {
+	constructor(options: any) {
 		if ('extensions' in (options || {})) this.extensions = options.extensions;
 	}
 
-	init (context: WorkFlowContext) {
+	init(context: WorkFlowContext) {
 		if (Array.isArray(this.extensions)) {
 			return this.extensions.forEach(ext => context.allowExtension(ext));
 		}
 	}
 
-	transform (file: File) {
+	transform(file: File) {
 		file.loadContents();
 
 		file.contents = `module.exports = ${JSON.stringify(file.contents)}`;
