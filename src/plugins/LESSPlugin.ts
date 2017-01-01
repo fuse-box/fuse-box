@@ -29,12 +29,31 @@ export class LESSPluginClass implements Plugin {
      * @memberOf LESSPluginClass
      */
     public transform(file: File) {
+        const context: WorkFlowContext = file.context;
+        const options = {...this.options};
+
         file.loadContents();
+
+        const sourceMapDef = {
+            sourceMapBasepath: '.',
+            sourceMapRootpath: file.info.absDir
+        }
 
         if (!less) {
             less = require("less");
         }
-        return less.render(file.contents, this.options).then(output => {
+
+        options.filename = file.info.fuseBoxPath;
+
+        if ('sourceMapConfig' in context) {
+            options.sourceMap = {...sourceMapDef, ...options.sourceMap || {}};
+        }
+
+        return less.render(file.contents, options).then(output => {
+            if (output.map) {
+                file.sourceMap = output.map;
+            }
+
             file.contents = output.css;
         });
     }
