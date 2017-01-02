@@ -33,8 +33,10 @@ export class SassPluginClass implements Plugin {
             sourceMap: true,
             outFile: file.info.fuseBoxPath,
             sourceMapContents: true,
-            includePaths: [file.info.absDir],
+            includePaths: [],
         }, this.options);
+
+        options.includePaths.push(file.info.absDir);
 
         return new Promise((res, rej) => {
             return sass.render(options, (err, result) => {
