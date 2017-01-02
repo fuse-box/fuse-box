@@ -3,6 +3,7 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.3.37            | Fixed [57](https://github.com/fuse-box/fuse-box/issues/57)
 | 1.3.36            | Fixed #56, less and stylus emit sourcemaps
 | 1.3.34-35            | TSX [issue](https://github.com/fuse-box/fuse-box/issues/46) fixed
 | 1.3.33            | Various fixes from PRs, few new plugins added
