@@ -128,6 +128,8 @@ export class CSSPluginClass implements Plugin {
                 }));
                 return Promise.all(tasks);
             }
+        } else {
+            file.sourceMap = undefined;
         }
 
         if (this.serve) {

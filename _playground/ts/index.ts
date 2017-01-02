@@ -1,5 +1,7 @@
 //import "./styles.css"
 import "./test.scss";
-//import "./less/styles.less";
-var helloWord = "11";
-console.log(helloWord);
+
+
+var debug = require('debug')('compression')
+console.log(debug);
+export default typeof window === undefined;
