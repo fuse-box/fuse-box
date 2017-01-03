@@ -3,6 +3,7 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.1.39            | Added net, querystring and some other node modules
 | 1.1.38            | Critical bug related to windows slashes
 | 1.3.37            | Fixed [57](https://github.com/fuse-box/fuse-box/issues/57)
 | 1.3.36            | Fixed #56, less and stylus emit sourcemaps
