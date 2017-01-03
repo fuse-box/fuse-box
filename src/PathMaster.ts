@@ -133,6 +133,7 @@ export class PathMaster {
         name = name.replace(/\\/g, "/");
         root = root.replace(/\\/g, "/");
         name = name.replace(root, "").replace(/^\/|\\/, "");
+
         if (this.tsMode) {
             name = ensurePublicExtension(name);
         }

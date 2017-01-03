@@ -43,9 +43,11 @@ export function replaceExt(npath, ext): string {
     if (npath.length === 0) {
         return npath;
     }
-
-    let nFileName = path.basename(npath, path.extname(npath)) + ext;
-    return path.join(path.dirname(npath), nFileName);
+    if (/\.[a-z0-9]+$/i.test(npath)) {
+        return npath.replace(/\.[a-z0-9]+$/i, ext);
+    } else {
+        return npath + ext;
+    }
 }
 
 export function ensurePublicExtension(url: string) {
