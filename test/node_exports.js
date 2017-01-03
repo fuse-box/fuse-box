@@ -153,4 +153,18 @@ describe("Node modules and exports", (done) => {
         }).catch(done);
     });
 
+    it("Node library 'url' should be ok", (done) => {
+        env({
+            log: false,
+            cache: false,
+            globals: { default: "myLib" },
+            files: {
+                "index.js": `module.exports = require("url")`
+            }
+        }, "> index.js").then(data => {
+            data.myLib.Url.should.be.ok;
+            done();
+        }).catch(done);
+    });
+
 })
