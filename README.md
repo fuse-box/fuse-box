@@ -59,3 +59,5 @@ FuseBox.init({
     outFile: "./out.js"
 }).bundle(">index.ts");
 ```
+
+If you like the project, don't forget to star it!
