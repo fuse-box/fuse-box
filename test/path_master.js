@@ -89,12 +89,12 @@ describe("PathMaster", () => {
         testFolderShouldEqual(result.absPath, "/lib/bar/data.xml")
     });
 
-    it("Should recognize an css file", () => {
+    it("Should recognize a css file", () => {
         let result = pm.resolve("./bar/data.css", getTestFolder("lib/"));
         testFolderShouldEqual(result.absPath, "/lib/bar/data.css")
     });
 
-    it("Should give  cheerio version", () => {
+    it("Should give cheerio version", () => {
         let result = pm.resolve("cheerio", getTestFolder("lib/"));
 
         result.nodeModuleInfo.version.should.equal("0.22.0");
@@ -123,6 +123,12 @@ describe("PathMaster", () => {
     it("Should find node lib 'path' in asset folder", () => {
         let result = pm.resolve("path", getTestFolder("lib/"));
         result.nodeModuleInfo.version.should.equal("0.0.0");
+    });
+
+    it("Should find 'zlib' as a core module", () => {
+        let result = pm.resolve("zlib", getTestFolder("lib/"));
+        result.nodeModuleInfo.version.should.equal("0.0.0");
+        result.nodeModuleInfo.isCorePackage.should.equal(true);
     });
 
     it("Should give information explicit cheerio require (absPath)", () => {
