@@ -11,22 +11,22 @@ const appRoot = require("app-root-path");
 
 const mkdirp = require("mkdirp");
 /**
- * 
- * 
+ *
+ *
  * @export
  * @interface Plugin
  */
 export interface Plugin {
     /**
-     * 
-     * 
+     *
+     *
      * @type {RegExp}
      * @memberOf Plugin
      */
     test?: RegExp;
     /**
-     * 
-     * 
+     *
+     *
      * @type {string[]}
      * @memberOf Plugin
      */
@@ -34,32 +34,32 @@ export interface Plugin {
 
 
     /**
-     * 
-     * 
+     *
+     *
      * @type {{ (context: WorkFlowContext) }}
      * @memberOf Plugin
      */
     init?: { (context: WorkFlowContext) };
     /**
-     * 
-     * 
+     *
+     *
      * @type {{ (file: File, ast?: any) }}
      * @memberOf Plugin
      */
     transform?: { (file: File, ast?: any) };
     /**
-     * 
-     * 
+     *
+     *
      * @param {WorkFlowContext} context
-     * 
+     *
      * @memberOf Plugin
      */
     bundleStart?(context: WorkFlowContext);
     /**
-     * 
-     * 
+     *
+     *
      * @param {WorkFlowContext} context
-     * 
+     *
      * @memberOf Plugin
      */
     bundleEnd?(context: WorkFlowContext);
@@ -69,144 +69,152 @@ export interface Plugin {
  * WorkFlowContext
  */
 /**
- * 
- * 
+ *
+ *
  * @export
  * @class WorkFlowContext
  */
 export class WorkFlowContext {
 
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf WorkFlowContext
      */
     public defaultPackageName = "default";
 
     /**
-     * 
-     * 
+     *
+     *
      * @type {string[]}
      * @memberOf WorkFlowContext
      */
     public ignoreGlobal: string[] = [];
     /**
-     * 
-     * 
+     *
+     *
      * @type {Map<string, ModuleCollection>}
      * @memberOf WorkFlowContext
      */
     public nodeModules: Map<string, ModuleCollection> = new Map();
     /**
-     * 
-     * 
+     *
+     *
      * @type {Map<string, IPackageInformation>}
      * @memberOf WorkFlowContext
      */
     public libPaths: Map<string, IPackageInformation> = new Map();
     /**
-     * 
-     * 
+     *
+     *
      * @type {string}
      * @memberOf WorkFlowContext
      */
     public homeDir: string;
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf WorkFlowContext
      */
     public printLogs = true;
     /**
-     * 
-     * 
+     *
+     *
      * @type {Plugin[]}
      * @memberOf WorkFlowContext
      */
     public plugins: Plugin[];
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf WorkFlowContext
      */
     public useCache = true;
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf WorkFlowContext
      */
     public doLog = true;
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf WorkFlowContext
      */
     public cache: ModuleCache;
     /**
-     * 
-     * 
+     *
+     *
      * @type {*}
      * @memberOf WorkFlowContext
      */
     public tsConfig: any;
     /**
-     * 
-     * 
+     *
+     *
      * @type {string}
      * @memberOf WorkFlowContext
      */
     public customModulesFolder: string;
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf WorkFlowContext
      */
     public tsMode = false;
     /**
-     * 
-     * 
+     *
+     *
      * @type {string[]}
      * @memberOf WorkFlowContext
      */
     public globals: any;
     /**
-     * 
-     * 
+     *
+     *
      * @type {boolean}
      * @memberOf WorkFlowContext
      */
     public standaloneBundle: boolean = true;
     /**
-     * 
-     * 
+     * Flag to determine the server/cli context
+     *
+     * @type {boolean}
+     * @memberOf WorkFlowContext
+     */
+    public isServer: boolean = false;
+
+    /**
+     *
+     *
      * @type {BundleSource}
      * @memberOf WorkFlowContext
      */
     public source: BundleSource;
     /**
-     * 
-     * 
+     *
+     *
      * @type {*}
      * @memberOf WorkFlowContext
      */
     public sourceMapConfig: any;
     /**
-     * 
-     * 
+     *
+     *
      * @type {string}
      * @memberOf WorkFlowContext
      */
     public outFile: string;
 
     /**
-     * 
-     * 
+     *
+     *
      * @type {Log}
      * @memberOf WorkFlowContext
      */
@@ -219,9 +227,9 @@ export class WorkFlowContext {
         this.cache = new ModuleCache(this);
     }
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf WorkFlowContext
      */
     public reset() {
@@ -233,20 +241,20 @@ export class WorkFlowContext {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {string} ext
-     * 
+     *
      * @memberOf WorkFlowContext
      */
     public allowExtension(ext: string) {
         AllowedExtenstions.add(ext);
     }
     /**
-     * 
-     * 
+     *
+     *
      * @param {string} dir
-     * 
+     *
      * @memberOf WorkFlowContext
      */
     public setHomeDir(dir: string) {
@@ -254,13 +262,13 @@ export class WorkFlowContext {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {string} name
      * @param {string} version
      * @param {IPackageInformation} info
      * @returns
-     * 
+     *
      * @memberOf WorkFlowContext
      */
     public setLibInfo(name: string, version: string, info: IPackageInformation) {
@@ -271,23 +279,23 @@ export class WorkFlowContext {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {string} name
      * @returns
-     * 
+     *
      * @memberOf WorkFlowContext
      */
     public convert2typescript(name: string) {
         return name.replace(/\.ts$/, ".js");
     }
     /**
-     * 
-     * 
+     *
+     *
      * @param {string} name
      * @param {string} version
      * @returns {IPackageInformation}
-     * 
+     *
      * @memberOf WorkFlowContext
      */
     public getLibInfo(name: string, version: string): IPackageInformation {
@@ -298,10 +306,10 @@ export class WorkFlowContext {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {any} printLogs
-     * 
+     *
      * @memberOf WorkFlowContext
      */
     public setPrintLogs(printLogs) {
@@ -309,10 +317,10 @@ export class WorkFlowContext {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {boolean} useCache
-     * 
+     *
      * @memberOf WorkFlowContext
      */
     public setUseCache(useCache: boolean) {
@@ -320,11 +328,11 @@ export class WorkFlowContext {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {string} name
      * @returns
-     * 
+     *
      * @memberOf WorkFlowContext
      */
     public hasNodeModule(name: string) {
@@ -336,11 +344,11 @@ export class WorkFlowContext {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {string} name
      * @param {ModuleCollection} collection
-     * 
+     *
      * @memberOf WorkFlowContext
      */
     public addNodeModule(name: string, collection: ModuleCollection) {
@@ -348,10 +356,10 @@ export class WorkFlowContext {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @returns
-     * 
+     *
      * @memberOf WorkFlowContext
      */
     public getTypeScriptConfig() {
@@ -375,11 +383,11 @@ export class WorkFlowContext {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {string} userPath
      * @returns
-     * 
+     *
      * @memberOf WorkFlowContext
      */
     public ensureUserPath(userPath: string) {
@@ -392,9 +400,9 @@ export class WorkFlowContext {
     }
 
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf WorkFlowContext
      */
     public writeOutput() {
@@ -412,11 +420,11 @@ export class WorkFlowContext {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {string} name
      * @returns {ModuleCollection}
-     * 
+     *
      * @memberOf WorkFlowContext
      */
     public getNodeModule(name: string): ModuleCollection {
@@ -424,11 +432,11 @@ export class WorkFlowContext {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {string} name
      * @param {*} args
-     * 
+     *
      * @memberOf WorkFlowContext
      */
     public triggerPluginsMethodOnce(name: string, args: any, fn?: { (plugin: Plugin) }) {
@@ -457,12 +465,12 @@ export class WorkFlowContext {
     }
     /**
      * Make sure plugin method is triggered only once
-     * 
+     *
      * @private
      * @param {*} cls
      * @param {string} method
      * @returns
-     * 
+     *
      * @memberOf WorkFlowContext
      */
     private pluginRequiresTriggering(cls: any, method: string) {

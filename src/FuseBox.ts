@@ -81,6 +81,10 @@ export class FuseBox {
             this.context.ignoreGlobal = opts.ignoreGlobal;
         }
 
+        if (opts.isServer) {
+          this.context.isServer = true;
+        }
+
         if (opts.outFile) {
             this.context.outFile = opts.outFile;
         }
@@ -113,11 +117,11 @@ export class FuseBox {
 
 
     /**
-     * Make  a Bundle 
-     * 
+     * Make  a Bundle
+     *
      * @param {string} str
      * @param {boolean} [daemon] string to a daemon (watching)
-     * 
+     *
      * @memberOf FuseBox
      */
     public bundle(str: string, daemon?: boolean) {
