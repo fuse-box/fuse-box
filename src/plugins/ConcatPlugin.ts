@@ -49,10 +49,6 @@ export class ConcatPluginClass implements Plugin {
      * @memberOf FuseBoxHTMLPlugin
      */
     public transform(file: File) {
-        if (file.groupMode) {
-            // we got our file here
-            return this.tranformFiles(file);
-        }
         file.loadContents();
 
         let context = file.context;
@@ -66,7 +62,7 @@ export class ConcatPluginClass implements Plugin {
         file.alternativeContent = `module.exports = require("./${this.bundleName}")`;
     }
 
-    private tranformFiles(group: File) {
+    public transformGroup(group: File) {
         let contents = [];
         group.subFiles.forEach(file => {
             contents.push(file.contents);

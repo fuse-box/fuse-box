@@ -182,14 +182,22 @@ export class File {
 
             if (target) {
                 if (Array.isArray(target)) {
-                    this.asyncResolve(each(target, plugin => {
+                    this.asyncResolve(each(target, (plugin: Plugin) => {
+                        // if we are in a groupMode, we don't trigger tranform
+                        // we trigger tranformGroup
+                        if (this.groupMode && utils.isFunction(plugin.transformGroup)) {
+                            return plugin.transformGroup.apply(plugin, [this]);
+                        }
                         if (utils.isFunction(plugin.transform)) {
                             return plugin.transform.apply(plugin, [this]);
                         }
                     }));
                 } else {
+                    if (this.groupMode && utils.isFunction(target.transformGroup)) {
+                        return this.asyncResolve(target.transformGroup.apply(target, [this]));
+                    }
                     if (utils.isFunction(target.transform)) {
-                        this.asyncResolve(target.transform.apply(target, [this]));
+                        return this.asyncResolve(target.transform.apply(target, [this]));
                     }
                 }
             }

@@ -47,6 +47,9 @@ export interface Plugin {
      * @memberOf Plugin
      */
     transform?: { (file: File, ast?: any) };
+
+
+    transformGroup?: { (file: File) };
     /**
      * 
      * 
