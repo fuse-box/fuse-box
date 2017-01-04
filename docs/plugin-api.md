@@ -43,6 +43,13 @@ All files are bundled.
 
 Please be patient! __Documentation is in progress__. 
 
+## Alternative content
+
+If for some reason we want to preserve file contents for a later reuse and override the output, we can use 
+`file.alternativeContent` which affects directly bundling process over [here](https://github.com/fuse-box/fuse-box/blob/96b646a632f886f296a533ccf4c45f436cf443f3/src/BundleSource.ts#L133)
+
+It can be use for the [concat](concat-file) technique for example
+
 ## Concat files
 
 It is possible to concat files into one using the plugin API. There is [ConcatPlugin](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/ConcatPlugin.ts#L51) which serves as an example for the subject. 
@@ -78,7 +85,11 @@ public transform(file: File) {
  
 When we register a new file group `context.createFileGroup("txtBundle.txt")` FuseBox creates a __fake__ or a virtual file which is added to the dependency tree. This file has a special mode, called `groupMode`.
 
+We need to alter the output as well using [alternative content](#alternative-content). Original contents will be ignored by the Source bundler.
+
 After FuseBox has bundled all files related to your current project, it checks for groups over [here](https://github.com/fuse-box/fuse-box/blob/master/src/ModuleCollection.ts#L260), iterates and executes plugins. Then each plugin is tested accordingly (now our file name is called `txtBundle.txt` with `.txt` extension) and executes `transformGroup` of a plugin if set.
+
+You should understand that `txtBundle.txt` behaves like any other file, with one exception - it does not call `transform` but `tranformGroup` instead.
 
 
 ```js
