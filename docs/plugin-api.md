@@ -16,6 +16,7 @@ interface Plugin {
     bundleEnd?(context: WorkFlowContext);
 }
 ```
+## Spec
 
 ### test [RegExp]
 
@@ -41,5 +42,40 @@ Happens on bundle start. A good place to inject your custom code here. For examp
 All files are bundled.
 
 Please be patient! __Documentation is in progress__. 
+
+## Concat files
+
+It is possible to concat file into a one using plugin API. There is [ConcatPlugin](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/ConcatPlugin.ts#L51) which serves as an example for the subject. 
+
+It order to understand how it works imagine a plugin chain:
+
+```js
+[/\.txt$/, fsbx.ConcatPlugin({ ext: ".txt", name: "textBundle.txt" })],
+```
+
+We have 2 files, `a.txt` and `b.txt` which are captured by the plugin API, and each of them is redirected to the ConcatPlugin's transform, which looks like this:
+
+```
+public transform(file: File) {
+    // Loading the contents of file a.txt or b.txt
+    file.loadContents();
+
+    let context = file.context;
+    
+    // create a file group in the context with name which is set in the plugin configuration
+    // let's say "txtBundle.txt"
+    let fileGroup = context.getFileGroup(this.bundleName);
+    if (!fileGroup) {
+        fileGroup = context.createFileGroup(this.bundleName);
+    }
+    // Adding current file (say a.txt) as a subFile 
+    fileGroup.addSubFile(file);
+
+    // making sure the current file refers to an object at runtime that calls our bundle
+    file.alternativeContent = `module.exports = require("./${this.bundleName}")`;
+}
+ ```
+
+
 
 
