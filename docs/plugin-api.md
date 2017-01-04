@@ -48,7 +48,7 @@ Please be patient! __Documentation is in progress__.
 If for some reason we want to preserve file contents for a later reuse and override the output, we can use 
 `file.alternativeContent` which affects directly bundling process over [here](https://github.com/fuse-box/fuse-box/blob/96b646a632f886f296a533ccf4c45f436cf443f3/src/BundleSource.ts#L133)
 
-It can be use for the [concat](concat-file) technique for example
+It can be use for the [concat](#concat-files) technique for example
 
 ## Concat files
 
