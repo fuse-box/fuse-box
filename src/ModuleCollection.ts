@@ -1,6 +1,6 @@
 import { File } from "./File";
 import { PathMaster, IPackageInformation } from "./PathMaster";
-import { WorkFlowContext } from "./WorkFlowContext";
+import { WorkFlowContext } from "./WorkflowContext";
 import { each, utils } from "realm-utils";
 import { BundleData } from "./Arithmetic";
 
@@ -159,20 +159,15 @@ export class ModuleCollection {
      * @memberOf ModuleCollection
      */
     public initPlugins() {
-        if (this.context.plugins) {
-            this.context.plugins.forEach(plugin => {
-                if (utils.isFunction(plugin.init)) {
-                    plugin.init(this.context);
-                }
-                if (plugin.dependencies) {
-                    plugin.dependencies.forEach(mod => {
-                        this.toBeResolved.push(
-                            new File(this.context, this.pm.init(mod))
-                        );
-                    });
-                }
-            });
-        }
+        this.context.triggerPluginsMethodOnce("init", [this.context], (plugin) => {
+            if (plugin.dependencies) {
+                plugin.dependencies.forEach(mod => {
+                    this.toBeResolved.push(
+                        new File(this.context, this.pm.init(mod))
+                    );
+                });
+            }
+        });
     }
 
     /**
@@ -192,6 +187,8 @@ export class ModuleCollection {
         return each(data.including, (withDeps, modulePath) => {
             let file = new File(this.context, this.pm.init(modulePath));
             return this.resolve(file);
+        }).then(() => {
+            return this.onDefaultProjectDone();
         }).then(x => {
 
             return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
@@ -255,11 +252,18 @@ export class ModuleCollection {
         // e.g require("lodash") - we require entry file
         // unlike require("requre/each") - points to an explicit file
         // So we might never resolve the entry (if only a partial require was mentioned)
-        return file.info.nodeModuleExplicitOriginal
+        return file.info.nodeModuleExplicitOriginal && collection.pm
             ? collection.resolve(new File(this.context, collection.pm.init(file.info.absPath)))
             : collection.resolveEntry();
     }
 
+    public onDefaultProjectDone() {
+
+        this.context.fileGroups.forEach(group => {
+            this.dependencies.set(group.info.fuseBoxPath, group);
+            group.tryPlugins();
+        });
+    }
     /**
      * 
      * 
@@ -320,7 +324,7 @@ export class ModuleCollection {
             return each(file.analysis.dependencies, name => {
                 return this.resolve(new File(this.context,
                     this.pm.resolve(name, file.info.absDir, fileLimitPath)), shouldIgnoreDeps);
-            });
+            })
         }
     }
 }

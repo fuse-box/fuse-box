@@ -1,7 +1,7 @@
-import { PrettyError } from './PrettyError';
+import { ASTTraverse } from "./ASTTraverse";
+import { PrettyError } from "./PrettyError";
 import { File } from "./File";
 const acorn = require("acorn");
-const traverse = require("ast-traverse");
 const escodegen = require("escodegen");
 require("acorn-es7")(acorn);
 require("acorn-jsx/inject")(acorn);
@@ -74,15 +74,15 @@ export class FileAnalysis {
      * 
      * @memberOf FileAST
      */
-    public parseUsingAcorn() {
+    public parseUsingAcorn(options?: any) {
         try {
-            this.ast = acorn.parse(this.file.contents, {
+            this.ast = acorn.parse(this.file.contents, {...options || {}, ...{
                 sourceType: "module",
                 tolerant: true,
                 ecmaVersion: 8,
                 plugins: { es7: true, jsx: true },
                 jsx: { allowNamespacedObjects: true }
-            });
+            }});
         } catch (err) {
             return PrettyError.errorWithContents(err, this.file);
         }
@@ -107,7 +107,8 @@ export class FileAnalysis {
             return node.type === "Literal" || node.type === "StringLiteral";
         }
 
-        traverse(this.ast, {
+
+        ASTTraverse.traverse(this.ast, {
             pre: (node, parent, prop, idx) => {
 
                 if (node.type === "MemberExpression") {
@@ -144,7 +145,7 @@ export class FileAnalysis {
                         out.requires.push(node.source.value);
                     }
                 }
-                if (node.type === "CallExpression") {
+                if (node.type === "CallExpression" && node.callee) {
 
                     if (node.callee.type === "Identifier" && node.callee.name === "require") {
                         let arg1 = node.arguments[0];

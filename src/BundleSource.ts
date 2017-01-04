@@ -1,11 +1,11 @@
-
+import { ensurePublicExtension, replaceExt } from './Utils';
 import { BundleData } from './Arithmetic';
 import { ModuleCollection } from "./ModuleCollection";
-import { WorkFlowContext } from "./WorkFlowContext";
+import { WorkFlowContext } from "./WorkflowContext";
 import { Config } from "./Config";
 import { File } from "./File";
-import * as path from "path";
-import * as fs from "fs";
+import * as path from 'path';
+import * as fs from 'fs';
 
 const Concat = require("concat-with-sourcemaps");
 
@@ -44,6 +44,14 @@ export class BundleSource {
      */
     constructor(public context: WorkFlowContext) {
         this.concat = new Concat(true, "", "\n");
+    }
+
+    /**
+     *
+     * 
+     * @memberOf BundleSource
+     */
+    public init() {
         this.concat.add(null, "(function(FuseBox){");
     }
 
@@ -118,6 +126,7 @@ export class BundleSource {
         if (file.info.isRemoteFile || file.notFound) {
             return;
         }
+
         this.collectionSource.add(null,
             `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){ 
 ${file.headerContent ? file.headerContent.join("\n") : ""}`);
@@ -138,9 +147,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         let entry = bundleData.entry;
         let context = this.context;
         if (entry) {
-            if (this.context.tsMode) {
-                entry = this.context.convert2typescript(entry);
-            }
+            entry = ensurePublicExtension(entry);
         }
         let mainEntry;
 
@@ -179,6 +186,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         } else {
             this.concat.add(null, "()");
         }
+
         if (this.context.sourceMapConfig) {
             if (this.context.sourceMapConfig.bundleReference) {
                 this.concat.add(null, `//# sourceMappingURL=${this.context.sourceMapConfig.bundleReference}`);

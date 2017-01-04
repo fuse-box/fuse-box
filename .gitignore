@@ -1,15 +1,13 @@
 .project
 .settings
 node_modules/
-.language-cache/
 .vscode/
 yarn.lock
 build/
-out.js
+dist/
 .DS_Store
 .tmp/
 .idea/
 sourcemaps.js.map
-foo.js
-eee.js
 .fusebox
+_dist

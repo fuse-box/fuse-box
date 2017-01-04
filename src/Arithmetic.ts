@@ -133,7 +133,7 @@ export class Arithmetic {
                 let extname = path.extname(fp);
 
                 // Switching to typescript mode
-                if (extname === ".ts") {
+                if (extname === ".ts" || extname === ".tsx") {
                     tsMode = true;
                 }
                 if (!extname && !filePattern.match(/\.js$/)) {

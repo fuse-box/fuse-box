@@ -1,32 +1,41 @@
-const build = require("./../build/commonjs/index.js");
-const watch = require("watch");
-
-//global.Promise = require('bluebird')
-const FuseBox = build.FuseBox;
 const fs = require("fs");
+const watch = require("watch");
+const precss = require("precss");
+const build = require("./../build/commonjs/index.js");
+const FuseBox = build.FuseBox;
+const POST_CSS_PLUGINS = [precss()];
 
-let fuseBox = FuseBox.init({
+const fuseBox = FuseBox.init({
     homeDir: "_playground/ts",
-    // sourceMap: {
-    //     bundleReference: "./sourcemaps.js.map",
-    //     outFile: "sourcemaps.js.map",
-    // },
+    sourceMap: {
+        bundleReference: "./sourcemaps.js.map",
+        outFile: "_playground/_build/sourcemaps.js.map",
+    },
     cache: false,
     //globals: { default: "myLib", "wires-reactive": "Reactive" },
     outFile: "_playground/_build/out.js",
     //package: "myLib",
     //globals: { myLib: "myLib" },
     modulesFolder: "_playground/npm",
-    //plugins: [new build.TypeScriptHelpers(), build.JSONPlugin, new build.CSSPlugin({ minify: true })]
     plugins: [
         build.TypeScriptHelpers(),
         build.JSONPlugin(),
-        build.PostCSS([require("precss")()]),
-        build.CSSPlugin({
-            minify: true
-                // serve: path => `./${path}`
-        })
+
+        [/\.txt$/, build.ConcatPlugin({ ext: ".txt", name: "textBundle.txt" })],
+
+        // process them all ;-)
+        [build.LESSPlugin(), build.CSSPlugin()],
+
+        [build.SassPlugin(), build.CSSPlugin({ write: true })],
+
+        // All other CSS files
+        [build.PostCSS(POST_CSS_PLUGINS), build.CSSPlugin()],
+
+        // Add a banner to bundle output
+        build.BannerPlugin('// Hey this is my banner! Copyright 2016!')
+
+        //build.UglifyJSPlugin()
     ]
 });
 
-fuseBox.bundle(">index.ts");
+fuseBox.bundle(">index.ts", true);

@@ -86,7 +86,7 @@ export class BabelPluginClass implements Plugin {
         // By default we would want to limit the babel 
         // And use acorn instead (it's faster)
         let pass = result.map
-            && (this.limit2project && file.collection.name === "default");
+            && (this.limit2project && file.collection.name === file.context.defaultPackageName);
 
         if (pass) {
 

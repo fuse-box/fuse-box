@@ -259,11 +259,8 @@ mtime : ${stats.mtime.getTime()}
                     name: collection.info.name,
                     version: collection.info.version,
                 };
-                return new Promise((resolve, reject) => {
-                    //  console.log(collection.nodeModules);
-                    return resolve(traverse(collection.nodeModules, dependencies));
-
-                });
+                  
+                return traverse(collection.nodeModules, dependencies);
 
             });
         }

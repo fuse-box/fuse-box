@@ -1,10 +1,9 @@
-import { PluginChain } from './PluginChain';
 import { ModuleCollection } from "./ModuleCollection";
 import { FileAnalysis } from "./FileAnalysis";
 import { WorkFlowContext, Plugin } from "./WorkflowContext";
 import { IPathInformation } from "./PathMaster";
 import * as fs from "fs";
-import { utils } from "realm-utils";
+import { utils, each } from "realm-utils";
 
 
 /**
@@ -28,6 +27,8 @@ export class File {
     public alternativeContent: string;
 
     public notFound: boolean;
+
+    public params: Map<string, string>;
     /**
      * 
      * 
@@ -98,6 +99,11 @@ export class File {
      * @memberOf File
      */
     public resolving: Promise<any>[] = [];
+
+    public subFiles: File[] = [];
+
+    public groupMode = false;
+
     /**
      * Creates an instance of File.
      * 
@@ -107,8 +113,20 @@ export class File {
      * @memberOf File
      */
     constructor(public context: WorkFlowContext, public info: IPathInformation) {
+        if (info.params) {
+            this.params = info.params;
+        }
         this.absPath = info.absPath;
     }
+
+    public hasSubFiles() {
+        return this.subFiles.length > 0;
+    }
+
+    public addSubFile(file: File) {
+        this.subFiles.push(file);
+    }
+
 
     /**
      * 
@@ -126,11 +144,10 @@ export class File {
         return name;
     }
 
-    public createChain(name: string, file: File, opts?: any) {
-        return new PluginChain(name, file, opts);
+
+    public asyncResolve(promise: Promise<any>) {
+        this.resolving.push(promise);
     }
-
-
 
     /**
      * 
@@ -144,36 +161,44 @@ export class File {
             let target: Plugin;
             let index = 0;
             while (!target && index < this.context.plugins.length) {
-                let plugin = this.context.plugins[index];
-                if (plugin.test && plugin.test.test(this.absPath)) {
-                    target = plugin;
+                let item = this.context.plugins[index];
+                let itemTest: RegExp;
+                if (Array.isArray(item)) {
+                    let el = item[0];
+                    // check for the first item ( it might be a RegExp)
+                    if (el instanceof RegExp) {
+                        itemTest = el;
+                    } else {
+                        itemTest = el.test;
+                    }
+                } else {
+                    itemTest = item.test;
+                }
+                if (itemTest && itemTest.test(this.absPath)) {
+                    target = item;
                 }
                 index++;
             }
-            let tranformationResult;
-            // Found target plugin
+
             if (target) {
-                // call tranformation callback
-                if (utils.isFunction(target.transform)) {
-                    tranformationResult = target.transform.apply(target, [this, _ast]);
-
-                }
-            }
-
-            if (utils.isPromise(tranformationResult)) {
-
-                // Let tranformation resolve (if it's async)
-                this.resolving.push(new Promise((resolve, reject) => {
-                    tranformationResult.then(res => {
-                        if (res instanceof PluginChain) {
-                            this.chainPlugins(index, res);
+                if (Array.isArray(target)) {
+                    this.asyncResolve(each(target, (plugin: Plugin) => {
+                        // if we are in a groupMode, we don't trigger tranform
+                        // we trigger tranformGroup
+                        if (this.groupMode && utils.isFunction(plugin.transformGroup)) {
+                            return plugin.transformGroup.apply(plugin, [this]);
                         }
-                        return resolve(res);
-                    }).catch(reject);
-                }));
-            } else {
-                if (tranformationResult instanceof PluginChain) {
-                    this.chainPlugins(index, tranformationResult);
+                        if (utils.isFunction(plugin.transform)) {
+                            return plugin.transform.apply(plugin, [this]);
+                        }
+                    }));
+                } else {
+                    if (this.groupMode && utils.isFunction(target.transformGroup)) {
+                        return this.asyncResolve(target.transformGroup.apply(target, [this]));
+                    }
+                    if (utils.isFunction(target.transform)) {
+                        return this.asyncResolve(target.transform.apply(target, [this]));
+                    }
                 }
             }
         }
@@ -199,13 +224,17 @@ export class File {
      * @memberOf File
      */
     public loadContents() {
+        if (this.isLoaded) {
+            return;
+        }
+
         this.contents = fs.readFileSync(this.info.absPath).toString();
         this.isLoaded = true;
     }
 
-    public makeAnalysis() {
+    public makeAnalysis(parserOptions?: any) {
         if (!this.analysis.astIsLoaded()) {
-            this.analysis.parseUsingAcorn();
+            this.analysis.parseUsingAcorn(parserOptions);
         }
         this.analysis.analyze();
     }
@@ -241,6 +270,9 @@ export class File {
             return;
         }
         this.tryPlugins();
+        if (!this.isLoaded) {
+            throw { message: `File contents for ${this.absPath} were not loaded. Missing a plugin?` }
+        }
     }
 
     /**
@@ -285,14 +317,5 @@ export class File {
         this.tryPlugins();
     }
 
-    private chainPlugins(start: number, chain: PluginChain) {
-        chain.setContext(this.context);
-        let total = this.context.plugins.length;
-        for (let i = start; i < total; i++) {
-            let plugin = this.context.plugins[i];
-            if (utils.isFunction(plugin[chain.methodName])) {
-                plugin[chain.methodName](chain);
-            }
-        }
-    }
+
 }

@@ -1,9 +1,10 @@
-
-import { IPackageInformation, IPathInformation } from './PathMaster';
+import { ensurePublicExtension, replaceExt } from "./Utils";
+import { IPackageInformation, IPathInformation } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
 import * as path from "path";
 import * as fs from "fs";
 import { Config } from "./Config";
+
 const NODE_MODULE = /^([a-z@].*)$/;
 export interface INodeModuleRequire {
     name: string;
@@ -19,6 +20,7 @@ export interface IPathInformation {
     nodeModuleExplicitOriginal?: string;
     absDir?: string;
     fuseBoxPath?: string;
+    params?: Map<string, string>;
     absPath?: string;
 }
 
@@ -72,6 +74,12 @@ export class PathMaster {
             data.absPath = name;
             return data;
         }
+
+        // if (/\?/.test(name)) {
+        //     let paramsSplit = name.split(/\?(.+)/);
+        //     name = paramsSplit[0];
+        //     data.params = parseQuery(paramsSplit[1]);
+        // }
         data.isNodeModule = NODE_MODULE.test(name);
 
         if (data.isNodeModule) {
@@ -125,8 +133,9 @@ export class PathMaster {
         name = name.replace(/\\/g, "/");
         root = root.replace(/\\/g, "/");
         name = name.replace(root, "").replace(/^\/|\\/, "");
+
         if (this.tsMode) {
-            name = this.context.convert2typescript(name);
+            name = ensurePublicExtension(name);
         }
         return name;
     }
@@ -143,7 +152,22 @@ export class PathMaster {
      */
     public getAbsolutePath(name: string, root: string, rootEntryLimit?: string, explicit = false) {
         let url = this.ensureFolderAndExtensions(name, root, explicit);
+
+
         let result = path.resolve(root, url);
+
+        // A check for tsx
+        // Simple a hack..
+        // ensureFolderAndExtensions needs to be re-writted
+        // We should list a folder and pick matching file
+        if (this.tsMode) {
+            if (!fs.existsSync(result)) {
+                let tsxVersion = replaceExt(result, ".tsx");
+                if (fs.existsSync(tsxVersion)) {
+                    return tsxVersion;
+                }
+            }
+        }
 
         // Fixing node_modules package .json limits.
         if (rootEntryLimit && name.match(/\.\.\/$/)) {
@@ -164,6 +188,16 @@ export class PathMaster {
 
 
     private ensureFolderAndExtensions(name: string, root: string, explicit = false) {
+        // Would be great to list a folder and prob for a file.
+        // So, let's say, user did not specify an extension
+        // So we list a folder, get something like this:
+        // .
+        // target.jsx
+        // target.tsx
+        // target.ts
+        // In case of tsMode we choose target.ts if available
+        //      if target.ts is missing, we choose target.tsx and so on
+
         let ext = path.extname(name);
         let fileExt = this.tsMode && !explicit ? ".ts" : ".js";
 
@@ -171,7 +205,9 @@ export class PathMaster {
             name = "." + name.slice(1, name.length);
             name = path.join(this.rootPackagePath, name);
         }
+
         if (!AllowedExtenstions.has(ext)) {
+
             if (/\/$/.test(name)) {
                 return `${name}index${fileExt}`;
             }
@@ -192,6 +228,8 @@ export class PathMaster {
                 name += fileExt;
             }
         }
+
+
         return name;
     }
 
@@ -259,6 +297,9 @@ export class PathMaster {
         let localLib = path.join(Config.LOCAL_LIBS, name);
         let modulePath = path.join(Config.NODE_MODULES_DIR, name);
 
+        if (fs.existsSync(localLib)) {
+            return readMainFile(localLib, false);
+        }
         if (this.context.customModulesFolder) {
             let customFolder = path.join(this.context.customModulesFolder, name);
             if (fs.existsSync(customFolder)) {
@@ -280,10 +321,8 @@ export class PathMaster {
                 }
             }
         }
-        if (fs.existsSync(localLib)) {
-            return readMainFile(localLib, false);
-        } else {
-            return readMainFile(modulePath, false);
-        }
+
+        return readMainFile(modulePath, false);
+
     }
 }

@@ -1,3 +1,1 @@
-export class HelloMyLib {
-    constructor() { }
-}
+export default typeof window === undefined

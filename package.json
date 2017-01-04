@@ -1,9 +1,10 @@
 {
     "name": "fuse-box",
-    "version": "1.3.17",
+    "version": "1.3.41",
     "description": "Fuse-Box a bundler just does it right",
     "typings": "./dist/typings/index.d.ts",
     "main": "dist/commonjs/index.js",
+    "types": "dist/typings/index.ts",
     "directories": {
         "test": "test"
     },
@@ -40,6 +41,7 @@
         "rollup": "^0.36.3",
         "run-sequence": "^1.2.2",
         "should": "^11.1.0",
+        "sinon": "^1.17.6",
         "typescript": "^2.1.1",
         "watch": "^1.0.1",
         "wires-reactive": "^1.1.1"
@@ -50,7 +52,6 @@
         "acorn-jsx": "^3.0.1",
         "ansi": "^0.3.1",
         "app-root-path": "^2.0.1",
-        "ast-traverse": "^0.1.1",
         "buffer": "^5.0.0",
         "concat-with-sourcemaps": "^1.0.4",
         "escodegen": "^1.8.1",
@@ -61,5 +62,14 @@
         "realm-utils": "^1.0.6",
         "request": "^2.79.0",
         "watch": "^1.0.1"
+    },
+    "peerDependencies": {
+        "less": "*",
+        "babel-core": "*",
+        "postcss": "*",
+        "stylus": "*",
+        "node-sass": "*",
+        "uglify-js": "*",
+        "source-map": "*"
     }
 }

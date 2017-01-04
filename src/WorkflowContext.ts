@@ -3,9 +3,10 @@ import * as fs from "fs";
 import { BundleSource } from "./BundleSource";
 import { File } from "./File";
 import { Log } from "./Log";
-import { IPackageInformation, AllowedExtenstions } from "./PathMaster";
+import { IPackageInformation, IPathInformation, AllowedExtenstions } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "./ModuleCache";
+import { utils } from "realm-utils";
 const appRoot = require("app-root-path");
 
 const mkdirp = require("mkdirp");
@@ -38,14 +39,17 @@ export interface Plugin {
      * @type {{ (context: WorkFlowContext) }}
      * @memberOf Plugin
      */
-    init: { (context: WorkFlowContext) };
+    init?: { (context: WorkFlowContext) };
     /**
      * 
      * 
      * @type {{ (file: File, ast?: any) }}
      * @memberOf Plugin
      */
-    transform: { (file: File, ast?: any) };
+    transform?: { (file: File, ast?: any) };
+
+
+    transformGroup?: { (file: File) };
     /**
      * 
      * 
@@ -125,6 +129,8 @@ export class WorkFlowContext {
      * @memberOf WorkFlowContext
      */
     public plugins: Plugin[];
+
+    public fileGroups: Map<string, File>;
     /**
      * 
      * 
@@ -211,6 +217,7 @@ export class WorkFlowContext {
      */
     public log: Log;
 
+    public pluginTriggers: Map<string, Set<String>>;
 
 
     public initCache() {
@@ -226,9 +233,35 @@ export class WorkFlowContext {
         this.log = new Log(this.doLog);
         this.source = new BundleSource(this);
         this.nodeModules = new Map();
+        this.pluginTriggers = new Map();
+        this.fileGroups = new Map();
         this.libPaths = new Map();
     }
 
+    /**
+     * Create a new file group
+     * Mocks up file
+     * 
+     * @param {string} name
+     * 
+     * @memberOf WorkFlowContext
+     */
+    public createFileGroup(name: string): File {
+        let info = <IPathInformation>{
+            fuseBoxPath: name,
+            absPath: name,
+        }
+        let file = new File(this, info);
+        file.contents = "";
+        file.groupMode = true;
+        this.fileGroups.set(name, file);
+        return file;
+    }
+
+
+    public getFileGroup(name: string): File {
+        return this.fileGroups.get(name);
+    }
     /**
      * 
      * 
@@ -418,5 +451,63 @@ export class WorkFlowContext {
      */
     public getNodeModule(name: string): ModuleCollection {
         return this.nodeModules.get(name);
+    }
+
+    /**
+     * 
+     * 
+     * @param {string} name
+     * @param {*} args
+     * 
+     * @memberOf WorkFlowContext
+     */
+    public triggerPluginsMethodOnce(name: string, args: any, fn?: { (plugin: Plugin) }) {
+        this.plugins.forEach(plugin => {
+            if (Array.isArray(plugin)) {
+                plugin.forEach(p => {
+                    if (utils.isFunction(p[name])) {
+                        if (this.pluginRequiresTriggering(p, name)) {
+                            p[name].apply(p, args);
+                            if (fn) {
+                                fn(p);
+                            }
+                        }
+                    }
+                });
+            }
+            if (utils.isFunction(plugin[name])) {
+                if (this.pluginRequiresTriggering(plugin, name)) {
+                    plugin[name].apply(plugin, args);
+                    if (fn) {
+                        fn(plugin);
+                    }
+                }
+            }
+        });
+    }
+    /**
+     * Make sure plugin method is triggered only once
+     * 
+     * @private
+     * @param {*} cls
+     * @param {string} method
+     * @returns
+     * 
+     * @memberOf WorkFlowContext
+     */
+    private pluginRequiresTriggering(cls: any, method: string) {
+        if (!cls.constructor) {
+            return true;
+        }
+        let name = cls.constructor.name;
+        if (!this.pluginTriggers.has(name)) {
+            this.pluginTriggers.set(name, new Set());
+        }
+        let items = this.pluginTriggers.get(name);
+        if (!items.has(method)) {
+            items.add(method);
+            return true;
+        }
+        return false;
     }
 }
