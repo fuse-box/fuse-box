@@ -5,7 +5,10 @@ import * as path from "path";
 import * as fs from "fs";
 import { Config } from "./Config";
 
+const repl = require('repl');
+
 const NODE_MODULE = /^([a-z@].*)$/;
+const BUILTIN_LIBS = repl._builtinLibs;
 export interface INodeModuleRequire {
     name: string;
     target?: string;
@@ -22,6 +25,7 @@ export interface IPathInformation {
     fuseBoxPath?: string;
     params?: Map<string, string>;
     absPath?: string;
+    isCorePackage?: boolean;
 }
 
 export interface IPackageInformation {
@@ -33,6 +37,7 @@ export interface IPackageInformation {
     entryRoot: string,
     custom: boolean;
     customBelongsTo?: string;
+    isCorePackage?: boolean;
 }
 
 export class AllowedExtenstions {
@@ -54,7 +59,9 @@ export class PathMaster {
 
     private tsMode = false;
 
-    constructor(public context: WorkFlowContext, public rootPackagePath?: string) { }
+    constructor(public context: WorkFlowContext, public rootPackagePath?: string) {
+        this.context = context;
+    }
 
     public init(name: string) {
         return this.resolve(name, this.rootPackagePath);
@@ -90,7 +97,7 @@ export class PathMaster {
             // A trick to avoid one nasty situation
             // Imagine lodash@1.0.0 that is set as a custom depedency for 2 libraries
             // We need to make sure there, that we use one source (either or)
-            // We don't want to take modules from 2 different places (in case if versions match) 
+            // We don't want to take modules from 2 different places (in case if versions match)
             let nodeModuleInfo = this.getNodeModuleInformation(info.name);
             let cachedInfo = this.context.getLibInfo(nodeModuleInfo.name, nodeModuleInfo.version);
             if (cachedInfo) { // Modules has been defined already
@@ -253,7 +260,6 @@ export class PathMaster {
     }
 
     private getNodeModuleInformation(name: string): IPackageInformation {
-
         let readMainFile = (folder, isCustom: boolean) => {
             // package.json path
             let packageJSONPath = path.join(folder, "package.json");
@@ -305,6 +311,20 @@ export class PathMaster {
             if (fs.existsSync(customFolder)) {
                 return readMainFile(customFolder, false);
             }
+        }
+
+        // Handle the node.js core modules that are not extended as assets
+        if (BUILTIN_LIBS.indexOf(name) !== -1) {
+          return {
+            name: name,
+            custom: true,
+            root: null,
+            missing: false,
+            entryRoot: null,
+            entry: null,
+            version: '0.0.0',
+            isCorePackage: true
+          };
         }
 
         if (this.rootPackagePath) {// handle a conflicting library
