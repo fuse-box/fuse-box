@@ -167,4 +167,19 @@ describe("Node modules and exports", (done) => {
         }).catch(done);
     });
 
+    it("Node library 'zlib' should be ignored as a core package", (done) => {
+        env({
+            log: false,
+            cache: false,
+            globals: { default: "myLib" },
+            isServer: false,
+            files: {
+                "index.js": `module.exports = require("zlib")`
+            }
+        }, "> index.js").then(data => {
+            data.myLib.should.be.ok;
+            done();
+        }).catch(done);
+    });
+
 })
