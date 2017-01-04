@@ -187,6 +187,8 @@ export class ModuleCollection {
         return each(data.including, (withDeps, modulePath) => {
             let file = new File(this.context, this.pm.init(modulePath));
             return this.resolve(file);
+        }).then(() => {
+            return this.onDefaultProjectDone();
         }).then(x => {
 
             return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
@@ -255,6 +257,13 @@ export class ModuleCollection {
             : collection.resolveEntry();
     }
 
+    public onDefaultProjectDone() {
+
+        this.context.fileGroups.forEach(group => {
+            this.dependencies.set(group.info.fuseBoxPath, group);
+            group.tryPlugins();
+        });
+    }
     /**
      * 
      * 
@@ -315,7 +324,7 @@ export class ModuleCollection {
             return each(file.analysis.dependencies, name => {
                 return this.resolve(new File(this.context,
                     this.pm.resolve(name, file.info.absDir, fileLimitPath)), shouldIgnoreDeps);
-            });
+            })
         }
     }
 }

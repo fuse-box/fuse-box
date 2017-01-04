@@ -21,6 +21,8 @@ const fuseBox = FuseBox.init({
         build.TypeScriptHelpers(),
         build.JSONPlugin(),
 
+        [/\.txt$/, build.ConcatPlugin({ ext: ".txt", name: "textBundle.txt" })],
+
         // process them all ;-)
         [build.LESSPlugin(), build.CSSPlugin()],
 

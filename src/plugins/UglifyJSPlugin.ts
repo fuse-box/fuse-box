@@ -3,7 +3,7 @@ import { WorkFlowContext } from "../WorkflowContext";
 import { Plugin } from "../WorkflowContext";
 import { BundleSource } from '../BundleSource';
 
-import * as UglifyJs from "uglify-js";
+
 
 /**
  * @export
@@ -17,14 +17,16 @@ export class UglifyJSPluginClass implements Plugin {
 	 */
 	public options: any;
 
-	constructor (options: any) {
+	constructor(options: any) {
 		this.options = options || {};
 	}
 
-	postBundle (context) {
-		const mainOptions:any = {
+	public postBundle(context) {
+		const mainOptions: any = {
 			fromString: true
 		};
+		const UglifyJs = require("uglify-js");
+
 
 		const concat = context.source.getResult();
 		const source = concat.content.toString();

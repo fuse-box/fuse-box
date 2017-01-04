@@ -99,6 +99,11 @@ export class File {
      * @memberOf File
      */
     public resolving: Promise<any>[] = [];
+
+    public subFiles: File[] = [];
+
+    public groupMode = false;
+
     /**
      * Creates an instance of File.
      * 
@@ -113,6 +118,15 @@ export class File {
         }
         this.absPath = info.absPath;
     }
+
+    public hasSubFiles() {
+        return this.subFiles.length > 0;
+    }
+
+    public addSubFile(file: File) {
+        this.subFiles.push(file);
+    }
+
 
     /**
      * 

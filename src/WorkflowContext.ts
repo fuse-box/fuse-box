@@ -3,7 +3,7 @@ import * as fs from "fs";
 import { BundleSource } from "./BundleSource";
 import { File } from "./File";
 import { Log } from "./Log";
-import { IPackageInformation, AllowedExtenstions } from "./PathMaster";
+import { IPackageInformation, IPathInformation, AllowedExtenstions } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "./ModuleCache";
 import { utils } from "realm-utils";
@@ -126,6 +126,8 @@ export class WorkFlowContext {
      * @memberOf WorkFlowContext
      */
     public plugins: Plugin[];
+
+    public fileGroups: Map<string, File>;
     /**
      * 
      * 
@@ -229,9 +231,34 @@ export class WorkFlowContext {
         this.source = new BundleSource(this);
         this.nodeModules = new Map();
         this.pluginTriggers = new Map();
+        this.fileGroups = new Map();
         this.libPaths = new Map();
     }
 
+    /**
+     * Create a new file group
+     * Mocks up file
+     * 
+     * @param {string} name
+     * 
+     * @memberOf WorkFlowContext
+     */
+    public createFileGroup(name: string): File {
+        let info = <IPathInformation>{
+            fuseBoxPath: name,
+            absPath: name,
+        }
+        let file = new File(this, info);
+        file.contents = "";
+        file.groupMode = true;
+        this.fileGroups.set(name, file);
+        return file;
+    }
+
+
+    public getFileGroup(name: string): File {
+        return this.fileGroups.get(name);
+    }
     /**
      * 
      * 
