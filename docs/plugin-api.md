@@ -47,7 +47,7 @@ Please be patient! __Documentation is in progress__.
 
 It is possible to concat files into one using the plugin API. There is [ConcatPlugin](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/ConcatPlugin.ts#L51) which serves as an example for the subject. 
 
-It order to understand how it works imagine a plugin chain:
+In order to understand how it works imagine a plugin chain:
 
 ```js
 [/\.txt$/, fsbx.ConcatPlugin({ ext: ".txt", name: "textBundle.txt" })],
@@ -91,4 +91,12 @@ public transformGroup(group: File) {
     group.contents = `module.exports = ${JSON.stringify(text)}`;
 }
  ```
+ 
+Now our bundle has a virtual file which looks like this:
+
+```js
+___scope___.file("textBundle.txt", function(exports, require, module, __filename, __dirname){ 
+    module.exports = "hello\nworld"
+});
+```
 
