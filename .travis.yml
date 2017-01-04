@@ -4,4 +4,4 @@ node_js:
 install:
   - npm install
   - gulp dist
-  - npm install babel-generator babylon cheerio @angular/core stylus less postcss node-sass uglify-js source-map
+  - npm install babel-core babel-generator babylon cheerio @angular/core stylus less postcss node-sass uglify-js source-map
