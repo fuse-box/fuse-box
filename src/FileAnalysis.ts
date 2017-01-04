@@ -145,7 +145,7 @@ export class FileAnalysis {
                         out.requires.push(node.source.value);
                     }
                 }
-                if (node.type === "CallExpression") {
+                if (node.type === "CallExpression" && node.callee) {
 
                     if (node.callee.type === "Identifier" && node.callee.name === "require") {
                         let arg1 = node.arguments[0];
