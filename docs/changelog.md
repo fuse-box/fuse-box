@@ -3,6 +3,7 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.1.41            | Fixed a bug related to the ast traversing and babel. Added a new plugin api
 | 1.1.40            | Fixing small bugs (uglify-js + peer deps)
 | 1.1.39            | Added net, querystring and some other node modules
 | 1.1.38            | Critical bug related to windows slashes
