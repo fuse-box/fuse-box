@@ -3,6 +3,7 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.1.40            | Fixing small bugs (uglify-js + peer deps)
 | 1.1.39            | Added net, querystring and some other node modules
 | 1.1.38            | Critical bug related to windows slashes
 | 1.3.37            | Fixed [57](https://github.com/fuse-box/fuse-box/issues/57)
