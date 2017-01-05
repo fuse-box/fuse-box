@@ -237,7 +237,8 @@ var $import = function (name, opts) {
         });
     };
     locals.require.main = {
-        filename: $isBrowser ? "./" : global["require"].main.filename
+        filename: $isBrowser ? "./" : global["require"].main.filename,
+        paths: $isBrowser ? [] : global["require"].main.paths
     };
     var args = [locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName];
     $trigger("before-import", args);
