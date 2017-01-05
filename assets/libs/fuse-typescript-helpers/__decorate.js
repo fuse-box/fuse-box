@@ -4,6 +4,9 @@ FuseBox.global("__fsbx_decorate", function(localArguments) {
             r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
             d;
 
+        if (!decorators) {
+            return;
+        }
         if (decorators && decorators.push) {
             decorators.push(
                 __metadata("fusebox:exports", localArguments[0]),

@@ -219,7 +219,7 @@ export class WorkFlowContext {
 
     public pluginTriggers: Map<string, Set<String>>;
 
-
+    public storage: Map<string, any>;
     public initCache() {
         this.cache = new ModuleCache(this);
     }
@@ -231,11 +231,20 @@ export class WorkFlowContext {
      */
     public reset() {
         this.log = new Log(this.doLog);
+        this.storage = new Map();
         this.source = new BundleSource(this);
         this.nodeModules = new Map();
         this.pluginTriggers = new Map();
         this.fileGroups = new Map();
         this.libPaths = new Map();
+    }
+
+    public setItem(key: string, obj: any) {
+        this.storage.set(key, obj);
+    }
+
+    public getItem(key: string): any {
+        return this.storage.get(key);
     }
 
     /**
