@@ -3,6 +3,8 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.1.48            | Added `FuseBox.packages` to the client API
+| 1.1.47            | Fixed a critical bug related to circual dep resolution on cache
 | 1.1.45-46         | Added few missing nodejs libs
 | 1.1.44            | Fixed an issue related to typescript helpers (typo)
 | 1.1.43            | Fixed [75](https://github.com/fuse-box/fuse-box/issues/75) Typescript helpers
