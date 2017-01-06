@@ -27,7 +27,8 @@ npm install fuse-box --save-dev
 FuseBox has many plugins in place to help you get started. All you need to do is install `fuse-box` from npm.
 
 ## Try it now!
-### Angular
+
+### Angular2
 
 Check a [marvellous TODO app](https://github.com/fuse-box/angular2-example) built on the latest angular2. Demo [here](https://fuse-box.github.io/angular2-example/).
 Fuse it in a fraction of second! (50-80ms)
