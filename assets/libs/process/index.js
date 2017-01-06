@@ -1,6 +1,9 @@
 // From https://github.com/defunctzombie/node-process/blob/master/browser.js
 // shim for using process in browser
 if (FuseBox.isServer) {
+    if (typeof __process_env__ !== "undefined") {
+        Object.assign(global.process.env, __process_env__);
+    }
     module.exports = global.process;
 } else {
     var productionEnv = false; //require('@system-env').production;
@@ -73,6 +76,9 @@ if (FuseBox.isServer) {
     process.env = {
         NODE_ENV: productionEnv ? 'production' : 'development'
     };
+    if (typeof __process_env__ !== "undefined") {
+        Object.assign(process.env, __process_env__);
+    }
     process.argv = [];
     process.version = ''; // empty string to avoid regexp issues
     process.versions = {};
