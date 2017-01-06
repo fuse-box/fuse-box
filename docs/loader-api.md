@@ -106,7 +106,7 @@ FuseBox.dynamic("foo/bar.js", "module.exports = {foo : 'bar'}")
 FuseBox.dynamic("foo/wow.js", "require('./bar')")
 ```
 
-See how `wow.js` is referring to the `foo/bar.js`. A dynamic module is fully functional FuseBox file, that plays nicely with the rest of the bundle and vice versa. You bundle won't have any problems using a wildcard import on your dynamic modules too.
+See how `wow.js` is referring to the `foo/bar.js`. A dynamic module is a fully functional FuseBox file, that plays nicely with the rest of the bundle and vice versa. Your bundle won't have any problems using a wildcard import on the dynamic modules too.
 
 ```
 require("~/foo/*") // will give 2 files
