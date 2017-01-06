@@ -3,6 +3,7 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.1.49            | Added [EnvPlugin](#envplugin)
 | 1.1.48            | Added `FuseBox.packages` to the client API
 | 1.1.47            | Fixed a critical bug related to circual dep resolution on cache
 | 1.1.45-46         | Added few missing nodejs libs
