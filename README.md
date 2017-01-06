@@ -28,12 +28,12 @@ FuseBox has many plugins in place to help you get started. All you need to do is
 
 ## Try it now!
 ### Angular
-Check [marvellous TODO app](https://github.com/fuse-box/angular2-example) built on the latest angular2. Demo [here](https://fuse-box.github.io/angular2-example/)
+Check [marvellous TODO app](https://github.com/fuse-box/angular2-example) built on the latest angular2. Demo [here](https://fuse-box.github.io/angular2-example/).
 Fuse it in a fraction of second! (50-80ms)
 
 ### React
 Fuse [react](https://github.com/fuse-box/react-example) with babel in 50ms
-
+---
 This [benchmark](https://github.com/fuse-box/benchmark) will tell you, that speed matters.
 __1200 files to bundle__:
 
