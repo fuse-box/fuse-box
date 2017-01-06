@@ -3,6 +3,8 @@
 //import "path"
 //import "./styles.css"
 //import "./test.scss";
+require('auth0-lock/lib/index.js')
+
 
 class A {
     constructor() { }

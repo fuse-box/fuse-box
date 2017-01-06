@@ -19,6 +19,8 @@ export class ModuleCollection {
      * @memberOf ModuleCollection
      */
     public nodeModules: Map<string, ModuleCollection> = new Map();
+
+    public traversed = false;
     /**
      * 
      * 

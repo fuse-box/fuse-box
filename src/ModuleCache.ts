@@ -242,6 +242,9 @@ mtime : ${stats.mtime.getTime()}
          */
         let traverse = (modules: Map<string, ModuleCollection>, root: any) => {
             return each(modules, (collection: ModuleCollection) => {
+                if (collection.traversed) {
+                    return;
+                }
                 let dependencies = {};
                 let flatFiles;
                 if (collection.cached) {
@@ -267,9 +270,8 @@ mtime : ${stats.mtime.getTime()}
                     name: collection.info.name,
                     version: collection.info.version,
                 };
-
+                collection.traversed = true;
                 return traverse(collection.nodeModules, dependencies);
-
             });
         }
         traverse(rootCollection.nodeModules, json.tree).then(() => {

@@ -39,4 +39,4 @@ const fuseBox = FuseBox.init({
     ]
 });
 
-fuseBox.bundle(">index.ts", true);
+fuseBox.bundle(">index.ts");
