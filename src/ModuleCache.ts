@@ -68,7 +68,15 @@ export class ModuleCache {
         mkdirp.sync(this.cacheFolder);
         this.cacheFile = path.join(this.cacheFolder, "deps.json");
         if (fs.existsSync(this.cacheFile)) {
-            this.cachedDeps = require(this.cacheFile);
+            try {
+                this.cachedDeps = require(this.cacheFile);
+            } catch (e) {
+                this.cachedDeps = {
+                    tree: {},
+                    flat: {},
+                };
+            }
+
         }
     }
 
@@ -259,7 +267,7 @@ mtime : ${stats.mtime.getTime()}
                     name: collection.info.name,
                     version: collection.info.version,
                 };
-                  
+
                 return traverse(collection.nodeModules, dependencies);
 
             });
