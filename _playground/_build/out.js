@@ -34,7 +34,7 @@ FuseBox.pkg("default", {}, function(___scope___){
 ___scope___.file("index.js", function(exports, require, module, __filename, __dirname){ 
 
 "use strict";
-require('auth0-lock/lib/index.js');
+require('auth0-lock/lib');
 var A = (function () {
     function A() {
     }

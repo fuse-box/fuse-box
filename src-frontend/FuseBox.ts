@@ -365,6 +365,7 @@ const $import = (name: string, opts: any = {}) => {
  * @class FuseBox
  */
 class FuseBox {
+    public static packages = $packages;
     public static get isBrowser() {
         return $isBrowser !== undefined;
     }
