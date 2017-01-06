@@ -28,7 +28,7 @@ FuseBox has many plugins in place to help you get started. All you need to do is
 
 ## Try it now!
 ### Angular
-Check [marvellous TODO app](https://github.com/fuse-box/angular2-example) built on the latest angular2. Demo [here](https://fuse-box.github.io/angular2-example/).
+Check a [marvellous TODO app](https://github.com/fuse-box/angular2-example) built on the latest angular2. Demo [here](https://fuse-box.github.io/angular2-example/).
 Fuse it in a fraction of second! (50-80ms)
 
 ### React
