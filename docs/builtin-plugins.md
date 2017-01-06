@@ -240,7 +240,7 @@ plugins : [
 Access it like you used to:
 
 ```
-console.log( process.env.bar )
+console.log( process.env.foo )
 ```
 
 
