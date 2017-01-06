@@ -286,3 +286,19 @@ export function testDecorator() {
     }
 }
 ```
+
+## EnvPlugin
+
+Writes environmental variables to both client and server at build time.
+
+```js
+plugins : [
+   fsbx.EnvPlugin({ foo: "bar" })
+]
+```
+
+Access it like you used to:
+
+```
+console.log( process.env.bar )
+```
