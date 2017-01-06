@@ -6,4 +6,4 @@ FuseBox.global("__assign", function(t) {
                 t[p] = s[p];
     }
     return t;
-}):
+});

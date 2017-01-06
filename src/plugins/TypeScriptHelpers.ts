@@ -20,7 +20,7 @@ export class TypeScriptHelpersClass implements Plugin {
      */
     public test: RegExp = /(\.js|\.ts)$/;
 
-    private helpers: Set<string>;
+
     private registeredHelpers: Map<string, string> = new Map();
 
 
@@ -44,16 +44,18 @@ export class TypeScriptHelpersClass implements Plugin {
      * @memberOf FuseBoxCSSPlugin
      */
     public init(context: WorkFlowContext) {
-        this.helpers = new Set();
+        context.setItem("ts_helpers", new Set());
     }
 
 
     public bundleEnd(context: WorkFlowContext) {
-        this.helpers.forEach(name => {
+        let helpers: Set<string> = context.getItem("ts_helpers");
+        helpers.forEach(name => {
             let contents = this.registeredHelpers.get(name);
             context.source.addContent(contents);
         });
     }
+
     /**
      *
      *
@@ -63,6 +65,12 @@ export class TypeScriptHelpersClass implements Plugin {
      */
     public transform(file: File) {
         let patchDecorate = false;
+
+        // Ignore anything but our current package
+        if (file.collection.name !== file.context.defaultPackageName) {
+            return;
+        }
+        let helpers: Set<string> = file.context.getItem("ts_helpers");
         // Check which helpers are actually used
         this.registeredHelpers.forEach((cont, name) => {
             let regexp = new RegExp(name, "gm");
@@ -70,8 +78,8 @@ export class TypeScriptHelpersClass implements Plugin {
                 if (name === "__decorate") {
                     patchDecorate = true;
                 }
-                if (!this.helpers.has(name)) {
-                    this.helpers.add(name);
+                if (!helpers.has(name)) {
+                    helpers.add(name);
                 }
             }
         });

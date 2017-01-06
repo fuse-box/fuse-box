@@ -348,7 +348,8 @@ const $import = (name: string, opts: any = {}) => {
         });
     }
     locals.require.main = {
-        filename: $isBrowser ? "./" : global["require"].main.filename
+        filename: $isBrowser ? "./" : global["require"].main.filename,
+        paths: $isBrowser ? [] : global["require"].main.paths
     }
 
     let args = [locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName];
