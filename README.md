@@ -45,6 +45,7 @@ __1200 files to bundle__:
 
 * No headache, minimalist configs
 * First class [typescript](http://fuse-box.org/#typescript) support
+* Arithmetic [instructions](http://fuse-box.org/#arithmetic-instructions)
 * Blazing fast bundle time
 * [Wildcard imports](http://fuse-box.org/#wildcard-import)
 * [Dynamic modules](http://fuse-box.org/#dynamic-modules) at runtime
