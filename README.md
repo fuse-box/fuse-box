@@ -69,4 +69,7 @@ FuseBox.init({
 }).bundle(">index.ts");
 ```
 
+---
+Don't hesitate to concat me personally or join our [gitter channel](https://gitter.im/fusebox-bundler/Lobby) we are very active and friendly!
+
 If you like the project, don't forget to star it!
