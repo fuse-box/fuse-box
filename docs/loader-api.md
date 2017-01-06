@@ -96,9 +96,9 @@ Another feature that allows you to register `commonjs` modules at runtime.
 FuseBox.dynamic("foo/bar.js", "module.exports = {foo : 'bar'}")
 ```
 
-Note how `foo/bar.js` is set. It's called `FuseBox path`, which should not start with slashes or periods. FuseBox will register a file in the `default`project. Hence, it is possible to override your local files, but impossible to do the same with external packages. 
+Note how `foo/bar.js` is set. It's called "FuseBox path", which should not start with slashes or periods. FuseBox will register a file in the `default`project. Hence, it is possible to override your local files, but impossible to do the same with external packages. 
 
-Mind __the path__ as well. `foo/bar.js` path means, that your `require` context it pointed to the folder `foo`
+It's imperative to bear in mind __file's path__ as well. Having `foo/bar.js` as a dynamic module, means that its `require` context will be pointed to the folder `foo`
 To make it clear, let's register two files
 
 ```js
