@@ -90,7 +90,7 @@ However, it is not recommended. But if you want to play god, you can use that fu
 
 ## Dynamic modules
 
-Another feature that allows you to register `commonjs` modules at runtime. 
+Another feature that allows you to register `commonjs` modules at runtime in browser and on server accordingly
 
 ```js
 FuseBox.dynamic("foo/bar.js", "module.exports = {foo : 'bar'}")
@@ -111,6 +111,8 @@ See how `wow.js` is referring to the `foo/bar.js`. A dynamic module is a fully f
 ```
 require("~/foo/*") // will give 2 files
 ```
+
+It's impossible to transpile dynamic modules at the moment. You can easily do it yourself, since the API accepts a string, 
 
 ## Point to the root
 You can use `~` symbol to point to your project's path in order to solve `../../../../../utils` mess.
