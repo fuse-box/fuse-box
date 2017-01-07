@@ -227,6 +227,23 @@ plugins: [
 ]
 ```
 
+## EnvPlugin
+
+Writes environmental variables to both client and server at build time.
+
+```js
+plugins : [
+   fsbx.EnvPlugin({ foo: "bar" })
+]
+```
+
+Access it like you used to:
+
+```
+console.log( process.env.foo )
+```
+
+
 ## Typescript helpers
 
 A very handy plugin, adds required typescript functions to the bundle. Please note that it adds only the ones that are actually used. So you won't be seeing an unnecessary code.
@@ -286,3 +303,5 @@ export function testDecorator() {
     }
 }
 ```
+
+

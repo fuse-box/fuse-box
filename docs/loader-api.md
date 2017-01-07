@@ -88,6 +88,32 @@ FuseBox.on("after-import", (exports, require, module, __filename, __dirname, pkg
 
 However, it is not recommended. But if you want to play god, you can use that functionality.
 
+## Dynamic modules
+
+Another feature that allows you to register `commonjs` modules at runtime in browser and on server accordingly
+
+```js
+FuseBox.dynamic("foo/bar.js", "module.exports = {foo : 'bar'}")
+```
+
+Note how `foo/bar.js` is set. It's called "FuseBox path", which should not start with slashes or periods. FuseBox will register a file in the `default`project. Hence, it is possible to override your local files, but impossible to do the same with external packages. 
+
+It's imperative to bear in mind __file's path__ as well. Having `foo/bar.js` as a dynamic module, means that its `require` context will be pointed to the folder `foo`
+To make it clear, let's register two files
+
+```js
+FuseBox.dynamic("foo/bar.js", "module.exports = {foo : 'bar'}")
+FuseBox.dynamic("foo/wow.js", "require('./bar')")
+```
+
+See how `wow.js` is referring to the `foo/bar.js`. A dynamic module is a fully functional FuseBox file, that plays nicely with the rest of the bundle and vice versa. Your bundle won't have any problems using a wildcard import on the dynamic modules too.
+
+```
+require("~/foo/*") // will give 2 files
+```
+
+It's impossible to transpile dynamic modules at the moment. You can easily do it yourself, since the API accepts a string, 
+
 ## Point to the root
 You can use `~` symbol to point to your project's path in order to solve `../../../../../utils` mess.
 

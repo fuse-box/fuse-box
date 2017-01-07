@@ -320,5 +320,6 @@ var FuseBox = (function () {
     };
     return FuseBox;
 }());
+FuseBox.packages = $packages;
  
 return __root__["FuseBox"] = FuseBox; } )(this)

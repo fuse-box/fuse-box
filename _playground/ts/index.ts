@@ -1,8 +1,11 @@
+
 //import "./a.txt";
 //import "./b.txt";
 //import "path"
 //import "./styles.css"
 //import "./test.scss";
+console.log(process.env.foo);
+
 
 class A {
     constructor() { }

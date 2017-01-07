@@ -1,4 +1,5 @@
-export { ConcatPlugin } from './plugins/ConcatPlugin';
+export { EnvPlugin } from "./plugins/EnvPlugin";
+export { ConcatPlugin } from "./plugins/ConcatPlugin";
 export { StylusPlugin } from "./plugins/StylusPlugin";
 export { PostCSS } from "./plugins/PostCSSPlugin";
 export { TypeScriptHelpers } from "./plugins/TypeScriptHelpers";

@@ -11,7 +11,7 @@ const fuseBox = FuseBox.init({
         bundleReference: "./sourcemaps.js.map",
         outFile: "_playground/_build/sourcemaps.js.map",
     },
-    globals: { jQuery: "$" },
+    //globals: { jQuery: "$" },
     cache: false,
     //globals: { default: "myLib", "wires-reactive": "Reactive" },
     outFile: "_playground/_build/out.js",
@@ -21,6 +21,7 @@ const fuseBox = FuseBox.init({
     plugins: [
         build.TypeScriptHelpers(),
         build.JSONPlugin(),
+        build.EnvPlugin({ foo: "bar" }),
 
         [/\.txt$/, build.ConcatPlugin({ ext: ".txt", name: "textBundle.txt" })],
 
@@ -39,4 +40,4 @@ const fuseBox = FuseBox.init({
     ]
 });
 
-fuseBox.bundle(">index.ts", true);
+fuseBox.bundle(">index.ts");

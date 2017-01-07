@@ -1,4 +1,4 @@
-# Fusebox
+# FuseBox
 
 [![Build Status](https://travis-ci.org/fuse-box/fuse-box.svg?branch=master)](https://travis-ci.org/fuse-box/fuse-box)
 [![Fusebox-bundler](https://img.shields.io/badge/gitter-join%20chat%20%E2%86%92-brightgreen.svg)](https://gitter.im/fusebox-bundler/Lobby)
@@ -28,26 +28,41 @@ FuseBox has many plugins in place to help you get started. All you need to do is
 
 ## Try it now!
 
-Check a [marvellous TODO app](https://fuse-box.github.io/angular2-example/) built on the latest [ng2+sass](https://github.com/fuse-box/angular2-example). Fuse it in a fraction of second! (50-80ms)
-[react-example](https://github.com/fuse-box/react-example) 50ms!
+### Angular2
 
-Check this [benchmark](https://github.com/fuse-box/benchmark):
-__1200 files to bundle__
+Check a [marvellous TODO app](https://github.com/fuse-box/angular2-example) built on the latest angular2. Demo [here](https://fuse-box.github.io/angular2-example/).
+Fuse it in a fraction of second! (50-80ms)
 
-|         |            |
-| ------------- |:-------------:| 
-| FuseBox      | __0.234s__ |
-| Webpack      | 1.376s |
+### React
+
+Fuse [react](https://github.com/fuse-box/react-example) with babel in 50ms
+
+---
+This [benchmark](https://github.com/fuse-box/benchmark) will tell you, that speed matters.
+__1200 files to bundle__:
+
+* FuseBox __0.234s__
+* Webpack 1.376s
 
 
-__1000 files to bundle / 10 times__
+## Highlights
 
-|         |            |
-| ------------- |:-------------:| 
-| FuseBox      | __2.257s__ |
-| Webpack      | 13.591s |
+* No headache, minimalist configs
+* First class [typescript](http://fuse-box.org/#typescript) support
+* Arithmetic [instructions](http://fuse-box.org/#arithmetic-instructions)
+* Blazing fast bundle time
+* [Wildcard imports](http://fuse-box.org/#wildcard-import)
+* [Dynamic modules](http://fuse-box.org/#dynamic-modules) at runtime
+* [Tilde support](http://fuse-box.org/#point-to-the-root)
+* Works everywhere
 
-## All your need to compile and bundle typescript
+There is so much more. FuseBox pushing it to a whole new level. 
+
+## Start now
+
+```
+npm install typescript fuse-box --save-dev
+```
 
 ```
 FuseBox.init({
@@ -59,5 +74,8 @@ FuseBox.init({
     outFile: "./out.js"
 }).bundle(">index.ts");
 ```
+
+---
+Don't hesitate to concat me personally or join our [gitter channel](https://gitter.im/fusebox-bundler/Lobby) we are very active and friendly!
 
 If you like the project, don't forget to star it!
