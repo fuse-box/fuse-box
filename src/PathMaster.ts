@@ -161,10 +161,17 @@ export class PathMaster {
         // ensureFolderAndExtensions needs to be re-writted
         // We should list a folder and pick matching file
         if (this.tsMode) {
+            console.log(result);
             if (!fs.existsSync(result)) {
                 let tsxVersion = replaceExt(result, ".tsx");
                 if (fs.existsSync(tsxVersion)) {
                     return tsxVersion;
+                } else {
+                    // yet another hack 
+                    // final check for .js extension
+                    // I know, it's not pretty ;-( Let's find a way to fix that
+                    let jsVersion = replaceExt(result, ".js");
+                    return jsVersion;
                 }
             }
         }

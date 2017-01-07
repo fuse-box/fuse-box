@@ -7,6 +7,8 @@
 console.log(process.env.foo);
 
 
+import "./some";
+
 class A {
     constructor() { }
 }

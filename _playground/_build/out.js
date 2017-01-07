@@ -36,6 +36,7 @@ ___scope___.file("index.js", function(exports, require, module, __filename, __di
 var process = require("process");
 "use strict";
 console.log(process.env.foo);
+require("./some");
 var A = (function () {
     function A() {
     }
@@ -49,6 +50,10 @@ var B = (function (_super) {
     return B;
 }(A));
 
+});
+___scope___.file("some.js", function(exports, require, module, __filename, __dirname){ 
+
+module.exports = { some: true }
 });
 });
 FuseBox.pkg("process", {}, function(___scope___){
