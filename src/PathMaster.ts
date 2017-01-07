@@ -161,7 +161,6 @@ export class PathMaster {
         // ensureFolderAndExtensions needs to be re-writted
         // We should list a folder and pick matching file
         if (this.tsMode) {
-            console.log(result);
             if (!fs.existsSync(result)) {
                 let tsxVersion = replaceExt(result, ".tsx");
                 if (fs.existsSync(tsxVersion)) {
