@@ -1,6 +1,6 @@
 # Tips
 
-below are some tips that will help you in avoiding issues while using **FuseBox**.
+below are some tips that will improve your experience and help you  avoiding gotchas while using **FuseBox**.
 
 ## General
 * Don't import **FuseBox** in your code, it will cause issues, it is already added to your bundle.
