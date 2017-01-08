@@ -165,6 +165,12 @@ export class PathMaster {
                 let tsxVersion = replaceExt(result, ".tsx");
                 if (fs.existsSync(tsxVersion)) {
                     return tsxVersion;
+                } else {
+                    // yet another hack 
+                    // final check for .js extension
+                    // I know, it's not pretty ;-( Let's find a way to fix that
+                    let jsVersion = replaceExt(result, ".js");
+                    return jsVersion;
                 }
             }
         }
