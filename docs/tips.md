@@ -12,5 +12,4 @@ for example to import a file  just use  `FuseBox.import('./myfile')`
 * **FuseBox** `API` has neat `isServer` and `isBrowser` methods, use them to check the environment the code is running in. for example `FuseBox.isServer` will return `true` if you are running your code in `Node.js`
 
 ## TypeScript tips
-* __TypeScript__ can automatically infer file extension if it is `.ts` or `.tsx` but if it is `.js`, 
-make sure to always add the `.js` extension when you require or import that file  as **TypeScript** requires it.
+* You don't have to worry about `module` option in **TypeScript** compiler options, Fuse will automatically set it up for you, even if you forget to add it.
