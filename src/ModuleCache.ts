@@ -172,26 +172,28 @@ mtime : ${stats.mtime.getTime()}
          */
         let getAllRequired = (key, json: any) => {
             if (required.indexOf(key) === -1) {
-                let collection = new ModuleCollection(this.context, json.name);
-                collection.cached = true;
-                collection.cachedName = key;
-                collection.cacheFile = path.join(this.cacheFolder, encodeURIComponent(key));
+                if (json.name) {
+                    let collection = new ModuleCollection(this.context, json.name);
+                    collection.cached = true;
+                    collection.cachedName = key;
+                    collection.cacheFile = path.join(this.cacheFolder, encodeURIComponent(key));
 
-                operations.push(new Promise((resolve, reject) => {
-                    if (fs.existsSync(collection.cacheFile)) {
-                        fs.readFile(collection.cacheFile, (err, result) => {
-                            collection.cachedContent = result.toString();
+                    operations.push(new Promise((resolve, reject) => {
+                        if (fs.existsSync(collection.cacheFile)) {
+                            fs.readFile(collection.cacheFile, (err, result) => {
+                                collection.cachedContent = result.toString();
+                                return resolve();
+                            });
+                        } else {
+                            collection.cachedContent = "";
+                            console.warn(`${collection.cacheFile} was not found`);
                             return resolve();
-                        });
-                    } else {
-                        collection.cachedContent = "";
-                        console.warn(`${collection.cacheFile} was not found`);
-                        return resolve();
-                    }
+                        }
 
-                }));
-                this.context.addNodeModule(collection.cachedName, collection);
-                required.push(key);
+                    }));
+                    this.context.addNodeModule(collection.cachedName, collection);
+                    required.push(key);
+                }
                 if (json.deps) {
                     for (let k in json.deps) { if (json.deps.hasOwnProperty(k)) { getAllRequired(k, json.deps[k]); } }
                 }
