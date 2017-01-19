@@ -131,9 +131,9 @@ export class FuseBox {
         }
     }
 
-    public devServer(str: string) {
+    public devServer(str: string, opts: any) {
         let server = new Server(this);
-        server.start(str);
+        server.start(str, opts);
 
     }
 

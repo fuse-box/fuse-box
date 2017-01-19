@@ -17,16 +17,18 @@ export class Server {
      * 
      * @memberOf Server
      */
-    public start(str: string) {
+    public start(str: string, opts: any) {
         // adding hot reload plugin
         this.fuse.context.plugins.push(HotReloadPlugin());
+        opts = opts || {};
 
         let buildPath = ensureUserPath(this.fuse.context.outFile);
         let rootDir = path.dirname(buildPath);
 
-        HTTPServer.start({
-            root: rootDir,
-        });
+        opts.root = opts.root ? ensureUserPath(opts.root) : rootDir;
+        opts.port = opts.port || 4444;
+
+        HTTPServer.start(opts);
         let socket = SocketServer.getInstance();
         this.fuse.context.emmitter.addListener("source-changed", (info) => {
             socket.send("source-changed", info);

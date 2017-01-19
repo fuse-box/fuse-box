@@ -40,4 +40,4 @@ const fuseBox = FuseBox.init({
     ]
 });
 
-fuseBox.devServer(">index.ts");
+fuseBox.devServer(">index.ts", { port: 8083 });

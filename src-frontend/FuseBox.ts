@@ -16,6 +16,7 @@ __root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports :
 const $fsbx = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
     : global["$fsbx"] = global["$fsbx"] || {}; // in case of nodejs
 
+
 if (!$isBrowser) {
     global["require"] = require;
 }
