@@ -309,6 +309,13 @@ export class File {
         }
         this.contents = result.outputText;
 
+        // emit new file
+        this.context.emmitter.emit("source-changed", {
+            type: "js",
+            content: this.contents,
+            path: this.info.fuseBoxPath
+        });
+
         // consuming transpiled javascript
         this.makeAnalysis();
         if (this.context.useCache) {

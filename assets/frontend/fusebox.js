@@ -289,6 +289,7 @@ var FuseBox = (function () {
         }
     };
     FuseBox.main = function (name) {
+        this.mainFile = name;
         return FuseBox.import(name, {});
     };
     FuseBox.expose = function (obj) {
@@ -305,6 +306,13 @@ var FuseBox = (function () {
                 res(true, exports, require, module, __filename, __dirname, __root__);
             });
         });
+    };
+    FuseBox.flush = function () {
+        var def = $packages["default"];
+        for (var name_1 in def.f) {
+            var file = def.f[name_1];
+            delete file.locals;
+        }
     };
     FuseBox.pkg = function (pkg_name, versions, fn) {
         if ($packages[pkg_name]) {

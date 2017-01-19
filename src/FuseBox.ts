@@ -1,3 +1,4 @@
+import { Server } from './devServer/Server';
 import { JSONPlugin } from "./plugins/JSONplugin";
 import { PathMaster } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
@@ -22,9 +23,9 @@ export class FuseBox {
     }
     public virtualFiles: any;
 
-    private collectionSource: CollectionSource;
+    public collectionSource: CollectionSource;
 
-    private context: WorkFlowContext;
+    public context: WorkFlowContext;
 
 
     /**
@@ -94,7 +95,7 @@ export class FuseBox {
         this.context.initCache();
     }
 
-     public triggerPre() {
+    public triggerPre() {
         this.context.triggerPluginsMethodOnce("preBundle", [this.context]);
     }
 
@@ -128,6 +129,12 @@ export class FuseBox {
         } else {
             return this.initiateBundle(str);
         }
+    }
+
+    public devServer(str: string) {
+        let server = new Server(this);
+        server.start(str);
+
     }
 
     public process(bundleData: BundleData, standalone?: boolean) {
@@ -189,7 +196,7 @@ export class FuseBox {
         });
     }
 
-    private initiateBundle(str: string) {
+    public initiateBundle(str: string) {
         this.context.reset();
         this.triggerPre();
         this.context.source.init();

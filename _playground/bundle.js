@@ -28,7 +28,7 @@ const fuseBox = FuseBox.init({
         // process them all ;-)
         [build.LESSPlugin(), build.CSSPlugin()],
 
-        [build.SassPlugin(), build.CSSPlugin({ write: true })],
+        [build.SassPlugin(), build.CSSPlugin()],
 
         // All other CSS files
         [build.PostCSS(POST_CSS_PLUGINS), build.CSSPlugin()],
@@ -40,4 +40,4 @@ const fuseBox = FuseBox.init({
     ]
 });
 
-fuseBox.bundle(">index.ts");
+fuseBox.devServer(">index.ts");

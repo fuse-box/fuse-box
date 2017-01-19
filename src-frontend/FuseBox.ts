@@ -366,6 +366,7 @@ const $import = (name: string, opts: any = {}) => {
  */
 class FuseBox {
     public static packages = $packages;
+    public static mainFile;
     public static get isBrowser() {
         return $isBrowser !== undefined;
     }
@@ -430,6 +431,7 @@ class FuseBox {
     }
 
     public static main(name: string) {
+        this.mainFile = name;
         return FuseBox.import(name, {});
     }
 
@@ -458,6 +460,14 @@ class FuseBox {
                 res(true, exports, require, module, __filename, __dirname, __root__);
             });
         });
+    }
+
+    public static flush() {
+        let def = $packages["default"];
+        for (let name in def.f) {
+            let file = def.f[name];
+            delete file.locals;
+        }
     }
 
     /**

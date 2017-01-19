@@ -1,14 +1,8 @@
-
-//import "./a.txt";
-//import "./b.txt";
-//import "path"
-//import "./styles.css"
-//import "./test.scss";
-console.log(process.env.foo);
+import { MyFoo } from './Foo';
 
 
 import "./some";
-
+import "./foo.scss";
 class A {
     constructor() { }
 }
@@ -18,6 +12,7 @@ class B extends A {
         super();
     }
 }
+let a = new MyFoo();
 
 //require("./hello")
 //let a = require("./foo.js")

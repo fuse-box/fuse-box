@@ -7,6 +7,8 @@ import { IPackageInformation, IPathInformation, AllowedExtenstions } from "./Pat
 import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "./ModuleCache";
 import { utils } from "realm-utils";
+import { EventEmitter } from "events";
+
 const appRoot = require("app-root-path");
 
 const mkdirp = require("mkdirp");
@@ -79,6 +81,7 @@ export interface Plugin {
  */
 export class WorkFlowContext {
 
+    public emmitter = new EventEmitter();
     /**
      * 
      * 
