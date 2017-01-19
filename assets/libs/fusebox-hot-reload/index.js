@@ -2,6 +2,9 @@ const Client = require("fusebox-websocket").SocketClient;
 
 module.exports = {
     connect: () => {
+        if (FuseBox.isServer) {
+            return;
+        }
         let client = new Client();
         client.connect();
         console.log("connecting...");
@@ -20,6 +23,6 @@ module.exports = {
         })
         client.on("error", (erro) => {
             console.log(error);
-        })
+        });
     }
 }
