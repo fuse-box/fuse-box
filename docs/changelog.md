@@ -3,6 +3,8 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.1.51-54         | Introducing devServer
+| 1.1.50            | Fixed caching issue
 | 1.1.49            | Added [EnvPlugin](#envplugin)
 | 1.1.48            | Added `FuseBox.packages` to the client API
 | 1.1.47            | Fixed a critical bug related to circual dep resolution on cache
