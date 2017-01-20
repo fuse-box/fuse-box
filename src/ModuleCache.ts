@@ -141,7 +141,7 @@ export class ModuleCache {
         let stats: any = fs.statSync(file.absPath);
 
         let cacheData = {
-            contents: JSON.stringify(file.contents),
+            contents: file.contents,
             dependencies: file.analysis.dependencies,
             sourceMap: sourcemaps || {},
             mtime: stats.mtime.getTime(),
