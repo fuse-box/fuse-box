@@ -311,6 +311,8 @@ export class File {
 
         // consuming transpiled javascript
         this.makeAnalysis();
+        this.tryPlugins();
+
         if (this.context.useCache) {
             // emit new file
             this.context.emmitter.emit("source-changed", {
@@ -320,6 +322,5 @@ export class File {
             });
             this.context.cache.writeStaticCache(this, this.sourceMap);
         }
-        this.tryPlugins();
     }
 }
