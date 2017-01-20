@@ -1,8 +1,11 @@
+import * as process from 'process';
 import { MyFoo } from './Foo';
 
-
+import tpl from "./hello.html"
 import "./some";
 import "./foo.scss";
+
+console.log(tpl);
 class A {
     constructor() { }
 }
@@ -10,6 +13,11 @@ class B extends A {
     constructor() {
 
         super();
+    }
+
+
+    public hello() {
+
     }
 }
 

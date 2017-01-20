@@ -38,11 +38,43 @@ FuseBox.on("async", function(name) {
 FuseBox.pkg("default", {}, function(___scope___){
 ___scope___.file("index.js", function(exports, require, module, __filename, __dirname){ 
 
-"\"use strict\";\nvar Foo_1 = require(\"./Foo\");\nrequire(\"./some\");\nrequire(\"./foo.scss\");\nvar A = (function () {\n    function A() {\n    }\n    return A;\n}());\nvar B = (function (_super) {\n    __extends(B, _super);\n    function B() {\n        return _super.call(this) || this;\n    }\n    return B;\n}(A));\nvar a = new Foo_1.MyFoo();\n"
+"use strict";
+var Foo_1 = require("./Foo");
+var hello_html_1 = require("./hello.html");
+require("./some");
+require("./foo.scss");
+console.log(hello_html_1.default);
+var A = (function () {
+    function A() {
+    }
+    return A;
+}());
+var B = (function (_super) {
+    __extends(B, _super);
+    function B() {
+        return _super.call(this) || this;
+    }
+    B.prototype.hello = function () {
+    };
+    return B;
+}(A));
+var a = new Foo_1.MyFoo();
+
 });
 ___scope___.file("Foo.js", function(exports, require, module, __filename, __dirname){ 
 
-"\"use strict\";\nvar MyFoo = (function () {\n    function MyFoo() {\n        console.log(\"HAH!n!!e foo!!!!!     ...\", new Date());\n    }\n    return MyFoo;\n}());\nexports.MyFoo = MyFoo;\n"
+"use strict";
+var MyFoo = (function () {
+    function MyFoo() {
+    }
+    return MyFoo;
+}());
+exports.MyFoo = MyFoo;
+
+});
+___scope___.file("hello.html", function(exports, require, module, __filename, __dirname){ 
+
+module.exports.default =  "<h1>Hello world!!!!!g</h1>"
 });
 ___scope___.file("some.js", function(exports, require, module, __filename, __dirname){ 
 

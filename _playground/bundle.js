@@ -13,7 +13,6 @@ const fuseBox = FuseBox.init({
     },
     //globals: { jQuery: "$" },
     cache: true,
-    log: false,
     //globals: { default: "myLib", "wires-reactive": "Reactive" },
     outFile: "_playground/_build/out.js",
     //package: "myLib",
@@ -35,9 +34,11 @@ const fuseBox = FuseBox.init({
         [build.PostCSS(POST_CSS_PLUGINS), build.CSSPlugin()],
 
         // Add a banner to bundle output
-        build.BannerPlugin('// Hey this is my banner! Copyright 2016!')
+        build.BannerPlugin('// Hey this is my banner! Copyright 2016!'),
 
         //build.UglifyJSPlugin()
+
+        build.HTMLPlugin(),
     ]
 });
 

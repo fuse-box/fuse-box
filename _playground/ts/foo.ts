@@ -1,6 +1,6 @@
 export class MyFoo {
     constructor() {
-        console.log("HAH!n!!e foo!!!!!     ...", new Date());
+        //console.log("HAHpppo!!!k     ...", new Date());
     }
 }
 
