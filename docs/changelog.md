@@ -3,6 +3,7 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.1.54-63         | Cache improvements and devServer tweaks
 | 1.1.51-54         | Introducing devServer
 | 1.1.50            | Fixed caching issue
 | 1.1.49            | Added [EnvPlugin](#envplugin)
