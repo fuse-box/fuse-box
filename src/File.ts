@@ -290,6 +290,9 @@ export class File {
                 this.isLoaded = true;
                 this.sourceMap = cached.sourceMap;
                 this.contents = cached.contents;
+                if (cached.headerContent) {
+                    this.headerContent = cached.headerContent;
+                }
                 this.analysis.dependencies = cached.dependencies;
                 this.tryPlugins();
                 return;
@@ -315,10 +318,14 @@ export class File {
 
         if (this.context.useCache) {
             // emit new file
+            let cachedContent = this.contents;
+            if (this.headerContent) {
+                cachedContent = this.headerContent.join("\n") + "\n" + cachedContent;
+            }
             this.context.emmitter.emit("source-changed", {
                 type: "js",
-                content: this.contents,
-                path: this.info.fuseBoxPath
+                content: cachedContent,
+                path: this.info.fuseBoxPath,
             });
             this.context.cache.writeStaticCache(this, this.sourceMap);
         }

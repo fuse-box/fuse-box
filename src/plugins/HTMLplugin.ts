@@ -42,11 +42,27 @@ export class FuseBoxHTMLPlugin implements Plugin {
      * @memberOf FuseBoxHTMLPlugin
      */
     public transform(file: File) {
+
+        let context = file.context;
+        if (context.useCache) {
+            let cached = context.cache.getStaticCache(file);
+            if (cached) {
+                file.isLoaded = true;
+                file.contents = cached.contents;
+                return;
+            }
+        }
+
         file.loadContents();
         if (this.useDefault) {
             file.contents = `module.exports.default =  ${JSON.stringify(file.contents)}`;
         } else {
             file.contents = `module.exports =  ${JSON.stringify(file.contents)}`;
+        }
+
+        if (context.useCache) {
+            context.emitJavascriptHotReload(file);
+            context.cache.writeStaticCache(file, file.sourceMap);
         }
     }
 };

@@ -144,11 +144,13 @@ export class ModuleCache {
             contents: file.contents,
             dependencies: file.analysis.dependencies,
             sourceMap: sourcemaps || {},
+            headerContent: file.headerContent,
             mtime: stats.mtime.getTime(),
         }
         let data = `module.exports = { contents : ${JSON.stringify(cacheData.contents)}, 
 dependencies : ${JSON.stringify(cacheData.dependencies)}, 
 sourceMap : ${JSON.stringify(cacheData.sourceMap)},
+headerContent : ${JSON.stringify(cacheData.headerContent)}, 
 mtime : ${cacheData.mtime}
 };`;
         MEMORY_CACHE[memCacheKey] = cacheData;

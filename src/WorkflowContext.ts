@@ -226,6 +226,14 @@ export class WorkFlowContext {
     public initCache() {
         this.cache = new ModuleCache(this);
     }
+
+    public emitJavascriptHotReload(file: File) {
+        this.emmitter.emit("source-changed", {
+            type: "js",
+            content: file.contents,
+            path: file.info.fuseBoxPath,
+        });
+    }
     /**
      * 
      * 
