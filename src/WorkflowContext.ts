@@ -218,7 +218,7 @@ export class WorkFlowContext {
      * @type {Log}
      * @memberOf WorkFlowContext
      */
-    public log: Log;
+    public log: Log = new Log(this.doLog)
 
     public pluginTriggers: Map<string, Set<String>>;
 

@@ -48,7 +48,7 @@ export class HTTPServer {
             server.listen(port, () => {
                 this.fuse.context.log.echo(`Launching dev server on port ${port}`);
             });
-        }, 500);
+        }, 10);
     }
 
 }
