@@ -1,5 +1,10 @@
 export class MyFoo {
     constructor() {
-        console.log("new foo!!!!!     ...", new Date());
+        console.log("HAH!n!!e foo!!!!!     ...", new Date());
     }
 }
+
+
+
+
+

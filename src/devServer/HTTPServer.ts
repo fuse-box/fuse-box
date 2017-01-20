@@ -1,3 +1,4 @@
+import { FuseBox } from '../';
 import { SocketServer } from "./SocketServer";
 import * as http from "http";
 import * as express from "express";
@@ -6,20 +7,23 @@ import * as express from "express";
 
 export class HTTPServer {
 
-
-
-
-    public static start(opts: any): HTTPServer {
-        let server: HTTPServer = new HTTPServer();
+    public static start(opts: any, fuse: FuseBox): HTTPServer {
+        let server: HTTPServer = new HTTPServer(fuse);
         server.launch(opts);
         return server;
     }
 
+
+    public app: express.Application;
+
+
     public opts: any;
 
     constructor(
-        private app: express.Application = express()
-    ) { }
+        private fuse: FuseBox
+    ) {
+        this.app = express.Application = express();
+    }
 
 
     private setup(): void {
@@ -33,15 +37,18 @@ export class HTTPServer {
     private launch(opts: any): void {
         this.opts = opts || {};
 
+
         const port = this.opts.port || 4444;
 
         let server = http.createServer();
-        SocketServer.createInstance(server);
+        SocketServer.createInstance(server, this.fuse);
         this.setup();
         server.on("request", this.app);
-        server.listen(port, () => {
-            console.info(`App is running on port ${port}`);
-        });
+        setTimeout(() => {
+            server.listen(port, () => {
+                this.fuse.context.log.echo(`Launching dev server on port ${port}`);
+            });
+        }, 10);
     }
 
 }

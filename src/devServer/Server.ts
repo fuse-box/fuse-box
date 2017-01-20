@@ -1,4 +1,4 @@
-import { SocketServer } from './SocketServer';
+import { SocketServer } from "./SocketServer";
 import { HotReloadPlugin } from "./../plugins/HotReloadPlugin";
 import * as path from "path";
 import { ensureUserPath } from "../Utils";
@@ -28,9 +28,11 @@ export class Server {
         opts.root = opts.root ? ensureUserPath(opts.root) : rootDir;
         opts.port = opts.port || 4444;
 
-        HTTPServer.start(opts);
+
+        HTTPServer.start(opts, this.fuse);
         let socket = SocketServer.getInstance();
         this.fuse.context.emmitter.addListener("source-changed", (info) => {
+            this.fuse.context.log.echo(`Source changed for ${info.path}`);
             socket.send("source-changed", info);
         });
 

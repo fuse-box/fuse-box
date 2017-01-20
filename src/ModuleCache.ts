@@ -93,24 +93,31 @@ export class ModuleCache {
 
         let stats = fs.statSync(file.absPath);
         let fileName = encodeURIComponent(file.info.fuseBoxPath);
+        let memCacheKey = encodeURIComponent(file.absPath);
         let data;
-        if (MEMORY_CACHE[fileName]) {
-            data = MEMORY_CACHE[fileName];
+
+
+        if (MEMORY_CACHE[memCacheKey]) {
+            data = MEMORY_CACHE[memCacheKey];
             if (data.mtime !== stats.mtime.getTime()) {
                 return;
             }
+            return data;
         } else {
             let dest = path.join(this.staticCacheFolder, fileName);
             if (fs.existsSync(dest)) {
                 try {
+
                     data = require(dest);
                 } catch (e) {
+                    console.log(e);
                     return;
                 }
                 if (data.mtime !== stats.mtime.getTime()) {
                     return;
                 }
-                MEMORY_CACHE[fileName] = data;
+
+                MEMORY_CACHE[memCacheKey] = data;
                 return data;
             }
         }
@@ -129,14 +136,22 @@ export class ModuleCache {
     public writeStaticCache(file: File, sourcemaps: string) {
 
         let fileName = encodeURIComponent(file.info.fuseBoxPath);
+        let memCacheKey = encodeURIComponent(file.absPath);
         let dest = path.join(this.staticCacheFolder, fileName);
         let stats: any = fs.statSync(file.absPath);
-        let data = `module.exports = { contents : ${JSON.stringify(file.contents)}, 
-dependencies : ${JSON.stringify(file.analysis.dependencies)}, 
-sourceMap : ${JSON.stringify(sourcemaps || {})},
-mtime : ${stats.mtime.getTime()}
+
+        let cacheData = {
+            contents: JSON.stringify(file.contents),
+            dependencies: file.analysis.dependencies,
+            sourceMap: sourcemaps || {},
+            mtime: stats.mtime.getTime(),
+        }
+        let data = `module.exports = { contents : ${JSON.stringify(cacheData.contents)}, 
+dependencies : ${JSON.stringify(cacheData.dependencies)}, 
+sourceMap : ${JSON.stringify(cacheData.sourceMap)},
+mtime : ${cacheData.mtime}
 };`;
-        MEMORY_CACHE[fileName] = data;
+        MEMORY_CACHE[memCacheKey] = cacheData;
         fs.writeFileSync(dest, data);
     }
 

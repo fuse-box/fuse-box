@@ -12,6 +12,28 @@ class B extends A {
         super();
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 let a = new MyFoo();
 //require("./hello")
 //let a = require("./foo.js")

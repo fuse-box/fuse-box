@@ -13,6 +13,7 @@ const fuseBox = FuseBox.init({
     },
     //globals: { jQuery: "$" },
     cache: true,
+    log: false,
     //globals: { default: "myLib", "wires-reactive": "Reactive" },
     outFile: "_playground/_build/out.js",
     //package: "myLib",

@@ -59,15 +59,7 @@ var a = new Foo_1.MyFoo();
 });
 ___scope___.file("Foo.js", function(exports, require, module, __filename, __dirname){ 
 
-"use strict";
-var MyFoo = (function () {
-    function MyFoo() {
-        console.log("new foo!!!!!     ...", new Date());
-    }
-    return MyFoo;
-}());
-exports.MyFoo = MyFoo;
-
+"\"use strict\";\nvar MyFoo = (function () {\n    function MyFoo() {\n        console.log(\"HAH!n!!e foo!!!!!     ...\", new Date());\n    }\n    return MyFoo;\n}());\nexports.MyFoo = MyFoo;\n"
 });
 ___scope___.file("some.js", function(exports, require, module, __filename, __dirname){ 
 

@@ -1,3 +1,4 @@
+import { FuseBox } from "./../FuseBox";
 import { Server } from "ws";
 
 
@@ -5,9 +6,9 @@ export class SocketServer {
 
     public static server: SocketServer;
 
-    public static createInstance(server?: any) {
+    public static createInstance(server: any, fuse: FuseBox) {
         if (!this.server) {
-            this.server = this.start(server);
+            this.server = this.start(server, fuse);
         }
         return this.server;
     }
@@ -16,9 +17,9 @@ export class SocketServer {
         return this.server;
     }
 
-    public static start(server: any) {
+    public static start(server: any, fuse: FuseBox) {
         let wss = new Server({ server: server });
-        let ss = new SocketServer(wss);
+        let ss = new SocketServer(wss, fuse);
         return ss;
     }
 
@@ -26,9 +27,9 @@ export class SocketServer {
     public cursor: any;
     public clients = new Set<any>();
 
-    constructor(public server: any) {
+    constructor(public server: any, public fuse: FuseBox) {
         server.on("connection", (ws) => {
-            console.log("connected");
+            this.fuse.context.log.echo("Client connected")
             this.clients.add(ws);
 
             ws.on("message", message => {
@@ -38,7 +39,7 @@ export class SocketServer {
                 }
             });
             ws.on("close", () => {
-                console.log("close..");
+                this.fuse.context.log.echo("Connection closed");
                 this.clients.delete(ws);
             });
         });
