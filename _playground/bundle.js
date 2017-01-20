@@ -12,7 +12,7 @@ const fuseBox = FuseBox.init({
         outFile: "_playground/_build/sourcemaps.js.map",
     },
     //globals: { jQuery: "$" },
-    cache: false,
+    cache: true,
     //globals: { default: "myLib", "wires-reactive": "Reactive" },
     outFile: "_playground/_build/out.js",
     //package: "myLib",

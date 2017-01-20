@@ -8,6 +8,7 @@ import * as path from "path";
 import { each } from "realm-utils";
 const mkdirp = require("mkdirp");
 
+const MEMORY_CACHE = {};
 /**
  * 
  * 
@@ -92,14 +93,28 @@ export class ModuleCache {
 
         let stats = fs.statSync(file.absPath);
         let fileName = encodeURIComponent(file.info.fuseBoxPath);
-        let dest = path.join(this.staticCacheFolder, fileName);
-        if (fs.existsSync(dest)) {
-            let data = require(dest);
+        let data;
+        if (MEMORY_CACHE[fileName]) {
+            data = MEMORY_CACHE[fileName];
             if (data.mtime !== stats.mtime.getTime()) {
                 return;
             }
-            return data;
+        } else {
+            let dest = path.join(this.staticCacheFolder, fileName);
+            if (fs.existsSync(dest)) {
+                try {
+                    data = require(dest);
+                } catch (e) {
+                    return;
+                }
+                if (data.mtime !== stats.mtime.getTime()) {
+                    return;
+                }
+                MEMORY_CACHE[fileName] = data;
+                return data;
+            }
         }
+
     }
 
     /**
@@ -121,6 +136,7 @@ dependencies : ${JSON.stringify(file.analysis.dependencies)},
 sourceMap : ${JSON.stringify(sourcemaps || {})},
 mtime : ${stats.mtime.getTime()}
 };`;
+        MEMORY_CACHE[fileName] = data;
         fs.writeFileSync(dest, data);
     }
 
@@ -174,14 +190,20 @@ mtime : ${stats.mtime.getTime()}
             if (required.indexOf(key) === -1) {
                 if (json.name) {
                     let collection = new ModuleCollection(this.context, json.name);
+                    let cacheKey = encodeURIComponent(key)
                     collection.cached = true;
                     collection.cachedName = key;
-                    collection.cacheFile = path.join(this.cacheFolder, encodeURIComponent(key));
+                    collection.cacheFile = path.join(this.cacheFolder, cacheKey);
 
                     operations.push(new Promise((resolve, reject) => {
+                        if (MEMORY_CACHE[cacheKey]) {
+                            collection.cachedContent = MEMORY_CACHE[cacheKey];
+                            return resolve();
+                        }
                         if (fs.existsSync(collection.cacheFile)) {
                             fs.readFile(collection.cacheFile, (err, result) => {
                                 collection.cachedContent = result.toString();
+                                MEMORY_CACHE[cacheKey] = collection.cachedContent;
                                 return resolve();
                             });
                         } else {
@@ -294,8 +316,12 @@ mtime : ${stats.mtime.getTime()}
     public set(info: IPackageInformation, contents: string) {
         return new Promise((resolve, reject) => {
 
-            let targetName = path.join(this.cacheFolder, encodeURIComponent(`${info.name}@${info.version}`));
+            let cacheKey = encodeURIComponent(`${info.name}@${info.version}`);
 
+            let targetName = path.join(this.cacheFolder, cacheKey);
+            // storing to memory
+            MEMORY_CACHE[cacheKey] = contents;
+            console.log("set cache");
             fs.writeFile(targetName, contents, (err) => {
                 return resolve();
             });

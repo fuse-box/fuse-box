@@ -170,7 +170,7 @@ export class FuseBox {
                         if (collection.cached || (collection.info && !collection.info.missing)) {
                             return self.collectionSource.get(collection).then((cnt: string) => {
                                 self.context.log.echoCollection(collection, cnt);
-                                if (!collection.cachedName) {
+                                if (!collection.cachedName && self.context.useCache) {
                                     self.context.cache.set(collection.info, cnt);
                                 }
                                 this.globalContents.push(cnt);

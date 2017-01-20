@@ -62,7 +62,7 @@ ___scope___.file("Foo.js", function(exports, require, module, __filename, __dirn
 "use strict";
 var MyFoo = (function () {
     function MyFoo() {
-        console.log("new foo     ...", new Date());
+        console.log("new foo!!!!!     ...", new Date());
     }
     return MyFoo;
 }());
@@ -75,7 +75,7 @@ module.exports = { some: true }
 });
 ___scope___.file("foo.scss", function(exports, require, module, __filename, __dirname){ 
 
-__fsbx_css("foo.scss", "body {\n  background: lime;\n  margin: 40px;\n  color: blue; }\n\n/*# sourceMappingURL=foo.scss.map */")
+__fsbx_css("foo.scss", "body {\n  background: black;\n  margin: 40px;\n  color: blue; }\n\n/*# sourceMappingURL=foo.scss.map */")
 });
 });
 FuseBox.pkg("fusebox-hot-reload", {}, function(___scope___){
@@ -85,6 +85,9 @@ const Client = require("fusebox-websocket").SocketClient;
 
 module.exports = {
     connect: () => {
+        if (FuseBox.isServer) {
+            return;
+        }
         let client = new Client();
         client.connect();
         console.log("connecting...");
@@ -103,7 +106,7 @@ module.exports = {
         })
         client.on("error", (erro) => {
             console.log(error);
-        })
+        });
     }
 }
 });
