@@ -140,6 +140,9 @@ export class ModuleCache {
         let dest = path.join(this.staticCacheFolder, fileName);
         let stats: any = fs.statSync(file.absPath);
 
+        if (file.headerContent) {
+            file.contents = file.headerContent.join("\n") + file.contents;
+        }
         let cacheData = {
             contents: file.contents,
             dependencies: file.analysis.dependencies,
