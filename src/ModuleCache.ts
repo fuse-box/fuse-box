@@ -321,7 +321,6 @@ mtime : ${stats.mtime.getTime()}
             let targetName = path.join(this.cacheFolder, cacheKey);
             // storing to memory
             MEMORY_CACHE[cacheKey] = contents;
-            console.log("set cache");
             fs.writeFile(targetName, contents, (err) => {
                 return resolve();
             });
