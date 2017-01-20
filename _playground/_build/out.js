@@ -38,24 +38,7 @@ FuseBox.on("async", function(name) {
 FuseBox.pkg("default", {}, function(___scope___){
 ___scope___.file("index.js", function(exports, require, module, __filename, __dirname){ 
 
-"use strict";
-var Foo_1 = require("./Foo");
-require("./some");
-require("./foo.scss");
-var A = (function () {
-    function A() {
-    }
-    return A;
-}());
-var B = (function (_super) {
-    __extends(B, _super);
-    function B() {
-        return _super.call(this) || this;
-    }
-    return B;
-}(A));
-var a = new Foo_1.MyFoo();
-
+"\"use strict\";\nvar Foo_1 = require(\"./Foo\");\nrequire(\"./some\");\nrequire(\"./foo.scss\");\nvar A = (function () {\n    function A() {\n    }\n    return A;\n}());\nvar B = (function (_super) {\n    __extends(B, _super);\n    function B() {\n        return _super.call(this) || this;\n    }\n    return B;\n}(A));\nvar a = new Foo_1.MyFoo();\n"
 });
 ___scope___.file("Foo.js", function(exports, require, module, __filename, __dirname){ 
 
