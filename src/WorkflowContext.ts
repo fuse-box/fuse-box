@@ -81,6 +81,15 @@ export interface Plugin {
  */
 export class WorkFlowContext {
 
+
+    public shim: any;
+
+    /**
+     * 
+     * 
+     * 
+     * @memberOf WorkFlowContext
+     */
     public emmitter = new EventEmitter();
     /**
      * 
@@ -234,6 +243,23 @@ export class WorkFlowContext {
             path: file.info.fuseBoxPath,
         });
     }
+
+    /**
+     * 
+     * 
+     * @param {string} name
+     * @returns {boolean}
+     * 
+     * @memberOf WorkFlowContext
+     */
+    public isShimed(name: string): boolean {
+        if (!this.shim) {
+            return false;
+        }
+        return this.shim[name] !== undefined;
+    }
+
+
     /**
      * 
      * 

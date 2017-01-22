@@ -1,11 +1,14 @@
 import * as process from 'process';
 import { MyFoo } from './Foo';
 
-import tpl from "./hello.html"
-import "./some";
-import "./foo.scss";
+//import * as jst from 'jstree/dist/jstree';
+//console.log("1",jst);
+//1
 
-console.log(tpl);
+// $(function () {
+//     $('[data-toggle="tooltip"]').tooltip()
+// })
+
 class A {
     constructor() { }
 }

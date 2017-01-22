@@ -7,10 +7,10 @@ const POST_CSS_PLUGINS = [precss()];
 
 const fuseBox = FuseBox.init({
     homeDir: "_playground/ts",
-    sourceMap: {
-        bundleReference: "./sourcemaps.js.map",
-        outFile: "_playground/_build/sourcemaps.js.map",
-    },
+    // sourceMap: {
+    //     bundleReference: "./sourcemaps.js.map",
+    //     outFile: "_playground/_build/sourcemaps.js.map",
+    // },
     //globals: { jQuery: "$" },
     cache: true,
     //globals: { default: "myLib", "wires-reactive": "Reactive" },
@@ -18,6 +18,12 @@ const fuseBox = FuseBox.init({
     //package: "myLib",
     //globals: { myLib: "myLib" },
     modulesFolder: "_playground/npm",
+    shim: {
+        foobar: {
+            source: "_playground/shims/foobar.js",
+            exports: "window.foobar"
+        }
+    },
     plugins: [
         build.TypeScriptHelpers(),
         build.JSONPlugin(),

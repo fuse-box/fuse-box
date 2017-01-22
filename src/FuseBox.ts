@@ -1,3 +1,6 @@
+import * as fs from 'fs';
+import { ensureUserPath } from './Utils';
+import { ShimCollection } from './ShimCollection';
 import { Server } from './devServer/Server';
 import { JSONPlugin } from "./plugins/JSONplugin";
 import { PathMaster } from "./PathMaster";
@@ -68,6 +71,10 @@ export class FuseBox {
 
         if (opts.globals) {
             this.context.globals = opts.globals;
+        }
+
+        if (opts.shim) {
+            this.context.shim = opts.shim;
         }
 
         if (opts.standalone !== undefined) {
@@ -167,6 +174,7 @@ export class FuseBox {
 
                 public addNodeModules() {
                     return each(self.context.nodeModules, (collection: ModuleCollection) => {
+
                         if (collection.cached || (collection.info && !collection.info.missing)) {
                             return self.collectionSource.get(collection).then((cnt: string) => {
                                 self.context.log.echoCollection(collection, cnt);
@@ -196,11 +204,36 @@ export class FuseBox {
         });
     }
 
+    public addShims() {
+        // add all shims
+        let shim = this.context.shim;
+        if (shim) {
+            for (let name in shim) {
+                if (shim.hasOwnProperty(name)) {
+                    let data = shim[name];
+                    if (data.exports) {
+                        // creating a fake collection
+                        let shimedCollection
+                            = ShimCollection.create(this.context, name, data.exports);
+                        this.context.addNodeModule(name, shimedCollection);
+
+                        if (data.source) {
+                            let source = ensureUserPath(data.source);
+                            let contents = fs.readFileSync(source).toString();
+                            this.context.source.addContent(contents);
+                        }
+                    }
+                }
+            }
+        }
+    }
     public initiateBundle(str: string) {
         this.context.reset();
         this.triggerPre();
         this.context.source.init();
+        this.addShims();
         this.triggerStart();
+
         let parser = Arithmetic.parse(str);
         let bundle: BundleData;
         return Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
