@@ -112,7 +112,7 @@ FuseBox.init({
 ## Shimming 
 
 For those libraries that are bundled to work in `window` (jquery) for example, you need to provide a shimming configuration.
-FuseBox will not do analysis on that file, it will simply add them at the top of the bundle.
+FuseBox will not do analysis on that file, it will simply add it to the top of the bundle.
 
 ```
 FuseBox.init({
@@ -133,7 +133,7 @@ import * as foo from "jquery"
 console.log(foo)
 ```
 
-The key `jquery` in our case is used to define a package name: for example, you can replace `jquery` with `foo` and use `import "foo"` to get a jquery instance.
+The key `jquery` in our case is used to define package name: for example, you can replace `jquery` with `foo` and use `import "foo"` to get a jquery instance.
 
 
 
