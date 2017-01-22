@@ -3,7 +3,7 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
-| 1.1.67            | Proper shimming 
+| 1.1.67            | Proper [shimming](http://fuse-box.org/#shimming) 
 | 1.1.63-66         | devServer fixes
 | 1.1.54-63         | Cache improvements and devServer tweaks
 | 1.1.51-54         | Introducing devServer
