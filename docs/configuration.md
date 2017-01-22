@@ -109,6 +109,32 @@ FuseBox.init({
 })
 ```
 
+## Shimming 
+
+For those libraries that are bundled to work in `window` (jquery) for example, you need to provide a shimming configuration.
+FuseBox will not do analysis on that file, it will simply add them at the top of the bundle.
+
+```
+FuseBox.init({
+   shim: {
+        jquery: {
+            source: "node_modules/jquery/dist/jquery.js",
+            exports: "$"
+        }
+   }
+});
+```
+
+You can remove `source` option if you load a library using the script tag (for example from a CDN). After it has been shimmed,
+you can use FuseBox API, or import/require statement to obtain it.
+
+```
+import * as foo from "jquery"
+console.log(foo)
+```
+
+The key `jquery` in our case is used to define a package name: for example, you can replace `jquery` with `foo` and use `import "foo"` to get a jquery instance.
+
 
 
 
