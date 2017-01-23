@@ -13,7 +13,6 @@ const getSocketURL = (host) => {
         let portInHost = new RegExp(":\\d{1,}.*$");
         if (portInHost.test(host)) {
             port = "";
-            host = host.replace(port, "");
         }
         let http = new RegExp("^http(s)?://");
         if (http.test(host)) {
