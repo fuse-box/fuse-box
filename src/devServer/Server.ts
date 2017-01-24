@@ -7,6 +7,7 @@ import { FuseBox } from "../FuseBox";
 const watch = require("watch");
 
 export class Server {
+    public httpServer: HTTPServer;
     constructor(private fuse: FuseBox) {
 
     }
@@ -17,7 +18,7 @@ export class Server {
      * 
      * @memberOf Server
      */
-    public start(str: string, opts: any) {
+    public start(str: string, opts: any): Server {
         // adding hot reload plugin
         this.fuse.context.plugins.push(HotReloadPlugin());
         opts = opts || {};
@@ -27,9 +28,8 @@ export class Server {
 
         opts.root = opts.root ? ensureUserPath(opts.root) : rootDir;
         opts.port = opts.port || 4444;
+        this.httpServer = HTTPServer.start(opts, this.fuse);
 
-
-        HTTPServer.start(opts, this.fuse);
         let socket = SocketServer.getInstance();
         this.fuse.context.emmitter.addListener("source-changed", (info) => {
             this.fuse.context.log.echo(`Source changed for ${info.path}`);
@@ -40,5 +40,6 @@ export class Server {
         watch.watchTree(this.fuse.context.homeDir, { interval: 0.2 }, () => {
             this.fuse.initiateBundle(str);
         });
+        return this;
     }
 }

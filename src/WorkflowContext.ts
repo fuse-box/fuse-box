@@ -473,7 +473,7 @@ export class WorkFlowContext {
      * 
      * @memberOf WorkFlowContext
      */
-    public writeOutput() {
+    public writeOutput(fn?: any) {
         let res = this.source.getResult();
         // Writing sourcemaps
         if (this.sourceMapConfig && this.sourceMapConfig.outFile) {
@@ -483,7 +483,11 @@ export class WorkFlowContext {
         // writing target
         if (this.outFile) {
             let target = this.ensureUserPath(this.outFile);
-            fs.writeFile(target, res.content, () => { });
+            fs.writeFile(target, res.content, () => {
+                if (fn) {
+                    fn();
+                }
+            });
         }
     }
 

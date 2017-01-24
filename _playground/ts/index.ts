@@ -8,6 +8,10 @@ import { MyFoo } from './Foo';
 // $(function () {
 //     $('[data-toggle="tooltip"]').tooltip()
 // })
+//import * as jq from "jquery";
+import "jquery"
+import "jqtree";
+//console.log($("body").tree);
 
 class A {
     constructor() { }

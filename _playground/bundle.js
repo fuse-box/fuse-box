@@ -19,9 +19,9 @@ const fuseBox = FuseBox.init({
     //globals: { myLib: "myLib" },
     modulesFolder: "_playground/npm",
     shim: {
-        foobar: {
-            source: "_playground/shims/foobar.js",
-            exports: "window.foobar"
+        jquery: {
+            source: "node_modules/jquery/dist/jquery.js",
+            exports: "$"
         }
     },
     plugins: [

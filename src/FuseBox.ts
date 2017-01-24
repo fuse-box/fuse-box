@@ -128,23 +128,24 @@ export class FuseBox {
      * 
      * @memberOf FuseBox
      */
-    public bundle(str: string, daemon?: boolean) {
-        if (daemon) {
-            watch.watchTree(this.context.homeDir, { interval: 0.2 }, () => {
-                this.initiateBundle(str);
-            });
-        } else {
-            return this.initiateBundle(str);
-        }
+    public bundle(str: string, bundleReady?: any) {
+        return this.initiateBundle(str, bundleReady);
     }
 
+    /**
+     * 
+     * 
+     * @param {string} str
+     * @param {*} opts
+     * 
+     * @memberOf FuseBox
+     */
     public devServer(str: string, opts: any) {
         let server = new Server(this);
-        server.start(str, opts);
-
+        return server.start(str, opts);
     }
 
-    public process(bundleData: BundleData, standalone?: boolean) {
+    public process(bundleData: BundleData, bundleReady?: any) {
         let bundleCollection = new ModuleCollection(this.context, this.context.defaultPackageName);
         bundleCollection.pm = new PathMaster(this.context, bundleData.homeDir);
 
@@ -198,7 +199,7 @@ export class FuseBox {
                 this.triggerEnd();
                 self.context.source.finalize(bundleData);
                 this.triggerPost();
-                this.context.writeOutput();
+                this.context.writeOutput(bundleReady);
                 return self.context.source.getResult();
             });
         });
@@ -227,7 +228,7 @@ export class FuseBox {
             }
         }
     }
-    public initiateBundle(str: string) {
+    public initiateBundle(str: string, bundleReady?: any) {
         this.context.reset();
         this.triggerPre();
         this.context.source.init();
@@ -239,7 +240,7 @@ export class FuseBox {
         return Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
 
             bundle = data;
-            return this.process(data);
+            return this.process(data, bundleReady);
         }).then((contents) => {
             bundle.finalize(); // Clean up temp folder if required
 
