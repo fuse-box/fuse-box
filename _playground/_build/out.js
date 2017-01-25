@@ -10339,6 +10339,7 @@ ___scope___.file("index.js", function(exports, require, module, __filename, __di
 const events = require("events");
 
 const getSocketURL = (host) => {
+    
         const isBrowser = FuseBox.isBrowser
         if (host && /^ws(s):\/\//.test(host)) {
             return host;
@@ -10346,7 +10347,7 @@ const getSocketURL = (host) => {
         let protocol = "ws://";
         let port = isBrowser ? (!host &&
             window.location.port ? window.location.port : "") : "";
-        host = host ? host : (isBrowser ? window.location.host : "localhost");
+        host = host ? host : (isBrowser ? window.location.origin : "localhost");
         let portInHost = new RegExp(":\\d{1,}.*$");
         if (portInHost.test(host)) {
             port = "";

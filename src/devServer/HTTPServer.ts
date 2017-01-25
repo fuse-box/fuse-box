@@ -34,7 +34,7 @@ export class HTTPServer {
 
 
 
-    private launch(opts: any): void {
+    public launch(opts: any): void {
         this.opts = opts || {};
 
 

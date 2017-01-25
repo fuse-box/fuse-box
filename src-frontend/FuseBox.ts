@@ -234,19 +234,24 @@ const $async = (file: string, cb) => {
         var xmlhttp;
         xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                let contentType = xmlhttp.getResponseHeader("Content-Type");
-                let content = xmlhttp.responseText;
-                if (/json/.test(contentType)) {
-                    content = `module.exports = ${content}`;
-                } else {
-                    if (!/javascript/.test(contentType)) {
-                        content = `module.exports = ${JSON.stringify(content)}`;
+            if (xmlhttp.readyState == 4) {
+                if (xmlhttp.status == 200) {
+                    let contentType = xmlhttp.getResponseHeader("Content-Type");
+                    let content = xmlhttp.responseText;
+                    if (/json/.test(contentType)) {
+                        content = `module.exports = ${content}`;
+                    } else {
+                        if (!/javascript/.test(contentType)) {
+                            content = `module.exports = ${JSON.stringify(content)}`;
+                        }
                     }
+                    let normalized = $pathJoin("./", file);
+                    FuseBox.dynamic(normalized, content);
+                    cb(FuseBox.import(file, {}));
+                } else {
+                    console.error(`${file} was not found upon request`)
+                    cb(undefined);
                 }
-                let normalized = $pathJoin("./", file);
-                FuseBox.dynamic(normalized, content);
-                cb(FuseBox.import(file, {}));
             }
         }
         xmlhttp.open("GET", file, true);

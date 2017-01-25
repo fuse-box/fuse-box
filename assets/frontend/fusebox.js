@@ -143,20 +143,26 @@ var $async = function (file, cb) {
         var xmlhttp;
         xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                var contentType = xmlhttp.getResponseHeader("Content-Type");
-                var content = xmlhttp.responseText;
-                if (/json/.test(contentType)) {
-                    content = "module.exports = " + content;
+            if (xmlhttp.readyState == 4) {
+                if (xmlhttp.status == 200) {
+                    var contentType = xmlhttp.getResponseHeader("Content-Type");
+                    var content = xmlhttp.responseText;
+                    if (/json/.test(contentType)) {
+                        content = "module.exports = " + content;
+                    }
+                    else {
+                        if (!/javascript/.test(contentType)) {
+                            content = "module.exports = " + JSON.stringify(content);
+                        }
+                    }
+                    var normalized = $pathJoin("./", file);
+                    FuseBox.dynamic(normalized, content);
+                    cb(FuseBox.import(file, {}));
                 }
                 else {
-                    if (!/javascript/.test(contentType)) {
-                        content = "module.exports = " + JSON.stringify(content);
-                    }
+                    console.error(file + " was not found upon request");
+                    cb(undefined);
                 }
-                var normalized = $pathJoin("./", file);
-                FuseBox.dynamic(normalized, content);
-                cb(FuseBox.import(file, {}));
             }
         };
         xmlhttp.open("GET", file, true);
