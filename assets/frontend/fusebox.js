@@ -248,7 +248,8 @@ var $import = function (name, opts) {
     };
     var args = [locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName];
     $trigger("before-import", args);
-    file.fn.apply(0, args);
+    var fn = file.fn;
+    fn(locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName);
     $trigger("after-import", args);
     return locals.module.exports;
 };
@@ -313,8 +314,14 @@ var FuseBox = (function () {
             });
         });
     };
-    FuseBox.flush = function () {
+    FuseBox.flush = function (fileName) {
         var def = $packages["default"];
+        if (fileName) {
+            if (def.f[fileName]) {
+                delete def.f[fileName].locals;
+            }
+            return;
+        }
         for (var name_1 in def.f) {
             var file = def.f[name_1];
             delete file.locals;

@@ -360,7 +360,9 @@ const $import = (name: string, opts: any = {}) => {
 
     let args = [locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName];
     $trigger("before-import", args);
-    file.fn.apply(0, args);
+    //file.fn.apply(0, args);
+    let fn = file.fn;
+    fn(locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName)
     $trigger("after-import", args);
     return locals.module.exports;
 }
@@ -468,8 +470,14 @@ class FuseBox {
         });
     }
 
-    public static flush() {
+    public static flush(fileName?: string) {
         let def = $packages["default"];
+        if (fileName) {
+            if (def.f[fileName]) {
+                delete def.f[fileName].locals;
+            }
+            return;
+        }
         for (let name in def.f) {
             let file = def.f[name];
             delete file.locals;

@@ -13,7 +13,6 @@ export class HTTPServer {
         return server;
     }
 
-
     public app: express.Application;
 
 
@@ -26,20 +25,13 @@ export class HTTPServer {
     }
 
 
-    private setup(): void {
-        if (this.opts.root) {
-            this.app.use("/", express.static(this.opts.root));
-        }
-    }
+
 
 
 
     public launch(opts: any): void {
         this.opts = opts || {};
-
-
         const port = this.opts.port || 4444;
-
         let server = http.createServer();
         SocketServer.createInstance(server, this.fuse);
         this.setup();
@@ -51,6 +43,15 @@ export class HTTPServer {
         }, 10);
     }
 
+
+
+
+
+    private setup(): void {
+        if (this.opts.root) {
+            this.app.use("/", express.static(this.opts.root));
+        }
+    }
 }
 
 

@@ -24,6 +24,7 @@ const fuseBox = FuseBox.init({
             exports: "$"
         }
     },
+    log: false,
     plugins: [
         build.TypeScriptHelpers(),
         build.JSONPlugin(),
@@ -48,4 +49,9 @@ const fuseBox = FuseBox.init({
     ]
 });
 
-fuseBox.devServer(">index.ts", { port: 8083 });
+fuseBox.devServer(">index.ts", {
+    port: 8083,
+    emitter: (self, fileInfo) => {
+        self.socketServer.send("source-changed", fileInfo);
+    }
+});

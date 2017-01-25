@@ -49,6 +49,8 @@ class B extends A {
 
 
 
+
+
 let a = new MyFoo();
 //require("./hello")
 //let a = require("./foo.js")
