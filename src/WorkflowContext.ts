@@ -484,7 +484,7 @@ export class WorkFlowContext {
         if (this.outFile) {
             let target = this.ensureUserPath(this.outFile);
             fs.writeFile(target, res.content, () => {
-                if (fn) {
+                if (utils.isFunction(fn)) {
                     fn();
                 }
             });
