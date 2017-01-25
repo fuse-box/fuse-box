@@ -29,7 +29,8 @@ export class Server {
         let buildPath = ensureUserPath(this.fuse.context.outFile);
         let rootDir = path.dirname(buildPath);
 
-        opts.root = opts.root ? (utils.isString(opts.root) ? ensureUserPath(opts.root) : false) : rootDir;
+        opts.root = opts.root !== undefined
+            ? (utils.isString(opts.root) ? ensureUserPath(opts.root) : false) : rootDir;
         opts.port = opts.port || 4444;
 
 

@@ -49,9 +49,10 @@ const fuseBox = FuseBox.init({
     ]
 });
 
-fuseBox.devServer(">index.ts", {
+const devServer = fuseBox.devServer(">index.ts", {
     port: 8083,
     emitter: (self, fileInfo) => {
         self.socketServer.send("source-changed", fileInfo);
     }
 });
+console.log(devServer.httpServer.app);
