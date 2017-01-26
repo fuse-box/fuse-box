@@ -8,6 +8,7 @@ import * as path from "path";
 import { each } from "realm-utils";
 const mkdirp = require("mkdirp");
 
+const MEMORY_CACHE = {};
 /**
  * 
  * 
@@ -92,14 +93,35 @@ export class ModuleCache {
 
         let stats = fs.statSync(file.absPath);
         let fileName = encodeURIComponent(file.info.fuseBoxPath);
-        let dest = path.join(this.staticCacheFolder, fileName);
-        if (fs.existsSync(dest)) {
-            let data = require(dest);
+        let memCacheKey = encodeURIComponent(file.absPath);
+        let data;
+
+
+        if (MEMORY_CACHE[memCacheKey]) {
+            data = MEMORY_CACHE[memCacheKey];
             if (data.mtime !== stats.mtime.getTime()) {
                 return;
             }
             return data;
+        } else {
+            let dest = path.join(this.staticCacheFolder, fileName);
+            if (fs.existsSync(dest)) {
+                try {
+
+                    data = require(dest);
+                } catch (e) {
+                    console.log(e);
+                    return;
+                }
+                if (data.mtime !== stats.mtime.getTime()) {
+                    return;
+                }
+
+                MEMORY_CACHE[memCacheKey] = data;
+                return data;
+            }
         }
+
     }
 
     /**
@@ -114,13 +136,24 @@ export class ModuleCache {
     public writeStaticCache(file: File, sourcemaps: string) {
 
         let fileName = encodeURIComponent(file.info.fuseBoxPath);
+        let memCacheKey = encodeURIComponent(file.absPath);
         let dest = path.join(this.staticCacheFolder, fileName);
         let stats: any = fs.statSync(file.absPath);
-        let data = `module.exports = { contents : ${JSON.stringify(file.contents)}, 
-dependencies : ${JSON.stringify(file.analysis.dependencies)}, 
-sourceMap : ${JSON.stringify(sourcemaps || {})},
-mtime : ${stats.mtime.getTime()}
+
+        let cacheData = {
+            contents: file.contents,
+            dependencies: file.analysis.dependencies,
+            sourceMap: sourcemaps || {},
+            headerContent: file.headerContent,
+            mtime: stats.mtime.getTime(),
+        }
+        let data = `module.exports = { contents : ${JSON.stringify(cacheData.contents)}, 
+dependencies : ${JSON.stringify(cacheData.dependencies)}, 
+sourceMap : ${JSON.stringify(cacheData.sourceMap)},
+headerContent : ${JSON.stringify(cacheData.headerContent)}, 
+mtime : ${cacheData.mtime}
 };`;
+        MEMORY_CACHE[memCacheKey] = cacheData;
         fs.writeFileSync(dest, data);
     }
 
@@ -172,26 +205,34 @@ mtime : ${stats.mtime.getTime()}
          */
         let getAllRequired = (key, json: any) => {
             if (required.indexOf(key) === -1) {
-                let collection = new ModuleCollection(this.context, json.name);
-                collection.cached = true;
-                collection.cachedName = key;
-                collection.cacheFile = path.join(this.cacheFolder, encodeURIComponent(key));
+                if (json.name) {
+                    let collection = new ModuleCollection(this.context, json.name);
+                    let cacheKey = encodeURIComponent(key)
+                    collection.cached = true;
+                    collection.cachedName = key;
+                    collection.cacheFile = path.join(this.cacheFolder, cacheKey);
 
-                operations.push(new Promise((resolve, reject) => {
-                    if (fs.existsSync(collection.cacheFile)) {
-                        fs.readFile(collection.cacheFile, (err, result) => {
-                            collection.cachedContent = result.toString();
+                    operations.push(new Promise((resolve, reject) => {
+                        if (MEMORY_CACHE[cacheKey]) {
+                            collection.cachedContent = MEMORY_CACHE[cacheKey];
                             return resolve();
-                        });
-                    } else {
-                        collection.cachedContent = "";
-                        console.warn(`${collection.cacheFile} was not found`);
-                        return resolve();
-                    }
+                        }
+                        if (fs.existsSync(collection.cacheFile)) {
+                            fs.readFile(collection.cacheFile, (err, result) => {
+                                collection.cachedContent = result.toString();
+                                MEMORY_CACHE[cacheKey] = collection.cachedContent;
+                                return resolve();
+                            });
+                        } else {
+                            collection.cachedContent = "";
+                            console.warn(`${collection.cacheFile} was not found`);
+                            return resolve();
+                        }
 
-                }));
-                this.context.addNodeModule(collection.cachedName, collection);
-                required.push(key);
+                    }));
+                    this.context.addNodeModule(collection.cachedName, collection);
+                    required.push(key);
+                }
                 if (json.deps) {
                     for (let k in json.deps) { if (json.deps.hasOwnProperty(k)) { getAllRequired(k, json.deps[k]); } }
                 }
@@ -292,8 +333,11 @@ mtime : ${stats.mtime.getTime()}
     public set(info: IPackageInformation, contents: string) {
         return new Promise((resolve, reject) => {
 
-            let targetName = path.join(this.cacheFolder, encodeURIComponent(`${info.name}@${info.version}`));
+            let cacheKey = encodeURIComponent(`${info.name}@${info.version}`);
 
+            let targetName = path.join(this.cacheFolder, cacheKey);
+            // storing to memory
+            MEMORY_CACHE[cacheKey] = contents;
             fs.writeFile(targetName, contents, (err) => {
                 return resolve();
             });

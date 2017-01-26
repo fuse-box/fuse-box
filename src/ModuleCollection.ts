@@ -215,6 +215,9 @@ export class ModuleCollection {
     public resolveNodeModule(file: File) {
 
         let info = file.info.nodeModuleInfo;
+        if (this.context.isShimed(info.name)) {
+            return;
+        }
         let collection: ModuleCollection;
 
         // setting key for a module

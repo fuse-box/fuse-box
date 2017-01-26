@@ -143,20 +143,26 @@ var $async = function (file, cb) {
         var xmlhttp;
         xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                var contentType = xmlhttp.getResponseHeader("Content-Type");
-                var content = xmlhttp.responseText;
-                if (/json/.test(contentType)) {
-                    content = "module.exports = " + content;
+            if (xmlhttp.readyState == 4) {
+                if (xmlhttp.status == 200) {
+                    var contentType = xmlhttp.getResponseHeader("Content-Type");
+                    var content = xmlhttp.responseText;
+                    if (/json/.test(contentType)) {
+                        content = "module.exports = " + content;
+                    }
+                    else {
+                        if (!/javascript/.test(contentType)) {
+                            content = "module.exports = " + JSON.stringify(content);
+                        }
+                    }
+                    var normalized = $pathJoin("./", file);
+                    FuseBox.dynamic(normalized, content);
+                    cb(FuseBox.import(file, {}));
                 }
                 else {
-                    if (!/javascript/.test(contentType)) {
-                        content = "module.exports = " + JSON.stringify(content);
-                    }
+                    console.error(file + " was not found upon request");
+                    cb(undefined);
                 }
-                var normalized = $pathJoin("./", file);
-                FuseBox.dynamic(normalized, content);
-                cb(FuseBox.import(file, {}));
             }
         };
         xmlhttp.open("GET", file, true);
@@ -242,7 +248,8 @@ var $import = function (name, opts) {
     };
     var args = [locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName];
     $trigger("before-import", args);
-    file.fn.apply(0, args);
+    var fn = file.fn;
+    fn(locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName);
     $trigger("after-import", args);
     return locals.module.exports;
 };
@@ -289,6 +296,7 @@ var FuseBox = (function () {
         }
     };
     FuseBox.main = function (name) {
+        this.mainFile = name;
         return FuseBox.import(name, {});
     };
     FuseBox.expose = function (obj) {
@@ -305,6 +313,19 @@ var FuseBox = (function () {
                 res(true, exports, require, module, __filename, __dirname, __root__);
             });
         });
+    };
+    FuseBox.flush = function (fileName) {
+        var def = $packages["default"];
+        if (fileName) {
+            if (def.f[fileName]) {
+                delete def.f[fileName].locals;
+            }
+            return;
+        }
+        for (var name_1 in def.f) {
+            var file = def.f[name_1];
+            delete file.locals;
+        }
     };
     FuseBox.pkg = function (pkg_name, versions, fn) {
         if ($packages[pkg_name]) {

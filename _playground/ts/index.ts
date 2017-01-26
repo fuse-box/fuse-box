@@ -1,13 +1,17 @@
+import * as process from 'process';
+import { MyFoo } from './Foo';
 
-//import "./a.txt";
-//import "./b.txt";
-//import "path"
-//import "./styles.css"
-//import "./test.scss";
-console.log(process.env.foo);
+//import * as jst from 'jstree/dist/jstree';
+//console.log("1",jst);
+//1
 
-
-import "./some";
+// $(function () {
+//     $('[data-toggle="tooltip"]').tooltip()
+// })
+//import * as jq from "jquery";
+import "jquery"
+import "jqtree";
+//console.log($("body").tree);
 
 class A {
     constructor() { }
@@ -17,8 +21,37 @@ class B extends A {
 
         super();
     }
+
+
+    public hello() {
+
+    }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+let a = new MyFoo();
 //require("./hello")
 //let a = require("./foo.js")
 //console.log(a);

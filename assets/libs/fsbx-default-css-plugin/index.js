@@ -17,6 +17,10 @@ var __fsbx_css = function(__filename, contents) {
             s.href = __filename;
         }
         document.getElementsByTagName("head")[0].appendChild(s);
+    } else {
+        if (contents) {
+            exists.innerHTML = contents;
+        }
     }
 }
 FuseBox.on("async", function(name) {

@@ -3,6 +3,12 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.1.68 - 1.3.70   | Hot reload fixes, various tweaks
+| 1.1.67            | Proper [shimming](http://fuse-box.org/#shimming) 
+| 1.1.63-66         | devServer fixes
+| 1.1.54-63         | Cache improvements and devServer tweaks
+| 1.1.51-54         | Introducing devServer
+| 1.1.50            | Fixed caching issue
 | 1.1.49            | Added [EnvPlugin](#envplugin)
 | 1.1.48            | Added `FuseBox.packages` to the client API
 | 1.1.47            | Fixed a critical bug related to circual dep resolution on cache

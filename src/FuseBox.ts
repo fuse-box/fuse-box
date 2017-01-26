@@ -1,3 +1,7 @@
+import * as fs from 'fs';
+import { ensureUserPath } from './Utils';
+import { ShimCollection } from './ShimCollection';
+import { Server } from './devServer/Server';
 import { JSONPlugin } from "./plugins/JSONplugin";
 import { PathMaster } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
@@ -22,9 +26,9 @@ export class FuseBox {
     }
     public virtualFiles: any;
 
-    private collectionSource: CollectionSource;
+    public collectionSource: CollectionSource;
 
-    private context: WorkFlowContext;
+    public context: WorkFlowContext;
 
 
     /**
@@ -69,6 +73,10 @@ export class FuseBox {
             this.context.globals = opts.globals;
         }
 
+        if (opts.shim) {
+            this.context.shim = opts.shim;
+        }
+
         if (opts.standalone !== undefined) {
             this.context.standaloneBundle = opts.standaloneBundle;
         }
@@ -94,7 +102,7 @@ export class FuseBox {
         this.context.initCache();
     }
 
-     public triggerPre() {
+    public triggerPre() {
         this.context.triggerPluginsMethodOnce("preBundle", [this.context]);
     }
 
@@ -120,17 +128,24 @@ export class FuseBox {
      * 
      * @memberOf FuseBox
      */
-    public bundle(str: string, daemon?: boolean) {
-        if (daemon) {
-            watch.watchTree(this.context.homeDir, { interval: 0.2 }, () => {
-                this.initiateBundle(str);
-            });
-        } else {
-            return this.initiateBundle(str);
-        }
+    public bundle(str: string, bundleReady?: any) {
+        return this.initiateBundle(str, bundleReady);
     }
 
-    public process(bundleData: BundleData, standalone?: boolean) {
+    /**
+     * 
+     * 
+     * @param {string} str
+     * @param {*} opts
+     * 
+     * @memberOf FuseBox
+     */
+    public devServer(str: string, opts: any) {
+        let server = new Server(this);
+        return server.start(str, opts);
+    }
+
+    public process(bundleData: BundleData, bundleReady?: any) {
         let bundleCollection = new ModuleCollection(this.context, this.context.defaultPackageName);
         bundleCollection.pm = new PathMaster(this.context, bundleData.homeDir);
 
@@ -160,10 +175,11 @@ export class FuseBox {
 
                 public addNodeModules() {
                     return each(self.context.nodeModules, (collection: ModuleCollection) => {
+
                         if (collection.cached || (collection.info && !collection.info.missing)) {
                             return self.collectionSource.get(collection).then((cnt: string) => {
                                 self.context.log.echoCollection(collection, cnt);
-                                if (!collection.cachedName) {
+                                if (!collection.cachedName && self.context.useCache) {
                                     self.context.cache.set(collection.info, cnt);
                                 }
                                 this.globalContents.push(cnt);
@@ -183,23 +199,48 @@ export class FuseBox {
                 this.triggerEnd();
                 self.context.source.finalize(bundleData);
                 this.triggerPost();
-                this.context.writeOutput();
+                this.context.writeOutput(bundleReady);
                 return self.context.source.getResult();
             });
         });
     }
 
-    private initiateBundle(str: string) {
+    public addShims() {
+        // add all shims
+        let shim = this.context.shim;
+        if (shim) {
+            for (let name in shim) {
+                if (shim.hasOwnProperty(name)) {
+                    let data = shim[name];
+                    if (data.exports) {
+                        // creating a fake collection
+                        let shimedCollection
+                            = ShimCollection.create(this.context, name, data.exports);
+                        this.context.addNodeModule(name, shimedCollection);
+
+                        if (data.source) {
+                            let source = ensureUserPath(data.source);
+                            let contents = fs.readFileSync(source).toString();
+                            this.context.source.addContent(contents);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    public initiateBundle(str: string, bundleReady?: any) {
         this.context.reset();
         this.triggerPre();
         this.context.source.init();
+        this.addShims();
         this.triggerStart();
+
         let parser = Arithmetic.parse(str);
         let bundle: BundleData;
         return Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
 
             bundle = data;
-            return this.process(data);
+            return this.process(data, bundleReady);
         }).then((contents) => {
             bundle.finalize(); // Clean up temp folder if required
 

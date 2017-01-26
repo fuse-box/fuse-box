@@ -1,3 +1,4 @@
+export { HotReloadPlugin } from "./plugins/HotReloadPlugin";
 export { EnvPlugin } from "./plugins/EnvPlugin";
 export { ConcatPlugin } from "./plugins/ConcatPlugin";
 export { StylusPlugin } from "./plugins/StylusPlugin";
@@ -12,6 +13,7 @@ export { HTMLPlugin } from "./plugins/HTMLplugin";
 export { JSONPlugin } from "./plugins/JSONplugin";
 export { BannerPlugin } from "./plugins/BannerPlugin";
 export { SassPlugin } from "./plugins/SassPlugin";
+
 
 export { UglifyJSPlugin } from "./plugins/UglifyJSPlugin";
 export { SourceMapPlainJsPlugin } from "./plugins/SourceMapPlainJsPlugin";

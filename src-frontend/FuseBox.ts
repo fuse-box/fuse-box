@@ -16,6 +16,7 @@ __root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports :
 const $fsbx = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
     : global["$fsbx"] = global["$fsbx"] || {}; // in case of nodejs
 
+
 if (!$isBrowser) {
     global["require"] = require;
 }
@@ -233,19 +234,24 @@ const $async = (file: string, cb) => {
         var xmlhttp;
         xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                let contentType = xmlhttp.getResponseHeader("Content-Type");
-                let content = xmlhttp.responseText;
-                if (/json/.test(contentType)) {
-                    content = `module.exports = ${content}`;
-                } else {
-                    if (!/javascript/.test(contentType)) {
-                        content = `module.exports = ${JSON.stringify(content)}`;
+            if (xmlhttp.readyState == 4) {
+                if (xmlhttp.status == 200) {
+                    let contentType = xmlhttp.getResponseHeader("Content-Type");
+                    let content = xmlhttp.responseText;
+                    if (/json/.test(contentType)) {
+                        content = `module.exports = ${content}`;
+                    } else {
+                        if (!/javascript/.test(contentType)) {
+                            content = `module.exports = ${JSON.stringify(content)}`;
+                        }
                     }
+                    let normalized = $pathJoin("./", file);
+                    FuseBox.dynamic(normalized, content);
+                    cb(FuseBox.import(file, {}));
+                } else {
+                    console.error(`${file} was not found upon request`)
+                    cb(undefined);
                 }
-                let normalized = $pathJoin("./", file);
-                FuseBox.dynamic(normalized, content);
-                cb(FuseBox.import(file, {}));
             }
         }
         xmlhttp.open("GET", file, true);
@@ -354,7 +360,9 @@ const $import = (name: string, opts: any = {}) => {
 
     let args = [locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName];
     $trigger("before-import", args);
-    file.fn.apply(0, args);
+    //file.fn.apply(0, args);
+    let fn = file.fn;
+    fn(locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName)
     $trigger("after-import", args);
     return locals.module.exports;
 }
@@ -366,6 +374,7 @@ const $import = (name: string, opts: any = {}) => {
  */
 class FuseBox {
     public static packages = $packages;
+    public static mainFile;
     public static get isBrowser() {
         return $isBrowser !== undefined;
     }
@@ -430,6 +439,7 @@ class FuseBox {
     }
 
     public static main(name: string) {
+        this.mainFile = name;
         return FuseBox.import(name, {});
     }
 
@@ -458,6 +468,20 @@ class FuseBox {
                 res(true, exports, require, module, __filename, __dirname, __root__);
             });
         });
+    }
+
+    public static flush(fileName?: string) {
+        let def = $packages["default"];
+        if (fileName) {
+            if (def.f[fileName]) {
+                delete def.f[fileName].locals;
+            }
+            return;
+        }
+        for (let name in def.f) {
+            let file = def.f[name];
+            delete file.locals;
+        }
     }
 
     /**

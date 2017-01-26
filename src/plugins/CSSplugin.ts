@@ -145,7 +145,14 @@ export class CSSPluginClass implements Plugin {
             contents = `__fsbx_css("${filePath}")`;
         } else {
             let cssContent = this.minify ? this.minifyContents(file.contents) : file.contents;
-            contents = `__fsbx_css("${filePath}", ${JSON.stringify(cssContent)})`;
+            let safeContents = JSON.stringify(cssContent);
+
+            file.context.emmitter.emit("source-changed", {
+                type: "css",
+                content: cssContent,
+                path: file.info.fuseBoxPath,
+            });
+            contents = `__fsbx_css("${filePath}", ${safeContents})`;
         }
 
         file.contents = contents;

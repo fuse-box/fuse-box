@@ -99,6 +99,7 @@ export class BabelPluginClass implements Plugin {
             file.sourceMap = JSON.stringify(sm);
 
             if (this.context.useCache) {
+                this.context.emitJavascriptHotReload(file);
                 this.context.cache.writeStaticCache(file, file.sourceMap);
             }
         }

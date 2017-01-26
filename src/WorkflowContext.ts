@@ -7,6 +7,8 @@ import { IPackageInformation, IPathInformation, AllowedExtenstions } from "./Pat
 import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "./ModuleCache";
 import { utils } from "realm-utils";
+import { EventEmitter } from "events";
+
 const appRoot = require("app-root-path");
 
 const mkdirp = require("mkdirp");
@@ -79,6 +81,16 @@ export interface Plugin {
  */
 export class WorkFlowContext {
 
+
+    public shim: any;
+
+    /**
+     * 
+     * 
+     * 
+     * @memberOf WorkFlowContext
+     */
+    public emmitter = new EventEmitter();
     /**
      * 
      * 
@@ -215,7 +227,7 @@ export class WorkFlowContext {
      * @type {Log}
      * @memberOf WorkFlowContext
      */
-    public log: Log;
+    public log: Log = new Log(this.doLog)
 
     public pluginTriggers: Map<string, Set<String>>;
 
@@ -223,6 +235,31 @@ export class WorkFlowContext {
     public initCache() {
         this.cache = new ModuleCache(this);
     }
+
+    public emitJavascriptHotReload(file: File) {
+        this.emmitter.emit("source-changed", {
+            type: "js",
+            content: file.contents,
+            path: file.info.fuseBoxPath,
+        });
+    }
+
+    /**
+     * 
+     * 
+     * @param {string} name
+     * @returns {boolean}
+     * 
+     * @memberOf WorkFlowContext
+     */
+    public isShimed(name: string): boolean {
+        if (!this.shim) {
+            return false;
+        }
+        return this.shim[name] !== undefined;
+    }
+
+
     /**
      * 
      * 
@@ -436,7 +473,7 @@ export class WorkFlowContext {
      * 
      * @memberOf WorkFlowContext
      */
-    public writeOutput() {
+    public writeOutput(fn?: any) {
         let res = this.source.getResult();
         // Writing sourcemaps
         if (this.sourceMapConfig && this.sourceMapConfig.outFile) {
@@ -446,7 +483,11 @@ export class WorkFlowContext {
         // writing target
         if (this.outFile) {
             let target = this.ensureUserPath(this.outFile);
-            fs.writeFile(target, res.content, () => { });
+            fs.writeFile(target, res.content, () => {
+                if (utils.isFunction(fn)) {
+                    fn();
+                }
+            });
         }
     }
 
