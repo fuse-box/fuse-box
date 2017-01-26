@@ -135,6 +135,19 @@ console.log(foo)
 
 The key `jquery` in our case is used to define package name: for example, you can replace `jquery` with `foo` and use `import "foo"` to get a jquery instance.
 
+If you are coming from `Webpack` this also could be used to behave like the Aliasing Feature in `Webpack`, so the equivalent of the below in `Webpack`
+```
+alias: { 'react-native': 'react-native-web' }
+```
+would be
+```
+shim : {
+   "react-native-web" : { exports : "require('react-native')"}
+}
+```
+Now you  can reference it like  `window.ReactNative` , and require function is at your convenience
+
+
 
 
 
