@@ -65,7 +65,7 @@ interface IReference {
  * @returns
  */
 const $getNodeModuleName = (name) => {
-    if (/^([@a-z].*)$/.test(name)) {
+    if (name.indexOf('http:') === 0 || name.indexOf('https') === 0) {
         if (name[0] === "@") {
             let s = name.split("/");
             let target = s.splice(2, s.length).join("/");
@@ -159,7 +159,7 @@ const $getRef = (name, opts: any): IReference => {
         name = nodeModule[1];
     }
     // Tilde test
-    if (/^~/.test(name)) {
+    if (name.charAt(0)==='~') {
         name = name.slice(2, name.length);
         basePath = "./";
     }
