@@ -256,20 +256,7 @@ var $import = function (name, opts) {
 var FuseBox = (function () {
     function FuseBox() {
     }
-    Object.defineProperty(FuseBox, "isBrowser", {
-        get: function () {
-            return $isBrowser !== undefined;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(FuseBox, "isServer", {
-        get: function () {
-            return !$isBrowser;
-        },
-        enumerable: true,
-        configurable: true
-    });
+    ;
     FuseBox.global = function (key, obj) {
         var target = $isBrowser ? window : global;
         if (obj === undefined) {
@@ -306,8 +293,15 @@ var FuseBox = (function () {
             __root__[data.alias] = exposed;
         }
     };
-    FuseBox.dynamic = function (path, str) {
-        this.pkg("default", {}, function (___scope___) {
+    FuseBox.dynamic = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        var pkg = "default";
+        var path, str;
+        args.length === 2 ? (path = args[0], str = args[1], args) : (pkg = args[0], path = args[1], str = args[2], args);
+        this.pkg(pkg, {}, function (___scope___) {
             ___scope___.file(path, function (exports, require, module, __filename, __dirname) {
                 var res = new Function('__fbx__dnm__', 'exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
                 res(true, exports, require, module, __filename, __dirname, __root__);
@@ -342,5 +336,7 @@ var FuseBox = (function () {
     return FuseBox;
 }());
 FuseBox.packages = $packages;
+FuseBox.isBrowser = $isBrowser !== undefined;
+FuseBox.isServer = !$isBrowser;
  
 return __root__["FuseBox"] = FuseBox; } )(this)

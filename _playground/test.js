@@ -12,19 +12,13 @@ const fuseBox = FuseBox.init({
     //     outFile: "_playground/_build/sourcemaps.js.map",
     // },
     //globals: { jQuery: "$" },
-    cache: true,
+    cache: false,
     //globals: { default: "myLib", "wires-reactive": "Reactive" },
     outFile: "_playground/_build/out.js",
     //package: "myLib",
     //globals: { myLib: "myLib" },
     modulesFolder: "_playground/npm",
-    shim: {
-        jquery: {
-            source: "node_modules/jquery/dist/jquery.js",
-            exports: "$"
-        }
-    },
-    log: false,
+    log: true,
     plugins: [
         build.TypeScriptHelpers(),
         build.JSONPlugin(),
@@ -55,4 +49,4 @@ const fuseBox = FuseBox.init({
         self.socketServer.send("source-changed", fileInfo);
     }
 });*/
-fuseBox.test("index.ts")
+fuseBox.test()

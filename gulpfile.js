@@ -35,6 +35,7 @@ gulp.task("src-frontend", () => {
 
 })
 
+
 gulp.task("publish", function(done) {
     runSequence('dist', 'increment-version', "commit-release", 'npm-publish', done);
 })
@@ -141,13 +142,12 @@ gulp.task("minify-frontend", function() {
 });
 
 gulp.task('watch', ['build', 'src-frontend'], function() {
-    // gulp.watch(['assets/**/*.js'], () => {
-    //     runSequence("minify-frontend", 'hello');
-    // });
 
     gulp.watch(['src-frontend/**/*.ts'], () => {
         runSequence("src-frontend");
     });
+
+
     // gulp.watch(['assets/**/*.js'], () => {
     //     runSequence('hello');
     // });

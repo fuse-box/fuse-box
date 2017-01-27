@@ -375,13 +375,8 @@ const $import = (name: string, opts: any = {}) => {
 class FuseBox {
     public static packages = $packages;
     public static mainFile;
-    public static get isBrowser() {
-        return $isBrowser !== undefined;
-    }
-
-    public static get isServer() {
-        return !$isBrowser;
-    }
+    public static isBrowser = $isBrowser !== undefined;;
+    public static isServer = !$isBrowser;
 
     public static global(key: string, obj?: any) {
         let target = $isBrowser ? window : global;
@@ -461,8 +456,11 @@ class FuseBox {
      * 
      * @memberOf FuseBox
      */
-    public static dynamic(path: string, str: string) {
-        this.pkg("default", {}, function (___scope___) {
+    public static dynamic(...args) {
+        let pkg = "default";
+        let path, str;
+        args.length === 2 ? [path, str] = args : [pkg, path, str] = args;
+        this.pkg(pkg, {}, function (___scope___) {
             ___scope___.file(path, function (exports, require, module, __filename, __dirname) {
                 var res = new Function('__fbx__dnm__', 'exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
                 res(true, exports, require, module, __filename, __dirname, __root__);

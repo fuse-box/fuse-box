@@ -126,4 +126,15 @@ describe("Dynamic modules", (done) => {
         }).catch(done);
     });
 
+    it("Should register a module in a different package", (done) => {
+        getTestEnv({
+            "index.js": `
+            FuseBox.dynamic("foo", "hello/world.js", "module.exports = {hello : 'world'}")`,
+        }, "**/*.js").then(root => {
+            root.FuseBox.import("./index");
+            root.FuseBox.import("foo/hello/world").should.deepEqual({ hello: "world" });
+            done();
+        }).catch(done);
+    });
+
 })

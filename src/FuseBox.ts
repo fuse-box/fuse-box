@@ -10,6 +10,8 @@ import { Arithmetic, BundleData } from "./Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";
 import * as path from "path";
 import { each, utils, chain, Chainable } from "realm-utils";
+import { Config } from './Config';
+import { BundleTestRunner } from './testRunner/BundleTestRunner';
 const appRoot = require("app-root-path");
 const watch = require("watch");
 /**
@@ -132,6 +134,8 @@ export class FuseBox {
         return this.initiateBundle(str, bundleReady);
     }
 
+
+
     /**
      * 
      * 
@@ -228,6 +232,23 @@ export class FuseBox {
             }
         }
     }
+
+    public test(str: string = "**/*.test.ts") {
+        // include test files to the bundle
+        const clonedOpts = Object.assign({}, this.opts);
+        const testBundleFile = path.join(Config.TEMP_FOLDER, "tests", decodeURIComponent(this.opts.outFile));
+        clonedOpts.outFile = testBundleFile;
+
+        // adding fuse-test dependency to be bundled
+        str += " +fuse-test";
+        return FuseBox.init(clonedOpts).bundle(str, () => {
+            const bundle = require(testBundleFile);
+            let runner = new BundleTestRunner(bundle);
+            return runner.start();
+        });
+    }
+
+
     public initiateBundle(str: string, bundleReady?: any) {
         this.context.reset();
         this.triggerPre();
