@@ -243,7 +243,7 @@ export class FuseBox {
         clonedOpts.outFile = testBundleFile;
 
         // adding fuse-test dependency to be bundled
-        str += ` +fuse-test ${reporter}`;
+        str += ` +fuse-test ${reporter} -ansi`;
         return FuseBox.init(clonedOpts).bundle(str, () => {
             const bundle = require(testBundleFile);
             let runner = new BundleTestRunner(bundle, {
