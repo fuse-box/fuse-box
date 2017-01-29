@@ -3,6 +3,7 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.1.78            | Significant performance boost to the loader 
 | 1.1.77            | Improved dynamic modules
 | 1.1.71-76         | Test suit runner
 | 1.1.68 - 1.3.70   | Hot reload fixes, various tweaks
