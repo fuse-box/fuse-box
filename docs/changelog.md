@@ -3,6 +3,8 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.1.77            | Improved dynamic modules
+| 1.1.71-76         | Test suit runner
 | 1.1.68 - 1.3.70   | Hot reload fixes, various tweaks
 | 1.1.67            | Proper [shimming](http://fuse-box.org/#shimming) 
 | 1.1.63-66         | devServer fixes
