@@ -456,7 +456,7 @@ class FuseBox {
      * 
      * @memberOf FuseBox
      */
-    public static dynamic(path: string, str: string, opts) {
+    public static dynamic(path: string, str: string, opts?: any) {
         let pkg = opts && opts.pkg || "default";
         this.pkg(pkg, {}, function (___scope___) {
             ___scope___.file(path, function (exports, require, module, __filename, __dirname) {
