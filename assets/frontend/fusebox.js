@@ -293,14 +293,8 @@ var FuseBox = (function () {
             __root__[data.alias] = exposed;
         }
     };
-    FuseBox.dynamic = function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        var pkg = "default";
-        var path, str;
-        args.length === 2 ? (path = args[0], str = args[1], args) : (pkg = args[0], path = args[1], str = args[2], args);
+    FuseBox.dynamic = function (path, str, opts) {
+        var pkg = opts && opts.pkg || "default";
         this.pkg(pkg, {}, function (___scope___) {
             ___scope___.file(path, function (exports, require, module, __filename, __dirname) {
                 var res = new Function('__fbx__dnm__', 'exports', 'require', 'module', '__filename', '__dirname', '__root__', str);

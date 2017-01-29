@@ -1,7 +1,7 @@
-import * as fs from 'fs';
-import { ensureUserPath } from './Utils';
-import { ShimCollection } from './ShimCollection';
-import { Server } from './devServer/Server';
+import * as fs from "fs";
+import { ensureUserPath } from "./Utils";
+import { ShimCollection } from "./ShimCollection";
+import { Server } from "./devServer/Server";
 import { JSONPlugin } from "./plugins/JSONplugin";
 import { PathMaster } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
@@ -10,8 +10,8 @@ import { Arithmetic, BundleData } from "./Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";
 import * as path from "path";
 import { each, utils, chain, Chainable } from "realm-utils";
-import { Config } from './Config';
-import { BundleTestRunner } from './testRunner/BundleTestRunner';
+import { Config } from "./Config";
+import { BundleTestRunner } from "./testRunner/BundleTestRunner";
 const appRoot = require("app-root-path");
 const watch = require("watch");
 /**

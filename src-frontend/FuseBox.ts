@@ -456,10 +456,8 @@ class FuseBox {
      * 
      * @memberOf FuseBox
      */
-    public static dynamic(...args) {
-        let pkg = "default";
-        let path, str;
-        args.length === 2 ? [path, str] = args : [pkg, path, str] = args;
+    public static dynamic(path: string, str: string, opts) {
+        let pkg = opts && opts.pkg || "default";
         this.pkg(pkg, {}, function (___scope___) {
             ___scope___.file(path, function (exports, require, module, __filename, __dirname) {
                 var res = new Function('__fbx__dnm__', 'exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
