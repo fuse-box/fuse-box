@@ -1,0 +1,51 @@
+<html>
+
+<body>
+    <script>
+        function makeid() {
+            var text = "";
+            var possible = "/abcdefghijklmnopqrstuvwxyz0123456789@";
+            for (var i = 0; i < 20; i++)
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+            return text;
+        }
+        let strings;
+        const generateStrings = () => {
+            let exists = localStorage.getItem("strings")
+            if (!exists) {
+                strings = [];
+                for (let i = 0; i <= 10000; i++) {
+                    strings.push(makeid())
+                }
+                localStorage.setItem("strings", JSON.stringify(strings));
+            } else {
+                strings = JSON.parse(localStorage.getItem("strings"));
+            }
+        }
+
+        generateStrings();
+
+        const measure = (name, fn) => {
+            var t0 = performance.now();
+            for (let i = 0; i < strings.length; i++) {
+                fn(strings[i]);
+            }
+            var t1 = performance.now();
+            console.log(`${name} took ${t1 -t0}`);
+        }
+
+        measure("Check modules using charCodeAt", (str) => {
+            // https://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
+            var n = str.charCodeAt(0);
+            // basically alphabet starts with 65, and symbol @ is 64
+            let okay = n >= 64 && n <= 90;
+        });
+        measure("Check modules using regexp", (str) => {
+            // matching first symbol that is matching the the alphabet + "@"
+            let okay = /^([@a-z].*)$/.test(str);
+        });
+    </script>
+</body>
+
+</html>
