@@ -65,8 +65,12 @@ interface IReference {
  * @returns
  */
 const $getNodeModuleName = (name) => {
-    if (/^([@a-z].*)$/.test(name)) {
-        if (name[0] === "@") {
+    const n = name.charCodeAt(0);
+    // https://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
+    // basically lowcase alphabet starts with 97 ends with 122, and symbol @ is 64
+    // which 2x faster than /^([@a-z].*)$/
+    if (n >= 97 && n <= 122 || n === 64) {
+        if (n === 64) { // if it's "@" symbol
             let s = name.split("/");
             let target = s.splice(2, s.length).join("/");
             return [`${s[0]}/${s[1]}`, target || undefined];
@@ -159,10 +163,13 @@ const $getRef = (name, opts: any): IReference => {
         name = nodeModule[1];
     }
     // Tilde test
-    if (/^~/.test(name)) {
+    // Charcode is 2x faster
+    //if (/^~/.test(name)) {
+    if (name && name.charCodeAt(0) === 126) {
         name = name.slice(2, name.length);
         basePath = "./";
     }
+
 
     let pkg = $packages[pkg_name];
 
@@ -192,7 +199,7 @@ const $getRef = (name, opts: any): IReference => {
     let file = pkg.f[validPath];
     let wildcard;
     // Probing for wildcard
-    if (!file && /\*/.test(validPath)) {
+    if (!file && validPath.indexOf("*") > -1) {
         wildcard = validPath;
     }
     if (!file && !wildcard) {
@@ -292,9 +299,18 @@ const $trigger = (name: string, args: any) => {
 const $import = (name: string, opts: any = {}) => {
 
     // Test for external URLS  
-    if (/^(http(s)?:|\/\/)/.test(name)) {
+    // Basically : symbol can occure only at 4 and 5 position
+    // Cuz ":" is a not a valid symbol in filesystem
+    // Charcode test is 3-4 times faster than regexp
+    // 58 charCode is ":""
+    // console.log( ":".charCodeAt(0) )
+    // if (/^(http(s)?:|\/\/)/.test(name)) {
+    //     return $loadURL(name);
+    // }
+    if (name.charCodeAt(4) === 58 || name.charCodeAt(5) === 58) {
         return $loadURL(name);
     }
+
     let ref = $getRef(name, opts);
     if (ref.serverReference) {
         return ref.serverReference;

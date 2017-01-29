@@ -11,8 +11,9 @@ if (!$isBrowser) {
 var $packages = $fsbx.p = $fsbx.p || {};
 var $events = $fsbx.e = $fsbx.e || {};
 var $getNodeModuleName = function (name) {
-    if (/^([@a-z].*)$/.test(name)) {
-        if (name[0] === "@") {
+    var n = name.charCodeAt(0);
+    if (n >= 97 && n <= 122 || n === 64) {
+        if (n === 64) {
             var s = name.split("/");
             var target = s.splice(2, s.length).join("/");
             return [s[0] + "/" + s[1], target || undefined];
@@ -93,7 +94,7 @@ var $getRef = function (name, opts) {
         }
         name = nodeModule[1];
     }
-    if (/^~/.test(name)) {
+    if (name && name.charCodeAt(0) === 126) {
         name = name.slice(2, name.length);
         basePath = "./";
     }
@@ -115,7 +116,7 @@ var $getRef = function (name, opts) {
     var validPath = $ensureExtension(filePath);
     var file = pkg.f[validPath];
     var wildcard;
-    if (!file && /\*/.test(validPath)) {
+    if (!file && validPath.indexOf("*") > -1) {
         wildcard = validPath;
     }
     if (!file && !wildcard) {
@@ -189,7 +190,7 @@ var $trigger = function (name, args) {
 };
 var $import = function (name, opts) {
     if (opts === void 0) { opts = {}; }
-    if (/^(http(s)?:|\/\/)/.test(name)) {
+    if (name.charCodeAt(4) === 58 || name.charCodeAt(5) === 58) {
         return $loadURL(name);
     }
     var ref = $getRef(name, opts);

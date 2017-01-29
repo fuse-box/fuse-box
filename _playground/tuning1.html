@@ -35,16 +35,85 @@
             console.log(`${name} took ${t1 -t0}`);
         }
 
-        measure("Check modules using charCodeAt", (str) => {
-            // https://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
+        const checkValidModule = (str) => {
             var n = str.charCodeAt(0);
             // basically alphabet starts with 65, and symbol @ is 64
-            let okay = n >= 64 && n <= 90;
+            let okay = n > 63 && n < 91 || n >= 97 && n <= 122;
+            console.log(str, okay);
+        }
+
+        const isHTTP = (str) => {
+            const res = str.charCodeAt(4) === 58 || str.charCodeAt(5) === 58;
+            console.log(str, res);
+            return res;
+        }
+
+        measure("Check modules using charCodeAt", (str) => {
+            // https://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
+            // basically alphabet starts with 65, and symbol @ is 64
+            var n = str.charCodeAt(0);
+            // basically alphabet starts with 65, and symbol @ is 64
+            let okay = n >= 97 && n <= 122 || n === 64;
         });
         measure("Check modules using regexp", (str) => {
             // matching first symbol that is matching the the alphabet + "@"
             let okay = /^([@a-z].*)$/.test(str);
         });
+
+        console.log('---------------');
+        measure("Measure http with regex", (str) => {
+
+            let okay = /^(http(s)?:|\/\/)/.test(str);
+        });
+
+        measure("Measure http with indexOf", (str) => {
+
+            let okay = str.charCodeAt(4) === 58 || str.charCodeAt(5) === 58;
+        });
+
+
+        console.log('---------------');
+        measure("Measure * with regex", (str) => {
+
+            let okay = /\*/.test(str)
+        });
+
+        measure("Measure * with indexOf", (str) => {
+
+            let okay = str.indexOf("*") > -1;
+        });
+
+
+        console.log('---------------');
+
+        measure("Measure tilde with regex", (str) => {
+
+            let okay = /^~/.test(str)
+        });
+
+        measure("Measure tilde with charcode test", (str) => {
+
+            let okay = str && str.charCodeAt(0) === 126;
+        });
+
+        // checkValidModule("./aa");
+        // checkValidModule("/aa");
+        // checkValidModule("@angular");
+        // checkValidModule("foo/bar");
+
+
+
+
+
+        const lowCase = "abcdefghijklmnopqrstuvwxyz"
+        const upperCase = lowCase.toUpperCase();
+        const finalString = `@${upperCase}${lowCase}`;
+
+        console.log("~", "~".charCodeAt(0));
+        for (let i = 0; i < finalString.length; i++) {
+            let str = finalString[i]
+                //console.log(str, finalString.charCodeAt(i));
+        }
     </script>
 </body>
 
