@@ -10,6 +10,15 @@
 
             return text;
         }
+
+        function smallId() {
+            var text = "";
+            var possible = "/abcdefghijklmnopqrstuvwxyz0123456789@";
+            for (var i = 0; i < 5; i++)
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+            return text;
+        }
         let strings;
         const generateStrings = () => {
             let exists = localStorage.getItem("strings")
@@ -23,12 +32,37 @@
                 strings = JSON.parse(localStorage.getItem("strings"));
             }
         }
+        let moduleStrings;
+        const generateNodeModuleStrings = () => {
+            let exists = localStorage.getItem("moduleStrings")
+
+            if (!exists) {
+                moduleStrings = [];
+                for (let i = 0; i <= 10000; i++) {
+                    moduleStrings.push(smallId() + "/" + smallId() + "/" + smallId())
+                }
+                localStorage.setItem("moduleStrings", JSON.stringify(moduleStrings));
+            } else {
+                moduleStrings = JSON.parse(localStorage.getItem("moduleStrings"));
+            }
+        }
+
 
         generateStrings();
+        generateNodeModuleStrings();
 
         const measure = (name, fn) => {
             var t0 = performance.now();
             for (let i = 0; i < strings.length; i++) {
+                fn(strings[i]);
+            }
+            var t1 = performance.now();
+            console.log(`${name} took ${t1 -t0}`);
+        }
+
+        const measureNodeModules = (name, fn) => {
+            var t0 = performance.now();
+            for (let i = 0; i < moduleStrings.length; i++) {
                 fn(strings[i]);
             }
             var t1 = performance.now();
@@ -100,6 +134,30 @@
         // checkValidModule("/aa");
         // checkValidModule("@angular");
         // checkValidModule("foo/bar");
+        console.log('---------------');
+        measureNodeModules("Measure nodeMoldule split by with regex 1", (name) => {
+
+            let res = name.split(/\/(.+)?/);
+        });
+
+
+        const splitModule = (name) => {
+            let index = name.indexOf("/");
+            if (index === -1) {
+                return [name]
+            }
+            let first = name.substring(0, index)
+            let second = name.substring(index + 1);
+        }
+        measureNodeModules("Measure nodeMoldule split with substring", (name) => {
+
+            splitModule(name)
+
+        });
+
+        splitModule("cheerio");
+
+
 
 
 
