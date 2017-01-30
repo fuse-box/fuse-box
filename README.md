@@ -81,3 +81,4 @@ Don't hesitate to concat me personally or join our [gitter channel](https://gitt
 Special thanks to to [devmondo](https://github.com/devmondo) for incredible ideas, given inspiration and relentless testing/contributing to the project.  
 
 If you like the project, don't forget to star it!
+
