@@ -2,6 +2,7 @@ import { FuseBox } from '../';
 import { SocketServer } from "./SocketServer";
 import * as http from "http";
 import * as express from "express";
+import { ensureUserPath } from '../Utils';
 
 
 
@@ -43,6 +44,9 @@ export class HTTPServer {
         }, 10);
     }
 
+    public serveStatic(userPath, userFolder) {
+        this.app.use(userPath, express.static(ensureUserPath(userFolder)));
+    }
 
 
 
