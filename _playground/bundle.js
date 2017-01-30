@@ -18,13 +18,13 @@ const fuseBox = FuseBox.init({
     //package: "myLib",
     //globals: { myLib: "myLib" },
     modulesFolder: "_playground/npm",
-    shim: {
-        jquery: {
-            source: "node_modules/jquery/dist/jquery.js",
-            exports: "$"
-        }
-    },
-    log: false,
+    // shim: {
+    //     jquery: {
+    //         source: "node_modules/jquery/dist/jquery.js",
+    //         exports: "$"
+    //     }
+    // },
+    log: true,
     plugins: [
         build.TypeScriptHelpers(),
         build.JSONPlugin(),
@@ -55,4 +55,6 @@ const fuseBox = FuseBox.init({
         self.socketServer.send("source-changed", fileInfo);
     }
 });*/
-fuseBox.test("index.ts")
+fuseBox.devServer(">index.ts", {
+    port: 7777
+})

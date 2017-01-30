@@ -1,48 +1,7 @@
-import * as process from 'process';
-
-
-class A {
-    constructor() { }
-}
-class B extends A {
-    constructor() {
-
-        super();
-    }
-
-
-    public hello() {
-
-    }
-}
+require("./foo");
+console.log(require("fbjs/lib/invariant.js"));
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-let a = new MyFoo();
-//require("./hello")
-//let a = require("./foo.js")
-//console.log(a);
-//var debug = require('debug')('compression')
-//console.log(debug);
-//export default typeof window === undefined;
+console.log('11..');
