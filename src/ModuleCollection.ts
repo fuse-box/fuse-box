@@ -225,12 +225,12 @@ export class ModuleCollection {
         // We don't register and process node_modules twice
         // So for example, 2 modules have a custom dependency lodash@1.0.0
         // In a nutshell we try to avoid grabbing the same source from different folders
-        let moduleName = info.custom ?
-            `${info.name}@${info.version}` : info.name;
+        let moduleName = `${info.name}@${info.version}`
 
         // Make sure it has not been mentioned ever befor
         if (!this.context.hasNodeModule(moduleName)) {
-            collection = new ModuleCollection(this.context, moduleName, info);
+            collection = new ModuleCollection(this.context,
+                info.custom ? moduleName : info.name, info);
             collection.pm = new PathMaster(this.context, info.root);
 
             if (info.entry) { // Some modules don't have entry files

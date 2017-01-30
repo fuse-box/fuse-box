@@ -220,7 +220,7 @@ mtime : ${cacheData.mtime}
             if (required.indexOf(key) === -1) {
                 if (json.name) {
                     let collection = new ModuleCollection(this.context, json.name);
-                    let cacheKey = encodeURIComponent(key)
+                    let cacheKey = encodeURIComponent(key);
                     collection.cached = true;
                     collection.cachedName = key;
                     collection.cacheFile = path.join(this.cacheFolder, cacheKey);
@@ -243,7 +243,7 @@ mtime : ${cacheData.mtime}
                         }
 
                     }));
-                    this.context.addNodeModule(collection.cachedName, collection);
+                    this.context.addNodeModule(key, collection);
                     required.push(key);
                 }
                 if (json.deps) {
