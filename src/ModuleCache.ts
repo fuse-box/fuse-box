@@ -316,7 +316,6 @@ mtime : ${cacheData.mtime}
                 flatFiles = json.flat[key].files;
 
                 collection.dependencies.forEach(file => {
-                    console.log(file.info.fuseBoxPath);
                     if (flatFiles.indexOf(file.info.fuseBoxPath) < 0) {
                         flatFiles.push(file.info.fuseBoxPath);
                     }
