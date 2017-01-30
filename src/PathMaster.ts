@@ -136,15 +136,15 @@ export class PathMaster {
 
         if (this.tsMode) {
             name = ensurePublicExtension(name);
-        } else {
-            // Some smart asses like "react-router"
-            // Skip .js for their main entry points.
-            // HATE HATE HATE
-            let ext = path.extname(name);
-            if (!ext) {
-                name += ".js";
-            }
         }
+        // Some smart asses like "react-router"
+        // Skip .js for their main entry points.
+        // HATE HATE HATE
+        let ext = path.extname(name);
+        if (!ext) {
+            name += ".js";
+        }
+
 
         return name;
     }
