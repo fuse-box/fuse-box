@@ -297,6 +297,7 @@ export class ModuleCollection {
                 return;
             }
 
+
             // Check if a module needs to ignored
             // It could be defined previosly (as in exluding all dependencies)
             // Of an explict exclusion
@@ -326,10 +327,12 @@ export class ModuleCollection {
             }
 
             // Process file dependencies recursively
+
             return each(file.analysis.dependencies, name => {
+
                 return this.resolve(new File(this.context,
                     this.pm.resolve(name, file.info.absDir, fileLimitPath)), shouldIgnoreDeps);
-            })
+            });
         }
     }
 }

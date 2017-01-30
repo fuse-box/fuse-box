@@ -2,7 +2,7 @@ import { WorkFlowContext } from "./WorkflowContext";
 import { IPackageInformation } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
 import * as fs from "fs";
-import { File } from "./File"
+import { File } from './File';
 import { Config } from "./Config";
 import * as path from "path";
 import { each } from "realm-utils";
@@ -169,6 +169,14 @@ mtime : ${cacheData.mtime}
         let through: File[] = [];
         let valid4Caching = [];
 
+        const moduleFileCollection = new Map<string, Map<string, File>>();
+        files.forEach(file => {
+            let info = file.info.nodeModuleInfo;
+            if (!moduleFileCollection.get(info.name)) {
+                moduleFileCollection.set(info.name, new Map<string, File>())
+            }
+            moduleFileCollection.get(info.name).set(file.info.fuseBoxPath, file);
+        });
         files.forEach(file => {
             let info = file.info.nodeModuleInfo;
 
@@ -178,10 +186,15 @@ mtime : ${cacheData.mtime}
 
                 through.push(file);
             } else {
-
                 if (cached.version !== info.version || cached.files.indexOf(file.info.fuseBoxPath) === -1) {
-
                     through.push(file);
+                    for (let i = 0; i < cached.files.length; i++) {
+                        let cachedFileName = cached.files[i];
+                        let f = moduleFileCollection.get(info.name).get(cachedFileName);
+                        if (f) {
+                            through.push(f);
+                        }
+                    }
                     let index = valid4Caching.indexOf(key);
                     if (index !== -1) {
                         valid4Caching.splice(index, 1);
@@ -301,7 +314,9 @@ mtime : ${cacheData.mtime}
                     };
                 }
                 flatFiles = json.flat[key].files;
+
                 collection.dependencies.forEach(file => {
+                    console.log(file.info.fuseBoxPath);
                     if (flatFiles.indexOf(file.info.fuseBoxPath) < 0) {
                         flatFiles.push(file.info.fuseBoxPath);
                     }
@@ -315,6 +330,7 @@ mtime : ${cacheData.mtime}
                 return traverse(collection.nodeModules, dependencies);
             });
         }
+        //console.log("traverse...", rootCollection.nodeModules);
         traverse(rootCollection.nodeModules, json.tree).then(() => {
             fs.writeFile(this.cacheFile, JSON.stringify(json, undefined, 2), () => { });
         });
@@ -331,6 +347,7 @@ mtime : ${cacheData.mtime}
      * @memberOf ModuleCache
      */
     public set(info: IPackageInformation, contents: string) {
+
         return new Promise((resolve, reject) => {
 
             let cacheKey = encodeURIComponent(`${info.name}@${info.version}`);
