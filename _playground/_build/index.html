@@ -7,19 +7,24 @@
 
 <body>
     <div id="root"></div>
-    <h1>Welcome to <span class="fuse-box">FuseBox!</span></h1>
-    <p>
-        The simplest and fastest bundler around!
-    </p>
-    <p class="raw-styling">
-        Raw style string output using CSSPlugin option "raw". This is useful for Angular2 who want inlined styles in their <a href="https://angular.io/docs/ts/latest/api/core/index/Component-decorator.html" target="_blank">components</a>:
-        <div class="style-example">
-        </div>
-    </p>
+
+
+    <div id="container">
+        <ul>
+            <li>Root node
+                <ul>
+                    <li>Child node 1</li>
+                    <li>Child node 2</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <script>
+    </script>
 
     <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="left" title="Tooltip on left">Tooltip on left</button>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    
+
     <script type="text/javascript" charset="utf-8" src="out.js?2"></script>
 </body>
 

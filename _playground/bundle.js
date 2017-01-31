@@ -18,30 +18,32 @@ const fuseBox = FuseBox.init({
     //package: "myLib",
     //globals: { myLib: "myLib" },
     modulesFolder: "_playground/npm",
-    // shim: {
-    //     jquery: {
-    //         source: "node_modules/jquery/dist/jquery.js",
-    //         exports: "$"
-    //     }
-    // },
-    log: false,
+    shim: {
+        jquery: {
+            exports: "$"
+        }
+    },
+    cache: false,
+    log: true,
     plugins: [
         build.TypeScriptHelpers(),
         build.JSONPlugin(),
         build.EnvPlugin({ foo: "bar" }),
 
-        [/\.txt$/, build.ConcatPlugin({ ext: ".txt", name: "textBundle.txt" })],
+        [/.*\.css$/, build.CSSResourcePlugin(), build.CSSPlugin()],
+        // [/\.txt$/, build.ConcatPlugin({ ext: ".txt", name: "textBundle.txt" })],
 
-        // process them all ;-)
-        [build.LESSPlugin(), build.CSSPlugin()],
+        // // process them all ;-)
+        // [build.LESSPlugin(), build.CSSPlugin()],
 
-        [build.SassPlugin(), build.CSSPlugin()],
+        // [build.SassPlugin(), build.CSSPlugin()],
 
-        // All other CSS files
-        [build.PostCSS(POST_CSS_PLUGINS), build.CSSPlugin()],
+        // // All other CSS files
+        // [build.PostCSS(POST_CSS_PLUGINS), build.CSSPlugin()],
 
-        // Add a banner to bundle output
-        build.BannerPlugin('// Hey this is my banner! Copyright 2016!'),
+        // // Add a banner to bundle output
+        // build.BannerPlugin('// Hey this is my banner! Copyright 2016!'),
+
 
         //build.UglifyJSPlugin()
 
@@ -60,6 +62,5 @@ const fuseBox = FuseBox.init({
 // })
 
 fuseBox.devServer(">index.ts", {
-    port: 7778,
-    httpServer: false
+    port: 7778
 })

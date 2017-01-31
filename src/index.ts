@@ -1,3 +1,4 @@
+export { CSSResourcePlugin } from "./plugins/CSSResourcePlugin";
 export { HotReloadPlugin } from "./plugins/HotReloadPlugin";
 export { EnvPlugin } from "./plugins/EnvPlugin";
 export { ConcatPlugin } from "./plugins/ConcatPlugin";

@@ -31,8 +31,18 @@ export function ensureUserPath(userPath: string) {
     }
     let dir = path.dirname(userPath);
     mkdirp.sync(dir);
+
     return userPath;
 }
+
+export function ensureDir(userPath: string) {
+    if (!path.isAbsolute(userPath)) {
+        userPath = path.join(appRoot.path, userPath);
+    }
+    mkdirp.sync(userPath);
+    return userPath;
+}
+
 
 
 export function replaceExt(npath, ext): string {
