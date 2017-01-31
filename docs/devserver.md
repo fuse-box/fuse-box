@@ -13,7 +13,7 @@ FuseBox.init({
 
 You don't need to specify any parameters if you don't like. FuseBox will automatically serve your `build` folder, which is `build/` (in the case above)
 
-You will get `express` application running and a `socket` server bound to the same port. To change the port provide the `port` option.
+You will get `express` application running and a `socket` server bound to the same port. To change the port provide `port` option.
 
 ```
 devServer(">index.ts", {
