@@ -99,7 +99,7 @@ plugins : [
 
 `resolve` in our case is the actual path on browser. `f` is a modified file name (you don't need to change it)
 
-
+> HINT: disable cache while playing with the options, as npm modules along with css files are heavily cached
 
 ## Less Plugin
 Install less first.
