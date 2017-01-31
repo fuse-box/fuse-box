@@ -175,7 +175,7 @@ export class File {
                 } else {
                     itemTest = item.test;
                 }
-                if (itemTest && itemTest.test(this.absPath)) {
+                if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(this.absPath)) {
                     target = item;
                 }
                 index++;

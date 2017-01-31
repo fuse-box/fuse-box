@@ -21,11 +21,11 @@ export class CSSPluginClass implements Plugin {
      * @memberOf FuseBoxCSSPlugin
      */
     public test: RegExp = /\.css$/;
-    public dependencies = ["fsb-default-css-plugin"];
     private raw = false;
     private minify = false;
     private serve: any;
     private writeOptions: any;
+    private bundle: any;
 
     constructor(opts: any) {
         opts = opts || {};
@@ -36,6 +36,10 @@ export class CSSPluginClass implements Plugin {
 
         if (opts.write) {
             this.writeOptions = opts.write;
+        }
+
+        if (opts.bundle) {
+            this.bundle = opts.bundle;
         }
 
         if (opts.minify !== undefined) {
@@ -77,7 +81,21 @@ export class CSSPluginClass implements Plugin {
         let contents;
         let filePath = file.info.fuseBoxPath;
         let serve = false;
+        let context = file.context;
 
+        // bundle files
+        if (this.bundle) {
+            let fileGroup = context.getFileGroup(this.bundle);
+            if (!fileGroup) {
+                fileGroup = context.createFileGroup(this.bundle);
+            }
+            // Adding current file (say a.txt) as a subFile 
+            fileGroup.addSubFile(file);
+
+            // making sure the current file refers to an object at runtime that calls our bundle
+            file.alternativeContent = `module.exports = require("./${this.bundle}")`;
+            return;
+        }
         if (this.writeOptions) {
             if (!utils.isPlainObject(this.writeOptions)) {
                 this.writeOptions = {};
