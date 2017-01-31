@@ -160,6 +160,7 @@ export class File {
         if (this.context.plugins) {
             let target: Plugin;
             let index = 0;
+
             while (!target && index < this.context.plugins.length) {
                 let item = this.context.plugins[index];
                 let itemTest: RegExp;

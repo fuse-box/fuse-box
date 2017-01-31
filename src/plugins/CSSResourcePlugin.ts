@@ -75,6 +75,7 @@ export class CSSResourcePluginClass implements Plugin {
 
     public createResouceFolder(file: File) {
         if (resourceFolderChecked === false) {
+
             resourceFolderChecked = true;
             if (this.distFolder) {
                 return;
