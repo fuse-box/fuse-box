@@ -77,4 +77,18 @@ describe("Wildcard imports", (done) => {
         }).catch(done);
     });
 
+
+    it("Should import 2 javascript capital case", (done) => {
+        getTestEnv({
+
+            "foo/A.js": "module.exports = {a : 1}",
+            "foo/B.js": "module.exports = {b : 1}",
+        }, "**/*.js").then(root => {
+            let result = root.FuseBox.import("./foo/*");
+
+            result.should.deepEqual({ 'foo/A.js': { a: 1 }, 'foo/B.js': { b: 1 } })
+            done();
+        }).catch(done);
+    });
+
 })

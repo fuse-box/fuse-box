@@ -208,7 +208,7 @@ var $import = function (name, opts) {
         var safeRegEx = new RegExp(ref.wildcard
             .replace(/\*/g, "@")
             .replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&")
-            .replace(/@/g, "[a-z0-9$_-]+"));
+            .replace(/@/g, "[a-z0-9$_-]+"), "i");
         var pkg = $packages[ref.pkgName];
         if (pkg) {
             var batch = {};
