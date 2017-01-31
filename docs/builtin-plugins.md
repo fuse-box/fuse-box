@@ -67,7 +67,7 @@ On top of that a CSS file will added to DOM upon request if not found in the bun
 ## CSSResourcePlugin
 
 Imagine a situation where you import a css file from an npm library. 
-Let's try  make [jstree]() library work
+Let's try  make [jstree](https://github.com/vakata/jstree) library work
 
 ```
 import "jstree/dist/jstree.js";
@@ -99,7 +99,7 @@ plugins : [
 
 `resolve` in our case is the actual path on browser. `f` is a modified file name (you don't need to change it)
 
-
+> HINT: disable cache while playing with the options, as npm modules along with css files are heavily cached
 
 ## Less Plugin
 Install less first.
