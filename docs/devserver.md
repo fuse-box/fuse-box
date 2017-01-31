@@ -1,6 +1,6 @@
 # Dev Server and HMR
 
-Run a development server all you need is to change `bundle` to `devServer`
+To run a development server all you need is to change `bundle` to `devServer`
 
 
 ## Launch express and socket 
