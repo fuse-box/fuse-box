@@ -64,6 +64,43 @@ plugins: [
 
 On top of that a CSS file will added to DOM upon request if not found in the bundle.
 
+## CSSResourcePlugin
+
+Imagine a situation where you import a css file from an npm library. 
+Let's try  make [jstree]() library work
+
+```
+import "jstree/dist/jstree.js";
+import "jstree/dist/themes/default/style.css";
+```
+
+`style.css` has relative resources (images, fonts), which obviously need to be copied. CSSResourcePlugin comes real handy.
+It re-writes URL and copies files to a destination specified by user, if parameters were not given it takes your build folder and puts everything into 'css-resources'.
+
+How to use it with default settings
+
+```
+plugins : [
+   [/node_modules.*\.css$/, build.CSSResourcePlugin(), build.CSSPlugin()]
+]
+```
+
+Custom paths
+
+```
+plugins : [
+   [/node_modules.*\.css$/, 
+      build.CSSResourcePlugin({
+          dist : "build/resources",
+          resolve : (f) => `/resources/${f}`
+      }), build.CSSPlugin()]
+]
+```
+
+`resolve` in our case is the actual path on browser. `f` is a modified file name (you don't need to change it)
+
+
+
 ## Less Plugin
 Install less first.
 ```bash
