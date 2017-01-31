@@ -54,6 +54,7 @@ __1200 files to bundle__:
 * [Wildcard imports](http://fuse-box.org/#wildcard-import)
 * [Dynamic modules](http://fuse-box.org/#dynamic-modules) at runtime
 * [Tilde support](http://fuse-box.org/#point-to-the-root)
+* [DevServer and HMR](http://fuse-box.org/#dev-server-and-hmr) intergate with existing HTTP apps in 1 second!
 * Works everywhere
 
 There is so much more. FuseBox pushing it to a whole new level. 
