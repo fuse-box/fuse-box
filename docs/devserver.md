@@ -60,7 +60,7 @@ fuseBox.devServer(">index.ts", {
 });
 ```
 
-## Intergate with existing app
+## Integrate with existing app
 
 If you have an existing http application (java, python, nodejs - it does not matter), you can easiliy intergate fusebox with it.
 ```
