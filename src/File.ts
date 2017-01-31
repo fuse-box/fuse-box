@@ -322,6 +322,7 @@ export class File {
             if (this.headerContent) {
                 cachedContent = this.headerContent.join("\n") + "\n" + cachedContent;
             }
+
             this.context.emmitter.emit("source-changed", {
                 type: "js",
                 content: cachedContent,

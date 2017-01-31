@@ -1,11 +1,15 @@
 const Client = require("fusebox-websocket").SocketClient;
 
 module.exports = {
-    connect: () => {
+    connect: (port) => {
+
         if (FuseBox.isServer) {
             return;
         }
-        let client = new Client();
+        port = port || window.location.port;
+        let client = new Client({
+            port: port
+        });
         client.connect();
         console.log("connecting...");
         client.on("source-changed", (data) => {

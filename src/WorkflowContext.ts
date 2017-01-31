@@ -221,6 +221,8 @@ export class WorkFlowContext {
      */
     public outFile: string;
 
+    public initialLoad = true;
+
     /**
      * 
      * 
@@ -450,6 +452,10 @@ export class WorkFlowContext {
         return this.tsConfig;
     }
 
+    public isFirstTime() {
+        return this.initialLoad === true;
+    }
+
     /**
      * 
      * 
@@ -474,6 +480,7 @@ export class WorkFlowContext {
      * @memberOf WorkFlowContext
      */
     public writeOutput(fn?: any) {
+        this.initialLoad = false;
         let res = this.source.getResult();
         // Writing sourcemaps
         if (this.sourceMapConfig && this.sourceMapConfig.outFile) {

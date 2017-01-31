@@ -41,7 +41,8 @@ ___scope___.file("index.js", function(exports, require, module, __filename, __di
 "use strict";
 require("./foo");
 console.log(require("fbjs/lib/invariant.js"));
-console.log('11..');
+const a = 1;
+console.log('pukka, sukka');
 
 });
 ___scope___.file("foo.js", function(exports, require, module, __filename, __dirname){ 
@@ -63,11 +64,15 @@ ___scope___.file("index.js", function(exports, require, module, __filename, __di
 const Client = require("fusebox-websocket").SocketClient;
 
 module.exports = {
-    connect: () => {
+    connect: (port) => {
+
         if (FuseBox.isServer) {
             return;
         }
-        let client = new Client();
+        port = port || window.location.port;
+        let client = new Client({
+            port: port
+        });
         client.connect();
         console.log("connecting...");
         client.on("source-changed", (data) => {
@@ -96,34 +101,15 @@ ___scope___.file("index.js", function(exports, require, module, __filename, __di
 
 const events = require("events");
 
-const getSocketURL = (host) => {
-    
-        const isBrowser = FuseBox.isBrowser
-        if (host && /^ws(s):\/\//.test(host)) {
-            return host;
-        }
-        let protocol = "ws://";
-        let port = isBrowser ? (!host &&
-            window.location.port ? window.location.port : "") : "";
-        host = host ? host : (isBrowser ? window.location.origin : "localhost");
-        let portInHost = new RegExp(":\\d{1,}.*$");
-        if (portInHost.test(host)) {
-            port = "";
-        }
-        let http = new RegExp("^http(s)?://");
-        if (http.test(host)) {
-            protocol = host.indexOf("https") > -1 ? "wss://" : "ws://";
-            host = host.replace(http, "");
-        }
-        return `${protocol}${host}${port ? `:${port}` : ""}`;
-}
-
-
 class SocketClient {
-    constructor(host) {
+    constructor(opts) {
+        opts = opts || {};
+        const port = opts.port || window.location.port;
+        const protocol = location.protocol === "https:" ? "wss://" : "ws://";
+        const domain = location.hostname || "localhost";
+        this.url = opts.host || `${protocol}${domain}:${port}`;
         this.authSent = false;
         this.emitter = new events.EventEmitter();
-        this.host = host;
     }
     reconnect(fn) {
         setTimeout(() => {
@@ -135,9 +121,9 @@ class SocketClient {
         this.emitter.on(event, fn);
     }
     connect(fn) {
-        let url = getSocketURL(this.host);
+        console.log("connect", this.url);
         setTimeout(() => {
-            this.client = new WebSocket(url);
+            this.client = new WebSocket(this.url);
             this.bindEvents(fn);
         }, 0);
     }
@@ -153,7 +139,7 @@ class SocketClient {
         this.emitter.emit("error", data);
     }
     bindEvents(fn) {
-        
+
         this.client.onopen = (event) => {
             if (fn) {
                 fn(this);
@@ -490,76 +476,6 @@ if (FuseBox.isServer) {
 return ___scope___.entry = "index.js";
 });
 FuseBox.pkg("fbjs", {}, function(___scope___){
-___scope___.file("lib/shallowEqual.js", function(exports, require, module, __filename, __dirname){ 
-
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @typechecks
- * 
- */
-
-/*eslint-disable no-self-compare */
-
-'use strict';
-
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-
-/**
- * inlined Object.is polyfill to avoid requiring consumers ship their own
- * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
- */
-function is(x, y) {
-  // SameValue algorithm
-  if (x === y) {
-    // Steps 1-5, 7-10
-    // Steps 6.b-6.e: +0 != -0
-    // Added the nonzero y check to make Flow happy, but it is redundant
-    return x !== 0 || y !== 0 || 1 / x === 1 / y;
-  } else {
-    // Step 6.a: NaN == NaN
-    return x !== x && y !== y;
-  }
-}
-
-/**
- * Performs equality by iterating through keys on an object and returning false
- * when any key has values which are not strictly equal between the arguments.
- * Returns true when the values of all keys are strictly equal.
- */
-function shallowEqual(objA, objB) {
-  if (is(objA, objB)) {
-    return true;
-  }
-
-  if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
-    return false;
-  }
-
-  var keysA = Object.keys(objA);
-  var keysB = Object.keys(objB);
-
-  if (keysA.length !== keysB.length) {
-    return false;
-  }
-
-  // Test for A's keys different from B.
-  for (var i = 0; i < keysA.length; i++) {
-    if (!hasOwnProperty.call(objB, keysA[i]) || !is(objA[keysA[i]], objB[keysA[i]])) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-module.exports = shallowEqual;
-});
 ___scope___.file("lib/ExecutionEnvironment.js", function(exports, require, module, __filename, __dirname){ 
 
 /**
@@ -831,7 +747,7 @@ if (FuseBox.isServer) {
 });
 return ___scope___.entry = "index.js";
 });
-FuseBox.import("fusebox-hot-reload").connect()
+FuseBox.import("fusebox-hot-reload").connect(7778)
 
 FuseBox.import("default/index.js");
 FuseBox.main("default/index.js");

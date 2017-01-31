@@ -23,7 +23,7 @@ export class Server {
      */
     public start(str: string, opts: any): Server {
         // adding hot reload plugin
-        this.fuse.context.plugins.push(HotReloadPlugin());
+
         opts = opts || {};
 
         let buildPath = ensureUserPath(this.fuse.context.outFile);
@@ -32,7 +32,9 @@ export class Server {
         opts.root = opts.root !== undefined
             ? (utils.isString(opts.root) ? ensureUserPath(opts.root) : false) : rootDir;
         opts.port = opts.port || 4444;
-
+        this.fuse.context.plugins.push(
+            HotReloadPlugin({ port: opts.port })
+        );
 
         // allow user to override hot reload emitter
         let emitter = utils.isFunction(opts.emitter) ? opts.emitter : false;
@@ -41,8 +43,12 @@ export class Server {
         this.httpServer = new HTTPServer(this.fuse);
 
         process.nextTick(() => {
+            if (opts.httpServer === false) {
+                SocketServer.startSocketServer(opts.port, this.fuse);
+            } else {
+                this.httpServer.launch(opts);
+            }
 
-            this.httpServer.launch(opts);
             this.socketServer = SocketServer.getInstance();
 
             this.fuse.context.emmitter.addListener("source-changed", (info) => {
@@ -50,16 +56,21 @@ export class Server {
                 // type: "js",
                 // content: file.contents,
                 // path: file.info.fuseBoxPath,
-
-                this.fuse.context.log.echo(`Source changed for ${info.path}`);
-                if (emitter) {
-                    emitter(this, info);
-                } else {
-                    this.socketServer.send("source-changed", info);
+                if (this.fuse.context.isFirstTime() === false) {
+                    this.fuse.context.log.echo(`Source changed for ${info.path}`);
+                    if (emitter) {
+                        emitter(this, info);
+                    } else {
+                        this.socketServer.send("source-changed", info);
+                    }
                 }
+
             });
 
+
+
             watch.watchTree(this.fuse.context.homeDir, { interval: 0.2 }, () => {
+
                 this.fuse.initiateBundle(str);
             });
         });

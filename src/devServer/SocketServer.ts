@@ -23,6 +23,13 @@ export class SocketServer {
         return ss;
     }
 
+    public static startSocketServer(port: number, fuse: FuseBox) {
+        let wss = new Server({ port: port });
+        this.server = new SocketServer(wss, fuse);
+        fuse.context.log.echo(`Launching socket server on ${port}`);
+        return this.server;
+    }
+
 
     public cursor: any;
     public clients = new Set<any>();
@@ -54,5 +61,5 @@ export class SocketServer {
 
     protected onMessage(client: any, type: string, data: any) {
 
-    }
+    };
 }

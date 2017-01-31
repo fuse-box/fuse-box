@@ -1,33 +1,14 @@
 const events = require("events");
 
-const getSocketURL = (host) => {
-    
-        const isBrowser = FuseBox.isBrowser
-        if (host && /^ws(s):\/\//.test(host)) {
-            return host;
-        }
-        let protocol = "ws://";
-        let port = isBrowser ? (!host &&
-            window.location.port ? window.location.port : "") : "";
-        host = host ? host : (isBrowser ? window.location.origin : "localhost");
-        let portInHost = new RegExp(":\\d{1,}.*$");
-        if (portInHost.test(host)) {
-            port = "";
-        }
-        let http = new RegExp("^http(s)?://");
-        if (http.test(host)) {
-            protocol = host.indexOf("https") > -1 ? "wss://" : "ws://";
-            host = host.replace(http, "");
-        }
-        return `${protocol}${host}${port ? `:${port}` : ""}`;
-}
-
-
 class SocketClient {
-    constructor(host) {
+    constructor(opts) {
+        opts = opts || {};
+        const port = opts.port || window.location.port;
+        const protocol = location.protocol === "https:" ? "wss://" : "ws://";
+        const domain = location.hostname || "localhost";
+        this.url = opts.host || `${protocol}${domain}:${port}`;
         this.authSent = false;
         this.emitter = new events.EventEmitter();
-        this.host = host;
     }
     reconnect(fn) {
         setTimeout(() => {
@@ -39,9 +20,9 @@ class SocketClient {
         this.emitter.on(event, fn);
     }
     connect(fn) {
-        let url = getSocketURL(this.host);
+        console.log("connect", this.url);
         setTimeout(() => {
-            this.client = new WebSocket(url);
+            this.client = new WebSocket(this.url);
             this.bindEvents(fn);
         }, 0);
     }
@@ -57,7 +38,7 @@ class SocketClient {
         this.emitter.emit("error", data);
     }
     bindEvents(fn) {
-        
+
         this.client.onopen = (event) => {
             if (fn) {
                 fn(this);
