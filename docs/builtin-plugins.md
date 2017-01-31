@@ -67,7 +67,7 @@ On top of that a CSS file will added to DOM upon request if not found in the bun
 ## CSSResourcePlugin
 
 Imagine a situation where you import a css file from an npm library. 
-Let's try  make [jstree]() library work
+Let's try  make [jstree](https://github.com/vakata/jstree) library work
 
 ```
 import "jstree/dist/jstree.js";
