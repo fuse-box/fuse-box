@@ -1,5 +1,5 @@
 import { File } from "../File";
-import { Plugin } from "../WorkflowContext";
+import { Plugin, WorkFlowContext } from "../WorkflowContext";
 import { ensureUserPath, ensureDir } from "../Utils";
 import * as path from "path";
 import { utils } from "realm-utils";
@@ -69,6 +69,10 @@ export class CSSResourcePluginClass implements Plugin {
         if (utils.isFunction(opts.resolve)) {
             this.resolveFn = opts.resolve;
         }
+    }
+
+    public init(context: WorkFlowContext) {
+        context.allowExtension(".css");
     }
 
     public resolveFn = (p) => path.join("/css-resources", p)
