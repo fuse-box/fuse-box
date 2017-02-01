@@ -185,6 +185,27 @@ For example with `useDefault: true` you will be able to import HTML files like s
 import tpl from "~/views/file.html"
 ```
 
+
+## ImageBase64Plugin
+
+Works greatly if you want to have images bundled
+
+```bash
+npm install base64-img --save-dev
+```
+```
+plugins: [
+    fsbx.ImageBase64Plugin()
+]
+```
+
+Example for react
+```jsx
+const image = require("./icons/image.png")
+<img src={image} />
+```
+
+
 ## Babel plugin
 
 You can use babel plugin to transpile your code. 
