@@ -1,3 +1,4 @@
+export { ImageBase64Plugin } from "./plugins/ImageBase64Plugin";
 export { CSSResourcePlugin } from "./plugins/CSSResourcePlugin";
 export { HotReloadPlugin } from "./plugins/HotReloadPlugin";
 export { EnvPlugin } from "./plugins/EnvPlugin";

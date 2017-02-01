@@ -1,11 +1,8 @@
-import "jstree/dist/jstree.js";
-import "jstree/dist/themes/default/style.css";
-
-$(function () {
-    $('#container').jstree();
-});
+const a = require("./grumpy.jpg");
+const img = document.createElement("img");
+img.setAttribute("src", a);
+document.body.appendChild(img)
 
 
+]
 
-
-const a = 1;

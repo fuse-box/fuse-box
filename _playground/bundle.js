@@ -29,8 +29,7 @@ const fuseBox = FuseBox.init({
         build.TypeScriptHelpers(),
         build.JSONPlugin(),
         build.EnvPlugin({ foo: "bar" }),
-
-        [/node_modules.*\.css$/, build.CSSResourcePlugin(), build.CSSPlugin()],
+        build.ImageBase64Plugin(), [/node_modules.*\.css$/, build.CSSResourcePlugin(), build.CSSPlugin()],
         // [/\.txt$/, build.ConcatPlugin({ ext: ".txt", name: "textBundle.txt" })],
 
         // // process them all ;-)
