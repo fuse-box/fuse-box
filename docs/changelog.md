@@ -3,26 +3,28 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
-| 1.1.78            | Significant performance boost to the loader 
-| 1.1.77            | Improved dynamic modules
-| 1.1.71-76         | Test suit runner
-| 1.1.68 - 1.3.70   | Hot reload fixes, various tweaks
-| 1.1.67            | Proper [shimming](http://fuse-box.org/#shimming) 
-| 1.1.63-66         | devServer fixes
-| 1.1.54-63         | Cache improvements and devServer tweaks
-| 1.1.51-54         | Introducing devServer
-| 1.1.50            | Fixed caching issue
-| 1.1.49            | Added [EnvPlugin](#envplugin)
-| 1.1.48            | Added `FuseBox.packages` to the client API
-| 1.1.47            | Fixed a critical bug related to circual dep resolution on cache
-| 1.1.45-46         | Added few missing nodejs libs
-| 1.1.44            | Fixed an issue related to typescript helpers (typo)
-| 1.1.43            | Fixed [75](https://github.com/fuse-box/fuse-box/issues/75) Typescript helpers
-| 1.1.42            | Fixed [#67](https://github.com/fuse-box/fuse-box/issues/67) + 71 and some other small fixes
-| 1.1.41            | Fixed a bug related to the ast traversing and babel. Added a new plugin api
-| 1.1.40            | Fixing small bugs (uglify-js + peer deps)
-| 1.1.39            | Added net, querystring and some other node modules
-| 1.1.38            | Critical bug related to windows slashes
+| 1.3.85-90           | Plugins added [CSSResourcePlugin](http://fuse-box.org/#cssresourceplugin) and [ImageBase64Plugin](http://fuse-box.org/#imagebase64plugin)
+| 1.3.85            | Fixed caching (finally)
+| 1.3.78            | Significant performance boost to the loader 
+| 1.3.77            | Improved dynamic modules
+| 1.3.71-76         | Test suit runner
+| 1.3.68 - 1.3.70   | Hot reload fixes, various tweaks
+| 1.3.67            | Proper [shimming](http://fuse-box.org/#shimming) 
+| 1.3.63-66         | devServer fixes
+| 1.3.54-63         | Cache improvements and devServer tweaks
+| 1.3.51-54         | Introducing devServer
+| 1.3.50            | Fixed caching issue
+| 1.3.49            | Added [EnvPlugin](#envplugin)
+| 1.3.48            | Added `FuseBox.packages` to the client API
+| 1.3.47            | Fixed a critical bug related to circual dep resolution on cache
+| 1.3.45-46         | Added few missing nodejs libs
+| 1.3.44            | Fixed an issue related to typescript helpers (typo)
+| 1.3.43            | Fixed [75](https://github.com/fuse-box/fuse-box/issues/75) Typescript helpers
+| 1.3.42            | Fixed [#67](https://github.com/fuse-box/fuse-box/issues/67) + 71 and some other small fixes
+| 1.3.41            | Fixed a bug related to the ast traversing and babel. Added a new plugin api
+| 1.3.40            | Fixing small bugs (uglify-js + peer deps)
+| 1.3.39            | Added net, querystring and some other node modules
+| 1.3.38            | Critical bug related to windows slashes
 | 1.3.37            | Fixed [57](https://github.com/fuse-box/fuse-box/issues/57)
 | 1.3.36            | Fixed #56, less and stylus emit sourcemaps
 | 1.3.34-35            | TSX [issue](https://github.com/fuse-box/fuse-box/issues/46) fixed
