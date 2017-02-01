@@ -189,6 +189,10 @@ import tpl from "~/views/file.html"
 ## ImageBase64Plugin
 
 Works greatly if you want to have images bundled
+
+```bash
+npm install base64-img --save-dev
+```
 ```
 plugins: [
     fsbx.ImageBase64Plugin()
