@@ -4,6 +4,9 @@ import { ensureUserPath, ensureDir } from "../Utils";
 import * as path from "path";
 import { utils } from "realm-utils";
 import * as fs from "fs";
+import { PostCSSResourcePlugin } from "../lib/postcss/PostCSSResourcePlugin";
+const base64Img = require("base64-img");
+const postcss = require("postcss");
 
 let resourceFolderChecked = false;
 
@@ -27,7 +30,7 @@ const copyFile = (source, target) => {
             rd.pipe(wr);
         });
     });
-}
+};
 
 const generateNewFileName = (str): string => {
     let s = str.split("node_modules");
@@ -50,7 +53,7 @@ const generateNewFileName = (str): string => {
         fname = "_" + fname.slice(1);
     }
     return fname;
-}
+};
 
 /**
  * @export
@@ -61,10 +64,15 @@ export class CSSResourcePluginClass implements Plugin {
 
 
     public distFolder: string;
+    public inlineImages: false;
     constructor(opts: any) {
         opts = opts || {};
         if (opts.dist) {
             this.distFolder = ensureDir(opts.dist);
+        }
+
+        if (opts.inline) {
+            this.inlineImages = opts.inline;
         }
         if (utils.isFunction(opts.resolve)) {
             this.resolveFn = opts.resolve;
@@ -96,28 +104,36 @@ export class CSSResourcePluginClass implements Plugin {
     public transform(file: File) {
         file.loadContents();
         let contents = file.contents;
-        let match;
-
-        this.createResouceFolder(file);
-        let currentFolder = file.info.absDir;
+        if (this.distFolder) {
+            this.createResouceFolder(file);
+        }
+        const currentFolder = file.info.absDir;
         const files = {};
         const tasks = [];
-        let re = /\s*url\((?!"data:)([^\)]+)/g;
-        while (match = re.exec(contents)) {
-            let relativeFile = match[1];
-            // replacing slashes
-            relativeFile = relativeFile.replace(/"|'/g, "");
-            let urlFile = path.resolve(currentFolder, relativeFile);
-            if (!files[urlFile]) {
-                let newFileName = generateNewFileName(urlFile);
-                let newPath = path.join(this.distFolder, newFileName);
-                contents = contents.replace(relativeFile, `${this.resolveFn(newFileName)}`);
-                files[urlFile] = true;
-                tasks.push(copyFile(urlFile, newPath));
-            }
-        }
-        file.contents = contents;
-        return Promise.all(tasks);
+
+        return postcss([PostCSSResourcePlugin({
+            fn: (url) => {
+                let urlFile = path.resolve(currentFolder, url);
+                if (this.inlineImages) {
+                    return base64Img.base64Sync(urlFile);
+                }
+
+                // copy files
+                if (this.distFolder) {
+                    if (!files[urlFile]) {
+                        let newFileName = generateNewFileName(urlFile);
+                        let newPath = path.join(this.distFolder, newFileName);
+                        files[urlFile] = true;
+                        tasks.push(copyFile(urlFile, newPath));
+                        return this.resolveFn(newFileName);
+                    }
+                }
+            },
+        })]).process(contents).then(result => {
+            file.contents = result.css;
+            //console.log(result.css);
+            return Promise.all(tasks);
+        });
     }
 }
 

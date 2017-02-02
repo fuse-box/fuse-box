@@ -318,7 +318,9 @@ export class WorkFlowContext {
      * @memberOf WorkFlowContext
      */
     public allowExtension(ext: string) {
-        AllowedExtenstions.add(ext);
+        if (!AllowedExtenstions.has(ext)) {
+            AllowedExtenstions.add(ext);
+        }
     }
     /**
      * 

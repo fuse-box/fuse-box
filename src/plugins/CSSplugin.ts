@@ -26,6 +26,7 @@ export class CSSPluginClass implements Plugin {
     private serve: any;
     private writeOptions: any;
     private bundle: any;
+    private urlRules: any;
 
     constructor(opts: any) {
         opts = opts || {};
@@ -49,6 +50,7 @@ export class CSSPluginClass implements Plugin {
         if (opts.serve !== undefined) {
             this.serve = opts.serve;
         }
+
 
     }
     /**

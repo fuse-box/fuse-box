@@ -1,7 +1,7 @@
 import { File } from "../File";
 import { WorkFlowContext } from "./../WorkflowContext";
 import { Plugin } from "../WorkflowContext";
-
+const base64Img = require("base64-img");
 /**
  * 
  * 
@@ -45,7 +45,6 @@ export class ImageBase64PluginClass implements Plugin {
         if (cached) {
             file.contents = cached.contents;
         } else {
-            const base64Img = require("base64-img");
             const data = base64Img.base64Sync(file.absPath);
             file.contents = `module.exports = ${JSON.stringify(data)}`;
             context.cache.writeStaticCache(file, undefined);
