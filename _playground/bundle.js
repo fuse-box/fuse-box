@@ -23,16 +23,21 @@ const fuseBox = FuseBox.init({
             exports: "$"
         }
     },
-    cache: false,
+    cache: true,
     log: true,
     plugins: [
         build.TypeScriptHelpers(),
         build.JSONPlugin(),
         build.EnvPlugin({ foo: "bar" }),
-        build.ImageBase64Plugin(), [/node_modules.*\.css$/, build.CSSResourcePlugin({
+        build.ImageBase64Plugin(),
+
+        [/node_modules.*\.css$/, build.CSSResourcePlugin({
             dist: "_playground/_build/resources",
             resolve: (f) => `resources/${f}`
         }), build.CSSPlugin()],
+
+
+        [build.CSSResourcePlugin({ inline: true }), build.CSSPlugin()],
         // [/\.txt$/, build.ConcatPlugin({ ext: ".txt", name: "textBundle.txt" })],
 
         // // process them all ;-)

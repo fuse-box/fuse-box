@@ -1,5 +1,5 @@
-$blue: #056ef0;
-$column: 200px;
-body {
-    background: blue;
+#root {
+    width: 100px;
+    height: 100px;
+    background: url("./businessman.svg");
 }
