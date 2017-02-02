@@ -3,6 +3,7 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.3.90-94           | Tweaking CSSResourcePlugin
 | 1.3.85-90           | Plugins added [CSSResourcePlugin](http://fuse-box.org/#cssresourceplugin) and [ImageBase64Plugin](http://fuse-box.org/#imagebase64plugin)
 | 1.3.85            | Fixed caching (finally)
 | 1.3.78            | Significant performance boost to the loader 

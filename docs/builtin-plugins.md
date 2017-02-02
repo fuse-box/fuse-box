@@ -75,17 +75,10 @@ import "jstree/dist/themes/default/style.css";
 ```
 
 `style.css` has relative resources (images, fonts), which obviously need to be copied. CSSResourcePlugin comes real handy.
-It re-writes URL and copies files to a destination specified by user, if parameters were not given it takes your build folder and puts everything into 'css-resources'.
+It re-writes URL and copies files to a destination specified by user,
 
-How to use it with default settings
 
-```
-plugins : [
-   [/node_modules.*\.css$/, build.CSSResourcePlugin(), build.CSSPlugin()]
-]
-```
-
-Custom paths
+### Copy files
 
 ```
 plugins : [
@@ -98,6 +91,20 @@ plugins : [
 ```
 
 `resolve` in our case is the actual path on browser. `f` is a modified file name (you don't need to change it)
+
+
+### Inline 
+You can inline images as well
+
+```
+plugins : [
+   [/node_modules.*\.css$/, 
+      build.CSSResourcePlugin({
+            inline : true
+      }), build.CSSPlugin()]
+]
+```
+
 
 > HINT: disable cache while playing with the options, as npm modules along with css files are heavily cached
 
