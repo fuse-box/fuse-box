@@ -39,6 +39,18 @@ In this case, you will get everything that is required in the index, as well as 
 
 `**/*.js -path` - Bundle everything with dependencies except for module path
 
+## Making many bundles at once
+You can specify many outFiles. Your config will be copied for every single process.
+
+For example:
+
+```js
+fuseBox.bundle({
+    "_build/test_vendor.js": "+path",
+    "_build/app.js": ">[index.ts]"
+});
+```
+
 ## Bundle in a bundle
 
 Super powers of FuseBox allow doing that without code redundancy. An API of a second bundle will be removed, and 2 bundles will be fused together, keeping only one shared Fusebox API.
