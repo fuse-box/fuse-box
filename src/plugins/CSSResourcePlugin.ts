@@ -5,9 +5,10 @@ import * as path from "path";
 import { utils } from "realm-utils";
 import * as fs from "fs";
 import { PostCSSResourcePlugin } from "../lib/postcss/PostCSSResourcePlugin";
+import { SVG2Base64 } from "../lib/SVG2Base64";
 const base64Img = require("base64-img");
 const postcss = require("postcss");
-
+const IMG_CACHE = {};
 let resourceFolderChecked = false;
 
 const copyFile = (source, target) => {
@@ -62,7 +63,7 @@ const generateNewFileName = (str): string => {
  */
 export class CSSResourcePluginClass implements Plugin {
 
-
+    public test: RegExp = /\.css$/;
     public distFolder: string;
     public inlineImages: false;
     constructor(opts: any) {
@@ -115,7 +116,18 @@ export class CSSResourcePluginClass implements Plugin {
             fn: (url) => {
                 let urlFile = path.resolve(currentFolder, url);
                 if (this.inlineImages) {
-                    return base64Img.base64Sync(urlFile);
+                    if (IMG_CACHE[urlFile]) {
+                        return IMG_CACHE[urlFile];
+                    }
+                    const ext = path.extname(urlFile);
+                    if (ext === ".svg") {
+                        let content = SVG2Base64.get(fs.readFileSync(urlFile).toString());
+                        IMG_CACHE[urlFile] = content;
+                        return content;
+                    }
+                    let result = base64Img.base64Sync(urlFile);
+                    IMG_CACHE[urlFile] = result;
+                    return result;
                 }
 
                 // copy files

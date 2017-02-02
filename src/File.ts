@@ -166,8 +166,11 @@ export class File {
                 let itemTest: RegExp;
                 if (Array.isArray(item)) {
                     let el = item[0];
-                    // check for the first item ( it might be a RegExp)
-                    if (el instanceof RegExp) {
+                    // for some reason on window it gives false sometimes...
+                    // if (el instanceof RegExp) {
+                    //     itemTest = el;
+                    // }
+                    if (el && typeof el.test === "function") {
                         itemTest = el;
                     } else {
                         itemTest = el.test;
