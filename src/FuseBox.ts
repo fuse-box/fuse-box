@@ -12,6 +12,7 @@ import * as path from "path";
 import { each, utils, chain, Chainable } from "realm-utils";
 import { Config } from "./Config";
 import { BundleTestRunner } from "./testRunner/BundleTestRunner";
+import { FuseAPI } from './lib/FuseApi';
 const appRoot = require("app-root-path");
 const watch = require("watch");
 /**
@@ -130,8 +131,18 @@ export class FuseBox {
      * 
      * @memberOf FuseBox
      */
-    public bundle(str: string, bundleReady?: any) {
-        return this.initiateBundle(str, bundleReady);
+    public bundle(str: any, bundleReady?: any) {
+        if (utils.isString(str)) {
+            return this.initiateBundle(str, bundleReady);
+        }
+        if (utils.isPlainObject(str)) {
+            let items = str;
+            return each(items, (bundleStr, outFile) => {
+                let newConfig = Object.assign(this.opts, { outFile: outFile })
+                let fuse = FuseBox.init(newConfig);
+                return fuse.initiateBundle(bundleStr);
+            });
+        }
     }
 
 
