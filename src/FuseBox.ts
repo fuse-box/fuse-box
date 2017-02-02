@@ -247,7 +247,7 @@ export class FuseBox {
     public test(str: string = "**/*.test.ts", opts: any) {
         opts = opts || {};
         opts.reporter = opts.reporter || "fuse-test-reporter";
-
+        opts.exit = true;
 
         // include test files to the bundle
         const clonedOpts = Object.assign({}, this.opts);
