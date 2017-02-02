@@ -30,9 +30,8 @@ const fuseBox = FuseBox.init({
         build.JSONPlugin(),
         build.EnvPlugin({ foo: "bar" }),
         build.ImageBase64Plugin(), [/node_modules.*\.css$/, build.CSSResourcePlugin({
-            // dist: "_playground/_build/resources",
-            // resolve: (f) => `resources/${f}`
-            inline: true
+            dist: "_playground/_build/resources",
+            resolve: (f) => `resources/${f}`
         }), build.CSSPlugin()],
         // [/\.txt$/, build.ConcatPlugin({ ext: ".txt", name: "textBundle.txt" })],
 

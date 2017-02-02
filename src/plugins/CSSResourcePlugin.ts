@@ -120,18 +120,17 @@ export class CSSResourcePluginClass implements Plugin {
 
                 // copy files
                 if (this.distFolder) {
+                    let newFileName = generateNewFileName(urlFile);
                     if (!files[urlFile]) {
-                        let newFileName = generateNewFileName(urlFile);
                         let newPath = path.join(this.distFolder, newFileName);
-                        files[urlFile] = true;
                         tasks.push(copyFile(urlFile, newPath));
-                        return this.resolveFn(newFileName);
+                        files[urlFile] = true;
                     }
+                    return this.resolveFn(newFileName);
                 }
             },
         })]).process(contents).then(result => {
             file.contents = result.css;
-            //console.log(result.css);
             return Promise.all(tasks);
         });
     }
