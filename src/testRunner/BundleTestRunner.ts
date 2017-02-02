@@ -4,7 +4,7 @@ export class BundleTestRunner {
     public reporter: string;
     public opts: any;
     constructor(public bundle: any, opts?: any) {
-        this.opts = this.opts || {};
+        this.opts = opts || {};
         this.reporter = opts.reporter || "fuse-test-reporter";
         this.fuse = bundle.FuseBox;
     }
