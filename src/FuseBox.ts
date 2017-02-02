@@ -246,7 +246,8 @@ export class FuseBox {
 
     public test(str: string = "**/*.test.ts", opts: any) {
         opts = opts || {};
-        let reporter = opts.reporter || "fuse-test-reporter";
+        opts.reporter = opts.reporter || "fuse-test-reporter";
+
 
         // include test files to the bundle
         const clonedOpts = Object.assign({}, this.opts);
@@ -254,12 +255,10 @@ export class FuseBox {
         clonedOpts.outFile = testBundleFile;
 
         // adding fuse-test dependency to be bundled
-        str += ` +fuse-test ${reporter} -ansi`;
+        str += ` +fuse-test ${opts.reporter} -ansi`;
         return FuseBox.init(clonedOpts).bundle(str, () => {
             const bundle = require(testBundleFile);
-            let runner = new BundleTestRunner(bundle, {
-                reporter: reporter
-            });
+            let runner = new BundleTestRunner(bundle, opts);
             return runner.start();
         });
     }
