@@ -13,7 +13,7 @@ It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely con
 
 FuseBox loves __typescript__, and does not require any additional configuration. It will compile and bundle your code within a fraction of a second, yet offering a comprehensive loader API. 
 
-It is packed with features, and unfolds limitless possibilities of extending the API.
+It is packed with features, and unfolds limitless possibilities of extending the API. Watch a [4 minute intro video on youtube](https://www.youtube.com/watch?v=gCfWVRsWoKA)
 
 [Offical documentation](http://fuse-box.org/) / Submit an [issue](https://github.com/fuse-box/fuse-box/issues/new) / Make [documentation](https://github.com/fuse-box/fuse-box/tree/master/docs) better / Join [gitter channel](https://gitter.im/fusebox-bundler/Lobby) we are active!
 
