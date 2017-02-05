@@ -256,7 +256,7 @@ var $import = function (name, opts) {
     var args = [locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName];
     $trigger("before-import", args);
     var fn = file.fn;
-    fn(locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName);
+    fn.apply(0, args);
     $trigger("after-import", args);
     return locals.module.exports;
 };

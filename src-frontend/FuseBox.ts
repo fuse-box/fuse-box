@@ -384,9 +384,10 @@ const $import = (name: string, opts: any = {}) => {
 
     let args = [locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName];
     $trigger("before-import", args);
-    //file.fn.apply(0, args);
+
     let fn = file.fn;
-    fn(locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName)
+    fn.apply(0, args);
+    //fn(locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName)
     $trigger("after-import", args);
     return locals.module.exports;
 }
