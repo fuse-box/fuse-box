@@ -3,6 +3,8 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.3.301             | PR [101](https://github.com/fuse-box/fuse-box/pull/101) merged 
+| 1.3.97-300          | Preparing test runner
 | 1.3.96              | Many bundles at once
 | 1.3.95              | SVG Support in CSSResourcePlugin
 | 1.3.90-94           | Tweaking CSSResourcePlugin
