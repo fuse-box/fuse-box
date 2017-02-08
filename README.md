@@ -1,4 +1,4 @@
-![logo](logo_text.png)
+![logo](logo.png)
 
 # FuseBox
 
