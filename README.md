@@ -1,3 +1,5 @@
+![logo](logo_text.png)
+
 # FuseBox
 
 [![Build Status](https://travis-ci.org/fuse-box/fuse-box.svg?branch=master)](https://travis-ci.org/fuse-box/fuse-box)
@@ -5,7 +7,7 @@
 
 [![NPM](https://nodei.co/npm/fuse-box.png?downloads=true)](https://nodei.co/npm/fuse-box/)
 
-![logo](logo_text.png)
+
 
 http://fuse-box.org/
 
