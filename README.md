@@ -5,6 +5,8 @@
 
 [![NPM](https://nodei.co/npm/fuse-box.png?downloads=true)](https://nodei.co/npm/fuse-box/)
 
+![logo](logo_text.png)
+
 http://fuse-box.org/
 
 FuseBox is a bundler/module loader that combines the power of webpack, JSPM and SystemJS. 
