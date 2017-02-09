@@ -1,5 +1,2 @@
-
-
-import * as _ from "lodash";
-console.log("lodash", _.each);
-
+const buffer = require("buffer");
+console.log(buffer);
