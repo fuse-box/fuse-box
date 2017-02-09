@@ -1,9 +1,9 @@
 const fs = require("fs");
 const watch = require("watch");
-const precss = require("precss");
+
 const build = require("./../build/commonjs/index.js");
 const FuseBox = build.FuseBox;
-const POST_CSS_PLUGINS = [precss()];
+
 
 const fuseBox = FuseBox.init({
     homeDir: "_playground/ts",

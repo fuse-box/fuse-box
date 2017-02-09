@@ -471,7 +471,6 @@ FuseBox.pkg("buffer", {}, function(___scope___){
 ___scope___.file("index.js", function(exports, require, module, __filename, __dirname){ 
 
 if (FuseBox.isServer) {
-    console.log("here..");
     module.exports = global.require("buffer");
 } else {
     /*!
