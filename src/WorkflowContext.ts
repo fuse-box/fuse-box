@@ -8,6 +8,7 @@ import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "./ModuleCache";
 import { utils } from "realm-utils";
 import { EventEmitter } from "events";
+import { ensureUserPath } from './Utils';
 
 const appRoot = require("app-root-path");
 
@@ -141,6 +142,8 @@ export class WorkFlowContext {
      * @memberOf WorkFlowContext
      */
     public plugins: Plugin[];
+
+
 
     public fileGroups: Map<string, File>;
     /**
@@ -435,10 +438,14 @@ export class WorkFlowContext {
      * @memberOf WorkFlowContext
      */
     public getTypeScriptConfig() {
+
+        let url;
         if (this.tsConfig) {
-            return this.tsConfig;
+            url = ensureUserPath(this.tsConfig);
+        } else {
+            url = path.join(this.homeDir, "tsconfig.json");
         }
-        let url = path.join(this.homeDir, "tsconfig.json");
+
         if (fs.existsSync(url)) {
             this.tsConfig = require(url);
         } else {

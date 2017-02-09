@@ -4,6 +4,7 @@ import { WorkFlowContext, Plugin } from "./WorkflowContext";
 import { IPathInformation } from "./PathMaster";
 import * as fs from "fs";
 import { utils, each } from "realm-utils";
+import { ensureUserPath } from './Utils';
 
 
 /**
@@ -305,6 +306,8 @@ export class File {
         const ts = require("typescript");
 
         this.loadContents();
+
+
         let result = ts.transpileModule(this.contents, this.context.getTypeScriptConfig());
 
         if (result.sourceMapText && this.context.sourceMapConfig) {

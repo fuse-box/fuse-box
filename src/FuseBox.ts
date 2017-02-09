@@ -72,6 +72,7 @@ export class FuseBox {
             this.context.doLog = opts.log ? true : false;
         }
 
+
         if (opts.globals) {
             this.context.globals = opts.globals;
         }
