@@ -3,6 +3,7 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.3.306             | Added file.properties to the API. Removed buffer
 | 1.3.305             | Fixed errors related to Buffer. It is properly shimmed now, and fuse is serving a native "buffer" on server
 | 1.3.304             | Fixed tsConfig property
 | 1.3.303             | Added object-assign-polyfill to `process`
