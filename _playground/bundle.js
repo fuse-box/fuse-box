@@ -23,7 +23,8 @@ const fuseBox = FuseBox.init({
             exports: "$"
         }
     },
-    cache: true,
+    tsConfig: "./tsconfig.json",
+    cache: false,
     log: true,
     plugins: [
         build.TypeScriptHelpers(),
