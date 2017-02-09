@@ -82,7 +82,7 @@ FuseBox.init({
 ```
 
 ---
-Don't hesitate to concat me personally or join our [gitter channel](https://gitter.im/fusebox-bundler/Lobby) we are very active and friendly!
+Join our [gitter channel](https://gitter.im/fusebox-bundler/Lobby) we are very active and friendly!
 
 Special thanks to to [devmondo](https://github.com/devmondo) for incredible ideas, given inspiration and relentless testing/contributing to the project.  
 
