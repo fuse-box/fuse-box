@@ -188,6 +188,8 @@ export class WorkFlowContext {
      * @memberOf WorkFlowContext
      */
     public tsMode = false;
+
+    public loadedTsConfig: any;
     /**
      * 
      * 
@@ -430,6 +432,7 @@ export class WorkFlowContext {
         this.nodeModules.set(name, collection);
     }
 
+
     /**
      * 
      * 
@@ -438,6 +441,9 @@ export class WorkFlowContext {
      * @memberOf WorkFlowContext
      */
     public getTypeScriptConfig() {
+        if (this.loadedTsConfig) {
+            return this.loadedTsConfig;
+        }
 
         let url;
         if (this.tsConfig) {
@@ -445,20 +451,21 @@ export class WorkFlowContext {
         } else {
             url = path.join(this.homeDir, "tsconfig.json");
         }
-
+        let config;
         if (fs.existsSync(url)) {
-            this.tsConfig = require(url);
+            config = require(url);
         } else {
-            this.tsConfig = {
+            config = {
                 compilerOptions: {}
             };
         }
-        this.tsConfig.compilerOptions.module = "commonjs";
+        config.compilerOptions.module = "commonjs";
         if (this.sourceMapConfig) {
-            this.tsConfig.compilerOptions.sourceMap = true;
-            this.tsConfig.compilerOptions.inlineSources = true;
+            config.compilerOptions.sourceMap = true;
+            config.compilerOptions.inlineSources = true;
         }
-        return this.tsConfig;
+        this.loadedTsConfig = config;
+        return config;
     }
 
     public isFirstTime() {
