@@ -3,7 +3,8 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
-| 1.3.304             | Fixed errors related to Buffer. It is properly shimmed now, and fuse is serving a native "buffer" on server
+| 1.3.305             | Fixed errors related to Buffer. It is properly shimmed now, and fuse is serving a native "buffer" on server
+| 1.3.304             | Fixed tsConfig property
 | 1.3.303             | Added object-assign-polyfill to `process`
 | 1.3.302             | PR [101](https://github.com/fuse-box/fuse-box/pull/101) merged 
 | 1.3.301             | Quick fix in the API
