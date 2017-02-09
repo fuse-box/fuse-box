@@ -5,8 +5,6 @@
 [![Fusebox-bundler](https://img.shields.io/badge/gitter-join%20chat%20%E2%86%92-brightgreen.svg)](https://gitter.im/fusebox-bundler/Lobby)
 
 
-
-
 [![NPM](https://nodei.co/npm/fuse-box.png?downloads=true)](https://nodei.co/npm/fuse-box/)
 
 
@@ -34,13 +32,13 @@ FuseBox has many plugins in place to help you get started. All you need to do is
 npm install fuse-box --save-dev
 ```
 
-Or using yarn:
+Or install using Yarn:
 
 ```bash
 yarn add fuse-box --dev
 ```
 
-## Try it now!
+## Try it out!
 
 ### [Angular2 Example](https://github.com/fuse-box/angular2-example)
 
@@ -50,9 +48,9 @@ Todo App built on the latest Angular2 (compiles in 50-80ms!)
 
 Simple example using React with babel (compiles in 50ms!)
 
-### Benchmark
+### [Benchmark](https://github.com/fuse-box/benchmark)
 
-Speed matters. Check out our [benchmark](https://github.com/fuse-box/benchmark) for demo! 
+Speed matters. Check out our benchmark example for a real world demo! 
 __1200 files to bundle__:
 
 * FuseBox __0.234s__
@@ -69,17 +67,17 @@ __1200 files to bundle__:
 * [Dynamic modules](http://fuse-box.org/#dynamic-modules) at runtime
 * [Tilde support](http://fuse-box.org/#point-to-the-root)
 * [DevServer and HMR](http://fuse-box.org/#dev-server-and-hmr) integrate with existing HTTP apps in 1 second!
-* Works everywhere!
+* Works everywhere for easy universal applications!
 
 There is so much more. FuseBox pushing it to a whole new level!
 
 ## Start Now
 
-```
+```bash
 npm install typescript fuse-box --save-dev
 ```
 
-```
+```ts
 FuseBox.init({
     homeDir: "src/",
     sourceMap: {
