@@ -6,6 +6,7 @@ if (FuseBox.isServer) {
     }
     module.exports = global.process;
 } else {
+    require("object-assign-polyfill");
     var productionEnv = false; //require('@system-env').production;
 
     var process = module.exports = {};
