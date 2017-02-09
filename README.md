@@ -84,7 +84,7 @@ FuseBox.init({
 ---
 Join our [gitter channel](https://gitter.im/fusebox-bundler/Lobby) we are very active and friendly!
 
-Special thanks to to [devmondo](https://github.com/devmondo) for incredible ideas, given inspiration and relentless testing/contributing to the project.  
+Special thanks to [devmondo](https://github.com/devmondo) for incredible ideas, giving inspiration and relentless testing/contributing to the project.  
 
 If you like the project, don't forget to star it!
 
