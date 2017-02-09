@@ -86,6 +86,8 @@ export class File {
      * @memberOf File
      */
     public sourceMap: any;
+
+    public properties = new Map<string, any>();
     /**
      * 
      * 
@@ -120,6 +122,15 @@ export class File {
         this.absPath = info.absPath;
     }
 
+
+    public addProperty(key: string, obj: any) {
+        this.properties.set(key, obj);
+    }
+
+    public getProperty(key: string): any {
+        return this.properties.get(key);
+    }
+
     public hasSubFiles() {
         return this.subFiles.length > 0;
     }
@@ -127,6 +138,8 @@ export class File {
     public addSubFile(file: File) {
         this.subFiles.push(file);
     }
+
+
 
 
     /**
