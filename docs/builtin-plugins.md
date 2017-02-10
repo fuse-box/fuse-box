@@ -267,7 +267,7 @@ Add anything at the top of your bundle.
 ```js
 plugins: [
     // Add a banner to bundle output
-    fxbx.BannerPlugin('// Hey this is my banner! Copyright 2016!')
+    fsbx.BannerPlugin('// Hey this is my banner! Copyright 2016!')
 ]
 ```
 
@@ -276,7 +276,7 @@ Compresses your code by [UglifyJS2](https://github.com/mishoo/UglifyJS2)
 ```js
 plugins: [
     // [options] - UglifyJS2 options
-    fxbx.UglifyJSPlugin(options)
+    fsbx.UglifyJSPlugin(options)
 ]
 ```
 

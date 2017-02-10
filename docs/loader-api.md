@@ -26,6 +26,29 @@ FuseBox.import("fs");
 Please note that some libraries like "fs" are faked in the browser. Meaning that it won't spit out an error, but won't work as expected on the server for known reasons.
 Nodejs environment, however, will get authentic "fs" module. (Concerns http, net, tty e.t.c )
 
+
+## Lazy Load
+
+Lazy load works out of the box.
+
+Imagine that bundle does not have `myModule.js`, and it's a `CommonJs` module. In order to lazy load it, put your target file next to it available via HTTP, and load it like so:
+
+```
+FuseBox.import("./myModule.js", (module) => {
+})
+```
+
+If a module is not found within FuseBox' context, it tries to load it via HTTP request. Once obtained, the API caches the exports, allowing to request that module synchronously later on.
+
+```
+import "./myModule".
+```
+
+You can load other bundles as well. For example [here](#bundle-in-a-bundle) 
+
+
+
+
 ## Wildcard import
 With wildcard imports `*` you can require all files that match a particular pattern. A wildcard with no default extension will fallback to `.js`.
 For example
