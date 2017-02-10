@@ -81,28 +81,27 @@ export class BabelPluginClass implements Plugin {
             }
         }
 
-        let result = babelCore.transform(file.contents, this.config);
+        if (this.limit2project === false || file.collection.name === file.context.defaultPackageName) {
+            let result = babelCore.transform(file.contents, this.config);
+            // By default we would want to limit the babel 
+            // And use acorn instead (it's faster)
+            if (result.map) {
 
-        // By default we would want to limit the babel 
-        // And use acorn instead (it's faster)
-        let pass = result.map
-            && (this.limit2project && file.collection.name === file.context.defaultPackageName);
+                file.analysis.loadAst(result.ast);
+                file.analysis.analyze();
+                file.contents = result.code;
+                let sm = result.map;
+                sm.file = file.info.fuseBoxPath;
+                sm.sources = [file.info.fuseBoxPath];
+                file.sourceMap = JSON.stringify(sm);
 
-        if (pass) {
-
-            file.analysis.loadAst(result.ast);
-            file.analysis.analyze();
-            file.contents = result.code;
-            let sm = result.map;
-            sm.file = file.info.fuseBoxPath;
-            sm.sources = [file.info.fuseBoxPath];
-            file.sourceMap = JSON.stringify(sm);
-
-            if (this.context.useCache) {
-                this.context.emitJavascriptHotReload(file);
-                this.context.cache.writeStaticCache(file, file.sourceMap);
+                if (this.context.useCache) {
+                    this.context.emitJavascriptHotReload(file);
+                    this.context.cache.writeStaticCache(file, file.sourceMap);
+                }
             }
         }
+
     }
 };
 
