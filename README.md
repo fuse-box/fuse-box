@@ -5,8 +5,6 @@
 [![Fusebox-bundler](https://img.shields.io/badge/gitter-join%20chat%20%E2%86%92-brightgreen.svg)](https://gitter.im/fusebox-bundler/Lobby)
 
 
-
-
 [![NPM](https://nodei.co/npm/fuse-box.png?downloads=true)](https://nodei.co/npm/fuse-box/)
 
 
@@ -16,34 +14,43 @@ FuseBox is a bundler/module loader that combines the power of webpack, JSPM and 
 
 It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convenient for developers. It requires zero configuration to bundle such monsters like `babel-core`.
 
-FuseBox loves __typescript__, and does not require any additional configuration. It will compile and bundle your code within a fraction of a second, yet offering a comprehensive loader API. 
+FuseBox loves __typescript__, and does not require any additional configuration. It will compile and bundle your code within a fraction of a second, yet offering a comprehensive loader API. It is packed with features, and unfolds limitless possibilities of extending the API.
 
-It is packed with features, and unfolds limitless possibilities of extending the API. Watch a [4 minute intro video on youtube](https://www.youtube.com/watch?v=gCfWVRsWoKA)
+Watch a [4 minute intro video on youtube](https://www.youtube.com/watch?v=gCfWVRsWoKA).
 
-[Offical documentation](http://fuse-box.org/) / Submit an [issue](https://github.com/fuse-box/fuse-box/issues/new) / Make [documentation](https://github.com/fuse-box/fuse-box/tree/master/docs) better / Join [gitter channel](https://gitter.im/fusebox-bundler/Lobby) we are active!
+- [Offical Documentation](http://fuse-box.org/)
+- [Submit an Issue](https://github.com/fuse-box/fuse-box/issues/new)
+- [Make Documentation Better](https://github.com/fuse-box/fuse-box/tree/master/docs)
+- [Join Gitter Channel](https://gitter.im/fusebox-bundler/Lobby) (we are active!)
 
 
 ## Installation
+
+FuseBox has many plugins in place to help you get started. All you need to do is install `fuse-box` from npm.
 
 ```bash
 npm install fuse-box --save-dev
 ```
 
-FuseBox has many plugins in place to help you get started. All you need to do is install `fuse-box` from npm.
+Or install using Yarn:
 
-## Try it now!
+```bash
+yarn add fuse-box --dev
+```
 
-### Angular2
+## Try it out!
 
-Check a [marvellous TODO app](https://github.com/fuse-box/angular2-example) built on the latest angular2. Demo [here](https://fuse-box.github.io/angular2-example/).
-Fuse it in a fraction of second! (50-80ms)
+### [Angular2 Example](https://github.com/fuse-box/angular2-example)
 
-### React
+Todo App built on the latest Angular2 (compiles in 50-80ms!)
 
-Fuse [react](https://github.com/fuse-box/react-example) with babel in 50ms
+### [React Example](https://github.com/fuse-box/react-example)
 
----
-This [benchmark](https://github.com/fuse-box/benchmark) will tell you, that speed matters.
+Simple example using React with babel (compiles in 50ms!)
+
+### [Benchmark](https://github.com/fuse-box/benchmark)
+
+Speed matters. Check out our benchmark example for a real world demo! 
 __1200 files to bundle__:
 
 * FuseBox __0.234s__
@@ -52,25 +59,25 @@ __1200 files to bundle__:
 
 ## Highlights
 
-* No headache, minimalist configs
+* No headache, minimal configuration
 * First class [typescript](http://fuse-box.org/#typescript) support
 * Arithmetic [instructions](http://fuse-box.org/#arithmetic-instructions)
 * Blazing fast bundle time
 * [Wildcard imports](http://fuse-box.org/#wildcard-import)
 * [Dynamic modules](http://fuse-box.org/#dynamic-modules) at runtime
 * [Tilde support](http://fuse-box.org/#point-to-the-root)
-* [DevServer and HMR](http://fuse-box.org/#dev-server-and-hmr) intergate with existing HTTP apps in 1 second!
-* Works everywhere
+* [DevServer and HMR](http://fuse-box.org/#dev-server-and-hmr) integrate with existing HTTP apps in 1 second!
+* Works everywhere for easy universal applications!
 
-There is so much more. FuseBox pushing it to a whole new level. 
+There is so much more. FuseBox pushing it to a whole new level!
 
-## Start now
+## Start Now
 
-```
+```bash
 npm install typescript fuse-box --save-dev
 ```
 
-```
+```ts
 FuseBox.init({
     homeDir: "src/",
     sourceMap: {
