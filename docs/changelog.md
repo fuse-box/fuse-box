@@ -3,6 +3,7 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.3.309             | Clear Interval, avoiding frantic bundle call on fileChange
 | 1.3.308             | Preventing babel-plugin from transpling all npm deps. Issue [108](https://github.com/fuse-box/fuse-box/issues/108)
 | 1.3.307             | Fixed broken tsConfig property
 | 1.3.306             | Added file.properties to the API. Removed buffer
