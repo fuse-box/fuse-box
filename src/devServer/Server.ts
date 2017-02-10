@@ -68,10 +68,12 @@ export class Server {
             });
 
 
-
+            let timeout;
             watch.watchTree(this.fuse.context.homeDir, { interval: 0.2 }, () => {
-
-                this.fuse.initiateBundle(str);
+                clearInterval(timeout);
+                timeout = setTimeout(() => {
+                    this.fuse.initiateBundle(str);
+                }, 70);
             });
         });
         return this;
