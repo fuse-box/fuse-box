@@ -3,6 +3,8 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.3.308             | Preventing babel-plugin from transpling all npm deps. Issue [108](https://github.com/fuse-box/fuse-box/issues/108)
+| 1.3.307             | Fixed broken tsConfig property
 | 1.3.306             | Added file.properties to the API. Removed buffer
 | 1.3.305             | Fixed errors related to Buffer. It is properly shimmed now, and fuse is serving a native "buffer" on server
 | 1.3.304             | Fixed tsConfig property
