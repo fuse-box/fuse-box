@@ -14,7 +14,7 @@ the `devServer` function takes an *optional* options parameter as a second argum
 ### Changing the the served folder
 FuseBox will automatically serve your `build` folder e.g. with `outFile : "build/out.js"` the build server is `build/`.
 
-You can change it by passing in a string value to the `root` option: 
+You can change it by passing in a string value to the `root` option (relative to `process.cwd`): 
 
 ```js
 devServer(">index.ts", {
