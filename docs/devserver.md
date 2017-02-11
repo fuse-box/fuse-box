@@ -2,49 +2,57 @@
 
 To run a development server all you need is to change `bundle` to `devServer`
 
-
-
 ## Launch express and socket 
-```
+```js
 FuseBox.init({
     homeDir: "src",
-    outFile : "build/out.js",
-}).devServer(">index.ts")
+    outFile: "build/out.js",
+}).devServer(">index.ts");
 ```
+the `devServer` function takes an *optional* options parameter as a second argument.
 
-You don't need to specify any parameters if you don't like. FuseBox will automatically serve your `build` folder, which is `build/` (in the case above)
+### Changing the the served folder
+FuseBox will automatically serve your `build` folder e.g. with `outFile : "build/out.js"` the build server is `build/`.
 
-You will get `express` application running and a `socket` server bound to the same port. To change the port provide `port` option.
+You can change it by passing in a string value to the `root` option (relative to `process.cwd`): 
 
-```
+```js
 devServer(">index.ts", {
-   port : 8081
-})
+   root: 'public/build'
+});
+```
+
+### Changing the port
+By default you will get `express` application running and a `socket` server bound to port `4444`. To change the port provide `port` option.
+
+```js
+devServer(">index.ts", {
+   port: 8081
+});
 ```
 
 ## Express api
-
 Access express application like so:
-```
+```js
 const self = devServer(">index.ts", {
-   port : 8081
-})
-self.httpServer.app.use(/* your middleware */)
+   port: 8081
+});
+self.httpServer.app.use(/* your middleware */);
 ```
 
 You can set `root` to false if you want to manually configure the root path
 
-```
+```js
 const self = devServer(">index.ts", {
-   port : 8081,
-   root : false
-})
-self.httpServer.serveStatic("*", "build/static")
+   port: 8081,
+   root: false
+});
+self.httpServer.serveStatic("*", "build/static");
 ```
 
 `serveStatic` is convenience method, that looks like this:
 
-```
+```js
 this.app.use(userPath, express.static(ensureUserPath(userFolder)));
 ```
 
@@ -63,14 +71,10 @@ fuseBox.devServer(">index.ts", {
 ## Integrate with existing app
 
 If you have an existing http application (java, python, nodejs - it does not matter), you can easiliy intergate fusebox with it.
-```
+```js
 fuse.devServer(">app.tsx", {
     port: 8080, 
     httpServer: false
-})
+});
 ```
 In this configuration `port: 8080` corresponds to a socket server port, having `httpServer:false` makes it work only in `socket` mode.  Once you page it loaded, `FuseBox API` will try to connect to `:8080` port an start listening to events.
-
-
-
-
