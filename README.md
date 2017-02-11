@@ -93,6 +93,7 @@ FuseBox.init({
 * [Typescript + React + Reflux + Sass + Code Splitting](https://github.com/fuse-box/fuse-box-ts-react-reflux-seed)
 * [Vue.js Seed](https://github.com/fuse-box/fuse-box-vue-seed) 
 * [Express seed](https://github.com/fuse-box/fuse-box-express-seed)
+
 ---
 Join our [gitter channel](https://gitter.im/fusebox-bundler/Lobby) we are very active and friendly!
 
