@@ -4,14 +4,14 @@ The concept of FuseBox is simple. Bundle anything for frontend and server withou
 
 ## Initialisation
 
-Initialize a fuse-box instance like so. Each instance will handle 1 bundle.
+Initialise a fuse-box instance like so. Each instance will handle 1 bundle.
 ```js
 FuseBox.init({ /* you config is here */ })
 ```
 
 ## Home directory
 
-That's your source folder, you don't need to provide an absolute path, it will check it automatically and concat with your project folder.
+That's your source folder. It can be an absolute path, Or it can be relative to the current `process.cwd()`.
 
 ```js
 FuseBox.init({ 
@@ -21,7 +21,7 @@ FuseBox.init({
 
 ## Out file
 
-That's your bundle file. It is relative to your project directory, but you can give it an absolute path as well
+That's your bundle file. It can be an absolute path, Or it can be relative to the current `process.cwd()`.
 
 ```js
 FuseBox.init({ 
@@ -92,7 +92,8 @@ sourceMap: {
   outFile: "sourcemaps.js.map",
 }
 ```
-`bundleReference` speaks for itself. This line will be added to the bundle. For example `//# sourceMappingURL=./sourcemaps.js.map`. If your client is not able to read them, make sure that the path is reachable. 
+* `bundleReference` speaks for itself. This line will be added to the bundle. For example `//# sourceMappingURL=./sourcemaps.js.map`. If your client is not able to read them, make sure that the path is reachable. 
+* `outFile` is where the sourcemap is written to disk. It can be an absolute path, Or it can be relative to the current `process.cwd()`. 
 
 Sourcemaps currently work with [typescript](#typescript) and [BabelPlugin](#babel-plugin)
 
@@ -157,9 +158,4 @@ shim : {
    "react-native-web" : { exports : "require('react-native')"}
 }
 ```
-Now you  can reference it like  `window.ReactNative` , and require function is at your convenience
-
-
-
-
-
+Now you can reference it like  `window.ReactNative`, and require function is at your convenience.
