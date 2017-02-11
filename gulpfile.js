@@ -1,7 +1,7 @@
-const gulp = require("gulp")
-const rename = require("gulp-rename");
+const gulp = require('gulp')
+const rename = require('gulp-rename');
 
-const replace = require("gulp-replace");
+const replace = require('gulp-replace');
 const ts = require('gulp-typescript');
 const concat = require('gulp-concat');
 const fs = require('fs');
@@ -10,34 +10,34 @@ const runSequence = require('run-sequence');
 const bump = require('gulp-bump');
 const child_process = require('child_process');
 const spawn = child_process.spawn;
-const wrap = require("gulp-wrap");
+const wrap = require('gulp-wrap');
 const uglify = require('gulp-uglify');
 
 let projectTypings = ts.createProject('src/tsconfig.json');
 let projectCommonjs = ts.createProject('src/tsconfig.json', {
-    target: "es6",
+    target: 'es6',
 });
 
 let projectFrontend = ts.createProject('src-frontend/tsconfig.json', {
 
 });
-gulp.task("src-frontend", () => {
-    return gulp.src("src-frontend/**/*.ts")
+gulp.task('src-frontend', () => {
+    return gulp.src('src-frontend/**/*.ts')
         .pipe(projectFrontend()).js
         .pipe(wrap('(function(__root__){ <%= contents %> \nreturn __root__["FuseBox"] = FuseBox; } )(this)'))
-        .pipe(rename("fusebox.js"))
+        .pipe(rename('fusebox.js'))
         .pipe(gulp.dest('assets/frontend'))
-        .pipe(rename("fusebox.min.js"))
+        .pipe(rename('fusebox.min.js'))
         .pipe(uglify())
-        .pipe(replace(/;$/, ""))
-        .pipe(replace(/^\!/, ""))
+        .pipe(replace(/;$/, ''))
+        .pipe(replace(/^\!/, ''))
         .pipe(gulp.dest('assets/frontend'))
 
 })
 
 
-gulp.task("publish", function(done) {
-    runSequence('dist', 'increment-version', "commit-release", 'npm-publish', done);
+gulp.task('publish', function(done) {
+    runSequence('dist', 'increment-version', 'commit-release', 'npm-publish', done);
 })
 
 gulp.task('increment-version', function() {
@@ -46,7 +46,7 @@ gulp.task('increment-version', function() {
         .pipe(gulp.dest('./'));
 });
 gulp.task('commit-release', function(done) {
-    let json = JSON.parse(fs.readFileSync(__dirname + "/package.json").toString());
+    let json = JSON.parse(fs.readFileSync(__dirname + '/package.json').toString());
     child_process.exec(`git add .; git commit -m "Release ${json.version}" -a; git tag v${json.version}; git push origin master --tags`, (error, stdout, stderr) => {
         if (error) {
             console.error(`exec error: ${error}`);
@@ -68,7 +68,7 @@ gulp.task('npm-publish', function(done) {
         done()
     });
 });
-gulp.task("commit", ["dist", "minify-frontend"], function(done) {
+gulp.task('commit', ['dist', 'minify-frontend'], function(done) {
     const readline = require('readline');
 
     const rl = readline.createInterface({
@@ -92,13 +92,13 @@ gulp.task("commit", ["dist", "minify-frontend"], function(done) {
     });
 });
 
-gulp.task("dist-typings", () => {
+gulp.task('dist-typings', () => {
     let result = gulp.src('src/**/*.ts')
         .pipe(projectTypings());
     return result.dts.pipe(gulp.dest('dist/typings'));
 });
 
-gulp.task("dist-commonjs", () => {
+gulp.task('dist-commonjs', () => {
     let result = gulp.src('src/**/*.ts')
         .pipe(sourcemaps.init())
         .pipe(projectCommonjs());
@@ -107,8 +107,8 @@ gulp.task("dist-commonjs", () => {
 
 
 
-gulp.task("test-build", ["build"], () => {
-    return runSequence("webpack")
+gulp.task('test-build', ['build'], () => {
+    return runSequence('webpack')
 });
 
 
@@ -135,16 +135,16 @@ gulp.task('hello', function() {
     });
 });
 
-gulp.task("minify-frontend", function() {
-    return gulp.src("assets/fusebox.js")
+gulp.task('minify-frontend', function() {
+    return gulp.src('assets/fusebox.js')
         .pipe(uglify())
-        .pipe(rename("fusebox.min.js")).pipe(gulp.dest("assets/"))
+        .pipe(rename('fusebox.min.js')).pipe(gulp.dest('assets/'))
 });
 
 gulp.task('watch', ['build', 'src-frontend'], function() {
 
     gulp.watch(['src-frontend/**/*.ts'], () => {
-        runSequence("src-frontend");
+        runSequence('src-frontend');
     });
 
 
@@ -159,11 +159,11 @@ gulp.task('watch', ['build', 'src-frontend'], function() {
 
 
 gulp.task('uglify-test', function() {
-    return gulp.src("./out.js")
+    return gulp.src('./out.js')
         .pipe(uglify())
-        .pipe(rename("out.min.js")).pipe(gulp.dest("./"))
+        .pipe(rename('out.min.js')).pipe(gulp.dest('./'))
 });
 
-gulp.task('dist', ['dist-typings', 'dist-commonjs', "src-frontend"], function() {
+gulp.task('dist', ['dist-typings', 'dist-commonjs', 'src-frontend'], function() {
 
 });
