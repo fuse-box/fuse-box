@@ -105,14 +105,6 @@ gulp.task('dist-commonjs', () => {
     return result.js.pipe(gulp.dest('dist/commonjs'));
 });
 
-
-
-gulp.task('test-build', ['build'], () => {
-    return runSequence('webpack')
-});
-
-
-
 gulp.task('build', function() {
     let result = gulp.src('src/**/*.ts')
         .pipe(sourcemaps.init())
