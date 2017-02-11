@@ -16,3 +16,4 @@ sourcemaps.js.map
 .fusebox
 _dist
 _playground/
+npm-debug.log*
