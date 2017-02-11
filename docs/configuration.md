@@ -110,18 +110,6 @@ FuseBox.init({
 })
 ```
 
-## tsConfig
-
-Set your own `tsconfig.json` file path
-
-```
-FuseBox.init({
-    tsConfig : "tsconfig.json"
-})
-```
-
-
-
 ## Shimming 
 
 For those libraries that are bundled to work in `window` (jquery) for example, you need to provide a shimming configuration.

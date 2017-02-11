@@ -19,4 +19,16 @@ FuseBox.init({
 }).bundle(">index.ts");
 ```
 
-FuseBox automatically switches to a typescript mode, compiles and bundles your files. Place `tsconfig.json` in your `homeDir`. It will be loaded automatically. For your own convenience add [Typescript helpers](#typescript-helpers) plugin.
+FuseBox automatically switches to typescript mode by detecting the extension `.ts` / `.tsx`. FuseBox compiles and bundles your files.
+
+> For your own convenience you can also add the [Typescript helpers plugin](#typescript-helpers).
+
+## tsConfig
+
+FuseBox comes with default ts options. You can customize the ts options by placing `tsconfig.json` in your `homeDir` and it will be picked up automatically. Alternatively you can use the tsconfig option to customize the path to tsconfig.json (can be an absolute path, Or it can be relative to the current `process.cwd()`).
+
+```js
+FuseBox.init({
+    tsConfig : "tsconfig.json"
+})
+```
