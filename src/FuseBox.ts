@@ -15,6 +15,25 @@ import { BundleTestRunner } from "./testRunner/BundleTestRunner";
 import { FuseAPI } from './lib/FuseApi';
 const appRoot = require("app-root-path");
 const watch = require("watch");
+
+export interface FuseBoxOptions {
+    homeDir?: string;
+    modulesFolder?: string;
+    tsConfig?: string;
+    package?: string;
+    cache?: boolean;
+    log?: boolean;
+    globals?: { [packageName: string]: /** Variable name */ string };
+    plugins?: any[];
+    shim?: any;
+    standaloneBundle?: boolean;
+    sourceMap?: any;
+    ignoreGlobal?: string[];
+    outFile?: string;
+    files?: any;
+}
+
+
 /**
  *
  *
@@ -24,7 +43,7 @@ const watch = require("watch");
 export class FuseBox {
 
 
-    public static init(opts?: any) {
+    public static init(opts?: FuseBoxOptions) {
         return new FuseBox(opts);
     }
     public virtualFiles: any;
@@ -41,7 +60,7 @@ export class FuseBox {
      *
      * @memberOf FuseBox
      */
-    constructor(public opts: any) {
+    constructor(public opts?: FuseBoxOptions) {
         this.context = new WorkFlowContext();
         this.collectionSource = new CollectionSource(this.context);
         opts = opts || {};
@@ -81,7 +100,7 @@ export class FuseBox {
             this.context.shim = opts.shim;
         }
 
-        if (opts.standalone !== undefined) {
+        if (opts.standaloneBundle !== undefined) {
             this.context.standaloneBundle = opts.standaloneBundle;
         }
 
