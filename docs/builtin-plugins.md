@@ -1,7 +1,5 @@
 # Built-in plugins
 
-
-
 Fusebox contains premade plugins, that should help you to get started. 
 
 ## CSS Plugin
@@ -128,7 +126,7 @@ plugins:[
 ## PostCSSPlugin
 Install libraries first
 
-```js
+```bash
 npm install precss postcss --save-dev
 ```
 
@@ -155,7 +153,6 @@ plugins:[
 ```
 
 ## Raw Plugin
-
 Make files export text data
 
 ```js
@@ -178,7 +175,6 @@ plugins:[
 ```
 
 ## HTML Plugin
-
 ```js
 plugins: [
   fsbx.HTMLPlugin({ useDefault: false })
@@ -192,9 +188,7 @@ For example with `useDefault: true` you will be able to import HTML files like s
 import tpl from "~/views/file.html"
 ```
 
-
 ## ImageBase64Plugin
-
 Works greatly if you want to have images bundled
 
 ```bash
@@ -214,7 +208,6 @@ const image = require("./icons/image.png")
 
 
 ## Babel plugin
-
 You can use babel plugin to transpile your code. 
 Make sure you have `babel-core` installed
 
@@ -243,7 +236,6 @@ Note, that if you want to have sourcemaps in place, set `sourceMaps` to true. Re
 
 
 ## JSON plugin
-
 Of course, it can't be all shiny without a JSON plugin, can it?
 
 ```js
@@ -253,7 +245,6 @@ plugins: [
 ```
 
 ## SVG Plugin
-
 React lovers, [here it is](https://github.com/fuse-box/react-example/blob/master/gulpfile.js#L17). Plain and simple.
 
 ```js
@@ -293,19 +284,18 @@ plugins: [
 ```
 
 ## EnvPlugin
-
 Writes environmental variables to both client and server at build time.
 
 ```js
 plugins : [
-   fsbx.EnvPlugin({ foo: "bar" })
+   fsbx.EnvPlugin({ NODE_ENV: "production" })
 ]
 ```
 
 Access it like you used to:
 
 ```
-console.log( process.env.foo )
+console.log( process.env.NODE_ENV )
 ```
 
 
