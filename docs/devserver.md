@@ -12,9 +12,9 @@ FuseBox.init({
 the `devServer` function takes an *optional* options parameter as a second argument.
 
 ### Changing the the served folder
-FuseBox will automatically serve your `build` folder e.g. with `outFile : "build/out.js"` the build server is `build/`.
+FuseBox will automatically serve your `build` folder e.g. with `outFile : "build/out.js"` it will serve the folder `build/`.
 
-You can change it by passing in a string value to the `root` option (relative to `process.cwd`): 
+You can change it by passing in a string value to the `root` option (It can be an absolute path, Or it can be relative to the current `process.cwd()`): 
 
 ```js
 devServer(">index.ts", {
