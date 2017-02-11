@@ -105,14 +105,6 @@ gulp.task('dist-commonjs', () => {
     return result.js.pipe(gulp.dest('dist/commonjs'));
 });
 
-gulp.task('build', function() {
-    let result = gulp.src('src/**/*.ts')
-        .pipe(sourcemaps.init())
-        .pipe(projectCommonjs());
-    return result.js.pipe(gulp.dest('build/commonjs'));
-});
-
-
 let node;
 
 gulp.task('hello', function() {
@@ -133,7 +125,7 @@ gulp.task('minify-frontend', function() {
         .pipe(rename('fusebox.min.js')).pipe(gulp.dest('assets/'))
 });
 
-gulp.task('watch', ['build', 'src-frontend'], function() {
+gulp.task('watch', ['dist-commonjs', 'src-frontend'], function() {
 
     gulp.watch(['src-frontend/**/*.ts'], () => {
         runSequence('src-frontend');
@@ -145,7 +137,7 @@ gulp.task('watch', ['build', 'src-frontend'], function() {
     // });
 
     gulp.watch(['src/**/*.ts'], () => {
-        runSequence('build');
+        runSequence('dist-commonjs');
     });
 });
 
