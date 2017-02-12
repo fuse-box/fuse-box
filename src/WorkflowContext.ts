@@ -39,7 +39,7 @@ export class WorkFlowContext {
      */
     public defaultPackageName = "default";
 
-    public transformTypescript: any;
+    public transformTypescript?: (contents: string) => string;
 
     public ignoreGlobal: string[] = [];
 
