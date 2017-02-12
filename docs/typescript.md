@@ -32,3 +32,6 @@ FuseBox.init({
     tsConfig : "tsconfig.json"
 })
 ```
+
+* We automatically set the `module` to `commonjs`.
+* If you set `sourceMap` in your `FuseBox` options, we automatically setup the sourcemap settings for TypeScript `compilerOptions`.
