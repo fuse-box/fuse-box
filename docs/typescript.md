@@ -25,7 +25,7 @@ FuseBox automatically switches to typescript mode by detecting the extension `.t
 
 ## tsConfig
 
-FuseBox comes with default ts options. You can customize the ts options by placing `tsconfig.json` in your `homeDir` and it will be picked up automatically. Alternatively you can use the tsconfig option to customize the path to tsconfig.json (It can be an absolute path, Or relative to `appRootPath`).
+FuseBox comes with default ts options. `tsconfig.json` will be picked up automatically. Alternatively you can use the tsconfig option to customize the path to tsconfig.json (It can be an absolute path, Or relative to `appRootPath`).
 
 ```js
 FuseBox.init({

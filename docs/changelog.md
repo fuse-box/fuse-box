@@ -3,6 +3,7 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.3.111             | Fixing [modulesFolder](http://fuse-box.org/#custom-modules-folder) priority, Related [issue 124](https://github.com/fuse-box/fuse-box/issues/124)
 | 1.3.110             | Automatic tsconfig.json lookup
 | 1.3.109             | Clear Interval, avoiding frantic bundle call on fileChange
 | 1.3.108             | Preventing babel-plugin from transpling all npm deps. Issue [108](https://github.com/fuse-box/fuse-box/issues/108)
