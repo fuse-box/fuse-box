@@ -25,6 +25,13 @@ export function parseQuery(qstr) {
     }
     return query;
 }
+
+/**
+ * Does two things:
+ * - If a relative path is given,
+ *  it is assumed to be relative to appRoot and is then made absolute
+ * - Ensures that the directory containing the userPath exits (creates it if needed)
+ */
 export function ensureUserPath(userPath: string) {
     if (!path.isAbsolute(userPath)) {
         userPath = path.join(appRoot.path, userPath);
