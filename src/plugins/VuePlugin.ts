@@ -1,7 +1,7 @@
 import { File } from "../File";
 import { WorkFlowContext } from "./../WorkflowContext";
 import { Plugin } from "../WorkflowContext";
-const ts = require("typescript");
+
 
 let vueCompiler;
 export class VuePluginClass implements Plugin {
@@ -29,6 +29,8 @@ export class VuePluginClass implements Plugin {
             let parsed = vueCompiler.compile(html);
 
             let jsContent = result.script.content;
+            const ts = require("typescript");
+
             const jsTranspiled = ts.transpileModule(jsContent, file.context.getTypeScriptConfig());
             const tsResult = `
                 var View = require('vue/dist/vue.js');
