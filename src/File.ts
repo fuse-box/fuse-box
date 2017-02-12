@@ -6,6 +6,8 @@ import * as fs from "fs";
 import { utils, each } from "realm-utils";
 import { ensureUserPath } from './Utils';
 
+import * as ts from "typescript";
+
 
 /**
  * 

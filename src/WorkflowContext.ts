@@ -8,7 +8,11 @@ import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "./ModuleCache";
 import { utils } from "realm-utils";
 import { EventEmitter } from "events";
-import { ensureUserPath } from './Utils';
+import { ensureUserPath, findFileBackwards } from './Utils';
+import * as process from 'process';
+
+
+const appRoot = require("app-root-path");
 
 /**
  * Interface for a FuseBox plugin
@@ -204,20 +208,28 @@ export class WorkFlowContext {
             return this.loadedTsConfig;
         }
 
-        let url;
+        const ts = require("typescript");
+
+        let url, configFile;
+        let config: any = {
+            compilerOptions: {}
+        };;
         if (this.tsConfig) {
-            url = ensureUserPath(this.tsConfig);
+            configFile = ensureUserPath(this.tsConfig);
         } else {
             url = path.join(this.homeDir, "tsconfig.json");
+            let tsconfig = findFileBackwards(url, appRoot.path);
+            if (tsconfig) {
+                configFile = tsconfig;
+            }
         }
-        let config;
-        if (fs.existsSync(url)) {
-            config = require(url);
+        if (configFile) {
+            this.log.echoStatus(`Typescript config:  ${configFile.replace(appRoot.path, '')}`);
+            config = require(configFile);
         } else {
-            config = {
-                compilerOptions: {}
-            };
+            this.log.echoStatus(`Typescript config file was not found. Improvising`);
         }
+
         config.compilerOptions.module = "commonjs";
         if (this.sourceMapConfig) {
             config.compilerOptions.sourceMap = true;

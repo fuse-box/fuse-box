@@ -24,6 +24,16 @@ export class Log {
         cursor.write("\n");
         cursor.reset();
     }
+
+    public echoStatus(str: string) {
+        if (this.printLog) {
+            cursor.write(`  → `)
+                .cyan().write(str);
+            cursor.write("\n");
+            cursor.reset();
+        }
+    }
+
     public echoDefaultCollection(collection: ModuleCollection, contents: string, printFiles?: boolean) {
         if (!this.printLog) {
             return;

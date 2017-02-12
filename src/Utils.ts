@@ -1,4 +1,5 @@
 import * as path from "path";
+import * as fs from 'fs';
 const appRoot = require("app-root-path");
 const mkdirp = require("mkdirp");
 
@@ -83,4 +84,32 @@ export function getBuiltInNodeModules(): Array<string> {
     return Object.keys(process.binding("natives")).filter(m => {
         return !/^_|^internal|\//.test(m) && MBLACKLIST.indexOf(m) === -1;
     });
+}
+
+export function findFileBackwards(target: string, limitPath: string): string {
+
+    let [found, reachedLimit] = [false, false];
+    let filename = path.basename(target);
+    let current = path.dirname(target);
+    let iterations = 0;
+    const maxIterations = 10;
+
+    while (found === false && reachedLimit === false) {
+
+        let targetFilePath = path.join(current, filename);
+        if (fs.existsSync(targetFilePath)) {
+            return targetFilePath;
+        }
+
+        if (limitPath === current) {
+            reachedLimit = true;
+        }
+        // going backwards
+        current = path.join(current, "..");
+        // Making sure we won't have any perpetual loops here
+        iterations++;
+        if (iterations > maxIterations) {
+            reachedLimit = true;
+        }
+    }
 }

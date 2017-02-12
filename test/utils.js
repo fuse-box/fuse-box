@@ -1,5 +1,6 @@
 const should = require("should");
-const Utils = require(`../${process.env.TRAVIS ? "dist" : "build"}/commonjs/Utils.js`);
+const Utils = require(`../dist/commonjs/Utils.js`);
+const path = require("path");
 
 describe("Utils", (done) => {
     it("Should replaceExt correctly with ext", () => {
@@ -18,7 +19,12 @@ describe("Utils", (done) => {
 
         let res = Utils.replaceExt("a/hello", ".js")
         res.should.equal("a/hello.js")
-    })
+    });
 
 
+    it("Should find file backwards", () => {
+        const rootFolder = path.join(__dirname, "/fixtures/findfile")
+        let res = Utils.findFileBackwards(path.join(rootFolder, "a/b/c/tsconfig.json"), rootFolder);
+        res.should.match(/findfile\/a\/b\/tsconfig.json$/);
+    });
 });
