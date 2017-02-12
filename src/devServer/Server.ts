@@ -8,6 +8,15 @@ import { utils } from "realm-utils";
 import * as process from "process";
 const watch = require("watch");
 
+export type HotReloadEmitter = (server: Server, sourceChangedInfo: any) => any;
+
+export interface ServerOptions {
+    port?: number;
+    root?: boolean | string;
+    emitter?: HotReloadEmitter;
+    httpServer?: boolean;
+}
+
 export class Server {
     public httpServer: HTTPServer;
     public socketServer: SocketServer;
@@ -21,7 +30,7 @@ export class Server {
      * 
      * @memberOf Server
      */
-    public start(str: string, opts: any): Server {
+    public start(str: string, opts?: ServerOptions): Server {
         // adding hot reload plugin
 
         opts = opts || {};
@@ -30,14 +39,14 @@ export class Server {
         let rootDir = path.dirname(buildPath);
 
         opts.root = opts.root !== undefined
-            ? (utils.isString(opts.root) ? ensureUserPath(opts.root) : false) : rootDir;
+            ? (utils.isString(opts.root) ? ensureUserPath(opts.root as string) : false) : rootDir;
         opts.port = opts.port || 4444;
         this.fuse.context.plugins.push(
             HotReloadPlugin({ port: opts.port })
         );
 
         // allow user to override hot reload emitter
-        let emitter = utils.isFunction(opts.emitter) ? opts.emitter : false;
+        let emitter: HotReloadEmitter | false = utils.isFunction(opts.emitter) ? opts.emitter : false;
 
         // let middlewares to connect
         this.httpServer = new HTTPServer(this.fuse);

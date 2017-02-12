@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { ensureUserPath } from "./Utils";
 import { ShimCollection } from "./ShimCollection";
-import { Server } from "./devServer/Server";
+import { Server, ServerOptions } from "./devServer/Server";
 import { JSONPlugin } from "./plugins/JSONplugin";
 import { PathMaster } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
@@ -169,17 +169,8 @@ export class FuseBox {
         }
     }
 
-
-
-    /**
-     * 
-     * 
-     * @param {string} str
-     * @param {*} opts
-     * 
-     * @memberOf FuseBox
-     */
-    public devServer(str: string, opts: any) {
+    /** Starts the dev server and returns it */
+    public devServer(str: string, opts?: ServerOptions) {
         let server = new Server(this);
         return server.start(str, opts);
     }
