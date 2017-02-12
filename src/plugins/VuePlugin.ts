@@ -22,6 +22,7 @@ export class VuePluginClass implements Plugin {
         if (context.useCache) {
             let cached = context.cache.getStaticCache(file);
             if (cached) {
+                file.isLoaded = true;
                 if (cached.sourceMap) {
                     file.sourceMap = cached.sourceMap;
                 }
