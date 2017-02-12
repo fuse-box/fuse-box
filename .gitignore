@@ -12,3 +12,4 @@ dist/
 sourcemaps.js.map
 .fusebox
 _dist
+npm-debug.log*
