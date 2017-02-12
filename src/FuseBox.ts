@@ -148,21 +148,16 @@ export class FuseBox {
 
 
     /**
-     * Make  a Bundle 
-     * 
-     * @param {string} str
-     * @param {boolean} [daemon] string to a daemon (watching)
-     * 
-     * @memberOf FuseBox
+     * Make a Bundle (or bundles)
      */
-    public bundle(str: any, bundleReady?: any) {
+    public bundle(str: string | { [bundleStr: string]: /** outFile */ string }, bundleReady?: any) {
         if (utils.isString(str)) {
-            return this.initiateBundle(str, bundleReady);
+            return this.initiateBundle(str as string, bundleReady);
         }
         if (utils.isPlainObject(str)) {
             let items = str;
-            return each(items, (bundleStr, outFile) => {
-                let newConfig = Object.assign(this.opts, { outFile: outFile })
+            return each(items, (bundleStr: string, outFile: string) => {
+                let newConfig = Object.assign({}, this.opts, { outFile: outFile });
                 let fuse = FuseBox.init(newConfig);
                 return fuse.initiateBundle(bundleStr);
             });
