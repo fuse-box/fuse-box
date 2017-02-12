@@ -38,7 +38,6 @@ export function ensureUserPath(userPath: string) {
     }
     let dir = path.dirname(userPath);
     mkdirp.sync(dir);
-
     return userPath;
 }
 

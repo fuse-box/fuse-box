@@ -11,7 +11,9 @@ const watch = require("watch");
 export type HotReloadEmitter = (server: Server, sourceChangedInfo: any) => any;
 
 export interface ServerOptions {
+    /** Defaults to 4444 if not specified */
     port?: number;
+    
     root?: boolean | string;
     emitter?: HotReloadEmitter;
     httpServer?: boolean;
