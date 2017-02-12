@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { ensureUserPath } from "./Utils";
 import { ShimCollection } from "./ShimCollection";
-import { Server } from "./devServer/Server";
+import { Server, ServerOptions } from "./devServer/Server";
 import { JSONPlugin } from "./plugins/JSONplugin";
 import { PathMaster } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
@@ -148,43 +148,29 @@ export class FuseBox {
 
 
     /**
-     * Make  a Bundle 
-     * 
-     * @param {string} str
-     * @param {boolean} [daemon] string to a daemon (watching)
-     * 
-     * @memberOf FuseBox
+     * Make a Bundle (or bundles)
      */
-    public bundle(str: any, bundleReady?: any) {
+    public bundle(str: string | { [bundleStr: string]: /** outFile */ string }, bundleReady?: any) {
         if (utils.isString(str)) {
-            return this.initiateBundle(str, bundleReady);
+            return this.initiateBundle(str as string, bundleReady);
         }
         if (utils.isPlainObject(str)) {
             let items = str;
-            return each(items, (bundleStr, outFile) => {
-                let newConfig = Object.assign(this.opts, { outFile: outFile })
+            return each(items, (bundleStr: string, outFile: string) => {
+                let newConfig = Object.assign({}, this.opts, { outFile: outFile });
                 let fuse = FuseBox.init(newConfig);
                 return fuse.initiateBundle(bundleStr);
             });
         }
     }
 
-
-
-    /**
-     * 
-     * 
-     * @param {string} str
-     * @param {*} opts
-     * 
-     * @memberOf FuseBox
-     */
-    public devServer(str: string, opts: any) {
+    /** Starts the dev server and returns it */
+    public devServer(str: string, opts?: ServerOptions) {
         let server = new Server(this);
         return server.start(str, opts);
     }
 
-    public process(bundleData: BundleData, bundleReady?: any) {
+    public process(bundleData: BundleData, bundleReady?: () => any) {
         let bundleCollection = new ModuleCollection(this.context, this.context.defaultPackageName);
         bundleCollection.pm = new PathMaster(this.context, bundleData.homeDir);
 

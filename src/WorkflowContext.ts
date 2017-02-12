@@ -10,9 +10,6 @@ import { utils } from "realm-utils";
 import { EventEmitter } from "events";
 import { ensureUserPath } from './Utils';
 
-const appRoot = require("app-root-path");
-const mkdirp = require("mkdirp");
-
 /**
  * Interface for a FuseBox plugin
  */
@@ -234,34 +231,20 @@ export class WorkFlowContext {
         return this.initialLoad === true;
     }
 
-
-    /**
-     * Makes sure that the folder section of `userPath` exists
-     * (creates one if it doesn't)
-     */
-    public ensureUserPath(userPath: string) {
-        if (!path.isAbsolute(userPath)) {
-            userPath = path.join(appRoot.path, userPath);
-        }
-        let dir = path.dirname(userPath);
-        mkdirp.sync(dir);
-        return userPath;
-    }
-
-    public writeOutput(fn?: () => any) {
+    public writeOutput(outFileWritten?: () => any) {
         this.initialLoad = false;
         let res = this.source.getResult();
         // Writing sourcemaps
         if (this.sourceMapConfig && this.sourceMapConfig.outFile) {
-            let target = this.ensureUserPath(this.sourceMapConfig.outFile);
+            let target = ensureUserPath(this.sourceMapConfig.outFile);
             fs.writeFile(target, res.sourceMap, () => { });
         }
         // writing target
         if (this.outFile) {
-            let target = this.ensureUserPath(this.outFile);
+            let target = ensureUserPath(this.outFile);
             fs.writeFile(target, res.content, () => {
-                if (utils.isFunction(fn)) {
-                    fn();
+                if (utils.isFunction(outFileWritten)) {
+                    outFileWritten();
                 }
             });
         }
