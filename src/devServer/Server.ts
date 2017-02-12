@@ -38,11 +38,12 @@ export class Server {
         let buildPath = ensureUserPath(this.fuse.context.outFile);
         let rootDir = path.dirname(buildPath);
 
-        opts.root = opts.root !== undefined
+        const root: string | boolean = opts.root !== undefined
             ? (utils.isString(opts.root) ? ensureUserPath(opts.root as string) : false) : rootDir;
-        opts.port = opts.port || 4444;
+        const port = opts.port || 4444;
+
         this.fuse.context.plugins.push(
-            HotReloadPlugin({ port: opts.port })
+            HotReloadPlugin({ port })
         );
 
         // allow user to override hot reload emitter
@@ -53,9 +54,9 @@ export class Server {
 
         process.nextTick(() => {
             if (opts.httpServer === false) {
-                SocketServer.startSocketServer(opts.port, this.fuse);
+                SocketServer.startSocketServer(port, this.fuse);
             } else {
-                this.httpServer.launch(opts);
+                this.httpServer.launch({ root, port });
             }
 
             this.socketServer = SocketServer.getInstance();
