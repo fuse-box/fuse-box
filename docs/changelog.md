@@ -3,16 +3,17 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
-| 1.3.309             | Clear Interval, avoiding frantic bundle call on fileChange
-| 1.3.308             | Preventing babel-plugin from transpling all npm deps. Issue [108](https://github.com/fuse-box/fuse-box/issues/108)
-| 1.3.307             | Fixed broken tsConfig property
-| 1.3.306             | Added file.properties to the API. Removed buffer
-| 1.3.305             | Fixed errors related to Buffer. It is properly shimmed now, and fuse is serving a native "buffer" on server
-| 1.3.304             | Fixed tsConfig property
-| 1.3.303             | Added object-assign-polyfill to `process`
-| 1.3.302             | PR [101](https://github.com/fuse-box/fuse-box/pull/101) merged 
-| 1.3.301             | Quick fix in the API
-| 1.3.97-300          | Preparing test runner
+| 1.3.110             | Automatic tsconfig.json lookup
+| 1.3.109             | Clear Interval, avoiding frantic bundle call on fileChange
+| 1.3.108             | Preventing babel-plugin from transpling all npm deps. Issue [108](https://github.com/fuse-box/fuse-box/issues/108)
+| 1.3.107             | Fixed broken tsConfig property
+| 1.3.106             | Added file.properties to the API. Removed buffer
+| 1.3.105             | Fixed errors related to Buffer. It is properly shimmed now, and fuse is serving a native "buffer" on server
+| 1.3.104             | Fixed tsConfig property
+| 1.3.103             | Added object-assign-polyfill to `process`
+| 1.3.102             | PR [101](https://github.com/fuse-box/fuse-box/pull/101) merged 
+| 1.3.101             | Quick fix in the API
+| 1.3.97-100          | Preparing test runner
 | 1.3.96              | Many bundles at once
 | 1.3.95              | SVG Support in CSSResourcePlugin
 | 1.3.90-94           | Tweaking CSSResourcePlugin
