@@ -1,5 +1,5 @@
 const should = require('should');
-const build = require(`../${process.env.TRAVIS ? "dist" : "build"}/commonjs/index.js`);
+const build = require(`../dist/commonjs/index.js`);
 const getTestEnv = require('./fixtures/lib').getTestEnv;
 const SassPlugin = build.SassPlugin;
 const RawPlugin = build.RawPlugin;
@@ -16,9 +16,11 @@ describe('SassPlugin', () => {
     it('Should return compiled css', () => {
         return getTestEnv({
             'style.scss': file
-        }, '>style.scss', {plugins: [
-            [SassPlugin({}), RawPlugin()]
-        ]}).then(root => {
+        }, '>style.scss', {
+            plugins: [
+                [SassPlugin({}), RawPlugin()]
+            ]
+        }).then(root => {
             let result = root.FuseBox.import('./style.scss');
 
             result.should.equal(`body {

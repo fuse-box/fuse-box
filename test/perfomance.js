@@ -1,5 +1,5 @@
 const should = require("should");
-const build = require(`../${process.env.TRAVIS ? "dist" : "build"}/commonjs/index.js`);
+const build = require(`../dist/commonjs/index.js`);
 const FuseBox = build.FuseBox;
 
 const IS_CI = 'CI' in process.env;
