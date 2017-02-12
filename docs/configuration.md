@@ -2,6 +2,8 @@
 
 The concept of FuseBox is simple. Bundle anything for frontend and server without a headache. Simply put, you can copy paste a simple config down below and bundle some heavy module like `babel-core` or `babel-generator`. But let's get started and break down all available options in fusebox.
 
+> App Root Path: We resolve a few relative paths to `appRootPath` for your convinience. Generally its the folder containing `package.json`.
+
 ## Initialisation
 
 Initialise a fuse-box instance like so. Each instance will handle 1 bundle.
@@ -11,20 +13,20 @@ FuseBox.init({ /* you config is here */ })
 
 ## Home directory
 
-That's your source folder. It can be an absolute path, Or it can be relative to the current `process.cwd()`.
+That's your source folder. It can be an absolute path, Or relative to `process.cwd()`.
 
 ```js
-FuseBox.init({ 
+FuseBox.init({
   homeDir : "./src"
 })
 ```
 
 ## Out file
 
-That's your bundle file. It can be an absolute path, Or it can be relative to the current `process.cwd()`.
+That's your bundle file. It can be an absolute path, Or relative to `appRootPath`.
 
 ```js
-FuseBox.init({ 
+FuseBox.init({
   homeDir : "./src",
   outFile : "./build/bundle.js"
 })
@@ -92,8 +94,8 @@ sourceMap: {
   outFile: "sourcemaps.js.map",
 }
 ```
-* `bundleReference` speaks for itself. This line will be added to the bundle. For example `//# sourceMappingURL=./sourcemaps.js.map`. If your client is not able to read them, make sure that the path is reachable. 
-* `outFile` is where the sourcemap is written to disk. It can be an absolute path, Or it can be relative to the current `process.cwd()`. 
+* `bundleReference` speaks for itself. This line will be added to the bundle. For example `//# sourceMappingURL=./sourcemaps.js.map`. If your client is not able to read them, make sure that the path is reachable.
+* `outFile` is where the sourcemap is written to disk. It can be an absolute path, Or relative to `appRootPath`.
 
 Sourcemaps currently work with [typescript](#typescript) and [BabelPlugin](#babel-plugin)
 

@@ -1,6 +1,5 @@
 import * as path from "path";
 const appRoot = require("app-root-path");
-
 const mkdirp = require("mkdirp");
 
 const MBLACKLIST = [

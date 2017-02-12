@@ -37,7 +37,7 @@ In this case, you will get everything that is required in the index, as well as 
 `**/*.js -path` - Bundle everything with dependencies except for module `path`
 
 ## Making many bundles at once
-You can specify many outFiles (relative to `process.cwd()`). Your config will be copied for every single process.
+You can specify many `{ outFile : bundleStr }`. Your config (excluding `outFile`) will be copied for every single process.
 
 For example:
 
