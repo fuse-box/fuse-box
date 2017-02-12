@@ -39,6 +39,8 @@ export class WorkFlowContext {
      */
     public defaultPackageName = "default";
 
+    public transformTypescript: any;
+
     public ignoreGlobal: string[] = [];
 
     public nodeModules: Map<string, ModuleCollection> = new Map();

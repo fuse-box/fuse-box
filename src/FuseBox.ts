@@ -31,6 +31,7 @@ export interface FuseBoxOptions {
     ignoreGlobal?: string[];
     outFile?: string;
     files?: any;
+    transformTypescript?: any;
 }
 
 
@@ -74,6 +75,9 @@ export class FuseBox {
                     ? opts.modulesFolder : path.join(appRoot.path, opts.modulesFolder);
         }
 
+        if (opts.transformTypescript) {
+            this.context.transformTypescript = opts.transformTypescript;
+        }
         if (opts.tsConfig) {
             this.context.tsConfig = opts.tsConfig;
         }

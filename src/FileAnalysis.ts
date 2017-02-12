@@ -76,13 +76,15 @@ export class FileAnalysis {
      */
     public parseUsingAcorn(options?: any) {
         try {
-            this.ast = acorn.parse(this.file.contents, {...options || {}, ...{
-                sourceType: "module",
-                tolerant: true,
-                ecmaVersion: 8,
-                plugins: { es7: true, jsx: true },
-                jsx: { allowNamespacedObjects: true }
-            }});
+            this.ast = acorn.parse(this.file.contents, {
+                ...options || {}, ...{
+                    sourceType: "module",
+                    tolerant: true,
+                    ecmaVersion: 8,
+                    plugins: { es7: true, jsx: true },
+                    jsx: { allowNamespacedObjects: true }
+                }
+            });
         } catch (err) {
             return PrettyError.errorWithContents(err, this.file);
         }

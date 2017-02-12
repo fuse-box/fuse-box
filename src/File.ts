@@ -321,7 +321,12 @@ export class File {
         this.loadContents();
 
 
+        if (utils.isFunction(this.context.transformTypescript)) {
+            this.contents = this.context.transformTypescript(this.contents);
+        }
+
         let result = ts.transpileModule(this.contents, this.context.getTypeScriptConfig());
+
 
         if (result.sourceMapText && this.context.sourceMapConfig) {
             let jsonSourceMaps = JSON.parse(result.sourceMapText);
