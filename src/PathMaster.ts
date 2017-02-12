@@ -312,14 +312,16 @@ export class PathMaster {
         let localLib = path.join(Config.LOCAL_LIBS, name);
         let modulePath = path.join(Config.NODE_MODULES_DIR, name);
 
-        if (fs.existsSync(localLib)) {
-            return readMainFile(localLib, false);
-        }
+
         if (this.context.customModulesFolder) {
             let customFolder = path.join(this.context.customModulesFolder, name);
             if (fs.existsSync(customFolder)) {
                 return readMainFile(customFolder, false);
             }
+        }
+
+        if (fs.existsSync(localLib)) {
+            return readMainFile(localLib, false);
         }
 
         if (this.rootPackagePath) {// handle a conflicting library
