@@ -1,12 +1,14 @@
 import * as fs from 'fs';
-import { File } from "../File";
-import { WorkFlowContext } from "./../WorkflowContext";
-import { Plugin } from "../WorkflowContext";
+import * as path from 'path';
+import * as appRoot from 'app-root-path';
+import {File} from "../File";
+import {WorkFlowContext} from "./../WorkflowContext";
+import {Plugin} from "../WorkflowContext";
 
 let babelCore;
 /**
- * 
- * 
+ *
+ *
  * @export
  * @class FuseBoxHTMLPlugin
  * @implements {Plugin}
@@ -15,8 +17,8 @@ export class BabelPluginClass implements Plugin {
 
 
     /**
-     * 
-     * 
+     *
+     *
      * @type {RegExp}
      * @memberOf FuseBoxHTMLPlugin
      */
@@ -27,10 +29,14 @@ export class BabelPluginClass implements Plugin {
     private config: any = {};
 
     constructor(opts: any) {
-        opts = opts || {};
-        if (opts.config !== undefined) {
-            this.config = opts.config;
+        let babelRcConfig;
+        let babelRcPath = path.join(appRoot.path, `.babelrc`);
+        if (fs.existsSync(babelRcPath)) {
+            babelRcConfig = fs.readFileSync(babelRcPath).toString();
+            if (babelRcConfig) babelRcConfig = JSON.parse(babelRcConfig);
         }
+        opts = opts || {};
+        this.config = opts.config ? opts.config : babelRcConfig;
         if (opts.test !== undefined) {
             this.test = opts.test;
         }
@@ -40,13 +46,11 @@ export class BabelPluginClass implements Plugin {
     }
 
 
-
-
     /**
-     * 
-     * 
+     *
+     *
      * @param {WorkFlowContext} context
-     * 
+     *
      * @memberOf FuseBoxHTMLPlugin
      */
     public init(context: WorkFlowContext) {
@@ -56,10 +60,10 @@ export class BabelPluginClass implements Plugin {
 
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {File} file
-     * 
+     *
      * @memberOf FuseBoxHTMLPlugin
      */
     public transform(file: File, ast: any) {
@@ -103,7 +107,8 @@ export class BabelPluginClass implements Plugin {
         }
 
     }
-};
+}
+;
 
 export const BabelPlugin = (opts: any) => {
     return new BabelPluginClass(opts);

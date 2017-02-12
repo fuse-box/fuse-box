@@ -1,4 +1,4 @@
-const fsbx = require("./../build/commonjs/index.js");
+const fsbx = require("./../dist/commonjs/index.js");
 const watch = require("watch");
 
 //global.Promise = require('bluebird')
@@ -17,7 +17,7 @@ let fuseBox = FuseBox.init({
     plugins: [
         fsbx.BabelPlugin({
             config: {
-                sourceMaps: true,
+                sourceMaps: false,
                 presets: ["es2015"]
             }
         })
