@@ -31,7 +31,7 @@ export interface FuseBoxOptions {
     ignoreGlobal?: string[];
     outFile?: string;
     files?: any;
-    transformTypescript?: any;
+    transformTypescript?: (contents: string) => string;
 }
 
 
