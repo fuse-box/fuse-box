@@ -11,7 +11,7 @@ export interface HTTPServerOptions {
 
     /** 
      * If specfied this is the folder served from express.static
-     * It can be an absolute path or relative to `process.cwd()`
+     * It can be an absolute path or relative to `appRootPath`
      **/
     root?: string | boolean;
 }
