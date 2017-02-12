@@ -231,7 +231,7 @@ export class WorkFlowContext {
         return this.initialLoad === true;
     }
 
-    public writeOutput(fn?: () => any) {
+    public writeOutput(outFileWritten?: () => any) {
         this.initialLoad = false;
         let res = this.source.getResult();
         // Writing sourcemaps
@@ -243,8 +243,8 @@ export class WorkFlowContext {
         if (this.outFile) {
             let target = ensureUserPath(this.outFile);
             fs.writeFile(target, res.content, () => {
-                if (utils.isFunction(fn)) {
-                    fn();
+                if (utils.isFunction(outFileWritten)) {
+                    outFileWritten();
                 }
             });
         }

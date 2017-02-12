@@ -175,7 +175,7 @@ export class FuseBox {
         return server.start(str, opts);
     }
 
-    public process(bundleData: BundleData, bundleReady?: any) {
+    public process(bundleData: BundleData, bundleReady?: () => any) {
         let bundleCollection = new ModuleCollection(this.context, this.context.defaultPackageName);
         bundleCollection.pm = new PathMaster(this.context, bundleData.homeDir);
 
