@@ -21,6 +21,10 @@ FuseBox.init({
 })
 ```
 
+* bundling input files are relative to `homeDir`.
+* this is the folder that we watch for changes when using the `devServer`.
+* this is the folder we check for any `tsconfig.json` (can be changed using the `tsConfig` option).
+
 ## Out file
 
 That's your bundle file. It can be an absolute path, Or relative to `appRootPath`.
