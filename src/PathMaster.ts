@@ -5,7 +5,12 @@ import * as path from "path";
 import * as fs from "fs";
 import { Config } from "./Config";
 
+/**
+ * If a import url isn't relative
+ * and only has ascii + @ in the name it is considered a node module
+ */
 const NODE_MODULE = /^([a-z@].*)$/;
+
 export interface INodeModuleRequire {
     name: string;
     target?: string;
