@@ -4,9 +4,6 @@ import { WorkFlowContext, Plugin } from "./WorkflowContext";
 import { IPathInformation } from "./PathMaster";
 import * as fs from "fs";
 import { utils, each } from "realm-utils";
-import { ensureUserPath } from './Utils';
-
-import * as ts from "typescript";
 
 
 /**
@@ -350,7 +347,7 @@ export class File {
                 cachedContent = this.headerContent.join("\n") + "\n" + cachedContent;
             }
 
-            this.context.emmitter.emit("source-changed", {
+            this.context.sourceChangedEmitter.emit({
                 type: "js",
                 content: cachedContent,
                 path: this.info.fuseBoxPath,

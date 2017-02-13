@@ -4,7 +4,7 @@ import { File } from "./File";
 export class CollectionSource {
     constructor(public context: WorkFlowContext) { }
 
-    public get(collection: ModuleCollection, withSourceMaps: boolean = false): Promise<string> {
+    public get(collection: ModuleCollection): Promise<string> {
 
         if (collection.cachedContent) {
 
@@ -25,7 +25,6 @@ export class CollectionSource {
 
     }
     private resolveFiles(files: Map<string, File>): Promise<File[]> {
-        let cnt = [];
         let promises: Promise<any>[] = [];
         files.forEach(file => {
             file.resolving.forEach(p => {

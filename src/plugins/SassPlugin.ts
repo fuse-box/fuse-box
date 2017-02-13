@@ -1,4 +1,3 @@
-import * as path from "path";
 import { File } from "../File";
 import { WorkFlowContext } from "../WorkflowContext";
 import { Plugin } from "../WorkflowContext";

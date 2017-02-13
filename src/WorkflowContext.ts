@@ -7,9 +7,9 @@ import { IPackageInformation, IPathInformation, AllowedExtenstions } from "./Pat
 import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "./ModuleCache";
 import { utils } from "realm-utils";
-import { EventEmitter } from "events";
+import { EventEmitter } from "./EventEmitter";
 import { ensureUserPath, findFileBackwards } from './Utils';
-import * as process from 'process';
+import { SourceChangedEvent } from './devServer/Server';
 
 
 const appRoot = require("app-root-path");
@@ -33,7 +33,7 @@ export interface Plugin {
 export class WorkFlowContext {
     public shim: any;
 
-    public emmitter = new EventEmitter();
+    public sourceChangedEmitter = new EventEmitter<SourceChangedEvent>();
 
     /**
      * The default package name or the package name configured in options
@@ -93,7 +93,7 @@ export class WorkFlowContext {
     }
 
     public emitJavascriptHotReload(file: File) {
-        this.emmitter.emit("source-changed", {
+        this.sourceChangedEmitter.emit({
             type: "js",
             content: file.contents,
             path: file.info.fuseBoxPath,
@@ -207,8 +207,6 @@ export class WorkFlowContext {
         if (this.loadedTsConfig) {
             return this.loadedTsConfig;
         }
-
-        const ts = require("typescript");
 
         let url, configFile;
         let config: any = {

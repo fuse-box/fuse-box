@@ -34,7 +34,7 @@ export class Log {
         }
     }
 
-    public echoDefaultCollection(collection: ModuleCollection, contents: string, printFiles?: boolean) {
+    public echoDefaultCollection(collection: ModuleCollection, contents: string) {
         if (!this.printLog) {
             return;
         }
@@ -54,7 +54,7 @@ export class Log {
         cursor.reset();
     }
 
-    public echoCollection(collection: ModuleCollection, contents: string, printFiles?: boolean) {
+    public echoCollection(collection: ModuleCollection, contents: string) {
         if (!this.printLog) {
             return;
         }

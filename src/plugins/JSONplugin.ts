@@ -40,6 +40,6 @@ export class FuseBoxJSONPlugin implements Plugin {
     }
 };
 
-export const JSONPlugin = (opts?: any) => {
+export const JSONPlugin = () => {
     return new FuseBoxJSONPlugin();
 }

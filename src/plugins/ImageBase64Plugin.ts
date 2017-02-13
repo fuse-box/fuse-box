@@ -64,6 +64,6 @@ export class ImageBase64PluginClass implements Plugin {
     }
 };
 
-export const ImageBase64Plugin = (opts?: any) => {
+export const ImageBase64Plugin = () => {
     return new ImageBase64PluginClass();
 }

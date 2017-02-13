@@ -226,9 +226,9 @@ export class PropParser {
      *
      * @memberOf PropParser
      */
-    public set(...args) {
-        for (let i = 0; i < arguments.length; i++) {
-            let name = arguments[i];
+    public set(...args: any[]) {
+        for (let i = 0; i < args.length; i++) {
+            let name = args[i];
             if (!this.states.has(name)) {
                 this.states.add(name);
             }
@@ -241,9 +241,9 @@ export class PropParser {
      *
      * @memberOf PropParser
      */
-    public clean(...args) {
-        for (let i = 0; i < arguments.length; i++) {
-            let name = arguments[i];
+    public clean(...args: any[]) {
+        for (let i = 0; i < args.length; i++) {
+            let name = args[i];
             this.states.delete(name);
         }
     }
@@ -280,9 +280,9 @@ export class PropParser {
      *
      * @memberOf PropParser
      */
-    public unset(...args) {
-        for (let i = 0; i < arguments.length; i++) {
-            let name = arguments[i];
+    public unset(...args: any[]) {
+        for (let i = 0; i < args.length; i++) {
+            let name = args[i];
             this.states.delete(name);
         }
     }

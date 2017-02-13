@@ -61,10 +61,8 @@ interface IReference {
  * Considers a partial request
  * for Example
  * require("lodash/dist/hello")
- * @param {any} name
- * @returns
  */
-const $getNodeModuleName = (name) => {
+const $getNodeModuleName = (name: string) => {
     const n = name.charCodeAt(0);
     // https://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
     // basically lowcase alphabet starts with 97 ends with 122, and symbol @ is 64
@@ -98,8 +96,8 @@ const $getDir = (filePath: string) => {
  * @param {any} name
  * @returns
  */
-const $pathJoin = function (...string): string {
-    let parts = [];
+const $pathJoin = function (...string:string[]): string {
+    let parts: string[] = [];
     for (let i = 0, l = arguments.length; i < l; i++) {
         parts = parts.concat(arguments[i].split("/"));
     }
@@ -116,7 +114,7 @@ const $pathJoin = function (...string): string {
 /**
  * Adds javascript extension if no extension was spotted
  */
-const $ensureExtension = (name): string => {
+const $ensureExtension = (name: string): string => {
     let matched = name.match(/\.(\w{1,})$/);
     if (matched) {
         let ext = matched[1];
@@ -153,7 +151,11 @@ const $loadURL = (url: string) => {
 }
 
 
-const $getRef = (name, opts: any): IReference => {
+const $getRef = (name: string, opts: {
+    path?: string;
+    pkg?: string;
+    v?: { [pkg: string]: /** version e.g. `1.0.0`` */string }
+}): IReference => {
     let basePath = opts.path || "./";
     let pkg_name = opts.pkg || "default";
     let nodeModule = $getNodeModuleName(name);
@@ -244,9 +246,9 @@ const $getRef = (name, opts: any): IReference => {
  * Makes it possible to request files asynchronously
  * 
  */
-const $async = (file: string, cb) => {
+const $async = (file: string, cb: (imported?: any) => any) => {
     if ($isBrowser) {
-        var xmlhttp;
+        var xmlhttp: XMLHttpRequest;
         xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4) {
@@ -399,7 +401,7 @@ const $import = (name: string, opts: any = {}) => {
  */
 class FuseBox {
     public static packages = $packages;
-    public static mainFile;
+    public static mainFile: string;
     public static isBrowser = $isBrowser !== undefined;;
     public static isServer = !$isBrowser;
 
@@ -481,10 +483,10 @@ class FuseBox {
      * 
      * @memberOf FuseBox
      */
-    public static dynamic(path: string, str: string, opts?: any) {
+    public static dynamic(path: string, str: string, opts?: { pkg: string }) {
         let pkg = opts && opts.pkg || "default";
-        this.pkg(pkg, {}, function (___scope___) {
-            ___scope___.file(path, function (exports, require, module, __filename, __dirname) {
+        this.pkg(pkg, {}, function (___scope___: any) {
+            ___scope___.file(path, function(exports: any, require: any, module: any, __filename: string, __dirname: string) {
                 var res = new Function('__fbx__dnm__', 'exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
                 res(true, exports, require, module, __filename, __dirname, __root__);
             });
