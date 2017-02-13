@@ -25,7 +25,6 @@ export class CollectionSource {
 
     }
     private resolveFiles(files: Map<string, File>): Promise<File[]> {
-        let cnt = [];
         let promises: Promise<any>[] = [];
         files.forEach(file => {
             file.resolving.forEach(p => {

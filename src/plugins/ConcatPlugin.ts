@@ -10,7 +10,6 @@ import { Plugin } from "../WorkflowContext";
  * @implements {Plugin}
  */
 export class ConcatPluginClass implements Plugin {
-    private useDefault = true;
     private ext: any;
     private bundleName: string;
     private delimiter = "\n";

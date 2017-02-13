@@ -26,7 +26,6 @@ export class CSSPluginClass implements Plugin {
     private serve: any;
     private writeOptions: any;
     private bundle: any;
-    private urlRules: any;
 
     constructor(opts: any) {
         opts = opts || {};

@@ -12,9 +12,7 @@ import * as path from "path";
 import { each, utils, chain, Chainable } from "realm-utils";
 import { Config } from "./Config";
 import { BundleTestRunner } from "./testRunner/BundleTestRunner";
-import { FuseAPI } from './lib/FuseApi';
 const appRoot = require("app-root-path");
-const watch = require("watch");
 
 export interface FuseBoxOptions {
     homeDir?: string;

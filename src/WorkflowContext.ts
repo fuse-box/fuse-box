@@ -9,7 +9,6 @@ import { ModuleCache } from "./ModuleCache";
 import { utils } from "realm-utils";
 import { EventEmitter } from "./EventEmitter";
 import { ensureUserPath, findFileBackwards } from './Utils';
-import * as process from 'process';
 import { SourceChangedEvent } from './devServer/Server';
 
 
@@ -208,8 +207,6 @@ export class WorkFlowContext {
         if (this.loadedTsConfig) {
             return this.loadedTsConfig;
         }
-
-        const ts = require("typescript");
 
         let url, configFile;
         let config: any = {
