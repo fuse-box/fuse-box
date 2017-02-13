@@ -2,7 +2,7 @@
 
 The concept of FuseBox is simple. Bundle anything for frontend and server without a headache. Simply put, you can copy paste a simple config down below and bundle some heavy module like `babel-core` or `babel-generator`. But let's get started and break down all available options in fusebox.
 
-> App Root Path: We resolve a few relative paths to `appRootPath` for your convinience. Generally its the folder containing `package.json`.
+> App Root Path: We resolve a few relative paths to `appRootPath` for your convenience. Generally its the folder containing `package.json`.
 
 ## Initialisation
 
@@ -36,7 +36,7 @@ FuseBox.init({
 
 ## Cache
 
-You can turn off caching if you like. By default caching is on. FuseBox will create a folder `.fuse-box` in your project path, and store related files. Don't forget to add it to .gitgnore.
+You can turn off caching if you like. By default caching is on. FuseBox will create a folder `.fuse-box` in your project path, and store related files. Don't forget to add it to .gitignore.
 
 ```js
 FuseBox.init({
