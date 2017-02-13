@@ -32,7 +32,7 @@
 | 1.3.50            | Fixed caching issue
 | 1.3.49            | Added [EnvPlugin](#envplugin)
 | 1.3.48            | Added `FuseBox.packages` to the client API
-| 1.3.47            | Fixed a critical bug related to circual dep resolution on cache
+| 1.3.47            | Fixed a critical bug related to circular dep resolution on cache
 | 1.3.45-46         | Added few missing nodejs libs
 | 1.3.44            | Fixed an issue related to typescript helpers (typo)
 | 1.3.43            | Fixed [75](https://github.com/fuse-box/fuse-box/issues/75) Typescript helpers

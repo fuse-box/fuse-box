@@ -20,7 +20,7 @@ Follow us on [twitter](https://twitter.com/FuseBoxJS)
 
 Watch a [4 minute intro video on youtube](https://www.youtube.com/watch?v=gCfWVRsWoKA).
 
-- [Offical Documentation](http://fuse-box.org/)
+- [Official Documentation](http://fuse-box.org/)
 - [Submit an Issue](https://github.com/fuse-box/fuse-box/issues/new)
 - [Make Documentation Better](https://github.com/fuse-box/fuse-box/tree/master/docs)
 - [Join Gitter Channel](https://gitter.im/fusebox-bundler/Lobby) (we are active!)
