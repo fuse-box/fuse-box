@@ -4,7 +4,7 @@ import { File } from "./File";
 export class CollectionSource {
     constructor(public context: WorkFlowContext) { }
 
-    public get(collection: ModuleCollection, withSourceMaps: boolean = false): Promise<string> {
+    public get(collection: ModuleCollection): Promise<string> {
 
         if (collection.cachedContent) {
 
