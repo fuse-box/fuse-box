@@ -283,6 +283,13 @@ export class PathMaster {
                 } else {
                     entryFile = path.join(folder, "index.js");
                 }
+                if (json.browser) {
+                  if (typeof json.browser === "object") {
+                    entryFile = path.join(folder, json.browser[json.main]);
+                  } else {
+                    entryFile = path.join(folder, json.browser);
+                  }
+                }
 
                 entryRoot = path.dirname(entryFile);
                 return {
