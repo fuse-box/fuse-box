@@ -35,8 +35,16 @@ export interface IPackageInformation {
     customBelongsTo?: string;
 }
 
+/**
+ * Manages the allowed extensions e.g. 
+ * should user be allowed to do `require('./foo.ts')`
+ */
 export class AllowedExtenstions {
+    /** 
+     * Users are allowed to require files with these extensions by default
+     **/
     public static list: Set<string> = new Set([".js", ".ts", ".tsx", ".json", ".xml", ".css", ".html"]);
+
     public static add(name: string) {
         if (!this.list.has(name)) {
             this.list.add(name);
