@@ -69,7 +69,7 @@ export class Server {
 
             this.socketServer = SocketServer.getInstance();
 
-            this.fuse.context.emmitter.on((info) => {
+            this.fuse.context.sourceChangedEmitter.on((info) => {
                 if (this.fuse.context.isFirstTime() === false) {
                     this.fuse.context.log.echo(`Source changed for ${info.path}`);
                     if (emitter) {

@@ -166,7 +166,7 @@ export class CSSPluginClass implements Plugin {
             let cssContent = this.minify ? this.minifyContents(file.contents) : file.contents;
             let safeContents = JSON.stringify(cssContent);
 
-            file.context.emmitter.emit({
+            file.context.sourceChangedEmitter.emit({
                 type: "css",
                 content: cssContent,
                 path: file.info.fuseBoxPath,

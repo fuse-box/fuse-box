@@ -33,7 +33,7 @@ export interface Plugin {
 export class WorkFlowContext {
     public shim: any;
 
-    public emmitter = new EventEmitter<SourceChangedEvent>();
+    public sourceChangedEmitter = new EventEmitter<SourceChangedEvent>();
 
     /**
      * The default package name or the package name configured in options
@@ -93,7 +93,7 @@ export class WorkFlowContext {
     }
 
     public emitJavascriptHotReload(file: File) {
-        this.emmitter.emit({
+        this.sourceChangedEmitter.emit({
             type: "js",
             content: file.contents,
             path: file.info.fuseBoxPath,
