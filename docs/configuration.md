@@ -13,7 +13,7 @@ FuseBox.init({ /* you config is here */ })
 
 ## Home directory
 
-That's your source folder. It can be an absolute path, Or relative to `process.cwd()`.
+That's your source folder. It can be an absolute path, Or relative to `appRootPath`.
 
 ```js
 FuseBox.init({
@@ -24,6 +24,8 @@ FuseBox.init({
 ## Out file
 
 That's your bundle file. It can be an absolute path, Or relative to `appRootPath`.
+
+> fuse-box takes care of creating required directory structure for you!
 
 ```js
 FuseBox.init({
@@ -37,7 +39,7 @@ FuseBox.init({
 You can turn off caching if you like. By default caching is on. FuseBox will create a folder `.fuse-box` in your project path, and store related files. Don't forget to add it to .gitgnore.
 
 ```js
-FuseBox.init({ 
+FuseBox.init({
   homeDir : "./src",
   outFile : "./build/bundle.js",
   cache : true
@@ -46,7 +48,7 @@ FuseBox.init({
 
 ## Custom modules folder
 
-You probably would want to test a package some day, or just have an abstraction on top of your code. For that, you can use `modulesFolder` property. It behaves exactly the same like another npm module, just in a custom folder. 
+You probably would want to test a package some day, or just have an abstraction on top of your code. For that, you can use `modulesFolder` property. It behaves exactly the same like another npm module, just in a custom folder.
 
 ```
 FuseBox.init({
@@ -60,7 +62,7 @@ You don't need to create `package.json` - `index.js` will work just fine. It wil
 
 
 ## Package name
-You default package name is `default`, You don't need to change it if you are not planning on having isolated bundles. 
+You default package name is `default`, You don't need to change it if you are not planning on having isolated bundles.
 Any bundle added as a script tag will share `default` package, keep that in mind. If you want to release a package (say to npm), you probably would want set a different name (to avoid scope collision)
 
 It's imperative having a __unique name__ (matching an npm package) when publishing a bundle to NPM.
@@ -74,7 +76,7 @@ FuseBox.init({
 
 ## Global variables
 
-You can expose your package variables to `window` (in browser) and `exports`in node respectively. 
+You can expose your package variables to `window` (in browser) and `exports`in node respectively.
 
 ```
 FuseBox.init({
@@ -112,7 +114,7 @@ FuseBox.init({
 })
 ```
 
-## Shimming 
+## Shimming
 
 For those libraries that are bundled to work in `window` (jquery) for example, you need to provide a shimming configuration.
 FuseBox will not do analysis on that file, it will simply add it to the top of the bundle.
