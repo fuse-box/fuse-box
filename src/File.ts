@@ -350,7 +350,7 @@ export class File {
                 cachedContent = this.headerContent.join("\n") + "\n" + cachedContent;
             }
 
-            this.context.emmitter.emit("source-changed", {
+            this.context.emmitter.emit({
                 type: "js",
                 content: cachedContent,
                 path: this.info.fuseBoxPath,

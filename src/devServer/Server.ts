@@ -10,6 +10,12 @@ const watch = require("watch");
 
 export type HotReloadEmitter = (server: Server, sourceChangedInfo: any) => any;
 
+export type SourceChangedEvent = {
+    type: 'js' | 'css',
+    content: string,
+    path: string
+}
+
 export interface ServerOptions {
     /** Defaults to 4444 if not specified */
     port?: number;
@@ -63,11 +69,7 @@ export class Server {
 
             this.socketServer = SocketServer.getInstance();
 
-            this.fuse.context.emmitter.addListener("source-changed", (info) => {
-
-                // type: "js",
-                // content: file.contents,
-                // path: file.info.fuseBoxPath,
+            this.fuse.context.emmitter.on((info) => {
                 if (this.fuse.context.isFirstTime() === false) {
                     this.fuse.context.log.echo(`Source changed for ${info.path}`);
                     if (emitter) {
@@ -76,7 +78,6 @@ export class Server {
                         this.socketServer.send("source-changed", info);
                     }
                 }
-
             });
 
 
