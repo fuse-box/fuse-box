@@ -1,5 +1,10 @@
+import { File } from "../File";
 import { WorkFlowContext } from "./../WorkflowContext";
 import { Plugin } from "../WorkflowContext";
+
+export interface CSSBundleOptions {
+
+}
 
 /**
  * 
@@ -10,11 +15,16 @@ import { Plugin } from "../WorkflowContext";
  */
 export class CSSBundleClass implements Plugin {
     public test: RegExp = /\.css$/;
-    constructor(opts: any = {}) { }
+    constructor(opts: CSSBundleOptions) { }
     public init(context: WorkFlowContext) { }
+
+    public transformGroup(group: File) {
+
+    }
+
 };
 
-export const CSSBundle = (opts?: any) => {
+export const CSSBundle = (opts: CSSBundleOptions = {}) => {
     return new CSSBundleClass(opts);
 };
 
