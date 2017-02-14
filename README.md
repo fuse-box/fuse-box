@@ -18,6 +18,8 @@ FuseBox loves __typescript__, and does not require any additional configuration.
 
 Follow us on [twitter](https://twitter.com/FuseBoxJS)
 
+Upvote your [favourite feature](https://productpains.com/product/fusebox)
+
 Watch a [4 minute intro video on youtube](https://www.youtube.com/watch?v=gCfWVRsWoKA).
 
 - [Official Documentation](http://fuse-box.org/)
