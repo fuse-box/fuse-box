@@ -96,7 +96,7 @@ const $getDir = (filePath: string) => {
  * @param {any} name
  * @returns
  */
-const $pathJoin = function (...string:string[]): string {
+const $pathJoin = function (...string: string[]): string {
     let parts: string[] = [];
     for (let i = 0, l = arguments.length; i < l; i++) {
         parts = parts.concat(arguments[i].split("/"));
@@ -486,7 +486,7 @@ class FuseBox {
     public static dynamic(path: string, str: string, opts?: { pkg: string }) {
         let pkg = opts && opts.pkg || "default";
         this.pkg(pkg, {}, function (___scope___: any) {
-            ___scope___.file(path, function(exports: any, require: any, module: any, __filename: string, __dirname: string) {
+            ___scope___.file(path, function (exports: any, require: any, module: any, __filename: string, __dirname: string) {
                 var res = new Function('__fbx__dnm__', 'exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
                 res(true, exports, require, module, __filename, __dirname, __root__);
             });

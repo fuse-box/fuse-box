@@ -27,7 +27,7 @@ export class TypeScriptHelpersClass implements Plugin {
     constructor(opts: any) {
         opts = opts || {};
 
-        let folder = path.join(Config.LOCAL_LIBS, "fuse-typescript-helpers")
+        let folder = path.join(Config.FUSEBOX_MODULES, "fuse-typescript-helpers")
         let files = fs.readdirSync(folder);
         files.forEach(fileName => {
             let contents = fs.readFileSync(path.join(folder, fileName)).toString();

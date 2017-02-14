@@ -1,4 +1,4 @@
-const build = require(`../../${process.env.TRAVIS ? "dist" : "build"}/commonjs/index.js`);
+const build = require(`../../dist/commonjs/index.js`);
 const fs = require("fs");
 
 const FuseBox = build.FuseBox;
@@ -26,7 +26,7 @@ exports.getTestEnv = (files, str, config, returnConcat) => {
 
             let fn = new Function("window", "__root__", str);
             fn(scope, scope);
-            
+
             return resolve(scope);
         });
     });

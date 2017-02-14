@@ -65,7 +65,7 @@ export class CSSPluginClass implements Plugin {
 
     public bundleStart(context: WorkFlowContext) {
 
-        let lib = path.join(Config.LOCAL_LIBS, "fsbx-default-css-plugin", "index.js")
+        let lib = path.join(Config.FUSEBOX_MODULES, "fsbx-default-css-plugin", "index.js")
         context.source.addContent(fs.readFileSync(lib).toString());
     }
 

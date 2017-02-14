@@ -18,22 +18,28 @@ let projectCommonjs = ts.createProject('src/tsconfig.json', {
     target: 'es6',
 });
 
-let projectFrontend = ts.createProject('src-frontend/tsconfig.json', {
+let projectLoader = ts.createProject('src/loader/tsconfig.json', {
 
 });
-gulp.task('src-frontend', () => {
-    return gulp.src('src-frontend/**/*.ts')
-        .pipe(projectFrontend()).js
+gulp.task('dist-loader', () => {
+    return gulp.src('src/loader/LoaderAPI.ts')
+        .pipe(projectLoader()).js
         .pipe(wrap('(function(__root__){ <%= contents %> \nreturn __root__["FuseBox"] = FuseBox; } )(this)'))
         .pipe(rename('fusebox.js'))
-        .pipe(gulp.dest('assets/frontend'))
+        .pipe(gulp.dest('modules/fuse-box-loader-api'))
         .pipe(rename('fusebox.min.js'))
         .pipe(uglify())
         .pipe(replace(/;$/, ''))
         .pipe(replace(/^\!/, ''))
-        .pipe(gulp.dest('assets/frontend'))
+        .pipe(gulp.dest('modules/fuse-box-loader-api'))
 
-})
+});
+
+gulp.task('minify-loader', function() {
+    return gulp.src('modules/fuse-box-loader-api/fusebox.js')
+        .pipe(uglify())
+        .pipe(rename('fusebox.min.js')).pipe(gulp.dest('modules/fuse-box-loader-api'))
+});
 
 
 gulp.task('publish', function(done) {
@@ -68,29 +74,6 @@ gulp.task('npm-publish', function(done) {
         done()
     });
 });
-gulp.task('commit', ['dist', 'minify-frontend'], function(done) {
-    const readline = require('readline');
-
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-
-    rl.question('What are the updates? ', (text) => {
-        // TODO: Log the answer in a database
-        child_process.exec(`git add .; git commit -m "${text}" -a; git push origin master`, (error, stdout, stderr) => {
-            if (error) {
-                console.error(`exec error: ${error}`);
-                return;
-            }
-            console.log(`stdout: ${stdout}`);
-            console.log(`stderr: ${stderr}`);
-            done();
-        });
-
-        rl.close();
-    });
-});
 
 gulp.task('dist-typings', () => {
     let result = gulp.src('src/**/*.ts')
@@ -99,7 +82,7 @@ gulp.task('dist-typings', () => {
 });
 
 gulp.task('dist-commonjs', () => {
-    let result = gulp.src('src/**/*.ts')
+    let result = gulp.src(['src/**/*.ts', "!./src/loader/LoaderAPI.ts"])
         .pipe(sourcemaps.init())
         .pipe(projectCommonjs());
     return result.js.pipe(gulp.dest('dist/commonjs'));
@@ -119,16 +102,12 @@ gulp.task('hello', function() {
     });
 });
 
-gulp.task('minify-frontend', function() {
-    return gulp.src('assets/fusebox.js')
-        .pipe(uglify())
-        .pipe(rename('fusebox.min.js')).pipe(gulp.dest('assets/'))
-});
 
-gulp.task('watch', ['dist-commonjs', 'src-frontend'], function() {
 
-    gulp.watch(['src-frontend/**/*.ts'], () => {
-        runSequence('src-frontend');
+gulp.task('watch', ['dist-commonjs', 'dist-loader'], function() {
+
+    gulp.watch(['dist-loader/**/*.ts'], () => {
+        runSequence('dist-loader');
     });
 
 
@@ -148,6 +127,6 @@ gulp.task('uglify-test', function() {
         .pipe(rename('out.min.js')).pipe(gulp.dest('./'))
 });
 
-gulp.task('dist', ['dist-typings', 'dist-commonjs', 'src-frontend'], function() {
+gulp.task('dist', ['dist-typings', 'dist-commonjs', 'dist-loader'], function() {
 
 });

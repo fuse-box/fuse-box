@@ -184,7 +184,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         this.concat.add(null, "})");
 
         if (context.standaloneBundle) {
-            let fuseboxLibFile = path.join(Config.ASSETS_DIR, "frontend", "fusebox.min.js");
+            let fuseboxLibFile = path.join(Config.FUSEBOX_MODULES, "fuse-box-loader-api", "fusebox.min.js");
             let wrapper = fs.readFileSync(fuseboxLibFile).toString();
             this.concat.add(null, `(${wrapper})`);
         } else {
