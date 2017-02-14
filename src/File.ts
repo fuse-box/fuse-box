@@ -1,6 +1,6 @@
 import { ModuleCollection } from "./ModuleCollection";
 import { FileAnalysis } from "./FileAnalysis";
-import { WorkFlowContext, Plugin } from "./WorkflowContext";
+import { WorkFlowContext, Plugin } from './WorkflowContext';
 import { IPathInformation } from "./PathMaster";
 import * as fs from "fs";
 import { utils, each } from "realm-utils";
@@ -163,6 +163,20 @@ export class File {
     }
 
     /**
+     * Typescript transformation needs to be handled
+     * Before the actual transformation
+     * Can't exists within a chain group
+     */
+    public tryTypescriptPlugins() {
+        if (this.context.plugins) {
+            this.context.plugins.forEach((plugin: Plugin) => {
+                if (utils.isFunction(plugin.onTypescriptTransform)) {
+                    plugin.onTypescriptTransform(this);
+                }
+            });
+        }
+    }
+    /**
      * 
      * 
      * @param {*} [_ast]
@@ -318,12 +332,8 @@ export class File {
         const ts = require("typescript");
 
         this.loadContents();
-
-
-        if (utils.isFunction(this.context.transformTypescript)) {
-            this.contents = this.context.transformTypescript(this.contents);
-        }
-
+        // Calling it before transpileModule on purpose
+        this.tryTypescriptPlugins();
         let result = ts.transpileModule(this.contents, this.context.getTypeScriptConfig());
 
 
