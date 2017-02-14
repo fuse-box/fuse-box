@@ -177,6 +177,10 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         if (mainEntry) {
             this.concat.add(null, `FuseBox.main("${mainEntry}");`);
         }
+        if (context.defaultPackageName !== "default") {
+            this.concat.add(null, `FuseBox.defaultPackageName = ${JSON.stringify(context.defaultPackageName)};`);
+        }
+
         this.concat.add(null, "})");
 
         if (context.standaloneBundle) {
