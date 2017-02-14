@@ -1,1 +1,0 @@
-window.foobar = "foo bar from library";
