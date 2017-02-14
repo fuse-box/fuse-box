@@ -12,6 +12,7 @@ interface Plugin {
     dependencies?: string[];
     init: { (context: WorkFlowContext) };
     transform: { (file: File) };
+    onTypescriptTransform?: { (file: File) };
     bundleStart?(context: WorkFlowContext);
     bundleEnd?(context: WorkFlowContext);
 }
@@ -49,6 +50,21 @@ If for some reason we want to preserve file contents for a later reuse and overr
 `file.alternativeContent` which affects directly bundling process over [here](https://github.com/fuse-box/fuse-box/blob/96b646a632f886f296a533ccf4c45f436cf443f3/src/BundleSource.ts#L133)
 
 It can be use for the [concat](#concat-files) technique for example
+
+## Transforming typescript
+
+You can tranform typescript code before it actually gets to transpiling
+
+```
+const MySuperTranformation = {
+    onTypescriptTransform: (file) => {
+        file.contents += "\n console.log('I am here')";
+    }
+}
+FuseBox.init({
+    plugins : [MySuperTranformation]
+})
+```
 
 ## Concat files
 

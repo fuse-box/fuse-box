@@ -23,6 +23,7 @@ export interface Plugin {
     init?: { (context: WorkFlowContext) };
     transform?: { (file: File, ast?: any) };
     transformGroup?: { (file: File) };
+    onTypescriptTransform?: { (file: File) };
     bundleStart?(context: WorkFlowContext);
     bundleEnd?(context: WorkFlowContext);
 }

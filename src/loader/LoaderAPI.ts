@@ -2,7 +2,6 @@ declare let __root__: any;
 declare let __fbx__dnm__: any;
 
 const $isBrowser = typeof window !== "undefined" && window.navigator;
-
 // Patching global variable
 if ($isBrowser) {
     window["global"] = window;
@@ -162,7 +161,7 @@ const $loadURL = (url: string) => {
 const $getRef = (name: string, opts: {
     path?: string;
     pkg?: string;
-    v?: {[pkg: string]: /** version e.g. `1.0.0`` */string}
+    v?: { [pkg: string]: /** version e.g. `1.0.0`` */string }
 }): IReference => {
     let basePath = opts.path || "./";
     let pkg_name = opts.pkg || "default";
@@ -381,7 +380,7 @@ const $import = (name: string, opts: any = {}) => {
     let fuseBoxDirname = $getDir(validPath);
 
     locals.exports = {};
-    locals.module = {exports: locals.exports};
+    locals.module = { exports: locals.exports };
     locals.require = (name: string, optionalCallback: any) => {
         return $import(name, {
             pkg: pkgName,
@@ -413,7 +412,7 @@ class FuseBox {
     public static packages = $packages;
     public static mainFile: string;
     public static isBrowser = $isBrowser !== undefined;
-;
+    ;
     public static isServer = !$isBrowser;
 
     public static global(key: string, obj?: any) {
@@ -499,7 +498,7 @@ class FuseBox {
      *
      * @memberOf FuseBox
      */
-    public static dynamic(path: string, str: string, opts?: {pkg: string}) {
+    public static dynamic(path: string, str: string, opts?: { pkg: string }) {
         let pkg = opts && opts.pkg || "default";
         this.pkg(pkg, {}, function (___scope___: any) {
             ___scope___.file(path, function (exports: any, require: any, module: any, __filename: string, __dirname: string) {
@@ -546,7 +545,7 @@ class FuseBox {
         let _scope = pkg.s = {
             // Scope file
             file: (name: string, fn: any) => {
-                _files[name] = {fn: fn};
+                _files[name] = { fn: fn };
             },
         };
         return fn(_scope);
