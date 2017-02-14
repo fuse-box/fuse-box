@@ -278,19 +278,15 @@ export class PathMaster {
                 // Getting an entry point
                 let entryFile;
                 let entryRoot;
-                if (json.main) {
-                    entryFile = path.join(folder, json.main);
-                } else {
-                    entryFile = path.join(folder, "index.js");
-                }
                 if (json.browser) {
-                  if (typeof json.browser === "object") {
-                    entryFile = path.join(folder, json.browser[json.main]);
-                  } else {
-                    entryFile = path.join(folder, json.browser);
+                  if (typeof json.browser === "object" && json.browser[json.main]) {
+                    entryFile = json.browser[json.main];
+                  }
+                  if (typeof json.browser === "string") {
+                    entryFile = json.browser;
                   }
                 }
-
+                entryFile = path.join(folder, entryFile || json.main || "index.js");
                 entryRoot = path.dirname(entryFile);
                 return {
                     name: name,
