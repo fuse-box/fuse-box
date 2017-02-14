@@ -75,6 +75,7 @@ __1200 files to bundle__:
 * [Dynamic modules](http://fuse-box.org/#dynamic-modules) at runtime
 * [Tilde support](http://fuse-box.org/#point-to-the-root)
 * [DevServer and HMR](http://fuse-box.org/#dev-server-and-hmr) integrate with existing HTTP apps in 1 second!
+* Metadata e.g `__filename` for decorators.
 * Works everywhere for easy universal applications!
 
 There is so much more. FuseBox pushing it to a whole new level!
