@@ -460,6 +460,14 @@ class FuseBox {
         }
     }
 
+    /**
+     * Get list of all Modules
+     * @static
+     * @memberOf FuseBox
+     */
+    public static get packages() {
+        return $packages
+    }
     public static main(name: string) {
         this.mainFile = name;
         return FuseBox.import(name, {});
