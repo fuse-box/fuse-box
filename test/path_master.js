@@ -9,6 +9,7 @@ const getTestFolder = (name) => {
     return path.join(testFolder, name)
 }
 const testFolderShouldEqual = (a, b) => {
+    a = a.replace(/\\/g, '/');//for Windows OS
     let matched = a.indexOf(b) === a.length - b.length;
     if (!matched) {
         throw new Error(`${a} is not ${b}`);
