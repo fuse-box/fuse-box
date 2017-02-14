@@ -29,6 +29,7 @@ export class VuePluginClass implements Plugin {
                 file.analysis.skip();
                 file.analysis.dependencies = cached.dependencies;
                 file.contents = cached.contents;
+                
                 return;
             }
         }
