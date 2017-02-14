@@ -279,8 +279,13 @@ var FuseBox = (function () {
         $events[name].push(fn);
     };
     FuseBox.exists = function (path) {
-        var ref = $getRef(path, {});
-        return ref.file !== undefined;
+        try {
+            var ref = $getRef(path, {});
+            return ref.file !== undefined;
+        }
+        catch (err) {
+            return false;
+        }
     };
     FuseBox.remove = function (path) {
         var ref = $getRef(path, {});
@@ -330,7 +335,9 @@ var FuseBox = (function () {
         var _files = pkg.f = {};
         pkg.v = versions;
         var _scope = pkg.s = {
-            file: function (name, fn) { _files[name] = { fn: fn }; },
+            file: function (name, fn) {
+                _files[name] = { fn: fn };
+            },
         };
         return fn(_scope);
     };

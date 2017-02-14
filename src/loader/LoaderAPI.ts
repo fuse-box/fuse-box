@@ -34,8 +34,8 @@ const $events = $fsbx.e = $fsbx.e || {};
  * Contain information about user import;
  * Having FuseBox.import("./foo/bar") makes analysis on the string
  * Detects if it's package or not, explicit references are given as well
- * 
- * 
+ *
+ *
  * @interface IReference
  */
 interface IReference {
@@ -56,7 +56,7 @@ interface IReference {
     wildcard?: string;
 }
 
-/** 
+/**
  * $getNodeModuleName
  * Considers a partial request
  * for Example
@@ -104,10 +104,18 @@ const $pathJoin = function (...string: string[]): string {
     let newParts = [];
     for (let i = 0, l = parts.length; i < l; i++) {
         let part = parts[i];
-        if (!part || part === ".") { continue; }
-        if (part === "..") { newParts.pop(); } else { newParts.push(part); }
+        if (!part || part === ".") {
+            continue;
+        }
+        if (part === "..") {
+            newParts.pop();
+        } else {
+            newParts.push(part);
+        }
     }
-    if (parts[0] === "") { newParts.unshift(""); }
+    if (parts[0] === "") {
+        newParts.unshift("");
+    }
     return newParts.join("/") || (newParts.length ? "/" : ".");
 }
 
@@ -154,7 +162,7 @@ const $loadURL = (url: string) => {
 const $getRef = (name: string, opts: {
     path?: string;
     pkg?: string;
-    v?: { [pkg: string]: /** version e.g. `1.0.0`` */string }
+    v?: {[pkg: string]: /** version e.g. `1.0.0`` */string}
 }): IReference => {
     let basePath = opts.path || "./";
     let pkg_name = opts.pkg || "default";
@@ -242,9 +250,9 @@ const $getRef = (name: string, opts: {
 
 /**
  * $async
- * Async request 
+ * Async request
  * Makes it possible to request files asynchronously
- * 
+ *
  */
 const $async = (file: string, cb: (imported?: any) => any) => {
     if ($isBrowser) {
@@ -276,7 +284,8 @@ const $async = (file: string, cb: (imported?: any) => any) => {
     } else {
         if (/\.(js|json)$/.test(file)) {
             return cb(global["require"](file));
-        } return cb("");
+        }
+        return cb("");
     }
 }
 
@@ -294,7 +303,8 @@ const $trigger = (name: string, args: any) => {
             if (res === false) {
                 return false;
             }
-        };
+        }
+        ;
     }
 }
 
@@ -371,7 +381,7 @@ const $import = (name: string, opts: any = {}) => {
     let fuseBoxDirname = $getDir(validPath);
 
     locals.exports = {};
-    locals.module = { exports: locals.exports };
+    locals.module = {exports: locals.exports};
     locals.require = (name: string, optionalCallback: any) => {
         return $import(name, {
             pkg: pkgName,
@@ -395,14 +405,15 @@ const $import = (name: string, opts: any = {}) => {
 }
 
 /**
- * 
- * 
+ *
+ *
  * @class FuseBox
  */
 class FuseBox {
     public static packages = $packages;
     public static mainFile: string;
-    public static isBrowser = $isBrowser !== undefined;;
+    public static isBrowser = $isBrowser !== undefined;
+;
     public static isServer = !$isBrowser;
 
     public static global(key: string, obj?: any) {
@@ -414,12 +425,12 @@ class FuseBox {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @static
      * @param {string} name
      * @returns
-     * 
+     *
      * @memberOf FuseBox
      */
     public static import(name: string, opts: any) {
@@ -433,23 +444,28 @@ class FuseBox {
 
     /**
      * Check if a file exists in path
-     * 
+     *
      * @static
      * @param {string} path
      * @returns
-     * 
+     *
      * @memberOf FuseBox
      */
     public static exists(path: string) {
-        let ref = $getRef(path, {});
-        return ref.file !== undefined;
+        try {
+            let ref = $getRef(path, {});
+            return ref.file !== undefined;
+        }
+        catch (err) {
+            return false;
+        }
     }
 
     /**
      * Removing a module
      * @static
      * @param {string} path
-     * 
+     *
      * @memberOf FuseBox
      */
     public static remove(path: string) {
@@ -476,14 +492,14 @@ class FuseBox {
 
     /**
      * Registers a dynamic path
-     * 
+     *
      * @static
      * @param {string} path
      * @param {string} str
-     * 
+     *
      * @memberOf FuseBox
      */
-    public static dynamic(path: string, str: string, opts?: { pkg: string }) {
+    public static dynamic(path: string, str: string, opts?: {pkg: string}) {
         let pkg = opts && opts.pkg || "default";
         this.pkg(pkg, {}, function (___scope___: any) {
             ___scope___.file(path, function (exports: any, require: any, module: any, __filename: string, __dirname: string) {
@@ -508,18 +524,20 @@ class FuseBox {
     }
 
     /**
-     * 
+     *
      * Register a package
      * @static
      * @param {string} name
      * @param {*} versions
      * @param {*} fn
-     * 
+     *
      * @memberOf FuseBox
      */
     public static pkg(pkg_name: string, versions: any, fn: any) {
         // Let's not register a package scope twice
-        if ($packages[pkg_name]) { return fn($packages[pkg_name].s); }
+        if ($packages[pkg_name]) {
+            return fn($packages[pkg_name].s);
+        }
         // create new package
         let pkg: any = $packages[pkg_name] = {};
         let _files: any = pkg.f = {};
@@ -527,7 +545,9 @@ class FuseBox {
         pkg.v = versions;
         let _scope = pkg.s = {
             // Scope file
-            file: (name: string, fn: any) => { _files[name] = { fn: fn }; },
+            file: (name: string, fn: any) => {
+                _files[name] = {fn: fn};
+            },
         };
         return fn(_scope);
     }
