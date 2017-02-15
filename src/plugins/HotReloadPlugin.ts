@@ -1,17 +1,18 @@
 import { WorkFlowContext } from "./../WorkflowContext";
 import { Plugin } from "../WorkflowContext";
 
+export interface HotReloadPluginOptions { 
+    /** The port that the client JS connects to */
+    port?: number | string 
+}
+
 /**
- * 
- * 
- * @export
- * @class FuseBoxHTMLPlugin
- * @implements {Plugin}
+ * Hot reload plugin
  */
 export class HotReloadPluginClass implements Plugin {
     public dependencies = ["fusebox-hot-reload"];
     public port: any = "";
-    constructor(opts: { port?: number | string } = {}) {
+    constructor(opts: HotReloadPluginOptions = {}) {
         if (opts.port) {
             this.port = opts.port;
         }
@@ -23,7 +24,7 @@ export class HotReloadPluginClass implements Plugin {
     }
 };
 
-export const HotReloadPlugin = (opts?: any) => {
+export const HotReloadPlugin = (opts?: HotReloadPluginOptions) => {
     return new HotReloadPluginClass(opts);
 };
 

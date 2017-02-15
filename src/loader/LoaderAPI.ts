@@ -1,6 +1,46 @@
 declare let __root__: any;
 declare let __fbx__dnm__: any;
 
+/** 
+ * Package name to version
+ */
+type PackageVersions = {
+    [pkg: string]: /** version e.g. `1.0.0`` */string
+}
+
+/**
+ * Holds the details for a loaded package
+ */
+type PackageDetails = {
+    /** Holds the package scope */
+    s: {
+        entry?: string
+        file?: any
+    },
+    /** Holds package files */
+    f: {
+        [name: string]: {
+            fn: Function
+            /** Locals if any */
+            locals?: any
+        }
+    },
+    v: PackageVersions,
+}
+
+/**
+ * A runtime storage for FuseBox
+ */
+type FSBX = {
+    p?: {
+        [packageName: string]: PackageDetails;
+    },
+    /** FuseBox events */
+    e?: {
+        'after-import'?: any;
+    }
+}
+
 const $isBrowser = typeof window !== "undefined" && window.navigator;
 // Patching global variable
 if ($isBrowser) {
@@ -11,16 +51,20 @@ if ($isBrowser) {
 // In order for dynamic imports to work, we need to switch window to module.exports
 __root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports : __root__;
 
-// A runtime storage for Fusebox
-const $fsbx = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
+/** 
+ * A runtime storage for FuseBox
+ */
+const $fsbx: FSBX = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
     : global["$fsbx"] = global["$fsbx"] || {}; // in case of nodejs
 
 
 if (!$isBrowser) {
     global["require"] = require;
 }
-// All packages are here
-// Used to reference to the outside world
+/**
+ * All packages are here
+ *  Used to reference to the outside world
+ */
 const $packages = $fsbx.p = $fsbx.p || {};
 
 // A list of custom events
@@ -33,25 +77,26 @@ const $events = $fsbx.e = $fsbx.e || {};
  * Contain information about user import;
  * Having FuseBox.import("./foo/bar") makes analysis on the string
  * Detects if it's package or not, explicit references are given as well
- *
- *
- * @interface IReference
  */
 interface IReference {
     file?: any;
-    // serverReference is a result of nodejs require statement
-    // In case if module is not in a bundle
+    /**
+     * serverReference is a result of nodejs require statement
+     * In case if module is not in a bundle
+     */
     serverReference?: string;
-    // Current package name
+    /** Current package name */
     pkgName?: string;
-    // Custom version to take into a consideration
+    /** Custom version to take into a consideration */
     versions?: any;
-    // User path
+    /** User path */
     filePath?: string;
-    // Converted valid path (with extension)
-    // That can be recognized by FuseBox
+    /**
+     * Converted valid path (with extension)
+     * That can be recognized by FuseBox
+     */
     validPath?: string;
-    // Require with wildcards (e.g import("/lib/*"))
+    /** Require with wildcards (e.g import("/lib/*")) */
     wildcard?: string;
 }
 
@@ -84,7 +129,7 @@ const $getNodeModuleName = (name: string) => {
     }
 }
 
-// Gets file directory
+/** Gets file directory */
 const $getDir = (filePath: string) => {
     return filePath.substring(0, filePath.lastIndexOf('/')) || "./";
 }
@@ -92,10 +137,8 @@ const $getDir = (filePath: string) => {
 /**
  * Joins paths
  * Works like nodejs path.join
- * @param {any} name
- * @returns
  */
-const $pathJoin = function (...string: string[]): string {
+const $pathJoin = function(...string: string[]): string {
     let parts: string[] = [];
     for (let i = 0, l = arguments.length; i < l; i++) {
         parts = parts.concat(arguments[i].split("/"));
@@ -137,6 +180,10 @@ const $ensureExtension = (name: string): string => {
     return name + ".js";
 }
 
+/**
+ * Loads a url
+ *  inserts a script tag or a css link based on url extension
+ */
 const $loadURL = (url: string) => {
     if ($isBrowser) {
         let d = document;
@@ -157,11 +204,10 @@ const $loadURL = (url: string) => {
     }
 }
 
-
 const $getRef = (name: string, opts: {
     path?: string;
     pkg?: string;
-    v?: { [pkg: string]: /** version e.g. `1.0.0`` */string }
+    v?: PackageVersions;
 }): IReference => {
     let basePath = opts.path || "./";
     let pkg_name = opts.pkg || "default";
@@ -251,13 +297,12 @@ const $getRef = (name: string, opts: {
  * $async
  * Async request
  * Makes it possible to request files asynchronously
- *
  */
 const $async = (file: string, cb: (imported?: any) => any) => {
     if ($isBrowser) {
         var xmlhttp: XMLHttpRequest;
         xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
+        xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == 4) {
                 if (xmlhttp.status == 200) {
                     let contentType = xmlhttp.getResponseHeader("Content-Type");
@@ -312,8 +357,6 @@ const $trigger = (name: string, args: any) => {
  * With opt provided it's possible to set:
  *   1) Base directory
  *   2) Target package name
- * @param {any} name
- * @returns
  */
 const $import = (name: string, opts: any = {}) => {
 
@@ -376,7 +419,6 @@ const $import = (name: string, opts: any = {}) => {
         return file.locals.module.exports;
     }
     let locals: any = file.locals = {};
-    let __filename = name;
     let fuseBoxDirname = $getDir(validPath);
 
     locals.exports = {};
@@ -404,15 +446,12 @@ const $import = (name: string, opts: any = {}) => {
 }
 
 /**
- *
- *
- * @class FuseBox
+ * The FuseBox client side loader API
  */
 class FuseBox {
     public static packages = $packages;
     public static mainFile: string;
     public static isBrowser = $isBrowser !== undefined;
-    ;
     public static isServer = !$isBrowser;
 
     public static global(key: string, obj?: any) {
@@ -424,13 +463,7 @@ class FuseBox {
     }
 
     /**
-     *
-     *
-     * @static
-     * @param {string} name
-     * @returns
-     *
-     * @memberOf FuseBox
+     * Imports a module
      */
     public static import(name: string, opts: any) {
         return $import(name, opts);
@@ -443,12 +476,6 @@ class FuseBox {
 
     /**
      * Check if a file exists in path
-     *
-     * @static
-     * @param {string} path
-     * @returns
-     *
-     * @memberOf FuseBox
      */
     public static exists(path: string) {
         try {
@@ -461,11 +488,7 @@ class FuseBox {
     }
 
     /**
-     * Removing a module
-     * @static
-     * @param {string} path
-     *
-     * @memberOf FuseBox
+     * Removes a module
      */
     public static remove(path: string) {
         let ref = $getRef(path, {});
@@ -491,17 +514,17 @@ class FuseBox {
 
     /**
      * Registers a dynamic path
-     *
-     * @static
-     * @param {string} path
-     * @param {string} str
-     *
-     * @memberOf FuseBox
+     * 
+     * @param str a function that is invoked with
+     *  - `true, exports,require,module,__filename,__dirname,__root__`
      */
-    public static dynamic(path: string, str: string, opts?: { pkg: string }) {
+    public static dynamic(path: string, str: string, opts?: {
+        /** The name of the package */
+        pkg: string
+    }) {
         let pkg = opts && opts.pkg || "default";
-        this.pkg(pkg, {}, function (___scope___: any) {
-            ___scope___.file(path, function (exports: any, require: any, module: any, __filename: string, __dirname: string) {
+        this.pkg(pkg, {}, function(___scope___: any) {
+            ___scope___.file(path, function(exports: any, require: any, module: any, __filename: string, __dirname: string) {
                 var res = new Function('__fbx__dnm__', 'exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
                 res(true, exports, require, module, __filename, __dirname, __root__);
             });
@@ -525,21 +548,15 @@ class FuseBox {
     /**
      *
      * Register a package
-     * @static
-     * @param {string} name
-     * @param {*} versions
-     * @param {*} fn
-     *
-     * @memberOf FuseBox
      */
-    public static pkg(pkg_name: string, versions: any, fn: any) {
+    public static pkg(pkg_name: string, versions: PackageVersions, fn: Function) {
         // Let's not register a package scope twice
         if ($packages[pkg_name]) {
             return fn($packages[pkg_name].s);
         }
         // create new package
-        let pkg: any = $packages[pkg_name] = {};
-        let _files: any = pkg.f = {};
+        let pkg = $packages[pkg_name] = {} as PackageDetails;
+        let _files = pkg.f = {};
         // storing versions
         pkg.v = versions;
         let _scope = pkg.s = {

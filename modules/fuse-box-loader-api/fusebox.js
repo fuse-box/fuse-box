@@ -238,7 +238,6 @@ var $import = function (name, opts) {
         return file.locals.module.exports;
     }
     var locals = file.locals = {};
-    var __filename = name;
     var fuseBoxDirname = $getDir(validPath);
     locals.exports = {};
     locals.module = { exports: locals.exports };
@@ -263,7 +262,6 @@ var $import = function (name, opts) {
 var FuseBox = (function () {
     function FuseBox() {
     }
-    ;
     FuseBox.global = function (key, obj) {
         var target = $isBrowser ? window : global;
         if (obj === undefined) {
