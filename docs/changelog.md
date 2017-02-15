@@ -3,6 +3,7 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.3.114             | [Milestone 1](https://github.com/fuse-box/fuse-box/milestone/1?closed=1)
 | 1.3.113             | PR 152 (Code refactor). TTY shim fix. + Initial VUE plugin
 | 1.3.112             | Merged [PR 147](https://github.com/fuse-box/fuse-box/pull/147) + Few non-significant tweaks
 | 1.3.111             | Fixing [modulesFolder](http://fuse-box.org/#custom-modules-folder) priority, Related [issue 124](https://github.com/fuse-box/fuse-box/issues/124)
