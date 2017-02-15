@@ -531,17 +531,20 @@ class FuseBox {
         });
     }
 
-    public static flush(fileName?: string) {
+    /**
+     * Flushes the cache for the default package
+     * @param shouldFlush you get to chose if a particular file should be flushed from cache
+     */
+    public static flush(
+        shouldFlush?: (fileName: string) => boolean
+    ) {
         let def = $packages["default"];
-        if (fileName) {
-            if (def.f[fileName]) {
-                delete def.f[fileName].locals;
+        for (let fileName in def.f) {
+            const doFlush = !shouldFlush || shouldFlush(fileName);
+            if (doFlush) {
+                let file = def.f[fileName];
+                delete file.locals;    
             }
-            return;
-        }
-        for (let name in def.f) {
-            let file = def.f[name];
-            delete file.locals;
         }
     }
 
