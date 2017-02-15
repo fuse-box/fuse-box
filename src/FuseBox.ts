@@ -4,7 +4,7 @@ import { ShimCollection } from "./ShimCollection";
 import { Server, ServerOptions } from "./devServer/Server";
 import { JSONPlugin } from "./plugins/JSONplugin";
 import { PathMaster } from "./PathMaster";
-import { WorkFlowContext } from "./WorkflowContext";
+import { WorkFlowContext, Plugin } from "./WorkflowContext";
 import { CollectionSource } from "./CollectionSource";
 import { Arithmetic, BundleData } from "./Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";
@@ -22,7 +22,7 @@ export interface FuseBoxOptions {
     cache?: boolean;
     log?: boolean;
     globals?: { [packageName: string]: /** Variable name */ string };
-    plugins?: any[];
+    plugins?: Plugin[];
     shim?: any;
     standaloneBundle?: boolean;
     sourceMap?: any;
