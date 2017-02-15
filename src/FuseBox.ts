@@ -27,6 +27,7 @@ export interface FuseBoxOptions {
     standaloneBundle?: boolean;
     sourceMap?: any;
     ignoreGlobal?: string[];
+    serverBundle?: boolean;
     outFile?: string;
     files?: any;
     transformTypescript?: (contents: string) => string;
@@ -78,6 +79,10 @@ export class FuseBox {
         }
         if (opts.tsConfig) {
             this.context.tsConfig = opts.tsConfig;
+        }
+
+        if (opts.serverBundle !== undefined) {
+            this.context.serverBundle = opts.serverBundle;
         }
 
         this.context.plugins = opts.plugins || [JSONPlugin()];

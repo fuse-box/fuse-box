@@ -155,3 +155,16 @@ shim : {
 }
 ```
 Now you can reference it like  `window.ReactNative`, and require function is at your convenience.
+
+## Server Bundle
+
+In case you are running your bundle in `electron` for example,
+you might want to make fuse think that it is running on server.
+
+```
+FuseBox.init({
+    serverBundle : true
+})
+```
+
+Don't run that bundle in a traditional browser.

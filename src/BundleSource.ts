@@ -151,6 +151,12 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         }
         let mainEntry;
 
+        // handle server bundle
+
+        if (context.serverBundle) {
+            this.concat.add(null, `FuseBox.isServer = true;`);
+        }
+
         // Handle globals
         if (context.globals) {
             let data = [];

@@ -45,6 +45,11 @@ export class WorkFlowContext {
 
     public ignoreGlobal: string[] = [];
 
+    /**
+     * Explicitly target bundle to server
+     */
+    public serverBundle = false;
+
     public nodeModules: Map<string, ModuleCollection> = new Map();
 
     public libPaths: Map<string, IPackageInformation> = new Map();
