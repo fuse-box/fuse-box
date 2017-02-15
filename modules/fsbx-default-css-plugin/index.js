@@ -23,6 +23,10 @@ var __fsbx_css = function(__filename, contents) {
         }
     }
 }
+
+// TODO: Review
+FuseBox.includeStyle = __fsbx_css;
+
 FuseBox.on("async", function(name) {
     if (FuseBox.isServer) {
         return;

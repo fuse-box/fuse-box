@@ -22,7 +22,9 @@ module.exports = {
                 }
             }
             if (data.type === "css" && __fsbx_css) {
-                __fsbx_css(data.path, data.content)
+                var newContent = 'FuseBox.includeStyle('+JSON.stringify(data.path)+', '+JSON.stringify(data.content)+')';
+                FuseBox.dynamic(data.path, newContent);
+                __fsbx_css(data.path, data.content);
             }
         })
         client.on("error", (erro) => {
