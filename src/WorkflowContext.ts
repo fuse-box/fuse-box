@@ -19,13 +19,18 @@ const appRoot = require("app-root-path");
  */
 export interface Plugin {
     test?: RegExp;
-    dependencies?: string[];
     init?: { (context: WorkFlowContext) };
     transform?: { (file: File, ast?: any) };
     transformGroup?: { (file: File) };
     onTypescriptTransform?: { (file: File) };
     bundleStart?(context: WorkFlowContext);
     bundleEnd?(context: WorkFlowContext);
+
+    /**
+     * If provided then the dependencies are loaded on the client
+     *  before the plugin is invoked
+     */
+    dependencies?: string[];
 }
 
 /**
