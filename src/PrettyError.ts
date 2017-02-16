@@ -2,25 +2,25 @@ import { File } from "./File";
 const ansi = require("ansi");
 const cursor = ansi(process.stdout);
 /**
- * 
- * 
+ *
+ *
  * @export
  * @class PrettyTrace
  */
 export class PrettyError {
     /**
-     * Prints a pretty error 
+     * Prints a pretty error
      * Based on Acorn Exception
-     * 
+     *
      * It order for it work an exception must have err.loc with (line)
      * For example:
-     * 
+     *
      * Position { line: 1, column: 5 }
-     * 
+     *
      * @static
      * @param {*} position
      * @param {string} contents
-     * 
+     *
      * @memberOf PrettyTrace
      */
     public static errorWithContents(error: any, file: File) {
@@ -47,7 +47,7 @@ export class PrettyError {
                     l.white().bg.red().write(`${index + 1}  ${line}`);
                     l.bg.reset();
                 } else {
-                    l.brightBlack().write(`${index + 1} `).red().write(` ${line}`)
+                    l.reset().write(`${index + 1} `).red().write(` ${line}`)
                 }
                 l.write("\n").reset();
             }
