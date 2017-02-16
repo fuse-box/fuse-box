@@ -52,7 +52,7 @@ export class BundleSource {
      * @memberOf BundleSource
      */
     public init() {
-        this.concat.add(null, "(function(FuseBox){FuseBox.$fuse$=FuseBox");
+        this.concat.add(null, "(function(FuseBox){FuseBox.$fuse$=FuseBox;");
     }
 
     /**

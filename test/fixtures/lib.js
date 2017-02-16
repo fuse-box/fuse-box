@@ -73,11 +73,19 @@ exports.createEnv = (opts, str, done) => {
             moduleParams.cache = false;
             moduleParams.log = false;
             FuseBox.init(moduleParams).bundle(moduleParams.instructions, () => {
-                output.modules[name] = require(moduleParams.outFile)
+                if (moduleParams.onDone) {
+                    moduleParams.onDone({
+                        localPath: localPath,
+                        filePath: moduleParams.outFile,
+                        projectDir: path.join(localPath, "project")
+                    });
+                }
+                output.modules[name] = require(moduleParams.outFile);
                 return resolve();
             })
         });
     }).then(() => {
+
         const projectOptions = opts.project;
         projectOptions.outFile = path.join(localPath, "project", "index.js");
         projectOptions.cache = false;
@@ -95,7 +103,7 @@ exports.createEnv = (opts, str, done) => {
             })
         });
     }).then(() => {
-        deleteFolderRecursive(localPath);
+        //deleteFolderRecursive(localPath);
         return output;
     })
 }
