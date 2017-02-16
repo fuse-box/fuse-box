@@ -68,9 +68,9 @@ export class Log {
             .write("\n").reset();
     }
 
-    public end(header: string) {
+    public end(header?: string) {
         let took = process.hrtime(this.timeStart) as [number, number];
-        this.echoBundleStats(header, this.totalSize, took);
+        this.echoBundleStats(header || 'Bundle', this.totalSize, took);
     }
 
     public echoBundleStats (header: string, size: number, took: [number, number]) {

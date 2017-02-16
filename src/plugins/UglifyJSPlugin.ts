@@ -50,7 +50,7 @@ export class UglifyJSPluginClass implements Plugin {
 		let took = process.hrtime(timeStart)
 		let bytes = Buffer.byteLength(result.code, "utf8")
 
-		context.log.echoBundleStats('UglifyJS Bundle', bytes, took)
+		context.log.echoBundleStats('Bundle (Uglified)', bytes, took)
 
 		newConcat.add(null, result.code, result.map || sourceMap);
 	}
