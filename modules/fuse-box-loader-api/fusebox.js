@@ -312,17 +312,14 @@ var FuseBox = (function () {
             });
         });
     };
-    FuseBox.flush = function (fileName) {
+    FuseBox.flush = function (shouldFlush) {
         var def = $packages["default"];
-        if (fileName) {
-            if (def.f[fileName]) {
-                delete def.f[fileName].locals;
+        for (var fileName in def.f) {
+            var doFlush = !shouldFlush || shouldFlush(fileName);
+            if (doFlush) {
+                var file = def.f[fileName];
+                delete file.locals;
             }
-            return;
-        }
-        for (var name_1 in def.f) {
-            var file = def.f[name_1];
-            delete file.locals;
         }
     };
     FuseBox.pkg = function (pkg_name, versions, fn) {
@@ -339,10 +336,14 @@ var FuseBox = (function () {
         };
         return fn(_scope);
     };
+    FuseBox.addPlugin = function (plugin) {
+        this.plugins.push(plugin);
+    };
     return FuseBox;
 }());
 FuseBox.packages = $packages;
 FuseBox.isBrowser = $isBrowser !== undefined;
 FuseBox.isServer = !$isBrowser;
+FuseBox.plugins = [];
  
 return __root__["FuseBox"] = FuseBox; } )(this)

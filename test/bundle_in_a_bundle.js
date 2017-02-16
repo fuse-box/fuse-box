@@ -87,7 +87,7 @@ describe('Bundle in a bundle', () => {
                 instructions: "> index.ts"
             }
         }).then((result) => {
-            if (result.projectSize > 5300) {
+            if (result.projectSize > 5350) {
                 return done(new Error(`Unexpected Bundle Size ${result.projectSize}!! Bundle is not removed from an uglified version`))
             }
 
