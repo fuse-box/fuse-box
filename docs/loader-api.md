@@ -141,3 +141,60 @@ require("~/lib/utils")
 // es6
 import * as utils from "~/lib/utils";
 ```
+
+## Loader Plugins
+Loader plugins can intercept certain default behaviors. Here is the current plugin interface: 
+
+```js
+interface LoaderPlugin {
+    /** 
+     * If true is returned by the plugin
+     *  it means that module change has been handled
+     *  by plugin and no special work is needed by FuseBox
+     **/
+    hmrUpdate?(evt: SourceChangedEvent): boolean;
+}
+
+/** Where */
+type SourceChangedEvent = {
+    type: 'js' | 'css',
+    content: string,
+    path: string
+}
+```
+
+You register a plugin using `FuseBox.addPlugin(YourPlugin)`. As an example here is a way to register a plugin that doesn't flush certain stateful modules on hot reload:
+
+```js
+const registerStatefulModules = (moduleNames:string[]) => FuseBox.addPlugin({
+  hmrUpdate: (data) => {
+    if (data.type === "js") {
+
+      /** If a stateful module has changed reload the window */
+      if (moduleNames.indexOf(data.path) !== -1) {
+          window.location.reload();
+      }
+
+      /** Otherwise flush the other modules */
+      FuseBox.flush(function(fileName) {
+          return moduleNames.indexOf(fileName) === -1;
+      });
+      /** Patch the module at give path */
+      FuseBox.dynamic(data.path, data.content);
+
+      /** Re-import / run the mainFile */
+      if (FuseBox.mainFile) {
+          FuseBox.import(FuseBox.mainFile)
+      }
+
+      /** We don't want the default behavior */
+      return true;   
+    }
+});
+
+registerStatefulModules(['foo','bar']);
+```
+
+PROTIP: example of modules you might not want to flush: 
+* Modules that when required register a global hook e.g. `window.addEventListener("hashchange",/*something*/)`
+* Modules that initialize / hold state e.g when using [MobX](https://github.com/mobxjs/mobx).

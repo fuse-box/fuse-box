@@ -451,7 +451,7 @@ type SourceChangedEvent = {
     path: string
 }
 
-type LoaderPlugin = {
+interface LoaderPlugin {
     /** 
      * If true is returned by the plugin
      *  it means that module change has been handled
