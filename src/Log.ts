@@ -79,11 +79,8 @@ export class Log {
       }
       cursor.write("\n")
           .green().write(`    ${header}\n`)
-          .reset().write(`    --------------\n`)
           .yellow().write(`    Size: ${prettysize(size)} \n`)
           .yellow().write(`    Time: ${prettyTime(took, "ms")}`)
-          .write("\n")
-          .reset().write(`    --------------\n`)
           .write("\n").reset();
     }
 }
