@@ -52,7 +52,7 @@ export class BundleSource {
      * @memberOf BundleSource
      */
     public init() {
-        this.concat.add(null, "(function(FuseBox){");
+        this.concat.add(null, "(function(FuseBox){FuseBox.$fuse$=FuseBox");
     }
 
     /**
@@ -123,7 +123,7 @@ export class BundleSource {
      * @memberOf BundleSource
      */
     public addFile(file: File) {
-        if (file.info.isRemoteFile || file.notFound) {
+        if (file.info.isRemoteFile || file.notFound || file.collection.acceptFiles === false) {
             return;
         }
 

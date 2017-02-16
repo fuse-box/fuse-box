@@ -21,6 +21,9 @@ export class ModuleCollection {
     public nodeModules: Map<string, ModuleCollection> = new Map();
 
     public traversed = false;
+
+    public acceptFiles = true;
+
     /**
      * 
      * 

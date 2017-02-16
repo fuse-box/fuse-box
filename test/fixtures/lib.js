@@ -5,12 +5,32 @@ const FuseBox = build.FuseBox;
 
 const mkdirp = require("mkdirp");
 const appRoot = require("app-root-path");
+const { each } = require("realm-utils");
 const path = require("path");
+
+
+
+
+const deleteFolderRecursive = function(path) {
+    if (fs.existsSync(path)) {
+        fs.readdirSync(path).forEach(function(file, index) {
+            var curPath = path + "/" + file;
+            if (fs.lstatSync(curPath).isDirectory()) { // recurse
+                deleteFolderRecursive(curPath);
+            } else { // delete file
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(path);
+    }
+};
+
 exports.getTestEnv = (files, str, config, returnConcat) => {
     return new Promise((resolve, reject) => {
         let fsb = new FuseBox(Object.assign({
             log: false,
             cache: false,
+            modulesFolder: `${__dirname}/modules/`,
             plugins: [build.JSONPlugin()],
             files: files
         }, config || {}));
@@ -30,6 +50,52 @@ exports.getTestEnv = (files, str, config, returnConcat) => {
             return resolve(scope);
         });
     });
+}
+
+
+exports.createEnv = (opts, str, done) => {
+    const name = opts.name || `test-${new Date().getTime()}`;
+
+    let tmpFolder = path.join(appRoot.path, ".fusebox", "tests");
+    mkdirp(tmpFolder)
+    let localPath = path.join(tmpFolder, name);
+
+    const output = {
+        modules: {}
+    }
+
+    const modulesFolder = path.join(localPath, "modules");
+    // creating modules
+    return each(opts.modules, (moduleParams, name) => {
+        return new Promise((resolve, reject) => {
+            moduleParams.outFile = path.join(modulesFolder, name, "index.js");
+            moduleParams.package = name;
+            moduleParams.cache = false;
+            moduleParams.log = false;
+            FuseBox.init(moduleParams).bundle(moduleParams.instructions, () => {
+                output.modules[name] = require(moduleParams.outFile)
+                return resolve();
+            })
+        });
+    }).then(() => {
+        const projectOptions = opts.project;
+        projectOptions.outFile = path.join(localPath, "project", "index.js");
+        projectOptions.cache = false;
+        projectOptions.log = false;
+        projectOptions.modulesFolder = modulesFolder;
+        return new Promise((resolve, reject) => {
+            FuseBox.init(projectOptions).bundle(projectOptions.instructions, () => {
+                const length = fs.readFileSync(projectOptions.outFile).buffer.byteLength;
+                output.project = require(projectOptions.outFile);
+                output.projectSize = length;
+
+                return resolve();
+            })
+        });
+    }).then(() => {
+        deleteFolderRecursive(localPath);
+        return output;
+    })
 }
 
 exports.getNodeEnv = (opts, str, done) => {
