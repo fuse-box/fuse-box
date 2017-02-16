@@ -1,6 +1,6 @@
 # Built-in plugins
 
-Fusebox contains premade plugins, that should help you to get started. 
+Fusebox contains premade plugins, that should help you to get started.
 
 ## CSS Plugin
 
@@ -28,7 +28,7 @@ plugins: [
     ]
 ]
 ```
-* It will create an according file - `./main.scss` becomes `build/main.css` (your [outFile](#out-file) folder + project path) 
+* It will create an according file - `./main.scss` becomes `build/main.css` (your [outFile](#out-file) folder + project path)
 * Will create `main.css.map` and it will do mappping too, ff sourcemaps are attached
 * It will automatically append filename to the head (and serve it)
 
@@ -64,7 +64,7 @@ On top of that a CSS file will added to DOM upon request if not found in the bun
 
 ## CSSResourcePlugin
 
-Imagine a situation where you import a css file from an npm library. 
+Imagine a situation where you import a css file from an npm library.
 Let's try  make [jstree](https://github.com/vakata/jstree) library work
 
 ```
@@ -80,7 +80,7 @@ It re-writes URL and copies files to a destination specified by user,
 
 ```
 plugins : [
-   [/node_modules.*\.css$/, 
+   [/node_modules.*\.css$/,
       build.CSSResourcePlugin({
           dist : "build/resources",
           resolve : (f) => `/resources/${f}`
@@ -91,12 +91,12 @@ plugins : [
 `resolve` in our case is the actual path on browser. `f` is a modified file name (you don't need to change it)
 
 
-### Inline 
+### Inline
 You can inline images as well
 
 ```
 plugins : [
-   [/node_modules.*\.css$/, 
+   [/node_modules.*\.css$/,
       build.CSSResourcePlugin({
             inline : true
       }), build.CSSPlugin()]
@@ -208,13 +208,13 @@ const image = require("./icons/image.png")
 
 
 ## Babel plugin
-You can use babel plugin to transpile your code. 
+You can use babel plugin to transpile your code.
 Make sure you have `babel-core` installed
 
 ```bash
 npm install babel-core babel-preset-es2015 babel-plugin-transform-react-jsx
 ```
-For example. to transpile JSX, you can use this configuration. 
+For example. to transpile JSX, you can use this configuration.
 ```js
  plugins: [
     fsbx.BabelPlugin({
@@ -236,7 +236,7 @@ Note, that if you want to have sourcemaps in place, set `sourceMaps` to true. Re
 
 
 ## JSON plugin
-Of course, it can't be all shiny without a JSON plugin, can it?
+Of course, it can't be all shiny without a JSON plugin, can it? (Allows `.json` files to be required/imported as JavaScript objects)
 
 ```js
 plugins: [
@@ -271,6 +271,8 @@ plugins: [
 ]
 ```
 
+Passing in no options will cause the `outFile` to be minified with default options.
+
 ## SourceMapPlainJsPlugin
 `npm i source-map`
 ```js
@@ -284,7 +286,7 @@ plugins: [
 ```
 
 ## EnvPlugin
-Writes environmental variables to both client and server at build time.
+Writes environment variables to both client and server at build time.
 
 ```js
 plugins : [
@@ -296,6 +298,16 @@ Access it like you used to:
 
 ```
 console.log( process.env.NODE_ENV )
+```
+
+The order of plugins is important: environment variables created with this plugin will only be available to plugins further down the chain.
+
+```
+plugins : [
+   fsbx.BabelPlugin({ /* settings /*}), // <-- won't have NODE_ENV set
+   fsbx.EnvPlugin({ NODE_ENV: "production" }),
+   fsbx.BabelPlugin({ /* settings /*}), // <-- will have NODE_ENV set
+]
 ```
 
 
@@ -320,7 +332,7 @@ If you spot an error or a missing helper, please, submit an issue, or a pull req
 
 ### Using the plugin
 
-Simply add TypeScriptHelpers to your plugin list. No further configuration required. FuseBox will take care of everything else. To avoid unnecessary AST (which is heavy) this plugin does a simple RegExp, and tests for declarations. It is absolutely safe, and your code is not modified in any way. 
+Simply add TypeScriptHelpers to your plugin list. No further configuration required. FuseBox will take care of everything else. To avoid unnecessary AST (which is heavy) this plugin does a simple RegExp, and tests for declarations. It is absolutely safe, and your code is not modified in any way.
 
 ```js
 const fsbx = require("fuse-box");
@@ -331,7 +343,7 @@ let fuseBox = fsbx.FuseBox.init({
 });
 
 ```
-### Extended metadata properties 
+### Extended metadata properties
 
 You can have access to the entire environment of a file, using reflect-metadata. Make sure you have it installed first
 
@@ -358,5 +370,3 @@ export function testDecorator() {
     }
 }
 ```
-
-
