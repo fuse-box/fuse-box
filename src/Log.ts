@@ -69,16 +69,20 @@ export class Log {
     }
 
     public end() {
-        if (!this.printLog) {
-            return;
-        }
         let took = process.hrtime(this.timeStart)
-        cursor.write("\n")
-            .reset().write(`    --------------\n`)
-            .yellow().write(`    Size: ${prettysize(this.totalSize)} \n`)
-            .yellow().write(`    Time: ${prettyTime(took, "ms")}`)
-            .write("\n")
-            .reset().write(`    --------------\n`)
-            .write("\n").reset();
+        this.echoBundleStats(this.totalSize, took)
+    }
+
+    public echoBundleStats (size, took) {
+      if (!this.printLog) {
+          return;
+      }
+      cursor.write("\n")
+          .reset().write(`    --------------\n`)
+          .yellow().write(`    Size: ${prettysize(size)} \n`)
+          .yellow().write(`    Time: ${prettyTime(took, "ms")}`)
+          .write("\n")
+          .reset().write(`    --------------\n`)
+          .write("\n").reset();
     }
 }

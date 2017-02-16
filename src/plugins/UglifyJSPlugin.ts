@@ -1,8 +1,6 @@
 import { Plugin } from "../WorkflowContext";
 import { BundleSource } from '../BundleSource';
 
-
-
 /**
  * @export
  * @class UglifyJSPluginClass
@@ -42,10 +40,17 @@ export class UglifyJSPluginClass implements Plugin {
 			}
 		}
 
+		let timeStart = process.hrtime();
+
 		const result = UglifyJs.minify(source, {
 			...this.options,
 			...mainOptions
 		});
+
+		let took = process.hrtime(timeStart)
+		let bytes = Buffer.byteLength(result.code, "utf8")
+
+		context.log.echoBundleStats(bytes, took)
 
 		newConcat.add(null, result.code, result.map || sourceMap);
 	}
