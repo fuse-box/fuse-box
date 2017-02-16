@@ -1,6 +1,6 @@
 import { PropParser } from "./ArithmeticStringParser";
 import { Config } from "./Config";
-import { each, chain, Chainable } from "realm-utils";
+import { each, chain, Chainable, utils } from 'realm-utils';
 import { File } from "./File";
 import * as path from "path";
 import * as fs from "fs";
@@ -162,6 +162,9 @@ export class Arithmetic {
                     homeDir = this.tempFolder;
                     mkdirp.sync(this.tempFolder);
                     return each(virtualFiles, (fileContents, fileName) => {
+                        if (utils.isFunction(fileContents)) {
+                            fileContents = fileContents();
+                        }
                         let filePath = path.join(this.tempFolder, fileName);
                         let fileDir = path.dirname(filePath);
                         mkdirp.sync(fileDir);

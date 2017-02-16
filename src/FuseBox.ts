@@ -203,7 +203,6 @@ export class FuseBox {
 
                 public addNodeModules() {
                     return each(self.context.nodeModules, (collection: ModuleCollection) => {
-
                         if (collection.cached || (collection.info && !collection.info.missing)) {
                             return self.collectionSource.get(collection).then((cnt: string) => {
                                 self.context.log.echoCollection(collection, cnt);
