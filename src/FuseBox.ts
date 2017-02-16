@@ -222,7 +222,7 @@ export class FuseBox {
                 }
 
             }).then(result => {
-                self.context.log.end();
+                self.context.log.end('FuseBox Bundle');
                 this.triggerEnd();
                 self.context.source.finalize(bundleData);
                 this.triggerPost();
