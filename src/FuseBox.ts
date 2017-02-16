@@ -153,7 +153,7 @@ export class FuseBox {
     /**
      * Make a Bundle (or bundles)
      */
-    public bundle(str: string | { [bundleStr: string]: /** outFile */ string }, bundleReady?: any) {
+    public bundle(str: string | { [bundleStr: string]: /** outFile */ string }, bundleReady?: any): Promise<any> {
         if (utils.isString(str)) {
             return this.initiateBundle(str as string, bundleReady);
         }

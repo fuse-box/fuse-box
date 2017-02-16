@@ -12,6 +12,18 @@ import { ensureUserPath, findFileBackwards } from './Utils';
 import { SourceChangedEvent } from './devServer/Server';
 
 
+/**
+ * All the plugin method names
+ */
+type PluginMethodName =
+    'init'
+    | 'preBuild'
+    | 'preBundle'
+    | 'bundleStart'
+    | 'bundleEnd'
+    | 'postBundle'
+    | 'postBuild'
+
 const appRoot = require("app-root-path");
 
 /**
@@ -275,7 +287,10 @@ export class WorkFlowContext {
         return this.nodeModules.get(name);
     }
 
-    public triggerPluginsMethodOnce(name: string, args: any, fn?: { (plugin: Plugin) }) {
+    /**
+     * @param fn if provided, its called once the plugin method has been triggered
+     */
+    public triggerPluginsMethodOnce(name: PluginMethodName, args: any, fn?: { (plugin: Plugin) }) {
         this.plugins.forEach(plugin => {
             if (Array.isArray(plugin)) {
                 plugin.forEach(p => {
@@ -302,8 +317,9 @@ export class WorkFlowContext {
 
     /**
      * Makes sure plugin method is triggered only once
+     * @returns true if the plugin needs triggering
      */
-    private pluginRequiresTriggering(cls: any, method: string) {
+    private pluginRequiresTriggering(cls: any, method: PluginMethodName) {
         if (!cls.constructor) {
             return true;
         }
