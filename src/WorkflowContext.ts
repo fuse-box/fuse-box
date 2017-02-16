@@ -15,7 +15,7 @@ import { SourceChangedEvent } from './devServer/Server';
 /**
  * All the plugin method names
  */
-type PluginMethodName =
+export type PluginMethodName =
     'init'
     | 'preBuild'
     | 'preBundle'
