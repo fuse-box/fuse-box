@@ -68,17 +68,19 @@ export class Log {
             .write("\n").reset();
     }
 
-    public end() {
-        if (!this.printLog) {
-            return;
-        }
-        let took = process.hrtime(this.timeStart)
-        cursor.write("\n")
-            .reset().write(`    --------------\n`)
-            .yellow().write(`    Size: ${prettysize(this.totalSize)} \n`)
-            .yellow().write(`    Time: ${prettyTime(took, "ms")}`)
-            .write("\n")
-            .reset().write(`    --------------\n`)
-            .write("\n").reset();
+    public end(header?: string) {
+        let took = process.hrtime(this.timeStart) as [number, number];
+        this.echoBundleStats(header || 'Bundle', this.totalSize, took);
+    }
+
+    public echoBundleStats (header: string, size: number, took: [number, number]) {
+      if (!this.printLog) {
+          return;
+      }
+      cursor.write("\n")
+          .green().write(`    ${header}\n`)
+          .yellow().write(`    Size: ${prettysize(size)} \n`)
+          .yellow().write(`    Time: ${prettyTime(took, "ms")}`)
+          .write("\n").reset();
     }
 }
