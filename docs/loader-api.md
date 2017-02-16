@@ -166,33 +166,35 @@ type SourceChangedEvent = {
 You register a plugin using `FuseBox.addPlugin(YourPlugin)`. As an example here is a way to register a plugin that doesn't flush certain stateful modules on hot reload:
 
 ```js
-const registerStatefulModules = (moduleNames:string[]) => FuseBox.addPlugin({
-  hmrUpdate: (data) => {
-    if (data.type === "js") {
+const registerStatefulModules = (moduleNames: string[]) => FuseBox.addPlugin({
+  hmrUpdate: ({ type, path, content }) => {
+    if (type === "js") {
+      const isModuleNameInPath = (path) => moduleNames.some(name => path.includes(name));
 
       /** If a stateful module has changed reload the window */
-      if (moduleNames.indexOf(data.path) !== -1) {
-          window.location.reload();
+      if (isModuleNameInPath(path)) {
+        window.location.reload();
       }
 
       /** Otherwise flush the other modules */
       FuseBox.flush(function(fileName) {
-          return moduleNames.indexOf(fileName) === -1;
+        return !isModuleNameInPath(fileName);
       });
       /** Patch the module at give path */
-      FuseBox.dynamic(data.path, data.content);
+      FuseBox.dynamic(path, content);
 
       /** Re-import / run the mainFile */
       if (FuseBox.mainFile) {
-          FuseBox.import(FuseBox.mainFile)
+        FuseBox.import(FuseBox.mainFile)
       }
 
       /** We don't want the default behavior */
-      return true;   
+      return true;
     }
+  }
 });
 
-registerStatefulModules(['foo','bar']);
+registerStatefulModules(['TestStore', 'actions/index']);
 ```
 
 PROTIP: example of modules you might not want to flush: 
