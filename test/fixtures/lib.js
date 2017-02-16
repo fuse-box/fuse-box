@@ -85,9 +85,11 @@ exports.createEnv = (opts, str, done) => {
         projectOptions.modulesFolder = modulesFolder;
         return new Promise((resolve, reject) => {
             FuseBox.init(projectOptions).bundle(projectOptions.instructions, () => {
-                const length = fs.readFileSync(projectOptions.outFile).buffer.byteLength;
+                const contents = fs.readFileSync(projectOptions.outFile);
+                const length = contents.buffer.byteLength;
                 output.project = require(projectOptions.outFile);
                 output.projectSize = length;
+                output.projectContents = contents;
 
                 return resolve();
             })

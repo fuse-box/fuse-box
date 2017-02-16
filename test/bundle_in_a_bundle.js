@@ -71,6 +71,6 @@ describe('Bundle in a bundle', () => {
                 .should.deepEqual({ hello: { bar: { HelloFoo: 'Yep, that\'s me2!' } } })
 
             done();
-        })
-    })
+        });
+    });
 });
