@@ -123,7 +123,7 @@ plugins:[
 
 
 
-## PostCSSPlugin
+## PostCSS
 Install libraries first
 
 ```bash
@@ -138,7 +138,7 @@ const POST_CSS_PLUGINS = [precss()];
 
 
 plugins:[
-  [fsbx.PostCSSPlugin(POST_CSS_PLUGINS), fsbx.CSSPlugin()],
+  [fsbx.PostCSS(POST_CSS_PLUGINS), fsbx.CSSPlugin()],
 ],
 ```
 
