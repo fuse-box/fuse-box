@@ -19,3 +19,4 @@ _playground
 # FuseBox modules built from TS
 modules/fsbx-default-css-plugin/
 modules/fusebox-hot-reload/
+modules/fusebox-websocket/

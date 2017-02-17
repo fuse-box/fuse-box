@@ -1,6 +1,11 @@
 const events = require("events");
 
-class SocketClient {
+export class SocketClient {
+    url: string;
+    authSent: boolean;
+    emitter: any;
+    client: WebSocket;
+
     constructor(opts) {
         opts = opts || {};
         const port = opts.port || window.location.port;
@@ -19,7 +24,7 @@ class SocketClient {
     on(event, fn) {
         this.emitter.on(event, fn);
     }
-    connect(fn) {
+    connect(fn?) {
         console.log("connect", this.url);
         setTimeout(() => {
             this.client = new WebSocket(this.url);
@@ -44,7 +49,7 @@ class SocketClient {
                 fn(this);
             }
         };
-        this.client.onerror = (event) => {
+        this.client.onerror = (event: any) => {
             this.error({ reason: event.reason, message: "Socket error" });
         };
         this.client.onclose = (event) => {
@@ -63,4 +68,3 @@ class SocketClient {
         };
     }
 }
-exports.SocketClient = SocketClient;

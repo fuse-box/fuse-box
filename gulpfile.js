@@ -23,11 +23,14 @@ let projectLoader = ts.createProject('src/loader/tsconfig.json');
  * Used to build the fusebox modules
  * Each of these
  * - is loaded from `src/modules/${name}/index.ts`
- * - built to `modules/${name}/index.js` (be sure to .gitignore `modules/${name}`)
+ * - built to `modules/${name}/index.js` 
+ * 
+ * When adding a new module here be sure to .gitignore `modules/${name}/`
  */
 const fuseboxModuleTasks = [
     'fsbx-default-css-plugin',
     'fusebox-hot-reload',
+    'fusebox-websocket',
 ].map(fuseboxModule => {
     let project = ts.createProject('src/modules/tsconfig.json');
     const taskName = `dist-modules-${fuseboxModule}`

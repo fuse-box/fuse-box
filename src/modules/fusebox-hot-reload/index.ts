@@ -3,7 +3,9 @@
 /**
  * @module listens to `source-changed` socket events and actions hot reload
  */
-const Client = require("fusebox-websocket").SocketClient;
+
+import { SocketClient } from '../fusebox-websocket';
+const Client: typeof SocketClient = require("fusebox-websocket").SocketClient;
 
 export const connect = (port: string) => {
 
