@@ -47,12 +47,12 @@ export class PostCSSPluginClass implements Plugin {
         if (!postcss) {
             postcss = require("postcss");
         }
-        return postcss(this.processors, this.opts)
-            .process(file.contents)
-            .then(result => {
-                file.contents = result.css;
-                return result.css;
-            });
+        return postcss(this.processors)
+        	.process(file.contents)
+        	.then(result => {
+            	file.contents = result.css;
+            	return result.css;
+	        });
     }
 }
 
