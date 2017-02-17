@@ -17,10 +17,28 @@ let projectTypings = ts.createProject('src/tsconfig.json');
 let projectCommonjs = ts.createProject('src/tsconfig.json', {
     target: 'es6',
 });
+let projectLoader = ts.createProject('src/loader/tsconfig.json');
 
-let projectLoader = ts.createProject('src/loader/tsconfig.json', {
-
+/**
+ * Used to build the fusebox modules
+ * Each of these
+ * - is loaded from `src/modules/${name}/index.ts`
+ * - built to `modules/${name}/index.js` (be sure to .gitignore `modules/${name}`)
+ */
+const fuseboxModuleTasks = [
+    'fsbx-default-css-plugin',
+].map(fuseboxModule => {
+    let project = ts.createProject('src/modules/tsconfig.json');
+    const taskName = `dist-modules-${fuseboxModule}`
+    gulp.task(taskName, () => {
+        return gulp.src(`src/modules/${fuseboxModule}/index.ts`)
+        .pipe(project()).js
+        .pipe(gulp.dest(`modules/${fuseboxModule}`))
+    });
+    return taskName;
 });
+gulp.task('dist-modules', fuseboxModuleTasks);
+
 gulp.task('dist-loader', () => {
     return gulp.src('src/loader/LoaderAPI.ts')
         .pipe(projectLoader()).js
@@ -104,7 +122,7 @@ gulp.task('hello', function() {
 
 
 
-gulp.task('watch', ['dist-commonjs', 'dist-loader'], function() {
+gulp.task('watch', ['dist-commonjs', 'dist-loader', 'dist-modules'], function() {
 
     gulp.watch(['dist-loader/**/*.ts'], () => {
         runSequence('dist-loader');
@@ -114,6 +132,10 @@ gulp.task('watch', ['dist-commonjs', 'dist-loader'], function() {
     // gulp.watch(['assets/**/*.js'], () => {
     //     runSequence('hello');
     // });
+    
+    gulp.watch(['src/modules/**/*.ts'], () => {
+        runSequence('dist-modules');
+    });
 
     gulp.watch(['src/**/*.ts'], () => {
         runSequence('dist-commonjs');
@@ -127,6 +149,6 @@ gulp.task('uglify-test', function() {
         .pipe(rename('out.min.js')).pipe(gulp.dest('./'))
 });
 
-gulp.task('dist', ['dist-typings', 'dist-commonjs', 'dist-loader'], function() {
+gulp.task('dist', ['dist-typings', 'dist-commonjs', 'dist-loader', 'dist-modules'], function() {
 
 });
