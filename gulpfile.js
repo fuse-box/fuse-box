@@ -24,9 +24,7 @@ function onError(error) {
 }
 
 let projectTypings = ts.createProject('src/tsconfig.json');
-let projectCommonjs = ts.createProject('src/tsconfig.json', {
-    target: 'es6',
-});
+let projectCommonjs = ts.createProject('src/tsconfig.json');
 let projectLoader = ts.createProject('src/loader/tsconfig.json');
 
 /**
@@ -53,6 +51,9 @@ const fuseboxModuleTasks = [
 });
 gulp.task('dist-modules', fuseboxModuleTasks);
 
+/**
+ * Loader API building
+ */
 gulp.task('dist-loader', () => {
     return gulp.src('src/loader/LoaderAPI.ts')
         .pipe(projectLoader()).on('error', onError).js
@@ -66,18 +67,47 @@ gulp.task('dist-loader', () => {
         .pipe(gulp.dest('modules/fuse-box-loader-api'))
 
 });
-
 gulp.task('minify-loader', function() {
     return gulp.src('modules/fuse-box-loader-api/fusebox.js')
         .pipe(uglify())
         .pipe(rename('fusebox.min.js')).pipe(gulp.dest('modules/fuse-box-loader-api'))
 });
 
+gulp.task('dist-typings', () => {
+    let result = gulp.src('src/**/*.ts')
+        .pipe(projectTypings());
+    return result.dts.pipe(gulp.dest('dist/typings'));
+});
 
+gulp.task('dist-commonjs', () => {
+    return gulp.src(['src/**/*.ts', "!./src/loader/LoaderAPI.ts", "!./src/modules/**/*.ts"])
+        .pipe(sourcemaps.init())
+        .pipe(projectCommonjs()).on('error', onError).js
+        .pipe(gulp.dest('dist/commonjs'));
+});
+
+/**
+ * Used for tests
+ */
+let node;
+gulp.task('hello', function() {
+    if (node) node.kill()
+    node = spawn('node', ['hello.js'], {
+        stdio: 'inherit'
+    })
+    node.on('close', function(code) {
+        if (code === 8) {
+            gulp.log('Error detected, waiting for changes...');
+        }
+    });
+});
+
+/**
+ * NPM deploy management
+ */
 gulp.task('publish', function(done) {
     runSequence('dist', 'increment-version', 'commit-release', 'npm-publish', done);
-})
-
+});
 gulp.task('increment-version', function() {
     return gulp.src('./package.json')
         .pipe(bump())
@@ -107,36 +137,15 @@ gulp.task('npm-publish', function(done) {
     });
 });
 
-gulp.task('dist-typings', () => {
-    let result = gulp.src('src/**/*.ts')
-        .pipe(projectTypings());
-    return result.dts.pipe(gulp.dest('dist/typings'));
-});
+/**
+ * Combined build task
+ */
+gulp.task('dist', ['dist-typings', 'dist-commonjs', 'dist-loader', 'dist-modules'], function() {});
 
-gulp.task('dist-commonjs', () => {
-    return gulp.src(['src/**/*.ts', "!./src/loader/LoaderAPI.ts", "!./src/modules/**/*.ts"])
-        .pipe(sourcemaps.init())
-        .pipe(projectCommonjs()).on('error', onError).js
-        .pipe(gulp.dest('dist/commonjs'));
-});
-
-let node;
-
-gulp.task('hello', function() {
-    if (node) node.kill()
-    node = spawn('node', ['hello.js'], {
-        stdio: 'inherit'
-    })
-    node.on('close', function(code) {
-        if (code === 8) {
-            gulp.log('Error detected, waiting for changes...');
-        }
-    });
-});
-
-
-
-gulp.task('watch', ['dist-commonjs', 'dist-loader', 'dist-modules'], function() {
+/**
+ * For development workflow
+ */
+gulp.task('watch', ['dist'], function() {
     watching = true;
 
     gulp.watch(['dist-loader/**/*.ts'], () => {
@@ -155,9 +164,4 @@ gulp.task('watch', ['dist-commonjs', 'dist-loader', 'dist-modules'], function() 
     gulp.watch(['src/**/*.ts'], () => {
         runSequence('dist-commonjs');
     });
-});
-
-
-gulp.task('dist', ['dist-typings', 'dist-commonjs', 'dist-loader', 'dist-modules'], function() {
-
 });
