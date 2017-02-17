@@ -13,6 +13,16 @@ const spawn = child_process.spawn;
 const wrap = require('gulp-wrap');
 const uglify = require('gulp-uglify');
 
+/**
+ * Fail on error if not in watch mode
+ */
+let watching = false;
+function onError(error) {
+    if (!watching) {
+        process.exit(1);
+    }
+}
+
 let projectTypings = ts.createProject('src/tsconfig.json');
 let projectCommonjs = ts.createProject('src/tsconfig.json', {
     target: 'es6',
@@ -36,7 +46,7 @@ const fuseboxModuleTasks = [
     const taskName = `dist-modules-${fuseboxModule}`
     gulp.task(taskName, () => {
         return gulp.src(`src/modules/${fuseboxModule}/index.ts`)
-        .pipe(project()).js
+        .pipe(project()).on('error', onError).js
         .pipe(gulp.dest(`modules/${fuseboxModule}`))
     });
     return taskName;
@@ -45,7 +55,7 @@ gulp.task('dist-modules', fuseboxModuleTasks);
 
 gulp.task('dist-loader', () => {
     return gulp.src('src/loader/LoaderAPI.ts')
-        .pipe(projectLoader()).js
+        .pipe(projectLoader()).on('error', onError).js
         .pipe(wrap('(function(__root__){ <%= contents %> \nreturn __root__["FuseBox"] = FuseBox; } )(this)'))
         .pipe(rename('fusebox.js'))
         .pipe(gulp.dest('modules/fuse-box-loader-api'))
@@ -104,10 +114,10 @@ gulp.task('dist-typings', () => {
 });
 
 gulp.task('dist-commonjs', () => {
-    let result = gulp.src(['src/**/*.ts', "!./src/loader/LoaderAPI.ts"])
+    return gulp.src(['src/**/*.ts', "!./src/loader/LoaderAPI.ts", "!./src/modules/**/*.ts"])
         .pipe(sourcemaps.init())
-        .pipe(projectCommonjs());
-    return result.js.pipe(gulp.dest('dist/commonjs'));
+        .pipe(projectCommonjs()).on('error', onError).js
+        .pipe(gulp.dest('dist/commonjs'));
 });
 
 let node;
@@ -127,6 +137,7 @@ gulp.task('hello', function() {
 
 
 gulp.task('watch', ['dist-commonjs', 'dist-loader', 'dist-modules'], function() {
+    watching = true;
 
     gulp.watch(['dist-loader/**/*.ts'], () => {
         runSequence('dist-loader');
