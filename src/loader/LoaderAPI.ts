@@ -616,3 +616,13 @@ class FuseBox {
         this.plugins.push(plugin);
     }
 }
+
+/** 
+ * Injected into the global namespace by the fsbx-default-css-plugin 
+ * Generates a tag with an `id` based on `__filename`
+ * If you call it it again with the same file name the same tag is patched
+ * @param __filename the name of the source file
+ * @param contents if provided creates a style tag
+ *  otherwise __filename is added as a link tag
+ **/
+declare var __fsbx_css: { (__filename: string, contents?: string): void };
