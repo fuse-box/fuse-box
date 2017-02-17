@@ -23,9 +23,19 @@ function onError(error) {
     }
 }
 
+/**
+ * ts projects
+ */
 let projectTypings = ts.createProject('src/tsconfig.json');
 let projectCommonjs = ts.createProject('src/tsconfig.json');
 let projectLoader = ts.createProject('src/loader/tsconfig.json');
+let getProjectModule = () => ts.createProject('src/modules/tsconfig.json');
+
+/**
+ * Our commonjs only files
+ */
+let filesMain = ['src/**/*.ts', "!./src/loader/LoaderAPI.ts", "!./src/modules/**/*.ts"];
+
 
 /**
  * Used to build the fusebox modules
@@ -40,7 +50,7 @@ const fuseboxModuleTasks = [
     'fusebox-hot-reload',
     'fusebox-websocket',
 ].map(fuseboxModule => {
-    let project = ts.createProject('src/modules/tsconfig.json');
+    let project = getProjectModule();
     const taskName = `dist-modules-${fuseboxModule}`
     gulp.task(taskName, () => {
         return gulp.src(`src/modules/${fuseboxModule}/index.ts`)
@@ -73,18 +83,21 @@ gulp.task('minify-loader', function() {
         .pipe(rename('fusebox.min.js')).pipe(gulp.dest('modules/fuse-box-loader-api'))
 });
 
+/**
+ * Main building
+ */
 gulp.task('dist-typings', () => {
-    let result = gulp.src('src/**/*.ts')
-        .pipe(projectTypings());
-    return result.dts.pipe(gulp.dest('dist/typings'));
+    return result = gulp.src(filesMain)
+        .pipe(projectTypings()).dts
+        .pipe(gulp.dest('dist/typings'));
 });
-
 gulp.task('dist-commonjs', () => {
-    return gulp.src(['src/**/*.ts', "!./src/loader/LoaderAPI.ts", "!./src/modules/**/*.ts"])
+    return gulp.src(filesMain)
         .pipe(sourcemaps.init())
         .pipe(projectCommonjs()).on('error', onError).js
         .pipe(gulp.dest('dist/commonjs'));
 });
+gulp.task('dist-main',['dist-typings', 'dist-commonjs']);
 
 /**
  * NPM deploy management
@@ -124,7 +137,7 @@ gulp.task('npm-publish', function(done) {
 /**
  * Combined build task
  */
-gulp.task('dist', ['dist-typings', 'dist-commonjs', 'dist-loader', 'dist-modules'], function() {});
+gulp.task('dist', ['dist-main', 'dist-loader', 'dist-modules']);
 
 /**
  * For development workflow
@@ -132,7 +145,7 @@ gulp.task('dist', ['dist-typings', 'dist-commonjs', 'dist-loader', 'dist-modules
 gulp.task('watch', ['dist'], function() {
     watching = true;
 
-    gulp.watch(['dist-loader/**/*.ts'], () => {
+    gulp.watch(['src/loader/**/*.ts'], () => {
         runSequence('dist-loader');
     });
     
@@ -140,7 +153,7 @@ gulp.task('watch', ['dist'], function() {
         runSequence('dist-modules');
     });
 
-    gulp.watch(['src/**/*.ts'], () => {
-        runSequence('dist-commonjs');
+    gulp.watch(filesMain, () => {
+        runSequence('dist-main');
     });
 });
