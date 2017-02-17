@@ -26,7 +26,9 @@ function onError(error) {
 /**
  * ts projects
  */
-let projectTypings = ts.createProject('src/tsconfig.json');
+let projectTypings = ts.createProject('src/tsconfig.json', {
+    removeComments: false
+});
 let projectCommonjs = ts.createProject('src/tsconfig.json');
 let projectLoader = ts.createProject('src/loader/tsconfig.json');
 let getProjectModule = () => ts.createProject('src/modules/tsconfig.json');
