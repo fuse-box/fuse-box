@@ -13,7 +13,7 @@ export class SocketClient {
         const port = opts.port || window.location.port;
         const protocol = location.protocol === "https:" ? "wss://" : "ws://";
         const domain = location.hostname || "localhost";
-        this.url = opts.host || `${protocol}${domain}:${port}`;
+        this.url = opts.host || `${protocol}${domain}:${port}, {rejectUnauthorized: false}`;
         this.authSent = false;
         this.emitter = new events.EventEmitter();
     }
@@ -31,7 +31,7 @@ export class SocketClient {
     connect(fn?: OnOpenFn) {
         console.log("connect", this.url);
         setTimeout(() => {
-            this.client = new WebSocket(this.url, {rejectUnauthorized: false});
+            this.client = new WebSocket(this.url);
             this.bindEvents(fn);
         }, 0);
     }
