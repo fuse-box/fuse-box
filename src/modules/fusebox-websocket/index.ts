@@ -1,5 +1,7 @@
 const events = require("events");
 
+export type OnOpenFn = (client: SocketClient) => void;
+
 export class SocketClient {
     url: string;
     authSent: boolean;
@@ -21,10 +23,12 @@ export class SocketClient {
             this.connect(fn);
         }, 5000);
     }
+
     on(event, fn) {
         this.emitter.on(event, fn);
     }
-    connect(fn?) {
+
+    connect(fn?: OnOpenFn) {
         console.log("connect", this.url);
         setTimeout(() => {
             this.client = new WebSocket(this.url);
@@ -39,11 +43,14 @@ export class SocketClient {
             this.client.send(JSON.stringify({ event: eventName, data: data || {} }));
         }
     }
-    error(data) {
+
+
+    private error(data: {reason: any, message: string}) {
         this.emitter.emit("error", data);
     }
-    bindEvents(fn) {
 
+    /** Wires up the socket client messages to be emitted on our event emitter */
+    private bindEvents(fn?: OnOpenFn) {
         this.client.onopen = (event) => {
             if (fn) {
                 fn(this);
