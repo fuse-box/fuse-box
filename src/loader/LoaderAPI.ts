@@ -204,6 +204,17 @@ const $loadURL = (url: string) => {
     }
 }
 
+/**
+ * Loop through an objects own keys and call a function with the key and value
+ */
+const $loopObjKey = (obj: Object, func: Function) => {
+    for (let key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            func(key, obj[key])
+        }
+    }
+}
+
 const $getRef = (name: string, opts: {
     path?: string;
     pkg?: string;
@@ -521,24 +532,19 @@ class FuseBox {
     public static expose(obj: any) {
         for (let key in obj) {
             let data = obj[key];
+            let alias = data.alias;
             let exposed = $import(data.pkg);
-            if (data.alias === '*') {
-                for (let exportKey in exposed) {
-                    if (exposed.hasOwnProperty(exportKey)) {
-                        __root__[exportKey] = exposed[exportKey];
-                    }
-                }
-            } else if (typeof data.alias === 'object') {
-                for (let exportKey in data.alias) {
-                    if (data.alias.hasOwnProperty(exportKey)) {
-                        __root__[data.alias[exportKey]] = exposed[exportKey];
-                    }
-                }
+            if (alias === '*') {
+                $loopObjKey(exposed, (exportKey, value) => __root__[exportKey] = value);
+            } else if (typeof alias === 'object') {
+                $loopObjKey(alias, (exportKey, value) => __root__[value] = exposed[exportKey]);
             } else {
-                __root__[data.alias] = exposed;
+                __root__[alias] = exposed;
             }
         }
     }
+
+
 
 
     /**

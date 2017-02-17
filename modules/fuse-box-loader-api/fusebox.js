@@ -88,6 +88,13 @@ var $loadURL = function (url) {
         head.insertBefore(target, head.firstChild);
     }
 };
+var $loopObjKey = function (obj, func) {
+    for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            func(key, obj[key]);
+        }
+    }
+};
 var $getRef = function (name, opts) {
     var basePath = opts.path || "./";
     var pkg_name = opts.pkg || "default";
@@ -297,26 +304,22 @@ var FuseBox = (function () {
         return FuseBox.import(name, {});
     };
     FuseBox.expose = function (obj) {
-        for (var key in obj) {
+        var _loop_1 = function (key) {
             var data = obj[key];
+            var alias = data.alias;
             var exposed = $import(data.pkg);
-            if (data.alias === '*') {
-                for (var exportKey in exposed) {
-                    if (exposed.hasOwnProperty(exportKey)) {
-                        __root__[exportKey] = exposed[exportKey];
-                    }
-                }
+            if (alias === '*') {
+                $loopObjKey(exposed, function (exportKey, value) { return __root__[exportKey] = value; });
             }
-            else if (typeof data.alias === 'object') {
-                for (var exportKey in data.alias) {
-                    if (data.alias.hasOwnProperty(exportKey)) {
-                        __root__[data.alias[exportKey]] = exposed[exportKey];
-                    }
-                }
+            else if (typeof alias === 'object') {
+                $loopObjKey(alias, function (exportKey, value) { return __root__[value] = exposed[exportKey]; });
             }
             else {
-                __root__[data.alias] = exposed;
+                __root__[alias] = exposed;
             }
+        };
+        for (var key in obj) {
+            _loop_1(key);
         }
     };
     FuseBox.dynamic = function (path, str, opts) {

@@ -25,7 +25,7 @@ describe('Bundle in a bundle', () => {
                 instructions: "> index.ts"
             }
         }).then((result) => {
-            if (result.projectSize > 5400) {
+            if (result.projectSize > 5490) {
                 return done(new Error(`Unexpected Bundle Size ${result.projectSize}!! Bundle is not removed from an uglified version`))
             }
             result.project.FuseBox.import("./index")
@@ -53,7 +53,7 @@ describe('Bundle in a bundle', () => {
                 instructions: "> index.ts"
             }
         }).then((result) => {
-            if (result.projectSize > 5300) {
+            if (result.projectSize > 5370) {
                 return done(new Error(`Unexpected Bundle Size ${result.projectSize}!! Bundle is not removed from an uglified version`))
             }
 
@@ -87,7 +87,7 @@ describe('Bundle in a bundle', () => {
                 instructions: "> index.ts"
             }
         }).then((result) => {
-            if (result.projectSize > 5350) {
+            if (result.projectSize > 5535) {
                 return done(new Error(`Unexpected Bundle Size ${result.projectSize}!! Bundle is not removed from an uglified version`))
             }
 
@@ -125,7 +125,7 @@ describe('Bundle in a bundle', () => {
                 instructions: "> index.ts"
             }
         }).then((result) => {
-            if (result.projectSize > 5300) {
+            if (result.projectSize > 5410) {
                 return done(new Error(`Unexpected Bundle Size ${result.projectSize}!! Bundle is not removed from an uglified version`))
             }
 
