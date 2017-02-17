@@ -334,8 +334,7 @@ export class File {
         this.loadContents();
         // Calling it before transpileModule on purpose
         this.tryTypescriptPlugins();
-        let result = ts.transpileModule(this.contents, this.context.getTypeScriptConfig());
-
+        let result = ts.transpileModule(this.contents, this.getTranspilationConfig());
 
         if (result.sourceMapText && this.context.sourceMapConfig) {
             let jsonSourceMaps = JSON.parse(result.sourceMapText);
@@ -364,5 +363,23 @@ export class File {
             });
             this.context.cache.writeStaticCache(this, this.sourceMap);
         }
+    }
+
+    /**
+     * Provides a file-specific transpilation config. This is needed so we can supply the filename to
+     * the TypeScript compiler.
+     * 
+     * @private
+     * @returns
+     * 
+     * @memberOf File
+     */
+    private getTranspilationConfig() {
+        return Object.assign({},
+            this.context.getTypeScriptConfig(),
+            {
+                fileName: this.info.absPath,
+            }
+        );
     }
 }
