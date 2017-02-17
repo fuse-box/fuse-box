@@ -15,3 +15,8 @@ _dist
 npm-debug.log*
 playground
 _playground
+
+# FuseBox modules built from TS
+modules/fsbx-default-css-plugin/
+modules/fusebox-hot-reload/
+modules/fusebox-websocket/

@@ -1,4 +1,11 @@
-var __fsbx_css = function(__filename, contents) {
+/// <reference path="../LoaderAPI.d.ts"/>
+
+/**
+ * @param __filename the name of the source file
+ * @param contents if provided creates a style tag
+ *  otherwise __filename is added as a link tag
+ */
+var __fsbx_css = function(__filename: string, contents?: string): void {
     if (FuseBox.isServer) {
         return;
     }
@@ -13,8 +20,8 @@ var __fsbx_css = function(__filename, contents) {
         if (contents) {
             s.innerHTML = contents;
         } else {
-            s.rel = "stylesheet";
-            s.href = __filename;
+            (s as HTMLLinkElement).rel = "stylesheet";
+            (s as HTMLLinkElement).href = __filename;
         }
         document.getElementsByTagName("head")[0].appendChild(s);
     } else {
@@ -23,6 +30,11 @@ var __fsbx_css = function(__filename, contents) {
         }
     }
 }
+
+/**
+ * Listens to 'async' requets and if the name is a css file 
+ * wires it to `__fsbx_css`
+ */
 FuseBox.on("async", function(name) {
     if (FuseBox.isServer) {
         return;

@@ -131,7 +131,8 @@ export class BundleSource {
      * @memberOf BundleSource
      */
     public addFile(file: File) {
-        if (file.info.isRemoteFile || file.notFound || file.collection.acceptFiles === false) {
+        if (file.info.isRemoteFile || file.notFound
+            || file.collection && file.collection.acceptFiles === false) {
             return;
         }
 
