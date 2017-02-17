@@ -310,6 +310,17 @@ plugins : [
 ]
 ```
 
+## CoffeePlugin
+
+Handle [CoffeeScript](http://coffeescript.org) compilation of .coffee files
+
+```js
+plugins : [
+   fsbx.CoffeePlugin({
+       // Options passed to the coffeescript compiler
+   })
+]
+```
 
 ## Typescript helpers
 
