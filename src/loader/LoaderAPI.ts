@@ -1,7 +1,7 @@
 declare let __root__: any;
 declare let __fbx__dnm__: any;
 
-/** 
+/**
  * Package name to version
  */
 type PackageVersions = {
@@ -51,7 +51,7 @@ if ($isBrowser) {
 // In order for dynamic imports to work, we need to switch window to module.exports
 __root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports : __root__;
 
-/** 
+/**
  * A runtime storage for FuseBox
  */
 const $fsbx: FSBX = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
@@ -204,6 +204,17 @@ const $loadURL = (url: string) => {
     }
 }
 
+/**
+ * Loop through an objects own keys and call a function with the key and value
+ */
+const $loopObjKey = (obj: Object, func: Function) => {
+    for (let key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            func(key, obj[key])
+        }
+    }
+}
+
 const $getRef = (name: string, opts: {
     path?: string;
     pkg?: string;
@@ -240,7 +251,7 @@ const $getRef = (name: string, opts: {
         if ($isBrowser) {
             throw `Package was not found "${pkg_name}"`;
         } else {
-            // Return "real" node module 
+            // Return "real" node module
             return {
                 serverReference: require(pkg_name)
             }
@@ -360,7 +371,7 @@ const $trigger = (name: string, args: any) => {
  */
 const $import = (name: string, opts: any = {}) => {
 
-    // Test for external URLS  
+    // Test for external URLS
     // Basically : symbol can occure only at 4 and 5 position
     // Cuz ":" is a not a valid symbol in filesystem
     // Charcode test is 3-4 times faster than regexp
@@ -452,7 +463,7 @@ type SourceChangedEvent = {
 }
 
 interface LoaderPlugin {
-    /** 
+    /**
      * If true is returned by the plugin
      *  it means that module change has been handled
      *  by plugin and no special work is needed by FuseBox
@@ -521,15 +532,24 @@ class FuseBox {
     public static expose(obj: any) {
         for (let key in obj) {
             let data = obj[key];
+            let alias = data.alias;
             let exposed = $import(data.pkg);
-            __root__[data.alias] = exposed;
+            if (alias === '*') {
+                $loopObjKey(exposed, (exportKey, value) => __root__[exportKey] = value);
+            } else if (typeof alias === 'object') {
+                $loopObjKey(alias, (exportKey, value) => __root__[value] = exposed[exportKey]);
+            } else {
+                __root__[alias] = exposed;
+            }
         }
     }
 
 
+
+
     /**
      * Registers a dynamic path
-     * 
+     *
      * @param str a function that is invoked with
      *  - `true, exports,require,module,__filename,__dirname,__root__`
      */
@@ -558,7 +578,7 @@ class FuseBox {
             const doFlush = !shouldFlush || shouldFlush(fileName);
             if (doFlush) {
                 let file = def.f[fileName];
-                delete file.locals;    
+                delete file.locals;
             }
         }
     }
