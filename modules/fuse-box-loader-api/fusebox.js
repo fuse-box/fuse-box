@@ -300,7 +300,23 @@ var FuseBox = (function () {
         for (var key in obj) {
             var data = obj[key];
             var exposed = $import(data.pkg);
-            __root__[data.alias] = exposed;
+            if (data.alias === '*') {
+                for (var exportKey in exposed) {
+                    if (exposed.hasOwnProperty(exportKey)) {
+                        __root__[exportKey] = exposed[exportKey];
+                    }
+                }
+            }
+            else if (typeof data.alias === 'object') {
+                for (var exportKey in data.alias) {
+                    if (data.alias.hasOwnProperty(exportKey)) {
+                        __root__[data.alias[exportKey]] = exposed[exportKey];
+                    }
+                }
+            }
+            else {
+                __root__[data.alias] = exposed;
+            }
         }
     };
     FuseBox.dynamic = function (path, str, opts) {
