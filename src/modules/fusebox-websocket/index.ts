@@ -2,7 +2,7 @@ const events = require("events");
 
 export type OnOpenFn = (client: SocketClient) => void;
 
-export class SocketClient {
+export class IntentionalTypoToSeeBuildFail {
     url: string;
     authSent: boolean;
     emitter: any;

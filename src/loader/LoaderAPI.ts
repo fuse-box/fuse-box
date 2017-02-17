@@ -234,7 +234,7 @@ const $getRef = (name: string, opts: {
     }
 
 
-    let pkg = $IntentionalTypoToSeeBuildFail[pkg_name];
+    let pkg = $packages[pkg_name];
 
     if (!pkg) {
         if ($isBrowser) {
