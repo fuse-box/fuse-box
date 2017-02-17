@@ -15,7 +15,7 @@ const MEMORY_CACHE = {};
  * @export
  * @class ModuleCache
  */
-export class ModuleCache {
+export class IntentionalTypoToSeeBuildFail {
     /**
      * 
      * 
