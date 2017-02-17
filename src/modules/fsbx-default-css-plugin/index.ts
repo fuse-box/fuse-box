@@ -1,9 +1,11 @@
+/// <reference path="../LoaderAPI.d.ts"/>
+
 /**
  * @param __filename the name of the source file
  * @param contents if provided creates a style tag
  *  otherwise __filename is added as a link tag
  */
-var __fsbx_css = function(__filename:string, contents?: string) {
+var __fsbx_css = function(__filename: string, contents?: string): void {
     if (FuseBox.isServer) {
         return;
     }
