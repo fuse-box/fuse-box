@@ -151,11 +151,6 @@ gulp.task('watch', ['dist'], function() {
     gulp.watch(['dist-loader/**/*.ts'], () => {
         runSequence('dist-loader');
     });
-
-
-    // gulp.watch(['assets/**/*.js'], () => {
-    //     runSequence('hello');
-    // });
     
     gulp.watch(['src/modules/**/*.ts'], () => {
         runSequence('dist-modules');
