@@ -158,12 +158,6 @@ gulp.task('watch', ['dist-commonjs', 'dist-loader', 'dist-modules'], function() 
 });
 
 
-gulp.task('uglify-test', function() {
-    return gulp.src('./out.js')
-        .pipe(uglify())
-        .pipe(rename('out.min.js')).pipe(gulp.dest('./'))
-});
-
 gulp.task('dist', ['dist-typings', 'dist-commonjs', 'dist-loader', 'dist-modules'], function() {
 
 });
