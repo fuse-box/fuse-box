@@ -19,7 +19,7 @@ export const PostCSSResourcePlugin = postcss.plugin("css-resource", function (op
     return (css, result) => {
         css.walkDecls(declaration => {
             if (declaration.prop) {
-                if (declaration.prop.indexOf("background") === 0) {
+                if (declaration.prop.indexOf("background") === 0 || declaration.prop.indexOf("src") === 0) {
                     let re = /url\((.*?)\)/g;
                     let match;
                     // tslint:disable-next-line:no-conditional-assignment
