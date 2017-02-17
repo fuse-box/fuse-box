@@ -3,6 +3,7 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.3.117             | https://github.com/fuse-box/fuse-box/milestone/4?closed=1
 | 1.3.116             | https://github.com/fuse-box/fuse-box/milestone/3?closed=1
 | 1.3.115             | Babel fails on config without sourcemaps, electron-fusebox - Node API, [mt1.3.115](https://github.com/fuse-box/fuse-box/milestone/2?closed=1)
 | 1.3.114             | [Milestone 1](https://github.com/fuse-box/fuse-box/milestone/1?closed=1)
