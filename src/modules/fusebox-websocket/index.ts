@@ -31,7 +31,7 @@ export class SocketClient {
     connect(fn?: OnOpenFn) {
         console.log("connect", this.url);
         setTimeout(() => {
-            this.client = new WebSocket(this.url);
+            this.client = new WebSocket(this.url, {rejectUnauthorized: false});
             this.bindEvents(fn);
         }, 0);
     }
