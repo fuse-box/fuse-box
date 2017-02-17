@@ -87,22 +87,6 @@ gulp.task('dist-commonjs', () => {
 });
 
 /**
- * Used for tests
- */
-let node;
-gulp.task('hello', function() {
-    if (node) node.kill()
-    node = spawn('node', ['hello.js'], {
-        stdio: 'inherit'
-    })
-    node.on('close', function(code) {
-        if (code === 8) {
-            gulp.log('Error detected, waiting for changes...');
-        }
-    });
-});
-
-/**
  * NPM deploy management
  */
 gulp.task('publish', function(done) {
