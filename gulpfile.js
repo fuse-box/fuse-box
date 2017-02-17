@@ -27,6 +27,7 @@ let projectLoader = ts.createProject('src/loader/tsconfig.json');
  */
 const fuseboxModuleTasks = [
     'fsbx-default-css-plugin',
+    'fusebox-hot-reload',
 ].map(fuseboxModule => {
     let project = ts.createProject('src/modules/tsconfig.json');
     const taskName = `dist-modules-${fuseboxModule}`

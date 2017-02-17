@@ -17,4 +17,5 @@ playground
 _playground
 
 # FuseBox modules built from TS
-modules/fsbx-default-css-plugin
+modules/fsbx-default-css-plugin/
+modules/fusebox-hot-reload/
