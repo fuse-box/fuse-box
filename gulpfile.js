@@ -62,12 +62,7 @@ gulp.task('dist-loader-typings', () => {
         .pipe(projectLoaderTypings()).dts
         .pipe(gulp.dest('dist'));
 });
-gulp.task('minify-loader', ['dist-loader-js'], function() {
-    return gulp.src('modules/fuse-box-loader-api/fusebox.js')
-        .pipe(uglify())
-        .pipe(rename('fusebox.min.js')).pipe(gulp.dest('modules/fuse-box-loader-api'))
-});
-gulp.task('dist-loader', ['dist-loader-js', 'minify-loader', 'dist-loader-typings'])
+gulp.task('dist-loader', ['dist-loader-js', 'dist-loader-typings'])
 
 /**
  * Used to build the fusebox modules
