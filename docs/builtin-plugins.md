@@ -4,41 +4,26 @@ Fusebox contains premade plugins, that should help you to get started.
 
 ## CSS Plugin
 
-It's very easy to start working with css files. You have 2 options, you either bundle the contents or serve the files. A decision that can be made at build time.
+The CSS plugin is elegant and powerful.  It can be used to combine all CSS files into a single bundle, or to mark files as external to
+the bundle, to be served separately by the web server.  Both options are specified in the options for the CSSPlugin.  By default, all files are bundled.
 
 For example:
 ```js
 plugins: [
-    fsbx.CSSPlugin({
-        minify: true
-    })
+    fsbx.CSSPlugin({})
 ]
 ```
 
-In this case, all CSS files will be bundled.
+In this case, all CSS files will be bundled along with the javascript, and can be required from any javascript file directly.
 
-### Write contents to a different file
+### Serving files external to the bundle
 
-Combine this module with something else, and you will see real magic happen.
-```
-plugins: [
-    [
-        fsbx.SassPlugin({ outputStyle: 'compressed' }),
-        fsbx.CSSPlugin({ write: true })
-    ]
-]
-```
-* It will create an according file - `./main.scss` becomes `build/main.css` (your [outFile](#out-file) folder + project path)
-* Will create `main.css.map` and it will do mappping too, ff sourcemaps are attached
-* It will automatically append filename to the head (and serve it)
+In some cases, with very large CSS files that rarely change, it may be better for the end user's browser to cache the CSS file separately
+from the primary bundle.  In this case, passing in the `serve` option will instruct fusebox not to bundle the CSS file, but instead to
+translate the require of styles from this file into a request for a CSS file from the server rather than loading locally from the bundle.
 
-Check how it works [here](https://github.com/fuse-box/angular2-example)
-
-> Note - we are still working on the CSS plugins. Be patient. Customisations are coming soon.
-
-### Serving file
-
-But if you define "serve" option with a callback, all files will be filtered through it. A callback is expected to return a string with a browser path. If you return "undefined" or *NOT* a string, that file will be bundled as if no option was specified.
+The `serve` option must be a function that accepts the path to the current CSS file and returns either the server path, or a falsey value
+if the file should be bundled.  Here are examples of both use cases:
 
 All css files will be served by server.
 ```js
@@ -50,7 +35,7 @@ plugins: [
 ]
 ```
 
-All files will be served except for "styles.css" (contents will be included in the bundle)
+All files will be served except for "styles.css," which will be included in the bundle along with other bundled javascript.
 ```
 plugins: [
     fsbx.CSSPlugin({
@@ -60,7 +45,30 @@ plugins: [
 ]
 ```
 
-On top of that a CSS file will added to DOM upon request if not found in the bundle.
+Any CSS file that is required by javascript code which has not been bundled will be loaded directly into the DOM by requesting it from
+the server.
+
+### Chaining CSS plugins to transform SCSS, Sass, and others
+
+Fusebox's plugin system allows simple transformation of more complex CSS systems through plugin chaining.  For example, to transform
+Sass into CSS:
+
+```
+plugins: [
+    [
+        fsbx.SassPlugin({ outputStyle: 'compressed' }),
+        fsbx.CSSPlugin({ write: true })
+    ]
+]
+```
+
+* This simple code will change any scss file to a css file - `./main.scss` becomes `build/main.css` (your [outFile](#out-file) folder + project path)
+* it also creates `main.css.map` if sourcemaps have been specified
+* it automatically appends the new CSS files to the head of the web page and serves them
+
+A more extensive example can be found [here](https://github.com/fuse-box/angular2-example)
+
+> Note - CSS plugins are in flux, more customization is coming
 
 ## CSSResourcePlugin
 
@@ -119,8 +127,7 @@ plugins:[
 ],
 ```
 
-> We still need to figure out what to do with sourcemaps. Be patient!
-
+> Note: Source maps are not yet completely implemented
 
 
 ## PostCSS
@@ -142,8 +149,7 @@ plugins:[
 ],
 ```
 
-> We still need to figure out what to do with sourcemaps. Be patient!
-
+> Note: Source maps are not yet completely implemented
 
 ## StylusPlugin
 ```js
