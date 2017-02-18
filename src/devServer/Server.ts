@@ -22,8 +22,8 @@ export interface ServerOptions {
 
     /** 
      * - If false nothing is served.
-     * - If string specfied this is the folder served from express.static
-     * - It can be an absolute path or relative to `appRootPath`
+     * - If string specified this is the folder served from express.static
+     *      It can be an absolute path or relative to `appRootPath`
      **/
     root?: boolean | string;
 
