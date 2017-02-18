@@ -5,7 +5,7 @@ Fusebox contains premade plugins, that should help you to get started.
 ## CSS Plugin
 
 The CSS plugin is elegant and powerful.  It can be used to combine all CSS files into a single bundle, or to mark files as external to
-the bundle, to be served separately by the web server.  Both options are specified in the options for the CSSPlugin.  By default, all files are bundled.
+the bundle, to be served separately by the web server.  By default, all CSS files are bundled.
 
 For example:
 ```js
@@ -14,13 +14,77 @@ plugins: [
 ]
 ```
 
-In this case, all CSS files will be bundled along with the javascript, and can be required from any javascript file directly.
+### Chaining CSS plugins to transform SCSS, Sass, and others
 
-### Serving files external to the bundle
+Fusebox's plugin system allows simple transformation of more complex CSS systems through plugin chaining.  For example, to transform
+Sass into CSS:
 
-In some cases, with very large CSS files that rarely change, it may be better for the end user's browser to cache the CSS file separately
-from the primary bundle.  In this case, passing in the `serve` option will instruct fusebox not to bundle the CSS file, but instead to
-translate the require of styles from this file into a request for a CSS file from the server rather than loading locally from the bundle.
+```
+plugins: [
+    [
+        fsbx.SassPlugin({ outputStyle: 'compressed' }),
+        fsbx.CSSPlugin({ write: true })
+    ]
+]
+```
+
+* This simple code will change any scss file to a css file - `./main.scss` becomes `build/main.css` (your [outFile](#out-file) folder + project path)
+* it also creates `main.css.map` if sourcemaps have been specified
+* it automatically appends the new CSS files to the head of the web page and serves them
+
+A more extensive example can be found [here](https://github.com/fuse-box/angular2-example)
+
+### Options
+
+The CSS plugin accepts a few options to customize the output bundle, and to handle edge cases.
+
+#### minify
+
+If specified as true, all CSS files will have extraneous whitespace removed to help reduce file size.  This option is false by default.
+
+```
+plugins: [
+  fsbx.CSSPlugin({
+    minify: true
+  })
+]
+```
+
+#### write
+
+If specified as true, then the CSS files will be processed and transferred to the build folder for bundling.  This option is false by
+default, and should be set to true when chaining with any CSS processing plugins above it.
+
+```
+plugins: [
+    [
+        fsbx.SassPlugin({ outputStyle: 'compressed' }),
+        fsbx.CSSPlugin({ write: true })
+    ]
+]
+```
+
+The option should be set to false for any CSS files that will be served (and not bundled) to decrease build time.
+
+```js
+plugins: [
+    fsbx.CSSPlugin({
+        minify: true,
+        serve: path => `./${path}`
+    })
+]
+```
+
+#### bundle
+
+???
+
+#### serve
+
+This option should be used to delegate serving a CSS file external to the bundle to either the DevServer or your chosen web server.
+Unlike other options passed to the CSSPlugin, `serve` must be a function.  The function accepts the path to CSS files, and should return
+the URL that the CSS file can be accessed at, or false if the file should be bundled.  This flexibility allows serving some files
+separately, and bundling others.
 
 The `serve` option must be a function that accepts the path to the current CSS file and returns either the server path, or a falsey value
 if the file should be bundled.  Here are examples of both use cases:
@@ -47,26 +111,6 @@ plugins: [
 
 Any CSS file that is required by javascript code which has not been bundled will be loaded directly into the DOM by requesting it from
 the server.
-
-### Chaining CSS plugins to transform SCSS, Sass, and others
-
-Fusebox's plugin system allows simple transformation of more complex CSS systems through plugin chaining.  For example, to transform
-Sass into CSS:
-
-```
-plugins: [
-    [
-        fsbx.SassPlugin({ outputStyle: 'compressed' }),
-        fsbx.CSSPlugin({ write: true })
-    ]
-]
-```
-
-* This simple code will change any scss file to a css file - `./main.scss` becomes `build/main.css` (your [outFile](#out-file) folder + project path)
-* it also creates `main.css.map` if sourcemaps have been specified
-* it automatically appends the new CSS files to the head of the web page and serves them
-
-A more extensive example can be found [here](https://github.com/fuse-box/angular2-example)
 
 > Note - CSS plugins are in flux, more customization is coming
 
