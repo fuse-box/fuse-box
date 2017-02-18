@@ -47,7 +47,11 @@ let filesMain = ['src/**/*.ts', "!./src/loader/LoaderAPI.ts", "!./src/modules/**
 gulp.task('dist-loader-js', () => {
     return gulp.src('src/loader/LoaderAPI.ts')
         .pipe(projectLoader()).on('error', onError).js
-        .pipe(wrap('(function(__root__){ <%= contents %> \nreturn __root__["FuseBox"] = FuseBox; } )(this)'))
+        .pipe(wrap(`(function(__root__){
+if (__root__["FuseBox"]) return __root__["FuseBox"];
+<%= contents %>
+return __root__["FuseBox"] = FuseBox; } )(this)`
+        ))
         .pipe(rename('fusebox.js'))
         .pipe(gulp.dest('modules/fuse-box-loader-api'))
         .pipe(rename('fusebox.min.js'))
