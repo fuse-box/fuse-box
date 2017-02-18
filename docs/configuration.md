@@ -163,17 +163,19 @@ console.log(foo)
 
 The key `jquery` in our case is used to define package name: for example, you can replace `jquery` with `foo` and use `import "foo"` to get a jquery instance.
 
-If you are coming from `Webpack` this also could be used to behave like the Aliasing Feature in `Webpack`, so the equivalent of the below in `Webpack`
-```
-alias: { 'react-native': 'react-native-web' }
-```
-would be
+Example shim config:
 ```
 shim : {
    "react-native-web" : { exports : "require('react-native')"}
 }
 ```
 Now you can reference it like  `window.ReactNative`, and require function is at your convenience.
+
+Important to note, shims will not be analyzed, which means they should be transpiled before importing, or imported into an environment that does not need them to be transpiled. Shimming works similar to [requirejs](http://requirejs.org/) and [jspm](http://jspm.io/).
+
+## Mapping
+🚧 Is a work in progress, this feature will provide similar functionality to webpack aliases.
+
 
 ## Server Bundle
 
