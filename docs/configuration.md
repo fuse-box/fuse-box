@@ -177,6 +177,7 @@ Now you can reference it like  `window.ReactNative`, and require function is at 
 
 ## Server Bundle
 
+
 In case you are running your bundle in `electron` for example,
 you might want to make fuse think that it is running on server.
 
@@ -185,5 +186,6 @@ FuseBox.init({
     serverBundle : true
 })
 ```
+> Use it ONLY for electron environment. This is a very special case that allows FuseBox to be run in browser but behave as if it's running on server.
 
 Don't run that bundle in a traditional browser.
