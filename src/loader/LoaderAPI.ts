@@ -1,3 +1,7 @@
+/** 
+ * This whole file is wrapped in a function by our gulpfile.js
+ * The function is injected the global `this` as `__root__`
+ **/
 declare let __root__: any;
 declare let __fbx__dnm__: any;
 
