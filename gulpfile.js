@@ -27,10 +27,13 @@ function onError(error) {
  * ts projects
  */
 let projectTypings = ts.createProject('src/tsconfig.json', {
-    removeComments: false
+    removeComments: false,
 });
 let projectCommonjs = ts.createProject('src/tsconfig.json');
 let projectLoader = ts.createProject('src/loader/tsconfig.json');
+let projectLoaderTypings = ts.createProject('src/loader/tsconfig.json',{
+    removeComments: false,
+});
 let getProjectModule = () => ts.createProject('src/modules/tsconfig.json');
 
 /**
@@ -38,6 +41,28 @@ let getProjectModule = () => ts.createProject('src/modules/tsconfig.json');
  */
 let filesMain = ['src/**/*.ts', "!./src/loader/LoaderAPI.ts", "!./src/modules/**/*.ts"];
 
+/**
+ * Loader API building
+ */
+gulp.task('dist-loader-js', () => {
+    return gulp.src('src/loader/LoaderAPI.ts')
+        .pipe(projectLoader()).on('error', onError).js
+        .pipe(wrap('(function(__root__){ <%= contents %> \nreturn __root__["FuseBox"] = FuseBox; } )(this)'))
+        .pipe(rename('fusebox.js'))
+        .pipe(gulp.dest('modules/fuse-box-loader-api'))
+        .pipe(rename('fusebox.min.js'))
+        .pipe(uglify())
+        .pipe(replace(/;$/, ''))
+        .pipe(replace(/^\!/, ''))
+        .pipe(gulp.dest('modules/fuse-box-loader-api'))
+
+});
+gulp.task('dist-loader-typings', () => {
+    return gulp.src('src/loader/LoaderAPI.ts')
+        .pipe(projectLoaderTypings()).dts
+        .pipe(gulp.dest('dist'));
+});
+gulp.task('dist-loader', ['dist-loader-js', 'dist-loader-typings'])
 
 /**
  * Used to build the fusebox modules
@@ -54,7 +79,7 @@ const fuseboxModuleTasks = [
 ].map(fuseboxModule => {
     let project = getProjectModule();
     const taskName = `dist-modules-${fuseboxModule}`
-    gulp.task(taskName, () => {
+    gulp.task(taskName,['dist-loader-typings'], () => {
         return gulp.src(`src/modules/${fuseboxModule}/index.ts`)
         .pipe(project()).on('error', onError).js
         .pipe(gulp.dest(`modules/${fuseboxModule}`))
@@ -62,28 +87,6 @@ const fuseboxModuleTasks = [
     return taskName;
 });
 gulp.task('dist-modules', fuseboxModuleTasks);
-
-/**
- * Loader API building
- */
-gulp.task('dist-loader', () => {
-    return gulp.src('src/loader/LoaderAPI.ts')
-        .pipe(projectLoader()).on('error', onError).js
-        .pipe(wrap('(function(__root__){ <%= contents %> \nreturn __root__["FuseBox"] = FuseBox; } )(this)'))
-        .pipe(rename('fusebox.js'))
-        .pipe(gulp.dest('modules/fuse-box-loader-api'))
-        .pipe(rename('fusebox.min.js'))
-        .pipe(uglify())
-        .pipe(replace(/;$/, ''))
-        .pipe(replace(/^\!/, ''))
-        .pipe(gulp.dest('modules/fuse-box-loader-api'))
-
-});
-gulp.task('minify-loader', function() {
-    return gulp.src('modules/fuse-box-loader-api/fusebox.js')
-        .pipe(uglify())
-        .pipe(rename('fusebox.min.js')).pipe(gulp.dest('modules/fuse-box-loader-api'))
-});
 
 /**
  * Main building
