@@ -7,7 +7,15 @@ import { File } from "./File";
 import * as path from 'path';
 import * as fs from 'fs';
 
-const Concat = require("concat-with-sourcemaps");
+export type Concat = {
+    add(fileName: string | null, content: string | Buffer, sourceMap?: string): void;
+    content: Buffer;
+    sourceMap: string;
+}
+export type ConcatModule = {
+    new (generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
+}
+export const Concat: ConcatModule = require("concat-with-sourcemaps");
 
 /**
  * 
@@ -30,7 +38,7 @@ export class BundleSource {
      * @type {*}
      * @memberOf BundleSource
      */
-    private concat: any;
+    private concat: Concat;
 
     private collectionSource: any;
 
@@ -52,7 +60,7 @@ export class BundleSource {
      * @memberOf BundleSource
      */
     public init() {
-        this.concat.add(null, "(function(FuseBox){");
+        this.concat.add(null, "(function(FuseBox){FuseBox.$fuse$=FuseBox;");
     }
 
     /**
@@ -123,7 +131,8 @@ export class BundleSource {
      * @memberOf BundleSource
      */
     public addFile(file: File) {
-        if (file.info.isRemoteFile || file.notFound) {
+        if (file.info.isRemoteFile || file.notFound
+            || file.collection && file.collection.acceptFiles === false) {
             return;
         }
 

@@ -84,11 +84,30 @@ You can expose your package variables to `window` (in browser) and `exports`in n
 
 ```
 FuseBox.init({
+    // exposes window.mySuperLib
     globals: { default: "mySuperLib" },
 })
 ```
 
-Whereas key is the name of a package and value is an alias that groups exports. "default" is your current project. Please, note, that in order to expose your default package, a bundle must have an [entry point](#entry-point)
+Whereas key is the name of a package and value is an alias that groups exports. "default" is your current project.
+
+You can also expose your packages exports to `window` or `exports`.
+
+```
+// assuming mySuperLib exports a "handler" and "logger" property
+
+FuseBox.init({
+    // exposes window.superHandler
+    globals: { "mySuperLib": { "handler": "superHandler"} },
+
+    // OR
+    // exposes window.handler and window.logger
+    globals: { "mySuperLib": "*" },
+})
+
+```
+
+Please, note, that in order to expose your package, a bundle must have a [package name](#package-name)
 
 ## Sourcemaps
 

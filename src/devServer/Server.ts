@@ -19,28 +19,33 @@ export type SourceChangedEvent = {
 export interface ServerOptions {
     /** Defaults to 4444 if not specified */
     port?: number;
-    
+
+    /** 
+     * - If false nothing is served.
+     * - If string specfied this is the folder served from express.static
+     * - It can be an absolute path or relative to `appRootPath`
+     **/
     root?: boolean | string;
+
     emitter?: HotReloadEmitter;
     httpServer?: boolean;
 }
 
+/**
+ * Wrapper around the static + socket servers
+ */
 export class Server {
     public httpServer: HTTPServer;
     public socketServer: SocketServer;
     constructor(private fuse: FuseBox) {
 
     }
+
     /**
-     * 
-     * 
-     * @param {string} str
-     * 
-     * @memberOf Server
+     * Starts the server
+     * @param str the default bundle arithmetic string 
      */
     public start(str: string, opts?: ServerOptions): Server {
-        // adding hot reload plugin
-
         opts = opts || {};
 
         let buildPath = ensureUserPath(this.fuse.context.outFile);
@@ -80,7 +85,9 @@ export class Server {
                 }
             });
 
-
+            /**
+             * watches the home directory for changes and trigger re-bundling
+             */
             let timeout;
             watch.watchTree(this.fuse.context.homeDir, { interval: 0.2 }, () => {
                 clearInterval(timeout);

@@ -9,8 +9,7 @@ Plugins inject dependent packages/javascript code, that becomes a part of FuseBo
 
 FuseBox bundle works in both environments. Essentially, it does not matter where you run it. FuseBox will persist itself in browser window, or nodejs globals.
 
-Every bundle contains a 3.7k footer with FuseBox API (1,6KB gzipped).  
-
+Every bundle contains a 3.7k footer with FuseBox API (1.6KB gzipped).  
 
 ## Import
 Import is 100% compatible with commonjs specification. You can require folders, skip file extensions (fusebox will guess it).
@@ -33,21 +32,18 @@ Lazy load works out of the box.
 
 Imagine that bundle does not have `myModule.js`, and it's a `CommonJs` module. In order to lazy load it, put your target file next to it available via HTTP, and load it like so:
 
-```
+```js
 FuseBox.import("./myModule.js", (module) => {
 })
 ```
 
 If a module is not found within FuseBox' context, it tries to load it via HTTP request. Once obtained, the API caches the exports, allowing to request that module synchronously later on.
 
-```
+```js
 import "./myModule".
 ```
 
 You can load other bundles as well. For example [here](#bundle-in-a-bundle) 
-
-
-
 
 ## Wildcard import
 With wildcard imports `*` you can require all files that match a particular pattern. A wildcard with no default extension will fallback to `.js`.
@@ -79,29 +75,28 @@ FuseBox.import("./batch/*-component")
 
 Note that you can use all of the above with `require` statement too.
 
-```
+```js
 require("~/stuff/boo").hello
 ```
+
 or
 
-```
+```js
 require("~/stuff/boo.js").hello
 ```
 
 ## Remove
 You can completely remove a module from memory. 
 
-```
+```js
 FuseBox.remove("./foo")
 ```
-
-
 
 ## FuseBox events
 
 It is possible to intercept require statements. You can catch "before-import" and "after-import" events like so:
 
-```
+```js
 FuseBox.on("before-import", (exports, require, module, __filename, __dirname, pkg) => {                
 });
 
@@ -131,7 +126,7 @@ FuseBox.dynamic("foo/wow.js", "require('./bar')")
 
 See how `wow.js` is referring to the `foo/bar.js`. A dynamic module is a fully functional FuseBox file, that plays nicely with the rest of the bundle and vice versa. Your bundle won't have any problems using a wildcard import on the dynamic modules too.
 
-```
+```js
 require("~/foo/*") // will give 2 files
 ```
 
@@ -145,4 +140,38 @@ You can use `~` symbol to point to your project's path in order to solve `../../
 require("~/lib/utils")
 // es6
 import * as utils from "~/lib/utils";
+```
+
+## Loader Plugins
+Loader plugins can intercept hmr updates to override the default behavior. Here is the current plugin interface: 
+
+```js
+interface LoaderPlugin {
+    /** 
+     * If true is returned by the plugin
+     *  it means that module change has been handled
+     *  by plugin and no special work is needed by FuseBox
+     **/
+    hmrUpdate?(evt: SourceChangedEvent): boolean;
+}
+
+/** Where */
+type SourceChangedEvent = {
+    type: 'js' | 'css',
+    content: string,
+    path: string
+}
+```
+
+You register a plugin using `FuseBox.addPlugin(YourPlugin)`. As an example here is a way to register a plugin that just reloads the window for *js* files instead of the default behavior:
+
+```js
+FuseBox.addPlugin({
+  hmrUpdate: ({ type, path, content }) => {
+    if (type === "js") {
+      window.location.reload();
+      return true;
+    }
+  }
+});
 ```

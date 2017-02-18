@@ -120,6 +120,17 @@ export class CSSResourcePluginClass implements Plugin {
                         return IMG_CACHE[urlFile];
                     }
                     const ext = path.extname(urlFile);
+                    let fontsExtensions ={
+                        '.woff': 'application/font-woff',
+                        '.woff2': 'application/font-woff2',
+                        '.eot': 'application/vnd.ms-fontobject',
+                        '.ttf': 'application/x-font-ttf',
+                        '.otf': 'font/opentype'
+                    };
+                    if(fontsExtensions[ext]) {
+                        let content = new Buffer(fs.readFileSync(urlFile)).toString('base64');
+                        return `data:${fontsExtensions[ext]};charset=utf-8;base64,${content}`;
+                    }
                     if (ext === ".svg") {
                         let content = SVG2Base64.get(fs.readFileSync(urlFile).toString());
                         IMG_CACHE[urlFile] = content;

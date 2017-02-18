@@ -27,6 +27,7 @@ export class FileAnalysis {
 
     private wasAnalysed = false;
     private skipAnalysis = false;
+    private fuseBoxVariable = "FuseBox";
 
 
 
@@ -109,10 +110,13 @@ export class FileAnalysis {
             return node.type === "Literal" || node.type === "StringLiteral";
         }
 
-
         ASTTraverse.traverse(this.ast, {
             pre: (node, parent, prop, idx) => {
-
+                if (node.type === "Identifier") {
+                    if (node.name === "$fuse$") {
+                        this.fuseBoxVariable = parent.object.name;
+                    }
+                }
                 if (node.type === "MemberExpression") {
                     if (node.object && node.object.type === "Identifier") {
                         if (node.object.name === "process") {
@@ -120,15 +124,17 @@ export class FileAnalysis {
                         }
                     }
                     if (parent.type === "CallExpression") {
-                        if (node.object && node.object.type === "Identifier" && node.object.name === "FuseBox") {
+                        if (node.object && node.object.type === "Identifier" && node.object.name === this.fuseBoxVariable) {
                             if (node.property && node.property.type === "Identifier") {
-
+                                // console.log(node);
                                 // Extraing main file name from a bundle
+
                                 if (node.property.name === "main") {
                                     if (parent.arguments) {
                                         let f = parent.arguments[0];
                                         if (f && isString(f)) {
                                             out.fuseBoxMain = f.value;
+
                                             out.fuseBoxBundle = true;
                                         }
                                     }
@@ -158,6 +164,7 @@ export class FileAnalysis {
                 }
             }
         });
+
         out.requires.forEach(name => {
             this.dependencies.push(name);
         });
@@ -168,7 +175,6 @@ export class FileAnalysis {
             }
         }
 
-
         if (out.fuseBoxBundle) {
             // Reset all dependencies if a fusebox bundle is spotted
             this.dependencies = [];
@@ -176,7 +182,16 @@ export class FileAnalysis {
             // No need in extra footers
             this.removeFuseBoxApiFromBundle();
             if (out.fuseBoxMain) {
-                this.file.alternativeContent = `module.exports = require("${out.fuseBoxMain}")`
+                const externalCollection = this.file.collection.name !== this.file.context.defaultPackageName;
+                if (externalCollection) {
+                    // Ignore this collection as it will be override by the actual bundle
+                    this.file.collection.acceptFiles = false;
+                } else {
+                    // otherwise we know that user is referring to a file which is a FuseBox bundle
+                    // We point to the package with entry point
+                    // e.g require("foobar/index.js")
+                    this.file.alternativeContent = `module.exports = require("${out.fuseBoxMain}")`
+                }
             }
         }
         this.wasAnalysed = true;
@@ -192,17 +207,25 @@ export class FileAnalysis {
      */
     private removeFuseBoxApiFromBundle() {
         let ast = this.ast;
+
         let modifiedAst;
         if (ast.type === "Program") {
             let first = ast.body[0];
+
             if (first && first.type === "ExpressionStatement") {
                 let expression = first.expression;
+                // handled uglified version
+                if (expression.type === "UnaryExpression" && expression.operator === "!") {
+                    expression = expression.argument || {};
+                }
+
                 if (expression.type === "CallExpression") {
                     let callee = expression.callee;
                     if (callee.type === "FunctionExpression") {
                         if (callee.params && callee.params[0]) {
                             let param1 = callee.params[0];
-                            if (param1.type === "Identifier" && param1.name === "FuseBox") {
+
+                            if (param1.type === "Identifier" && param1.name === this.fuseBoxVariable) {
                                 modifiedAst = callee.body;
                             }
                         }
@@ -211,7 +234,7 @@ export class FileAnalysis {
             }
         }
         if (modifiedAst) {
-            this.file.contents = `(function()${escodegen.generate(modifiedAst)})();`;
+            this.file.contents = `(function(${this.fuseBoxVariable})${escodegen.generate(modifiedAst)})(FuseBox);`;
         }
     }
 }

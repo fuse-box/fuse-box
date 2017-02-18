@@ -88,6 +88,13 @@ var $loadURL = function (url) {
         head.insertBefore(target, head.firstChild);
     }
 };
+var $loopObjKey = function (obj, func) {
+    for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            func(key, obj[key]);
+        }
+    }
+};
 var $getRef = function (name, opts) {
     var basePath = opts.path || "./";
     var pkg_name = opts.pkg || "default";
@@ -297,10 +304,22 @@ var FuseBox = (function () {
         return FuseBox.import(name, {});
     };
     FuseBox.expose = function (obj) {
-        for (var key in obj) {
+        var _loop_1 = function (key) {
             var data = obj[key];
+            var alias = data.alias;
             var exposed = $import(data.pkg);
-            __root__[data.alias] = exposed;
+            if (alias === '*') {
+                $loopObjKey(exposed, function (exportKey, value) { return __root__[exportKey] = value; });
+            }
+            else if (typeof alias === 'object') {
+                $loopObjKey(alias, function (exportKey, value) { return __root__[value] = exposed[exportKey]; });
+            }
+            else {
+                __root__[alias] = exposed;
+            }
+        };
+        for (var key in obj) {
+            _loop_1(key);
         }
     };
     FuseBox.dynamic = function (path, str, opts) {
@@ -312,17 +331,14 @@ var FuseBox = (function () {
             });
         });
     };
-    FuseBox.flush = function (fileName) {
+    FuseBox.flush = function (shouldFlush) {
         var def = $packages["default"];
-        if (fileName) {
-            if (def.f[fileName]) {
-                delete def.f[fileName].locals;
+        for (var fileName in def.f) {
+            var doFlush = !shouldFlush || shouldFlush(fileName);
+            if (doFlush) {
+                var file = def.f[fileName];
+                delete file.locals;
             }
-            return;
-        }
-        for (var name_1 in def.f) {
-            var file = def.f[name_1];
-            delete file.locals;
         }
     };
     FuseBox.pkg = function (pkg_name, versions, fn) {
@@ -339,10 +355,14 @@ var FuseBox = (function () {
         };
         return fn(_scope);
     };
+    FuseBox.addPlugin = function (plugin) {
+        this.plugins.push(plugin);
+    };
     return FuseBox;
 }());
 FuseBox.packages = $packages;
 FuseBox.isBrowser = $isBrowser !== undefined;
 FuseBox.isServer = !$isBrowser;
+FuseBox.plugins = [];
  
 return __root__["FuseBox"] = FuseBox; } )(this)

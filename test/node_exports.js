@@ -50,6 +50,39 @@ describe("Node modules and exports", (done) => {
         }).catch(done);
     });
 
+    it('Should expose wildcard globals', (done) => {
+        env({
+            log: false,
+            cache: false,
+            package: 'wires-reactive',
+            globals: { "wires-reactive": "*" },
+            files: {
+                "index.js": `module.exports = {hello : "world", wildcard: "exporting"};`
+            }
+        }, "> index.js").then(data => {
+            data.hello.should.be.ok;
+            data.hello.should.equal("world");
+            data.wildcard.should.be.ok;
+            data.wildcard.should.equal("exporting");
+            done();
+        }).catch(done);
+    });
+
+    it('Should expose object-keyed globals', (done) => {
+        env({
+            log: false,
+            cache: false,
+            package: 'wires-reactive',
+            globals: { "wires-reactive": { "hello": "helloExt"} },
+            files: {
+                "index.js": `module.exports = {hello : "world"};`
+            }
+        }, "> index.js").then(data => {
+            data.helloExt.should.be.ok;
+            data.helloExt.should.equal("world");
+            done();
+        }).catch(done);
+    });
 
     it("Node library 'net' should be found", (done) => {
         env({
