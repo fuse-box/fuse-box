@@ -39,7 +39,11 @@ export const connect = (port: string) => {
             }
         }
         if (data.type === "css" && __fsbx_css) {
-            __fsbx_css(data.path, data.content)
+            let sPath = JSON.stringify(data.path);
+            let sContent = JSON.stringify(data.content);
+            let newContent = `(${__fsbx_css.toString()})(${sPath}, ${sContent})`;
+            FuseBox.dynamic(data.path, newContent);
+            __fsbx_css(data.path, data.content);
         }
     })
     client.on("error", (error) => {
