@@ -85,7 +85,7 @@ const fuseboxModuleTasks = [
     const taskName = `dist-modules-${fuseboxModule}`
     gulp.task(taskName,['dist-loader-typings'], () => {
         return gulp.src(`src/modules/${fuseboxModule}/index.ts`)
-        .pipe(project()).on('error', onError).js
+        .pipe(project()).on('error', onError)
         .pipe(gulp.dest(`modules/${fuseboxModule}`))
     });
     return taskName;
