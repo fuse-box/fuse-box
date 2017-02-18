@@ -491,7 +491,7 @@ class FuseBox {
     /**
      * Imports a module
      */
-    public static import(name: string, opts: any) {
+    public static import(name: string, opts?: any) {
         return $import(name, opts);
     }
 
