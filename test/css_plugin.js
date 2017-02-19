@@ -94,5 +94,55 @@ describe('CSSPlugins ', () => {
         }).catch(done)
     });
 
+    it("Should create a CSS File and inject it with inject:true", (done) => {
+        makeTestFolder();
+        createEnv({
+            project: {
+                files: {
+                    "index.ts": `exports.hello = { bar : require("./main.css") }`,
+                    "main.css": "h1 {}"
+                },
+                plugins: [
+                    CSSPlugin({
+                        outFile: (file) => `${tmp}/${file}`,
+                        inject: true
+                    })
+                ],
+                instructions: "> index.ts"
+            }
+        }).then((result) => {
+            const js = result.projectContents.toString();
+            shouldExist("main.css");
+            should.equal(
+                js.indexOf(`__fsbx_css("main.css");`) > -1, true);
+            done();
+        }).catch(done)
+    });
+
+    it("Should create a CSS File with a custom injector", (done) => {
+        makeTestFolder();
+        createEnv({
+            project: {
+                files: {
+                    "index.ts": `exports.hello = { bar : require("./main.css") }`,
+                    "main.css": "h1 {}"
+                },
+                plugins: [
+                    CSSPlugin({
+                        outFile: (file) => `${tmp}/${file}`,
+                        inject: (file) => `custom/${file}`
+                    })
+                ],
+                instructions: "> index.ts"
+            }
+        }).then((result) => {
+            const js = result.projectContents.toString();
+            shouldExist("main.css");
+            should.equal(
+                js.indexOf(`__fsbx_css("custom/main.css");`) > -1, true);
+            done();
+        }).catch(done)
+    });
+
 
 });
