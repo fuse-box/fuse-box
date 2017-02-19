@@ -1,5 +1,3 @@
-/// <reference path="../../../dist/LoaderAPI.d.ts"/>
-
 var __fsbx_css = function(__filename: string, contents?: string): void {
     if (FuseBox.isServer) {
         return;

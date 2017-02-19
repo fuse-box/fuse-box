@@ -1,5 +1,3 @@
-/// <reference path="../../../dist/LoaderAPI.d.ts"/>
-
 /**
  * @module listens to `source-changed` socket events and actions hot reload
  */

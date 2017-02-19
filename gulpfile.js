@@ -64,7 +64,8 @@ return __root__["FuseBox"] = FuseBox; } )(this)`
 gulp.task('dist-loader-typings', () => {
     return gulp.src('src/loader/LoaderAPI.ts')
         .pipe(projectLoaderTypings()).dts
-        .pipe(gulp.dest('dist'));
+        .pipe(rename('LoaderAPI.ts'))
+        .pipe(gulp.dest('src/modules/fuse-loader'));
 });
 gulp.task('dist-loader', ['dist-loader-js', 'dist-loader-typings'])
 
@@ -80,11 +81,15 @@ const fuseboxModuleTasks = [
     'fsbx-default-css-plugin',
     'fusebox-hot-reload',
     'fusebox-websocket',
+    'fuse-loader',
 ].map(fuseboxModule => {
     let project = getProjectModule();
     const taskName = `dist-modules-${fuseboxModule}`
     gulp.task(taskName,['dist-loader-typings'], () => {
-        return gulp.src(`src/modules/${fuseboxModule}/index.ts`)
+        return gulp.src([
+            `src/modules/${fuseboxModule}/index.ts`, 
+            'src/modules/fuse-loader/LoaderAPI.ts'
+        ])
         .pipe(project()).on('error', onError)
         .pipe(gulp.dest(`modules/${fuseboxModule}`))
     });
