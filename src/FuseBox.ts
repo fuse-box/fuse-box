@@ -29,7 +29,7 @@ export interface FuseBoxOptions {
     ignoreGlobal?: string[];
     serverBundle?: boolean;
     outFile?: string;
-    debug: boolean;
+    debug?: boolean;
     files?: any;
     transformTypescript?: (contents: string) => string;
 }

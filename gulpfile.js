@@ -31,10 +31,10 @@ let projectTypings = ts.createProject('src/tsconfig.json', {
 });
 let projectCommonjs = ts.createProject('src/tsconfig.json');
 let projectLoader = ts.createProject('src/loader/tsconfig.json');
-let projectLoaderTypings = ts.createProject('src/loader/tsconfig.json',{
+let projectLoaderTypings = ts.createProject('src/loader/tsconfig.json', {
     removeComments: false,
 });
-let getProjectModule = () => ts.createProject('src/modules/tsconfig.json');
+let projectModule = ts.createProject('src/modules/tsconfig.json');
 
 /**
  * Our commonjs only files
@@ -64,33 +64,20 @@ return __root__["FuseBox"] = FuseBox; } )(this)`
 gulp.task('dist-loader-typings', () => {
     return gulp.src('src/loader/LoaderAPI.ts')
         .pipe(projectLoaderTypings()).dts
-        .pipe(gulp.dest('dist'));
+        .pipe(rename('LoaderAPI.ts'))
+        .pipe(gulp.dest('src/modules/fuse-loader'));
 });
 gulp.task('dist-loader', ['dist-loader-js', 'dist-loader-typings'])
 
 /**
  * Used to build the fusebox modules
- * Each of these
- * - is loaded from `src/modules/${name}/index.ts`
- * - built to `modules/${name}/index.js` 
- * 
  * When adding a new module here be sure to .gitignore `modules/${name}/`
  */
-const fuseboxModuleTasks = [
-    'fsbx-default-css-plugin',
-    'fusebox-hot-reload',
-    'fusebox-websocket',
-].map(fuseboxModule => {
-    let project = getProjectModule();
-    const taskName = `dist-modules-${fuseboxModule}`
-    gulp.task(taskName,['dist-loader-typings'], () => {
-        return gulp.src(`src/modules/${fuseboxModule}/index.ts`)
-        .pipe(project()).on('error', onError).js
-        .pipe(gulp.dest(`modules/${fuseboxModule}`))
-    });
-    return taskName;
+gulp.task('dist-modules', ['dist-loader-typings'], () => {
+    return gulp.src(`src/modules/**/*.ts`)
+        .pipe(projectModule()).on('error', onError)
+        .pipe(gulp.dest(`modules`))
 });
-gulp.task('dist-modules', fuseboxModuleTasks);
 
 /**
  * Main building
@@ -106,7 +93,7 @@ gulp.task('dist-commonjs', () => {
         .pipe(projectCommonjs()).on('error', onError).js
         .pipe(gulp.dest('dist/commonjs'));
 });
-gulp.task('dist-main',['dist-typings', 'dist-commonjs']);
+gulp.task('dist-main', ['dist-typings', 'dist-commonjs']);
 
 /**
  * NPM deploy management
@@ -157,7 +144,7 @@ gulp.task('watch', ['dist'], function() {
     gulp.watch(['src/loader/**/*.ts'], () => {
         runSequence('dist-loader');
     });
-    
+
     gulp.watch(['src/modules/**/*.ts'], () => {
         runSequence('dist-modules');
     });

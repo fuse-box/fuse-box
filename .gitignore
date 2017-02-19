@@ -16,7 +16,13 @@ npm-debug.log*
 playground
 _playground
 
+# FuseBox Loader API built type definition
+# Which is then exported as a module from `src`
+src/modules/fuse-loader/LoaderAPI.ts
+
 # FuseBox modules built from TS
 modules/fsbx-default-css-plugin/
 modules/fusebox-hot-reload/
 modules/fusebox-websocket/
+modules/fuse-loader/
+modules/fuse-hmr/
