@@ -40,6 +40,13 @@ export class Log {
         }
     }
 
+    public echoWarning(str: string) {
+        cursor.red().write(`  → WARNING `)
+            .write(str);
+        cursor.write("\n");
+        cursor.reset();
+    }
+
     public echoDefaultCollection(collection: ModuleCollection, contents: string) {
         if (!this.printLog) {
             return;

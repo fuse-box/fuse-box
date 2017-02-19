@@ -129,7 +129,7 @@ export class BundleSource {
         this.collectionSource.add(null,
             `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){ 
 ${file.headerContent ? file.headerContent.join("\n") : ""}`);
-        this.collectionSource.add(null, file.alternativeContent || file.contents, file.sourceMap);
+        this.collectionSource.add(null, file.alternativeContent !== undefined ? file.alternativeContent : file.contents, file.sourceMap);
         this.collectionSource.add(null, "});");
     }
 

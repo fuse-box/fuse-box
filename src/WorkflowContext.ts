@@ -134,6 +134,18 @@ export class WorkFlowContext {
         }
     }
 
+    public warning(str: string) {
+        return this.log.echoWarning(str);
+    }
+
+    public fatal(str: string) {
+        throw new Error(str);
+    }
+    public debugPlugin(plugin: Plugin, text: string) {
+        const name = plugin.constructor && plugin.constructor.name ? plugin.constructor.name : "Unknown";
+        this.debug(name, text);
+    }
+
     public isShimed(name: string): boolean {
         if (!this.shim) {
             return false;

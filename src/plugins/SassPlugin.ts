@@ -25,8 +25,6 @@ export class SassPluginClass implements Plugin {
     public transform(file: File): Promise<any> {
         file.loadContents();
 
-        const debug = (text: string) => file.context.debug(this.constructor.name, text);
-
         if (!sass) { sass = require("node-sass"); }
 
         const options = Object.assign({

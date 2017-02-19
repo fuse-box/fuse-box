@@ -13,6 +13,7 @@ import { each, utils, chain, Chainable } from "realm-utils";
 import { Config } from "./Config";
 import { BundleTestRunner } from "./testRunner/BundleTestRunner";
 import * as process from 'process';
+
 const appRoot = require("app-root-path");
 
 export interface FuseBoxOptions {
@@ -236,7 +237,7 @@ export class FuseBox {
                 this.triggerPost();
                 this.context.writeOutput(bundleReady);
                 return self.context.source.getResult();
-            });
+            })
         });
     }
 

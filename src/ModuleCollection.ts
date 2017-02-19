@@ -3,7 +3,7 @@ import { PathMaster, IPackageInformation } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
 import { each } from "realm-utils";
 import { BundleData } from "./Arithmetic";
-
+const PrettyError = require('pretty-error');
 
 /**
  * 
@@ -207,7 +207,11 @@ export class ModuleCollection {
                 });
             }).then(() => {
                 return this.context.cache.buildMap(this);
-            });
+            }).catch(e => {
+                var pe = new PrettyError();
+                console.log("");
+                console.log(pe.render(e));
+            })
     }
     /* Resolving pending files */
     public resolvePending() {
@@ -215,7 +219,7 @@ export class ModuleCollection {
         return Promise.all(this.context.pendingPromises).then(() => {
             // reset pending promises 
             this.context.pendingPromises = [];
-        });
+        })
     }
     /**
      * 

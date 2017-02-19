@@ -222,7 +222,7 @@ export class File {
                             return plugin.transformGroup.apply(plugin, [this]);
                         }
                         if (utils.isFunction(plugin.transform)) {
-                            this.context.debug(plugin.constructor.name, `Captured ${this.info.fuseBoxPath}`);
+                            this.context.debugPlugin(plugin, `Captured ${this.info.fuseBoxPath}`);
                             return plugin.transform.apply(plugin, [this]);
                         }
                     }));
@@ -231,6 +231,7 @@ export class File {
                         return this.asyncResolve(target.transformGroup.apply(target, [this]));
                     }
                     if (utils.isFunction(target.transform)) {
+                        this.context.debugPlugin(target, `Captured ${this.info.fuseBoxPath}`);
                         return this.asyncResolve(target.transform.apply(target, [this]));
                     }
                 }
