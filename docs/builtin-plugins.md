@@ -19,7 +19,7 @@ plugins: [
 Fusebox's plugin system allows simple transformation of more complex CSS systems through plugin chaining.  For example, to transform
 Sass into CSS:
 
-```
+```js
 plugins: [
     [
         fsbx.SassPlugin({ outputStyle: 'compressed' }),
@@ -42,7 +42,7 @@ The CSS plugin accepts a few options to customize the output bundle, and to hand
 
 If specified as true, all CSS files will have extraneous whitespace removed to help reduce file size.  This option is false by default.
 
-```
+```js
 plugins: [
   fsbx.CSSPlugin({
     minify: true
@@ -70,7 +70,7 @@ plugins: [
 If specified as true, then the CSS files will be processed and transferred to the build folder for bundling.  This option is false by
 default, and should be set to true when chaining with any CSS processing plugins above it.
 
-```
+```js
 plugins: [
     [
         fsbx.SassPlugin({ outputStyle: 'compressed' }),
@@ -113,7 +113,7 @@ plugins: [
 ```
 
 All files will be served except for "styles.css," which will be included in the bundle along with other bundled javascript.
-```
+```js
 plugins: [
     fsbx.CSSPlugin({
         minify: true,
@@ -132,7 +132,7 @@ the server.
 Imagine a situation where you import a css file from an npm library.
 Let's try  make [jstree](https://github.com/vakata/jstree) library work
 
-```
+```js
 import "jstree/dist/jstree.js";
 import "jstree/dist/themes/default/style.css";
 ```
@@ -143,7 +143,7 @@ It re-writes URL and copies files to a destination specified by user,
 
 ### Copy files
 
-```
+```js
 plugins : [
    [/node_modules.*\.css$/,
       build.CSSResourcePlugin({
@@ -159,7 +159,7 @@ plugins : [
 ### Inline
 You can inline images as well
 
-```
+```js
 plugins : [
    [/node_modules.*\.css$/,
       build.CSSResourcePlugin({
@@ -257,7 +257,7 @@ Works greatly if you want to have images bundled
 ```bash
 npm install base64-img --save-dev
 ```
-```
+```js
 plugins: [
     fsbx.ImageBase64Plugin()
 ]
@@ -359,13 +359,13 @@ plugins : [
 
 Access it like you used to:
 
-```
+```js
 console.log( process.env.NODE_ENV )
 ```
 
 The order of plugins is important: environment variables created with this plugin will only be available to plugins further down the chain.
 
-```
+```js
 plugins : [
    fsbx.BabelPlugin({ /* settings /*}), // <-- won't have NODE_ENV set
    fsbx.EnvPlugin({ NODE_ENV: "production" }),
