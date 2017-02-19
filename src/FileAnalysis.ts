@@ -117,6 +117,14 @@ export class FileAnalysis {
                         this.fuseBoxVariable = parent.object.name;
                     }
                 }
+
+                // @NOTE: would not match
+                // var window = typeof window != 'undefined' ? window : global
+                // window.process.argv.forEach(eh => eh)
+                // global.process.argv.forEach(eh => eh)
+                //
+                // @example:
+                // process.argv.forEach(eh => eh)
                 if (node.type === "MemberExpression") {
                     if (node.object && node.object.type === "Identifier") {
                         if (node.object.name === "process") {
@@ -143,9 +151,38 @@ export class FileAnalysis {
                         }
                     }
                 }
+
+                // @example
+                // var eh = 'value'
                 if (node.type === "VariableDeclarator") {
-                    if (node.id && node.id.type === "Identifier" && node.id.name === "process") {
+                    // @example
+                    // var eh = process
+                    //     ^      ^
+                    //    id     init
+                    if ((node.id && node.id.type === "Identifier" && node.id.name === "process") || (node.init && node.init.name === "process")) {
                         out.processDeclared = true;
+                    }
+                    // @example
+                    // var eh = process
+                    // var canada = eh.env
+                    else if (node.init && node.init.type === "MemberExpression") {
+                        if (node.init.object && node.init.object.name === "process") {
+                            out.processDeclared = true;
+                        }
+
+                        // ~@TODO: but prioritizations yo
+                        // var eh = window.process
+                        // var {env} = eh
+                        // else if (node.init.property) {
+                        //     var supportedProcessProps = [
+                        //         'nextTick', 'title', 'browser', 'env', 'argv', 'version', 'versions',
+                        //         'on', 'addListener', 'once', 'off', 'removeListener', 'removeAllListeners', 'emit',
+                        //         'binding', 'cwd', 'chdir', 'unmask',
+                        //     ]
+                        //     if (supportedProcessProps.includes(node.init.property.name)) {
+                        //         acorn.findNodeAt(node, )
+                        //     }
+                        // }
                     }
                 }
                 if (node.type === "ImportDeclaration") {
@@ -154,7 +191,6 @@ export class FileAnalysis {
                     }
                 }
                 if (node.type === "CallExpression" && node.callee) {
-
                     if (node.callee.type === "Identifier" && node.callee.name === "require") {
                         let arg1 = node.arguments[0];
                         if (isString(arg1)) {
