@@ -78,16 +78,17 @@ gulp.task('dist-loader', ['dist-loader-js', 'dist-loader-typings'])
  * When adding a new module here be sure to .gitignore `modules/${name}/`
  */
 const fuseboxModuleTasks = [
+    'fuse-loader',
     'fsbx-default-css-plugin',
     'fusebox-hot-reload',
     'fusebox-websocket',
-    'fuse-loader',
+    'fuse-hmr',
 ].map(fuseboxModule => {
     let project = getProjectModule();
     const taskName = `dist-modules-${fuseboxModule}`
     gulp.task(taskName,['dist-loader-typings'], () => {
         return gulp.src([
-            `src/modules/${fuseboxModule}/index.ts`, 
+            `src/modules/${fuseboxModule}/index.ts`,
             'src/modules/fuse-loader/LoaderAPI.ts'
         ])
         .pipe(project()).on('error', onError)
