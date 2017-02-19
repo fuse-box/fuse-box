@@ -81,31 +81,51 @@ export class CSSPluginClass implements Plugin {
 
         const debug = (text: string) => group.context.debug("CSSPlugin", text);
         debug(`Start ${group.info.fuseBoxPath}`);
-        let concat = new Concat(true, group.info.fuseBoxPath, "\n");
+
+        let concat = new Concat(true, "", "\n");
         group.subFiles.forEach(file => {
             debug(`Concat ${file.info.fuseBoxPath}`);
-            concat.add(file.info.fuseBoxPath, file.contents, file.sourceMap);
+            concat.add(file.info.fuseBoxPath, file.contents, file.generateCorrectSourceMap());
         });
+
         let options = group.groupOptions || {};
         const cssContents = concat.content;
 
         // writing
         if (options.outFile) {
             let outFile = ensureUserPath(options.outFile);
-            if (options.sourceMap) {
-                concat.add(null, `/*# sourceMappingURL=${options.sourceMap} */`);
-            }
+            const bundleDir = path.dirname(outFile);
+            const sourceMapsName = path.basename(outFile) + ".map";
+
+            concat.add(null, `/*# sourceMappingURL=${sourceMapsName} */`);
+
 
             debug(`Writing ${outFile}`);
             return write(outFile, concat.content).then(() => {
                 // here we need to handle sourcemaps
                 // Yet to come
+                group.contents = `__fsbx_css("${group.info.fuseBoxPath}");`;
+
+
+                // emitting changes
+                // need to reload a file if possible
+                group.context.sourceChangedEmitter.emit({
+                    type: "css-file",
+                    content: "",
+                    path: group.info.fuseBoxPath,
+                });
+
+                // Writing sourcemaps
+                const sourceMapsFile = ensureUserPath(path.join(bundleDir, sourceMapsName))
+                console.log(concat.sourceMap.toString());
+                return write(sourceMapsFile, concat.sourceMap);
             });
         } else {
             debug(`Inlining ${group.info.fuseBoxPath}`);
             const safeContents = JSON.stringify(cssContents.toString());
             group.contents = `__fsbx_css("${group.info.fuseBoxPath}", ${safeContents});`;
         }
+
 
         // emitting changes
         group.context.sourceChangedEmitter.emit({

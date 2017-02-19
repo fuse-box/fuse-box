@@ -366,6 +366,16 @@ export class File {
         }
     }
 
+    public generateCorrectSourceMap(fname?: string) {
+        if (this.sourceMap) {
+            let jsonSourceMaps = JSON.parse(this.sourceMap);
+            jsonSourceMaps.file = this.info.fuseBoxPath;
+            jsonSourceMaps.sources = [fname || this.info.fuseBoxPath];
+            this.sourceMap = JSON.stringify(jsonSourceMaps);
+        }
+        return this.sourceMap;
+    }
+
     /**
      * Provides a file-specific transpilation config. This is needed so we can supply the filename to
      * the TypeScript compiler.

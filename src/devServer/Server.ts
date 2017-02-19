@@ -11,7 +11,7 @@ const watch = require("watch");
 export type HotReloadEmitter = (server: Server, sourceChangedInfo: any) => any;
 
 export type SourceChangedEvent = {
-    type: 'js' | 'css',
+    type: 'js' | 'css' | 'css-file',
     content: string,
     path: string
 }
