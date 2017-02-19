@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { ensureUserPath } from "./Utils";
+import { ensureUserPath, contains } from './Utils';
 import { ShimCollection } from "./ShimCollection";
 import { Server, ServerOptions } from "./devServer/Server";
 import { JSONPlugin } from "./plugins/JSONplugin";
@@ -12,6 +12,7 @@ import * as path from "path";
 import { each, utils, chain, Chainable } from "realm-utils";
 import { Config } from "./Config";
 import { BundleTestRunner } from "./testRunner/BundleTestRunner";
+import * as process from 'process';
 const appRoot = require("app-root-path");
 
 export interface FuseBoxOptions {
@@ -72,6 +73,8 @@ export class FuseBox {
         if (opts.debug !== undefined) {
             this.context.debugMode = opts.debug;
         }
+
+        this.context.debugMode = opts.debug !== undefined ? opts.debug : contains(process.argv, '--debug')
 
         if (opts.modulesFolder) {
             this.context.customModulesFolder =

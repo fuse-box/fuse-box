@@ -213,6 +213,7 @@ export class File {
             }
 
             if (target) {
+
                 if (Array.isArray(target)) {
                     this.asyncResolve(each(target, (plugin: Plugin) => {
                         // if we are in a groupMode, we don't trigger tranform
@@ -221,6 +222,7 @@ export class File {
                             return plugin.transformGroup.apply(plugin, [this]);
                         }
                         if (utils.isFunction(plugin.transform)) {
+                            this.context.debug(plugin.constructor.name, `Captured ${this.info.fuseBoxPath}`);
                             return plugin.transform.apply(plugin, [this]);
                         }
                     }));
@@ -292,6 +294,7 @@ export class File {
         }
 
         if (/\.ts(x)?$/.test(this.absPath)) {
+            this.context.debug("Typescript", `Captured  ${this.info.fuseBoxPath}`)
             return this.handleTypescript();
         }
 
@@ -316,6 +319,8 @@ export class File {
      * @memberOf File
      */
     private handleTypescript() {
+        const debug = (str: string) => this.context.debug("Typescript", str);
+
         if (this.context.useCache) {
             let cached = this.context.cache.getStaticCache(this);
             if (cached) {
@@ -325,6 +330,7 @@ export class File {
                 if (cached.headerContent) {
                     this.headerContent = cached.headerContent;
                 }
+                debug(`From cache ${this.info.fuseBoxPath}`)
                 this.analysis.dependencies = cached.dependencies;
                 this.tryPlugins();
                 return;
@@ -335,6 +341,7 @@ export class File {
         this.loadContents();
         // Calling it before transpileModule on purpose
         this.tryTypescriptPlugins();
+        debug(`Transpile ${this.info.fuseBoxPath}`)
         let result = ts.transpileModule(this.contents, this.getTranspilationConfig());
 
         if (result.sourceMapText && this.context.sourceMapConfig) {

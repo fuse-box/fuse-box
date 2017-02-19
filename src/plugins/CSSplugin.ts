@@ -79,7 +79,7 @@ export class CSSPluginClass implements Plugin {
 
     public transformGroup(group: File) {
 
-        const debug = (text: string) => group.context.debug("CSSPlugin", text);
+        const debug = (text: string) => group.context.debug(this.constructor.name, text);
         debug(`Start group transformation on "${group.info.fuseBoxPath}"`);
 
         let concat = new Concat(true, "", "\n");
@@ -148,8 +148,8 @@ export class CSSPluginClass implements Plugin {
             return;
         }
 
-        const debug = (text: string) => file.context.debug("CSSPlugin", text);
-        debug(`Captured ${file.info.fuseBoxPath}`);
+        const debug = (text: string) => file.context.debug(this.constructor.name, text);
+        //debug(`Captured ${file.info.fuseBoxPath}`);
 
         file.loadContents();
 

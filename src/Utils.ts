@@ -17,6 +17,9 @@ export type ConcatModule = {
 }
 export const Concat: ConcatModule = require("concat-with-sourcemaps");
 
+export function contains(array: any[], obj: any) {
+    return array && array.indexOf(obj) > -1;
+}
 
 export function write(fileName: string, contents: any) {
     return new Promise((resolve, reject) => {

@@ -25,10 +25,10 @@ export class SassPluginClass implements Plugin {
     public transform(file: File): Promise<any> {
         file.loadContents();
 
-        const debug = (text: string) => file.context.debug("SassPlugin", text);
+        const debug = (text: string) => file.context.debug(this.constructor.name, text);
 
         if (!sass) { sass = require("node-sass"); }
-        debug(`Captured ${file.info.fuseBoxPath}`)
+
         const options = Object.assign({
             data: file.contents,
             sourceMap: true,
