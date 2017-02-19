@@ -25,8 +25,10 @@ export class SassPluginClass implements Plugin {
     public transform(file: File): Promise<any> {
         file.loadContents();
 
-        if (!sass) { sass = require("node-sass"); }
+        const debug = (text: string) => file.context.debug("SassPlugin", text);
 
+        if (!sass) { sass = require("node-sass"); }
+        debug(`Captured ${file.info.fuseBoxPath}`)
         const options = Object.assign({
             data: file.contents,
             sourceMap: true,
@@ -39,7 +41,9 @@ export class SassPluginClass implements Plugin {
 
         return new Promise((res, rej) => {
             return sass.render(options, (err, result) => {
-                if (err) { return rej(err); }
+                if (err) {
+                    return rej(err);
+                }
                 file.sourceMap = result.map && result.map.toString();
                 file.contents = result.css.toString();
                 return res(file.contents);

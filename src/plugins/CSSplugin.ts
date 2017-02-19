@@ -80,11 +80,11 @@ export class CSSPluginClass implements Plugin {
     public transformGroup(group: File) {
 
         const debug = (text: string) => group.context.debug("CSSPlugin", text);
-        debug(`Start ${group.info.fuseBoxPath}`);
+        debug(`Start group transformation on "${group.info.fuseBoxPath}"`);
 
         let concat = new Concat(true, "", "\n");
         group.subFiles.forEach(file => {
-            debug(`Concat ${file.info.fuseBoxPath}`);
+            debug(`  -> Concat ${file.info.fuseBoxPath}`);
             concat.add(file.info.fuseBoxPath, file.contents, file.generateCorrectSourceMap());
         });
 
@@ -117,7 +117,6 @@ export class CSSPluginClass implements Plugin {
 
                 // Writing sourcemaps
                 const sourceMapsFile = ensureUserPath(path.join(bundleDir, sourceMapsName))
-                console.log(concat.sourceMap.toString());
                 return write(sourceMapsFile, concat.sourceMap);
             });
         } else {
@@ -149,6 +148,9 @@ export class CSSPluginClass implements Plugin {
             return;
         }
 
+        const debug = (text: string) => file.context.debug("CSSPlugin", text);
+        debug(`Captured ${file.info.fuseBoxPath}`);
+
         file.loadContents();
 
         let contents;
@@ -165,6 +167,7 @@ export class CSSPluginClass implements Plugin {
             }
             // Adding current file (say a.txt) as a subFile 
             fileGroup.addSubFile(file);
+            debug(`  grouping -> ${this.bundle}`);
 
             const chainExports = file.getProperty("exports");
 
