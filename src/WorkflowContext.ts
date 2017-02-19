@@ -31,12 +31,12 @@ const appRoot = require("app-root-path");
  */
 export interface Plugin {
     test?: RegExp;
-    init?: { (context: WorkFlowContext) };
-    transform?: { (file: File, ast?: any) };
-    transformGroup?: { (file: File) };
-    onTypescriptTransform?: { (file: File) };
-    bundleStart?(context: WorkFlowContext);
-    bundleEnd?(context: WorkFlowContext);
+    init?(context: WorkFlowContext): any;
+    transform?(file: File, ast?: any): any;
+    transformGroup?(file: File): any;
+    onTypescriptTransform?(file: File): any;
+    bundleStart?(context: WorkFlowContext): any;
+    bundleEnd?(context: WorkFlowContext): any;
 
     /**
      * If provided then the dependencies are loaded on the client

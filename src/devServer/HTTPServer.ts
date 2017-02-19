@@ -30,7 +30,7 @@ export class HTTPServer {
     constructor(
         private fuse: FuseBox
     ) {
-        this.app = express.Application = express();
+        this.app = express();
     }
 
     public launch(opts: HTTPServerOptions): void {
@@ -57,5 +57,3 @@ export class HTTPServer {
         }
     }
 }
-
-
