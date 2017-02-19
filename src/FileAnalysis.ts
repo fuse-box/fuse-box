@@ -8,10 +8,10 @@ require("acorn-jsx/inject")(acorn);
 
 /**
  * Makes static analysis on the code
- * Gets require statements (es5 and es6) 
- * 
+ * Gets require statements (es5 and es6)
+ *
  * Adds additional injections (if needed)
- * 
+ *
  * @export
  * @class FileAST
  */
@@ -19,7 +19,7 @@ export class FileAnalysis {
 
     /**
      * Acorn AST
-     * 
+     *
      * @type {*}
      * @memberOf FileAST
      */
@@ -32,8 +32,8 @@ export class FileAnalysis {
 
 
     /**
-     * A list of dependencies 
-     * 
+     * A list of dependencies
+     *
      * @type {string[]}
      * @memberOf FileAST
      */
@@ -41,9 +41,9 @@ export class FileAnalysis {
 
     /**
      * Creates an instance of FileAST.
-     * 
+     *
      * @param {File} file
-     * 
+     *
      * @memberOf FileAST
      */
     constructor(public file: File) { }
@@ -55,9 +55,9 @@ export class FileAnalysis {
 
     /**
      * Loads an AST
-     * 
+     *
      * @param {*} ast
-     * 
+     *
      * @memberOf FileAnalysis
      */
     public loadAst(ast: any) {
@@ -69,10 +69,10 @@ export class FileAnalysis {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @private
-     * 
+     *
      * @memberOf FileAST
      */
     public parseUsingAcorn(options?: any) {
@@ -236,9 +236,9 @@ export class FileAnalysis {
     /**
      * Removes a footer with FuseBox API
      * In case a file we require appears to be a bundle
-     * 
+     *
      * @private
-     * 
+     *
      * @memberOf FileAnalysis
      */
     private removeFuseBoxApiFromBundle() {

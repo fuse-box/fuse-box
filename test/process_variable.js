@@ -40,7 +40,13 @@ describe("Process variable must be handled with care", (done) => {
             `,
         }, "**/*.js").then(root => {
             let result = root.FuseBox.import("./index");
-            result.should.deepEqual({ process: { NODE_ENV: 'development' } });
+            var supportedProcessProps = [
+                'title', 'env', 'argv',
+                'binding', 'cwd', 'chdir',
+            ]
+            supportedProcessProps.forEach(supported => {
+                console.assert(result.eh.hasOwnProperty(supported) === true, `property exists: ${supported}`)
+            })
             done();
         }).catch(done);
     });
