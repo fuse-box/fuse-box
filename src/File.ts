@@ -106,6 +106,8 @@ export class File {
 
     public groupMode = false;
 
+    public groupOptions: any;
+
     /**
      * Creates an instance of File.
      * 
@@ -159,7 +161,7 @@ export class File {
 
 
     public asyncResolve(promise: Promise<any>) {
-        this.resolving.push(promise);
+        this.context.pendingPromises.push(promise);
     }
 
     /**
@@ -187,13 +189,12 @@ export class File {
         if (this.context.plugins) {
             let target: Plugin;
             let index = 0;
-
             while (!target && index < this.context.plugins.length) {
                 let item = this.context.plugins[index];
                 let itemTest: RegExp;
                 if (Array.isArray(item)) {
                     let el = item[0];
-                    // for some reason on window it gives false sometimes...
+                    // for some reason on windows OS it gives false sometimes...
                     // if (el instanceof RegExp) {
                     //     itemTest = el;
                     // }

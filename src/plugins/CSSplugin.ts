@@ -7,6 +7,8 @@ import { WorkFlowContext } from "./../WorkflowContext";
 import { Plugin } from "../WorkflowContext";
 import { utils } from "realm-utils";
 import { CSSPluginDeprecated } from './CSSPluginDeprecated';
+import { Concat, ensureUserPath, write } from '../Utils';
+
 /**
  *
  *
@@ -24,12 +26,16 @@ export class CSSPluginClass implements Plugin {
     public test: RegExp = /\.css$/;
     private raw = false;
     private minify = false;
+    private opts: any;
     private serve: any;
+
     private writeOptions: any;
     private bundle: any;
 
     constructor(opts: any) {
         opts = opts || {};
+
+        this.opts = opts;
 
         if (opts.raw !== undefined) {
             this.raw = opts.raw;
@@ -42,6 +48,7 @@ export class CSSPluginClass implements Plugin {
         if (opts.bundle) {
             this.bundle = opts.bundle;
         }
+
 
         if (opts.minify !== undefined) {
             this.minify = opts.minify;
@@ -70,6 +77,45 @@ export class CSSPluginClass implements Plugin {
         context.source.addContent(fs.readFileSync(lib).toString());
     }
 
+    public transformGroup(group: File) {
+
+        const debug = (text: string) => group.context.debug("CSSPlugin", text);
+        debug(`Start ${group.info.fuseBoxPath}`);
+        let concat = new Concat(true, group.info.fuseBoxPath, "\n");
+        group.subFiles.forEach(file => {
+            debug(`Concat ${file.info.fuseBoxPath}`);
+            concat.add(file.info.fuseBoxPath, file.contents, file.sourceMap);
+        });
+        let options = group.groupOptions || {};
+        const cssContents = concat.content;
+
+        // writing
+        if (options.outFile) {
+            let outFile = ensureUserPath(options.outFile);
+            if (options.sourceMap) {
+                concat.add(null, `/*# sourceMappingURL=${options.sourceMap} */`);
+            }
+
+            debug(`Writing ${outFile}`);
+            return write(outFile, concat.content).then(() => {
+                // here we need to handle sourcemaps
+                // Yet to come
+            });
+        } else {
+            debug(`Inlining ${group.info.fuseBoxPath}`);
+            const safeContents = JSON.stringify(cssContents.toString());
+            group.contents = `__fsbx_css("${group.info.fuseBoxPath}", ${safeContents});`;
+        }
+
+        // emitting changes
+        group.context.sourceChangedEmitter.emit({
+            type: "css",
+            content: cssContents.toString(),
+            path: group.info.fuseBoxPath,
+        });
+    }
+
+
     /**
      *
      *
@@ -78,6 +124,11 @@ export class CSSPluginClass implements Plugin {
      * @memberOf FuseBoxCSSPlugin
      */
     public transform(file: File) {
+        // no bundle groups here
+        if (file.hasSubFiles()) {
+            return;
+        }
+
         file.loadContents();
 
         let contents;
@@ -86,18 +137,23 @@ export class CSSPluginClass implements Plugin {
         let context = file.context;
 
         // bundle files
+
         if (this.bundle) {
             let fileGroup = context.getFileGroup(this.bundle);
             if (!fileGroup) {
-                fileGroup = context.createFileGroup(this.bundle);
+                fileGroup = context.createFileGroup(this.bundle, file.collection, this.opts);
             }
             // Adding current file (say a.txt) as a subFile 
             fileGroup.addSubFile(file);
 
-            // making sure the current file refers to an object at runtime that calls our bundle
-            file.alternativeContent = `module.exports = require("./${this.bundle}")`;
+            const chainExports = file.getProperty("exports");
+
+            // Respect other plugins to override the output
+            file.alternativeContent = `module.exports = ${chainExports && contents ? chainExports : "require('./" + this.bundle + "')"}`;
             return;
         }
+
+
         if (this.writeOptions) {
             const writeResult = CSSPluginDeprecated.writeOptions(this.writeOptions, file);
             if (writeResult) {
@@ -130,11 +186,7 @@ export class CSSPluginClass implements Plugin {
             contents = `__fsbx_css("${filePath}", ${safeContents});`;
         }
 
-        const chainExports = file.getProperty("exports");
-        if (chainExports && contents) {
-            contents += `module.exports = ${chainExports}`;
-        }
-        file.contents = contents;
+
     }
 
     private minifyContents(contents) {

@@ -24,6 +24,8 @@ export class ModuleCollection {
 
     public acceptFiles = true;
 
+    public pendingPromises: Promise<any>[] = [];
+
     /**
      * 
      * 
@@ -192,21 +194,29 @@ export class ModuleCollection {
         return each(data.including, (withDeps, modulePath) => {
             let file = new File(this.context, this.pm.init(modulePath));
             return this.resolve(file);
-        }).then(() => {
-            return this.onDefaultProjectDone();
-        }).then(x => {
-
-            return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
-        }).then(toResolve => {
-
-            return each(toResolve, (file: File) => {
-                return this.resolveNodeModule(file);
+        })
+            .then(() => this.resolvePending())
+            .then(() => this.onDefaultProjectDone())
+            // In case the final stage requires to be resolved
+            .then(() => this.resolvePending())
+            .then(() => {
+                return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
+            }).then(toResolve => {
+                return each(toResolve, (file: File) => {
+                    return this.resolveNodeModule(file);
+                });
+            }).then(() => {
+                return this.context.cache.buildMap(this);
             });
-        }).then(() => {
-            return this.context.cache.buildMap(this);
+    }
+    /* Resolving pending files */
+    public resolvePending() {
+
+        return Promise.all(this.context.pendingPromises).then(() => {
+            // reset pending promises 
+            this.context.pendingPromises = [];
         });
     }
-
     /**
      * 
      * 
@@ -265,8 +275,8 @@ export class ModuleCollection {
             : collection.resolveEntry();
     }
 
-    public onDefaultProjectDone() {
 
+    public onDefaultProjectDone() {
         this.context.fileGroups.forEach(group => {
             this.dependencies.set(group.info.fuseBoxPath, group);
             group.tryPlugins();

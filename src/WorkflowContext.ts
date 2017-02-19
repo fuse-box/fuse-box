@@ -62,6 +62,8 @@ export class WorkFlowContext {
 
     public ignoreGlobal: string[] = [];
 
+    public pendingPromises: Promise<any>[] = [];
+
     /**
      * Explicitly target bundle to server
      */
@@ -105,11 +107,14 @@ export class WorkFlowContext {
 
     public initialLoad = true;
 
-    public log: Log = new Log(this.doLog)
+    public debugMode = false;
+
+    public log: Log = new Log(this)
 
     public pluginTriggers: Map<string, Set<String>>;
 
     public storage: Map<string, any>;
+
 
     public initCache() {
         this.cache = new ModuleCache(this);
@@ -121,6 +126,12 @@ export class WorkFlowContext {
             content: file.contents,
             path: file.info.fuseBoxPath,
         });
+    }
+
+    public debug(group: string, text: string) {
+        if (this.debugMode) {
+            this.log.echo(`${group} : ${text}`);
+        }
     }
 
     public isShimed(name: string): boolean {
@@ -135,7 +146,7 @@ export class WorkFlowContext {
      * Resets significant class members
      */
     public reset() {
-        this.log = new Log(this.doLog);
+        this.log = new Log(this);
         this.storage = new Map();
         this.source = new BundleSource(this);
         this.nodeModules = new Map();
@@ -156,14 +167,19 @@ export class WorkFlowContext {
      * Create a new file group
      * Mocks up file
      */
-    public createFileGroup(name: string): File {
+    public createFileGroup(name: string, collection: ModuleCollection, options?: any): File {
         let info = <IPathInformation>{
             fuseBoxPath: name,
             absPath: name,
         }
         let file = new File(this, info);
+        file.collection = collection;
         file.contents = "";
         file.groupMode = true;
+        // Pass it along
+        // Transformation might happen in a different plugin
+        file.groupOptions = options;
+
         this.fileGroups.set(name, file);
         return file;
     }

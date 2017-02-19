@@ -29,6 +29,7 @@ export interface FuseBoxOptions {
     ignoreGlobal?: string[];
     serverBundle?: boolean;
     outFile?: string;
+    debug: boolean;
     files?: any;
     transformTypescript?: (contents: string) => string;
 }
@@ -68,6 +69,10 @@ export class FuseBox {
         if (opts.homeDir) {
             homeDir = path.isAbsolute(opts.homeDir) ? opts.homeDir : path.join(appRoot.path, opts.homeDir);
         }
+        if (opts.debug !== undefined) {
+            this.context.debugMode = opts.debug;
+        }
+
         if (opts.modulesFolder) {
             this.context.customModulesFolder =
                 path.isAbsolute(opts.modulesFolder)

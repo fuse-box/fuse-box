@@ -1,4 +1,5 @@
 import { ModuleCollection } from "./ModuleCollection";
+import { WorkFlowContext } from './WorkflowContext';
 const ansi = require("ansi");
 const cursor = ansi(process.stdout);
 const prettysize = require("prettysize");
@@ -7,9 +8,14 @@ const prettyTime = require("pretty-time");
 export class Log {
     private timeStart = process.hrtime();
     private totalSize = 0;
-    constructor(public printLog: boolean) { }
+    private printLog = true;
+
+    constructor(public context: WorkFlowContext) {
+        this.printLog = context.doLog;
+    }
 
     public echo(str: string) {
+
         let data = new Date();
         let hour: any = data.getHours();
         let min: any = data.getMinutes();
@@ -73,14 +79,14 @@ export class Log {
         this.echoBundleStats(header || 'Bundle', this.totalSize, took);
     }
 
-    public echoBundleStats (header: string, size: number, took: [number, number]) {
-      if (!this.printLog) {
-          return;
-      }
-      cursor.write("\n")
-          .green().write(`    ${header}\n`)
-          .yellow().write(`    Size: ${prettysize(size)} \n`)
-          .yellow().write(`    Time: ${prettyTime(took, "ms")}`)
-          .write("\n").reset();
+    public echoBundleStats(header: string, size: number, took: [number, number]) {
+        if (!this.printLog) {
+            return;
+        }
+        cursor.write("\n")
+            .green().write(`    ${header}\n`)
+            .yellow().write(`    Size: ${prettysize(size)} \n`)
+            .yellow().write(`    Time: ${prettyTime(took, "ms")}`)
+            .write("\n").reset();
     }
 }
