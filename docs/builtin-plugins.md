@@ -50,7 +50,22 @@ plugins: [
 ]
 ```
 
+#### bundle
+
+This option is used to combine all css files into one file.  Within the bundle, the files can still be referenced with their original
+names, but the loader will request the single file that was made from bundling the css files together
+
+```js
+plugins: [
+    fsbx.CSSPlugin({
+        bundle: 'bundle.css'
+    })
+]
+```
+
 #### write
+
+> WARNING: this option is deprecated and will be removed. Use bundle instead.
 
 If specified as true, then the CSS files will be processed and transferred to the build folder for bundling.  This option is false by
 default, and should be set to true when chaining with any CSS processing plugins above it.
@@ -75,11 +90,9 @@ plugins: [
 ]
 ```
 
-#### bundle
-
-???
-
 #### serve
+
+> WARNING: this option is deprecated and will be removed. Use bundle instead.
 
 This option should be used to delegate serving a CSS file external to the bundle to either the DevServer or your chosen web server.
 Unlike other options passed to the CSSPlugin, `serve` must be a function.  The function accepts the path to CSS files, and should return
