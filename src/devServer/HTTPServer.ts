@@ -23,8 +23,7 @@ export class HTTPServer {
         return server;
     }
 
-    public app: express.Application;
-
+    public app: any;
     public opts: HTTPServerOptions;
 
     constructor(
