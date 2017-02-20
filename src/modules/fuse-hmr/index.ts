@@ -11,16 +11,28 @@ const customizedHMRPlugin = {
             }
 
             /** Otherwise flush the other modules */
-            Loader.flush(function(fileName) {
+            Loader.flush(function (fileName) {
                 return !isModuleStateful(fileName);
             });
-            
+
             /** Patch the module at give path */
             Loader.dynamic(path, content);
 
             /** Re-import / run the mainFile */
             if (Loader.mainFile) {
-                Loader.import(Loader.mainFile)
+                try {
+                    Loader.import(Loader.mainFile)
+                } catch (e) {
+                    // in case if a package was not found
+                    // It probably means that it's just not in the scope
+                    if (typeof e === "string") { // a better way but string?!
+                        if (/not found/.test(e)) {
+                            return window.location.reload();
+                        }
+                    }
+                    console.error(e);
+                }
+
             }
 
             /** We don't want the default behavior */

@@ -128,9 +128,13 @@ export class WorkFlowContext {
 
     }
     public emitJavascriptHotReload(file: File) {
+        let content = file.contents;
+        if (file.headerContent) {
+            content = file.headerContent.join("\n") + "\n" + content;
+        }
         this.sourceChangedEmitter.emit({
             type: "js",
-            content: file.contents,
+            content: content,
             path: file.info.fuseBoxPath,
         });
     }

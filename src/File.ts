@@ -320,7 +320,7 @@ export class File {
      * @memberOf File
      */
     private handleTypescript() {
-        const debug = (str: string) => this.context.debug("Typescript", str);
+        const debug = (str: string) => this.context.debug("TypeScript", str);
 
         if (this.context.useCache) {
             let cached = this.context.cache.getStaticCache(this);
@@ -360,16 +360,7 @@ export class File {
 
         if (this.context.useCache) {
             // emit new file
-            let cachedContent = this.contents;
-            if (this.headerContent) {
-                cachedContent = this.headerContent.join("\n") + "\n" + cachedContent;
-            }
-
-            this.context.sourceChangedEmitter.emit({
-                type: "js",
-                content: cachedContent,
-                path: this.info.fuseBoxPath,
-            });
+            this.context.emitJavascriptHotReload(this);
             this.context.cache.writeStaticCache(this, this.sourceMap);
         }
     }
