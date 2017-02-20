@@ -26,7 +26,7 @@ bin: npm start
 
 run
 ```shell
-bin: node | nodemon ./changelog/changelog.js -B
+bin: node | nodemon ./changelog/changelog.js -B | basic-auth | -O | oauth
 ```
 
 Available arguments: 
