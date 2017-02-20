@@ -28,10 +28,12 @@ export class ChangelogCreater {
   }
 
   authenticate(args) {
-      const index = args[2].indexOf(this._cmd);
-      if (!args || !args[2] || index === -1) {
-
-      } else {
+      if (!args || args && !args[2]){
+        return;
+      }
+      const index = this._cmd.indexOf(args[2]);
+      if (index !== -1) {
+        console.log(this._cmd[index]);
         index < 2 ? this.basicAuth() : this.oauth();
       }
   }
@@ -60,7 +62,7 @@ export class ChangelogCreater {
    * @memberOf GithubApi
    */
   public basicAuth(): any {
-      if (!GithubConfig.username || GithubConfig.password) {
+      if (!GithubConfig.username || !GithubConfig.password) {
           return Promise.reject(new Error('GithubConfig.username, GithubConfig.password is required for basic Auth.'));
       }
 

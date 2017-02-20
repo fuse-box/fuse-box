@@ -13,10 +13,7 @@
   "devDependencies": {
     "@reactivex/rxjs": "^5.1.1",
     "@types/es6-shim": "^0.31.32",
-    "@types/github": "^0.0.0",
-    "@types/request": "^0.0.40",
     "github": "^9.0.0",
-    "node": "^0.0.0",
-    "request": "^2.79.0"
+    "node": "^0.0.0"
   }
 }
