@@ -123,6 +123,15 @@ export class File {
         this.absPath = info.absPath;
     }
 
+    public static createByName(collection: ModuleCollection, name: string): File {
+        let info = <IPathInformation>{
+            fuseBoxPath: name,
+            absPath: name,
+        }
+        let file = new File(collection.context, info);
+        file.collection = collection;
+        return file;
+    }
 
     public addProperty(key: string, obj: any) {
         this.properties.set(key, obj);

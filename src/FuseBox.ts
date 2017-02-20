@@ -14,7 +14,6 @@ import { Config } from "./Config";
 import { BundleTestRunner } from "./testRunner/BundleTestRunner";
 import * as process from 'process';
 import { nativeModules, HeaderImport } from './HeaderImport';
-
 const appRoot = require("app-root-path");
 
 export interface FuseBoxOptions {
@@ -195,7 +194,6 @@ export class FuseBox {
     public process(bundleData: BundleData, bundleReady?: () => any) {
         let bundleCollection = new ModuleCollection(this.context, this.context.defaultPackageName);
         bundleCollection.pm = new PathMaster(this.context, bundleData.homeDir);
-
         // swiching on typescript compiler
         if (bundleData.typescriptMode) {
             this.context.tsMode = true;

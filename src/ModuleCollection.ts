@@ -3,6 +3,7 @@ import { PathMaster, IPackageInformation } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
 import { each, utils } from 'realm-utils';
 import { BundleData } from "./Arithmetic";
+import { ensurePublicExtension } from './Utils';
 const PrettyError = require('pretty-error');
 
 /**
@@ -189,6 +190,10 @@ export class ModuleCollection {
         this.bundle = data;
         this.delayedResolve = true;
         this.initPlugins();
+
+        if (data.entry) {
+            this.entryFile = File.createByName(this, ensurePublicExtension(data.entry));
+        }
 
         // faking entry point
         return each(data.including, (withDeps, modulePath) => {
