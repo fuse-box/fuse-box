@@ -23,7 +23,6 @@
     },
     "homepage": "https://github.com/fuse-box/fuse-box#readme",
     "devDependencies": {
-        "@types/node": "^6.0.41",
         "cheerio": "0.22.0",
         "fuse-box-test-using-old-version": "^1.0.0",
         "fuse-box-testcase1": "^1.0.0",
@@ -38,6 +37,7 @@
         "gulp-uglify": "^2.0.0",
         "gulp-wrap": "^0.13.0",
         "mocha": "^3.1.0",
+        "node-fetch": "^1.6.3",
         "reflect-metadata": "^0.1.8",
         "rollup": "^0.36.3",
         "run-sequence": "^1.2.2",

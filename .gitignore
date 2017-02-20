@@ -20,3 +20,5 @@ _playground
 modules/fsbx-default-css-plugin/
 modules/fusebox-hot-reload/
 modules/fusebox-websocket/
+bin/**/*.js
+/bin/github-config.ts
