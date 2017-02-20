@@ -5,9 +5,11 @@
         "moduleResolution": "node",
         "isolatedModules": false,
         "jsx": "react",
+        "sourceMap": true,
+        "inlineSourceMap": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "noUnusedLocals": true,
+        "noUnusedLocals": false,
         "declaration": false,
         "noImplicitAny": false,
         "noImplicitUseStrict": false,
@@ -19,7 +21,10 @@
     "exclude": [
         "loader/**/*",
         "src/**/*",
-        "node_modules/**/*"
+        "**/*.d.ts",
+        "node_modules/**/*",
+        "bin/node_modules/**/*",
+        "node_modules"
     ],
     "compileOnSave": false,
     "buildOnSave": false,
