@@ -16,6 +16,7 @@ const makeTestFolder = () => {
     shouldExist = (name) => {
         const fname = path.join(tmp, name);;
         should.equal(fs.existsSync(fname), true);
+        return fs.readFileSync(fname).toString();
     }
 }
 
@@ -141,6 +142,109 @@ describe('CSSPlugins ', () => {
             should.equal(
                 js.indexOf(`__fsbx_css("custom/main.css");`) > -1, true);
             done();
+        }).catch(done)
+    });
+
+    it("Should bundle and inline 2 CSS files into one", (done) => {
+        makeTestFolder();
+
+        createEnv({
+            project: {
+                files: {
+                    "index.ts": `require("./a.css"); require("./b.css") }`,
+                    "a.css": "body {};",
+                    "b.css": "h1 {};"
+                },
+                plugins: [CSSPlugin({ bundle: "app.css" })],
+                instructions: "> index.ts"
+            }
+        }).then((result) => {
+            const js = result.projectContents.toString();
+            should.equal(
+                js.indexOf(`__fsbx_css("app.css", "body {};\\nh1 {};");`) > -1, true);
+            done();
+
+        }).catch(done)
+    });
+
+
+    it("Should bundle and write 2 CSS files into one", (done) => {
+        makeTestFolder();
+
+        createEnv({
+            project: {
+                files: {
+                    "index.ts": `require("./a.css"); require("./b.css") }`,
+                    "a.css": "body {};",
+                    "b.css": "h1 {};"
+                },
+                plugins: [CSSPlugin({ bundle: "app.css", outFile: `${tmp}/app.css` })],
+                instructions: "> index.ts"
+            }
+        }).then((result) => {
+            const js = result.projectContents.toString();
+            const contents = shouldExist("app.css");
+            contents.should.equal(`body {};
+h1 {};
+/*# sourceMappingURL=app.css.map */`)
+
+            shouldExist("app.css.map")
+            should.equal(
+                js.indexOf(`__fsbx_css("app.css");`) > -1, true);
+            done();
+
+        }).catch(done)
+    });
+
+    it("Should bundle and write 2 CSS files into one but not inject it", (done) => {
+        makeTestFolder();
+
+        createEnv({
+            project: {
+                files: {
+                    "index.ts": `require("./a.css"); require("./b.css") }`,
+                    "a.css": "body {};",
+                    "b.css": "h1 {};"
+                },
+                plugins: [CSSPlugin({ bundle: "app.css", outFile: `${tmp}/app.css`, inject: false })],
+                instructions: "> index.ts"
+            }
+        }).then((result) => {
+            const js = result.projectContents.toString();
+            const contents = shouldExist("app.css");
+            should.equal(
+                js.indexOf(`__fsbx_css("app.css");`) == -1, true);
+            done();
+
+        }).catch(done)
+    });
+
+    it("Should bundle and write 2 CSS files into one and inject with a custom injector", (done) => {
+        makeTestFolder();
+
+        createEnv({
+            project: {
+                files: {
+                    "index.ts": `require("./a.css"); require("./b.css") }`,
+                    "a.css": "body {};",
+                    "b.css": "h1 {};"
+                },
+                plugins: [
+                    CSSPlugin({
+                        bundle: "app.css",
+                        outFile: `${tmp}/app.css`,
+                        inject: (file) => `custom/${file}`
+                    })
+                ],
+                instructions: "> index.ts"
+            }
+        }).then((result) => {
+            const js = result.projectContents.toString();
+            const contents = shouldExist("app.css");
+            should.equal(
+                js.indexOf(`__fsbx_css("custom/app.css");`) > -1, true);
+            done();
+
         }).catch(done)
     });
 
