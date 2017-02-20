@@ -1,5 +1,5 @@
 import should = require("should");
-const getTestEnv = require("./fixtures/lib.js").getTestEnv;
+const getTestEnv = require("./fixtures/lib").getTestEnv;
 
 describe("Process variable must be handled with care", () => {
 

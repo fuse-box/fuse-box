@@ -1,5 +1,5 @@
 const build = require(`../../dist/commonjs/index.js`);
-const fs = require("fs");
+import fs = require("fs");
 
 const FuseBox = build.FuseBox;
 
@@ -25,7 +25,7 @@ const deleteFolderRecursive = function(path) {
     }
 };
 
-exports.getTestEnv = (files, str, config, returnConcat) => {
+export const getTestEnv = (files, str, config, returnConcat) => {
     return new Promise((resolve, reject) => {
         let fsb = new FuseBox(Object.assign({
             log: false,
@@ -53,14 +53,14 @@ exports.getTestEnv = (files, str, config, returnConcat) => {
 }
 
 
-exports.createEnv = (opts, str, done) => {
+export const createEnv = (opts, str?, done?) => {
     const name = opts.name || `test-${new Date().getTime()}`;
 
-    let tmpFolder = path.join(appRoot.path, ".fusebox", "tests");
+    let tmpFolder = path.join(appRoot.path, ".fusebox", "test-tmp");
     mkdirp(tmpFolder)
     let localPath = path.join(tmpFolder, name);
 
-    const output = {
+    const output: any = {
         modules: {}
     }
 
@@ -108,7 +108,7 @@ exports.createEnv = (opts, str, done) => {
     })
 }
 
-exports.getNodeEnv = (opts, str, done) => {
+export const getNodeEnv = (opts, str, done) => {
     return new Promise((resolve, reject) => {
         let tmpFolder = path.join(appRoot.path, ".tmp");
         mkdirp(tmpFolder)
