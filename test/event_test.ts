@@ -1,8 +1,8 @@
-const should = require("should");
-const getTestEnv = require("./fixtures/lib.js").getTestEnv;
+import should = require("should");
+const ensureImport = should;
+const getTestEnv = require("./fixtures/lib").getTestEnv;
 
-describe("Events", (done) => {
-
+describe("Events", () => {
     it("Register event after-import", (done) => {
         getTestEnv({
             "index.js": "exports.bar = 1; require('./foo/bar')",

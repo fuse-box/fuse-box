@@ -1,7 +1,8 @@
-const should = require('should');
+import should = require('should');
+const ensureImport = should;
 const fsbx = require(`../dist/commonjs/index.js`);
 const path = require("path");
-const { getTestEnv, createEnv } = require("./fixtures/lib.js")
+const { getTestEnv, createEnv } = require("./fixtures/lib")
 const fs = require("fs");
 const mkdirp = require("mkdirp");
 
@@ -30,7 +31,7 @@ describe('Shimmin', () => {
     });
 
     it("Reference shim should work", (done) => {
-        global.testReferenceShim = { result: "I am okay" };
+        (global as any).testReferenceShim = { result: "I am okay" };
         createEnv({
             project: {
                 shim: {
@@ -46,7 +47,7 @@ describe('Shimmin', () => {
         }).then((result) => {
             result.project.FuseBox.import("./index")
                 .should.deepEqual({ hello: { bar: { result: 'I am okay' } } })
-            delete global.testReferenceShim;
+            delete (global as any).testReferenceShim;
             done();
         })
     });

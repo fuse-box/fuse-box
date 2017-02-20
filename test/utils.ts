@@ -1,8 +1,9 @@
-const should = require("should");
+import should = require("should");
+const ensureImport = should;
 const Utils = require(`../dist/commonjs/Utils.js`);
 const path = require("path");
 
-describe("Utils", (done) => {
+describe("Utils", () => {
     it("Should replaceExt correctly with ext", () => {
 
         let res = Utils.replaceExt("a/hello.ts", ".js")

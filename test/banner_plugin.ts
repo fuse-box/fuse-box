@@ -1,4 +1,5 @@
-const should = require('should');
+import should = require('should');
+const ensureImport = should;
 const sinon = require('sinon');
 const getTestEnv = require('./fixtures/lib').getTestEnv;
 const build = require(`../dist/commonjs/index.js`);

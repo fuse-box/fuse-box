@@ -1,7 +1,8 @@
-const should = require("should");
-const getTestEnv = require("./fixtures/lib.js").getTestEnv;
+import should = require("should");
+const ensureImport = should;
+const getTestEnv = require("./fixtures/lib").getTestEnv;
 
-describe("Generic requires", (done) => {
+describe("Generic requires", () => {
 
     it("Case 1", (done) => {
         getTestEnv({

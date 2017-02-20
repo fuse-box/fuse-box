@@ -9,7 +9,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "TRAVIS=true ./node_modules/mocha/bin/mocha",
+    "test": "TRAVIS=true;TS_NODE_PROJECT=./test/tsconfig.json mocha --require ts-node/register \"test/*.ts\" --watch-extensions ts",
+    "test:only": "TRAVIS=true;TS_NODE_PROJECT=./test/tsconfig.json mocha --require ts-node/register --watch-extensions ts",
     "start": "gulp watch"
   },
   "repository": {
@@ -23,7 +24,9 @@
   },
   "homepage": "https://github.com/fuse-box/fuse-box#readme",
   "devDependencies": {
+    "@types/mocha": "^2.2.39",
     "@types/node": "^6.0.41",
+    "@types/should": "^8.1.30",
     "cheerio": "0.22.0",
     "fuse-box-test-using-old-version": "^1.0.0",
     "fuse-box-testcase1": "^1.0.0",
@@ -43,6 +46,7 @@
     "run-sequence": "^1.2.2",
     "should": "^11.1.0",
     "sinon": "^1.17.6",
+    "ts-node": "^2.1.0",
     "typescript": "^2.1.1",
     "watch": "^1.0.1",
     "wires-reactive": "^1.1.1"

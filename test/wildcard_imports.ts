@@ -1,7 +1,8 @@
-const should = require("should");
-const getTestEnv = require("./fixtures/lib.js").getTestEnv;
+import should = require("should");
+const ensureImport = should;
+const getTestEnv = require("./fixtures/lib").getTestEnv;
 
-describe("Wildcard imports", (done) => {
+describe("Wildcard imports", () => {
 
     it("Should import 2 javascript files without ext", (done) => {
         getTestEnv({

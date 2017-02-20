@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es6"
+  },
+  "compileOnSave": false,
+  "include": [
+    "../src",
+    "."
+  ],
+  "exclude": [
+    "fixtures",
+    "../src/loader/**/*"
+  ]
+}
