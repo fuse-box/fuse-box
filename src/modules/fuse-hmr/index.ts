@@ -11,7 +11,7 @@ const customizedHMRPlugin = {
             }
 
             /** Otherwise flush the other modules */
-            Loader.flush(function (fileName) {
+            Loader.flush(function(fileName) {
                 return !isModuleStateful(fileName);
             });
 
@@ -27,7 +27,7 @@ const customizedHMRPlugin = {
                     // It probably means that it's just not in the scope
                     if (typeof e === "string") { // a better way but string?!
                         if (/not found/.test(e)) {
-                            return window.location.reload();
+                            window.location.reload();
                         }
                     }
                     console.error(e);
