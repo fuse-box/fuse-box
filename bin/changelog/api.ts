@@ -80,7 +80,7 @@ export class GithubApi {
       repo: this._repo,
       state: 'closed'
     }));
-    // return Observable.fromEvent(request.get(this.url('releases')).auth('drmabuse@posteo.de', 'deluxe26477!'), 'response')
+    // return Observable.fromEvent(request.get(this.url('releases')).auth('drmabuse@posteo.de', ''), 'response')
     //   .map((resp: any) => {
     //     debugger;
     //     return <IMilestone.RootObject[]>resp.request.body
