@@ -1,5 +1,6 @@
 
 --- TO BE REMOVED --
+
 Before summiting an issue, please make sure that:
 
 * You have removed the `.fusebox` folder in your project root
