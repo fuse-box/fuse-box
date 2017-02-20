@@ -122,6 +122,11 @@ export class WorkFlowContext {
         this.cache = new ModuleCache(this);
     }
 
+
+    public getHeaderImportsConfiguration() {
+
+
+    }
     public emitJavascriptHotReload(file: File) {
         this.sourceChangedEmitter.emit({
             type: "js",

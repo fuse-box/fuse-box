@@ -13,6 +13,7 @@ import { each, utils, chain, Chainable } from "realm-utils";
 import { Config } from "./Config";
 import { BundleTestRunner } from "./testRunner/BundleTestRunner";
 import * as process from 'process';
+import { nativeModules, HeaderImport } from './HeaderImport';
 
 const appRoot = require("app-root-path");
 
@@ -25,6 +26,7 @@ export interface FuseBoxOptions {
     log?: boolean;
     globals?: { [packageName: string]: /** Variable name */ string };
     plugins?: Plugin[];
+    imports?: any;
     shim?: any;
     standaloneBundle?: boolean;
     sourceMap?: any;
@@ -106,6 +108,14 @@ export class FuseBox {
         if (opts.log !== undefined) {
             this.context.doLog = opts.log ? true : false;
         }
+
+        if (utils.isPlainObject(opts.imports)) {
+            for (let varName in opts.imports) {
+                const pkgName = opts.imports[varName];
+                nativeModules.add(new HeaderImport(varName, pkgName));
+            }
+        }
+
 
 
         if (opts.globals) {
