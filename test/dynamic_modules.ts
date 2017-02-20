@@ -1,7 +1,7 @@
-const should = require("should");
+import should = require("should");
 const getTestEnv = require("./fixtures/lib.js").getTestEnv;
 
-describe("Dynamic modules", (done) => {
+describe("Dynamic modules", () => {
 
     it("Should access a dynamic module (without ext)", (done) => {
         getTestEnv({

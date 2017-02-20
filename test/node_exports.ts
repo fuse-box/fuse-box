@@ -1,7 +1,7 @@
-const should = require("should");
+import should = require("should");
 const env = require("./fixtures/lib.js").getNodeEnv;
 
-describe("Node modules and exports", (done) => {
+describe("Node modules and exports", () => {
 
     it("Fusebox should be exposed", (done) => {
         env({

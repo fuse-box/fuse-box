@@ -1,7 +1,7 @@
-const should = require("should");
+import should = require("should");
 const getTestEnv = require("./fixtures/lib.js").getTestEnv;
 
-describe("Process variable must be handled with care", (done) => {
+describe("Process variable must be handled with care", () => {
 
     it("Process should be NOT be bundled as it was defined as a variable", (done) => {
         getTestEnv({

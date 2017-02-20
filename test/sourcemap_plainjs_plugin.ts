@@ -1,6 +1,6 @@
 const build = require(`../dist/commonjs/index.js`);
 const getTestEnv = require('./fixtures/lib').getTestEnv;
-const should = require("should");
+import should = require("should");
 const file1 = `
 module.exports = 'file1';
 `;

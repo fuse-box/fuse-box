@@ -1,5 +1,5 @@
 const build = require(`../dist/commonjs/index.js`);
-const should = require("should");
+import should = require("should");
 
 const getAbsoluteEntryPath = build.getAbsoluteEntryPath;
 const Module = build.Module;

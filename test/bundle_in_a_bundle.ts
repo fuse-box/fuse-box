@@ -1,4 +1,4 @@
-const should = require('should');
+import should = require('should');
 const fsbx = require(`../dist/commonjs/index.js`);
 const path = require("path");
 const { getTestEnv, createEnv } = require("./fixtures/lib.js")

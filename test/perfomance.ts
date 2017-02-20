@@ -1,4 +1,4 @@
-const should = require("should");
+import should = require("should");
 const build = require(`../dist/commonjs/index.js`);
 const FuseBox = build.FuseBox;
 
@@ -11,7 +11,7 @@ const options = {
 };
 
 function runFuse(opts, str) {
-    options.files = opts.files
+    (options as any).files = opts.files
 
     return new FuseBox(options).bundle(str);
 }
