@@ -1,5 +1,5 @@
 const should = require('should');
-const { CSSPlugin } = require(`../dist/commonjs/index.js`);
+const { CSSPlugin, CSSResourcePlugin } = require(`../dist/commonjs/index.js`);
 const path = require("path");
 const { getTestEnv, createEnv } = require("./fixtures/lib.js")
 const fs = require("fs");
@@ -248,5 +248,62 @@ h1 {};
         }).catch(done)
     });
 
+
+    it("A simple case should with the the CSSResourcePlugin", (done) => {
+        makeTestFolder();
+
+        createEnv({
+            project: {
+                files: {
+                    "index.ts": `exports.hello = { bar : require("./main.css") }`,
+                    "main.css": "body {}"
+                },
+                plugins: [
+                    [CSSResourcePlugin({ inline: true }), CSSPlugin()]
+                ],
+                instructions: "> index.ts"
+            }
+        }).then((result) => {
+            const js = result.projectContents.toString();
+            should.equal(
+                js.indexOf(`__fsbx_css("main.css", "body {}")`) > -1, true);
+            done();
+        }).catch(done)
+    });
+    // failing here....
+    // it("Should with the CSSResourcePlugin + bundle and write 2 CSS files into one and inject with a custom injector", (done) => {
+    //     makeTestFolder();
+
+    //     createEnv({
+    //         project: {
+    //             files: {
+    //                 "index.ts": `require("./a.css"); require("./b.css") }`,
+    //                 "a.css": "body {};",
+    //                 "b.css": "h1 {};"
+    //             },
+    //             plugins: [
+    //                 [
+    //                     CSSResourcePlugin(),
+    //                     CSSPlugin({
+    //                         bundle: "app.css",
+    //                         outFile: `${tmp}/app.css`,
+    //                         inject: (file) => `custom/${file}`
+    //                     })
+    //                 ]
+    //             ],
+    //             instructions: "> index.ts"
+    //         }
+    //     }).then((result) => {
+
+    //         // const js = result.projectContents.toString();
+
+    //         // const contents = shouldExist("app.css");
+
+    //         // should.equal(
+    //         //     js.indexOf(`__fsbx_css("custom/app.css");`) > -1, true);
+    //         // done();
+
+    //     }).catch(done)
+    // });
 
 });
