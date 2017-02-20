@@ -13,6 +13,8 @@ import { Observable } from '@reactivex/rxjs';
 export class ChangelogCreater {
   private github: Github;
   private _uri: string = 'https://api.github.com';
+  private _cmd = ['-B', 'basic-auth', '-O', 'oauth'];
+  private _args: string[];
 
   constructor(options: Github.Options = {}, private _owner: string = 'fuse-box', private _repo: string = 'fuse-box', ) {
     this.github = new Github(Object.assign({
@@ -22,7 +24,16 @@ export class ChangelogCreater {
         host: "api.github.com", // should be api.github.com for GitHub
         timeout: 5000
     }, options));
-    this.basicAuth();
+    this.authenticate(process.argv);
+  }
+
+  authenticate(args) {
+      const index = args[2].indexOf(this._cmd);
+      if (!args || !args[2] || index === -1) {
+
+      } else {
+        index < 2 ? this.basicAuth() : this.oauth();
+      }
   }
   /**
    * concat owner/repo
@@ -35,7 +46,10 @@ export class ChangelogCreater {
    * @description oauth
    * @memberOf GithubApi
    */
-  public oauth() {
+  public oauth(): any {
+      if (!GithubConfig.username || GithubConfig.password) {
+          return Promise.reject(new Error('GithubConfig.token is required for oauth.'));
+      }
       return this.github.authenticate({
           type: "oauth",
           token: GithubConfig.token
@@ -45,7 +59,11 @@ export class ChangelogCreater {
    * @description basicAuth
    * @memberOf GithubApi
    */
-  public basicAuth() {
+  public basicAuth(): any {
+      if (!GithubConfig.username || GithubConfig.password) {
+          return Promise.reject(new Error('GithubConfig.username, GithubConfig.password is required for basic Auth.'));
+      }
+
       return this.github.authenticate({
           type: 'basic',
           username: GithubConfig.username,
