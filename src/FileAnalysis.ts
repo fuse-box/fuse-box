@@ -8,10 +8,10 @@ require("acorn-jsx/inject")(acorn);
 
 /**
  * Makes static analysis on the code
- * Gets require statements (es5 and es6) 
- * 
+ * Gets require statements (es5 and es6)
+ *
  * Adds additional injections (if needed)
- * 
+ *
  * @export
  * @class FileAST
  */
@@ -19,7 +19,7 @@ export class FileAnalysis {
 
     /**
      * Acorn AST
-     * 
+     *
      * @type {*}
      * @memberOf FileAST
      */
@@ -32,8 +32,8 @@ export class FileAnalysis {
 
 
     /**
-     * A list of dependencies 
-     * 
+     * A list of dependencies
+     *
      * @type {string[]}
      * @memberOf FileAST
      */
@@ -41,9 +41,9 @@ export class FileAnalysis {
 
     /**
      * Creates an instance of FileAST.
-     * 
+     *
      * @param {File} file
-     * 
+     *
      * @memberOf FileAST
      */
     constructor(public file: File) { }
@@ -55,9 +55,9 @@ export class FileAnalysis {
 
     /**
      * Loads an AST
-     * 
+     *
      * @param {*} ast
-     * 
+     *
      * @memberOf FileAnalysis
      */
     public loadAst(ast: any) {
@@ -69,10 +69,10 @@ export class FileAnalysis {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @private
-     * 
+     *
      * @memberOf FileAST
      */
     public parseUsingAcorn(options?: any) {
@@ -117,6 +117,14 @@ export class FileAnalysis {
                         this.fuseBoxVariable = parent.object.name;
                     }
                 }
+
+                // @NOTE: would not match
+                // var window = typeof window != 'undefined' ? window : global
+                // window.process.argv.forEach(eh => eh)
+                // global.process.argv.forEach(eh => eh)
+                //
+                // @example:
+                // process.argv.forEach(eh => eh)
                 if (node.type === "MemberExpression") {
                     if (node.object && node.object.type === "Identifier") {
                         if (node.object.name === "process") {
@@ -143,9 +151,38 @@ export class FileAnalysis {
                         }
                     }
                 }
+
+                // @example
+                // var eh = 'value'
                 if (node.type === "VariableDeclarator") {
-                    if (node.id && node.id.type === "Identifier" && node.id.name === "process") {
+                    // @example
+                    // var eh = process
+                    //     ^      ^
+                    //    id     init
+                    if ((node.id && node.id.type === "Identifier" && node.id.name === "process") || (node.init && node.init.name === "process")) {
                         out.processDeclared = true;
+                    }
+                    // @example
+                    // var eh = process
+                    // var canada = eh.env
+                    else if (node.init && node.init.type === "MemberExpression") {
+                        if (node.init.object && node.init.object.name === "process") {
+                            out.processDeclared = true;
+                        }
+
+                        // ~@TODO: but prioritizations yo
+                        // var eh = window.process
+                        // var {env} = eh
+                        // else if (node.init.property) {
+                        //     var supportedProcessProps = [
+                        //         'nextTick', 'title', 'browser', 'env', 'argv', 'version', 'versions',
+                        //         'on', 'addListener', 'once', 'off', 'removeListener', 'removeAllListeners', 'emit',
+                        //         'binding', 'cwd', 'chdir', 'unmask',
+                        //     ]
+                        //     if (supportedProcessProps.includes(node.init.property.name)) {
+                        //         acorn.findNodeAt(node, )
+                        //     }
+                        // }
                     }
                 }
                 if (node.type === "ImportDeclaration") {
@@ -154,7 +191,6 @@ export class FileAnalysis {
                     }
                 }
                 if (node.type === "CallExpression" && node.callee) {
-
                     if (node.callee.type === "Identifier" && node.callee.name === "require") {
                         let arg1 = node.arguments[0];
                         if (isString(arg1)) {
@@ -200,9 +236,9 @@ export class FileAnalysis {
     /**
      * Removes a footer with FuseBox API
      * In case a file we require appears to be a bundle
-     * 
+     *
      * @private
-     * 
+     *
      * @memberOf FileAnalysis
      */
     private removeFuseBoxApiFromBundle() {

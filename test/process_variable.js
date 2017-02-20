@@ -28,4 +28,26 @@ describe("Process variable must be handled with care", (done) => {
             done();
         }).catch(done);
     });
+
+    // @NOTE: not sure where to run this through but would be an integration test
+    // var eh = process
+    // console.log(Object.keys(process))
+    it("Process should be bundled and required when it is assigned to a variable", (done) => {
+        getTestEnv({
+            "index.js": `
+                var eh = process;
+                exports.eh = eh;
+            `,
+        }, "**/*.js").then(root => {
+            let result = root.FuseBox.import("./index");
+            var supportedProcessProps = [
+                'title', 'env', 'argv',
+                'binding', 'cwd', 'chdir',
+            ]
+            supportedProcessProps.forEach(supported => {
+                console.assert(result.eh.hasOwnProperty(supported) === true, `property exists: ${supported}`)
+            })
+            done();
+        }).catch(done);
+    });
 })
