@@ -37,12 +37,12 @@ let statefulModuleCheck: (moduleName: string) => boolean = () => false;
 
 /**
  * Registers given module names as being stateful
- * @param check for a given moduleName returns true if the module is stateful
+ * @param isStateful for a given moduleName returns true if the module is stateful
  */
-export const setStatefulModules = (check: (moduleName: string) => boolean) => {
+export const setStatefulModules = (isStateful: (moduleName: string) => boolean) => {
     if (!alreadyRegistered) {
         alreadyRegistered = true;
         Loader.addPlugin(customizedHMRPlugin);
     }
-    statefulModuleCheck = check;
+    statefulModuleCheck = isStateful;
 }
