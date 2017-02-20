@@ -15,3 +15,9 @@ npm install babel-core babel-generator babylon cheerio @angular/core stylus less
 * In another window run `npm test -- --watch`
 
 Now you can modify any file in `src`/`src-frontend`/`test` and build will happen automatically followed by tests running automatically.
+
+If you want to test just one file you can use `describe.only` or just run `npm run test:only` as shown below
+
+```ts
+npm run test:only -- test/arithmetic.ts
+```
