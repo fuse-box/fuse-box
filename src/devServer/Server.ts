@@ -11,7 +11,7 @@ const watch = require("watch");
 export type HotReloadEmitter = (server: Server, sourceChangedInfo: any) => any;
 
 export type SourceChangedEvent = {
-    type: 'js' | 'css',
+    type: 'js' | 'css' | 'css-file',
     content: string,
     path: string
 }
@@ -22,8 +22,8 @@ export interface ServerOptions {
 
     /** 
      * - If false nothing is served.
-     * - If string specfied this is the folder served from express.static
-     * - It can be an absolute path or relative to `appRootPath`
+     * - If string specified this is the folder served from express.static
+     *      It can be an absolute path or relative to `appRootPath`
      **/
     root?: boolean | string;
 

@@ -1,4 +1,6 @@
-(function(__root__){ var $isBrowser = typeof window !== "undefined" && window.navigator;
+(function(__root__){
+if (__root__["FuseBox"]) return __root__["FuseBox"];
+var $isBrowser = typeof window !== "undefined" && window.navigator;
 if ($isBrowser) {
     window["global"] = window;
 }
@@ -364,5 +366,5 @@ FuseBox.packages = $packages;
 FuseBox.isBrowser = $isBrowser !== undefined;
 FuseBox.isServer = !$isBrowser;
 FuseBox.plugins = [];
- 
+
 return __root__["FuseBox"] = FuseBox; } )(this)

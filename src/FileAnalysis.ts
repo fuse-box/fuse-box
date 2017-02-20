@@ -1,10 +1,14 @@
 import { ASTTraverse } from "./ASTTraverse";
 import { PrettyError } from "./PrettyError";
 import { File } from "./File";
+import { nativeModules, HeaderImport } from './HeaderImport';
 const acorn = require("acorn");
 const escodegen = require("escodegen");
 require("acorn-es7")(acorn);
 require("acorn-jsx/inject")(acorn);
+
+
+
 
 /**
  * Makes static analysis on the code
@@ -96,12 +100,11 @@ export class FileAnalysis {
         if (this.wasAnalysed || this.skipAnalysis) {
             return;
         }
-
+        const nativeImports = {};
+        const bannedImports = {};
 
         let out = {
             requires: [],
-            processDeclared: false,
-            processRequired: false,
             fuseBoxBundle: false,
             fuseBoxMain: undefined
         };
@@ -113,16 +116,26 @@ export class FileAnalysis {
         ASTTraverse.traverse(this.ast, {
             pre: (node, parent, prop, idx) => {
                 if (node.type === "Identifier") {
+
                     if (node.name === "$fuse$") {
                         this.fuseBoxVariable = parent.object.name;
-                    }
-                }
-                if (node.type === "MemberExpression") {
-                    if (node.object && node.object.type === "Identifier") {
-                        if (node.object.name === "process") {
-                            out.processRequired = true;
+                    } else {
+
+                        if (nativeModules.has(node.name) && !bannedImports[node.name]) {
+                            if (parent && parent.type === "VariableDeclarator"
+                                && parent.id && parent.id.type === "Identifier" && parent.id.name === node.name) {
+                                delete nativeImports[node.name];
+                                if (!bannedImports[node.name]) {
+                                    bannedImports[node.name] = true;
+                                }
+                            } else {
+                                nativeImports[node.name] = nativeModules.get(node.name);
+                            }
                         }
                     }
+                }
+
+                if (node.type === "MemberExpression") {
                     if (parent.type === "CallExpression") {
                         if (node.object && node.object.type === "Identifier" && node.object.name === this.fuseBoxVariable) {
                             if (node.property && node.property.type === "Identifier") {
@@ -143,11 +156,7 @@ export class FileAnalysis {
                         }
                     }
                 }
-                if (node.type === "VariableDeclarator") {
-                    if (node.id && node.id.type === "Identifier" && node.id.name === "process") {
-                        out.processDeclared = true;
-                    }
-                }
+
                 if (node.type === "ImportDeclaration") {
                     if (node.source && isString(node.source)) {
                         out.requires.push(node.source.value);
@@ -168,10 +177,12 @@ export class FileAnalysis {
         out.requires.forEach(name => {
             this.dependencies.push(name);
         });
-        if (!out.processDeclared) {
-            if (out.processRequired) {
-                this.dependencies.push("process");
-                this.file.addHeaderContent(`var process = require("process");`);
+        // inject imports
+        for (let nativeImportName in nativeImports) {
+            if (nativeImports.hasOwnProperty(nativeImportName)) {
+                const nativeImport: HeaderImport = nativeImports[nativeImportName];
+                this.dependencies.push(nativeImport.pkg);
+                this.file.addHeaderContent(`/* fuse:injection: */ var ${nativeImport.variable} = require("${nativeImport.pkg}");`);
             }
         }
 

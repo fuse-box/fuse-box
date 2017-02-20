@@ -1,4 +1,4 @@
-import { ensurePublicExtension } from './Utils';
+import { ensurePublicExtension, Concat } from './Utils';
 import { BundleData } from './Arithmetic';
 import { ModuleCollection } from "./ModuleCollection";
 import { WorkFlowContext } from "./WorkflowContext";
@@ -6,16 +6,6 @@ import { Config } from "./Config";
 import { File } from "./File";
 import * as path from 'path';
 import * as fs from 'fs';
-
-export type Concat = {
-    add(fileName: string | null, content: string | Buffer, sourceMap?: string): void;
-    content: Buffer;
-    sourceMap: string;
-}
-export type ConcatModule = {
-    new (generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
-}
-export const Concat: ConcatModule = require("concat-with-sourcemaps");
 
 /**
  * 
@@ -139,7 +129,7 @@ export class BundleSource {
         this.collectionSource.add(null,
             `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){ 
 ${file.headerContent ? file.headerContent.join("\n") : ""}`);
-        this.collectionSource.add(null, file.alternativeContent || file.contents, file.sourceMap);
+        this.collectionSource.add(null, file.alternativeContent !== undefined ? file.alternativeContent : file.contents, file.sourceMap);
         this.collectionSource.add(null, "});");
     }
 

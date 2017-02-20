@@ -39,7 +39,9 @@ export class SassPluginClass implements Plugin {
 
         return new Promise((res, rej) => {
             return sass.render(options, (err, result) => {
-                if (err) { return rej(err); }
+                if (err) {
+                    return rej(err);
+                }
                 file.sourceMap = result.map && result.map.toString();
                 file.contents = result.css.toString();
                 return res(file.contents);

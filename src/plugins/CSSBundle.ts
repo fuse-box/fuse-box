@@ -19,12 +19,10 @@ export class CSSBundleClass implements Plugin {
     public init(context: WorkFlowContext) { }
 
     public transformGroup(group: File) {
-
+        console.log("Transform group");
     }
-
 };
 
 export const CSSBundle = (opts: CSSBundleOptions = {}) => {
     return new CSSBundleClass(opts);
 };
-

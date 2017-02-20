@@ -26,17 +26,19 @@ export type PluginMethodName =
 
 const appRoot = require("app-root-path");
 
+
 /**
  * Interface for a FuseBox plugin
  */
 export interface Plugin {
     test?: RegExp;
-    init?: { (context: WorkFlowContext) };
-    transform?: { (file: File, ast?: any) };
-    transformGroup?: { (file: File) };
-    onTypescriptTransform?: { (file: File) };
-    bundleStart?(context: WorkFlowContext);
-    bundleEnd?(context: WorkFlowContext);
+    opts?: any;
+    init?(context: WorkFlowContext): any;
+    transform?(file: File, ast?: any): any;
+    transformGroup?(file: File): any;
+    onTypescriptTransform?(file: File): any;
+    bundleStart?(context: WorkFlowContext): any;
+    bundleEnd?(context: WorkFlowContext): any;
 
     /**
      * If provided then the dependencies are loaded on the client
@@ -61,6 +63,8 @@ export class WorkFlowContext {
     public transformTypescript?: (contents: string) => string;
 
     public ignoreGlobal: string[] = [];
+
+    public pendingPromises: Promise<any>[] = [];
 
     /**
      * Explicitly target bundle to server
@@ -105,22 +109,52 @@ export class WorkFlowContext {
 
     public initialLoad = true;
 
-    public log: Log = new Log(this.doLog)
+    public debugMode = false;
+
+    public log: Log = new Log(this)
 
     public pluginTriggers: Map<string, Set<String>>;
 
     public storage: Map<string, any>;
 
+
     public initCache() {
         this.cache = new ModuleCache(this);
     }
 
+
+    public getHeaderImportsConfiguration() {
+
+
+    }
     public emitJavascriptHotReload(file: File) {
+        let content = file.contents;
+        if (file.headerContent) {
+            content = file.headerContent.join("\n") + "\n" + content;
+        }
         this.sourceChangedEmitter.emit({
             type: "js",
-            content: file.contents,
+            content: content,
             path: file.info.fuseBoxPath,
         });
+    }
+
+    public debug(group: string, text: string) {
+        if (this.debugMode) {
+            this.log.echo(`${group} : ${text}`);
+        }
+    }
+
+    public warning(str: string) {
+        return this.log.echoWarning(str);
+    }
+
+    public fatal(str: string) {
+        throw new Error(str);
+    }
+    public debugPlugin(plugin: Plugin, text: string) {
+        const name = plugin.constructor && plugin.constructor.name ? plugin.constructor.name : "Unknown";
+        this.debug(name, text);
     }
 
     public isShimed(name: string): boolean {
@@ -135,7 +169,7 @@ export class WorkFlowContext {
      * Resets significant class members
      */
     public reset() {
-        this.log = new Log(this.doLog);
+        this.log = new Log(this);
         this.storage = new Map();
         this.source = new BundleSource(this);
         this.nodeModules = new Map();
@@ -156,14 +190,19 @@ export class WorkFlowContext {
      * Create a new file group
      * Mocks up file
      */
-    public createFileGroup(name: string): File {
+    public createFileGroup(name: string, collection: ModuleCollection, handler: Plugin): File {
         let info = <IPathInformation>{
             fuseBoxPath: name,
             absPath: name,
         }
         let file = new File(this, info);
+        file.collection = collection;
         file.contents = "";
         file.groupMode = true;
+        // Pass it along
+        // Transformation might happen in a different plugin
+        file.groupHandler = handler;
+
         this.fileGroups.set(name, file);
         return file;
     }

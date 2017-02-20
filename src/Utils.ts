@@ -7,6 +7,30 @@ const MBLACKLIST = [
     "freelist",
     "sys"
 ];
+export type Concat = {
+    add(fileName: string | null, content: string | Buffer, sourceMap?: string): void;
+    content: Buffer;
+    sourceMap: string;
+}
+export type ConcatModule = {
+    new (generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
+}
+export const Concat: ConcatModule = require("concat-with-sourcemaps");
+
+export function contains(array: any[], obj: any) {
+    return array && array.indexOf(obj) > -1;
+}
+
+export function write(fileName: string, contents: any) {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(fileName, contents, (e) => {
+            if (e) {
+                return reject(e);
+            }
+            return resolve();
+        })
+    });
+}
 
 export function camelCase(str: string) {
     let DEFAULT_REGEX = /[-_]+(.)?/g;

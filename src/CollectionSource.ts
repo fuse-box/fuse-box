@@ -14,35 +14,48 @@ export class CollectionSource {
             });
         }
         this.context.source.createCollection(collection);
-        return this.resolveFiles(collection.dependencies).then(files => {
+        let files = this.filterFiles(collection.dependencies);
 
-            this.context.source.startCollection(collection);
-            files.forEach(f => {
-                this.context.source.addFile(f);
-            });
-            return this.context.source.endCollection(collection);
+        this.context.source.startCollection(collection);
+        files.forEach(f => {
+            this.context.source.addFile(f);
         });
 
+        return Promise.resolve(this.context.source.endCollection(collection));
     }
-    private resolveFiles(files: Map<string, File>): Promise<File[]> {
-        let promises: Promise<any>[] = [];
+    private filterFiles(files: Map<string, File>): File[] {
+        let filtered: File[] = [];
         files.forEach(file => {
-            file.resolving.forEach(p => {
-                promises.push(p);
-            });
-        });
-        return Promise.all(promises).then(() => {
-            let filtered: File[] = [];
-            files.forEach(file => {
-                if (file.isFuseBoxBundle) {
-                    this.context.source.addContentToCurrentCollection(file.contents);
-                }
-                if (!file.info.isRemoteFile) {
-                    filtered.push(file);
-                }
+            if (file.isFuseBoxBundle) {
+                this.context.source.addContentToCurrentCollection(file.contents);
+            }
+            if (!file.info.isRemoteFile) {
+                filtered.push(file);
+            }
 
-            });
-            return filtered;
         });
+        return filtered;
     }
+
+    // private resolveFiles(files: Map<string, File>): Promise<File[]> {
+    //     let promises: Promise<any>[] = [];
+    //     files.forEach(file => {
+    //         file.resolving.forEach(p => {
+    //             promises.push(p);
+    //         });
+    //     });
+    //     return Promise.all(promises).then(() => {
+    //         let filtered: File[] = [];
+    //         files.forEach(file => {
+    //             if (file.isFuseBoxBundle) {
+    //                 this.context.source.addContentToCurrentCollection(file.contents);
+    //             }
+    //             if (!file.info.isRemoteFile) {
+    //                 filtered.push(file);
+    //             }
+
+    //         });
+    //         return filtered;
+    //     });
+    // }
 }

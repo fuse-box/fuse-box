@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { ensureUserPath } from "./Utils";
+import { ensureUserPath, contains } from './Utils';
 import { ShimCollection } from "./ShimCollection";
 import { Server, ServerOptions } from "./devServer/Server";
 import { JSONPlugin } from "./plugins/JSONplugin";
@@ -12,6 +12,8 @@ import * as path from "path";
 import { each, utils, chain, Chainable } from "realm-utils";
 import { Config } from "./Config";
 import { BundleTestRunner } from "./testRunner/BundleTestRunner";
+import * as process from 'process';
+import { nativeModules, HeaderImport } from './HeaderImport';
 const appRoot = require("app-root-path");
 
 export interface FuseBoxOptions {
@@ -23,12 +25,14 @@ export interface FuseBoxOptions {
     log?: boolean;
     globals?: { [packageName: string]: /** Variable name */ string };
     plugins?: Plugin[];
+    imports?: any;
     shim?: any;
     standaloneBundle?: boolean;
     sourceMap?: any;
     ignoreGlobal?: string[];
     serverBundle?: boolean;
     outFile?: string;
+    debug?: boolean;
     files?: any;
     transformTypescript?: (contents: string) => string;
 }
@@ -68,6 +72,12 @@ export class FuseBox {
         if (opts.homeDir) {
             homeDir = path.isAbsolute(opts.homeDir) ? opts.homeDir : path.join(appRoot.path, opts.homeDir);
         }
+        if (opts.debug !== undefined) {
+            this.context.debugMode = opts.debug;
+        }
+
+        this.context.debugMode = opts.debug !== undefined ? opts.debug : contains(process.argv, '--debug')
+
         if (opts.modulesFolder) {
             this.context.customModulesFolder =
                 path.isAbsolute(opts.modulesFolder)
@@ -97,6 +107,14 @@ export class FuseBox {
         if (opts.log !== undefined) {
             this.context.doLog = opts.log ? true : false;
         }
+
+        if (utils.isPlainObject(opts.imports)) {
+            for (let varName in opts.imports) {
+                const pkgName = opts.imports[varName];
+                nativeModules.add(new HeaderImport(varName, pkgName));
+            }
+        }
+
 
 
         if (opts.globals) {
@@ -176,7 +194,6 @@ export class FuseBox {
     public process(bundleData: BundleData, bundleReady?: () => any) {
         let bundleCollection = new ModuleCollection(this.context, this.context.defaultPackageName);
         bundleCollection.pm = new PathMaster(this.context, bundleData.homeDir);
-
         // swiching on typescript compiler
         if (bundleData.typescriptMode) {
             this.context.tsMode = true;
@@ -228,7 +245,7 @@ export class FuseBox {
                 this.triggerPost();
                 this.context.writeOutput(bundleReady);
                 return self.context.source.getResult();
-            });
+            })
         });
     }
 

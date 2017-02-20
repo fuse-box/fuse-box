@@ -163,7 +163,9 @@ type SourceChangedEvent = {
 }
 ```
 
-You register a plugin using `FuseBox.addPlugin(YourPlugin)`. As an example here is a way to register a plugin that just reloads the window for *js* files instead of the default behavior:
+You register a plugin using `FuseBox.addPlugin(YourPlugin)`. 
+
+* As an example here is a way to register a plugin that just reloads the window for *js* files instead of the default behavior:
 
 ```js
 FuseBox.addPlugin({
@@ -172,6 +174,17 @@ FuseBox.addPlugin({
       window.location.reload();
       return true;
     }
+  }
+});
+```
+
+* As another example, here is a plugin that disables all default HMR behavior and simply logs a message to the console:
+
+```js
+FuseBox.addPlugin({
+  hmrUpdate: (evt) => {
+    console.log('HMR Update', evt, 'Please reload the window');
+    return true;
   }
 });
 ```
