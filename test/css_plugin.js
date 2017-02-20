@@ -155,7 +155,7 @@ describe('CSSPlugins ', () => {
                     "a.css": "body {};",
                     "b.css": "h1 {};"
                 },
-                plugins: [CSSPlugin({ bundle: "app.css" })],
+                plugins: [CSSPlugin({ group: "app.css" })],
                 instructions: "> index.ts"
             }
         }).then((result) => {
@@ -178,7 +178,7 @@ describe('CSSPlugins ', () => {
                     "a.css": "body {};",
                     "b.css": "h1 {};"
                 },
-                plugins: [CSSPlugin({ bundle: "app.css", outFile: `${tmp}/app.css` })],
+                plugins: [CSSPlugin({ group: "app.css", outFile: `${tmp}/app.css` })],
                 instructions: "> index.ts"
             }
         }).then((result) => {
@@ -206,7 +206,7 @@ h1 {};
                     "a.css": "body {};",
                     "b.css": "h1 {};"
                 },
-                plugins: [CSSPlugin({ bundle: "app.css", outFile: `${tmp}/app.css`, inject: false })],
+                plugins: [CSSPlugin({ group: "app.css", outFile: `${tmp}/app.css`, inject: false })],
                 instructions: "> index.ts"
             }
         }).then((result) => {
@@ -231,7 +231,7 @@ h1 {};
                 },
                 plugins: [
                     CSSPlugin({
-                        bundle: "app.css",
+                        group: "app.css",
                         outFile: `${tmp}/app.css`,
                         inject: (file) => `custom/${file}`
                     })
