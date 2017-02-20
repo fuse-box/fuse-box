@@ -1,4 +1,5 @@
 import should = require('should');
+const ensureImport = should;
 const build = require(`../dist/commonjs/index.js`);
 const getTestEnv = require('./fixtures/lib').getTestEnv;
 const SassPlugin = build.SassPlugin;

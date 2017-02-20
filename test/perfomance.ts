@@ -1,4 +1,5 @@
 import should = require("should");
+const ensureImport = should;
 const build = require(`../dist/commonjs/index.js`);
 const FuseBox = build.FuseBox;
 

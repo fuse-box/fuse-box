@@ -1,4 +1,5 @@
 import should = require("should");
+const ensureImport = should;
 const Utils = require(`../dist/commonjs/Utils.js`);
 const path = require("path");
 

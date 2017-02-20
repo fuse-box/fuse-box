@@ -1,4 +1,5 @@
 import should = require("should");
+const ensureImport = should;
 const env = require("./fixtures/lib").getNodeEnv;
 
 describe("Node modules and exports", () => {

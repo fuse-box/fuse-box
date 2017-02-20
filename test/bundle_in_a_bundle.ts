@@ -1,4 +1,5 @@
 import should = require('should');
+const ensureImport = should;
 const fsbx = require(`../dist/commonjs/index.js`);
 const path = require("path");
 import fixtures = require("./fixtures/lib")

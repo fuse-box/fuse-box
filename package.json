@@ -10,6 +10,7 @@
   },
   "scripts": {
     "test": "TRAVIS=true;TS_NODE_PROJECT=./test/tsconfig.json mocha --require ts-node/register \"test/*.ts\" --watch-extensions ts",
+    "test:only": "TRAVIS=true;TS_NODE_PROJECT=./test/tsconfig.json mocha --require ts-node/register --watch-extensions ts",
     "start": "gulp watch"
   },
   "repository": {
