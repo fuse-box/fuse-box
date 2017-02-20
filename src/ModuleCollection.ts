@@ -1,7 +1,7 @@
-import { File } from "./File";
+import { File } from './File';
 import { PathMaster, IPackageInformation } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
-import { each } from "realm-utils";
+import { each, utils } from 'realm-utils';
 import { BundleData } from "./Arithmetic";
 const PrettyError = require('pretty-error');
 
@@ -196,9 +196,7 @@ export class ModuleCollection {
             return this.resolve(file);
         })
             .then(() => this.resolvePending())
-            .then(() => this.onDefaultProjectDone())
-            // In case the final stage requires to be resolved
-            .then(() => this.resolvePending())
+            .then(() => this.transformGroups())
             .then(() => {
                 return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
             }).then(toResolve => {
@@ -280,12 +278,25 @@ export class ModuleCollection {
     }
 
 
-    public onDefaultProjectDone() {
-        this.context.fileGroups.forEach(group => {
+    public transformGroups() {
+        const promises = [];
+        this.context.fileGroups.forEach((group: File, name: string) => {
             this.dependencies.set(group.info.fuseBoxPath, group);
-            group.tryPlugins();
+            if (group.groupHandler) {
+                if (utils.isFunction(group.groupHandler.transformGroup)) {
+                    promises.push(new Promise((resolve, reject) => {
+                        const result = group.groupHandler.transformGroup(group);
+                        if (utils.isPromise(result)) {
+                            return result.then(resolve).catch(reject);
+                        }
+                        return resolve();
+                    }));
+                }
+            }
         });
+        return Promise.all(promises);
     }
+
     /**
      * 
      * 

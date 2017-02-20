@@ -26,11 +26,13 @@ export type PluginMethodName =
 
 const appRoot = require("app-root-path");
 
+
 /**
  * Interface for a FuseBox plugin
  */
 export interface Plugin {
     test?: RegExp;
+    opts?: any;
     init?(context: WorkFlowContext): any;
     transform?(file: File, ast?: any): any;
     transformGroup?(file: File): any;
@@ -179,7 +181,7 @@ export class WorkFlowContext {
      * Create a new file group
      * Mocks up file
      */
-    public createFileGroup(name: string, collection: ModuleCollection, options?: any): File {
+    public createFileGroup(name: string, collection: ModuleCollection, handler: Plugin): File {
         let info = <IPathInformation>{
             fuseBoxPath: name,
             absPath: name,
@@ -190,7 +192,7 @@ export class WorkFlowContext {
         file.groupMode = true;
         // Pass it along
         // Transformation might happen in a different plugin
-        file.groupOptions = options;
+        file.groupHandler = handler;
 
         this.fileGroups.set(name, file);
         return file;

@@ -26,7 +26,7 @@ export class CSSPluginClass implements Plugin {
     public test: RegExp = /\.css$/;
     private raw = false;
     private minify = false;
-    private opts: any;
+    public opts: any;
     private serve: any;
 
     private writeOptions: any;
@@ -98,7 +98,7 @@ export class CSSPluginClass implements Plugin {
             concat.add(file.info.fuseBoxPath, file.contents, file.generateCorrectSourceMap());
         });
 
-        let options = group.groupOptions || {};
+        let options = group.groupHandler.opts || {};
         const cssContents = concat.content;
 
         // writing
@@ -177,7 +177,7 @@ export class CSSPluginClass implements Plugin {
             const bundleName = this.opts.group;
             let fileGroup = context.getFileGroup(bundleName);
             if (!fileGroup) {
-                fileGroup = context.createFileGroup(bundleName, file.collection, this.opts);
+                fileGroup = context.createFileGroup(bundleName, file.collection, this);
             }
             // Adding current file (say a.txt) as a subFile 
             fileGroup.addSubFile(file);

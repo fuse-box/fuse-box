@@ -106,7 +106,7 @@ export class File {
 
     public groupMode = false;
 
-    public groupOptions: any;
+    public groupHandler: Plugin;
 
     /**
      * Creates an instance of File.
