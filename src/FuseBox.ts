@@ -310,12 +310,10 @@ export class FuseBox {
         let parser = Arithmetic.parse(str);
         let bundle: BundleData;
         return Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
-
             bundle = data;
             return this.process(data, bundleReady);
         }).then((contents) => {
             bundle.finalize(); // Clean up temp folder if required
-
             return contents;
         }).catch(e => {
             console.log(e.stack || e);

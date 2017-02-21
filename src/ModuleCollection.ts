@@ -25,8 +25,6 @@ export class ModuleCollection {
 
     public acceptFiles = true;
 
-    public pendingPromises: Promise<any>[] = [];
-
     /**
      * 
      * 
@@ -200,15 +198,17 @@ export class ModuleCollection {
             let file = new File(this.context, this.pm.init(modulePath));
             return this.resolve(file);
         })
-            .then(() => this.resolvePending())
+            .then(() => this.context.resolve())
             .then(() => this.transformGroups())
             .then(() => {
                 return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
             }).then(toResolve => {
-                return each(toResolve, (file: File) => {
-                    return this.resolveNodeModule(file);
-                });
-            }).then(() => {
+                return each(toResolve, (file: File) => this.resolveNodeModule(file));
+            })
+            // node modules might need to resolved asynchronously
+            // like css plugins
+            .then(() => this.context.resolve())
+            .then(() => {
                 return this.context.cache.buildMap(this);
             }).catch(e => {
                 var pe = new PrettyError();
@@ -216,14 +216,7 @@ export class ModuleCollection {
                 console.log(pe.render(e));
             })
     }
-    /* Resolving pending files */
-    public resolvePending() {
 
-        return Promise.all(this.context.pendingPromises).then(() => {
-            // reset pending promises 
-            this.context.pendingPromises = [];
-        })
-    }
     /**
      * 
      * 

@@ -3,7 +3,7 @@ import { FileAnalysis } from "./FileAnalysis";
 import { WorkFlowContext, Plugin } from './WorkflowContext';
 import { IPathInformation } from "./PathMaster";
 import * as fs from "fs";
-import { utils, each } from "realm-utils";
+import { utils, each } from 'realm-utils';
 
 
 /**
@@ -168,11 +168,6 @@ export class File {
         return name;
     }
 
-
-    public asyncResolve(promise: Promise<any>) {
-        this.context.pendingPromises.push(promise);
-    }
-
     /**
      * Typescript transformation needs to be handled
      * Before the actual transformation
@@ -220,31 +215,24 @@ export class File {
                 }
                 index++;
             }
-
+            const tasks = [];
             if (target) {
 
                 if (Array.isArray(target)) {
-                    this.asyncResolve(each(target, (plugin: Plugin) => {
-                        // if we are in a groupMode, we don't trigger tranform
-                        // we trigger tranformGroup
-                        if (this.groupMode && utils.isFunction(plugin.transformGroup)) {
-                            return plugin.transformGroup.apply(plugin, [this]);
-                        }
+                    target.forEach(plugin => {
                         if (utils.isFunction(plugin.transform)) {
                             this.context.debugPlugin(plugin, `Captured ${this.info.fuseBoxPath}`);
-                            return plugin.transform.apply(plugin, [this]);
+                            tasks.push(() => plugin.transform.apply(plugin, [this]));
                         }
-                    }));
+                    })
                 } else {
-                    if (this.groupMode && utils.isFunction(target.transformGroup)) {
-                        return this.asyncResolve(target.transformGroup.apply(target, [this]));
-                    }
                     if (utils.isFunction(target.transform)) {
                         this.context.debugPlugin(target, `Captured ${this.info.fuseBoxPath}`);
-                        return this.asyncResolve(target.transform.apply(target, [this]));
+                        tasks.push(() => target.transform.apply(target, [this]));
                     }
                 }
             }
+            return this.context.queue(each(tasks, promise => promise()));
         }
     }
     /**

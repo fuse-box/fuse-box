@@ -6,9 +6,9 @@ const RawPlugin = build.RawPlugin;
 const postcss = require('postcss');
 
 const pluginA = postcss.plugin('AllBlocks', function(options) {
-    return function (css) {
-        css.walkRules(function (rule) {
-            rule.walkDecls(function (decl, i) {
+    return function(css) {
+        css.walkRules(function(rule) {
+            rule.walkDecls(function(decl, i) {
                 if (decl.prop === 'display') {
                     decl.value = 'block';
                 }
@@ -18,8 +18,8 @@ const pluginA = postcss.plugin('AllBlocks', function(options) {
 });
 
 const pluginB = postcss.plugin('IdToClass', function(options) {
-    return function (css) {
-        css.walkRules(function (rule) {
+    return function(css) {
+        css.walkRules(function(rule) {
             if (rule.selector && rule.selector[0] === '#') {
                 rule.selector = '.' + rule.selector.slice(1);
             }
@@ -37,31 +37,35 @@ const style = `
 `;
 
 describe('PostCssPlugin', () => {
-    
+
     it('Smoke test', () => {
-        return getTestEnv({'style.css': style }, '>style.css', {
+        return getTestEnv({ 'style.css': style }, '>style.css', {
             plugins: [
                 [PostCssPlugin(), RawPlugin()]
             ]
         }).then(root => {
-            let result = root.FuseBox.import('./style.css'); 
+            let result = root.FuseBox.import('./style.css');
             should.ok(result);
         });
     });
-    
+
     it('No plugins should output unmodified input', () => {
-        return getTestEnv({'style.css': style }, '>style.css', {
+        return getTestEnv({ 'style.css': style }, '>style.css', {
             plugins: [
                 [PostCssPlugin(), RawPlugin()]
             ]
         }).then(root => {
             let result = root.FuseBox.import('./style.css');
             result.should.equal(style);
-        });
+        }).catch((e) => {
+            console.log(e);
+        })
+
+
     });
-    
+
     it('Single test plugin', () => {
-        return getTestEnv({'style.css': style }, '>style.css', {
+        return getTestEnv({ 'style.css': style }, '>style.css', {
             plugins: [
                 [PostCssPlugin([pluginA]), RawPlugin()]
             ]
@@ -70,9 +74,9 @@ describe('PostCssPlugin', () => {
             result.should.containEql('display: block');
         });
     });
-    
+
     it('Several plugins', () => {
-        return getTestEnv({'style.css': style }, '>style.css', {
+        return getTestEnv({ 'style.css': style }, '>style.css', {
             plugins: [
                 [PostCssPlugin([pluginA, pluginB]), RawPlugin()]
             ]
@@ -83,5 +87,5 @@ describe('PostCssPlugin', () => {
             result.should.containEql('.moon');
         });
     });
-    
+
 });

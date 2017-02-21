@@ -6,7 +6,7 @@ import { Log } from "./Log";
 import { IPackageInformation, IPathInformation, AllowedExtenstions } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "./ModuleCache";
-import { utils } from "realm-utils";
+import { utils } from 'realm-utils';
 import { EventEmitter } from "./EventEmitter";
 import { ensureUserPath, findFileBackwards } from './Utils';
 import { SourceChangedEvent } from './devServer/Server';
@@ -126,6 +126,15 @@ export class WorkFlowContext {
         this.cache = new ModuleCache(this);
     }
 
+    public resolve() {
+        return Promise.all(this.pendingPromises).then(() => {
+            this.pendingPromises = [];
+        });
+    }
+
+    public queue(obj: any) {
+        this.pendingPromises.push(obj);
+    }
 
     public getHeaderImportsConfiguration() {
 
