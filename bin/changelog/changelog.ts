@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import {IMileStoneWithIssues, ChangeLogTemplate} from './changelogTemplate';
 import {IMilestones, IIssue} from './interfaces';
 import * as Github from 'github';
 
@@ -8,9 +10,9 @@ import { Observable } from '@reactivex/rxjs';
  *
  * @author DrMabuse23 <https://github.com/DrMabuse23>
  * @export
- * @class ChangelogCreater
+ * @class ChangelogApi
  */
-export class ChangelogCreater {
+export class ChangelogApi {
   private github: Github;
   private _uri: string = 'https://api.github.com';
   private _cmd = ['-B', 'basic-auth', '-O', 'oauth'];
@@ -46,7 +48,7 @@ export class ChangelogCreater {
 
   /**
    * @description oauth
-   * @memberOf ChangelogCreater
+   * @memberOf ChangelogApi
    */
   public oauth(): any {
       if (!GithubConfig.username || GithubConfig.password) {
@@ -59,7 +61,7 @@ export class ChangelogCreater {
   }
   /**
    * @description basicAuth
-   * @memberOf ChangelogCreater
+   * @memberOf ChangelogApi
    */
   public basicAuth(): any {
       if (!GithubConfig.username || !GithubConfig.password) {
@@ -79,7 +81,7 @@ export class ChangelogCreater {
   /**
    * @link [milestones](https://developer.github.com/v3/issues/milestones/#list-milestones-for-a-repository)
    * @type {Observable<any>}
-   * @memberOf ChangelogCreater
+   * @memberOf ChangelogApi
    */
   public get milestones(): Observable<IMilestones.RootObject[]> {
       const options = this._assignOwnerRepo({
@@ -91,7 +93,7 @@ export class ChangelogCreater {
    /**
    * @link [milestone](https://developer.github.com/v3/issues/milestones/#get-a-single-milestone)
    * @type {Observable<IMilestones.RootObject>}
-   * @memberOf ChangelogCreater
+   * @memberOf ChangelogApi
    */
   public getMilestone(id): Observable<IMilestones.RootObject> {
       const options = this._assignOwnerRepo({
@@ -103,7 +105,7 @@ export class ChangelogCreater {
     /**
    * @link [issues for a repositors](https://developer.github.com/v3/issues/#list-issues-for-a-repository)
    * @type {Observable<{milestone:IMilestones.RootObject, issue?: IIssue.RootObject, error?: any }>}
-   * @memberOf ChangelogCreater
+   * @memberOf ChangelogApi
    */
   public getIssuesByMileStone(milestone): Observable<{milestone:IMilestones.RootObject, issues?: IIssue.RootObject[], error?: any }> {
       const options: Github.IssuesGetForRepoParams = this._assignOwnerRepo({
@@ -119,8 +121,10 @@ export class ChangelogCreater {
 }
 
 
-const api = new ChangelogCreater();
-const _milestones: {milestone: IMilestones.RootObject, issues: IIssue.RootObject[]}[] = [];
+
+const api = new ChangelogApi();
+const _milestones: IMileStoneWithIssues[] = [];
+let template: ChangeLogTemplate;
 
 api.milestones
     .flatMap((milestones) => Observable.from(milestones))
@@ -133,14 +137,17 @@ api.milestones
     })
     .subscribe(
         (resp ) => {
-            _milestones.push(<{milestone:IMilestones.RootObject, issues: IIssue.RootObject[]}>resp);
+            _milestones.push(<IMileStoneWithIssues>resp);
             // console.log(JSON.stringify(resp, null, 2));
         }, 
         (e) => {
             console.error(e);
         },
         () => {
-            console.log(_milestones);
+
+            const template = new ChangeLogTemplate(_milestones);
+            fs.writeFileSync('./CHANGELOG.md', template.createMd());;
+            console.log(template.createMd());
+
         }
     );
-
