@@ -109,21 +109,18 @@ export class FileAnalysis {
         }
 
         const aliasCollection = this.file.context.aliasCollection;
-
-        for (let alias in aliasCollection) {
-            if (aliasCollection.hasOwnProperty(alias)) {
-                const aliasReplacement = aliasCollection[alias];
-                if (path.isAbsolute(aliasReplacement)) {
-                    // dying in agony
-                    this.file.context.fatal(`Can't use absolute paths with alias "${alias}"`)
-                }
-                if (requireStatement.indexOf(alias) === 0) {
-                    requireStatement = replaceAliasRequireStatement(requireStatement, alias, aliasReplacement);
-                    // only if we need it
-                    this.requiresRegeneration = true;
-                }
+        aliasCollection.forEach(props => {
+            // if (path.isAbsolute(aliasReplacement)) {
+            //     // dying in agony
+            //     this.file.context.fatal(`Can't use absolute paths with alias "${alias}"`)
+            // }
+            // console.log(">>", alias);
+            if (props.expr.test(requireStatement)) {
+                requireStatement = requireStatement.replace(props.expr, `${props.replacement}$2`);
+                // only if we need it
+                this.requiresRegeneration = true;
             }
-        }
+        });
         return requireStatement;
     }
 

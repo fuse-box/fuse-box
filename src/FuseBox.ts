@@ -110,7 +110,19 @@ export class FuseBox {
         }
 
         if (opts.alias) {
-            this.context.aliasCollection = opts.alias;
+
+            // convert alias keys to regexp
+            const aliases = [];
+            for (const key in opts.alias) {
+                if (opts.alias.hasOwnProperty(key)) {
+                    if (path.isAbsolute(key)) {
+                        // dying in agony
+                        this.context.fatal(`Can't use absolute paths with alias "${key}"`)
+                    }
+                    aliases.push({ expr: new RegExp(`^(${key})(/|$)`), replacement: opts.alias[key] })
+                }
+            }
+            this.context.aliasCollection = aliases;
             this.context.experimentalAliasEnabled = true;
         }
 
