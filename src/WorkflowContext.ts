@@ -8,7 +8,7 @@ import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "./ModuleCache";
 import { utils } from 'realm-utils';
 import { EventEmitter } from "./EventEmitter";
-import { ensureUserPath, findFileBackwards } from './Utils';
+import { ensureUserPath, findFileBackwards, ensureDir } from './Utils';
 import { SourceChangedEvent } from './devServer/Server';
 
 
@@ -232,7 +232,7 @@ export class WorkFlowContext {
     }
 
     public setHomeDir(dir: string) {
-        this.homeDir = dir;
+        this.homeDir = ensureDir(dir);
     }
 
     public setLibInfo(name: string, version: string, info: IPackageInformation) {
