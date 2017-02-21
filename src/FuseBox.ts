@@ -34,6 +34,7 @@ export interface FuseBoxOptions {
     outFile?: string;
     debug?: boolean;
     files?: any;
+    alias?: any;
     transformTypescript?: (contents: string) => string;
 }
 
@@ -108,6 +109,11 @@ export class FuseBox {
             this.context.doLog = opts.log ? true : false;
         }
 
+        if (opts.alias) {
+            this.context.aliasCollection = opts.alias;
+            this.context.experimentalAliasEnabled = true;
+        }
+
         if (utils.isPlainObject(opts.imports)) {
             for (let varName in opts.imports) {
                 const pkgName = opts.imports[varName];
@@ -136,6 +142,7 @@ export class FuseBox {
         if (opts.ignoreGlobal) {
             this.context.ignoreGlobal = opts.ignoreGlobal;
         }
+
 
         if (opts.outFile) {
             this.context.outFile = opts.outFile;

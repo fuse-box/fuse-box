@@ -117,6 +117,10 @@ export class WorkFlowContext {
 
     public storage: Map<string, any>;
 
+    public aliasCollection: any;
+
+    public experimentalAliasEnabled = false;
+
 
     public initCache() {
         this.cache = new ModuleCache(this);
