@@ -4,6 +4,7 @@ import { WorkFlowContext, Plugin } from './WorkflowContext';
 import { IPathInformation } from "./PathMaster";
 import * as fs from "fs";
 import { utils, each } from 'realm-utils';
+import * as path from "path";
 
 
 /**
@@ -210,7 +211,7 @@ export class File {
                 } else {
                     itemTest = item.test;
                 }
-                if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(this.absPath)) {
+                if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(path.relative(this.context.homeDir, this.absPath))) {
                     target = item;
                 }
                 index++;
