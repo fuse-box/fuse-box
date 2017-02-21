@@ -73,7 +73,7 @@ export class ChangelogCreater {
       });
   }
 
-  private _assignOwnerRepo(yours): {repo: any, owner: any, [key: string]: any}{
+  private _assignOwnerRepo(yours): any{
       return Object.assign(yours, {owner: this._owner, repo: this._repo});
   }
   /**
