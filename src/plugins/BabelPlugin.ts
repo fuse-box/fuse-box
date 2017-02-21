@@ -26,6 +26,7 @@ export class BabelPluginClass implements Plugin {
     private limit2project: boolean = true;
 
     private config: any = {};
+    private configPrinted = false;
 
     constructor(opts: any) {
         let babelRcConfig;
@@ -69,6 +70,11 @@ export class BabelPluginClass implements Plugin {
 
         if (!babelCore) {
             babelCore = require("babel-core");
+        }
+        if (this.configPrinted === false) {
+            file.context.debug("BabelPlugin", `\n\tConfiguration: ${JSON.stringify(this.config)}`)
+
+            this.configPrinted = true;
         }
         if (this.context.useCache) {
 
