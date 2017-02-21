@@ -3,6 +3,8 @@
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 
+| 1.3.120             | https://github.com/fuse-box/fuse-box/milestone/8?closed=1
+| 1.3.119             | https://github.com/fuse-box/fuse-box/milestone/5?closed=1
 | 1.3.118             | https://github.com/fuse-box/fuse-box/milestone/6?closed=1
 | 1.3.117             | https://github.com/fuse-box/fuse-box/milestone/4?closed=1
 | 1.3.116             | https://github.com/fuse-box/fuse-box/milestone/3?closed=1
