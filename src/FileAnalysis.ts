@@ -3,6 +3,7 @@ import { PrettyError } from "./PrettyError";
 import { File } from "./File";
 import { nativeModules, HeaderImport } from './HeaderImport';
 import { replaceAliasRequireStatement } from './Utils';
+import * as path from 'path';
 const acorn = require("acorn");
 const escodegen = require("escodegen");
 require("acorn-es7")(acorn);
@@ -112,7 +113,7 @@ export class FileAnalysis {
         for (let alias in aliasCollection) {
             if (aliasCollection.hasOwnProperty(alias)) {
                 const aliasReplacement = aliasCollection[alias];
-                if (aliasReplacement[0] === "/") {
+                if (path.isAbsolute(aliasReplacement)) {
                     // dying in agony
                     this.file.context.fatal(`Can't use absolute paths with alias "${alias}"`)
                 }
