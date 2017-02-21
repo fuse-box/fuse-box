@@ -27,4 +27,9 @@ describe("Utils", (done) => {
         let res = Utils.findFileBackwards(path.join(rootFolder, "a/b/c/tsconfig.json"), rootFolder);
         res.should.match(/findfile\/a\/b\/tsconfig.json$/);
     });
+
+    it("Should replace alias", () => {
+        const res = Utils.replaceAliasRequireStatement("foo/bar", "foo", "~/hello/world/foo/");
+        res.should.equal("~/hello/world/foo/bar")
+    });
 });

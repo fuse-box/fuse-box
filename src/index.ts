@@ -16,7 +16,6 @@ export { HTMLPlugin } from "./plugins/HTMLplugin";
 export { JSONPlugin } from "./plugins/JSONplugin";
 export { BannerPlugin } from "./plugins/BannerPlugin";
 export { SassPlugin } from "./plugins/SassPlugin";
-export { CSSBundle } from "./plugins/CSSBundle";
 export { UglifyJSPlugin } from "./plugins/UglifyJSPlugin";
 export { SourceMapPlainJsPlugin } from "./plugins/SourceMapPlainJsPlugin";
 export { RawPlugin } from "./plugins/RawPlugin";

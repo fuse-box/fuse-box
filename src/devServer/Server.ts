@@ -29,6 +29,8 @@ export interface ServerOptions {
 
     emitter?: HotReloadEmitter;
     httpServer?: boolean;
+    socketURI?: string;
+    hmr?: boolean
 }
 
 /**
@@ -54,10 +56,12 @@ export class Server {
         const root: string | boolean = opts.root !== undefined
             ? (utils.isString(opts.root) ? ensureUserPath(opts.root as string) : false) : rootDir;
         const port = opts.port || 4444;
+        if (opts.hmr !== false) {
+            this.fuse.context.plugins.push(
+                HotReloadPlugin({ port, uri: opts.socketURI })
+            );
+        }
 
-        this.fuse.context.plugins.push(
-            HotReloadPlugin({ port })
-        );
 
         // allow user to override hot reload emitter
         let emitter: HotReloadEmitter | false = utils.isFunction(opts.emitter) ? opts.emitter : false;

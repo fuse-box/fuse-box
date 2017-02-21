@@ -31,7 +31,6 @@ export class RawPluginClass implements Plugin {
 
 	transform(file: File) {
 		file.loadContents();
-
 		file.contents = `module.exports = ${JSON.stringify(file.contents)}`;
 	}
 }

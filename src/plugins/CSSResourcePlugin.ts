@@ -115,20 +115,20 @@ export class CSSResourcePluginClass implements Plugin {
         return postcss([PostCSSResourcePlugin({
             fn: (url) => {
                 let urlFile = path.resolve(currentFolder, url);
-                urlFile = urlFile.replace(/\?.*$/, "");
+                urlFile = urlFile.replace(/[?\#].*$/, "");
                 if (this.inlineImages) {
                     if (IMG_CACHE[urlFile]) {
                         return IMG_CACHE[urlFile];
                     }
                     const ext = path.extname(urlFile);
-                    let fontsExtensions ={
+                    let fontsExtensions = {
                         '.woff': 'application/font-woff',
                         '.woff2': 'application/font-woff2',
                         '.eot': 'application/vnd.ms-fontobject',
                         '.ttf': 'application/x-font-ttf',
                         '.otf': 'font/opentype'
                     };
-                    if(fontsExtensions[ext]) {
+                    if (fontsExtensions[ext]) {
                         let content = new Buffer(fs.readFileSync(urlFile)).toString('base64');
                         return `data:${fontsExtensions[ext]};charset=utf-8;base64,${content}`;
                     }

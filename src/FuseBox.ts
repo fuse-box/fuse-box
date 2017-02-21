@@ -25,7 +25,7 @@ export interface FuseBoxOptions {
     log?: boolean;
     globals?: { [packageName: string]: /** Variable name */ string };
     plugins?: Plugin[];
-    imports?: any;
+    autoImport?: any;
     shim?: any;
     standaloneBundle?: boolean;
     sourceMap?: any;
@@ -34,6 +34,7 @@ export interface FuseBoxOptions {
     outFile?: string;
     debug?: boolean;
     files?: any;
+    alias?: any;
     transformTypescript?: (contents: string) => string;
 }
 
@@ -108,9 +109,26 @@ export class FuseBox {
             this.context.doLog = opts.log ? true : false;
         }
 
-        if (utils.isPlainObject(opts.imports)) {
-            for (let varName in opts.imports) {
-                const pkgName = opts.imports[varName];
+        if (opts.alias) {
+
+            // convert alias keys to regexp
+            const aliases = [];
+            for (const key in opts.alias) {
+                if (opts.alias.hasOwnProperty(key)) {
+                    if (path.isAbsolute(key)) {
+                        // dying in agony
+                        this.context.fatal(`Can't use absolute paths with alias "${key}"`)
+                    }
+                    aliases.push({ expr: new RegExp(`^(${key})(/|$)`), replacement: opts.alias[key] })
+                }
+            }
+            this.context.aliasCollection = aliases;
+            this.context.experimentalAliasEnabled = true;
+        }
+
+        if (utils.isPlainObject(opts.autoImport)) {
+            for (let varName in opts.autoImport) {
+                const pkgName = opts.autoImport[varName];
                 nativeModules.add(new HeaderImport(varName, pkgName));
             }
         }
@@ -136,6 +154,7 @@ export class FuseBox {
         if (opts.ignoreGlobal) {
             this.context.ignoreGlobal = opts.ignoreGlobal;
         }
+
 
         if (opts.outFile) {
             this.context.outFile = opts.outFile;
@@ -303,12 +322,10 @@ export class FuseBox {
         let parser = Arithmetic.parse(str);
         let bundle: BundleData;
         return Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
-
             bundle = data;
             return this.process(data, bundleReady);
         }).then((contents) => {
             bundle.finalize(); // Clean up temp folder if required
-
             return contents;
         }).catch(e => {
             console.log(e.stack || e);

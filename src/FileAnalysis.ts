@@ -33,7 +33,7 @@ export class FileAnalysis {
     private skipAnalysis = false;
     private fuseBoxVariable = "FuseBox";
 
-
+    private requiresRegeneration = false;
 
     /**
      * A list of dependencies 
@@ -93,6 +93,28 @@ export class FileAnalysis {
         } catch (err) {
             return PrettyError.errorWithContents(err, this.file);
         }
+    }
+
+
+    public handleAliasReplacement(requireStatement: string): string {
+
+        if (!this.file.context.experimentalAliasEnabled) {
+            return requireStatement;
+        }
+        // enable aliases only for the current project
+        if (this.file.collection.name !== this.file.context.defaultPackageName) {
+            return requireStatement;
+        }
+
+        const aliasCollection = this.file.context.aliasCollection;
+        aliasCollection.forEach(props => {
+            if (props.expr.test(requireStatement)) {
+                requireStatement = requireStatement.replace(props.expr, `${props.replacement}$2`);
+                // only if we need it
+                this.requiresRegeneration = true;
+            }
+        });
+        return requireStatement;
     }
 
     public analyze() {
@@ -167,7 +189,9 @@ export class FileAnalysis {
                     if (node.callee.type === "Identifier" && node.callee.name === "require") {
                         let arg1 = node.arguments[0];
                         if (isString(arg1)) {
-                            out.requires.push(arg1.value);
+                            let requireStatement = this.handleAliasReplacement(arg1.value);
+                            arg1.value = requireStatement;
+                            out.requires.push(requireStatement);
                         }
                     }
                 }
@@ -182,7 +206,7 @@ export class FileAnalysis {
             if (nativeImports.hasOwnProperty(nativeImportName)) {
                 const nativeImport: HeaderImport = nativeImports[nativeImportName];
                 this.dependencies.push(nativeImport.pkg);
-                this.file.addHeaderContent(`/* fuse:injection: */ var ${nativeImport.variable} = require("${nativeImport.pkg}");`);
+                this.file.addHeaderContent(nativeImport.getImportStatement());
             }
         }
 
@@ -206,6 +230,10 @@ export class FileAnalysis {
             }
         }
         this.wasAnalysed = true;
+        // regenerate content
+        if (this.requiresRegeneration) {
+            this.file.contents = escodegen.generate(this.ast);
+        }
     }
 
     /**

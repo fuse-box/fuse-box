@@ -16,7 +16,7 @@ describe("Native variables", (done) => {
                 }
             },
             project: {
-                imports: {
+                autoImport: {
                     woops: "superFoo"
                 },
                 files: {
@@ -49,7 +49,7 @@ describe("Native variables", (done) => {
                 }
             },
             project: {
-                imports: {
+                autoImport: {
                     woops: "superFoo"
                 },
                 files: {
@@ -81,7 +81,7 @@ describe("Native variables", (done) => {
                 }
             },
             project: {
-                imports: {
+                autoImport: {
                     woops: "superFoo"
                 },
                 files: {
@@ -116,7 +116,7 @@ describe("Native variables", (done) => {
                 }
             },
             project: {
-                imports: {
+                autoImport: {
                     woops: "superFoo2"
                 },
                 files: {
@@ -157,7 +157,7 @@ describe("Native variables", (done) => {
                 }
             },
             project: {
-                imports: {
+                autoImport: {
                     Inferno: "inferno"
                 },
                 files: {
@@ -171,6 +171,28 @@ describe("Native variables", (done) => {
             should.equal(
                 contents.indexOf(`/* fuse:injection: */ var Inferno`) > -1, true);
             out.should.deepEqual({ result: "pure magic" })
+            done();
+        })
+    })
+
+
+    it("`Should auto import Buffer`", (done) => {
+
+        createEnv({
+            project: {
+                files: {
+                    "index.ts": ` exports.hello = new Buffer("sd");
+                    `
+                },
+                instructions: "> index.ts"
+            }
+        }).then((result) => {
+            const out = result.project.FuseBox.import("./index");
+            out.hello.should.be.ok;
+            const contents = result.projectContents.toString();
+            should.equal(
+                contents.indexOf(`/* fuse:injection: */ var Buffer = require("buffer").Buffer`) > -1, true);
+
             done();
         })
     })

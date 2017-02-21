@@ -5,14 +5,15 @@
 import { SocketClient } from '../fusebox-websocket';
 const Client: typeof SocketClient = require("fusebox-websocket").SocketClient;
 
-export const connect = (port: string) => {
+export const connect = (port: string, uri: string) => {
 
     if (FuseBox.isServer) {
         return;
     }
     port = port || window.location.port;
     let client = new Client({
-        port: port
+        port: port,
+        uri: uri
     });
     client.connect();
     console.log("connecting...");
@@ -35,15 +36,15 @@ export const connect = (port: string) => {
             if (FuseBox.mainFile) {
                 try {
                     FuseBox.import(FuseBox.mainFile)
-                } catch(e){
-                    if ( typeof e === "string"){
-                        if ( /not found/.test(e) ){
+                } catch (e) {
+                    if (typeof e === "string") {
+                        if (/not found/.test(e)) {
                             return window.location.reload();
                         }
                     }
                     console.error(e);
                 }
-                
+
             }
         }
         if (data.type === "css" && __fsbx_css) {
