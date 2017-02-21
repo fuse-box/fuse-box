@@ -31,6 +31,25 @@ devServer(">index.ts", {
 });
 ```
 
+## Disable HMR
+If you not into Hot Reload, you can disable it:
+
+
+```js
+devServer(">index.ts", {
+   hmr : false
+});
+```
+
+## Custom socket URI
+You can customize the URI if required.
+
+```js
+devServer(">index.ts", {
+   socketURI : "wss://localhost:3333" 
+});
+```
+
 ## Express api
 Access express application like so:
 ```js
