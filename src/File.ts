@@ -210,7 +210,7 @@ export class File {
                 } else {
                     itemTest = item.test;
                 }
-                if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(this.absPath)) {
+                if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(this.info.fuseBoxPath)) {
                     target = item;
                 }
                 index++;
