@@ -21,6 +21,11 @@ export function contains(array: any[], obj: any) {
     return array && array.indexOf(obj) > -1;
 }
 
+export function replaceAliasRequireStatement(requireStatement: string, aliasName: string, aliasReplacement: string) {
+    requireStatement = requireStatement.replace(aliasName, aliasReplacement);
+    requireStatement = path.normalize(requireStatement)
+    return requireStatement;
+}
 export function write(fileName: string, contents: any) {
     return new Promise((resolve, reject) => {
         fs.writeFile(fileName, contents, (e) => {
