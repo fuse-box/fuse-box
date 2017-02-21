@@ -2,8 +2,6 @@ import { ASTTraverse } from "./ASTTraverse";
 import { PrettyError } from "./PrettyError";
 import { File } from "./File";
 import { nativeModules, HeaderImport } from './HeaderImport';
-import { replaceAliasRequireStatement } from './Utils';
-import * as path from 'path';
 const acorn = require("acorn");
 const escodegen = require("escodegen");
 require("acorn-es7")(acorn);
@@ -110,11 +108,6 @@ export class FileAnalysis {
 
         const aliasCollection = this.file.context.aliasCollection;
         aliasCollection.forEach(props => {
-            // if (path.isAbsolute(aliasReplacement)) {
-            //     // dying in agony
-            //     this.file.context.fatal(`Can't use absolute paths with alias "${alias}"`)
-            // }
-            // console.log(">>", alias);
             if (props.expr.test(requireStatement)) {
                 requireStatement = requireStatement.replace(props.expr, `${props.replacement}$2`);
                 // only if we need it
