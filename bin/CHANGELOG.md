@@ -1,106 +1,123 @@
 
-                
-1.3.120
+
+[1.3.120](https://github.com/fuse-box/fuse-box/milestone/8)
 ======
     
 
-                Title | Closed
---- | ---
-[ResourceCSSPlugin -> handle hashtags in urls](https://github.com/fuse-box/fuse-box/issues/262) | 2017-02-21T17:50:03Z
-[Buffer is not bundled correctly](https://github.com/fuse-box/fuse-box/issues/263) | 2017-02-21T17:46:22Z
+Critical bug fixes
 
-            ,
+Title | Closed
+--- | ---
+[ISSUE 262](https://github.com/fuse-box/fuse-box/issues/262) ResourceCSSPlugin -> handle hashtags in urls | February 21, 2017 6:50 PM
+[ISSUE 263](https://github.com/fuse-box/fuse-box/issues/263) Buffer is not bundled correctly | February 21, 2017 6:46 PM
+
                 
-1.3.115
+
+[1.3.119](https://github.com/fuse-box/fuse-box/milestone/5)
 ======
     
 
-                Title | Closed
---- | ---
-[electron-fusebox - Node API](https://github.com/fuse-box/fuse-box/issues/156) | 2017-02-15T08:52:48Z
-[Babel fails on config without sourcemaps](https://github.com/fuse-box/fuse-box/issues/180) | 2017-02-15T13:29:08Z
 
-            ,
+
+Title | Closed
+--- | ---
+[ISSUE 111](https://github.com/fuse-box/fuse-box/issues/111) Allow real aliasing | February 21, 2017 9:33 AM
+[ISSUE 159](https://github.com/fuse-box/fuse-box/issues/159) EnvPlugin: The global process is not available after hot-reload | February 20, 2017 9:52 PM
+[ISSUE 165](https://github.com/fuse-box/fuse-box/issues/165) Error > Buffer is not defined | February 20, 2017 3:20 PM
+[ISSUE 166](https://github.com/fuse-box/fuse-box/issues/166) NodeJs Native Libraries | February 20, 2017 3:20 PM
+[ISSUE 177](https://github.com/fuse-box/fuse-box/issues/177) CSSPlugin brushup | February 20, 2017 1:08 PM
+[ISSUE 207](https://github.com/fuse-box/fuse-box/issues/207) Make HMR configurable | February 21, 2017 12:03 PM
+[ISSUE 208](https://github.com/fuse-box/fuse-box/issues/208) HMR seems to have problems connecting to FuseBox via HTTPS | February 21, 2017 10:46 AM
+[PR 230](https://github.com/fuse-box/fuse-box/pull/230) FuseBox loader duplication fix | February 18, 2017 11:56 PM
+[ISSUE 233](https://github.com/fuse-box/fuse-box/issues/233) Debug mode in context | February 19, 2017 3:01 AM
+[ISSUE 239](https://github.com/fuse-box/fuse-box/issues/239) User Package missing an entry point when bundled | February 20, 2017 10:28 PM
+[PR 240](https://github.com/fuse-box/fuse-box/pull/240) Cleanups / docs | February 20, 2017 10:45 AM
+[ISSUE 243](https://github.com/fuse-box/fuse-box/issues/243) CSSResourcePlugin should handle URLs that have params at the end | February 20, 2017 12:56 PM
+[ISSUE 250](https://github.com/fuse-box/fuse-box/issues/250) Module imports Injection | February 20, 2017 3:24 PM
+[ISSUE 257](https://github.com/fuse-box/fuse-box/issues/257) Reload the page with HMR if a package is not found in the scope. | February 21, 2017 11:07 AM
+
                 
-1.3.116
+
+[1.3.118](https://github.com/fuse-box/fuse-box/milestone/6)
 ======
     
 
-                Title | Closed
---- | ---
-[CSSResourcePlugin does not bundle Fonts](https://github.com/fuse-box/fuse-box/issues/179) | 2017-02-15T19:43:15Z
-[Fix a typo.](https://github.com/fuse-box/fuse-box/pull/182) | 2017-02-15T19:43:53Z
-[Bundle in a bundle gets broken on scope collision with index.js](https://github.com/fuse-box/fuse-box/issues/188) | 2017-02-16T20:42:04Z
-[change brightBlack to reset get neutral color on dark themes](https://github.com/fuse-box/fuse-box/pull/190) | 2017-02-16T17:50:49Z
-[add notes to env, uglify, and json plugins](https://github.com/fuse-box/fuse-box/pull/191) | 2017-02-16T18:28:40Z
 
-            ,
+
+Title | Closed
+--- | ---
+[PR 200](https://github.com/fuse-box/fuse-box/pull/200) add expose possibilities | February 17, 2017 6:41 PM
+[PR 204](https://github.com/fuse-box/fuse-box/pull/204) Added Coffee support | February 17, 2017 12:47 PM
+[PR 210](https://github.com/fuse-box/fuse-box/pull/210) I like my coffee tested | February 17, 2017 6:31 PM
+[PR 211](https://github.com/fuse-box/fuse-box/pull/211) Reverted wrong fix #197 | February 17, 2017 10:33 PM
+[PR 216](https://github.com/fuse-box/fuse-box/pull/216) Pass the source file name to the transpiler | February 18, 2017 12:18 AM
+[PR 218](https://github.com/fuse-box/fuse-box/pull/218) Loader Types | February 18, 2017 6:59 AM
+[PR 219](https://github.com/fuse-box/fuse-box/pull/219) :memo: new entry in .travis.yml | February 18, 2017 7:04 AM
+[PR 221](https://github.com/fuse-box/fuse-box/pull/221) :memo: simply the docs for how to add a loader plugin :rose: | February 18, 2017 7:02 AM
+
                 
-1.3.114
+
+[1.3.117](https://github.com/fuse-box/fuse-box/milestone/4)
 ======
     
 
-                Title | Closed
---- | ---
-[Check if imported package has a browser-field and use it](https://github.com/fuse-box/fuse-box/pull/154) | 2017-02-14T21:08:09Z
-[add package name to the public API](https://github.com/fuse-box/fuse-box/issues/162) | 2017-02-14T13:53:55Z
-[transformTypescript](https://github.com/fuse-box/fuse-box/issues/164) | 2017-02-14T21:58:58Z
-[FuseBox.exists("app.html") triggers error](https://github.com/fuse-box/fuse-box/issues/169) | 2017-02-14T21:07:03Z
 
-            ,
+
+Title | Closed
+--- | ---
+[PR 158](https://github.com/fuse-box/fuse-box/pull/158) HMR plugins | February 16, 2017 10:48 PM
+[ISSUE 167](https://github.com/fuse-box/fuse-box/issues/167) UglifyJS Plugin should report on progress and recalculate the bundle size | February 16, 2017 10:45 PM
+[PR 192](https://github.com/fuse-box/fuse-box/pull/192) Report the new size and time taken for UglifyJS | February 16, 2017 10:31 PM
+[ISSUE 197](https://github.com/fuse-box/fuse-box/issues/197) PostCSS plugin doesn't do anything with opts? | February 18, 2017 7:08 AM
+[ISSUE 198](https://github.com/fuse-box/fuse-box/issues/198) Shiming stopped working | February 17, 2017 8:28 AM
+[PR 199](https://github.com/fuse-box/fuse-box/pull/199) moving modules to ts to make it easier to code review / maintain | February 17, 2017 7:34 AM
+[PR 201](https://github.com/fuse-box/fuse-box/pull/201) :memo: rename to actual plugin name `PostCSS` | February 17, 2017 7:12 AM
+
                 
-1.3.118
+
+[1.3.116](https://github.com/fuse-box/fuse-box/milestone/3)
 ======
     
 
-                Title | Closed
---- | ---
-[add expose possibilities](https://github.com/fuse-box/fuse-box/pull/200) | 2017-02-17T17:41:44Z
-[Added Coffee support](https://github.com/fuse-box/fuse-box/pull/204) | 2017-02-17T11:47:48Z
-[I like my coffee tested](https://github.com/fuse-box/fuse-box/pull/210) | 2017-02-17T17:31:37Z
-[Reverted wrong fix #197](https://github.com/fuse-box/fuse-box/pull/211) | 2017-02-17T21:33:17Z
-[Pass the source file name to the transpiler](https://github.com/fuse-box/fuse-box/pull/216) | 2017-02-17T23:18:21Z
-[Loader Types](https://github.com/fuse-box/fuse-box/pull/218) | 2017-02-18T05:59:45Z
-[:memo: new entry in .travis.yml](https://github.com/fuse-box/fuse-box/pull/219) | 2017-02-18T06:04:47Z
-[:memo: simply the docs for how to add a loader plugin :rose:](https://github.com/fuse-box/fuse-box/pull/221) | 2017-02-18T06:02:57Z
+HMR Plugins
 
-            ,
+Title | Closed
+--- | ---
+[ISSUE 179](https://github.com/fuse-box/fuse-box/issues/179) CSSResourcePlugin does not bundle Fonts | February 15, 2017 8:43 PM
+[PR 182](https://github.com/fuse-box/fuse-box/pull/182) Fix a typo. | February 15, 2017 8:43 PM
+[ISSUE 188](https://github.com/fuse-box/fuse-box/issues/188) Bundle in a bundle gets broken on scope collision with index.js | February 16, 2017 9:42 PM
+[PR 190](https://github.com/fuse-box/fuse-box/pull/190) change brightBlack to reset get neutral color on dark themes | February 16, 2017 6:50 PM
+[PR 191](https://github.com/fuse-box/fuse-box/pull/191) add notes to env, uglify, and json plugins | February 16, 2017 7:28 PM
+
                 
-1.3.117
+
+[1.3.115](https://github.com/fuse-box/fuse-box/milestone/2)
 ======
     
 
-                Title | Closed
---- | ---
-[HMR plugins](https://github.com/fuse-box/fuse-box/pull/158) | 2017-02-16T21:48:45Z
-[UglifyJS Plugin should report on progress and recalculate the bundle size](https://github.com/fuse-box/fuse-box/issues/167) | 2017-02-16T21:45:11Z
-[Report the new size and time taken for UglifyJS](https://github.com/fuse-box/fuse-box/pull/192) | 2017-02-16T21:31:37Z
-[PostCSS plugin doesn't do anything with opts?](https://github.com/fuse-box/fuse-box/issues/197) | 2017-02-18T06:08:35Z
-[Shiming stopped working](https://github.com/fuse-box/fuse-box/issues/198) | 2017-02-17T07:28:49Z
-[moving modules to ts to make it easier to code review / maintain](https://github.com/fuse-box/fuse-box/pull/199) | 2017-02-17T06:34:09Z
-[:memo: rename to actual plugin name `PostCSS`](https://github.com/fuse-box/fuse-box/pull/201) | 2017-02-17T06:12:48Z
 
-            ,
+
+Title | Closed
+--- | ---
+[ISSUE 156](https://github.com/fuse-box/fuse-box/issues/156) electron-fusebox - Node API | February 15, 2017 9:52 AM
+[ISSUE 180](https://github.com/fuse-box/fuse-box/issues/180) Babel fails on config without sourcemaps | February 15, 2017 2:29 PM
+
                 
-1.3.119
+
+[1.3.114](https://github.com/fuse-box/fuse-box/milestone/1)
 ======
     
 
-                Title | Closed
---- | ---
-[Allow real aliasing](https://github.com/fuse-box/fuse-box/issues/111) | 2017-02-21T08:33:44Z
-[EnvPlugin: The global process is not available after hot-reload](https://github.com/fuse-box/fuse-box/issues/159) | 2017-02-20T20:52:03Z
-[Error > Buffer is not defined](https://github.com/fuse-box/fuse-box/issues/165) | 2017-02-20T14:20:31Z
-[NodeJs Native Libraries](https://github.com/fuse-box/fuse-box/issues/166) | 2017-02-20T14:20:06Z
-[CSSPlugin brushup](https://github.com/fuse-box/fuse-box/issues/177) | 2017-02-20T12:08:58Z
-[Make HMR configurable](https://github.com/fuse-box/fuse-box/issues/207) | 2017-02-21T11:03:54Z
-[HMR seems to have problems connecting to FuseBox via HTTPS](https://github.com/fuse-box/fuse-box/issues/208) | 2017-02-21T09:46:15Z
-[FuseBox loader duplication fix](https://github.com/fuse-box/fuse-box/pull/230) | 2017-02-18T22:56:29Z
-[Debug mode in context](https://github.com/fuse-box/fuse-box/issues/233) | 2017-02-19T02:01:55Z
-[User Package missing an entry point when bundled](https://github.com/fuse-box/fuse-box/issues/239) | 2017-02-20T21:28:42Z
-[Cleanups / docs](https://github.com/fuse-box/fuse-box/pull/240) | 2017-02-20T09:45:25Z
-[CSSResourcePlugin should handle URLs that have params at the end](https://github.com/fuse-box/fuse-box/issues/243) | 2017-02-20T11:56:55Z
-[Module imports Injection](https://github.com/fuse-box/fuse-box/issues/250) | 2017-02-20T14:24:20Z
-[Reload the page with HMR if a package is not found in the scope.](https://github.com/fuse-box/fuse-box/issues/257) | 2017-02-21T10:07:26Z
+# transformTypescript enhancement
+# Check if imported package has a browser-field and use it  enhancement
+# FuseBox.exists("app.html") triggers error bug
+# Add package name to the public API enhancement
 
-            
+Title | Closed
+--- | ---
+[PR 154](https://github.com/fuse-box/fuse-box/pull/154) Check if imported package has a browser-field and use it | February 14, 2017 10:08 PM
+[ISSUE 162](https://github.com/fuse-box/fuse-box/issues/162) add package name to the public API | February 14, 2017 2:53 PM
+[ISSUE 164](https://github.com/fuse-box/fuse-box/issues/164) transformTypescript | February 14, 2017 10:58 PM
+[ISSUE 169](https://github.com/fuse-box/fuse-box/issues/169) FuseBox.exists("app.html") triggers error | February 14, 2017 10:07 PM
+
+                

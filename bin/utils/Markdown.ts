@@ -1,3 +1,7 @@
+import * as moment from 'moment/moment';
+export const humanDate = (date: Date) => {
+    return moment(date).format('LLL');
+}
 export const noCase = (title) => {
     const noCase = require('no-case');
     return noCase(title);
@@ -26,7 +30,7 @@ export const table = (array, columns?) => {
       return String(item[key] || "")
     }).join(" | ") + "\r\n"
   })
-
+  
   // Return table
   return table
 }

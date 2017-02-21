@@ -144,9 +144,8 @@ api.milestones
             console.error(e);
         },
         () => {
-
             const template = new ChangeLogTemplate(_milestones);
-            fs.writeFileSync('./CHANGELOG.md', template.createMd());;
+            fs.writeFileSync('./CHANGELOG.md', template.createMd());
             console.log(template.createMd());
 
         }
