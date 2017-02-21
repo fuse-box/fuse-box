@@ -6,7 +6,7 @@ import { Observable } from '@reactivex/rxjs';
 
 /**
  *
- *
+ * @author DrMabuse23 <https://github.com/DrMabuse23>
  * @export
  * @class ChangelogCreater
  */
@@ -89,8 +89,8 @@ export class ChangelogCreater {
         .map((resp: any) => resp.data);
   }
    /**
-   * @link [milestones](https://developer.github.com/v3/issues/milestones/#list-milestones-for-a-repository)
-   * @type {Observable<any>}
+   * @link [milestone](https://developer.github.com/v3/issues/milestones/#get-a-single-milestone)
+   * @type {Observable<IMilestones.RootObject>}
    * @memberOf GithubApi
    */
   public getMilestone(id): Observable<IMilestones.RootObject> {
@@ -101,11 +101,11 @@ export class ChangelogCreater {
         .map((resp: any) => resp.data);
   }
     /**
-   * @link [milestones](https://developer.github.com/v3/issues/milestones/#list-milestones-for-a-repository)
-   * @type {Observable<any>}
+   * @link [issues for a repositors](https://developer.github.com/v3/issues/#list-issues-for-a-repository)
+   * @type {Observable<{milestone:IMilestones.RootObject, issue?: IIssue.RootObject, error?: any }>}
    * @memberOf GithubApi
    */
-  public getIssuesByMileStone(milestone): Observable<any> {
+  public getIssuesByMileStone(milestone): Observable<{milestone:IMilestones.RootObject, issue?: IIssue.RootObject, error?: any }> {
       const options: Github.IssuesGetForRepoParams = this._assignOwnerRepo({
           milestone: milestone.number,
           direction: 'asc',
@@ -120,7 +120,6 @@ export class ChangelogCreater {
 
 
 const api = new ChangelogCreater();
-
 const _milestones: {milestone: IMilestones.RootObject, issues: IIssue.RootObject[]}[] = [];
 
 api.milestones
@@ -133,13 +132,17 @@ api.milestones
         return api.getIssuesByMileStone(milestone);
     })
     .subscribe(
-        (resp) => {
+        (resp: {milestone:IMilestones.RootObject, issue: IIssue.RootObject}) => {
             const exist = _milestones.findIndex((item) => item.milestone.number === resp.milestone.number)
-        if (exist >= 0) {
-            _milestones[exist].issues.push(resp.issue)
-        } else {
-            _milestones.push(resp);
-        }
+
+            if (exist >= 0) {
+                _milestones[exist].issues.push(resp.issue)
+            } else {
+                _milestones.push({
+                    milestone: resp.milestone,
+                    issues: [resp.issue]
+                });
+            }
             // console.log(JSON.stringify(resp, null, 2));
         }, 
         (e) => {
