@@ -46,7 +46,7 @@ export class ChangelogCreater {
 
   /**
    * @description oauth
-   * @memberOf GithubApi
+   * @memberOf ChangelogCreater
    */
   public oauth(): any {
       if (!GithubConfig.username || GithubConfig.password) {
@@ -59,7 +59,7 @@ export class ChangelogCreater {
   }
   /**
    * @description basicAuth
-   * @memberOf GithubApi
+   * @memberOf ChangelogCreater
    */
   public basicAuth(): any {
       if (!GithubConfig.username || !GithubConfig.password) {
@@ -79,7 +79,7 @@ export class ChangelogCreater {
   /**
    * @link [milestones](https://developer.github.com/v3/issues/milestones/#list-milestones-for-a-repository)
    * @type {Observable<any>}
-   * @memberOf GithubApi
+   * @memberOf ChangelogCreater
    */
   public get milestones(): Observable<IMilestones.RootObject[]> {
       const options = this._assignOwnerRepo({
@@ -91,7 +91,7 @@ export class ChangelogCreater {
    /**
    * @link [milestone](https://developer.github.com/v3/issues/milestones/#get-a-single-milestone)
    * @type {Observable<IMilestones.RootObject>}
-   * @memberOf GithubApi
+   * @memberOf ChangelogCreater
    */
   public getMilestone(id): Observable<IMilestones.RootObject> {
       const options = this._assignOwnerRepo({
@@ -103,7 +103,7 @@ export class ChangelogCreater {
     /**
    * @link [issues for a repositors](https://developer.github.com/v3/issues/#list-issues-for-a-repository)
    * @type {Observable<{milestone:IMilestones.RootObject, issue?: IIssue.RootObject, error?: any }>}
-   * @memberOf GithubApi
+   * @memberOf ChangelogCreater
    */
   public getIssuesByMileStone(milestone): Observable<{milestone:IMilestones.RootObject, issues?: IIssue.RootObject[], error?: any }> {
       const options: Github.IssuesGetForRepoParams = this._assignOwnerRepo({
