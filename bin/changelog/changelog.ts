@@ -105,7 +105,7 @@ export class ChangelogCreater {
    * @type {Observable<{milestone:IMilestones.RootObject, issue?: IIssue.RootObject, error?: any }>}
    * @memberOf GithubApi
    */
-  public getIssuesByMileStone(milestone): Observable<{milestone:IMilestones.RootObject, issue?: IIssue.RootObject, error?: any }> {
+  public getIssuesByMileStone(milestone): Observable<{milestone:IMilestones.RootObject, issues?: IIssue.RootObject[], error?: any }> {
       const options: Github.IssuesGetForRepoParams = this._assignOwnerRepo({
           milestone: milestone.number,
           direction: 'asc',
@@ -132,17 +132,8 @@ api.milestones
         return api.getIssuesByMileStone(milestone);
     })
     .subscribe(
-        (resp: {milestone:IMilestones.RootObject, issue: IIssue.RootObject}) => {
-            const exist = _milestones.findIndex((item) => item.milestone.number === resp.milestone.number)
-
-            if (exist >= 0) {
-                _milestones[exist].issues.push(resp.issue)
-            } else {
-                _milestones.push({
-                    milestone: resp.milestone,
-                    issues: [resp.issue]
-                });
-            }
+        (resp ) => {
+            _milestones.push(<{milestone:IMilestones.RootObject, issues: IIssue.RootObject[]}>resp);
             // console.log(JSON.stringify(resp, null, 2));
         }, 
         (e) => {
