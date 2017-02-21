@@ -75,6 +75,19 @@ self.httpServer.serveStatic("*", "build/static");
 this.app.use(userPath, express.static(ensureUserPath(userFolder)));
 ```
 
+You can also create an SPA server which fallbacks to index.html
+```js
+var express = require('express');
+var path = require('path')
+var server = devServer('>index.js', {
+    port: 8081,
+});
+server.httpServer.app.use(express.static(path.join('build','static')));
+server.httpServer.app.get('*', function(req, res) {
+    res.sendFile(path.join('build', 'index.html'));
+});
+```
+
 ## Custom emitter
 
 You can manually sent events on file change like so:
