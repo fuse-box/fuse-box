@@ -1,2 +1,2 @@
-export {IIssue} from "./Issue";
-export {IMilestones} from "./milestones";
+export { IIssue } from "./Issue";
+export { IMilestones } from "./milestones";

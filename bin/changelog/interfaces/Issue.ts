@@ -1,4 +1,4 @@
-export namespace IIssue{
+export namespace IIssue {
 
     export interface User {
         login: string;

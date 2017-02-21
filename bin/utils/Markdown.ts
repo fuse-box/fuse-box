@@ -8,31 +8,31 @@ export const noCase = (title) => {
 }
 
 export const table = (array, columns?) => {
-  let table = ""
-  // Generate column list
-  const cols = columns
-    ? columns.split(",")
-    : Object.keys(array[0])
+    let table = ""
+    // Generate column list
+    const cols = columns
+        ? columns.split(",")
+        : Object.keys(array[0])
 
-  // Generate table headers
-  table += cols.join(" | ")
-  table += "\r\n"
+    // Generate table headers
+    table += cols.join(" | ")
+    table += "\r\n"
 
-  // Generate table header seperator
-  table += cols.map(function () {
-    return '---'
-  }).join(' | ')
-  table += "\r\n"
+    // Generate table header seperator
+    table += cols.map(function() {
+        return '---'
+    }).join(' | ')
+    table += "\r\n"
 
-  // Generate table body
-  array.forEach(function (item) {
-    table += cols.map(function (key) {
-      return String(item[key] || "")
-    }).join(" | ") + "\r\n"
-  })
-  
-  // Return table
-  return table
+    // Generate table body
+    array.forEach(function(item) {
+        table += cols.map(function(key) {
+            return String(item[key] || "")
+        }).join(" | ") + "\r\n"
+    })
+
+    // Return table
+    return table
 }
 
 
@@ -106,7 +106,7 @@ ${title}
  * ```
  */
 export const link = (title: any, url: any, alt?: any) => {
-    return `[${title}](${url}${alt?' '+alt:''})`;
+    return `[${title}](${url}${alt ? ' ' + alt : ''})`;
 }
 
 /**

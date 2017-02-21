@@ -1,12 +1,12 @@
-import {h5} from '../utils/Markdown';
-import {noCase, link, table, altH1, humanDate} from '../utils/Markdown';
+import { h5 } from '../utils/Markdown';
+import { noCase, link, table, altH1, humanDate } from '../utils/Markdown';
 import * as semver from 'semver';
-import {IMilestones, IIssue} from './interfaces';
-import {Observable} from '@reactivex/rxjs/dist/cjs/Observable';
-import {ChangelogApi} from './changelog';
+import { IMilestones, IIssue } from './interfaces';
+import { Observable } from '@reactivex/rxjs/dist/cjs/Observable';
+import { ChangelogApi } from './changelog';
 
 export interface IMileStoneWithIssues {
-    milestone: IMilestones.RootObject; 
+    milestone: IMilestones.RootObject;
     issues: IIssue.RootObject[];
 }
 
@@ -18,15 +18,15 @@ export class ChangeLogTemplate {
 
     }
 
-     sortByMileStone(a:IMileStoneWithIssues,b:IMileStoneWithIssues) {
-         const c = a.milestone.title;
-         const d = b.milestone.title;
-         
+    sortByMileStone(a: IMileStoneWithIssues, b: IMileStoneWithIssues) {
+        const c = a.milestone.title;
+        const d = b.milestone.title;
+
         if (semver.gt(c, d)) {
             return -1;
         }
-            
-        if (semver.lt(c, d)){
+
+        if (semver.lt(c, d)) {
             return 1;
         }
         return 0;
@@ -52,13 +52,13 @@ export class ChangeLogTemplate {
             .sort(this.sortByMileStone)
             .map((item) => {
                 return `
-${altH1(link(item.milestone.title, item.milestone.html_url))}\n\r
-${item.milestone.description}\n\r
-${this.getIssueTable(item.issues)}
+                    ${altH1(link(item.milestone.title, item.milestone.html_url))}\n\r
+                    ${item.milestone.description}\n\r
+                    ${this.getIssueTable(item.issues)}
                 `;
             });
         let template = '';
-        milestonesMd.forEach((milestoneMd) => template+=milestoneMd);
+        milestonesMd.forEach((milestoneMd) => template += milestoneMd);
         return template;
     }
 }
