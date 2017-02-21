@@ -14,6 +14,9 @@ export class SocketClient {
         const protocol = location.protocol === "https:" ? "wss://" : "ws://";
         const domain = location.hostname || "localhost";
         this.url = opts.host || `${protocol}${domain}:${port}`;
+        if (opts.uri) {
+            this.url = opts.uri;
+        }
         this.authSent = false;
         this.emitter = new events.EventEmitter();
     }
@@ -45,7 +48,7 @@ export class SocketClient {
     }
 
 
-    private error(data: {reason: any, message: string}) {
+    private error(data: { reason: any, message: string }) {
         this.emitter.emit("error", data);
     }
 

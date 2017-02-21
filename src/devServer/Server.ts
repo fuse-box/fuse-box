@@ -29,6 +29,7 @@ export interface ServerOptions {
 
     emitter?: HotReloadEmitter;
     httpServer?: boolean;
+    socketURI?: string;
 }
 
 /**
@@ -56,7 +57,7 @@ export class Server {
         const port = opts.port || 4444;
 
         this.fuse.context.plugins.push(
-            HotReloadPlugin({ port })
+            HotReloadPlugin({ port, uri: opts.socketURI })
         );
 
         // allow user to override hot reload emitter

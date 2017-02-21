@@ -1,9 +1,10 @@
 import { WorkFlowContext } from "./../WorkflowContext";
 import { Plugin } from "../WorkflowContext";
 
-export interface HotReloadPluginOptions { 
+export interface HotReloadPluginOptions {
     /** The port that the client JS connects to */
-    port?: number | string 
+    port?: number | string,
+    uri?: string;
 }
 
 /**
@@ -12,15 +13,19 @@ export interface HotReloadPluginOptions {
 export class HotReloadPluginClass implements Plugin {
     public dependencies = ["fusebox-hot-reload"];
     public port: any = "";
+    public uri: any = "";
     constructor(opts: HotReloadPluginOptions = {}) {
         if (opts.port) {
             this.port = opts.port;
+        }
+        if (opts.uri) {
+            this.uri = opts.uri;
         }
     }
     public init() { }
 
     public bundleEnd(context: WorkFlowContext) {
-        context.source.addContent(`FuseBox.import("fusebox-hot-reload").connect(${this.port})`);
+        context.source.addContent(`FuseBox.import("fusebox-hot-reload").connect(${this.port}, ${JSON.stringify(this.uri)})`);
     }
 };
 
