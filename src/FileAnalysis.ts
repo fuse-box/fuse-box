@@ -216,7 +216,7 @@ export class FileAnalysis {
             if (nativeImports.hasOwnProperty(nativeImportName)) {
                 const nativeImport: HeaderImport = nativeImports[nativeImportName];
                 this.dependencies.push(nativeImport.pkg);
-                this.file.addHeaderContent(`/* fuse:injection: */ var ${nativeImport.variable} = require("${nativeImport.pkg}");`);
+                this.file.addHeaderContent(nativeImport.getImportStatement());
             }
         }
 
