@@ -25,7 +25,7 @@ export interface FuseBoxOptions {
     log?: boolean;
     globals?: { [packageName: string]: /** Variable name */ string };
     plugins?: Plugin[];
-    imports?: any;
+    autoImport?: any;
     shim?: any;
     standaloneBundle?: boolean;
     sourceMap?: any;
@@ -114,9 +114,9 @@ export class FuseBox {
             this.context.experimentalAliasEnabled = true;
         }
 
-        if (utils.isPlainObject(opts.imports)) {
-            for (let varName in opts.imports) {
-                const pkgName = opts.imports[varName];
+        if (utils.isPlainObject(opts.autoImport)) {
+            for (let varName in opts.autoImport) {
+                const pkgName = opts.autoImport[varName];
                 nativeModules.add(new HeaderImport(varName, pkgName));
             }
         }

@@ -137,6 +137,63 @@ FuseBox.init({
 })
 ```
 
+## Auto import
+
+If you into black magic this API is for you.
+
+```
+FuseBox.init({
+    autoImport: {
+        Inferno: "inferno"
+    }
+})
+```
+Whereas the key `Inferno` (uppercase) is a variable name, and `inferno` (lowcase) is a require statement.
+
+You code is being analysed for variable declarations. If you use the `Inferno` variale in your code in any way but declaring it,
+FuseBox will inject the require statement `var Inferno = require("inferno")`
+
+Example:
+```
+Inferno.doMagic()
+```
+
+Will result in:
+
+```
+var Inferno = require("inferno");
+Inferno.doMagic()
+```
+
+However `var Inferno = {};` will do nothing.
+
+## Alias
+If you are coming from WebPack this feature might be helpful.
+
+It is an experimental one, and the API might change in the feature. It breaks the sourcemaps
+of a file where it's being used as it is required to re-generated the source code (we know that - on it)
+
+```
+FuseBox.init({
+    alias : {
+        "utils" : "~/somewhere/far/away/"
+    }
+})
+```
+
+* The tilde is required to resolve your `homeDir`
+* Aliases will not work with absolute paths (it goes against the concept of FuseBox)
+
+You can alias an npm package like so :
+
+```
+FuseBox.init({
+    alias : {
+        "babel-utils" : "babel/dist/something/here/utils"
+    }
+})
+```
+
 ## Shimming
 
 For those libraries that are bundled to work in `window` (jquery) for example, you need to provide a shimming configuration.

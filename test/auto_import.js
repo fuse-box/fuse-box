@@ -16,7 +16,7 @@ describe("Native variables", (done) => {
                 }
             },
             project: {
-                imports: {
+                autoImport: {
                     woops: "superFoo"
                 },
                 files: {
@@ -49,7 +49,7 @@ describe("Native variables", (done) => {
                 }
             },
             project: {
-                imports: {
+                autoImport: {
                     woops: "superFoo"
                 },
                 files: {
@@ -81,7 +81,7 @@ describe("Native variables", (done) => {
                 }
             },
             project: {
-                imports: {
+                autoImport: {
                     woops: "superFoo"
                 },
                 files: {
@@ -116,7 +116,7 @@ describe("Native variables", (done) => {
                 }
             },
             project: {
-                imports: {
+                autoImport: {
                     woops: "superFoo2"
                 },
                 files: {
@@ -157,7 +157,7 @@ describe("Native variables", (done) => {
                 }
             },
             project: {
-                imports: {
+                autoImport: {
                     Inferno: "inferno"
                 },
                 files: {
