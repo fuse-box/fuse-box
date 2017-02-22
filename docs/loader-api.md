@@ -132,15 +132,7 @@ require("~/foo/*") // will give 2 files
 
 It's impossible to transpile dynamic modules at the moment. You can easily do it yourself, since the API accepts a string, 
 
-## Point to the root
-You can use `~` symbol to point to your project's [homeDir](http://fuse-box.org/#home-directory) in order to solve `../../../../../utils` mess.
 
-```js
-// es5
-require("~/lib/utils")
-// es6
-import * as utils from "~/lib/utils";
-```
 
 ## Loader Plugins
 Loader plugins can intercept hmr updates to override the default behavior. Here is the current plugin interface: 
