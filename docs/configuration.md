@@ -30,7 +30,7 @@ FuseBox.init({
 
 ## Out file
 
-That's your _bundle_ file. It can be an absolute path, Or relative to `appRootPath`.
+That's your _bundle_ file. It can be an absolute path, Or relative to [appRootPath](#app-root-path).
 
 > fuse-box takes care of creating required directory structure for you!
 
