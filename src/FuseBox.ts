@@ -99,7 +99,14 @@ export class FuseBox {
         this.context.plugins = opts.plugins || [JSONPlugin()];
 
         if (opts.package) {
-            this.context.defaultPackageName = opts.package;
+            if (utils.isPlainObject(opts.package)) {
+                const packageOptions: any = opts.package;
+                this.context.defaultPackageName = packageOptions.name || "default";
+                this.context.defaultEntryPoint = packageOptions.entry;
+            } else {
+                this.context.defaultPackageName = opts.package;
+            }
+
         }
         if (opts.cache !== undefined) {
             this.context.useCache = opts.cache ? true : false;

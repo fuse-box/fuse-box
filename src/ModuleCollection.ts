@@ -189,8 +189,8 @@ export class ModuleCollection {
         this.delayedResolve = true;
         this.initPlugins();
 
-        if (data.entry) {
-            this.entryFile = File.createByName(this, ensurePublicExtension(data.entry));
+        if (this.context.defaultEntryPoint) {
+            this.entryFile = File.createByName(this, ensurePublicExtension(this.context.defaultEntryPoint));
         }
 
         // faking entry point

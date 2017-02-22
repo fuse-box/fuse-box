@@ -173,6 +173,7 @@ Inferno.doMagic()
 
 However `var Inferno = {};` will do nothing.
 
+
 ## Alias
 If you are coming from WebPack this feature might be helpful.
 
