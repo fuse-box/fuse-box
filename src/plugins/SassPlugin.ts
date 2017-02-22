@@ -35,8 +35,14 @@ export class SassPluginClass implements Plugin {
             sourceMap: true,
             outFile: file.info.fuseBoxPath,
             sourceMapContents: true,
-            includePaths: [],
         }, this.options);
+
+        options.includePaths = [];
+        if (typeof this.options.includePaths !== "undefined"){
+            this.options.includePaths.forEach((path) => {
+                options.includePaths.push(path);
+            });
+        }
 
         options.includePaths.push(file.info.absDir);
 
