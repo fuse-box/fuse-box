@@ -5,7 +5,7 @@ import { IPathInformation } from "./PathMaster";
 import * as fs from "fs";
 import { utils, each } from 'realm-utils';
 import * as path from "path";
-
+const appRoot = require("app-root-path");
 
 /**
  * 
@@ -211,7 +211,7 @@ export class File {
                 } else {
                     itemTest = item.test;
                 }
-                if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(path.relative(this.context.homeDir, this.absPath))) {
+                if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(path.relative(appRoot.path, this.absPath))) {
                     target = item;
                 }
                 index++;
