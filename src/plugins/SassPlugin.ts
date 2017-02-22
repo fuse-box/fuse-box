@@ -24,6 +24,9 @@ export class SassPluginClass implements Plugin {
 
     public transform(file: File): Promise<any> {
         file.loadContents();
+        if (!file.contents) {
+            return;
+        }
 
         if (!sass) { sass = require("node-sass"); }
 
