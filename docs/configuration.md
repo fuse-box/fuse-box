@@ -228,10 +228,9 @@ shim : {
 ```
 Now you can reference it like  `window.ReactNative`, and require function is at your convenience.
 
-Important to note, shims will not be analyzed, which means they should be transpiled before importing, or imported into an environment that does not need them to be transpiled. Shimming works similar to [requirejs](http://requirejs.org/) and [jspm](http://jspm.io/).
+Important to note, shims will not be analyzed, which means they should be transpiled before importing, or imported into an environment that does not need them to be transpiled. Shimming works similar to [requirejs](http://requirejs.org/) and [jspm](http://jspm.io/). 
 
-## Mapping
-🚧 Is a work in progress, this feature will provide similar functionality to webpack aliases.
+For an example, see [shimming in the fuse config](https://github.com/fuse-box/shimming-and-css-example/blob/master/fuse.js#L7) and [how it can be accessed in your code](https://github.com/fuse-box/shimming-and-css-example/blob/master/src/index.ts#L4)
 
 
 ## Server Bundle
