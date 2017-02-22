@@ -17,6 +17,7 @@ const uglify = require('gulp-uglify');
  * Fail on error if not in watch mode
  */
 let watching = false;
+
 function onError(error) {
     if (!watching) {
         process.exit(1);
@@ -50,8 +51,7 @@ gulp.task('dist-loader-js', () => {
         .pipe(wrap(`(function(__root__){
 if (__root__["FuseBox"]) return __root__["FuseBox"];
 <%= contents %>
-return __root__["FuseBox"] = FuseBox; } )(this)`
-        ))
+return __root__["FuseBox"] = FuseBox; } )(this)`))
         .pipe(rename('fusebox.js'))
         .pipe(gulp.dest('modules/fuse-box-loader-api'))
         .pipe(rename('fusebox.min.js'))
@@ -96,7 +96,7 @@ gulp.task('dist-commonjs', () => {
 gulp.task('dist-main', ['dist-typings', 'dist-commonjs']);
 
 /**
- * NPM deploy management
+ *  NPM deploy management
  */
 gulp.task('publish', function(done) {
     runSequence('dist', 'increment-version', 'commit-release', 'npm-publish', done);
