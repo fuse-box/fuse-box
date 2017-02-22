@@ -83,6 +83,30 @@ FuseBox.init({
     package: "mySuperLib"
 })
 ```
+If you want to have an entry point (main) file, define it like so:
+
+```js
+FuseBox.init({
+    package:{
+        name :  "mySuperLib",
+        main : "index.ts"
+    }
+})
+```
+If you don't want to you have your package execute on load, make sure your instruction does not have `>` in it.
+
+Here is an example how make a package:
+```js
+FuseBox.init({
+    package: {
+        name: "super-name",
+        entry: "index.ts"
+    },
+    homeDir: `/src-package`,
+    outFile: `build/packages/super-name.js`,
+}).bundle("index.ts")
+```
+
 
 ## Global variables
 
