@@ -1,4 +1,4 @@
-import { ensurePublicExtension, replaceExt } from "./Utils";
+import { ensurePublicExtension } from "./Utils";
 import { IPackageInformation, IPathInformation } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
 import * as path from "path";
@@ -182,20 +182,20 @@ export class PathMaster {
         // Simple a hack..
         // ensureFolderAndExtensions needs to be re-writted
         // We should list a folder and pick matching file
-        if (this.tsMode) {
-            if (!fs.existsSync(result)) {
-                let tsxVersion = replaceExt(result, ".tsx");
-                if (fs.existsSync(tsxVersion)) {
-                    return tsxVersion;
-                } else {
-                    // yet another hack 
-                    // final check for .js extension
-                    // I know, it's not pretty ;-( Let's find a way to fix that
-                    let jsVersion = replaceExt(result, ".js");
-                    return jsVersion;
-                }
-            }
-        }
+        // if (this.tsMode) {
+        //     if (!fs.existsSync(result)) {
+        //         let tsxVersion = replaceExt(result, ".tsx");
+        //         if (fs.existsSync(tsxVersion)) {
+        //             return tsxVersion;
+        //         } else {
+        //             // yet another hack 
+        //             // final check for .js extension
+        //             // I know, it's not pretty ;-( Let's find a way to fix that
+        //             let jsVersion = replaceExt(result, ".js");
+        //             return jsVersion;
+        //         }
+        //     }
+        // }
 
         // Fixing node_modules package .json limits.
         if (rootEntryLimit && name.match(/\.\.\/$/)) {
@@ -213,6 +213,48 @@ export class PathMaster {
         }
         return "";
     }
+
+    private testFolder(folder: string, name: string) {
+        const extensions = ["js", "jsx"];
+        if (this.tsMode) {
+            extensions.push("ts", "tsx");
+        }
+
+        if (fs.existsSync(folder)) {
+            for (let i = 0; i < extensions.length; i++) {
+                let ext = extensions[i];
+                const index = `index.${ext}`;
+                const target = path.join(folder, index);
+                if (fs.existsSync(target)) {
+                    let result = path.join(name, index);
+                    let startsWithDot = result[0] === "."; // After transformation we need to bring the dot back
+                    if (startsWithDot) {
+                        result = `./${result}`;
+                    }
+                    return result;
+                }
+            }
+        }
+    }
+
+    private checkFileName(root: string, name: string) {
+        const extensions = ["js", "jsx"];
+        if (this.tsMode) {
+            extensions.push("ts", "tsx");
+        }
+        for (let i = 0; i < extensions.length; i++) {
+            let ext = extensions[i];
+            let fileName = `${name}.${ext}`;
+            let target = path.isAbsolute(name) ? fileName : path.join(root, fileName);
+            if (fs.existsSync(target)) {
+                if (fileName[0] === ".") {
+                    fileName = `./${fileName}`;
+                }
+                return fileName;
+            }
+        }
+    }
+
 
 
     private ensureFolderAndExtensions(name: string, root: string, explicit = false) {
@@ -235,28 +277,19 @@ export class PathMaster {
         }
 
         if (!AllowedExtenstions.has(ext)) {
-
-            if (/\/$/.test(name)) {
-                return `${name}index${fileExt}`;
-            }
-            let folderDir = path.isAbsolute(name) ? path.join(name, `index${fileExt}`)
-                : path.join(root, name, `index${fileExt}`);
-
-            if (fs.existsSync(folderDir)) {
-                let startsWithDot = name[0] === "."; // After transformation we need to bring the dot back
-                name = path.join(name, "/", `index${fileExt}`); // detecting a real relative path
-                if (startsWithDot) {
-                    // making sure we are not modifying it and converting to
-                    // what can be take for node_module
-                    // For example: ./foo if a folder, becomes "foo/index.js",
-                    // whereas foo can be interpreted as node_module
-                    name = `./${name}`;
-                }
+            let folder = path.isAbsolute(name) ? name : path.join(root, name);
+            const folderPath = this.testFolder(folder, name);
+            if (folderPath) {
+                return folderPath;
             } else {
-                name += fileExt;
+                let fileNameCheck = this.checkFileName(root, name);
+                if (fileNameCheck) {
+                    return fileNameCheck;
+                } else {
+                    name += fileExt;
+                }
             }
         }
-
 
         return name;
     }
@@ -292,12 +325,12 @@ export class PathMaster {
                 let entryFile;
                 let entryRoot;
                 if (json.browser) {
-                  if (typeof json.browser === "object" && json.browser[json.main]) {
-                    entryFile = json.browser[json.main];
-                  }
-                  if (typeof json.browser === "string") {
-                    entryFile = json.browser;
-                  }
+                    if (typeof json.browser === "object" && json.browser[json.main]) {
+                        entryFile = json.browser[json.main];
+                    }
+                    if (typeof json.browser === "string") {
+                        entryFile = json.browser;
+                    }
                 }
                 entryFile = path.join(folder, entryFile || json.main || "index.js");
                 entryRoot = path.dirname(entryFile);

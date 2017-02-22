@@ -142,7 +142,7 @@ const $getDir = (filePath: string) => {
  * Joins paths
  * Works like nodejs path.join
  */
-const $pathJoin = function(...string: string[]): string {
+const $pathJoin = function (...string: string[]): string {
     let parts: string[] = [];
     for (let i = 0, l = arguments.length; i < l; i++) {
         parts = parts.concat(arguments[i].split("/"));
@@ -290,11 +290,17 @@ const $getRef = (name: string, opts: {
             validPath = filePath + ".js";
             file = pkg.f[validPath];
         }
+
         // if file is not found STILL
         // then we can try JSX
         if (!file) {
             // try for JSX one last time
             file = pkg.f[filePath + ".jsx"];
+        }
+
+        if (!file) {
+            validPath = filePath + "/index.jsx";
+            file = pkg.f[validPath];
         }
     }
 
@@ -317,7 +323,7 @@ const $async = (file: string, cb: (imported?: any) => any) => {
     if ($isBrowser) {
         var xmlhttp: XMLHttpRequest;
         xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
+        xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4) {
                 if (xmlhttp.status == 200) {
                     let contentType = xmlhttp.getResponseHeader("Content-Type");
@@ -562,8 +568,8 @@ class FuseBox {
         pkg: string
     }) {
         let pkg = opts && opts.pkg || "default";
-        this.pkg(pkg, {}, function(___scope___: any) {
-            ___scope___.file(path, function(exports: any, require: any, module: any, __filename: string, __dirname: string) {
+        this.pkg(pkg, {}, function (___scope___: any) {
+            ___scope___.file(path, function (exports: any, require: any, module: any, __filename: string, __dirname: string) {
                 var res = new Function('__fbx__dnm__', 'exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
                 res(true, exports, require, module, __filename, __dirname, __root__);
             });

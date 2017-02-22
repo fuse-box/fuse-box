@@ -20,8 +20,8 @@ describe("Alias test", (done) => {
             const out = result.project.FuseBox.import("./index");
             out.should.deepEqual({ something: { result: 'I was so far away, but i am here now' } })
             done();
-        })
-    })
+        }).catch(done)
+    });
 
     it("Should replace an alias - case 2", (done) => {
 
