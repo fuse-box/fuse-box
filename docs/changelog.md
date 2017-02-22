@@ -1,5 +1,5 @@
 # Changelog
-
+[see our next features & milestones for the future!](https://github.com/fuse-box/fuse-box/milestones)
 
 | Version         | Changes                 |
 | ---------------------- |:-----------------------------| 

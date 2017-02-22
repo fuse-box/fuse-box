@@ -110,3 +110,5 @@ fuse.devServer(">app.tsx", {
 });
 ```
 In this configuration `port: 8080` corresponds to a socket server port, having `httpServer:false` makes it work only in `socket` mode.  Once you page it loaded, `FuseBox API` will try to connect to `:8080` port an start listening to events.
+
+See the [fuse-box-express-example](https://github.com/fuse-box/fuse-box-express-seed) for a more detailed setup.

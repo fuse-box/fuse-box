@@ -26,6 +26,17 @@ Please note that some libraries like "fs" are faked in the browser. Meaning that
 Nodejs environment, however, will get authentic "fs" module. (Concerns http, net, tty e.t.c )
 
 
+### Point to the root
+You can use `~` symbol to point to your project's [homeDir](http://fuse-box.org/#home-directory) in order to fix relative path messes such as `../../../../../utils`.
+
+```js
+// es5
+require("~/lib/utils")
+// es6
+import * as utils from "~/lib/utils";
+```
+
+
 ## Lazy Load
 
 Lazy load works out of the box.
@@ -132,15 +143,7 @@ require("~/foo/*") // will give 2 files
 
 It's impossible to transpile dynamic modules at the moment. You can easily do it yourself, since the API accepts a string, 
 
-## Point to the root
-You can use `~` symbol to point to your project's path in order to solve `../../../../../utils` mess.
 
-```js
-// es5
-require("~/lib/utils")
-// es6
-import * as utils from "~/lib/utils";
-```
 
 ## Loader Plugins
 Loader plugins can intercept hmr updates to override the default behavior. Here is the current plugin interface: 
@@ -188,3 +191,20 @@ FuseBox.addPlugin({
   }
 });
 ```
+
+* Another way to register plugins, is when instantiating (with new, or .init)
+```js
+FuseBox.init({
+  homeDir: "src",
+  outFile: "build/out.js",
+  plugins: [
+    hmrUpdate: (evt) => {
+      console.log('HMR Update', evt, 'Please reload the window');
+      return true;
+    },
+  ],
+}};
+```
+
+### Loader Plugin Examples
+- [vue plugin](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/VuePlugin.ts#L7)
