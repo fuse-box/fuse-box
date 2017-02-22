@@ -102,7 +102,7 @@ export class FuseBox {
             if (utils.isPlainObject(opts.package)) {
                 const packageOptions: any = opts.package;
                 this.context.defaultPackageName = packageOptions.name || "default";
-                this.context.defaultEntryPoint = packageOptions.entry;
+                this.context.defaultEntryPoint = packageOptions.main;
             } else {
                 this.context.defaultPackageName = opts.package;
             }
