@@ -181,9 +181,9 @@ mtime : ${cacheData.mtime}
             let info = file.info.nodeModuleInfo;
 
             let key = `${info.name}@${info.version}`;
+            let cachePath = path.join(this.cacheFolder, encodeURIComponent(key));
             let cached = this.cachedDeps.flat[key];
-            if (!cached) {
-
+            if (!cached || !fs.existsSync(cachePath)) {
                 through.push(file);
             } else {
                 if (cached.version !== info.version || cached.files.indexOf(file.info.fuseBoxPath) === -1) {
@@ -191,6 +191,7 @@ mtime : ${cacheData.mtime}
                     for (let i = 0; i < cached.files.length; i++) {
                         let cachedFileName = cached.files[i];
                         let f = moduleFileCollection.get(info.name).get(cachedFileName);
+
                         if (f) {
                             through.push(f);
                         }
