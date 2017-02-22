@@ -133,7 +133,7 @@ require("~/foo/*") // will give 2 files
 It's impossible to transpile dynamic modules at the moment. You can easily do it yourself, since the API accepts a string, 
 
 ## Point to the root
-You can use `~` symbol to point to your project's path in order to solve `../../../../../utils` mess.
+You can use `~` symbol to point to your project's [homeDir](http://fuse-box.org/#home-directory) in order to solve `../../../../../utils` mess.
 
 ```js
 // es5
@@ -188,3 +188,20 @@ FuseBox.addPlugin({
   }
 });
 ```
+
+* Another way to register plugins, is when instantiating (with new, or .init)
+```js
+FuseBox.init({
+  homeDir: "src",
+  outFile: "build/out.js",
+  plugins: [
+    hmrUpdate: (evt) => {
+      console.log('HMR Update', evt, 'Please reload the window');
+      return true;
+    },
+  ],
+}};
+```
+
+### Loader Plugin Examples
+- [vue plugin](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/VuePlugin.ts#L7)
