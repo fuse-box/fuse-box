@@ -51,6 +51,37 @@ If for some reason we want to preserve file contents for a later reuse and overr
 
 It can be use for the [concat](#concat-files) technique for example
 
+
+## Transform
+
+### Helpers
+- `file.contents`: can rewrite the output of a particular chunk, it is a simple string
+- `file.analysis.dependencies`: can clear/flush dependencies of a file by setting it to an empty array.
+- `file.info`: information about the file, such as `file.info.absPath` and `file.info.fuseBoxPath`
+
+
+### AST
+To use the AST, you need to know if the AST has been loaded already. You can do this by checking whether `file.analysis.ast` is not `undefined`.
+
+If it has not been loaded, it can be loaded by doing:
+```js
+file.loadContents()
+file.analysis.parseUsingAcorn()
+file.analysis.analyze()
+```
+
+If babel plugin has been used, the AST will be loaded using [babel babylon](https://github.com/babel/babylon).
+
+You can load any ast parser you'd like by
+```js
+if (!file.analysis.ast) {
+  const result = YourAST(file.contents)
+  file.analysis.loadAst(result.ast);
+  file.analysis.analyze()
+}
+```
+
+
 ## Transforming typescript
 
 You can tranform typescript code before it actually gets to transpiling
@@ -127,3 +158,15 @@ ___scope___.file("textBundle.txt", function(exports, require, module, __filename
 });
 ```
 
+
+### Things to experiment with
+- try changing the contents of a file
+- try logging the contents of the file in the transformation file
+- try loggint the ast once it has been loading
+
+### Plugin API source code
+- [babel plugin](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/BabelPlugin.ts#L24)
+- [bundle source code](https://github.com/fuse-box/fuse-box/blob/96b646a632f886f296a533ccf4c45f436cf443f3/src/BundleSource.ts#L133)
+- [read the FileAnalysis code](https://github.com/fuse-box/fuse-box/blob/master/src/FileAnalysis.ts#L120)
+- [css plugin tests](https://github.com/fuse-box/fuse-box/blob/master/test/css_plugin.js)
+- [code for all built in plugins](https://github.com/fuse-box/fuse-box/tree/master/src/plugins)
