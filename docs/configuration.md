@@ -2,7 +2,8 @@
 
 The concept of FuseBox is simple. Bundle anything for frontend and server without a headache. Simply put, you can copy paste a simple config down below and bundle some heavy module like `babel-core` or `babel-generator`. But let's get started and break down all available options in fusebox.
 
-> App Root Path: We resolve a few relative paths to `appRootPath` for your convenience. Generally it's the folder containing `package.json`.
+## App Root Path
+> We resolve a few relative paths to `appRootPath` for your convenience. Generally it's the folder containing `package.json`.
 
 ## Initialisation
 
@@ -13,7 +14,7 @@ FuseBox.init({ /* you config is here */ })
 
 ## Home directory
 
-That's your source folder. It can be an absolute path, Or relative to `appRootPath`.
+That's your _source_ folder. It can be an absolute path, Or relative to [appRootPath](#app-root-path).
 
 ```js
 FuseBox.init({
@@ -24,10 +25,12 @@ FuseBox.init({
 * bundling input files are relative to `homeDir`.
 * this is the folder that we watch for changes when using the `devServer`.
 * this is the folder we check for any `tsconfig.json` (can be changed using the `tsConfig` option).
+* see [imports](http://fuse-box.org/#import) for even more available features.
+
 
 ## Out file
 
-That's your bundle file. It can be an absolute path, Or relative to `appRootPath`.
+That's your _bundle_ file. It can be an absolute path, Or relative to `appRootPath`.
 
 > fuse-box takes care of creating required directory structure for you!
 
@@ -37,6 +40,7 @@ FuseBox.init({
   outFile: "./build/bundle.js"
 })
 ```
+
 
 ## Cache
 
