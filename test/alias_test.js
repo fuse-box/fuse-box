@@ -11,10 +11,10 @@ describe("Alias test", (done) => {
                     "utils": "~/utils/far/away/a/b/c"
                 },
                 files: {
-                    "index.ts": `exports.something = require("utils/hello")`,
+                    "index.js": `exports.something = require("utils/hello")`,
                     "utils/far/away/a/b/c/hello.js": "module.exports = { result : 'I was so far away, but i am here now'}"
                 },
-                instructions: "> index.ts"
+                instructions: "> index.js"
             }
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
@@ -31,10 +31,10 @@ describe("Alias test", (done) => {
                     "utils": "~/utils/far/away/a/b/c/"
                 },
                 files: {
-                    "index.ts": `exports.something = require("utils/hello")`,
+                    "index.js": `exports.something = require("utils/hello")`,
                     "utils/far/away/a/b/c/hello.js": "module.exports = { result : 'I was so far away, but i am here now'}"
                 },
-                instructions: "> index.ts"
+                instructions: "> index.js"
             }
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
@@ -49,9 +49,9 @@ describe("Alias test", (done) => {
             modules: {
                 "preact-compat": {
                     files: {
-                        "index.ts": "module.exports = { name : 'i am preact-compat'}"
+                        "index.js": "module.exports = { name : 'i am preact-compat'}"
                     },
-                    instructions: "> index.ts"
+                    instructions: "> index.js"
                 }
             },
             project: {
@@ -87,11 +87,11 @@ describe("Alias test", (done) => {
                     "utils-foo": "~/utils/far/z"
                 },
                 files: {
-                    "index.ts": `exports.something = [require("utils/hello"), require("utils-foo/stay")]`,
+                    "index.js": `exports.something = [require("utils/hello"), require("utils-foo/stay")]`,
                     "utils/far/away/a/b/c/hello.js": "module.exports = { result : 'I was so far away, but i am here now'}",
                     "utils/far/z/stay.js": "module.exports = { result : 'I should stay here'}"
                 },
-                instructions: "> index.ts"
+                instructions: "> index.js"
             }
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
