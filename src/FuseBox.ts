@@ -310,7 +310,7 @@ export class FuseBox {
         clonedOpts.outFile = testBundleFile;
 
         // adding fuse-test dependency to be bundled
-        str += ` +fuse-test ${opts.reporter} -ansi`;
+        str += ` +fuse-test-runner ${opts.reporter} -ansi`;
         return FuseBox.init(clonedOpts).bundle(str, () => {
             const bundle = require(testBundleFile);
             let runner = new BundleTestRunner(bundle, opts);
