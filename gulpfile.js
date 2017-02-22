@@ -96,7 +96,7 @@ gulp.task('dist-commonjs', () => {
 gulp.task('dist-main', ['dist-typings', 'dist-commonjs']);
 
 /**
- *  NPM deploy management
+ *   NPM deploy management
  */
 gulp.task('publish', function(done) {
     runSequence('dist', 'increment-version', 'commit-release', 'npm-publish', done);
