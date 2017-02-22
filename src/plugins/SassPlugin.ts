@@ -35,9 +35,11 @@ export class SassPluginClass implements Plugin {
         }, this.options);
 
         options.includePaths = [];
-        this.options.includePaths.forEach((path) => {
-            options.includePaths.push(path);
-        });
+        if (typeof this.options.includePaths !== "undefined"){
+            this.options.includePaths.forEach((path) => {
+                options.includePaths.push(path);
+            });
+        }
 
         options.includePaths.push(file.info.absDir);
 
