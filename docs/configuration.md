@@ -42,6 +42,8 @@ FuseBox.init({
 
 You can turn off caching if you like. By default caching is on. FuseBox will create a folder `.fuse-box` in your project path, and store related files. Don't forget to add it to .gitignore.
 
+> If things go wrong or things are not updating, delete the `.fusebox` folder to force clear the cache.
+
 ```js
 FuseBox.init({
   homeDir: "./src",
