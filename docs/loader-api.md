@@ -26,6 +26,17 @@ Please note that some libraries like "fs" are faked in the browser. Meaning that
 Nodejs environment, however, will get authentic "fs" module. (Concerns http, net, tty e.t.c )
 
 
+### Point to the root
+You can use `~` symbol to point to your project's [homeDir](http://fuse-box.org/#home-directory) in order to fix relative path messes such as `../../../../../utils`.
+
+```js
+// es5
+require("~/lib/utils")
+// es6
+import * as utils from "~/lib/utils";
+```
+
+
 ## Lazy Load
 
 Lazy load works out of the box.
