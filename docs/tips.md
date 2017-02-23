@@ -13,3 +13,30 @@ for example to import a file  just use  `FuseBox.import('./myfile')`
 
 ## TypeScript tips
 * You don't have to worry about `module` option in **TypeScript** compiler options, Fuse will automatically set it up for you, even if you forget to add it.
+
+
+## Electron tips
+
+[Electron](http://electron.atom.io/) has 2 JavaScript environments. One is Node JS (called main) and one is Chromium (called renderer).
+
+Electron gives the renderer process the ability to call native commands by proxying through the `electron` module.
+
+To make this setup work with **FuseBox**, you'll need to **add** these two options to the bundle targetting your renderer.
+
+```js
+{
+  serverBundle: true,
+  shim: {
+    electron: { exports: "global.require('electron')" }
+  }
+}
+```
+
+The `serverBundle` command tells **FuseBox** to make available some of the Node JS modules (`path`, `fs`, etc.) to that JS environment.
+
+The `shim` acts as a pass through instructing **FuseBox** to trust us that `electron` is available to require. The `global.` is important since **FuseBox** as already called dibs on `require()`. They left us `global.require()` for these types of shenanigans. :beers:
+
+No need to include or exclude `+electron` from your bundles. Just these few lines will do the job.
+
+Happy Electron-ing!
+
