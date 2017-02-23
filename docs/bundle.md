@@ -64,3 +64,22 @@ import * as myLib from "./bundles/myLib.js"
 ```
 
 FuseBox sniffs its own creations and restructures the code accordingly.
+
+## Importing Bundles
+you can import using the fusebox api wrapper that is built into the bundle
+```js
+const bundled = require("./magic/yourOutFile.js")
+const exports = bundle.FuseBox.import("./yourBundle.js");
+```
+
+or you can import the file directly using FuseBox
+```
+const fusebox = require("fuse-box")
+const FuseBox = fusebox.FuseBox
+
+const bundled = require("./magic/yourOutFile.js")
+const bundled = FuseBox.import("./yourBundle.js")
+```
+
+## Scoping / Fused
+If you have more than one bundle and require them, they will be `fused` behind the scenes. That is to say, they will be able to import from each other. This is possible because FuseBox is not just a bundler, but a full featured virtual environment! [See an example using fusing](https://github.com/fuse-box/fuse-box-scopes-example). 
