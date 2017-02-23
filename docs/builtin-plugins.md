@@ -4,23 +4,22 @@ Fusebox contains premade plugins, that should help you to get started.
 
 ## CSS Plugin
 
-It's very easy to start working with css files. You have 2 options, you either bundle the contents or serve the files. A decision that can be made at build time.
+The CSS plugin is elegant and powerful.  It can be used to combine all CSS files into a single bundle, or to mark files as external to
+the bundle, to be served separately by the web server.  By default, all CSS files are bundled.
 
 For example:
 ```js
 plugins: [
-    fsbx.CSSPlugin({
-        minify: true
-    })
+    fsbx.CSSPlugin({})
 ]
 ```
 
-In this case, all CSS files will be bundled.
+### Chaining CSS plugins to transform SCSS, Sass, and others
 
-### Write contents to a different file
+Fusebox's plugin system allows simple transformation of more complex CSS systems through plugin chaining.  For example, to transform
+Sass into CSS:
 
-Combine this module with something else, and you will see real magic happen.
-```
+```js
 plugins: [
     [
         fsbx.SassPlugin({ outputStyle: 'compressed' }),
@@ -28,17 +27,80 @@ plugins: [
     ]
 ]
 ```
-* It will create an according file - `./main.scss` becomes `build/main.css` (your [outFile](#out-file) folder + project path)
-* Will create `main.css.map` and it will do mappping too, ff sourcemaps are attached
-* It will automatically append filename to the head (and serve it)
 
-Check how it works [here](https://github.com/fuse-box/angular2-example)
+* This simple code will change any scss file to a css file - `./main.scss` becomes `build/main.css` (your [outFile](#out-file) folder + project path)
+* it also creates `main.css.map` if sourcemaps have been specified
+* it automatically appends the new CSS files to the head of the web page and serves them
 
-> Note - we are still working on the CSS plugins. Be patient. Customisations are coming soon.
+A more extensive example can be found [here](https://github.com/fuse-box/angular2-example)
 
-### Serving file
+### Options
 
-But if you define "serve" option with a callback, all files will be filtered through it. A callback is expected to return a string with a browser path. If you return "undefined" or *NOT* a string, that file will be bundled as if no option was specified.
+The CSS plugin accepts a few options to customize the output bundle, and to handle edge cases.
+
+#### minify
+
+If specified as true, all CSS files will have extraneous whitespace removed to help reduce file size.  This option is false by default.
+
+```js
+plugins: [
+  fsbx.CSSPlugin({
+    minify: true
+  })
+]
+```
+
+#### bundle
+
+This option is used to combine all css files into one file.  Within the bundle, the files can still be referenced with their original
+names, but the loader will request the single file that was made from bundling the css files together
+
+```js
+plugins: [
+    fsbx.CSSPlugin({
+        bundle: 'bundle.css'
+    })
+]
+```
+
+#### write
+
+> WARNING: this option is deprecated and will be removed. Use bundle instead.
+
+If specified as true, then the CSS files will be processed and transferred to the build folder for bundling.  This option is false by
+default, and should be set to true when chaining with any CSS processing plugins above it.
+
+```js
+plugins: [
+    [
+        fsbx.SassPlugin({ outputStyle: 'compressed' }),
+        fsbx.CSSPlugin({ write: true })
+    ]
+]
+```
+
+The option should be set to false for any CSS files that will be served (and not bundled) to decrease build time.
+
+```js
+plugins: [
+    fsbx.CSSPlugin({
+        minify: true,
+        serve: path => `./${path}`
+    })
+]
+```
+
+#### serve
+
+> WARNING: this option is deprecated and will be removed. Use bundle instead.
+
+This option should be used to delegate serving a CSS file external to the bundle to either the DevServer or your chosen web server.
+Unlike other options passed to the CSSPlugin, `serve` must be a function.  The function accepts the path to CSS files, and should return
+the URL that the CSS file can be accessed at, or false if the file should be bundled.  This flexibility allows serving some files
+separately, and bundling others.
+
+The `serve` option must be a function that accepts the path to the current CSS file and returns either the server path, or a falsey value
+if the file should be bundled.  Here are examples of both use cases:
 
 All css files will be served by server.
 ```js
@@ -50,8 +112,8 @@ plugins: [
 ]
 ```
 
-All files will be served except for "styles.css" (contents will be included in the bundle)
-```
+All files will be served except for "styles.css," which will be included in the bundle along with other bundled javascript.
+```js
 plugins: [
     fsbx.CSSPlugin({
         minify: true,
@@ -60,14 +122,17 @@ plugins: [
 ]
 ```
 
-On top of that a CSS file will added to DOM upon request if not found in the bundle.
+Any CSS file that is required by javascript code which has not been bundled will be loaded directly into the DOM by requesting it from
+the server.
+
+> Note - CSS plugins are in flux, more customization is coming
 
 ## CSSResourcePlugin
 
 Imagine a situation where you import a css file from an npm library.
 Let's try  make [jstree](https://github.com/vakata/jstree) library work
 
-```
+```js
 import "jstree/dist/jstree.js";
 import "jstree/dist/themes/default/style.css";
 ```
@@ -78,7 +143,7 @@ It re-writes URL and copies files to a destination specified by user,
 
 ### Copy files
 
-```
+```js
 plugins : [
    [/node_modules.*\.css$/,
       build.CSSResourcePlugin({
@@ -94,7 +159,7 @@ plugins : [
 ### Inline
 You can inline images as well
 
-```
+```js
 plugins : [
    [/node_modules.*\.css$/,
       build.CSSResourcePlugin({
@@ -119,8 +184,7 @@ plugins:[
 ],
 ```
 
-> We still need to figure out what to do with sourcemaps. Be patient!
-
+> Note: Source maps are not yet completely implemented
 
 
 ## PostCSS
@@ -142,8 +206,7 @@ plugins:[
 ],
 ```
 
-> We still need to figure out what to do with sourcemaps. Be patient!
-
+> Note: Source maps are not yet completely implemented
 
 ## StylusPlugin
 ```js
@@ -194,7 +257,7 @@ Works greatly if you want to have images bundled
 ```bash
 npm install base64-img --save-dev
 ```
-```
+```js
 plugins: [
     fsbx.ImageBase64Plugin()
 ]
@@ -296,13 +359,13 @@ plugins : [
 
 Access it like you used to:
 
-```
+```js
 console.log( process.env.NODE_ENV )
 ```
 
 The order of plugins is important: environment variables created with this plugin will only be available to plugins further down the chain.
 
-```
+```js
 plugins : [
    fsbx.BabelPlugin({ /* settings /*}), // <-- won't have NODE_ENV set
    fsbx.EnvPlugin({ NODE_ENV: "production" }),
