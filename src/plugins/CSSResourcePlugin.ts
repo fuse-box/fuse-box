@@ -120,6 +120,10 @@ export class CSSResourcePluginClass implements Plugin {
                     if (IMG_CACHE[urlFile]) {
                         return IMG_CACHE[urlFile];
                     }
+                    if (!fs.existsSync(urlFile)) {
+                        file.context.debug("CSSResourcePlugin", `Can't find file ${urlFile}`)
+                        return;
+                    }
                     const ext = path.extname(urlFile);
                     let fontsExtensions = {
                         '.woff': 'application/font-woff',
