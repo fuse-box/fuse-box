@@ -162,7 +162,7 @@ ___scope___.file("textBundle.txt", function(exports, require, module, __filename
 ### Things to experiment with
 - try changing the contents of a file
 - try logging the contents of the file in the transformation file
-- try loggint the ast once it has been loading
+- try logging the ast once it has been loading
 
 ### Plugin API source code
 - [babel plugin](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/BabelPlugin.ts#L24)
