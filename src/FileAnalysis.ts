@@ -102,9 +102,9 @@ export class FileAnalysis {
             return requireStatement;
         }
         // enable aliases only for the current project
-        if (this.file.collection.name !== this.file.context.defaultPackageName) {
-            return requireStatement;
-        }
+        // if (this.file.collection.name !== this.file.context.defaultPackageName) {
+        //    return requireStatement;
+        // }
 
         const aliasCollection = this.file.context.aliasCollection;
         aliasCollection.forEach(props => {
