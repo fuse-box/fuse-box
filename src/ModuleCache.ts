@@ -238,6 +238,7 @@ mtime : ${cacheData.mtime}
                                 return resolve();
                             });
                         } else {
+                            console.log(through);
                             collection.cachedContent = "";
                             console.warn(`${collection.cacheFile} was not found`);
                             return resolve();

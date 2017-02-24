@@ -121,7 +121,7 @@ export class Arithmetic {
         let collect = (list) => {
             let data = new Map<string, IBundleInformation>();
             return each(list, (withDeps, filePattern) => {
-                if (filePattern.match(/^[a-z0-9_-]+$/i)) { // check for a valid node module name
+                if (filePattern.match(/^[a-z0-9_\-@\/]+$/i)) { // check for a valid node module name
                     data.set(filePattern, {
                         deps: withDeps,
                         nodeModule: true,
