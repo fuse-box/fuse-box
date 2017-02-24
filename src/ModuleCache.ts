@@ -252,10 +252,11 @@ mtime : ${cacheData.mtime}
                     }));
                     this.context.addNodeModule(key, collection);
                     required.push(key);
+                    if (json.deps) {
+                        for (let k in json.deps) { if (json.deps.hasOwnProperty(k)) { getAllRequired(k, json.deps[k]); } }
+                    }
                 }
-                if (json.deps) {
-                    for (let k in json.deps) { if (json.deps.hasOwnProperty(k)) { getAllRequired(k, json.deps[k]); } }
-                }
+                
             }
         }
 
