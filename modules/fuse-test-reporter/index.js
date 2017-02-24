@@ -131,6 +131,7 @@ class FuseBoxTestReporter {
     }
     endTest(stats, took) {
         $printStats(stats, took);
+        console.log("");
     }
 }
 Object.defineProperty(exports, "__esModule", { value: true });
