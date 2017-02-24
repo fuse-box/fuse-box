@@ -219,6 +219,57 @@ describe("Native variables", (done) => {
         }).then((result) => {
 
             const contents = result.projectContents.toString();
+
+            should.equal(
+                contents.indexOf(`/* fuse:injection: */ var process`) === -1, true);
+            done();
+        })
+    })
+
+    it("Process check with type property", (done) => {
+
+        createEnv({
+
+            project: {
+                autoImport: {
+                    woops: "superFoo"
+                },
+                files: {
+                    "index.ts": `
+                        var a ={ process : "sdf"}
+                    `
+                },
+                instructions: "> index.ts"
+            }
+        }).then((result) => {
+
+            const contents = result.projectContents.toString();
+            should.equal(
+                contents.indexOf(`/* fuse:injection: */ var process`) === -1, true);
+            done();
+        })
+    })
+
+
+    it("Process check with function param", (done) => {
+
+        createEnv({
+
+            project: {
+                autoImport: {
+                    woops: "superFoo"
+                },
+                files: {
+                    "index.ts": `
+                        var a = function(process){}
+                    `
+                },
+                instructions: "> index.ts"
+            }
+        }).then((result) => {
+
+            const contents = result.projectContents.toString();
+
             should.equal(
                 contents.indexOf(`/* fuse:injection: */ var process`) === -1, true);
             done();

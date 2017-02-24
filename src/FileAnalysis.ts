@@ -9,6 +9,7 @@ require("acorn-jsx/inject")(acorn);
 
 
 const isDeclaration = (node) => {
+
     return node.type === "VariableDeclarator" || node.type === "FunctionDeclaration";
 }
 
@@ -148,7 +149,10 @@ export class FileAnalysis {
 
                         if (nativeModules.has(node.name) && !bannedImports[node.name]) {
 
-                            if (parent && isDeclaration(parent)
+                            const isProperty = parent.type && parent.type === "Property";
+                            const isFunctionExpression = parent.type && parent.type === "FunctionExpression" && parent.params;
+
+                            if (isProperty || isFunctionExpression || parent && isDeclaration(parent)
                                 && parent.id && parent.id.type === "Identifier" && parent.id.name === node.name) {
                                 delete nativeImports[node.name];
                                 if (!bannedImports[node.name]) {
