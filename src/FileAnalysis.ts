@@ -8,7 +8,9 @@ require("acorn-es7")(acorn);
 require("acorn-jsx/inject")(acorn);
 
 
-
+const isDeclaration = (node) => {
+    return node.type === "VariableDeclarator" || node.type === "FunctionDeclaration";
+}
 
 /**
  * Makes static analysis on the code
@@ -135,6 +137,7 @@ export class FileAnalysis {
             return node.type === "Literal" || node.type === "StringLiteral";
         }
 
+
         ASTTraverse.traverse(this.ast, {
             pre: (node, parent, prop, idx) => {
                 if (node.type === "Identifier") {
@@ -144,7 +147,8 @@ export class FileAnalysis {
                     } else {
 
                         if (nativeModules.has(node.name) && !bannedImports[node.name]) {
-                            if (parent && parent.type === "VariableDeclarator"
+
+                            if (parent && isDeclaration(parent)
                                 && parent.id && parent.id.type === "Identifier" && parent.id.name === node.name) {
                                 delete nativeImports[node.name];
                                 if (!bannedImports[node.name]) {
@@ -161,9 +165,8 @@ export class FileAnalysis {
                     if (parent.type === "CallExpression") {
                         if (node.object && node.object.type === "Identifier" && node.object.name === this.fuseBoxVariable) {
                             if (node.property && node.property.type === "Identifier") {
-                                // console.log(node);
-                                // Extraing main file name from a bundle
 
+                                // Extraing main file name from a bundle
                                 if (node.property.name === "main") {
                                     if (parent.arguments) {
                                         let f = parent.arguments[0];

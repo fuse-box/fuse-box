@@ -196,4 +196,32 @@ describe("Native variables", (done) => {
             done();
         })
     })
+
+
+
+    it("Process check with function", (done) => {
+
+        createEnv({
+
+            project: {
+                autoImport: {
+                    woops: "superFoo"
+                },
+                files: {
+                    "index.ts": `
+                        function process(node) {
+
+                        }
+                    `
+                },
+                instructions: "> index.ts"
+            }
+        }).then((result) => {
+
+            const contents = result.projectContents.toString();
+            should.equal(
+                contents.indexOf(`/* fuse:injection: */ var process`) === -1, true);
+            done();
+        })
+    })
 })
