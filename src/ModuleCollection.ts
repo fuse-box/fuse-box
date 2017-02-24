@@ -211,7 +211,11 @@ export class ModuleCollection {
                 return this.context.cache.buildMap(this);
             }).catch(e => {
                 this.context.nukeCache();
-                console.error(e.stack || e);
+                if (e.message) {
+                    this.context.fatal(e.message)
+                } else {
+                    console.error(e.stack || e);
+                }
             });
     }
 
