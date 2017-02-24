@@ -8,8 +8,9 @@ import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "./ModuleCache";
 import { utils } from 'realm-utils';
 import { EventEmitter } from "./EventEmitter";
-import { ensureUserPath, findFileBackwards, ensureDir } from './Utils';
+import { ensureUserPath, findFileBackwards, ensureDir, removeFolder } from './Utils';
 import { SourceChangedEvent } from './devServer/Server';
+import { Config } from './Config';
 
 
 /**
@@ -159,6 +160,13 @@ export class WorkFlowContext {
         }
     }
 
+    public nukeCache() {
+        this.resetNodeModules();
+        removeFolder(Config.TEMP_FOLDER);
+        this.cache.initialize();
+    }
+
+
     public warning(str: string) {
         return this.log.echoWarning(str);
     }
@@ -269,6 +277,10 @@ export class WorkFlowContext {
 
     public isGlobalyIgnored(name: string): boolean {
         return this.ignoreGlobal.indexOf(name) > -1;
+    }
+
+    public resetNodeModules() {
+        this.nodeModules = new Map<string, ModuleCollection>();
     }
 
     public addNodeModule(name: string, collection: ModuleCollection) {

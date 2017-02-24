@@ -1,7 +1,7 @@
 import { ModuleCollection } from "./ModuleCollection";
 import { FileAnalysis } from "./FileAnalysis";
 import { WorkFlowContext, Plugin } from './WorkflowContext';
-import { IPathInformation } from "./PathMaster";
+import { IPathInformation, IPackageInformation } from './PathMaster';
 import * as fs from "fs";
 import { utils, each } from 'realm-utils';
 import * as path from "path";
@@ -128,6 +128,18 @@ export class File {
         let info = <IPathInformation>{
             fuseBoxPath: name,
             absPath: name,
+        }
+        let file = new File(collection.context, info);
+        file.collection = collection;
+        return file;
+    }
+
+    public static createModuleReference(collection: ModuleCollection, packageInfo: IPackageInformation): File {
+        let info = <IPathInformation>{
+            fuseBoxPath: name,
+            absPath: name,
+            isNodeModule: true,
+            nodeModuleInfo: packageInfo
         }
         let file = new File(collection.context, info);
         file.collection = collection;

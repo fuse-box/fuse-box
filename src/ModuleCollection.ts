@@ -4,7 +4,6 @@ import { WorkFlowContext } from "./WorkflowContext";
 import { each, utils } from 'realm-utils';
 import { BundleData } from "./Arithmetic";
 import { ensurePublicExtension } from './Utils';
-const PrettyError = require('pretty-error');
 
 /**
  * 
@@ -211,10 +210,9 @@ export class ModuleCollection {
             .then(() => {
                 return this.context.cache.buildMap(this);
             }).catch(e => {
-                var pe = new PrettyError();
-                console.log("");
-                console.log(pe.render(e));
-            })
+                this.context.nukeCache();
+                console.error(e.stack || e);
+            });
     }
 
     /**

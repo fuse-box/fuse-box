@@ -62,7 +62,6 @@
         "ieee754": "^1.1.8",
         "mkdirp": "^0.5.1",
         "postcss": "^5.2.11",
-        "pretty-error": "^2.0.2",
         "pretty-time": "^0.2.0",
         "prettysize": "0.0.3",
         "realm-utils": "^1.0.8",

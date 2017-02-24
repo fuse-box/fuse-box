@@ -1,5 +1,5 @@
 import { WorkFlowContext } from "./WorkflowContext";
-import { IPackageInformation } from "./PathMaster";
+import { IPackageInformation } from './PathMaster';
 import { ModuleCollection } from "./ModuleCollection";
 import * as fs from "fs";
 import { File } from './File';
@@ -59,9 +59,13 @@ export class ModuleCache {
      * @memberOf ModuleCache
      */
     constructor(public context: WorkFlowContext) {
+        this.initialize();
+    }
+
+    public initialize() {
         this.cacheFolder = path.join(Config.TEMP_FOLDER, "cache",
             Config.FUSEBOX_VERSION,
-            encodeURIComponent(`${Config.PROJECT_FOLDER}${context.outFile || ""}`));
+            encodeURIComponent(`${Config.PROJECT_FOLDER}${this.context.outFile || ""}`));
 
 
         this.staticCacheFolder = path.join(this.cacheFolder, "static");
@@ -77,7 +81,6 @@ export class ModuleCache {
                     flat: {},
                 };
             }
-
         }
     }
 
@@ -183,7 +186,9 @@ mtime : ${cacheData.mtime}
             let key = `${info.name}@${info.version}`;
             let cachePath = path.join(this.cacheFolder, encodeURIComponent(key));
             let cached = this.cachedDeps.flat[key];
+
             if (!cached || !fs.existsSync(cachePath)) {
+
                 through.push(file);
             } else {
                 if (cached.version !== info.version || cached.files.indexOf(file.info.fuseBoxPath) === -1) {
@@ -209,7 +214,7 @@ mtime : ${cacheData.mtime}
         });
         let required = [];
         let operations: Promise<any>[] = [];
-
+        let cacheReset = false;
         /**
          * 
          * 
@@ -219,7 +224,7 @@ mtime : ${cacheData.mtime}
          */
         let getAllRequired = (key, json: any) => {
             if (required.indexOf(key) === -1) {
-                if (json.name) {
+                if (json) {
                     let collection = new ModuleCollection(this.context, json.name);
                     let cacheKey = encodeURIComponent(key);
                     collection.cached = true;
@@ -238,8 +243,9 @@ mtime : ${cacheData.mtime}
                                 return resolve();
                             });
                         } else {
-                            collection.cachedContent = "";
-                            console.warn(`${collection.cacheFile} was not found`);
+                            // reset cache
+                            valid4Caching = [];
+                            cacheReset = true;
                             return resolve();
                         }
 
@@ -255,8 +261,14 @@ mtime : ${cacheData.mtime}
 
         valid4Caching.forEach(key => {
             getAllRequired(key, this.cachedDeps.tree[key]);
+
         });
+
         return Promise.all(operations).then(() => {
+            if (cacheReset) {
+                this.context.resetNodeModules();
+                return files;
+            }
             return through;
         });
     }
