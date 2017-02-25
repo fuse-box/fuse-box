@@ -1,13 +1,13 @@
 export { VuePlugin } from "./plugins/VuePlugin";
-export { ImageBase64Plugin } from "./plugins/ImageBase64Plugin";
+export { ImageBase64Plugin } from "./plugins/images/ImageBase64Plugin";
 export { CSSResourcePlugin } from "./plugins/stylesheet/CSSResourcePlugin";
 export { HotReloadPlugin } from "./plugins/HotReloadPlugin";
 export { EnvPlugin } from "./plugins/EnvPlugin";
 export { ConcatPlugin } from "./plugins/ConcatPlugin";
-export { StylusPlugin } from "./plugins/StylusPlugin";
-export { PostCSS } from "./plugins/PostCSSPlugin";
+export { StylusPlugin } from "./plugins/stylesheet/StylusPlugin";
+export { PostCSS } from "./plugins/stylesheet/PostCSSPlugin";
 export { TypeScriptHelpers } from "./plugins/TypeScriptHelpers";
-export { SVGPlugin } from "./plugins/SVGPlugin";
+export { SVGPlugin } from "./plugins/images/SVGPlugin";
 export { BabelPlugin } from "./plugins/js-transpilers/BabelPlugin";
 export { CoffeePlugin } from "./plugins/js-transpilers/CoffeePlugin";
 export { LESSPlugin } from "./plugins/stylesheet/LESSPlugin";

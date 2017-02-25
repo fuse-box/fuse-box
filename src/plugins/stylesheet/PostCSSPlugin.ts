@@ -1,6 +1,6 @@
-import { File } from "../File";
-import { WorkFlowContext } from "./../WorkflowContext";
-import { Plugin } from "../WorkflowContext";
+import { File } from "../../File";
+import { WorkFlowContext } from "./../../WorkflowContext";
+import { Plugin } from "../../WorkflowContext";
 
 
 let postcss;

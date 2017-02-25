@@ -1,6 +1,6 @@
-import { File } from '../File';
-import { WorkFlowContext } from '../WorkflowContext';
-import { Plugin } from '../WorkflowContext';
+import { File } from '../../File';
+import { WorkFlowContext } from '../../WorkflowContext';
+import { Plugin } from '../../WorkflowContext';
 
 let stylus;
 
@@ -17,17 +17,17 @@ export class StylusPluginClass implements Plugin {
 	public test: RegExp = /\.styl$/;
 	public options: any;
 
-	constructor (options: any) {
+	constructor(options: any) {
 		this.options = options || {};
 	}
 
-	public init (context: WorkFlowContext) {
+	public init(context: WorkFlowContext) {
 		context.allowExtension('.styl');
 	}
 
-	public transform (file: File): Promise<any> {
+	public transform(file: File): Promise<any> {
 		const context: WorkFlowContext = file.context;
-		const options = {...this.options};
+		const options = { ...this.options };
 		const sourceMapDef = {
 			comment: false,
 			sourceRoot: file.info.absDir
@@ -40,7 +40,7 @@ export class StylusPluginClass implements Plugin {
 		options.filename = file.info.fuseBoxPath;
 
 		if ('sourceMapConfig' in context) {
-			options.sourcemap = {...sourceMapDef, ...this.options.sourcemap || {}}
+			options.sourcemap = { ...sourceMapDef, ...this.options.sourcemap || {} }
 		}
 
 		return new Promise((res, rej) => {

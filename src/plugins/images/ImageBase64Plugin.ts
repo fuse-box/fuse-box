@@ -1,8 +1,7 @@
-import { File } from "../File";
-import { WorkFlowContext } from "./../WorkflowContext";
-import { Plugin } from "../WorkflowContext";
+import { File } from "../../File";
+import { WorkFlowContext, Plugin } from "./../../WorkflowContext";
 import * as path from 'path';
-import { SVG2Base64 } from '../lib/SVG2Base64';
+import { SVG2Base64 } from '../../lib/SVG2Base64';
 const base64Img = require("base64-img");
 /**
  * 
