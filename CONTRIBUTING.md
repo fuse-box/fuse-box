@@ -5,10 +5,10 @@
 `npm start`
 
 # Testing
-* Once: Run `npm install` with all the packages in `travis.yml`. As of this writing it means: 
+* Once: Run `npm install` with all the packages in `.travis.yml`. As of this writing it means: 
 
 ```
-npm install babel-core babel-generator babylon cheerio @angular/core stylus less postcss node-sass uglify-js source-map
+npm install babel-core babel-generator babylon cheerio @angular/core stylus less postcss node-sass uglify-js source-map coffee-script
 ```
 
 * In one window run `npm start`

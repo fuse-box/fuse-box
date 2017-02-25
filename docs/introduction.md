@@ -15,6 +15,8 @@ It is packed with features, and unfolds limitless possibilities of extending the
 
 Join [gitter channel](https://gitter.im/fusebox-bundler/Lobby), we are active! / View on [github](https://github.com/fuse-box/fuse-box) / Submit an [issue](https://github.com/fuse-box/fuse-box/issues/new) / Contribute to this [documentation](https://github.com/fuse-box/fuse-box/tree/master/docs)
 
+## Minimum requirement
+**Node v6.0.0**
 
 ## Installation
 

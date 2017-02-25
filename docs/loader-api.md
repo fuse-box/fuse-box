@@ -26,6 +26,17 @@ Please note that some libraries like "fs" are faked in the browser. Meaning that
 Nodejs environment, however, will get authentic "fs" module. (Concerns http, net, tty e.t.c )
 
 
+### Point to the root
+You can use `~` symbol to point to your project's [homeDir](http://fuse-box.org/#home-directory) in order to fix relative path messes such as `../../../../../utils`.
+
+```js
+// es5
+require("~/lib/utils")
+// es6
+import * as utils from "~/lib/utils";
+```
+
+
 ## Lazy Load
 
 Lazy load works out of the box.
@@ -132,18 +143,10 @@ require("~/foo/*") // will give 2 files
 
 It's impossible to transpile dynamic modules at the moment. You can easily do it yourself, since the API accepts a string, 
 
-## Point to the root
-You can use `~` symbol to point to your project's path in order to solve `../../../../../utils` mess.
 
-```js
-// es5
-require("~/lib/utils")
-// es6
-import * as utils from "~/lib/utils";
-```
 
 ## Loader Plugins
-Loader plugins can intercept certain default behaviors. Here is the current plugin interface: 
+Loader plugins can intercept hmr updates to override the default behavior. Here is the current plugin interface: 
 
 ```js
 interface LoaderPlugin {
@@ -163,40 +166,45 @@ type SourceChangedEvent = {
 }
 ```
 
-You register a plugin using `FuseBox.addPlugin(YourPlugin)`. As an example here is a way to register a plugin that doesn't flush certain stateful modules on hot reload:
+You register a plugin using `FuseBox.addPlugin(YourPlugin)`. 
+
+* As an example here is a way to register a plugin that just reloads the window for *js* files instead of the default behavior:
 
 ```js
-const registerStatefulModules = (moduleNames: string[]) => FuseBox.addPlugin({
+FuseBox.addPlugin({
   hmrUpdate: ({ type, path, content }) => {
     if (type === "js") {
-      const isModuleNameInPath = (path) => moduleNames.some(name => path.includes(name));
-
-      /** If a stateful module has changed reload the window */
-      if (isModuleNameInPath(path)) {
-        window.location.reload();
-      }
-
-      /** Otherwise flush the other modules */
-      FuseBox.flush(function(fileName) {
-        return !isModuleNameInPath(fileName);
-      });
-      /** Patch the module at give path */
-      FuseBox.dynamic(path, content);
-
-      /** Re-import / run the mainFile */
-      if (FuseBox.mainFile) {
-        FuseBox.import(FuseBox.mainFile)
-      }
-
-      /** We don't want the default behavior */
+      window.location.reload();
       return true;
     }
   }
 });
-
-registerStatefulModules(['TestStore', 'actions/index']);
 ```
 
-PROTIP: example of modules you might not want to flush: 
-* Modules that when required register a global hook e.g. `window.addEventListener("hashchange",/*something*/)`
-* Modules that initialize / hold state e.g when using [MobX](https://github.com/mobxjs/mobx).
+* As another example, here is a plugin that disables all default HMR behavior and simply logs a message to the console:
+
+```js
+FuseBox.addPlugin({
+  hmrUpdate: (evt) => {
+    console.log('HMR Update', evt, 'Please reload the window');
+    return true;
+  }
+});
+```
+
+* Another way to register plugins, is when instantiating (with new, or .init)
+```js
+FuseBox.init({
+  homeDir: "src",
+  outFile: "build/out.js",
+  plugins: [
+    hmrUpdate: (evt) => {
+      console.log('HMR Update', evt, 'Please reload the window');
+      return true;
+    },
+  ],
+}};
+```
+
+### Loader Plugin Examples
+- [vue plugin](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/VuePlugin.ts#L7)

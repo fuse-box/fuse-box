@@ -1,9 +1,9 @@
-import { File } from "./File";
+import { File } from './File';
 import { PathMaster, IPackageInformation } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
-import { each } from "realm-utils";
+import { each, utils } from 'realm-utils';
 import { BundleData } from "./Arithmetic";
-
+import { ensurePublicExtension } from './Utils';
 
 /**
  * 
@@ -188,23 +188,35 @@ export class ModuleCollection {
         this.delayedResolve = true;
         this.initPlugins();
 
+        if (this.context.defaultEntryPoint) {
+            this.entryFile = File.createByName(this, ensurePublicExtension(this.context.defaultEntryPoint));
+        }
+
         // faking entry point
         return each(data.including, (withDeps, modulePath) => {
             let file = new File(this.context, this.pm.init(modulePath));
             return this.resolve(file);
-        }).then(() => {
-            return this.onDefaultProjectDone();
-        }).then(x => {
-
-            return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
-        }).then(toResolve => {
-
-            return each(toResolve, (file: File) => {
-                return this.resolveNodeModule(file);
+        })
+            .then(() => this.context.resolve())
+            .then(() => this.transformGroups())
+            .then(() => {
+                return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
+            }).then(toResolve => {
+                return each(toResolve, (file: File) => this.resolveNodeModule(file));
+            })
+            // node modules might need to resolved asynchronously
+            // like css plugins
+            .then(() => this.context.resolve())
+            .then(() => {
+                return this.context.cache.buildMap(this);
+            }).catch(e => {
+                this.context.nukeCache();
+                if (e.message) {
+                    this.context.fatal(e.message)
+                } else {
+                    console.error(e.stack || e);
+                }
             });
-        }).then(() => {
-            return this.context.cache.buildMap(this);
-        });
     }
 
     /**
@@ -265,13 +277,26 @@ export class ModuleCollection {
             : collection.resolveEntry();
     }
 
-    public onDefaultProjectDone() {
 
-        this.context.fileGroups.forEach(group => {
+    public transformGroups() {
+        const promises = [];
+        this.context.fileGroups.forEach((group: File, name: string) => {
             this.dependencies.set(group.info.fuseBoxPath, group);
-            group.tryPlugins();
+            if (group.groupHandler) {
+                if (utils.isFunction(group.groupHandler.transformGroup)) {
+                    promises.push(new Promise((resolve, reject) => {
+                        const result = group.groupHandler.transformGroup(group);
+                        if (utils.isPromise(result)) {
+                            return result.then(resolve).catch(reject);
+                        }
+                        return resolve();
+                    }));
+                }
+            }
         });
+        return Promise.all(promises);
     }
+
     /**
      * 
      * 

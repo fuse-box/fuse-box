@@ -1,4 +1,5 @@
 if (FuseBox.isServer) {
+
     module.exports = global.require("buffer");
 } else {
     /*!
@@ -15,6 +16,7 @@ if (FuseBox.isServer) {
     var ieee754 = require('ieee754')
 
     exports.Buffer = Buffer
+    exports.FuseShim = true
     exports.SlowBuffer = SlowBuffer
     exports.INSPECT_MAX_BYTES = 50
 

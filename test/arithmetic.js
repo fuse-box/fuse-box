@@ -55,17 +55,33 @@ describe("Arithmetic", () => {
     });
 
     it("Should include an entry point", () => {
-        let result = Arithmetic.parse(` > main/app`);
-        result.entry.should.deepEqual({ "main/app": true })
-        result.including.should.deepEqual({ "main/app": true })
+        let result = Arithmetic.parse(` > main/app.js`);
+        result.entry.should.deepEqual({ "main/app.js": true })
+        result.including.should.deepEqual({ "main/app.js": true })
     });
 
 
     it("Should understand an entry point without deps", () => {
-        let result = Arithmetic.parse(` > [main/app]  -path`);
+        let result = Arithmetic.parse(` > [main/app.js]  -path`);
 
         result.excluding.should.deepEqual({ 'path': true });
-        result.entry.should.deepEqual({ "main/app": false })
+        result.entry.should.deepEqual({ "main/app.js": false })
     });
+
+    it("Should add explicit require", () => {
+        let result = Arithmetic.parse(` > [main/app.js]  @blueprint/core`);
+        result.including.should.deepEqual({ 'main/app.js': false, '@blueprint/core': true })
+
+    });
+
+    it("Should exclude explicit require", () => {
+        let result = Arithmetic.parse(` > [main/app.js]  - @blueprint/core`);
+
+        result.excluding.should.deepEqual({ '@blueprint/core': true })
+
+    });
+
+
+
 
 })

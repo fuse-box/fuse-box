@@ -3,64 +3,90 @@
 Fusebox contains premade plugins, that should help you to get started.
 
 ## CSS Plugin
+CSSPlugin should be always at the end of any CSS processor chain, as it handles everything that is relating to bundling, reloading and grouping.
 
-It's very easy to start working with css files. You have 2 options, you either bundle the contents or serve the files. A decision that can be made at build time.
 
-For example:
+### Inline CSS
+
+```
+plugins : [
+  CSSPlugin()
+]
+```
+That configuration gets all `.css` on they way, and inlines them in your bundle.
+
+### Write to the filesystem
+
+You can write files to the file system as well.
+
 ```js
-plugins: [
-    fsbx.CSSPlugin({
-        minify: true
+plugins : [
+    CSSPlugin({
+        outFile: (file) => `${tmp}/${file}`
     })
 ]
 ```
 
-In this case, all CSS files will be bundled.
+FuseBox will automatically inject your files into the HEAD once required
 
-### Write contents to a different file
-
-Combine this module with something else, and you will see real magic happen.
+```html
+<link rel="stylesheet" type="text/css" href="main.css">
 ```
-plugins: [
-    [
-        fsbx.SassPlugin({ outputStyle: 'compressed' }),
-        fsbx.CSSPlugin({ write: true })
-    ]
-]
-```
-* It will create an according file - `./main.scss` becomes `build/main.css` (your [outFile](#out-file) folder + project path)
-* Will create `main.css.map` and it will do mappping too, ff sourcemaps are attached
-* It will automatically append filename to the head (and serve it)
 
-Check how it works [here](https://github.com/fuse-box/angular2-example)
+### Head injection
 
-> Note - we are still working on the CSS plugins. Be patient. Customisations are coming soon.
+CSSPlugin automatically appends your script into the HEAD by default. You can override it by setting `{inject : false}`
 
-### Serving file
-
-But if you define "serve" option with a callback, all files will be filtered through it. A callback is expected to return a string with a browser path. If you return "undefined" or *NOT* a string, that file will be bundled as if no option was specified.
-
-All css files will be served by server.
 ```js
-plugins: [
-    fsbx.CSSPlugin({
-        minify: true,
-        serve: path => `./${path}`
+plugins : [
+    CSSPlugin({
+        outFile: (file) => `${tmp}/${file}`,
+        inject : false
     })
 ]
 ```
+Now you can manually append your css file!
 
-All files will be served except for "styles.css" (contents will be included in the bundle)
-```
-plugins: [
-    fsbx.CSSPlugin({
-        minify: true,
-        serve: path => path === "styles.css` ? 0 : ./${path}`
+If you want to keep the magic but configure the injection yourself, you can provide a callback to the `inject` 
+parameter to customise your css file resolver in the browser
+
+```js
+plugins : [
+    CSSPlugin({
+        outFile: (file) => `${tmp}/${file}`,
+        inject: (file) => `custom/${file}`
     })
 ]
 ```
+Will result in:
 
-On top of that a CSS file will added to DOM upon request if not found in the bundle.
+```html
+<link rel="stylesheet" type="text/css" href="custom/main.css">
+```
+ 
+
+### Grouping files
+
+You can group many css files into a one file. 
+
+
+```js
+plugins : [
+    CSSPlugin({group : "bundle.css"})
+]
+```
+
+the `group` option should not contain any relative or absolute paths. This is a virtual file in the dependency tree. You can use 
+all paramters described above to customise the behaviour. For example
+
+```js
+ plugins: [CSSPlugin({ group: "app.css", outFile: `${tmp}/app.css` })],
+
+```
+
+> NOTE! outFile should be a string when used with `group` option.
+
+Check the tests [here](https://github.com/fuse-box/fuse-box/blob/master/test/css_plugin.js) 
 
 ## CSSResourcePlugin
 

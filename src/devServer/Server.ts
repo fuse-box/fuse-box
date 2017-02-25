@@ -11,7 +11,7 @@ const watch = require("watch");
 export type HotReloadEmitter = (server: Server, sourceChangedInfo: any) => any;
 
 export type SourceChangedEvent = {
-    type: 'js' | 'css',
+    type: 'js' | 'css' | 'css-file',
     content: string,
     path: string
 }
@@ -22,13 +22,15 @@ export interface ServerOptions {
 
     /** 
      * - If false nothing is served.
-     * - If string specfied this is the folder served from express.static
-     * - It can be an absolute path or relative to `appRootPath`
+     * - If string specified this is the folder served from express.static
+     *      It can be an absolute path or relative to `appRootPath`
      **/
     root?: boolean | string;
 
     emitter?: HotReloadEmitter;
     httpServer?: boolean;
+    socketURI?: string;
+    hmr?: boolean
 }
 
 /**
@@ -54,10 +56,12 @@ export class Server {
         const root: string | boolean = opts.root !== undefined
             ? (utils.isString(opts.root) ? ensureUserPath(opts.root as string) : false) : rootDir;
         const port = opts.port || 4444;
+        if (opts.hmr !== false) {
+            this.fuse.context.plugins.push(
+                HotReloadPlugin({ port, uri: opts.socketURI })
+            );
+        }
 
-        this.fuse.context.plugins.push(
-            HotReloadPlugin({ port })
-        );
 
         // allow user to override hot reload emitter
         let emitter: HotReloadEmitter | false = utils.isFunction(opts.emitter) ? opts.emitter : false;

@@ -53,7 +53,7 @@ export class ConcatPluginClass implements Plugin {
         let context = file.context;
         let fileGroup = context.getFileGroup(this.bundleName);
         if (!fileGroup) {
-            fileGroup = context.createFileGroup(this.bundleName);
+            fileGroup = context.createFileGroup(this.bundleName, file.collection, this);
         }
         fileGroup.addSubFile(file);
 

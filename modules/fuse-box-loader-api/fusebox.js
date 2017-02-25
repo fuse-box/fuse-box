@@ -1,4 +1,6 @@
-(function(__root__){ var $isBrowser = typeof window !== "undefined" && window.navigator;
+(function(__root__){
+if (__root__["FuseBox"]) return __root__["FuseBox"];
+var $isBrowser = typeof window !== "undefined" && window.navigator;
 if ($isBrowser) {
     window["global"] = window;
 }
@@ -141,6 +143,10 @@ var $getRef = function (name, opts) {
         }
         if (!file) {
             file = pkg.f[filePath + ".jsx"];
+        }
+        if (!file) {
+            validPath = filePath + "/index.jsx";
+            file = pkg.f[validPath];
         }
     }
     return {
@@ -364,5 +370,5 @@ FuseBox.packages = $packages;
 FuseBox.isBrowser = $isBrowser !== undefined;
 FuseBox.isServer = !$isBrowser;
 FuseBox.plugins = [];
- 
+
 return __root__["FuseBox"] = FuseBox; } )(this)

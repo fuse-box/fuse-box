@@ -1,5 +1,3 @@
-/// <reference path="../LoaderAPI.d.ts"/>
-
 /**
  * @module listens to `source-changed` socket events and actions hot reload
  */
@@ -7,14 +5,15 @@
 import { SocketClient } from '../fusebox-websocket';
 const Client: typeof SocketClient = require("fusebox-websocket").SocketClient;
 
-export const connect = (port: string) => {
+export const connect = (port: string, uri: string) => {
 
     if (FuseBox.isServer) {
         return;
     }
     port = port || window.location.port;
     let client = new Client({
-        port: port
+        port: port,
+        uri: uri
     });
     client.connect();
     console.log("connecting...");
@@ -35,7 +34,17 @@ export const connect = (port: string) => {
             FuseBox.flush();
             FuseBox.dynamic(data.path, data.content);
             if (FuseBox.mainFile) {
-                FuseBox.import(FuseBox.mainFile)
+                try {
+                    FuseBox.import(FuseBox.mainFile)
+                } catch (e) {
+                    if (typeof e === "string") {
+                        if (/not found/.test(e)) {
+                            return window.location.reload();
+                        }
+                    }
+                    console.error(e);
+                }
+
             }
         }
         if (data.type === "css" && __fsbx_css) {

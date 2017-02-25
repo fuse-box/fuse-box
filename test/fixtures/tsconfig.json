@@ -7,18 +7,14 @@
         "jsx": "react",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
+        "noUnusedLocals": true,
         "declaration": true,
         "noImplicitAny": false,
         "noImplicitUseStrict": false,
-        "removeComments": false,
+        "removeComments": true,
         "noLib": false,
+        "outDir": "build/",
         "preserveConstEnums": true,
         "suppressImplicitAnyIndexErrors": true
-    },
-    "exclude": [],
-    "compileOnSave": false,
-    "buildOnSave": false,
-    "atom": {
-        "rewriteTsconfig": false
     }
 }

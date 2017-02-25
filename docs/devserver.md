@@ -31,6 +31,25 @@ devServer(">index.ts", {
 });
 ```
 
+## Disable HMR
+If you not into Hot Reload, you can disable it:
+
+
+```js
+devServer(">index.ts", {
+   hmr : false
+});
+```
+
+## Custom socket URI
+You can customize the URI if required.
+
+```js
+devServer(">index.ts", {
+   socketURI : "wss://localhost:3333" 
+});
+```
+
 ## Express api
 Access express application like so:
 ```js
@@ -56,6 +75,19 @@ self.httpServer.serveStatic("*", "build/static");
 this.app.use(userPath, express.static(ensureUserPath(userFolder)));
 ```
 
+You can also create an SPA server which fallbacks to index.html
+```js
+var express = require('express');
+var path = require('path')
+var server = devServer('>index.js', {
+    port: 8081,
+});
+server.httpServer.app.use(express.static(path.join('build','static')));
+server.httpServer.app.get('*', function(req, res) {
+    res.sendFile(path.join('build', 'index.html'));
+});
+```
+
 ## Custom emitter
 
 You can manually sent events on file change like so:
@@ -78,3 +110,5 @@ fuse.devServer(">app.tsx", {
 });
 ```
 In this configuration `port: 8080` corresponds to a socket server port, having `httpServer:false` makes it work only in `socket` mode.  Once you page it loaded, `FuseBox API` will try to connect to `:8080` port an start listening to events.
+
+See the [fuse-box-express-example](https://github.com/fuse-box/fuse-box-express-seed) for a more detailed setup.

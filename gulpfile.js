@@ -17,6 +17,7 @@ const uglify = require('gulp-uglify');
  * Fail on error if not in watch mode
  */
 let watching = false;
+
 function onError(error) {
     if (!watching) {
         process.exit(1);
@@ -26,48 +27,31 @@ function onError(error) {
 /**
  * ts projects
  */
-let projectTypings = ts.createProject('src/tsconfig.json');
+let projectTypings = ts.createProject('src/tsconfig.json', {
+    removeComments: false,
+});
 let projectCommonjs = ts.createProject('src/tsconfig.json');
 let projectLoader = ts.createProject('src/loader/tsconfig.json');
-let getProjectModule = () => ts.createProject('src/modules/tsconfig.json');
+let projectLoaderTypings = ts.createProject('src/loader/tsconfig.json', {
+    removeComments: false,
+});
+let projectModule = ts.createProject('src/modules/tsconfig.json');
 
 /**
  * Our commonjs only files
  */
 let filesMain = ['src/**/*.ts', "!./src/loader/LoaderAPI.ts", "!./src/modules/**/*.ts"];
 
-
-/**
- * Used to build the fusebox modules
- * Each of these
- * - is loaded from `src/modules/${name}/index.ts`
- * - built to `modules/${name}/index.js` 
- * 
- * When adding a new module here be sure to .gitignore `modules/${name}/`
- */
-const fuseboxModuleTasks = [
-    'fsbx-default-css-plugin',
-    'fusebox-hot-reload',
-    'fusebox-websocket',
-].map(fuseboxModule => {
-    let project = getProjectModule();
-    const taskName = `dist-modules-${fuseboxModule}`
-    gulp.task(taskName, () => {
-        return gulp.src(`src/modules/${fuseboxModule}/index.ts`)
-        .pipe(project()).on('error', onError).js
-        .pipe(gulp.dest(`modules/${fuseboxModule}`))
-    });
-    return taskName;
-});
-gulp.task('dist-modules', fuseboxModuleTasks);
-
 /**
  * Loader API building
  */
-gulp.task('dist-loader', () => {
+gulp.task('dist-loader-js', () => {
     return gulp.src('src/loader/LoaderAPI.ts')
         .pipe(projectLoader()).on('error', onError).js
-        .pipe(wrap('(function(__root__){ <%= contents %> \nreturn __root__["FuseBox"] = FuseBox; } )(this)'))
+        .pipe(wrap(`(function(__root__){
+if (__root__["FuseBox"]) return __root__["FuseBox"];
+<%= contents %>
+return __root__["FuseBox"] = FuseBox; } )(this)`))
         .pipe(rename('fusebox.js'))
         .pipe(gulp.dest('modules/fuse-box-loader-api'))
         .pipe(rename('fusebox.min.js'))
@@ -77,10 +61,22 @@ gulp.task('dist-loader', () => {
         .pipe(gulp.dest('modules/fuse-box-loader-api'))
 
 });
-gulp.task('minify-loader', function() {
-    return gulp.src('modules/fuse-box-loader-api/fusebox.js')
-        .pipe(uglify())
-        .pipe(rename('fusebox.min.js')).pipe(gulp.dest('modules/fuse-box-loader-api'))
+gulp.task('dist-loader-typings', () => {
+    return gulp.src('src/loader/LoaderAPI.ts')
+        .pipe(projectLoaderTypings()).dts
+        .pipe(rename('LoaderAPI.ts'))
+        .pipe(gulp.dest('src/modules/fuse-loader'));
+});
+gulp.task('dist-loader', ['dist-loader-js', 'dist-loader-typings'])
+
+/**
+ * Used to build the fusebox modules
+ * When adding a new module here be sure to .gitignore `modules/${name}/`
+ */
+gulp.task('dist-modules', ['dist-loader-typings'], () => {
+    return gulp.src(`src/modules/**/*.ts`)
+        .pipe(projectModule()).on('error', onError)
+        .pipe(gulp.dest(`modules`))
 });
 
 /**
@@ -97,10 +93,10 @@ gulp.task('dist-commonjs', () => {
         .pipe(projectCommonjs()).on('error', onError).js
         .pipe(gulp.dest('dist/commonjs'));
 });
-gulp.task('dist-main',['dist-typings', 'dist-commonjs']);
+gulp.task('dist-main', ['dist-typings', 'dist-commonjs']);
 
 /**
- * NPM deploy management
+ *   NPM deploy management
  */
 gulp.task('publish', function(done) {
     runSequence('dist', 'increment-version', 'commit-release', 'npm-publish', done);
@@ -148,7 +144,7 @@ gulp.task('watch', ['dist'], function() {
     gulp.watch(['src/loader/**/*.ts'], () => {
         runSequence('dist-loader');
     });
-    
+
     gulp.watch(['src/modules/**/*.ts'], () => {
         runSequence('dist-modules');
     });

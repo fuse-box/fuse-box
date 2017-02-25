@@ -7,6 +7,35 @@ const MBLACKLIST = [
     "freelist",
     "sys"
 ];
+export type Concat = {
+    add(fileName: string | null, content: string | Buffer, sourceMap?: string): void;
+    content: Buffer;
+    sourceMap: string;
+}
+export type ConcatModule = {
+    new (generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
+}
+export const Concat: ConcatModule = require("concat-with-sourcemaps");
+
+export function contains(array: any[], obj: any) {
+    return array && array.indexOf(obj) > -1;
+}
+
+export function replaceAliasRequireStatement(requireStatement: string, aliasName: string, aliasReplacement: string) {
+    requireStatement = requireStatement.replace(aliasName, aliasReplacement);
+    requireStatement = path.normalize(requireStatement)
+    return requireStatement;
+}
+export function write(fileName: string, contents: any) {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(fileName, contents, (e) => {
+            if (e) {
+                return reject(e);
+            }
+            return resolve();
+        })
+    });
+}
 
 export function camelCase(str: string) {
     let DEFAULT_REGEX = /[-_]+(.)?/g;
@@ -49,6 +78,19 @@ export function ensureDir(userPath: string) {
     return userPath;
 }
 
+export function removeFolder(userPath) {
+    if (fs.existsSync(userPath)) {
+        fs.readdirSync(userPath).forEach(function (file, index) {
+            var curPath = path.join(userPath, file);
+            if (fs.lstatSync(curPath).isDirectory()) { // recurse
+                removeFolder(curPath);
+            } else { // delete file
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(userPath);
+    }
+}
 
 
 export function replaceExt(npath, ext): string {

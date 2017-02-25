@@ -9,7 +9,7 @@ const getTestFolder = (name) => {
     return path.join(testFolder, name)
 }
 const testFolderShouldEqual = (a, b) => {
-    a = a.replace(/\\/g, '/');//for Windows OS
+    a = a.replace(/\\/g, '/'); //for Windows OS
     let matched = a.indexOf(b) === a.length - b.length;
     if (!matched) {
         throw new Error(`${a} is not ${b}`);
@@ -52,6 +52,7 @@ describe("PathMaster", () => {
 
     it("Should property join a local folder with index", () => {
         let result = pm.resolve("../", getTestFolder("lib/bar"));
+        console.log(result);
         testFolderShouldEqual(result.absPath, "/lib/index.js")
     });
 

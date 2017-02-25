@@ -1,3 +1,7 @@
+/** 
+ * This whole file is wrapped in a function by our gulpfile.js
+ * The function is injected the global `this` as `__root__`
+ **/
 declare let __root__: any;
 declare let __fbx__dnm__: any;
 
@@ -138,7 +142,7 @@ const $getDir = (filePath: string) => {
  * Joins paths
  * Works like nodejs path.join
  */
-const $pathJoin = function(...string: string[]): string {
+const $pathJoin = function (...string: string[]): string {
     let parts: string[] = [];
     for (let i = 0, l = arguments.length; i < l; i++) {
         parts = parts.concat(arguments[i].split("/"));
@@ -286,11 +290,17 @@ const $getRef = (name: string, opts: {
             validPath = filePath + ".js";
             file = pkg.f[validPath];
         }
+
         // if file is not found STILL
         // then we can try JSX
         if (!file) {
             // try for JSX one last time
             file = pkg.f[filePath + ".jsx"];
+        }
+
+        if (!file) {
+            validPath = filePath + "/index.jsx";
+            file = pkg.f[validPath];
         }
     }
 
@@ -313,7 +323,7 @@ const $async = (file: string, cb: (imported?: any) => any) => {
     if ($isBrowser) {
         var xmlhttp: XMLHttpRequest;
         xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
+        xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4) {
                 if (xmlhttp.status == 200) {
                     let contentType = xmlhttp.getResponseHeader("Content-Type");
@@ -491,7 +501,7 @@ class FuseBox {
     /**
      * Imports a module
      */
-    public static import(name: string, opts: any) {
+    public static import(name: string, opts?: any) {
         return $import(name, opts);
     }
 
@@ -558,8 +568,8 @@ class FuseBox {
         pkg: string
     }) {
         let pkg = opts && opts.pkg || "default";
-        this.pkg(pkg, {}, function(___scope___: any) {
-            ___scope___.file(path, function(exports: any, require: any, module: any, __filename: string, __dirname: string) {
+        this.pkg(pkg, {}, function (___scope___: any) {
+            ___scope___.file(path, function (exports: any, require: any, module: any, __filename: string, __dirname: string) {
                 var res = new Function('__fbx__dnm__', 'exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
                 res(true, exports, require, module, __filename, __dirname, __root__);
             });
@@ -616,3 +626,13 @@ class FuseBox {
         this.plugins.push(plugin);
     }
 }
+
+/** 
+ * Injected into the global namespace by the fsbx-default-css-plugin 
+ * Generates a tag with an `id` based on `__filename`
+ * If you call it it again with the same file name the same tag is patched
+ * @param __filename the name of the source file
+ * @param contents if provided creates a style tag
+ *  otherwise __filename is added as a link tag
+ **/
+declare var __fsbx_css: { (__filename: string, contents?: string): void };

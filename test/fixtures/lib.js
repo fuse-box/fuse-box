@@ -72,6 +72,9 @@ exports.createEnv = (opts, str, done) => {
             moduleParams.package = name;
             moduleParams.cache = false;
             moduleParams.log = false;
+
+            moduleParams.tsConfig = path.join(appRoot.path, "test", "fixtures", "tsconfig.json")
+
             FuseBox.init(moduleParams).bundle(moduleParams.instructions, () => {
                 if (moduleParams.onDone) {
                     moduleParams.onDone({
@@ -90,6 +93,7 @@ exports.createEnv = (opts, str, done) => {
         projectOptions.outFile = path.join(localPath, "project", "index.js");
         projectOptions.cache = false;
         projectOptions.log = false;
+        projectOptions.tsConfig = path.join(appRoot.path, "test", "fixtures", "tsconfig.json")
         projectOptions.modulesFolder = modulesFolder;
         return new Promise((resolve, reject) => {
             FuseBox.init(projectOptions).bundle(projectOptions.instructions, () => {
