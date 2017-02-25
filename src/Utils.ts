@@ -65,6 +65,7 @@ export function ensureUserPath(userPath: string) {
     if (!path.isAbsolute(userPath)) {
         userPath = path.join(appRoot.path, userPath);
     }
+    userPath = path.normalize(userPath);
     let dir = path.dirname(userPath);
     mkdirp.sync(dir);
     return userPath;
@@ -74,6 +75,7 @@ export function ensureDir(userPath: string) {
     if (!path.isAbsolute(userPath)) {
         userPath = path.join(appRoot.path, userPath);
     }
+    userPath = path.normalize(userPath);
     mkdirp.sync(userPath);
     return userPath;
 }

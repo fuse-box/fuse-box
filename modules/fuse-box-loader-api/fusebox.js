@@ -14,11 +14,15 @@ var $packages = $fsbx.p = $fsbx.p || {};
 var $events = $fsbx.e = $fsbx.e || {};
 var $getNodeModuleName = function (name) {
     var n = name.charCodeAt(0);
+    var s = name.charCodeAt(1);
+    if (!$isBrowser && s === 58) {
+        return;
+    }
     if (n >= 97 && n <= 122 || n === 64) {
         if (n === 64) {
-            var s = name.split("/");
-            var target = s.splice(2, s.length).join("/");
-            return [s[0] + "/" + s[1], target || undefined];
+            var s_1 = name.split("/");
+            var target = s_1.splice(2, s_1.length).join("/");
+            return [s_1[0] + "/" + s_1[1], target || undefined];
         }
         var index = name.indexOf("/");
         if (index === -1) {
@@ -118,7 +122,7 @@ var $getRef = function (name, opts) {
             basePath = "./";
         }
         else {
-            if (!$isBrowser && (name.charCodeAt(0) === 47 || name.charCodeAt(1) == 58)) {
+            if (!$isBrowser && (name.charCodeAt(0) === 47 || name.charCodeAt(1) === 58)) {
                 return $serverRequire(name);
             }
         }

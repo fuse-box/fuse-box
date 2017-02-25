@@ -112,6 +112,12 @@ interface IReference {
  */
 const $getNodeModuleName = (name: string) => {
     const n = name.charCodeAt(0);
+    const s = name.charCodeAt(1);
+    // basically a hack for windows to stop recognising
+    // c:\ as a valid node module
+    if (!$isBrowser && s === 58) {
+        return;
+    }
     // https://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
     // basically lowcase alphabet starts with 97 ends with 122, and symbol @ is 64
     // which 2x faster than /^([@a-z].*)$/
@@ -254,7 +260,7 @@ const $getRef = (name: string, opts: {
         } else {
             // check for absolute paths for nodejs
             // either first one is / (47 for *nix) or second one : (58 for windows) 
-            if (!$isBrowser && (name.charCodeAt(0) === 47 || name.charCodeAt(1) == 58)) {
+            if (!$isBrowser && (name.charCodeAt(0) === 47 || name.charCodeAt(1) === 58)) {
                 return $serverRequire(name);
             }
         }
