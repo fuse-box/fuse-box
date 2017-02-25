@@ -18,7 +18,7 @@ That's your _source_ folder. It can be an absolute path, Or relative to [appRoot
 
 ```js
 FuseBox.init({
-  homeDir: "./src"
+  homeDir: "./src",
 })
 ```
 
@@ -37,7 +37,7 @@ That's your _bundle_ file. It can be an absolute path, Or relative to [appRootPa
 ```js
 FuseBox.init({
   homeDir: "./src",
-  outFile: "./build/bundle.js"
+  outFile: "./build/bundle.js",
 })
 ```
 
@@ -52,9 +52,21 @@ You can turn off caching if you like. By default caching is on. FuseBox will cre
 FuseBox.init({
   homeDir: "./src",
   outFile: "./build/bundle.js",
-  cache: true
+  cache: true,
 })
 ```
+
+## Debug and Log
+Additional logging and debugging can be enabled, but keep in mind they can reduce performance.
+```js
+FuseBox.init({
+  homeDir: "./src",
+  outFile: "./build/bundle.js",
+  log: true,
+  debug: true,
+})
+```
+
 
 ## Custom modules folder
 
@@ -62,7 +74,7 @@ You probably would want to test a package some day, or just have an abstraction 
 
 ```js
 FuseBox.init({
-    modulesFolder: "src/modules"
+    modulesFolder: "src/modules",
 })
 ```
 
@@ -80,7 +92,7 @@ It's imperative having a __unique name__ (matching an npm package) when publishi
 
 ```js
 FuseBox.init({
-    package: "mySuperLib"
+    package: "mySuperLib",
 })
 ```
 If you want to have an entry point (main) file, define it like so:
@@ -88,9 +100,9 @@ If you want to have an entry point (main) file, define it like so:
 ```js
 FuseBox.init({
     package:{
-        name :  "mySuperLib",
-        main : "index.ts"
-    }
+        name: "mySuperLib",
+        main: "index.ts",
+    },
 })
 ```
 If you don't want to you have your package execute on load, make sure your instruction does not have `>` in it.
@@ -100,7 +112,7 @@ Here is an example how make a package:
 FuseBox.init({
     package: {
         name: "super-name",
-        entry: "index.ts"
+        entry: "index.ts",
     },
     homeDir: `/src-package`,
     outFile: `build/packages/super-name.js`,
@@ -153,6 +165,8 @@ sourceMap: {
 * `outFile` is where the sourcemap is written to disk. It can be an absolute path, Or relative to `appRootPath`.
 
 Sourcemaps currently work with [typescript](#typescript) and [BabelPlugin](#babel-plugin)
+[see the SourceMapPlainJsPlugin][#SourceMapPlainJsPlugin]
+
 
 ## List of plugins
 
@@ -160,10 +174,10 @@ Sourcemaps currently work with [typescript](#typescript) and [BabelPlugin](#babe
 ```js
 FuseBox.init({
     plugins:[
-        build.TypeScriptHelpers(),
-        build.JSONPlugin(),
-        [build.LESSPlugin(), build.CSSPlugin()],
-    ]
+        fsbx.TypeScriptHelpers(),
+        fsbx.JSONPlugin(),
+        [fsbx.LESSPlugin(), fsbx.CSSPlugin()],
+    ],
 })
 ```
 
@@ -174,8 +188,8 @@ If you are into black magic, this API is for you.
 ```js
 FuseBox.init({
     autoImport: {
-        Inferno: "inferno"
-    }
+        Inferno: "inferno",
+    },
 })
 ```
 Whereas the key `Inferno` (uppercase) is a variable name, and `inferno` (lowercase) is a require statement.
@@ -201,14 +215,14 @@ However `var Inferno = {};` will do nothing.
 ## Alias
 If you are coming from WebPack this feature might be helpful.
 
-> Alias is an experimental feature; the API might change in the feature. 
+> Alias is an experimental feature; the API might change in the feature.
 > using Alias breaks sourcemaps of a file where it's being used as it is required to re-generated the source code (this will be fixed soon)
 
 ```js
 FuseBox.init({
-    alias : {
+    alias: {
         "faraway": "~/somewhere/far/away/",
-    }
+    },
 })
 ```
 
@@ -219,9 +233,9 @@ You can also alias npm packages:
 
 ```js
 FuseBox.init({
-    alias : {
-        "babel-utils": "babel/dist/something/here/utils"
-    }
+    alias: {
+        "babel-utils": "babel/dist/something/here/utils",
+    },
 })
 ```
 
@@ -251,8 +265,8 @@ FuseBox.init({
    shim: {
         jquery: {
             source: "node_modules/jquery/dist/jquery.js",
-            exports: "$"
-        }
+            exports: "$",
+        },
    }
 });
 ```
@@ -269,13 +283,13 @@ The key `jquery` in our case is used to define package name: for example, you ca
 
 Example shim config:
 ```js
-shim : {
-   "react-native-web": { exports : "require('react-native')"}
+shim: {
+   "react-native-web": { exports: "require('react-native')"},
 }
 ```
 Now you can reference it like  `window.ReactNative`, and require function is at your convenience.
 
-Important to note, shims will not be analyzed, which means they should be transpiled before importing, or imported into an environment that does not need them to be transpiled. Shimming works similar to [requirejs](http://requirejs.org/) and [jspm](http://jspm.io/). 
+Important to note, shims will not be analyzed, which means they should be transpiled before importing, or imported into an environment that does not need them to be transpiled. Shimming works similar to [requirejs](http://requirejs.org/) and [jspm](http://jspm.io/).
 
 For an example, see [shimming in the fuse config](https://github.com/fuse-box/shimming-and-css-example/blob/master/fuse.js#L7) and [how it can be accessed in your code](https://github.com/fuse-box/shimming-and-css-example/blob/master/src/index.ts#L4)
 
@@ -288,9 +302,152 @@ you might want to make fuse think that it is running on server.
 
 ```js
 FuseBox.init({
-    serverBundle: true
+    serverBundle: true,
 })
 ```
 > Use it ONLY for electron environment. This is a very special case that allows FuseBox to be run in browser but behave as if it's running on server.
 
 Don't run that bundle in a traditional browser.
+
+
+
+
+## Full Config
+An example using the available config options might look similar to:
+```js
+import fsbx from "fuse-box"
+const FuseBox = fsbx.FuseBox
+
+const config = {
+  homeDir: "./src",
+  outFile: "./build/bundle.js",
+  log: true,
+  debug: true,
+  plugins:[
+    fsbx.BabelPlugin({
+      // test is optional
+      // this would make it only parse `.jsx` files
+      // it defaults to `js` and `jsx`
+      test: /\.jsx$/,
+
+      // if no config is passed in,
+      // it will use the .babelrc closest to homeDir
+      config: {
+        "sourceMaps": true,
+        "presets": ["latest"],
+        "plugins": [
+          "transform-react-jsx",
+          "transform-object-rest-spread",
+          "transform-decorators-legacy",
+          "transform-class-properties",
+          "add-module-exports",
+        ],
+      },
+
+      // this is default `true`
+      // setting this to false
+      // means babel will parse _all imported node modules_
+      limit2project: true,
+    }),
+
+    fsbx.TypeScriptHelpers(),
+    fsbx.JSONPlugin(),
+    fsbx.HTMLPlugin({ useDefault: false })
+
+    // these css plugins are chained
+    [
+      fsbx.LESSPlugin(),
+      fsbx.CSSPlugin({
+        // file is the file.info.absPath
+        // more info on that in the `Plugin API` section
+        outFile: (file) => `./tmp/${file}`
+      })
+    ],
+
+    fsbx.SourceMapPlainJsPlugin(),
+  ],
+
+  shim: {
+    "react-native-web": {
+      exports: `require("react-native")`,
+    },
+  },
+
+  alias: {
+    // node modules
+    "babel-utils": "babel/dist/something/here/utils",
+
+    // homeDir
+    "faraway": "~/somewhere/far/away/",
+  },
+
+  // this works in a similar way to how things such as `process.env`
+  // are automatically added for the browser
+  autoImport: {
+    // used any time we do `Inferno.anything` in the source code
+    Inferno: "inferno",
+  },
+
+  // is for the package `canadaEh`
+  // will export everything that your entry point
+  // think of it as `entry point exports`
+  // and it also adds the exports to `global` or `window`
+  globals: { "canadaEh": "*" },
+
+  // package can just be a string naming your package
+  package: {
+    // name must be unique
+    name: "canadaEh",
+    // main is optional, it is used as an optional entry point
+    main: "index.ts",
+  },
+
+  sourceMap: {
+    bundleReference: "sourcemaps.js.map",
+    outFile: "sourcemaps.js.map",
+  },
+}
+
+if (process.env.NODE_ENV === 'production') {
+  // [options] - UglifyJS2 options
+  const prodPlugins = [
+    fsbx.UglifyJSPlugin(options),
+    fsbx.EnvPlugin({ NODE_ENV: "production" }),
+  ]
+  config.plugins = config.plugins.concat(prodPlugins)
+}
+
+// this is the same as
+// const fuse = new FuseBox(config)
+const fuse = FuseBox.init(config)
+
+// --- bundling
+
+let frontEndDev = true
+let vendors = [
+  'commander',
+  'tosource',
+  'flipbox',
+  'path',
+  'fs',
+]
+const vendorInst = "[async-registry.js]" + vendors.map(vendor => ' +' + vendor).join('')
+const appInst = ">[index.ts]" + vendors.map(vendor => ' -' + vendor).join('')
+
+const multipleBundles = {
+    "./build/vendorBundle.js": vendorInst,
+    "./build/appBundle.js": appInst,
+}
+
+const singleBundle = `
+    > [index.ts]
+    + [**/*.html]
+    + [**/*.js]
+    + [**/*.ts]
+    + [**/*.css]
+`
+
+if (frontEndDev) bundle.devServer(singleBundle)
+else bundle.bundle(multipleBundles)
+
+```

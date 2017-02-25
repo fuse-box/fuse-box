@@ -153,3 +153,24 @@ gulp.task('watch', ['dist'], function() {
         runSequence('dist-main');
     });
 });
+
+gulp.task('installDevDeps', function(done) {
+  var deps = [
+    'babel-core',
+    'babel-generator',
+    'babylon',
+    'cheerio',
+    '@angular/core',
+    'stylus',
+    'less',
+    'postcss',
+    'node-sass',
+    'uglify-js',
+    'source-map',
+    'coffee-script',
+    '@types/node',
+  ]
+  var installDeps = spawn('npm', ['install'].concat(deps), {
+      stdio: 'inherit'
+  })
+});

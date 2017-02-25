@@ -1,17 +1,19 @@
 # Built-in plugins
+Fusebox contains premade plugins that should help you to get started.
 
-Fusebox contains several built-in plugins to handle common use cases.
 
 ## CSS Plugin
 CSSPlugin is used to handle .css syntax.  As such, it should always be at the end of any CSS processing chain (see [#list-of-plugins](Plugin configuration) for examples of plugin chains), as it handles everything that is relating to bundling, reloading and grouping css styles.
 
 
+[see the mastering css with fusebox example](https://github.com/fuse-box/mastering-css)
+
+
 ### Inline CSS
 
 ```js
-plugins : [
-  CSSPlugin()
-]
+plugins: [
+  CSSPlugin(),
 ```
 That configuration converts all `.css` files into a format that allows including them directly into javascript.  For example:
 
@@ -24,10 +26,11 @@ import './main.css'
 The outFile option is used to write css files to the bundle directory
 
 ```js
-plugins : [
+let tmp = './tmp'
+plugins: [
     CSSPlugin({
-        outFile: (file) => `directory/${file}`
-    })
+        outFile: (file) => `${tmp}/${file}`,
+    }),
 ]
 ```
 
@@ -45,26 +48,26 @@ creates
 
 ### Head injection
 
-CSSPlugin automatically appends css styles or stylesheets into the HEAD by default as in the above example. You can override this behavior by setting `{inject : false}`
+CSSPlugin automatically appends css styles or stylesheets into the HEAD by default as in the above example. You can override this behavior by setting `{inject: false}`
 
 ```js
-plugins : [
+plugins: [
     CSSPlugin({
         outFile: (file) => `${tmp}/${file}`,
-        inject : false
-    })
+        inject: false,
+    }),
 ]
 ```
 
-If you want to keep the magic but configure the injection yourself, you can provide a callback to the `inject` 
+If you want to keep the magic but configure the injection yourself, you can provide a callback to the `inject`
 parameter to customise your css file resolver in the browser
 
 ```js
-plugins : [
+plugins: [
     CSSPlugin({
         outFile: (file) => `${tmp}/${file}`,
-        inject: (file) => `custom/${file}`
-    })
+        inject: (file) => `custom/${file}`,
+    }),
 ]
 ```
 Will result in:
@@ -72,22 +75,28 @@ Will result in:
 ```html
 <link rel="stylesheet" type="text/css" href="custom/main.css">
 ```
- 
+
 
 ### Grouping files
-
 You can group many css files into a single file.  Imports of any individual file will be converted into imports of the grouped file.
 
+
 ```js
-plugins : [
-    CSSPlugin({
-        group : "bundle.css"
-    })
+plugins: [
+    CSSPlugin({group: "bundle.css"}),
 ]
 ```
 
 the `group` option should not contain any relative or absolute paths. This is a virtual file in the dependency tree. You can use 
 all parameters described above to customise the behaviour. For example
+
+```js
+plugins: [
+    CSSPlugin({
+        group: "bundle.css"
+    })
+]
+```
 
 ```js
 plugins : [
@@ -107,7 +116,7 @@ Check out the tests [here](https://github.com/fuse-box/fuse-box/blob/master/test
 This program is designed to make it easy to import a css library from an npm package.
 Let's try to make the [jstree](https://github.com/vakata/jstree) library work
 
-```
+```js
 import "jstree/dist/jstree.js";
 import "jstree/dist/themes/default/style.css";
 ```
@@ -118,13 +127,13 @@ It re-writes the URL and copies files to a destination specified by user,
 
 ### Copy files
 
-```
-plugins : [
+```js
+plugins: [
    [/node_modules.*\.css$/,
-      build.CSSResourcePlugin({
-          dist : "build/resources",
-          resolve : (f) => `/resources/${f}`
-      }), build.CSSPlugin()]
+      fsbx.CSSResourcePlugin({
+          dist: "build/resources",
+          resolve: (f) => `/resources/${f}`
+      }), fsbx.CSSPlugin()]
 ]
 ```
 
@@ -134,12 +143,12 @@ plugins : [
 ### Inline
 You can inline images as well, converting them to base64 data images inside the CSS
 
-```
-plugins : [
+```js
+plugins: [
    [/node_modules.*\.css$/,
-      build.CSSResourcePlugin({
-            inline : true
-      }), build.CSSPlugin()]
+    fsbx.CSSResourcePlugin({
+      inline: true,
+    }), fsbx.CSSPlugin()],
 ]
 ```
 
@@ -155,7 +164,7 @@ The less plugin generates CSS, and must be chained prior to the CSSPlugin to be 
 
 ```js
 plugins:[
-  [fsbx.LESSPlugin(), fsbx.CSSPlugin()]
+  [fsbx.LESSPlugin(), fsbx.CSSPlugin()],
 ],
 ```
 
@@ -174,7 +183,6 @@ PostCSS generates CSS, and must be chained prior to the CSSPlugin to be used:
 ```js
 const precss = require("precss");
 const POST_CSS_PLUGINS = [precss()];
-
 
 plugins:[
   [fsbx.PostCSS(POST_CSS_PLUGINS), fsbx.CSSPlugin()],
@@ -199,7 +207,7 @@ Make files export text data
 
 ```js
 plugins:[
- [/\.raw$/, RawPlugin({extensions: ['.raw']})]
+ [/\.raw$/, RawPlugin({extensions: ['.raw']})],
 ],
 ```
 
@@ -215,23 +223,32 @@ npm install node-sass
 Usage:
 ```js
 plugins:[
-  [fsbx.SassPlugin({ /* options */ })]
+  [fsbx.SassPlugin({ /* options */ })],
 ],
 ```
 
 ## HTML Plugin
 ```js
 plugins: [
-  fsbx.HTMLPlugin({ useDefault: false })
+  fsbx.HTMLPlugin({ useDefault: false }),
 ]
 ```
 
 Toggle `useDefault` to make HTML files export strings as `default` property.
-For example with `useDefault: true` you will be able to import HTML files like so :
+For example with `useDefault: true` you will be able to import HTML files like so:
 
 ```js
 import tpl from "~/views/file.html"
 ```
+
+With `useDefault: true`, is as if the html file contains this:
+```jsx
+export default `
+  <!DOCTYPE html>
+  <title>eh</title>
+`
+```
+
 
 ## ImageBase64Plugin
 Works greatly if you want to have images bundled
@@ -239,9 +256,9 @@ Works greatly if you want to have images bundled
 ```bash
 npm install base64-img --save-dev
 ```
-```
+```js
 plugins: [
-    fsbx.ImageBase64Plugin()
+    fsbx.ImageBase64Plugin(),
 ]
 ```
 
@@ -269,16 +286,16 @@ npm install babel-core babel-preset-es2015 babel-plugin-transform-react-jsx
             sourceMaps: true,
             presets: ["es2015"],
             plugins: [
-                ["transform-react-jsx"]
-            ]
-        }
+                ["transform-react-jsx"],
+            ],
+        },
     })
 ]
 ```
 
-option `limit2project` can be set to true to use this plugin across an entire project (including other modules like npm)
+`limit2project` is default true, to use this plugin across an entire project (including other modules like npm)
 
-Note, that if you want to have sourcemaps in place, set `sourceMaps` to true. Read the sourcemaps section for a better understanding of how sourcemaps are defined.
+Note, that if you want to have sourceMaps in place, set `sourceMaps` to true. [Read sourceMaps section](#sourcemaps) for better understanding how sourceMaps are defined.
 
 
 ## JSON plugin
@@ -286,7 +303,7 @@ The JSON plugin allows .json files to be imported as javascript objects
 
 ```js
 plugins: [
-    fsbx.JSONPlugin()
+    fsbx.JSONPlugin(),
 ]
 ```
 
@@ -299,7 +316,7 @@ The SVG plugin allows importing svg graphics files into javascript source for us
 
 ```js
 plugins: [
-    fsbx.SVGPlugin()
+    fsbx.SVGPlugin(),
 ]
 ```
 
@@ -308,7 +325,7 @@ Add a comment with static text at the top of the bundle.
 ```js
 plugins: [
     // Add a banner to bundle output
-    fsbx.BannerPlugin('// Hey this is my banner! Copyright 2016!')
+    fsbx.BannerPlugin('// Hey this is my banner! Copyright 2016!'),
 ]
 ```
 
@@ -317,7 +334,7 @@ Compresses the javascript code by using [UglifyJS2](https://github.com/mishoo/Ug
 ```js
 plugins: [
     // [options] - UglifyJS2 options
-    fsbx.UglifyJSPlugin(options)
+    fsbx.UglifyJSPlugin(options),
 ]
 ```
 
@@ -331,29 +348,29 @@ sourceMap: {
   outFile: "sourcemaps.js.map",
 },
 plugins: [
-    fsbx.SourceMapPlainJsPlugin();
-]
+    fsbx.SourceMapPlainJsPlugin(),
+],
 ```
 
 ## EnvPlugin
 Creates environment variables for both client and server at build time.
 
 ```js
-plugins : [
-   fsbx.EnvPlugin({ NODE_ENV: "production" })
-]
+plugins: [
+   fsbx.EnvPlugin({ NODE_ENV: "production" }),
+],
 ```
 
 Access it with `process.env.${ENVIRONMENT_VARIABLE_NAME}` as in:
 
-```
-console.log( process.env.NODE_ENV )
+```js
+console.log(process.env.NODE_ENV)
 ```
 
 The order of plugins is important: environment variables created with this plugin will only be available to plugins further down the chain, so EnvPlugin should be early in the list of plugins.
 
-```
-plugins : [
+```js
+plugins: [
    fsbx.BabelPlugin({ /* settings /*}), // <-- won't have NODE_ENV set
    fsbx.EnvPlugin({ NODE_ENV: "production" }),
    fsbx.BabelPlugin({ /* settings /*}), // <-- will have NODE_ENV set
@@ -365,11 +382,11 @@ plugins : [
 Allows [CoffeeScript](http://coffeescript.org) compilation of .coffee files
 
 ```js
-plugins : [
+plugins: [
    fsbx.CoffeePlugin({
        // Options passed to the coffeescript compiler
-   })
-]
+   }),
+],
 ```
 
 ## Typescript helpers
@@ -397,10 +414,10 @@ Simply add TypeScriptHelpers to your plugin list. No further configuration requi
 
 ```js
 const fsbx = require("fuse-box");
-let fuseBox = fsbx.FuseBox.init({
+let fuse = fsbx.FuseBox.init({
     homeDir: "test/fixtures/cases/ts",
     outFile: "./out.js",
-    plugins: [fsbx.TypeScriptHelpers()]
+    plugins: [fsbx.TypeScriptHelpers()],
 });
 
 ```
