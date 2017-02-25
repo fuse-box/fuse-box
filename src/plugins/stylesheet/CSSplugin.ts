@@ -256,6 +256,6 @@ export class CSSPluginClass implements Plugin {
     }
 }
 
-export const CSSPlugin = (opts: any) => {
+export const CSSPlugin = (opts?: any) => {
     return new CSSPluginClass(opts)
 }
