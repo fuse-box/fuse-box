@@ -21,20 +21,20 @@ import './main.css'
 
 ### Write css to the filesystem
 
-You can write css files to the file system as well.
+The outFile option is used to write css files to the bundle directory
 
 ```js
 plugins : [
     CSSPlugin({
-        outFile: (file) => `${tmp}/${file}`
+        outFile: (file) => `directory/${file}`
     })
 ]
 ```
 
-FuseBox will automatically inject your files into the HEAD when imported
+FuseBox will automatically inject your files into the HEAD using link tags when imported
 
 ```js
-import './main.css'
+import 'directory/main.css'
 ```
 
 creates
@@ -55,7 +55,6 @@ plugins : [
     })
 ]
 ```
-Now you can manually append your css files!
 
 If you want to keep the magic but configure the injection yourself, you can provide a callback to the `inject` 
 parameter to customise your css file resolver in the browser
@@ -77,7 +76,7 @@ Will result in:
 
 ### Grouping files
 
-You can group many css files into a single file. 
+You can group many css files into a single file.  Imports of any individual file will be converted into imports of the grouped file.
 
 ```js
 plugins : [
@@ -105,16 +104,16 @@ Check out the tests [here](https://github.com/fuse-box/fuse-box/blob/master/test
 
 ## CSSResourcePlugin
 
-Imagine a situation where you import a css file from an npm library.
-Let's try  make [jstree](https://github.com/vakata/jstree) library work
+This program is designed to make it easy to import a css library from an npm package.
+Let's try to make the [jstree](https://github.com/vakata/jstree) library work
 
 ```
 import "jstree/dist/jstree.js";
 import "jstree/dist/themes/default/style.css";
 ```
 
-`style.css` has relative resources (images, fonts), which obviously need to be copied. CSSResourcePlugin comes real handy.
-It re-writes URL and copies files to a destination specified by user,
+`style.css` has relative resources (images, fonts), which need to be copied in order to use it. CSSResourcePlugin solves this problem.
+It re-writes the URL and copies files to a destination specified by user,
 
 
 ### Copy files
@@ -133,7 +132,7 @@ plugins : [
 
 
 ### Inline
-You can inline images as well
+You can inline images as well, converting them to base64 data images inside the CSS
 
 ```
 plugins : [
@@ -152,7 +151,7 @@ Install less first.
 ```bash
 npm install less --save-dev
 ```
-Less plugin should be chained along the with the CSSPlugin
+The less plugin generates CSS, and must be chained prior to the CSSPlugin to be used:
 
 ```js
 plugins:[
@@ -160,18 +159,17 @@ plugins:[
 ],
 ```
 
-> We still need to figure out what to do with sourcemaps. Be patient!
-
+> Sourcemaps are not yet properly handled.  Development is ongoing on this feature
 
 
 ## PostCSS
-Install libraries first
+Install postcss and any postcss plugins first
 
 ```bash
 npm install precss postcss --save-dev
 ```
 
-PostCSS should be chained along the with the CSSPlugin
+PostCSS generates CSS, and must be chained prior to the CSSPlugin to be used:
 
 ```js
 const precss = require("precss");
@@ -183,10 +181,13 @@ plugins:[
 ],
 ```
 
-> We still need to figure out what to do with sourcemaps. Be patient!
+> Sourcemaps are not yet properly handled.  Development is ongoing on this feature
 
 
 ## StylusPlugin
+
+stylus generates CSS, and must be chained prior to the CSSPlugin to be used:
+
 ```js
 plugins:[
   [fsbx.StylusPlugin(), fsbx.CSSPlugin()]
@@ -204,6 +205,9 @@ plugins:[
 
 
 ## SassPlugin
+
+Sass generates CSS, and must be chained prior to the CSSPlugin to be used:
+
 ```bash
 npm install node-sass
 ```
@@ -249,13 +253,14 @@ const image = require("./icons/image.png")
 
 
 ## Babel plugin
-You can use babel plugin to transpile your code.
-Make sure you have `babel-core` installed
+The babel plugin is used to transpile code to different dialects of javascript.
+The npm `babel-core` package must be installed to use the babel plugin.
+
+For example, to transpile JSX, you can use this configuration:
 
 ```bash
 npm install babel-core babel-preset-es2015 babel-plugin-transform-react-jsx
 ```
-For example. to transpile JSX, you can use this configuration.
 ```js
  plugins: [
     fsbx.BabelPlugin({
@@ -271,13 +276,13 @@ For example. to transpile JSX, you can use this configuration.
 ]
 ```
 
-`limit2project` set to true, to use this plugin across an entire project (including other modules like npm)
+option `limit2project` can be set to true to use this plugin across an entire project (including other modules like npm)
 
-Note, that if you want to have sourcemaps in place, set `sourceMaps` to true. Read sourcemaps section for better understanding how sourcemaps are defined.
+Note, that if you want to have sourcemaps in place, set `sourceMaps` to true. Read the sourcemaps section for a better understanding of how sourcemaps are defined.
 
 
 ## JSON plugin
-Of course, it can't be all shiny without a JSON plugin, can it? (Allows `.json` files to be required/imported as JavaScript objects)
+The JSON plugin allows .json files to be imported as javascript objects
 
 ```js
 plugins: [
@@ -286,7 +291,11 @@ plugins: [
 ```
 
 ## SVG Plugin
-React lovers, [here it is](https://github.com/fuse-box/react-example/blob/master/gulpfile.js#L17). Plain and simple.
+
+The SVG plugin allows importing svg graphics files into javascript source for use in styles and as image source.
+
+[here is an example usage](https://github.com/fuse-box/react-example/blob/master/fuse.js), and the
+[source file that imports the SVG](https://github.com/fuse-box/react-example/blob/master/src/App.jsx#L10)
 
 ```js
 plugins: [
@@ -295,7 +304,7 @@ plugins: [
 ```
 
 ## BannerPlugin
-Add anything at the top of your bundle.
+Add a comment with static text at the top of the bundle.
 ```js
 plugins: [
     // Add a banner to bundle output
@@ -304,7 +313,7 @@ plugins: [
 ```
 
 ## UglifyJSPlugin
-Compresses your code by [UglifyJS2](https://github.com/mishoo/UglifyJS2)
+Compresses the javascript code by using [UglifyJS2](https://github.com/mishoo/UglifyJS2)
 ```js
 plugins: [
     // [options] - UglifyJS2 options
@@ -327,7 +336,7 @@ plugins: [
 ```
 
 ## EnvPlugin
-Writes environment variables to both client and server at build time.
+Creates environment variables for both client and server at build time.
 
 ```js
 plugins : [
@@ -335,13 +344,13 @@ plugins : [
 ]
 ```
 
-Access it like you used to:
+Access it with `process.env.${ENVIRONMENT_VARIABLE_NAME}` as in:
 
 ```
 console.log( process.env.NODE_ENV )
 ```
 
-The order of plugins is important: environment variables created with this plugin will only be available to plugins further down the chain.
+The order of plugins is important: environment variables created with this plugin will only be available to plugins further down the chain, so EnvPlugin should be early in the list of plugins.
 
 ```
 plugins : [
@@ -353,7 +362,7 @@ plugins : [
 
 ## CoffeePlugin
 
-Handle [CoffeeScript](http://coffeescript.org) compilation of .coffee files
+Allows [CoffeeScript](http://coffeescript.org) compilation of .coffee files
 
 ```js
 plugins : [
@@ -365,9 +374,9 @@ plugins : [
 
 ## Typescript helpers
 
-A very handy plugin, adds required typescript functions to the bundle. Please note that it adds only the ones that are actually used. So you won't be seeing an unnecessary code.
+This plugin adds required typescript functions to the bundle. Please note that it adds only the ones that are actually used, helping to avoid unnecessary code.
 
-Please, check this [list](https://github.com/fuse-box/fuse-box/tree/master/assets/libs/fuse-typescript-helpers)
+This [list](https://github.com/fuse-box/fuse-box/tree/master/assets/libs/fuse-typescript-helpers) shows the possible helpers.
 
 Available helpers:
 
@@ -380,7 +389,7 @@ __extends | Generic typescript helper
 __generator | Generic typescript helper
 __param | Generic typescript helper
 
-If you spot an error or a missing helper, please, submit an issue, or a pull request. If you feel impatient enough, you can always create your own plugin, based on this class [code](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/TypeScriptHelpers.ts)
+If you spot an error or a missing helper, please submit an issue or a pull request. If needed, you can always create your own plugin, based on this class [code](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/TypeScriptHelpers.ts)
 
 ### Using the plugin
 
