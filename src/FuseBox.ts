@@ -6,7 +6,7 @@ import { JSONPlugin } from "./plugins/JSONplugin";
 import { PathMaster } from "./PathMaster";
 import { WorkFlowContext, Plugin } from "./WorkflowContext";
 import { CollectionSource } from "./CollectionSource";
-import { Arithmetic, BundleData } from "./Arithmetic";
+import { Arithmetic, BundleData } from "./arithmetic/Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";
 import * as path from "path";
 import { each, utils, chain, Chainable } from "realm-utils";

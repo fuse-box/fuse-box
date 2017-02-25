@@ -12,7 +12,7 @@ const child_process = require('child_process');
 const spawn = child_process.spawn;
 const wrap = require('gulp-wrap');
 const uglify = require('gulp-uglify');
-const { FuseBox, JSONPlugin } = require("./dist/commonjs/index");
+
 
 /**
  * Fail on error if not in watch mode
@@ -41,7 +41,7 @@ let projectModule = ts.createProject('src/modules/tsconfig.json');
 /**
  * Our commonjs only files
  */
-let filesMain = ['src/**/*.ts', "!./src/loader/LoaderAPI.ts", "!./src/modules/**/*.ts"];
+let filesMain = ['src/**/*.ts', "!./**/*test*.ts", "!./src/loader/LoaderAPI.ts", "!./src/modules/**/*.ts"];
 
 /**
  * Loader API building
@@ -133,6 +133,7 @@ gulp.task('npm-publish', function(done) {
 
 
 gulp.task("make-task-runner", (done) => {
+    const { FuseBox, JSONPlugin } = require("./dist/commonjs/index");
     const version = require("./package.json").version;
     FuseBox.init({
         package: {
@@ -170,22 +171,22 @@ gulp.task('watch', ['dist'], function() {
 });
 
 gulp.task('installDevDeps', function(done) {
-  var deps = [
-    'babel-core',
-    'babel-generator',
-    'babylon',
-    'cheerio',
-    '@angular/core',
-    'stylus',
-    'less',
-    'postcss',
-    'node-sass',
-    'uglify-js',
-    'source-map',
-    'coffee-script',
-    '@types/node',
-  ]
-  var installDeps = spawn('npm', ['install'].concat(deps), {
-      stdio: 'inherit'
-  })
+    var deps = [
+        'babel-core',
+        'babel-generator',
+        'babylon',
+        'cheerio',
+        '@angular/core',
+        'stylus',
+        'less',
+        'postcss',
+        'node-sass',
+        'uglify-js',
+        'source-map',
+        'coffee-script',
+        '@types/node',
+    ]
+    var installDeps = spawn('npm', ['install'].concat(deps), {
+        stdio: 'inherit'
+    })
 });

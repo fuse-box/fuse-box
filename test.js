@@ -19,5 +19,6 @@ if (special) {
 FuseBox.init({
     homeDir: `${__dirname}/src`,
     tsConfig: `${__dirname}/src/tsconfig.json`,
-    outFile: `${__dirname}/.fusebox/test.js`
+    outFile: `${__dirname}/.fusebox/test.js`,
+    log: false
 }).test(`[**/${mask}]`)

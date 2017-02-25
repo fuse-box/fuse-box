@@ -1,7 +1,7 @@
 import { PropParser } from "./ArithmeticStringParser";
-import { Config } from "./Config";
+import { Config } from "./../Config";
 import { each, chain, Chainable, utils } from 'realm-utils';
-import { File } from "./File";
+import { File } from "./../File";
 import * as path from "path";
 import * as fs from "fs";
 const mkdirp = require("mkdirp");

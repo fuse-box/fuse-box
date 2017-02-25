@@ -2,7 +2,7 @@ import { File } from './File';
 import { PathMaster, IPackageInformation } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
 import { each, utils } from 'realm-utils';
-import { BundleData } from "./Arithmetic";
+import { BundleData } from "./arithmetic/Arithmetic";
 import { ensurePublicExtension } from './Utils';
 
 /**
@@ -211,7 +211,7 @@ export class ModuleCollection {
                 return this.context.cache.buildMap(this);
             }).catch(e => {
                 this.context.nukeCache();
-                 console.error(e);
+                console.error(e);
                 // if (e.message) {
                 //     this.context.fatal(e.message)
                 // } else {

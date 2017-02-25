@@ -1,5 +1,5 @@
 import { ensurePublicExtension, Concat } from './Utils';
-import { BundleData } from './Arithmetic';
+import { BundleData } from './arithmetic/Arithmetic';
 import { ModuleCollection } from "./ModuleCollection";
 import { WorkFlowContext } from "./WorkflowContext";
 import { Config } from "./Config";
