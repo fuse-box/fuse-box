@@ -1,0 +1,16 @@
+# format for examples
+- examples must have trailing commas, this allows copy pasting without added work
+- when all docs follow a format, changing the format is quite easy since things can be search-and-replaced
+- to keep consistency across the docs:
+  - import from `fuse-box` is `fsbx`
+    - `import fsbx from "fuse-box"`
+    - `fsbx.TypeScriptHelpers()`
+  - `.FuseBox` from `fsbx` (`fsbx.FuseBox`) is `FuseBox`:
+    - `const FuseBox = fsbx.FuseBox`
+  - instantiation of `FuseBox` is `fuse`
+    - `const fuse = FuseBox.init(config)`
+  - use `.init` and not `new` except when explaining the ability to use `new`
+  - all objects have no spacing between property and value
+    - good: `{port: 8080}`
+    - bad  : `{port : 8080}`
+    - bad:`{port:8080}`

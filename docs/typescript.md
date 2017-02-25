@@ -15,7 +15,7 @@ FuseBox.init({
          bundleReference: "./sourcemaps.js.map",
          outFile: "sourcemaps.js.map",
     },
-    outFile: "./out.js"
+    outFile: "./out.js",
 }).bundle(">index.ts");
 ```
 
@@ -27,13 +27,13 @@ FuseBox automatically switches to typescript mode by detecting the extension `.t
 
 FuseBox comes with default ts options so you don't *need* a tsconfig.
 
-If you have a tsconfig file in your `homeDir` or any directory up the file tree (e.g. `appRootPath`), it will be picked up automatically. 
+If you have a tsconfig file in your `homeDir` or any directory up the file tree (e.g. `appRootPath`), it will be picked up automatically.
 
 Alternatively you can use the tsconfig option to customize the path to tsconfig.json (It can be an absolute path, Or relative to `appRootPath`).
 
 ```js
 FuseBox.init({
-    tsConfig : "tsconfig.json"
+    tsConfig: "tsconfig.json",
 })
 ```
 
