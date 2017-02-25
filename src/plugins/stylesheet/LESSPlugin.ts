@@ -1,6 +1,6 @@
-import { File } from "../File";
-import { WorkFlowContext } from "./../WorkflowContext";
-import { Plugin } from "../WorkflowContext";
+import { File } from "../../File";
+import { WorkFlowContext } from "./../../WorkflowContext";
+import { Plugin } from "../../WorkflowContext";
 let less;
 
 /**
@@ -30,7 +30,7 @@ export class LESSPluginClass implements Plugin {
      */
     public transform(file: File) {
         const context: WorkFlowContext = file.context;
-        const options = {...this.options};
+        const options = { ...this.options };
 
         file.loadContents();
 
@@ -46,7 +46,7 @@ export class LESSPluginClass implements Plugin {
         options.filename = file.info.fuseBoxPath;
 
         if ('sourceMapConfig' in context) {
-            options.sourceMap = {...sourceMapDef, ...options.sourceMap || {}};
+            options.sourceMap = { ...sourceMapDef, ...options.sourceMap || {} };
         }
 
         return less.render(file.contents, options).then(output => {

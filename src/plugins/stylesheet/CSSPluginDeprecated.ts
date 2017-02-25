@@ -1,7 +1,7 @@
 import * as fs from "fs";
-import { File } from "../File";
+import { File } from "../../File";
 import { utils } from "realm-utils";
-import { ensureUserPath, replaceExt } from '../Utils';
+import { ensureUserPath, replaceExt } from '../../Utils';
 import * as path from 'path';
 
 /**

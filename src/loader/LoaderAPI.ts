@@ -253,7 +253,8 @@ const $getRef = (name: string, opts: {
             basePath = "./";
         } else {
             // check for absolute paths for nodejs
-            if (!$isBrowser && name.charCodeAt(0) === 47) {
+            // either first one is / (47 for *nix) or second one : (58 for windows) 
+            if (!$isBrowser && (name.charCodeAt(0) === 47 || name.charCodeAt(1) == 58)) {
                 return $serverRequire(name);
             }
         }

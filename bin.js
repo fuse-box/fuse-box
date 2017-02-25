@@ -8,7 +8,7 @@ var VuePlugin_1 = require("./plugins/VuePlugin");
 exports.VuePlugin = VuePlugin_1.VuePlugin;
 var ImageBase64Plugin_1 = require("./plugins/ImageBase64Plugin");
 exports.ImageBase64Plugin = ImageBase64Plugin_1.ImageBase64Plugin;
-var CSSResourcePlugin_1 = require("./plugins/CSSResourcePlugin");
+var CSSResourcePlugin_1 = require("./plugins/stylesheet/CSSResourcePlugin");
 exports.CSSResourcePlugin = CSSResourcePlugin_1.CSSResourcePlugin;
 var HotReloadPlugin_1 = require("./plugins/HotReloadPlugin");
 exports.HotReloadPlugin = HotReloadPlugin_1.HotReloadPlugin;
@@ -24,13 +24,13 @@ var TypeScriptHelpers_1 = require("./plugins/TypeScriptHelpers");
 exports.TypeScriptHelpers = TypeScriptHelpers_1.TypeScriptHelpers;
 var SVGPlugin_1 = require("./plugins/SVGPlugin");
 exports.SVGPlugin = SVGPlugin_1.SVGPlugin;
-var BabelPlugin_1 = require("./plugins/BabelPlugin");
+var BabelPlugin_1 = require("./plugins/js-transpilers/BabelPlugin");
 exports.BabelPlugin = BabelPlugin_1.BabelPlugin;
-var CoffeePlugin_1 = require("./plugins/CoffeePlugin");
+var CoffeePlugin_1 = require("./plugins/js-transpilers/CoffeePlugin");
 exports.CoffeePlugin = CoffeePlugin_1.CoffeePlugin;
-var LESSPlugin_1 = require("./plugins/LESSPlugin");
+var LESSPlugin_1 = require("./plugins/stylesheet/LESSPlugin");
 exports.LESSPlugin = LESSPlugin_1.LESSPlugin;
-var CSSplugin_1 = require("./plugins/CSSplugin");
+var CSSplugin_1 = require("./plugins/stylesheet/CSSplugin");
 exports.CSSPlugin = CSSplugin_1.CSSPlugin;
 var HTMLplugin_1 = require("./plugins/HTMLplugin");
 exports.HTMLPlugin = HTMLplugin_1.HTMLPlugin;
@@ -38,7 +38,7 @@ var JSONplugin_1 = require("./plugins/JSONplugin");
 exports.JSONPlugin = JSONplugin_1.JSONPlugin;
 var BannerPlugin_1 = require("./plugins/BannerPlugin");
 exports.BannerPlugin = BannerPlugin_1.BannerPlugin;
-var SassPlugin_1 = require("./plugins/SassPlugin");
+var SassPlugin_1 = require("./plugins/stylesheet/SassPlugin");
 exports.SassPlugin = SassPlugin_1.SassPlugin;
 var UglifyJSPlugin_1 = require("./plugins/UglifyJSPlugin");
 exports.UglifyJSPlugin = UglifyJSPlugin_1.UglifyJSPlugin;
@@ -50,7 +50,7 @@ var WorkflowContext_1 = require("./WorkflowContext");
 exports.WorkFlowContext = WorkflowContext_1.WorkFlowContext;
 var PathMaster_1 = require("./PathMaster");
 exports.PathMaster = PathMaster_1.PathMaster;
-var Arithmetic_1 = require("./Arithmetic");
+var Arithmetic_1 = require("./arithmetic/Arithmetic");
 exports.Arithmetic = Arithmetic_1.Arithmetic;
 var ModuleCollection_1 = require("./ModuleCollection");
 exports.ModuleCollection = ModuleCollection_1.ModuleCollection;
@@ -184,17 +184,17 @@ class SVG2Base64 {
 exports.SVG2Base64 = SVG2Base64;
 
 });
-___scope___.file("plugins/CSSResourcePlugin.js", function(exports, require, module, __filename, __dirname){ 
+___scope___.file("plugins/stylesheet/CSSResourcePlugin.js", function(exports, require, module, __filename, __dirname){ 
 /* fuse:injection: */ var Buffer = require("buffer").Buffer;
 /* fuse:injection: */ var process = require("process");
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Utils_1 = require("../Utils");
+const Utils_1 = require("../../Utils");
 const path = require("path");
 const realm_utils_1 = require("realm-utils");
 const fs = require("fs");
-const PostCSSResourcePlugin_1 = require("../lib/postcss/PostCSSResourcePlugin");
-const SVG2Base64_1 = require("../lib/SVG2Base64");
+const PostCSSResourcePlugin_1 = require("../../lib/postcss/PostCSSResourcePlugin");
+const SVG2Base64_1 = require("../../lib/SVG2Base64");
 const base64Img = require("base64-img");
 const postcss = require("postcss");
 const IMG_CACHE = {};
@@ -808,7 +808,7 @@ exports.SVGPlugin = () => {
 };
 
 });
-___scope___.file("plugins/BabelPlugin.js", function(exports, require, module, __filename, __dirname){ 
+___scope___.file("plugins/js-transpilers/BabelPlugin.js", function(exports, require, module, __filename, __dirname){ 
 
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -889,7 +889,7 @@ exports.BabelPlugin = (opts) => {
 };
 
 });
-___scope___.file("plugins/CoffeePlugin.js", function(exports, require, module, __filename, __dirname){ 
+___scope___.file("plugins/js-transpilers/CoffeePlugin.js", function(exports, require, module, __filename, __dirname){ 
 
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -935,7 +935,7 @@ exports.CoffeePlugin = (options = {}) => {
 };
 
 });
-___scope___.file("plugins/LESSPlugin.js", function(exports, require, module, __filename, __dirname){ 
+___scope___.file("plugins/stylesheet/LESSPlugin.js", function(exports, require, module, __filename, __dirname){ 
 
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -977,16 +977,16 @@ exports.LESSPlugin = (opts) => {
 };
 
 });
-___scope___.file("plugins/CSSplugin.js", function(exports, require, module, __filename, __dirname){ 
+___scope___.file("plugins/stylesheet/CSSplugin.js", function(exports, require, module, __filename, __dirname){ 
 
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const path = require("path");
-const Config_1 = require("./../Config");
+const Config_1 = require("./../../Config");
 const realm_utils_1 = require("realm-utils");
 const CSSPluginDeprecated_1 = require("./CSSPluginDeprecated");
-const Utils_1 = require("../Utils");
+const Utils_1 = require("../../Utils");
 class CSSPluginClass {
     constructor(opts) {
         this.test = /\.css$/;
@@ -1150,13 +1150,13 @@ exports.CSSPlugin = (opts) => {
 };
 
 });
-___scope___.file("plugins/CSSPluginDeprecated.js", function(exports, require, module, __filename, __dirname){ 
+___scope___.file("plugins/stylesheet/CSSPluginDeprecated.js", function(exports, require, module, __filename, __dirname){ 
 
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const realm_utils_1 = require("realm-utils");
-const Utils_1 = require("../Utils");
+const Utils_1 = require("../../Utils");
 const path = require("path");
 class CSSPluginDeprecated {
     static writeOptions(opts, file) {
@@ -1287,7 +1287,7 @@ exports.BannerPlugin = (banner) => {
 };
 
 });
-___scope___.file("plugins/SassPlugin.js", function(exports, require, module, __filename, __dirname){ 
+___scope___.file("plugins/stylesheet/SassPlugin.js", function(exports, require, module, __filename, __dirname){ 
 
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -3172,12 +3172,12 @@ class EventEmitter {
 exports.EventEmitter = EventEmitter;
 
 });
-___scope___.file("Arithmetic.js", function(exports, require, module, __filename, __dirname){ 
+___scope___.file("arithmetic/Arithmetic.js", function(exports, require, module, __filename, __dirname){ 
 
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const ArithmeticStringParser_1 = require("./ArithmeticStringParser");
-const Config_1 = require("./Config");
+const Config_1 = require("./../Config");
 const realm_utils_1 = require("realm-utils");
 const path = require("path");
 const fs = require("fs");
@@ -3319,7 +3319,7 @@ class Arithmetic {
 exports.Arithmetic = Arithmetic;
 
 });
-___scope___.file("ArithmeticStringParser.js", function(exports, require, module, __filename, __dirname){ 
+___scope___.file("arithmetic/ArithmeticStringParser.js", function(exports, require, module, __filename, __dirname){ 
 
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -3475,7 +3475,7 @@ const JSONplugin_1 = require("./plugins/JSONplugin");
 const PathMaster_1 = require("./PathMaster");
 const WorkflowContext_1 = require("./WorkflowContext");
 const CollectionSource_1 = require("./CollectionSource");
-const Arithmetic_1 = require("./Arithmetic");
+const Arithmetic_1 = require("./arithmetic/Arithmetic");
 const ModuleCollection_1 = require("./ModuleCollection");
 const path = require("path");
 const realm_utils_1 = require("realm-utils");
@@ -3961,4 +3961,4 @@ return ___scope___.entry = "index.js";
 });
 FuseBox.defaultPackageName = "fuse-box4-test";
 })
-(function(e){if(e.FuseBox)return e.FuseBox;var r="undefined"!=typeof window&&window.navigator;r&&(window.global=window),e=r&&"undefined"==typeof __fbx__dnm__?e:module.exports;var n=r?window.__fsbx__=window.__fsbx__||{}:global.$fsbx=global.$fsbx||{};r||(global.require=require);var t=n.p=n.p||{},i=n.e=n.e||{},a=function(e){var r=e.charCodeAt(0);if(r>=97&&r<=122||64===r){if(64===r){var n=e.split("/"),t=n.splice(2,n.length).join("/");return[n[0]+"/"+n[1],t||void 0]}var i=e.indexOf("/");if(i===-1)return[e];var a=e.substring(0,i),o=e.substring(i+1);return[a,o]}},o=function(e){return e.substring(0,e.lastIndexOf("/"))||"./"},f=function(){for(var e=[],r=0;r<arguments.length;r++)e[r]=arguments[r];for(var n=[],t=0,i=arguments.length;t<i;t++)n=n.concat(arguments[t].split("/"));for(var a=[],t=0,i=n.length;t<i;t++){var o=n[t];o&&"."!==o&&(".."===o?a.pop():a.push(o))}return""===n[0]&&a.unshift(""),a.join("/")||(a.length?"/":".")},u=function(e){var r=e.match(/\.(\w{1,})$/);if(r){var n=r[1];return n?e:e+".js"}return e+".js"},s=function(e){if(r){var n,t=document,i=t.getElementsByTagName("head")[0];/\.css$/.test(e)?(n=t.createElement("link"),n.rel="stylesheet",n.type="text/css",n.href=e):(n=t.createElement("script"),n.type="text/javascript",n.src=e,n.async=!0),i.insertBefore(n,i.firstChild)}},l=function(e,r){for(var n in e)e.hasOwnProperty(n)&&r(n,e[n])},c=function(e){return{server:require(e)}},v=function(e,n){var i=n.path||"./",o=n.pkg||"default",s=a(e);if(s&&(i="./",o=s[0],n.v&&n.v[o]&&(o=o+"@"+n.v[o]),e=s[1]),e)if(126===e.charCodeAt(0))e=e.slice(2,e.length),i="./";else if(!r&&47===e.charCodeAt(0))return c(e);var l=t[o];if(!l){if(r)throw'Package was not found "'+o+'"';return c(o+(e?"/"+e:""))}e||(e="./"+l.s.entry);var v,d=f(i,e),p=u(d),g=l.f[p];return!g&&p.indexOf("*")>-1&&(v=p),g||v||(p=f(d,"/","index.js"),g=l.f[p],g||(p=d+".js",g=l.f[p]),g||(g=l.f[d+".jsx"]),g||(p=d+"/index.jsx",g=l.f[p])),{file:g,wildcard:v,pkgName:o,versions:l.v,filePath:d,validPath:p}},d=function(e,n){if(!r)return n(/\.(js|json)$/.test(e)?global.require(e):"");var t;t=new XMLHttpRequest,t.onreadystatechange=function(){if(4==t.readyState)if(200==t.status){var r=t.getResponseHeader("Content-Type"),i=t.responseText;/json/.test(r)?i="module.exports = "+i:/javascript/.test(r)||(i="module.exports = "+JSON.stringify(i));var a=f("./",e);m.dynamic(a,i),n(m.import(e,{}))}else console.error(e+" was not found upon request"),n(void 0)},t.open("GET",e,!0),t.send()},p=function(e,r){var n=i[e];if(n)for(var t in n){var a=n[t].apply(null,r);if(a===!1)return!1}},g=function(e,n){if(void 0===n&&(n={}),58===e.charCodeAt(4)||58===e.charCodeAt(5))return s(e);var i=v(e,n);if(i.server)return i.server;var a=i.file;if(i.wildcard){var f=new RegExp(i.wildcard.replace(/\*/g,"@").replace(/[.?*+^$[\]\\(){}|-]/g,"\\$&").replace(/@/g,"[a-z0-9$_-]+"),"i"),u=t[i.pkgName];if(u){var l={};for(var c in u.f)f.test(c)&&(l[c]=g(i.pkgName+"/"+c));return l}}if(!a){var m="function"==typeof n,h=p("async",[e,n]);if(h===!1)return;return d(e,function(e){if(m)return n(e)})}var x=i.validPath,_=i.pkgName;if(a.locals&&a.locals.module)return a.locals.module.exports;var w=a.locals={},y=o(x);w.exports={},w.module={exports:w.exports},w.require=function(e,r){return g(e,{pkg:_,path:y,v:i.versions})},w.require.main={filename:r?"./":global.require.main.filename,paths:r?[]:global.require.main.paths};var b=[w.module.exports,w.require,w.module,x,y,_];p("before-import",b);var j=a.fn;return j.apply(0,b),p("after-import",b),w.module.exports},m=function(){function n(){}return n.global=function(e,n){var t=r?window:global;return void 0===n?t[e]:void(t[e]=n)},n.import=function(e,r){return g(e,r)},n.on=function(e,r){i[e]=i[e]||[],i[e].push(r)},n.exists=function(e){try{var r=v(e,{});return void 0!==r.file}catch(e){return!1}},n.remove=function(e){var r=v(e,{}),n=t[r.pkgName];n&&n.f[r.validPath]&&delete n.f[r.validPath]},n.main=function(e){return this.mainFile=e,n.import(e,{})},n.expose=function(r){var n=function(n){var t=r[n],i=t.alias,a=g(t.pkg);"*"===i?l(a,function(r,n){return e[r]=n}):"object"==typeof i?l(i,function(r,n){return e[n]=a[r]}):e[i]=a};for(var t in r)n(t)},n.dynamic=function(r,n,t){var i=t&&t.pkg||"default";this.pkg(i,{},function(t){t.file(r,function(r,t,i,a,o){var f=new Function("__fbx__dnm__","exports","require","module","__filename","__dirname","__root__",n);f(!0,r,t,i,a,o,e)})})},n.flush=function(e){var r=t.default;for(var n in r.f){var i=!e||e(n);if(i){var a=r.f[n];delete a.locals}}},n.pkg=function(e,r,n){if(t[e])return n(t[e].s);var i=t[e]={},a=i.f={};i.v=r;var o=i.s={file:function(e,r){a[e]={fn:r}}};return n(o)},n.addPlugin=function(e){this.plugins.push(e)},n}();return m.packages=t,m.isBrowser=void 0!==r,m.isServer=!r,m.plugins=[],e.FuseBox=m}(this))
+(function(e){if(e.FuseBox)return e.FuseBox;var r="undefined"!=typeof window&&window.navigator;r&&(window.global=window),e=r&&"undefined"==typeof __fbx__dnm__?e:module.exports;var n=r?window.__fsbx__=window.__fsbx__||{}:global.$fsbx=global.$fsbx||{};r||(global.require=require);var t=n.p=n.p||{},i=n.e=n.e||{},a=function(e){var r=e.charCodeAt(0);if(r>=97&&r<=122||64===r){if(64===r){var n=e.split("/"),t=n.splice(2,n.length).join("/");return[n[0]+"/"+n[1],t||void 0]}var i=e.indexOf("/");if(i===-1)return[e];var a=e.substring(0,i),o=e.substring(i+1);return[a,o]}},o=function(e){return e.substring(0,e.lastIndexOf("/"))||"./"},f=function(){for(var e=[],r=0;r<arguments.length;r++)e[r]=arguments[r];for(var n=[],t=0,i=arguments.length;t<i;t++)n=n.concat(arguments[t].split("/"));for(var a=[],t=0,i=n.length;t<i;t++){var o=n[t];o&&"."!==o&&(".."===o?a.pop():a.push(o))}return""===n[0]&&a.unshift(""),a.join("/")||(a.length?"/":".")},u=function(e){var r=e.match(/\.(\w{1,})$/);if(r){var n=r[1];return n?e:e+".js"}return e+".js"},s=function(e){if(r){var n,t=document,i=t.getElementsByTagName("head")[0];/\.css$/.test(e)?(n=t.createElement("link"),n.rel="stylesheet",n.type="text/css",n.href=e):(n=t.createElement("script"),n.type="text/javascript",n.src=e,n.async=!0),i.insertBefore(n,i.firstChild)}},l=function(e,r){for(var n in e)e.hasOwnProperty(n)&&r(n,e[n])},c=function(e){return{server:require(e)}},v=function(e,n){var i=n.path||"./",o=n.pkg||"default",s=a(e);if(s&&(i="./",o=s[0],n.v&&n.v[o]&&(o=o+"@"+n.v[o]),e=s[1]),e)if(126===e.charCodeAt(0))e=e.slice(2,e.length),i="./";else if(!r&&(47===e.charCodeAt(0)||58==e.charCodeAt(1)))return c(e);var l=t[o];if(!l){if(r)throw'Package was not found "'+o+'"';return c(o+(e?"/"+e:""))}e||(e="./"+l.s.entry);var v,d=f(i,e),p=u(d),g=l.f[p];return!g&&p.indexOf("*")>-1&&(v=p),g||v||(p=f(d,"/","index.js"),g=l.f[p],g||(p=d+".js",g=l.f[p]),g||(g=l.f[d+".jsx"]),g||(p=d+"/index.jsx",g=l.f[p])),{file:g,wildcard:v,pkgName:o,versions:l.v,filePath:d,validPath:p}},d=function(e,n){if(!r)return n(/\.(js|json)$/.test(e)?global.require(e):"");var t;t=new XMLHttpRequest,t.onreadystatechange=function(){if(4==t.readyState)if(200==t.status){var r=t.getResponseHeader("Content-Type"),i=t.responseText;/json/.test(r)?i="module.exports = "+i:/javascript/.test(r)||(i="module.exports = "+JSON.stringify(i));var a=f("./",e);m.dynamic(a,i),n(m.import(e,{}))}else console.error(e+" was not found upon request"),n(void 0)},t.open("GET",e,!0),t.send()},p=function(e,r){var n=i[e];if(n)for(var t in n){var a=n[t].apply(null,r);if(a===!1)return!1}},g=function(e,n){if(void 0===n&&(n={}),58===e.charCodeAt(4)||58===e.charCodeAt(5))return s(e);var i=v(e,n);if(i.server)return i.server;var a=i.file;if(i.wildcard){var f=new RegExp(i.wildcard.replace(/\*/g,"@").replace(/[.?*+^$[\]\\(){}|-]/g,"\\$&").replace(/@/g,"[a-z0-9$_-]+"),"i"),u=t[i.pkgName];if(u){var l={};for(var c in u.f)f.test(c)&&(l[c]=g(i.pkgName+"/"+c));return l}}if(!a){var m="function"==typeof n,h=p("async",[e,n]);if(h===!1)return;return d(e,function(e){if(m)return n(e)})}var x=i.validPath,_=i.pkgName;if(a.locals&&a.locals.module)return a.locals.module.exports;var w=a.locals={},y=o(x);w.exports={},w.module={exports:w.exports},w.require=function(e,r){return g(e,{pkg:_,path:y,v:i.versions})},w.require.main={filename:r?"./":global.require.main.filename,paths:r?[]:global.require.main.paths};var b=[w.module.exports,w.require,w.module,x,y,_];p("before-import",b);var j=a.fn;return j.apply(0,b),p("after-import",b),w.module.exports},m=function(){function n(){}return n.global=function(e,n){var t=r?window:global;return void 0===n?t[e]:void(t[e]=n)},n.import=function(e,r){return g(e,r)},n.on=function(e,r){i[e]=i[e]||[],i[e].push(r)},n.exists=function(e){try{var r=v(e,{});return void 0!==r.file}catch(e){return!1}},n.remove=function(e){var r=v(e,{}),n=t[r.pkgName];n&&n.f[r.validPath]&&delete n.f[r.validPath]},n.main=function(e){return this.mainFile=e,n.import(e,{})},n.expose=function(r){var n=function(n){var t=r[n],i=t.alias,a=g(t.pkg);"*"===i?l(a,function(r,n){return e[r]=n}):"object"==typeof i?l(i,function(r,n){return e[n]=a[r]}):e[i]=a};for(var t in r)n(t)},n.dynamic=function(r,n,t){var i=t&&t.pkg||"default";this.pkg(i,{},function(t){t.file(r,function(r,t,i,a,o){var f=new Function("__fbx__dnm__","exports","require","module","__filename","__dirname","__root__",n);f(!0,r,t,i,a,o,e)})})},n.flush=function(e){var r=t.default;for(var n in r.f){var i=!e||e(n);if(i){var a=r.f[n];delete a.locals}}},n.pkg=function(e,r,n){if(t[e])return n(t[e].s);var i=t[e]={},a=i.f={};i.v=r;var o=i.s={file:function(e,r){a[e]={fn:r}}};return n(o)},n.addPlugin=function(e){this.plugins.push(e)},n}();return m.packages=t,m.isBrowser=void 0!==r,m.isServer=!r,m.plugins=[],e.FuseBox=m}(this))

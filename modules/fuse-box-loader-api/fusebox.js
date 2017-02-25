@@ -118,7 +118,7 @@ var $getRef = function (name, opts) {
             basePath = "./";
         }
         else {
-            if (!$isBrowser && name.charCodeAt(0) === 47) {
+            if (!$isBrowser && (name.charCodeAt(0) === 47 || name.charCodeAt(1) == 58)) {
                 return $serverRequire(name);
             }
         }

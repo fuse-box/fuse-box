@@ -1,11 +1,11 @@
-import { File } from "../File";
-import { Plugin, WorkFlowContext } from "../WorkflowContext";
-import { ensureUserPath, ensureDir } from "../Utils";
+import { File } from "../../File";
+import { Plugin, WorkFlowContext } from "../../WorkflowContext";
+import { ensureUserPath, ensureDir } from "../../Utils";
 import * as path from "path";
 import { utils } from "realm-utils";
 import * as fs from "fs";
-import { PostCSSResourcePlugin } from "../lib/postcss/PostCSSResourcePlugin";
-import { SVG2Base64 } from "../lib/SVG2Base64";
+import { PostCSSResourcePlugin } from "../../lib/postcss/PostCSSResourcePlugin";
+import { SVG2Base64 } from "../../lib/SVG2Base64";
 const base64Img = require("base64-img");
 const postcss = require("postcss");
 const IMG_CACHE = {};

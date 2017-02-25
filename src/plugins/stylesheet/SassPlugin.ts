@@ -1,6 +1,6 @@
-import { File } from "../File";
-import { WorkFlowContext } from "../WorkflowContext";
-import { Plugin } from "../WorkflowContext";
+import { File } from "../../File";
+import { WorkFlowContext } from "../../WorkflowContext";
+import { Plugin } from "../../WorkflowContext";
 
 let sass;
 
@@ -38,7 +38,7 @@ export class SassPluginClass implements Plugin {
         }, this.options);
 
         options.includePaths = [];
-        if (typeof this.options.includePaths !== "undefined"){
+        if (typeof this.options.includePaths !== "undefined") {
             this.options.includePaths.forEach((path) => {
                 options.includePaths.push(path);
             });

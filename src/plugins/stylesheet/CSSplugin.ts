@@ -1,13 +1,13 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import { Config } from "./../Config";
-import { File } from "../File";
-import { WorkFlowContext } from "./../WorkflowContext";
-import { Plugin } from "../WorkflowContext";
+import { Config } from "./../../Config";
+import { File } from "../../File";
+import { WorkFlowContext } from "./../../WorkflowContext";
+import { Plugin } from "../../WorkflowContext";
 import { utils } from "realm-utils";
 import { CSSPluginDeprecated } from './CSSPluginDeprecated';
-import { Concat, ensureUserPath, write } from '../Utils';
+import { Concat, ensureUserPath, write } from '../../Utils';
 
 /**
  *
