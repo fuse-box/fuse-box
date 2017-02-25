@@ -8,7 +8,7 @@ const mkdirp = require("mkdirp");
 const appRoot = require("app-root-path");
 
 
-let tmp, shouldExistж
+let tmp, shouldExist;
 
 const makeTestFolder = () => {
     tmp = path.join(appRoot.path, ".fusebox", "css-test", new Date().getTime().toString());
