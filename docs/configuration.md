@@ -430,11 +430,13 @@ let vendors = [
   'flipbox',
   'path',
   'fs',
-].map(vendor => ' -' + vendor).join('')
+]
+const vendorInst = "[async-registry.js]" + vendors.map(vendor => ' +' + vendor).join('')
+const appInst = ">[index.ts]" + vendors.map(vendor => ' -' + vendor).join('')
 
 const multipleBundles = {
-    "./build/vendorBundle.js": "[async-registry.js]" + vendors,
-    "./build/appBundle.js": ">[index.ts]",
+    "./build/vendorBundle.js": vendorInst,
+    "./build/appBundle.js": appInst,
 }
 
 const singleBundle = `
