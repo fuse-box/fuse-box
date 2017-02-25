@@ -69,8 +69,10 @@ export class ModuleCache {
 
 
         this.staticCacheFolder = path.join(this.cacheFolder, "static");
-        mkdirp.sync(this.staticCacheFolder);
-        mkdirp.sync(this.cacheFolder);
+        try {
+            mkdirp.sync(this.staticCacheFolder); // that fails on windows sometimes
+        } catch (e) { }
+
         this.cacheFile = path.join(this.cacheFolder, "deps.json");
         if (fs.existsSync(this.cacheFile)) {
             try {
@@ -256,7 +258,7 @@ mtime : ${cacheData.mtime}
                         for (let k in json.deps) { if (json.deps.hasOwnProperty(k)) { getAllRequired(k, json.deps[k]); } }
                     }
                 }
-                
+
             }
         }
 

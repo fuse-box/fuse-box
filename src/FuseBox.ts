@@ -306,7 +306,7 @@ export class FuseBox {
 
         // include test files to the bundle
         const clonedOpts = Object.assign({}, this.opts);
-        const testBundleFile = path.join(Config.TEMP_FOLDER, "tests", decodeURIComponent(this.opts.outFile));
+        const testBundleFile = path.join(Config.TEMP_FOLDER, "tests", encodeURIComponent(this.opts.outFile));
         clonedOpts.outFile = testBundleFile;
 
         // adding fuse-test dependency to be bundled

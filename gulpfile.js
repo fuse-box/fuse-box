@@ -132,7 +132,7 @@ gulp.task('npm-publish', function(done) {
 });
 
 
-gulp.task("make-task-runner", (done) => {
+gulp.task("make-test-runner", (done) => {
     const { FuseBox, JSONPlugin } = require("./dist/commonjs/index");
     const version = require("./package.json").version;
     FuseBox.init({
@@ -144,7 +144,7 @@ gulp.task("make-task-runner", (done) => {
         homeDir: "src",
         outFile: "./bin.js",
         cache: false
-    }).bundle(`[index.ts]`, done)
+    }).bundle(`[index.ts] +fuse-test-runner +fuse-test-reporter`, done)
 });
 /**
  * Combined build task
