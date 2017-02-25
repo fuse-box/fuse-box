@@ -88,7 +88,7 @@ interface IReference {
      * serverReference is a result of nodejs require statement
      * In case if module is not in a bundle
      */
-    serverReference?: string;
+    server?: string;
     /** Current package name */
     pkgName?: string;
     /** Custom version to take into a consideration */
@@ -219,6 +219,10 @@ const $loopObjKey = (obj: Object, func: Function) => {
     }
 }
 
+const $serverRequire = (path) => {
+    return { server: require(path) }
+}
+
 const $getRef = (name: string, opts: {
     path?: string;
     pkg?: string;
@@ -243,10 +247,19 @@ const $getRef = (name: string, opts: {
     // Tilde test
     // Charcode is 2x faster
     //if (/^~/.test(name)) {
-    if (name && name.charCodeAt(0) === 126) {
-        name = name.slice(2, name.length);
-        basePath = "./";
+    if (name) {
+        if (name.charCodeAt(0) === 126) {
+            name = name.slice(2, name.length);
+            basePath = "./";
+        } else {
+            // check for absolute paths for nodejs
+            if (!$isBrowser && name.charCodeAt(0) === 47) {
+                return $serverRequire(name);
+            }
+        }
     }
+
+
 
 
     let pkg = $packages[pkg_name];
@@ -256,9 +269,7 @@ const $getRef = (name: string, opts: {
             throw `Package was not found "${pkg_name}"`;
         } else {
             // Return "real" node module
-            return {
-                serverReference: require(pkg_name)
-            }
+            return $serverRequire(pkg_name + (name ? "/" + name : ""));
         }
     }
     if (!name) {
@@ -395,8 +406,8 @@ const $import = (name: string, opts: any = {}) => {
     }
 
     let ref = $getRef(name, opts);
-    if (ref.serverReference) {
-        return ref.serverReference;
+    if (ref.server) {
+        return ref.server;
     }
     let file = ref.file;
 

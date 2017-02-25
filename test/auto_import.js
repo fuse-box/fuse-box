@@ -251,7 +251,7 @@ describe("Native variables", (done) => {
     })
 
 
-    it("Process check with function param", (done) => {
+    it("Process check with function param 'function(process){}'", (done) => {
 
         createEnv({
 
@@ -274,5 +274,30 @@ describe("Native variables", (done) => {
                 contents.indexOf(`/* fuse:injection: */ var process`) === -1, true);
             done();
         })
-    })
+    });
+
+    it("Should not bundle process with 'function Users(process)'", (done) => {
+
+        createEnv({
+
+            project: {
+                autoImport: {
+                    woops: "superFoo"
+                },
+                files: {
+                    "index.ts": `
+                       function Users(process){}
+                    `
+                },
+                instructions: "> index.ts"
+            }
+        }).then((result) => {
+
+            const contents = result.projectContents.toString();
+
+            should.equal(
+                contents.indexOf(`/* fuse:injection: */ var process`) === -1, true);
+            done();
+        })
+    });
 })

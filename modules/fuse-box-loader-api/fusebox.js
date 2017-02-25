@@ -97,6 +97,9 @@ var $loopObjKey = function (obj, func) {
         }
     }
 };
+var $serverRequire = function (path) {
+    return { server: require(path) };
+};
 var $getRef = function (name, opts) {
     var basePath = opts.path || "./";
     var pkg_name = opts.pkg || "default";
@@ -109,9 +112,16 @@ var $getRef = function (name, opts) {
         }
         name = nodeModule[1];
     }
-    if (name && name.charCodeAt(0) === 126) {
-        name = name.slice(2, name.length);
-        basePath = "./";
+    if (name) {
+        if (name.charCodeAt(0) === 126) {
+            name = name.slice(2, name.length);
+            basePath = "./";
+        }
+        else {
+            if (!$isBrowser && name.charCodeAt(0) === 47) {
+                return $serverRequire(name);
+            }
+        }
     }
     var pkg = $packages[pkg_name];
     if (!pkg) {
@@ -119,9 +129,7 @@ var $getRef = function (name, opts) {
             throw "Package was not found \"" + pkg_name + "\"";
         }
         else {
-            return {
-                serverReference: require(pkg_name)
-            };
+            return $serverRequire(pkg_name + (name ? "/" + name : ""));
         }
     }
     if (!name) {
@@ -213,8 +221,8 @@ var $import = function (name, opts) {
         return $loadURL(name);
     }
     var ref = $getRef(name, opts);
-    if (ref.serverReference) {
-        return ref.serverReference;
+    if (ref.server) {
+        return ref.server;
     }
     var file = ref.file;
     if (ref.wildcard) {

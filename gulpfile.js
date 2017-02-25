@@ -12,6 +12,7 @@ const child_process = require('child_process');
 const spawn = child_process.spawn;
 const wrap = require('gulp-wrap');
 const uglify = require('gulp-uglify');
+const { FuseBox, JSONPlugin } = require("./dist/commonjs/index");
 
 /**
  * Fail on error if not in watch mode
@@ -130,6 +131,20 @@ gulp.task('npm-publish', function(done) {
     });
 });
 
+
+gulp.task("make-task-runner", (done) => {
+    const version = require("./package.json").version;
+    FuseBox.init({
+        package: {
+            name: "fuse-box4-test",
+            main: "index.js"
+        },
+        plugins: [JSONPlugin()],
+        homeDir: "src",
+        outFile: "./bin.js",
+        cache: false
+    }).bundle(`[index.ts]`, done)
+});
 /**
  * Combined build task
  */

@@ -8,10 +8,6 @@ require("acorn-es7")(acorn);
 require("acorn-jsx/inject")(acorn);
 
 
-const isDeclaration = (node) => {
-
-    return node.type === "VariableDeclarator" || node.type === "FunctionDeclaration";
-}
 
 /**
  * Makes static analysis on the code
@@ -146,13 +142,18 @@ export class FileAnalysis {
                     if (node.name === "$fuse$") {
                         this.fuseBoxVariable = parent.object.name;
                     } else {
-
+                        // here we dicide we can inject
+                        // there are many conditions where injection should not happen
                         if (nativeModules.has(node.name) && !bannedImports[node.name]) {
 
                             const isProperty = parent.type && parent.type === "Property";
-                            const isFunctionExpression = parent.type && parent.type === "FunctionExpression" && parent.params;
+                            const isFunction = parent.type 
+                                && (parent.type === "FunctionExpression" || 
+                                    parent.type === "FunctionDeclaration"
+                                    ) && parent.params;
+                            const isDeclaration = parent.type === "VariableDeclarator" || parent.type === "FunctionDeclaration";
 
-                            if (isProperty || isFunctionExpression || parent && isDeclaration(parent)
+                            if (isProperty || isFunction || parent && isDeclaration
                                 && parent.id && parent.id.type === "Identifier" && parent.id.name === node.name) {
                                 delete nativeImports[node.name];
                                 if (!bannedImports[node.name]) {
