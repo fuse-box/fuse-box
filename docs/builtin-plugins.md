@@ -1,23 +1,27 @@
 # Built-in plugins
 
-Fusebox contains premade plugins, that should help you to get started.
+Fusebox contains several built-in plugins to handle common use cases.
 
 ## CSS Plugin
-CSSPlugin should be always at the end of any CSS processor chain, as it handles everything that is relating to bundling, reloading and grouping.
+CSSPlugin is used to handle .css syntax.  As such, it should always be at the end of any CSS processing chain (see [#list-of-plugins](Plugin configuration) for examples of plugin chains), as it handles everything that is relating to bundling, reloading and grouping css styles.
 
 
 ### Inline CSS
 
-```
+```js
 plugins : [
   CSSPlugin()
 ]
 ```
-That configuration gets all `.css` on they way, and inlines them in your bundle.
+That configuration converts all `.css` files into a format that allows including them directly into javascript.  For example:
 
-### Write to the filesystem
+```js
+import './main.css'
+```
 
-You can write files to the file system as well.
+### Write css to the filesystem
+
+You can write css files to the file system as well.
 
 ```js
 plugins : [
@@ -27,7 +31,13 @@ plugins : [
 ]
 ```
 
-FuseBox will automatically inject your files into the HEAD once required
+FuseBox will automatically inject your files into the HEAD when imported
+
+```js
+import './main.css'
+```
+
+creates
 
 ```html
 <link rel="stylesheet" type="text/css" href="main.css">
@@ -35,7 +45,7 @@ FuseBox will automatically inject your files into the HEAD once required
 
 ### Head injection
 
-CSSPlugin automatically appends your script into the HEAD by default. You can override it by setting `{inject : false}`
+CSSPlugin automatically appends css styles or stylesheets into the HEAD by default as in the above example. You can override this behavior by setting `{inject : false}`
 
 ```js
 plugins : [
@@ -45,7 +55,7 @@ plugins : [
     })
 ]
 ```
-Now you can manually append your css file!
+Now you can manually append your css files!
 
 If you want to keep the magic but configure the injection yourself, you can provide a callback to the `inject` 
 parameter to customise your css file resolver in the browser
@@ -67,26 +77,31 @@ Will result in:
 
 ### Grouping files
 
-You can group many css files into a one file. 
-
+You can group many css files into a single file. 
 
 ```js
 plugins : [
-    CSSPlugin({group : "bundle.css"})
+    CSSPlugin({
+        group : "bundle.css"
+    })
 ]
 ```
 
 the `group` option should not contain any relative or absolute paths. This is a virtual file in the dependency tree. You can use 
-all paramters described above to customise the behaviour. For example
+all parameters described above to customise the behaviour. For example
 
 ```js
- plugins: [CSSPlugin({ group: "app.css", outFile: `${tmp}/app.css` })],
-
+plugins : [
+    CSSPlugin({
+        group: "app.css",
+        outFile: `${tmp}/app.css`
+    })
+]
 ```
 
-> NOTE! outFile should be a string when used with `group` option.
+> NOTE! outFile must be a string (not a callback) when used with the `group` option.
 
-Check the tests [here](https://github.com/fuse-box/fuse-box/blob/master/test/css_plugin.js) 
+Check out the tests [here](https://github.com/fuse-box/fuse-box/blob/master/test/css_plugin.js) 
 
 ## CSSResourcePlugin
 
