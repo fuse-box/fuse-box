@@ -2,8 +2,8 @@ import { File } from './File';
 import { PathMaster, IPackageInformation } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
 import { each, utils } from 'realm-utils';
-import { BundleData } from "./arithmetic/Arithmetic";
-import { ensurePublicExtension } from './Utils';
+import { BundleData } from "../arithmetic/Arithmetic";
+import { ensurePublicExtension } from '../Utils';
 
 /**
  * 

@@ -1,8 +1,8 @@
-import { WorkFlowContext } from "./WorkflowContext";
-import { IPackageInformation } from './PathMaster';
-import { ModuleCollection } from "./ModuleCollection";
+import { WorkFlowContext } from "./core/WorkflowContext";
+import { IPackageInformation } from './core/PathMaster';
+import { ModuleCollection } from "./core/ModuleCollection";
 import * as fs from "fs";
-import { File } from './File';
+import { File } from './core/File';
 import { Config } from "./Config";
 import * as path from "path";
 import { each } from "realm-utils";

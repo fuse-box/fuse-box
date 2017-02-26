@@ -1,7 +1,6 @@
 import { Config } from "./../Config";
-import { File } from "../File";
-import { WorkFlowContext } from "./../WorkflowContext";
-import { Plugin } from "../WorkflowContext";
+import { File } from "../core/File";
+import { WorkFlowContext, Plugin } from "../core/WorkflowContext";
 import * as fs from "fs";
 import * as path from "path";
 /**

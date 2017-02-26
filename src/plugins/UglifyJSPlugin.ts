@@ -1,4 +1,4 @@
-import { Plugin } from "../WorkflowContext";
+import { Plugin } from "../core/WorkflowContext";
 import { BundleSource } from '../BundleSource';
 
 /**

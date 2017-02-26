@@ -1,6 +1,6 @@
-import { File } from "../File";
-import { WorkFlowContext } from "./../WorkflowContext";
-import { Plugin } from "../WorkflowContext";
+import { File } from "../core/File";
+import { WorkFlowContext } from "../core/WorkflowContext";
+import { Plugin } from "../core/WorkflowContext";
 
 
 let vueCompiler;
@@ -29,7 +29,7 @@ export class VuePluginClass implements Plugin {
                 file.analysis.skip();
                 file.analysis.dependencies = cached.dependencies;
                 file.contents = cached.contents;
-                
+
                 return;
             }
         }

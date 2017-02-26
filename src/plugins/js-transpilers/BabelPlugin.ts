@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as appRoot from 'app-root-path';
-import { File } from "../../File";
-import { WorkFlowContext } from "./../../WorkflowContext";
-import { Plugin } from "../../WorkflowContext";
+import { File } from "../../core/File";
+import { WorkFlowContext } from "../../core/WorkflowContext";
+import { Plugin } from "../../core/WorkflowContext";
 
 let babelCore;
 /**

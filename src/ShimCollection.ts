@@ -1,7 +1,7 @@
-import { IPackageInformation, IPathInformation } from './PathMaster';
-import { WorkFlowContext } from './WorkflowContext';
-import { File } from './File';
-import { ModuleCollection } from './ModuleCollection';
+import { IPackageInformation, IPathInformation } from './core/PathMaster';
+import { WorkFlowContext } from './core/WorkflowContext';
+import { File } from './core/File';
+import { ModuleCollection } from './core/ModuleCollection';
 
 /**
  * 

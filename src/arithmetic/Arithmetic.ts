@@ -1,11 +1,11 @@
 import { PropParser } from "./ArithmeticStringParser";
 import { Config } from "./../Config";
 import { each, chain, Chainable, utils } from 'realm-utils';
-import { File } from "./../File";
+import { File } from "../core/File";
 import * as path from "path";
 import * as fs from "fs";
-const mkdirp = require("mkdirp");
-const glob = require("glob");
+import * as mkdirp from 'mkdirp';
+import * as glob from "glob";
 
 
 const deleteFolderRecursive = (p) => {

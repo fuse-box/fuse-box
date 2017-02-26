@@ -1,16 +1,16 @@
 import * as path from "path";
 import * as fs from "fs";
-import { BundleSource } from "./BundleSource";
+import { BundleSource } from "../BundleSource";
 import { File } from "./File";
-import { Log } from "./Log";
+import { Log } from "../Log";
 import { IPackageInformation, IPathInformation, AllowedExtenstions } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
-import { ModuleCache } from "./ModuleCache";
+import { ModuleCache } from "../ModuleCache";
 import { utils } from 'realm-utils';
-import { EventEmitter } from "./EventEmitter";
-import { ensureUserPath, findFileBackwards, ensureDir, removeFolder } from './Utils';
-import { SourceChangedEvent } from './devServer/Server';
-import { Config } from './Config';
+import { EventEmitter } from "../EventEmitter";
+import { ensureUserPath, findFileBackwards, ensureDir, removeFolder } from '../Utils';
+import { SourceChangedEvent } from '../devServer/Server';
+import { Config } from '../Config';
 
 
 /**

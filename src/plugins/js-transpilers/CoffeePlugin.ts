@@ -1,6 +1,6 @@
-import { WorkFlowContext } from "./../../WorkflowContext"
-import { Plugin } from "../../WorkflowContext"
-import { File } from "../../File"
+import { WorkFlowContext } from "../../core/WorkflowContext"
+import { Plugin } from "../../core/WorkflowContext"
+import { File } from "../../core/File"
 
 let coffee
 

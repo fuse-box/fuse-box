@@ -1,4 +1,4 @@
-import { FuseBox } from "./../FuseBox";
+import { FuseBox } from "../core/FuseBox";
 import { Server } from "ws";
 
 

@@ -20,9 +20,6 @@ export { UglifyJSPlugin } from "./plugins/UglifyJSPlugin";
 export { SourceMapPlainJsPlugin } from "./plugins/SourceMapPlainJsPlugin";
 export { RawPlugin } from "./plugins/RawPlugin";
 
-export { WorkFlowContext } from "./WorkflowContext";
-export { PathMaster } from "./PathMaster";
-export { Arithmetic } from "./arithmetic/Arithmetic";
-export { ModuleCollection } from "./ModuleCollection";
-export { FuseBox } from "./FuseBox";
+
+export { FuseBox } from "./core/FuseBox";
 

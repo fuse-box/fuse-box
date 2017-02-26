@@ -3,7 +3,7 @@ import { HotReloadPlugin } from "./../plugins/HotReloadPlugin";
 import * as path from "path";
 import { ensureUserPath } from "../Utils";
 import { HTTPServer } from "./HTTPServer";
-import { FuseBox } from "../FuseBox";
+import { FuseBox } from "../core/FuseBox";
 import { utils } from "realm-utils";
 import * as process from "process";
 const watch = require("watch");

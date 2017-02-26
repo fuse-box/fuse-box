@@ -1,5 +1,5 @@
 import { ModuleCollection } from "./ModuleCollection";
-import { FileAnalysis } from "./FileAnalysis";
+import { FileAnalysis } from "../analysis/FileAnalysis";
 import { WorkFlowContext, Plugin } from './WorkflowContext';
 import { IPathInformation, IPackageInformation } from './PathMaster';
 import * as fs from "fs";

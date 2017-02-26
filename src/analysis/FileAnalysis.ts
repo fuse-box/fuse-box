@@ -1,9 +1,11 @@
-import { ASTTraverse } from "./ASTTraverse";
-import { PrettyError } from "./PrettyError";
-import { File } from "./File";
+import { ASTTraverse } from "./../ASTTraverse";
+import { PrettyError } from "./../PrettyError";
+import { File } from "../core/File";
 import { nativeModules, HeaderImport } from './HeaderImport';
-const acorn = require("acorn");
-const escodegen = require("escodegen");
+import * as acorn from "acorn";
+import * as escodegen from "escodegen";
+
+
 require("acorn-es7")(acorn);
 require("acorn-jsx/inject")(acorn);
 
@@ -147,10 +149,10 @@ export class FileAnalysis {
                         if (nativeModules.has(node.name) && !bannedImports[node.name]) {
 
                             const isProperty = parent.type && parent.type === "Property";
-                            const isFunction = parent.type 
-                                && (parent.type === "FunctionExpression" || 
+                            const isFunction = parent.type
+                                && (parent.type === "FunctionExpression" ||
                                     parent.type === "FunctionDeclaration"
-                                    ) && parent.params;
+                                ) && parent.params;
                             const isDeclaration = parent.type === "VariableDeclarator" || parent.type === "FunctionDeclaration";
 
                             if (isProperty || isFunction || parent && isDeclaration

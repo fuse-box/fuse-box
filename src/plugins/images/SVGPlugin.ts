@@ -1,5 +1,5 @@
-import { File } from "../../File";
-import { WorkFlowContext, Plugin } from "./../../WorkflowContext";
+import { File } from "../../core/File";
+import { WorkFlowContext, Plugin } from "./../../core/WorkflowContext";
 
 
 /**

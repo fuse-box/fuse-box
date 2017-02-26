@@ -21,5 +21,5 @@ FuseBox.init({
     tsConfig: `${__dirname}/src/tsconfig.json`,
     outFile: `${__dirname}/.fusebox/test.js`,
     log: false,
-    cache: false,
+    cache: true,
 }).test(`[**/${mask}]`)

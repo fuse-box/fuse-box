@@ -1,5 +1,5 @@
-import { File } from "../../File";
-import { Plugin, WorkFlowContext } from "../../WorkflowContext";
+import { File } from "../../core/File";
+import { Plugin, WorkFlowContext } from "../../core/WorkflowContext";
 import { ensureUserPath, ensureDir } from "../../Utils";
 import * as path from "path";
 import { utils } from "realm-utils";

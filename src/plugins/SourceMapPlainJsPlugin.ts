@@ -1,6 +1,6 @@
-import { File } from "../File";
-import { WorkFlowContext } from "../WorkflowContext";
-import { Plugin } from "../WorkflowContext";
+import { File } from "../core/File";
+import { WorkFlowContext } from "../core/WorkflowContext";
+import { Plugin } from "../core/WorkflowContext";
 
 import * as acorn from "acorn";
 import * as SourceMap from "source-map";
@@ -42,27 +42,27 @@ export class SourceMapPlainJsPluginClass implements Plugin {
 
 	transform(file: File) {
 		const tokens = [];
-		
+
 		if (this.context.useCache) {
-		    const cached = this.context.cache.getStaticCache(file);
+			const cached = this.context.cache.getStaticCache(file);
 
-		    if (cached) {
-		        if (cached.sourceMap) {
-		            file.sourceMap = cached.sourceMap;
-		        }
+			if (cached) {
+				if (cached.sourceMap) {
+					file.sourceMap = cached.sourceMap;
+				}
 
-		        file.analysis.skip();
-		        file.analysis.dependencies = cached.dependencies;
-		        file.contents = cached.contents;
+				file.analysis.skip();
+				file.analysis.dependencies = cached.dependencies;
+				file.contents = cached.contents;
 
-		        return true;
-		    }
+				return true;
+			}
 		}
 
 		file.loadContents();
 
 		if ('sourceMapConfig' in this.context) {
-			file.makeAnalysis({onToken: tokens});
+			file.makeAnalysis({ onToken: tokens });
 			file.sourceMap = this.getSourceMap(file, tokens);
 		} else {
 			file.makeAnalysis();
@@ -72,7 +72,7 @@ export class SourceMapPlainJsPluginClass implements Plugin {
 	private getSourceMap(file: File, tokens: Array<any>): string {
 		const fileContent = file.contents;
 		const filePath = file.info.fuseBoxPath
-		const smGenerator = new SourceMap.SourceMapGenerator({file: filePath});
+		const smGenerator = new SourceMap.SourceMapGenerator({ file: filePath });
 
 		tokens.some(token => {
 			if (token.type.label === "eof") return true;
@@ -96,6 +96,6 @@ export class SourceMapPlainJsPluginClass implements Plugin {
 	}
 }
 
-export const SourceMapPlainJsPlugin = (options?:any) => {
+export const SourceMapPlainJsPlugin = (options?: any) => {
 	return new SourceMapPlainJsPluginClass(options);
 }

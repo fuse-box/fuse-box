@@ -1,6 +1,6 @@
-import { WorkFlowContext } from "./WorkflowContext";
-import { ModuleCollection } from "./ModuleCollection";
-import { File } from "./File";
+import { WorkFlowContext } from "./core/WorkflowContext";
+import { ModuleCollection } from "./core/ModuleCollection";
+import { File } from "./core/File";
 export class CollectionSource {
     constructor(public context: WorkFlowContext) { }
 

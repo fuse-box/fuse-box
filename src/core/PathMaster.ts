@@ -1,9 +1,9 @@
-import { ensurePublicExtension } from "./Utils";
+import { ensurePublicExtension } from "../Utils";
 import { IPackageInformation, IPathInformation } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
 import * as path from "path";
 import * as fs from "fs";
-import { Config } from "./Config";
+import { Config } from "../Config";
 
 /**
  * If a import url isn't relative
@@ -77,7 +77,7 @@ export class PathMaster {
         this.tsMode = true;
     }
 
-    public resolve(name: string, root: string, rootEntryLimit?: string): IPathInformation {
+    public resolve(name: string, root?: string, rootEntryLimit?: string): IPathInformation {
 
         let data = <IPathInformation>{};
 

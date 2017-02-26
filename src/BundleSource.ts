@@ -1,9 +1,9 @@
 import { ensurePublicExtension, Concat } from './Utils';
 import { BundleData } from './arithmetic/Arithmetic';
-import { ModuleCollection } from "./ModuleCollection";
-import { WorkFlowContext } from "./WorkflowContext";
+import { ModuleCollection } from "./core/ModuleCollection";
+import { WorkFlowContext } from "./core/WorkflowContext";
 import { Config } from "./Config";
-import { File } from "./File";
+import { File } from "./core/File";
 import * as path from 'path';
 import * as fs from 'fs';
 
