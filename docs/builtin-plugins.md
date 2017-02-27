@@ -223,9 +223,36 @@ npm install node-sass
 Usage:
 ```js
 plugins:[
-  [fsbx.SassPlugin({ /* options */ })],
+  [SassPlugin({ /* options */ }), CSSPlugin()],
 ],
 ```
+
+By default, you have 3 macros available:
+
+That same as [home directory](#home-directory)
+```css
+@import '$homeDir/test2.scss';
+```
+
+Your application root.
+
+```css
+@import '$appRoot/src/test.scss';
+```
+
+`Tilde` that points to node_modules
+```css
+@import '~bootstrap/dist/bootstrap.css';
+```
+
+You can override any of these by providing a key:
+
+```js
+plugins: [
+    [ SassPlugin({ macros: { "$homeDir": "custom/dir/" }}), CSSPlugin() ]
+]
+```
+
 
 ## HTML Plugin
 ```js
