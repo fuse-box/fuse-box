@@ -1,11 +1,10 @@
-const should = require("should");
+import { createEnv } from './stubs/TestEnvironment';
+import { should } from "fuse-test-runner";
 
-const { getTestEnv, createEnv } = require("./fixtures/lib.js")
-describe("Native variables", (done) => {
 
-    it("`Should inject a variable woops case 1`", (done) => {
-
-        createEnv({
+export class AutoImportTest {
+    "Should inject a variable woops case 1"() {
+        return createEnv({
             modules: {
                 superFoo: {
                     files: {
@@ -27,18 +26,15 @@ describe("Native variables", (done) => {
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
             const contents = result.projectContents.toString();
-            should.equal(
-                contents.indexOf(`/* fuse:injection: */ var woops`) > -1, true);
-            out.should.deepEqual({ something: { HelloFoo: 'I am super' } })
-            done();
+            should(contents).findString(`/* fuse:injection: */ var woops`);
+            should(out).deepEqual({ something: { HelloFoo: 'I am super' } })
         })
-    })
+    }
 
 
 
-    it("`Should inject a variable woops case 2`", (done) => {
-
-        createEnv({
+    "`Should inject a variable woops case 2`"() {
+        return createEnv({
             modules: {
                 superFoo: {
                     files: {
@@ -60,17 +56,15 @@ describe("Native variables", (done) => {
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
             const contents = result.projectContents.toString();
-            should.equal(
-                contents.indexOf(`/* fuse:injection: */ var woops`) > -1, true);
-            out.should.deepEqual({ something: "here" })
-            done();
+
+            should(contents).findString(`/* fuse:injection: */ var woops`);
+            should(out).deepEqual({ something: "here" });
         })
-    })
+    }
 
 
-    it("`Should inject a variable woops case 2`", (done) => {
-
-        createEnv({
+    "`Should inject a variable woops case 2`"() {
+        return createEnv({
             modules: {
                 superFoo: {
                     files: {
@@ -96,14 +90,12 @@ describe("Native variables", (done) => {
             const out = result.project.FuseBox.import("./index");
             const contents = result.projectContents.toString();
 
-            should.equal(
-                contents.indexOf(`/* fuse:injection: */ var woops`) > -1, true);
-            out.should.deepEqual({ something: { HelloFoo: 'I am super' } })
-            done();
+            should(contents).findString(`/* fuse:injection: */ var woops`);
+            should(out).deepEqual({ something: { HelloFoo: 'I am super' } });
         })
-    })
+    }
 
-    it("`Should not inject a variable woops case 1`", (done) => {
+    "`Should not inject a variable woops case 1`"() {
 
         createEnv({
             modules: {
@@ -131,16 +123,13 @@ describe("Native variables", (done) => {
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
             const contents = result.projectContents.toString();
-
-            should.equal(
-                contents.indexOf(`/* fuse:injection: */ var woops`) === -1, true);
-            out.should.deepEqual({ myExport: { nada: true } })
-            done();
-        }).catch(done)
-    })
+            should(contents).notFindString(`/* fuse:injection: */ var woops`);
+            should(out).deepEqual({ myExport: { nada: true } });
+        });
+    }
 
 
-    it("`Should inject a variable Inferno`", (done) => {
+    "`Should inject a variable Inferno`"() {
 
         createEnv({
             modules: {
@@ -168,17 +157,16 @@ describe("Native variables", (done) => {
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
             const contents = result.projectContents.toString();
-            should.equal(
-                contents.indexOf(`/* fuse:injection: */ var Inferno`) > -1, true);
-            out.should.deepEqual({ result: "pure magic" })
-            done();
-        })
-    })
+
+            should(contents).findString(`/* fuse:injection: */ var Inferno`);
+            should(out).deepEqual({ result: "pure magic" })
+        });
+    }
 
 
-    it("`Should auto import Buffer`", (done) => {
 
-        createEnv({
+    "`Should auto import Buffer`"() {
+        return createEnv({
             project: {
                 files: {
                     "index.ts": ` exports.hello = new Buffer("sd");
@@ -188,20 +176,15 @@ describe("Native variables", (done) => {
             }
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
-            out.hello.should.be.ok;
             const contents = result.projectContents.toString();
-            should.equal(
-                contents.indexOf(`/* fuse:injection: */ var Buffer = require("buffer").Buffer`) > -1, true);
 
-            done();
+            should(out.hello).beObject()
+            should(contents).findString(`/* fuse:injection: */ var Buffer = require("buffer").Buffer`);
         })
-    })
+    }
 
-
-
-    it("Process check with function", (done) => {
-
-        createEnv({
+    "Process check with function"() {
+        return createEnv({
 
             project: {
                 autoImport: {
@@ -217,18 +200,14 @@ describe("Native variables", (done) => {
                 instructions: "> index.ts"
             }
         }).then((result) => {
-
             const contents = result.projectContents.toString();
 
-            should.equal(
-                contents.indexOf(`/* fuse:injection: */ var process`) === -1, true);
-            done();
-        })
-    })
+            should(contents).notFindString(`/* fuse:injection: */ var process`);
+        });
+    }
 
-    it("Process check with type property", (done) => {
-
-        createEnv({
+    "Process check with type property"() {
+        return createEnv({
 
             project: {
                 autoImport: {
@@ -244,16 +223,15 @@ describe("Native variables", (done) => {
         }).then((result) => {
 
             const contents = result.projectContents.toString();
-            should.equal(
-                contents.indexOf(`/* fuse:injection: */ var process`) === -1, true);
-            done();
-        })
-    })
+
+            should(contents).notFindString(`/* fuse:injection: */ var process`);
+        });
+    }
 
 
-    it("Process check with function param 'function(process){}'", (done) => {
+    "Process check with function param 'function(process){}'"() {
 
-        createEnv({
+        return createEnv({
 
             project: {
                 autoImport: {
@@ -269,16 +247,13 @@ describe("Native variables", (done) => {
         }).then((result) => {
 
             const contents = result.projectContents.toString();
-
-            should.equal(
-                contents.indexOf(`/* fuse:injection: */ var process`) === -1, true);
-            done();
+            should(contents).notFindString(`/* fuse:injection: */ var process`);
         })
-    });
+    }
 
-    it("Should not bundle process with 'function Users(process)'", (done) => {
+    "Should not bundle process with 'function Users(process)'"() {
 
-        createEnv({
+        return createEnv({
 
             project: {
                 autoImport: {
@@ -294,10 +269,7 @@ describe("Native variables", (done) => {
         }).then((result) => {
 
             const contents = result.projectContents.toString();
-
-            should.equal(
-                contents.indexOf(`/* fuse:injection: */ var process`) === -1, true);
-            done();
+            should(contents).notFindString(`/* fuse:injection: */ var process`);
         })
-    });
-})
+    }
+}
