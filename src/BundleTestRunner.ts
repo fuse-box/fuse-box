@@ -1,4 +1,4 @@
-import { FuseAPI } from "../lib/FuseApi";
+import { FuseAPI } from "./lib/FuseApi";
 export class BundleTestRunner {
     public fuse: FuseAPI;
     public reporter: string;

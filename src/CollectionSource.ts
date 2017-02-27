@@ -36,26 +36,4 @@ export class CollectionSource {
         });
         return filtered;
     }
-
-    // private resolveFiles(files: Map<string, File>): Promise<File[]> {
-    //     let promises: Promise<any>[] = [];
-    //     files.forEach(file => {
-    //         file.resolving.forEach(p => {
-    //             promises.push(p);
-    //         });
-    //     });
-    //     return Promise.all(promises).then(() => {
-    //         let filtered: File[] = [];
-    //         files.forEach(file => {
-    //             if (file.isFuseBoxBundle) {
-    //                 this.context.source.addContentToCurrentCollection(file.contents);
-    //             }
-    //             if (!file.info.isRemoteFile) {
-    //                 filtered.push(file);
-    //             }
-
-    //         });
-    //         return filtered;
-    //     });
-    // }
 }

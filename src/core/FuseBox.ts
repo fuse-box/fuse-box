@@ -11,7 +11,7 @@ import { ModuleCollection } from "./ModuleCollection";
 import * as path from "path";
 import { each, utils, chain, Chainable } from "realm-utils";
 import { Config } from "./../Config";
-import { BundleTestRunner } from "./../testRunner/BundleTestRunner";
+import { BundleTestRunner } from "../BundleTestRunner";
 import * as process from 'process';
 import { nativeModules, HeaderImport } from '../analysis/HeaderImport';
 const appRoot = require("app-root-path");
