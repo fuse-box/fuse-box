@@ -112,6 +112,7 @@ export class FileAnalysis {
             if (props.expr.test(requireStatement)) {
                 requireStatement = requireStatement.replace(props.expr, `${props.replacement}$2`);
                 // only if we need it
+
                 this.requiresRegeneration = true;
             }
         });
@@ -179,7 +180,6 @@ export class FileAnalysis {
                                         let f = parent.arguments[0];
                                         if (f && isString(f)) {
                                             out.fuseBoxMain = f.value;
-
                                             out.fuseBoxBundle = true;
                                         }
                                     }
@@ -194,8 +194,8 @@ export class FileAnalysis {
                         out.requires.push(node.source.value);
                     }
                 }
-                if (node.type === "CallExpression" && node.callee) {
 
+                if (node.type === "CallExpression" && node.callee) {
                     if (node.callee.type === "Identifier" && node.callee.name === "require") {
                         let arg1 = node.arguments[0];
                         if (isString(arg1)) {
@@ -233,7 +233,7 @@ export class FileAnalysis {
                     this.file.collection.acceptFiles = false;
                 } else {
                     // otherwise we know that user is referring to a file which is a FuseBox bundle
-                    // We point to the package with entry point
+                    // We pnt to the package with entry point
                     // e.g require("foobar/index.js")
                     this.file.alternativeContent = `module.exports = require("${out.fuseBoxMain}")`
                 }
@@ -242,7 +242,7 @@ export class FileAnalysis {
         this.wasAnalysed = true;
         // regenerate content
         if (this.requiresRegeneration) {
-            this.file.contents = escodegen.generate(this.ast);
+            this.file.contents = this.file.context.generateCode(this.ast);
         }
     }
 

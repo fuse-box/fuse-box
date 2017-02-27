@@ -1,12 +1,10 @@
-const should = require("should");
-const fsbx = require(`../dist/commonjs/index.js`);
+import { createEnv } from '../../test-stubs/TestEnvironment';
+import { should } from "fuse-test-runner";
+import { BabelPlugin } from '../../plugins/js-transpilers/BabelPlugin';
 
-const { getTestEnv, createEnv } = require("./fixtures/lib.js")
-describe("Alias test", (done) => {
-
-    it("Should replace an alias - case 1", (done) => {
-
-        createEnv({
+export class AliasTest {
+    "Should replace an alias - case 1"() {
+        return createEnv({
             project: {
                 alias: {
                     "utils": "~/utils/far/away/a/b/c"
@@ -19,14 +17,12 @@ describe("Alias test", (done) => {
             }
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
-            out.should.deepEqual({ something: { result: 'I was so far away, but i am here now' } })
-            done();
-        }).catch(done)
-    });
+            should(out).deepEqual({ something: { result: 'I was so far away, but i am here now' } });
+        });
+    }
 
-    it("Should replace an alias - case 2", (done) => {
-
-        createEnv({
+    "Should replace an alias - case 2"() {
+        return createEnv({
             project: {
                 alias: {
                     "utils": "~/utils/far/away/a/b/c/"
@@ -39,14 +35,12 @@ describe("Alias test", (done) => {
             }
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
-            out.should.deepEqual({ something: { result: 'I was so far away, but i am here now' } })
-            done();
-        })
-    });
+            should(out).deepEqual({ something: { result: 'I was so far away, but i am here now' } });
+        });
+    }
 
-    it("Should replace an alias - as a file - with babel", (done) => {
-
-        createEnv({
+    "Should replace an alias - as a file - with babel"() {
+        return createEnv({
             project: {
                 alias: {
                     "eh": "~/moose/eh/igloo.js"
@@ -55,39 +49,36 @@ describe("Alias test", (done) => {
                     "index.js": `export {default as canada} from 'eh'`,
                     "moose/eh/igloo.js": "export default { result: 'igloo'}"
                 },
-                instructions: "> index.js",
-                plugins: [fsbx.BabelPlugin({config: {"presets":["latest"]}})],
+                instructions: "index.js",
+                plugins: [BabelPlugin({ config: { "presets": ["latest"] } })],
             }
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
-            out.should.deepEqual({ canada: { result: 'igloo' } })
-            done();
-        })
-    });
-    it.only("Should replace an alias - with babel 2", (done) => {
+            should(out).deepEqual({ canada: { result: 'igloo' } });
+        });
+    }
 
-        createEnv({
+    "Should replace an alias - with babel 2"() {
+        return createEnv({
             project: {
                 alias: {
-                    "eh": "~/moose/eh/"
+                    "eh": "~/moose/eh"
                 },
                 files: {
-                    "index.js": `export default require('eh/igloo.js')`,
+                    "index.js": `export default require('eh/igloo2.js')`,
                     "moose/eh/igloo2.js": "export default { result: 'igloo'}"
                 },
                 instructions: "> index.js",
-                plugins: [fsbx.BabelPlugin({config: {"presets":["latest"]}})],
+                plugins: [BabelPlugin({ config: { "presets": ["latest"] } })],
             }
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
-            out.should.deepEqual({ result: 'igloo' })
-            done();
-        })
-    });
+            should(out).deepEqual({ default: { default: { result: 'igloo' } } });
+        });
+    }
 
-    it("Should handle aliases with packages", (done) => {
-
-        createEnv({
+    "Should handle aliases with packages"() {
+        return createEnv({
             modules: {
                 "preact-compat": {
                     files: {
@@ -111,16 +102,15 @@ describe("Alias test", (done) => {
             }
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
-            out.should.deepEqual([
+            should(out).deepEqual([
                 { name: 'i am preact-compat' },
                 { name: 'i am preact-compat' }
-            ])
-            done();
-        }).catch(done)
-    });
+            ]);
+        });
+    }
 
 
-    it("Should handle aliases that start with the same chars", (done) => {
+    "Should handle aliases that start with the same chars"() {
 
         createEnv({
             project: {
@@ -138,12 +128,11 @@ describe("Alias test", (done) => {
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
 
-            out.should.deepEqual({
+            should(out).deepEqual({
                 something: [{ result: 'I was so far away, but i am here now' },
-                    { result: 'I should stay here' }
+                { result: 'I should stay here' }
                 ]
             })
-            done();
         })
-    });
-})
+    }
+}

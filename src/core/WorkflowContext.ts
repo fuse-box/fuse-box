@@ -11,7 +11,7 @@ import { EventEmitter } from "../EventEmitter";
 import { ensureUserPath, findFileBackwards, ensureDir, removeFolder } from '../Utils';
 import { SourceChangedEvent } from '../devServer/Server';
 import { Config } from '../Config';
-
+import * as escodegen from "escodegen";
 
 /**
  * All the plugin method names
@@ -123,6 +123,7 @@ export class WorkFlowContext {
 
     public experimentalAliasEnabled = false;
 
+    public customCodeGenerator: any;
 
     public initCache() {
         this.cache = new ModuleCache(this);
@@ -140,8 +141,19 @@ export class WorkFlowContext {
 
     public getHeaderImportsConfiguration() {
 
-
     }
+
+    public setCodeGenerator(fn: any) {
+        this.customCodeGenerator = fn;
+    }
+
+    public generateCode(ast: any) {
+        if (this.customCodeGenerator) {
+            return this.customCodeGenerator(ast);
+        }
+        return escodegen.generate(ast);
+    }
+
     public emitJavascriptHotReload(file: File) {
         let content = file.contents;
         if (file.headerContent) {

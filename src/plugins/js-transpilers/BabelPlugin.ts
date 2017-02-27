@@ -97,14 +97,25 @@ export class BabelPluginClass implements Plugin {
 
             if (result.ast) {
                 file.analysis.loadAst(result.ast);
-                file.analysis.analyze();
+                let sourceMaps = result.map;
+                // escodegen does not realy like babel
+                // so a custom function handles tranformation here if needed
+                // This happens only when the code is required regeneration
+                // for example with alises -> in any cases this will stay untouched
+                file.context.setCodeGenerator((ast) => {
+                    const result = babelCore.transformFromAst(ast);
+                    sourceMaps = result.map;
+                    return result.code;
+                });
+
                 file.contents = result.code;
-                if (result.map) {
-                    let sm = result.map;
-                    sm.file = file.info.fuseBoxPath;
-                    sm.sources = [file.info.fuseBoxPath];
-                    file.sourceMap = JSON.stringify(sm);
+                file.analysis.analyze();
+                if (sourceMaps) {
+                    sourceMaps.file = file.info.fuseBoxPath;
+                    sourceMaps.sources = [file.info.fuseBoxPath];
+                    file.sourceMap = JSON.stringify(sourceMaps);
                 }
+
                 if (this.context.useCache) {
                     this.context.emitJavascriptHotReload(file);
                     this.context.cache.writeStaticCache(file, file.sourceMap);
