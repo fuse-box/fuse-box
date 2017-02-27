@@ -78,6 +78,10 @@ export class BundleData {
     }
 }
 
+export interface ArithmeticProperties {
+    tempDir: string;
+    data: any;
+}
 /**
  *
  *
@@ -116,7 +120,7 @@ export class Arithmetic {
      *
      * @memberOf Arithmetic
      */
-    public static getFiles(parser: PropParser, virtualFiles: string, homeDir: string) {
+    public static getFiles(parser: PropParser, virtualFiles: string, homeDir: string): Promise<BundleData> {
         let tsMode = false;
         let collect = (list) => {
             let data = new Map<string, IBundleInformation>();
@@ -160,6 +164,7 @@ export class Arithmetic {
                 if (virtualFiles) {
                     this.tempFolder = path.join(Config.TEMP_FOLDER, new Date().getTime().toString());
                     homeDir = this.tempFolder;
+
                     mkdirp.sync(this.tempFolder);
                     return each(virtualFiles, (fileContents, fileName) => {
                         if (utils.isFunction(fileContents)) {
@@ -192,6 +197,7 @@ export class Arithmetic {
         }).then(result => {
             let data = new BundleData(homeDir, tsMode, result.including, result.excluding, result.entry);
             if (result.tempFolder) {
+
                 data.setupTempFolder(result.tempFolder);
             }
             return data;

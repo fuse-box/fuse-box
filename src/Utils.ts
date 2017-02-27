@@ -81,6 +81,7 @@ export function ensureDir(userPath: string) {
 }
 
 export function removeFolder(userPath) {
+
     if (fs.existsSync(userPath)) {
         fs.readdirSync(userPath).forEach(function (file, index) {
             var curPath = path.join(userPath, file);

@@ -1,5 +1,9 @@
 import { File } from "../../core/File";
 import { WorkFlowContext, Plugin } from "../../core/WorkflowContext";
+import * as fs from 'fs';
+import * as path from 'path';
+import * as appRoot from 'app-root-path';
+import { Config } from '../../Config';
 
 let sass;
 
@@ -29,12 +33,20 @@ export class SassPluginClass implements Plugin {
 
         if (!sass) { sass = require("node-sass"); }
 
+        const defaultMacro = {
+            "$homeDir": file.context.homeDir,
+            "$appRoot": appRoot.path,
+            "~": Config.NODE_MODULES_DIR + "/"
+        };
+
         const options = Object.assign({
             data: file.contents,
             sourceMap: true,
             outFile: file.info.fuseBoxPath,
-            sourceMapContents: true,
+            sourceMapContents: true
         }, this.options);
+
+
 
         options.includePaths = [];
         if (typeof this.options.includePaths !== "undefined") {
@@ -42,19 +54,31 @@ export class SassPluginClass implements Plugin {
                 options.includePaths.push(path);
             });
         }
+        options.macros = Object.assign(defaultMacro, this.options.macros || {}, );
+
+
+        options.importer = (url, prev, done) => {
+            for (let key in options.macros) {
+                if (options.macros.hasOwnProperty(key)) {
+                    url = url.replace(key, options.macros[key]);
+                }
+            }
+            done({ file: path.normalize(url) });
+        }
 
         options.includePaths.push(file.info.absDir);
-
-        return new Promise((res, rej) => {
+        return new Promise((resolve, reject) => {
             return sass.render(options, (err, result) => {
                 if (err) {
-                    return rej(err);
+                    return reject(err);
                 }
                 file.sourceMap = result.map && result.map.toString();
                 file.contents = result.css.toString();
-                return res(file.contents);
+
+                return resolve();
             });
         });
+
     }
 }
 

@@ -9,7 +9,7 @@ import * as appRoot from 'app-root-path';
 
 
 export function createEnv(opts: any) {
-    const name = opts.name || `test-${new Date().getTime()}`;
+    const name = opts.name || `hih-test-${new Date().getTime()}`;
 
     let tmpFolder = path.join(appRoot.path, ".fusebox", "tests");
     mkdirp(tmpFolder)

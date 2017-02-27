@@ -329,7 +329,12 @@ export class FuseBox {
         let parser = Arithmetic.parse(str);
         let bundle: BundleData;
         return Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
+
             bundle = data;
+            if (bundle.tmpFolder) {
+                this.context.homeDir = bundle.tmpFolder
+            }
+
             return this.process(data, bundleReady);
         }).then((contents) => {
             bundle.finalize(); // Clean up temp folder if required
