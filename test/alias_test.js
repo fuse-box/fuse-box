@@ -1,4 +1,5 @@
 const should = require("should");
+const fsbx = require(`../dist/commonjs/index.js`);
 
 const { getTestEnv, createEnv } = require("./fixtures/lib.js")
 describe("Alias test", (done) => {
@@ -43,6 +44,47 @@ describe("Alias test", (done) => {
         })
     });
 
+    it("Should replace an alias - as a file - with babel", (done) => {
+
+        createEnv({
+            project: {
+                alias: {
+                    "eh": "~/moose/eh/igloo.js"
+                },
+                files: {
+                    "index.js": `export {default as canada} from 'eh'`,
+                    "moose/eh/igloo.js": "export default { result: 'igloo'}"
+                },
+                instructions: "> index.js",
+                plugins: [fsbx.BabelPlugin({config: {"presets":["latest"]}})],
+            }
+        }).then((result) => {
+            const out = result.project.FuseBox.import("./index");
+            out.should.deepEqual({ canada: { result: 'igloo' } })
+            done();
+        })
+    });
+    it.only("Should replace an alias - with babel 2", (done) => {
+
+        createEnv({
+            project: {
+                alias: {
+                    "eh": "~/moose/eh/"
+                },
+                files: {
+                    "index.js": `export default require('eh/igloo.js')`,
+                    "moose/eh/igloo2.js": "export default { result: 'igloo'}"
+                },
+                instructions: "> index.js",
+                plugins: [fsbx.BabelPlugin({config: {"presets":["latest"]}})],
+            }
+        }).then((result) => {
+            const out = result.project.FuseBox.import("./index");
+            out.should.deepEqual({ result: 'igloo' })
+            done();
+        })
+    });
+
     it("Should handle aliases with packages", (done) => {
 
         createEnv({
@@ -61,7 +103,7 @@ describe("Alias test", (done) => {
                 },
                 files: {
                     "index.ts": `module.exports = [
-                        require("react"),  
+                        require("react"),
                         require("react-dom")
                     ]`,
                 },
