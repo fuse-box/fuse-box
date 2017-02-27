@@ -371,9 +371,9 @@ The order of plugins is important: environment variables created with this plugi
 
 ```js
 plugins: [
-   fsbx.BabelPlugin({ /* settings /*}), // <-- won't have NODE_ENV set
+   fsbx.BabelPlugin({ /* settings */ }), // <-- won't have NODE_ENV set
    fsbx.EnvPlugin({ NODE_ENV: "production" }),
-   fsbx.BabelPlugin({ /* settings /*}), // <-- will have NODE_ENV set
+   fsbx.BabelPlugin({ /* settings */ }), // <-- will have NODE_ENV set
 ]
 ```
 
