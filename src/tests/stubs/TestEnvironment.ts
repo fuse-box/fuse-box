@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { each } from "realm-utils"
-import { FuseBox } from '../core/FuseBox';
+import { FuseBox } from '../../core/FuseBox';
 import * as fs from 'fs';
 import * as mkdirp from "mkdirp";
 import * as appRoot from 'app-root-path';

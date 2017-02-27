@@ -1,11 +1,11 @@
-import { createEnv } from '../../test-stubs/TestEnvironment';
-import { CSSPlugin } from './CSSplugin';
+import { createEnv } from './stubs/TestEnvironment';
 import { should } from "fuse-test-runner";
 import * as path from 'path';
 import * as appRoot from 'app-root-path';
 import * as fs from 'fs';
-import { CSSResourcePlugin } from './CSSResourcePlugin';
-import { SassPlugin } from './SassPlugin';
+import { CSSResourcePlugin } from '../plugins/stylesheet/CSSResourcePlugin';
+import { SassPlugin } from '../plugins/stylesheet/SassPlugin';
+import { CSSPlugin } from '../plugins/stylesheet/CSSplugin';
 const mkdirp = require("mkdirp");
 let tmp, shouldExist;
 

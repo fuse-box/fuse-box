@@ -1,6 +1,5 @@
 import { File } from "../../core/File";
 import { WorkFlowContext, Plugin } from "../../core/WorkflowContext";
-import * as fs from 'fs';
 import * as path from 'path';
 import * as appRoot from 'app-root-path';
 import { Config } from '../../Config';

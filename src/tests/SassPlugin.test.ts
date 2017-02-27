@@ -1,8 +1,8 @@
-import { createEnv } from '../../test-stubs/TestEnvironment';
-import { CSSPlugin } from './CSSplugin';
+import { createEnv } from './stubs/TestEnvironment';
+import { CSSPlugin } from '../plugins/stylesheet/CSSplugin';
 import { should } from "fuse-test-runner";
-import { SassPlugin } from './SassPlugin';
-import { Config } from '../../Config';
+import { SassPlugin } from '../plugins/stylesheet/SassPlugin';
+import { Config } from '../Config';
 import * as fs from 'fs';
 import * as path from 'path';
 export class CssPluginTest {
