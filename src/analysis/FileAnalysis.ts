@@ -11,9 +11,10 @@ import { ImportDeclaration } from './plugins/ImportDeclaration';
 require("acorn-es7")(acorn);
 require("acorn-jsx/inject")(acorn);
 
-export interface AnalysisPlugin {
-    onNode(node: any, parent: any): void;
-}
+
+
+const plugins: any = [AutoImport, OwnVariable, OwnBundle, ImportDeclaration]
+
 
 /**
  * Makes static analysis on the code
@@ -30,7 +31,14 @@ export class FileAnalysis {
 
     private wasAnalysed = false;
 
+
     private skipAnalysis = false;
+
+    public bannedImports = {};
+
+    public nativeImports = {};
+
+    public fuseBoxMainFile;
 
     public requiresRegeneration = false;
 
@@ -83,9 +91,15 @@ export class FileAnalysis {
     }
 
     public handleAliasReplacement(requireStatement: string): string {
+
         if (!this.file.context.experimentalAliasEnabled) {
             return requireStatement;
         }
+        // enable aliases only for the current project
+        // if (this.file.collection.name !== this.file.context.defaultPackageName) {
+        //    return requireStatement;
+        // }
+
         const aliasCollection = this.file.context.aliasCollection;
         aliasCollection.forEach(props => {
             if (props.expr.test(requireStatement)) {
@@ -115,19 +129,14 @@ export class FileAnalysis {
         if (this.wasAnalysed || this.skipAnalysis) {
             return;
         }
-        const plugins = [
-            new AutoImport(this.file, this.file.analysis),
-            new OwnVariable(this.file, this.file.analysis),
-            new OwnBundle(this.file, this.file.analysis),
-            new ImportDeclaration(this.file, this.file.analysis)
-        ];
+
 
         ASTTraverse.traverse(this.ast, {
             pre: (node, parent, prop, idx) =>
-                plugins.forEach(plugin => plugin.onNode(node, parent))
+                plugins.forEach(plugin => plugin.onNode(this.file, node, parent))
         });
 
-        plugins.forEach(plugin => plugin.onEnd());
+        plugins.forEach(plugin => plugin.onEnd(this.file));
 
         this.wasAnalysed = true;
         // regenerate content

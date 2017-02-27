@@ -1,4 +1,3 @@
-import { AnalysisPlugin, FileAnalysis } from './../FileAnalysis';
 import { File } from "../../core/File";
 import * as escodegen from 'escodegen';
 
@@ -11,23 +10,23 @@ import * as escodegen from 'escodegen';
  * It will understand an uglified version of FuseBox
  * That's why we need OwnVariable plugin
  */
-export class OwnBundle implements AnalysisPlugin {
-    public fuseBoxMainFile: false;
-    constructor(public file: File, public analysis: FileAnalysis) { }
+export class OwnBundle {
 
-    public onNode(node: any, parent: any) {
+
+    public static onNode(file: File, node: any, parent: any) {
+        const analysis = file.analysis;
         if (node.type === "MemberExpression") {
             if (parent.type === "CallExpression") {
                 if (node.object && node.object.type === "Identifier" &&
-                    node.object.name === this.analysis.fuseBoxVariable) {
+                    node.object.name === analysis.fuseBoxVariable) {
                     if (node.property && node.property.type === "Identifier") {
 
                         // Extraing main file name from a bundle
                         if (node.property.name === "main") {
                             if (parent.arguments) {
                                 let f = parent.arguments[0];
-                                if (f && this.analysis.nodeIsString(f)) {
-                                    this.fuseBoxMainFile = f.value;
+                                if (f && analysis.nodeIsString(f)) {
+                                    analysis.fuseBoxMainFile = f.value;
                                 }
                             }
                         }
@@ -38,22 +37,23 @@ export class OwnBundle implements AnalysisPlugin {
     }
 
 
-    public onEnd() {
-        if (this.fuseBoxMainFile) {
+    public static onEnd(file: File) {
+        const analysis = file.analysis;
+        if (analysis.fuseBoxMainFile) {
             // Reset all dependencies if a fusebox bundle is spotted
-            this.file.analysis.dependencies = [];
-            this.file.isFuseBoxBundle = true;
+            file.analysis.dependencies = [];
+            file.isFuseBoxBundle = true;
             // No need in extra footers
-            this.removeFuseBoxApiFromBundle();
-            const externalCollection = this.file.collection.name !== this.file.context.defaultPackageName;
+            this.removeFuseBoxApiFromBundle(file);
+            const externalCollection = file.collection.name !== file.context.defaultPackageName;
             if (externalCollection) {
                 // Ignore this collection as it will be override by the actual bundle
-                this.file.collection.acceptFiles = false;
+                file.collection.acceptFiles = false;
             } else {
                 // otherwise we know that user is referring to a file which is a FuseBox bundle
                 // We pnt to the package with entry point
                 // e.g require("foobar/index.js")
-                this.file.alternativeContent = `module.exports = require("${this.fuseBoxMainFile}")`
+                file.alternativeContent = `module.exports = require("${file.analysis.fuseBoxMainFile}")`
             }
         }
     }
@@ -61,9 +61,9 @@ export class OwnBundle implements AnalysisPlugin {
     /**
      * Getting rid of redundancies
      */
-    private removeFuseBoxApiFromBundle() {
-        let ast = this.analysis.ast;
-        const fuseVariable = this.analysis.fuseBoxVariable;
+    private static removeFuseBoxApiFromBundle(file: File) {
+        let ast = file.analysis.ast;
+        const fuseVariable = file.analysis.fuseBoxVariable;
         let modifiedAst;
         if (ast.type === "Program") {
             let first = ast.body[0];
@@ -90,7 +90,7 @@ export class OwnBundle implements AnalysisPlugin {
             }
         }
         if (modifiedAst) {
-            this.file.contents = `(function(${fuseVariable})${escodegen.generate(modifiedAst)})(FuseBox);`;
+            file.contents = `(function(${fuseVariable})${escodegen.generate(modifiedAst)})(FuseBox);`;
         }
     }
 }

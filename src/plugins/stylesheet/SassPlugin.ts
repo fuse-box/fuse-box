@@ -57,6 +57,10 @@ export class SassPluginClass implements Plugin {
 
 
         options.importer = (url, prev, done) => {
+            if (/https?:/.test(url)) {
+                return done({ url: url });
+            }
+
             for (let key in options.macros) {
                 if (options.macros.hasOwnProperty(key)) {
                     url = url.replace(key, options.macros[key]);
