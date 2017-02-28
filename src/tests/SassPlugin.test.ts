@@ -46,7 +46,7 @@ export class CssPluginTest {
                     "b.scss": "h1 { color:red}"
                 },
                 plugins: [
-                    [SassPlugin(), CSSPlugin()]
+                    [SassPlugin({ importer: true }), CSSPlugin()]
                 ],
                 instructions: "index.ts"
             }
@@ -72,7 +72,7 @@ export class CssPluginTest {
 
                 },
                 plugins: [
-                    [SassPlugin(), CSSPlugin()]
+                    [SassPlugin({ importer: true }), CSSPlugin()]
                 ],
                 instructions: "index.ts"
             }
@@ -99,6 +99,7 @@ export class CssPluginTest {
                 },
                 plugins: [
                     [SassPlugin({
+                        importer: true,
                         macros: {
                             "$hello": Config.TEMP_FOLDER + "/"
                         }
@@ -129,6 +130,7 @@ export class CssPluginTest {
                 },
                 plugins: [
                     [SassPlugin({
+                        importer: true,
                         macros: {
                             "$homeDir": Config.TEMP_FOLDER + "/"
                         }
