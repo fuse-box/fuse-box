@@ -55,7 +55,6 @@ export class BundleData {
 
     public finalize() {
         if (this.tmpFolder) {
-
             deleteFolderRecursive(this.tmpFolder);
         }
     }

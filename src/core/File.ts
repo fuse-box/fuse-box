@@ -338,9 +338,9 @@ export class File {
                 this.isLoaded = true;
                 this.sourceMap = cached.sourceMap;
                 this.contents = cached.contents;
-                if (cached.headerContent) {
-                    this.headerContent = cached.headerContent;
-                }
+                // if (cached.headerContent) {
+                //     //this.headerContent = cached.headerContent;
+                // }
                 debug(`From cache ${this.info.fuseBoxPath}`)
                 this.analysis.dependencies = cached.dependencies;
                 this.tryPlugins();
