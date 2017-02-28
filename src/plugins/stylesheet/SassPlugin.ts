@@ -56,18 +56,21 @@ export class SassPluginClass implements Plugin {
         options.macros = Object.assign(defaultMacro, this.options.macros || {}, );
 
 
-        options.importer = (url, prev, done) => {
-            if (/https?:/.test(url)) {
-                return done({ url: url });
-            }
-
-            for (let key in options.macros) {
-                if (options.macros.hasOwnProperty(key)) {
-                    url = url.replace(key, options.macros[key]);
+        if (this.options.importer === true) {
+            options.importer = (url, prev, done) => {
+                if (/https?:/.test(url)) {
+                    return done({ url: url });
                 }
+
+                for (let key in options.macros) {
+                    if (options.macros.hasOwnProperty(key)) {
+                        url = url.replace(key, options.macros[key]);
+                    }
+                }
+                done({ file: path.normalize(url) });
             }
-            done({ file: path.normalize(url) });
         }
+
 
         options.includePaths.push(file.info.absDir);
         return new Promise((resolve, reject) => {
