@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from 'fs';
+import * as fsExtra from 'fs-extra';
 const appRoot = require("app-root-path");
-const mkdirp = require("mkdirp");
 
 const MBLACKLIST = [
     "freelist",
@@ -67,7 +67,8 @@ export function ensureUserPath(userPath: string) {
     }
     userPath = path.normalize(userPath);
     let dir = path.dirname(userPath);
-    mkdirp.sync(dir);
+
+    fsExtra.ensureDirSync(dir);
     return userPath;
 }
 
@@ -76,7 +77,8 @@ export function ensureDir(userPath: string) {
         userPath = path.join(appRoot.path, userPath);
     }
     userPath = path.normalize(userPath);
-    mkdirp.sync(userPath);
+
+    fsExtra.ensureDirSync(userPath);
     return userPath;
 }
 

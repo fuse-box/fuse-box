@@ -2,17 +2,20 @@ import * as path from 'path';
 import { each } from "realm-utils"
 import { FuseBox } from '../../core/FuseBox';
 import * as fs from 'fs';
-import * as mkdirp from "mkdirp";
 import * as appRoot from 'app-root-path';
+import { removeFolder } from '../../Utils';
+import * as fsExtra from 'fs-extra';
 
 
 
 
 export function createEnv(opts: any) {
-    const name = opts.name || `hih-test-${new Date().getTime()}`;
+    const name = opts.name || `test-${new Date().getTime()}`;
 
-    let tmpFolder = path.join(appRoot.path, ".fusebox", "tests");
-    mkdirp(tmpFolder)
+    let tmpFolder = path.join(appRoot.path, ".fusebox", "tests", name);
+
+
+    fsExtra.ensureDirSync(tmpFolder);
     let localPath = path.join(tmpFolder, name);
 
     const output: any = {
@@ -62,7 +65,8 @@ export function createEnv(opts: any) {
             })
         });
     }).then(() => {
-        //deleteFolderRecursive(localPath);
+
+        removeFolder(localPath);
         return output;
     })
 }

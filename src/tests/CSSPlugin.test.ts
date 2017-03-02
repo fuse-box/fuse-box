@@ -6,12 +6,13 @@ import * as fs from 'fs';
 import { CSSResourcePlugin } from '../plugins/stylesheet/CSSResourcePlugin';
 import { SassPlugin } from '../plugins/stylesheet/SassPlugin';
 import { CSSPlugin } from '../plugins/stylesheet/CSSplugin';
-const mkdirp = require("mkdirp");
+import * as fsExtra from 'fs-extra';
+
 let tmp, shouldExist;
 
 const makeTestFolder = () => {
     tmp = path.join(appRoot.path, ".fusebox", "css-test", new Date().getTime().toString());
-    mkdirp(tmp);
+    fsExtra.ensureDirSync(tmp);
     shouldExist = (name) => {
         const fname = path.join(tmp, name);;
         should(fs.existsSync(fname)).equal(true);

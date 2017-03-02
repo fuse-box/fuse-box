@@ -3,7 +3,8 @@ const fs = require("fs");
 
 const FuseBox = build.FuseBox;
 
-const mkdirp = require("mkdirp");
+
+const fsExtra = require("fs-extra")
 const appRoot = require("app-root-path");
 const { each } = require("realm-utils");
 const path = require("path");
@@ -57,7 +58,9 @@ exports.createEnv = (opts, str, done) => {
     const name = opts.name || `test-${new Date().getTime()}`;
 
     let tmpFolder = path.join(appRoot.path, ".fusebox", "tests");
-    mkdirp(tmpFolder)
+
+
+    fsExtra.ensureDirSync(tmpFolder);
     let localPath = path.join(tmpFolder, name);
 
     const output = {
@@ -115,7 +118,8 @@ exports.createEnv = (opts, str, done) => {
 exports.getNodeEnv = (opts, str, done) => {
     return new Promise((resolve, reject) => {
         let tmpFolder = path.join(appRoot.path, ".tmp");
-        mkdirp(tmpFolder)
+
+        fsExtra.ensureDirSync(tmpFolder);
         let filePath = path.join(tmpFolder, `test-${new Date().getTime()}-${Math.random()}.js`);
 
         let fsb = new FuseBox(opts);

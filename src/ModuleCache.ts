@@ -6,7 +6,8 @@ import { File } from './core/File';
 import { Config } from "./Config";
 import * as path from "path";
 import { each } from "realm-utils";
-const mkdirp = require("mkdirp");
+import * as fsExtra from 'fs-extra';
+
 
 const MEMORY_CACHE = {};
 /**
@@ -69,9 +70,8 @@ export class ModuleCache {
 
 
         this.staticCacheFolder = path.join(this.cacheFolder, "static");
-        try {
-            mkdirp.sync(this.staticCacheFolder); // that fails on windows sometimes
-        } catch (e) { }
+        fsExtra.ensureDirSync(this.staticCacheFolder);
+
 
         this.cacheFile = path.join(this.cacheFolder, "deps.json");
         if (fs.existsSync(this.cacheFile)) {

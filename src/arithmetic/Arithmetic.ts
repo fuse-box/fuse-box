@@ -4,7 +4,9 @@ import { each, chain, Chainable, utils } from 'realm-utils';
 import { File } from "../core/File";
 import * as path from "path";
 import * as fs from "fs";
-import * as mkdirp from 'mkdirp';
+import * as fsExtra from "fs-extra";
+
+
 import * as glob from "glob";
 
 
@@ -161,17 +163,17 @@ export class Arithmetic {
             public tempFolder: string;
             public prepareVirtualFiles() {
                 if (virtualFiles) {
-                    this.tempFolder = path.join(Config.TEMP_FOLDER, new Date().getTime().toString());
+                    this.tempFolder = path.join(Config.TEMP_FOLDER, "virtual-files", new Date().getTime().toString());
                     homeDir = this.tempFolder;
+                    fsExtra.ensureDirSync(this.tempFolder);
 
-                    mkdirp.sync(this.tempFolder);
                     return each(virtualFiles, (fileContents, fileName) => {
                         if (utils.isFunction(fileContents)) {
                             fileContents = fileContents();
                         }
                         let filePath = path.join(this.tempFolder, fileName);
                         let fileDir = path.dirname(filePath);
-                        mkdirp.sync(fileDir);
+                        fsExtra.ensureDirSync(fileDir);
                         fs.writeFileSync(filePath, fileContents);
                     });
                 }
