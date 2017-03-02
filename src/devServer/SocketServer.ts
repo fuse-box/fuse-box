@@ -20,6 +20,8 @@ export class SocketServer {
     public static start(server: any, fuse: FuseBox) {
         let wss = new Server({ server: server });
         let ss = new SocketServer(wss, fuse);
+
+
         return ss;
     }
 
@@ -27,6 +29,7 @@ export class SocketServer {
         let wss = new Server({ port: port });
         this.server = new SocketServer(wss, fuse);
         fuse.context.log.echo(`Launching socket server on ${port}`);
+
         return this.server;
     }
 
