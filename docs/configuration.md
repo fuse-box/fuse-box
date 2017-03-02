@@ -315,6 +315,12 @@ Don't run that bundle in a traditional browser.
 ## Full Config
 An example using the available config options might look similar to:
 ```js
+// remember, unless you transpile your fuse.js, es6 will not work in your fuse.js
+// so using `require` is the easiest. 
+// destructuring with `require` is supported with the current node version.
+//
+// importing can also be done with the syntax:
+// import {FuseBox, BabelPlugin} from "fuse-box"
 import fsbx from "fuse-box"
 const FuseBox = fsbx.FuseBox
 
@@ -447,7 +453,7 @@ const singleBundle = `
     + [**/*.css]
 `
 
-if (frontEndDev) bundle.devServer(singleBundle)
-else bundle.bundle(multipleBundles)
+if (frontEndDev) fuse.devServer(singleBundle)
+else fuse.bundle(multipleBundles)
 
 ```
