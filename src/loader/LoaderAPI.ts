@@ -88,7 +88,7 @@ interface IReference {
      * serverReference is a result of nodejs require statement
      * In case if module is not in a bundle
      */
-    serverReference?: string;
+    server?: string;
     /** Current package name */
     pkgName?: string;
     /** Custom version to take into a consideration */
@@ -112,6 +112,12 @@ interface IReference {
  */
 const $getNodeModuleName = (name: string) => {
     const n = name.charCodeAt(0);
+    const s = name.charCodeAt(1);
+    // basically a hack for windows to stop recognising
+    // c:\ as a valid node module
+    if (!$isBrowser && s === 58) {
+        return;
+    }
     // https://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
     // basically lowcase alphabet starts with 97 ends with 122, and symbol @ is 64
     // which 2x faster than /^([@a-z].*)$/
@@ -142,7 +148,7 @@ const $getDir = (filePath: string) => {
  * Joins paths
  * Works like nodejs path.join
  */
-const $pathJoin = function(...string: string[]): string {
+const $pathJoin = function (...string: string[]): string {
     let parts: string[] = [];
     for (let i = 0, l = arguments.length; i < l; i++) {
         parts = parts.concat(arguments[i].split("/"));
@@ -219,6 +225,10 @@ const $loopObjKey = (obj: Object, func: Function) => {
     }
 }
 
+const $serverRequire = (path) => {
+    return { server: require(path) }
+}
+
 const $getRef = (name: string, opts: {
     path?: string;
     pkg?: string;
@@ -243,10 +253,20 @@ const $getRef = (name: string, opts: {
     // Tilde test
     // Charcode is 2x faster
     //if (/^~/.test(name)) {
-    if (name && name.charCodeAt(0) === 126) {
-        name = name.slice(2, name.length);
-        basePath = "./";
+    if (name) {
+        if (name.charCodeAt(0) === 126) {
+            name = name.slice(2, name.length);
+            basePath = "./";
+        } else {
+            // check for absolute paths for nodejs
+            // either first one is / (47 for *nix) or second one : (58 for windows) 
+            if (!$isBrowser && (name.charCodeAt(0) === 47 || name.charCodeAt(1) === 58)) {
+                return $serverRequire(name);
+            }
+        }
     }
+
+
 
 
     let pkg = $packages[pkg_name];
@@ -256,9 +276,7 @@ const $getRef = (name: string, opts: {
             throw `Package was not found "${pkg_name}"`;
         } else {
             // Return "real" node module
-            return {
-                serverReference: require(pkg_name)
-            }
+            return $serverRequire(pkg_name + (name ? "/" + name : ""));
         }
     }
     if (!name) {
@@ -290,11 +308,17 @@ const $getRef = (name: string, opts: {
             validPath = filePath + ".js";
             file = pkg.f[validPath];
         }
+
         // if file is not found STILL
         // then we can try JSX
         if (!file) {
             // try for JSX one last time
             file = pkg.f[filePath + ".jsx"];
+        }
+
+        if (!file) {
+            validPath = filePath + "/index.jsx";
+            file = pkg.f[validPath];
         }
     }
 
@@ -317,7 +341,7 @@ const $async = (file: string, cb: (imported?: any) => any) => {
     if ($isBrowser) {
         var xmlhttp: XMLHttpRequest;
         xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
+        xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4) {
                 if (xmlhttp.status == 200) {
                     let contentType = xmlhttp.getResponseHeader("Content-Type");
@@ -389,8 +413,8 @@ const $import = (name: string, opts: any = {}) => {
     }
 
     let ref = $getRef(name, opts);
-    if (ref.serverReference) {
-        return ref.serverReference;
+    if (ref.server) {
+        return ref.server;
     }
     let file = ref.file;
 
@@ -562,8 +586,8 @@ class FuseBox {
         pkg: string
     }) {
         let pkg = opts && opts.pkg || "default";
-        this.pkg(pkg, {}, function(___scope___: any) {
-            ___scope___.file(path, function(exports: any, require: any, module: any, __filename: string, __dirname: string) {
+        this.pkg(pkg, {}, function (___scope___: any) {
+            ___scope___.file(path, function (exports: any, require: any, module: any, __filename: string, __dirname: string) {
                 var res = new Function('__fbx__dnm__', 'exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
                 res(true, exports, require, module, __filename, __dirname, __root__);
             });

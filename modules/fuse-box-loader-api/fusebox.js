@@ -14,11 +14,15 @@ var $packages = $fsbx.p = $fsbx.p || {};
 var $events = $fsbx.e = $fsbx.e || {};
 var $getNodeModuleName = function (name) {
     var n = name.charCodeAt(0);
+    var s = name.charCodeAt(1);
+    if (!$isBrowser && s === 58) {
+        return;
+    }
     if (n >= 97 && n <= 122 || n === 64) {
         if (n === 64) {
-            var s = name.split("/");
-            var target = s.splice(2, s.length).join("/");
-            return [s[0] + "/" + s[1], target || undefined];
+            var s_1 = name.split("/");
+            var target = s_1.splice(2, s_1.length).join("/");
+            return [s_1[0] + "/" + s_1[1], target || undefined];
         }
         var index = name.indexOf("/");
         if (index === -1) {
@@ -97,6 +101,9 @@ var $loopObjKey = function (obj, func) {
         }
     }
 };
+var $serverRequire = function (path) {
+    return { server: require(path) };
+};
 var $getRef = function (name, opts) {
     var basePath = opts.path || "./";
     var pkg_name = opts.pkg || "default";
@@ -109,9 +116,16 @@ var $getRef = function (name, opts) {
         }
         name = nodeModule[1];
     }
-    if (name && name.charCodeAt(0) === 126) {
-        name = name.slice(2, name.length);
-        basePath = "./";
+    if (name) {
+        if (name.charCodeAt(0) === 126) {
+            name = name.slice(2, name.length);
+            basePath = "./";
+        }
+        else {
+            if (!$isBrowser && (name.charCodeAt(0) === 47 || name.charCodeAt(1) === 58)) {
+                return $serverRequire(name);
+            }
+        }
     }
     var pkg = $packages[pkg_name];
     if (!pkg) {
@@ -119,9 +133,7 @@ var $getRef = function (name, opts) {
             throw "Package was not found \"" + pkg_name + "\"";
         }
         else {
-            return {
-                serverReference: require(pkg_name)
-            };
+            return $serverRequire(pkg_name + (name ? "/" + name : ""));
         }
     }
     if (!name) {
@@ -143,6 +155,10 @@ var $getRef = function (name, opts) {
         }
         if (!file) {
             file = pkg.f[filePath + ".jsx"];
+        }
+        if (!file) {
+            validPath = filePath + "/index.jsx";
+            file = pkg.f[validPath];
         }
     }
     return {
@@ -209,8 +225,8 @@ var $import = function (name, opts) {
         return $loadURL(name);
     }
     var ref = $getRef(name, opts);
-    if (ref.serverReference) {
-        return ref.serverReference;
+    if (ref.server) {
+        return ref.server;
     }
     var file = ref.file;
     if (ref.wildcard) {

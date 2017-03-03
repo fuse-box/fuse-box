@@ -3,8 +3,8 @@ const fsbx = require(`../dist/commonjs/index.js`);
 const path = require("path");
 const { getTestEnv, createEnv } = require("./fixtures/lib.js")
 const fs = require("fs");
-const mkdirp = require("mkdirp");
 
+const { fsExtra } = require("fs-extra")
 describe('Shimmin', () => {
 
 

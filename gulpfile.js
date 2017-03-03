@@ -1,6 +1,6 @@
 const gulp = require('gulp')
 const rename = require('gulp-rename');
-const path = require('path');
+
 const replace = require('gulp-replace');
 const ts = require('gulp-typescript');
 const concat = require('gulp-concat');
@@ -12,11 +12,13 @@ const child_process = require('child_process');
 const spawn = child_process.spawn;
 const wrap = require('gulp-wrap');
 const uglify = require('gulp-uglify');
-const changelog = require('gulp-changelog-generator');
+
+
 /**
  * Fail on error if not in watch mode
  */
 let watching = false;
+
 function onError(error) {
     if (!watching) {
         process.exit(1);
@@ -39,7 +41,7 @@ let projectModule = ts.createProject('src/modules/tsconfig.json');
 /**
  * Our commonjs only files
  */
-let filesMain = ['src/**/*.ts', "!./src/loader/LoaderAPI.ts", "!./src/modules/**/*.ts"];
+let filesMain = ['src/**/*.ts', "!./**/*test*.ts", "!./src/loader/LoaderAPI.ts", "!./src/modules/**/*.ts"];
 
 /**
  * Loader API building
@@ -50,8 +52,7 @@ gulp.task('dist-loader-js', () => {
         .pipe(wrap(`(function(__root__){
 if (__root__["FuseBox"]) return __root__["FuseBox"];
 <%= contents %>
-return __root__["FuseBox"] = FuseBox; } )(this)`
-        ))
+return __root__["FuseBox"] = FuseBox; } )(this)`))
         .pipe(rename('fusebox.js'))
         .pipe(gulp.dest('modules/fuse-box-loader-api'))
         .pipe(rename('fusebox.min.js'))
@@ -96,10 +97,22 @@ gulp.task('dist-commonjs', () => {
 gulp.task('dist-main', ['dist-typings', 'dist-commonjs']);
 
 /**
- * NPM deploy management
+ *   NPM deploy management
  */
-gulp.task('publish', function(done) {
+gulp.task('publish', ['changelog'], function(done) {
     runSequence('dist', 'increment-version', 'commit-release', 'npm-publish', done);
+});
+gulp.task('changelog', function (done) {
+    var config = {
+        username: '',
+        password: '',
+        repoOwner: 'fuse-box',
+        repoName: 'fuse-box'
+    };
+  gulp.src('./CHANGELOG.md', {buffer: false, base: './'})
+    .pipe(changelog.gulpChangeLogGeneratorPlugin(config))
+    .pipe(gulp.dest('./'))
+    .pipe(done);
 });
 gulp.task('increment-version', function() {
     return gulp.src('./package.json')
@@ -129,17 +142,21 @@ gulp.task('npm-publish', function(done) {
         done()
     });
 });
-gulp.task('changelog', function (done) {
-    var config = {
-        username: '',
-        password: '',
-        repoOwner: 'fuse-box',
-        repoName: 'fuse-box'
-    };
-  gulp.src('./CHANGELOG.md', {buffer: false, base: './'})
-    .pipe(changelog.gulpChangeLogGeneratorPlugin(config))
-    .pipe(gulp.dest('./'))
-    .pipe(done);
+
+
+gulp.task("make-test-runner", (done) => {
+    const { FuseBox, JSONPlugin } = require("./dist/commonjs/index");
+    const version = require("./package.json").version;
+    FuseBox.init({
+        package: {
+            name: "fuse-box4-test",
+            main: "index.js"
+        },
+        plugins: [JSONPlugin()],
+        homeDir: "src",
+        outFile: "./bin.js",
+        cache: false
+    }).bundle(`[index.ts] +fuse-test-runner +fuse-test-reporter`, done)
 });
 /**
  * Combined build task
@@ -163,4 +180,25 @@ gulp.task('watch', ['dist'], function() {
     gulp.watch(filesMain, () => {
         runSequence('dist-main');
     });
+});
+
+gulp.task('installDevDeps', function(done) {
+    var deps = [
+        'babel-core',
+        'babel-generator',
+        'babylon',
+        'cheerio',
+        '@angular/core',
+        'stylus',
+        'less',
+        'postcss',
+        'node-sass',
+        'uglify-js',
+        'source-map',
+        'coffee-script',
+        '@types/node',
+    ]
+    var installDeps = spawn('npm', ['install'].concat(deps), {
+        stdio: 'inherit'
+    })
 });

@@ -1,4 +1,4 @@
-import { File } from "./File";
+import { File } from "./core/File";
 const ansi = require("ansi");
 const cursor = ansi(process.stdout);
 /**

@@ -1,5 +1,5 @@
-import { ModuleCollection } from "./ModuleCollection";
-import { WorkFlowContext } from './WorkflowContext';
+import { ModuleCollection } from "./core/ModuleCollection";
+import { WorkFlowContext } from './core/WorkflowContext';
 const ansi = require("ansi");
 const cursor = ansi(process.stdout);
 const prettysize = require("prettysize");

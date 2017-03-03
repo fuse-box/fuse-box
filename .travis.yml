@@ -1,7 +1,7 @@
 language: node_js
 node_js:
-  - "6"
+  - "7"
 install:
   - npm install
   - gulp dist
-  - npm install babel-core babel-generator babylon cheerio @angular/core stylus less postcss node-sass uglify-js source-map coffee-script
+  - npm install babel-core babel-generator babel-preset-latest babylon cheerio @angular/core stylus less postcss node-sass uglify-js source-map coffee-script

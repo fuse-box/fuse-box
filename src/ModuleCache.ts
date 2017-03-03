@@ -1,12 +1,13 @@
-import { WorkFlowContext } from "./WorkflowContext";
-import { IPackageInformation } from "./PathMaster";
-import { ModuleCollection } from "./ModuleCollection";
+import { WorkFlowContext } from "./core/WorkflowContext";
+import { IPackageInformation } from './core/PathMaster';
+import { ModuleCollection } from "./core/ModuleCollection";
 import * as fs from "fs";
-import { File } from './File';
+import { File } from './core/File';
 import { Config } from "./Config";
 import * as path from "path";
 import { each } from "realm-utils";
-const mkdirp = require("mkdirp");
+import * as fsExtra from 'fs-extra';
+
 
 const MEMORY_CACHE = {};
 /**
@@ -39,6 +40,8 @@ export class ModuleCache {
      * @memberOf ModuleCache
      */
     private staticCacheFolder: string;
+
+    private permanentCacheFolder: string;
     /**
      * 
      * 
@@ -59,14 +62,21 @@ export class ModuleCache {
      * @memberOf ModuleCache
      */
     constructor(public context: WorkFlowContext) {
+        this.initialize();
+    }
+
+    public initialize() {
         this.cacheFolder = path.join(Config.TEMP_FOLDER, "cache",
             Config.FUSEBOX_VERSION,
-            encodeURIComponent(`${Config.PROJECT_FOLDER}${context.outFile || ""}`));
+            encodeURIComponent(`${Config.PROJECT_FOLDER}${this.context.outFile || ""}`));
 
+        this.permanentCacheFolder = path.join(this.cacheFolder, "permanent");
+        fsExtra.ensureDirSync(this.permanentCacheFolder);
 
         this.staticCacheFolder = path.join(this.cacheFolder, "static");
-        mkdirp.sync(this.staticCacheFolder);
-        mkdirp.sync(this.cacheFolder);
+        fsExtra.ensureDirSync(this.staticCacheFolder);
+
+
         this.cacheFile = path.join(this.cacheFolder, "deps.json");
         if (fs.existsSync(this.cacheFile)) {
             try {
@@ -77,9 +87,31 @@ export class ModuleCache {
                     flat: {},
                 };
             }
-
         }
     }
+
+    public setPermanentCache(key: string, contents: string) {
+        key = encodeURIComponent(key);
+
+        let filePath = path.join(this.permanentCacheFolder, key);
+        fs.writeFile(filePath, contents, () => { });
+        MEMORY_CACHE[filePath] = contents;
+    }
+
+    public getPermanentCache(key: string) {
+        key = encodeURIComponent(key);
+        let filePath = path.join(this.permanentCacheFolder, key);
+        if (MEMORY_CACHE[filePath]) {
+            return MEMORY_CACHE[filePath];
+        }
+        if (fs.existsSync(filePath)) {
+            const contents = fs.readFileSync(filePath).toString()
+            MEMORY_CACHE[filePath] = contents;
+            return contents;
+        }
+    }
+
+
 
     /**
      * 
@@ -181,8 +213,10 @@ mtime : ${cacheData.mtime}
             let info = file.info.nodeModuleInfo;
 
             let key = `${info.name}@${info.version}`;
+            let cachePath = path.join(this.cacheFolder, encodeURIComponent(key));
             let cached = this.cachedDeps.flat[key];
-            if (!cached) {
+
+            if (!cached || !fs.existsSync(cachePath)) {
 
                 through.push(file);
             } else {
@@ -191,6 +225,7 @@ mtime : ${cacheData.mtime}
                     for (let i = 0; i < cached.files.length; i++) {
                         let cachedFileName = cached.files[i];
                         let f = moduleFileCollection.get(info.name).get(cachedFileName);
+
                         if (f) {
                             through.push(f);
                         }
@@ -208,7 +243,7 @@ mtime : ${cacheData.mtime}
         });
         let required = [];
         let operations: Promise<any>[] = [];
-
+        let cacheReset = false;
         /**
          * 
          * 
@@ -218,7 +253,7 @@ mtime : ${cacheData.mtime}
          */
         let getAllRequired = (key, json: any) => {
             if (required.indexOf(key) === -1) {
-                if (json.name) {
+                if (json) {
                     let collection = new ModuleCollection(this.context, json.name);
                     let cacheKey = encodeURIComponent(key);
                     collection.cached = true;
@@ -237,25 +272,33 @@ mtime : ${cacheData.mtime}
                                 return resolve();
                             });
                         } else {
-                            collection.cachedContent = "";
-                            console.warn(`${collection.cacheFile} was not found`);
+                            // reset cache
+                            valid4Caching = [];
+                            cacheReset = true;
                             return resolve();
                         }
 
                     }));
                     this.context.addNodeModule(key, collection);
                     required.push(key);
+                    if (json.deps) {
+                        for (let k in json.deps) { if (json.deps.hasOwnProperty(k)) { getAllRequired(k, json.deps[k]); } }
+                    }
                 }
-                if (json.deps) {
-                    for (let k in json.deps) { if (json.deps.hasOwnProperty(k)) { getAllRequired(k, json.deps[k]); } }
-                }
+
             }
         }
 
         valid4Caching.forEach(key => {
             getAllRequired(key, this.cachedDeps.tree[key]);
+
         });
+
         return Promise.all(operations).then(() => {
+            if (cacheReset) {
+                this.context.resetNodeModules();
+                return files;
+            }
             return through;
         });
     }

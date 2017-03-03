@@ -3,7 +3,8 @@ const fs = require("fs");
 
 const FuseBox = build.FuseBox;
 
-const mkdirp = require("mkdirp");
+
+const fsExtra = require("fs-extra")
 const appRoot = require("app-root-path");
 const { each } = require("realm-utils");
 const path = require("path");
@@ -57,7 +58,9 @@ exports.createEnv = (opts, str, done) => {
     const name = opts.name || `test-${new Date().getTime()}`;
 
     let tmpFolder = path.join(appRoot.path, ".fusebox", "tests");
-    mkdirp(tmpFolder)
+
+
+    fsExtra.ensureDirSync(tmpFolder);
     let localPath = path.join(tmpFolder, name);
 
     const output = {
@@ -72,6 +75,9 @@ exports.createEnv = (opts, str, done) => {
             moduleParams.package = name;
             moduleParams.cache = false;
             moduleParams.log = false;
+
+            moduleParams.tsConfig = path.join(appRoot.path, "test", "fixtures", "tsconfig.json")
+
             FuseBox.init(moduleParams).bundle(moduleParams.instructions, () => {
                 if (moduleParams.onDone) {
                     moduleParams.onDone({
@@ -90,6 +96,7 @@ exports.createEnv = (opts, str, done) => {
         projectOptions.outFile = path.join(localPath, "project", "index.js");
         projectOptions.cache = false;
         projectOptions.log = false;
+        projectOptions.tsConfig = path.join(appRoot.path, "test", "fixtures", "tsconfig.json")
         projectOptions.modulesFolder = modulesFolder;
         return new Promise((resolve, reject) => {
             FuseBox.init(projectOptions).bundle(projectOptions.instructions, () => {
@@ -111,7 +118,8 @@ exports.createEnv = (opts, str, done) => {
 exports.getNodeEnv = (opts, str, done) => {
     return new Promise((resolve, reject) => {
         let tmpFolder = path.join(appRoot.path, ".tmp");
-        mkdirp(tmpFolder)
+
+        fsExtra.ensureDirSync(tmpFolder);
         let filePath = path.join(tmpFolder, `test-${new Date().getTime()}-${Math.random()}.js`);
 
         let fsb = new FuseBox(opts);

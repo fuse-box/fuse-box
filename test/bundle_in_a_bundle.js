@@ -3,7 +3,8 @@ const fsbx = require(`../dist/commonjs/index.js`);
 const path = require("path");
 const { getTestEnv, createEnv } = require("./fixtures/lib.js")
 const fs = require("fs");
-const mkdirp = require("mkdirp");
+
+const fsExtra = require("fs-extra")
 
 describe('Bundle in a bundle', () => {
 
@@ -13,20 +14,20 @@ describe('Bundle in a bundle', () => {
             modules: {
                 foobar: {
                     files: {
-                        "index.ts": `export const HelloFoo = "Yep, that's me1"`
+                        "index.js": `exports.HelloFoo = "Yep, that's me1"`
                     },
-                    instructions: ">index.ts"
+                    instructions: ">index.js"
                 }
             },
             project: {
                 files: {
-                    "index.ts": `exports.hello = { bar : require("foobar") }`
+                    "index.js": `exports.hello = { bar : require("foobar") }`
                 },
-                instructions: "> index.ts"
+                instructions: "> index.js"
             }
         }).then((result) => {
 
-            if (result.projectSize > 5600) {
+            if (result.projectSize > 5620) {
                 return done(new Error(`Unexpected Bundle Size ${result.projectSize}!! Bundle is not removed from an uglified version`))
             }
             result.project.FuseBox.import("./index")
@@ -41,20 +42,20 @@ describe('Bundle in a bundle', () => {
             modules: {
                 foobar: {
                     files: {
-                        "index.ts": `export const HelloFoo = "Yep, that's me2!"`
+                        "index.js": `exports.HelloFoo = "Yep, that's me2!"`
                     },
                     plugins: [fsbx.UglifyJSPlugin()],
-                    instructions: ">index.ts"
+                    instructions: ">index.js"
                 }
             },
             project: {
                 files: {
-                    "index.ts": `exports.hello = { bar : require("foobar") }`
+                    "index.js": `exports.hello = { bar : require("foobar") }`
                 },
-                instructions: "> index.ts"
+                instructions: "> index.js"
             }
         }).then((result) => {
-            if (result.projectSize > 5600) {
+            if (result.projectSize > 5620) {
                 return done(new Error(`Unexpected Bundle Size ${result.projectSize}!! Bundle is not removed from an uglified version`))
             }
 
@@ -71,9 +72,9 @@ describe('Bundle in a bundle', () => {
             modules: {
                 foobar: {
                     files: {
-                        "index.ts": `export const HelloFoo = "Yep, that's me2!"`
+                        "index.js": `exports.HelloFoo = "Yep, that's me2!"`
                     },
-                    instructions: ">index.ts",
+                    instructions: ">index.js",
                     onDone: (info) => {
                         bundleContents = fs.readFileSync(info.filePath).toString();
                     }
@@ -82,10 +83,10 @@ describe('Bundle in a bundle', () => {
             project: {
                 files: {
                     "hello.js": () => bundleContents,
-                    "index.ts": `exports.hello = { bar : require("./hello.js") }`
+                    "index.js": `exports.hello = { bar : require("./hello.js") }`
 
                 },
-                instructions: "> index.ts"
+                instructions: "> index.js"
             }
         }).then((result) => {
 
@@ -108,9 +109,9 @@ describe('Bundle in a bundle', () => {
                 //cache: false,
                 foobar: {
                     files: {
-                        "index.ts": `export const HelloFoo = "Yep, that's me2!"`
+                        "index.js": `exports.HelloFoo = "Yep, that's me2!"`
                     },
-                    instructions: ">index.ts",
+                    instructions: ">index.js",
                     plugins: [fsbx.UglifyJSPlugin()],
                     onDone: (info) => {
                         bundleContents = fs.readFileSync(info.filePath).toString();
@@ -121,10 +122,10 @@ describe('Bundle in a bundle', () => {
                 //cache: false,
                 files: {
                     "hello.js": () => bundleContents,
-                    "index.ts": `exports.hello = { bar : require("./hello.js") }`
+                    "index.js": `exports.hello = { bar : require("./hello.js") }`
 
                 },
-                instructions: "> index.ts"
+                instructions: "> index.js"
             }
         }).then((result) => {
             if (result.projectSize > 5600) {

@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from 'fs';
+import * as fsExtra from 'fs-extra';
 const appRoot = require("app-root-path");
-const mkdirp = require("mkdirp");
 
 const MBLACKLIST = [
     "freelist",
@@ -65,8 +65,10 @@ export function ensureUserPath(userPath: string) {
     if (!path.isAbsolute(userPath)) {
         userPath = path.join(appRoot.path, userPath);
     }
+    userPath = path.normalize(userPath);
     let dir = path.dirname(userPath);
-    mkdirp.sync(dir);
+
+    fsExtra.ensureDirSync(dir);
     return userPath;
 }
 
@@ -74,10 +76,38 @@ export function ensureDir(userPath: string) {
     if (!path.isAbsolute(userPath)) {
         userPath = path.join(appRoot.path, userPath);
     }
-    mkdirp.sync(userPath);
+    userPath = path.normalize(userPath);
+
+    fsExtra.ensureDirSync(userPath);
     return userPath;
 }
 
+export function string2RegExp(obj: any) {
+    let escapedRegEx = obj
+        .replace(/\*/g, "@")
+        .replace(/[.?*+[\]-]/g, "\\$&")
+        .replace(/@/g, "\\w{1,}", "i");
+
+    if (escapedRegEx.indexOf("$") === -1) {
+        escapedRegEx += "$";
+    }
+    return new RegExp(escapedRegEx);
+}
+
+export function removeFolder(userPath) {
+
+    if (fs.existsSync(userPath)) {
+        fs.readdirSync(userPath).forEach(function (file, index) {
+            var curPath = path.join(userPath, file);
+            if (fs.lstatSync(curPath).isDirectory()) { // recurse
+                removeFolder(curPath);
+            } else { // delete file
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(userPath);
+    }
+}
 
 
 export function replaceExt(npath, ext): string {
