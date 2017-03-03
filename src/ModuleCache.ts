@@ -40,6 +40,8 @@ export class ModuleCache {
      * @memberOf ModuleCache
      */
     private staticCacheFolder: string;
+
+    private permanentCacheFolder: string;
     /**
      * 
      * 
@@ -68,6 +70,8 @@ export class ModuleCache {
             Config.FUSEBOX_VERSION,
             encodeURIComponent(`${Config.PROJECT_FOLDER}${this.context.outFile || ""}`));
 
+        this.permanentCacheFolder = path.join(this.cacheFolder, "permanent");
+        fsExtra.ensureDirSync(this.permanentCacheFolder);
 
         this.staticCacheFolder = path.join(this.cacheFolder, "static");
         fsExtra.ensureDirSync(this.staticCacheFolder);
@@ -85,6 +89,29 @@ export class ModuleCache {
             }
         }
     }
+
+    public setPermanentCache(key: string, contents: string) {
+        key = encodeURIComponent(key);
+
+        let filePath = path.join(this.permanentCacheFolder, key);
+        fs.writeFile(filePath, contents, () => { });
+        MEMORY_CACHE[filePath] = contents;
+    }
+
+    public getPermanentCache(key: string) {
+        key = encodeURIComponent(key);
+        let filePath = path.join(this.permanentCacheFolder, key);
+        if (MEMORY_CACHE[filePath]) {
+            return MEMORY_CACHE[filePath];
+        }
+        if (fs.existsSync(filePath)) {
+            const contents = fs.readFileSync(filePath).toString()
+            MEMORY_CACHE[filePath] = contents;
+            return contents;
+        }
+    }
+
+
 
     /**
      * 

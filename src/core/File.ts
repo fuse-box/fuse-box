@@ -5,6 +5,8 @@ import { IPathInformation, IPackageInformation } from './PathMaster';
 import * as fs from "fs";
 import { utils, each } from 'realm-utils';
 import * as path from "path";
+import { SourceMapGenerator } from './SourceMapGenerator';
+
 const appRoot = require("app-root-path");
 
 /**
@@ -312,13 +314,37 @@ export class File {
         if (/\.js(x)?$/.test(this.absPath)) {
             this.loadContents();
             this.tryPlugins();
-            this.makeAnalysis();
+            const vendorSourceMaps = this.context.sourceMapConfig
+                && this.context.sourceMapConfig.vendor === true && this.collection.name !== this.context.defaultPackageName
+            if (vendorSourceMaps) {
+                this.loadVendorSourceMap();
+            } else {
+                this.makeAnalysis();
+            }
             return;
         }
         this.tryPlugins();
         if (!this.isLoaded) {
             throw { message: `File contents for ${this.absPath} were not loaded. Missing a plugin?` }
         }
+    }
+
+    public loadVendorSourceMap() {
+        const key = `vendor/${this.collection.name}/${this.info.fuseBoxPath}`
+        this.context.debug("File", `Vendor sourcemap ${key}`);
+        let cachedMaps = this.context.cache.getPermanentCache(key);
+        if (cachedMaps) {
+            this.sourceMap = cachedMaps;
+            this.makeAnalysis();
+        } else {
+            const tokens = [];
+            this.makeAnalysis({ onToken: tokens });
+            SourceMapGenerator.generate(this, tokens);
+            this.generateCorrectSourceMap(key)
+
+            this.context.cache.setPermanentCache(key, this.sourceMap);
+        }
+
     }
 
     /**

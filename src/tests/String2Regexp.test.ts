@@ -56,6 +56,7 @@ export class String2Regexp {
     }
 
     "Should match conditions"() {
+        console.log(string2RegExp("components/*.css"));
         should("libs/styles/hello.css").match(
             string2RegExp("*.css$|*.js$")
         )

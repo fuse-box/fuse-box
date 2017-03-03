@@ -103,4 +103,28 @@ export class ArithmeticTest {
         should(result.excluding)
             .deepEqual({ '@blueprint/core': true });
     }
+
+    "Should get deps only"() {
+        let result = Arithmetic.parse(`{ index.ts }`);
+
+        should(result.including).deepEqual({})
+        should(result.excluding).deepEqual({})
+        should(result.depsOnly).deepEqual({ "index.ts": true });
+    }
+
+    "Should get deps only and additional dependency"() {
+        let result = Arithmetic.parse(`{ index.ts } + path`);
+
+        should(result.including).deepEqual({ path: true })
+        should(result.excluding).deepEqual({})
+        should(result.depsOnly).deepEqual({ "index.ts": true });
+    }
+
+    "Should get deps only minus additional dependency"() {
+        let result = Arithmetic.parse(`{ index.ts } - path`);
+
+        should(result.including).deepEqual({})
+        should(result.excluding).deepEqual({ path: true })
+        should(result.depsOnly).deepEqual({ "index.ts": true });
+    }
 }

@@ -97,7 +97,7 @@ export class BundleSource {
 
         let key = collection.info ? `${collection.info.name}@${collection.info.version}` : "default";
         this.concat.add(`packages/${key}`,
-            this.collectionSource.content, key === "default" ? this.collectionSource.sourceMap : undefined);
+            this.collectionSource.content, this.collectionSource.sourceMap);
         return this.collectionSource.content.toString();
     }
 
@@ -130,6 +130,8 @@ export class BundleSource {
             `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){ 
 ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         this.collectionSource.add(null, file.alternativeContent !== undefined ? file.alternativeContent : file.contents, file.sourceMap);
+
+
         this.collectionSource.add(null, "});");
     }
 

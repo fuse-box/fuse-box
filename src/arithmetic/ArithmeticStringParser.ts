@@ -27,7 +27,9 @@ enum STATES {
     /**
      *
      */
-    ENTRY_POINT
+    ENTRY_POINT,
+
+    ONLY_DEPS,
 }
 /**
  *
@@ -36,26 +38,11 @@ enum STATES {
  * @class PropParser
  */
 export class PropParser {
-    /**
-     *
-     *
-     *
-     * @memberOf PropParser
-     */
+
     public excluding = {};
-    /**
-     *
-     *
-     *
-     * @memberOf PropParser
-     */
     public including = {};
-    /**
-     *
-     *
-     *
-     * @memberOf PropParser
-     */
+    public depsOnly = {};
+
     public entry = {};
     /**
      *
@@ -111,9 +98,19 @@ export class PropParser {
      * @memberOf PropParser
      */
     public tokenReady() {
+
         let word = this.word.join("");
+        if (!word) {
+            this.reset():
+            return;
+        }
+
         let isEntry = this.has(STATES.ENTRY_POINT);
-        if (this.has(STATES.EXCLUDING_DEPS)) {
+
+        if (this.has(STATES.ONLY_DEPS)) {
+            this.depsOnly[word] = true;
+        }
+        else if (this.has(STATES.EXCLUDING_DEPS)) {
             if (this.has(STATES.MINUS)) {
                 this.excluding[word] = false;
             } else {
@@ -156,6 +153,10 @@ export class PropParser {
                 this.set(STATES.MINUS);
                 return;
             }
+            if (char === "{") {
+                this.set(STATES.ONLY_DEPS);
+                return;
+            }
 
             if (char === ">") {
                 this.set(STATES.ENTRY_POINT);
@@ -171,7 +172,14 @@ export class PropParser {
                 this.set(STATES.EXCLUDING_DEPS);
                 return;
             }
-            if (char === "]") {
+
+            if (char === "{") {
+                this.set(STATES.ONLY_DEPS);
+                return;
+            }
+
+
+            if (char === "]" || char === "}") {
                 return this.tokenReady();
             }
             if (char.match(/\s/)) {
