@@ -220,9 +220,9 @@ plugins : [
 | Simplified RegExp | Compiled RegExp |
 | ------------- | ------------- |
 | .css        | /\.css$/  |
-| *.css$|*.js$  | /\w{1,}\.css$|\w{1,}\.js$/  |
-| components/*.css  | /\w{1,}\.css$|\w{1,}\.js$/  |
-| components/*.(css|scss) | /components\/\w{1,}\.(css|scss)$/ |
+| *.css$\|*.js$  | /\w{1,}\.css$\|\w{1,}\.js$/  |
+| components/*.css  | /\w{1,}\.css$\|\w{1,}\.js$/  |
+| components/*.(css\|scss) | /components\/\w{1,}\.(css\|scss)$/ |
 
 
 
