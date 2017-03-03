@@ -207,9 +207,12 @@ Make files export text data
 
 ```js
 plugins:[
- [/\.raw$/, RawPlugin({extensions: ['.raw']})],
+ RawPlugin([".txt", "inline-styles/*.css"])
 ],
 ```
+
+Automatically enables extensions in the context. Make sure you have a valid mask with extension at the end of it.
+For example `RawPlugin(["asdf"])` will throw an error. `RawPlugin(["hello.txt"])` will enable `txt`.
 
 
 ## SassPlugin
