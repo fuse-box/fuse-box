@@ -26,7 +26,3 @@ modules/fusebox-hot-reload/
 modules/fusebox-websocket/
 modules/fuse-loader/
 modules/fuse-hmr/
-
-# bin
-bin/**/*.js
-/bin/github-config.ts
