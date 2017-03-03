@@ -124,6 +124,13 @@ export function replaceExt(npath, ext): string {
         return npath + ext;
     }
 }
+export function extractExtension(str: string) {
+    const result = str.match(/\.([a-z0-9]+)\$?$/);
+    if (!result) {
+        throw new Error(`Can't extract extension from string ${str}`);
+    }
+    return result[1];
+}
 
 export function ensurePublicExtension(url: string) {
     let ext = path.extname(url);
