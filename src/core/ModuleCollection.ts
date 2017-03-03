@@ -5,6 +5,7 @@ import { each, utils } from 'realm-utils';
 import { BundleData } from "../arithmetic/Arithmetic";
 import { ensurePublicExtension, string2RegExp } from '../Utils';
 
+
 /**
  * 
  * 
@@ -186,14 +187,18 @@ export class ModuleCollection {
         });
     }
 
-    /**
-     * 
-     * 
-     * @param {BundleData} data
-     * @returns {Promise<ModuleCollection>}
-     * 
-     * @memberOf ModuleCollection
-     */
+    public resolveDepsOnly(depsOnly: Map<string, any>) {
+
+        return each(depsOnly, (withDeps, modulePath) => {
+            let file = new File(this.context, this.pm.init(modulePath));
+            return this.resolve(file);
+        }).then(() => {
+
+            // reset current dependencies
+            // so they won't get bundled
+            this.dependencies = new Map<string, File>();
+        });
+    }
     public collectBundle(data: BundleData): Promise<ModuleCollection> {
         this.bundle = data;
         this.delayedResolve = true;
@@ -203,32 +208,32 @@ export class ModuleCollection {
             this.entryFile = File.createByName(this, ensurePublicExtension(this.context.defaultEntryPoint));
         }
 
-        // faking entry point
-        return each(data.including, (withDeps, modulePath) => {
-            let file = new File(this.context, this.pm.init(modulePath));
-            return this.resolve(file);
-        })
-            .then(() => this.context.resolve())
-            .then(() => this.transformGroups())
-            .then(() => {
-                return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
-            }).then(toResolve => {
-                return each(toResolve, (file: File) => this.resolveNodeModule(file));
+
+        return this.resolveDepsOnly(data.depsOnly).then(() => {
+
+            return each(data.including, (withDeps, modulePath) => {
+                let file = new File(this.context, this.pm.init(modulePath));
+                return this.resolve(file);
             })
-            // node modules might need to resolved asynchronously
-            // like css plugins
-            .then(() => this.context.resolve())
-            .then(() => {
-                return this.context.cache.buildMap(this);
-            }).catch(e => {
-                this.context.nukeCache();
-                console.error(e);
-                // if (e.message) {
-                //     this.context.fatal(e.message)
-                // } else {
-                //     console.error(e.stack || e);
-                // }
-            });
+                .then(() => this.context.resolve())
+                .then(() => this.transformGroups())
+                .then(() => {
+                    return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
+                }).then(toResolve => {
+                    return each(toResolve, (file: File) => this.resolveNodeModule(file));
+                })
+                // node modules might need to resolved asynchronously
+                // like css plugins
+                .then(() => this.context.resolve())
+                .then(() => {
+
+                    return this.context.cache.buildMap(this);
+                }).catch(e => {
+                    this.context.nukeCache();
+                    console.error(e);
+                });
+        })
+
     }
 
     /**

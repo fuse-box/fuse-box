@@ -34,13 +34,15 @@ export interface IBundleInformation {
  */
 export class BundleData {
     public tmpFolder: string;
+    public including: Map<string, IBundleInformation>;
+    public excluding: Map<string, IBundleInformation>;
+    public depsOnly: Map<string, IBundleInformation>;
+    public entry: string;
+    public homeDir: string;
+    public typescriptMode: boolean;
 
-    constructor(public homeDir: string, public typescriptMode: boolean,
-        public including: Map<string, IBundleInformation>,
-        public excluding: Map<string, IBundleInformation>,
-        public entry?: string
+    public setIncluding(info: Map<string, IBundleInformation>) {
 
-    ) {
     }
 
 
@@ -189,6 +191,10 @@ export class Arithmetic {
                 return collect(parser.excluding);
             }
 
+            public setDepsOnly() {
+                return collect(parser.depsOnly);
+            }
+
             public setEntry() {
                 let keys = Object.keys(parser.entry);
                 if (keys.length) {
@@ -196,9 +202,14 @@ export class Arithmetic {
                 }
             }
         }).then(result => {
-            let data = new BundleData(homeDir, tsMode, result.including, result.excluding, result.entry);
+            let data = new BundleData();
+            data.homeDir = homeDir;
+            data.typescriptMode = tsMode;
+            data.including = result.including;
+            data.excluding = result.excluding;
+            data.depsOnly = result.depsOnly;
+            data.entry = result.entry;
             if (result.tempFolder) {
-
                 data.setupTempFolder(result.tempFolder);
             }
             return data;
