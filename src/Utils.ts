@@ -82,6 +82,18 @@ export function ensureDir(userPath: string) {
     return userPath;
 }
 
+export function string2RegExp(obj: any) {
+    let escapedRegEx = obj
+        .replace(/\*/g, "@")
+        .replace(/[.?*+[\]-]/g, "\\$&")
+        .replace(/@/g, "\\w{1,}", "i");
+
+    if (escapedRegEx.indexOf("$") === -1) {
+        escapedRegEx += "$";
+    }
+    return new RegExp(escapedRegEx);
+}
+
 export function removeFolder(userPath) {
 
     if (fs.existsSync(userPath)) {

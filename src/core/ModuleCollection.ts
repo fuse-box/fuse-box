@@ -3,7 +3,7 @@ import { PathMaster, IPackageInformation } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
 import { each, utils } from 'realm-utils';
 import { BundleData } from "../arithmetic/Arithmetic";
-import { ensurePublicExtension } from '../Utils';
+import { ensurePublicExtension, string2RegExp } from '../Utils';
 
 /**
  * 
@@ -164,6 +164,17 @@ export class ModuleCollection {
      * @memberOf ModuleCollection
      */
     public initPlugins() {
+
+        // allow easy regex
+        this.context.plugins.forEach(plugin => {
+            if (utils.isArray(plugin) && utils.isString(plugin[0])) {
+                plugin.splice(0, 1, string2RegExp(plugin[0]))
+            } else {
+                if (utils.isString(plugin.test)) {
+                    plugin.test = string2RegExp(plugin.test);
+                }
+            }
+        });
         this.context.triggerPluginsMethodOnce("init", [this.context], (plugin) => {
             if (plugin.dependencies) {
                 plugin.dependencies.forEach(mod => {
