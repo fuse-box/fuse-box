@@ -99,8 +99,20 @@ gulp.task('dist-main', ['dist-typings', 'dist-commonjs']);
 /**
  *   NPM deploy management
  */
-gulp.task('publish', function(done) {
+gulp.task('publish', ['changelog'], function(done) {
     runSequence('dist', 'increment-version', 'commit-release', 'npm-publish', done);
+});
+gulp.task('changelog', function (done) {
+    var config = {
+        username: '',
+        password: '',
+        repoOwner: 'fuse-box',
+        repoName: 'fuse-box'
+    };
+  gulp.src('./CHANGELOG.md', {buffer: false, base: './'})
+    .pipe(changelog.gulpChangeLogGeneratorPlugin(config))
+    .pipe(gulp.dest('./'))
+    .pipe(done);
 });
 gulp.task('increment-version', function() {
     return gulp.src('./package.json')
