@@ -213,7 +213,7 @@ For example:
 ```js
 plugins : [
     ["styles/*.css", CSSPlugin({group: "bundle.css"})] // will group files under "styles" folder
-    ["components/*.css", CSSPlugin(] // will inline all styles that match components path
+    ["components/*.css", CSSPlugin()] // will inline all styles that match components path
 ]
 ```
 
