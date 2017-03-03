@@ -101,7 +101,7 @@ export class PropParser {
 
         let word = this.word.join("");
         if (!word) {
-            this.reset():
+            this.reset();
             return;
         }
 
@@ -153,7 +153,7 @@ export class PropParser {
                 this.set(STATES.MINUS);
                 return;
             }
-            if (char === "{") {
+            if (char === "~") {
                 this.set(STATES.ONLY_DEPS);
                 return;
             }
@@ -173,13 +173,13 @@ export class PropParser {
                 return;
             }
 
-            if (char === "{") {
+            if (char === "~") {
                 this.set(STATES.ONLY_DEPS);
                 return;
             }
 
 
-            if (char === "]" || char === "}") {
+            if (char === "]") {
                 return this.tokenReady();
             }
             if (char.match(/\s/)) {

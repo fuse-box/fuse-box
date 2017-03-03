@@ -105,7 +105,7 @@ export class ArithmeticTest {
     }
 
     "Should get deps only"() {
-        let result = Arithmetic.parse(`{ index.ts }`);
+        let result = Arithmetic.parse(`~ index.ts `);
 
         should(result.including).deepEqual({})
         should(result.excluding).deepEqual({})
@@ -113,7 +113,7 @@ export class ArithmeticTest {
     }
 
     "Should get deps only and additional dependency"() {
-        let result = Arithmetic.parse(`{ index.ts } + path`);
+        let result = Arithmetic.parse(` ~ index.ts  + path`);
 
         should(result.including).deepEqual({ path: true })
         should(result.excluding).deepEqual({})
@@ -121,7 +121,7 @@ export class ArithmeticTest {
     }
 
     "Should get deps only minus additional dependency"() {
-        let result = Arithmetic.parse(`{ index.ts } - path`);
+        let result = Arithmetic.parse(`~ index.ts - path`);
 
         should(result.including).deepEqual({})
         should(result.excluding).deepEqual({ path: true })
