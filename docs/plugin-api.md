@@ -51,7 +51,7 @@ Happens when a plugin is initialized. It is common practice to reset your plugin
 ### triggers
 
 #### bundleStart
-Happens on bundle start. A good place to inject your custom code here. For example [here](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/CSSplugin.ts#L50)
+Happens on bundle start. A good place to inject your custom code here. For example [here](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/HotReloadPlugin.ts#L14)
 
 #### bundleEnd
 All files are bundled. But it has not been finalized and written to a file.
@@ -63,7 +63,7 @@ Triggered after adding shims.
 Triggered after the bundle source has been finalized, but before it is written to file.
 [UglifyPlugin](#UglifyJSPlugin) uses this trigger.
 
-[see the source code that triggers these plugin methods](https://github.com/fuse-box/fuse-box/blob/master/src/FuseBox.ts#L179)
+[see the source code that triggers these plugin methods](https://github.com/fuse-box/fuse-box/blob/master/src/core/FuseBox.ts#L179)
 
 
 ## Alternative content
@@ -92,7 +92,7 @@ FuseBox.init({
 - `file.contents`: can rewrite the output of a particular chunk, it is a simple string
 - `file.info`: information about the file, such as `file.info.absPath` and `file.info.fuseBoxPath`
 - `file.analysis.dependencies`: can clear/flush dependencies of a file by setting it to an empty array.
-- [read the File source for more](https://github.com/fuse-box/fuse-box/blob/master/src/FileAnalysis.ts#L33)
+- [read the File source for more](https://github.com/fuse-box/fuse-box/blob/master/src/analysis/FileAnalysis.ts#L28)
 
 ### AST
 To use the AST, you need to know if the AST has been loaded already. You can do this by checking whether `file.analysis.ast` is not `undefined`.
@@ -115,7 +115,7 @@ if (!file.analysis.ast) {
 }
 ```
 
-[read the FileAnalysis source for more](https://github.com/fuse-box/fuse-box/blob/master/src/File.ts)
+[read the FileAnalysis source for more](https://github.com/fuse-box/fuse-box/blob/master/src/core/File.ts)
 
 
 ## Transforming typescript
@@ -168,7 +168,7 @@ public transform(file: File) {
 
 When we register a new file group `context.createFileGroup("txtBundle.txt")` FuseBox creates a __fake__ or a virtual file which is added to the dependency tree. This file has a special mode, called `groupMode`.
 
-We need to alter the output as well using [alternative content](#alternative-content). Original contents will be ignored by the Source bundler.
+We need to alter the output as well using [alternative content](#Alternative content). Original contents will be ignored by the Source bundler.
 
 After FuseBox has bundled all files related to your current project, it checks for groups over [here](https://github.com/fuse-box/fuse-box/blob/master/src/ModuleCollection.ts#L260), iterates and executes plugins. Then each plugin is tested accordingly (now our file name is called `txtBundle.txt` with `.txt` extension) and executes `transformGroup` of a plugin if set.
 
@@ -201,8 +201,8 @@ ___scope___.file("textBundle.txt", function(exports, require, module, __filename
 - try logging the ast once it has been loading
 
 ### Plugin API source code
-- [babel plugin](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/BabelPlugin.ts#L24)
+- [babel plugin](https://github.com/fuse-box/fuse-box/blob/v1.3.23/src/plugins/BabelPlugin.ts#L14)
 - [bundle source code](https://github.com/fuse-box/fuse-box/blob/96b646a632f886f296a533ccf4c45f436cf443f3/src/BundleSource.ts#L133)
-- [read the FileAnalysis code](https://github.com/fuse-box/fuse-box/blob/master/src/FileAnalysis.ts#L120)
-- [css plugin tests](https://github.com/fuse-box/fuse-box/blob/master/test/css_plugin.js)
+- [read the FileAnalysis code](https://github.com/fuse-box/fuse-box/blob/master/src/analysis/FileAnalysis.ts#L28)
+- [css plugin tests](https://github.com/fuse-box/fuse-box/blob/master/src/tests/CSSPlugin.test.ts)
 - [code for all built in plugins](https://github.com/fuse-box/fuse-box/tree/master/src/plugins)

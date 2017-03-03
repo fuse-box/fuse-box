@@ -78,7 +78,7 @@ FuseBox.init({
 })
 ```
 
-You local `npm` will have the highest priority. In essence, you can override fusebox's [path](https://github.com/fuse-box/fuse-box/blob/master/assets/libs/path/index.js) of [fs](https://github.com/fuse-box/fuse-box/blob/master/assets/libs/fs/index.js) module if you like. Customize you packages in your own manner!
+You local `npm` will have the highest priority. In essence, you can override fusebox's [path](https://github.com/fuse-box/fuse-box/blob/master/modules/path/index.js) of [fs](https://github.com/fuse-box/fuse-box/blob/master/modules/fs/index.js) module if you like. Customize you packages in your own manner!
 
 You don't need to create `package.json` - `index.js` will work just fine. It will be [cached](#cache) like any other npm module with version `0.0.0`, so remember to toggle cache property in the config
 
@@ -180,6 +180,50 @@ FuseBox.init({
     ],
 })
 ```
+
+## Plugin chaining
+
+A plugin can be chained. For example, if you want to make SassPlugin work:
+
+```js
+FuseBox.init({
+    plugins:[
+        [fsbx.LESSPlugin(), fsbx.CSSPlugin()],
+    ]
+})
+```
+
+How it works:
+
+FuseBox tests each file running it through the plugin list. If it sees an array, it test for the first Plugin on the list test (which is `.scss` in our case. First element on the list could be a Regular Expression or a [simplified](#simplified-regExp) version of it:
+
+```js
+
+[".scss",fsbx.LESSPlugin(), fsbx.CSSPlugin()] // simple and clean
+[/\.scss$/,fsbx.LESSPlugin(), fsbx.CSSPlugin()] // more verbose
+
+```
+
+## Simplified RegExp
+
+FuseBox understands wildcards which are converted to RegExp
+
+For example:
+
+```js
+plugins : [
+    ["styles/*.css", CSSPlugin({group: "bundle.css"})] // will group files under "styles" folder
+    ["components/*.css", CSSPlugin()] // will inline all styles that match components path
+]
+```
+
+* `.css` -> /\\.css$/
+* `*.css$|*.js$` -> /\w{1,}\\.css$\|\w{1,}\.js$/
+* `components/*.css` -> /components\/\w{1,}\\.css$/
+* `components/*.(css\|scss)` -> /components\/\w{1,}\\.(css|scss)$/
+
+
+
 
 ## Auto import
 

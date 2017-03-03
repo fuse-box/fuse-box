@@ -31,7 +31,7 @@
 [src-module-collection-collectbundle]: (https://github.com/fuse-box/fuse-box/tree/master/src/ModuleCollection.ts)
 
 [src-log]: https://github.com/fuse-box/fuse-box/blob/master/src/Log.ts
-[src-file]: https://github.com/fuse-box/fuse-box/blob/master/src/File.ts
+[src-file]: https://github.com/fuse-box/fuse-box/blob/master/src/core/File.ts
 [src-path-master]: (https://github.com/fuse-box/fuse-box/tree/master/src/PathMaster.ts)
 [src-workflow-context]: (https://github.com/fuse-box/fuse-box/tree/master/src/WorkFlowContext.ts)
 [src-arithmetic]: (https://github.com/fuse-box/fuse-box/tree/master/src/WorkFlowContext.ts)
