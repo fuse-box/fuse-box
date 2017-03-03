@@ -109,7 +109,7 @@ plugins : [
 
 > NOTE! outFile must be a string (not a callback) when used with the `group` option.
 
-Check out the tests [here](https://github.com/fuse-box/fuse-box/blob/master/test/css_plugin.js) 
+Check out the tests [here](https://github.com/fuse-box/fuse-box/blob/master/src/tests/CSSPlugin.test.ts) 
 
 ## CSSResourcePlugin
 
@@ -420,7 +420,7 @@ plugins: [
 
 This plugin adds required typescript functions to the bundle. Please note that it adds only the ones that are actually used, helping to avoid unnecessary code.
 
-This [list](https://github.com/fuse-box/fuse-box/tree/master/assets/libs/fuse-typescript-helpers) shows the possible helpers.
+This [list](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/TypeScriptHelpers.ts) shows the possible helpers.
 
 Available helpers:
 
