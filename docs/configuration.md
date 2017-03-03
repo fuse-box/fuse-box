@@ -181,6 +181,51 @@ FuseBox.init({
 })
 ```
 
+## Plugin chaining
+
+A plugin can be chained. For example, if you want to make SassPlugin work:
+
+```js
+FuseBox.init({
+    plugins:[
+        [fsbx.LESSPlugin(), fsbx.CSSPlugin()],
+    ]
+})
+```
+
+How it works:
+
+FuseBox tests each file running it through the plugin list. If it sees an array, it test for the first Plugin on the list test (which is `.scss` in our case. First element on the list could be a Regular Expression or a [simplified](#simplified-regExp) version of it:
+
+```js
+
+[".scss",fsbx.LESSPlugin(), fsbx.CSSPlugin()] // simple and clean
+[/\.scss$/,fsbx.LESSPlugin(), fsbx.CSSPlugin()] // more verbose
+
+```
+
+## Simplified RegExp
+
+FuseBox understands wildcards which are converted to RegExp
+
+For example:
+
+```js
+plugins : [
+    ["styles/*.css", CSSPlugin({group: "bundle.css"})] // will group files under "styles" folder
+    ["components/*.css", CSSPlugin(] // will inline all styles that match components path
+]
+```
+
+| Simplified RegExp | Compiled RegExp |
+| ------------- | ------------- |
+| `.css`        | /\.css$/  |
+| `*.css$|*.js$`  | /\w{1,}\.css$|\w{1,}\.js$/  |
+| `components/*.css`  | /\w{1,}\.css$|\w{1,}\.js$/  |
+| `components/*.(css|scss)` | /components\/\w{1,}\.(css|scss)$/
+
+
+
 ## Auto import
 
 If you are into black magic, this API is for you.
