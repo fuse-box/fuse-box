@@ -30,6 +30,7 @@
         "fuse-box-testcase3": "^1.0.3",
         "gulp": "^3.9.1",
         "gulp-bump": "^2.4.0",
+        "gulp-changelog-generator": "https://github.com/fuse-box/gulp-changelog-generator.git",
         "gulp-concat": "^2.6.0",
         "gulp-rename": "^1.2.2",
         "gulp-replace": "^0.5.4",

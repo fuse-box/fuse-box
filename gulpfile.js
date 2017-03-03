@@ -1,6 +1,6 @@
 const gulp = require('gulp')
 const rename = require('gulp-rename');
-
+const path = require('path');
 const replace = require('gulp-replace');
 const ts = require('gulp-typescript');
 const concat = require('gulp-concat');
@@ -12,7 +12,7 @@ const child_process = require('child_process');
 const spawn = child_process.spawn;
 const wrap = require('gulp-wrap');
 const uglify = require('gulp-uglify');
-
+const changelog = require('gulp-changelog-generator');
 /**
  * Fail on error if not in watch mode
  */
@@ -129,7 +129,18 @@ gulp.task('npm-publish', function(done) {
         done()
     });
 });
-
+gulp.task('changelog', function (done) {
+    var config = {
+        username: '',
+        password: '',
+        repoOwner: 'fuse-box',
+        repoName: 'fuse-box'
+    };
+  gulp.src('./CHANGELOG.md', {buffer: false, base: './'})
+    .pipe(changelog.gulpChangeLogGeneratorPlugin(config))
+    .pipe(gulp.dest('./'))
+    .pipe(done);
+});
 /**
  * Combined build task
  */
