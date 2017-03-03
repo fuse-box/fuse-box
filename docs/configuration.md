@@ -217,10 +217,10 @@ plugins : [
 ]
 ```
 
-* `.css` -> /\.css$/
-* `*.css$|*.js$` -> /\w{1,}\.css$\|\w{1,}\.js$/
-* `components/*.css` -> /components\/\w{1,}\.css$/
-* `components/*.(css\|scss)` -> /components\/\w{1,}\.(css|scss)$/
+* `.css` -> /\\.css$/
+* `*.css$|*.js$` -> /\w{1,}\\.css$\|\w{1,}\.js$/
+* `components/*.css` -> /components\/\w{1,}\\.css$/
+* `components/*.(css\|scss)` -> /components\/\w{1,}\\.(css|scss)$/
 
 
 
