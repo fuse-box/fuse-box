@@ -25,6 +25,13 @@ fuse.bundle(">index.ts [lib/**/*.ts]");
 
 In this case, you will get everything that is required in the index, as well as everything that lies under `lib/` folder with one condition - any external libraries will be ignored.
 
+### Arithmetic Symbols
+
+* ` + ` adds a package / file 
+* ` - ` excludes a package / file
+* ` ! ` Removes the loader API from the bundle
+* ` ^ ` Disables cache
+
 ### Examples for better understanding
 `> index.js [**/*.js]` - Bundle everything without dependencies, and execute `index.js`.
 
