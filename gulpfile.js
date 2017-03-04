@@ -1,6 +1,6 @@
 const gulp = require('gulp')
 const rename = require('gulp-rename');
-
+const clean = require('gulp-clean');
 const replace = require('gulp-replace');
 const ts = require('gulp-typescript');
 const concat = require('gulp-concat');
@@ -125,7 +125,8 @@ gulp.task('changelog', function(done) {
         repoOwner: 'fuse-box',
         repoName: 'fuse-box'
     };
-    gulp.src('./CHANGELOG.md', { buffer: false, base: './' })
+    gulp.src('./docs/changelog.md', { buffer: false, base: './' })
+        .pipe(clean())
         .pipe(changelog.gulpChangeLogGeneratorPlugin(config))
         .pipe(gulp.dest('./'))
         .pipe(done);
