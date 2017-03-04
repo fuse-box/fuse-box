@@ -90,7 +90,7 @@ export class BundleSource {
      */
     public endCollection(collection: ModuleCollection) {
         let entry = collection.entryFile ? collection.entryFile.info.fuseBoxPath : "";
-        
+
         if (entry) {
             this.collectionSource.add(null, `return ___scope___.entry = "${entry}";`);
         }
@@ -98,7 +98,7 @@ export class BundleSource {
 
         let key = collection.info ? `${collection.info.name}@${collection.info.version}` : "default";
         this.concat.add(`packages/${key}`,
-            this.collectionSource.content, this.collectionSource.sourceMap);
+            this.collectionSource.content, key !== undefined ? this.collectionSource.sourceMap : undefined);
         return this.collectionSource.content.toString();
     }
 

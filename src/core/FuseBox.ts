@@ -14,6 +14,7 @@ import { Config } from "./../Config";
 import { BundleTestRunner } from "../BundleTestRunner";
 import * as process from 'process';
 import { nativeModules, HeaderImport } from '../analysis/HeaderImport';
+
 const appRoot = require("app-root-path");
 
 export interface FuseBoxOptions {
@@ -28,6 +29,7 @@ export interface FuseBoxOptions {
     autoImport?: any;
     shim?: any;
     standalone?: boolean;
+    sourcemaps?: any;
     sourceMap?: any;
     ignoreGlobal?: string[];
     serverBundle?: boolean;
@@ -154,9 +156,7 @@ export class FuseBox {
             this.context.standaloneBundle = opts.standalone;
         }
 
-        if (opts.sourceMap) {
-            this.context.sourceMapConfig = opts.sourceMap;
-        }
+
 
         if (opts.ignoreGlobal) {
             this.context.ignoreGlobal = opts.ignoreGlobal;
@@ -164,8 +164,42 @@ export class FuseBox {
 
 
         if (opts.outFile) {
-            this.context.outFile = opts.outFile;
+            this.context.outFile = ensureUserPath(opts.outFile);
         }
+
+        if (opts.sourceMap) {
+            // deprecated
+            this.context.sourceMapConfig = opts.sourceMap;
+            this.context.log.echoWarning("sourceMap is deprecated. Use { sourcemaps : true } instead")
+            //this.context.sourceMapConfig = opts.sourceMap;
+        }
+
+        if (opts.sourcemaps) {
+            const sourceMapOptions: any = {}
+            let projectSourcMaps = false;
+            let vendorSourceMaps = false;
+            if (opts.sourcemaps === true) {
+                projectSourcMaps = true;
+            }
+            if (utils.isPlainObject(opts.sourcemaps)) {
+                if (opts.sourcemaps.project) {
+                    projectSourcMaps = true;
+                }
+                if (opts.sourcemaps.vendor === true) {
+                    vendorSourceMaps = true;
+                }
+            }
+            const mapsName = path.basename(this.context.outFile) + ".map"
+            const mapsOutFile =
+                path.join(path.dirname(this.context.outFile), mapsName);
+            if (projectSourcMaps) {
+                sourceMapOptions.outFile = mapsOutFile;
+                sourceMapOptions.bundleReference = mapsName;
+            }
+            sourceMapOptions.vendor = vendorSourceMaps;
+            this.context.sourceMapConfig = sourceMapOptions;
+        }
+
         this.context.setHomeDir(homeDir);
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);
