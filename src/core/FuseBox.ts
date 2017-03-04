@@ -27,7 +27,7 @@ export interface FuseBoxOptions {
     plugins?: Plugin[];
     autoImport?: any;
     shim?: any;
-    standaloneBundle?: boolean;
+    standalone?: boolean;
     sourceMap?: any;
     ignoreGlobal?: string[];
     serverBundle?: boolean;
@@ -150,8 +150,8 @@ export class FuseBox {
             this.context.shim = opts.shim;
         }
 
-        if (opts.standaloneBundle !== undefined) {
-            this.context.standaloneBundle = opts.standaloneBundle;
+        if (opts.standalone !== undefined) {
+            this.context.standaloneBundle = opts.standalone;
         }
 
         if (opts.sourceMap) {
@@ -206,6 +206,7 @@ export class FuseBox {
             return each(items, (bundleStr: string, outFile: string) => {
                 let newConfig = Object.assign({}, this.opts, { outFile: outFile });
                 let fuse = FuseBox.init(newConfig);
+
                 return fuse.initiateBundle(bundleStr);
             });
         }
@@ -333,6 +334,15 @@ export class FuseBox {
             bundle = data;
             if (bundle.tmpFolder) {
                 this.context.homeDir = bundle.tmpFolder
+            }
+            if (bundle.standalone !== undefined) {
+                this.context.debug("Arithmetic", `Override standalone ${bundle.standalone}`)
+
+                this.context.standaloneBundle = bundle.standalone;
+            }
+            if (bundle.cache !== undefined) {
+                this.context.debug("Arithmetic", `Override cache ${bundle.cache}`)
+                this.context.useCache = bundle.cache;
             }
 
             return this.process(data, bundleReady);

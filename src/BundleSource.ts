@@ -90,6 +90,7 @@ export class BundleSource {
      */
     public endCollection(collection: ModuleCollection) {
         let entry = collection.entryFile ? collection.entryFile.info.fuseBoxPath : "";
+        
         if (entry) {
             this.collectionSource.add(null, `return ___scope___.entry = "${entry}";`);
         }
@@ -195,7 +196,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             let wrapper = fs.readFileSync(fuseboxLibFile).toString();
             this.concat.add(null, `(${wrapper})`);
         } else {
-            this.concat.add(null, "()");
+            this.concat.add(null, "(FuseBox)");
         }
 
         if (this.context.sourceMapConfig) {

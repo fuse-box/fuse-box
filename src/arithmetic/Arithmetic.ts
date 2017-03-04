@@ -40,7 +40,8 @@ export class BundleData {
     public entry: string;
     public homeDir: string;
     public typescriptMode: boolean;
-
+    public standalone: boolean;
+    public cache: boolean;
     public setIncluding(info: Map<string, IBundleInformation>) {
 
     }
@@ -209,6 +210,8 @@ export class Arithmetic {
             data.excluding = result.excluding;
             data.depsOnly = result.depsOnly;
             data.entry = result.entry;
+            data.standalone = parser.standalone;
+            data.cache = parser.cache;
             if (result.tempFolder) {
                 data.setupTempFolder(result.tempFolder);
             }

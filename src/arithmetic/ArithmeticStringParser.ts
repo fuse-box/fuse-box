@@ -42,8 +42,9 @@ export class PropParser {
     public excluding = {};
     public including = {};
     public depsOnly = {};
-
+    public standalone: boolean;
     public entry = {};
+    public cache: boolean;
     /**
      *
      *
@@ -144,6 +145,14 @@ export class PropParser {
      */
     public receive(char: string, last: boolean) {
         if (this.has(STATES.PENDING)) {
+            if (char === "!") {
+                this.standalone = false;
+                return;
+            }
+            if (char === "^") {
+                this.cache = false;
+                return;
+            }
             if (char === "+") {
                 this.set(STATES.PLUS);
                 return;

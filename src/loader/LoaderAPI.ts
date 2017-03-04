@@ -2,8 +2,10 @@
  * This whole file is wrapped in a function by our gulpfile.js
  * The function is injected the global `this` as `__root__`
  **/
+const $isBrowser = typeof window !== "undefined" && window.navigator;
 declare let __root__: any;
 declare let __fbx__dnm__: any;
+
 
 /**
  * Package name to version
@@ -45,7 +47,7 @@ type FSBX = {
     }
 }
 
-const $isBrowser = typeof window !== "undefined" && window.navigator;
+
 // Patching global variable
 if ($isBrowser) {
     window["global"] = window;

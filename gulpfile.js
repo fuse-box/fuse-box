@@ -62,6 +62,22 @@ return __root__["FuseBox"] = FuseBox; } )(this)`))
         .pipe(gulp.dest('modules/fuse-box-loader-api'))
 
 });
+
+gulp.task('dist-cdn-loader-js', () => {
+    return gulp.src('src/loader/LoaderAPI.ts')
+        .pipe(projectLoader()).on('error', onError).js
+        .pipe(wrap(`(function(__root__){
+if (__root__["FuseBox"]) return __root__["FuseBox"];
+<%= contents %>
+return __root__["FuseBox"] = FuseBox; } )(this)`))
+        .pipe(rename('fusebox.js'))
+        .pipe(gulp.dest('modules/fuse-box-loader-api'))
+        .pipe(rename('fusebox.min.js'))
+        .pipe(uglify())
+        .pipe(gulp.dest('dist/'))
+
+});
+
 gulp.task('dist-loader-typings', () => {
     return gulp.src('src/loader/LoaderAPI.ts')
         .pipe(projectLoaderTypings()).dts
@@ -102,17 +118,17 @@ gulp.task('dist-main', ['dist-typings', 'dist-commonjs']);
 gulp.task('publish', ['changelog'], function(done) {
     runSequence('dist', 'increment-version', 'commit-release', 'npm-publish', done);
 });
-gulp.task('changelog', function (done) {
+gulp.task('changelog', function(done) {
     var config = {
         username: '',
         password: '',
         repoOwner: 'fuse-box',
         repoName: 'fuse-box'
     };
-  gulp.src('./CHANGELOG.md', {buffer: false, base: './'})
-    .pipe(changelog.gulpChangeLogGeneratorPlugin(config))
-    .pipe(gulp.dest('./'))
-    .pipe(done);
+    gulp.src('./CHANGELOG.md', { buffer: false, base: './' })
+        .pipe(changelog.gulpChangeLogGeneratorPlugin(config))
+        .pipe(gulp.dest('./'))
+        .pipe(done);
 });
 gulp.task('increment-version', function() {
     return gulp.src('./package.json')
