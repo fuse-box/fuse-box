@@ -29,7 +29,7 @@ In this case, you will get everything that is required in the index, as well as 
 
 * ` + ` adds a package / file 
 * ` - ` excludes a package / file
-* ` ! ` Removes the loader API from the bundle
+* ` ! ` Removes the loader API from a bundle
 * ` ^ ` Disables cache
 
 ### Examples for better understanding
