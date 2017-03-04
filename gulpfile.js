@@ -12,7 +12,7 @@ const child_process = require('child_process');
 const spawn = child_process.spawn;
 const wrap = require('gulp-wrap');
 const uglify = require('gulp-uglify');
-
+const changelog = require('gulp-changelog-generator');
 
 /**
  * Fail on error if not in watch mode
