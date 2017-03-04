@@ -67,6 +67,8 @@ export class WorkFlowContext {
 
     public pendingPromises: Promise<any>[] = [];
 
+    public customAPIFile: string;
+
     public defaultEntryPoint: string;
     /**
      * Explicitly target bundle to server

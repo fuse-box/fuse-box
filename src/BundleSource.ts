@@ -1,4 +1,4 @@
-import { ensurePublicExtension, Concat } from './Utils';
+import { ensurePublicExtension, Concat, ensureUserPath } from './Utils';
 import { BundleData } from './arithmetic/Arithmetic';
 import { ModuleCollection } from "./core/ModuleCollection";
 import { WorkFlowContext } from "./core/WorkflowContext";
@@ -193,6 +193,9 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
 
         if (context.standaloneBundle) {
             let fuseboxLibFile = path.join(Config.FUSEBOX_MODULES, "fuse-box-loader-api", "fusebox.min.js");
+            if (this.context.customAPIFile) {
+                fuseboxLibFile = ensureUserPath(this.context.customAPIFile);
+            }
             let wrapper = fs.readFileSync(fuseboxLibFile).toString();
             this.concat.add(null, `(${wrapper})`);
         } else {

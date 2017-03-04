@@ -33,6 +33,7 @@ export interface FuseBoxOptions {
     sourceMap?: any;
     ignoreGlobal?: string[];
     serverBundle?: boolean;
+    customAPIFile?: string;
     outFile?: string;
     debug?: boolean;
     files?: any;
@@ -162,6 +163,9 @@ export class FuseBox {
             this.context.ignoreGlobal = opts.ignoreGlobal;
         }
 
+        if (opts.customAPIFile) {
+            this.context.customAPIFile = opts.customAPIFile;
+        }
 
         if (opts.outFile) {
             this.context.outFile = ensureUserPath(opts.outFile);
