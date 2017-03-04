@@ -56,6 +56,8 @@ FuseBox.init({
 })
 ```
 
+Alternatively, you can disable cache by adding `^` to the arithmetic instructions
+
 ## Debug and Log
 Additional logging and debugging can be enabled, but keep in mind they can reduce performance.
 ```js
@@ -156,17 +158,33 @@ Please, note, that in order to expose your package, a bundle must have a [packag
 Sourcemaps in FuseBox are enabled by adding this property to a fusebox init configuration
 
 ```js
-sourceMap: {
-  bundleReference: "sourcemaps.js.map",
-  outFile: "sourcemaps.js.map",
-}
+sourcemaps: true
 ```
-* `bundleReference` speaks for itself. This line will be added to the bundle. For example `//# sourceMappingURL=./sourcemaps.js.map`. If your client is not able to read them, make sure that the path is reachable.
-* `outFile` is where the sourcemap is written to disk. It can be an absolute path, Or relative to `appRootPath`.
+
+You can add an object to allow vendor sourcemaps
+
+```js
+sourcemaps: { project : true, vendor : true}
+```
+
+> vendor sourcemaps will be generated correctly with disabled cache. It's a know bug
 
 Sourcemaps currently work with [typescript](#typescript) and [BabelPlugin](#babel-plugin)
 [see the SourceMapPlainJsPlugin][#SourceMapPlainJsPlugin]
 
+## Standalone
+
+By default FuseBox injects API in every bundle. That can be overridden by setting:
+
+```
+{ standalone : false }
+```
+
+Alternatively, you add `!` symbol to the arithmetics
+
+```
+! >index.ts
+```
 
 ## List of plugins
 
