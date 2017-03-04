@@ -186,6 +186,12 @@ Alternatively, you add `!` symbol to the arithmetics
 ! >index.ts
 ```
 
+Load the API from the CDN:
+
+```html
+<script type="text/javascript" src="https://unpkg.com/fuse-box/dist/fusebox.min.js"></script>
+```
+
 ## List of plugins
 
 `plugins` option expects an array of plugins, See [Plugin API](#plugin-api)
