@@ -150,7 +150,7 @@ export class Arithmetic {
                 return new Promise((resolve, reject) => {
                     glob(fp, (err, files) => {
                         for (let i = 0; i < files.length; i++) {
-                            data.set(files[i], {
+                            data.set(files[i].normalize('NFC'), {
                                 deps: withDeps
                             });
                         }
