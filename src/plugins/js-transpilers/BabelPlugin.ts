@@ -91,7 +91,15 @@ export class BabelPluginClass implements Plugin {
         }
 
         if (this.limit2project === false || file.collection.name === file.context.defaultPackageName) {
-            let result = babelCore.transform(file.contents, this.config);
+            let result;
+            try {
+                result = babelCore.transform(file.contents, this.config);
+            } catch (e) {
+                file.analysis.skip();
+                console.error(e);
+                return;
+            }
+
             // By default we would want to limit the babel 
             // And use acorn instead (it's faster)
 
