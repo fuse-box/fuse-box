@@ -13,6 +13,6 @@ export class EnvPluginClass implements Plugin {
     }
 }
 
-export const EnvPlugin = (banner: string) => {
+export const EnvPlugin = (banner: any) => {
     return new EnvPluginClass(banner);
 }
