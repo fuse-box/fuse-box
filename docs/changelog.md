@@ -2,6 +2,8 @@
 
 ### [1.3.123](https://github.com/fuse-box/fuse-box/milestone/11)
 
+    
+
 Matroshka Release
 
 Title | Closed
@@ -17,6 +19,8 @@ Title | Closed
 [ISSUE 340](https://github.com/fuse-box/fuse-box/issues/340) SourceMap option will be removed (deprecated) | March 4, 2017 10:48 PM
 [ISSUE 342](https://github.com/fuse-box/fuse-box/issues/342) New arithmetic symbol ^ | March 4, 2017 9:49 PM
 [ISSUE 343](https://github.com/fuse-box/fuse-box/issues/343) CustomAPIFile Options for the most adventurous | March 4, 2017 11:12 PM
+[PR 344](https://github.com/fuse-box/fuse-box/pull/344) normalize filename | March 5, 2017 3:57 PM
+[PR 345](https://github.com/fuse-box/fuse-box/pull/345) Changed TypeScriptHelpers plugin test to support ts and tsx | March 5, 2017 9:59 AM
 
                 
 
@@ -161,6 +165,7 @@ Title | Closed
     
 
 
+
 Title | Closed
 --- | ---
 [ISSUE 156](https://github.com/fuse-box/fuse-box/issues/156) electron-fusebox - Node API | February 15, 2017 9:52 AM
@@ -181,4 +186,4 @@ Title | Closed
 [ISSUE 164](https://github.com/fuse-box/fuse-box/issues/164) transformTypescript | February 14, 2017 10:58 PM
 [ISSUE 169](https://github.com/fuse-box/fuse-box/issues/169) FuseBox.exists("app.html") triggers error | February 14, 2017 10:07 PM
 
-            
+                
