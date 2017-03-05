@@ -95,18 +95,7 @@ export function string2RegExp(obj: any) {
 }
 
 export function removeFolder(userPath) {
-
-    if (fs.existsSync(userPath)) {
-        fs.readdirSync(userPath).forEach(function (file, index) {
-            var curPath = path.join(userPath, file);
-            if (fs.lstatSync(curPath).isDirectory()) { // recurse
-                removeFolder(curPath);
-            } else { // delete file
-                fs.unlinkSync(curPath);
-            }
-        });
-        fs.rmdirSync(userPath);
-    }
+    fsExtra.removeSync(userPath)
 }
 
 

@@ -115,7 +115,7 @@ gulp.task('dist-main', ['dist-typings', 'dist-commonjs']);
 /**
  *   NPM deploy management
  */
-gulp.task('publish', ['changelog'], function(done) {
+gulp.task('publish', ['dist-cdn-loader-js'], function(done) {
     runSequence('dist', 'increment-version', 'commit-release', 'npm-publish', done);
 });
 gulp.task('changelog', function(done) {
