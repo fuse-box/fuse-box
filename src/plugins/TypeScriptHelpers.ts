@@ -7,7 +7,7 @@ import * as path from "path";
  *
  *
  * @export
- * @class FuseBoxCSSPlugin
+ * @class FuseBoxTypeScriptHelpersPlugin
  * @implements {Plugin}
  */
 export class TypeScriptHelpersClass implements Plugin {
@@ -15,9 +15,9 @@ export class TypeScriptHelpersClass implements Plugin {
      *  
      *
      * @type {RegExp}
-     * @memberOf FuseBoxCSSPlugin
+     * @memberOf FuseBoxTypeScriptHelpersPlugin
      */
-    public test: RegExp = /(\.js|\.ts)$/;
+    public test: RegExp = /\.tsx?$/;
 
 
     private registeredHelpers: Map<string, string> = new Map();
@@ -40,7 +40,7 @@ export class TypeScriptHelpersClass implements Plugin {
      *
      * @param {WorkFlowContext} context
      *
-     * @memberOf FuseBoxCSSPlugin
+     * @memberOf FuseBoxTypeScriptHelpersPlugin
      */
     public init(context: WorkFlowContext) {
         context.setItem("ts_helpers", new Set());
@@ -60,7 +60,7 @@ export class TypeScriptHelpersClass implements Plugin {
      *
      * @param {File} file
      *
-     * @memberOf FuseBoxCSSPlugin
+     * @memberOf FuseBoxTypeScriptHelpersPlugin
      */
     public transform(file: File) {
         let patchDecorate = false;
