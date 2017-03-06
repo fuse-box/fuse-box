@@ -29,7 +29,7 @@ export interface FuseBoxOptions {
     autoImport?: any;
     shim?: any;
     standalone?: boolean;
-    sourcemaps?: any;
+    sourceMaps?: any;
     sourceMap?: any;
     ignoreGlobal?: string[];
     serverBundle?: boolean;
@@ -174,22 +174,22 @@ export class FuseBox {
         if (opts.sourceMap) {
             // deprecated
             this.context.sourceMapConfig = opts.sourceMap;
-            this.context.log.echoWarning("sourceMap is deprecated. Use { sourcemaps : true } instead")
+            this.context.log.echoWarning("sourceMap is deprecated. Use { sourceMaps: true } instead")
             //this.context.sourceMapConfig = opts.sourceMap;
         }
 
-        if (opts.sourcemaps) {
+        if (opts.sourceMaps) {
             const sourceMapOptions: any = {}
             let projectSourcMaps = false;
             let vendorSourceMaps = false;
-            if (opts.sourcemaps === true) {
+            if (opts.sourceMaps === true) {
                 projectSourcMaps = true;
             }
-            if (utils.isPlainObject(opts.sourcemaps)) {
-                if (opts.sourcemaps.project) {
+            if (utils.isPlainObject(opts.sourceMaps)) {
+                if (opts.sourceMaps.project) {
                     projectSourcMaps = true;
                 }
-                if (opts.sourcemaps.vendor === true) {
+                if (opts.sourceMaps.vendor === true) {
                     vendorSourceMaps = true;
                 }
             }
