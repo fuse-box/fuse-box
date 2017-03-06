@@ -90,6 +90,13 @@ class FluentBundle {
     return this
   }
 
+  // aka, vendors
+  public onlyDeps() {
+    this.useOnlyDeps = true
+    this.str += `\n ~`
+    return this
+  }
+
   // same
   public ignoreDeps() {
     this.noDeps = true
