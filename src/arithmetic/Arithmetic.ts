@@ -1,14 +1,12 @@
 import { PropParser } from "./ArithmeticStringParser";
+import Fluent from "./Fluent";
 import { Config } from "./../Config";
 import { each, chain, Chainable, utils } from 'realm-utils';
 import { File } from "../core/File";
 import * as path from "path";
 import * as fs from "fs";
 import * as fsExtra from "fs-extra";
-
-
 import * as glob from "glob";
-
 
 const deleteFolderRecursive = (p) => {
     if (fs.existsSync(p)) {
@@ -24,6 +22,7 @@ const deleteFolderRecursive = (p) => {
     }
 };
 
+export {Fluent}
 
 export interface IBundleInformation {
     deps: boolean;
