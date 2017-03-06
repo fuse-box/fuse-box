@@ -3,7 +3,7 @@
 // [**/*.js] - Bundle everything without dependencies
 // **/*.js - Bundle everything with dependencies
 // **/*.js -path - Bundle everything with dependencies except for module path
-
+//
 // + adds a package / file
 // - excludes a package / file
 // ! Removes the loader API from a bundle
@@ -14,7 +14,7 @@
  * can is in canada, so true.
  * strIncludesAnyOf('canada', ['eh', 'can'])
  */
-function strIncludesAnyOf(string: any, strings: any, delimiter: boolean | string = false) {
+function strIncludesAnyOf(string: any, strings: any, delimiter: boolean | string = false): boolean{
   if (delimiter && typeof strings === 'string' && strings.includes(','))
     strings = strings.split(',')
 
@@ -24,22 +24,16 @@ function strIncludesAnyOf(string: any, strings: any, delimiter: boolean | string
 }
 
 class FluentBundle {
-  public cmds: Array<Object>;
-  public name: string;
-  public str: string;
+  public cmds: Array<Object> = [];
+  public str: string = '';
   public arithmetics: string;
-  public noDeps: boolean;
+  public noDeps: boolean = false;
+  public useOnlyDeps: boolean;
 
-  constructor(name, arithmetics) {
-    this.noDeps = false
-    this.cmds = []
-    this.str = ``
-    this.name = name
-    this.arithmetics = arithmetics
-  }
+  constructor(public name: string, public fluentInstance: Fluent) {}
 
   public finishBundle() {
-    return this.arithmetics
+    return this.fluentInstance
   }
   public addCmd(cmd: any, bundle: any) {
     this.cmds.push({
@@ -74,7 +68,7 @@ class FluentBundle {
       this.str += `\n >${bundle}`
     return this
   }
-  public add(bundle: any) {
+  public add(bundle: string) {
     this.addCmd('add', bundle)
     if (this.noDeps)
       this.str += `\n +[${bundle}]`
@@ -118,9 +112,10 @@ class FluentBundle {
 }
 
 class Fluent {
-  public bundled: Object;
-  constructor() {
-    this.bundled = {}
+  public bundled: Object = {};
+
+  static init() {
+    return new Fluent()
   }
 
   public reset() {
@@ -129,7 +124,7 @@ class Fluent {
   }
 
   // name is also output place if multiple
-  public startBundle(name: any) {
+  public startBundle(name: string) {
     this.bundled[name] = new FluentBundle(name, this)
     return this.bundled[name]
   }
@@ -152,10 +147,7 @@ class Fluent {
     if (strIncludesAnyOf(str, '[,>,],+[,-,**,^,~,!', ',')) return true
     return false
   }
-
-  static init() {
-    return new Fluent()
-  }
 }
 
+export {Fluent, FluentBundle, strIncludesAnyOf}
 export default Fluent
