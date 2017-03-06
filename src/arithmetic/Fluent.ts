@@ -144,7 +144,7 @@ class Fluent {
   }
 
   public static isArithmetic(str: string): boolean {
-    if (strIncludesAnyOf(str, '[,>,],+[,-,**', ',')) return true
+    if (strIncludesAnyOf(str, '[,>,],+[,-,**,^,~', ',')) return true
     return false
   }
 
