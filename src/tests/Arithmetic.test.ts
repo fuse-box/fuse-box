@@ -73,6 +73,14 @@ export class ArithmeticTest {
 
       should(typeof singleBundle).deepEqual('string')
     }
+
+    "isArithmetic should detect arithmetics properly"() {
+      const isArithmeticTrue = Fluent.isArithmetic('!^>[index.js] +[**/*.js] -path')
+      const isArithmeticFalse = Fluent.isArithmetic('eh...')
+      should(isArithmeticTrue).deepEqual(true)
+      should(isArithmeticFalse).deepEqual(false)
+    }
+
     "should parse a single bundle fluently"() {
       const singleBundle = Fluent
         .init()
@@ -82,11 +90,15 @@ export class ArithmeticTest {
         .exclude('path')
         .include('inferno')
         .noCache()
+        .noApi()
         .finishBundle()
         .finish()
 
       should(typeof singleBundle).deepEqual('string')
       let parsed = Arithmetic.parse(singleBundle);
+
+      should(parsed.str.includes('!'))
+          .deepEqual(true)
 
       should(parsed.str.includes('^'))
           .deepEqual(true)
