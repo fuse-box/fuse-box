@@ -60,6 +60,11 @@ class FluentBundle {
     return this
   }
 
+  public noApi() {
+    this.str = `! ` + this.str
+    return this
+  }
+
   // should add support to make it not need to take in the bundle
   public execute(bundle: any) {
     this.addCmd('execute', bundle)
@@ -144,7 +149,7 @@ class Fluent {
   }
 
   public static isArithmetic(str: string): boolean {
-    if (strIncludesAnyOf(str, '[,>,],+[,-,**,^,~', ',')) return true
+    if (strIncludesAnyOf(str, '[,>,],+[,-,**,^,~,!', ',')) return true
     return false
   }
 
