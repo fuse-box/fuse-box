@@ -1,7 +1,107 @@
-import { Arithmetic } from '../arithmetic/Arithmetic';
+import { Arithmetic, Fluent } from '../arithmetic/Arithmetic';
 import { should } from "fuse-test-runner";
 
 export class ArithmeticTest {
+    "should parse multiple bundles extending from a single bundle fluently"() {
+      const result = Fluent
+        .init()
+        .startBundle('coolbundle')
+        .ignoreDeps()
+        .and('>ooo.js')
+        .add('ahhhh.js')
+        .add('fuse.magic.ts')
+        .add('*/**.js')
+        .include('path')
+        .include('fs')
+        .exclude('magic-in-me')
+        .finishBundle()
+
+      const singleBundle = result.finish()
+
+      const multipleBundles = result
+        .startBundle('webworker')
+        .includeDeps()
+        .execute('/src/eh.js')
+        .add('webworkerfile.js')
+        .exclude('fs')
+        .finishBundle()
+        .finish()
+
+      should(typeof singleBundle).deepEqual('string')
+      should(typeof multipleBundles).deepEqual('object')
+    }
+
+    "should parse multiple bundles fluently"() {
+      const multipleBundles = Fluent
+        .init()
+        .startBundle('coolbundle')
+        .ignoreDeps()
+        .and('>ooo.js')
+        .add('ahhhh.js')
+        .add('fuse.magic.ts')
+        .add('*/**.js')
+        .include('path')
+        .include('fs')
+        .exclude('magic-in-me')
+        .finishBundle()
+
+        .startBundle('webworker')
+        .includeDeps()
+        .execute('/src/eh.js')
+        .add('webworkerfile.js')
+        .exclude('fs')
+        .finishBundle()
+        .finish()
+
+      should(typeof multipleBundles).deepEqual('object')
+    }
+    "should handle a single bundle fluently"() {
+      const result = Fluent
+        .init()
+        .startBundle('coolbundle')
+        .ignoreDeps()
+        .and('>ooo.js')
+        .add('ahhhh.js')
+        .add('fuse.magic.ts')
+        .add('*/**.js')
+        .include('path')
+        .include('fs')
+        .exclude('magic-in-me')
+        .finishBundle()
+
+      const singleBundle = result.finish()
+
+      should(typeof singleBundle).deepEqual('string')
+    }
+    "should parse a single bundle fluently"() {
+      const singleBundle = Fluent
+        .init()
+        .startBundle('coolbundle')
+        .ignoreDeps()
+        .execute('main/app.js')
+        .exclude('path')
+        .include('inferno')
+        .noCache()
+        .finishBundle()
+        .finish()
+
+      should(typeof singleBundle).deepEqual('string')
+      let parsed = Arithmetic.parse(singleBundle);
+
+      should(parsed.str.includes('^'))
+          .deepEqual(true)
+
+      should(parsed.entry)
+          .deepEqual({ "main/app.js": false })
+
+      should(parsed.excluding)
+          .deepEqual({ 'path': true });
+
+      should(parsed.including)
+          .deepEqual({ 'main/app.js': false, 'inferno': true });
+
+    }
+
     "Should parse a simple test"() {
         let result = Arithmetic.parse(`src/**/*.js  -[main/app.js]`);
         should(result.including)
