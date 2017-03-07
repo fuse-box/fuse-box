@@ -1,4 +1,4 @@
-import { Arithmetic } from '../arithmetic/Arithmetic';
+import { Arithmetic } from "../arithmetic/Arithmetic";
 import { should } from "fuse-test-runner";
 
 export class ArithmeticTest {
