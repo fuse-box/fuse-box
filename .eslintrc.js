@@ -143,7 +143,7 @@ module.exports = {
     // http://eslint.org/docs/rules/func-style
     // "disallowFunctionDeclarations": 1,
     "func-style": [
-      "error",
+      "warn",
       "declaration",
       {
         "allowArrowFunctions": true,
@@ -214,7 +214,7 @@ module.exports = {
     "no-self-compare": 2,
     "valid-typeof": 2,
     "no-unused-vars": 1,
-    "handle-callback-err": 2,
+    "handle-callback-err": 1,
     "no-shadow-restricted-names": 2,
     "no-new-require": 2,
     "no-mixed-spaces-and-tabs": 2,
