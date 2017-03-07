@@ -17,9 +17,9 @@ export class Log {
 
     public echo(str: string) {
         let data = new Date();
-        let hour: any = data.getHours();
-        let min: any = data.getMinutes();
-        let sec: any = data.getSeconds();
+        let hour : any = data.getHours();
+        let min : any = data.getMinutes();
+        let sec : any = data.getSeconds();
 
         hour = hour < 10 ? `0${hour}` : hour;
         min = min < 10 ? `0${min}` : min;
@@ -56,12 +56,12 @@ export class Log {
         this.totalSize += bytes;
         cursor.reset().write(`└──`)
             .green().write(` ${collection.cachedName || collection.name}`)
-            .yellow().write(` (${collection.dependencies.size} files,  ${size})`)
+            .yellow().write(` (${collection.dependencies.size} files,  ${size})`);
 
-        cursor.write("\n")
+        cursor.write("\n");
         collection.dependencies.forEach(file => {
             if (!file.info.isRemoteFile) {
-                cursor.reset().write(`      ${file.info.fuseBoxPath}`).write("\n")
+                cursor.reset().write(`      ${file.info.fuseBoxPath}`).write("\n");
             }
         });
         cursor.reset();
@@ -83,7 +83,7 @@ export class Log {
 
     public end(header?: string) {
         let took = process.hrtime(this.timeStart) as [number, number];
-        this.echoBundleStats(header || 'Bundle', this.totalSize, took);
+        this.echoBundleStats(header || "Bundle", this.totalSize, took);
     }
 
     public echoBundleStats(header: string, size: number, took: [number, number]) {

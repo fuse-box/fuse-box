@@ -315,7 +315,7 @@ export class PathMaster {
             const packageJSONPath = path.join(folder, "package.json");
             if (fs.existsSync(packageJSONPath)) {
                 // read contents
-                const json: any = require(packageJSONPath);
+                const json : any = require(packageJSONPath);
                 // Getting an entry point
                 let entryFile;
                 let entryRoot;
@@ -330,11 +330,11 @@ export class PathMaster {
                 entryFile = path.join(folder, entryFile || json.main || "index.js");
                 entryRoot = path.dirname(entryFile);
                 return {
-                    name: name,
+                    name,
                     custom: isCustom,
                     root: folder,
                     missing: false,
-                    entryRoot: entryRoot,
+                    entryRoot,
                     entry: entryFile,
                     version: json.version,
                 };
@@ -345,7 +345,7 @@ export class PathMaster {
             let defaultEntryRoot = entryFile ? path.dirname(entryFile) : undefined;
             let packageExists = fs.existsSync(folder);
             return {
-                name: name,
+                name,
                 missing: !packageExists,
                 custom: isCustom,
                 root: folder,

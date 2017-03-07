@@ -1,5 +1,5 @@
 if (FuseBox.isServer) {
-    module.exports = global.require("url");
+    module.exports = global.require('url');
 } else {
-    module.exports = {}
+    module.exports = {};
 }

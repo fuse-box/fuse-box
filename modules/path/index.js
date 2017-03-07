@@ -1,5 +1,5 @@
 if (FuseBox.isServer) {
-    module.exports = global.require("path");
+    module.exports = global.require('path');
 } else {
     var process = require('process');
 
@@ -197,7 +197,7 @@ if (FuseBox.isServer) {
     // String.prototype.substr - negative index don't work in IE8
     var substr = 'ab'.substr(-1) === 'b' ?
 
-        function(str, start, len) { return str.substr(start, len) } :
+        function(str, start, len) { return str.substr(start, len); } :
         function(str, start, len) {
             if (start < 0) start = str.length + start;
             return str.substr(start, len);

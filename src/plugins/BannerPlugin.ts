@@ -15,7 +15,7 @@ export class BannerPluginClass implements Plugin {
     public banner: string;
 
     constructor(banner: string) {
-        this.banner = banner || '';
+        this.banner = banner || "";
     }
 
     public preBundle(context: WorkFlowContext) {
@@ -25,4 +25,4 @@ export class BannerPluginClass implements Plugin {
 
 export const BannerPlugin = (banner: string) => {
     return new BannerPluginClass(banner);
-}
+};

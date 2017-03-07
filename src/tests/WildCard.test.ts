@@ -1,4 +1,4 @@
-import { createEnv } from './stubs/TestEnvironment';
+import { createEnv } from "./stubs/TestEnvironment";
 import { should } from "fuse-test-runner";
 
 
@@ -10,11 +10,11 @@ export class WildCardTest {
                     "foo/a.ts": "module.exports = {a : 1}",
                     "foo/b.ts": "module.exports = {b : 1}",
                 },
-                instructions: "**/**.ts"
-            }
+                instructions: "**/**.ts",
+            },
         }).then((result) => {
             should(result.project.FuseBox.import("./foo/*"))
-                .deepEqual({ 'foo/a.js': { a: 1 }, 'foo/b.js': { b: 1 } })
+                .deepEqual({ "foo/a.js": { a: 1 }, "foo/b.js": { b: 1 } });
         });
     }
 
@@ -26,11 +26,11 @@ export class WildCardTest {
                     "foo/a.ts": "module.exports = {a : 1}",
                     "foo/b.ts": "module.exports = {b : 1}",
                 },
-                instructions: "**/**.ts"
-            }
+                instructions: "**/**.ts",
+            },
         }).then((result) => {
             should(result.project.FuseBox.import("./foo/*.js"))
-                .deepEqual({ 'foo/a.js': { a: 1 }, 'foo/b.js': { b: 1 } })
+                .deepEqual({ "foo/a.js": { a: 1 }, "foo/b.js": { b: 1 } });
         });
     }
 
@@ -43,11 +43,11 @@ export class WildCardTest {
                     "foo/b-comp.ts": "module.exports = {b : 1}",
                     "foo/c.ts": "module.exports = {c : 1}",
                 },
-                instructions: "**/**.ts"
-            }
+                instructions: "**/**.ts",
+            },
         }).then((result) => {
             should(result.project.FuseBox.import("./foo/*-comp"))
-                .deepEqual({ 'foo/a-comp.js': { a: 1 }, 'foo/b-comp.js': { b: 1 } })
+                .deepEqual({ "foo/a-comp.js": { a: 1 }, "foo/b-comp.js": { b: 1 } });
         });
     }
 
@@ -59,11 +59,11 @@ export class WildCardTest {
                     "foo/b-comp.ts": "module.exports = {b : 1}",
                     "foo/c.ts": "module.exports = {c : 1}",
                 },
-                instructions: "**/**.ts"
-            }
+                instructions: "**/**.ts",
+            },
         }).then((result) => {
             should(result.project.FuseBox.import("./foo/*-comp.js"))
-                .deepEqual({ 'foo/a-comp.js': { a: 1 }, 'foo/b-comp.js': { b: 1 } })
+                .deepEqual({ "foo/a-comp.js": { a: 1 }, "foo/b-comp.js": { b: 1 } });
         });
     }
 

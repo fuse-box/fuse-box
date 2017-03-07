@@ -1,16 +1,16 @@
-"use strict";
-const realm_utils_1 = require("realm-utils");
+'use strict';
+const realm_utils_1 = require('realm-utils');
 let ansi, cursor;
 if (FuseBox.isServer) {
-    ansi = require("ansi");
+    ansi = require('ansi');
     cursor = ansi(process.stdout);
 }
 const $indentString = (str, amount) => {
     let lines = str.split(/\r?\n/);
     let newLines = [];
-    let emptySpace = "";
+    let emptySpace = '';
     for (let i = 0; i < amount; i++) {
-        emptySpace += " ";
+        emptySpace += ' ';
     }
     for (let i = 0; i < lines.length; i++) {
         newLines.push(emptySpace + lines[i]);
@@ -22,20 +22,20 @@ const $printCategory = (title) => {
         cursor.write(' ')
             .bold().write(`\n   ${title} ______________________ `)
             .bg.reset();
-        cursor.write("\n");
+        cursor.write('\n');
         cursor.reset();
     }
 };
 const $printSubCategory = (title) => {
     if (cursor) {
         cursor.write('    ').bold().brightBlack().write(`${title} →`);
-        cursor.write("\n");
+        cursor.write('\n');
         cursor.reset();
     }
 };
 const $printLine = () => {
     if (cursor) {
-        cursor.write("\n");
+        cursor.write('\n');
         cursor.reset();
     }
 };
@@ -43,7 +43,7 @@ const $printCaseSuccess = (name) => {
     if (cursor) {
         cursor.green().write(`      ✓ `)
             .brightBlack().write(name);
-        cursor.write("\n");
+        cursor.write('\n');
         cursor.reset();
     }
 };
@@ -51,11 +51,11 @@ const $printCaseError = (name, message) => {
     if (cursor) {
         cursor.red().bold().write(`      ✗ `)
             .red().write(name);
-        cursor.write("\n");
+        cursor.write('\n');
         cursor.reset();
         if (message) {
             cursor.white().write($indentString(message, 10));
-            cursor.write("\n");
+            cursor.write('\n');
         }
         cursor.reset();
     }
@@ -64,9 +64,9 @@ const $printHeading = (fileAmount) => {
     if (cursor) {
         cursor.yellow()
             .bold().write(`> Launching tests ... `);
-        cursor.write("\n");
+        cursor.write('\n');
         cursor.write(`> Found ${fileAmount} files`);
-        cursor.write("\n");
+        cursor.write('\n');
         cursor.reset();
     }
 };
@@ -89,19 +89,19 @@ const $printStats = (data, took) => {
                 });
             });
         });
-        cursor.write("\n");
-        cursor.write("   ☞ ");
-        cursor.write("\n   ");
+        cursor.write('\n');
+        cursor.write('   ☞ ');
+        cursor.write('\n   ');
         cursor.green().write(` ${passed} passed `);
         cursor.reset();
         if (failed > 0) {
-            cursor.write(" ");
+            cursor.write(' ');
             cursor.bold().red().write(` ${failed} failed `);
             cursor.reset();
             cursor.brightBlack().write(` (${took}ms)`);
-            cursor.write("\n   ");
+            cursor.write('\n   ');
             cursor.reset();
-            cursor.write("\n");
+            cursor.write('\n');
         } else {
             cursor.brightBlack().write(` (${took}ms)`).reset();
         }
@@ -131,8 +131,8 @@ class FuseBoxTestReporter {
     }
     endTest(stats, took) {
         $printStats(stats, took);
-        console.log("");
+        console.log('');
     }
 }
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, '__esModule', { value: true });
 exports.default = FuseBoxTestReporter;

@@ -3,7 +3,7 @@
  */
 
 import { SocketClient } from '../fusebox-websocket';
-const Client: typeof SocketClient = require("fusebox-websocket").SocketClient;
+const Client : typeof SocketClient = require('fusebox-websocket').SocketClient;
 
 export const connect = (port: string, uri: string) => {
 
@@ -12,15 +12,15 @@ export const connect = (port: string, uri: string) => {
     }
     port = port || window.location.port;
     let client = new Client({
-        port: port,
-        uri: uri
+        port,
+        uri,
     });
     client.connect();
-    console.log("connecting...");
-    client.on("source-changed", (data) => {
+    console.log('connecting...');
+    client.on('source-changed', (data) => {
         console.log(`Updating "${data.path}" ...`);
 
-        /** 
+        /**
          * If a plugin handles this request then we don't have to do anything
          **/
         for (var index = 0; index < FuseBox.plugins.length; index++) {
@@ -30,14 +30,14 @@ export const connect = (port: string, uri: string) => {
             }
         }
 
-        if (data.type === "js") {
+        if (data.type === 'js') {
             FuseBox.flush();
             FuseBox.dynamic(data.path, data.content);
             if (FuseBox.mainFile) {
                 try {
-                    FuseBox.import(FuseBox.mainFile)
+                    FuseBox.import(FuseBox.mainFile);
                 } catch (e) {
-                    if (typeof e === "string") {
+                    if (typeof e === 'string') {
                         if (/not found/.test(e)) {
                             return window.location.reload();
                         }
@@ -47,11 +47,11 @@ export const connect = (port: string, uri: string) => {
 
             }
         }
-        if (data.type === "css" && __fsbx_css) {
-            __fsbx_css(data.path, data.content)
+        if (data.type === 'css' && __fsbx_css) {
+            __fsbx_css(data.path, data.content);
         }
-    })
-    client.on("error", (error) => {
+    });
+    client.on('error', (error) => {
         console.log(error);
     });
-}
+};

@@ -161,7 +161,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             for (let key in context.globals) {
                 if (context.globals.hasOwnProperty(key)) {
                     let alias = context.globals[key];
-                    let item: any = {};
+                    let item : any = {};
                     item.alias = alias;
                     item.pkg = key;
                     if (key === context.defaultPackageName && entry) {

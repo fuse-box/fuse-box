@@ -10,7 +10,7 @@ describe("Wildcard imports", (done) => {
             "foo/b.js": "module.exports = {b : 1}",
         }, "**/*.js").then(root => {
             let result = root.FuseBox.import("./foo/*");
-            result.should.deepEqual({ 'foo/a.js': { a: 1 }, 'foo/b.js': { b: 1 } })
+            result.should.deepEqual({ "foo/a.js": { a: 1 }, "foo/b.js": { b: 1 } });
             done();
         }).catch(done);
     });
@@ -22,7 +22,7 @@ describe("Wildcard imports", (done) => {
             "foo/b.js": "module.exports = {b : 1}",
         }, "**/*.js").then(root => {
             let result = root.FuseBox.import("./foo/*.js");
-            result.should.deepEqual({ 'foo/a.js': { a: 1 }, 'foo/b.js': { b: 1 } })
+            result.should.deepEqual({ "foo/a.js": { a: 1 }, "foo/b.js": { b: 1 } });
             done();
         }).catch(done);
     });
@@ -35,7 +35,7 @@ describe("Wildcard imports", (done) => {
             "foo/c.js": "module.exports = {c : 1}",
         }, "**/*.js").then(root => {
             let result = root.FuseBox.import("./foo/*-comp");
-            result.should.deepEqual({ 'foo/a-comp.js': { a: 1 }, 'foo/b-comp.js': { b: 1 } })
+            result.should.deepEqual({ "foo/a-comp.js": { a: 1 }, "foo/b-comp.js": { b: 1 } });
             done();
         }).catch(done);
     });
@@ -48,7 +48,7 @@ describe("Wildcard imports", (done) => {
             "foo/c.js": "module.exports = {c : 1}",
         }, "**/*.js").then(root => {
             let result = root.FuseBox.import("./foo/*-comp.js");
-            result.should.deepEqual({ 'foo/a-comp.js': { a: 1 }, 'foo/b-comp.js': { b: 1 } })
+            result.should.deepEqual({ "foo/a-comp.js": { a: 1 }, "foo/b-comp.js": { b: 1 } });
             done();
         }).catch(done);
     });
@@ -57,10 +57,10 @@ describe("Wildcard imports", (done) => {
         getTestEnv({
 
             "foo/a.json": "module.exports = {a : 1}",
-            "foo/b.json": "module.exports = {b : 1}"
+            "foo/b.json": "module.exports = {b : 1}",
         }, "**/*.**").then(root => {
             let result = root.FuseBox.import("./foo/*");
-            result.should.deepEqual({ 'foo/a.json': { a: 1 }, 'foo/b.json': { b: 1 } })
+            result.should.deepEqual({ "foo/a.json": { a: 1 }, "foo/b.json": { b: 1 } });
             done();
         }).catch(done);
     });
@@ -69,10 +69,10 @@ describe("Wildcard imports", (done) => {
         getTestEnv({
 
             "foo/a.json": "module.exports = {a : 1}",
-            "foo/b.json": "module.exports = {b : 1}"
+            "foo/b.json": "module.exports = {b : 1}",
         }, "**/*.**").then(root => {
             let result = root.FuseBox.import("./foo/*.json");
-            result.should.deepEqual({ 'foo/a.json': { a: 1 }, 'foo/b.json': { b: 1 } })
+            result.should.deepEqual({ "foo/a.json": { a: 1 }, "foo/b.json": { b: 1 } });
             done();
         }).catch(done);
     });
@@ -86,9 +86,9 @@ describe("Wildcard imports", (done) => {
         }, "**/*.js").then(root => {
             let result = root.FuseBox.import("./foo/*");
 
-            result.should.deepEqual({ 'foo/A.js': { a: 1 }, 'foo/B.js': { b: 1 } })
+            result.should.deepEqual({ "foo/A.js": { a: 1 }, "foo/B.js": { b: 1 } });
             done();
         }).catch(done);
     });
 
-})
+});

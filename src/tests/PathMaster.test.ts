@@ -1,22 +1,22 @@
-import * as appRoot from 'app-root-path';
-import * as path from 'path';
-import { PathMaster } from '../core/PathMaster';
-import { WorkFlowContext } from '../core/WorkflowContext';
+import * as appRoot from "app-root-path";
+import * as path from "path";
+import { PathMaster } from "../core/PathMaster";
+import { WorkFlowContext } from "../core/WorkflowContext";
 import { should } from "fuse-test-runner";
 
 const testFolder = path.join(appRoot.path, "test/fixtures/path-test");
 const getTestFolder = (name) => {
-    return path.join(testFolder, name)
-}
+    return path.join(testFolder, name);
+};
 const testFolderShouldEqual = (a, b) => {
-    a = a.replace(/\\/g, '/'); //for Windows OS
+    a = a.replace(/\\/g, "/"); //for Windows OS
     let matched = a.indexOf(b) === a.length - b.length;
     if (!matched) {
         throw new Error(`${a} is not ${b}`);
     }
-}
+};
 
-const pm = new PathMaster(new WorkFlowContext(), testFolder)
+const pm = new PathMaster(new WorkFlowContext(), testFolder);
 
 export class PathMasterTest {
     "Should detect node module"() {
@@ -43,52 +43,52 @@ export class PathMasterTest {
 
     "Should property join a local file"() {
         let result = pm.resolve("../foo.js", getTestFolder("lib/bar"));
-        testFolderShouldEqual(result.absPath, "/lib/foo.js")
+        testFolderShouldEqual(result.absPath, "/lib/foo.js");
     }
 
     "Should property join a local folder with index"() {
         let result = pm.resolve("../", getTestFolder("lib/bar"));
-        testFolderShouldEqual(result.absPath, "/lib/index.js")
+        testFolderShouldEqual(result.absPath, "/lib/index.js");
     }
 
     "Should property join a local file with extension"() {
         let result = pm.resolve("../some.js", getTestFolder("lib/bar"));
-        testFolderShouldEqual(result.absPath, "/lib/some.js")
+        testFolderShouldEqual(result.absPath, "/lib/some.js");
     }
 
     "Should property join a local file without extension"() {
         let result = pm.resolve("../some", getTestFolder("lib/bar"));
-        testFolderShouldEqual(result.absPath, "/lib/some.js")
+        testFolderShouldEqual(result.absPath, "/lib/some.js");
     }
 
     "Should resolve the same folder (index.js)"() {
         let result = pm.resolve("./", getTestFolder("lib/"));
-        testFolderShouldEqual(result.absPath, "/lib/index.js")
+        testFolderShouldEqual(result.absPath, "/lib/index.js");
     }
 
     "Should resolve the same folder but deeper"() {
         let result = pm.resolve("./../", getTestFolder("lib/bar"));
-        testFolderShouldEqual(result.absPath, "/lib/index.js")
+        testFolderShouldEqual(result.absPath, "/lib/index.js");
     }
 
     "Should resolve libs folder"() {
         let result = pm.resolve("./", getTestFolder("lib/bar"));
-        testFolderShouldEqual(result.absPath, "/lib/bar/index.js")
+        testFolderShouldEqual(result.absPath, "/lib/bar/index.js");
     }
 
     "Should recognize a json file"() {
         let result = pm.resolve("./bar/data.json", getTestFolder("lib/"));
-        testFolderShouldEqual(result.absPath, "/lib/bar/data.json")
+        testFolderShouldEqual(result.absPath, "/lib/bar/data.json");
     }
 
     "Should recognize an xml file"() {
         let result = pm.resolve("./bar/data.xml", getTestFolder("lib/"));
-        testFolderShouldEqual(result.absPath, "/lib/bar/data.xml")
+        testFolderShouldEqual(result.absPath, "/lib/bar/data.xml");
     }
 
     "Should recognize an css file"() {
         let result = pm.resolve("./bar/data.css", getTestFolder("lib/"));
-        testFolderShouldEqual(result.absPath, "/lib/bar/data.css")
+        testFolderShouldEqual(result.absPath, "/lib/bar/data.css");
     }
 
     "Should give  cheerio version"() {
@@ -98,31 +98,31 @@ export class PathMasterTest {
 
     "Should give propery entry (cheerio)"() {
         let result = pm.resolve("cheerio", getTestFolder("lib/"));
-        testFolderShouldEqual(result.nodeModuleInfo.entry, "node_modules/cheerio/index.js")
+        testFolderShouldEqual(result.nodeModuleInfo.entry, "node_modules/cheerio/index.js");
     }
 
     "Should give proper root (cheerio)"() {
         let result = pm.resolve("cheerio", getTestFolder("lib/"));
-        testFolderShouldEqual(result.nodeModuleInfo.root, "node_modules/cheerio")
+        testFolderShouldEqual(result.nodeModuleInfo.root, "node_modules/cheerio");
     }
 
     "Should give proper absPath (cheerio)"() {
         let result = pm.resolve("cheerio", getTestFolder("lib/"));
-        testFolderShouldEqual(result.absPath, "node_modules/cheerio/index.js")
+        testFolderShouldEqual(result.absPath, "node_modules/cheerio/index.js");
     }
 
     "Should give proper absDir (cheerio)"() {
         let result = pm.resolve("cheerio", getTestFolder("lib/"));
-        testFolderShouldEqual(result.absDir, "node_modules/cheerio")
+        testFolderShouldEqual(result.absDir, "node_modules/cheerio");
     }
 
     "Should find node lib 'path' in asset folder"() {
         let result = pm.resolve("path", getTestFolder("lib/"));
-        should(result.nodeModuleInfo.version).equal("0.0.0")
+        should(result.nodeModuleInfo.version).equal("0.0.0");
     }
     "Should give information explicit cheerio require (absPath)"() {
         let result = pm.resolve("cheerio/lib/static", getTestFolder("lib/"));
-        testFolderShouldEqual(result.absPath, "lib/static.js")
+        testFolderShouldEqual(result.absPath, "lib/static.js");
     }
 
     "Should give information explicit cheerio require (absDir)"() {
@@ -133,12 +133,12 @@ export class PathMasterTest {
 
     "Should give explicit cheerio require (entry)"() {
         let result = pm.resolve("cheerio/lib/static", getTestFolder("lib/"));
-        testFolderShouldEqual(result.nodeModuleInfo.entry, "node_modules/cheerio/index.js")
+        testFolderShouldEqual(result.nodeModuleInfo.entry, "node_modules/cheerio/index.js");
     }
 
     "Should give explicit cheerio require (root)"() {
         let result = pm.resolve("cheerio/lib/static", getTestFolder("lib/"));
-        testFolderShouldEqual(result.nodeModuleInfo.root, "node_modules/cheerio")
+        testFolderShouldEqual(result.nodeModuleInfo.root, "node_modules/cheerio");
     }
 
     // fusebox path ******************************************************
@@ -189,14 +189,14 @@ export class PathMasterTest {
     "Should resolve tilda file (on file without ext)"() {
         let result = pm.resolve("~/some", getTestFolder("./bar/data.json"));
 
-        testFolderShouldEqual(result.absPath, "path-test/some.js")
+        testFolderShouldEqual(result.absPath, "path-test/some.js");
         should(result.fuseBoxPath).equal("some.js");
     }
 
     "Should resolve tilda file (on file with ext)"() {
         let result = pm.resolve("~/some.js", getTestFolder("./bar/data.json"));
 
-        testFolderShouldEqual(result.absPath, "path-test/some.js")
+        testFolderShouldEqual(result.absPath, "path-test/some.js");
         should(result.fuseBoxPath).equal("some.js");
     }
 

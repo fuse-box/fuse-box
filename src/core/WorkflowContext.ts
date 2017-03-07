@@ -17,13 +17,13 @@ import { Config } from "../Config";
  * All the plugin method names
  */
 export type PluginMethodName =
-    'init'
-    | 'preBuild'
-    | 'preBundle'
-    | 'bundleStart'
-    | 'bundleEnd'
-    | 'postBundle'
-    | 'postBuild'
+    "init"
+    | "preBuild"
+    | "preBundle"
+    | "bundleStart"
+    | "bundleEnd"
+    | "postBundle"
+    | "postBuild";
 
 const appRoot = require("app-root-path");
 
@@ -163,7 +163,7 @@ export class WorkFlowContext {
         }
         this.sourceChangedEmitter.emit({
             type: "js",
-            content: content,
+            content,
             path: file.info.fuseBoxPath,
         });
     }
@@ -229,7 +229,7 @@ export class WorkFlowContext {
         let info = <IPathInformation>{
             fuseBoxPath: name,
             absPath: name,
-        }
+        };
         let file = new File(this, info);
         file.collection = collection;
         file.contents = "";
@@ -266,7 +266,7 @@ export class WorkFlowContext {
 
     /** Converts the file extension from `.ts` to `.js` */
     public convert2typescript(name: string) {
-        return name.replace(/\.ts$/, '.js');
+        return name.replace(/\.ts$/, ".js");
     }
 
     public getLibInfo(name: string, version: string): IPackageInformation {
@@ -310,9 +310,9 @@ export class WorkFlowContext {
         }
 
         let url, configFile;
-        let config: any = {
-            compilerOptions: {}
-        };;
+        let config : any = {
+            compilerOptions: {},
+        }; ;
         if (this.tsConfig) {
             configFile = ensureUserPath(this.tsConfig);
         } else {
@@ -323,7 +323,7 @@ export class WorkFlowContext {
             }
         }
         if (configFile) {
-            this.log.echoStatus(`Typescript config:  ${configFile.replace(appRoot.path, '')}`);
+            this.log.echoStatus(`Typescript config:  ${configFile.replace(appRoot.path, "")}`);
             config = require(configFile);
         } else {
             this.log.echoStatus(`Typescript config file was not found. Improvising`);

@@ -5,7 +5,7 @@ import * as SourceMap from "source-map";
 export class SourceMapGenerator {
     public static generate(file: File, tokens: any[]) {
         const fileContent = file.contents;
-        const filePath = file.info.fuseBoxPath
+        const filePath = file.info.fuseBoxPath;
         const smGenerator = new SourceMap.SourceMapGenerator({ file: `packages/${file.collection.name}/${filePath}` });
 
         tokens.some(token => {
@@ -16,7 +16,7 @@ export class SourceMapGenerator {
                 original: lineInfo,
                 generated: lineInfo,
                 source: filePath,
-                name: false
+                name: false,
             };
 
             if (token.type.label === "name") mapping.name = token.value;

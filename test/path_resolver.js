@@ -8,7 +8,7 @@ describe("Path resolver", (done) => {
             "index.js": `module.exports = require("./foo/hello");`,
             "foo/hello.js": "module.exports = {ok : 1 }",
         }, "**/*.js").then(root => {
-            const res = root.FuseBox.import("./index")
+            const res = root.FuseBox.import("./index");
             res.should.deepEqual({ ok: 1 });
             done();
         }).catch(done);
@@ -19,7 +19,7 @@ describe("Path resolver", (done) => {
             "index.ts": `module.exports = require("./foo/hello");`,
             "foo/hello.ts": "module.exports = {ok : 1 }",
         }, "index.ts").then(root => {
-            const res = root.FuseBox.import("./index")
+            const res = root.FuseBox.import("./index");
             res.should.deepEqual({ ok: 1 });
             done();
         }).catch(done);
@@ -30,7 +30,7 @@ describe("Path resolver", (done) => {
             "index.ts": `module.exports = require("./foo/hello");`,
             "foo/hello.tsx": "module.exports = {ok : 1 }",
         }, "index.ts").then(root => {
-            const res = root.FuseBox.import("./index")
+            const res = root.FuseBox.import("./index");
             res.should.deepEqual({ ok: 1 });
             done();
         }).catch(done);
@@ -42,7 +42,7 @@ describe("Path resolver", (done) => {
             "index.js": `module.exports = require("./foo/hello");`,
             "foo/hello/index.js": "module.exports = {ok : 1 }",
         }, "**/*.js").then(root => {
-            const res = root.FuseBox.import("./index")
+            const res = root.FuseBox.import("./index");
             res.should.deepEqual({ ok: 1 });
             done();
         }).catch(done);
@@ -53,7 +53,7 @@ describe("Path resolver", (done) => {
             "index.ts": `module.exports = require("./foo/hello");`,
             "foo/hello/index.ts": "module.exports = {ok : 1 }",
         }, "index.ts").then(root => {
-            const res = root.FuseBox.import("./index")
+            const res = root.FuseBox.import("./index");
             res.should.deepEqual({ ok: 1 });
             done();
         }).catch(done);
@@ -64,11 +64,11 @@ describe("Path resolver", (done) => {
             "index.ts": `module.exports = require("./foo/hello");`,
             "foo/hello/index.tsx": "module.exports = {ok : 1 }",
         }, "index.ts").then(root => {
-            const res = root.FuseBox.import("./index")
+            const res = root.FuseBox.import("./index");
             res.should.deepEqual({ ok: 1 });
             done();
         }).catch(done);
     });
 
 
-})
+});

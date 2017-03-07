@@ -40,7 +40,7 @@ export class VuePluginClass implements Plugin {
             vueCompiler = require("vue-template-compiler");
         }
 
-        let result = vueCompiler.parseComponent(file.contents, this.opts)
+        let result = vueCompiler.parseComponent(file.contents, this.opts);
         if (result.template && result.template.type === "template") {
             let html = result.template.content;
             //let parsed = vueCompiler.compile(html);
@@ -54,7 +54,7 @@ var _v = function(exports){${jsTranspiled.outputText}};
 _p.template = ${JSON.stringify(html)};
 let _e = {}; _v(_e); _p = Object.assign(_e.default, _p)
 module.exports ={render : function(el){_p.el = el; return new View(_p)}}
-            `
+            `;
             file.contents = tsResult;
             file.analysis.parseUsingAcorn();
             file.analysis.analyze();

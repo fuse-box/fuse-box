@@ -6,8 +6,8 @@ import { File } from "../../core/File";
 import { WorkFlowContext } from "../../core/WorkflowContext";
 import { Plugin } from "../../core/WorkflowContext";
 import { utils } from "realm-utils";
-import { CSSPluginDeprecated } from './CSSPluginDeprecated';
-import { Concat, ensureUserPath, write } from '../../Utils';
+import { CSSPluginDeprecated } from "./CSSPluginDeprecated";
+import { Concat, ensureUserPath, write } from "../../Utils";
 
 /**
  *
@@ -66,7 +66,7 @@ export class CSSPluginClass implements Plugin {
 
     public bundleStart(context: WorkFlowContext) {
 
-        let lib = path.join(Config.FUSEBOX_MODULES, "fsbx-default-css-plugin", "index.js")
+        let lib = path.join(Config.FUSEBOX_MODULES, "fsbx-default-css-plugin", "index.js");
         context.source.addContent(fs.readFileSync(lib).toString());
     }
 
@@ -79,7 +79,7 @@ export class CSSPluginClass implements Plugin {
             ? options.inject(file.info.fuseBoxPath) : file.info.fuseBoxPath;
 
         // noop the contents if a user wants to manually inject it
-        const result = options.inject !== false ? `__fsbx_css("${resolvedPath}");` : '';
+        const result = options.inject !== false ? `__fsbx_css("${resolvedPath}");` : "";
         if (alternative) {
             file.alternativeContent = result;
         } else {
@@ -122,7 +122,7 @@ export class CSSPluginClass implements Plugin {
                 });
 
                 // Writing sourcemaps
-                const sourceMapsFile = ensureUserPath(path.join(bundleDir, sourceMapsName))
+                const sourceMapsFile = ensureUserPath(path.join(bundleDir, sourceMapsName));
                 return write(sourceMapsFile, concat.sourceMap);
             });
         } else {
@@ -170,7 +170,7 @@ export class CSSPluginClass implements Plugin {
          * Should not start with . or /
          *     e.g "bundle.css""
          * require("./a.css"); require("./b.css");
-         * 
+         *
          * 2 files combined will be written or inlined to "bundle.css"
          */
         if (this.opts.group) {
@@ -179,7 +179,7 @@ export class CSSPluginClass implements Plugin {
             if (!fileGroup) {
                 fileGroup = context.createFileGroup(bundleName, file.collection, this);
             }
-            // Adding current file (say a.txt) as a subFile 
+            // Adding current file (say a.txt) as a subFile
             fileGroup.addSubFile(file);
             debug(`  grouping -> ${bundleName}`);
 
@@ -205,7 +205,7 @@ export class CSSPluginClass implements Plugin {
         if (outFileFunction) {
             const userPath = ensureUserPath(outFileFunction(file.info.fuseBoxPath));
             // reset the content so it won't get bundled
-            file.alternativeContent = '';
+            file.alternativeContent = "";
             this.inject(file, this.opts, true);
             // writing ilfe
             return write(userPath, file.contents).then(() => {
@@ -257,5 +257,5 @@ export class CSSPluginClass implements Plugin {
 }
 
 export const CSSPlugin = (opts?: any) => {
-    return new CSSPluginClass(opts)
-}
+    return new CSSPluginClass(opts);
+};

@@ -13,8 +13,8 @@ const extractValue = (input) => {
         return;
     }
     return input;
-}
-export const PostCSSResourcePlugin = postcss.plugin("css-resource", function (opts) {
+};
+export const PostCSSResourcePlugin = postcss.plugin("css-resource", function(opts) {
     opts = opts || {};
     return (css, result) => {
         css.walkDecls(declaration => {
