@@ -1,5 +1,9 @@
 import * as fs from "fs";
-import { ensureUserPath, contains } from './../Utils';
+import * as path from "path";
+import * as process from "process";
+import { Config } from "./../Config";
+import { each, utils, chain, Chainable } from "realm-utils";
+import { ensureUserPath, contains } from "./../Utils";
 import { ShimCollection } from "./../ShimCollection";
 import { Server, ServerOptions } from "./../devServer/Server";
 import { JSONPlugin } from "./../plugins/JSONplugin";
@@ -8,12 +12,8 @@ import { WorkFlowContext, Plugin } from "./WorkflowContext";
 import { CollectionSource } from "./../CollectionSource";
 import { Arithmetic, BundleData } from "./../arithmetic/Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";
-import * as path from "path";
-import { each, utils, chain, Chainable } from "realm-utils";
-import { Config } from "./../Config";
 import { BundleTestRunner } from "../BundleTestRunner";
-import * as process from 'process';
-import { nativeModules, HeaderImport } from '../analysis/HeaderImport';
+import { nativeModules, HeaderImport } from "../analysis/HeaderImport";
 
 const appRoot = require("app-root-path");
 
@@ -49,8 +49,6 @@ export interface FuseBoxOptions {
  * @class FuseBox
  */
 export class FuseBox {
-
-
     public static init(opts?: FuseBoxOptions) {
         return new FuseBox(opts);
     }
@@ -59,7 +57,6 @@ export class FuseBox {
     public collectionSource: CollectionSource;
 
     public context: WorkFlowContext;
-
 
     /**
      * Creates an instance of FuseBox.
@@ -111,6 +108,7 @@ export class FuseBox {
             }
 
         }
+
         if (opts.cache !== undefined) {
             this.context.useCache = opts.cache ? true : false;
         }
@@ -356,7 +354,6 @@ export class FuseBox {
             return runner.start();
         });
     }
-
 
     public initiateBundle(str: string, bundleReady?: any) {
         this.context.reset();

@@ -1,9 +1,9 @@
-import { ensurePublicExtension } from "../Utils";
 import { IPackageInformation, IPathInformation } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
+import { ensurePublicExtension } from "../Utils";
+import { Config } from "../Config";
 import * as path from "path";
 import * as fs from "fs";
-import { Config } from "../Config";
 
 /**
  * If a import url isn't relative
@@ -310,12 +310,12 @@ export class PathMaster {
 
     private getNodeModuleInformation(name: string): IPackageInformation {
 
-        let readMainFile = (folder, isCustom: boolean) => {
+        const readMainFile = (folder, isCustom: boolean) => {
             // package.json path
-            let packageJSONPath = path.join(folder, "package.json");
+            const packageJSONPath = path.join(folder, "package.json");
             if (fs.existsSync(packageJSONPath)) {
                 // read contents
-                let json: any = require(packageJSONPath);
+                const json: any = require(packageJSONPath);
                 // Getting an entry point
                 let entryFile;
                 let entryRoot;
@@ -339,6 +339,7 @@ export class PathMaster {
                     version: json.version,
                 };
             }
+
             let defaultEntry = path.join(folder, "index.js");
             let entryFile = fs.existsSync(defaultEntry) ? defaultEntry : undefined;
             let defaultEntryRoot = entryFile ? path.dirname(entryFile) : undefined;

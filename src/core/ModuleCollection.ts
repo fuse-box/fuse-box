@@ -273,7 +273,7 @@ export class ModuleCollection {
         }
 
 
-        // If we are using a custom version 
+        // If we are using a custom version
         // THe source output should know about.
         // When compiling the ouput we will take it into a consideration
         if (info.custom) {

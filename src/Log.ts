@@ -1,5 +1,6 @@
 import { ModuleCollection } from "./core/ModuleCollection";
-import { WorkFlowContext } from './core/WorkflowContext';
+import { WorkFlowContext } from "./core/WorkflowContext";
+
 const ansi = require("ansi");
 const cursor = ansi(process.stdout);
 const prettysize = require("prettysize");
@@ -15,7 +16,6 @@ export class Log {
     }
 
     public echo(str: string) {
-
         let data = new Date();
         let hour: any = data.getHours();
         let min: any = data.getMinutes();

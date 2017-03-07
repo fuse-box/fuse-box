@@ -1,8 +1,8 @@
-import { File } from '../core/File';
-import { WorkFlowContext } from '../core/WorkflowContext';
-import { Plugin } from '../core/WorkflowContext';
-import { utils } from 'realm-utils';
-import { extractExtension, string2RegExp } from '../Utils';
+import { File } from "../core/File";
+import { WorkFlowContext } from "../core/WorkflowContext";
+import { Plugin } from "../core/WorkflowContext";
+import { utils } from "realm-utils";
+import { extractExtension, string2RegExp } from "../Utils";
 
 /**
  * @export
@@ -34,13 +34,13 @@ export class RawPluginClass implements Plugin {
         }
     }
 
-    init(context: WorkFlowContext) {
+    public init(context: WorkFlowContext) {
         if (Array.isArray(this.extensions)) {
             return this.extensions.forEach(ext => context.allowExtension(ext));
         }
     }
 
-    transform(file: File) {
+    public transform(file: File) {
         const context = file.context;
         if (context.useCache) {
             let cached = context.cache.getStaticCache(file);

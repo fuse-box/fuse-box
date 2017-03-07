@@ -1,4 +1,4 @@
-/** 
+/**
  * This whole file is wrapped in a function by our gulpfile.js
  * The function is injected the global `this` as `__root__`
  **/

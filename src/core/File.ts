@@ -1,17 +1,17 @@
 import { ModuleCollection } from "./ModuleCollection";
 import { FileAnalysis } from "../analysis/FileAnalysis";
-import { WorkFlowContext, Plugin } from './WorkflowContext';
-import { IPathInformation, IPackageInformation } from './PathMaster';
+import { WorkFlowContext, Plugin } from "./WorkflowContext";
+import { IPathInformation, IPackageInformation } from "./PathMaster";
+import { SourceMapGenerator } from "./SourceMapGenerator";
+import { utils, each } from "realm-utils";
 import * as fs from "fs";
-import { utils, each } from 'realm-utils';
 import * as path from "path";
-import { SourceMapGenerator } from './SourceMapGenerator';
 
 const appRoot = require("app-root-path");
 
 /**
- * 
- * 
+ *
+ *
  * @export
  * @class File
  */

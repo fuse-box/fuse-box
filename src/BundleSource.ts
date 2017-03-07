@@ -127,26 +127,23 @@ export class BundleSource {
         }
 
         this.collectionSource.add(null,
-            `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){ 
+            `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){
 ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         this.collectionSource.add(null, file.alternativeContent !== undefined ? file.alternativeContent : file.contents, file.sourceMap);
-
 
         this.collectionSource.add(null, "});");
     }
 
-
-
     /**
-     * 
-     * 
+     *
+     *
      * @param {BundleData} bundleData
-     * 
+     *
      * @memberOf BundleSource
      */
     public finalize(bundleData: BundleData) {
         let entry = bundleData.entry;
-        let context = this.context;
+        const context = this.context;
         if (entry) {
             entry = ensurePublicExtension(entry);
         }

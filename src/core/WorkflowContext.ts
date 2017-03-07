@@ -1,17 +1,17 @@
 import * as path from "path";
 import * as fs from "fs";
+import * as escodegen from "escodegen";
 import { BundleSource } from "../BundleSource";
 import { File } from "./File";
 import { Log } from "../Log";
 import { IPackageInformation, IPathInformation, AllowedExtenstions } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "../ModuleCache";
-import { utils } from 'realm-utils';
 import { EventEmitter } from "../EventEmitter";
-import { ensureUserPath, findFileBackwards, ensureDir, removeFolder } from '../Utils';
-import { SourceChangedEvent } from '../devServer/Server';
-import { Config } from '../Config';
-import * as escodegen from "escodegen";
+import { utils } from "realm-utils";
+import { ensureUserPath, findFileBackwards, ensureDir, removeFolder } from "../Utils";
+import { SourceChangedEvent } from "../devServer/Server";
+import { Config } from "../Config";
 
 /**
  * All the plugin method names
@@ -180,7 +180,6 @@ export class WorkFlowContext {
         this.cache.initialize();
     }
 
-
     public warning(str: string) {
         return this.log.echoWarning(str);
     }
@@ -345,7 +344,7 @@ export class WorkFlowContext {
 
     public writeOutput(outFileWritten?: () => any) {
         this.initialLoad = false;
-        let res = this.source.getResult();
+        const res = this.source.getResult();
         // Writing sourcemaps
         if (this.sourceMapConfig && this.sourceMapConfig.outFile) {
             let target = ensureUserPath(this.sourceMapConfig.outFile);

@@ -1,40 +1,45 @@
 import { WorkFlowContext } from "./core/WorkflowContext";
-import { IPackageInformation } from './core/PathMaster';
+import { IPackageInformation } from "./core/PathMaster";
 import { ModuleCollection } from "./core/ModuleCollection";
-import * as fs from "fs";
-import { File } from './core/File';
+import { File } from "./core/File";
 import { Config } from "./Config";
-import * as path from "path";
 import { each } from "realm-utils";
-import * as fsExtra from 'fs-extra';
-
+import * as fsExtra from "fs-extra";
+import * as fs from "fs";
+import * as path from "path";
 
 const MEMORY_CACHE = {};
+
+export type AbsPath = string
+export type RelPath = string
+export type AbsFile = string
+export type RelFile = string
+export type AbsDir = string
+export type RelDir = string
+
 /**
- * 
- * 
- * @export
+ *
  * @class ModuleCache
  */
 export class ModuleCache {
     /**
-     * 
-     * 
-     * @type {string}
+     *
+     *
+     * @type {AbsDir}
      * @memberOf ModuleCache
      */
-    public cacheFolder: string;
+    public cacheFolder: AbsDir;
     /**
-     * 
-     * 
+     *
+     *
      * @private
      * @type {string}
      * @memberOf ModuleCache
      */
     private cacheFile: string;
     /**
-     * 
-     * 
+     *
+     *
      * @private
      * @type {string}
      * @memberOf ModuleCache
@@ -126,7 +131,6 @@ export class ModuleCache {
         let memCacheKey = encodeURIComponent(file.absPath);
         let data;
 
-
         if (MEMORY_CACHE[memCacheKey]) {
             data = MEMORY_CACHE[memCacheKey];
             if (data.mtime !== stats.mtime.getTime()) {
@@ -137,7 +141,6 @@ export class ModuleCache {
             let dest = path.join(this.staticCacheFolder, fileName);
             if (fs.existsSync(dest)) {
                 try {
-
                     data = require(dest);
                 } catch (e) {
                     console.log(e);
@@ -214,7 +217,6 @@ mtime: ${cacheData.mtime}
             let cached = this.cachedDeps.flat[key];
 
             if (!cached || !fs.existsSync(cachePath)) {
-
                 through.push(file);
             } else {
                 if (cached.version !== info.version || cached.files.indexOf(file.info.fuseBoxPath) === -1) {
@@ -238,17 +240,18 @@ mtime: ${cacheData.mtime}
                 }
             }
         });
-        let required = [];
-        let operations: Promise<any>[] = [];
+
+        const required = [];
+        const operations: Promise<any>[] = [];
         let cacheReset = false;
         /**
-         * 
-         * 
+         *
+         *
          * @param {any} err
          * @param {any} result
          * @returns
          */
-        let getAllRequired = (key, json: any) => {
+        const getAllRequired = (key, json: any) => {
             if (required.indexOf(key) === -1) {
                 if (json) {
                     let collection = new ModuleCollection(this.context, json.name);
@@ -288,7 +291,6 @@ mtime: ${cacheData.mtime}
 
         valid4Caching.forEach(key => {
             getAllRequired(key, this.cachedDeps.tree[key]);
-
         });
 
         return Promise.all(operations).then(() => {
@@ -375,23 +377,20 @@ mtime: ${cacheData.mtime}
         });
     }
 
-
     /**
-     * 
-     * 
+     *
+     *
      * @param {IPackageInformation} info
      * @param {string} contents
      * @returns
-     * 
+     *
      * @memberOf ModuleCache
      */
     public set(info: IPackageInformation, contents: string) {
-
         return new Promise((resolve, reject) => {
+            const cacheKey = encodeURIComponent(`${info.name}@${info.version}`);
+            const targetName = path.join(this.cacheFolder, cacheKey);
 
-            let cacheKey = encodeURIComponent(`${info.name}@${info.version}`);
-
-            let targetName = path.join(this.cacheFolder, cacheKey);
             // storing to memory
             MEMORY_CACHE[cacheKey] = contents;
             fs.writeFile(targetName, contents, (err) => {
@@ -400,4 +399,3 @@ mtime: ${cacheData.mtime}
         });
     }
 }
-
