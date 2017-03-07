@@ -1,4 +1,4 @@
-import { createEnv } from './stubs/TestEnvironment';
+import { createEnv } from "./stubs/TestEnvironment";
 import { should } from "fuse-test-runner";
 
 
@@ -9,14 +9,14 @@ export class AutoImportTest {
                 files: {
                     "hello.ts": `module.exports = require("./stuff/boo");`,
                 },
-                instructions: "hello.ts"
-            }
+                instructions: "hello.ts",
+            },
         }).then((result) => {
-            const fuse = result.project.FuseBox
-            fuse.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}")
+            const fuse = result.project.FuseBox;
+            fuse.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}");
 
             should(fuse.import("./hello"))
-                .deepEqual({ hello: 'dynamic' });
+                .deepEqual({ hello: "dynamic" });
         });
     }
 }

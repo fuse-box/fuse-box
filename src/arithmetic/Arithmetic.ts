@@ -22,7 +22,7 @@ const deleteFolderRecursive = (p) => {
     }
 };
 
-export {Fluent}
+export { Fluent };
 
 export interface IBundleInformation {
     deps: boolean;
@@ -149,8 +149,8 @@ export class Arithmetic {
                 return new Promise((resolve, reject) => {
                     glob(fp, (err, files) => {
                         for (let i = 0; i < files.length; i++) {
-                            data.set(files[i].normalize('NFC'), {
-                                deps: withDeps
+                            data.set(files[i].normalize("NFC"), {
+                                deps: withDeps,
                             });
                         }
                         return resolve();
@@ -159,7 +159,7 @@ export class Arithmetic {
             }).then(x => {
                 return data;
             });
-        }
+        };
 
         return chain(class extends Chainable {
             public tempFolder: string;

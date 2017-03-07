@@ -1,29 +1,29 @@
 import * as path from "path";
 import * as fs from "fs";
+import * as escodegen from "escodegen";
 import { BundleSource } from "../BundleSource";
 import { File } from "./File";
 import { Log } from "../Log";
 import { IPackageInformation, IPathInformation, AllowedExtenstions } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "../ModuleCache";
-import { utils } from 'realm-utils';
 import { EventEmitter } from "../EventEmitter";
-import { ensureUserPath, findFileBackwards, ensureDir, removeFolder } from '../Utils';
-import { SourceChangedEvent } from '../devServer/Server';
-import { Config } from '../Config';
-import * as escodegen from "escodegen";
+import { utils } from "realm-utils";
+import { ensureUserPath, findFileBackwards, ensureDir, removeFolder } from "../Utils";
+import { SourceChangedEvent } from "../devServer/Server";
+import { Config } from "../Config";
 
 /**
  * All the plugin method names
  */
 export type PluginMethodName =
-    'init'
-    | 'preBuild'
-    | 'preBundle'
-    | 'bundleStart'
-    | 'bundleEnd'
-    | 'postBundle'
-    | 'postBuild'
+    "init"
+    | "preBuild"
+    | "preBundle"
+    | "bundleStart"
+    | "bundleEnd"
+    | "postBundle"
+    | "postBuild";
 
 const appRoot = require("app-root-path");
 
@@ -163,7 +163,7 @@ export class WorkFlowContext {
         }
         this.sourceChangedEmitter.emit({
             type: "js",
-            content: content,
+            content,
             path: file.info.fuseBoxPath,
         });
     }
@@ -179,7 +179,6 @@ export class WorkFlowContext {
         removeFolder(Config.TEMP_FOLDER);
         this.cache.initialize();
     }
-
 
     public warning(str: string) {
         return this.log.echoWarning(str);
@@ -230,7 +229,7 @@ export class WorkFlowContext {
         let info = <IPathInformation>{
             fuseBoxPath: name,
             absPath: name,
-        }
+        };
         let file = new File(this, info);
         file.collection = collection;
         file.contents = "";
@@ -267,7 +266,7 @@ export class WorkFlowContext {
 
     /** Converts the file extension from `.ts` to `.js` */
     public convert2typescript(name: string) {
-        return name.replace(/\.ts$/, '.js');
+        return name.replace(/\.ts$/, ".js");
     }
 
     public getLibInfo(name: string, version: string): IPackageInformation {
@@ -302,7 +301,7 @@ export class WorkFlowContext {
     }
 
 
-    /** 
+    /**
      * Retuns the parsed `tsconfig.json` contents
      */
     public getTypeScriptConfig() {
@@ -311,9 +310,9 @@ export class WorkFlowContext {
         }
 
         let url, configFile;
-        let config: any = {
-            compilerOptions: {}
-        };;
+        let config : any = {
+            compilerOptions: {},
+        }; ;
         if (this.tsConfig) {
             configFile = ensureUserPath(this.tsConfig);
         } else {
@@ -326,7 +325,7 @@ export class WorkFlowContext {
         }
 
         if (configFile) {
-            this.log.echoStatus(`Typescript config:  ${configFile.replace(appRoot.path, '')}`);
+            this.log.echoStatus(`Typescript config:  ${configFile.replace(appRoot.path, "")}`);
             config = require(configFile);
         } else {
             config.compilerOptions.module = "commonjs";
@@ -348,7 +347,7 @@ export class WorkFlowContext {
 
     public writeOutput(outFileWritten?: () => any) {
         this.initialLoad = false;
-        let res = this.source.getResult();
+        const res = this.source.getResult();
         // Writing sourcemaps
         if (this.sourceMapConfig && this.sourceMapConfig.outFile) {
             let target = ensureUserPath(this.sourceMapConfig.outFile);

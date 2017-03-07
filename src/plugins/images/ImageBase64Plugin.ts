@@ -1,28 +1,29 @@
 import { File } from "../../core/File";
 import { WorkFlowContext, Plugin } from "../../core/WorkflowContext";
-import * as path from 'path';
-import { SVG2Base64 } from '../../lib/SVG2Base64';
+import * as path from "path";
+import { SVG2Base64 } from "../../lib/SVG2Base64";
 const base64Img = require("base64-img");
+
 /**
- * 
- * 
+ *
+ *
  * @export
  * @class FuseBoxHTMLPlugin
  * @implements {Plugin}
  */
 export class ImageBase64PluginClass implements Plugin {
     /**
-     * 
-     * 
+     *
+     *
      * @type {RegExp}
      * @memberOf FuseBoxHTMLPlugin
      */
     public test: RegExp = /\.(gif|png|jpg|jpeg|svg)$/i;
     /**
-     * 
-     * 
+     *
+     *
      * @param {WorkFlowContext} context
-     * 
+     *
      * @memberOf FuseBoxHTMLPlugin
      */
     public init(context: WorkFlowContext) {
@@ -33,10 +34,10 @@ export class ImageBase64PluginClass implements Plugin {
         context.allowExtension(".svg");
     }
     /**
-     * 
-     * 
+     *
+     *
      * @param {File} file
-     * 
+     *
      * @memberOf FuseBoxHTMLPlugin
      */
     public transform(file: File) {
@@ -65,4 +66,4 @@ export class ImageBase64PluginClass implements Plugin {
 
 export const ImageBase64Plugin = () => {
     return new ImageBase64PluginClass();
-}
+};

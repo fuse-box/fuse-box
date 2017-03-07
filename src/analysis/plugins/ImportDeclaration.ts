@@ -2,7 +2,7 @@ import { File } from "../../core/File";
 
 /**
  * Handles require and ImportDeclarations
- * At the moment does not transpile 
+ * At the moment does not transpile
  */
 export class ImportDeclaration {
 
@@ -19,7 +19,7 @@ export class ImportDeclaration {
                 if (analysis.nodeIsString(arg1)) {
                     let requireStatement = this.handleAliasReplacement(file, arg1.value);
                     arg1.value = requireStatement;
-                    analysis.addDependency(requireStatement)
+                    analysis.addDependency(requireStatement);
                 }
             }
         }

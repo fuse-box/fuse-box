@@ -12,7 +12,7 @@ import * as path from "path";
  */
 export class TypeScriptHelpersClass implements Plugin {
     /**
-     *  
+     *
      *
      * @type {RegExp}
      * @memberOf FuseBoxTypeScriptHelpersPlugin
@@ -26,7 +26,7 @@ export class TypeScriptHelpersClass implements Plugin {
     constructor(opts: any) {
         opts = opts || {};
 
-        let folder = path.join(Config.FUSEBOX_MODULES, "fuse-typescript-helpers")
+        let folder = path.join(Config.FUSEBOX_MODULES, "fuse-typescript-helpers");
         let files = fs.readdirSync(folder);
         files.forEach(fileName => {
             let contents = fs.readFileSync(path.join(folder, fileName)).toString();
@@ -48,7 +48,7 @@ export class TypeScriptHelpersClass implements Plugin {
 
 
     public bundleEnd(context: WorkFlowContext) {
-        let helpers: Set<string> = context.getItem("ts_helpers");
+        let helpers : Set < string > = context.getItem("ts_helpers");
         helpers.forEach(name => {
             let contents = this.registeredHelpers.get(name);
             context.source.addContent(contents);
@@ -69,7 +69,7 @@ export class TypeScriptHelpersClass implements Plugin {
         if (file.collection.name !== file.context.defaultPackageName) {
             return;
         }
-        let helpers: Set<string> = file.context.getItem("ts_helpers");
+        let helpers : Set < string > = file.context.getItem("ts_helpers");
         // Check which helpers are actually used
         this.registeredHelpers.forEach((cont, name) => {
             let regexp = new RegExp(name, "gm");
@@ -90,4 +90,4 @@ export class TypeScriptHelpersClass implements Plugin {
 
 export let TypeScriptHelpers = () => {
     return new TypeScriptHelpersClass({});
-}
+};

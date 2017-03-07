@@ -1,13 +1,12 @@
 import { WorkFlowContext } from "./core/WorkflowContext";
 import { ModuleCollection } from "./core/ModuleCollection";
 import { File } from "./core/File";
+
 export class CollectionSource {
     constructor(public context: WorkFlowContext) { }
 
     public get(collection: ModuleCollection): Promise<string> {
-
         if (collection.cachedContent) {
-
             return new Promise((resolve, reject) => {
                 this.context.source.addContent(collection.cachedContent);
                 return resolve(collection.cachedContent);
@@ -23,8 +22,9 @@ export class CollectionSource {
 
         return Promise.resolve(this.context.source.endCollection(collection));
     }
+
     private filterFiles(files: Map<string, File>): File[] {
-        let filtered: File[] = [];
+        let filtered : File[] = [];
         files.forEach(file => {
             if (file.isFuseBoxBundle) {
                 this.context.source.addContentToCurrentCollection(file.contents);

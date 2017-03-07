@@ -2,10 +2,10 @@ import { ASTTraverse } from "./../ASTTraverse";
 import { PrettyError } from "./../PrettyError";
 import { File } from "../core/File";
 import * as acorn from "acorn";
-import { AutoImport } from './plugins/AutoImport';
-import { OwnVariable } from './plugins/OwnVariable';
-import { OwnBundle } from './plugins/OwnBundle';
-import { ImportDeclaration } from './plugins/ImportDeclaration';
+import { AutoImport } from "./plugins/AutoImport";
+import { OwnVariable } from "./plugins/OwnVariable";
+import { OwnBundle } from "./plugins/OwnBundle";
+import { ImportDeclaration } from "./plugins/ImportDeclaration";
 
 
 require("acorn-es7")(acorn);
@@ -13,7 +13,7 @@ require("acorn-jsx/inject")(acorn);
 
 
 
-const plugins: any = [AutoImport, OwnVariable, OwnBundle, ImportDeclaration]
+const plugins: any = [AutoImport, OwnVariable, OwnBundle, ImportDeclaration];
 
 export function acornParse(contents, options?: any) {
     return acorn.parse(contents, {
@@ -28,10 +28,10 @@ export function acornParse(contents, options?: any) {
 }
 /**
  * Makes static analysis on the code
- * Gets require statements (es5 and es6) 
- * 
+ * Gets require statements (es5 and es6)
+ *
  * Adds additional injections (if needed)
- * 
+ *
  * @export
  * @class FileAST
  */
@@ -64,9 +64,9 @@ export class FileAnalysis {
 
     /**
      * Loads an AST
-     * 
+     *
      * @param {*} ast
-     * 
+     *
      * @memberOf FileAnalysis
      */
     public loadAst(ast: any) {
@@ -80,10 +80,10 @@ export class FileAnalysis {
 
 
     /**
-     * 
-     * 
+     *
+     *
      * @private
-     * 
+     *
      * @memberOf FileAST
      */
     public parseUsingAcorn(options?: any) {
@@ -137,7 +137,7 @@ export class FileAnalysis {
 
         ASTTraverse.traverse(this.ast, {
             pre: (node, parent, prop, idx) =>
-                plugins.forEach(plugin => plugin.onNode(this.file, node, parent))
+                plugins.forEach(plugin => plugin.onNode(this.file, node, parent)),
         });
 
         plugins.forEach(plugin => plugin.onEnd(this.file));

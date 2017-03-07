@@ -1,5 +1,5 @@
-import { should } from 'fuse-test-runner';
-import { extractExtension } from '../Utils';
+import { should } from "fuse-test-runner";
+import { extractExtension } from "../Utils";
 
 export class UtilsExtensionExtract {
     "Should extract extension without $"() {

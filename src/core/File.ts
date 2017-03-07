@@ -1,17 +1,17 @@
 import { ModuleCollection } from "./ModuleCollection";
 import { FileAnalysis } from "../analysis/FileAnalysis";
-import { WorkFlowContext, Plugin } from './WorkflowContext';
-import { IPathInformation, IPackageInformation } from './PathMaster';
+import { WorkFlowContext, Plugin } from "./WorkflowContext";
+import { IPathInformation, IPackageInformation } from "./PathMaster";
+import { SourceMapGenerator } from "./SourceMapGenerator";
+import { utils, each } from "realm-utils";
 import * as fs from "fs";
-import { utils, each } from 'realm-utils';
 import * as path from "path";
-import { SourceMapGenerator } from './SourceMapGenerator';
 
 const appRoot = require("app-root-path");
 
 /**
- * 
- * 
+ *
+ *
  * @export
  * @class File
  */
@@ -23,7 +23,7 @@ export class File {
      * In order to keep bundle in a bundle
      * We can't destory the original contents
      * But instead we add additional property that will override bundle file contents
-     * 
+     *
      * @type {string}
      * @memberOf FileAnalysis
      */
@@ -33,57 +33,57 @@ export class File {
 
     public params: Map<string, string>;
     /**
-     * 
-     * 
+     *
+     *
      * @type {string}
      * @memberOf File
      */
     public absPath: string;
     /**
-     * 
-     * 
+     *
+     *
      * @type {string}
      * @memberOf File
      */
     public contents: string;
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf File
      */
     public isLoaded = false;
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf File
      */
     public isNodeModuleEntry = false;
     /**
-     * 
-     * 
+     *
+     *
      * @type {ModuleCollection}
      * @memberOf File
      */
     public collection: ModuleCollection;
     /**
-     * 
-     * 
+     *
+     *
      * @type {string[]}
      * @memberOf File
      */
     public headerContent: string[];
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf File
      */
     public isTypeScript = false;
     /**
-     * 
-     * 
+     *
+     *
      * @type {*}
      * @memberOf File
      */
@@ -91,15 +91,15 @@ export class File {
 
     public properties = new Map<string, any>();
     /**
-     * 
-     * 
+     *
+     *
      * @type {FileAnalysis}
      * @memberOf File
      */
     public analysis: FileAnalysis = new FileAnalysis(this);
     /**
-     * 
-     * 
+     *
+     *
      * @type {Promise<any>[]}
      * @memberOf File
      */
@@ -113,10 +113,10 @@ export class File {
 
     /**
      * Creates an instance of File.
-     * 
+     *
      * @param {WorkFlowContext} context
      * @param {IPathInformation} info
-     * 
+     *
      * @memberOf File
      */
     constructor(public context: WorkFlowContext, public info: IPathInformation) {
@@ -130,7 +130,7 @@ export class File {
         let info = <IPathInformation>{
             fuseBoxPath: name,
             absPath: name,
-        }
+        };
         let file = new File(collection.context, info);
         file.collection = collection;
         return file;
@@ -141,8 +141,8 @@ export class File {
             fuseBoxPath: name,
             absPath: name,
             isNodeModule: true,
-            nodeModuleInfo: packageInfo
-        }
+            nodeModuleInfo: packageInfo,
+        };
         let file = new File(collection.context, info);
         file.collection = collection;
         return file;
@@ -165,13 +165,11 @@ export class File {
     }
 
 
-
-
     /**
-     * 
-     * 
+     *
+     *
      * @returns
-     * 
+     *
      * @memberOf File
      */
     public getCrossPlatormPath() {
@@ -198,10 +196,10 @@ export class File {
         }
     }
     /**
-     * 
-     * 
+     *
+     *
      * @param {*} [_ast]
-     * 
+     *
      * @memberOf File
      */
     public tryPlugins(_ast?: any) {
@@ -239,7 +237,7 @@ export class File {
                             this.context.debugPlugin(plugin, `Captured ${this.info.fuseBoxPath}`);
                             tasks.push(() => plugin.transform.apply(plugin, [this]));
                         }
-                    })
+                    });
                 } else {
                     if (utils.isFunction(target.transform)) {
                         this.context.debugPlugin(target, `Captured ${this.info.fuseBoxPath}`);
@@ -251,10 +249,10 @@ export class File {
         }
     }
     /**
-     * 
-     * 
+     *
+     *
      * @param {string} str
-     * 
+     *
      * @memberOf File
      */
     public addHeaderContent(str: string) {
@@ -265,9 +263,9 @@ export class File {
     }
 
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf File
      */
     public loadContents() {
@@ -286,12 +284,11 @@ export class File {
         this.analysis.analyze();
     }
 
-
     /**
-     * 
-     * 
+     *
+     *
      * @returns
-     * 
+     *
      * @memberOf File
      */
     public consume() {
@@ -307,7 +304,7 @@ export class File {
         }
 
         if (/\.ts(x)?$/.test(this.absPath)) {
-            this.context.debug("Typescript", `Captured  ${this.info.fuseBoxPath}`)
+            this.context.debug("Typescript", `Captured  ${this.info.fuseBoxPath}`);
             return this.handleTypescript();
         }
 
@@ -315,7 +312,7 @@ export class File {
             this.loadContents();
             this.tryPlugins();
             const vendorSourceMaps = this.context.sourceMapConfig
-                && this.context.sourceMapConfig.vendor === true && this.collection.name !== this.context.defaultPackageName
+                && this.context.sourceMapConfig.vendor === true && this.collection.name !== this.context.defaultPackageName;
             if (vendorSourceMaps) {
                 this.loadVendorSourceMap();
             } else {
@@ -325,12 +322,12 @@ export class File {
         }
         this.tryPlugins();
         if (!this.isLoaded) {
-            throw { message: `File contents for ${this.absPath} were not loaded. Missing a plugin?` }
+            throw { message: `File contents for ${this.absPath} were not loaded. Missing a plugin?` };
         }
     }
 
     public loadVendorSourceMap() {
-        const key = `vendor/${this.collection.name}/${this.info.fuseBoxPath}`
+        const key = `vendor/${this.collection.name}/${this.info.fuseBoxPath}`;
         this.context.debug("File", `Vendor sourcemap ${key}`);
         let cachedMaps = this.context.cache.getPermanentCache(key);
         if (cachedMaps) {
@@ -340,7 +337,7 @@ export class File {
             const tokens = [];
             this.makeAnalysis({ onToken: tokens });
             SourceMapGenerator.generate(this, tokens);
-            this.generateCorrectSourceMap(key)
+            this.generateCorrectSourceMap(key);
 
             this.context.cache.setPermanentCache(key, this.sourceMap);
         }
@@ -348,11 +345,11 @@ export class File {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @private
      * @returns
-     * 
+     *
      * @memberOf File
      */
     private handleTypescript() {
@@ -364,10 +361,12 @@ export class File {
                 this.isLoaded = true;
                 this.sourceMap = cached.sourceMap;
                 this.contents = cached.contents;
+
                 if (cached.headerContent) {
                     this.headerContent = cached.headerContent;
                 }
                 debug(`From cache ${this.info.fuseBoxPath}`)
+
                 this.analysis.dependencies = cached.dependencies;
                 this.tryPlugins();
                 return;
@@ -378,14 +377,14 @@ export class File {
         this.loadContents();
         // Calling it before transpileModule on purpose
         this.tryTypescriptPlugins();
-        debug(`Transpile ${this.info.fuseBoxPath}`)
+        debug(`Transpile ${this.info.fuseBoxPath}`);
         let result = ts.transpileModule(this.contents, this.getTranspilationConfig());
 
         if (result.sourceMapText && this.context.sourceMapConfig) {
             let jsonSourceMaps = JSON.parse(result.sourceMapText);
             jsonSourceMaps.file = this.info.fuseBoxPath;
             jsonSourceMaps.sources = [this.info.fuseBoxPath.replace(/\.js(x?)$/, ".ts$1")];
-            result.outputText = result.outputText.replace("//# sourceMappingURL=module.js.map", "")
+            result.outputText = result.outputText.replace("//# sourceMappingURL=module.js.map", "");
             this.sourceMap = JSON.stringify(jsonSourceMaps);
         }
         this.contents = result.outputText;
@@ -414,10 +413,10 @@ export class File {
     /**
      * Provides a file-specific transpilation config. This is needed so we can supply the filename to
      * the TypeScript compiler.
-     * 
+     *
      * @private
      * @returns
-     * 
+     *
      * @memberOf File
      */
     private getTranspilationConfig() {

@@ -1,5 +1,5 @@
 if (FuseBox.isServer) {
-    module.exports = global.require("querystring");
+    module.exports = global.require('querystring');
 } else {
 
     // Copyright Joyent, Inc. and other Node contributors.

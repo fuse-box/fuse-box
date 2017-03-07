@@ -1,4 +1,3 @@
-
 const appRoot = require("app-root-path");
 import * as path from "path";
 const PROJECT_ROOT = process.env.FUSEBOX_DIST_ROOT || path.join(__dirname, "../../");

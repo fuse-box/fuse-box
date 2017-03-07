@@ -1,4 +1,4 @@
-const gulp = require('gulp')
+const gulp = require('gulp');
 const rename = require('gulp-rename');
 const clean = require('gulp-clean');
 const replace = require('gulp-replace');
@@ -41,7 +41,7 @@ let projectModule = ts.createProject('src/modules/tsconfig.json');
 /**
  * Our commonjs only files
  */
-let filesMain = ['src/**/*.ts', "!./**/*test*.ts", "!./src/loader/LoaderAPI.ts", "!./src/modules/**/*.ts"];
+let filesMain = ['src/**/*.ts', '!./**/*test*.ts', '!./src/loader/LoaderAPI.ts', '!./src/modules/**/*.ts'];
 
 /**
  * Loader API building
@@ -59,7 +59,7 @@ return __root__["FuseBox"] = FuseBox; } )(this)`))
         .pipe(uglify())
         .pipe(replace(/;$/, ''))
         .pipe(replace(/^\!/, ''))
-        .pipe(gulp.dest('modules/fuse-box-loader-api'))
+        .pipe(gulp.dest('modules/fuse-box-loader-api'));
 
 });
 
@@ -74,7 +74,7 @@ return __root__["FuseBox"] = FuseBox; } )(this)`))
         .pipe(gulp.dest('modules/fuse-box-loader-api'))
         .pipe(rename('fusebox.min.js'))
         .pipe(uglify())
-        .pipe(gulp.dest('dist/'))
+        .pipe(gulp.dest('dist/'));
 
 });
 
@@ -84,7 +84,7 @@ gulp.task('dist-loader-typings', () => {
         .pipe(rename('LoaderAPI.ts'))
         .pipe(gulp.dest('src/modules/fuse-loader'));
 });
-gulp.task('dist-loader', ['dist-loader-js', 'dist-loader-typings'])
+gulp.task('dist-loader', ['dist-loader-js', 'dist-loader-typings']);
 
 /**
  * Used to build the fusebox modules
@@ -93,7 +93,7 @@ gulp.task('dist-loader', ['dist-loader-js', 'dist-loader-typings'])
 gulp.task('dist-modules', ['dist-loader-typings'], () => {
     return gulp.src(`src/modules/**/*.ts`)
         .pipe(projectModule()).on('error', onError)
-        .pipe(gulp.dest(`modules`))
+        .pipe(gulp.dest(`modules`));
 });
 
 /**
@@ -123,7 +123,7 @@ gulp.task('changelog', function(done) {
         username: '',
         password: '',
         repoOwner: 'fuse-box',
-        repoName: 'fuse-box'
+        repoName: 'fuse-box',
     };
     gulp.src('./docs/changelog.md', { buffer: false, base: './' })
         .pipe(clean())
@@ -150,30 +150,30 @@ gulp.task('commit-release', function(done) {
 });
 gulp.task('npm-publish', function(done) {
     var publish = spawn('npm', ['publish'], {
-        stdio: 'inherit'
-    })
+        stdio: 'inherit',
+    });
     publish.on('close', function(code) {
         if (code === 8) {
             gulp.log('Error detected, waiting for changes...');
         }
-        done()
+        done();
     });
 });
 
 
-gulp.task("make-test-runner", (done) => {
-    const { FuseBox, JSONPlugin } = require("./dist/commonjs/index");
-    const version = require("./package.json").version;
+gulp.task('make-test-runner', (done) => {
+    const { FuseBox, JSONPlugin } = require('./dist/commonjs/index');
+    const version = require('./package.json').version;
     FuseBox.init({
         package: {
-            name: "fuse-box4-test",
-            main: "index.js"
+            name: 'fuse-box4-test',
+            main: 'index.js',
         },
         plugins: [JSONPlugin()],
-        homeDir: "src",
-        outFile: "./bin.js",
-        cache: false
-    }).bundle(`[index.ts] +fuse-test-runner +fuse-test-reporter`, done)
+        homeDir: 'src',
+        outFile: './bin.js',
+        cache: false,
+    }).bundle(`[index.ts] +fuse-test-runner +fuse-test-reporter`, done);
 });
 
 gulp.task("copy-to-inferno", () => {
@@ -204,10 +204,12 @@ gulp.task('watch', ['dist', 'copy-to-inferno'], function() {
     });
 });
 
+// "lint-modules": "modules/**/*.js"
 gulp.task('installDevDeps', function(done) {
     var deps = [
         'babel-core',
         'babel-generator',
+        'babel-preset-latest',
         'babylon',
         'cheerio',
         '@angular/core',
@@ -219,8 +221,8 @@ gulp.task('installDevDeps', function(done) {
         'source-map',
         'coffee-script',
         '@types/node',
-    ]
+    ];
     var installDeps = spawn('npm', ['install'].concat(deps), {
-        stdio: 'inherit'
-    })
+        stdio: 'inherit',
+    });
 });

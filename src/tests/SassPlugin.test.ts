@@ -1,10 +1,10 @@
-import { createEnv } from './stubs/TestEnvironment';
-import { CSSPlugin } from '../plugins/stylesheet/CSSplugin';
+import { createEnv } from "./stubs/TestEnvironment";
+import { CSSPlugin } from "../plugins/stylesheet/CSSplugin";
 import { should } from "fuse-test-runner";
-import { SassPlugin } from '../plugins/stylesheet/SassPlugin';
-import { Config } from '../Config';
-import * as fs from 'fs';
-import * as path from 'path';
+import { SassPlugin } from "../plugins/stylesheet/SassPlugin";
+import { Config } from "../Config";
+import * as fs from "fs";
+import * as path from "path";
 export class CssPluginTest {
 
     "Should import reset.css"() {
@@ -17,17 +17,17 @@ export class CssPluginTest {
                         body { font-size:12px }
                         
                     `,
-                    "reset.scss": "h1 { color:red}"
+                    "reset.scss": "h1 { color:red}",
                 },
                 plugins: [
-                    [SassPlugin(), CSSPlugin()]
+                    [SassPlugin(), CSSPlugin()],
                 ],
-                instructions: "index.ts"
-            }
+                instructions: "index.ts",
+            },
         }).then((result) => {
             const js = result.projectContents.toString();
 
-            should(js).findString(`color: red`).findString('font-size: 12px')
+            should(js).findString(`color: red`).findString("font-size: 12px");
         });
     }
 
@@ -43,22 +43,22 @@ export class CssPluginTest {
                         body { font-size:12px }
 
                     `,
-                    "b.scss": "h1 { color:red}"
+                    "b.scss": "h1 { color:red}",
                 },
                 plugins: [
-                    [SassPlugin({ importer: true }), CSSPlugin()]
+                    [SassPlugin({ importer: true }), CSSPlugin()],
                 ],
-                instructions: "index.ts"
-            }
+                instructions: "index.ts",
+            },
         }).then((result) => {
             const js = result.projectContents.toString();
-            should(js).findString(`color: red`).findString('font-size: 12px')
+            should(js).findString(`color: red`).findString("font-size: 12px");
         });
     }
 
     "Should compile with $appRoot macro"() {
 
-        fs.writeFileSync(path.join(Config.TEMP_FOLDER, "test.scss"), "h1 {color: pink}")
+        fs.writeFileSync(path.join(Config.TEMP_FOLDER, "test.scss"), "h1 {color: pink}");
         return createEnv({
             project: {
                 files: {
@@ -72,19 +72,19 @@ export class CssPluginTest {
 
                 },
                 plugins: [
-                    [SassPlugin({ importer: true }), CSSPlugin()]
+                    [SassPlugin({ importer: true }), CSSPlugin()],
                 ],
-                instructions: "index.ts"
-            }
+                instructions: "index.ts",
+            },
         }).then((result) => {
             const js = result.projectContents.toString();
-            should(js).findString(`color: pink`).findString('font-size: 12px')
+            should(js).findString(`color: pink`).findString("font-size: 12px");
         });
     }
 
     "Should compile with custom $hello"() {
 
-        fs.writeFileSync(path.join(Config.TEMP_FOLDER, "test2.scss"), "h1 {color: purple}")
+        fs.writeFileSync(path.join(Config.TEMP_FOLDER, "test2.scss"), "h1 {color: purple}");
         return createEnv({
             project: {
                 files: {
@@ -101,21 +101,21 @@ export class CssPluginTest {
                     [SassPlugin({
                         importer: true,
                         macros: {
-                            "$hello": Config.TEMP_FOLDER + "/"
-                        }
-                    }), CSSPlugin()]
+                            "$hello": Config.TEMP_FOLDER + "/",
+                        },
+                    }), CSSPlugin()],
                 ],
-                instructions: "index.ts"
-            }
+                instructions: "index.ts",
+            },
         }).then((result) => {
             const js = result.projectContents.toString();
-            should(js).findString(`color: purple`).findString('font-size: 12px')
+            should(js).findString(`color: purple`).findString("font-size: 12px");
         });
     }
 
     "Should be able to override $homeDir"() {
 
-        fs.writeFileSync(path.join(Config.TEMP_FOLDER, "test3.scss"), "h1 {color: purple}")
+        fs.writeFileSync(path.join(Config.TEMP_FOLDER, "test3.scss"), "h1 {color: purple}");
         return createEnv({
             project: {
                 files: {
@@ -132,15 +132,15 @@ export class CssPluginTest {
                     [SassPlugin({
                         importer: true,
                         macros: {
-                            "$homeDir": Config.TEMP_FOLDER + "/"
-                        }
-                    }), CSSPlugin()]
+                            "$homeDir": Config.TEMP_FOLDER + "/",
+                        },
+                    }), CSSPlugin()],
                 ],
-                instructions: "index.ts"
-            }
+                instructions: "index.ts",
+            },
         }).then((result) => {
             const js = result.projectContents.toString();
-            should(js).findString(`color: purple`).findString('font-size: 12px')
+            should(js).findString(`color: purple`).findString("font-size: 12px");
         });
     }
 

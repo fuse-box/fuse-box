@@ -1,29 +1,29 @@
-import { ensurePublicExtension, Concat, ensureUserPath } from './Utils';
-import { BundleData } from './arithmetic/Arithmetic';
+import { ensurePublicExtension, Concat, ensureUserPath } from "./Utils";
 import { ModuleCollection } from "./core/ModuleCollection";
 import { WorkFlowContext } from "./core/WorkflowContext";
-import { Config } from "./Config";
+import { BundleData } from "./arithmetic/Arithmetic";
 import { File } from "./core/File";
-import * as path from 'path';
-import * as fs from 'fs';
+import { Config } from "./Config";
+import * as path from "path";
+import * as fs from "fs";
 
 /**
- * 
- * 
+ *
+ *
  * @export
  * @class BundleSource
  */
 export class BundleSource {
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf BundleSource
      */
     public standalone = false;
     /**
-     * 
-     * 
+     *
+     *
      * @private
      * @type {*}
      * @memberOf BundleSource
@@ -35,9 +35,9 @@ export class BundleSource {
 
     /**
      * Creates an instance of BundleSource.
-     * 
+     *
      * @param {WorkFlowContext} context
-     * 
+     *
      * @memberOf BundleSource
      */
     constructor(public context: WorkFlowContext) {
@@ -46,7 +46,7 @@ export class BundleSource {
 
     /**
      *
-     * 
+     *
      * @memberOf BundleSource
      */
     public init() {
@@ -54,10 +54,10 @@ export class BundleSource {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {ModuleCollection} collection
-     * 
+     *
      * @memberOf BundleSource
      */
     public createCollection(collection: ModuleCollection) {
@@ -66,10 +66,10 @@ export class BundleSource {
 
     public addContentToCurrentCollection(data: string) {
         if (this.collectionSource) {
-
             this.collectionSource.add(null, data);
         }
     }
+
     public startCollection(collection: ModuleCollection) {
         let conflicting = {};
         if (collection.conflictingVersions) {
@@ -84,10 +84,10 @@ export class BundleSource {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {ModuleCollection} collection
-     * 
+     *
      * @memberOf BundleSource
      */
     public endCollection(collection: ModuleCollection) {
@@ -106,23 +106,22 @@ export class BundleSource {
         return this.collectionSource.content.toString();
     }
 
-
-
     /**
-     * 
-     * 
+     *
+     *
      * @param {string} data
-     * 
+     *
      * @memberOf BundleSource
      */
     public addContent(data: string) {
         this.concat.add(null, data);
     }
+
     /**
-     * 
-     * 
+     *
+     *
      * @param {File} file
-     * 
+     *
      * @memberOf BundleSource
      */
     public addFile(file: File) {
@@ -132,7 +131,7 @@ export class BundleSource {
         }
 
         this.collectionSource.add(null,
-            `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){ 
+            `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){
 ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         this.collectionSource.add(null, `/* fuse:start-file "${file.info.fuseBoxPath}"*/`);
         this.collectionSource.add(null, file.alternativeContent !== undefined ? file.alternativeContent : file.contents, file.sourceMap);
@@ -140,18 +139,16 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         this.collectionSource.add(null, "});");
     }
 
-
-
     /**
-     * 
-     * 
+     *
+     *
      * @param {BundleData} bundleData
-     * 
+     *
      * @memberOf BundleSource
      */
     public finalize(bundleData: BundleData) {
         let entry = bundleData.entry;
-        let context = this.context;
+        const context = this.context;
         if (entry) {
             entry = ensurePublicExtension(entry);
         }
@@ -214,10 +211,10 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @returns
-     * 
+     *
      * @memberOf BundleSource
      */
     public getResult() {
