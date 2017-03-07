@@ -4,4 +4,4 @@ node_js:
 install:
   - npm install
   - gulp dist
-  - npm install babel-core babel-generator babel-preset-latest babylon cheerio @angular/core stylus less postcss node-sass uglify-js source-map coffee-script
+  - grunt installDevDeps
