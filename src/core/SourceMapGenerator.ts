@@ -23,7 +23,7 @@ export class SourceMapGenerator {
 
             smGenerator.addMapping(mapping);
         });
-        //console.log(fileContent);
+
         smGenerator.setSourceContent(filePath, fileContent);
         file.sourceMap = JSON.stringify(smGenerator.toJSON());
     }

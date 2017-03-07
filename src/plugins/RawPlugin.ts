@@ -1,8 +1,8 @@
-import { File } from '../core/File';
-import { WorkFlowContext } from '../core/WorkflowContext';
-import { Plugin } from '../core/WorkflowContext';
-import { utils } from 'realm-utils';
-import { extractExtension, string2RegExp } from '../Utils';
+import { File } from "../core/File";
+import { WorkFlowContext } from "../core/WorkflowContext";
+import { Plugin } from "../core/WorkflowContext";
+import { utils } from "realm-utils";
+import { extractExtension, string2RegExp } from "../Utils";
 
 /**
  * @export

@@ -1,4 +1,4 @@
-/** 
+/**
  * This whole file is wrapped in a function by our gulpfile.js
  * The function is injected the global `this` as `__root__`
  **/
@@ -261,7 +261,7 @@ const $getRef = (name: string, opts: {
             basePath = "./";
         } else {
             // check for absolute paths for nodejs
-            // either first one is / (47 for *nix) or second one : (58 for windows) 
+            // either first one is / (47 for *nix) or second one : (58 for windows)
             if (!$isBrowser && (name.charCodeAt(0) === 47 || name.charCodeAt(1) === 58)) {
                 return $serverRequire(name);
             }
@@ -647,8 +647,8 @@ class FuseBox {
     }
 }
 
-/** 
- * Injected into the global namespace by the fsbx-default-css-plugin 
+/**
+ * Injected into the global namespace by the fsbx-default-css-plugin
  * Generates a tag with an `id` based on `__filename`
  * If you call it it again with the same file name the same tag is patched
  * @param __filename the name of the source file

@@ -25,7 +25,7 @@ var __fsbx_css = function(__filename: string, contents?: string): void {
 }
 
 /**
- * Listens to 'async' requets and if the name is a css file 
+ * Listens to 'async' requets and if the name is a css file
  * wires it to `__fsbx_css`
  */
 FuseBox.on("async", function(name) {

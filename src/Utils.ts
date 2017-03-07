@@ -1,6 +1,6 @@
 import * as path from "path";
-import * as fs from 'fs';
-import * as fsExtra from 'fs-extra';
+import * as fs from "fs";
+import * as fsExtra from "fs-extra";
 const appRoot = require("app-root-path");
 
 const MBLACKLIST = [
@@ -142,7 +142,6 @@ export function getBuiltInNodeModules(): Array<string> {
 }
 
 export function findFileBackwards(target: string, limitPath: string): string {
-
     let [found, reachedLimit] = [false, false];
     let filename = path.basename(target);
     let current = path.dirname(target);
@@ -150,7 +149,6 @@ export function findFileBackwards(target: string, limitPath: string): string {
     const maxIterations = 10;
 
     while (found === false && reachedLimit === false) {
-
         let targetFilePath = path.join(current, filename);
         if (fs.existsSync(targetFilePath)) {
             return targetFilePath;
