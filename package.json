@@ -16,7 +16,6 @@
     "devDeps": "gulp installDevDeps"
   },
   "pre-commit": [
-    "lint-fix",
     "test"
   ],
   "engines": {
