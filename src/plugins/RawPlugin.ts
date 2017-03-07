@@ -10,15 +10,15 @@ import { extractExtension, string2RegExp } from "../Utils";
  * @implements {Plugin}
  */
 export class RawPluginClass implements Plugin {
-		/**
-		 * @type {RegExp}
-		 * @memberOf RawPluginClass
-		 */
+	/**
+	 * @type {RegExp}
+	 * @memberOf RawPluginClass
+	 */
     public test: RegExp = /.*/;
-		/**
-		 * @type {Array<string>}
-		 * @memberOf RawPluginClass
-		 */
+	/**
+	 * @type {Array<string>}
+	 * @memberOf RawPluginClass
+	 */
     public extensions: Array<string>;
 
     constructor(options: any) {
@@ -34,13 +34,13 @@ export class RawPluginClass implements Plugin {
         }
     }
 
-    public init(context: WorkFlowContext) {
+    init(context: WorkFlowContext) {
         if (Array.isArray(this.extensions)) {
             return this.extensions.forEach(ext => context.allowExtension(ext));
         }
     }
 
-    public transform(file: File) {
+    transform(file: File) {
         const context = file.context;
         if (context.useCache) {
             let cached = context.cache.getStaticCache(file);
