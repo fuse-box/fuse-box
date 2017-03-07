@@ -10,8 +10,6 @@ const { each } = require('realm-utils');
 const path = require('path');
 
 
-
-
 const deleteFolderRecursive = function(path) {
     if (fs.existsSync(path)) {
         fs.readdirSync(path).forEach(function(file, index) {

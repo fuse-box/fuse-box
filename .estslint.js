@@ -88,6 +88,7 @@ module.exports = {
     'curly': 0,
     'no-multi-spaces': 0,
     'no-alert': 1,
+
     // 'no-multiple-empty-lines': [2, {
     //   'max': 2,
     // }],
