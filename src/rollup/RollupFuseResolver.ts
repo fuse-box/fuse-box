@@ -1,7 +1,7 @@
-import { statSync } from 'fs';
-import * as path from 'path';
-import { PathMaster, IPathInformation } from '../core/PathMaster';
-import { WorkFlowContext } from '../core/WorkflowContext';
+import { statSync } from "fs";
+import * as path from "path";
+import { PathMaster, IPathInformation } from "../core/PathMaster";
+import { WorkFlowContext } from "../core/WorkflowContext";
 
 export function RollupFuseResolver(context: WorkFlowContext, root: string) {
     return {
@@ -14,7 +14,7 @@ export function RollupFuseResolver(context: WorkFlowContext, root: string) {
             }
             let pm = new PathMaster(context, root);
 
-            if (importee.indexOf('~') === 0) {
+            if (importee.indexOf("~") === 0) {
                 const localFile = "." + importee.slice(1);
                 let resolved: IPathInformation = pm.resolve(localFile, root);
                 return resolved.absPath;
@@ -31,7 +31,7 @@ export function RollupFuseResolver(context: WorkFlowContext, root: string) {
 
             const basename = path.basename(importer);
             const directory = importer.split(basename)[0];
-            const dirIndexFile = path.join(directory + importee, 'index.js');
+            const dirIndexFile = path.join(directory + importee, "index.js");
 
             // TODO: This should be asynchronous
             let stats;

@@ -22,8 +22,8 @@ export function acornParse(contents, options?: any) {
             tolerant: true,
             ecmaVersion: 8,
             plugins: { es7: true, jsx: true },
-            jsx: { allowNamespacedObjects: true }
-        }
+            jsx: { allowNamespacedObjects: true },
+        },
     });
 }
 /**

@@ -13,8 +13,8 @@ import { CollectionSource } from "./../CollectionSource";
 import { Arithmetic, BundleData } from "./../arithmetic/Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";
 import { BundleTestRunner } from "../BundleTestRunner";
-import { nativeModules, HeaderImport } from '../analysis/HeaderImport';
-import { Reverse } from './Reverse';
+import { nativeModules, HeaderImport } from "../analysis/HeaderImport";
+import { Reverse } from "./Reverse";
 
 const appRoot = require("app-root-path");
 

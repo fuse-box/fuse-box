@@ -365,7 +365,7 @@ export class File {
                 if (cached.headerContent) {
                     this.headerContent = cached.headerContent;
                 }
-                debug(`From cache ${this.info.fuseBoxPath}`)
+                debug(`From cache ${this.info.fuseBoxPath}`);
 
                 this.analysis.dependencies = cached.dependencies;
                 this.tryPlugins();

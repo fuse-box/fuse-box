@@ -1,10 +1,10 @@
-import { ensureDir } from '../Utils';
-import { WorkFlowContext } from './WorkflowContext';
-import { Config } from '../Config';
-import * as path from 'path';
-import * as fs from 'fs';
+import { ensureDir } from "../Utils";
+import { WorkFlowContext } from "./WorkflowContext";
+import { Config } from "../Config";
+import * as path from "path";
+import * as fs from "fs";
 import * as rollup from "rollup";
-import { RollupFuseResolver } from '../rollup/RollupFuseResolver';
+import { RollupFuseResolver } from "../rollup/RollupFuseResolver";
 
 
 
@@ -21,7 +21,7 @@ export class Reverse {
         const contents = this.bundle.toString();/**/
         const lines = contents.split(/\r?\n/);
 
-        let defaultCollectionConsume = true
+        let defaultCollectionConsume = true;
         let files = {};
         let fileNameConsume;
         lines.forEach(line => {
@@ -31,13 +31,13 @@ export class Reverse {
             }
 
             if (defaultCollectionConsume) {
-                const matchedName = line.match(/\/\* fuse:start-file "(.*)"\*\//)
+                const matchedName = line.match(/\/\* fuse:start-file "(.*)"\*\//);
                 if (matchedName) {
                     fileNameConsume = matchedName[1];
                     files[fileNameConsume] = [];
 
                 }
-                const matchedEndName = line.match(/\/\* fuse:end-file "(.*)"\*\//)
+                const matchedEndName = line.match(/\/\* fuse:end-file "(.*)"\*\//);
                 if (matchedEndName) {
                     fileNameConsume = false;
                 }
@@ -55,15 +55,15 @@ export class Reverse {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @private
      * @param {*} files
-     * 
+     *
      * @memberOf Reverse
      */
     private createTemporaryStructure(files: any) {
-        const tmpFolder = path.join(Config.TEMP_FOLDER, "es6", encodeURIComponent(this.context.outFile), new Date().getTime().toString())
+        const tmpFolder = path.join(Config.TEMP_FOLDER, "es6", encodeURIComponent(this.context.outFile), new Date().getTime().toString());
         ensureDir(tmpFolder);
 
         for (let fname in files) {
@@ -76,18 +76,18 @@ export class Reverse {
         }
 
         rollup.rollup({
-            entry: path.join(tmpFolder, 'packages/inferno/src/index.js'),
+            entry: path.join(tmpFolder, "packages/inferno/src/index.js"),
             plugins: [RollupFuseResolver(this.context, tmpFolder)],
-        }).then(function (bundle) {
+        }).then(function(bundle) {
             // Generate bundle + sourcemap
             var result = bundle.generate({
                 // output format - 'amd', 'cjs', 'es', 'iife', 'umd'
-                format: 'cjs'
+                format: "cjs",
             });
             console.log(result);
         }).catch(e => {
             console.log(e.stack || e);
-        })
+        });
 
 
     }

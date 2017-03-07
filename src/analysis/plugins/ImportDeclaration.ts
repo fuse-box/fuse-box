@@ -27,7 +27,7 @@ export class ImportDeclaration {
             if (node.source && analysis.nodeIsString(node.source)) {
                 let requireStatement = this.handleAliasReplacement(file, node.source.value);
                 node.source.value = requireStatement;
-                analysis.addDependency(requireStatement)
+                analysis.addDependency(requireStatement);
 
             }
         }
