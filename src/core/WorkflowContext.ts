@@ -1,17 +1,17 @@
-import * as path from "path";
-import * as fs from "fs";
-import * as escodegen from "escodegen";
-import { BundleSource } from "../BundleSource";
-import { File } from "./File";
-import { Log } from "../Log";
-import { IPackageInformation, IPathInformation, AllowedExtenstions } from "./PathMaster";
-import { ModuleCollection } from "./ModuleCollection";
-import { ModuleCache } from "../ModuleCache";
-import { EventEmitter } from "../EventEmitter";
-import { utils } from "realm-utils";
-import { ensureUserPath, findFileBackwards, ensureDir, removeFolder } from "../Utils";
-import { SourceChangedEvent } from "../devServer/Server";
-import { Config } from "../Config";
+import * as path from 'path';
+import * as fs from 'fs';
+import * as escodegen from 'escodegen';
+import { BundleSource } from '../BundleSource';
+import { File } from './File';
+import { Log } from '../Log';
+import { IPackageInformation, IPathInformation, AllowedExtenstions } from './PathMaster';
+import { ModuleCollection } from './ModuleCollection';
+import { ModuleCache } from '../ModuleCache';
+import { EventEmitter } from '../EventEmitter';
+import { utils } from 'realm-utils';
+import { ensureUserPath, findFileBackwards, ensureDir, removeFolder } from '../Utils';
+import { SourceChangedEvent } from '../devServer/Server';
+import { Config } from '../Config';
 
 /**
  * All the plugin method names
@@ -23,9 +23,9 @@ export type PluginMethodName =
     | 'bundleStart'
     | 'bundleEnd'
     | 'postBundle'
-    | 'postBuild'
+    | 'postBuild';
 
-const appRoot = require("app-root-path");
+const appRoot = require('app-root-path');
 
 
 /**
@@ -59,7 +59,7 @@ export class WorkFlowContext {
     /**
      * The default package name or the package name configured in options
      */
-    public defaultPackageName = "default";
+    public defaultPackageName = 'default';
 
     public transformTypescript?: (contents: string) => string;
 
@@ -159,11 +159,11 @@ export class WorkFlowContext {
     public emitJavascriptHotReload(file: File) {
         let content = file.contents;
         if (file.headerContent) {
-            content = file.headerContent.join("\n") + "\n" + content;
+            content = file.headerContent.join('\n') + '\n' + content;
         }
         this.sourceChangedEmitter.emit({
-            type: "js",
-            content: content,
+            type: 'js',
+            content,
             path: file.info.fuseBoxPath,
         });
     }
@@ -188,7 +188,7 @@ export class WorkFlowContext {
         throw new Error(str);
     }
     public debugPlugin(plugin: Plugin, text: string) {
-        const name = plugin.constructor && plugin.constructor.name ? plugin.constructor.name : "Unknown";
+        const name = plugin.constructor && plugin.constructor.name ? plugin.constructor.name : 'Unknown';
         this.debug(name, text);
     }
 
@@ -229,10 +229,10 @@ export class WorkFlowContext {
         let info = <IPathInformation>{
             fuseBoxPath: name,
             absPath: name,
-        }
+        };
         let file = new File(this, info);
         file.collection = collection;
-        file.contents = "";
+        file.contents = '';
         file.groupMode = true;
         // Pass it along
         // Transformation might happen in a different plugin
@@ -310,13 +310,13 @@ export class WorkFlowContext {
         }
 
         let url, configFile;
-        let config: any = {
-            compilerOptions: {}
-        };;
+        let config : any = {
+            compilerOptions: {},
+        }; ;
         if (this.tsConfig) {
             configFile = ensureUserPath(this.tsConfig);
         } else {
-            url = path.join(this.homeDir, "tsconfig.json");
+            url = path.join(this.homeDir, 'tsconfig.json');
             let tsconfig = findFileBackwards(url, appRoot.path);
             if (tsconfig) {
                 configFile = tsconfig;
@@ -329,7 +329,7 @@ export class WorkFlowContext {
             this.log.echoStatus(`Typescript config file was not found. Improvising`);
         }
 
-        config.compilerOptions.module = "commonjs";
+        config.compilerOptions.module = 'commonjs';
         if (this.sourceMapConfig) {
             config.compilerOptions.sourceMap = true;
             config.compilerOptions.inlineSources = true;

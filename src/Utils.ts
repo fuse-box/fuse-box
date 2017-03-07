@@ -1,21 +1,21 @@
-import * as path from "path";
-import * as fs from "fs";
-import * as fsExtra from "fs-extra";
-const appRoot = require("app-root-path");
+import * as path from 'path';
+import * as fs from 'fs';
+import * as fsExtra from 'fs-extra';
+const appRoot = require('app-root-path');
 
 const MBLACKLIST = [
-    "freelist",
-    "sys"
+    'freelist',
+    'sys',
 ];
 export type Concat = {
     add(fileName: string | null, content: string | Buffer, sourceMap?: string): void;
     content: Buffer;
     sourceMap: string;
-}
+};
 export type ConcatModule = {
     new (generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
-}
-export const Concat: ConcatModule = require("concat-with-sourcemaps");
+};
+export const Concat : ConcatModule = require('concat-with-sourcemaps');
 
 export function contains(array: any[], obj: any) {
     return array && array.indexOf(obj) > -1;
@@ -23,7 +23,7 @@ export function contains(array: any[], obj: any) {
 
 export function replaceAliasRequireStatement(requireStatement: string, aliasName: string, aliasReplacement: string) {
     requireStatement = requireStatement.replace(aliasName, aliasReplacement);
-    requireStatement = path.normalize(requireStatement)
+    requireStatement = path.normalize(requireStatement);
     return requireStatement;
 }
 export function write(fileName: string, contents: any) {
@@ -33,24 +33,24 @@ export function write(fileName: string, contents: any) {
                 return reject(e);
             }
             return resolve();
-        })
+        });
     });
 }
 
 export function camelCase(str: string) {
     let DEFAULT_REGEX = /[-_]+(.)?/g;
     function toUpper(match, group1) {
-        return group1 ? group1.toUpperCase() : "";
+        return group1 ? group1.toUpperCase() : '';
     }
     return str.replace(DEFAULT_REGEX, toUpper);
 }
 
 export function parseQuery(qstr) {
     let query = new Map<string, string>();
-    let a = qstr.split("&");
+    let a = qstr.split('&');
     for (let i = 0; i < a.length; i++) {
-        let b = a[i].split("=");
-        query.set(decodeURIComponent(b[0]), decodeURIComponent(b[1] || ""));
+        let b = a[i].split('=');
+        query.set(decodeURIComponent(b[0]), decodeURIComponent(b[1] || ''));
     }
     return query;
 }
@@ -84,23 +84,23 @@ export function ensureDir(userPath: string) {
 
 export function string2RegExp(obj: any) {
     let escapedRegEx = obj
-        .replace(/\*/g, "@")
-        .replace(/[.?*+[\]-]/g, "\\$&")
-        .replace(/@/g, "\\w{1,}", "i");
+        .replace(/\*/g, '@')
+        .replace(/[.?*+[\]-]/g, '\\$&')
+        .replace(/@/g, '\\w{1,}', 'i');
 
-    if (escapedRegEx.indexOf("$") === -1) {
-        escapedRegEx += "$";
+    if (escapedRegEx.indexOf('$') === -1) {
+        escapedRegEx += '$';
     }
     return new RegExp(escapedRegEx);
 }
 
 export function removeFolder(userPath) {
-    fsExtra.removeSync(userPath)
+    fsExtra.removeSync(userPath);
 }
 
 
 export function replaceExt(npath, ext): string {
-    if (typeof npath !== "string") {
+    if (typeof npath !== 'string') {
         return npath;
     }
 
@@ -123,20 +123,20 @@ export function extractExtension(str: string) {
 
 export function ensurePublicExtension(url: string) {
     let ext = path.extname(url);
-    if (ext === ".ts") {
-        url = replaceExt(url, ".js");
+    if (ext === '.ts') {
+        url = replaceExt(url, '.js');
     }
-    if (ext === ".tsx") {
-        url = replaceExt(url, ".jsx");
+    if (ext === '.tsx') {
+        url = replaceExt(url, '.jsx');
     }
     return url;
 }
 
 
 export function getBuiltInNodeModules(): Array<string> {
-    const process: any = global.process;
+    const process : any = global.process;
 
-    return Object.keys(process.binding("natives")).filter(m => {
+    return Object.keys(process.binding('natives')).filter(m => {
         return !/^_|^internal|\//.test(m) && MBLACKLIST.indexOf(m) === -1;
     });
 }
@@ -158,7 +158,7 @@ export function findFileBackwards(target: string, limitPath: string): string {
             reachedLimit = true;
         }
         // going backwards
-        current = path.join(current, "..");
+        current = path.join(current, '..');
         // Making sure we won't have any perpetual loops here
         iterations++;
         if (iterations > maxIterations) {

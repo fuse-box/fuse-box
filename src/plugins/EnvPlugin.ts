@@ -1,5 +1,5 @@
-import { WorkFlowContext } from "../core/WorkflowContext";
-import { Plugin } from "../core/WorkflowContext";
+import { WorkFlowContext } from '../core/WorkflowContext';
+import { Plugin } from '../core/WorkflowContext';
 
 /**
  * @export
@@ -15,4 +15,4 @@ export class EnvPluginClass implements Plugin {
 
 export const EnvPlugin = (banner: any) => {
     return new EnvPluginClass(banner);
-}
+};

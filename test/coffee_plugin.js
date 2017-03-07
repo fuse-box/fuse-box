@@ -13,11 +13,11 @@ class Demo
 describe('CoffeeePlugin', () => {
     it('Should return compiled coffee', () => {
         return getTestEnv({
-            'app.coffee': file
+            'app.coffee': file,
         }, '>app.coffee', {
             plugins: [
-                [CoffeePlugin({}), RawPlugin()]
-            ]
+                [CoffeePlugin({}), RawPlugin()],
+            ],
         }).then(root => {
             let result = root.FuseBox.import('./app.coffee');
 
@@ -34,19 +34,19 @@ Demo = (function() {
 
 })();
 `);
-            return true
+            return true;
         });
     });
 
     it('Should handle options', () => {
         return getTestEnv({
-            'app.coffee': file
+            'app.coffee': file,
         }, '>app.coffee', {
             plugins: [
                 [CoffeePlugin({
-                  bare: false
-                }), RawPlugin()]
-            ]
+                    bare: false,
+                }), RawPlugin()],
+            ],
         }).then(root => {
             let result = root.FuseBox.import('./app.coffee');
 
@@ -66,7 +66,7 @@ Demo = (function() {
 
 }).call(this);
 `);
-            return true
+            return true;
         });
     });
 });

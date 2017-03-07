@@ -1,4 +1,4 @@
-FuseBox.global("__extends", function(d, b) {
+FuseBox.global('__extends', function(d, b) {
     for (var p in b)
         if (b.hasOwnProperty(p)) d[p] = b[p];
 

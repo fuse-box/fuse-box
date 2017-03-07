@@ -1,6 +1,6 @@
-import { File } from "../../core/File";
-import { WorkFlowContext } from "./../../core/WorkflowContext";
-import { Plugin } from "../../core/WorkflowContext";
+import { File } from '../../core/File';
+import { WorkFlowContext } from './../../core/WorkflowContext';
+import { Plugin } from '../../core/WorkflowContext';
 let less;
 
 /**
@@ -21,7 +21,7 @@ export class LESSPluginClass implements Plugin {
     }
 
     public init(context: WorkFlowContext) {
-        context.allowExtension(".less");
+        context.allowExtension('.less');
     }
 
     /**
@@ -29,18 +29,18 @@ export class LESSPluginClass implements Plugin {
      * @memberOf LESSPluginClass
      */
     public transform(file: File) {
-        const context: WorkFlowContext = file.context;
+        const context : WorkFlowContext = file.context;
         const options = { ...this.options };
 
         file.loadContents();
 
         const sourceMapDef = {
             sourceMapBasepath: '.',
-            sourceMapRootpath: file.info.absDir
-        }
+            sourceMapRootpath: file.info.absDir,
+        };
 
         if (!less) {
-            less = require("less");
+            less = require('less');
         }
 
         options.filename = file.info.fuseBoxPath;
@@ -60,5 +60,5 @@ export class LESSPluginClass implements Plugin {
 }
 
 export const LESSPlugin = (opts: any) => {
-    return new LESSPluginClass(opts)
-}
+    return new LESSPluginClass(opts);
+};

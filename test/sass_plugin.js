@@ -15,11 +15,11 @@ body {
 describe('SassPlugin', () => {
     it('Should return compiled css', () => {
         return getTestEnv({
-            'style.scss': file
+            'style.scss': file,
         }, '>style.scss', {
             plugins: [
-                [SassPlugin({}), RawPlugin()]
-            ]
+                [SassPlugin({}), RawPlugin()],
+            ],
         }).then(root => {
             let result = root.FuseBox.import('./style.scss');
 
@@ -28,7 +28,7 @@ describe('SassPlugin', () => {
 
 /*# sourceMappingURL=style.scss.map */`);
 
-            return true
+            return true;
         });
     });
 });

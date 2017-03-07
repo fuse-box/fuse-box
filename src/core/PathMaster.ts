@@ -1,9 +1,9 @@
-import { IPackageInformation, IPathInformation } from "./PathMaster";
-import { WorkFlowContext } from "./WorkflowContext";
-import { ensurePublicExtension } from "../Utils";
-import { Config } from "../Config";
-import * as path from "path";
-import * as fs from "fs";
+import { IPackageInformation, IPathInformation } from './PathMaster';
+import { WorkFlowContext } from './WorkflowContext';
+import { ensurePublicExtension } from '../Utils';
+import { Config } from '../Config';
+import * as path from 'path';
+import * as fs from 'fs';
 
 /**
  * If a import url isn't relative
@@ -48,7 +48,7 @@ export class AllowedExtenstions {
     /**
      * Users are allowed to require files with these extensions by default
      **/
-    public static list: Set<string> = new Set([".js", ".ts", ".tsx", ".json", ".xml", ".css", ".html"]);
+    public static list: Set<string> = new Set(['.js', '.ts', '.tsx', '.json', '.xml', '.css', '.html']);
 
     public static add(name: string) {
         if (!this.list.has(name)) {
@@ -143,9 +143,9 @@ export class PathMaster {
         if (!root) {
             return;
         }
-        name = name.replace(/\\/g, "/");
-        root = root.replace(/\\/g, "/");
-        name = name.replace(root, "").replace(/^\/|\\/, "");
+        name = name.replace(/\\/g, '/');
+        root = root.replace(/\\/g, '/');
+        name = name.replace(root, '').replace(/^\/|\\/, '');
 
         if (this.tsMode) {
             name = ensurePublicExtension(name);
@@ -155,7 +155,7 @@ export class PathMaster {
         // HATE HATE HATE
         let ext = path.extname(name);
         if (!ext) {
-            name += ".js";
+            name += '.js';
         }
 
 
@@ -210,13 +210,13 @@ export class PathMaster {
             let s = this.rootPackagePath.split(/\/|\\/g);
             return s[s.length - 1];
         }
-        return "";
+        return '';
     }
 
     private testFolder(folder: string, name: string) {
-        const extensions = ["js", "jsx"];
+        const extensions = ['js', 'jsx'];
         if (this.tsMode) {
-            extensions.push("ts", "tsx");
+            extensions.push('ts', 'tsx');
         }
 
         if (fs.existsSync(folder)) {
@@ -226,7 +226,7 @@ export class PathMaster {
                 const target = path.join(folder, index);
                 if (fs.existsSync(target)) {
                     let result = path.join(name, index);
-                    let startsWithDot = result[0] === "."; // After transformation we need to bring the dot back
+                    let startsWithDot = result[0] === '.'; // After transformation we need to bring the dot back
                     if (startsWithDot) {
                         result = `./${result}`;
                     }
@@ -237,16 +237,16 @@ export class PathMaster {
     }
 
     private checkFileName(root: string, name: string) {
-        const extensions = ["js", "jsx"];
+        const extensions = ['js', 'jsx'];
         if (this.tsMode) {
-            extensions.push("ts", "tsx");
+            extensions.push('ts', 'tsx');
         }
         for (let i = 0; i < extensions.length; i++) {
             let ext = extensions[i];
             let fileName = `${name}.${ext}`;
             let target = path.isAbsolute(name) ? fileName : path.join(root, fileName);
             if (fs.existsSync(target)) {
-                if (fileName[0] === ".") {
+                if (fileName[0] === '.') {
                     fileName = `./${fileName}`;
                 }
                 return fileName;
@@ -266,10 +266,10 @@ export class PathMaster {
         //      if target.ts is missing, we choose target.tsx and so on
 
         let ext = path.extname(name);
-        let fileExt = this.tsMode && !explicit ? ".ts" : ".js";
+        let fileExt = this.tsMode && !explicit ? '.ts' : '.js';
 
-        if (name[0] === "~" && name[1] === "/" && this.rootPackagePath) {
-            name = "." + name.slice(1, name.length);
+        if (name[0] === '~' && name[1] === '/' && this.rootPackagePath) {
+            name = '.' + name.slice(1, name.length);
             name = path.join(this.rootPackagePath, name);
         }
 
@@ -293,9 +293,9 @@ export class PathMaster {
 
     private getNodeModuleInfo(name: string): INodeModuleRequire {
         // Handle scope requires
-        if (name[0] === "@") {
-            let s = name.split("/");
-            let target = s.splice(2, s.length).join("/");
+        if (name[0] === '@') {
+            let s = name.split('/');
+            let target = s.splice(2, s.length).join('/');
             return {
                 name: `${s[0]}/${s[1]}`,
                 target: target || undefined,
@@ -312,46 +312,46 @@ export class PathMaster {
 
         const readMainFile = (folder, isCustom: boolean) => {
             // package.json path
-            const packageJSONPath = path.join(folder, "package.json");
+            const packageJSONPath = path.join(folder, 'package.json');
             if (fs.existsSync(packageJSONPath)) {
                 // read contents
-                const json: any = require(packageJSONPath);
+                const json : any = require(packageJSONPath);
                 // Getting an entry point
                 let entryFile;
                 let entryRoot;
                 if (json.browser) {
-                    if (typeof json.browser === "object" && json.browser[json.main]) {
+                    if (typeof json.browser === 'object' && json.browser[json.main]) {
                         entryFile = json.browser[json.main];
                     }
-                    if (typeof json.browser === "string") {
+                    if (typeof json.browser === 'string') {
                         entryFile = json.browser;
                     }
                 }
-                entryFile = path.join(folder, entryFile || json.main || "index.js");
+                entryFile = path.join(folder, entryFile || json.main || 'index.js');
                 entryRoot = path.dirname(entryFile);
                 return {
-                    name: name,
+                    name,
                     custom: isCustom,
                     root: folder,
                     missing: false,
-                    entryRoot: entryRoot,
+                    entryRoot,
                     entry: entryFile,
                     version: json.version,
                 };
             }
 
-            let defaultEntry = path.join(folder, "index.js");
+            let defaultEntry = path.join(folder, 'index.js');
             let entryFile = fs.existsSync(defaultEntry) ? defaultEntry : undefined;
             let defaultEntryRoot = entryFile ? path.dirname(entryFile) : undefined;
             let packageExists = fs.existsSync(folder);
             return {
-                name: name,
+                name,
                 missing: !packageExists,
                 custom: isCustom,
                 root: folder,
                 entry: entryFile,
                 entryRoot: defaultEntryRoot,
-                version: "0.0.0",
+                version: '0.0.0',
             };
         };
 
@@ -371,12 +371,12 @@ export class PathMaster {
 
         if (this.rootPackagePath) {// handle a conflicting library
 
-            let nestedNodeModule = path.join(this.rootPackagePath, "node_modules", name);
+            let nestedNodeModule = path.join(this.rootPackagePath, 'node_modules', name);
             if (fs.existsSync(nestedNodeModule)) {
                 return readMainFile(nestedNodeModule, true);
             } else {
                 // climb up (sometimes it can be in a parent)
-                let upperNodeModule = path.join(this.rootPackagePath, "../", name);
+                let upperNodeModule = path.join(this.rootPackagePath, '../', name);
                 if (fs.existsSync(upperNodeModule)) {
                     let isCustom = path.dirname(this.rootPackagePath) !== Config.NODE_MODULES_DIR;
                     return readMainFile(upperNodeModule, isCustom);

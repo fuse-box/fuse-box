@@ -11,17 +11,17 @@ describe('StylusPlugin', () => {
             'style.styl': `
 				body
 					color white
-			`
+			`,
         }, '>style.styl', {
             plugins: [
-                [StylusPlugin({}), RawPlugin()]
-            ]
+                [StylusPlugin({}), RawPlugin()],
+            ],
         }).then(root => {
             let result = root.FuseBox.import('./style.styl');
 
             result.should.equal('body {\n  color: #fff;\n}\n');
 
-            return true
+            return true;
         });
     });
 });

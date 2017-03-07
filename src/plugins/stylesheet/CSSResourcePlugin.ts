@@ -1,13 +1,13 @@
-import { File } from "../../core/File";
-import { Plugin, WorkFlowContext } from "../../core/WorkflowContext";
-import { ensureUserPath, ensureDir } from "../../Utils";
-import * as path from "path";
-import { utils } from "realm-utils";
-import * as fs from "fs";
-import { PostCSSResourcePlugin } from "../../lib/postcss/PostCSSResourcePlugin";
-import { SVG2Base64 } from "../../lib/SVG2Base64";
-const base64Img = require("base64-img");
-const postcss = require("postcss");
+import { File } from '../../core/File';
+import { Plugin, WorkFlowContext } from '../../core/WorkflowContext';
+import { ensureUserPath, ensureDir } from '../../Utils';
+import * as path from 'path';
+import { utils } from 'realm-utils';
+import * as fs from 'fs';
+import { PostCSSResourcePlugin } from '../../lib/postcss/PostCSSResourcePlugin';
+import { SVG2Base64 } from '../../lib/SVG2Base64';
+const base64Img = require('base64-img');
+const postcss = require('postcss');
 const IMG_CACHE = {};
 let resourceFolderChecked = false;
 
@@ -18,14 +18,14 @@ const copyFile = (source, target) => {
                 return resolve();
             }
             let rd = fs.createReadStream(source);
-            rd.on("error", (err) => {
+            rd.on('error', (err) => {
                 return reject(err);
             });
             let wr = fs.createWriteStream(target);
-            wr.on("error", (err) => {
+            wr.on('error', (err) => {
                 return reject(err);
             });
-            wr.on("close", (ex) => {
+            wr.on('close', (ex) => {
                 return resolve();
             });
             rd.pipe(wr);
@@ -34,7 +34,7 @@ const copyFile = (source, target) => {
 };
 
 const generateNewFileName = (str): string => {
-    let s = str.split("node_modules");
+    let s = str.split('node_modules');
     const ext = path.extname(str);
     if (s[1]) {
         str = s[1];
@@ -50,8 +50,8 @@ const generateNewFileName = (str): string => {
         hash |= 0; // Convert to 32bit integer
     }
     let fname = hash.toString() + ext;
-    if (fname.charAt(0) === "-") {
-        fname = "_" + fname.slice(1);
+    if (fname.charAt(0) === '-') {
+        fname = '_' + fname.slice(1);
     }
     return fname;
 };
@@ -81,10 +81,10 @@ export class CSSResourcePluginClass implements Plugin {
     }
 
     public init(context: WorkFlowContext) {
-        context.allowExtension(".css");
+        context.allowExtension('.css');
     }
 
-    public resolveFn = (p) => path.join("/css-resources", p)
+    public resolveFn = (p) => path.join('/css-resources', p)
 
     public createResouceFolder(file: File) {
         if (resourceFolderChecked === false) {
@@ -96,7 +96,7 @@ export class CSSResourcePluginClass implements Plugin {
             // making sure dist folder exists
             let outFilePath = ensureUserPath(file.context.outFile);
             let outFileDir = path.dirname(outFilePath);
-            this.distFolder = ensureDir(path.join(outFileDir, "css-resources"));
+            this.distFolder = ensureDir(path.join(outFileDir, 'css-resources'));
         }
     }
 
@@ -115,13 +115,13 @@ export class CSSResourcePluginClass implements Plugin {
         return postcss([PostCSSResourcePlugin({
             fn: (url) => {
                 let urlFile = path.resolve(currentFolder, url);
-                urlFile = urlFile.replace(/[?\#].*$/, "");
+                urlFile = urlFile.replace(/[?\#].*$/, '');
                 if (this.inlineImages) {
                     if (IMG_CACHE[urlFile]) {
                         return IMG_CACHE[urlFile];
                     }
                     if (!fs.existsSync(urlFile)) {
-                        file.context.debug("CSSResourcePlugin", `Can't find file ${urlFile}`)
+                        file.context.debug('CSSResourcePlugin', `Can't find file ${urlFile}`);
                         return;
                     }
                     const ext = path.extname(urlFile);
@@ -130,13 +130,13 @@ export class CSSResourcePluginClass implements Plugin {
                         '.woff2': 'application/font-woff2',
                         '.eot': 'application/vnd.ms-fontobject',
                         '.ttf': 'application/x-font-ttf',
-                        '.otf': 'font/opentype'
+                        '.otf': 'font/opentype',
                     };
                     if (fontsExtensions[ext]) {
                         let content = new Buffer(fs.readFileSync(urlFile)).toString('base64');
                         return `data:${fontsExtensions[ext]};charset=utf-8;base64,${content}`;
                     }
-                    if (ext === ".svg") {
+                    if (ext === '.svg') {
                         let content = SVG2Base64.get(fs.readFileSync(urlFile).toString());
                         IMG_CACHE[urlFile] = content;
                         return content;

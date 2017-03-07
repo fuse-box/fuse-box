@@ -1,5 +1,5 @@
 import { createEnv } from './stubs/TestEnvironment';
-import { should } from "fuse-test-runner";
+import { should } from 'fuse-test-runner';
 import * as path from 'path';
 import * as appRoot from 'app-root-path';
 import * as fs from 'fs';
@@ -11,136 +11,136 @@ import * as fsExtra from 'fs-extra';
 let tmp, shouldExist;
 
 const makeTestFolder = () => {
-    tmp = path.join(appRoot.path, ".fusebox", "css-test", new Date().getTime().toString());
+    tmp = path.join(appRoot.path, '.fusebox', 'css-test', new Date().getTime().toString());
     fsExtra.ensureDirSync(tmp);
     shouldExist = (name) => {
-        const fname = path.join(tmp, name);;
+        const fname = path.join(tmp, name); ;
         should(fs.existsSync(fname)).equal(true);
         return fs.readFileSync(fname).toString();
-    }
-}
+    };
+};
 
 export class CssPluginTest {
-    "Should require and inline a simple CSS File"() {
+    'Should require and inline a simple CSS File'() {
         return createEnv({
             project: {
                 files: {
-                    "index.ts": `exports.hello = { bar : require("./main.css") }`,
-                    "main.css": "body {}"
+                    'index.ts': `exports.hello = { bar : require("./main.css") }`,
+                    'main.css': 'body {}',
                 },
                 plugins: [CSSPlugin()],
-                instructions: "> index.ts"
-            }
+                instructions: '> index.ts',
+            },
         }).then((result) => {
             const js = result.projectContents.toString();
             should(js).findString(`__fsbx_css("main.css", "body {}")`);
         });
     }
 
-    "Should require and create a simple CSS File"() {
+    'Should require and create a simple CSS File'() {
         makeTestFolder();
         return createEnv({
             project: {
                 files: {
-                    "index.ts": `exports.hello = { bar : require("./main.css") }`,
-                    "main.css": "body {}"
+                    'index.ts': `exports.hello = { bar : require("./main.css") }`,
+                    'main.css': 'body {}',
                 },
                 plugins: [
                     CSSPlugin({
-                        outFile: (file) => `${tmp}/${file}`
-                    })
+                        outFile: (file) => `${tmp}/${file}`,
+                    }),
                 ],
-                instructions: "> index.ts"
-            }
+                instructions: '> index.ts',
+            },
         }).then((result) => {
             const js = result.projectContents.toString();
-            shouldExist("main.css");
+            shouldExist('main.css');
             should(js).findString(`__fsbx_css("main.css");`);
         });
     }
 
 
-    "Should create a CSS File but not inject it"() {
+    'Should create a CSS File but not inject it'() {
         makeTestFolder();
         return createEnv({
             project: {
                 files: {
-                    "index.ts": `exports.hello = { bar : require("./main.css") }`,
-                    "main.css": "h1 {}"
+                    'index.ts': `exports.hello = { bar : require("./main.css") }`,
+                    'main.css': 'h1 {}',
                 },
                 plugins: [
                     CSSPlugin({
                         outFile: (file) => `${tmp}/${file}`,
-                        inject: false
-                    })
+                        inject: false,
+                    }),
                 ],
-                instructions: "> index.ts"
-            }
+                instructions: '> index.ts',
+            },
         }).then((result) => {
             const js = result.projectContents.toString();
-            shouldExist("main.css");
+            shouldExist('main.css');
             should(js).notFindString(`__fsbx_css("main.css");`);
-        })
+        });
     }
 
-    "Should create a CSS File and inject it with inject:true"() {
+    'Should create a CSS File and inject it with inject:true'() {
         makeTestFolder();
         return createEnv({
             project: {
                 files: {
-                    "index.ts": `exports.hello = { bar : require("./main.css") }`,
-                    "main.css": "h1 {}"
+                    'index.ts': `exports.hello = { bar : require("./main.css") }`,
+                    'main.css': 'h1 {}',
                 },
                 plugins: [
                     CSSPlugin({
                         outFile: (file) => `${tmp}/${file}`,
-                        inject: true
-                    })
+                        inject: true,
+                    }),
                 ],
-                instructions: "> index.ts"
-            }
+                instructions: '> index.ts',
+            },
         }).then((result) => {
             const js = result.projectContents.toString();
-            shouldExist("main.css");
+            shouldExist('main.css');
             should(js).findString(`__fsbx_css("main.css");`);
         });
     }
 
-    "Should create a CSS File with a custom injector"() {
+    'Should create a CSS File with a custom injector'() {
         makeTestFolder();
         return createEnv({
             project: {
                 files: {
-                    "index.ts": `exports.hello = { bar : require("./main.css") }`,
-                    "main.css": "h1 {}"
+                    'index.ts': `exports.hello = { bar : require("./main.css") }`,
+                    'main.css': 'h1 {}',
                 },
                 plugins: [
                     CSSPlugin({
                         outFile: (file) => `${tmp}/${file}`,
-                        inject: (file) => `custom/${file}`
-                    })
+                        inject: (file) => `custom/${file}`,
+                    }),
                 ],
-                instructions: "> index.ts"
-            }
+                instructions: '> index.ts',
+            },
         }).then((result) => {
             const js = result.projectContents.toString();
-            shouldExist("main.css");
+            shouldExist('main.css');
             should(js).findString(`__fsbx_css("custom/main.css");`);
         });
     }
 
-    "Should bundle and inline 2 CSS files into one"() {
+    'Should bundle and inline 2 CSS files into one'() {
         makeTestFolder();
         return createEnv({
             project: {
                 files: {
-                    "index.ts": `require("./a.css"); require("./b.css") }`,
-                    "a.css": "body {};",
-                    "b.css": "h1 {};"
+                    'index.ts': `require("./a.css"); require("./b.css") }`,
+                    'a.css': 'body {};',
+                    'b.css': 'h1 {};',
                 },
-                plugins: [CSSPlugin({ group: "app.css" })],
-                instructions: "> index.ts"
-            }
+                plugins: [CSSPlugin({ group: 'app.css' })],
+                instructions: '> index.ts',
+            },
         }).then((result) => {
             const js = result.projectContents.toString();
             should(js).findString(`__fsbx_css("app.css", "body {};\\nh1 {};");`);
@@ -148,112 +148,112 @@ export class CssPluginTest {
     }
 
 
-    "Should bundle and write 2 CSS files into one"() {
+    'Should bundle and write 2 CSS files into one'() {
         makeTestFolder();
 
         return createEnv({
             project: {
                 files: {
-                    "index.ts": `require("./a.css"); require("./b.css") }`,
-                    "a.css": "body {};",
-                    "b.css": "h1 {};"
+                    'index.ts': `require("./a.css"); require("./b.css") }`,
+                    'a.css': 'body {};',
+                    'b.css': 'h1 {};',
                 },
-                plugins: [CSSPlugin({ group: "app.css", outFile: `${tmp}/app.css` })],
-                instructions: "> index.ts"
-            }
+                plugins: [CSSPlugin({ group: 'app.css', outFile: `${tmp}/app.css` })],
+                instructions: '> index.ts',
+            },
         }).then((result) => {
             const js = result.projectContents.toString();
-            const contents = shouldExist("app.css");
+            const contents = shouldExist('app.css');
             should(contents).equal(`body {};
 h1 {};
-/*# sourceMappingURL=app.css.map */`)
+/*# sourceMappingURL=app.css.map */`);
 
-            shouldExist("app.css.map");
+            shouldExist('app.css.map');
             should(js).findString(`__fsbx_css("app.css");`);
         });
     }
 
-    "Should bundle and write 2 CSS files into one but not inject it"() {
+    'Should bundle and write 2 CSS files into one but not inject it'() {
         makeTestFolder();
 
         return createEnv({
             project: {
                 files: {
-                    "index.ts": `require("./a.css"); require("./b.css") }`,
-                    "a.css": "body {};",
-                    "b.css": "h1 {};"
+                    'index.ts': `require("./a.css"); require("./b.css") }`,
+                    'a.css': 'body {};',
+                    'b.css': 'h1 {};',
                 },
-                plugins: [CSSPlugin({ group: "app.css", outFile: `${tmp}/app.css`, inject: false })],
-                instructions: "> index.ts"
-            }
+                plugins: [CSSPlugin({ group: 'app.css', outFile: `${tmp}/app.css`, inject: false })],
+                instructions: '> index.ts',
+            },
         }).then((result) => {
             const js = result.projectContents.toString();
-            shouldExist("app.css");
+            shouldExist('app.css');
             should(js).notFindString(`__fsbx_css("app.css");`);
         });
     }
 
-    "Should bundle and write 2 CSS files into one and inject with a custom injector"() {
+    'Should bundle and write 2 CSS files into one and inject with a custom injector'() {
         makeTestFolder();
 
         return createEnv({
             project: {
                 files: {
-                    "index.ts": `require("./a.css"); require("./b.css") }`,
-                    "a.css": "body {};",
-                    "b.css": "h1 {};"
+                    'index.ts': `require("./a.css"); require("./b.css") }`,
+                    'a.css': 'body {};',
+                    'b.css': 'h1 {};',
                 },
                 plugins: [
                     CSSPlugin({
-                        group: "app.css",
+                        group: 'app.css',
                         outFile: `${tmp}/app.css`,
-                        inject: (file) => `custom/${file}`
-                    })
+                        inject: (file) => `custom/${file}`,
+                    }),
                 ],
-                instructions: "> index.ts"
-            }
+                instructions: '> index.ts',
+            },
         }).then((result) => {
             const js = result.projectContents.toString();
-            shouldExist("app.css");
+            shouldExist('app.css');
             should(js).findString(`__fsbx_css("custom/app.css");`);
         });
     }
 
 
-    "A simple case should with the the CSSResourcePlugin"() {
+    'A simple case should with the the CSSResourcePlugin'() {
         makeTestFolder();
         return createEnv({
             project: {
                 files: {
-                    "index.ts": `exports.hello = { bar : require("./main.css") }`,
-                    "main.css": "body {}"
+                    'index.ts': `exports.hello = { bar : require("./main.css") }`,
+                    'main.css': 'body {}',
                 },
                 plugins: [
-                    [CSSResourcePlugin({ inline: true }), CSSPlugin()]
+                    [CSSResourcePlugin({ inline: true }), CSSPlugin()],
                 ],
-                instructions: "> index.ts"
-            }
+                instructions: '> index.ts',
+            },
         }).then((result) => {
             const js = result.projectContents.toString();
             should(js).findString(`__fsbx_css("main.css", "body {}")`);
         });
     }
     // failing here....
-    "Should with the SassPlugin"() {
+    'Should with the SassPlugin'() {
         makeTestFolder();
 
         return createEnv({
             project: {
                 files: {
-                    "index.ts": `require("./a.scss"); require("./b.scss") }`,
-                    "a.scss": "body {color:red};",
-                    "b.scss": "h1 {color:red};"
+                    'index.ts': `require("./a.scss"); require("./b.scss") }`,
+                    'a.scss': 'body {color:red};',
+                    'b.scss': 'h1 {color:red};',
                 },
                 plugins: [
-                    [SassPlugin(), CSSPlugin({ group: `all.css` })]
+                    [SassPlugin(), CSSPlugin({ group: `all.css` })],
                 ],
-                instructions: "> index.ts"
-            }
+                instructions: '> index.ts',
+            },
         }).then((result) => {
 
             const js = result.projectContents.toString();
@@ -261,20 +261,20 @@ h1 {};
         });
     }
 
-    "Should with the SassPlugin + CSSResourcePlugin"() {
+    'Should with the SassPlugin + CSSResourcePlugin'() {
         makeTestFolder();
         return createEnv({
             project: {
                 files: {
-                    "index.ts": `require("./a.scss"); require("./b.scss") }`,
-                    "a.scss": "body {color:red};",
-                    "b.scss": "h1 {color:red};"
+                    'index.ts': `require("./a.scss"); require("./b.scss") }`,
+                    'a.scss': 'body {color:red};',
+                    'b.scss': 'h1 {color:red};',
                 },
                 plugins: [
-                    [SassPlugin(), CSSResourcePlugin({ inline: true }), CSSPlugin({ group: `all.css` })]
+                    [SassPlugin(), CSSResourcePlugin({ inline: true }), CSSPlugin({ group: `all.css` })],
                 ],
-                instructions: "> index.ts"
-            }
+                instructions: '> index.ts',
+            },
         }).then((result) => {
             const js = result.projectContents.toString();
             should(js).findString(`__fsbx_css("all.css", "`);

@@ -1,13 +1,13 @@
-import { WorkFlowContext } from "./core/WorkflowContext";
-import { IPackageInformation } from "./core/PathMaster";
-import { ModuleCollection } from "./core/ModuleCollection";
-import { File } from "./core/File";
-import { Config } from "./Config";
-import { each } from "realm-utils";
-import { AbsDir } from "./Types";
-import * as fsExtra from "fs-extra";
-import * as fs from "fs";
-import * as path from "path";
+import { WorkFlowContext } from './core/WorkflowContext';
+import { IPackageInformation } from './core/PathMaster';
+import { ModuleCollection } from './core/ModuleCollection';
+import { File } from './core/File';
+import { Config } from './Config';
+import { each } from 'realm-utils';
+import { AbsDir } from './Types';
+import * as fsExtra from 'fs-extra';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const MEMORY_CACHE = {};
 
@@ -50,7 +50,7 @@ export class ModuleCache {
      */
     private cachedDeps = {
         tree: {},
-        flat: {}
+        flat: {},
     };
 
     /**
@@ -65,18 +65,18 @@ export class ModuleCache {
     }
 
     public initialize() {
-        this.cacheFolder = path.join(Config.TEMP_FOLDER, "cache",
+        this.cacheFolder = path.join(Config.TEMP_FOLDER, 'cache',
             Config.FUSEBOX_VERSION,
-            encodeURIComponent(`${Config.PROJECT_FOLDER}${this.context.outFile || ""}`));
+            encodeURIComponent(`${Config.PROJECT_FOLDER}${this.context.outFile || ''}`));
 
-        this.permanentCacheFolder = path.join(this.cacheFolder, "permanent");
+        this.permanentCacheFolder = path.join(this.cacheFolder, 'permanent');
         fsExtra.ensureDirSync(this.permanentCacheFolder);
 
-        this.staticCacheFolder = path.join(this.cacheFolder, "static");
+        this.staticCacheFolder = path.join(this.cacheFolder, 'static');
         fsExtra.ensureDirSync(this.staticCacheFolder);
 
 
-        this.cacheFile = path.join(this.cacheFolder, "deps.json");
+        this.cacheFile = path.join(this.cacheFolder, 'deps.json');
         if (fs.existsSync(this.cacheFile)) {
             try {
                 this.cachedDeps = require(this.cacheFile);
@@ -104,7 +104,7 @@ export class ModuleCache {
             return MEMORY_CACHE[filePath];
         }
         if (fs.existsSync(filePath)) {
-            const contents = fs.readFileSync(filePath).toString()
+            const contents = fs.readFileSync(filePath).toString();
             MEMORY_CACHE[filePath] = contents;
             return contents;
         }
@@ -164,7 +164,7 @@ export class ModuleCache {
         let fileName = encodeURIComponent(file.info.fuseBoxPath);
         let memCacheKey = encodeURIComponent(file.absPath);
         let dest = path.join(this.staticCacheFolder, fileName);
-        let stats: any = fs.statSync(file.absPath);
+        let stats : any = fs.statSync(file.absPath);
 
         let cacheData = {
             contents: file.contents,
@@ -172,7 +172,7 @@ export class ModuleCache {
             sourceMap: sourcemaps || {},
             headerContent: file.headerContent,
             mtime: stats.mtime.getTime(),
-        }
+        };
         let data = `module.exports = { contents: ${JSON.stringify(cacheData.contents)},
 dependencies: ${JSON.stringify(cacheData.dependencies)},
 sourceMap: ${JSON.stringify(cacheData.sourceMap)},
@@ -192,14 +192,14 @@ mtime: ${cacheData.mtime}
      * @memberOf ModuleCache
      */
     public resolve(files: File[]): Promise<File[]> {
-        let through: File[] = [];
+        let through : File[] = [];
         let valid4Caching = [];
 
         const moduleFileCollection = new Map<string, Map<string, File>>();
         files.forEach(file => {
             let info = file.info.nodeModuleInfo;
             if (!moduleFileCollection.get(info.name)) {
-                moduleFileCollection.set(info.name, new Map<string, File>())
+                moduleFileCollection.set(info.name, new Map<string, File>());
             }
             moduleFileCollection.get(info.name).set(file.info.fuseBoxPath, file);
         });
@@ -236,7 +236,7 @@ mtime: ${cacheData.mtime}
         });
 
         const required = [];
-        const operations: Promise<any>[] = [];
+        const operations : Promise < any > [] = [];
         let cacheReset = false;
         /**
          *
@@ -281,7 +281,7 @@ mtime: ${cacheData.mtime}
                 }
 
             }
-        }
+        };
 
         valid4Caching.forEach(key => {
             getAllRequired(key, this.cachedDeps.tree[key]);
@@ -346,7 +346,7 @@ mtime: ${cacheData.mtime}
                     json.flat[key] = {
                         name: collection.name,
                         version: collection.info.version,
-                        files: []
+                        files: [],
                     };
                 }
                 flatFiles = json.flat[key].files;
@@ -364,7 +364,7 @@ mtime: ${cacheData.mtime}
                 collection.traversed = true;
                 return traverse(collection.nodeModules, dependencies);
             });
-        }
+        };
         //console.log("traverse...", rootCollection.nodeModules);
         traverse(rootCollection.nodeModules, json.tree).then(() => {
             fs.writeFile(this.cacheFile, JSON.stringify(json, undefined, 2), () => { });

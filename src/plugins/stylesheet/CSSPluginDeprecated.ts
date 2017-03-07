@@ -1,6 +1,6 @@
-import * as fs from "fs";
-import { File } from "../../core/File";
-import { utils } from "realm-utils";
+import * as fs from 'fs';
+import { File } from '../../core/File';
+import { utils } from 'realm-utils';
 import { ensureUserPath, replaceExt } from '../../Utils';
 import * as path from 'path';
 
@@ -18,7 +18,7 @@ export class CSSPluginDeprecated {
             // Get a directory of our bundle
             let base = path.dirname(file.context.outFile);
             // Change project path extension to .css
-            let projectPath = replaceExt(file.info.fuseBoxPath, ".css");
+            let projectPath = replaceExt(file.info.fuseBoxPath, '.css');
 
             // Get new path based on where outFile is located + real project path
             // Making sure here that folders are created
@@ -29,7 +29,7 @@ export class CSSPluginDeprecated {
 
             let tasks = [];
             if (file.sourceMap) {
-                let sourceMapFile = projectPath + ".map";
+                let sourceMapFile = projectPath + '.map';
                 // adding sourcemap link to a file
                 // Sometimes it's already there (written by SASS for example)
                 // What shall we do then...

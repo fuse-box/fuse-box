@@ -1,42 +1,42 @@
-import { File } from "../../core/File";
-import { WorkFlowContext, Plugin } from "../../core/WorkflowContext";
+import { File } from '../../core/File';
+import { WorkFlowContext, Plugin } from '../../core/WorkflowContext';
 import * as path from 'path';
 import { SVG2Base64 } from '../../lib/SVG2Base64';
-const base64Img = require("base64-img");
+const base64Img = require('base64-img');
 /**
- * 
- * 
+ *
+ *
  * @export
  * @class FuseBoxHTMLPlugin
  * @implements {Plugin}
  */
 export class ImageBase64PluginClass implements Plugin {
     /**
-     * 
-     * 
+     *
+     *
      * @type {RegExp}
      * @memberOf FuseBoxHTMLPlugin
      */
     public test: RegExp = /\.(gif|png|jpg|jpeg|svg)$/i;
     /**
-     * 
-     * 
+     *
+     *
      * @param {WorkFlowContext} context
-     * 
+     *
      * @memberOf FuseBoxHTMLPlugin
      */
     public init(context: WorkFlowContext) {
-        context.allowExtension(".gif");
-        context.allowExtension(".png");
-        context.allowExtension(".jpg");
-        context.allowExtension(".jpeg");
-        context.allowExtension(".svg");
+        context.allowExtension('.gif');
+        context.allowExtension('.png');
+        context.allowExtension('.jpg');
+        context.allowExtension('.jpeg');
+        context.allowExtension('.svg');
     }
     /**
-     * 
-     * 
+     *
+     *
      * @param {File} file
-     * 
+     *
      * @memberOf FuseBoxHTMLPlugin
      */
     public transform(file: File) {
@@ -49,7 +49,7 @@ export class ImageBase64PluginClass implements Plugin {
             file.contents = cached.contents;
         } else {
             const ext = path.extname(file.absPath);
-            if (ext === ".svg") {
+            if (ext === '.svg') {
                 file.loadContents();
                 let content = SVG2Base64.get(file.contents);
                 file.contents = `module.exports = ${JSON.stringify(content)}`;
@@ -65,4 +65,4 @@ export class ImageBase64PluginClass implements Plugin {
 
 export const ImageBase64Plugin = () => {
     return new ImageBase64PluginClass();
-}
+};

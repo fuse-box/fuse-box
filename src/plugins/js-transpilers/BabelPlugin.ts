@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as appRoot from 'app-root-path';
-import { File } from "../../core/File";
-import { WorkFlowContext } from "../../core/WorkflowContext";
-import { Plugin } from "../../core/WorkflowContext";
+import { File } from '../../core/File';
+import { WorkFlowContext } from '../../core/WorkflowContext';
+import { Plugin } from '../../core/WorkflowContext';
 
 let babelCore;
 /**
@@ -55,7 +55,7 @@ export class BabelPluginClass implements Plugin {
      */
     public init(context: WorkFlowContext) {
         this.context = context;
-        context.allowExtension(".jsx");
+        context.allowExtension('.jsx');
     }
 
 
@@ -69,10 +69,10 @@ export class BabelPluginClass implements Plugin {
     public transform(file: File, ast: any) {
 
         if (!babelCore) {
-            babelCore = require("babel-core");
+            babelCore = require('babel-core');
         }
         if (this.configPrinted === false) {
-            file.context.debug("BabelPlugin", `\n\tConfiguration: ${JSON.stringify(this.config)}`)
+            file.context.debug('BabelPlugin', `\n\tConfiguration: ${JSON.stringify(this.config)}`);
 
             this.configPrinted = true;
         }
@@ -100,7 +100,7 @@ export class BabelPluginClass implements Plugin {
                 return;
             }
 
-            // By default we would want to limit the babel 
+            // By default we would want to limit the babel
             // And use acorn instead (it's faster)
 
             if (result.ast) {
@@ -137,5 +137,5 @@ export class BabelPluginClass implements Plugin {
 
 export const BabelPlugin = (opts: any) => {
     return new BabelPluginClass(opts);
-}
+};
 

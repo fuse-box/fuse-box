@@ -1,4 +1,4 @@
-const postcss = require("postcss");
+const postcss = require('postcss');
 
 const extractValue = (input) => {
     const first = input.charCodeAt(0);
@@ -13,13 +13,13 @@ const extractValue = (input) => {
         return;
     }
     return input;
-}
-export const PostCSSResourcePlugin = postcss.plugin("css-resource", function (opts) {
+};
+export const PostCSSResourcePlugin = postcss.plugin('css-resource', function(opts) {
     opts = opts || {};
     return (css, result) => {
         css.walkDecls(declaration => {
             if (declaration.prop) {
-                if (declaration.prop.indexOf("background") === 0 || declaration.prop.indexOf("src") === 0) {
+                if (declaration.prop.indexOf('background') === 0 || declaration.prop.indexOf('src') === 0) {
                     let re = /url\((.*?)\)/g;
                     let match;
                     // tslint:disable-next-line:no-conditional-assignment
@@ -27,9 +27,9 @@ export const PostCSSResourcePlugin = postcss.plugin("css-resource", function (op
                         const value = match[1];
 
                         const url = extractValue(value);
-                        if (typeof opts.fn === "function" && url) {
+                        if (typeof opts.fn === 'function' && url) {
                             const result = opts.fn(url);
-                            if (typeof result === "string") {
+                            if (typeof result === 'string') {
                                 declaration.value = declaration.value.replace(match[0],
                                     `url("${result}")`);
                             }

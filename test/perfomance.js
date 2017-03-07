@@ -1,4 +1,4 @@
-const should = require("should");
+const should = require('should');
 const build = require(`../dist/commonjs/index.js`);
 const FuseBox = build.FuseBox;
 
@@ -11,7 +11,7 @@ const options = {
 };
 
 function runFuse(opts, str) {
-    options.files = opts.files
+    options.files = opts.files;
 
     return new FuseBox(options).bundle(str);
 }
@@ -23,7 +23,7 @@ function test(fN, iN) {
 
     range.reduceRight((prev, cur, idx, array) => {
         if (idx + 1 === array.length - 1) {
-            files[`file-${prev}.js`] = `module.exports = 'content';`
+            files[`file-${prev}.js`] = `module.exports = 'content';`;
         }
 
         files[`file-${cur}.js`] = `require('file-${prev}.js');`;

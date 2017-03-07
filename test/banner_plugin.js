@@ -23,7 +23,7 @@ describe('BannerPlugin', () => {
         });
 
         return getTestEnv({
-            'entry.js': ''
+            'entry.js': '',
         }, '>entry.js', { plugins: [bannerPluginInst] }, true).then((concat) => {
             const code = concat.content.toString();
 

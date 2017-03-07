@@ -1,6 +1,6 @@
 const build = require(`../dist/commonjs/index.js`);
 const getTestEnv = require('./fixtures/lib').getTestEnv;
-const should = require("should");
+const should = require('should');
 const file1 = `
 module.exports = 'file1';
 `;
@@ -10,19 +10,19 @@ module.exports = 'file2';
 
 const defConf = {
     sourceMap: {
-        bundleReference: 'sourcemaps.js.map'
+        bundleReference: 'sourcemaps.js.map',
     },
-    plugins: [build.SourceMapPlainJsPlugin()]
+    plugins: [build.SourceMapPlainJsPlugin()],
 };
 
 
-const expectedSourceMaps = `{"version":3,"sources":["index.js","file1.js","file2.js"],"names":["require","false","module","exports"],"mappings":";;;;AAAAA,OAAOC,CAACA,YAAYA,CAACA,CAACD,OAAOC,CAACA,YAAYA;;;;;ACC1CC,MAAMD,CAACE,QAAQF,EAAEA,OAAOA;;;;;;ACAxBC,MAAMD,CAACE,QAAQF,EAAEA,OAAOA","file":"","sourcesContent":["require('./file1.js');require('./file2.js')","\nmodule.exports = 'file1';\n","\nmodule.exports = 'file2';\n"]}`
+const expectedSourceMaps = `{"version":3,"sources":["index.js","file1.js","file2.js"],"names":["require","false","module","exports"],"mappings":";;;;AAAAA,OAAOC,CAACA,YAAYA,CAACA,CAACD,OAAOC,CAACA,YAAYA;;;;;ACC1CC,MAAMD,CAACE,QAAQF,EAAEA,OAAOA;;;;;;ACAxBC,MAAMD,CAACE,QAAQF,EAAEA,OAAOA","file":"","sourcesContent":["require('./file1.js');require('./file2.js')","\nmodule.exports = 'file1';\n","\nmodule.exports = 'file2';\n"]}`;
 describe('SourceMapPlainJsPlugin', function() {
     it('Should create right sourcemap for plain js', () => {
         return getTestEnv({
             'index.js': `require('./file1.js');require('./file2.js')`,
             'file1.js': file1,
-            'file2.js': file2
+            'file2.js': file2,
         }, '>index.js', defConf, true).then(concat => {
 
             concat.sourceMap.should.be.okay;
@@ -36,12 +36,12 @@ describe('SourceMapPlainJsPlugin', function() {
         return getTestEnv({
             'index.js': `require('./file1.js');require('./file2.js')`,
             'file1.js': file1,
-            'file2.js': file2
+            'file2.js': file2,
         }, '>index.js', Object.assign(defConf, {
             plugins: [
                 build.UglifyJSPlugin(),
-                build.SourceMapPlainJsPlugin()
-            ]
+                build.SourceMapPlainJsPlugin(),
+            ],
         }), true).then(concat => {
             concat.sourceMap.should.be.okay;
             (concat.content.toString().match(/\/\/#\ssourceMappingURL=sourcemaps\.js\.map$/) !== null).should.equal(true);

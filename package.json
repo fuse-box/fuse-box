@@ -9,6 +9,7 @@
         "test": "test"
     },
     "scripts": {
+        "lint": "eslint src/*.ts src/**/*.ts src/**/**/*.ts test/*.js test/**/*.js modules/**/*.js --fix",
         "test": "TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js",
         "start": "gulp watch",
         "devDeps": "gulp installDevDeps"
@@ -50,7 +51,8 @@
         "sinon": "^1.17.6",
         "typescript": "^2.2.1",
         "watch": "^1.0.1",
-        "wires-reactive": "^1.1.1"
+        "wires-reactive": "^1.1.1",
+        "typescript-eslint-parser": "^2.0.0"
     },
     "dependencies": {
         "acorn": "^4.0.3",

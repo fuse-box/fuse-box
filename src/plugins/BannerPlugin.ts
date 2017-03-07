@@ -1,5 +1,5 @@
-import { WorkFlowContext } from "./../core/WorkflowContext";
-import { Plugin } from "../core/WorkflowContext";
+import { WorkFlowContext } from './../core/WorkflowContext';
+import { Plugin } from '../core/WorkflowContext';
 
 /**
  * @export
@@ -25,4 +25,4 @@ export class BannerPluginClass implements Plugin {
 
 export const BannerPlugin = (banner: string) => {
     return new BannerPluginClass(banner);
-}
+};

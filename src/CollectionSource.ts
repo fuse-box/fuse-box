@@ -1,6 +1,6 @@
-import { WorkFlowContext } from "./core/WorkflowContext";
-import { ModuleCollection } from "./core/ModuleCollection";
-import { File } from "./core/File";
+import { WorkFlowContext } from './core/WorkflowContext';
+import { ModuleCollection } from './core/ModuleCollection';
+import { File } from './core/File';
 
 export class CollectionSource {
     constructor(public context: WorkFlowContext) { }
@@ -24,7 +24,7 @@ export class CollectionSource {
     }
 
     private filterFiles(files: Map<string, File>): File[] {
-        let filtered: File[] = [];
+        let filtered : File[] = [];
         files.forEach(file => {
             if (file.isFuseBoxBundle) {
                 this.context.source.addContentToCurrentCollection(file.contents);

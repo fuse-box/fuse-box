@@ -12,11 +12,11 @@ describe('Typescript tests', () => {
             test: /\.(j|t)s(x)?$/,
             transform: () => {
                 hasHapened = true;
-            }
-        }
+            },
+        };
 
         return getTestEnv({
-            'index.ts': 'export const hello = 1'
+            'index.ts': 'export const hello = 1',
         }, '>index.ts', { plugins: [fakePlugin] }, true).then((concat) => {
             hasHapened.should.equal(true);
             return true;

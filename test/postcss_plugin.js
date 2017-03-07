@@ -41,8 +41,8 @@ describe('PostCssPlugin', () => {
     it('Smoke test', () => {
         return getTestEnv({ 'style.css': style }, '>style.css', {
             plugins: [
-                [PostCssPlugin(), RawPlugin()]
-            ]
+                [PostCssPlugin(), RawPlugin()],
+            ],
         }).then(root => {
             let result = root.FuseBox.import('./style.css');
             should.ok(result);
@@ -52,14 +52,14 @@ describe('PostCssPlugin', () => {
     it('No plugins should output unmodified input', () => {
         return getTestEnv({ 'style.css': style }, '>style.css', {
             plugins: [
-                [PostCssPlugin(), RawPlugin()]
-            ]
+                [PostCssPlugin(), RawPlugin()],
+            ],
         }).then(root => {
             let result = root.FuseBox.import('./style.css');
             result.should.equal(style);
         }).catch((e) => {
             console.log(e);
-        })
+        });
 
 
     });
@@ -67,8 +67,8 @@ describe('PostCssPlugin', () => {
     it('Single test plugin', () => {
         return getTestEnv({ 'style.css': style }, '>style.css', {
             plugins: [
-                [PostCssPlugin([pluginA]), RawPlugin()]
-            ]
+                [PostCssPlugin([pluginA]), RawPlugin()],
+            ],
         }).then(root => {
             let result = root.FuseBox.import('./style.css');
             result.should.containEql('display: block');
@@ -78,8 +78,8 @@ describe('PostCssPlugin', () => {
     it('Several plugins', () => {
         return getTestEnv({ 'style.css': style }, '>style.css', {
             plugins: [
-                [PostCssPlugin([pluginA, pluginB]), RawPlugin()]
-            ]
+                [PostCssPlugin([pluginA, pluginB]), RawPlugin()],
+            ],
         }).then(root => {
             let result = root.FuseBox.import('./style.css');
             result.should.containEql('display: block');

@@ -1,5 +1,5 @@
-import { FuseBox } from "../core/FuseBox";
-import { Server } from "ws";
+import { FuseBox } from '../core/FuseBox';
+import { Server } from 'ws';
 
 
 export class SocketServer {
@@ -18,7 +18,7 @@ export class SocketServer {
     }
 
     public static start(server: any, fuse: FuseBox) {
-        let wss = new Server({ server: server });
+        let wss = new Server({ server });
         let ss = new SocketServer(wss, fuse);
 
 
@@ -26,7 +26,7 @@ export class SocketServer {
     }
 
     public static startSocketServer(port: number, fuse: FuseBox) {
-        let wss = new Server({ port: port });
+        let wss = new Server({ port });
         this.server = new SocketServer(wss, fuse);
         fuse.context.log.echo(`Launching socket server on ${port}`);
 
@@ -38,18 +38,18 @@ export class SocketServer {
     public clients = new Set<any>();
 
     constructor(public server: any, public fuse: FuseBox) {
-        server.on("connection", (ws) => {
-            this.fuse.context.log.echo("Client connected")
+        server.on('connection', (ws) => {
+            this.fuse.context.log.echo('Client connected');
             this.clients.add(ws);
 
-            ws.on("message", message => {
+            ws.on('message', message => {
                 let input = JSON.parse(message);
                 if (input.event) {
                     this.onMessage(ws, input.event, input.data);
                 }
             });
-            ws.on("close", () => {
-                this.fuse.context.log.echo("Connection closed");
+            ws.on('close', () => {
+                this.fuse.context.log.echo('Connection closed');
                 this.clients.delete(ws);
             });
         });
@@ -58,7 +58,7 @@ export class SocketServer {
 
     public send(type: string, data: any) {
         this.clients.forEach(client => {
-            client.send(JSON.stringify({ type: type, data: data }));
+            client.send(JSON.stringify({ type, data }));
         });
     }
 

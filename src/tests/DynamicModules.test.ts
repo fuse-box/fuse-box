@@ -1,21 +1,21 @@
 import { createEnv } from './stubs/TestEnvironment';
-import { should } from "fuse-test-runner";
+import { should } from 'fuse-test-runner';
 
 
 export class AutoImportTest {
-    "Should access a dynamic module (without ext)"() {
+    'Should access a dynamic module (without ext)'() {
         return createEnv({
             project: {
                 files: {
-                    "hello.ts": `module.exports = require("./stuff/boo");`,
+                    'hello.ts': `module.exports = require("./stuff/boo");`,
                 },
-                instructions: "hello.ts"
-            }
+                instructions: 'hello.ts',
+            },
         }).then((result) => {
-            const fuse = result.project.FuseBox
-            fuse.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}")
+            const fuse = result.project.FuseBox;
+            fuse.dynamic('stuff/boo.js', 'module.exports = {hello : \'dynamic\'}');
 
-            should(fuse.import("./hello"))
+            should(fuse.import('./hello'))
                 .deepEqual({ hello: 'dynamic' });
         });
     }

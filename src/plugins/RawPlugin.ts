@@ -1,8 +1,8 @@
-import { File } from "../core/File";
-import { WorkFlowContext } from "../core/WorkflowContext";
-import { Plugin } from "../core/WorkflowContext";
-import { utils } from "realm-utils";
-import { extractExtension, string2RegExp } from "../Utils";
+import { File } from '../core/File';
+import { WorkFlowContext } from '../core/WorkflowContext';
+import { Plugin } from '../core/WorkflowContext';
+import { utils } from 'realm-utils';
+import { extractExtension, string2RegExp } from '../Utils';
 
 /**
  * @export
@@ -28,9 +28,9 @@ export class RawPluginClass implements Plugin {
         if (utils.isArray(options)) {
             this.extensions = [];
             options.forEach(str => {
-                this.extensions.push("." + extractExtension(str))
+                this.extensions.push('.' + extractExtension(str));
             });
-            this.test = string2RegExp(options.join("|"));
+            this.test = string2RegExp(options.join('|'));
         }
     }
 
@@ -62,4 +62,4 @@ export class RawPluginClass implements Plugin {
 
 export const RawPlugin = (options) => {
     return new RawPluginClass(options);
-}
+};

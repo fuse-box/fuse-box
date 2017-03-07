@@ -1,6 +1,6 @@
-import { File } from "../../core/File";
-import { WorkFlowContext } from "../../core/WorkflowContext";
-import { Plugin } from "../../core/WorkflowContext";
+import { File } from '../../core/File';
+import { WorkFlowContext } from '../../core/WorkflowContext';
+import { Plugin } from '../../core/WorkflowContext';
 
 
 let postcss;
@@ -32,7 +32,7 @@ export class PostCSSPluginClass implements Plugin {
      * @memberOf FuseBoxCSSPlugin
      */
     public init(context: WorkFlowContext) {
-        context.allowExtension(".css");
+        context.allowExtension('.css');
     }
 
     /**
@@ -45,7 +45,7 @@ export class PostCSSPluginClass implements Plugin {
     public transform(file: File) {
         file.loadContents();
         if (!postcss) {
-            postcss = require("postcss");
+            postcss = require('postcss');
         }
         return postcss(this.processors)
             .process(file.contents, this.opts)
@@ -58,4 +58,4 @@ export class PostCSSPluginClass implements Plugin {
 
 export const PostCSS = (processors?: any, opts?: any) => {
     return new PostCSSPluginClass(processors, opts);
-}
+};

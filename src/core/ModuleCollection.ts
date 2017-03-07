@@ -1,9 +1,9 @@
-import { File } from "./File";
-import { PathMaster, IPackageInformation } from "./PathMaster";
-import { WorkFlowContext } from "./WorkflowContext";
-import { BundleData } from "../arithmetic/Arithmetic";
+import { File } from './File';
+import { PathMaster, IPackageInformation } from './PathMaster';
+import { WorkFlowContext } from './WorkflowContext';
+import { BundleData } from '../arithmetic/Arithmetic';
 import { ensurePublicExtension, string2RegExp } from '../Utils';
-import { each, utils } from "realm-utils";
+import { each, utils } from 'realm-utils';
 
 /**
  *
@@ -168,14 +168,14 @@ export class ModuleCollection {
         // allow easy regex
         this.context.plugins.forEach(plugin => {
             if (utils.isArray(plugin) && utils.isString(plugin[0])) {
-                plugin.splice(0, 1, string2RegExp(plugin[0]))
+                plugin.splice(0, 1, string2RegExp(plugin[0]));
             } else {
                 if (utils.isString(plugin.test)) {
                     plugin.test = string2RegExp(plugin.test);
                 }
             }
         });
-        this.context.triggerPluginsMethodOnce("init", [this.context], (plugin) => {
+        this.context.triggerPluginsMethodOnce('init', [this.context], (plugin) => {
             if (plugin.dependencies) {
                 plugin.dependencies.forEach(mod => {
                     this.toBeResolved.push(
@@ -229,7 +229,7 @@ export class ModuleCollection {
                     this.context.nukeCache();
                     console.error(e);
                 });
-        })
+        });
 
     }
 
@@ -254,7 +254,7 @@ export class ModuleCollection {
         // We don't register and process node_modules twice
         // So for example, 2 modules have a custom dependency lodash@1.0.0
         // In a nutshell we try to avoid grabbing the same source from different folders
-        let moduleName = `${info.name}@${info.version}`
+        let moduleName = `${info.name}@${info.version}`;
 
         // Make sure it has not been mentioned ever befor
         if (!this.context.hasNodeModule(moduleName)) {

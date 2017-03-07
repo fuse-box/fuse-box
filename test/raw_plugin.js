@@ -7,7 +7,7 @@ const rawFile = `
 this is
 	raw
 		content
-`
+`;
 
 describe('RawPlugin', () => {
     it('Should return wrapped file content', () => {
@@ -17,11 +17,11 @@ describe('RawPlugin', () => {
 				require('./file2.onemoreraw');
 			`,
             'file1.raw': rawFile,
-            'file2.onemoreraw': rawFile
+            'file2.onemoreraw': rawFile,
         }, '>entry.js', {
             plugins: [
-                [/raw$/, RawPlugin({ extensions: ['.raw', '.onemoreraw'] })]
-            ]
+                [/raw$/, RawPlugin({ extensions: ['.raw', '.onemoreraw'] })],
+            ],
         }).then(root => {
             const fileRaw1 = root.FuseBox.import('./file1.raw');
             const fileRaw2 = root.FuseBox.import('./file2.onemoreraw');

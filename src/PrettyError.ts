@@ -1,6 +1,6 @@
-import { File } from "./core/File";
+import { File } from './core/File';
 
-const ansi = require("ansi");
+const ansi = require('ansi');
 const cursor = ansi(process.stdout);
 
 /**
@@ -37,9 +37,9 @@ export class PrettyError {
         let l = cursor;
         // Printing a pretty error
         l.white().bg.red().bold().write(`Acorn error: ${error.message}`);
-        l.reset().write("\n");
+        l.reset().write('\n');
         l.bold().write(`File: ${file.absPath}`);
-        l.write("\n\n").reset();
+        l.write('\n\n').reset();
 
         let errorLine = position.line * 1;
         lines.forEach((line, index) => {
@@ -49,12 +49,12 @@ export class PrettyError {
                     l.white().bg.red().write(`${index + 1}  ${line}`);
                     l.bg.reset();
                 } else {
-                    l.reset().write(`${index + 1} `).red().write(` ${line}`)
+                    l.reset().write(`${index + 1} `).red().write(` ${line}`);
                 }
-                l.write("\n").reset();
+                l.write('\n').reset();
             }
         });
-        l.write("\n");
-        throw "";
+        l.write('\n');
+        throw '';
     }
 }
