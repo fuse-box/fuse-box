@@ -210,6 +210,7 @@ export class FuseBox {
         this.virtualFiles = opts.files;
 
         this.context.initCache();
+        this.compareConfig(this.opts)
     }
 
     public triggerPre() {
@@ -246,6 +247,31 @@ export class FuseBox {
                 return fuse.initiateBundle(bundleStr);
             });
         }
+    }
+
+    /**
+     * @description if configs diff, clear cache
+     * @see constructor
+     * @see WorkflowContext
+     *
+     * if caching is disabled, ignore
+     * if already stored, compare
+     * else, write the config for use later
+     */
+    public compareConfig(config: FuseBoxOptions): void {
+      if (!this.context.useCache) return
+      const mainStr = fs.readFileSync(require.main.filename, 'utf8')
+
+      if (this.context.cache) {
+        const configPath = path.resolve(this.context.cache.cacheFolder, 'config.json')
+
+        if (fs.existsSync(configPath)) {
+          const storedConfigStr = fs.readFileSync(configPath, 'utf8')
+          if (storedConfigStr !== mainStr) this.context.nukeCache()
+        }
+
+        fs.writeFile(configPath, mainStr, () => { })
+      }
     }
 
     /** Starts the dev server and returns it */
