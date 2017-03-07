@@ -9,8 +9,8 @@
         "test": "test"
     },
     "scripts": {
-        "lint-fix": "eslint src/*.ts src/**/*.ts src/**/**/*.ts test/*.js test/**/*.js modules/**/*.js --fix --quiet --ignore-pattern=src/modules/**/*.ts",
-        "lint": "eslint src/*.ts src/**/*.ts src/**/**/*.ts test/*.js test/**/*.js modules/**/*.js --quiet --ignore-pattern=src/modules/**/*.ts",
+        "lint-fix": "eslint src/*.ts src/**/*.ts src/**/**/*.ts test/*.js test/**/*.js --fix --quiet --ignore-pattern=src/modules/**/*.ts",
+        "lint": "eslint src/*.ts src/**/*.ts src/**/**/*.ts test/*.js test/**/*.js --quiet --ignore-pattern=src/modules/**/*.ts",
         "test": "TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js",
         "start": "gulp watch",
         "devDeps": "gulp installDevDeps"
