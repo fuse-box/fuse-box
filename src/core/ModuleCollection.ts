@@ -224,10 +224,8 @@ export class ModuleCollection {
                 // node modules might need to resolved asynchronously
                 // like css plugins
                 .then(() => this.context.resolve())
-                .then(() => {
-
-                    return this.context.cache.buildMap(this);
-                }).catch(e => {
+                .then(() => this.context.cache.buildMap(this))
+                .catch(e => {
                     this.context.nukeCache();
                     console.error(e);
                 });
