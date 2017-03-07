@@ -159,18 +159,14 @@ function $pathJoin(...string: string[]): string {
     let newParts = [];
     for (let i = 0, l = parts.length; i < l; i++) {
         let part = parts[i];
-        if (!part || part === ".") {
-            continue;
-        }
+        if (!part || part === ".") continue;
         if (part === "..") {
             newParts.pop();
         } else {
             newParts.push(part);
         }
     }
-    if (parts[0] === "") {
-        newParts.unshift("");
-    }
+    if (parts[0] === "") newParts.unshift("");
     return newParts.join("/") || (newParts.length ? "/" : ".");
 };
 
@@ -238,20 +234,20 @@ type RefOpts = {
     pkg?: string;
     v?: PackageVersions;
 };
-function $getRef(name: string, opts: RefOpts): IReference {
-    let basePath = opts.path || "./";
-    let pkg_name = opts.pkg || "default";
+function $getRef(name: string, o: RefOpts): IReference {
+    let basePath = o.path || "./";
+    let pkgName = o.pkg || "default";
     let nodeModule = $getNodeModuleName(name);
 
     if (nodeModule) {
         // reset base path
         basePath = "./";
-        pkg_name = nodeModule[0];
+        pkgName = nodeModule[0];
         // if custom version is detected
         // We need to modify package path
         // To look like pkg@1.0.0
-        if (opts.v && opts.v[pkg_name]) {
-            pkg_name = `${pkg_name}@${opts.v[pkg_name]}`;
+        if (o.v && o.v[pkgName]) {
+            pkgName = `${pkgName}@${o.v[pkgName]}`;
         }
         name = nodeModule[1];
     }
@@ -271,14 +267,14 @@ function $getRef(name: string, opts: RefOpts): IReference {
         }
     }
 
-    let pkg = $packages[pkg_name];
+    let pkg = $packages[pkgName];
 
     if (!pkg) {
         if ($isBrowser) {
-            throw `Package was not found "${pkg_name}"`;
+            throw 'Package not found ' + pkgName;
         } else {
             // Return "real" node module
-            return $serverRequire(pkg_name + (name ? "/" + name : ""));
+            return $serverRequire(pkgName + (name ? "/" + name : ""));
         }
     }
 
@@ -326,7 +322,7 @@ function $getRef(name: string, opts: RefOpts): IReference {
     return {
         file,
         wildcard,
-        pkgName: pkg_name,
+        pkgName,
         versions: pkg.v,
         filePath,
         validPath,
@@ -340,8 +336,7 @@ function $getRef(name: string, opts: RefOpts): IReference {
  */
 function $async(file: string, cb: (imported?: any) => any) {
     if ($isBrowser) {
-        var xmlhttp: XMLHttpRequest;
-        xmlhttp = new XMLHttpRequest();
+        var xmlhttp: XMLHttpRequest = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == 4) {
                 if (xmlhttp.status == 200) {
@@ -358,7 +353,7 @@ function $async(file: string, cb: (imported?: any) => any) {
                     FuseBox.dynamic(normalized, content);
                     cb(FuseBox.import(file, {}));
                 } else {
-                    console.error(`${file} was not found upon request`);
+                    console.error(file, 'not found on request');
                     cb(undefined);
                 }
             }
@@ -366,9 +361,7 @@ function $async(file: string, cb: (imported?: any) => any) {
         xmlhttp.open("GET", file, true);
         xmlhttp.send();
     } else {
-        if (/\.(js|json)$/.test(file)) {
-            return cb(g["require"](file));
-        }
+        if (/\.(js|json)$/.test(file)) return cb(g["require"](file));
         return cb("");
     }
 };
@@ -398,7 +391,7 @@ function $trigger(name: string, args: any) {
  *   1) Base directory
  *   2) Target package name
  */
-function $import(name: string, opts: any = {}) {
+function $import(name: string, o: any = {}) {
 
     // Test for external URLS
     // Basically : symbol can occure only at 4 and 5 position
@@ -413,7 +406,7 @@ function $import(name: string, opts: any = {}) {
         return $loadURL(name);
     }
 
-    let ref = $getRef(name, opts);
+    let ref = $getRef(name, o);
     if (ref.server) {
         return ref.server;
     }
@@ -440,33 +433,30 @@ function $import(name: string, opts: any = {}) {
     }
 
     if (!file) {
-        let asyncMode = typeof opts === "function";
-        let processStopped = $trigger("async", [name, opts]);
+        let asyncMode = typeof o === "function";
+        let processStopped = $trigger("async", [name, o]);
         if (processStopped === false) {
             return;
         }
-        return $async(name, (result) => {
-            if (asyncMode) {
-                return opts(result);
-            }
-        });
-        //throw `File not found ${ref.validPath}`;
+        return $async(name, (result) => asyncMode ? o(result) : null);
+        // throw `File not found ${ref.validPath}`;
     }
-    let validPath = ref.validPath;
-    let pkgName = ref.pkgName;
 
-    if (file.locals && file.locals.module) {
-        return file.locals.module.exports;
-    }
-    let locals : any = file.locals = {};
-    let fuseBoxDirname = $getDir(validPath);
+    // pkgName
+    let pkg = ref.pkgName;
+
+    if (file.locals && file.locals.module) return file.locals.module.exports;
+    let locals: any = file.locals = {};
+
+    // @NOTE: is fuseBoxDirname
+    const path = $getDir(ref.validPath);
 
     locals.exports = {};
     locals.module = { exports: locals.exports };
     locals.require = (name: string, optionalCallback: any) => {
         return $import(name, {
-            pkg: pkgName,
-            path: fuseBoxDirname,
+            pkg,
+            path,
             v: ref.versions,
         });
     };
@@ -475,12 +465,11 @@ function $import(name: string, opts: any = {}) {
         paths: $isBrowser ? [] : g["require"].main.paths,
     };
 
-    let args = [locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName];
+    let args = [locals.module.exports, locals.require, locals.module, ref.validPath, path, pkg];
     $trigger("before-import", args);
 
-    let fn = file.fn;
-    fn.apply(0, args);
-    //fn(locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName)
+    file.fn.apply(0, args);
+    // fn(locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName)
     $trigger("after-import", args);
     return locals.module.exports;
 };
@@ -510,22 +499,25 @@ class FuseBox {
     public static isServer = !$isBrowser;
 
     public static global(key: string, obj?: any) {
-        if (obj === undefined) {
-            return g[key];
-        }
+        if (obj === undefined) return g[key];
         g[key] = obj;
     }
 
     /**
      * Imports a module
      */
-    public static import(name: string, opts?: any) {
-        return $import(name, opts);
+    public static import(name: string, o?: any) {
+        return $import(name, o);
     }
 
-    public static on(name: string, fn: any) {
-        $events[name] = $events[name] || [];
-        $events[name].push(fn);
+    /**
+     * @param  {string} n name
+     * @param  {any}    fn   [description]
+     * @return void
+     */
+    public static on(n: string, fn: any) {
+        $events[n] = $events[n] || [];
+        $events[n].push(fn);
     }
 
     /**
@@ -558,16 +550,15 @@ class FuseBox {
     }
 
     public static expose(obj: any) {
-        for (let key in obj) {
-            let data = obj[key];
-            let alias = data.alias;
-            let exposed = $import(data.pkg);
+        for (let k in obj) {
+            let alias = obj[k].alias;
+            let xp = $import(obj[k].pkg);
             if (alias === "*") {
-                $loopObjKey(exposed, (exportKey, value) => __root__[exportKey] = value);
+                $loopObjKey(xp, (exportKey, value) => __root__[exportKey] = value);
             } else if (typeof alias === "object") {
-                $loopObjKey(alias, (exportKey, value) => __root__[value] = exposed[exportKey]);
+                $loopObjKey(alias, (exportKey, value) => __root__[value] = xp[exportKey]);
             } else {
-                __root__[alias] = exposed;
+                __root__[alias] = xp;
             }
         }
     }
@@ -585,8 +576,7 @@ class FuseBox {
         /** The name of the package */
         pkg: string
     }) {
-        let pkg = opts && opts.pkg || "default";
-        this.pkg(pkg, {}, function(___scope___: any) {
+        this.pkg(opts && opts.pkg || "default", {}, function(___scope___: any) {
             ___scope___.file(path, function(exports: any, require: any, module: any, __filename: string, __dirname: string) {
                 var res = new Function("__fbx__dnm__", "exports", "require", "module", "__filename", "__dirname", "__root__", str);
                 res(true, exports, require, module, __filename, __dirname, __root__);
@@ -603,10 +593,8 @@ class FuseBox {
     ) {
         let def = $packages["default"];
         for (let fileName in def.f) {
-            const doFlush = !shouldFlush || shouldFlush(fileName);
-            if (doFlush) {
-                let file = def.f[fileName];
-                delete file.locals;
+            if (!shouldFlush || shouldFlush(fileName)) {
+                delete def.f[fileName].locals;
             }
         }
     }
@@ -615,23 +603,25 @@ class FuseBox {
      *
      * Register a package
      */
-    public static pkg(pkg_name: string, versions: PackageVersions, fn: Function) {
+    public static pkg(name: string, v: PackageVersions, fn: Function) {
         // Let's not register a package scope twice
-        if ($packages[pkg_name]) {
-            return fn($packages[pkg_name].s);
-        }
+        if ($packages[name]) return fn($packages[name].s);
+
         // create new package
-        let pkg = $packages[pkg_name] = {} as PackageDetails;
-        let _files = pkg.f = {};
-        // storing versions
-        pkg.v = versions;
-        let _scope = pkg.s = {
+        let pkg = $packages[name] = {} as PackageDetails;
+
+        // file
+        pkg.f = {};
+
+        // storing v
+        pkg.v = v;
+
+        // scope
+        pkg.s = {
             // Scope file
-            file: (name: string, fn: any) => {
-                _files[name] = { fn };
-            },
+            file: (name: string, fn: any) => pkg.f[name] = { fn },
         };
-        return fn(_scope);
+        return fn(pkg.s);
     }
 
     /**

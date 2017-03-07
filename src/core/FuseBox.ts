@@ -14,6 +14,7 @@ import { Arithmetic, BundleData } from "./../arithmetic/Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";
 import { BundleTestRunner } from "../BundleTestRunner";
 import { nativeModules, HeaderImport } from "../analysis/HeaderImport";
+import { Reverse } from "./Reverse";
 
 const appRoot = require("app-root-path");
 
@@ -100,7 +101,7 @@ export class FuseBox {
 
         if (opts.package) {
             if (utils.isPlainObject(opts.package)) {
-                const packageOptions : any = opts.package;
+                const packageOptions: any = opts.package;
                 this.context.defaultPackageName = packageOptions.name || "default";
                 this.context.defaultEntryPoint = packageOptions.main;
             } else {
@@ -177,7 +178,7 @@ export class FuseBox {
         }
 
         if (opts.sourcemaps) {
-            const sourceMapOptions : any = {};
+            const sourceMapOptions: any = {};
             let projectSourcMaps = false;
             let vendorSourceMaps = false;
             if (opts.sourcemaps === true) {
@@ -230,7 +231,9 @@ export class FuseBox {
     }
 
 
-
+    public reverse(bundle: Buffer, outDir: string) {
+        new Reverse(this.context, bundle, outDir);
+    }
     /**
      * Make a Bundle (or bundles)
      */

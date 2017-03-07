@@ -173,6 +173,11 @@ gulp.task("make-test-runner", (done) => {
         cache: false,
     }).bundle(`[index.ts] +fuse-test-runner +fuse-test-reporter`, done);
 });
+
+gulp.task("copy-to-inferno", () => {
+    return gulp.src("dist/commonjs/**/**.js").pipe(gulp.dest("../inferno/node_modules/fuse-box/dist/commonjs/"))
+})
+
 /**
  * Combined build task
  */
@@ -181,7 +186,9 @@ gulp.task("dist", ["dist-main", "dist-loader", "dist-modules"]);
 /**
  * For development workflow
  */
-gulp.task("watch", ["dist"], function() {
+
+gulp.task('watch', ['dist', 'copy-to-inferno'], function() {
+
     watching = true;
 
     gulp.watch(["src/loader/**/*.ts"], () => {
@@ -193,7 +200,7 @@ gulp.task("watch", ["dist"], function() {
     });
 
     gulp.watch(filesMain, () => {
-        runSequence("dist-main");
+        runSequence('dist-main', 'copy-to-inferno');
     });
 });
 

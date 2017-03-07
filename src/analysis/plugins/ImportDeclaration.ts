@@ -25,7 +25,10 @@ export class ImportDeclaration {
         }
         if (node.type === "ImportDeclaration") {
             if (node.source && analysis.nodeIsString(node.source)) {
-                analysis.addDependency(node.source.value);
+                let requireStatement = this.handleAliasReplacement(file, node.source.value);
+                node.source.value = requireStatement;
+                analysis.addDependency(requireStatement);
+
             }
         }
     }
