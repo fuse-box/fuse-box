@@ -12,7 +12,7 @@ if (!$isBrowser) {
 }
 var $packages = $fsbx.p = $fsbx.p || {};
 var $events = $fsbx.e = $fsbx.e || {};
-var $getNodeModuleName = function(name) {
+var $getNodeModuleName = function (name) {
     var n = name.charCodeAt(0);
     var s = name.charCodeAt(1);
     if (!$isBrowser && s === 58) {
