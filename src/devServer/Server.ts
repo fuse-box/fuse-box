@@ -1,11 +1,13 @@
-import { SocketServer } from "./SocketServer";
 import { HotReloadPlugin } from "./../plugins/HotReloadPlugin";
-import * as path from "path";
+import { SocketServer } from "./SocketServer";
 import { ensureUserPath } from "../Utils";
 import { HTTPServer } from "./HTTPServer";
 import { FuseBox } from "../core/FuseBox";
 import { utils } from "realm-utils";
+import {ArithmeticStr} from "../Types"
 import * as process from "process";
+import * as path from "path";
+
 const watch = require("watch");
 
 export type HotReloadEmitter = (server: Server, sourceChangedInfo: any) => any;
@@ -20,7 +22,7 @@ export interface ServerOptions {
     /** Defaults to 4444 if not specified */
     port?: number;
 
-    /** 
+    /**
      * - If false nothing is served.
      * - If string specified this is the folder served from express.static
      *      It can be an absolute path or relative to `appRootPath`
@@ -45,9 +47,9 @@ export class Server {
 
     /**
      * Starts the server
-     * @param str the default bundle arithmetic string 
+     * @param str the default bundle arithmetic string
      */
-    public start(str: string, opts?: ServerOptions): Server {
+    public start(str: ArithmeticStr, opts?: ServerOptions): Server {
         opts = opts || {};
 
         let buildPath = ensureUserPath(this.fuse.context.outFile);

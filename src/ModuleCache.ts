@@ -4,18 +4,12 @@ import { ModuleCollection } from "./core/ModuleCollection";
 import { File } from "./core/File";
 import { Config } from "./Config";
 import { each } from "realm-utils";
+import { AbsDir } from "./Types";
 import * as fsExtra from "fs-extra";
 import * as fs from "fs";
 import * as path from "path";
 
 const MEMORY_CACHE = {};
-
-export type AbsPath = string
-export type RelPath = string
-export type AbsFile = string
-export type RelFile = string
-export type AbsDir = string
-export type RelDir = string
 
 /**
  *

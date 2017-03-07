@@ -9,6 +9,8 @@
 // ! Removes the loader API from a bundle
 // ^ Disables cache
 
+import {ArithmeticStr} from "../Types"
+
 /**
  * @example
  * can is in canada, so true.
@@ -150,7 +152,7 @@ class Fluent {
     return instructions
   }
 
-  public static isArithmetic(str: string): boolean {
+  public static isArithmetic(str: ArithmeticStr): boolean {
     if (strIncludesAnyOf(str, '[,>,],+[,-,**,^,~,!', ',')) return true
     return false
   }
