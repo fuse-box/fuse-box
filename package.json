@@ -1,79 +1,89 @@
 {
-    "name": "fuse-box",
-    "version": "1.3.123",
-    "description": "Fuse-Box a bundler that does it right",
-    "typings": "./dist/typings/index.d.ts",
-    "main": "dist/commonjs/index.js",
-    "types": "dist/typings/index.ts",
-    "directories": {
-        "test": "test"
-    },
-    "scripts": {
-        "lint": "eslint src/*.ts src/**/*.ts src/**/**/*.ts test/*.js test/**/*.js --fix --ignore-pattern=src/modules/**/*.ts",
-        "test": "TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js",
-        "start": "gulp watch",
-        "devDeps": "gulp installDevDeps"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/fuse-box/fuse-box.git"
-    },
-    "author": "",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/fuse-box/fuse-box/issues"
-    },
-    "homepage": "https://github.com/fuse-box/fuse-box#readme",
-    "devDependencies": {
-        "@types/node": "^6.0.41",
-        "cheerio": "0.22.0",
-        "fuse-box-test-using-old-version": "^1.0.0",
-        "fuse-box-testcase1": "^1.0.0",
-        "fuse-box-testcase3": "^1.0.3",
-        "fuse-test-runner": "^1.0.6",
-        "gulp": "^3.9.1",
-        "gulp-bump": "^2.4.0",
-        "gulp-changelog-generator": "https://github.com/fuse-box/gulp-changelog-generator.git",
-        "gulp-clean": "^0.3.2",
-        "gulp-concat": "^2.6.0",
-        "gulp-rename": "^1.2.2",
-        "gulp-replace": "^0.5.4",
-        "gulp-sourcemaps": "^1.6.0",
-        "gulp-typescript": "^3.0.1",
-        "gulp-uglify": "^2.0.0",
-        "gulp-wrap": "^0.13.0",
-        "mkdirp": "^0.5.1",
-        "mocha": "^3.1.0",
-        "reflect-metadata": "^0.1.8",
-        "rollup": "^0.36.3",
-        "run-sequence": "^1.2.2",
-        "should": "^11.1.0",
-        "sinon": "^1.17.6",
-        "typescript": "^2.2.1",
-        "watch": "^1.0.1",
-        "wires-reactive": "^1.1.1",
-        "typescript-eslint-parser": "^2.0.0"
-    },
-    "dependencies": {
-        "acorn": "^4.0.3",
-        "acorn-es7": "^0.1.0",
-        "acorn-jsx": "^3.0.1",
-        "ansi": "^0.3.1",
-        "app-root-path": "^2.0.1",
-        "base64-img": "^1.0.3",
-        "base64-js": "^1.2.0",
-        "concat-with-sourcemaps": "^1.0.4",
-        "escodegen": "^1.8.1",
-        "express": "^4.14.0",
-        "fs-extra": "^2.0.0",
-        "glob": "^7.1.1",
-        "ieee754": "^1.1.8",
-        "postcss": "^5.2.11",
-        "pretty-time": "^0.2.0",
-        "prettysize": "0.0.3",
-        "realm-utils": "^1.0.8",
-        "request": "^2.79.0",
-        "watch": "^1.0.1",
-        "ws": "^1.1.1"
-    }
+  "name": "fuse-box",
+  "version": "1.3.123",
+  "description": "Fuse-Box a bundler that does it right",
+  "typings": "./dist/typings/index.d.ts",
+  "main": "dist/commonjs/index.js",
+  "types": "dist/typings/index.ts",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "lint-fix": "eslint src/*.ts src/**/*.ts src/**/**/*.ts test/*.js test/**/*.js modules/**/*.js --fix --quiet --ignore-pattern=src/modules/**/*.ts",
+    "lint": "eslint src/*.ts src/**/*.ts src/**/**/*.ts test/*.js test/**/*.js modules/**/*.js --quiet --ignore-pattern=src/modules/**/*.ts",
+    "test": "TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js",
+    "start": "gulp watch",
+    "devDeps": "gulp installDevDeps"
+  },
+  "pre-commit": [
+    "test"
+  ],
+  "engines": {
+    "node": ">= 6.9.5",
+    "npm": ">= 3.10.10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fuse-box/fuse-box.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fuse-box/fuse-box/issues"
+  },
+  "homepage": "https://github.com/fuse-box/fuse-box#readme",
+  "devDependencies": {
+    "@types/node": "^6.0.41",
+    "cheerio": "0.22.0",
+    "eslint": "^3.17.1",
+    "fuse-box-test-using-old-version": "^1.0.0",
+    "fuse-box-testcase1": "^1.0.0",
+    "fuse-box-testcase3": "^1.0.3",
+    "fuse-test-runner": "^1.0.6",
+    "gulp": "^3.9.1",
+    "gulp-bump": "^2.4.0",
+    "gulp-changelog-generator": "https://github.com/fuse-box/gulp-changelog-generator.git",
+    "gulp-clean": "^0.3.2",
+    "gulp-concat": "^2.6.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.5.4",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-typescript": "^3.0.1",
+    "gulp-uglify": "^2.0.0",
+    "gulp-wrap": "^0.13.0",
+    "mkdirp": "^0.5.1",
+    "mocha": "^3.1.0",
+    "pre-commit": "^1.2.2",
+    "reflect-metadata": "^0.1.8",
+    "rollup": "^0.36.3",
+    "run-sequence": "^1.2.2",
+    "should": "^11.1.0",
+    "sinon": "^1.17.6",
+    "typescript": "^2.2.1",
+    "typescript-eslint-parser": "^2.0.0",
+    "watch": "^1.0.1",
+    "wires-reactive": "^1.1.1"
+  },
+  "dependencies": {
+    "acorn": "^4.0.3",
+    "acorn-es7": "^0.1.0",
+    "acorn-jsx": "^3.0.1",
+    "ansi": "^0.3.1",
+    "app-root-path": "^2.0.1",
+    "base64-img": "^1.0.3",
+    "base64-js": "^1.2.0",
+    "concat-with-sourcemaps": "^1.0.4",
+    "escodegen": "^1.8.1",
+    "express": "^4.14.0",
+    "fs-extra": "^2.0.0",
+    "glob": "^7.1.1",
+    "ieee754": "^1.1.8",
+    "postcss": "^5.2.11",
+    "pretty-time": "^0.2.0",
+    "prettysize": "0.0.3",
+    "realm-utils": "^1.0.8",
+    "request": "^2.79.0",
+    "watch": "^1.0.1",
+    "ws": "^1.1.1"
+  }
 }

@@ -1,12 +1,12 @@
 // From https://github.com/defunctzombie/node-process/blob/master/browser.js
 // shim for using process in browser
 if (FuseBox.isServer) {
-    if (typeof __process_env__ !== 'undefined') {
+    if (typeof __process_env__ !== "undefined") {
         Object.assign(global.process.env, __process_env__);
     }
     module.exports = global.process;
 } else {
-    require('object-assign-polyfill');
+    require("object-assign-polyfill");
     var productionEnv = false; //require('@system-env').production;
 
     var process = module.exports = {};
@@ -72,16 +72,16 @@ if (FuseBox.isServer) {
     Item.prototype.run = function() {
         this.fun.apply(null, this.array);
     };
-    process.title = 'browser';
+    process.title = "browser";
     process.browser = true;
     process.env = {
-        NODE_ENV: productionEnv ? 'production' : 'development',
+        NODE_ENV: productionEnv ? "production" : "development",
     };
-    if (typeof __process_env__ !== 'undefined') {
+    if (typeof __process_env__ !== "undefined") {
         Object.assign(process.env, __process_env__);
     }
     process.argv = [];
-    process.version = ''; // empty string to avoid regexp issues
+    process.version = ""; // empty string to avoid regexp issues
     process.versions = {};
 
     function noop() {}
@@ -95,12 +95,12 @@ if (FuseBox.isServer) {
     process.emit = noop;
 
     process.binding = function(name) {
-        throw new Error('process.binding is not supported');
+        throw new Error("process.binding is not supported");
     };
 
-    process.cwd = function() { return '/'; };
+    process.cwd = function() { return "/"; };
     process.chdir = function(dir) {
-        throw new Error('process.chdir is not supported');
+        throw new Error("process.chdir is not supported");
     };
     process.umask = function() { return 0; };
 

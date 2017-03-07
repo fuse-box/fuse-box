@@ -1,6 +1,6 @@
 if (FuseBox.isServer) {
 
-    module.exports = global.require('buffer');
+    module.exports = global.require("buffer");
 } else {
     /*!
      * The buffer module from node.js, for the browser.
@@ -10,10 +10,10 @@ if (FuseBox.isServer) {
      */
     /* eslint-disable no-proto */
 
-    'use strict';
+    "use strict";
 
-    var base64 = require('base64-js');
-    var ieee754 = require('ieee754');
+    var base64 = require("base64-js");
+    var ieee754 = require("ieee754");
 
     exports.Buffer = Buffer;
     exports.FuseShim = true;
@@ -41,8 +41,8 @@ if (FuseBox.isServer) {
 
     if (!Buffer.TYPED_ARRAY_SUPPORT) {
         console.error(
-            'This browser lacks typed array (Uint8Array) support which is required by ' +
-            '`buffer` v5.x. Use `buffer` v4.x if you require old browser support.');
+            "This browser lacks typed array (Uint8Array) support which is required by " +
+            "`buffer` v5.x. Use `buffer` v4.x if you require old browser support.");
     }
 
     function typedArraySupport() {
@@ -58,7 +58,7 @@ if (FuseBox.isServer) {
 
     function createBuffer(length) {
         if (length > K_MAX_LENGTH) {
-            throw new RangeError('Invalid typed array length');
+            throw new RangeError("Invalid typed array length");
         }
         // Return an augmented `Uint8Array` instance
         var buf = new Uint8Array(length);
@@ -78,10 +78,10 @@ if (FuseBox.isServer) {
 
     function Buffer(arg, encodingOrOffset, length) {
         // Common case.
-        if (typeof arg === 'number') {
-            if (typeof encodingOrOffset === 'string') {
+        if (typeof arg === "number") {
+            if (typeof encodingOrOffset === "string") {
                 throw new Error(
-                    'If encoding is specified then the first argument must be a string'
+                    "If encoding is specified then the first argument must be a string"
                 );
             }
             return allocUnsafe(arg);
@@ -90,7 +90,7 @@ if (FuseBox.isServer) {
     }
 
     // Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
-    if (typeof Symbol !== 'undefined' && Symbol.species &&
+    if (typeof Symbol !== "undefined" && Symbol.species &&
         Buffer[Symbol.species] === Buffer) {
         Object.defineProperty(Buffer, Symbol.species, {
             value: null,
@@ -103,15 +103,15 @@ if (FuseBox.isServer) {
     Buffer.poolSize = 8192; // not used by this implementation
 
     function from(value, encodingOrOffset, length) {
-        if (typeof value === 'number') {
-            throw new TypeError('"value" argument must not be a number');
+        if (typeof value === "number") {
+            throw new TypeError("\"value\" argument must not be a number");
         }
 
-        if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
+        if (typeof ArrayBuffer !== "undefined" && value instanceof ArrayBuffer) {
             return fromArrayBuffer(value, encodingOrOffset, length);
         }
 
-        if (typeof value === 'string') {
+        if (typeof value === "string") {
             return fromString(value, encodingOrOffset);
         }
 
@@ -136,10 +136,10 @@ if (FuseBox.isServer) {
     Buffer.__proto__ = Uint8Array;
 
     function assertSize(size) {
-        if (typeof size !== 'number') {
-            throw new TypeError('"size" argument must be a number');
+        if (typeof size !== "number") {
+            throw new TypeError("\"size\" argument must be a number");
         } else if (size < 0) {
-            throw new RangeError('"size" argument must not be negative');
+            throw new RangeError("\"size\" argument must not be negative");
         }
     }
 
@@ -152,7 +152,7 @@ if (FuseBox.isServer) {
             // Only pay attention to encoding if it's a string. This
             // prevents accidentally sending in a number that would
             // be interpretted as a start offset.
-            return typeof encoding === 'string' ?
+            return typeof encoding === "string" ?
                 createBuffer(size).fill(fill, encoding) :
                 createBuffer(size).fill(fill);
         }
@@ -186,12 +186,12 @@ if (FuseBox.isServer) {
     };
 
     function fromString(string, encoding) {
-        if (typeof encoding !== 'string' || encoding === '') {
-            encoding = 'utf8';
+        if (typeof encoding !== "string" || encoding === "") {
+            encoding = "utf8";
         }
 
         if (!Buffer.isEncoding(encoding)) {
-            throw new TypeError('"encoding" must be a valid string encoding');
+            throw new TypeError("\"encoding\" must be a valid string encoding");
         }
 
         var length = byteLength(string, encoding) | 0;
@@ -222,11 +222,11 @@ if (FuseBox.isServer) {
         array.byteLength; // this throws if `array` is not a valid ArrayBuffer
 
         if (byteOffset < 0 || array.byteLength < byteOffset) {
-            throw new RangeError('\'offset\' is out of bounds');
+            throw new RangeError("'offset' is out of bounds");
         }
 
         if (array.byteLength < byteOffset + (length || 0)) {
-            throw new RangeError('\'length\' is out of bounds');
+            throw new RangeError("'length' is out of bounds");
         }
 
         var buf;
@@ -257,28 +257,28 @@ if (FuseBox.isServer) {
         }
 
         if (obj) {
-            if ((typeof ArrayBuffer !== 'undefined' &&
-                    obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
-                if (typeof obj.length !== 'number' || isnan(obj.length)) {
+            if ((typeof ArrayBuffer !== "undefined" &&
+                    obj.buffer instanceof ArrayBuffer) || "length" in obj) {
+                if (typeof obj.length !== "number" || isnan(obj.length)) {
                     return createBuffer(0);
                 }
                 return fromArrayLike(obj);
             }
 
-            if (obj.type === 'Buffer' && Array.isArray(obj.data)) {
+            if (obj.type === "Buffer" && Array.isArray(obj.data)) {
                 return fromArrayLike(obj.data);
             }
         }
 
-        throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.');
+        throw new TypeError("First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.");
     }
 
     function checked(length) {
         // Note: cannot use `length < K_MAX_LENGTH` here because that fails when
         // length is NaN (which is otherwise coerced to zero.)
         if (length >= K_MAX_LENGTH) {
-            throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
-                'size: 0x' + K_MAX_LENGTH.toString(16) + ' bytes');
+            throw new RangeError("Attempt to allocate Buffer larger than maximum " +
+                "size: 0x" + K_MAX_LENGTH.toString(16) + " bytes");
         }
         return length | 0;
     }
@@ -296,7 +296,7 @@ if (FuseBox.isServer) {
 
     Buffer.compare = function compare(a, b) {
         if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
-            throw new TypeError('Arguments must be Buffers');
+            throw new TypeError("Arguments must be Buffers");
         }
 
         if (a === b) return 0;
@@ -319,17 +319,17 @@ if (FuseBox.isServer) {
 
     Buffer.isEncoding = function isEncoding(encoding) {
         switch (String(encoding).toLowerCase()) {
-            case 'hex':
-            case 'utf8':
-            case 'utf-8':
-            case 'ascii':
-            case 'latin1':
-            case 'binary':
-            case 'base64':
-            case 'ucs2':
-            case 'ucs-2':
-            case 'utf16le':
-            case 'utf-16le':
+            case "hex":
+            case "utf8":
+            case "utf-8":
+            case "ascii":
+            case "latin1":
+            case "binary":
+            case "base64":
+            case "ucs2":
+            case "ucs-2":
+            case "utf16le":
+            case "utf-16le":
                 return true;
             default:
                 return false;
@@ -338,7 +338,7 @@ if (FuseBox.isServer) {
 
     Buffer.concat = function concat(list, length) {
         if (!Array.isArray(list)) {
-            throw new TypeError('"list" argument must be an Array of Buffers');
+            throw new TypeError("\"list\" argument must be an Array of Buffers");
         }
 
         if (list.length === 0) {
@@ -358,7 +358,7 @@ if (FuseBox.isServer) {
         for (i = 0; i < list.length; ++i) {
             var buf = list[i];
             if (!Buffer.isBuffer(buf)) {
-                throw new TypeError('"list" argument must be an Array of Buffers');
+                throw new TypeError("\"list\" argument must be an Array of Buffers");
             }
             buf.copy(buffer, pos);
             pos += buf.length;
@@ -370,12 +370,12 @@ if (FuseBox.isServer) {
         if (Buffer.isBuffer(string)) {
             return string.length;
         }
-        if (typeof ArrayBuffer !== 'undefined' && typeof ArrayBuffer.isView === 'function' &&
+        if (typeof ArrayBuffer !== "undefined" && typeof ArrayBuffer.isView === "function" &&
             (ArrayBuffer.isView(string) || string instanceof ArrayBuffer)) {
             return string.byteLength;
         }
-        if (typeof string !== 'string') {
-            string = '' + string;
+        if (typeof string !== "string") {
+            string = "" + string;
         }
 
         var len = string.length;
@@ -385,26 +385,26 @@ if (FuseBox.isServer) {
         var loweredCase = false;
         for (;;) {
             switch (encoding) {
-                case 'ascii':
-                case 'latin1':
-                case 'binary':
+                case "ascii":
+                case "latin1":
+                case "binary":
                     return len;
-                case 'utf8':
-                case 'utf-8':
+                case "utf8":
+                case "utf-8":
                 case undefined:
                     return utf8ToBytes(string).length;
-                case 'ucs2':
-                case 'ucs-2':
-                case 'utf16le':
-                case 'utf-16le':
+                case "ucs2":
+                case "ucs-2":
+                case "utf16le":
+                case "utf-16le":
                     return len * 2;
-                case 'hex':
+                case "hex":
                     return len >>> 1;
-                case 'base64':
+                case "base64":
                     return base64ToBytes(string).length;
                 default:
                     if (loweredCase) return utf8ToBytes(string).length; // assume utf8
-                    encoding = ('' + encoding).toLowerCase();
+                    encoding = ("" + encoding).toLowerCase();
                     loweredCase = true;
             }
         }
@@ -427,7 +427,7 @@ if (FuseBox.isServer) {
         // Return early if start > this.length. Done here to prevent potential uint32
         // coercion fail below.
         if (start > this.length) {
-            return '';
+            return "";
         }
 
         if (end === undefined || end > this.length) {
@@ -435,7 +435,7 @@ if (FuseBox.isServer) {
         }
 
         if (end <= 0) {
-            return '';
+            return "";
         }
 
         // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
@@ -443,39 +443,39 @@ if (FuseBox.isServer) {
         start >>>= 0;
 
         if (end <= start) {
-            return '';
+            return "";
         }
 
-        if (!encoding) encoding = 'utf8';
+        if (!encoding) encoding = "utf8";
 
         while (true) {
             switch (encoding) {
-                case 'hex':
+                case "hex":
                     return hexSlice(this, start, end);
 
-                case 'utf8':
-                case 'utf-8':
+                case "utf8":
+                case "utf-8":
                     return utf8Slice(this, start, end);
 
-                case 'ascii':
+                case "ascii":
                     return asciiSlice(this, start, end);
 
-                case 'latin1':
-                case 'binary':
+                case "latin1":
+                case "binary":
                     return latin1Slice(this, start, end);
 
-                case 'base64':
+                case "base64":
                     return base64Slice(this, start, end);
 
-                case 'ucs2':
-                case 'ucs-2':
-                case 'utf16le':
-                case 'utf-16le':
+                case "ucs2":
+                case "ucs-2":
+                case "utf16le":
+                case "utf-16le":
                     return utf16leSlice(this, start, end);
 
                 default:
-                    if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding);
-                    encoding = (encoding + '').toLowerCase();
+                    if (loweredCase) throw new TypeError("Unknown encoding: " + encoding);
+                    encoding = (encoding + "").toLowerCase();
                     loweredCase = true;
             }
         }
@@ -494,7 +494,7 @@ if (FuseBox.isServer) {
     Buffer.prototype.swap16 = function swap16() {
         var len = this.length;
         if (len % 2 !== 0) {
-            throw new RangeError('Buffer size must be a multiple of 16-bits');
+            throw new RangeError("Buffer size must be a multiple of 16-bits");
         }
         for (var i = 0; i < len; i += 2) {
             swap(this, i, i + 1);
@@ -505,7 +505,7 @@ if (FuseBox.isServer) {
     Buffer.prototype.swap32 = function swap32() {
         var len = this.length;
         if (len % 4 !== 0) {
-            throw new RangeError('Buffer size must be a multiple of 32-bits');
+            throw new RangeError("Buffer size must be a multiple of 32-bits");
         }
         for (var i = 0; i < len; i += 4) {
             swap(this, i, i + 3);
@@ -517,7 +517,7 @@ if (FuseBox.isServer) {
     Buffer.prototype.swap64 = function swap64() {
         var len = this.length;
         if (len % 8 !== 0) {
-            throw new RangeError('Buffer size must be a multiple of 64-bits');
+            throw new RangeError("Buffer size must be a multiple of 64-bits");
         }
         for (var i = 0; i < len; i += 8) {
             swap(this, i, i + 7);
@@ -530,30 +530,30 @@ if (FuseBox.isServer) {
 
     Buffer.prototype.toString = function toString() {
         var length = this.length;
-        if (length === 0) return '';
+        if (length === 0) return "";
         if (arguments.length === 0) return utf8Slice(this, 0, length);
         return slowToString.apply(this, arguments);
     };
 
     Buffer.prototype.equals = function equals(b) {
-        if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer');
+        if (!Buffer.isBuffer(b)) throw new TypeError("Argument must be a Buffer");
         if (this === b) return true;
         return Buffer.compare(this, b) === 0;
     };
 
     Buffer.prototype.inspect = function inspect() {
-        var str = '';
+        var str = "";
         var max = exports.INSPECT_MAX_BYTES;
         if (this.length > 0) {
-            str = this.toString('hex', 0, max).match(/.{2}/g).join(' ');
-            if (this.length > max) str += ' ... ';
+            str = this.toString("hex", 0, max).match(/.{2}/g).join(" ");
+            if (this.length > max) str += " ... ";
         }
-        return '<Buffer ' + str + '>';
+        return "<Buffer " + str + ">";
     };
 
     Buffer.prototype.compare = function compare(target, start, end, thisStart, thisEnd) {
         if (!Buffer.isBuffer(target)) {
-            throw new TypeError('Argument must be a Buffer');
+            throw new TypeError("Argument must be a Buffer");
         }
 
         if (start === undefined) {
@@ -570,7 +570,7 @@ if (FuseBox.isServer) {
         }
 
         if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
-            throw new RangeError('out of range index');
+            throw new RangeError("out of range index");
         }
 
         if (thisStart >= thisEnd && start >= end) {
@@ -624,7 +624,7 @@ if (FuseBox.isServer) {
         if (buffer.length === 0) return -1;
 
         // Normalize byteOffset
-        if (typeof byteOffset === 'string') {
+        if (typeof byteOffset === "string") {
             encoding = byteOffset;
             byteOffset = 0;
         } else if (byteOffset > 0x7fffffff) {
@@ -649,7 +649,7 @@ if (FuseBox.isServer) {
         }
 
         // Normalize val
-        if (typeof val === 'string') {
+        if (typeof val === "string") {
             val = Buffer.from(val, encoding);
         }
 
@@ -660,9 +660,9 @@ if (FuseBox.isServer) {
                 return -1;
             }
             return arrayIndexOf(buffer, val, byteOffset, encoding, dir);
-        } else if (typeof val === 'number') {
+        } else if (typeof val === "number") {
             val = val & 0xFF; // Search for a byte value [0-255]
-            if (typeof Uint8Array.prototype.indexOf === 'function') {
+            if (typeof Uint8Array.prototype.indexOf === "function") {
                 if (dir) {
                     return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset);
                 } else {
@@ -672,7 +672,7 @@ if (FuseBox.isServer) {
             return arrayIndexOf(buffer, [val], byteOffset, encoding, dir);
         }
 
-        throw new TypeError('val must be string, number or Buffer');
+        throw new TypeError("val must be string, number or Buffer");
     }
 
     function arrayIndexOf(arr, val, byteOffset, encoding, dir) {
@@ -682,8 +682,8 @@ if (FuseBox.isServer) {
 
         if (encoding !== undefined) {
             encoding = String(encoding).toLowerCase();
-            if (encoding === 'ucs2' || encoding === 'ucs-2' ||
-                encoding === 'utf16le' || encoding === 'utf-16le') {
+            if (encoding === "ucs2" || encoding === "ucs-2" ||
+                encoding === "utf16le" || encoding === "utf-16le") {
                 if (arr.length < 2 || val.length < 2) {
                     return -1;
                 }
@@ -757,7 +757,7 @@ if (FuseBox.isServer) {
 
         // must be an even number of digits
         var strLen = string.length;
-        if (strLen % 2 !== 0) throw new TypeError('Invalid hex string');
+        if (strLen % 2 !== 0) throw new TypeError("Invalid hex string");
 
         if (length > strLen / 2) {
             length = strLen / 2;
@@ -793,11 +793,11 @@ if (FuseBox.isServer) {
     Buffer.prototype.write = function write(string, offset, length, encoding) {
         // Buffer#write(string)
         if (offset === undefined) {
-            encoding = 'utf8';
+            encoding = "utf8";
             length = this.length;
             offset = 0;
                 // Buffer#write(string, encoding)
-        } else if (length === undefined && typeof offset === 'string') {
+        } else if (length === undefined && typeof offset === "string") {
             encoding = offset;
             length = this.length;
             offset = 0;
@@ -806,7 +806,7 @@ if (FuseBox.isServer) {
             offset = offset >>> 0;
             if (isFinite(length)) {
                 length = length >>> 0;
-                if (encoding === undefined) encoding = 'utf8';
+                if (encoding === undefined) encoding = "utf8";
             } else {
                 encoding = length;
                 length = undefined;
@@ -814,7 +814,7 @@ if (FuseBox.isServer) {
             // legacy write(string, encoding, offset, length) - remove in v0.13
         } else {
             throw new Error(
-                'Buffer.write(string, encoding, offset[, length]) is no longer supported'
+                "Buffer.write(string, encoding, offset[, length]) is no longer supported"
             );
         }
 
@@ -822,41 +822,41 @@ if (FuseBox.isServer) {
         if (length === undefined || length > remaining) length = remaining;
 
         if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
-            throw new RangeError('Attempt to write outside buffer bounds');
+            throw new RangeError("Attempt to write outside buffer bounds");
         }
 
-        if (!encoding) encoding = 'utf8';
+        if (!encoding) encoding = "utf8";
 
         var loweredCase = false;
         for (;;) {
             switch (encoding) {
-                case 'hex':
+                case "hex":
                     return hexWrite(this, string, offset, length);
 
-                case 'utf8':
-                case 'utf-8':
+                case "utf8":
+                case "utf-8":
                     return utf8Write(this, string, offset, length);
 
-                case 'ascii':
+                case "ascii":
                     return asciiWrite(this, string, offset, length);
 
-                case 'latin1':
-                case 'binary':
+                case "latin1":
+                case "binary":
                     return latin1Write(this, string, offset, length);
 
-                case 'base64':
+                case "base64":
                     // Warning: maxLength not taken into account in base64Write
                     return base64Write(this, string, offset, length);
 
-                case 'ucs2':
-                case 'ucs-2':
-                case 'utf16le':
-                case 'utf-16le':
+                case "ucs2":
+                case "ucs-2":
+                case "utf16le":
+                case "utf-16le":
                     return ucs2Write(this, string, offset, length);
 
                 default:
-                    if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding);
-                    encoding = ('' + encoding).toLowerCase();
+                    if (loweredCase) throw new TypeError("Unknown encoding: " + encoding);
+                    encoding = ("" + encoding).toLowerCase();
                     loweredCase = true;
             }
         }
@@ -864,7 +864,7 @@ if (FuseBox.isServer) {
 
     Buffer.prototype.toJSON = function toJSON() {
         return {
-            type: 'Buffer',
+            type: "Buffer",
             data: Array.prototype.slice.call(this._arr || this, 0),
         };
     };
@@ -962,7 +962,7 @@ if (FuseBox.isServer) {
         }
 
         // Decode in chunks to avoid "call stack size exceeded".
-        var res = '';
+        var res = "";
         var i = 0;
         while (i < len) {
             res += String.fromCharCode.apply(
@@ -974,7 +974,7 @@ if (FuseBox.isServer) {
     }
 
     function asciiSlice(buf, start, end) {
-        var ret = '';
+        var ret = "";
         end = Math.min(buf.length, end);
 
         for (var i = start; i < end; ++i) {
@@ -984,7 +984,7 @@ if (FuseBox.isServer) {
     }
 
     function latin1Slice(buf, start, end) {
-        var ret = '';
+        var ret = "";
         end = Math.min(buf.length, end);
 
         for (var i = start; i < end; ++i) {
@@ -999,7 +999,7 @@ if (FuseBox.isServer) {
         if (!start || start < 0) start = 0;
         if (!end || end < 0 || end > len) end = len;
 
-        var out = '';
+        var out = "";
         for (var i = start; i < end; ++i) {
             out += toHex(buf[i]);
         }
@@ -1008,7 +1008,7 @@ if (FuseBox.isServer) {
 
     function utf16leSlice(buf, start, end) {
         var bytes = buf.slice(start, end);
-        var res = '';
+        var res = "";
         for (var i = 0; i < bytes.length; i += 2) {
             res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256);
         }
@@ -1046,8 +1046,8 @@ if (FuseBox.isServer) {
      * Need to make sure that buffer isn't trying to write out of bounds.
      */
     function checkOffset(offset, ext, length) {
-        if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint');
-        if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length');
+        if ((offset % 1) !== 0 || offset < 0) throw new RangeError("offset is not uint");
+        if (offset + ext > length) throw new RangeError("Trying to access beyond buffer length");
     }
 
     Buffer.prototype.readUIntLE = function readUIntLE(offset, byteLength, noAssert) {
@@ -1221,9 +1221,9 @@ if (FuseBox.isServer) {
     };
 
     function checkInt(buf, value, offset, ext, max, min) {
-        if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance');
-        if (value > max || value < min) throw new RangeError('"value" argument is out of bounds');
-        if (offset + ext > buf.length) throw new RangeError('Index out of range');
+        if (!Buffer.isBuffer(buf)) throw new TypeError("\"buffer\" argument must be a Buffer instance");
+        if (value > max || value < min) throw new RangeError("\"value\" argument is out of bounds");
+        if (offset + ext > buf.length) throw new RangeError("Index out of range");
     }
 
     Buffer.prototype.writeUIntLE = function writeUIntLE(value, offset, byteLength, noAssert) {
@@ -1409,8 +1409,8 @@ if (FuseBox.isServer) {
     };
 
     function checkIEEE754(buf, value, offset, ext, max, min) {
-        if (offset + ext > buf.length) throw new RangeError('Index out of range');
-        if (offset < 0) throw new RangeError('Index out of range');
+        if (offset + ext > buf.length) throw new RangeError("Index out of range");
+        if (offset < 0) throw new RangeError("Index out of range");
     }
 
     function writeFloat(buf, value, offset, littleEndian, noAssert) {
@@ -1463,10 +1463,10 @@ if (FuseBox.isServer) {
 
         // Fatal error conditions
         if (targetStart < 0) {
-            throw new RangeError('targetStart out of bounds');
+            throw new RangeError("targetStart out of bounds");
         }
-        if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds');
-        if (end < 0) throw new RangeError('sourceEnd out of bounds');
+        if (start < 0 || start >= this.length) throw new RangeError("sourceStart out of bounds");
+        if (end < 0) throw new RangeError("sourceEnd out of bounds");
 
         // Are we oob?
         if (end > this.length) end = this.length;
@@ -1504,12 +1504,12 @@ if (FuseBox.isServer) {
     //    buffer.fill(string[, offset[, end]][, encoding])
     Buffer.prototype.fill = function fill(val, start, end, encoding) {
         // Handle string cases:
-        if (typeof val === 'string') {
-            if (typeof start === 'string') {
+        if (typeof val === "string") {
+            if (typeof start === "string") {
                 encoding = start;
                 start = 0;
                 end = this.length;
-            } else if (typeof end === 'string') {
+            } else if (typeof end === "string") {
                 encoding = end;
                 end = this.length;
             }
@@ -1519,19 +1519,19 @@ if (FuseBox.isServer) {
                     val = code;
                 }
             }
-            if (encoding !== undefined && typeof encoding !== 'string') {
-                throw new TypeError('encoding must be a string');
+            if (encoding !== undefined && typeof encoding !== "string") {
+                throw new TypeError("encoding must be a string");
             }
-            if (typeof encoding === 'string' && !Buffer.isEncoding(encoding)) {
-                throw new TypeError('Unknown encoding: ' + encoding);
+            if (typeof encoding === "string" && !Buffer.isEncoding(encoding)) {
+                throw new TypeError("Unknown encoding: " + encoding);
             }
-        } else if (typeof val === 'number') {
+        } else if (typeof val === "number") {
             val = val & 255;
         }
 
         // Invalid ranges are not set to a default, so can range check early.
         if (start < 0 || this.length < start || this.length < end) {
-            throw new RangeError('Out of range index');
+            throw new RangeError("Out of range index");
         }
 
         if (end <= start) {
@@ -1544,7 +1544,7 @@ if (FuseBox.isServer) {
         if (!val) val = 0;
 
         var i;
-        if (typeof val === 'number') {
+        if (typeof val === "number") {
             for (i = start; i < end; ++i) {
                 this[i] = val;
             }
@@ -1568,23 +1568,23 @@ if (FuseBox.isServer) {
 
     function base64clean(str) {
         // Node strips out invalid characters like \n and \t from the string, base64-js does not
-        str = stringtrim(str).replace(INVALID_BASE64_RE, '');
+        str = stringtrim(str).replace(INVALID_BASE64_RE, "");
             // Node converts strings with length < 2 to ''
-        if (str.length < 2) return '';
+        if (str.length < 2) return "";
             // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
         while (str.length % 4 !== 0) {
-            str = str + '=';
+            str = str + "=";
         }
         return str;
     }
 
     function stringtrim(str) {
         if (str.trim) return str.trim();
-        return str.replace(/^\s+|\s+$/g, '');
+        return str.replace(/^\s+|\s+$/g, "");
     }
 
     function toHex(n) {
-        if (n < 16) return '0' + n.toString(16);
+        if (n < 16) return "0" + n.toString(16);
         return n.toString(16);
     }
 
@@ -1661,7 +1661,7 @@ if (FuseBox.isServer) {
                     codePoint & 0x3F | 0x80
                 );
             } else {
-                throw new Error('Invalid code point');
+                throw new Error("Invalid code point");
             }
         }
 

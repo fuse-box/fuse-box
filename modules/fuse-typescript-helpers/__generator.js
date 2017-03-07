@@ -1,14 +1,14 @@
-FuseBox.global('__generator', function(thisArg, body) {
+FuseBox.global("__generator", function(thisArg, body) {
     var _ = { label: 0, sent() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] },
         f, y, t;
-    return { next: verb(0), 'throw': verb(1), 'return': verb(2) };
+    return { next: verb(0), "throw": verb(1), "return": verb(2) };
 
     function verb(n) { return function(v) { return step([n, v]); }; }
 
     function step(op) {
-        if (f) throw new TypeError('Generator is already executing.');
+        if (f) throw new TypeError("Generator is already executing.");
         while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? 'return' : op[0] ? 'throw' : 'next']) && !(t = t.call(y, op[1])).done) return t;
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [0, t.value];
             switch (op[0]) {
                 case 0:
