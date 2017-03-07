@@ -354,9 +354,9 @@ export class PathMaster {
                 version: "0.0.0",
             };
         };
+
         let localLib = path.join(Config.FUSEBOX_MODULES, name);
         let modulePath = path.join(Config.NODE_MODULES_DIR, name);
-
 
         if (this.context.customModulesFolder) {
             let customFolder = path.join(this.context.customModulesFolder, name);
