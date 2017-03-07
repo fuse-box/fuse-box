@@ -332,8 +332,12 @@ export class PathMaster {
                         entryFile = json.browser;
                     }
                 }
-                entryFile = path.join(folder, entryFile || json.main || "index.js");
-                entryRoot = path.dirname(entryFile);
+                if (json["jsnext:main"]) {
+                    entryFile = path.join(folder, json["jsnext:main"]);
+                } else {
+                    entryFile = path.join(folder, entryFile || json.main || "index.js");
+                    entryRoot = path.dirname(entryFile);
+                }
                 return {
                     name: name,
                     custom: isCustom,

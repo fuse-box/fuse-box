@@ -14,6 +14,7 @@ import { Config } from "./../Config";
 import { BundleTestRunner } from "../BundleTestRunner";
 import * as process from 'process';
 import { nativeModules, HeaderImport } from '../analysis/HeaderImport';
+import { Reverse } from './Reverse';
 
 const appRoot = require("app-root-path");
 
@@ -231,7 +232,9 @@ export class FuseBox {
     }
 
 
-
+    public reverse(bundle: Buffer, outDir: string) {
+        new Reverse(this.context, bundle, outDir);
+    }
     /**
      * Make a Bundle (or bundles)
      */

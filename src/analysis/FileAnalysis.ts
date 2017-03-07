@@ -15,7 +15,17 @@ require("acorn-jsx/inject")(acorn);
 
 const plugins: any = [AutoImport, OwnVariable, OwnBundle, ImportDeclaration]
 
-
+export function acornParse(contents, options?: any) {
+    return acorn.parse(contents, {
+        ...options || {}, ...{
+            sourceType: "module",
+            tolerant: true,
+            ecmaVersion: 8,
+            plugins: { es7: true, jsx: true },
+            jsx: { allowNamespacedObjects: true }
+        }
+    });
+}
 /**
  * Makes static analysis on the code
  * Gets require statements (es5 and es6) 
@@ -67,6 +77,8 @@ export class FileAnalysis {
         this.skipAnalysis = true;
     }
 
+
+
     /**
      * 
      * 
@@ -76,15 +88,7 @@ export class FileAnalysis {
      */
     public parseUsingAcorn(options?: any) {
         try {
-            this.ast = acorn.parse(this.file.contents, {
-                ...options || {}, ...{
-                    sourceType: "module",
-                    tolerant: true,
-                    ecmaVersion: 8,
-                    plugins: { es7: true, jsx: true },
-                    jsx: { allowNamespacedObjects: true }
-                }
-            });
+            this.ast = acornParse(this.file.contents, options);
         } catch (err) {
             return PrettyError.errorWithContents(err, this.file);
         }
