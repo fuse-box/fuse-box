@@ -41,6 +41,8 @@ if (!headerCollection) {
     headerCollection = new HeaderImportCollection();;
 }
 // register native variables
+headerCollection.add(new HeaderImport("timers", "timers"));
+headerCollection.add(new HeaderImport("stream", "stream"));
 headerCollection.add(new HeaderImport("process", "process"));
 headerCollection.add(new HeaderImport("Buffer", {
     pkg: "buffer",
