@@ -1,5 +1,5 @@
 if (FuseBox.isServer) {
-    module.exports = global.require('querystring');
+    module.exports = global.require("querystring");
 } else {
 
     // Copyright Joyent, Inc. and other Node contributors.
@@ -23,7 +23,7 @@ if (FuseBox.isServer) {
     // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
     // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-    'use strict';
+    "use strict";
 
     exports.decode = exports.parse = decode;
     exports.encode = exports.stringify = encode;
@@ -36,11 +36,11 @@ if (FuseBox.isServer) {
     }
 
     function decode(qs, sep, eq, options) {
-        sep = sep || '&';
-        eq = eq || '=';
+        sep = sep || "&";
+        eq = eq || "=";
         var obj = {};
 
-        if (typeof qs !== 'string' || qs.length === 0) {
+        if (typeof qs !== "string" || qs.length === 0) {
             return obj;
         }
 
@@ -48,7 +48,7 @@ if (FuseBox.isServer) {
         qs = qs.split(sep);
 
         var maxKeys = 1000;
-        if (options && typeof options.maxKeys === 'number') {
+        if (options && typeof options.maxKeys === "number") {
             maxKeys = options.maxKeys;
         }
 
@@ -59,7 +59,7 @@ if (FuseBox.isServer) {
         }
 
         for (var i = 0; i < len; ++i) {
-            var x = qs[i].replace(regexp, '%20'),
+            var x = qs[i].replace(regexp, "%20"),
                 idx = x.indexOf(eq),
                 kstr, vstr, k, v;
 
@@ -68,7 +68,7 @@ if (FuseBox.isServer) {
                 vstr = x.substr(idx + 1);
             } else {
                 kstr = x;
-                vstr = '';
+                vstr = "";
             }
 
             k = decodeURIComponent(kstr);
@@ -88,28 +88,28 @@ if (FuseBox.isServer) {
 
     var stringifyPrimitive = function(v) {
         switch (typeof v) {
-            case 'string':
+            case "string":
                 return v;
 
-            case 'boolean':
-                return v ? 'true' : 'false';
+            case "boolean":
+                return v ? "true" : "false";
 
-            case 'number':
-                return isFinite(v) ? v : '';
+            case "number":
+                return isFinite(v) ? v : "";
 
             default:
-                return '';
+                return "";
         }
     };
 
     function encode(obj, sep, eq, name) {
-        sep = sep || '&';
-        eq = eq || '=';
+        sep = sep || "&";
+        eq = eq || "=";
         if (obj === null) {
             obj = undefined;
         }
 
-        if (typeof obj === 'object') {
+        if (typeof obj === "object") {
             return Object.keys(obj).map(function(k) {
                 var ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
                 if (Array.isArray(obj[k])) {
@@ -123,7 +123,7 @@ if (FuseBox.isServer) {
 
         }
 
-        if (!name) return '';
+        if (!name) return "";
         return encodeURIComponent(stringifyPrimitive(name)) + eq +
             encodeURIComponent(stringifyPrimitive(obj));
     }
