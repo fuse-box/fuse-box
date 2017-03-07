@@ -1,29 +1,29 @@
-import { ensurePublicExtension, Concat, ensureUserPath } from './Utils';
-import { BundleData } from './arithmetic/Arithmetic';
+import { ensurePublicExtension, Concat, ensureUserPath } from "./Utils";
 import { ModuleCollection } from "./core/ModuleCollection";
 import { WorkFlowContext } from "./core/WorkflowContext";
-import { Config } from "./Config";
+import { BundleData } from "./arithmetic/Arithmetic";
 import { File } from "./core/File";
-import * as path from 'path';
-import * as fs from 'fs';
+import { Config } from "./Config";
+import * as path from "path";
+import * as fs from "fs";
 
 /**
- * 
- * 
+ *
+ *
  * @export
  * @class BundleSource
  */
 export class BundleSource {
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf BundleSource
      */
     public standalone = false;
     /**
-     * 
-     * 
+     *
+     *
      * @private
      * @type {*}
      * @memberOf BundleSource
@@ -35,9 +35,9 @@ export class BundleSource {
 
     /**
      * Creates an instance of BundleSource.
-     * 
+     *
      * @param {WorkFlowContext} context
-     * 
+     *
      * @memberOf BundleSource
      */
     constructor(public context: WorkFlowContext) {
@@ -46,7 +46,7 @@ export class BundleSource {
 
     /**
      *
-     * 
+     *
      * @memberOf BundleSource
      */
     public init() {
@@ -54,10 +54,10 @@ export class BundleSource {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {ModuleCollection} collection
-     * 
+     *
      * @memberOf BundleSource
      */
     public createCollection(collection: ModuleCollection) {
@@ -66,10 +66,10 @@ export class BundleSource {
 
     public addContentToCurrentCollection(data: string) {
         if (this.collectionSource) {
-
             this.collectionSource.add(null, data);
         }
     }
+
     public startCollection(collection: ModuleCollection) {
         let conflicting = {};
         if (collection.conflictingVersions) {
@@ -82,10 +82,10 @@ export class BundleSource {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {ModuleCollection} collection
-     * 
+     *
      * @memberOf BundleSource
      */
     public endCollection(collection: ModuleCollection) {
@@ -102,23 +102,22 @@ export class BundleSource {
         return this.collectionSource.content.toString();
     }
 
-
-
     /**
-     * 
-     * 
+     *
+     *
      * @param {string} data
-     * 
+     *
      * @memberOf BundleSource
      */
     public addContent(data: string) {
         this.concat.add(null, data);
     }
+
     /**
-     * 
-     * 
+     *
+     *
      * @param {File} file
-     * 
+     *
      * @memberOf BundleSource
      */
     public addFile(file: File) {
@@ -210,10 +209,10 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @returns
-     * 
+     *
      * @memberOf BundleSource
      */
     public getResult() {

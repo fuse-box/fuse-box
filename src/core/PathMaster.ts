@@ -41,11 +41,11 @@ export interface IPackageInformation {
 }
 
 /**
- * Manages the allowed extensions e.g. 
+ * Manages the allowed extensions e.g.
  * should user be allowed to do `require('./foo.ts')`
  */
 export class AllowedExtenstions {
-    /** 
+    /**
      * Users are allowed to require files with these extensions by default
      **/
     public static list: Set<string> = new Set([".js", ".ts", ".tsx", ".json", ".xml", ".css", ".html"]);
@@ -65,7 +65,7 @@ export class AllowedExtenstions {
  */
 export class PathMaster {
 
-    private tsMode = false;
+    private tsMode: boolean = false;
 
     constructor(public context: WorkFlowContext, public rootPackagePath?: string) { }
 
@@ -103,7 +103,7 @@ export class PathMaster {
             // A trick to avoid one nasty situation
             // Imagine lodash@1.0.0 that is set as a custom depedency for 2 libraries
             // We need to make sure there, that we use one source (either or)
-            // We don't want to take modules from 2 different places (in case if versions match) 
+            // We don't want to take modules from 2 different places (in case if versions match)
             let nodeModuleInfo = this.getNodeModuleInformation(info.name);
             let cachedInfo = this.context.getLibInfo(nodeModuleInfo.name, nodeModuleInfo.version);
             if (cachedInfo) { // Modules has been defined already
@@ -175,7 +175,6 @@ export class PathMaster {
     public getAbsolutePath(name: string, root: string, rootEntryLimit?: string, explicit = false) {
         let url = this.ensureFolderAndExtensions(name, root, explicit);
 
-
         let result = path.resolve(root, url);
 
         // A check for tsx
@@ -188,7 +187,7 @@ export class PathMaster {
         //         if (fs.existsSync(tsxVersion)) {
         //             return tsxVersion;
         //         } else {
-        //             // yet another hack 
+        //             // yet another hack
         //             // final check for .js extension
         //             // I know, it's not pretty ;-( Let's find a way to fix that
         //             let jsVersion = replaceExt(result, ".js");
@@ -255,8 +254,6 @@ export class PathMaster {
         }
     }
 
-
-
     private ensureFolderAndExtensions(name: string, root: string, explicit = false) {
         // Would be great to list a folder and prob for a file.
         // So, let's say, user did not specify an extension
@@ -293,8 +290,6 @@ export class PathMaster {
 
         return name;
     }
-
-
 
     private getNodeModuleInfo(name: string): INodeModuleRequire {
         // Handle scope requires

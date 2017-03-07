@@ -23,7 +23,7 @@ export class File {
      * In order to keep bundle in a bundle
      * We can't destory the original contents
      * But instead we add additional property that will override bundle file contents
-     * 
+     *
      * @type {string}
      * @memberOf FileAnalysis
      */
@@ -33,57 +33,57 @@ export class File {
 
     public params: Map<string, string>;
     /**
-     * 
-     * 
+     *
+     *
      * @type {string}
      * @memberOf File
      */
     public absPath: string;
     /**
-     * 
-     * 
+     *
+     *
      * @type {string}
      * @memberOf File
      */
     public contents: string;
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf File
      */
     public isLoaded = false;
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf File
      */
     public isNodeModuleEntry = false;
     /**
-     * 
-     * 
+     *
+     *
      * @type {ModuleCollection}
      * @memberOf File
      */
     public collection: ModuleCollection;
     /**
-     * 
-     * 
+     *
+     *
      * @type {string[]}
      * @memberOf File
      */
     public headerContent: string[];
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf File
      */
     public isTypeScript = false;
     /**
-     * 
-     * 
+     *
+     *
      * @type {*}
      * @memberOf File
      */
@@ -91,15 +91,15 @@ export class File {
 
     public properties = new Map<string, any>();
     /**
-     * 
-     * 
+     *
+     *
      * @type {FileAnalysis}
      * @memberOf File
      */
     public analysis: FileAnalysis = new FileAnalysis(this);
     /**
-     * 
-     * 
+     *
+     *
      * @type {Promise<any>[]}
      * @memberOf File
      */
@@ -113,10 +113,10 @@ export class File {
 
     /**
      * Creates an instance of File.
-     * 
+     *
      * @param {WorkFlowContext} context
      * @param {IPathInformation} info
-     * 
+     *
      * @memberOf File
      */
     constructor(public context: WorkFlowContext, public info: IPathInformation) {
@@ -165,13 +165,11 @@ export class File {
     }
 
 
-
-
     /**
-     * 
-     * 
+     *
+     *
      * @returns
-     * 
+     *
      * @memberOf File
      */
     public getCrossPlatormPath() {
@@ -198,10 +196,10 @@ export class File {
         }
     }
     /**
-     * 
-     * 
+     *
+     *
      * @param {*} [_ast]
-     * 
+     *
      * @memberOf File
      */
     public tryPlugins(_ast?: any) {
@@ -251,10 +249,10 @@ export class File {
         }
     }
     /**
-     * 
-     * 
+     *
+     *
      * @param {string} str
-     * 
+     *
      * @memberOf File
      */
     public addHeaderContent(str: string) {
@@ -265,9 +263,9 @@ export class File {
     }
 
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf File
      */
     public loadContents() {
@@ -286,12 +284,11 @@ export class File {
         this.analysis.analyze();
     }
 
-
     /**
-     * 
-     * 
+     *
+     *
      * @returns
-     * 
+     *
      * @memberOf File
      */
     public consume() {
@@ -348,11 +345,11 @@ export class File {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @private
      * @returns
-     * 
+     *
      * @memberOf File
      */
     private handleTypescript() {
@@ -414,10 +411,10 @@ export class File {
     /**
      * Provides a file-specific transpilation config. This is needed so we can supply the filename to
      * the TypeScript compiler.
-     * 
+     *
      * @private
      * @returns
-     * 
+     *
      * @memberOf File
      */
     private getTranspilationConfig() {

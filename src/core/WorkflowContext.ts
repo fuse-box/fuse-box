@@ -302,7 +302,7 @@ export class WorkFlowContext {
     }
 
 
-    /** 
+    /**
      * Retuns the parsed `tsconfig.json` contents
      */
     public getTypeScriptConfig() {

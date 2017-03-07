@@ -1,21 +1,20 @@
-import { File } from './File';
+import { File } from "./File";
 import { PathMaster, IPackageInformation } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
-import { each, utils } from 'realm-utils';
 import { BundleData } from "../arithmetic/Arithmetic";
 import { ensurePublicExtension, string2RegExp } from '../Utils';
-
+import { each, utils } from "realm-utils";
 
 /**
- * 
- * 
+ *
+ *
  * @export
  * @class ModuleCollection
  */
 export class ModuleCollection {
     /**
-     * 
-     * 
+     *
+     *
      * @type {Map<string, ModuleCollection>}
      * @memberOf ModuleCollection
      */
@@ -26,65 +25,65 @@ export class ModuleCollection {
     public acceptFiles = true;
 
     /**
-     * 
-     * 
+     *
+     *
      * @type {Map<string, File>}
      * @memberOf ModuleCollection
      */
     public dependencies: Map<string, File> = new Map();
     /**
-     * 
-     * 
+     *
+     *
      * @type {BundleData}
      * @memberOf ModuleCollection
      */
     public bundle: BundleData;
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf ModuleCollection
      */
     public entryResolved = false;
     /**
-     * 
-     * 
+     *
+     *
      * @type {PathMaster}
      * @memberOf ModuleCollection
      */
     public pm: PathMaster;
     /**
-     * 
-     * 
+     *
+     *
      * @type {File}
      * @memberOf ModuleCollection
      */
     public entryFile: File;
 
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf ModuleCollection
      */
     public cached = false;
     /**
-     * 
-     * 
+     *
+     *
      * @type {string}
      * @memberOf ModuleCollection
      */
     public cachedContent: string;
     /**
-     * 
-     * 
+     *
+     *
      * @type {string}
      * @memberOf ModuleCollection
      */
     public cachedName: string;
     /**
-     * 
-     * 
+     *
+     *
      * @type {string}
      * @memberOf ModuleCollection
      */
@@ -92,46 +91,46 @@ export class ModuleCollection {
 
 
     /**
-     * 
-     * 
+     *
+     *
      * @type {Map<string, string>}
      * @memberOf ModuleCollection
      */
     public conflictingVersions: Map<string, string> = new Map();
 
     /**
-     * 
-     * 
+     *
+     *
      * @private
      * @type {File[]}
      * @memberOf ModuleCollection
      */
     private toBeResolved: File[] = [];
     /**
-     * 
-     * 
+     *
+     *
      * @private
-     * 
+     *
      * @memberOf ModuleCollection
      */
     private delayedResolve = false;
 
     /**
      * Creates an instance of ModuleCollection.
-     * 
+     *
      * @param {WorkFlowContext} context
      * @param {string} name
      * @param {IPackageInformation} [info]
-     * 
+     *
      * @memberOf ModuleCollection
      */
     constructor(public context: WorkFlowContext, public name: string, public info?: IPackageInformation) { }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {File} file
-     * 
+     *
      * @memberOf ModuleCollection
      */
     public setupEntry(file: File) {
@@ -144,11 +143,11 @@ export class ModuleCollection {
 
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {boolean} [shouldIgnoreDeps]
      * @returns
-     * 
+     *
      * @memberOf ModuleCollection
      */
     public resolveEntry(shouldIgnoreDeps?: boolean) {
@@ -237,11 +236,11 @@ export class ModuleCollection {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {File} file
      * @returns
-     * 
+     *
      * @memberOf ModuleCollection
      */
     public resolveNodeModule(file: File) {
@@ -315,12 +314,12 @@ export class ModuleCollection {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {File} file
      * @param {boolean} [shouldIgnoreDeps]
      * @returns
-     * 
+     *
      * @memberOf ModuleCollection
      */
     public resolve(file: File, shouldIgnoreDeps?: boolean) {
@@ -359,7 +358,7 @@ export class ModuleCollection {
         } else {
             if (this.dependencies.has(file.absPath)) { return; }
 
-            // Consuming file 
+            // Consuming file
             // Here we read it and return a list of require statements
             file.consume();
 

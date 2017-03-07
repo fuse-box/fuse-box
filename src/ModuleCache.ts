@@ -43,10 +43,10 @@ export class ModuleCache {
 
     private permanentCacheFolder: string;
     /**
-     * 
-     * 
+     *
+     *
      * @private
-     * 
+     *
      * @memberOf ModuleCache
      */
     private cachedDeps = {
@@ -56,9 +56,9 @@ export class ModuleCache {
 
     /**
      * Creates an instance of ModuleCache.
-     * 
+     *
      * @param {WorkFlowContext} context
-     * 
+     *
      * @memberOf ModuleCache
      */
     constructor(public context: WorkFlowContext) {
@@ -111,14 +111,12 @@ export class ModuleCache {
         }
     }
 
-
-
     /**
-     * 
-     * 
+     *
+     *
      * @param {File} file
      * @returns
-     * 
+     *
      * @memberOf ModuleCache
      */
     public getStaticCache(file: File) {
@@ -157,16 +155,15 @@ export class ModuleCache {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {File} file
      * @param {any} dependencies
      * @param {string} sourcemaps
-     * 
+     *
      * @memberOf ModuleCache
      */
     public writeStaticCache(file: File, sourcemaps: string) {
-
         let fileName = encodeURIComponent(file.info.fuseBoxPath);
         let memCacheKey = encodeURIComponent(file.absPath);
         let dest = path.join(this.staticCacheFolder, fileName);
@@ -179,22 +176,22 @@ export class ModuleCache {
             headerContent: file.headerContent,
             mtime: stats.mtime.getTime(),
         }
-        let data = `module.exports = { contents : ${JSON.stringify(cacheData.contents)}, 
-dependencies : ${JSON.stringify(cacheData.dependencies)}, 
-sourceMap : ${JSON.stringify(cacheData.sourceMap)},
-headerContent : ${JSON.stringify(cacheData.headerContent)}, 
-mtime : ${cacheData.mtime}
+        let data = `module.exports = { contents: ${JSON.stringify(cacheData.contents)},
+dependencies: ${JSON.stringify(cacheData.dependencies)},
+sourceMap: ${JSON.stringify(cacheData.sourceMap)},
+headerContent: ${JSON.stringify(cacheData.headerContent)},
+mtime: ${cacheData.mtime}
 };`;
         MEMORY_CACHE[memCacheKey] = cacheData;
         fs.writeFileSync(dest, data);
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {File[]} files
      * @returns {Promise<File[]>}
-     * 
+     *
      * @memberOf ModuleCache
      */
     public resolve(files: File[]): Promise<File[]> {
@@ -304,40 +301,40 @@ mtime : ${cacheData.mtime}
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {ModuleCollection} rootCollection
-     * 
+     *
      * @memberOf ModuleCache
      */
     public buildMap(rootCollection: ModuleCollection) {
         let json = this.cachedDeps;
         /**
-         * 
-         * 
+         *
+         *
          * @param {Map<string, ModuleCollection>} modules
          * @param {*} root
          * @returns
          */
         /**
-         * 
-         * 
+         *
+         *
          * @param {ModuleCollection} collection
          * @returns
          */
         /**
-         * 
-         * 
+         *
+         *
          * @param {any} file
          */
         /**
-         * 
-         * 
+         *
+         *
          * @param {any} resolve
          * @param {any} reject
          * @returns
          */
-        let traverse = (modules: Map<string, ModuleCollection>, root: any) => {
+        const traverse = (modules: Map<string, ModuleCollection>, root: any) => {
             return each(modules, (collection: ModuleCollection) => {
                 if (collection.traversed) {
                     return;
