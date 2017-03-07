@@ -1,14 +1,15 @@
 (function(__root__){
 if (__root__["FuseBox"]) return __root__["FuseBox"];
 var $isBrowser = typeof window !== "undefined" && window.navigator;
+var g = $isBrowser ? window : global;
 if ($isBrowser) {
-    window["global"] = window;
+    g["global"] = window;
 }
 __root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports : __root__;
 var $fsbx = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
-    : global["$fsbx"] = global["$fsbx"] || {};
+    : g["$fsbx"] = g["$fsbx"] || {};
 if (!$isBrowser) {
-    global["require"] = require;
+    g["require"] = require;
 }
 var $packages = $fsbx.p = $fsbx.p || {};
 var $events = $fsbx.e = $fsbx.e || {};
@@ -69,8 +70,7 @@ function $pathJoin() {
 function $ensureExtension(name) {
     var matched = name.match(/\.(\w{1,})$/);
     if (matched) {
-        var ext = matched[1];
-        if (!ext) {
+        if (!matched[1]) {
             return name + ".js";
         }
         return name;
@@ -143,9 +143,7 @@ function $getRef(name, opts) {
             return $serverRequire(pkg_name + (name ? "/" + name : ""));
         }
     }
-    if (!name) {
-        name = "./" + pkg.s.entry;
-    }
+    name = name ? name : "./" + pkg.s.entry;
     var filePath = $pathJoin(basePath, name);
     var validPath = $ensureExtension(filePath);
     var file = pkg.f[validPath];
@@ -210,7 +208,7 @@ function $async(file, cb) {
     }
     else {
         if (/\.(js|json)$/.test(file)) {
-            return cb(global["require"](file));
+            return cb(g["require"](file));
         }
         return cb("");
     }
@@ -284,8 +282,8 @@ function $import(name, opts) {
         });
     };
     locals.require.main = {
-        filename: $isBrowser ? "./" : global["require"].main.filename,
-        paths: $isBrowser ? [] : global["require"].main.paths,
+        filename: $isBrowser ? "./" : g["require"].main.filename,
+        paths: $isBrowser ? [] : g["require"].main.paths,
     };
     var args = [locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName];
     $trigger("before-import", args);
@@ -299,11 +297,10 @@ var FuseBox = (function () {
     function FuseBox() {
     }
     FuseBox.global = function (key, obj) {
-        var target = $isBrowser ? window : global;
         if (obj === undefined) {
-            return target[key];
+            return g[key];
         }
-        target[key] = obj;
+        g[key] = obj;
     };
     FuseBox.import = function (name, opts) {
         return $import(name, opts);

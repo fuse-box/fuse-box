@@ -3,6 +3,7 @@
  * The function is injected the global `this` as `__root__`
  **/
 const $isBrowser = typeof window !== "undefined" && window.navigator;
+const g = $isBrowser ? window : global;
 declare let __root__: any;
 declare let __fbx__dnm__: any;
 
@@ -50,7 +51,7 @@ type FSBX = {
 
 // Patching global variable
 if ($isBrowser) {
-    window["global"] = window;
+    g["global"] = window;
 }
 // Set root
 // __fbx__dnm__ is a variable that is used in dynamic imports
@@ -61,11 +62,11 @@ __root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports :
  * A runtime storage for FuseBox
  */
 const $fsbx : FSBX = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
-    : global["$fsbx"] = global["$fsbx"] || {}; // in case of nodejs
+    : g["$fsbx"] = g["$fsbx"] || {}; // in case of nodejs
 
 
 if (!$isBrowser) {
-    global["require"] = require;
+    g["require"] = require;
 }
 /**
  * All packages are here
@@ -151,7 +152,7 @@ function $getDir(filePath: string) {
  * Works like nodejs path.join
  */
 function $pathJoin(...string: string[]): string {
-    let parts : string[] = [];
+    let parts: string[] = [];
     for (let i = 0, l = arguments.length; i < l; i++) {
         parts = parts.concat(arguments[i].split("/"));
     }
@@ -179,12 +180,13 @@ function $pathJoin(...string: string[]): string {
 function $ensureExtension(name: string): string {
     let matched = name.match(/\.(\w{1,})$/);
     if (matched) {
-        let ext = matched[1];
+        // @NOTE: matched [1] is the `ext` we are looking for
+        //
         // Adding extension if none was found
         // Might ignore the case of weird convention like this:
         // modules/core.object.define (core-js)
         // Will be handled differently afterwards
-        if (!ext) {
+        if (!matched[1]) {
             return name + ".js";
         }
         return name;
@@ -235,7 +237,7 @@ type RefOpts = {
     path?: string;
     pkg?: string;
     v?: PackageVersions;
-}
+};
 function $getRef(name: string, opts: RefOpts): IReference {
     let basePath = opts.path || "./";
     let pkg_name = opts.pkg || "default";
@@ -279,9 +281,8 @@ function $getRef(name: string, opts: RefOpts): IReference {
             return $serverRequire(pkg_name + (name ? "/" + name : ""));
         }
     }
-    if (!name) {
-        name = "./" + pkg.s.entry;
-    }
+
+    name = name ? name : "./" + pkg.s.entry;
 
     // get rid of options
     // if (name.indexOf("?") > -1) {
@@ -366,7 +367,7 @@ function $async(file: string, cb: (imported?: any) => any) {
         xmlhttp.send();
     } else {
         if (/\.(js|json)$/.test(file)) {
-            return cb(global["require"](file));
+            return cb(g["require"](file));
         }
         return cb("");
     }
@@ -470,8 +471,8 @@ function $import(name: string, opts: any = {}) {
         });
     };
     locals.require.main = {
-        filename: $isBrowser ? "./" : global["require"].main.filename,
-        paths: $isBrowser ? [] : global["require"].main.paths,
+        filename: $isBrowser ? "./" : g["require"].main.filename,
+        paths: $isBrowser ? [] : g["require"].main.paths,
     };
 
     let args = [locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName];
@@ -509,11 +510,10 @@ class FuseBox {
     public static isServer = !$isBrowser;
 
     public static global(key: string, obj?: any) {
-        let target = $isBrowser ? window : global;
         if (obj === undefined) {
-            return target[key];
+            return g[key];
         }
-        target[key] = obj;
+        g[key] = obj;
     }
 
     /**
