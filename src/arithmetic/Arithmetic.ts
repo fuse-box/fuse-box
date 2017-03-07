@@ -1,12 +1,12 @@
-import { PropParser } from './ArithmeticStringParser';
-import Fluent from './Fluent';
-import { Config } from './../Config';
-import { each, chain, Chainable, utils } from 'realm-utils';
-import { File } from '../core/File';
-import * as path from 'path';
-import * as fs from 'fs';
-import * as fsExtra from 'fs-extra';
-import * as glob from 'glob';
+import { PropParser } from "./ArithmeticStringParser";
+import Fluent from "./Fluent";
+import { Config } from "./../Config";
+import { each, chain, Chainable, utils } from "realm-utils";
+import { File } from "../core/File";
+import * as path from "path";
+import * as fs from "fs";
+import * as fsExtra from "fs-extra";
+import * as glob from "glob";
 
 const deleteFolderRecursive = (p) => {
     if (fs.existsSync(p)) {
@@ -140,16 +140,16 @@ export class Arithmetic {
                 let extname = path.extname(fp);
 
                 // Switching to typescript mode
-                if (extname === '.ts' || extname === '.tsx') {
+                if (extname === ".ts" || extname === ".tsx") {
                     tsMode = true;
                 }
                 if (!extname && !filePattern.match(/\.js$/)) {
-                    fp += '.js';
+                    fp += ".js";
                 }
                 return new Promise((resolve, reject) => {
                     glob(fp, (err, files) => {
                         for (let i = 0; i < files.length; i++) {
-                            data.set(files[i].normalize('NFC'), {
+                            data.set(files[i].normalize("NFC"), {
                                 deps: withDeps,
                             });
                         }
@@ -165,7 +165,7 @@ export class Arithmetic {
             public tempFolder: string;
             public prepareVirtualFiles() {
                 if (virtualFiles) {
-                    this.tempFolder = path.join(Config.TEMP_FOLDER, 'virtual-files', new Date().getTime().toString());
+                    this.tempFolder = path.join(Config.TEMP_FOLDER, "virtual-files", new Date().getTime().toString());
                     homeDir = this.tempFolder;
                     fsExtra.ensureDirSync(this.tempFolder);
 

@@ -1,5 +1,5 @@
-import { File } from '../../core/File';
-import { WorkFlowContext, Plugin } from './../../core/WorkflowContext';
+import { File } from "../../core/File";
+import { WorkFlowContext, Plugin } from "./../../core/WorkflowContext";
 
 
 /**
@@ -25,7 +25,7 @@ export class SVGSimplePlugin implements Plugin {
      * @memberOf FuseBoxHTMLPlugin
      */
     public init(context: WorkFlowContext) {
-        context.allowExtension('.svg');
+        context.allowExtension(".svg");
     }
     /**
      *
@@ -37,12 +37,12 @@ export class SVGSimplePlugin implements Plugin {
     public transform(file: File) {
         file.loadContents();
         let content = file.contents;
-        content = content.replace(/"/g, '\'');
-        content = content.replace(/\s+/g, ' ');
+        content = content.replace(/"/g, "'");
+        content = content.replace(/\s+/g, " ");
         content = content.replace(/[{}\|\\\^~\[\]`"<>#%]/g, (match) => {
-            return '%' + match[0].charCodeAt(0).toString(16).toUpperCase();
+            return "%" + match[0].charCodeAt(0).toString(16).toUpperCase();
         });
-        let data = 'data:image/svg+xml;charset=utf8,' + content.trim();
+        let data = "data:image/svg+xml;charset=utf8," + content.trim();
         file.contents = `module.exports = ${JSON.stringify(data)}`;
     }
 };

@@ -1,19 +1,19 @@
-import { HotReloadPlugin } from './../plugins/HotReloadPlugin';
-import { SocketServer } from './SocketServer';
-import { ensureUserPath } from '../Utils';
-import { HTTPServer } from './HTTPServer';
-import { FuseBox } from '../core/FuseBox';
-import { utils } from 'realm-utils';
-import { ArithmeticStr } from '../Types';
-import * as process from 'process';
-import * as path from 'path';
+import { HotReloadPlugin } from "./../plugins/HotReloadPlugin";
+import { SocketServer } from "./SocketServer";
+import { ensureUserPath } from "../Utils";
+import { HTTPServer } from "./HTTPServer";
+import { FuseBox } from "../core/FuseBox";
+import { utils } from "realm-utils";
+import { ArithmeticStr } from "../Types";
+import * as process from "process";
+import * as path from "path";
 
-const watch = require('watch');
+const watch = require("watch");
 
 export type HotReloadEmitter = (server: Server, sourceChangedInfo: any) => any;
 
 export type SourceChangedEvent = {
-    type: 'js' | 'css' | 'css-file',
+    type: "js" | "css" | "css-file",
     content: string,
     path: string
 };
@@ -94,7 +94,7 @@ export class Server {
                     if (emitter) {
                         emitter(this, info);
                     } else {
-                        this.socketServer.send('source-changed', info);
+                        this.socketServer.send("source-changed", info);
                     }
                 }
             });

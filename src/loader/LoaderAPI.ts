@@ -2,7 +2,7 @@
  * This whole file is wrapped in a function by our gulpfile.js
  * The function is injected the global `this` as `__root__`
  **/
-const $isBrowser = typeof window !== 'undefined' && window.navigator;
+const $isBrowser = typeof window !== "undefined" && window.navigator;
 declare let __root__: any;
 declare let __fbx__dnm__: any;
 
@@ -43,29 +43,29 @@ type FSBX = {
     },
     /** FuseBox events */
     e?: {
-        'after-import'?: any;
+        "after-import"?: any;
     }
 };
 
 
 // Patching global variable
 if ($isBrowser) {
-    window['global'] = window;
+    window["global"] = window;
 }
 // Set root
 // __fbx__dnm__ is a variable that is used in dynamic imports
 // In order for dynamic imports to work, we need to switch window to module.exports
-__root__ = !$isBrowser || typeof __fbx__dnm__ !== 'undefined' ? module.exports : __root__;
+__root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports : __root__;
 
 /**
  * A runtime storage for FuseBox
  */
-const $fsbx : FSBX = $isBrowser ? (window['__fsbx__'] = window['__fsbx__'] || {})
-    : global['$fsbx'] = global['$fsbx'] || {}; // in case of nodejs
+const $fsbx : FSBX = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
+    : global["$fsbx"] = global["$fsbx"] || {}; // in case of nodejs
 
 
 if (!$isBrowser) {
-    global['require'] = require;
+    global["require"] = require;
 }
 /**
  * All packages are here
@@ -125,13 +125,13 @@ const $getNodeModuleName = (name: string) => {
     // which 2x faster than /^([@a-z].*)$/
     if (n >= 97 && n <= 122 || n === 64) {
         if (n === 64) { // if it's "@" symbol
-            let s = name.split('/');
-            let target = s.splice(2, s.length).join('/');
+            let s = name.split("/");
+            let target = s.splice(2, s.length).join("/");
             return [`${s[0]}/${s[1]}`, target || undefined];
         }
         // this approach is 3x - 4x faster than
         // name.split(/\/(.+)?/);
-        let index = name.indexOf('/');
+        let index = name.indexOf("/");
         if (index === -1) {
             return [name];
         }
@@ -143,7 +143,7 @@ const $getNodeModuleName = (name: string) => {
 
 /** Gets file directory */
 const $getDir = (filePath: string) => {
-    return filePath.substring(0, filePath.lastIndexOf('/')) || './';
+    return filePath.substring(0, filePath.lastIndexOf("/")) || "./";
 };
 
 /**
@@ -153,24 +153,24 @@ const $getDir = (filePath: string) => {
 const $pathJoin = function(...string: string[]): string {
     let parts : string[] = [];
     for (let i = 0, l = arguments.length; i < l; i++) {
-        parts = parts.concat(arguments[i].split('/'));
+        parts = parts.concat(arguments[i].split("/"));
     }
     let newParts = [];
     for (let i = 0, l = parts.length; i < l; i++) {
         let part = parts[i];
-        if (!part || part === '.') {
+        if (!part || part === ".") {
             continue;
         }
-        if (part === '..') {
+        if (part === "..") {
             newParts.pop();
         } else {
             newParts.push(part);
         }
     }
-    if (parts[0] === '') {
-        newParts.unshift('');
+    if (parts[0] === "") {
+        newParts.unshift("");
     }
-    return newParts.join('/') || (newParts.length ? '/' : '.');
+    return newParts.join("/") || (newParts.length ? "/" : ".");
 };
 
 /**
@@ -185,11 +185,11 @@ const $ensureExtension = (name: string): string => {
         // modules/core.object.define (core-js)
         // Will be handled differently afterwards
         if (!ext) {
-            return name + '.js';
+            return name + ".js";
         }
         return name;
     }
-    return name + '.js';
+    return name + ".js";
 };
 
 /**
@@ -199,16 +199,16 @@ const $ensureExtension = (name: string): string => {
 const $loadURL = (url: string) => {
     if ($isBrowser) {
         let d = document;
-        var head = d.getElementsByTagName('head')[0];
+        var head = d.getElementsByTagName("head")[0];
         var target;
         if (/\.css$/.test(url)) {
-            target = d.createElement('link');
-            target.rel = 'stylesheet';
-            target.type = 'text/css';
+            target = d.createElement("link");
+            target.rel = "stylesheet";
+            target.type = "text/css";
             target.href = url;
         } else {
-            target = d.createElement('script');
-            target.type = 'text/javascript';
+            target = d.createElement("script");
+            target.type = "text/javascript";
             target.src = url;
             target.async = true;
         }
@@ -236,13 +236,13 @@ const $getRef = (name: string, opts: {
     pkg?: string;
     v?: PackageVersions;
 }): IReference => {
-    let basePath = opts.path || './';
-    let pkg_name = opts.pkg || 'default';
+    let basePath = opts.path || "./";
+    let pkg_name = opts.pkg || "default";
     let nodeModule = $getNodeModuleName(name);
 
     if (nodeModule) {
         // reset base path
-        basePath = './';
+        basePath = "./";
         pkg_name = nodeModule[0];
         // if custom version is detected
         // We need to modify package path
@@ -258,7 +258,7 @@ const $getRef = (name: string, opts: {
     if (name) {
         if (name.charCodeAt(0) === 126) {
             name = name.slice(2, name.length);
-            basePath = './';
+            basePath = "./";
         } else {
             // check for absolute paths for nodejs
             // either first one is / (47 for *nix) or second one : (58 for windows)
@@ -278,11 +278,11 @@ const $getRef = (name: string, opts: {
             throw `Package was not found "${pkg_name}"`;
         } else {
             // Return "real" node module
-            return $serverRequire(pkg_name + (name ? '/' + name : ''));
+            return $serverRequire(pkg_name + (name ? "/" + name : ""));
         }
     }
     if (!name) {
-        name = './' + pkg.s.entry;
+        name = "./" + pkg.s.entry;
     }
 
     // get rid of options
@@ -297,17 +297,17 @@ const $getRef = (name: string, opts: {
     let file = pkg.f[validPath];
     let wildcard;
     // Probing for wildcard
-    if (!file && validPath.indexOf('*') > -1) {
+    if (!file && validPath.indexOf("*") > -1) {
         wildcard = validPath;
     }
     if (!file && !wildcard) {
         // try folder index.js
-        validPath = $pathJoin(filePath, '/', 'index.js');
+        validPath = $pathJoin(filePath, "/", "index.js");
         file = pkg.f[validPath];
         // last resort try adding .js extension
         // Some libraries have a weired convention of naming file lile "foo.bar""
         if (!file) {
-            validPath = filePath + '.js';
+            validPath = filePath + ".js";
             file = pkg.f[validPath];
         }
 
@@ -315,11 +315,11 @@ const $getRef = (name: string, opts: {
         // then we can try JSX
         if (!file) {
             // try for JSX one last time
-            file = pkg.f[filePath + '.jsx'];
+            file = pkg.f[filePath + ".jsx"];
         }
 
         if (!file) {
-            validPath = filePath + '/index.jsx';
+            validPath = filePath + "/index.jsx";
             file = pkg.f[validPath];
         }
     }
@@ -346,7 +346,7 @@ const $async = (file: string, cb: (imported?: any) => any) => {
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == 4) {
                 if (xmlhttp.status == 200) {
-                    let contentType = xmlhttp.getResponseHeader('Content-Type');
+                    let contentType = xmlhttp.getResponseHeader("Content-Type");
                     let content = xmlhttp.responseText;
                     if (/json/.test(contentType)) {
                         content = `module.exports = ${content}`;
@@ -355,7 +355,7 @@ const $async = (file: string, cb: (imported?: any) => any) => {
                             content = `module.exports = ${JSON.stringify(content)}`;
                         }
                     }
-                    let normalized = $pathJoin('./', file);
+                    let normalized = $pathJoin("./", file);
                     FuseBox.dynamic(normalized, content);
                     cb(FuseBox.import(file, {}));
                 } else {
@@ -364,13 +364,13 @@ const $async = (file: string, cb: (imported?: any) => any) => {
                 }
             }
         };
-        xmlhttp.open('GET', file, true);
+        xmlhttp.open("GET", file, true);
         xmlhttp.send();
     } else {
         if (/\.(js|json)$/.test(file)) {
-            return cb(global['require'](file));
+            return cb(global["require"](file));
         }
-        return cb('');
+        return cb("");
     }
 };
 
@@ -424,9 +424,9 @@ const $import = (name: string, opts: any = {}) => {
     if (ref.wildcard) {
         // Prepare wildcard regexp
         let safeRegEx : RegExp = new RegExp(ref.wildcard
-            .replace(/\*/g, '@')
-            .replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&')
-            .replace(/@/g, '[a-z0-9$_-]+'), 'i');
+            .replace(/\*/g, "@")
+            .replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&")
+            .replace(/@/g, "[a-z0-9$_-]+"), "i");
 
         let pkg = $packages[ref.pkgName];
         if (pkg) {
@@ -441,8 +441,8 @@ const $import = (name: string, opts: any = {}) => {
     }
 
     if (!file) {
-        let asyncMode = typeof opts === 'function';
-        let processStopped = $trigger('async', [name, opts]);
+        let asyncMode = typeof opts === "function";
+        let processStopped = $trigger("async", [name, opts]);
         if (processStopped === false) {
             return;
         }
@@ -472,22 +472,22 @@ const $import = (name: string, opts: any = {}) => {
         });
     };
     locals.require.main = {
-        filename: $isBrowser ? './' : global['require'].main.filename,
-        paths: $isBrowser ? [] : global['require'].main.paths,
+        filename: $isBrowser ? "./" : global["require"].main.filename,
+        paths: $isBrowser ? [] : global["require"].main.paths,
     };
 
     let args = [locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName];
-    $trigger('before-import', args);
+    $trigger("before-import", args);
 
     let fn = file.fn;
     fn.apply(0, args);
     //fn(locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName)
-    $trigger('after-import', args);
+    $trigger("after-import", args);
     return locals.module.exports;
 };
 
 type SourceChangedEvent = {
-    type: 'js' | 'css',
+    type: "js" | "css",
     content: string,
     path: string
 };
@@ -564,9 +564,9 @@ class FuseBox {
             let data = obj[key];
             let alias = data.alias;
             let exposed = $import(data.pkg);
-            if (alias === '*') {
+            if (alias === "*") {
                 $loopObjKey(exposed, (exportKey, value) => __root__[exportKey] = value);
-            } else if (typeof alias === 'object') {
+            } else if (typeof alias === "object") {
                 $loopObjKey(alias, (exportKey, value) => __root__[value] = exposed[exportKey]);
             } else {
                 __root__[alias] = exposed;
@@ -587,10 +587,10 @@ class FuseBox {
         /** The name of the package */
         pkg: string
     }) {
-        let pkg = opts && opts.pkg || 'default';
+        let pkg = opts && opts.pkg || "default";
         this.pkg(pkg, {}, function(___scope___: any) {
             ___scope___.file(path, function(exports: any, require: any, module: any, __filename: string, __dirname: string) {
-                var res = new Function('__fbx__dnm__', 'exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
+                var res = new Function("__fbx__dnm__", "exports", "require", "module", "__filename", "__dirname", "__root__", str);
                 res(true, exports, require, module, __filename, __dirname, __root__);
             });
         });
@@ -603,7 +603,7 @@ class FuseBox {
     public static flush(
         shouldFlush?: (fileName: string) => boolean
     ) {
-        let def = $packages['default'];
+        let def = $packages["default"];
         for (let fileName in def.f) {
             const doFlush = !shouldFlush || shouldFlush(fileName);
             if (doFlush) {

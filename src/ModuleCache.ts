@@ -1,13 +1,13 @@
-import { WorkFlowContext } from './core/WorkflowContext';
-import { IPackageInformation } from './core/PathMaster';
-import { ModuleCollection } from './core/ModuleCollection';
-import { File } from './core/File';
-import { Config } from './Config';
-import { each } from 'realm-utils';
-import { AbsDir } from './Types';
-import * as fsExtra from 'fs-extra';
-import * as fs from 'fs';
-import * as path from 'path';
+import { WorkFlowContext } from "./core/WorkflowContext";
+import { IPackageInformation } from "./core/PathMaster";
+import { ModuleCollection } from "./core/ModuleCollection";
+import { File } from "./core/File";
+import { Config } from "./Config";
+import { each } from "realm-utils";
+import { AbsDir } from "./Types";
+import * as fsExtra from "fs-extra";
+import * as fs from "fs";
+import * as path from "path";
 
 const MEMORY_CACHE = {};
 
@@ -65,18 +65,18 @@ export class ModuleCache {
     }
 
     public initialize() {
-        this.cacheFolder = path.join(Config.TEMP_FOLDER, 'cache',
+        this.cacheFolder = path.join(Config.TEMP_FOLDER, "cache",
             Config.FUSEBOX_VERSION,
-            encodeURIComponent(`${Config.PROJECT_FOLDER}${this.context.outFile || ''}`));
+            encodeURIComponent(`${Config.PROJECT_FOLDER}${this.context.outFile || ""}`));
 
-        this.permanentCacheFolder = path.join(this.cacheFolder, 'permanent');
+        this.permanentCacheFolder = path.join(this.cacheFolder, "permanent");
         fsExtra.ensureDirSync(this.permanentCacheFolder);
 
-        this.staticCacheFolder = path.join(this.cacheFolder, 'static');
+        this.staticCacheFolder = path.join(this.cacheFolder, "static");
         fsExtra.ensureDirSync(this.staticCacheFolder);
 
 
-        this.cacheFile = path.join(this.cacheFolder, 'deps.json');
+        this.cacheFile = path.join(this.cacheFolder, "deps.json");
         if (fs.existsSync(this.cacheFile)) {
             try {
                 this.cachedDeps = require(this.cacheFile);

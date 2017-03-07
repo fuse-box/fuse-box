@@ -1,9 +1,9 @@
-import { File } from '../core/File';
-import { WorkFlowContext } from '../core/WorkflowContext';
-import { Plugin } from '../core/WorkflowContext';
+import { File } from "../core/File";
+import { WorkFlowContext } from "../core/WorkflowContext";
+import { Plugin } from "../core/WorkflowContext";
 
-import * as acorn from 'acorn';
-import * as SourceMap from 'source-map';
+import * as acorn from "acorn";
+import * as SourceMap from "source-map";
 
 /**
  * @export
@@ -20,7 +20,7 @@ export class SourceMapPlainJsPluginClass implements Plugin {
 	 * @type {string}
 	 * @memberOf SourceMapPlainJsPluginClass
 	 */
-    public ext: string = '.js';
+    public ext: string = ".js";
 	/**
 	 * @type {WorkFlowContext}
 	 * @memberOf SourceMapPlainJsPluginClass
@@ -30,8 +30,8 @@ export class SourceMapPlainJsPluginClass implements Plugin {
     constructor(options?: any) {
         options = options || {};
 
-        if ('test' in options) this.test = options.test;
-        if ('ext' in options) this.ext = options.ext;
+        if ("test" in options) this.test = options.test;
+        if ("ext" in options) this.ext = options.ext;
     }
 
     init(context: WorkFlowContext) {
@@ -61,7 +61,7 @@ export class SourceMapPlainJsPluginClass implements Plugin {
 
         file.loadContents();
 
-        if ('sourceMapConfig' in this.context) {
+        if ("sourceMapConfig" in this.context) {
             file.makeAnalysis({ onToken: tokens });
             file.sourceMap = this.getSourceMap(file, tokens);
         } else {
@@ -75,7 +75,7 @@ export class SourceMapPlainJsPluginClass implements Plugin {
         const smGenerator = new SourceMap.SourceMapGenerator({ file: filePath });
 
         tokens.some(token => {
-            if (token.type.label === 'eof') return true;
+            if (token.type.label === "eof") return true;
 
             const lineInfo = acorn.getLineInfo(fileContent, token.start);
             const mapping = {
@@ -85,7 +85,7 @@ export class SourceMapPlainJsPluginClass implements Plugin {
                 name: false,
             };
 
-            if (token.type.label === 'name') mapping.name = token.value;
+            if (token.type.label === "name") mapping.name = token.value;
 
             smGenerator.addMapping(mapping);
         });

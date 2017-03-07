@@ -1,21 +1,21 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import * as process from 'process';
-import { Config } from './../Config';
-import { each, utils, chain, Chainable } from 'realm-utils';
-import { ensureUserPath, contains } from './../Utils';
-import { ShimCollection } from './../ShimCollection';
-import { Server, ServerOptions } from './../devServer/Server';
-import { JSONPlugin } from './../plugins/JSONplugin';
-import { PathMaster } from './PathMaster';
-import { WorkFlowContext, Plugin } from './WorkflowContext';
-import { CollectionSource } from './../CollectionSource';
-import { Arithmetic, BundleData } from './../arithmetic/Arithmetic';
-import { ModuleCollection } from './ModuleCollection';
-import { BundleTestRunner } from '../BundleTestRunner';
-import { nativeModules, HeaderImport } from '../analysis/HeaderImport';
+import * as fs from "fs";
+import * as path from "path";
+import * as process from "process";
+import { Config } from "./../Config";
+import { each, utils, chain, Chainable } from "realm-utils";
+import { ensureUserPath, contains } from "./../Utils";
+import { ShimCollection } from "./../ShimCollection";
+import { Server, ServerOptions } from "./../devServer/Server";
+import { JSONPlugin } from "./../plugins/JSONplugin";
+import { PathMaster } from "./PathMaster";
+import { WorkFlowContext, Plugin } from "./WorkflowContext";
+import { CollectionSource } from "./../CollectionSource";
+import { Arithmetic, BundleData } from "./../arithmetic/Arithmetic";
+import { ModuleCollection } from "./ModuleCollection";
+import { BundleTestRunner } from "../BundleTestRunner";
+import { nativeModules, HeaderImport } from "../analysis/HeaderImport";
 
-const appRoot = require('app-root-path');
+const appRoot = require("app-root-path");
 
 export interface FuseBoxOptions {
     homeDir?: string;
@@ -77,7 +77,7 @@ export class FuseBox {
             this.context.debugMode = opts.debug;
         }
 
-        this.context.debugMode = opts.debug !== undefined ? opts.debug : contains(process.argv, '--debug');
+        this.context.debugMode = opts.debug !== undefined ? opts.debug : contains(process.argv, "--debug");
 
         if (opts.modulesFolder) {
             this.context.customModulesFolder =
@@ -101,7 +101,7 @@ export class FuseBox {
         if (opts.package) {
             if (utils.isPlainObject(opts.package)) {
                 const packageOptions : any = opts.package;
-                this.context.defaultPackageName = packageOptions.name || 'default';
+                this.context.defaultPackageName = packageOptions.name || "default";
                 this.context.defaultEntryPoint = packageOptions.main;
             } else {
                 this.context.defaultPackageName = opts.package;
@@ -172,7 +172,7 @@ export class FuseBox {
         if (opts.sourceMap) {
             // deprecated
             this.context.sourceMapConfig = opts.sourceMap;
-            this.context.log.echoWarning('sourceMap is deprecated. Use { sourcemaps : true } instead');
+            this.context.log.echoWarning("sourceMap is deprecated. Use { sourcemaps : true } instead");
             //this.context.sourceMapConfig = opts.sourceMap;
         }
 
@@ -191,7 +191,7 @@ export class FuseBox {
                     vendorSourceMaps = true;
                 }
             }
-            const mapsName = path.basename(this.context.outFile) + '.map';
+            const mapsName = path.basename(this.context.outFile) + ".map";
             const mapsOutFile =
                 path.join(path.dirname(this.context.outFile), mapsName);
             if (projectSourcMaps) {
@@ -214,19 +214,19 @@ export class FuseBox {
     }
 
     public triggerPre() {
-        this.context.triggerPluginsMethodOnce('preBundle', [this.context]);
+        this.context.triggerPluginsMethodOnce("preBundle", [this.context]);
     }
 
     public triggerStart() {
-        this.context.triggerPluginsMethodOnce('bundleStart', [this.context]);
+        this.context.triggerPluginsMethodOnce("bundleStart", [this.context]);
     }
 
     public triggerEnd() {
-        this.context.triggerPluginsMethodOnce('bundleEnd', [this.context]);
+        this.context.triggerPluginsMethodOnce("bundleEnd", [this.context]);
     }
 
     public triggerPost() {
-        this.context.triggerPluginsMethodOnce('postBundle', [this.context]);
+        this.context.triggerPluginsMethodOnce("postBundle", [this.context]);
     }
 
 
@@ -260,13 +260,13 @@ export class FuseBox {
      */
     public compareConfig(config: FuseBoxOptions): void {
         if (!this.context.useCache) return;
-        const mainStr = fs.readFileSync(require.main.filename, 'utf8');
+        const mainStr = fs.readFileSync(require.main.filename, "utf8");
 
         if (this.context.cache) {
-            const configPath = path.resolve(this.context.cache.cacheFolder, 'config.json');
+            const configPath = path.resolve(this.context.cache.cacheFolder, "config.json");
 
             if (fs.existsSync(configPath)) {
-                const storedConfigStr = fs.readFileSync(configPath, 'utf8');
+                const storedConfigStr = fs.readFileSync(configPath, "utf8");
                 if (storedConfigStr !== mainStr) this.context.nukeCache();
             }
 
@@ -362,14 +362,14 @@ export class FuseBox {
         }
     }
 
-    public test(str: string = '**/*.test.ts', opts: any) {
+    public test(str: string = "**/*.test.ts", opts: any) {
         opts = opts || {};
-        opts.reporter = opts.reporter || 'fuse-test-reporter';
+        opts.reporter = opts.reporter || "fuse-test-reporter";
         opts.exit = true;
 
         // include test files to the bundle
         const clonedOpts = Object.assign({}, this.opts);
-        const testBundleFile = path.join(Config.TEMP_FOLDER, 'tests', encodeURIComponent(this.opts.outFile));
+        const testBundleFile = path.join(Config.TEMP_FOLDER, "tests", encodeURIComponent(this.opts.outFile));
         clonedOpts.outFile = testBundleFile;
 
         // adding fuse-test dependency to be bundled
@@ -397,12 +397,12 @@ export class FuseBox {
                 this.context.homeDir = bundle.tmpFolder;
             }
             if (bundle.standalone !== undefined) {
-                this.context.debug('Arithmetic', `Override standalone ${bundle.standalone}`);
+                this.context.debug("Arithmetic", `Override standalone ${bundle.standalone}`);
 
                 this.context.standaloneBundle = bundle.standalone;
             }
             if (bundle.cache !== undefined) {
-                this.context.debug('Arithmetic', `Override cache ${bundle.cache}`);
+                this.context.debug("Arithmetic", `Override cache ${bundle.cache}`);
                 this.context.useCache = bundle.cache;
             }
 

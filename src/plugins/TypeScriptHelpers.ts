@@ -1,8 +1,8 @@
-import { Config } from './../Config';
-import { File } from '../core/File';
-import { WorkFlowContext, Plugin } from '../core/WorkflowContext';
-import * as fs from 'fs';
-import * as path from 'path';
+import { Config } from "./../Config";
+import { File } from "../core/File";
+import { WorkFlowContext, Plugin } from "../core/WorkflowContext";
+import * as fs from "fs";
+import * as path from "path";
 /**
  *
  *
@@ -26,11 +26,11 @@ export class TypeScriptHelpersClass implements Plugin {
     constructor(opts: any) {
         opts = opts || {};
 
-        let folder = path.join(Config.FUSEBOX_MODULES, 'fuse-typescript-helpers');
+        let folder = path.join(Config.FUSEBOX_MODULES, "fuse-typescript-helpers");
         let files = fs.readdirSync(folder);
         files.forEach(fileName => {
             let contents = fs.readFileSync(path.join(folder, fileName)).toString();
-            let name = fileName.replace(/\.js/, '');
+            let name = fileName.replace(/\.js/, "");
             this.registeredHelpers.set(name, contents);
         });
     }
@@ -43,12 +43,12 @@ export class TypeScriptHelpersClass implements Plugin {
      * @memberOf FuseBoxTypeScriptHelpersPlugin
      */
     public init(context: WorkFlowContext) {
-        context.setItem('ts_helpers', new Set());
+        context.setItem("ts_helpers", new Set());
     }
 
 
     public bundleEnd(context: WorkFlowContext) {
-        let helpers : Set < string > = context.getItem('ts_helpers');
+        let helpers : Set < string > = context.getItem("ts_helpers");
         helpers.forEach(name => {
             let contents = this.registeredHelpers.get(name);
             context.source.addContent(contents);
@@ -69,12 +69,12 @@ export class TypeScriptHelpersClass implements Plugin {
         if (file.collection.name !== file.context.defaultPackageName) {
             return;
         }
-        let helpers : Set < string > = file.context.getItem('ts_helpers');
+        let helpers : Set < string > = file.context.getItem("ts_helpers");
         // Check which helpers are actually used
         this.registeredHelpers.forEach((cont, name) => {
-            let regexp = new RegExp(name, 'gm');
+            let regexp = new RegExp(name, "gm");
             if (regexp.test(file.contents)) {
-                if (name === '__decorate') {
+                if (name === "__decorate") {
                     patchDecorate = true;
                 }
                 if (!helpers.has(name)) {
@@ -83,7 +83,7 @@ export class TypeScriptHelpersClass implements Plugin {
             }
         });
         if (patchDecorate) {
-            file.addHeaderContent('var __decorate = __fsbx_decorate(arguments)');
+            file.addHeaderContent("var __decorate = __fsbx_decorate(arguments)");
         }
     }
 }

@@ -1,4 +1,4 @@
-import { File } from '../../core/File';
+import { File } from "../../core/File";
 
 /**
  * Handles require and ImportDeclarations
@@ -13,8 +13,8 @@ export class ImportDeclaration {
      */
     public static onNode(file: File, node: any, parent: any) {
         const analysis = file.analysis;
-        if (node.type === 'CallExpression' && node.callee) {
-            if (node.callee.type === 'Identifier' && node.callee.name === 'require') {
+        if (node.type === "CallExpression" && node.callee) {
+            if (node.callee.type === "Identifier" && node.callee.name === "require") {
                 let arg1 = node.arguments[0];
                 if (analysis.nodeIsString(arg1)) {
                     let requireStatement = this.handleAliasReplacement(file, arg1.value);
@@ -23,7 +23,7 @@ export class ImportDeclaration {
                 }
             }
         }
-        if (node.type === 'ImportDeclaration') {
+        if (node.type === "ImportDeclaration") {
             if (node.source && analysis.nodeIsString(node.source)) {
                 analysis.addDependency(node.source.value);
             }

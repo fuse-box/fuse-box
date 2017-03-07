@@ -1,5 +1,5 @@
-import { WorkFlowContext } from './../core/WorkflowContext';
-import { Plugin } from '../core/WorkflowContext';
+import { WorkFlowContext } from "./../core/WorkflowContext";
+import { Plugin } from "../core/WorkflowContext";
 
 /**
  * @export
@@ -15,7 +15,7 @@ export class BannerPluginClass implements Plugin {
     public banner: string;
 
     constructor(banner: string) {
-        this.banner = banner || '';
+        this.banner = banner || "";
     }
 
     public preBundle(context: WorkFlowContext) {

@@ -1,5 +1,5 @@
-import { File } from '../core/File';
-import { WorkFlowContext, Plugin } from '../core/WorkflowContext';
+import { File } from "../core/File";
+import { WorkFlowContext, Plugin } from "../core/WorkflowContext";
 
 /**
  *
@@ -24,7 +24,7 @@ export class FuseBoxJSONPlugin implements Plugin {
      * @memberOf FuseBoxHTMLPlugin
      */
     public init(context: WorkFlowContext) {
-        context.allowExtension('.json');
+        context.allowExtension(".json");
     }
     /**
      *

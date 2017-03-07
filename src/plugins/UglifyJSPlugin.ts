@@ -1,5 +1,5 @@
-import { Plugin } from '../core/WorkflowContext';
-import { BundleSource } from '../BundleSource';
+import { Plugin } from "../core/WorkflowContext";
+import { BundleSource } from "../BundleSource";
 
 /**
  * @export
@@ -21,7 +21,7 @@ export class UglifyJSPluginClass implements Plugin {
         const mainOptions : any = {
             fromString: true,
         };
-        const UglifyJs = require('uglify-js');
+        const UglifyJs = require("uglify-js");
 
 
         const concat = context.source.getResult();
@@ -33,7 +33,7 @@ export class UglifyJSPluginClass implements Plugin {
 
         const newConcat = context.source.getResult();
 
-        if ('sourceMapConfig' in context) {
+        if ("sourceMapConfig" in context) {
             if (context.sourceMapConfig.bundleReference) {
                 mainOptions.inSourceMap = JSON.parse(sourceMap);
                 mainOptions.outSourceMap = context.sourceMapConfig.bundleReference;
@@ -48,9 +48,9 @@ export class UglifyJSPluginClass implements Plugin {
         });
 
         let took = process.hrtime(timeStart);
-        let bytes = Buffer.byteLength(result.code, 'utf8');
+        let bytes = Buffer.byteLength(result.code, "utf8");
 
-        context.log.echoBundleStats('Bundle (Uglified)', bytes, took);
+        context.log.echoBundleStats("Bundle (Uglified)", bytes, took);
 
         newConcat.add(null, result.code, result.map || sourceMap);
     }

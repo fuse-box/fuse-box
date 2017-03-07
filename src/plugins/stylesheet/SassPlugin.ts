@@ -1,8 +1,8 @@
-import { File } from '../../core/File';
-import { WorkFlowContext, Plugin } from '../../core/WorkflowContext';
-import * as path from 'path';
-import * as appRoot from 'app-root-path';
-import { Config } from '../../Config';
+import { File } from "../../core/File";
+import { WorkFlowContext, Plugin } from "../../core/WorkflowContext";
+import * as path from "path";
+import * as appRoot from "app-root-path";
+import { Config } from "../../Config";
 
 let sass;
 
@@ -21,7 +21,7 @@ export class SassPluginClass implements Plugin {
     }
 
     public init(context: WorkFlowContext) {
-        context.allowExtension('.scss');
+        context.allowExtension(".scss");
     }
 
     public transform(file: File): Promise<any> {
@@ -30,12 +30,12 @@ export class SassPluginClass implements Plugin {
             return;
         }
 
-        if (!sass) { sass = require('node-sass'); }
+        if (!sass) { sass = require("node-sass"); }
 
         const defaultMacro = {
-            '$homeDir': file.context.homeDir,
-            '$appRoot': appRoot.path,
-            '~': Config.NODE_MODULES_DIR + '/',
+            "$homeDir": file.context.homeDir,
+            "$appRoot": appRoot.path,
+            "~": Config.NODE_MODULES_DIR + "/",
         };
 
         const options = Object.assign({
@@ -48,7 +48,7 @@ export class SassPluginClass implements Plugin {
 
 
         options.includePaths = [];
-        if (typeof this.options.includePaths !== 'undefined') {
+        if (typeof this.options.includePaths !== "undefined") {
             this.options.includePaths.forEach((path) => {
                 options.includePaths.push(path);
             });

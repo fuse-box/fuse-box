@@ -1,9 +1,9 @@
-import { File } from './File';
-import { PathMaster, IPackageInformation } from './PathMaster';
-import { WorkFlowContext } from './WorkflowContext';
-import { BundleData } from '../arithmetic/Arithmetic';
-import { ensurePublicExtension, string2RegExp } from '../Utils';
-import { each, utils } from 'realm-utils';
+import { File } from "./File";
+import { PathMaster, IPackageInformation } from "./PathMaster";
+import { WorkFlowContext } from "./WorkflowContext";
+import { BundleData } from "../arithmetic/Arithmetic";
+import { ensurePublicExtension, string2RegExp } from "../Utils";
+import { each, utils } from "realm-utils";
 
 /**
  *
@@ -175,7 +175,7 @@ export class ModuleCollection {
                 }
             }
         });
-        this.context.triggerPluginsMethodOnce('init', [this.context], (plugin) => {
+        this.context.triggerPluginsMethodOnce("init", [this.context], (plugin) => {
             if (plugin.dependencies) {
                 plugin.dependencies.forEach(mod => {
                     this.toBeResolved.push(

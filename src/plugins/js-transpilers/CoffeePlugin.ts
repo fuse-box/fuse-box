@@ -1,6 +1,6 @@
-import { WorkFlowContext } from '../../core/WorkflowContext';
-import { Plugin } from '../../core/WorkflowContext';
-import { File } from '../../core/File';
+import { WorkFlowContext } from "../../core/WorkflowContext";
+import { Plugin } from "../../core/WorkflowContext";
+import { File } from "../../core/File";
 
 let coffee;
 
@@ -28,7 +28,7 @@ export class CoffeePluginClass implements Plugin {
         this.options = Object.assign({}, {
             bare: true,
             sourceMap: false,
-            sourceRoot: '',
+            sourceRoot: "",
             literate: false,
             filename: false,
             sourceFiles: false,
@@ -37,14 +37,14 @@ export class CoffeePluginClass implements Plugin {
     }
 
     public init(context: WorkFlowContext) {
-        context.allowExtension('.coffee');
+        context.allowExtension(".coffee");
     }
 
     public transform(file: File) {
         file.loadContents();
 
         if (!coffee) {
-            coffee = require('coffee-script');
+            coffee = require("coffee-script");
         }
 
         return new Promise((res, rej) => {

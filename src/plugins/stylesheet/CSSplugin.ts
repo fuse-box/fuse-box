@@ -1,13 +1,13 @@
 
-import * as fs from 'fs';
-import * as path from 'path';
-import { Config } from './../../Config';
-import { File } from '../../core/File';
-import { WorkFlowContext } from '../../core/WorkflowContext';
-import { Plugin } from '../../core/WorkflowContext';
-import { utils } from 'realm-utils';
-import { CSSPluginDeprecated } from './CSSPluginDeprecated';
-import { Concat, ensureUserPath, write } from '../../Utils';
+import * as fs from "fs";
+import * as path from "path";
+import { Config } from "./../../Config";
+import { File } from "../../core/File";
+import { WorkFlowContext } from "../../core/WorkflowContext";
+import { Plugin } from "../../core/WorkflowContext";
+import { utils } from "realm-utils";
+import { CSSPluginDeprecated } from "./CSSPluginDeprecated";
+import { Concat, ensureUserPath, write } from "../../Utils";
 
 /**
  *
@@ -61,12 +61,12 @@ export class CSSPluginClass implements Plugin {
      * @memberOf FuseBoxCSSPlugin
      */
     public init(context: WorkFlowContext) {
-        context.allowExtension('.css');
+        context.allowExtension(".css");
     }
 
     public bundleStart(context: WorkFlowContext) {
 
-        let lib = path.join(Config.FUSEBOX_MODULES, 'fsbx-default-css-plugin', 'index.js');
+        let lib = path.join(Config.FUSEBOX_MODULES, "fsbx-default-css-plugin", "index.js");
         context.source.addContent(fs.readFileSync(lib).toString());
     }
 
@@ -79,7 +79,7 @@ export class CSSPluginClass implements Plugin {
             ? options.inject(file.info.fuseBoxPath) : file.info.fuseBoxPath;
 
         // noop the contents if a user wants to manually inject it
-        const result = options.inject !== false ? `__fsbx_css("${resolvedPath}");` : '';
+        const result = options.inject !== false ? `__fsbx_css("${resolvedPath}");` : "";
         if (alternative) {
             file.alternativeContent = result;
         } else {
@@ -92,7 +92,7 @@ export class CSSPluginClass implements Plugin {
         const debug = (text: string) => group.context.debugPlugin(this, text);
         debug(`Start group transformation on "${group.info.fuseBoxPath}"`);
 
-        let concat = new Concat(true, '', '\n');
+        let concat = new Concat(true, "", "\n");
         group.subFiles.forEach(file => {
             debug(`  -> Concat ${file.info.fuseBoxPath}`);
             concat.add(file.info.fuseBoxPath, file.contents, file.generateCorrectSourceMap());
@@ -105,7 +105,7 @@ export class CSSPluginClass implements Plugin {
         if (options.outFile) {
             let outFile = ensureUserPath(options.outFile);
             const bundleDir = path.dirname(outFile);
-            const sourceMapsName = path.basename(outFile) + '.map';
+            const sourceMapsName = path.basename(outFile) + ".map";
 
             concat.add(null, `/*# sourceMappingURL=${sourceMapsName} */`);
 
@@ -116,8 +116,8 @@ export class CSSPluginClass implements Plugin {
                 // emitting changes
                 // need to reload a file if possible
                 group.context.sourceChangedEmitter.emit({
-                    type: 'css-file',
-                    content: '',
+                    type: "css-file",
+                    content: "",
                     path: group.info.fuseBoxPath,
                 });
 
@@ -134,7 +134,7 @@ export class CSSPluginClass implements Plugin {
 
         // emitting changes
         group.context.sourceChangedEmitter.emit({
-            type: 'css',
+            type: "css",
             content: cssContents.toString(),
             path: group.info.fuseBoxPath,
         });
@@ -183,10 +183,10 @@ export class CSSPluginClass implements Plugin {
             fileGroup.addSubFile(file);
             debug(`  grouping -> ${bundleName}`);
 
-            const chainExports = file.getProperty('exports');
+            const chainExports = file.getProperty("exports");
 
             // Respect other plugins to override the output
-            file.alternativeContent = `module.exports = ${chainExports && contents ? chainExports : 'require(\'./' + bundleName + '\')'}`;
+            file.alternativeContent = `module.exports = ${chainExports && contents ? chainExports : "require('./" + bundleName + "')"}`;
             return;
         }
 
@@ -205,13 +205,13 @@ export class CSSPluginClass implements Plugin {
         if (outFileFunction) {
             const userPath = ensureUserPath(outFileFunction(file.info.fuseBoxPath));
             // reset the content so it won't get bundled
-            file.alternativeContent = '';
+            file.alternativeContent = "";
             this.inject(file, this.opts, true);
             // writing ilfe
             return write(userPath, file.contents).then(() => {
                 if (file.sourceMap) {
                     const fileDir = path.dirname(userPath);
-                    const sourceMapPath = path.join(fileDir, path.basename(userPath) + '.map');
+                    const sourceMapPath = path.join(fileDir, path.basename(userPath) + ".map");
                     return write(sourceMapPath, file.sourceMap);
                 }
             });
@@ -241,7 +241,7 @@ export class CSSPluginClass implements Plugin {
                 file.alternativeContent = `__fsbx_css("${filePath}")`;
             } else {
                 file.context.sourceChangedEmitter.emit({
-                    type: 'css',
+                    type: "css",
                     content: file.contents,
                     path: file.info.fuseBoxPath,
                 });
@@ -252,7 +252,7 @@ export class CSSPluginClass implements Plugin {
     }
 
     private minifyContents(contents) {
-        return contents.replace(/\s{2,}/g, ' ').replace(/\t|\r|\n/g, '').trim();
+        return contents.replace(/\s{2,}/g, " ").replace(/\t|\r|\n/g, "").trim();
     }
 }
 

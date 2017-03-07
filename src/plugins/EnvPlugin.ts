@@ -1,5 +1,5 @@
-import { WorkFlowContext } from '../core/WorkflowContext';
-import { Plugin } from '../core/WorkflowContext';
+import { WorkFlowContext } from "../core/WorkflowContext";
+import { Plugin } from "../core/WorkflowContext";
 
 /**
  * @export

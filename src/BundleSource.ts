@@ -1,11 +1,11 @@
-import { ensurePublicExtension, Concat, ensureUserPath } from './Utils';
-import { ModuleCollection } from './core/ModuleCollection';
-import { WorkFlowContext } from './core/WorkflowContext';
-import { BundleData } from './arithmetic/Arithmetic';
-import { File } from './core/File';
-import { Config } from './Config';
-import * as path from 'path';
-import * as fs from 'fs';
+import { ensurePublicExtension, Concat, ensureUserPath } from "./Utils";
+import { ModuleCollection } from "./core/ModuleCollection";
+import { WorkFlowContext } from "./core/WorkflowContext";
+import { BundleData } from "./arithmetic/Arithmetic";
+import { File } from "./core/File";
+import { Config } from "./Config";
+import * as path from "path";
+import * as fs from "fs";
 
 /**
  *
@@ -41,7 +41,7 @@ export class BundleSource {
      * @memberOf BundleSource
      */
     constructor(public context: WorkFlowContext) {
-        this.concat = new Concat(true, '', '\n');
+        this.concat = new Concat(true, "", "\n");
     }
 
     /**
@@ -50,7 +50,7 @@ export class BundleSource {
      * @memberOf BundleSource
      */
     public init() {
-        this.concat.add(null, '(function(FuseBox){FuseBox.$fuse$=FuseBox;');
+        this.concat.add(null, "(function(FuseBox){FuseBox.$fuse$=FuseBox;");
     }
 
     /**
@@ -61,7 +61,7 @@ export class BundleSource {
      * @memberOf BundleSource
      */
     public createCollection(collection: ModuleCollection) {
-        this.collectionSource = new Concat(true, collection.name, '\n');
+        this.collectionSource = new Concat(true, collection.name, "\n");
     }
 
     public addContentToCurrentCollection(data: string) {
@@ -89,14 +89,14 @@ export class BundleSource {
      * @memberOf BundleSource
      */
     public endCollection(collection: ModuleCollection) {
-        let entry = collection.entryFile ? collection.entryFile.info.fuseBoxPath : '';
+        let entry = collection.entryFile ? collection.entryFile.info.fuseBoxPath : "";
 
         if (entry) {
             this.collectionSource.add(null, `return ___scope___.entry = "${entry}";`);
         }
-        this.collectionSource.add(null, '});');
+        this.collectionSource.add(null, "});");
 
-        let key = collection.info ? `${collection.info.name}@${collection.info.version}` : 'default';
+        let key = collection.info ? `${collection.info.name}@${collection.info.version}` : "default";
         this.concat.add(`packages/${key}`,
             this.collectionSource.content, key !== undefined ? this.collectionSource.sourceMap : undefined);
         return this.collectionSource.content.toString();
@@ -128,10 +128,10 @@ export class BundleSource {
 
         this.collectionSource.add(null,
             `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){
-${file.headerContent ? file.headerContent.join('\n') : ''}`);
+${file.headerContent ? file.headerContent.join("\n") : ""}`);
         this.collectionSource.add(null, file.alternativeContent !== undefined ? file.alternativeContent : file.contents, file.sourceMap);
 
-        this.collectionSource.add(null, '});');
+        this.collectionSource.add(null, "});");
     }
 
     /**
@@ -181,21 +181,21 @@ ${file.headerContent ? file.headerContent.join('\n') : ''}`);
         if (mainEntry) {
             this.concat.add(null, `FuseBox.main("${mainEntry}");`);
         }
-        if (context.defaultPackageName !== 'default') {
+        if (context.defaultPackageName !== "default") {
             this.concat.add(null, `FuseBox.defaultPackageName = ${JSON.stringify(context.defaultPackageName)};`);
         }
 
-        this.concat.add(null, '})');
+        this.concat.add(null, "})");
 
         if (context.standaloneBundle) {
-            let fuseboxLibFile = path.join(Config.FUSEBOX_MODULES, 'fuse-box-loader-api', 'fusebox.min.js');
+            let fuseboxLibFile = path.join(Config.FUSEBOX_MODULES, "fuse-box-loader-api", "fusebox.min.js");
             if (this.context.customAPIFile) {
                 fuseboxLibFile = ensureUserPath(this.context.customAPIFile);
             }
             let wrapper = fs.readFileSync(fuseboxLibFile).toString();
             this.concat.add(null, `(${wrapper})`);
         } else {
-            this.concat.add(null, '(FuseBox)');
+            this.concat.add(null, "(FuseBox)");
         }
 
         if (this.context.sourceMapConfig) {

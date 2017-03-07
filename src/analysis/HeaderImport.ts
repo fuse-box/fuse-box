@@ -1,4 +1,4 @@
-import { utils } from 'realm-utils';
+import { utils } from "realm-utils";
 
 export class HeaderImport {
     public pkg: string;
@@ -41,12 +41,12 @@ if (!headerCollection) {
     headerCollection = new HeaderImportCollection(); ;
 }
 // register native variables
-headerCollection.add(new HeaderImport('process', 'process'));
-headerCollection.add(new HeaderImport('Buffer', {
-    pkg: 'buffer',
+headerCollection.add(new HeaderImport("process", "process"));
+headerCollection.add(new HeaderImport("Buffer", {
+    pkg: "buffer",
     statement: `require("buffer").Buffer`,
 }));
 
-headerCollection.add(new HeaderImport('http', 'http'));
+headerCollection.add(new HeaderImport("http", "http"));
 
 export const nativeModules = headerCollection;

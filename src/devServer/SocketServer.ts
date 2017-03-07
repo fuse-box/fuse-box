@@ -1,5 +1,5 @@
-import { FuseBox } from '../core/FuseBox';
-import { Server } from 'ws';
+import { FuseBox } from "../core/FuseBox";
+import { Server } from "ws";
 
 
 export class SocketServer {
@@ -38,18 +38,18 @@ export class SocketServer {
     public clients = new Set<any>();
 
     constructor(public server: any, public fuse: FuseBox) {
-        server.on('connection', (ws) => {
-            this.fuse.context.log.echo('Client connected');
+        server.on("connection", (ws) => {
+            this.fuse.context.log.echo("Client connected");
             this.clients.add(ws);
 
-            ws.on('message', message => {
+            ws.on("message", message => {
                 let input = JSON.parse(message);
                 if (input.event) {
                     this.onMessage(ws, input.event, input.data);
                 }
             });
-            ws.on('close', () => {
-                this.fuse.context.log.echo('Connection closed');
+            ws.on("close", () => {
+                this.fuse.context.log.echo("Connection closed");
                 this.clients.delete(ws);
             });
         });

@@ -7,7 +7,7 @@ export class ASTTraverse {
         const skipProperty = options.skipProperty;
 
         let visit = (node, parent, prop?, idx?) => {
-            if (!node || typeof node.type !== 'string') {
+            if (!node || typeof node.type !== "string") {
                 return;
             }
             if (node._visited) {
@@ -22,7 +22,7 @@ export class ASTTraverse {
 
             if (res !== false) {
                 for (let prop in node) {
-                    if (skipProperty ? skipProperty(prop, node) : prop[0] === '$') {
+                    if (skipProperty ? skipProperty(prop, node) : prop[0] === "$") {
                         continue;
                     }
                     let child = node[prop];

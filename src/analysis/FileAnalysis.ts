@@ -1,15 +1,15 @@
-import { ASTTraverse } from './../ASTTraverse';
-import { PrettyError } from './../PrettyError';
-import { File } from '../core/File';
-import * as acorn from 'acorn';
-import { AutoImport } from './plugins/AutoImport';
-import { OwnVariable } from './plugins/OwnVariable';
-import { OwnBundle } from './plugins/OwnBundle';
-import { ImportDeclaration } from './plugins/ImportDeclaration';
+import { ASTTraverse } from "./../ASTTraverse";
+import { PrettyError } from "./../PrettyError";
+import { File } from "../core/File";
+import * as acorn from "acorn";
+import { AutoImport } from "./plugins/AutoImport";
+import { OwnVariable } from "./plugins/OwnVariable";
+import { OwnBundle } from "./plugins/OwnBundle";
+import { ImportDeclaration } from "./plugins/ImportDeclaration";
 
 
-require('acorn-es7')(acorn);
-require('acorn-jsx/inject')(acorn);
+require("acorn-es7")(acorn);
+require("acorn-jsx/inject")(acorn);
 
 
 
@@ -42,7 +42,7 @@ export class FileAnalysis {
 
     public requiresRegeneration = false;
 
-    public fuseBoxVariable = 'FuseBox';
+    public fuseBoxVariable = "FuseBox";
 
     public dependencies: string[] = [];
 
@@ -78,7 +78,7 @@ export class FileAnalysis {
         try {
             this.ast = acorn.parse(this.file.contents, {
                 ...options || {}, ...{
-                    sourceType: 'module',
+                    sourceType: "module",
                     tolerant: true,
                     ecmaVersion: 8,
                     plugins: { es7: true, jsx: true },
@@ -121,7 +121,7 @@ export class FileAnalysis {
     }
 
     public nodeIsString(node) {
-        return node.type === 'Literal' || node.type === 'StringLiteral';
+        return node.type === "Literal" || node.type === "StringLiteral";
     }
 
     public analyze() {

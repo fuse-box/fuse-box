@@ -1,6 +1,6 @@
-import { File } from '../core/File';
-import { WorkFlowContext } from '../core/WorkflowContext';
-import { Plugin } from '../core/WorkflowContext';
+import { File } from "../core/File";
+import { WorkFlowContext } from "../core/WorkflowContext";
+import { Plugin } from "../core/WorkflowContext";
 
 /**
  *
@@ -32,7 +32,7 @@ export class FuseBoxHTMLPlugin implements Plugin {
      * @memberOf FuseBoxHTMLPlugin
      */
     public init(context: WorkFlowContext) {
-        context.allowExtension('.html');
+        context.allowExtension(".html");
     }
     /**
      *

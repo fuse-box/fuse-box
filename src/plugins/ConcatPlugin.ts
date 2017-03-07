@@ -1,5 +1,5 @@
-import { File } from '../core/File';
-import { WorkFlowContext, Plugin } from './../core/WorkflowContext';
+import { File } from "../core/File";
+import { WorkFlowContext, Plugin } from "./../core/WorkflowContext";
 
 
 /**
@@ -12,11 +12,11 @@ import { WorkFlowContext, Plugin } from './../core/WorkflowContext';
 export class ConcatPluginClass implements Plugin {
     private ext: any;
     private bundleName: string;
-    private delimiter = '\n';
+    private delimiter = "\n";
     constructor(opts: any = {}) {
-        if ('ext' in opts) { this.ext = opts.ext; }
-        if ('name' in opts) { this.bundleName = opts.name; }
-        if ('delimiter' in opts) { this.delimiter = opts.delimiter; }
+        if ("ext" in opts) { this.ext = opts.ext; }
+        if ("name" in opts) { this.bundleName = opts.name; }
+        if ("delimiter" in opts) { this.delimiter = opts.delimiter; }
     }
     /**
      *

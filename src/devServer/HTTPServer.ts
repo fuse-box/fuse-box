@@ -1,8 +1,8 @@
-import { FuseBox } from '../';
-import { SocketServer } from './SocketServer';
-import * as http from 'http';
-import * as express from 'express';
-import { ensureUserPath } from '../Utils';
+import { FuseBox } from "../";
+import { SocketServer } from "./SocketServer";
+import * as http from "http";
+import * as express from "express";
+import { ensureUserPath } from "../Utils";
 
 
 export interface HTTPServerOptions {
@@ -38,7 +38,7 @@ export class HTTPServer {
         let server = http.createServer();
         SocketServer.createInstance(server, this.fuse);
         this.setup();
-        server.on('request', this.app);
+        server.on("request", this.app);
         setTimeout(() => {
             server.listen(port, () => {
                 this.fuse.context.log.echo(`Launching dev server on port ${port}`);
@@ -52,7 +52,7 @@ export class HTTPServer {
 
     private setup(): void {
         if (this.opts.root) {
-            this.app.use('/', express.static(this.opts.root));
+            this.app.use("/", express.static(this.opts.root));
         }
     }
 }

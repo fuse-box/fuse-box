@@ -1,13 +1,13 @@
-import { ModuleCollection } from './ModuleCollection';
-import { FileAnalysis } from '../analysis/FileAnalysis';
-import { WorkFlowContext, Plugin } from './WorkflowContext';
-import { IPathInformation, IPackageInformation } from './PathMaster';
-import { SourceMapGenerator } from './SourceMapGenerator';
-import { utils, each } from 'realm-utils';
-import * as fs from 'fs';
-import * as path from 'path';
+import { ModuleCollection } from "./ModuleCollection";
+import { FileAnalysis } from "../analysis/FileAnalysis";
+import { WorkFlowContext, Plugin } from "./WorkflowContext";
+import { IPathInformation, IPackageInformation } from "./PathMaster";
+import { SourceMapGenerator } from "./SourceMapGenerator";
+import { utils, each } from "realm-utils";
+import * as fs from "fs";
+import * as path from "path";
 
-const appRoot = require('app-root-path');
+const appRoot = require("app-root-path");
 
 /**
  *
@@ -177,7 +177,7 @@ export class File {
         if (!name) {
             return;
         }
-        name = name.replace(/\\/g, '/');
+        name = name.replace(/\\/g, "/");
         return name;
     }
 
@@ -215,7 +215,7 @@ export class File {
                     // if (el instanceof RegExp) {
                     //     itemTest = el;
                     // }
-                    if (el && typeof el.test === 'function') {
+                    if (el && typeof el.test === "function") {
                         itemTest = el;
                     } else {
                         itemTest = el.test;
@@ -304,7 +304,7 @@ export class File {
         }
 
         if (/\.ts(x)?$/.test(this.absPath)) {
-            this.context.debug('Typescript', `Captured  ${this.info.fuseBoxPath}`);
+            this.context.debug("Typescript", `Captured  ${this.info.fuseBoxPath}`);
             return this.handleTypescript();
         }
 
@@ -328,7 +328,7 @@ export class File {
 
     public loadVendorSourceMap() {
         const key = `vendor/${this.collection.name}/${this.info.fuseBoxPath}`;
-        this.context.debug('File', `Vendor sourcemap ${key}`);
+        this.context.debug("File", `Vendor sourcemap ${key}`);
         let cachedMaps = this.context.cache.getPermanentCache(key);
         if (cachedMaps) {
             this.sourceMap = cachedMaps;
@@ -353,7 +353,7 @@ export class File {
      * @memberOf File
      */
     private handleTypescript() {
-        const debug = (str: string) => this.context.debug('TypeScript', str);
+        const debug = (str: string) => this.context.debug("TypeScript", str);
 
         if (this.context.useCache) {
             let cached = this.context.cache.getStaticCache(this);
@@ -370,7 +370,7 @@ export class File {
                 return;
             }
         }
-        const ts = require('typescript');
+        const ts = require("typescript");
 
         this.loadContents();
         // Calling it before transpileModule on purpose
@@ -381,8 +381,8 @@ export class File {
         if (result.sourceMapText && this.context.sourceMapConfig) {
             let jsonSourceMaps = JSON.parse(result.sourceMapText);
             jsonSourceMaps.file = this.info.fuseBoxPath;
-            jsonSourceMaps.sources = [this.info.fuseBoxPath.replace(/\.js(x?)$/, '.ts$1')];
-            result.outputText = result.outputText.replace('//# sourceMappingURL=module.js.map', '');
+            jsonSourceMaps.sources = [this.info.fuseBoxPath.replace(/\.js(x?)$/, ".ts$1")];
+            result.outputText = result.outputText.replace("//# sourceMappingURL=module.js.map", "");
             this.sourceMap = JSON.stringify(jsonSourceMaps);
         }
         this.contents = result.outputText;

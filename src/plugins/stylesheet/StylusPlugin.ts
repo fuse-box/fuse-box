@@ -1,6 +1,6 @@
-import { File } from '../../core/File';
-import { WorkFlowContext } from '../../core/WorkflowContext';
-import { Plugin } from '../../core/WorkflowContext';
+import { File } from "../../core/File";
+import { WorkFlowContext } from "../../core/WorkflowContext";
+import { Plugin } from "../../core/WorkflowContext";
 
 let stylus;
 
@@ -22,7 +22,7 @@ export class StylusPluginClass implements Plugin {
     }
 
     public init(context: WorkFlowContext) {
-        context.allowExtension('.styl');
+        context.allowExtension(".styl");
     }
 
     public transform(file: File): Promise<any> {
@@ -35,11 +35,11 @@ export class StylusPluginClass implements Plugin {
 
         file.loadContents();
 
-        if (!stylus) stylus = require('stylus');
+        if (!stylus) stylus = require("stylus");
 
         options.filename = file.info.fuseBoxPath;
 
-        if ('sourceMapConfig' in context) {
+        if ("sourceMapConfig" in context) {
             options.sourcemap = { ...sourceMapDef, ...this.options.sourcemap || {} };
         }
 

@@ -1,5 +1,5 @@
-import { File } from '../../core/File';
-import { nativeModules, HeaderImport } from './../HeaderImport';
+import { File } from "../../core/File";
+import { nativeModules, HeaderImport } from "./../HeaderImport";
 
 /**
  * Checks if a variable needs to magically imported
@@ -18,19 +18,19 @@ export class AutoImport {
 
     public static onNode(file: File, node: any, parent: any) {
         const analysis = file.analysis;
-        if (node.type === 'Identifier') {
+        if (node.type === "Identifier") {
             // here we dicide we can inject
             // there are many conditions where injection should not happen
             if (nativeModules.has(node.name) && !analysis.bannedImports[node.name]) {
-                const isProperty = parent.type && parent.type === 'Property';
+                const isProperty = parent.type && parent.type === "Property";
                 const isFunction = parent.type
-                    && (parent.type === 'FunctionExpression' ||
-                        parent.type === 'FunctionDeclaration'
+                    && (parent.type === "FunctionExpression" ||
+                        parent.type === "FunctionDeclaration"
                     ) && parent.params;
-                const isDeclaration = parent.type === 'VariableDeclarator' || parent.type === 'FunctionDeclaration';
+                const isDeclaration = parent.type === "VariableDeclarator" || parent.type === "FunctionDeclaration";
 
                 if (isProperty || isFunction || parent && isDeclaration
-                    && parent.id && parent.id.type === 'Identifier' && parent.id.name === node.name) {
+                    && parent.id && parent.id.type === "Identifier" && parent.id.name === node.name) {
                     delete analysis.nativeImports[node.name];
                     if (!analysis.bannedImports[node.name]) {
                         analysis.bannedImports[node.name] = true;

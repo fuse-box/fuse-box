@@ -1,9 +1,9 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import * as appRoot from 'app-root-path';
-import { File } from '../../core/File';
-import { WorkFlowContext } from '../../core/WorkflowContext';
-import { Plugin } from '../../core/WorkflowContext';
+import * as fs from "fs";
+import * as path from "path";
+import * as appRoot from "app-root-path";
+import { File } from "../../core/File";
+import { WorkFlowContext } from "../../core/WorkflowContext";
+import { Plugin } from "../../core/WorkflowContext";
 
 let babelCore;
 /**
@@ -55,7 +55,7 @@ export class BabelPluginClass implements Plugin {
      */
     public init(context: WorkFlowContext) {
         this.context = context;
-        context.allowExtension('.jsx');
+        context.allowExtension(".jsx");
     }
 
 
@@ -69,10 +69,10 @@ export class BabelPluginClass implements Plugin {
     public transform(file: File, ast: any) {
 
         if (!babelCore) {
-            babelCore = require('babel-core');
+            babelCore = require("babel-core");
         }
         if (this.configPrinted === false) {
-            file.context.debug('BabelPlugin', `\n\tConfiguration: ${JSON.stringify(this.config)}`);
+            file.context.debug("BabelPlugin", `\n\tConfiguration: ${JSON.stringify(this.config)}`);
 
             this.configPrinted = true;
         }

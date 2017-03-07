@@ -9,7 +9,7 @@
 // ! Removes the loader API from a bundle
 // ^ Disables cache
 
-import { ArithmeticStr } from '../Types';
+import { ArithmeticStr } from "../Types";
 
 /**
  * @example
@@ -17,8 +17,8 @@ import { ArithmeticStr } from '../Types';
  * strIncludesAnyOf('canada', ['eh', 'can'])
  */
 function strIncludesAnyOf(string: any, strings: any, delimiter: boolean | string = false): boolean {
-    if (delimiter && typeof strings === 'string' && strings.includes(','))
-        strings = strings.split(',');
+    if (delimiter && typeof strings === "string" && strings.includes(","))
+        strings = strings.split(",");
 
     for (let i = 0, len = strings.length; i < len; i++)
         if (string.includes(strings[i])) return true;
@@ -27,7 +27,7 @@ function strIncludesAnyOf(string: any, strings: any, delimiter: boolean | string
 
 class FluentBundle {
     public cmds: Array<Object> = [];
-    public str: string = '';
+    public str: string = "";
     public arithmetics: string;
     public noDeps: boolean = false;
     public useOnlyDeps: boolean;
@@ -40,7 +40,7 @@ class FluentBundle {
     public addCmd(cmd: any, bundle: any) {
         this.cmds.push({
             bundle,
-            cmd: 'execute',
+            cmd: "execute",
         });
         return this;
     }
@@ -63,7 +63,7 @@ class FluentBundle {
 
   // should add support to make it not need to take in the bundle
     public execute(bundle: any) {
-        this.addCmd('execute', bundle);
+        this.addCmd("execute", bundle);
         if (this.noDeps)
             this.str += `\n >[${bundle}]`;
         else
@@ -71,7 +71,7 @@ class FluentBundle {
         return this;
     }
     public add(bundle: string) {
-        this.addCmd('add', bundle);
+        this.addCmd("add", bundle);
         if (this.noDeps)
             this.str += `\n +[${bundle}]`;
         else
@@ -153,7 +153,7 @@ class Fluent {
     }
 
     public static isArithmetic(str: ArithmeticStr): boolean {
-        if (strIncludesAnyOf(str, '[,>,],+[,-,**,^,~,!', ',')) return true;
+        if (strIncludesAnyOf(str, "[,>,],+[,-,**,^,~,!", ",")) return true;
         return false;
     }
 }
