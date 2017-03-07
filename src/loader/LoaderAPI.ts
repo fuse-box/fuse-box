@@ -112,7 +112,7 @@ interface IReference {
  * for Example
  * require("lodash/dist/hello")
  */
-const $getNodeModuleName = (name: string) => {
+function $getNodeModuleName(name: string) {
     const n = name.charCodeAt(0);
     const s = name.charCodeAt(1);
     // basically a hack for windows to stop recognising
@@ -142,7 +142,7 @@ const $getNodeModuleName = (name: string) => {
 };
 
 /** Gets file directory */
-const $getDir = (filePath: string) => {
+function $getDir(filePath: string) {
     return filePath.substring(0, filePath.lastIndexOf("/")) || "./";
 };
 
@@ -150,7 +150,7 @@ const $getDir = (filePath: string) => {
  * Joins paths
  * Works like nodejs path.join
  */
-const $pathJoin = function(...string: string[]): string {
+function $pathJoin(...string: string[]): string {
     let parts : string[] = [];
     for (let i = 0, l = arguments.length; i < l; i++) {
         parts = parts.concat(arguments[i].split("/"));
@@ -176,7 +176,7 @@ const $pathJoin = function(...string: string[]): string {
 /**
  * Adds javascript extension if no extension was spotted
  */
-const $ensureExtension = (name: string): string => {
+function $ensureExtension(name: string): string {
     let matched = name.match(/\.(\w{1,})$/);
     if (matched) {
         let ext = matched[1];
@@ -196,7 +196,7 @@ const $ensureExtension = (name: string): string => {
  * Loads a url
  *  inserts a script tag or a css link based on url extension
  */
-const $loadURL = (url: string) => {
+function $loadURL(url: string) {
     if ($isBrowser) {
         let d = document;
         var head = d.getElementsByTagName("head")[0];
@@ -219,7 +219,7 @@ const $loadURL = (url: string) => {
 /**
  * Loop through an objects own keys and call a function with the key and value
  */
-const $loopObjKey = (obj: Object, func: Function) => {
+function $loopObjKey(obj: Object, func: Function) {
     for (let key in obj) {
         if (obj.hasOwnProperty(key)) {
             func(key, obj[key]);
@@ -227,15 +227,16 @@ const $loopObjKey = (obj: Object, func: Function) => {
     }
 };
 
-const $serverRequire = (path) => {
+function $serverRequire(path) {
     return { server: require(path) };
 };
 
-const $getRef = (name: string, opts: {
+type RefOpts = {
     path?: string;
     pkg?: string;
     v?: PackageVersions;
-}): IReference => {
+}
+function $getRef(name: string, opts: RefOpts): IReference {
     let basePath = opts.path || "./";
     let pkg_name = opts.pkg || "default";
     let nodeModule = $getNodeModuleName(name);
@@ -267,9 +268,6 @@ const $getRef = (name: string, opts: {
             }
         }
     }
-
-
-
 
     let pkg = $packages[pkg_name];
 
@@ -339,7 +337,7 @@ const $getRef = (name: string, opts: {
  * Async request
  * Makes it possible to request files asynchronously
  */
-const $async = (file: string, cb: (imported?: any) => any) => {
+function $async(file: string, cb: (imported?: any) => any) {
     if ($isBrowser) {
         var xmlhttp: XMLHttpRequest;
         xmlhttp = new XMLHttpRequest();
@@ -380,7 +378,7 @@ const $async = (file: string, cb: (imported?: any) => any) => {
  * If a registered callback returns "false"
  * We break the loop
  */
-const $trigger = (name: string, args: any) => {
+function $trigger(name: string, args: any) {
     let e = $events[name];
     if (e) {
         for (let i in e) {
@@ -399,7 +397,7 @@ const $trigger = (name: string, args: any) => {
  *   1) Base directory
  *   2) Target package name
  */
-const $import = (name: string, opts: any = {}) => {
+function $import(name: string, opts: any = {}) {
 
     // Test for external URLS
     // Basically : symbol can occure only at 4 and 5 position
