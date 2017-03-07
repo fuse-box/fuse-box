@@ -19,7 +19,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 if (FuseBox.isServer) {
-    module.exports = global.require('events');
+    module.exports = global.require("events");
 } else {
     function EventEmitter() {
         this._events = this._events || {};
@@ -41,7 +41,7 @@ if (FuseBox.isServer) {
     // that to be increased. Set to zero for unlimited.
     EventEmitter.prototype.setMaxListeners = function(n) {
         if (!isNumber(n) || n < 0 || isNaN(n))
-            throw TypeError('n must be a positive number');
+            throw TypeError("n must be a positive number");
         this._maxListeners = n;
         return this;
     };
@@ -53,14 +53,14 @@ if (FuseBox.isServer) {
             this._events = {};
 
         // If there is no 'error' event listener then throw.
-        if (type === 'error') {
+        if (type === "error") {
             if (!this._events.error ||
                 (isObject(this._events.error) && !this._events.error.length)) {
                 er = arguments[1];
                 if (er instanceof Error) {
                     throw er; // Unhandled 'error' event
                 }
-                throw TypeError('Uncaught, unspecified "error" event.');
+                throw TypeError("Uncaught, unspecified \"error\" event.");
             }
         }
 
@@ -101,7 +101,7 @@ if (FuseBox.isServer) {
         var m;
 
         if (!isFunction(listener))
-            throw TypeError('listener must be a function');
+            throw TypeError("listener must be a function");
 
         if (!this._events)
             this._events = {};
@@ -109,7 +109,7 @@ if (FuseBox.isServer) {
         // To avoid recursion in the case that type === "newListener"! Before
         // adding it to the listeners, first emit "newListener".
         if (this._events.newListener)
-            this.emit('newListener', type,
+            this.emit("newListener", type,
                 isFunction(listener.listener) ?
                 listener.listener : listener);
 
@@ -133,11 +133,11 @@ if (FuseBox.isServer) {
 
             if (m && m > 0 && this._events[type].length > m) {
                 this._events[type].warned = true;
-                console.error('(node) warning: possible EventEmitter memory ' +
-                    'leak detected. %d listeners added. ' +
-                    'Use emitter.setMaxListeners() to increase limit.',
+                console.error("(node) warning: possible EventEmitter memory " +
+                    "leak detected. %d listeners added. " +
+                    "Use emitter.setMaxListeners() to increase limit.",
                     this._events[type].length);
-                if (typeof console.trace === 'function') {
+                if (typeof console.trace === "function") {
                     // not supported in IE 10
                     console.trace();
                 }
@@ -151,7 +151,7 @@ if (FuseBox.isServer) {
 
     EventEmitter.prototype.once = function(type, listener) {
         if (!isFunction(listener))
-            throw TypeError('listener must be a function');
+            throw TypeError("listener must be a function");
 
         var fired = false;
 
@@ -175,7 +175,7 @@ if (FuseBox.isServer) {
         var list, position, length, i;
 
         if (!isFunction(listener))
-            throw TypeError('listener must be a function');
+            throw TypeError("listener must be a function");
 
         if (!this._events || !this._events[type])
             return this;
@@ -188,7 +188,7 @@ if (FuseBox.isServer) {
             (isFunction(list.listener) && list.listener === listener)) {
             delete this._events[type];
             if (this._events.removeListener)
-                this.emit('removeListener', type, listener);
+                this.emit("removeListener", type, listener);
 
         } else if (isObject(list)) {
             for (i = length; i-- > 0;) {
@@ -210,7 +210,7 @@ if (FuseBox.isServer) {
             }
 
             if (this._events.removeListener)
-                this.emit('removeListener', type, listener);
+                this.emit("removeListener", type, listener);
         }
 
         return this;
@@ -234,10 +234,10 @@ if (FuseBox.isServer) {
         // emit removeListener for all listeners on all events
         if (arguments.length === 0) {
             for (key in this._events) {
-                if (key === 'removeListener') continue;
+                if (key === "removeListener") continue;
                 this.removeAllListeners(key);
             }
-            this.removeAllListeners('removeListener');
+            this.removeAllListeners("removeListener");
             this._events = {};
             return this;
         }
@@ -284,15 +284,15 @@ if (FuseBox.isServer) {
     };
 
     function isFunction(arg) {
-        return typeof arg === 'function';
+        return typeof arg === "function";
     }
 
     function isNumber(arg) {
-        return typeof arg === 'number';
+        return typeof arg === "number";
     }
 
     function isObject(arg) {
-        return typeof arg === 'object' && arg !== null;
+        return typeof arg === "object" && arg !== null;
     }
 
     function isUndefined(arg) {

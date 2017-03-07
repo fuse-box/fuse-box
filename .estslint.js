@@ -20,7 +20,7 @@ module.exports = {
     "jsx": true,
     "modules": true,
     "decorators": true,
-    "experimentalObjectRestSpread": true,
+    // "experimentalObjectRestSpread": true,
   },
   "env": {
     "node": true,
@@ -56,14 +56,14 @@ module.exports = {
 
     // https://github.com/airbnb/javascript#whitespace--before-blocks
     // http://eslint.org/docs/rules/space-before-blocks
-    "space-before-blocks": [
-      "error",
-      {
-        "functions": "always",
-        "keywords": "always",
-        "classes": "always",
-      },
-    ],
+    // "space-before-blocks": [
+    //   "error",
+    //   {
+    //     "functions": "always",
+    //     "keywords": "always",
+    //     "classes": "always",
+    //   },
+    // ],
 
     "no-trailing-spaces": ["error", {"skipBlankLines": true}],
     "no-unreachable": 1,
@@ -118,15 +118,16 @@ module.exports = {
       "error",
       "always",
     ],
-    "space-infix-ops": ["error", {"int32Hint": false}],
+    // "space-infix-ops": ["error", {"int32Hint": false}],
     "new-cap": 0,
     "no-spaced-func": 2,
     "semi-spacing": 2,
     "key-spacing": [2],
-    "indent": ["error", 4, {"SwitchCase": 1}],
+    // "indent": ["error", 4, {"SwitchCase": 1}],
+    // "indent": ["error", 4],
 
-    "yield-star-spacing": [2, "both"],
-    "yoda": [2, "never"],
+    // "yield-star-spacing": [2, "both"],
+    // "yoda": [2, "never"],
 
     // es6 ---------
     // https://github.com/airbnb/javascript#objects
@@ -155,7 +156,7 @@ module.exports = {
 
     // https://github.com/airbnb/javascript#functions
     // http://eslint.org/docs/rules/prefer-rest-params
-    "prefer-rest-params": 2,
+    "prefer-rest-params": 1,
 
     "no-loop-func": 2,
 
