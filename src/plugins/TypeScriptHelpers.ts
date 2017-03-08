@@ -85,7 +85,6 @@ export class TypeScriptHelpersClass implements Plugin {
             }
         });
         if (patchDecorate) {
-            console.log("add");
             file.addHeaderContent("var __decorate = __fsbx_decorate(arguments)");
         }
     }
