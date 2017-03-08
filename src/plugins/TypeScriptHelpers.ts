@@ -45,7 +45,7 @@ export class TypeScriptHelpersClass implements Plugin {
     }
 
     public bundleEnd(context: WorkFlowContext) {
-        let helpers : Set < string > = context.getItem("ts_helpers");
+        let helpers: Set<string> = context.getItem("ts_helpers");
         helpers.forEach(name => {
             let contents = this.registeredHelpers.get(name);
             context.source.addContent(contents);
@@ -66,13 +66,18 @@ export class TypeScriptHelpersClass implements Plugin {
         if (file.collection.name !== file.context.defaultPackageName) {
             return;
         }
-        let helpers : Set < string > = file.context.getItem("ts_helpers");
+        let helpers: Set<string> = file.context.getItem("ts_helpers");
         // Check which helpers are actually used
         this.registeredHelpers.forEach((cont, name) => {
             let regexp = new RegExp(name, "gm");
             if (regexp.test(file.contents)) {
+
                 if (name === "__decorate") {
                     patchDecorate = true;
+                    // temp solution
+                    if (file.headerContent && file.headerContent.indexOf("var __decorate = __fsbx_decorate(arguments)") === 0) {
+                        patchDecorate = false;
+                    }
                 }
                 if (!helpers.has(name)) {
                     helpers.add(name);
@@ -80,6 +85,7 @@ export class TypeScriptHelpersClass implements Plugin {
             }
         });
         if (patchDecorate) {
+            console.log("add");
             file.addHeaderContent("var __decorate = __fsbx_decorate(arguments)");
         }
     }

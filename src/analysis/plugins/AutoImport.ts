@@ -57,6 +57,9 @@ export class AutoImport {
      */
     public static onEnd(file: File) {
         const analysis = file.analysis;
+        if (file.headerContent) {
+            file.headerContent = [];
+        }
         for (let nativeImportName in analysis.nativeImports) {
             if (analysis.nativeImports.hasOwnProperty(nativeImportName)) {
                 const nativeImport: HeaderImport = analysis.nativeImports[nativeImportName];

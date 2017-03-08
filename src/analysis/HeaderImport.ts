@@ -38,7 +38,7 @@ export class HeaderImportCollection {
 // Basically initiate it only once
 let headerCollection: HeaderImportCollection;
 if (!headerCollection) {
-    headerCollection = new HeaderImportCollection();;
+    headerCollection = new HeaderImportCollection(); ;
 }
 // register native variables
 headerCollection.add(new HeaderImport("stream", {

@@ -162,6 +162,7 @@ export class WorkFlowContext {
         if (file.headerContent) {
             content = file.headerContent.join("\n") + "\n" + content;
         }
+
         this.sourceChangedEmitter.emit({
             type: "js",
             content,

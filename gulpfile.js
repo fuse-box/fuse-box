@@ -207,7 +207,7 @@ gulp.task('watch', ['dist', 'copy-to-inferno'], function() {
         runSequence('dist-main', 'copy-to-inferno');
     });
 });
-
+// npm install babel-core babel-generator babel-preset-latest babylon cheerio @angular/core stylus less postcss node-sass uglify-js source-map coffee-script @types/node rollup
 gulp.task("installDevDeps", function(done) {
     var deps = [
         "babel-core",

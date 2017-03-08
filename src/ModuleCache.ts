@@ -163,7 +163,7 @@ export class ModuleCache {
         let fileName = encodeURIComponent(file.info.fuseBoxPath);
         let memCacheKey = encodeURIComponent(file.absPath);
         let dest = path.join(this.staticCacheFolder, fileName);
-        let stats : any = fs.statSync(file.absPath);
+        let stats: any = fs.statSync(file.absPath);
 
         let cacheData = {
             contents: file.contents,
@@ -179,6 +179,7 @@ headerContent: ${JSON.stringify(cacheData.headerContent)},
 mtime: ${cacheData.mtime}
 };`;
         MEMORY_CACHE[memCacheKey] = cacheData;
+
         fs.writeFileSync(dest, data);
     }
 
@@ -191,7 +192,7 @@ mtime: ${cacheData.mtime}
      * @memberOf ModuleCache
      */
     public resolve(files: File[]): Promise<File[]> {
-        let through : File[] = [];
+        let through: File[] = [];
         let valid4Caching = [];
 
         const moduleFileCollection = new Map<string, Map<string, File>>();
@@ -235,7 +236,7 @@ mtime: ${cacheData.mtime}
         });
 
         const required = [];
-        const operations : Promise < any > [] = [];
+        const operations: Promise<any>[] = [];
         let cacheReset = false;
         /**
          *
