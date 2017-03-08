@@ -9,8 +9,10 @@ const bump = require("gulp-bump");
 const wrap = require("gulp-wrap");
 const uglify = require("gulp-uglify");
 const changelog = require("gulp-changelog-generator");
-const { spawn } = require("child_process");
+const { exec, spawn } = require("child_process");
+
 const fs = require("fs");
+
 
 /**
  * Fail on error if not in watch mode
@@ -140,7 +142,7 @@ gulp.task("increment-version", function() {
 });
 gulp.task("commit-release", function(done) {
     let json = JSON.parse(fs.readFileSync(__dirname + "/package.json").toString());
-    child_process.exec(`git add .; git commit -m "Release ${json.version}" -a; git tag v${json.version}; git push origin master --tags`, (error, stdout, stderr) => {
+    exec(`git add .; git commit -m "Release ${json.version}" -a; git tag v${json.version}; git push origin master --tags`, (error, stdout, stderr) => {
         if (error) {
             console.error(`exec error: ${error}`);
             return;
