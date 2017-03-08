@@ -43,8 +43,6 @@ rollup: {
 }
 ```
 
-`Bundle` contains configuration that happen at the latest stage of rollup. Everything is a primary configuration. You will not be able to use RollUP plugin (for now), as FuseBox injects it's own plugin for resolving modules. 
-
-You can utilise many of FuseBox plugins and features, for example [aliases](#alias)
+`Bundle` contains configuration that happen at the latest stage of rollup. Everything is a primary configuration. You will not be able to use Rollup plugins (for now), as FuseBox injects it's own plugin for resolving modules. Moreover, FuseBox has plenty to offer, for example [aliases](#alias)
 
 
