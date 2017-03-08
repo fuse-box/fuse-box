@@ -16,6 +16,7 @@
     "src", "dist", "modules", "test", "docs"
   ],
   "scripts": {
+    "help": "node bin/CommandLine --help",
     "lint-fix": "eslint src/*.ts src/**/*.ts src/**/**/*.ts test/*.js test/**/*.js --fix",
     "lint-fix-quiet": "npm run lint-fix -- --quiet",
     "test": "TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js",
