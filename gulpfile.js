@@ -179,7 +179,7 @@ gulp.task("make-test-runner", (done) => {
 });
 
 gulp.task("copy-to-inferno", () => {
-    return gulp.src("dist/commonjs/**/**.js").pipe(gulp.dest("../inferno/node_modules/fuse-box/dist/commonjs/"))
+    //return gulp.src("dist/commonjs/**/**.js").pipe(gulp.dest("../inferno/node_modules/fuse-box/dist/commonjs/"))
 })
 
 /**

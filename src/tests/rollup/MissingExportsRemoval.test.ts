@@ -1,6 +1,6 @@
-import { VirtualFile } from "./VirtualFile";
-import { MissingImportsRemoval } from "./MissingExportsRemoval";
 import { should } from "fuse-test-runner";
+import { VirtualFile } from "../../rollup/VirtualFile";
+import { MissingImportsRemoval } from "../../rollup/MissingExportsRemoval";
 
 export class MissingExportsRemoveTest {
 
@@ -15,6 +15,7 @@ export class MissingExportsRemoveTest {
             .mutate(x => x.get("test/foo.js"))
             .mutate(x => x.generate())
             .equal(`import { hello } from './bar';`);
+
     }
 
     "Should leave untouched"() {

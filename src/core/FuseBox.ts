@@ -34,6 +34,7 @@ export interface FuseBoxOptions {
     sourceMap?: any;
     ignoreGlobal?: string[];
     serverBundle?: boolean;
+    rollup?: any;
     customAPIFile?: string;
     outFile?: string;
     debug?: boolean;
@@ -157,6 +158,10 @@ export class FuseBox {
             this.context.ignoreGlobal = opts.ignoreGlobal;
         }
 
+        if (opts.rollup) {
+            this.context.rollupOptions = opts.rollup;
+        }
+
         if (opts.customAPIFile) {
             this.context.customAPIFile = opts.customAPIFile;
         }
@@ -225,10 +230,6 @@ export class FuseBox {
         this.context.triggerPluginsMethodOnce("postBundle", [this.context]);
     }
 
-    public rollup(bundle: Buffer, opts: any) {
-        let rollup = new MagicalRollup(this.context, bundle, opts);
-        return rollup.parse();
-    }
     /**
      * Make a Bundle (or bundles)
      */
@@ -326,14 +327,40 @@ export class FuseBox {
                 }
 
             }).then(result => {
-                self.context.log.end();
-                this.triggerEnd();
-                self.context.source.finalize(bundleData);
-                this.triggerPost();
-                this.context.writeOutput(bundleReady);
-                return self.context.source.getResult();
+                let self = this;
+
+                const rollup = this.handleRollup();
+                if (rollup) {
+                    self.context.source.finalize(bundleData);
+                    rollup().then(() => {
+                        self.context.log.end();
+                        this.triggerEnd();
+                        this.triggerPost();
+                        this.context.writeOutput(bundleReady);
+                        return self.context.source.getResult();
+                    });
+                } else {
+
+                    self.context.log.end();
+                    this.triggerEnd();
+                    self.context.source.finalize(bundleData);
+                    this.triggerPost();
+                    this.context.writeOutput(bundleReady);
+                    return self.context.source.getResult();
+                }
             });
         });
+    }
+
+    public handleRollup() {
+        if (this.context.rollupOptions) {
+            return () => {
+                let rollup = new MagicalRollup(this.context);
+                return rollup.parse();
+            };
+        } else {
+            return false;
+        }
     }
 
     public addShims() {

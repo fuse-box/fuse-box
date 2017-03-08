@@ -1,5 +1,6 @@
-import { VirtualFile, ImportDeclaration } from "./VirtualFile";
+
 import { should } from "fuse-test-runner";
+import { VirtualFile, ImportDeclaration } from "../../rollup/VirtualFile";
 
 export class VirtualFileTest {
     "Should extract exports"() {
@@ -126,6 +127,7 @@ export class VirtualFileTest {
         let hello = file.localImports.get("./hello");
         hello.get("bar").remove();
         should(file.generate()).equal(`import { foo } from './hello';`);
+
         hello.get("bar").remove();
         should(file.generate()).equal(``);
     }

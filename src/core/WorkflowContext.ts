@@ -69,6 +69,8 @@ export class WorkFlowContext {
     public customAPIFile: string;
 
     public defaultEntryPoint: string;
+
+    public rollupOptions: any;
     /**
      * Explicitly target bundle to server
      */
@@ -306,7 +308,7 @@ export class WorkFlowContext {
         }
 
         let url, configFile;
-        let config : any = {
+        let config: any = {
             compilerOptions: {},
         }; ;
         if (this.tsConfig) {
@@ -331,6 +333,12 @@ export class WorkFlowContext {
         if (this.sourceMapConfig) {
             config.compilerOptions.sourceMap = true;
             config.compilerOptions.inlineSources = true;
+        }
+        // switch to target es6
+        if (this.rollupOptions) {
+            this.debug("Typescript", "Forcing es6 output for typescript. Rollup deteced");
+            config.compilerOptions.module = "es6";
+            config.compilerOptions.target = "es6";
         }
         this.loadedTsConfig = config;
         return config;

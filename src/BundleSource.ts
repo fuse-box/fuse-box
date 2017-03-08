@@ -28,7 +28,7 @@ export class BundleSource {
      * @type {*}
      * @memberOf BundleSource
      */
-    private concat: Concat;
+    public concat: Concat;
 
     private collectionSource: any;
 
