@@ -1,7 +1,6 @@
 import { FuseBox } from "../core/FuseBox";
 import { Server } from "ws";
 
-
 export class SocketServer {
 
     public static server: SocketServer;
@@ -21,7 +20,6 @@ export class SocketServer {
         let wss = new Server({ server });
         let ss = new SocketServer(wss, fuse);
 
-
         return ss;
     }
 
@@ -32,7 +30,6 @@ export class SocketServer {
 
         return this.server;
     }
-
 
     public cursor: any;
     public clients = new Set<any>();
@@ -54,7 +51,6 @@ export class SocketServer {
             });
         });
     }
-
 
     public send(type: string, data: any) {
         this.clients.forEach(client => {

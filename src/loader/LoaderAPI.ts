@@ -7,7 +7,6 @@ const g = $isBrowser ? window : global;
 declare let __root__: any;
 declare let __fbx__dnm__: any;
 
-
 /**
  * Package name to version
  */
@@ -48,7 +47,6 @@ type FSBX = {
     }
 };
 
-
 // Patching global variable
 if ($isBrowser) {
     g["global"] = window;
@@ -64,7 +62,6 @@ __root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports :
 const $fsbx : FSBX = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
     : g["$fsbx"] = g["$fsbx"] || {}; // in case of nodejs
 
-
 if (!$isBrowser) {
     g["require"] = require;
 }
@@ -77,7 +74,6 @@ const $packages = $fsbx.p = $fsbx.p || {};
 // A list of custom events
 // For example "after-import"
 const $events = $fsbx.e = $fsbx.e || {};
-
 
 /**
  * Reference interface
@@ -366,7 +362,6 @@ function $async(file: string, cb: (imported?: any) => any) {
     }
 };
 
-
 /**
  * Trigger events
  * If a registered callback returns "false"
@@ -562,9 +557,6 @@ class FuseBox {
             }
         }
     }
-
-
-
 
     /**
      * Registers a dynamic path

@@ -14,7 +14,6 @@ describe("Generic requires", (done) => {
         }).catch(done);
     });
 
-
     it("Case 2 should import 3 files", (done) => {
         getTestEnv({
             "index.js": `exports.hello = require("./foo/bar.js");`,

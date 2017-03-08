@@ -77,7 +77,6 @@ describe("Wildcard imports", (done) => {
         }).catch(done);
     });
 
-
     it("Should import 2 javascript capital case", (done) => {
         getTestEnv({
 

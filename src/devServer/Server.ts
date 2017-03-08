@@ -72,7 +72,6 @@ export class Server {
 
         }
 
-
         // allow user to override hot reload emitter
         let emitter : HotReloadEmitter | false = utils.isFunction(opts.emitter) ? opts.emitter : false;
 

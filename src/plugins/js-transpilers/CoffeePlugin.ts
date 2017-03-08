@@ -59,7 +59,6 @@ export class CoffeePluginClass implements Plugin {
             }
         });
 
-
     }
 }
 

@@ -8,7 +8,6 @@ const fsExtra = require("fs-extra");
 
 describe("Bundle in a bundle", () => {
 
-
     it("Should require a bundled package", (done) => {
         createEnv({
             modules: {
@@ -35,7 +34,6 @@ describe("Bundle in a bundle", () => {
             done();
         });
     });
-
 
     it("Should require a bundled package and work with uglify", (done) => {
         createEnv({

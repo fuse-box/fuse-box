@@ -1,7 +1,6 @@
 import { createEnv } from "./stubs/TestEnvironment";
 import { should } from "fuse-test-runner";
 
-
 export class AutoImportTest {
     "Should access a dynamic module (without ext)"() {
         return createEnv({

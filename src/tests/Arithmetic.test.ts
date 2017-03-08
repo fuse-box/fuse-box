@@ -79,7 +79,6 @@ export class ArithmeticTest {
             .deepEqual({ "main/app.js": true });
     }
 
-
     "Should understand an entry point without deps"() {
         let result = Arithmetic.parse(` > [main/app.js]  -path`);
 

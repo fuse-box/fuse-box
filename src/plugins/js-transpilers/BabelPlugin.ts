@@ -15,7 +15,6 @@ let babelCore;
  */
 export class BabelPluginClass implements Plugin {
 
-
     /**
      * We can add tsx and ts here as well
      * Because Babel won't capture it just being a Plugin
@@ -45,7 +44,6 @@ export class BabelPluginClass implements Plugin {
         }
     }
 
-
     /**
      *
      *
@@ -57,7 +55,6 @@ export class BabelPluginClass implements Plugin {
         this.context = context;
         context.allowExtension(".jsx");
     }
-
 
     /**
      *

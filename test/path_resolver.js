@@ -70,5 +70,4 @@ describe("Path resolver", (done) => {
         }).catch(done);
     });
 
-
 });

@@ -2,7 +2,6 @@ import { File } from "../core/File";
 import { WorkFlowContext } from "../core/WorkflowContext";
 import { Plugin } from "../core/WorkflowContext";
 
-
 let vueCompiler;
 export class VuePluginClass implements Plugin {
     public test: RegExp = /\.vue$/;

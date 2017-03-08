@@ -27,7 +27,6 @@ export type PluginMethodName =
 
 const appRoot = require("app-root-path");
 
-
 /**
  * Interface for a FuseBox plugin
  */
@@ -199,7 +198,6 @@ export class WorkFlowContext {
         return this.shim[name] !== undefined;
     }
 
-
     /**
      * Resets significant class members
      */
@@ -241,7 +239,6 @@ export class WorkFlowContext {
         this.fileGroups.set(name, file);
         return file;
     }
-
 
     public getFileGroup(name: string): File {
         return this.fileGroups.get(name);
@@ -300,7 +297,6 @@ export class WorkFlowContext {
         this.nodeModules.set(name, collection);
     }
 
-
     /**
      * Retuns the parsed `tsconfig.json` contents
      */
@@ -331,7 +327,6 @@ export class WorkFlowContext {
             config.compilerOptions.module = "commonjs";
             this.log.echoStatus(`Typescript config file was not found. Improvising`);
         }
-
 
         if (this.sourceMapConfig) {
             config.compilerOptions.sourceMap = true;

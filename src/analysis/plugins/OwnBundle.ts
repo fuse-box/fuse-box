@@ -1,7 +1,6 @@
 import { File } from "../../core/File";
 import * as escodegen from "escodegen";
 
-
 /**
  * This plugin exists to understand FuseBox bundles.
  * For example if you bundle fusebox bundle this plugin will ensure
@@ -11,7 +10,6 @@ import * as escodegen from "escodegen";
  * That's why we need OwnVariable plugin
  */
 export class OwnBundle {
-
 
     public static onNode(file: File, node: any, parent: any) {
         const analysis = file.analysis;
@@ -35,7 +33,6 @@ export class OwnBundle {
             }
         }
     }
-
 
     public static onEnd(file: File) {
         const analysis = file.analysis;

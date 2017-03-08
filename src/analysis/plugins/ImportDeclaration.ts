@@ -6,7 +6,6 @@ import { File } from "../../core/File";
  */
 export class ImportDeclaration {
 
-
     /**
      * Extract require statements
      * At the same time replace aliases
@@ -32,7 +31,6 @@ export class ImportDeclaration {
             }
         }
     }
-
 
     public static onEnd() { }
 

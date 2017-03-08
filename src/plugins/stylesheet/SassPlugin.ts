@@ -45,8 +45,6 @@ export class SassPluginClass implements Plugin {
             sourceMapContents: true,
         }, this.options);
 
-
-
         options.includePaths = [];
         if (typeof this.options.includePaths !== "undefined") {
             this.options.includePaths.forEach((path) => {
@@ -54,7 +52,6 @@ export class SassPluginClass implements Plugin {
             });
         }
         options.macros = Object.assign(defaultMacro, this.options.macros || {},);
-
 
         if (this.options.importer === true) {
             options.importer = (url, prev, done) => {
@@ -70,7 +67,6 @@ export class SassPluginClass implements Plugin {
                 done({ file: path.normalize(url) });
             };
         }
-
 
         options.includePaths.push(file.info.absDir);
         return new Promise((resolve, reject) => {
