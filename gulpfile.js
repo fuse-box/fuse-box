@@ -224,6 +224,7 @@ gulp.task("installDevDeps", function(done) {
         "source-map",
         "coffee-script",
         "@types/node",
+        "rollup"
     ];
     var installDeps = spawn("npm", ["install"].concat(deps), {
         stdio: "inherit",
