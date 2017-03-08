@@ -23,11 +23,13 @@ export class AutoImport {
             if (nativeModules.has(node.name) && !analysis.bannedImports[node.name]) {
 
                 const belongsToAnotherObject = parent.type === "MemberExpression" && parent.object && parent.object.type === "Identifier" && parent.object.name !== node.name;
+
                 if (belongsToAnotherObject) {
                     return;
                 }
 
-                const isProperty = parent.type && parent.type === "Property";
+                const isProperty = parent.type && parent.type === "Property" && parent.value && parent.value.name !== node.name;
+
                 const isFunction = parent.type
                     && (parent.type === "FunctionExpression" ||
                         parent.type === "FunctionDeclaration"

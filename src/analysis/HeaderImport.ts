@@ -5,7 +5,7 @@ export class HeaderImport {
     public statement: string;
     constructor(public variable: string, pkg: any) {
         if (utils.isPlainObject(pkg)) {
-            let options : any = pkg;
+            let options: any = pkg;
             this.pkg = options.pkg;
             this.statement = options.statement;
         } else {
@@ -38,10 +38,9 @@ export class HeaderImportCollection {
 // Basically initiate it only once
 let headerCollection: HeaderImportCollection;
 if (!headerCollection) {
-    headerCollection = new HeaderImportCollection(); ;
+    headerCollection = new HeaderImportCollection();;
 }
 // register native variables
-headerCollection.add(new HeaderImport("timers", "timers"));
 headerCollection.add(new HeaderImport("stream", {
     pkg: "stream",
     statement: `require("stream").Stream`,
