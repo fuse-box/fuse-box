@@ -52,6 +52,12 @@ export class BundleSource {
         this.concat.add(null, "(function(FuseBox){FuseBox.$fuse$=FuseBox;");
     }
 
+    public annotate(comment: string) {
+        if (this.context.rollupOptions) {
+            this.collectionSource.add(null, comment);
+        }
+    }
+
     /**
      *
      *
@@ -79,7 +85,8 @@ export class BundleSource {
 
         this.collectionSource.add(null, `FuseBox.pkg("${collection.name}", ${JSON.stringify(
             conflicting)}, function(___scope___){`);
-        this.collectionSource.add(null, `/* fuse:start-collection "${collection.name}"*/`);
+
+        this.annotate(`/* fuse:start-collection "${collection.name}"*/`);
     }
 
     /**
@@ -96,7 +103,8 @@ export class BundleSource {
             this.collectionSource.add(null, `return ___scope___.entry = "${entry}";`);
         }
         this.collectionSource.add(null, "});");
-        this.collectionSource.add(null, `/* fuse:end-collection "${collection.name}"*/`);
+
+        this.annotate(`/* fuse:end-collection "${collection.name}"*/`);
 
         let key = collection.info ? `${collection.info.name}@${collection.info.version}` : "default";
         this.concat.add(`packages/${key}`,
@@ -131,9 +139,12 @@ export class BundleSource {
         this.collectionSource.add(null,
             `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){
 ${file.headerContent ? file.headerContent.join("\n") : ""}`);
-        this.collectionSource.add(null, `/* fuse:start-file "${file.info.fuseBoxPath}"*/`);
+
+
+        this.annotate(`/* fuse:start-file "${file.info.fuseBoxPath}"*/`);
         this.collectionSource.add(null, file.alternativeContent !== undefined ? file.alternativeContent : file.contents, file.sourceMap);
-        this.collectionSource.add(null, `/* fuse:end-file "${file.info.fuseBoxPath}"*/`);
+        this.annotate(`/* fuse:end-file "${file.info.fuseBoxPath}"*/`);
+
         this.collectionSource.add(null, "});");
     }
 
