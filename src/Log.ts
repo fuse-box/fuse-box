@@ -11,15 +11,21 @@ export class Log {
     private totalSize = 0;
     private printLog = true;
 
-    constructor(public context: WorkFlowContext) {
+    constructor(public context?: WorkFlowContext) {
         this.printLog = context.doLog;
+    }
+
+    public echoWith(str: string, opt: string) {
+      cursor.write(` `)[opt]().write(str);
+      cursor.write("\n");
+      cursor.reset();
     }
 
     public echo(str: string) {
         let data = new Date();
-        let hour : any = data.getHours();
-        let min : any = data.getMinutes();
-        let sec : any = data.getSeconds();
+        let hour: any = data.getHours();
+        let min: any = data.getMinutes();
+        let sec: any = data.getSeconds();
 
         hour = hour < 10 ? `0${hour}` : hour;
         min = min < 10 ? `0${min}` : min;

@@ -61,13 +61,14 @@ class FluentBundle {
         return this;
     }
 
-  // should add support to make it not need to take in the bundle
+    // should add support to make it not need to take in the bundle
     public execute(bundle: any) {
         this.addCmd("execute", bundle);
         if (this.noDeps)
             this.str += `\n >[${bundle}]`;
         else
-      this.str += `\n >${bundle}`;
+
+        this.str += `\n >${bundle}`;
         return this;
     }
     public add(bundle: string) {
@@ -75,7 +76,7 @@ class FluentBundle {
         if (this.noDeps)
             this.str += `\n +[${bundle}]`;
         else
-      this.str += `\n +${bundle}`;
+            this.str += `\n +${bundle}`;
 
         return this;
     }
@@ -92,14 +93,14 @@ class FluentBundle {
         return this;
     }
 
-  // aka, vendors
+    // aka, vendors
     public onlyDeps() {
         this.useOnlyDeps = true;
         this.str += `\n ~`;
         return this;
     }
 
-  // same
+    // same
     public ignoreDeps() {
         this.noDeps = true;
         return this;
@@ -109,8 +110,8 @@ class FluentBundle {
         return this;
     }
     public deps(bool: boolean) {
-    // if true, we do not ignore
-    // if false, we do ignore
+        // if true, we do not ignore
+        // if false, we do ignore
         this.noDeps = !bool;
         return this;
     }
@@ -132,7 +133,7 @@ class Fluent {
         return this;
     }
 
-  // name is also output place if multiple
+    // name is also output place if multiple
     public startBundle(name: string) {
         this.bundled[name] = new FluentBundle(name, this);
         return this.bundled[name];
