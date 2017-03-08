@@ -4,7 +4,7 @@ For those how are into minimalist bundles, FuseBox offers a built-in `Rollup` su
 
 At the moment it works only on typescript projects, therefore requires typescript. 
 
-## Let's roll
+## Installation
 
 Typescript is required due to the magic integration with Rollup. It will be used to transpile your code from es6 to es5.
 
@@ -27,11 +27,11 @@ npm install
 node fuse
 ```
 
-## Rollup: How it works 
+## How it works 
 In progress
 
 
-## Rollup Configuration
+## Configuration
 
 ```js
 rollup: {
