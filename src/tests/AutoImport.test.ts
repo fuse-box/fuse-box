@@ -1,7 +1,6 @@
 import { createEnv } from "./stubs/TestEnvironment";
 import { should } from "fuse-test-runner";
 
-
 export class AutoImportTest {
     "Should inject a variable woops case 1"() {
         return createEnv({
@@ -31,8 +30,6 @@ export class AutoImportTest {
         });
     }
 
-
-
     "`Should inject a variable woops case 2`"() {
         return createEnv({
             modules: {
@@ -61,7 +58,6 @@ export class AutoImportTest {
             should(out).deepEqual({ something: "here" });
         });
     }
-
 
     "`Should inject a variable woops case 2`"() {
         return createEnv({
@@ -128,7 +124,6 @@ export class AutoImportTest {
         });
     }
 
-
     "`Should inject a variable Inferno`"() {
 
         createEnv({
@@ -162,8 +157,6 @@ export class AutoImportTest {
             should(out).deepEqual({ result: "pure magic" });
         });
     }
-
-
 
     "`Should auto import Buffer`"() {
         return createEnv({
@@ -227,7 +220,6 @@ export class AutoImportTest {
             should(contents).notFindString(`/* fuse:injection: */ var process`);
         });
     }
-
 
     "Process check with function param 'function(process){}'"() {
 

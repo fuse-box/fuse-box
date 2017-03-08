@@ -75,7 +75,6 @@ export class ModuleCache {
         this.staticCacheFolder = path.join(this.cacheFolder, "static");
         fsExtra.ensureDirSync(this.staticCacheFolder);
 
-
         this.cacheFile = path.join(this.cacheFolder, "deps.json");
         if (fs.existsSync(this.cacheFile)) {
             try {

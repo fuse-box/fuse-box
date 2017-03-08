@@ -15,7 +15,6 @@ import { nativeModules, HeaderImport } from "./../HeaderImport";
  */
 export class AutoImport {
 
-
     public static onNode(file: File, node: any, parent: any) {
         const analysis = file.analysis;
         if (node.type === "Identifier") {

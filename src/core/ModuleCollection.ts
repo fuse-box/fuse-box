@@ -89,7 +89,6 @@ export class ModuleCollection {
      */
     public cacheFile: string;
 
-
     /**
      *
      *
@@ -140,7 +139,6 @@ export class ModuleCollection {
         file.isNodeModuleEntry = true;
         this.entryFile = file;
     }
-
 
     /**
      *
@@ -207,7 +205,6 @@ export class ModuleCollection {
             this.entryFile = File.createByName(this, ensurePublicExtension(this.context.defaultEntryPoint));
         }
 
-
         return this.resolveDepsOnly(data.depsOnly).then(() => {
 
             return each(data.including, (withDeps, modulePath) => {
@@ -270,7 +267,6 @@ export class ModuleCollection {
             collection = this.context.getNodeModule(moduleName);
         }
 
-
         // If we are using a custom version
         // THe source output should know about.
         // When compiling the ouput we will take it into a consideration
@@ -290,7 +286,6 @@ export class ModuleCollection {
             ? collection.resolve(new File(this.context, collection.pm.init(file.info.absPath)))
             : collection.resolveEntry();
     }
-
 
     public transformGroups() {
         const promises = [];
@@ -338,7 +333,6 @@ export class ModuleCollection {
 
                 return;
             }
-
 
             // Check if a module needs to ignored
             // It could be defined previosly (as in exluding all dependencies)

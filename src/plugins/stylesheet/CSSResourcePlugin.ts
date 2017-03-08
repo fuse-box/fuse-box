@@ -100,8 +100,6 @@ export class CSSResourcePluginClass implements Plugin {
         }
     }
 
-
-
     public transform(file: File) {
         file.loadContents();
         let contents = file.contents;

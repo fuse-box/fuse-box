@@ -1,7 +1,6 @@
 import { File } from "../core/File";
 import { WorkFlowContext, Plugin } from "./../core/WorkflowContext";
 
-
 /**
  *
  *
@@ -38,7 +37,6 @@ export class ConcatPluginClass implements Plugin {
             context.allowExtension(this.ext);
         }
     }
-
 
     /**
      *

@@ -19,9 +19,7 @@ export class TypeScriptHelpersClass implements Plugin {
      */
     public test: RegExp = /\.tsx?$/;
 
-
     private registeredHelpers: Map<string, string> = new Map();
-
 
     constructor(opts: any) {
         opts = opts || {};
@@ -45,7 +43,6 @@ export class TypeScriptHelpersClass implements Plugin {
     public init(context: WorkFlowContext) {
         context.setItem("ts_helpers", new Set());
     }
-
 
     public bundleEnd(context: WorkFlowContext) {
         let helpers : Set < string > = context.getItem("ts_helpers");

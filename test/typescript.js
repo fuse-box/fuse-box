@@ -3,7 +3,6 @@ const getTestEnv = require("./fixtures/lib").getTestEnv;
 const build = require(`../dist/commonjs/index.js`);
 const BannerPlugin = build.BannerPlugin;
 
-
 describe("Typescript tests", () => {
     it(`Should pass contents to any plugin that has jsx|js from transpiled file`, () => {
 

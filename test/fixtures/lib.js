@@ -3,12 +3,10 @@ const fs = require("fs");
 
 const FuseBox = build.FuseBox;
 
-
 const fsExtra = require("fs-extra");
 const appRoot = require("app-root-path");
 const { each } = require("realm-utils");
 const path = require("path");
-
 
 const deleteFolderRecursive = function(path) {
     if (fs.existsSync(path)) {
@@ -51,12 +49,10 @@ exports.getTestEnv = (files, str, config, returnConcat) => {
     });
 };
 
-
 exports.createEnv = (opts, str, done) => {
     const name = opts.name || `test-${new Date().getTime()}`;
 
     let tmpFolder = path.join(appRoot.path, ".fusebox", "tests");
-
 
     fsExtra.ensureDirSync(tmpFolder);
     let localPath = path.join(tmpFolder, name);

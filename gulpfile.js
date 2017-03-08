@@ -54,7 +54,11 @@ return __root__["FuseBox"] = FuseBox; } )(this)`))
         .pipe(rename("fusebox.js"))
         .pipe(gulp.dest("modules/fuse-box-loader-api"))
         .pipe(rename("fusebox.min.js"))
-        .pipe(uglify())
+        .pipe(uglify({
+            output: {
+                quote_keys: true
+            }
+        }))
         .pipe(replace(/;$/, ""))
         .pipe(replace(/^\!/, ""))
         .pipe(gulp.dest("modules/fuse-box-loader-api"));

@@ -59,7 +59,6 @@ export class CssPluginTest {
         });
     }
 
-
     "Should create a CSS File but not inject it"() {
         makeTestFolder();
         return createEnv({
@@ -147,7 +146,6 @@ export class CssPluginTest {
         });
     }
 
-
     "Should bundle and write 2 CSS files into one"() {
         makeTestFolder();
 
@@ -218,7 +216,6 @@ h1 {};
             should(js).findString(`__fsbx_css("custom/app.css");`);
         });
     }
-
 
     "A simple case should with the the CSSResourcePlugin"() {
         makeTestFolder();

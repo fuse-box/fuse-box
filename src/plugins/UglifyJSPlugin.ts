@@ -23,7 +23,6 @@ export class UglifyJSPluginClass implements Plugin {
         };
         const UglifyJs = require("uglify-js");
 
-
         const concat = context.source.getResult();
         const source = concat.content.toString();
         const sourceMap = concat.sourceMap;

@@ -21,7 +21,6 @@ describe("Utils", (done) => {
         res.should.equal("a/hello.js");
     });
 
-
     it("Should find file backwards", () => {
         const rootFolder = path.join(__dirname, "/fixtures/findfile");
         let res = Utils.findFileBackwards(path.join(rootFolder, "a/b/c/tsconfig.json"), rootFolder);

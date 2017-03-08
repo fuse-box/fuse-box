@@ -158,7 +158,6 @@ export class PathMaster {
             name += ".js";
         }
 
-
         return name;
     }
 

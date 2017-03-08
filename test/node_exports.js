@@ -142,7 +142,6 @@ describe("Node modules and exports", (done) => {
         }).catch(done);
     });
 
-
     it("Node library 'events' should be ok", (done) => {
         env({
             log: false,

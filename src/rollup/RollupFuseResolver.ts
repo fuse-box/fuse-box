@@ -5,9 +5,8 @@ import { WorkFlowContext } from "../core/WorkflowContext";
 
 export function RollupFuseResolver(context: WorkFlowContext, root: string) {
     return {
+
         resolveId(importee, importer) {
-
-
 
             if (!importer) {
                 return null;
@@ -26,8 +25,6 @@ export function RollupFuseResolver(context: WorkFlowContext, root: string) {
                     return resolved.nodeModuleInfo.entry;
                 }
             }
-
-
 
             const basename = path.basename(importer);
             const directory = importer.split(basename)[0];

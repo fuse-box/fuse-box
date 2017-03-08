@@ -40,7 +40,6 @@ export class PathMasterTest {
         should(result.isNodeModule).beTrue();
     }
 
-
     "Should property join a local file"() {
         let result = pm.resolve("../foo.js", getTestFolder("lib/bar"));
         testFolderShouldEqual(result.absPath, "/lib/foo.js");
@@ -129,7 +128,6 @@ export class PathMasterTest {
         let result = pm.resolve("cheerio/lib/static", getTestFolder("lib/"));
         testFolderShouldEqual(result.absDir, "lib");
     }
-
 
     "Should give explicit cheerio require (entry)"() {
         let result = pm.resolve("cheerio/lib/static", getTestFolder("lib/"));

@@ -14,7 +14,7 @@ import { Arithmetic, BundleData } from "./../arithmetic/Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";
 import { BundleTestRunner } from "../BundleTestRunner";
 import { nativeModules, HeaderImport } from "../analysis/HeaderImport";
-import { Reverse } from "./Reverse";
+import { MagicalRollup } from "../rollup/MagicalRollup";
 
 const appRoot = require("app-root-path");
 
@@ -41,7 +41,6 @@ export interface FuseBoxOptions {
     alias?: any;
     transformTypescript?: (contents: string) => string;
 }
-
 
 /**
  *
@@ -142,8 +141,6 @@ export class FuseBox {
             }
         }
 
-
-
         if (opts.globals) {
             this.context.globals = opts.globals;
         }
@@ -155,8 +152,6 @@ export class FuseBox {
         if (opts.standalone !== undefined) {
             this.context.standaloneBundle = opts.standalone;
         }
-
-
 
         if (opts.ignoreGlobal) {
             this.context.ignoreGlobal = opts.ignoreGlobal;
@@ -230,9 +225,9 @@ export class FuseBox {
         this.context.triggerPluginsMethodOnce("postBundle", [this.context]);
     }
 
-
-    public reverse(bundle: Buffer, outDir: string) {
-        new Reverse(this.context, bundle, outDir);
+    public rollup(bundle: Buffer, opts: any) {
+        let rollup = new MagicalRollup(this.context, bundle, opts);
+        return rollup.parse();
     }
     /**
      * Make a Bundle (or bundles)

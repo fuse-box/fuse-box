@@ -61,7 +61,6 @@ describe("PostCssPlugin", () => {
             console.log(e);
         });
 
-
     });
 
     it("Single test plugin", () => {

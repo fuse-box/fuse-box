@@ -7,11 +7,8 @@ import { OwnVariable } from "./plugins/OwnVariable";
 import { OwnBundle } from "./plugins/OwnBundle";
 import { ImportDeclaration } from "./plugins/ImportDeclaration";
 
-
 require("acorn-es7")(acorn);
 require("acorn-jsx/inject")(acorn);
-
-
 
 const plugins: any = [AutoImport, OwnVariable, OwnBundle, ImportDeclaration];
 
@@ -40,7 +37,6 @@ export class FileAnalysis {
     public ast: any;
 
     private wasAnalysed = false;
-
 
     private skipAnalysis = false;
 
@@ -76,8 +72,6 @@ export class FileAnalysis {
     public skip() {
         this.skipAnalysis = true;
     }
-
-
 
     /**
      *
@@ -133,7 +127,6 @@ export class FileAnalysis {
         if (this.wasAnalysed || this.skipAnalysis) {
             return;
         }
-
 
         ASTTraverse.traverse(this.ast, {
             pre: (node, parent, prop, idx) =>

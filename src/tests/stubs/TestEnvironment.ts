@@ -6,14 +6,10 @@ import * as appRoot from "app-root-path";
 import { removeFolder } from "../../Utils";
 import * as fsExtra from "fs-extra";
 
-
-
-
 export function createEnv(opts: any) {
     const name = opts.name || `test-${new Date().getTime()}`;
 
     let tmpFolder = path.join(appRoot.path, ".fusebox", "tests", name);
-
 
     fsExtra.ensureDirSync(tmpFolder);
     let localPath = path.join(tmpFolder, name);

@@ -4,7 +4,6 @@ import * as http from "http";
 import * as express from "express";
 import { ensureUserPath } from "../Utils";
 
-
 export interface HTTPServerOptions {
     /** Defaults to 4444 if not specified */
     port?: number;

@@ -109,7 +109,6 @@ export class AliasTest {
         });
     }
 
-
     "Should handle aliases that start with the same chars"() {
 
         createEnv({

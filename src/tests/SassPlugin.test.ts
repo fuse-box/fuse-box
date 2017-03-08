@@ -31,7 +31,6 @@ export class CssPluginTest {
         });
     }
 
-
     "Should compile with $homeDir macro"() {
         return createEnv({
             project: {
@@ -143,6 +142,5 @@ export class CssPluginTest {
             should(js).findString(`color: purple`).findString("font-size: 12px");
         });
     }
-
 
 }

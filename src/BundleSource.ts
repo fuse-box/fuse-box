@@ -32,7 +32,6 @@ export class BundleSource {
 
     private collectionSource: any;
 
-
     /**
      * Creates an instance of BundleSource.
      *
@@ -98,7 +97,6 @@ export class BundleSource {
         }
         this.collectionSource.add(null, "});");
         this.collectionSource.add(null, `/* fuse:end-collection "${collection.name}"*/`);
-
 
         let key = collection.info ? `${collection.info.name}@${collection.info.version}` : "default";
         this.concat.add(`packages/${key}`,

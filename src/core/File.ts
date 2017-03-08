@@ -164,7 +164,6 @@ export class File {
         this.subFiles.push(file);
     }
 
-
     /**
      *
      *

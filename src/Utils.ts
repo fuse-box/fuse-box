@@ -98,7 +98,6 @@ export function removeFolder(userPath) {
     fsExtra.removeSync(userPath);
 }
 
-
 export function replaceExt(npath, ext): string {
     if (typeof npath !== "string") {
         return npath;
@@ -131,7 +130,6 @@ export function ensurePublicExtension(url: string) {
     }
     return url;
 }
-
 
 export function getBuiltInNodeModules(): Array<string> {
     const process : any = global.process;

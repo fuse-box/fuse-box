@@ -15,7 +15,6 @@ const defConf = {
     plugins: [build.SourceMapPlainJsPlugin()],
 };
 
-
 const expectedSourceMaps = `{"version":3,"sources":["index.js","file1.js","file2.js"],"names":["require","false","module","exports"],"mappings":";;;;AAAAA,OAAOC,CAACA,YAAYA,CAACA,CAACD,OAAOC,CAACA,YAAYA;;;;;ACC1CC,MAAMD,CAACE,QAAQF,EAAEA,OAAOA;;;;;;ACAxBC,MAAMD,CAACE,QAAQF,EAAEA,OAAOA","file":"","sourcesContent":["require('./file1.js');require('./file2.js')","\nmodule.exports = 'file1';\n","\nmodule.exports = 'file2';\n"]}`;
 describe("SourceMapPlainJsPlugin", function() {
     it("Should create right sourcemap for plain js", () => {

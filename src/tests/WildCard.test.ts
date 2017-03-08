@@ -1,7 +1,6 @@
 import { createEnv } from "./stubs/TestEnvironment";
 import { should } from "fuse-test-runner";
 
-
 export class WildCardTest {
     "Should import 2 javascript files without ext"() {
         return createEnv({
@@ -18,7 +17,6 @@ export class WildCardTest {
         });
     }
 
-
     "Should import 2 javascript files with ext"() {
         return createEnv({
             project: {
@@ -33,7 +31,6 @@ export class WildCardTest {
                 .deepEqual({ "foo/a.js": { a: 1 }, "foo/b.js": { b: 1 } });
         });
     }
-
 
     "Should import 2 javascript files without ext and a mask"() {
         return createEnv({

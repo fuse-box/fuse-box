@@ -42,7 +42,6 @@ export class ImageBase64PluginClass implements Plugin {
      */
     public transform(file: File) {
 
-
         const context = file.context;
         const cached = context.cache.getStaticCache(file);
         if (cached) {

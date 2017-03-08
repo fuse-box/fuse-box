@@ -31,7 +31,6 @@ export class CSSPluginClass implements Plugin {
 
     private writeOptions: any;
 
-
     constructor(opts: any) {
         opts = opts || {};
 
@@ -109,7 +108,6 @@ export class CSSPluginClass implements Plugin {
 
             concat.add(null, `/*# sourceMappingURL=${sourceMapsName} */`);
 
-
             debug(`Writing ${outFile}`);
             return write(outFile, concat.content).then(() => {
                 this.inject(group, options);
@@ -131,7 +129,6 @@ export class CSSPluginClass implements Plugin {
             group.contents = `__fsbx_css("${group.info.fuseBoxPath}", ${safeContents});`;
         }
 
-
         // emitting changes
         group.context.sourceChangedEmitter.emit({
             type: "css",
@@ -139,7 +136,6 @@ export class CSSPluginClass implements Plugin {
             path: group.info.fuseBoxPath,
         });
     }
-
 
     /**
      *
