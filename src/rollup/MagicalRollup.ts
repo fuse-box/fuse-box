@@ -1,4 +1,4 @@
-import { ensureDir, ensureUserPath } from "../Utils";
+import { ensureDir, ensureUserPath, Concat } from "../Utils";
 import { Config } from "../Config";
 import * as path from "path";
 import * as fs from "fs";
@@ -11,24 +11,25 @@ import { WorkFlowContext } from "../core/WorkflowContext";
 export class MagicalRollup {
     private outFile: string;
     private entryFile: string;
+    private contents: String;
     public opts: any;
-    constructor(public context: WorkFlowContext, public bundle: Buffer, opts: any) {
-        this.opts = opts || {};
-        if (!this.opts.outFile) {
-            throw new Error("outFile Should be here");
+    constructor(public context: WorkFlowContext) {
+        if (!context.rollupOptions.entry) {
+            throw new Error("rollup.entry should be present");
         }
+        this.opts = context.rollupOptions;
+        this.entryFile = context.rollupOptions.entry;
+        this.contents = context.source.getResult().content.toString();
 
-        if (!this.opts.entry) {
-            throw new Error("entry should be here");
-        }
-        this.entryFile = this.opts.entry;
-        this.outFile = ensureUserPath(this.opts.outFile);
+        this.outFile = ensureUserPath(context.outFile);
     }
-
+    public debug(msg: string) {
+        this.context.debug("Rollup", msg);
+    }
     public parse() {
-        this.context.log.echo("Launching rollup ...");
-        const contents = this.bundle.toString();/**/
-        const lines = contents.split(/\r?\n/);
+        this.debug("Launching rollup ...");
+
+        const lines = this.contents.split(/\r?\n/);
 
         let defaultCollectionConsume = true;
         let files = {};
@@ -61,7 +62,7 @@ export class MagicalRollup {
             }
         });
 
-        this.context.log.echo("Files reverse engineered");
+        this.debug("Files reverse engineered");
         return this.rollup(files);
     }
 
@@ -87,7 +88,7 @@ export class MagicalRollup {
                 virtualMap.set(fname, file);
             }
         }
-        this.context.log.echo("Fixing missing imports");
+        this.debug("Fixing missing imports");
         let fixer = new MissingImportsRemoval(virtualMap);
         fixer.ensureAll();
 
@@ -97,24 +98,31 @@ export class MagicalRollup {
             ensureDir(fdir);
             fs.writeFileSync(fpath, file.generate());
         });
-        this.context.log.echo("Rollup roll!");
-        return rollup.rollup({
-            entry: path.join(tmpFolder, this.entryFile),
-            plugins: [
-                RollupFuseResolver(this.context, tmpFolder),
-            ],
-            treeshake: true,
-        }).then(bundle => {
-            this.context.log.echo("Generate bundle");
-            var result = bundle.generate({
-                format: "cjs",
-            });
 
+        this.debug("Roll Roll Roll!");
+        const bundleOptions = Object.assign(this.opts.bundle, {});
+
+        let rollupOptions = Object.assign(this.opts, {});
+        delete rollupOptions.bundle;
+        rollupOptions.entry = path.join(tmpFolder, rollupOptions.entry);
+        rollupOptions.plugins = [
+            RollupFuseResolver(this.context, tmpFolder),
+        ];
+
+        return rollup.rollup(rollupOptions).then(bundle => {
+            this.debug("Generate bundle");
+
+            // default options
+            const defaultOptions = Object.assign({ format: "umd" }, bundleOptions);
+
+            var result = bundle.generate(defaultOptions);
             const ts = require("typescript");
-            this.context.log.echo("Transpile to es5 with typescript");
+            this.debug("Transpile to es5 with typescript");
             let transpiled = ts.transpileModule(result.code, { target: "es5" });
-            this.context.log.echo(`Writing to ${this.outFile}`);
-            fs.writeFileSync(this.outFile, transpiled.outputText);
+            this.debug(`Writing to ${this.outFile}`);
+            let concat = new Concat(true, "", "\n");
+            concat.add(null, transpiled.outputText);
+            this.context.source.concat = concat;
         });
     }
 }

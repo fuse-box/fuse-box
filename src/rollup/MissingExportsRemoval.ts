@@ -1,5 +1,6 @@
 import { VirtualFile } from "./VirtualFile";
 import * as path from "path";
+import { ensureFuseBoxPath } from "../Utils";
 
 export class MissingImportsRemoval {
     constructor(public collection: Map<string, VirtualFile>) {
@@ -11,6 +12,7 @@ export class MissingImportsRemoval {
             file.localImports.forEach(imports => {
                 imports.forEach((importDeclaration, localName) => {
                     let target = path.join(baseDir, importDeclaration.localReference);
+                    target = ensureFuseBoxPath(target);
                     let file = this.findFile(target);
                     if (file) {
                         if (!file.inExports(importDeclaration.name)) {

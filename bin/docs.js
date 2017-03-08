@@ -1,6 +1,7 @@
 const fsbx = require("../dist/commonjs/index");
 const fs = require("fs");
 const path = require("path");
+const { inspector } = require("./utils");
 
 const base = path.resolve(__dirname, "../");
 const src = path.resolve(base, "./src");
@@ -52,7 +53,7 @@ function findDocsFor(name) {
     const titleToMatch = `(#{1,2}(${anyU}))`; // ${titleToMatch}
     const untilNextTitle = `(?!#{1,5})`;
     const untilNextHeader = `(?:^#{1,2})${untilNextTitle})`;
-    const reg = new RegExp(`((${name})(${anyU}${untilNextHeader})`, "gmi");
+    const reg = new RegExp(`(${titleToMatch}(${name})(${anyU}${untilNextHeader})`, "gmi");
     const match = md.match(reg);
 
     // md.includes(name)
@@ -67,7 +68,7 @@ function findDocsFor(name) {
     }
   });
 
-  // console.log(inspector(found.split('\n')))
+  console.log(inspector(found.split("\n")));
   return "";
 }
 

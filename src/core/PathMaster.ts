@@ -314,7 +314,7 @@ export class PathMaster {
             const packageJSONPath = path.join(folder, "package.json");
             if (fs.existsSync(packageJSONPath)) {
                 // read contents
-                const json : any = require(packageJSONPath);
+                const json: any = require(packageJSONPath);
                 // Getting an entry point
                 let entryFile;
                 let entryRoot;

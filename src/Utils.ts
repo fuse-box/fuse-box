@@ -15,7 +15,7 @@ export type Concat = {
 export type ConcatModule = {
     new (generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
 };
-export const Concat : ConcatModule = require("concat-with-sourcemaps");
+export const Concat: ConcatModule = require("concat-with-sourcemaps");
 
 export function contains(array: any[], obj: any) {
     return array && array.indexOf(obj) > -1;
@@ -119,6 +119,9 @@ export function extractExtension(str: string) {
     }
     return result[1];
 }
+export function ensureFuseBoxPath(input: string) {
+    return input.replace(/\\/g, "/");
+}
 
 export function ensurePublicExtension(url: string) {
     let ext = path.extname(url);
@@ -132,7 +135,7 @@ export function ensurePublicExtension(url: string) {
 }
 
 export function getBuiltInNodeModules(): Array<string> {
-    const process : any = global.process;
+    const process: any = global.process;
 
     return Object.keys(process.binding("natives")).filter(m => {
         return !/^_|^internal|\//.test(m) && MBLACKLIST.indexOf(m) === -1;
