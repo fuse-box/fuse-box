@@ -19,7 +19,7 @@ After you have set it up, there are few things you need to consider, before jump
 * Read thoroughly the Rollup [documentation](rollupjs.org)
 * FuseBox API will NOT be included. You won't be able to use ANY of the FuseBox features.
 
-If you know what you are doing, you can procceed by checking an [example](https://github.com/fuse-box/fuse-box-rollup-example):
+If you know what you are doing, you can proceed by checking an [example](https://github.com/fuse-box/fuse-box-rollup-example):
 
 ```bash
 git clone git@github.com:fuse-box/fuse-box-rollup-example.git
