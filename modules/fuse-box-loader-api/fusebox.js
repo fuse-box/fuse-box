@@ -34,7 +34,7 @@ var $getNodeModuleName = function (name) {
     }
 };
 var $getDir = function (filePath) {
-    return filePath.substring(0, filePath.lastIndexOf('/')) || "./";
+    return filePath.substring(0, filePath.lastIndexOf("/")) || "./";
 };
 var $pathJoin = function () {
     var string = [];
@@ -77,17 +77,17 @@ var $ensureExtension = function (name) {
 var $loadURL = function (url) {
     if ($isBrowser) {
         var d = document;
-        var head = d.getElementsByTagName('head')[0];
+        var head = d.getElementsByTagName("head")[0];
         var target;
         if (/\.css$/.test(url)) {
-            target = d.createElement('link');
-            target.rel = 'stylesheet';
-            target.type = 'text/css';
+            target = d.createElement("link");
+            target.rel = "stylesheet";
+            target.type = "text/css";
             target.href = url;
         }
         else {
-            target = d.createElement('script');
-            target.type = 'text/javascript';
+            target = d.createElement("script");
+            target.type = "text/javascript";
             target.src = url;
             target.async = true;
         }
@@ -167,7 +167,7 @@ var $getRef = function (name, opts) {
         pkgName: pkg_name,
         versions: pkg.v,
         filePath: filePath,
-        validPath: validPath
+        validPath: validPath,
     };
 };
 var $async = function (file, cb) {
@@ -270,12 +270,12 @@ var $import = function (name, opts) {
         return $import(name, {
             pkg: pkgName,
             path: fuseBoxDirname,
-            v: ref.versions
+            v: ref.versions,
         });
     };
     locals.require.main = {
         filename: $isBrowser ? "./" : global["require"].main.filename,
-        paths: $isBrowser ? [] : global["require"].main.paths
+        paths: $isBrowser ? [] : global["require"].main.paths,
     };
     var args = [locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName];
     $trigger("before-import", args);
@@ -326,10 +326,10 @@ var FuseBox = (function () {
             var data = obj[key];
             var alias = data.alias;
             var exposed = $import(data.pkg);
-            if (alias === '*') {
+            if (alias === "*") {
                 $loopObjKey(exposed, function (exportKey, value) { return __root__[exportKey] = value; });
             }
-            else if (typeof alias === 'object') {
+            else if (typeof alias === "object") {
                 $loopObjKey(alias, function (exportKey, value) { return __root__[value] = exposed[exportKey]; });
             }
             else {
@@ -344,7 +344,7 @@ var FuseBox = (function () {
         var pkg = opts && opts.pkg || "default";
         this.pkg(pkg, {}, function (___scope___) {
             ___scope___.file(path, function (exports, require, module, __filename, __dirname) {
-                var res = new Function('__fbx__dnm__', 'exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
+                var res = new Function("__fbx__dnm__", "exports", "require", "module", "__filename", "__dirname", "__root__", str);
                 res(true, exports, require, module, __filename, __dirname, __root__);
             });
         });

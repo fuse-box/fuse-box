@@ -24,7 +24,7 @@ export class ShimCollection {
         // faking entry
         let entryInfo = <IPathInformation>{
             isNodeModule: false,
-            fuseBoxPath: "index.js"
+            fuseBoxPath: "index.js",
         };
         let entryFile = new File(context, entryInfo);
         entryFile.isLoaded = true;

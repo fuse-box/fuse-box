@@ -6,13 +6,12 @@ const $isBrowser = typeof window !== "undefined" && window.navigator;
 declare let __root__: any;
 declare let __fbx__dnm__: any;
 
-
 /**
  * Package name to version
  */
 type PackageVersions = {
     [pkg: string]: /** version e.g. `1.0.0`` */string
-}
+};
 
 /**
  * Holds the details for a loaded package
@@ -32,7 +31,7 @@ type PackageDetails = {
         }
     },
     v: PackageVersions,
-}
+};
 
 /**
  * A runtime storage for FuseBox
@@ -43,10 +42,9 @@ type FSBX = {
     },
     /** FuseBox events */
     e?: {
-        'after-import'?: any;
+        "after-import"?: any;
     }
-}
-
+};
 
 // Patching global variable
 if ($isBrowser) {
@@ -60,9 +58,8 @@ __root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports :
 /**
  * A runtime storage for FuseBox
  */
-const $fsbx: FSBX = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
+const $fsbx : FSBX = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
     : global["$fsbx"] = global["$fsbx"] || {}; // in case of nodejs
-
 
 if (!$isBrowser) {
     global["require"] = require;
@@ -76,7 +73,6 @@ const $packages = $fsbx.p = $fsbx.p || {};
 // A list of custom events
 // For example "after-import"
 const $events = $fsbx.e = $fsbx.e || {};
-
 
 /**
  * Reference interface
@@ -135,23 +131,23 @@ const $getNodeModuleName = (name: string) => {
         if (index === -1) {
             return [name];
         }
-        let first = name.substring(0, index)
+        let first = name.substring(0, index);
         let second = name.substring(index + 1);
         return [first, second];
     }
-}
+};
 
 /** Gets file directory */
 const $getDir = (filePath: string) => {
-    return filePath.substring(0, filePath.lastIndexOf('/')) || "./";
-}
+    return filePath.substring(0, filePath.lastIndexOf("/")) || "./";
+};
 
 /**
  * Joins paths
  * Works like nodejs path.join
  */
-const $pathJoin = function (...string: string[]): string {
-    let parts: string[] = [];
+const $pathJoin = function(...string: string[]): string {
+    let parts : string[] = [];
     for (let i = 0, l = arguments.length; i < l; i++) {
         parts = parts.concat(arguments[i].split("/"));
     }
@@ -171,7 +167,7 @@ const $pathJoin = function (...string: string[]): string {
         newParts.unshift("");
     }
     return newParts.join("/") || (newParts.length ? "/" : ".");
-}
+};
 
 /**
  * Adds javascript extension if no extension was spotted
@@ -190,7 +186,7 @@ const $ensureExtension = (name: string): string => {
         return name;
     }
     return name + ".js";
-}
+};
 
 /**
  * Loads a url
@@ -199,22 +195,22 @@ const $ensureExtension = (name: string): string => {
 const $loadURL = (url: string) => {
     if ($isBrowser) {
         let d = document;
-        var head = d.getElementsByTagName('head')[0];
+        var head = d.getElementsByTagName("head")[0];
         var target;
         if (/\.css$/.test(url)) {
-            target = d.createElement('link');
-            target.rel = 'stylesheet';
-            target.type = 'text/css';
+            target = d.createElement("link");
+            target.rel = "stylesheet";
+            target.type = "text/css";
             target.href = url;
         } else {
-            target = d.createElement('script');
-            target.type = 'text/javascript';
+            target = d.createElement("script");
+            target.type = "text/javascript";
             target.src = url;
             target.async = true;
         }
         head.insertBefore(target, head.firstChild);
     }
-}
+};
 
 /**
  * Loop through an objects own keys and call a function with the key and value
@@ -222,14 +218,14 @@ const $loadURL = (url: string) => {
 const $loopObjKey = (obj: Object, func: Function) => {
     for (let key in obj) {
         if (obj.hasOwnProperty(key)) {
-            func(key, obj[key])
+            func(key, obj[key]);
         }
     }
-}
+};
 
 const $serverRequire = (path) => {
-    return { server: require(path) }
-}
+    return { server: require(path) };
+};
 
 const $getRef = (name: string, opts: {
     path?: string;
@@ -267,9 +263,6 @@ const $getRef = (name: string, opts: {
             }
         }
     }
-
-
-
 
     let pkg = $packages[pkg_name];
 
@@ -325,14 +318,14 @@ const $getRef = (name: string, opts: {
     }
 
     return {
-        file: file,
-        wildcard: wildcard,
+        file,
+        wildcard,
         pkgName: pkg_name,
         versions: pkg.v,
-        filePath: filePath,
-        validPath: validPath
-    }
-}
+        filePath,
+        validPath,
+    };
+};
 
 /**
  * $async
@@ -343,7 +336,7 @@ const $async = (file: string, cb: (imported?: any) => any) => {
     if ($isBrowser) {
         var xmlhttp: XMLHttpRequest;
         xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
+        xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == 4) {
                 if (xmlhttp.status == 200) {
                     let contentType = xmlhttp.getResponseHeader("Content-Type");
@@ -359,11 +352,11 @@ const $async = (file: string, cb: (imported?: any) => any) => {
                     FuseBox.dynamic(normalized, content);
                     cb(FuseBox.import(file, {}));
                 } else {
-                    console.error(`${file} was not found upon request`)
+                    console.error(`${file} was not found upon request`);
                     cb(undefined);
                 }
             }
-        }
+        };
         xmlhttp.open("GET", file, true);
         xmlhttp.send();
     } else {
@@ -372,8 +365,7 @@ const $async = (file: string, cb: (imported?: any) => any) => {
         }
         return cb("");
     }
-}
-
+};
 
 /**
  * Trigger events
@@ -391,7 +383,7 @@ const $trigger = (name: string, args: any) => {
         }
         ;
     }
-}
+};
 
 /**
  * Imports File
@@ -423,7 +415,7 @@ const $import = (name: string, opts: any = {}) => {
     // Wild card reference
     if (ref.wildcard) {
         // Prepare wildcard regexp
-        let safeRegEx: RegExp = new RegExp(ref.wildcard
+        let safeRegEx : RegExp = new RegExp(ref.wildcard
             .replace(/\*/g, "@")
             .replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&")
             .replace(/@/g, "[a-z0-9$_-]+"), "i");
@@ -448,7 +440,7 @@ const $import = (name: string, opts: any = {}) => {
         }
         return $async(name, (result) => {
             if (asyncMode) {
-                return opts(result)
+                return opts(result);
             }
         });
         //throw `File not found ${ref.validPath}`;
@@ -459,7 +451,7 @@ const $import = (name: string, opts: any = {}) => {
     if (file.locals && file.locals.module) {
         return file.locals.module.exports;
     }
-    let locals: any = file.locals = {};
+    let locals : any = file.locals = {};
     let fuseBoxDirname = $getDir(validPath);
 
     locals.exports = {};
@@ -468,13 +460,13 @@ const $import = (name: string, opts: any = {}) => {
         return $import(name, {
             pkg: pkgName,
             path: fuseBoxDirname,
-            v: ref.versions
+            v: ref.versions,
         });
-    }
+    };
     locals.require.main = {
         filename: $isBrowser ? "./" : global["require"].main.filename,
-        paths: $isBrowser ? [] : global["require"].main.paths
-    }
+        paths: $isBrowser ? [] : global["require"].main.paths,
+    };
 
     let args = [locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName];
     $trigger("before-import", args);
@@ -484,13 +476,13 @@ const $import = (name: string, opts: any = {}) => {
     //fn(locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName)
     $trigger("after-import", args);
     return locals.module.exports;
-}
+};
 
 type SourceChangedEvent = {
-    type: 'js' | 'css',
+    type: "js" | "css",
     content: string,
     path: string
-}
+};
 
 interface LoaderPlugin {
     /**
@@ -564,18 +556,15 @@ class FuseBox {
             let data = obj[key];
             let alias = data.alias;
             let exposed = $import(data.pkg);
-            if (alias === '*') {
+            if (alias === "*") {
                 $loopObjKey(exposed, (exportKey, value) => __root__[exportKey] = value);
-            } else if (typeof alias === 'object') {
+            } else if (typeof alias === "object") {
                 $loopObjKey(alias, (exportKey, value) => __root__[value] = exposed[exportKey]);
             } else {
                 __root__[alias] = exposed;
             }
         }
     }
-
-
-
 
     /**
      * Registers a dynamic path
@@ -588,9 +577,9 @@ class FuseBox {
         pkg: string
     }) {
         let pkg = opts && opts.pkg || "default";
-        this.pkg(pkg, {}, function (___scope___: any) {
-            ___scope___.file(path, function (exports: any, require: any, module: any, __filename: string, __dirname: string) {
-                var res = new Function('__fbx__dnm__', 'exports', 'require', 'module', '__filename', '__dirname', '__root__', str);
+        this.pkg(pkg, {}, function(___scope___: any) {
+            ___scope___.file(path, function(exports: any, require: any, module: any, __filename: string, __dirname: string) {
+                var res = new Function("__fbx__dnm__", "exports", "require", "module", "__filename", "__dirname", "__root__", str);
                 res(true, exports, require, module, __filename, __dirname, __root__);
             });
         });
@@ -630,7 +619,7 @@ class FuseBox {
         let _scope = pkg.s = {
             // Scope file
             file: (name: string, fn: any) => {
-                _files[name] = { fn: fn };
+                _files[name] = { fn };
             },
         };
         return fn(_scope);

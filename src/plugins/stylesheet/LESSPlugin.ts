@@ -29,15 +29,15 @@ export class LESSPluginClass implements Plugin {
      * @memberOf LESSPluginClass
      */
     public transform(file: File) {
-        const context: WorkFlowContext = file.context;
+        const context : WorkFlowContext = file.context;
         const options = { ...this.options };
 
         file.loadContents();
 
         const sourceMapDef = {
-            sourceMapBasepath: '.',
-            sourceMapRootpath: file.info.absDir
-        }
+            sourceMapBasepath: ".",
+            sourceMapRootpath: file.info.absDir,
+        };
 
         if (!less) {
             less = require("less");
@@ -45,7 +45,7 @@ export class LESSPluginClass implements Plugin {
 
         options.filename = file.info.fuseBoxPath;
 
-        if ('sourceMapConfig' in context) {
+        if ("sourceMapConfig" in context) {
             options.sourceMap = { ...sourceMapDef, ...options.sourceMap || {} };
         }
 
@@ -60,5 +60,5 @@ export class LESSPluginClass implements Plugin {
 }
 
 export const LESSPlugin = (opts: any) => {
-    return new LESSPluginClass(opts)
-}
+    return new LESSPluginClass(opts);
+};

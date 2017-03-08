@@ -2,7 +2,6 @@ import { File } from "../../core/File";
 import { WorkFlowContext } from "../../core/WorkflowContext";
 import { Plugin } from "../../core/WorkflowContext";
 
-
 let postcss;
 /**
  *
@@ -58,4 +57,4 @@ export class PostCSSPluginClass implements Plugin {
 
 export const PostCSS = (processors?: any, opts?: any) => {
     return new PostCSSPluginClass(processors, opts);
-}
+};

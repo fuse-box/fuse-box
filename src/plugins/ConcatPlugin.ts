@@ -1,10 +1,9 @@
 import { File } from "../core/File";
 import { WorkFlowContext, Plugin } from "./../core/WorkflowContext";
 
-
 /**
- * 
- * 
+ *
+ *
  * @export
  * @class FuseBoxHTMLPlugin
  * @implements {Plugin}
@@ -19,18 +18,18 @@ export class ConcatPluginClass implements Plugin {
         if ("delimiter" in opts) { this.delimiter = opts.delimiter; }
     }
     /**
-     * 
-     * 
+     *
+     *
      * @type {RegExp}
      * @memberOf FuseBoxHTMLPlugin
      */
     public test: RegExp = /\.txt$/;
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {WorkFlowContext} context
-     * 
+     *
      * @memberOf FuseBoxHTMLPlugin
      */
     public init(context: WorkFlowContext) {
@@ -39,12 +38,11 @@ export class ConcatPluginClass implements Plugin {
         }
     }
 
-
     /**
-     * 
-     * 
+     *
+     *
      * @param {File} file
-     * 
+     *
      * @memberOf FuseBoxHTMLPlugin
      */
     public transform(file: File) {

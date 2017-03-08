@@ -1,11 +1,11 @@
-import { utils } from 'realm-utils';
+import { utils } from "realm-utils";
 
 export class HeaderImport {
     public pkg: string;
     public statement: string;
     constructor(public variable: string, pkg: any) {
         if (utils.isPlainObject(pkg)) {
-            let options: any = pkg;
+            let options : any = pkg;
             this.pkg = options.pkg;
             this.statement = options.statement;
         } else {
@@ -15,7 +15,7 @@ export class HeaderImport {
     }
 
     public getImportStatement() {
-        return `/* fuse:injection: */ var ${this.variable} = ${this.statement};`
+        return `/* fuse:injection: */ var ${this.variable} = ${this.statement};`;
     }
 }
 
@@ -38,7 +38,7 @@ export class HeaderImportCollection {
 // Basically initiate it only once
 let headerCollection: HeaderImportCollection;
 if (!headerCollection) {
-    headerCollection = new HeaderImportCollection();;
+    headerCollection = new HeaderImportCollection(); ;
 }
 // register native variables
 headerCollection.add(new HeaderImport("timers", "timers"));
@@ -46,7 +46,7 @@ headerCollection.add(new HeaderImport("stream", "stream"));
 headerCollection.add(new HeaderImport("process", "process"));
 headerCollection.add(new HeaderImport("Buffer", {
     pkg: "buffer",
-    statement: `require("buffer").Buffer`
+    statement: `require("buffer").Buffer`,
 }));
 
 headerCollection.add(new HeaderImport("http", "http"));

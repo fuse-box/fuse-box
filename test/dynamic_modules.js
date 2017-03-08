@@ -7,9 +7,9 @@ describe("Dynamic modules", (done) => {
         getTestEnv({
             "hello.js": `module.exports = require("./stuff/boo");`,
         }, "**/*.js").then(root => {
-            root.FuseBox.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}")
+            root.FuseBox.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}");
             let result = root.FuseBox.import("./hello");
-            result.should.deepEqual({hello: 'dynamic'});
+            result.should.deepEqual({ hello: "dynamic" });
             done();
         }).catch(done);
     });
@@ -18,9 +18,9 @@ describe("Dynamic modules", (done) => {
         getTestEnv({
             "hello.js": `module.exports = require("./stuff/boo.js");`,
         }, "**/*.js").then(root => {
-            root.FuseBox.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}")
+            root.FuseBox.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}");
             let result = root.FuseBox.import("./hello");
-            result.should.deepEqual({hello: 'dynamic'});
+            result.should.deepEqual({ hello: "dynamic" });
             done();
         }).catch(done);
     });
@@ -29,9 +29,9 @@ describe("Dynamic modules", (done) => {
         getTestEnv({
             "hello.js": `module.exports = require("~/stuff/boo.js");`,
         }, "**/*.js").then(root => {
-            root.FuseBox.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}")
+            root.FuseBox.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}");
             let result = root.FuseBox.import("./hello");
-            result.should.deepEqual({hello: 'dynamic'});
+            result.should.deepEqual({ hello: "dynamic" });
             done();
         }).catch(done);
     });
@@ -40,9 +40,9 @@ describe("Dynamic modules", (done) => {
         getTestEnv({
             "hello.js": `module.exports = require("~/stuff/boo");`,
         }, "**/*.js").then(root => {
-            root.FuseBox.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}")
+            root.FuseBox.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}");
             let result = root.FuseBox.import("./hello");
-            result.should.deepEqual({hello: 'dynamic'});
+            result.should.deepEqual({ hello: "dynamic" });
             done();
         }).catch(done);
     });
@@ -55,7 +55,7 @@ describe("Dynamic modules", (done) => {
         }, "**/*.js").then(root => {
             root.FuseBox.import("./index");
             root.FuseBox.import("./hello/world");
-            root.itworks.should.deepEqual({foo: "bar"})
+            root.itworks.should.deepEqual({ foo: "bar" });
             done();
         }).catch(done);
     });
@@ -68,7 +68,7 @@ describe("Dynamic modules", (done) => {
         }, "**/*.js").then(root => {
             root.FuseBox.import("./index");
             root.FuseBox.import("./hello/world");
-            root.itworks.should.deepEqual({foo: "bar"})
+            root.itworks.should.deepEqual({ foo: "bar" });
             done();
         }).catch(done);
     });
@@ -81,7 +81,7 @@ describe("Dynamic modules", (done) => {
         }, "**/*.js").then(root => {
             root.FuseBox.import("./index");
             let res = root.FuseBox.import("./hello/world");
-            res.should.deepEqual({foo: "bar"})
+            res.should.deepEqual({ foo: "bar" });
             done();
         }).catch(done);
     });
@@ -94,7 +94,7 @@ describe("Dynamic modules", (done) => {
         }, "**/*.js").then(root => {
             root.FuseBox.import("./index");
             let res = root.FuseBox.import("./hello/world");
-            res.should.deepEqual({foo: "bar"})
+            res.should.deepEqual({ foo: "bar" });
             done();
         }).catch(done);
     });
@@ -106,9 +106,9 @@ describe("Dynamic modules", (done) => {
             "foo.js": `module.exports = {foo : "bar"}`,
         }, "**/*.js").then(root => {
             root.FuseBox.import("./index");
-            root.FuseBox.dynamic("hello/world.js", "module.exports = {'yes' : true}")
+            root.FuseBox.dynamic("hello/world.js", "module.exports = {'yes' : true}");
             let res = root.FuseBox.import("./hello/world");
-            res.should.deepEqual({yes: true})
+            res.should.deepEqual({ yes: true });
             done();
         }).catch(done);
     });
@@ -121,7 +121,7 @@ describe("Dynamic modules", (done) => {
         }, "**/*.js").then(root => {
             root.FuseBox.import("./index");
             let res = root.FuseBox.exists("./hello/world.js");
-            res.should.equal(true)
+            res.should.equal(true);
             done();
         }).catch(done);
     });
@@ -132,7 +132,7 @@ describe("Dynamic modules", (done) => {
         }, "**/*.js").then(root => {
             root.FuseBox.import("./index");
             let res = root.FuseBox.exists("app.html");
-            res.should.equal(false)
+            res.should.equal(false);
             done();
         }).catch(done);
     });
@@ -147,9 +147,9 @@ describe("Dynamic modules", (done) => {
             )`,
         }, "**/*.js").then(root => {
             root.FuseBox.import("./index");
-            root.FuseBox.import("foo/hello/world").should.deepEqual({hello: "world"});
+            root.FuseBox.import("foo/hello/world").should.deepEqual({ hello: "world" });
             done();
         }).catch(done);
     });
 
-})
+});

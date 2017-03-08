@@ -4,7 +4,7 @@ import { ensureUserPath } from "../Utils";
 import { HTTPServer } from "./HTTPServer";
 import { FuseBox } from "../core/FuseBox";
 import { utils } from "realm-utils";
-import {ArithmeticStr} from "../Types"
+import { ArithmeticStr } from "../Types";
 import * as process from "process";
 import * as path from "path";
 
@@ -13,10 +13,10 @@ const watch = require("watch");
 export type HotReloadEmitter = (server: Server, sourceChangedInfo: any) => any;
 
 export type SourceChangedEvent = {
-    type: 'js' | 'css' | 'css-file',
+    type: "js" | "css" | "css-file",
     content: string,
     path: string
-}
+};
 
 export interface ServerOptions {
     /** Defaults to 4444 if not specified */
@@ -55,26 +55,25 @@ export class Server {
         let buildPath = ensureUserPath(this.fuse.context.outFile);
         let rootDir = path.dirname(buildPath);
 
-        const root: string | boolean = opts.root !== undefined
+        const root : string | boolean = opts.root !== undefined
             ? (utils.isString(opts.root) ? ensureUserPath(opts.root as string) : false) : rootDir;
         const port = opts.port || 4444;
         if (opts.hmr !== false && this.fuse.context.useCache === true) {
 
             setTimeout(() => {
                 this.fuse.context.log.echo(`HMR is enabled`);
-            }, 1000)
+            }, 1000);
             this.fuse.context.plugins.push(
                 HotReloadPlugin({ port, uri: opts.socketURI })
             );
         } else {
-            setTimeout(() => { this.fuse.context.log.echo(`HMR is disabled. Caching should be enabled and {hmr} option should be NOT false`) }
-                , 1000)
+            setTimeout(() => { this.fuse.context.log.echo(`HMR is disabled. Caching should be enabled and {hmr} option should be NOT false`); }
+                , 1000);
 
         }
 
-
         // allow user to override hot reload emitter
-        let emitter: HotReloadEmitter | false = utils.isFunction(opts.emitter) ? opts.emitter : false;
+        let emitter : HotReloadEmitter | false = utils.isFunction(opts.emitter) ? opts.emitter : false;
 
         // let middlewares to connect
         this.httpServer = new HTTPServer(this.fuse);

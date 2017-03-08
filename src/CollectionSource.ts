@@ -24,7 +24,7 @@ export class CollectionSource {
     }
 
     private filterFiles(files: Map<string, File>): File[] {
-        let filtered: File[] = [];
+        let filtered : File[] = [];
         files.forEach(file => {
             if (file.isFuseBoxBundle) {
                 this.context.source.addContentToCurrentCollection(file.contents);

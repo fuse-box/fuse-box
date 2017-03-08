@@ -17,16 +17,15 @@ import { Config } from "../Config";
  * All the plugin method names
  */
 export type PluginMethodName =
-    'init'
-    | 'preBuild'
-    | 'preBundle'
-    | 'bundleStart'
-    | 'bundleEnd'
-    | 'postBundle'
-    | 'postBuild'
+    "init"
+    | "preBuild"
+    | "preBundle"
+    | "bundleStart"
+    | "bundleEnd"
+    | "postBundle"
+    | "postBuild";
 
 const appRoot = require("app-root-path");
-
 
 /**
  * Interface for a FuseBox plugin
@@ -70,6 +69,8 @@ export class WorkFlowContext {
     public customAPIFile: string;
 
     public defaultEntryPoint: string;
+
+    public rollupOptions: any;
     /**
      * Explicitly target bundle to server
      */
@@ -163,7 +164,7 @@ export class WorkFlowContext {
         }
         this.sourceChangedEmitter.emit({
             type: "js",
-            content: content,
+            content,
             path: file.info.fuseBoxPath,
         });
     }
@@ -199,7 +200,6 @@ export class WorkFlowContext {
         return this.shim[name] !== undefined;
     }
 
-
     /**
      * Resets significant class members
      */
@@ -229,7 +229,7 @@ export class WorkFlowContext {
         let info = <IPathInformation>{
             fuseBoxPath: name,
             absPath: name,
-        }
+        };
         let file = new File(this, info);
         file.collection = collection;
         file.contents = "";
@@ -241,7 +241,6 @@ export class WorkFlowContext {
         this.fileGroups.set(name, file);
         return file;
     }
-
 
     public getFileGroup(name: string): File {
         return this.fileGroups.get(name);
@@ -266,7 +265,7 @@ export class WorkFlowContext {
 
     /** Converts the file extension from `.ts` to `.js` */
     public convert2typescript(name: string) {
-        return name.replace(/\.ts$/, '.js');
+        return name.replace(/\.ts$/, ".js");
     }
 
     public getLibInfo(name: string, version: string): IPackageInformation {
@@ -300,7 +299,6 @@ export class WorkFlowContext {
         this.nodeModules.set(name, collection);
     }
 
-
     /**
      * Retuns the parsed `tsconfig.json` contents
      */
@@ -311,8 +309,8 @@ export class WorkFlowContext {
 
         let url, configFile;
         let config: any = {
-            compilerOptions: {}
-        };;
+            compilerOptions: {},
+        }; ;
         if (this.tsConfig) {
             configFile = ensureUserPath(this.tsConfig);
         } else {
@@ -321,18 +319,26 @@ export class WorkFlowContext {
             if (tsconfig) {
                 configFile = tsconfig;
             }
+
         }
+
         if (configFile) {
-            this.log.echoStatus(`Typescript config:  ${configFile.replace(appRoot.path, '')}`);
+            this.log.echoStatus(`Typescript config:  ${configFile.replace(appRoot.path, "")}`);
             config = require(configFile);
         } else {
+            config.compilerOptions.module = "commonjs";
             this.log.echoStatus(`Typescript config file was not found. Improvising`);
         }
 
-        config.compilerOptions.module = "commonjs";
         if (this.sourceMapConfig) {
             config.compilerOptions.sourceMap = true;
             config.compilerOptions.inlineSources = true;
+        }
+        // switch to target es6
+        if (this.rollupOptions) {
+            this.debug("Typescript", "Forcing es6 output for typescript. Rollup deteced");
+            config.compilerOptions.module = "es6";
+            config.compilerOptions.target = "es6";
         }
         this.loadedTsConfig = config;
         return config;

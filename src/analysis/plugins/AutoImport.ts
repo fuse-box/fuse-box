@@ -1,20 +1,19 @@
 import { File } from "../../core/File";
-import { nativeModules, HeaderImport } from './../HeaderImport';
+import { nativeModules, HeaderImport } from "./../HeaderImport";
 
 /**
  * Checks if a variable needs to magically imported
  * Yes, this is a black magic.
- * For example you reference 
+ * For example you reference
  *   process.env
- * 
+ *
  * Browser does not have it globally, so instead of polluting the window
- * we inject 
+ * we inject
  *   var process = require("process")
- * 
+ *
  * That's a very delicate subject as it's possible (yes) to break but only intentionally
  */
 export class AutoImport {
-
 
     public static onNode(file: File, node: any, parent: any) {
         const analysis = file.analysis;
@@ -50,7 +49,7 @@ export class AutoImport {
         const analysis = file.analysis;
         for (let nativeImportName in analysis.nativeImports) {
             if (analysis.nativeImports.hasOwnProperty(nativeImportName)) {
-                const nativeImport: HeaderImport = analysis.nativeImports[nativeImportName];
+                const nativeImport : HeaderImport = analysis.nativeImports[nativeImportName];
                 analysis.dependencies.push(nativeImport.pkg);
                 file.addHeaderContent(nativeImport.getImportStatement());
             }

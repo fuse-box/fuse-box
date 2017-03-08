@@ -28,10 +28,9 @@ export class BundleSource {
      * @type {*}
      * @memberOf BundleSource
      */
-    private concat: Concat;
+    public concat: Concat;
 
     private collectionSource: any;
-
 
     /**
      * Creates an instance of BundleSource.
@@ -51,6 +50,12 @@ export class BundleSource {
      */
     public init() {
         this.concat.add(null, "(function(FuseBox){FuseBox.$fuse$=FuseBox;");
+    }
+
+    public annotate(comment: string) {
+        if (this.context.rollupOptions) {
+            this.collectionSource.add(null, comment);
+        }
     }
 
     /**
@@ -77,8 +82,11 @@ export class BundleSource {
                 conflicting[name] = version;
             });
         }
+
         this.collectionSource.add(null, `FuseBox.pkg("${collection.name}", ${JSON.stringify(
             conflicting)}, function(___scope___){`);
+
+        this.annotate(`/* fuse:start-collection "${collection.name}"*/`);
     }
 
     /**
@@ -95,6 +103,8 @@ export class BundleSource {
             this.collectionSource.add(null, `return ___scope___.entry = "${entry}";`);
         }
         this.collectionSource.add(null, "});");
+
+        this.annotate(`/* fuse:end-collection "${collection.name}"*/`);
 
         let key = collection.info ? `${collection.info.name}@${collection.info.version}` : "default";
         this.concat.add(`packages/${key}`,
@@ -129,7 +139,11 @@ export class BundleSource {
         this.collectionSource.add(null,
             `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){
 ${file.headerContent ? file.headerContent.join("\n") : ""}`);
+
+
+        this.annotate(`/* fuse:start-file "${file.info.fuseBoxPath}"*/`);
         this.collectionSource.add(null, file.alternativeContent !== undefined ? file.alternativeContent : file.contents, file.sourceMap);
+        this.annotate(`/* fuse:end-file "${file.info.fuseBoxPath}"*/`);
 
         this.collectionSource.add(null, "});");
     }

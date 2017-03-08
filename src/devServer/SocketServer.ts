@@ -1,7 +1,6 @@
 import { FuseBox } from "../core/FuseBox";
 import { Server } from "ws";
 
-
 export class SocketServer {
 
     public static server: SocketServer;
@@ -18,28 +17,26 @@ export class SocketServer {
     }
 
     public static start(server: any, fuse: FuseBox) {
-        let wss = new Server({ server: server });
+        let wss = new Server({ server });
         let ss = new SocketServer(wss, fuse);
-
 
         return ss;
     }
 
     public static startSocketServer(port: number, fuse: FuseBox) {
-        let wss = new Server({ port: port });
+        let wss = new Server({ port });
         this.server = new SocketServer(wss, fuse);
         fuse.context.log.echo(`Launching socket server on ${port}`);
 
         return this.server;
     }
 
-
     public cursor: any;
     public clients = new Set<any>();
 
     constructor(public server: any, public fuse: FuseBox) {
         server.on("connection", (ws) => {
-            this.fuse.context.log.echo("Client connected")
+            this.fuse.context.log.echo("Client connected");
             this.clients.add(ws);
 
             ws.on("message", message => {
@@ -55,10 +52,9 @@ export class SocketServer {
         });
     }
 
-
     public send(type: string, data: any) {
         this.clients.forEach(client => {
-            client.send(JSON.stringify({ type: type, data: data }));
+            client.send(JSON.stringify({ type, data }));
         });
     }
 

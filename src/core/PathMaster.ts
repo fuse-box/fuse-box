@@ -158,7 +158,6 @@ export class PathMaster {
             name += ".js";
         }
 
-
         return name;
     }
 
@@ -327,14 +326,18 @@ export class PathMaster {
                         entryFile = json.browser;
                     }
                 }
-                entryFile = path.join(folder, entryFile || json.main || "index.js");
-                entryRoot = path.dirname(entryFile);
+                if (json["jsnext:main"]) {
+                    entryFile = path.join(folder, json["jsnext:main"]);
+                } else {
+                    entryFile = path.join(folder, entryFile || json.main || "index.js");
+                    entryRoot = path.dirname(entryFile);
+                }
                 return {
-                    name: name,
+                    name,
                     custom: isCustom,
                     root: folder,
                     missing: false,
-                    entryRoot: entryRoot,
+                    entryRoot,
                     entry: entryFile,
                     version: json.version,
                 };
@@ -345,7 +348,7 @@ export class PathMaster {
             let defaultEntryRoot = entryFile ? path.dirname(entryFile) : undefined;
             let packageExists = fs.existsSync(folder);
             return {
-                name: name,
+                name,
                 missing: !packageExists,
                 custom: isCustom,
                 root: folder,

@@ -14,6 +14,7 @@ import { Arithmetic, BundleData } from "./../arithmetic/Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";
 import { BundleTestRunner } from "../BundleTestRunner";
 import { nativeModules, HeaderImport } from "../analysis/HeaderImport";
+import { MagicalRollup } from "../rollup/MagicalRollup";
 
 const appRoot = require("app-root-path");
 
@@ -33,6 +34,7 @@ export interface FuseBoxOptions {
     sourceMap?: any;
     ignoreGlobal?: string[];
     serverBundle?: boolean;
+    rollup?: any;
     customAPIFile?: string;
     outFile?: string;
     debug?: boolean;
@@ -40,7 +42,6 @@ export interface FuseBoxOptions {
     alias?: any;
     transformTypescript?: (contents: string) => string;
 }
-
 
 /**
  *
@@ -77,7 +78,7 @@ export class FuseBox {
             this.context.debugMode = opts.debug;
         }
 
-        this.context.debugMode = opts.debug !== undefined ? opts.debug : contains(process.argv, '--debug')
+        this.context.debugMode = opts.debug !== undefined ? opts.debug : contains(process.argv, "--debug");
 
         if (opts.modulesFolder) {
             this.context.customModulesFolder =
@@ -125,9 +126,9 @@ export class FuseBox {
                 if (opts.alias.hasOwnProperty(key)) {
                     if (path.isAbsolute(key)) {
                         // dying in agony
-                        this.context.fatal(`Can't use absolute paths with alias "${key}"`)
+                        this.context.fatal(`Can't use absolute paths with alias "${key}"`);
                     }
-                    aliases.push({ expr: new RegExp(`^(${key})(/|$)`), replacement: opts.alias[key] })
+                    aliases.push({ expr: new RegExp(`^(${key})(/|$)`), replacement: opts.alias[key] });
                 }
             }
             this.context.aliasCollection = aliases;
@@ -141,8 +142,6 @@ export class FuseBox {
             }
         }
 
-
-
         if (opts.globals) {
             this.context.globals = opts.globals;
         }
@@ -155,10 +154,12 @@ export class FuseBox {
             this.context.standaloneBundle = opts.standalone;
         }
 
-
-
         if (opts.ignoreGlobal) {
             this.context.ignoreGlobal = opts.ignoreGlobal;
+        }
+
+        if (opts.rollup) {
+            this.context.rollupOptions = opts.rollup;
         }
 
         if (opts.customAPIFile) {
@@ -172,12 +173,12 @@ export class FuseBox {
         if (opts.sourceMap) {
             // deprecated
             this.context.sourceMapConfig = opts.sourceMap;
-            this.context.log.echoWarning("sourceMap is deprecated. Use { sourcemaps : true } instead")
+            this.context.log.echoWarning("sourceMap is deprecated. Use { sourcemaps : true } instead");
             //this.context.sourceMapConfig = opts.sourceMap;
         }
 
         if (opts.sourcemaps) {
-            const sourceMapOptions: any = {}
+            const sourceMapOptions: any = {};
             let projectSourcMaps = false;
             let vendorSourceMaps = false;
             if (opts.sourcemaps === true) {
@@ -191,7 +192,7 @@ export class FuseBox {
                     vendorSourceMaps = true;
                 }
             }
-            const mapsName = path.basename(this.context.outFile) + ".map"
+            const mapsName = path.basename(this.context.outFile) + ".map";
             const mapsOutFile =
                 path.join(path.dirname(this.context.outFile), mapsName);
             if (projectSourcMaps) {
@@ -210,7 +211,7 @@ export class FuseBox {
         this.virtualFiles = opts.files;
 
         this.context.initCache();
-        this.compareConfig(this.opts)
+        this.compareConfig(this.opts);
     }
 
     public triggerPre() {
@@ -229,8 +230,6 @@ export class FuseBox {
         this.context.triggerPluginsMethodOnce("postBundle", [this.context]);
     }
 
-
-
     /**
      * Make a Bundle (or bundles)
      */
@@ -241,7 +240,7 @@ export class FuseBox {
         if (utils.isPlainObject(str)) {
             let items = str;
             return each(items, (bundleStr: string, outFile: string) => {
-                let newConfig = Object.assign({}, this.opts, { outFile: outFile });
+                let newConfig = Object.assign({}, this.opts, { outFile });
                 let fuse = FuseBox.init(newConfig);
 
                 return fuse.initiateBundle(bundleStr);
@@ -259,19 +258,19 @@ export class FuseBox {
      * else, write the config for use later
      */
     public compareConfig(config: FuseBoxOptions): void {
-      if (!this.context.useCache) return
-      const mainStr = fs.readFileSync(require.main.filename, 'utf8')
+        if (!this.context.useCache) return;
+        const mainStr = fs.readFileSync(require.main.filename, "utf8");
 
-      if (this.context.cache) {
-        const configPath = path.resolve(this.context.cache.cacheFolder, 'config.json')
+        if (this.context.cache) {
+            const configPath = path.resolve(this.context.cache.cacheFolder, "config.json");
 
-        if (fs.existsSync(configPath)) {
-          const storedConfigStr = fs.readFileSync(configPath, 'utf8')
-          if (storedConfigStr !== mainStr) this.context.nukeCache()
+            if (fs.existsSync(configPath)) {
+                const storedConfigStr = fs.readFileSync(configPath, "utf8");
+                if (storedConfigStr !== mainStr) this.context.nukeCache();
+            }
+
+            fs.writeFile(configPath, mainStr, () => { });
         }
-
-        fs.writeFile(configPath, mainStr, () => { })
-      }
     }
 
     /** Starts the dev server and returns it */
@@ -328,14 +327,40 @@ export class FuseBox {
                 }
 
             }).then(result => {
-                self.context.log.end();
-                this.triggerEnd();
-                self.context.source.finalize(bundleData);
-                this.triggerPost();
-                this.context.writeOutput(bundleReady);
-                return self.context.source.getResult();
-            })
+                let self = this;
+
+                const rollup = this.handleRollup();
+                if (rollup) {
+                    self.context.source.finalize(bundleData);
+                    rollup().then(() => {
+                        self.context.log.end();
+                        this.triggerEnd();
+                        this.triggerPost();
+                        this.context.writeOutput(bundleReady);
+                        return self.context.source.getResult();
+                    });
+                } else {
+
+                    self.context.log.end();
+                    this.triggerEnd();
+                    self.context.source.finalize(bundleData);
+                    this.triggerPost();
+                    this.context.writeOutput(bundleReady);
+                    return self.context.source.getResult();
+                }
+            });
         });
+    }
+
+    public handleRollup() {
+        if (this.context.rollupOptions) {
+            return () => {
+                let rollup = new MagicalRollup(this.context);
+                return rollup.parse();
+            };
+        } else {
+            return false;
+        }
     }
 
     public addShims() {
@@ -394,15 +419,15 @@ export class FuseBox {
 
             bundle = data;
             if (bundle.tmpFolder) {
-                this.context.homeDir = bundle.tmpFolder
+                this.context.homeDir = bundle.tmpFolder;
             }
             if (bundle.standalone !== undefined) {
-                this.context.debug("Arithmetic", `Override standalone ${bundle.standalone}`)
+                this.context.debug("Arithmetic", `Override standalone ${bundle.standalone}`);
 
                 this.context.standaloneBundle = bundle.standalone;
             }
             if (bundle.cache !== undefined) {
-                this.context.debug("Arithmetic", `Override cache ${bundle.cache}`)
+                this.context.debug("Arithmetic", `Override cache ${bundle.cache}`);
                 this.context.useCache = bundle.cache;
             }
 

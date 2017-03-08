@@ -2,7 +2,7 @@ import { File } from "./File";
 import { PathMaster, IPackageInformation } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
 import { BundleData } from "../arithmetic/Arithmetic";
-import { ensurePublicExtension, string2RegExp } from '../Utils';
+import { ensurePublicExtension, string2RegExp } from "../Utils";
 import { each, utils } from "realm-utils";
 
 /**
@@ -89,7 +89,6 @@ export class ModuleCollection {
      */
     public cacheFile: string;
 
-
     /**
      *
      *
@@ -141,7 +140,6 @@ export class ModuleCollection {
         this.entryFile = file;
     }
 
-
     /**
      *
      *
@@ -168,7 +166,7 @@ export class ModuleCollection {
         // allow easy regex
         this.context.plugins.forEach(plugin => {
             if (utils.isArray(plugin) && utils.isString(plugin[0])) {
-                plugin.splice(0, 1, string2RegExp(plugin[0]))
+                plugin.splice(0, 1, string2RegExp(plugin[0]));
             } else {
                 if (utils.isString(plugin.test)) {
                     plugin.test = string2RegExp(plugin.test);
@@ -207,7 +205,6 @@ export class ModuleCollection {
             this.entryFile = File.createByName(this, ensurePublicExtension(this.context.defaultEntryPoint));
         }
 
-
         return this.resolveDepsOnly(data.depsOnly).then(() => {
 
             return each(data.including, (withDeps, modulePath) => {
@@ -229,7 +226,7 @@ export class ModuleCollection {
                     this.context.nukeCache();
                     console.error(e);
                 });
-        })
+        });
 
     }
 
@@ -254,7 +251,7 @@ export class ModuleCollection {
         // We don't register and process node_modules twice
         // So for example, 2 modules have a custom dependency lodash@1.0.0
         // In a nutshell we try to avoid grabbing the same source from different folders
-        let moduleName = `${info.name}@${info.version}`
+        let moduleName = `${info.name}@${info.version}`;
 
         // Make sure it has not been mentioned ever befor
         if (!this.context.hasNodeModule(moduleName)) {
@@ -269,7 +266,6 @@ export class ModuleCollection {
         } else {
             collection = this.context.getNodeModule(moduleName);
         }
-
 
         // If we are using a custom version
         // THe source output should know about.
@@ -290,7 +286,6 @@ export class ModuleCollection {
             ? collection.resolve(new File(this.context, collection.pm.init(file.info.absPath)))
             : collection.resolveEntry();
     }
-
 
     public transformGroups() {
         const promises = [];
@@ -338,7 +333,6 @@ export class ModuleCollection {
 
                 return;
             }
-
 
             // Check if a module needs to ignored
             // It could be defined previosly (as in exluding all dependencies)

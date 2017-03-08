@@ -3,14 +3,10 @@ const fs = require("fs");
 
 const FuseBox = build.FuseBox;
 
-
-const fsExtra = require("fs-extra")
+const fsExtra = require("fs-extra");
 const appRoot = require("app-root-path");
 const { each } = require("realm-utils");
 const path = require("path");
-
-
-
 
 const deleteFolderRecursive = function(path) {
     if (fs.existsSync(path)) {
@@ -33,14 +29,14 @@ exports.getTestEnv = (files, str, config, returnConcat) => {
             cache: false,
             modulesFolder: `${__dirname}/modules/`,
             plugins: [build.JSONPlugin()],
-            files: files
+            files,
         }, config || {}));
 
         fsb.bundle(str).then(data => {
             if (returnConcat) return resolve(data);
 
             let scope = {
-                navigator: 1
+                navigator: 1,
             };
             let str = data.content.toString();
             str = str.replace(/\(this\)\);?$/, "(__root__))");
@@ -51,21 +47,19 @@ exports.getTestEnv = (files, str, config, returnConcat) => {
             return resolve(scope);
         });
     });
-}
-
+};
 
 exports.createEnv = (opts, str, done) => {
     const name = opts.name || `test-${new Date().getTime()}`;
 
     let tmpFolder = path.join(appRoot.path, ".fusebox", "tests");
 
-
     fsExtra.ensureDirSync(tmpFolder);
     let localPath = path.join(tmpFolder, name);
 
     const output = {
-        modules: {}
-    }
+        modules: {},
+    };
 
     const modulesFolder = path.join(localPath, "modules");
     // creating modules
@@ -76,19 +70,19 @@ exports.createEnv = (opts, str, done) => {
             moduleParams.cache = false;
             moduleParams.log = false;
 
-            moduleParams.tsConfig = path.join(appRoot.path, "test", "fixtures", "tsconfig.json")
+            moduleParams.tsConfig = path.join(appRoot.path, "test", "fixtures", "tsconfig.json");
 
             FuseBox.init(moduleParams).bundle(moduleParams.instructions, () => {
                 if (moduleParams.onDone) {
                     moduleParams.onDone({
-                        localPath: localPath,
+                        localPath,
                         filePath: moduleParams.outFile,
-                        projectDir: path.join(localPath, "project")
+                        projectDir: path.join(localPath, "project"),
                     });
                 }
                 output.modules[name] = require(moduleParams.outFile);
                 return resolve();
-            })
+            });
         });
     }).then(() => {
 
@@ -96,7 +90,7 @@ exports.createEnv = (opts, str, done) => {
         projectOptions.outFile = path.join(localPath, "project", "index.js");
         projectOptions.cache = false;
         projectOptions.log = false;
-        projectOptions.tsConfig = path.join(appRoot.path, "test", "fixtures", "tsconfig.json")
+        projectOptions.tsConfig = path.join(appRoot.path, "test", "fixtures", "tsconfig.json");
         projectOptions.modulesFolder = modulesFolder;
         return new Promise((resolve, reject) => {
             FuseBox.init(projectOptions).bundle(projectOptions.instructions, () => {
@@ -107,13 +101,13 @@ exports.createEnv = (opts, str, done) => {
                 output.projectContents = contents;
 
                 return resolve();
-            })
+            });
         });
     }).then(() => {
         //deleteFolderRecursive(localPath);
         return output;
-    })
-}
+    });
+};
 
 exports.getNodeEnv = (opts, str, done) => {
     return new Promise((resolve, reject) => {
@@ -130,4 +124,4 @@ exports.getNodeEnv = (opts, str, done) => {
             return resolve(res);
         });
     });
-}
+};

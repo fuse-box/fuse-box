@@ -1,4 +1,4 @@
-const events = require("events");
+const events = require('events');
 
 export type OnOpenFn = (client: SocketClient) => void;
 
@@ -11,8 +11,8 @@ export class SocketClient {
     constructor(opts) {
         opts = opts || {};
         const port = opts.port || window.location.port;
-        const protocol = location.protocol === "https:" ? "wss://" : "ws://";
-        const domain = location.hostname || "localhost";
+        const protocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
+        const domain = location.hostname || 'localhost';
         this.url = opts.host || `${protocol}${domain}:${port}`;
         if (opts.uri) {
             this.url = opts.uri;
@@ -22,7 +22,7 @@ export class SocketClient {
     }
     reconnect(fn) {
         setTimeout(() => {
-            this.emitter.emit("reconnect", { message: "Trying to reconnect" });
+            this.emitter.emit('reconnect', { message: 'Trying to reconnect' });
             this.connect(fn);
         }, 5000);
     }
@@ -32,7 +32,7 @@ export class SocketClient {
     }
 
     connect(fn?: OnOpenFn) {
-        console.log("connect", this.url);
+        console.log('connect', this.url);
         setTimeout(() => {
             this.client = new WebSocket(this.url);
             this.bindEvents(fn);
@@ -49,7 +49,7 @@ export class SocketClient {
 
 
     private error(data: { reason: any, message: string }) {
-        this.emitter.emit("error", data);
+        this.emitter.emit('error', data);
     }
 
     /** Wires up the socket client messages to be emitted on our event emitter */
@@ -60,10 +60,10 @@ export class SocketClient {
             }
         };
         this.client.onerror = (event: any) => {
-            this.error({ reason: event.reason, message: "Socket error" });
+            this.error({ reason: event.reason, message: 'Socket error' });
         };
         this.client.onclose = (event) => {
-            this.emitter.emit("close", { message: "Socket closed" });
+            this.emitter.emit('close', { message: 'Socket closed' });
             if (event.code !== 1011) {
                 this.reconnect(fn);
             }
@@ -73,7 +73,7 @@ export class SocketClient {
             if (data) {
                 let item = JSON.parse(data);
                 this.emitter.emit(item.type, item.data);
-                this.emitter.emit("*", item);
+                this.emitter.emit('*', item);
             }
         };
     }

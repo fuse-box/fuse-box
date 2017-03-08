@@ -49,7 +49,7 @@ export class PrettyError {
                     l.white().bg.red().write(`${index + 1}  ${line}`);
                     l.bg.reset();
                 } else {
-                    l.reset().write(`${index + 1} `).red().write(` ${line}`)
+                    l.reset().write(`${index + 1} `).red().write(` ${line}`);
                 }
                 l.write("\n").reset();
             }
