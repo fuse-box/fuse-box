@@ -164,20 +164,20 @@ sourcemaps: true
 You can add an object to allow vendor sourcemaps
 
 ```js
-sourcemaps: { project : true, vendor : true}
+sourcemaps: { project: true, vendor: true}
 ```
 
-> vendor sourcemaps will be generated correctly with disabled cache. It's a know bug
+> vendor sourcemaps will be generated correctly with disabled cache. It's a known bug
 
 Sourcemaps currently work with [typescript](#typescript) and [BabelPlugin](#babel-plugin)
-[see the SourceMapPlainJsPlugin][#SourceMapPlainJsPlugin]
+[see the SourceMapPlainJsPlugin](#SourceMapPlainJsPlugin)
 
 ## Standalone
 
 By default FuseBox injects API in every bundle. That can be overridden by setting:
 
 ```
-{ standalone : false }
+{ standalone: false }
 ```
 
 Alternatively, you add `!` symbol to the arithmetics
@@ -384,7 +384,7 @@ Don't run that bundle in a traditional browser.
 An example using the available config options might look similar to:
 ```js
 // remember, unless you transpile your fuse.js, es6 will not work in your fuse.js
-// so using `require` is the easiest. 
+// so using `require` is the easiest.
 // destructuring with `require` is supported with the current node version.
 //
 // importing can also be done with the syntax:
