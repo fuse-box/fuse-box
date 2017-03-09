@@ -28,10 +28,10 @@ export class EventEmitter<T> {
     }
 
     emit = (event: T) => {
-    /** Update any general listeners */
+        /** Update any general listeners */
         this.listeners.forEach((listener) => listener(event));
 
-    /** Clear the `once` queue */
+        /** Clear the `once` queue */
         this.listenersOncer.forEach((listener) => listener(event));
         this.listenersOncer = [];
     }

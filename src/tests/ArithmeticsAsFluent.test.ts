@@ -28,23 +28,23 @@ export class ArithmeticAsFluentTest {
         .finishBundle()
         .finish();
 
-      // single & multi
+        // single & multi
         should(Fluent.isArithmetic(singleBundle)).beTrue();
         should(typeof singleBundle).deepEqual("string");
         should(typeof multipleBundles).deepEqual("object");
 
-      // data
+        // data
         const cool = multipleBundles["cool"];
         const coolParsed = Arithmetic.parse(cool);
 
-      // str
+        // str
         should(Fluent.isArithmetic(cool)).beTrue();
         should(typeof cool).deepEqual("string");
         should(cool).deepEqual(coolParsed.str);
         should(cool)
         .deepEqual(`>ooo.js\n +[ahhhh.js]\n +[fuse.magic.ts]\n +[*/**.js]\n +path\n +fs\n -magic-in-me`);
 
-      // parsed
+        // parsed
         should(coolParsed.excluding).deepEqual({
             "magic-in-me": true,
         });
@@ -60,11 +60,11 @@ export class ArithmeticAsFluentTest {
             "ooo.js": true,
         });
 
-      // data
+        // data
         const canada = multipleBundles["canada"];
         const canadaParsed = Arithmetic.parse(canada);
 
-      // str
+        // str
         should(typeof canada)
         .deepEqual("string");
         should(Fluent.isArithmetic(canada))
@@ -74,7 +74,7 @@ export class ArithmeticAsFluentTest {
         should(canada.replace(/\s/gmi, ""))
         .deepEqual(`>/src/eh.js+webworkerfile.js-fs`);
 
-      // parsed
+        // parsed
         should(canadaParsed.depsOnly)
         .deepEqual({});
         should(canadaParsed.excluding)
@@ -157,11 +157,11 @@ export class ArithmeticAsFluentTest {
         should(typeof singleBundle).deepEqual("string");
         let parsed = Arithmetic.parse(singleBundle);
 
-      // no api / not standalone
+        // no api / not standalone
         should(parsed.standalone).beFalse();
         should(parsed.str.includes("!")).beTrue();
 
-      // no cache
+        // no cache
         should(parsed.cache).beFalse();
         should(parsed.str.includes("^")).beTrue();
 

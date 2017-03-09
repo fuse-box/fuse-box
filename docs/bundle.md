@@ -27,10 +27,13 @@ In this case, you will get everything that is required in the index, as well as 
 
 ### Arithmetic Symbols
 
-* ` + ` adds a package / file 
+* ` + ` adds a package / file
 * ` - ` excludes a package / file
-* ` ! ` Removes the loader API from a bundle
-* ` ^ ` Disables cache
+* ` ! ` removes the loader API from a bundle
+* ` ^ ` disables cache
+* ` > ` executes a file, it should be an entry point, not a glob
+* ` [ ] ` matches everything inside without dependencies
+* ` **/*.ts ` matches every file using globs, with dependencies, experiment with [globtester](www.globtester.com)
 
 ### Examples for better understanding
 `> index.js [**/*.js]` - Bundle everything without dependencies, and execute `index.js`.
@@ -54,6 +57,63 @@ fuse.bundle({
     "_build/app.js": ">[index.ts]"
 });
 ```
+
+## Fluent
+Arithmetic instructions can be expressed using a more verbose, fluent api:
+[see tests for more examples here](https://github.com/fuse-box/fuse-box/blob/master/src/tests/ArithmeticsAsFluent.test.ts)
+
+### Single Fluent Bundle
+```js
+const instructions = fsbx.Fluent
+  .init()
+  .startBundle('./dist/noflo.js')
+  .excludeDeps() // also can be used as .ignoreDeps
+  .execute("src/lib/NoFlo.coffee")
+  .add("src/lib/*.coffee")
+  .exclude('fs') // also can be used as .ignore
+  .include('process')
+  .noApi()
+  .noCache()
+  .finishBundle()
+  .finish()
+
+// becomes:
+// ^ ! >[src/lib/NoFlo.coffee] -fs +process
+const bundle = fuse.bundle(instructions)
+```
+
+### Multi Fluent Bundle
+```js
+const instructions = fsbx.Fluent
+  .init()
+
+  .startBundle('./dist/noflo.js')
+  .excludeDeps()
+  .execute("src/lib/NoFlo.coffee")
+  .finishBundle()
+
+  .startBundle('./dist/bundle.js')
+  .excludeDeps()
+  .add("spec/**/*.coffee")
+  .finishBundle()
+
+  .startBundle('./dist/specs.js')
+  .includeDeps()
+  .add("spec/**/*.coffee")
+  .exclude('path')
+  .finishBundle()
+
+  .finish()
+
+// becomes:
+// {
+//   './dist/noflo.js': '>[src/lib/NoFlo.coffee]',
+//   './dist/bundle.js': '+[spec/**/*.coffee]',
+//   './dist/specs.js': '+spec/**/*.coffee -path'
+// }
+const bundles = fuse.bundle(instructions)
+```
+
 
 ## Bundle in a bundle
 The super powers of FuseBox allow merging bundles inside of bundles without code redundancy. The API of a second bundle will be removed, and 2 bundles will be fused together, keeping only one shared Fusebox API.
