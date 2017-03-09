@@ -11,7 +11,7 @@ export class Log {
     private totalSize = 0;
     private printLog = true;
 
-    constructor(public context?: WorkFlowContext) {
+    constructor(public context: WorkFlowContext | any) {
         this.printLog = context.doLog;
     }
 
