@@ -9,7 +9,8 @@ export class ReplacePluginClass implements Plugin {
     transform(file: File) {
         for (let key in this.options) {
             if (this.options.hasOwnProperty(key)) {
-                file.contents = file.contents.replace(key, this.options[key]);
+                const regexp = new RegExp(key, 'g');
+                file.contents = file.contents.replace(regexp, this.options[key]);
             }
         }
     }

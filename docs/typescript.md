@@ -11,11 +11,8 @@ Now let's define a simple configuration
 ```js
 FuseBox.init({
     homeDir: "src/",
-    sourceMap: {
-         bundleReference: "./sourcemaps.js.map",
-         outFile: "sourcemaps.js.map",
-    },
     outFile: "./out.js",
+    sourceMaps: true
 }).bundle(">index.ts");
 ```
 

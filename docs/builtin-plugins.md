@@ -1,7 +1,7 @@
 # Built-in plugins
 Fusebox contains premade plugins that should help you to get started.
 
-**note:** some of the plugins need to install external dependencies for them to function correctly. kindly take this into account. 
+**note:** some of the plugins need to install external dependencies for them to function correctly. kindly take this into account.
 
 ## CSS Plugin
 CSSPlugin is used to handle .css syntax.  As such, it should always be at the end of any CSS processing chain (see [#list-of-plugins](Plugin configuration) for examples of plugin chains), as it handles everything that is relating to bundling, reloading and grouping css styles.
@@ -88,7 +88,7 @@ plugins: [
 ]
 ```
 
-the `group` option should not contain any relative or absolute paths. This is a virtual file in the dependency tree. You can use 
+the `group` option should not contain any relative or absolute paths. This is a virtual file in the dependency tree. You can use
 all parameters described above to customise the behaviour. For example
 
 ```js
@@ -110,7 +110,7 @@ plugins : [
 
 > NOTE! outFile must be a string (not a callback) when used with the `group` option.
 
-Check out the tests [here](https://github.com/fuse-box/fuse-box/blob/master/src/tests/CSSPlugin.test.ts) 
+Check out the tests [here](https://github.com/fuse-box/fuse-box/blob/master/src/tests/CSSPlugin.test.ts)
 
 ## CSSResourcePlugin
 
@@ -407,6 +407,36 @@ plugins: [
    fsbx.BabelPlugin({ /* settings */ }), // <-- will have NODE_ENV set
 ]
 ```
+
+## ReplacePlugin
+The [EnvPlugin](#EnvPlugin) will define a value for you, but if somewhere along the line that value changes (for example, something setting `process.env.NODE_ENV = 'magic';`), the value will change.
+In contrast, the ReplacePlugin will _replace_ that key, with the value you provide, for example, instead of `process.env.NODE_ENV`, the value is replaced with a string. This allows [UglifyJSPlugin](#UglifyJSPlugin) to remove "dead code" and enables you to use production mode with modules that rely on this behaviour.
+
+
+### example:
+
+#### your config
+```js
+plugins: [
+  ReplacePlugin({ "process.env.NODE_ENV": JSON.stringify("production") }),
+],
+```
+
+#### your code
+```js
+if (process.env.NODE_ENV === 'production') console.log('production!')
+```
+
+#### result
+```js
+if ('production' === 'production') console.log('production!')
+```
+
+#### after uglifying
+```js
+console.log('production!')
+```
+
 
 ## CoffeePlugin
 
