@@ -71,6 +71,8 @@ export class WorkFlowContext {
     public defaultEntryPoint: string;
 
     public rollupOptions: any;
+
+    public hash: string | Boolean;
     /**
      * Explicitly target bundle to server
      */
@@ -201,6 +203,21 @@ export class WorkFlowContext {
         return this.shim[name] !== undefined;
     }
 
+    public isHashingRequired() {
+        const hashOption = this.hash;
+        let useHash = false;
+        if (typeof hashOption === "string") {
+            if (hashOption !== "md5") {
+                throw new Error(`Uknown algorythm ${hashOption}`)
+            }
+            useHash = true;
+        }
+        if (hashOption === true) {
+            useHash = true;
+        }
+        return useHash;
+    }
+
     /**
      * Resets significant class members
      */
@@ -311,7 +328,7 @@ export class WorkFlowContext {
         let url, configFile;
         let config: any = {
             compilerOptions: {},
-        }; ;
+        };;
         if (this.tsConfig) {
             configFile = ensureUserPath(this.tsConfig);
         } else {

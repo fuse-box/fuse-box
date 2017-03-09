@@ -36,6 +36,7 @@ export interface FuseBoxOptions {
     ignoreGlobal?: string[];
     serverBundle?: boolean;
     rollup?: any;
+    hash?: string | Boolean;
     customAPIFile?: string;
     outFile?: string;
     debug?: boolean;
@@ -117,6 +118,10 @@ export class FuseBox {
 
         if (opts.log !== undefined) {
             this.context.doLog = opts.log ? true : false;
+        }
+
+        if (opts.hash !== undefined) {
+            this.context.hash = opts.hash;
         }
 
         if (opts.alias) {

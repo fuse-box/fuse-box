@@ -1,9 +1,13 @@
 import { WorkFlowContext } from "./WorkflowContext";
-import { ensureDir } from "../Utils";
+import { ensureDir, ensureUserPath } from "../Utils";
 import * as path from "path";
+import * as crypto from "crypto";
+import * as fs from "fs";
 
 export class UserOutput {
     public dir: string;
+    public template: string;
+    public useHash = false;
     constructor(public context: WorkFlowContext, public original: string) {
         this.setup();
     }
@@ -13,17 +17,80 @@ export class UserOutput {
             throw new Error("$name should be present in the string");
         }
 
-        let params = this.extractParams();
-
-        this.dir = ensureDir(params.before);
+        const dir = path.dirname(this.original);
+        this.template = path.basename(this.original);
+        this.dir = ensureDir(dir);
+        this.useHash = this.context.isHashingRequired();
     }
-    private extractParams(): any {
-        const before = path.dirname(this.original);
-        const after = path.basename(this.original);
-        return {
-            before: before,
-            after: after,
+
+    /**
+     * Md5 hash
+     * @param content 
+     */
+    public generateHash(content: string) {
+        return crypto.createHash("md5").update(content, "utf8")
+            .digest('hex')
+    }
+
+    /**
+     * Gets path 
+     * Processes a template + hash if required by Context
+     * 
+     * @param {string} str
+     * @param {string} [hash]
+     * @returns
+     * 
+     * @memberOf UserOutput
+     */
+    public getPath(str: string, hash?: string) {
+        let template = this.template;
+
+        const userExt = path.extname(str);
+        const templateExt = path.extname(template);
+
+
+        // making use user has a priority on extensions
+        if (userExt && templateExt) {
+            template = template.replace(templateExt, '')
         }
+
+        let basename = path.basename(str);
+        let dirname = path.dirname(str);
+        let fname;
+        if (hash) {
+            if (template.indexOf('$hash') === -1) {
+                fname = template.replace('$name', basename + "-" + hash);
+            } else {
+                fname = template
+                    .replace('$name', basename)
+                    .replace('$hash', hash);
+            }
+        } else {
+            fname = template
+                .replace('$name', basename)
+                .replace('$hash', "")
+        }
+        let result = path.join(this.dir, dirname, fname);
+        return result;
     }
 
+    /**
+     * 
+     * 
+     * @param {string} userPath
+     * @param {(string | Buffer)} content
+     * @returns {string}
+     * 
+     * @memberOf UserOutput
+     */
+    public write(userPath: string, content: string | Buffer): string {
+        let hash;
+        if (this.useHash) {
+            hash = this.generateHash(content.toString());
+        }
+        let fullpath = this.getPath(userPath, hash);
+        fullpath = ensureUserPath(fullpath);
+        fs.writeFileSync(fullpath, content);
+        return fullpath;
+    }
 }
