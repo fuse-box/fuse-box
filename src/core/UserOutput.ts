@@ -1,5 +1,6 @@
 import { WorkFlowContext } from "./WorkflowContext";
 import { ensureDir } from "../Utils";
+import * as path from "path";
 
 export class UserOutput {
     public dir: string;
@@ -17,23 +18,11 @@ export class UserOutput {
         this.dir = ensureDir(params.before);
     }
     private extractParams(): any {
-        let index = 0;
-        let beforeDollar = [];
-        let afterDollar = [];
-        let dirComplete = false;
-        while (index < this.original.length) {
-            let symbol = this.original.charAt(index);
-            if (symbol !== "$" && !dirComplete) {
-                dirComplete = true;
-                beforeDollar.push(symbol);
-            } else {
-                afterDollar.push(symbol);
-            }
-            index++;
-        }
+        const before = path.dirname(this.original);
+        const after = path.basename(this.original);
         return {
-            before: beforeDollar.join(""),
-            after: afterDollar.join(""),
+            before: before,
+            after: after,
         }
     }
 
