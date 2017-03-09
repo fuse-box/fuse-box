@@ -1,23 +1,23 @@
-import { createEnv } from './stubs/TestEnvironment';
+import { createEnv } from "./stubs/TestEnvironment";
 import { should } from "fuse-test-runner";
-import { BabelPlugin } from '../plugins/js-transpilers/BabelPlugin';
+import { BabelPlugin } from "../plugins/js-transpilers/BabelPlugin";
 
 export class AliasTest {
     "Should replace an alias - case 1"() {
         return createEnv({
             project: {
                 alias: {
-                    "utils": "~/utils/far/away/a/b/c"
+                    "utils": "~/utils/far/away/a/b/c",
                 },
                 files: {
                     "index.js": `exports.something = require("utils/hello")`,
-                    "utils/far/away/a/b/c/hello.js": "module.exports = { result : 'I was so far away, but i am here now'}"
+                    "utils/far/away/a/b/c/hello.js": "module.exports = { result : 'I was so far away, but i am here now'}",
                 },
-                instructions: "> index.js"
-            }
+                instructions: "> index.js",
+            },
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
-            should(out).deepEqual({ something: { result: 'I was so far away, but i am here now' } });
+            should(out).deepEqual({ something: { result: "I was so far away, but i am here now" } });
         });
     }
 
@@ -25,17 +25,17 @@ export class AliasTest {
         return createEnv({
             project: {
                 alias: {
-                    "utils": "~/utils/far/away/a/b/c/"
+                    "utils": "~/utils/far/away/a/b/c/",
                 },
                 files: {
                     "index.js": `exports.something = require("utils/hello")`,
-                    "utils/far/away/a/b/c/hello.js": "module.exports = { result : 'I was so far away, but i am here now'}"
+                    "utils/far/away/a/b/c/hello.js": "module.exports = { result : 'I was so far away, but i am here now'}",
                 },
-                instructions: "> index.js"
-            }
+                instructions: "> index.js",
+            },
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
-            should(out).deepEqual({ something: { result: 'I was so far away, but i am here now' } });
+            should(out).deepEqual({ something: { result: "I was so far away, but i am here now" } });
         });
     }
 
@@ -43,18 +43,18 @@ export class AliasTest {
         return createEnv({
             project: {
                 alias: {
-                    "eh": "~/moose/eh/igloo.js"
+                    "eh": "~/moose/eh/igloo.js",
                 },
                 files: {
                     "index.js": `export {default as canada} from 'eh'`,
-                    "moose/eh/igloo.js": "export default { result: 'igloo'}"
+                    "moose/eh/igloo.js": "export default { result: 'igloo'}",
                 },
                 instructions: "index.js",
                 plugins: [BabelPlugin({ config: { "presets": ["latest"] } })],
-            }
+            },
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
-            should(out).deepEqual({ canada: { result: 'igloo' } });
+            should(out).deepEqual({ canada: { result: "igloo" } });
         });
     }
 
@@ -62,18 +62,18 @@ export class AliasTest {
         return createEnv({
             project: {
                 alias: {
-                    "eh": "~/moose/eh"
+                    "eh": "~/moose/eh",
                 },
                 files: {
                     "index.js": `export default require('eh/igloo2.js')`,
-                    "moose/eh/igloo2.js": "export default { result: 'igloo'}"
+                    "moose/eh/igloo2.js": "export default { result: 'igloo'}",
                 },
                 instructions: "> index.js",
                 plugins: [BabelPlugin({ config: { "presets": ["latest"] } })],
-            }
+            },
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
-            should(out).deepEqual({ default: { default: { result: 'igloo' } } });
+            should(out).deepEqual({ default: { default: { result: "igloo" } } });
         });
     }
 
@@ -82,15 +82,15 @@ export class AliasTest {
             modules: {
                 "preact-compat": {
                     files: {
-                        "index.js": "module.exports = { name : 'i am preact-compat'}"
+                        "index.js": "module.exports = { name : 'i am preact-compat'}",
                     },
-                    instructions: "> index.js"
-                }
+                    instructions: "> index.js",
+                },
             },
             project: {
                 alias: {
                     "react": "preact-compat",
-                    "react-dom": "preact-compat"
+                    "react-dom": "preact-compat",
                 },
                 files: {
                     "index.ts": `module.exports = [
@@ -98,17 +98,16 @@ export class AliasTest {
                         require("react-dom")
                     ]`,
                 },
-                instructions: "> index.ts"
-            }
+                instructions: "> index.ts",
+            },
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
             should(out).deepEqual([
-                { name: 'i am preact-compat' },
-                { name: 'i am preact-compat' }
+                { name: "i am preact-compat" },
+                { name: "i am preact-compat" },
             ]);
         });
     }
-
 
     "Should handle aliases that start with the same chars"() {
 
@@ -116,23 +115,23 @@ export class AliasTest {
             project: {
                 alias: {
                     "utils": "~/utils/far/away/a/b/c/",
-                    "utils-foo": "~/utils/far/z"
+                    "utils-foo": "~/utils/far/z",
                 },
                 files: {
                     "index.js": `exports.something = [require("utils/hello"), require("utils-foo/stay")]`,
                     "utils/far/away/a/b/c/hello.js": "module.exports = { result : 'I was so far away, but i am here now'}",
-                    "utils/far/z/stay.js": "module.exports = { result : 'I should stay here'}"
+                    "utils/far/z/stay.js": "module.exports = { result : 'I should stay here'}",
                 },
-                instructions: "> index.js"
-            }
+                instructions: "> index.js",
+            },
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
 
             should(out).deepEqual({
-                something: [{ result: 'I was so far away, but i am here now' },
-                { result: 'I should stay here' }
-                ]
-            })
-        })
+                something: [{ result: "I was so far away, but i am here now" },
+                { result: "I should stay here" },
+                ],
+            });
+        });
     }
 }

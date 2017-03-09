@@ -2,10 +2,9 @@ import { File } from "../../core/File";
 
 /**
  * Handles require and ImportDeclarations
- * At the moment does not transpile 
+ * At the moment does not transpile
  */
 export class ImportDeclaration {
-
 
     /**
      * Extract require statements
@@ -19,17 +18,19 @@ export class ImportDeclaration {
                 if (analysis.nodeIsString(arg1)) {
                     let requireStatement = this.handleAliasReplacement(file, arg1.value);
                     arg1.value = requireStatement;
-                    analysis.addDependency(requireStatement)
+                    analysis.addDependency(requireStatement);
                 }
             }
         }
         if (node.type === "ImportDeclaration") {
             if (node.source && analysis.nodeIsString(node.source)) {
-                analysis.addDependency(node.source.value);
+                let requireStatement = this.handleAliasReplacement(file, node.source.value);
+                node.source.value = requireStatement;
+                analysis.addDependency(requireStatement);
+
             }
         }
     }
-
 
     public static onEnd() { }
 

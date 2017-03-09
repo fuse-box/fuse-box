@@ -1,9 +1,9 @@
-import { ensurePublicExtension } from "../Utils";
 import { IPackageInformation, IPathInformation } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
+import { ensurePublicExtension } from "../Utils";
+import { Config } from "../Config";
 import * as path from "path";
 import * as fs from "fs";
-import { Config } from "../Config";
 
 /**
  * If a import url isn't relative
@@ -41,11 +41,11 @@ export interface IPackageInformation {
 }
 
 /**
- * Manages the allowed extensions e.g. 
+ * Manages the allowed extensions e.g.
  * should user be allowed to do `require('./foo.ts')`
  */
 export class AllowedExtenstions {
-    /** 
+    /**
      * Users are allowed to require files with these extensions by default
      **/
     public static list: Set<string> = new Set([".js", ".ts", ".tsx", ".json", ".xml", ".css", ".html"]);
@@ -65,7 +65,7 @@ export class AllowedExtenstions {
  */
 export class PathMaster {
 
-    private tsMode = false;
+    private tsMode: boolean = false;
 
     constructor(public context: WorkFlowContext, public rootPackagePath?: string) { }
 
@@ -103,7 +103,7 @@ export class PathMaster {
             // A trick to avoid one nasty situation
             // Imagine lodash@1.0.0 that is set as a custom depedency for 2 libraries
             // We need to make sure there, that we use one source (either or)
-            // We don't want to take modules from 2 different places (in case if versions match) 
+            // We don't want to take modules from 2 different places (in case if versions match)
             let nodeModuleInfo = this.getNodeModuleInformation(info.name);
             let cachedInfo = this.context.getLibInfo(nodeModuleInfo.name, nodeModuleInfo.version);
             if (cachedInfo) { // Modules has been defined already
@@ -158,7 +158,6 @@ export class PathMaster {
             name += ".js";
         }
 
-
         return name;
     }
 
@@ -175,7 +174,6 @@ export class PathMaster {
     public getAbsolutePath(name: string, root: string, rootEntryLimit?: string, explicit = false) {
         let url = this.ensureFolderAndExtensions(name, root, explicit);
 
-
         let result = path.resolve(root, url);
 
         // A check for tsx
@@ -188,7 +186,7 @@ export class PathMaster {
         //         if (fs.existsSync(tsxVersion)) {
         //             return tsxVersion;
         //         } else {
-        //             // yet another hack 
+        //             // yet another hack
         //             // final check for .js extension
         //             // I know, it's not pretty ;-( Let's find a way to fix that
         //             let jsVersion = replaceExt(result, ".js");
@@ -255,8 +253,6 @@ export class PathMaster {
         }
     }
 
-
-
     private ensureFolderAndExtensions(name: string, root: string, explicit = false) {
         // Would be great to list a folder and prob for a file.
         // So, let's say, user did not specify an extension
@@ -294,8 +290,6 @@ export class PathMaster {
         return name;
     }
 
-
-
     private getNodeModuleInfo(name: string): INodeModuleRequire {
         // Handle scope requires
         if (name[0] === "@") {
@@ -315,12 +309,12 @@ export class PathMaster {
 
     private getNodeModuleInformation(name: string): IPackageInformation {
 
-        let readMainFile = (folder, isCustom: boolean) => {
+        const readMainFile = (folder, isCustom: boolean) => {
             // package.json path
-            let packageJSONPath = path.join(folder, "package.json");
+            const packageJSONPath = path.join(folder, "package.json");
             if (fs.existsSync(packageJSONPath)) {
                 // read contents
-                let json: any = require(packageJSONPath);
+                const json: any = require(packageJSONPath);
                 // Getting an entry point
                 let entryFile;
                 let entryRoot;
@@ -332,24 +326,29 @@ export class PathMaster {
                         entryFile = json.browser;
                     }
                 }
-                entryFile = path.join(folder, entryFile || json.main || "index.js");
-                entryRoot = path.dirname(entryFile);
+                if (this.context.rollupOptions && json["jsnext:main"]) {
+                    entryFile = path.join(folder, json["jsnext:main"]);
+                } else {
+                    entryFile = path.join(folder, entryFile || json.main || "index.js");
+                    entryRoot = path.dirname(entryFile);
+                }
                 return {
-                    name: name,
+                    name,
                     custom: isCustom,
                     root: folder,
                     missing: false,
-                    entryRoot: entryRoot,
+                    entryRoot,
                     entry: entryFile,
                     version: json.version,
                 };
             }
+
             let defaultEntry = path.join(folder, "index.js");
             let entryFile = fs.existsSync(defaultEntry) ? defaultEntry : undefined;
             let defaultEntryRoot = entryFile ? path.dirname(entryFile) : undefined;
             let packageExists = fs.existsSync(folder);
             return {
-                name: name,
+                name,
                 missing: !packageExists,
                 custom: isCustom,
                 root: folder,
@@ -358,9 +357,9 @@ export class PathMaster {
                 version: "0.0.0",
             };
         };
+
         let localLib = path.join(Config.FUSEBOX_MODULES, name);
         let modulePath = path.join(Config.NODE_MODULES_DIR, name);
-
 
         if (this.context.customModulesFolder) {
             let customFolder = path.join(this.context.customModulesFolder, name);

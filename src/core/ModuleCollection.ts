@@ -1,21 +1,20 @@
-import { File } from './File';
+import { File } from "./File";
 import { PathMaster, IPackageInformation } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
-import { each, utils } from 'realm-utils';
 import { BundleData } from "../arithmetic/Arithmetic";
-import { ensurePublicExtension, string2RegExp } from '../Utils';
-
+import { ensurePublicExtension, string2RegExp } from "../Utils";
+import { each, utils } from "realm-utils";
 
 /**
- * 
- * 
+ *
+ *
  * @export
  * @class ModuleCollection
  */
 export class ModuleCollection {
     /**
-     * 
-     * 
+     *
+     *
      * @type {Map<string, ModuleCollection>}
      * @memberOf ModuleCollection
      */
@@ -26,112 +25,111 @@ export class ModuleCollection {
     public acceptFiles = true;
 
     /**
-     * 
-     * 
+     *
+     *
      * @type {Map<string, File>}
      * @memberOf ModuleCollection
      */
     public dependencies: Map<string, File> = new Map();
     /**
-     * 
-     * 
+     *
+     *
      * @type {BundleData}
      * @memberOf ModuleCollection
      */
     public bundle: BundleData;
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf ModuleCollection
      */
     public entryResolved = false;
     /**
-     * 
-     * 
+     *
+     *
      * @type {PathMaster}
      * @memberOf ModuleCollection
      */
     public pm: PathMaster;
     /**
-     * 
-     * 
+     *
+     *
      * @type {File}
      * @memberOf ModuleCollection
      */
     public entryFile: File;
 
     /**
-     * 
-     * 
-     * 
+     *
+     *
+     *
      * @memberOf ModuleCollection
      */
     public cached = false;
     /**
-     * 
-     * 
+     *
+     *
      * @type {string}
      * @memberOf ModuleCollection
      */
     public cachedContent: string;
     /**
-     * 
-     * 
+     *
+     *
      * @type {string}
      * @memberOf ModuleCollection
      */
     public cachedName: string;
     /**
-     * 
-     * 
+     *
+     *
      * @type {string}
      * @memberOf ModuleCollection
      */
     public cacheFile: string;
 
-
     /**
-     * 
-     * 
+     *
+     *
      * @type {Map<string, string>}
      * @memberOf ModuleCollection
      */
     public conflictingVersions: Map<string, string> = new Map();
 
     /**
-     * 
-     * 
+     *
+     *
      * @private
      * @type {File[]}
      * @memberOf ModuleCollection
      */
     private toBeResolved: File[] = [];
     /**
-     * 
-     * 
+     *
+     *
      * @private
-     * 
+     *
      * @memberOf ModuleCollection
      */
     private delayedResolve = false;
 
     /**
      * Creates an instance of ModuleCollection.
-     * 
+     *
      * @param {WorkFlowContext} context
      * @param {string} name
      * @param {IPackageInformation} [info]
-     * 
+     *
      * @memberOf ModuleCollection
      */
     constructor(public context: WorkFlowContext, public name: string, public info?: IPackageInformation) { }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {File} file
-     * 
+     *
      * @memberOf ModuleCollection
      */
     public setupEntry(file: File) {
@@ -142,13 +140,12 @@ export class ModuleCollection {
         this.entryFile = file;
     }
 
-
     /**
-     * 
-     * 
+     *
+     *
      * @param {boolean} [shouldIgnoreDeps]
      * @returns
-     * 
+     *
      * @memberOf ModuleCollection
      */
     public resolveEntry(shouldIgnoreDeps?: boolean) {
@@ -169,7 +166,7 @@ export class ModuleCollection {
         // allow easy regex
         this.context.plugins.forEach(plugin => {
             if (utils.isArray(plugin) && utils.isString(plugin[0])) {
-                plugin.splice(0, 1, string2RegExp(plugin[0]))
+                plugin.splice(0, 1, string2RegExp(plugin[0]));
             } else {
                 if (utils.isString(plugin.test)) {
                     plugin.test = string2RegExp(plugin.test);
@@ -208,7 +205,6 @@ export class ModuleCollection {
             this.entryFile = File.createByName(this, ensurePublicExtension(this.context.defaultEntryPoint));
         }
 
-
         return this.resolveDepsOnly(data.depsOnly).then(() => {
 
             return each(data.including, (withDeps, modulePath) => {
@@ -225,23 +221,21 @@ export class ModuleCollection {
                 // node modules might need to resolved asynchronously
                 // like css plugins
                 .then(() => this.context.resolve())
-                .then(() => {
-
-                    return this.context.cache.buildMap(this);
-                }).catch(e => {
+                .then(() => this.context.cache.buildMap(this))
+                .catch(e => {
                     this.context.nukeCache();
                     console.error(e);
                 });
-        })
+        });
 
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {File} file
      * @returns
-     * 
+     *
      * @memberOf ModuleCollection
      */
     public resolveNodeModule(file: File) {
@@ -257,7 +251,7 @@ export class ModuleCollection {
         // We don't register and process node_modules twice
         // So for example, 2 modules have a custom dependency lodash@1.0.0
         // In a nutshell we try to avoid grabbing the same source from different folders
-        let moduleName = `${info.name}@${info.version}`
+        let moduleName = `${info.name}@${info.version}`;
 
         // Make sure it has not been mentioned ever befor
         if (!this.context.hasNodeModule(moduleName)) {
@@ -273,8 +267,7 @@ export class ModuleCollection {
             collection = this.context.getNodeModule(moduleName);
         }
 
-
-        // If we are using a custom version 
+        // If we are using a custom version
         // THe source output should know about.
         // When compiling the ouput we will take it into a consideration
         if (info.custom) {
@@ -293,7 +286,6 @@ export class ModuleCollection {
             ? collection.resolve(new File(this.context, collection.pm.init(file.info.absPath)))
             : collection.resolveEntry();
     }
-
 
     public transformGroups() {
         const promises = [];
@@ -315,12 +307,12 @@ export class ModuleCollection {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {File} file
      * @param {boolean} [shouldIgnoreDeps]
      * @returns
-     * 
+     *
      * @memberOf ModuleCollection
      */
     public resolve(file: File, shouldIgnoreDeps?: boolean) {
@@ -342,7 +334,6 @@ export class ModuleCollection {
                 return;
             }
 
-
             // Check if a module needs to ignored
             // It could be defined previosly (as in exluding all dependencies)
             // Of an explict exclusion
@@ -359,7 +350,7 @@ export class ModuleCollection {
         } else {
             if (this.dependencies.has(file.absPath)) { return; }
 
-            // Consuming file 
+            // Consuming file
             // Here we read it and return a list of require statements
             file.consume();
 

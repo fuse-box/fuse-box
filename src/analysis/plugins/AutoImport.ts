@@ -1,20 +1,19 @@
 import { File } from "../../core/File";
-import { nativeModules, HeaderImport } from './../HeaderImport';
+import { nativeModules, HeaderImport } from "./../HeaderImport";
 
 /**
  * Checks if a variable needs to magically imported
  * Yes, this is a black magic.
- * For example you reference 
+ * For example you reference
  *   process.env
- * 
+ *
  * Browser does not have it globally, so instead of polluting the window
- * we inject 
+ * we inject
  *   var process = require("process")
- * 
+ *
  * That's a very delicate subject as it's possible (yes) to break but only intentionally
  */
 export class AutoImport {
-
 
     public static onNode(file: File, node: any, parent: any) {
         const analysis = file.analysis;
@@ -22,7 +21,15 @@ export class AutoImport {
             // here we dicide we can inject
             // there are many conditions where injection should not happen
             if (nativeModules.has(node.name) && !analysis.bannedImports[node.name]) {
-                const isProperty = parent.type && parent.type === "Property";
+
+                const belongsToAnotherObject = parent.type === "MemberExpression" && parent.object && parent.object.type === "Identifier" && parent.object.name !== node.name;
+
+                if (belongsToAnotherObject) {
+                    return;
+                }
+
+                const isProperty = parent.type && parent.type === "Property" && parent.value && parent.value.name !== node.name;
+
                 const isFunction = parent.type
                     && (parent.type === "FunctionExpression" ||
                         parent.type === "FunctionDeclaration"
@@ -36,8 +43,10 @@ export class AutoImport {
                         analysis.bannedImports[node.name] = true;
                     }
                 } else {
+                    //console.log(parent);
                     analysis.nativeImports[node.name] = nativeModules.get(node.name);
                 }
+                //}
             }
         }
     }
@@ -48,6 +57,9 @@ export class AutoImport {
      */
     public static onEnd(file: File) {
         const analysis = file.analysis;
+        if (file.headerContent) {
+            file.headerContent = [];
+        }
         for (let nativeImportName in analysis.nativeImports) {
             if (analysis.nativeImports.hasOwnProperty(nativeImportName)) {
                 const nativeImport: HeaderImport = analysis.nativeImports[nativeImportName];

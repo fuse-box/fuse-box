@@ -1,20 +1,20 @@
 import * as path from "path";
-import * as fs from 'fs';
-import * as fsExtra from 'fs-extra';
+import * as fs from "fs";
+import * as fsExtra from "fs-extra";
 const appRoot = require("app-root-path");
 
 const MBLACKLIST = [
     "freelist",
-    "sys"
+    "sys",
 ];
 export type Concat = {
     add(fileName: string | null, content: string | Buffer, sourceMap?: string): void;
     content: Buffer;
     sourceMap: string;
-}
+};
 export type ConcatModule = {
     new (generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
-}
+};
 export const Concat: ConcatModule = require("concat-with-sourcemaps");
 
 export function contains(array: any[], obj: any) {
@@ -23,7 +23,7 @@ export function contains(array: any[], obj: any) {
 
 export function replaceAliasRequireStatement(requireStatement: string, aliasName: string, aliasReplacement: string) {
     requireStatement = requireStatement.replace(aliasName, aliasReplacement);
-    requireStatement = path.normalize(requireStatement)
+    requireStatement = path.normalize(requireStatement);
     return requireStatement;
 }
 export function write(fileName: string, contents: any) {
@@ -33,7 +33,7 @@ export function write(fileName: string, contents: any) {
                 return reject(e);
             }
             return resolve();
-        })
+        });
     });
 }
 
@@ -95,9 +95,8 @@ export function string2RegExp(obj: any) {
 }
 
 export function removeFolder(userPath) {
-    fsExtra.removeSync(userPath)
+    fsExtra.removeSync(userPath);
 }
-
 
 export function replaceExt(npath, ext): string {
     if (typeof npath !== "string") {
@@ -120,6 +119,9 @@ export function extractExtension(str: string) {
     }
     return result[1];
 }
+export function ensureFuseBoxPath(input: string) {
+    return input.replace(/\\/g, "/");
+}
 
 export function ensurePublicExtension(url: string) {
     let ext = path.extname(url);
@@ -132,7 +134,6 @@ export function ensurePublicExtension(url: string) {
     return url;
 }
 
-
 export function getBuiltInNodeModules(): Array<string> {
     const process: any = global.process;
 
@@ -142,7 +143,6 @@ export function getBuiltInNodeModules(): Array<string> {
 }
 
 export function findFileBackwards(target: string, limitPath: string): string {
-
     let [found, reachedLimit] = [false, false];
     let filename = path.basename(target);
     let current = path.dirname(target);
@@ -150,7 +150,6 @@ export function findFileBackwards(target: string, limitPath: string): string {
     const maxIterations = 10;
 
     while (found === false && reachedLimit === false) {
-
         let targetFilePath = path.join(current, filename);
         if (fs.existsSync(targetFilePath)) {
             return targetFilePath;

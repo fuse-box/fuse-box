@@ -1,6 +1,6 @@
-const should = require('should');
+const should = require("should");
 const build = require(`../dist/commonjs/index.js`);
-const getTestEnv = require('./fixtures/lib').getTestEnv;
+const getTestEnv = require("./fixtures/lib").getTestEnv;
 const CoffeePlugin = build.CoffeePlugin;
 const RawPlugin = build.RawPlugin;
 
@@ -10,16 +10,16 @@ class Demo
     "hello"
 `;
 
-describe('CoffeeePlugin', () => {
-    it('Should return compiled coffee', () => {
+describe("CoffeeePlugin", () => {
+    it("Should return compiled coffee", () => {
         return getTestEnv({
-            'app.coffee': file
-        }, '>app.coffee', {
+            "app.coffee": file,
+        }, ">app.coffee", {
             plugins: [
-                [CoffeePlugin({}), RawPlugin()]
-            ]
+                [CoffeePlugin({}), RawPlugin()],
+            ],
         }).then(root => {
-            let result = root.FuseBox.import('./app.coffee');
+            let result = root.FuseBox.import("./app.coffee");
 
             result.should.equal(`var Demo;
 
@@ -34,21 +34,21 @@ Demo = (function() {
 
 })();
 `);
-            return true
+            return true;
         });
     });
 
-    it('Should handle options', () => {
+    it("Should handle options", () => {
         return getTestEnv({
-            'app.coffee': file
-        }, '>app.coffee', {
+            "app.coffee": file,
+        }, ">app.coffee", {
             plugins: [
                 [CoffeePlugin({
-                  bare: false
-                }), RawPlugin()]
-            ]
+                    bare: false,
+                }), RawPlugin()],
+            ],
         }).then(root => {
-            let result = root.FuseBox.import('./app.coffee');
+            let result = root.FuseBox.import("./app.coffee");
 
             result.should.equal(`(function() {
   var Demo;
@@ -66,7 +66,7 @@ Demo = (function() {
 
 }).call(this);
 `);
-            return true
+            return true;
         });
     });
 });

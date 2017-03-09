@@ -14,7 +14,6 @@ describe("Generic requires", (done) => {
         }).catch(done);
     });
 
-
     it("Case 2 should import 3 files", (done) => {
         getTestEnv({
             "index.js": `exports.hello = require("./foo/bar.js");`,
@@ -34,7 +33,7 @@ describe("Generic requires", (done) => {
             "foo/bar.js": "module.exports = require('./hello.js')",
             "foo/hello.js": "module.exports = {bar : 1}",
         }, "> index.js").then(root => {
-            should.equal(root.allGood.bar, 1)
+            should.equal(root.allGood.bar, 1);
             done();
         }).catch(done);
     });
@@ -182,4 +181,4 @@ describe("Generic requires", (done) => {
         }).catch(done);
     });
 
-})
+});

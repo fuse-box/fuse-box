@@ -1,17 +1,15 @@
 import { File } from "../../core/File";
-import * as escodegen from 'escodegen';
-
+import * as escodegen from "escodegen";
 
 /**
  * This plugin exists to understand FuseBox bundles.
- * For example if you bundle fusebox bundle this plugin will ensure 
+ * For example if you bundle fusebox bundle this plugin will ensure
  * that all redundancies are removed (API wise)
- * 
+ *
  * It will understand an uglified version of FuseBox
  * That's why we need OwnVariable plugin
  */
 export class OwnBundle {
-
 
     public static onNode(file: File, node: any, parent: any) {
         const analysis = file.analysis;
@@ -36,7 +34,6 @@ export class OwnBundle {
         }
     }
 
-
     public static onEnd(file: File) {
         const analysis = file.analysis;
         if (analysis.fuseBoxMainFile) {
@@ -53,7 +50,7 @@ export class OwnBundle {
                 // otherwise we know that user is referring to a file which is a FuseBox bundle
                 // We pnt to the package with entry point
                 // e.g require("foobar/index.js")
-                file.alternativeContent = `module.exports = require("${file.analysis.fuseBoxMainFile}")`
+                file.alternativeContent = `module.exports = require("${file.analysis.fuseBoxMainFile}")`;
             }
         }
     }

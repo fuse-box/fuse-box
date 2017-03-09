@@ -45,6 +45,7 @@ export class PropParser {
     public standalone: boolean;
     public entry = {};
     public cache: boolean;
+
     /**
      *
      *
@@ -99,7 +100,6 @@ export class PropParser {
      * @memberOf PropParser
      */
     public tokenReady() {
-
         let word = this.word.join("");
         if (!word) {
             this.reset();

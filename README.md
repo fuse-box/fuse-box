@@ -69,6 +69,7 @@ __1200 files to bundle__:
 
 * No headache, minimal configuration
 * First class [typescript](http://fuse-box.org/#typescript) support
+* Built-in [Rollup](http://fuse-box.org/#rollup) support
 * Arithmetic [instructions](http://fuse-box.org/#arithmetic-instructions)
 * Blazing fast bundle time
 * [Wildcard imports](http://fuse-box.org/#wildcard-import)

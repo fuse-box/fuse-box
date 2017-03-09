@@ -14,7 +14,7 @@ FuseBox.global("__fsbx_decorate", function(localArguments) {
                 __metadata("fusebox:module", localArguments[2]),
                 __metadata("fusebox:__filename", localArguments[3]),
                 __metadata("fusebox:__dirname", localArguments[4])
-            )
+            );
         }
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
         else

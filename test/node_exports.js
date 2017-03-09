@@ -10,7 +10,7 @@ describe("Node modules and exports", (done) => {
             files: {
                 "index.js": `require("./foo/bar.js");`,
                 "foo/bar.js": "module.exports = {bar : 1}",
-            }
+            },
         }, "> index.js").then(data => {
 
             data.FuseBox.should.be.ok;
@@ -24,11 +24,11 @@ describe("Node modules and exports", (done) => {
             cache: false,
             globals: { default: "myLib" },
             files: {
-                "index.js": `module.exports = {hello : "world"}`
-            }
+                "index.js": `module.exports = {hello : "world"}`,
+            },
         }, "> index.js").then(data => {
             data.myLib.should.be.ok;
-            data.myLib.hello.should.equal("world")
+            data.myLib.hello.should.equal("world");
             done();
         }).catch(done);
     });
@@ -40,25 +40,25 @@ describe("Node modules and exports", (done) => {
             globals: { default: "myLib", "wires-reactive": "reactive" },
             files: {
                 "index.js": `var wiresReactive = require("wires-reactive");
-                     module.exports = {hello : "world"}; `
-            }
+                     module.exports = {hello : "world"}; `,
+            },
         }, "> index.js").then(data => {
             data.myLib.should.be.ok;
-            data.myLib.hello.should.equal("world")
+            data.myLib.hello.should.equal("world");
             data.reactive.Watch.should.be.ok;
             done();
         }).catch(done);
     });
 
-    it('Should expose wildcard globals', (done) => {
+    it("Should expose wildcard globals", (done) => {
         env({
             log: false,
             cache: false,
-            package: 'wires-reactive',
+            package: "wires-reactive",
             globals: { "wires-reactive": "*" },
             files: {
-                "index.js": `module.exports = {hello : "world", wildcard: "exporting"};`
-            }
+                "index.js": `module.exports = {hello : "world", wildcard: "exporting"};`,
+            },
         }, "> index.js").then(data => {
             data.hello.should.be.ok;
             data.hello.should.equal("world");
@@ -68,15 +68,15 @@ describe("Node modules and exports", (done) => {
         }).catch(done);
     });
 
-    it('Should expose object-keyed globals', (done) => {
+    it("Should expose object-keyed globals", (done) => {
         env({
             log: false,
             cache: false,
-            package: 'wires-reactive',
-            globals: { "wires-reactive": { "hello": "helloExt"} },
+            package: "wires-reactive",
+            globals: { "wires-reactive": { "hello": "helloExt" } },
             files: {
-                "index.js": `module.exports = {hello : "world"};`
-            }
+                "index.js": `module.exports = {hello : "world"};`,
+            },
         }, "> index.js").then(data => {
             data.helloExt.should.be.ok;
             data.helloExt.should.equal("world");
@@ -90,8 +90,8 @@ describe("Node modules and exports", (done) => {
             cache: false,
             globals: { default: "myLib" },
             files: {
-                "index.js": `module.exports = require("net")`
-            }
+                "index.js": `module.exports = require("net")`,
+            },
         }, "> index.js").then(data => {
             data.myLib.connect.should.be.ok;
             done();
@@ -104,8 +104,8 @@ describe("Node modules and exports", (done) => {
             cache: false,
             globals: { default: "myLib" },
             files: {
-                "index.js": `module.exports = require("http")`
-            }
+                "index.js": `module.exports = require("http")`,
+            },
         }, "> index.js").then(data => {
             data.myLib.request.should.be.ok;
             done();
@@ -118,8 +118,8 @@ describe("Node modules and exports", (done) => {
             cache: false,
             globals: { default: "myLib" },
             files: {
-                "index.js": `module.exports = require("fs")`
-            }
+                "index.js": `module.exports = require("fs")`,
+            },
         }, "> index.js").then(data => {
 
             data.myLib.createWriteStream.should.be.ok;
@@ -133,8 +133,8 @@ describe("Node modules and exports", (done) => {
             cache: false,
             globals: { default: "myLib" },
             files: {
-                "index.js": `module.exports = require("module")`
-            }
+                "index.js": `module.exports = require("module")`,
+            },
         }, "> index.js").then(data => {
 
             data.myLib._load.should.be.ok;
@@ -142,15 +142,14 @@ describe("Node modules and exports", (done) => {
         }).catch(done);
     });
 
-
     it("Node library 'events' should be ok", (done) => {
         env({
             log: false,
             cache: false,
             globals: { default: "myLib" },
             files: {
-                "index.js": `module.exports = require("events")`
-            }
+                "index.js": `module.exports = require("events")`,
+            },
         }, "> index.js").then(data => {
             data.myLib.EventEmitter.should.be.ok;
             done();
@@ -163,8 +162,8 @@ describe("Node modules and exports", (done) => {
             cache: false,
             globals: { default: "myLib" },
             files: {
-                "index.js": `module.exports = require("process")`
-            }
+                "index.js": `module.exports = require("process")`,
+            },
         }, "> index.js").then(data => {
             data.myLib.env.should.be.ok;
             done();
@@ -177,8 +176,8 @@ describe("Node modules and exports", (done) => {
             cache: false,
             globals: { default: "myLib" },
             files: {
-                "index.js": `module.exports = require("stream")`
-            }
+                "index.js": `module.exports = require("stream")`,
+            },
         }, "> index.js").then(data => {
             //console.log(data.myLib);
             data.myLib.Stream.should.be.ok;
@@ -192,12 +191,12 @@ describe("Node modules and exports", (done) => {
             cache: false,
             globals: { default: "myLib" },
             files: {
-                "index.js": `module.exports = require("url")`
-            }
+                "index.js": `module.exports = require("url")`,
+            },
         }, "> index.js").then(data => {
             data.myLib.Url.should.be.ok;
             done();
         }).catch(done);
     });
 
-})
+});

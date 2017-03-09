@@ -2,9 +2,9 @@ export class ASTTraverse {
     public static traverse(root, options) {
 
         options = options || {};
-        let pre = options.pre;
-        let post = options.post;
-        let skipProperty = options.skipProperty;
+        const pre = options.pre;
+        const post = options.post;
+        const skipProperty = options.skipProperty;
 
         let visit = (node, parent, prop?, idx?) => {
             if (!node || typeof node.type !== "string") {

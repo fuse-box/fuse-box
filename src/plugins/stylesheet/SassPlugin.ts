@@ -1,8 +1,8 @@
 import { File } from "../../core/File";
 import { WorkFlowContext, Plugin } from "../../core/WorkflowContext";
-import * as path from 'path';
-import * as appRoot from 'app-root-path';
-import { Config } from '../../Config';
+import * as path from "path";
+import * as appRoot from "app-root-path";
+import { Config } from "../../Config";
 
 let sass;
 
@@ -35,17 +35,15 @@ export class SassPluginClass implements Plugin {
         const defaultMacro = {
             "$homeDir": file.context.homeDir,
             "$appRoot": appRoot.path,
-            "~": Config.NODE_MODULES_DIR + "/"
+            "~": Config.NODE_MODULES_DIR + "/",
         };
 
         const options = Object.assign({
             data: file.contents,
             sourceMap: true,
             outFile: file.info.fuseBoxPath,
-            sourceMapContents: true
+            sourceMapContents: true,
         }, this.options);
-
-
 
         options.includePaths = [];
         if (typeof this.options.includePaths !== "undefined") {
@@ -53,13 +51,12 @@ export class SassPluginClass implements Plugin {
                 options.includePaths.push(path);
             });
         }
-        options.macros = Object.assign(defaultMacro, this.options.macros || {}, );
-
+        options.macros = Object.assign(defaultMacro, this.options.macros || {},);
 
         if (this.options.importer === true) {
             options.importer = (url, prev, done) => {
                 if (/https?:/.test(url)) {
-                    return done({ url: url });
+                    return done({ url });
                 }
 
                 for (let key in options.macros) {
@@ -68,9 +65,8 @@ export class SassPluginClass implements Plugin {
                     }
                 }
                 done({ file: path.normalize(url) });
-            }
+            };
         }
-
 
         options.includePaths.push(file.info.absDir);
         return new Promise((resolve, reject) => {

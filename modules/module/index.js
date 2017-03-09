@@ -3,6 +3,6 @@ if (FuseBox.isServer) {
 } else {
     module.exports = {
         _load: FuseBox.import,
-        globalPaths: []
-    }
+        globalPaths: [],
+    };
 }

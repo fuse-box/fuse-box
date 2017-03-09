@@ -15,11 +15,11 @@ const $indentString = (str, amount) => {
     for (let i = 0; i < lines.length; i++) {
         newLines.push(emptySpace + lines[i]);
     }
-    return newLines.join('\n');
+    return newLines.join("\n");
 };
 const $printCategory = (title) => {
     if (cursor) {
-        cursor.write(' ')
+        cursor.write(" ")
             .bold().write(`\n   ${title} ______________________ `)
             .bg.reset();
         cursor.write("\n");
@@ -28,7 +28,7 @@ const $printCategory = (title) => {
 };
 const $printSubCategory = (title) => {
     if (cursor) {
-        cursor.write('    ').bold().brightBlack().write(`${title} →`);
+        cursor.write("    ").bold().brightBlack().write(`${title} →`);
         cursor.write("\n");
         cursor.reset();
     }

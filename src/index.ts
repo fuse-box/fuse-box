@@ -1,3 +1,4 @@
+export { ReplacePlugin } from "./plugins/ReplacePlugin";
 export { VuePlugin } from "./plugins/VuePlugin";
 export { ImageBase64Plugin } from "./plugins/images/ImageBase64Plugin";
 export { CSSResourcePlugin } from "./plugins/stylesheet/CSSResourcePlugin";
@@ -19,7 +20,6 @@ export { SassPlugin } from "./plugins/stylesheet/SassPlugin";
 export { UglifyJSPlugin } from "./plugins/UglifyJSPlugin";
 export { SourceMapPlainJsPlugin } from "./plugins/SourceMapPlainJsPlugin";
 export { RawPlugin } from "./plugins/RawPlugin";
-
+export { Fluent } from "./arithmetic/Fluent";
 
 export { FuseBox } from "./core/FuseBox";
-

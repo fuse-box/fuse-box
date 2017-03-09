@@ -1,14 +1,12 @@
 import { PropParser } from "./ArithmeticStringParser";
+import Fluent from "./Fluent";
 import { Config } from "./../Config";
-import { each, chain, Chainable, utils } from 'realm-utils';
+import { each, chain, Chainable, utils } from "realm-utils";
 import { File } from "../core/File";
 import * as path from "path";
 import * as fs from "fs";
 import * as fsExtra from "fs-extra";
-
-
 import * as glob from "glob";
-
 
 const deleteFolderRecursive = (p) => {
     if (fs.existsSync(p)) {
@@ -24,6 +22,7 @@ const deleteFolderRecursive = (p) => {
     }
 };
 
+export { Fluent };
 
 export interface IBundleInformation {
     deps: boolean;
@@ -150,8 +149,8 @@ export class Arithmetic {
                 return new Promise((resolve, reject) => {
                     glob(fp, (err, files) => {
                         for (let i = 0; i < files.length; i++) {
-                            data.set(files[i].normalize('NFC'), {
-                                deps: withDeps
+                            data.set(files[i].normalize("NFC"), {
+                                deps: withDeps,
                             });
                         }
                         return resolve();
@@ -160,7 +159,7 @@ export class Arithmetic {
             }).then(x => {
                 return data;
             });
-        }
+        };
 
         return chain(class extends Chainable {
             public tempFolder: string;

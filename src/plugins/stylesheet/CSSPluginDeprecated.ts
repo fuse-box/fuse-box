@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import { File } from "../../core/File";
 import { utils } from "realm-utils";
-import { ensureUserPath, replaceExt } from '../../Utils';
-import * as path from 'path';
+import { ensureUserPath, replaceExt } from "../../Utils";
+import * as path from "path";
 
 /**
  * This one will be replace with a different function by CSSBundle
