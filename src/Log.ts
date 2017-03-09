@@ -6,16 +6,12 @@ const cursor = ansi(process.stdout);
 const prettysize = require("prettysize");
 const prettyTime = require("pretty-time");
 
-export type DoLog = {
-  doLog: boolean,
-}
-
 export class Log {
     private timeStart = process.hrtime();
     private totalSize = 0;
     private printLog = true;
 
-    constructor(public context: WorkFlowContext | DoLog) {
+    constructor(public context: WorkFlowContext) {
         this.printLog = context.doLog;
     }
 

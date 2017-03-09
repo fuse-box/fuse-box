@@ -50,7 +50,7 @@ function findDocsFor(name) {
     }
   });
 
-  console.log(inspector(found.split("\n")));
+  // console.log(inspector(found.split("\n")));
   return "";
 }
 

@@ -6,7 +6,6 @@
 import * as program from "commander";
 import * as fsbx from "../index";
 import {
-  log,
   getOpts,
   inspector,
   pkg,
@@ -54,9 +53,9 @@ pluginProgram
         console.log(contents);
       }
 
-      log.echo(githubSrcFor(name));
-      log.echo(docsLinkFor(name));
-      log.echo(findDocsFor(name));
+      console.log(inspector(githubSrcFor(name)))
+      console.log(inspector(docsLinkFor(name)))
+      console.log(inspector(findDocsFor(name)))
       console.log(inspected);
     });
   });

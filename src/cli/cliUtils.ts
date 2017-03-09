@@ -1,4 +1,3 @@
-import { Log } from "../Log";
 import { execSync } from "child_process";
 import * as appRoot from "app-root-path";
 import * as path from "path";
@@ -16,9 +15,6 @@ function inspector(message): string {
   });
   return msg;
 }
-const log = new Log({
-  doLog: true,
-});
 
 function getOpts(opts) {
   const exclude: Array<string> | any = [
@@ -48,14 +44,12 @@ const execSyncStd = (cmd) => execSync(cmd, { stdio: "inherit" });
 export default {
   execSyncStd,
   pkg,
-  log,
   getOpts,
   inspector,
 };
 export {
   execSyncStd,
   pkg,
-  log,
   getOpts,
   inspector,
 };
