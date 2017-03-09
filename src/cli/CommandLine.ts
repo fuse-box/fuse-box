@@ -53,9 +53,9 @@ pluginProgram
         console.log(contents);
       }
 
-      console.log(inspector(githubSrcFor(name)))
-      console.log(inspector(docsLinkFor(name)))
-      console.log(inspector(findDocsFor(name)))
+      console.log(inspector(githubSrcFor(name)));
+      console.log(inspector(docsLinkFor(name)));
+      console.log(inspector(findDocsFor(name)));
       console.log(inspected);
     });
   });

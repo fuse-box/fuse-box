@@ -2,7 +2,6 @@ import * as fsbx from "../index";
 import * as fs from "fs";
 import * as path from "path";
 import * as appRoot from "app-root-path";
-import { inspector } from "./cliUtils";
 import { walk } from "../Utils";
 
 const base = appRoot.path;
