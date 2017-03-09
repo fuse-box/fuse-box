@@ -203,47 +203,55 @@ export class File {
      */
     public tryPlugins(_ast?: any) {
         if (this.context.plugins) {
-            let target: Plugin;
-            let index = 0;
-            while (!target && index < this.context.plugins.length) {
-                let item = this.context.plugins[index];
-                let itemTest: RegExp;
-                if (Array.isArray(item)) {
-                    let el = item[0];
-                    // for some reason on windows OS it gives false sometimes...
-                    // if (el instanceof RegExp) {
-                    //     itemTest = el;
-                    // }
-                    if (el && typeof el.test === "function") {
-                        itemTest = el;
-                    } else {
-                        itemTest = el.test;
-                    }
-                } else {
-                    itemTest = item.test;
-                }
-                if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(path.relative(appRoot.path, this.absPath))) {
-                    target = item;
-                }
-                index++;
-            }
-            const tasks = [];
-            if (target) {
+            const tasks = this.context.plugins.filter((plugin) => {
+                return plugin.test && utils.isFunction(plugin.test.test) &&
+                  plugin.transform && utils.isFunction(plugin.transform) &&
+                  plugin.test.test(path.relative(appRoot.path, this.absPath));
+            }).map((matchedPlugin) => {
+                return () => matchedPlugin.transform(this);
+            });
 
-                if (Array.isArray(target)) {
-                    target.forEach(plugin => {
-                        if (utils.isFunction(plugin.transform)) {
-                            this.context.debugPlugin(plugin, `Captured ${this.info.fuseBoxPath}`);
-                            tasks.push(() => plugin.transform.apply(plugin, [this]));
-                        }
-                    });
-                } else {
-                    if (utils.isFunction(target.transform)) {
-                        this.context.debugPlugin(target, `Captured ${this.info.fuseBoxPath}`);
-                        tasks.push(() => target.transform.apply(target, [this]));
-                    }
-                }
-            }
+            // let target: Plugin;
+            // let index = 0;
+            // while (!target && index < this.context.plugins.length) {
+            //     let item = this.context.plugins[index];
+            //     let itemTest: RegExp;
+            //     if (Array.isArray(item)) {
+            //         let el = item[0];
+            //         // for some reason on windows OS it gives false sometimes...
+            //         // if (el instanceof RegExp) {
+            //         //     itemTest = el;
+            //         // }
+            //         if (el && typeof el.test === "function") {
+            //             itemTest = el;
+            //         } else {
+            //             itemTest = el.test;
+            //         }
+            //     } else {
+            //         itemTest = item.test;
+            //     }
+            //     if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(path.relative(appRoot.path, this.absPath))) {
+            //         target = item;
+            //     }
+            //     index++;
+            // }
+            // const tasks = [];
+            // if (target) {
+            //
+            //     if (Array.isArray(target)) {
+            //         target.forEach(plugin => {
+            //             if (utils.isFunction(plugin.transform)) {
+            //                 this.context.debugPlugin(plugin, `Captured ${this.info.fuseBoxPath}`);
+            //                 tasks.push(() => plugin.transform.apply(plugin, [this]));
+            //             }
+            //         });
+            //     } else {
+            //         if (utils.isFunction(target.transform)) {
+            //             this.context.debugPlugin(target, `Captured ${this.info.fuseBoxPath}`);
+            //             tasks.push(() => target.transform.apply(target, [this]));
+            //         }
+            //     }
+            // }
             return this.context.queue(each(tasks, promise => promise()));
         }
     }
