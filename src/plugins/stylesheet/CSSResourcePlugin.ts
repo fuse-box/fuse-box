@@ -1,6 +1,6 @@
 import { File } from "../../core/File";
 import { Plugin, WorkFlowContext } from "../../core/WorkflowContext";
-import { ensureUserPath, ensureDir } from "../../Utils";
+import { ensureDir } from "../../Utils";
 import * as path from "path";
 import { utils } from "realm-utils";
 import * as fs from "fs";
@@ -94,9 +94,7 @@ export class CSSResourcePluginClass implements Plugin {
                 return;
             }
             // making sure dist folder exists
-            let outFilePath = ensureUserPath(file.context.outFile);
-            let outFileDir = path.dirname(outFilePath);
-            this.distFolder = ensureDir(path.join(outFileDir, "css-resources"));
+            this.distFolder = ensureDir(path.join(file.context.output.dir, "css-resources"));
         }
     }
 

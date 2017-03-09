@@ -13,6 +13,7 @@ import { ensureUserPath, findFileBackwards, ensureDir, removeFolder } from "../U
 import { SourceChangedEvent } from "../devServer/Server";
 import { Config } from "../Config";
 import { registerDefaultAutoImportModules, AutoImportedModule } from "./AutoImportedModule";
+import { UserOutput } from "./UserOutput";
 
 /**
  * All the plugin method names
@@ -73,6 +74,8 @@ export class WorkFlowContext {
 
     public rollupOptions: any;
 
+    public output: UserOutput;
+
     public hash: string | Boolean;
     /**
      * Explicitly target bundle to server
@@ -112,8 +115,6 @@ export class WorkFlowContext {
     public source: BundleSource;
 
     public sourceMapConfig: any;
-
-    public outFile: string;
 
     public initialLoad = true;
 
@@ -394,9 +395,8 @@ export class WorkFlowContext {
             fs.writeFile(target, res.sourceMap, () => { });
         }
         // writing target
-        if (this.outFile) {
-            let target = ensureUserPath(this.outFile);
-            fs.writeFile(target, res.content, () => {
+        if (this.output) {
+            this.output.writeCurrent(res.content).then(() => {
                 if (utils.isFunction(outFileWritten)) {
                     outFileWritten();
                 }

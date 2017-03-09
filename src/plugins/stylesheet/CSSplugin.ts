@@ -1,4 +1,3 @@
-
 import * as fs from "fs";
 import * as path from "path";
 import { Config } from "./../../Config";
@@ -6,7 +5,6 @@ import { File } from "../../core/File";
 import { WorkFlowContext } from "../../core/WorkflowContext";
 import { Plugin } from "../../core/WorkflowContext";
 import { utils } from "realm-utils";
-import { CSSPluginDeprecated } from "./CSSPluginDeprecated";
 import { Concat, ensureUserPath, write } from "../../Utils";
 
 /**
@@ -213,38 +211,14 @@ export class CSSPluginClass implements Plugin {
             });
         } else {
             let safeContents = JSON.stringify(file.contents);
-            let serve = false;
-            if (this.writeOptions) {
-                const writeResult = CSSPluginDeprecated.writeOptions(this.writeOptions, file);
-                if (writeResult) {
-                    return writeResult;
-                }
-            } else {
-                file.sourceMap = undefined;
-            }
-
-            /** DEPRECATED */
-            if (this.serve) {
-                if (utils.isFunction(this.serve)) {
-                    let userResult = this.serve(file.info.fuseBoxPath, file);
-                    if (utils.isString(userResult)) {
-                        filePath = userResult;
-                        serve = true;
-                    }
-                }
-            }
-            if (serve) { /** DEPRECATED */
-                file.alternativeContent = `__fsbx_css("${filePath}")`;
-            } else {
-                file.context.sourceChangedEmitter.emit({
-                    type: "css",
-                    content: file.contents,
-                    path: file.info.fuseBoxPath,
-                });
-                file.alternativeContent = `__fsbx_css("${filePath}", ${safeContents});`;
-            }
+            file.sourceMap = undefined;
+            file.context.sourceChangedEmitter.emit({
+                type: "css",
+                content: file.contents,
+                path: file.info.fuseBoxPath,
+            });
+            file.alternativeContent = `__fsbx_css("${filePath}", ${safeContents});`;
         }
-
     }
 
     private minifyContents(contents) {

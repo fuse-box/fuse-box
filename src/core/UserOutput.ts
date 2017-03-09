@@ -7,6 +7,7 @@ import * as fs from "fs";
 export class UserOutput {
     public dir: string;
     public template: string;
+    public filename = "bundle.js";
     public useHash = false;
     constructor(public context: WorkFlowContext, public original: string) {
         this.setup();
@@ -74,6 +75,10 @@ export class UserOutput {
         return result;
     }
 
+    public getBundlePath() {
+
+    }
+
     /**
      * 
      * 
@@ -83,14 +88,24 @@ export class UserOutput {
      * 
      * @memberOf UserOutput
      */
-    public write(userPath: string, content: string | Buffer): string {
+    public write(userPath: string, content: string | Buffer): Promise<string> {
         let hash;
         if (this.useHash) {
             hash = this.generateHash(content.toString());
         }
         let fullpath = this.getPath(userPath, hash);
         fullpath = ensureUserPath(fullpath);
-        fs.writeFileSync(fullpath, content);
-        return fullpath;
+        return new Promise((resolve, reject) => {
+            fs.writeFile(fullpath, content, (e) => {
+                if (e) {
+                    return reject(e);
+                }
+                return resolve(fullpath)
+            })
+        });
+    }
+
+    public writeCurrent(content: string | Buffer): Promise<string> {
+        return this.write(this.filename, content);
     }
 }

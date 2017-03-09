@@ -73,7 +73,6 @@ export class UserOutputTest {
     "Should omit extension if given by user"() {
         let output = new UserOutput(new WorkFlowContext(), testDir);
         let result = output.getPath("bundle.html");
-        console.log(ensureFuseBoxPath(result));
         should(
             ensureFuseBoxPath(result) // fixing slashes for windows
         ).match(/\/\.fusebox\/test-dir\/bundle\.html$/);
