@@ -1,6 +1,9 @@
 import { Log } from "../Log";
 import { execSync } from "child_process";
-const pkg = require("../../package.json");
+import * as appRoot from "app-root-path";
+import * as path from "path";
+
+const pkg = require(path.join(appRoot.path, "package.json"));
 
 function inspector(message): string {
   const util = require("util");

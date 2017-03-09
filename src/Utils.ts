@@ -167,3 +167,25 @@ export function findFileBackwards(target: string, limitPath: string): string {
         }
     }
 }
+
+
+export function walk(dir, options?: any) {
+    var defaults = {
+        recursive: false,
+    };
+    options = Object.assign(defaults, options);
+    var results = [];
+    var list = fs.readdirSync(dir);
+    list.forEach(function (file) {
+        file = dir + "/" + file;
+        var stat = fs.statSync(file);
+
+        if (options.recursive) {
+            if (stat && stat.isDirectory()) results = results.concat(walk(file));
+            else results.push(file);
+        } else if (stat && stat.isFile()) {
+            results.push(file);
+        }
+    });
+    return results;
+}

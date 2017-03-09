@@ -1,4 +1,4 @@
-import inquirer from "inquirer";
+import * as inquirer from "inquirer";
 
 export type Step = {
   name?: string,
@@ -198,10 +198,10 @@ const _steps = Data._steps
 // map to config,
 // would be helpful to have chaining first though
 // because it would be simpler
-class Builder {
+export class Builder {
   public config: any = {};
   public Fluent: any = {};
-  public gatherer: Gatherer = new Gatherer();
+  public gatherer = new Gatherer();
   constructor(fsbx) {
     this.Fluent = fsbx.Fluent;
   }
@@ -211,7 +211,7 @@ class Builder {
   }
 }
 
-class Gatherer {
+export class Gatherer {
   public data: Object = {};
   public steps: Array<Step> | any = [];
   public indx: number = 0;

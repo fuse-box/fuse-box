@@ -1,37 +1,21 @@
 import * as fsbx from "../index";
 import * as fs from "fs";
 import * as path from "path";
-import {inspector} from "./cliUtils";
+import * as appRoot from "app-root-path";
+import { inspector } from "./cliUtils";
+import { walk } from "../Utils";
 
-const base = path.resolve(__dirname, "../../");
+
+const base = appRoot.path;
 const src = path.resolve(base, "./src");
 const resolveSrc = file => path.resolve(src, file);
 const resolveRoot = file => path.resolve(base, file);
 
 const mds = {};
+
 const mdKeys = [];
-const plugins = Object.keys(fsbx).filter(key => key.includes("Plugin"));
+const plugins = Object.keys(fsbx).filter((key: string) => key.includes("Plugin"));
 
-function walk(dir, options) {
-  var defaults = {
-    recursive: false,
-  };
-  options = Object.assign(defaults, options);
-  var results = [];
-  var list = fs.readdirSync(dir);
-  list.forEach(function(file) {
-    file = dir + "/" + file;
-    var stat = fs.statSync(file);
-
-    if (options.recursive) {
-      if (stat && stat.isDirectory()) results = results.concat(walk(file));
-      else results.push(file);
-    } else if (stat && stat.isFile()) {
-      results.push(file);
-    }
-  });
-  return results;
-}
 
 function findDocsFor(name) {
   let found = ``;
@@ -76,7 +60,7 @@ function gatherDocs() {
   const mdFiles = walk(resolveRoot("./docs"));
 
   mdFiles.forEach(md => {
-    const contents= fs.readFileSync(md, "utf8");
+    const contents = fs.readFileSync(md, "utf8");
     const file = md.split("/").pop().replace(".md", "");
     mds[file] = contents;
     mdKeys.push(file);
