@@ -1,6 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as fsExtra from "fs-extra";
+import { utils } from "realm-utils";
 const appRoot = require("app-root-path");
 
 const MBLACKLIST = [
@@ -175,7 +176,7 @@ export function walk(dir, options?: any) {
     options = Object.assign(defaults, options);
     var results = [];
     var list = fs.readdirSync(dir);
-    list.forEach(function(file) {
+    list.forEach(function (file) {
         file = dir + "/" + file;
         var stat = fs.statSync(file);
 
@@ -187,4 +188,25 @@ export function walk(dir, options?: any) {
         }
     });
     return results;
+}
+
+
+/* UTILITIES */
+
+export function filter(items: any, fn: any) {
+    if (Array.isArray(items)) {
+        return items.filter(fn);
+    }
+
+    if (utils.isPlainObject(items)) {
+        let newObject = {};
+        for (let key in items) {
+            if (items.hasOwnProperty(key)) {
+                if (fn(items[key], key)) {
+                    newObject[key] = items[key]
+                }
+            }
+        }
+        return newObject;
+    }
 }

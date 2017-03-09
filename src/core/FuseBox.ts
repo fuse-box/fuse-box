@@ -13,7 +13,6 @@ import { CollectionSource } from "./../CollectionSource";
 import { Arithmetic, BundleData } from "./../arithmetic/Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";
 import { BundleTestRunner } from "../BundleTestRunner";
-import { nativeModules, HeaderImport } from "../analysis/HeaderImport";
 import { MagicalRollup } from "../rollup/MagicalRollup";
 
 const appRoot = require("app-root-path");
@@ -28,6 +27,7 @@ export interface FuseBoxOptions {
     globals?: { [packageName: string]: /** Variable name */ string };
     plugins?: Plugin[];
     autoImport?: any;
+    natives?: any;
     shim?: any;
     standalone?: boolean;
     sourceMaps?: any;
@@ -98,6 +98,10 @@ export class FuseBox {
             this.context.serverBundle = opts.serverBundle;
         }
 
+        if (utils.isPlainObject(opts.natives)) {
+            this.context.serverBundle = opts.serverBundle;
+        }
+
         this.context.plugins = opts.plugins || [JSONPlugin()];
 
         if (opts.package) {
@@ -136,12 +140,8 @@ export class FuseBox {
             this.context.experimentalAliasEnabled = true;
         }
 
-        if (utils.isPlainObject(opts.autoImport)) {
-            for (let varName in opts.autoImport) {
-                const pkgName = opts.autoImport[varName];
-                nativeModules.add(new HeaderImport(varName, pkgName));
-            }
-        }
+        this.context.initAutoImportConfig(opts.natives, opts.autoImport)
+
 
         if (opts.globals) {
             this.context.globals = opts.globals;

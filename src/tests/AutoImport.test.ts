@@ -25,6 +25,7 @@ export class AutoImportTest {
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
             const contents = result.projectContents.toString();
+
             should(contents).findString(`/* fuse:injection: */ var woops`);
             should(out).deepEqual({ something: { HelloFoo: "I am super" } });
         });

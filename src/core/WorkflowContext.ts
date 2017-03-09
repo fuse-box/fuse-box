@@ -12,6 +12,7 @@ import { utils } from "realm-utils";
 import { ensureUserPath, findFileBackwards, ensureDir, removeFolder } from "../Utils";
 import { SourceChangedEvent } from "../devServer/Server";
 import { Config } from "../Config";
+import { registerDefaultAutoImportModules, AutoImportedModule } from "./AutoImportedModule";
 
 /**
  * All the plugin method names
@@ -120,6 +121,15 @@ export class WorkFlowContext {
 
     public pluginTriggers: Map<string, Set<String>>;
 
+    public natives = {
+        process: true,
+        stream: true,
+        Buffer: true,
+        http: true,
+    }
+    public autoImportConfig = {};
+
+
     public storage: Map<string, any>;
 
     public aliasCollection: any[];
@@ -212,6 +222,15 @@ export class WorkFlowContext {
         this.pluginTriggers = new Map();
         this.fileGroups = new Map();
         this.libPaths = new Map();
+    }
+
+    public initAutoImportConfig(userNatives, userImports) {
+        this.autoImportConfig = registerDefaultAutoImportModules(userNatives);
+        if (utils.isPlainObject(userImports)) {
+            for (let varName in userImports) {
+                this.autoImportConfig[varName] = new AutoImportedModule(varName, userImports[varName]);
+            }
+        }
     }
 
     public setItem(key: string, obj: any) {
@@ -311,7 +330,7 @@ export class WorkFlowContext {
         let url, configFile;
         let config: any = {
             compilerOptions: {},
-        }; ;
+        };;
         if (this.tsConfig) {
             configFile = ensureUserPath(this.tsConfig);
         } else {

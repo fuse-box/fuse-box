@@ -1,5 +1,5 @@
 import { File } from "../../core/File";
-import { nativeModules, HeaderImport } from "./../HeaderImport";
+import { AutoImportedModule } from "../../core/AutoImportedModule";
 
 /**
  * Checks if a variable needs to magically imported
@@ -17,10 +17,11 @@ export class AutoImport {
 
     public static onNode(file: File, node: any, parent: any) {
         const analysis = file.analysis;
+        let modules = file.context.autoImportConfig;
         if (node.type === "Identifier") {
             // here we dicide we can inject
             // there are many conditions where injection should not happen
-            if (nativeModules.has(node.name) && !analysis.bannedImports[node.name]) {
+            if (modules[node.name] && !analysis.bannedImports[node.name]) {
 
                 const belongsToAnotherObject = parent.type === "MemberExpression" && parent.object && parent.object.type === "Identifier" && parent.object.name !== node.name;
 
@@ -43,10 +44,8 @@ export class AutoImport {
                         analysis.bannedImports[node.name] = true;
                     }
                 } else {
-                    //console.log(parent);
-                    analysis.nativeImports[node.name] = nativeModules.get(node.name);
+                    analysis.nativeImports[node.name] = modules[node.name];
                 }
-                //}
             }
         }
     }
@@ -62,7 +61,7 @@ export class AutoImport {
         }
         for (let nativeImportName in analysis.nativeImports) {
             if (analysis.nativeImports.hasOwnProperty(nativeImportName)) {
-                const nativeImport: HeaderImport = analysis.nativeImports[nativeImportName];
+                const nativeImport: AutoImportedModule = analysis.nativeImports[nativeImportName];
                 analysis.dependencies.push(nativeImport.pkg);
                 file.addHeaderContent(nativeImport.getImportStatement());
             }
