@@ -339,16 +339,16 @@ export class WorkFlowContext {
             if (tsconfig) {
                 configFile = tsconfig;
             }
-
         }
 
         if (configFile) {
             this.log.echoStatus(`Typescript config:  ${configFile.replace(appRoot.path, "")}`);
             config = require(configFile);
         } else {
-            config.compilerOptions.module = "commonjs";
             this.log.echoStatus(`Typescript config file was not found. Improvising`);
         }
+
+        config.compilerOptions.module = "commonjs";
 
         if (this.sourceMapConfig) {
             config.compilerOptions.sourceMap = true;
