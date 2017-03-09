@@ -1,5 +1,3 @@
-const path = require("path");
-const root = path.join(__dirname, "../");
-process.env.FUSEBOX_DIST_ROOT = root;
-process.env.PROJECT_NODE_MODULES = path.join(root, "node_modules");
+// this is done here to require the built cli
+// @see src/cli
 require("../dist/commonjs/cli/CommandLine.js");

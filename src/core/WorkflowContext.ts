@@ -3,7 +3,7 @@ import * as fs from "fs";
 import * as escodegen from "escodegen";
 import { BundleSource } from "../BundleSource";
 import { File } from "./File";
-import { Log } from "../Log";
+import { Log, DoLog } from "../Log";
 import { IPackageInformation, IPathInformation, AllowedExtenstions } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "../ModuleCache";
@@ -50,7 +50,7 @@ export interface Plugin {
 /**
  * Gets passed to each plugin to track FuseBox configuration
  */
-export class WorkFlowContext {
+export class WorkFlowContext implements DoLog {
     public shim: any;
 
     public sourceChangedEmitter = new EventEmitter<SourceChangedEvent>();
