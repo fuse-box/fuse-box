@@ -12,6 +12,7 @@ import { utils } from "realm-utils";
 import { ensureUserPath, findFileBackwards, ensureDir, removeFolder } from "../Utils";
 import { SourceChangedEvent } from "../devServer/Server";
 import { Config } from "../Config";
+import { registerDefaultAutoImportModules, AutoImportedModule } from "./AutoImportedModule";
 
 /**
  * All the plugin method names
@@ -122,6 +123,15 @@ export class WorkFlowContext {
 
     public pluginTriggers: Map<string, Set<String>>;
 
+    public natives = {
+        process: true,
+        stream: true,
+        Buffer: true,
+        http: true,
+    }
+    public autoImportConfig = {};
+
+
     public storage: Map<string, any>;
 
     public aliasCollection: any[];
@@ -231,6 +241,15 @@ export class WorkFlowContext {
         this.libPaths = new Map();
     }
 
+    public initAutoImportConfig(userNatives, userImports) {
+        this.autoImportConfig = registerDefaultAutoImportModules(userNatives);
+        if (utils.isPlainObject(userImports)) {
+            for (let varName in userImports) {
+                this.autoImportConfig[varName] = new AutoImportedModule(varName, userImports[varName]);
+            }
+        }
+    }
+
     public setItem(key: string, obj: any) {
         this.storage.set(key, obj);
     }
@@ -337,16 +356,16 @@ export class WorkFlowContext {
             if (tsconfig) {
                 configFile = tsconfig;
             }
-
         }
 
         if (configFile) {
             this.log.echoStatus(`Typescript config:  ${configFile.replace(appRoot.path, "")}`);
             config = require(configFile);
         } else {
-            config.compilerOptions.module = "commonjs";
             this.log.echoStatus(`Typescript config file was not found. Improvising`);
         }
+
+        config.compilerOptions.module = "commonjs";
 
         if (this.sourceMapConfig) {
             config.compilerOptions.sourceMap = true;
