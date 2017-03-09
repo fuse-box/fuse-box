@@ -44,7 +44,7 @@ FuseBox.init({
 
 ## Cache
 
-You can turn off caching if you like. By default caching is on. FuseBox will create a folder `.fuse-box` in your project path, and store related files. Don't forget to add it to .gitignore.
+You can turn off caching if you like. By default caching is on. FuseBox will create a folder `.fusebox` in your project path, and store related files. Don't forget to add it to .gitignore.
 
 > If things go wrong or things are not updating, delete the `.fusebox` folder to force clear the cache.
 
@@ -107,7 +107,7 @@ FuseBox.init({
     },
 })
 ```
-If you don't want to you have your package execute on load, make sure your instruction does not have `>` in it.
+If you don't want to have your package execute on load, make sure your instruction does not have `>` in it.
 
 Here is an example how make a package:
 ```js
@@ -155,29 +155,29 @@ Please, note, that in order to expose your package, a bundle must have a [packag
 
 ## Sourcemaps
 
-Sourcemaps in FuseBox are enabled by adding this property to a fusebox init configuration
+Sourcemaps in FuseBox are enabled by setting the sourceMaps property in a FuseBox configuration object:
 
 ```js
-sourcemaps: true
+sourceMaps: true
 ```
 
-You can add an object to allow vendor sourcemaps
+You can also provide an object to allow vendor sourcemaps:
 
 ```js
-sourcemaps: { project: true, vendor: true}
+sourceMaps: { project: true, vendor: true }
 ```
 
-> vendor sourcemaps will be generated correctly with disabled cache. It's a known bug
+> vendor sourcemaps will be generated correctly with disabled cache. It's a know bug
 
 Sourcemaps currently work with [typescript](#typescript) and [BabelPlugin](#babel-plugin)
-[see the SourceMapPlainJsPlugin](#SourceMapPlainJsPlugin)
+[see the SourceMapPlainJsPlugin](#sourcemapplainjsplugin)
 
 ## Standalone
 
 By default FuseBox injects API in every bundle. That can be overridden by setting:
 
 ```
-{ standalone: false }
+{ standalone : false }
 ```
 
 Alternatively, you add `!` symbol to the arithmetics
@@ -212,7 +212,7 @@ A plugin can be chained. For example, if you want to make SassPlugin work:
 ```js
 FuseBox.init({
     plugins:[
-        [fsbx.LESSPlugin(), fsbx.CSSPlugin()],
+        [fsbx.SassPlugin(), fsbx.CSSPlugin()],
     ]
 })
 ```
@@ -223,8 +223,8 @@ FuseBox tests each file running it through the plugin list. If it sees an array,
 
 ```js
 
-[".scss",fsbx.LESSPlugin(), fsbx.CSSPlugin()] // simple and clean
-[/\.scss$/,fsbx.LESSPlugin(), fsbx.CSSPlugin()] // more verbose
+[".scss",fsbx.SassPlugin(), fsbx.CSSPlugin()] // simple and clean
+[/\.scss$/,fsbx.SassPlugin(), fsbx.CSSPlugin()] // more verbose
 
 ```
 
@@ -262,7 +262,7 @@ FuseBox.init({
 ```
 Whereas the key `Inferno` (uppercase) is a variable name, and `inferno` (lowercase) is a require statement.
 
-You code is being analysed for variable declarations. If you use the `Inferno` variale in your code in any way but declaring it,
+Your code is being analysed for variable declarations. If you use the `Inferno` variale in your code in any way but declaring it,
 FuseBox will inject the require statement `var Inferno = require("inferno")`
 
 Example:
@@ -283,7 +283,7 @@ However `var Inferno = {};` will do nothing.
 ## Alias
 If you are coming from WebPack this feature might be helpful.
 
-> Alias is an experimental feature; the API might change in the feature.
+> Alias is an experimental feature; the API might change in the future.
 > using Alias breaks sourcemaps of a file where it's being used as it is required to re-generated the source code (this will be fixed soon)
 
 ```js
@@ -384,7 +384,7 @@ Don't run that bundle in a traditional browser.
 An example using the available config options might look similar to:
 ```js
 // remember, unless you transpile your fuse.js, es6 will not work in your fuse.js
-// so using `require` is the easiest.
+// so using `require` is the easiest. 
 // destructuring with `require` is supported with the current node version.
 //
 // importing can also be done with the syntax:

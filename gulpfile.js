@@ -52,15 +52,12 @@ gulp.task("dist-loader-js", () => {
         .pipe(wrap(`(function(__root__){
 if (__root__["FuseBox"]) return __root__["FuseBox"];
 <%= contents %>
+
 return __root__["FuseBox"] = FuseBox; } )(this)`))
         .pipe(rename("fusebox.js"))
         .pipe(gulp.dest("modules/fuse-box-loader-api"))
         .pipe(rename("fusebox.min.js"))
-        .pipe(uglify({
-            output: {
-                quote_keys: true
-            }
-        }))
+        .pipe(uglify())
         .pipe(replace(/;$/, ""))
         .pipe(replace(/^\!/, ""))
         .pipe(gulp.dest("modules/fuse-box-loader-api"));
