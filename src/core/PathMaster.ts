@@ -326,7 +326,7 @@ export class PathMaster {
                         entryFile = json.browser;
                     }
                 }
-                if (json["jsnext:main"]) {
+                if (this.context.rollupOptions && json["jsnext:main"]) {
                     entryFile = path.join(folder, json["jsnext:main"]);
                 } else {
                     entryFile = path.join(folder, entryFile || json.main || "index.js");

@@ -140,7 +140,6 @@ export class BundleSource {
             `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){
 ${file.headerContent ? file.headerContent.join("\n") : ""}`);
 
-
         this.annotate(`/* fuse:start-file "${file.info.fuseBoxPath}"*/`);
         this.collectionSource.add(null, file.alternativeContent !== undefined ? file.alternativeContent : file.contents, file.sourceMap);
         this.annotate(`/* fuse:end-file "${file.info.fuseBoxPath}"*/`);

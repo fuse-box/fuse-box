@@ -1,6 +1,7 @@
 {
-  "name": "fsbx",
-  "version": "1.3.124-inferno-preview",
+
+  "name": "fuse-box",
+  "version": "1.3.124",
   "description": "Fuse-Box a bundler that does it right",
   "typings": "./dist/typings/index.d.ts",
   "main": "dist/commonjs/index.js",
@@ -59,7 +60,6 @@
     "gulp-wrap": "^0.13.0",
     "mkdirp": "^0.5.1",
     "mocha": "^3.1.0",
-    "pre-commit": "^1.2.2",
     "reflect-metadata": "^0.1.8",
     "rollup": "^0.36.3",
     "run-sequence": "^1.2.2",

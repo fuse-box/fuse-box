@@ -8,7 +8,8 @@
 | proxying / stubbing imports | Fusebox proxying / stubbing imports  Plugin| [tomitrescak/proxyrequire](https://github.com/tomitrescak/proxyrequire) |
 
 
-# examples
+# Examples
+
 - https://github.com/fuse-box/development-playground/tree/master/src
 - https://github.com/fuse-box/mastering-css
 - https://github.com/fuse-box/shimming-and-css-example

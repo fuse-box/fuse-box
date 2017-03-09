@@ -30,7 +30,7 @@ export class AutoImportTest {
         });
     }
 
-    "`Should inject a variable woops case 2`"() {
+    "Should inject a variable woops case 4"() {
         return createEnv({
             modules: {
                 superFoo: {
@@ -59,7 +59,7 @@ export class AutoImportTest {
         });
     }
 
-    "`Should inject a variable woops case 2`"() {
+    "Should inject a variable woops case 2"() {
         return createEnv({
             modules: {
                 superFoo: {
@@ -91,7 +91,7 @@ export class AutoImportTest {
         });
     }
 
-    "`Should not inject a variable woops case 1`"() {
+    "Should not inject a variable woops case 1"() {
 
         createEnv({
             modules: {
@@ -124,7 +124,7 @@ export class AutoImportTest {
         });
     }
 
-    "`Should inject a variable Inferno`"() {
+    "Should inject a variable Inferno"() {
 
         createEnv({
             modules: {
@@ -262,6 +262,53 @@ export class AutoImportTest {
 
             const contents = result.projectContents.toString();
             should(contents).notFindString(`/* fuse:injection: */ var process`);
+        });
+    }
+
+    "Should not bundle process with 'hello.process()'"() {
+
+        return createEnv({
+
+            project: {
+                autoImport: {
+                    woops: "superFoo",
+                },
+                files: {
+                    "index.ts": `
+                        var hello = { }
+                        var a = () => {
+                            return hello.process();
+                        }
+                    `,
+                },
+                instructions: "> index.ts",
+            },
+        }).then((result) => {
+
+            const contents = result.projectContents.toString();
+            should(contents).notFindString(`/* fuse:injection: */ var process`);
+        });
+    }
+
+    "Should export process"() {
+
+        return createEnv({
+
+            project: {
+                files: {
+                    "index.ts": `
+                       module.exports = {
+                           hello : process
+                       }
+                    `,
+                },
+                instructions: "> index.ts",
+            },
+        }).then((result) => {
+
+            const contents = result.projectContents.toString();
+
+            should(contents).findString(`/* fuse:injection: */ var process`);
         });
     }
 }
