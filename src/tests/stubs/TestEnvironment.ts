@@ -14,7 +14,7 @@ export function createEnv(opts: any) {
     fsExtra.ensureDirSync(tmpFolder);
     let localPath = path.join(tmpFolder, name);
 
-    const output : any = {
+    const output: any = {
         modules: {},
     };
 
@@ -51,8 +51,18 @@ export function createEnv(opts: any) {
         projectOptions.modulesFolder = modulesFolder;
         return new Promise((resolve, reject) => {
             FuseBox.init(projectOptions).bundle(projectOptions.instructions, () => {
-                const contents = fs.readFileSync(projectOptions.outFile);
+                let contents = fs.readFileSync(projectOptions.outFile);
                 const length = contents.buffer.byteLength;
+
+                // let scope = {
+                //     navigator: 1,
+                // };
+                // let replaceJS = contents.toString().replace(/\(this\)\);?$/, "(__root__))");
+
+                // let fn = new Function("window", "__root__", replaceJS);
+                // fn(scope, scope);
+                // console.log(scope);
+
                 output.project = require(projectOptions.outFile);
                 output.projectSize = length;
                 output.projectContents = contents;

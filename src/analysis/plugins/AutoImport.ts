@@ -21,7 +21,15 @@ export class AutoImport {
             // here we dicide we can inject
             // there are many conditions where injection should not happen
             if (nativeModules.has(node.name) && !analysis.bannedImports[node.name]) {
-                const isProperty = parent.type && parent.type === "Property";
+
+                const belongsToAnotherObject = parent.type === "MemberExpression" && parent.object && parent.object.type === "Identifier" && parent.object.name !== node.name;
+
+                if (belongsToAnotherObject) {
+                    return;
+                }
+
+                const isProperty = parent.type && parent.type === "Property" && parent.value && parent.value.name !== node.name;
+
                 const isFunction = parent.type
                     && (parent.type === "FunctionExpression" ||
                         parent.type === "FunctionDeclaration"
@@ -35,8 +43,10 @@ export class AutoImport {
                         analysis.bannedImports[node.name] = true;
                     }
                 } else {
+                    //console.log(parent);
                     analysis.nativeImports[node.name] = nativeModules.get(node.name);
                 }
+                //}
             }
         }
     }
@@ -47,9 +57,12 @@ export class AutoImport {
      */
     public static onEnd(file: File) {
         const analysis = file.analysis;
+        if (file.headerContent) {
+            file.headerContent = [];
+        }
         for (let nativeImportName in analysis.nativeImports) {
             if (analysis.nativeImports.hasOwnProperty(nativeImportName)) {
-                const nativeImport : HeaderImport = analysis.nativeImports[nativeImportName];
+                const nativeImport: HeaderImport = analysis.nativeImports[nativeImportName];
                 analysis.dependencies.push(nativeImport.pkg);
                 file.addHeaderContent(nativeImport.getImportStatement());
             }
