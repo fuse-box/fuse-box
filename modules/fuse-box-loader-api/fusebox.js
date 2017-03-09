@@ -383,4 +383,5 @@ FuseBox.isBrowser = $isBrowser !== undefined;
 FuseBox.isServer = !$isBrowser;
 FuseBox.plugins = [];
 
+
 return __root__["FuseBox"] = FuseBox; } )(this)
