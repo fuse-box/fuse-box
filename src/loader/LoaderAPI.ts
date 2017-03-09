@@ -267,7 +267,7 @@ function $getRef(name: string, o: RefOpts): IReference {
 
     if (!pkg) {
         if ($isBrowser) {
-            throw 'Package not found ' + pkgName;
+            throw "Package not found " + pkgName;
         } else {
             // Return "real" node module
             return $serverRequire(pkgName + (name ? "/" + name : ""));

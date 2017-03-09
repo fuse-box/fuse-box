@@ -135,7 +135,7 @@ function $getRef(name, o) {
     var pkg = $packages[pkgName];
     if (!pkg) {
         if ($isBrowser) {
-            throw 'Package not found ' + pkgName;
+            throw "Package not found " + pkgName;
         }
         else {
             return $serverRequire(pkgName + (name ? "/" + name : ""));

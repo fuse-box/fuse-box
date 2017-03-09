@@ -168,7 +168,6 @@ export function findFileBackwards(target: string, limitPath: string): string {
     }
 }
 
-
 export function walk(dir, options?: any) {
     var defaults = {
         recursive: false,
@@ -176,7 +175,7 @@ export function walk(dir, options?: any) {
     options = Object.assign(defaults, options);
     var results = [];
     var list = fs.readdirSync(dir);
-    list.forEach(function (file) {
+    list.forEach(function(file) {
         file = dir + "/" + file;
         var stat = fs.statSync(file);
 

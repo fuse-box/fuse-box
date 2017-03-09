@@ -9,7 +9,7 @@ export type Step = {
   when?: Function,
   value?: any,
   checked?: boolean,
-}
+};
 
 class Data {
   // @TODO: connect to github api
@@ -190,8 +190,8 @@ class Data {
 
 // const availableDemos = Data.availableDemos
 // const demos = Data.hasDemo
-const choices = Data.choices
-const _steps = Data._steps
+const choices = Data.choices;
+const _steps = Data._steps;
 
 // @TODO:
 // finish this,

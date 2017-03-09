@@ -5,7 +5,6 @@ import * as appRoot from "app-root-path";
 import { inspector } from "./cliUtils";
 import { walk } from "../Utils";
 
-
 const base = appRoot.path;
 const src = path.resolve(base, "./src");
 const resolveSrc = file => path.resolve(src, file);
@@ -15,7 +14,6 @@ const mds = {};
 
 const mdKeys = [];
 const plugins = Object.keys(fsbx).filter((key: string) => key.includes("Plugin"));
-
 
 function findDocsFor(name) {
   let found = ``;

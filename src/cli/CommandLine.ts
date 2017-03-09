@@ -41,7 +41,7 @@ for (const index in plugins) {
 // existing plugins -ls
 // command for name
 pluginProgram
-  .action(function (options) {
+  .action(function(options) {
     const { keys } = getOpts(options);
     keys.forEach(name => {
       const Plugin = fsbx[name];
@@ -71,7 +71,6 @@ program.on("--help", () => {
   // execSyncStd("node CommandLine init --help");
 });
 
-
 // @TODO:
 // - [ ] interactive,
 // - [ ] log results of parsing,
@@ -89,17 +88,16 @@ program
   .option("-b, --bundle", "[glob] bundles with no dependencies")
   .option("-g, --glob", "**/*, [**/*.js], http://www.globtester.com/")
   .option("-p, --parse", "pass in a string, parse it (use quotes, --parse='magic here')")
-  .action(function (name, options) {
+  .action(function(name, options) {
     console.log("eh?");
   });
-
 
 const { Builder } = require("./ConfigGatherer");
 const config = new Builder(fsbx);
 
 program
   .command("step")
-  .action(function (name, options) {
+  .action(function(name, options) {
     config.stepper();
   });
 
@@ -107,10 +105,9 @@ program
 // - [ ] create this array based on a saved config file
 program
   .command("init")
-  .action(function (name, options) {
+  .action(function(name, options) {
     config.init();
   });
-
 
 // http://fuse-box.org/#simplified-regexp
 // http://fuse-box.org/#plugin-chaining
