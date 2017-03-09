@@ -1,5 +1,4 @@
 {
-
   "name": "fuse-box",
   "version": "1.3.124",
   "description": "Fuse-Box a bundler that does it right",
@@ -14,7 +13,11 @@
   },
   "bin": "bin/fsbx.js",
   "files": [
-    "src", "dist", "modules", "test", "docs"
+    "src",
+    "dist",
+    "modules",
+    "test",
+    "docs"
   ],
   "scripts": {
     "help": "node bin/fsbx --help",
@@ -56,7 +59,7 @@
     "gulp-rename": "1.2.2",
     "gulp-replace": "0.5.4",
     "gulp-sourcemaps": "1.6.0",
-    "gulp-typescript": "3.0.1",
+    "gulp-typescript": "3.1.5",
     "gulp-uglify": "2.0.0",
     "gulp-wrap": "0.13.0",
     "mkdirp": "^0.5.1",
