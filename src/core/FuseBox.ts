@@ -30,6 +30,7 @@ export interface FuseBoxOptions {
     autoImport?: any;
     shim?: any;
     standalone?: boolean;
+    sourceMaps?: any;
     sourcemaps?: any;
     sourceMap?: any;
     ignoreGlobal?: string[];
@@ -177,18 +178,19 @@ export class FuseBox {
             //this.context.sourceMapConfig = opts.sourceMap;
         }
 
-        if (opts.sourcemaps) {
+        const sourceMaps = opts.sourceMaps || opts.sourcemaps
+
+        if (sourceMaps) {
             const sourceMapOptions: any = {};
             let projectSourcMaps = false;
             let vendorSourceMaps = false;
-            if (opts.sourcemaps === true) {
+            if (sourceMaps === true) {
                 projectSourcMaps = true;
-            }
-            if (utils.isPlainObject(opts.sourcemaps)) {
-                if (opts.sourcemaps.project) {
+            } else if (utils.isPlainObject(sourceMaps)) {
+                if (sourceMaps.project) {
                     projectSourcMaps = true;
                 }
-                if (opts.sourcemaps.vendor === true) {
+                if (sourceMaps.vendor === true) {
                     vendorSourceMaps = true;
                 }
             }

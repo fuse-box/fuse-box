@@ -155,16 +155,16 @@ Please, note, that in order to expose your package, a bundle must have a [packag
 
 ## Sourcemaps
 
-Sourcemaps in FuseBox are enabled by adding this property to a fusebox init configuration
+Sourcemaps in FuseBox are enabled by setting the sourceMaps property in a FuseBox configuration object:
 
 ```js
-sourcemaps: true
+sourceMaps: true
 ```
 
-You can add an object to allow vendor sourcemaps
+You can also provide an object to allow vendor sourcemaps:
 
 ```js
-sourcemaps: { project : true, vendor : true}
+sourceMaps: { project: true, vendor: true }
 ```
 
 > vendor sourcemaps will be generated correctly with disabled cache. It's a know bug
