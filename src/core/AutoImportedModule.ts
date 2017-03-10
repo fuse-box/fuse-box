@@ -35,8 +35,7 @@ export function registerDefaultAutoImportModules(userConfig) {
     });
     nativeImports.http = new AutoImportedModule("http", "http");
 
-    return userConfig ?
-        filter​​(nativeImports, (value, key) => {
-            return userConfig[key] === undefined || userConfig[key] === true;
-        }) : nativeImports;
+    return userConfig ? filter(nativeImports, (value, key) =>
+        userConfig[key] === undefined || userConfig[key] === true
+    ) : nativeImports;
 }
