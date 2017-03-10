@@ -5,6 +5,7 @@ node_modules/
 .alm/
 yarn.lock
 build/
+dist/
 .DS_Store
 .tmp/
 .idea/
