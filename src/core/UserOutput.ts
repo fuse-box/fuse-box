@@ -15,7 +15,8 @@ export class UserOutput {
     private setup() {
         // $name is require
         if (this.original.indexOf('$name') === -1) {
-            throw new Error("$name should be present in the string");
+            this.filename = path.basename(this.original);
+            this.original = this.original.replace(this.filename, '$name');
         }
 
         const dir = path.dirname(this.original);

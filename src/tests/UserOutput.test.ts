@@ -12,10 +12,11 @@ export class UserOutputTest {
         should(output.original).equal(testDir);
     }
 
-    "Should not construct if $name is missing"() {
-        should().throwException(() => {
-            new UserOutput(new WorkFlowContext(), "dist");
-        });
+    "Should replace with $name if not set"() {
+        let output = new UserOutput(new WorkFlowContext(), ".fusebox/test-dir/hello.js");
+        should(output.original).equal(".fusebox/test-dir/$name");
+        should(output.filename).equal("hello.js")
+
     }
 
     "Folder should be created"() {
@@ -133,8 +134,11 @@ export class UserOutputTest {
         const testContents = `hello-${new Date().getTime()}`;
 
         let file = output.write("foo", testContents);
-        should(file).findString(".fusebox/test-dir/foo.js");
-        should(fs.readFileSync(file).toString()).equal(testContents)
+        return file.then(name => {
+            should(name).findString(".fusebox/test-dir/foo.js");
+            should(fs.readFileSync(name).toString()).equal(testContents)
+        })
+
     }
 
     "Should write a file with hash"() {
@@ -142,9 +146,10 @@ export class UserOutputTest {
         context.hash = true;
         let output = new UserOutput(context, testDir);
         const testContents = `foobar`;
-        let file = output.write("myFile", testContents);
-        should(file).findString(`.fusebox/test-dir/myFile-${foobarHash}.js`);
-        should(fs.readFileSync(file).toString()).equal(testContents)
+        return output.write("myFile", testContents).then(file => {
+            should(file).findString(`.fusebox/test-dir/myFile-${foobarHash}.js`);
+            should(fs.readFileSync(file).toString()).equal(testContents)
+        });
     }
 
     "Should write a file with hash and custom template"() {
@@ -152,9 +157,10 @@ export class UserOutputTest {
         context.hash = true;
         let output = new UserOutput(context, ".fusebox/test-dir/$name_____$hash___.js");
         const testContents = `foobar`;
-        let file = output.write("myFile", testContents);
-        should(file).findString(`.fusebox/test-dir/myFile_____${foobarHash}___.js`);
-        should(fs.readFileSync(file).toString()).equal(testContents)
+        return output.write("myFile", testContents).then(file => {
+            should(file).findString(`.fusebox/test-dir/myFile_____${foobarHash}___.js`);
+            should(fs.readFileSync(file).toString()).equal(testContents)
+        });
     }
 
 }

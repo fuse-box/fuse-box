@@ -40,6 +40,7 @@ export interface FuseBoxOptions {
     hash?: string | Boolean;
     customAPIFile?: string;
     output?: string;
+    outFile?: string; // deprecated
     debug?: boolean;
     files?: any;
     alias?: any;
@@ -219,8 +220,8 @@ export class FuseBox {
         }
         // In case of additional resources (or resourses to use with gulp)
         this.virtualFiles = opts.files;
-        if (opts.output) {
-            this.context.output = new UserOutput(this.context, opts.output);
+        if (opts.output || opts.outFile) {
+            this.context.output = new UserOutput(this.context, opts.output || opts.outFile);
         }
         this.context.initCache();
         this.compareConfig(this.opts);
