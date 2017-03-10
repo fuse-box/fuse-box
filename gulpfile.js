@@ -10,8 +10,16 @@ const wrap = require("gulp-wrap");
 const uglify = require("gulp-uglify");
 const changelog = require("gulp-changelog-generator");
 const { exec, spawn } = require("child_process");
-
+const homedir = require("homedir");
 const fs = require("fs");
+const header = require('gulp-header');
+const path = require("path");
+const getGitHubToken = () => {
+    const f = path.join(homedir(), ".github-token")
+    if (fs.existsSync(f)) {
+        return fs.readFileSync(f).toString().trim();
+    }
+}
 
 
 /**
@@ -119,16 +127,18 @@ gulp.task("dist-main", ["dist-typings", "dist-commonjs"]);
 gulp.task("publish", ["dist-cdn-loader-js"], function(done) {
     runSequence("dist", "increment-version", "commit-release", "npm-publish", done);
 });
+
 gulp.task("changelog", function(done) {
+    fs.writeFileSync(path.join(__dirname, "docs/changelog.md"), "");
+    const storedToken = getGitHubToken();
     var config = {
-        username: "",
-        password: "",
+        token: storedToken,
         repoOwner: "fuse-box",
         repoName: "fuse-box",
     };
     gulp.src("./docs/changelog.md", { buffer: false, base: "./" })
-        .pipe(clean())
         .pipe(changelog.gulpChangeLogGeneratorPlugin(config))
+        .pipe(header("# Changelog"))
         .pipe(gulp.dest("./"))
         .pipe(done);
 });
