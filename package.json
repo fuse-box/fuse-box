@@ -5,13 +5,18 @@
     "typings": "./dist/typings/index.d.ts",
     "main": "dist/commonjs/index.js",
     "types": "dist/typings/index.ts",
+    "bin": {
+      "fusebox": "bin/fsbx"
+    },
     "directories": {
+        "bin": "bin",
         "test": "test",
         "modules": "modules",
         "lib": "dist/commonjs",
         "typings": "dist/typings"
     },
     "files": [
+        "bin",
         "src",
         "dist",
         "modules",
