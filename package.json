@@ -24,11 +24,11 @@
     "docs"
   ],
   "scripts": {
-    "test-cli": "fusebox --help",
+    "test-cli": "fusebox",
     "help": "node bin/fsbx --help",
     "lint-fix": "eslint src/*.ts src/**/*.ts src/**/**/*.ts test/*.js test/**/*.js --fix",
     "lint-fix-quiet": "npm run lint-fix -- --quiet",
-    "test": "TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js",
+    "test": "TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js && npm run test-cli",
     "test:once": "gulp dist && TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js",
     "start": "gulp watch",
     "devDeps": "gulp installDevDeps",
