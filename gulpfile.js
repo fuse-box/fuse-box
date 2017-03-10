@@ -231,16 +231,16 @@ gulp.task("installDevDeps", function(done) {
       }
     });
 
-    // if (deps.length) {
-    //   spawnSync("npm", ["install"].concat(deps), {
-    //       stdio: "inherit",
-    //   });
-    // }
-    //
-    // spawnSync("npm", ["install"].concat(["https://github.com/aretecode/fuse-box#cli-test"]), {
-    //     stdio: "inherit",
-    // });
-    // execSync("npm run --help", {
-    //     stdio: "inherit",
-    // });
+    if (deps.length) {
+      spawnSync("npm", ["install"].concat(deps), {
+          stdio: "inherit",
+      });
+    }
+
+    spawnSync("npm", ["install"].concat(["https://github.com/aretecode/fuse-box#cli-test"]), {
+        stdio: "inherit",
+    });
+    execSync("npm run --help", {
+        stdio: "inherit",
+    });
 });
