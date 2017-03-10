@@ -33,7 +33,7 @@
     "start": "gulp watch",
     "devDeps": "gulp installDevDeps",
     "dist": "gulp dist",
-    "postinstall": "npm run devDeps && npm run dist"
+    "_postinstall": "npm run dist"
   },
   "engines": {
     "node": ">= 6.9.5",
