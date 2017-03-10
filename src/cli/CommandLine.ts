@@ -5,10 +5,10 @@
 // then run itself in subprocess
 import * as program from "commander";
 import * as fsbx from "../index";
+import {FuseBox} from "../core/FuseBox"
 import {
   getOpts,
   inspector,
-  pkg,
   execSyncStd,
 } from "./cliUtils";
 import {
@@ -20,7 +20,7 @@ import {
 } from "./docs";
 
 program
-  .version(pkg.version);
+  .version(FuseBox.version);
 
 const pluginProgram = program.command("plugins");
 pluginProgram.option("-d, --docs", "documentation for the plugin");

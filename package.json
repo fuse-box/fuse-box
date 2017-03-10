@@ -13,7 +13,8 @@
     "test": "test",
     "modules": "modules",
     "lib": "dist/commonjs",
-    "typings": "dist/typings"
+    "typings": "dist/typings",
+    "docs": "docs"
   },
   "files": [
     "bin",

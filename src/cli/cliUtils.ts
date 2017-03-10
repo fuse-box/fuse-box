@@ -1,8 +1,4 @@
 import { execSync } from "child_process";
-import * as appRoot from "app-root-path";
-import * as path from "path";
-
-const pkg = require(path.join(appRoot.path, "package.json"));
 
 function inspector(message): string {
   const util = require("util");
@@ -43,13 +39,11 @@ const execSyncStd = (cmd) => execSync(cmd, { stdio: "inherit" });
 // execSync, reserved in ts?
 export default {
   execSyncStd,
-  pkg,
   getOpts,
   inspector,
 };
 export {
   execSyncStd,
-  pkg,
   getOpts,
   inspector,
 };

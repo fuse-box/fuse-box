@@ -1,10 +1,11 @@
 import * as fsbx from "../index";
 import * as fs from "fs";
 import * as path from "path";
-import * as appRoot from "app-root-path";
+// import * as appRoot from "app-root-path";
 import { walk } from "../Utils";
 
-const base = appRoot.path;
+// const base = appRoot.path;
+const base = path.resolve(__dirname, "../../../")
 const src = path.resolve(base, "./src");
 const resolveSrc = file => path.resolve(src, file);
 const resolveRoot = file => path.resolve(base, file);
