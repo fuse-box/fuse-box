@@ -222,12 +222,20 @@ gulp.task("installDevDeps", function(done) {
         "coffee-script",
         "@types/node",
         "rollup",
-    ];
+    ].filter(dep => {
+      try {
+        requre(dep);
+        return false;
+      } catch (e) {
+        return true;
+      }
+    });
+
     spawn("npm", ["install"].concat(deps), {
         stdio: "inherit",
     });
 
-    // spawn("npm", ["install"].concat(["https://github.com/aretecode/fuse-box#broken-cli"]), {
+    // spawn("npm", ["install"].concat(["https://github.com/aretecode/fuse-box#cli-test"]), {
     //     stdio: "inherit",
     // });
     // execSync("npm run --help", {
