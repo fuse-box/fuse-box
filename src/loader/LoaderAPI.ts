@@ -597,17 +597,15 @@ class FuseBox {
      */
     public static pkg(name: string, v: PackageVersions, fn: Function) {
         // Let's not register a package scope twice
-        if ($packages[name]) return fn($packages[name].s);
-
-        // create new package
-        let pkg = $packages[name] = {} as PackageDetails;
-
-        // file
-        pkg.f = {};
-
-        // storing v
-        pkg.v = v;
-
+        let pkg = $packages[name]?$packages[name]:$packages[name] = {
+          f:{}, // Files
+          v:{}  // Versions
+        } as PackageDetails;
+      
+        // Copy over new versions
+        for(let libName in v) {
+            pkg.v[libName] = v[libName];
+        }
         // scope
         pkg.s = {
             // Scope file
@@ -615,6 +613,7 @@ class FuseBox {
         };
         return fn(pkg.s);
     }
+
 
     /**
      * Loader plugins
