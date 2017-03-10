@@ -9,10 +9,9 @@ const bump = require("gulp-bump");
 const wrap = require("gulp-wrap");
 const uglify = require("gulp-uglify");
 const changelog = require("gulp-changelog-generator");
-const { exec, spawn } = require("child_process");
+const { exec, spawn, execSync } = require("child_process");
 
 const fs = require("fs");
-
 
 /**
  * Fail on error if not in watch mode
@@ -161,7 +160,6 @@ gulp.task("npm-publish", function(done) {
     });
 });
 
-
 gulp.task("make-test-runner", (done) => {
     const { FuseBox, JSONPlugin } = require("./dist/commonjs/index");
     const version = require("./package.json").version;
@@ -179,7 +177,7 @@ gulp.task("make-test-runner", (done) => {
 
 gulp.task("copy-to-inferno", () => {
     //return gulp.src("dist/commonjs/**/**.js").pipe(gulp.dest("../inferno/node_modules/fuse-box/dist/commonjs/"))
-})
+});
 
 /**
  * Combined build task
@@ -190,7 +188,7 @@ gulp.task("dist", ["dist-main", "dist-loader", "dist-modules"]);
  * For development workflow
  */
 
-gulp.task('watch', ['dist', 'copy-to-inferno'], function() {
+gulp.task("watch", ["dist", "copy-to-inferno"], function() {
 
     watching = true;
 
@@ -203,7 +201,7 @@ gulp.task('watch', ['dist', 'copy-to-inferno'], function() {
     });
 
     gulp.watch(filesMain, () => {
-        runSequence('dist-main', 'copy-to-inferno');
+        runSequence("dist-main", "copy-to-inferno");
     });
 });
 // npm install babel-core babel-generator babel-preset-latest babylon cheerio @angular/core stylus less postcss node-sass uglify-js source-map coffee-script @types/node rollup
@@ -223,9 +221,16 @@ gulp.task("installDevDeps", function(done) {
         "source-map",
         "coffee-script",
         "@types/node",
-        "rollup"
+        "rollup",
     ];
-    var installDeps = spawn("npm", ["install"].concat(deps), {
+    spawn("npm", ["install"].concat(deps), {
         stdio: "inherit",
     });
+
+    // spawn("npm", ["install"].concat(["https://github.com/aretecode/fuse-box#broken-cli"]), {
+    //     stdio: "inherit",
+    // });
+    // execSync("npm run --help", {
+    //     stdio: "inherit",
+    // });
 });
