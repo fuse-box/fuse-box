@@ -52,7 +52,7 @@
     "fuse-test-runner": "^1.0.8",
     "gulp": "3.9.1",
     "gulp-bump": "2.4.0",
-    "gulp-changelog-generator": "https://github.com/fuse-box/gulp-changelog-generator.git",
+    "gulp-changelog-generator": "git+https://github.com/fuse-box/gulp-changelog-generator.git",
     "gulp-clean": "0.3.2",
     "gulp-concat": "2.6.0",
     "gulp-header": "^1.8.8",

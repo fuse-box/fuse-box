@@ -14,6 +14,7 @@ const homedir = require("homedir");
 const fs = require("fs");
 const header = require('gulp-header');
 const path = require("path");
+
 const getGitHubToken = () => {
     const f = path.join(homedir(), ".github-token")
     if (fs.existsSync(f)) {
