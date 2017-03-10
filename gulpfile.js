@@ -9,7 +9,7 @@ const bump = require("gulp-bump");
 const wrap = require("gulp-wrap");
 const uglify = require("gulp-uglify");
 const changelog = require("gulp-changelog-generator");
-const { exec, spawn, execSync } = require("child_process");
+const { exec, spawn, execSync, spawnSync } = require("child_process");
 
 const fs = require("fs");
 
@@ -224,18 +224,20 @@ gulp.task("installDevDeps", function(done) {
         "rollup",
     ].filter(dep => {
       try {
-        requre(dep);
+        require(dep);
         return false;
       } catch (e) {
         return true;
       }
     });
 
-    spawn("npm", ["install"].concat(deps), {
-        stdio: "inherit",
-    });
+    if (deps.length) {
+      spawnSync("npm", ["install"].concat(deps), {
+          stdio: "inherit",
+      });
+    }
 
-    // spawn("npm", ["install"].concat(["https://github.com/aretecode/fuse-box#cli-test"]), {
+    // spawnSync("npm", ["install"].concat(["https://github.com/aretecode/fuse-box#cli-test"]), {
     //     stdio: "inherit",
     // });
     // execSync("npm run --help", {
