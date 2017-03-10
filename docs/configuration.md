@@ -279,6 +279,20 @@ Inferno.doMagic()
 
 However `var Inferno = {};` will do nothing.
 
+## Natives
+FuseBox automatically imports this packages `stream`, `process`, `Buffer`, `http`
+
+Some cases, however, require omitting:
+
+```js
+FuseBox.init({
+   natives : {
+      process : false
+   }
+})
+```
+
+Use `stream`, `process`, `Buffer`, `http` keys to override default settings.
 
 ## Alias
 If you are coming from WebPack this feature might be helpful.
