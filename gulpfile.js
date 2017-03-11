@@ -10,8 +10,17 @@ const wrap = require("gulp-wrap");
 const uglify = require("gulp-uglify");
 const changelog = require("gulp-changelog-generator");
 const { exec, spawn, execSync, spawnSync } = require("child_process");
-
+const homedir = require("homedir");
 const fs = require("fs");
+const header = require('gulp-header');
+const path = require("path");
+
+const getGitHubToken = () => {
+    const f = path.join(homedir(), ".github-token")
+    if (fs.existsSync(f)) {
+        return fs.readFileSync(f).toString().trim();
+    }
+}
 
 /**
  * Fail on error if not in watch mode
@@ -118,16 +127,18 @@ gulp.task("dist-main", ["dist-typings", "dist-commonjs"]);
 gulp.task("publish", ["dist-cdn-loader-js"], function(done) {
     runSequence("dist", "increment-version", "commit-release", "npm-publish", done);
 });
+
 gulp.task("changelog", function(done) {
+    fs.writeFileSync(path.join(__dirname, "docs/changelog.md"), "");
+    const storedToken = getGitHubToken();
     var config = {
-        username: "",
-        password: "",
+        token: storedToken,
         repoOwner: "fuse-box",
         repoName: "fuse-box",
     };
     gulp.src("./docs/changelog.md", { buffer: false, base: "./" })
-        .pipe(clean())
         .pipe(changelog.gulpChangeLogGeneratorPlugin(config))
+        .pipe(header("# Changelog"))
         .pipe(gulp.dest("./"))
         .pipe(done);
 });
@@ -204,6 +215,7 @@ gulp.task("watch", ["dist", "copy-to-inferno"], function() {
         runSequence("dist-main", "copy-to-inferno");
     });
 });
+
 // npm install babel-core babel-generator babel-preset-latest babylon cheerio @angular/core stylus less postcss node-sass uglify-js source-map coffee-script @types/node rollup
 gulp.task("installDevDeps", function(done) {
     var deps = [
@@ -237,6 +249,7 @@ gulp.task("installDevDeps", function(done) {
       });
     }
 
+    // to test cli
     spawnSync("npm", ["install"].concat(["https://github.com/aretecode/fuse-box#cli-test"]), {
         stdio: "inherit",
     });
