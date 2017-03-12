@@ -1,5 +1,15 @@
 # Changelog
 
+### [1.3.127](https://github.com/fuse-box/fuse-box/milestone/16)
+    
+
+<p>Urgent fixes</p>
+
+| Reference | Description | Date |
+| --------- | ------------| ---- |
+|[ISSUE 387](https://github.com/fuse-box/fuse-box/issues/387) | Regression in 1.3.124, cannot bundle axios | March 12, 2017 8:04 PM|
+                
+
 ### [1.3.126](https://github.com/fuse-box/fuse-box/milestone/15)
     
 
