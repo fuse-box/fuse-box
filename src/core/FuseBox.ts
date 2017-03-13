@@ -271,7 +271,7 @@ export class FuseBox {
                 if (storedConfigStr !== mainStr) this.context.nukeCache();
             }
 
-            fs.writeFile(configPath, mainStr, () => { });
+            fs.writeFileSync(configPath, mainStr);
         }
     }
 
