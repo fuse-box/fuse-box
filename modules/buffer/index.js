@@ -49,7 +49,7 @@ if (FuseBox.isServer) {
         // Can typed array instances can be augmented?
         try {
             var arr = new Uint8Array(1);
-            arr.__proto__ = { __proto__: Uint8Array.prototype, foo() { return 42; } };
+            arr.__proto__ = { __proto__: Uint8Array.prototype, foo: function() { return 42; } };
             return arr.foo() === 42;
         } catch (e) {
             return false;
@@ -178,9 +178,9 @@ if (FuseBox.isServer) {
     Buffer.allocUnsafe = function(size) {
         return allocUnsafe(size);
     };
-        /**
-         * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
-         */
+    /**
+     * Equivalent to SlowBuffer(num), by default creates a non-zero-filled Buffer instance.
+     */
     Buffer.allocUnsafeSlow = function(size) {
         return allocUnsafe(size);
     };
@@ -796,12 +796,12 @@ if (FuseBox.isServer) {
             encoding = "utf8";
             length = this.length;
             offset = 0;
-                // Buffer#write(string, encoding)
+            // Buffer#write(string, encoding)
         } else if (length === undefined && typeof offset === "string") {
             encoding = offset;
             length = this.length;
             offset = 0;
-                // Buffer#write(string, offset[, length][, encoding])
+            // Buffer#write(string, offset[, length][, encoding])
         } else if (isFinite(offset)) {
             offset = offset >>> 0;
             if (isFinite(length)) {
@@ -1037,7 +1037,7 @@ if (FuseBox.isServer) {
         if (end < start) end = start;
 
         var newBuf = this.subarray(start, end);
-            // Return an augmented `Uint8Array` instance
+        // Return an augmented `Uint8Array` instance
         newBuf.__proto__ = Buffer.prototype;
         return newBuf;
     };
@@ -1569,9 +1569,9 @@ if (FuseBox.isServer) {
     function base64clean(str) {
         // Node strips out invalid characters like \n and \t from the string, base64-js does not
         str = stringtrim(str).replace(INVALID_BASE64_RE, "");
-            // Node converts strings with length < 2 to ''
+        // Node converts strings with length < 2 to ''
         if (str.length < 2) return "";
-            // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
+        // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
         while (str.length % 4 !== 0) {
             str = str + "=";
         }
