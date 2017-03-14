@@ -59,7 +59,7 @@ __root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports :
 /**
  * A runtime storage for FuseBox
  */
-const $fsbx : FSBX = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
+const $fsbx: FSBX = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
     : g["$fsbx"] = g["$fsbx"] || {}; // in case of nodejs
 
 if (!$isBrowser) {
@@ -333,7 +333,7 @@ function $getRef(name: string, o: RefOpts): IReference {
 function $async(file: string, cb: (imported?: any) => any) {
     if ($isBrowser) {
         var xmlhttp: XMLHttpRequest = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
+        xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4) {
                 if (xmlhttp.status == 200) {
                     let contentType = xmlhttp.getResponseHeader("Content-Type");
@@ -410,7 +410,7 @@ function $import(name: string, o: any = {}) {
     // Wild card reference
     if (ref.wildcard) {
         // Prepare wildcard regexp
-        let safeRegEx : RegExp = new RegExp(ref.wildcard
+        let safeRegEx: RegExp = new RegExp(ref.wildcard
             .replace(/\*/g, "@")
             .replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&")
             .replace(/@/g, "[a-z0-9$_-]+"), "i");
@@ -568,8 +568,8 @@ class FuseBox {
         /** The name of the package */
         pkg: string
     }) {
-        this.pkg(opts && opts.pkg || "default", {}, function(___scope___: any) {
-            ___scope___.file(path, function(exports: any, require: any, module: any, __filename: string, __dirname: string) {
+        this.pkg(opts && opts.pkg || "default", {}, function (___scope___: any) {
+            ___scope___.file(path, function (exports: any, require: any, module: any, __filename: string, __dirname: string) {
                 var res = new Function("__fbx__dnm__", "exports", "require", "module", "__filename", "__dirname", "__root__", str);
                 res(true, exports, require, module, __filename, __dirname, __root__);
             });
