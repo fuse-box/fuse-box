@@ -410,6 +410,8 @@ export class FuseBox {
 
     public initiateBundle(str: string, bundleReady?: any) {
         this.context.reset();
+        // Locking deferred calls until everything is written
+        this.context.defer.lock();
         this.triggerPre();
         this.context.source.init();
         this.addShims();

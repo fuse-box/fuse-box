@@ -11,8 +11,9 @@ import { EventEmitter } from "../EventEmitter";
 import { utils } from "realm-utils";
 import { ensureUserPath, findFileBackwards, ensureDir, removeFolder } from "../Utils";
 import { SourceChangedEvent } from "../devServer/Server";
-import { Config } from "../Config";
+
 import { registerDefaultAutoImportModules, AutoImportedModule } from "./AutoImportedModule";
+import { Defer } from "../Defer";
 
 /**
  * All the plugin method names
@@ -138,6 +139,7 @@ export class WorkFlowContext {
 
     public customCodeGenerator: any;
 
+    public defer = new Defer
     public initCache() {
         this.cache = new ModuleCache(this);
     }
@@ -188,8 +190,9 @@ export class WorkFlowContext {
 
     public nukeCache() {
         this.resetNodeModules();
-        removeFolder(Config.TEMP_FOLDER);
+        removeFolder(this.cache.cacheFolder);
         this.cache.initialize();
+
     }
 
     public warning(str: string) {
@@ -376,10 +379,12 @@ export class WorkFlowContext {
             let target = ensureUserPath(this.sourceMapConfig.outFile);
             fs.writeFile(target, res.sourceMap, () => { });
         }
+
         // writing target
         if (this.outFile) {
             let target = ensureUserPath(this.outFile);
             fs.writeFile(target, res.content, () => {
+                this.defer.unlock();
                 if (utils.isFunction(outFileWritten)) {
                     outFileWritten();
                 }
