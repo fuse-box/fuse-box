@@ -5,7 +5,7 @@
 
 [![NPM](https://nodei.co/npm/fuse-box.png?downloads=true)](https://nodei.co/npm/fuse-box/)
 
-FuseBox is a bundler/module loader that combines the power of webpack, JSPM and SystemJS.
+FuseBox is a bleeding edge bundler/module loader with super powers - Blazing speed, simplicity and ultimate flexibility.
 
 It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convenient for developers. It requires zero configuration to bundle such monsters like `babel-core`.
 
