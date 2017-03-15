@@ -167,7 +167,7 @@ You can also provide an object to allow vendor sourcemaps:
 sourceMaps: { project: true, vendor: true }
 ```
 
-> vendor sourcemaps will be generated correctly with disabled cache. It's a know bug
+> vendor sourcemaps will be generated correctly with disabled cache. It's a known bug
 
 Sourcemaps currently work with [typescript](#typescript) and [BabelPlugin](#babel-plugin)
 [see the SourceMapPlainJsPlugin](#sourcemapplainjsplugin)
