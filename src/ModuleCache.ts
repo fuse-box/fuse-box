@@ -253,16 +253,15 @@ mtime: ${cacheData.mtime}
                     collection.cached = true;
                     collection.cachedName = key;
                     collection.cacheFile = path.join(this.cacheFolder, cacheKey);
-
                     operations.push(new Promise((resolve, reject) => {
-                        if (MEMORY_CACHE[cacheKey]) {
-                            collection.cachedContent = MEMORY_CACHE[cacheKey];
+                        if (MEMORY_CACHE[collection.cacheFile]) {
+                            collection.cachedContent = MEMORY_CACHE[collection.cacheFile];
                             return resolve();
                         }
                         if (fs.existsSync(collection.cacheFile)) {
                             fs.readFile(collection.cacheFile, (err, result) => {
                                 collection.cachedContent = result.toString();
-                                MEMORY_CACHE[cacheKey] = collection.cachedContent;
+                                MEMORY_CACHE[collection.cacheFile] = collection.cachedContent;
                                 return resolve();
                             });
                         } else {

@@ -55,7 +55,7 @@ export class Server {
         let buildPath = ensureUserPath(this.fuse.context.outFile);
         let rootDir = path.dirname(buildPath);
 
-        const root : string | boolean = opts.root !== undefined
+        const root: string | boolean = opts.root !== undefined
             ? (utils.isString(opts.root) ? ensureUserPath(opts.root as string) : false) : rootDir;
         const port = opts.port || 4444;
         if (opts.hmr !== false && this.fuse.context.useCache === true) {
@@ -73,7 +73,7 @@ export class Server {
         }
 
         // allow user to override hot reload emitter
-        let emitter : HotReloadEmitter | false = utils.isFunction(opts.emitter) ? opts.emitter : false;
+        let emitter: HotReloadEmitter | false = utils.isFunction(opts.emitter) ? opts.emitter : false;
 
         // let middlewares to connect
         this.httpServer = new HTTPServer(this.fuse);
@@ -97,16 +97,14 @@ export class Server {
                     }
                 }
             });
-
+            const defer = this.fuse.context.defer;
             /**
              * watches the home directory for changes and trigger re-bundling
              */
-            let timeout;
             watch.watchTree(this.fuse.context.homeDir, { interval: 0.2 }, () => {
-                clearInterval(timeout);
-                timeout = setTimeout(() => {
+                defer.queue(this.fuse.context.homeDir, () => {
                     this.fuse.initiateBundle(str);
-                }, 70);
+                });
             });
         });
         return this;

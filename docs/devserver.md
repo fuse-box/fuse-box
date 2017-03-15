@@ -90,7 +90,7 @@ server.httpServer.app.get('*', function(req, res) {
 
 ## Custom emitter
 
-You can manually sent events on file change like so:
+You can manually send events on file change like so:
 
 ```js
 fuse.devServer(">index.ts", {

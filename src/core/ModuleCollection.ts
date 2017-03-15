@@ -197,6 +197,7 @@ export class ModuleCollection {
         });
     }
     public collectBundle(data: BundleData): Promise<ModuleCollection> {
+
         this.bundle = data;
         this.delayedResolve = true;
         this.initPlugins();
@@ -223,6 +224,7 @@ export class ModuleCollection {
                 .then(() => this.context.resolve())
                 .then(() => this.context.cache.buildMap(this))
                 .catch(e => {
+                    this.context.defer.unlock();
                     this.context.nukeCache();
                     console.error(e);
                 });
