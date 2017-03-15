@@ -125,7 +125,7 @@ gulp.task("dist-main", ["dist-typings", "dist-commonjs"]);
 /**
  *   NPM deploy management
  */
-gulp.task("publish", ["dist-cdn-loader-js", "changelog"], function(done) {
+gulp.task("publish", ["dist-cdn-loader-js"], function(done) {
     runSequence("dist", "increment-version", "commit-release", "npm-publish", done);
 });
 
@@ -188,9 +188,13 @@ gulp.task("make-test-runner", (done) => {
     }).bundle(`[index.ts] +fuse-test-runner +fuse-test-reporter`, done);
 });
 
-gulp.task("copy-to-inferno", () => {
-    //return gulp.src("dist/commonjs/**/**.js").pipe(gulp.dest("../inferno/node_modules/fuse-box/dist/commonjs/"))
-})
+gulp.task("copy-to-random", () => {
+    //return gulp.src("dist/**/**.**")
+    //    .pipe(gulp.dest("../random/fusemob-ssr/node_modules/fuse-box/dist/"))
+});
+gulp.task("copy-api-to-random", () => {
+    //return gulp.src("modules/fuse-box-loader-api/**/**.js").pipe(gulp.dest("../random/fusemob-ssr/node_modules/fuse-box/modules/fuse-box-loader-api"))
+});
 
 /**
  * Combined build task
@@ -201,12 +205,12 @@ gulp.task("dist", ["dist-main", "dist-loader", "dist-modules"]);
  * For development workflow
  */
 
-gulp.task('watch', ['dist', 'copy-to-inferno'], function() {
+gulp.task('watch', ['dist', 'copy-to-random', "copy-api-to-random"], function() {
 
     watching = true;
 
     gulp.watch(["src/loader/**/*.ts"], () => {
-        runSequence("dist-loader");
+        runSequence("dist-loader", "copy-api-to-random");
     });
 
     gulp.watch(["src/modules/**/*.ts"], () => {
@@ -214,7 +218,7 @@ gulp.task('watch', ['dist', 'copy-to-inferno'], function() {
     });
 
     gulp.watch(filesMain, () => {
-        runSequence('dist-main', 'copy-to-inferno');
+        runSequence('dist-main', 'copy-to-random');
     });
 });
 // npm install babel-core babel-generator babel-preset-latest babylon cheerio @angular/core stylus less postcss node-sass uglify-js source-map coffee-script @types/node rollup

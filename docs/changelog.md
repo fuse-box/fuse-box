@@ -1,5 +1,16 @@
 # Changelog
 
+### [1.3.128](https://github.com/fuse-box/fuse-box/milestone/17)
+    
+
+<p>Cache fixes</p>
+
+| Reference | Description | Date |
+| --------- | ------------| ---- |
+|[ISSUE 396](https://github.com/fuse-box/fuse-box/issues/396) | Shared cache causes issues | March 14, 2017 9:04 AM|
+|[ISSUE 399](https://github.com/fuse-box/fuse-box/issues/399) | Caching issues on windows | March 14, 2017 9:06 PM|
+                
+
 ### [1.3.127](https://github.com/fuse-box/fuse-box/milestone/16)
     
 
