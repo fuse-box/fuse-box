@@ -11,9 +11,10 @@ import { EventEmitter } from "../EventEmitter";
 import { utils } from "realm-utils";
 import { ensureUserPath, findFileBackwards, ensureDir, removeFolder } from "../Utils";
 import { SourceChangedEvent } from "../devServer/Server";
-
 import { registerDefaultAutoImportModules, AutoImportedModule } from "./AutoImportedModule";
 import { Defer } from "../Defer";
+import { UserOutput } from "./UserOutput";
+
 
 /**
  * All the plugin method names
@@ -73,6 +74,10 @@ export class WorkFlowContext {
     public defaultEntryPoint: string;
 
     public rollupOptions: any;
+
+    public output: UserOutput;
+
+    public hash: string | Boolean;
     /**
      * Explicitly target bundle to server
      */
@@ -111,8 +116,6 @@ export class WorkFlowContext {
     public source: BundleSource;
 
     public sourceMapConfig: any;
-
-    public outFile: string;
 
     public initialLoad = true;
 
@@ -212,6 +215,21 @@ export class WorkFlowContext {
             return false;
         }
         return this.shim[name] !== undefined;
+    }
+
+    public isHashingRequired() {
+        const hashOption = this.hash;
+        let useHash = false;
+        if (typeof hashOption === "string") {
+            if (hashOption !== "md5") {
+                throw new Error(`Uknown algorythm ${hashOption}`)
+            }
+            useHash = true;
+        }
+        if (hashOption === true) {
+            useHash = true;
+        }
+        return useHash;
     }
 
     /**
@@ -380,10 +398,8 @@ export class WorkFlowContext {
             fs.writeFile(target, res.sourceMap, () => { });
         }
 
-        // writing target
-        if (this.outFile) {
-            let target = ensureUserPath(this.outFile);
-            fs.writeFile(target, res.content, () => {
+        if (this.output) {
+            this.output.writeCurrent(res.content).then(() => {
                 this.defer.unlock();
                 if (utils.isFunction(outFileWritten)) {
                     outFileWritten();

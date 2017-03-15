@@ -52,7 +52,7 @@ export class Server {
     public start(str: ArithmeticStr, opts?: ServerOptions): Server {
         opts = opts || {};
 
-        let buildPath = ensureUserPath(this.fuse.context.outFile);
+        let buildPath = this.fuse.context.output.dir;
         let rootDir = path.dirname(buildPath);
 
         const root: string | boolean = opts.root !== undefined

@@ -14,6 +14,7 @@ import { Arithmetic, BundleData } from "./../arithmetic/Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";
 import { BundleTestRunner } from "../BundleTestRunner";
 import { MagicalRollup } from "../rollup/MagicalRollup";
+import { UserOutput } from "./UserOutput";
 
 const appRoot = require("app-root-path");
 
@@ -36,8 +37,10 @@ export interface FuseBoxOptions {
     ignoreGlobal?: string[];
     serverBundle?: boolean;
     rollup?: any;
+    hash?: string | Boolean;
     customAPIFile?: string;
-    outFile?: string;
+    output?: string;
+    outFile?: string; // deprecated
     debug?: boolean;
     files?: any;
     alias?: any;
@@ -78,6 +81,8 @@ export class FuseBox {
         if (opts.debug !== undefined) {
             this.context.debugMode = opts.debug;
         }
+
+
 
         this.context.debugMode = opts.debug !== undefined ? opts.debug : contains(process.argv, "--debug");
 
@@ -121,6 +126,10 @@ export class FuseBox {
 
         if (opts.log !== undefined) {
             this.context.doLog = opts.log ? true : false;
+        }
+
+        if (opts.hash !== undefined) {
+            this.context.hash = opts.hash;
         }
 
         if (opts.alias) {
@@ -167,9 +176,9 @@ export class FuseBox {
             this.context.customAPIFile = opts.customAPIFile;
         }
 
-        if (opts.outFile) {
-            this.context.outFile = ensureUserPath(opts.outFile);
-        }
+
+
+
 
         if (opts.sourceMap) {
             // deprecated
@@ -194,9 +203,9 @@ export class FuseBox {
                     vendorSourceMaps = true;
                 }
             }
-            const mapsName = path.basename(this.context.outFile) + ".map";
+            const mapsName = path.basename(this.context.output.filename) + ".map";
             const mapsOutFile =
-                path.join(path.dirname(this.context.outFile), mapsName);
+                path.join(this.context.output.dir, mapsName);
             if (projectSourcMaps) {
                 sourceMapOptions.outFile = mapsOutFile;
                 sourceMapOptions.bundleReference = mapsName;
@@ -211,7 +220,9 @@ export class FuseBox {
         }
         // In case of additional resources (or resourses to use with gulp)
         this.virtualFiles = opts.files;
-
+        if (opts.output || opts.outFile) {
+            this.context.output = new UserOutput(this.context, opts.output || opts.outFile);
+        }
         this.context.initCache();
         this.compareConfig(this.opts);
     }
@@ -396,8 +407,8 @@ export class FuseBox {
 
         // include test files to the bundle
         const clonedOpts = Object.assign({}, this.opts);
-        const testBundleFile = path.join(Config.TEMP_FOLDER, "tests", encodeURIComponent(this.opts.outFile));
-        clonedOpts.outFile = testBundleFile;
+        const testBundleFile = path.join(Config.TEMP_FOLDER, "tests", new Date().getTime().toString(), "/$name.js");
+        clonedOpts.output = testBundleFile;
 
         // adding fuse-test dependency to be bundled
         str += ` +fuse-test-runner ${opts.reporter} -ansi`;
