@@ -6,8 +6,8 @@ export class PathResolverTest {
         return createEnv({
             project: {
                 files: {
-                    "index.js": `module.exports = require("./foo/hello");`,
-                    "foo/hello.js": "module.exports = {ok : 1 }",
+                    "index.js": `module.exports = require("./woo/hello");`,
+                    "woo/hello.js": "module.exports = {ok : 1 }",
                 },
                 instructions: "**/*.js",
             },
@@ -21,8 +21,8 @@ export class PathResolverTest {
         return createEnv({
             project: {
                 files: {
-                    "index.ts": `module.exports = require("./foo/hello");`,
-                    "foo/hello.ts": "module.exports = {ok : 1 }",
+                    "index.ts": `module.exports = require("./woo/hello");`,
+                    "woo/hello.ts": "module.exports = {ok : 1 }",
                 },
                 instructions: "index.ts",
             },
@@ -36,8 +36,8 @@ export class PathResolverTest {
         return createEnv({
             project: {
                 files: {
-                    "index.ts": `module.exports = require("./foo/hello");`,
-                    "foo/hello.tsx": "module.exports = {ok : 1 }",
+                    "index.ts": `module.exports = require("./woo/hello");`,
+                    "woo/hello.tsx": "module.exports = {ok : 1 }",
                 },
                 instructions: "index.ts",
             },
@@ -51,8 +51,8 @@ export class PathResolverTest {
         return createEnv({
             project: {
                 files: {
-                    "index.js": `module.exports = require("./foo/hello");`,
-                    "foo/hello/index.js": "module.exports = {ok : 1 }",
+                    "index.js": `module.exports = require("./woo/hello");`,
+                    "woo/hello/index.js": "module.exports = {ok : 1 }",
                 },
                 instructions: "**/*.js",
             },
@@ -66,8 +66,8 @@ export class PathResolverTest {
         return createEnv({
             project: {
                 files: {
-                    "index.ts": `module.exports = require("./foo/hello");`,
-                    "foo/hello/index.ts": "module.exports = {ok : 1 }",
+                    "index.ts": `module.exports = require("./woo/hello");`,
+                    "woo/hello/index.ts": "module.exports = {ok : 1 }",
                 },
                 instructions: "**/*.js",
             },
@@ -81,8 +81,8 @@ export class PathResolverTest {
         return createEnv({
             project: {
                 files: {
-                    "index.ts": `module.exports = require("./foo/hello");`,
-                    "foo/hello/index.tsx": "module.exports = {ok : 1 }",
+                    "index.ts": `module.exports = require("./woo/hello");`,
+                    "woo/hello/index.tsx": "module.exports = {ok : 1 }",
                 },
                 instructions: "index.ts",
             },
