@@ -14,7 +14,7 @@ import { Arithmetic, BundleData } from "./../arithmetic/Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";
 import { BundleTestRunner } from "../BundleTestRunner";
 import { MagicalRollup } from "../rollup/MagicalRollup";
-
+const isWin = /^win/.test(process.platform);
 const appRoot = require("app-root-path");
 
 export interface FuseBoxOptions {
@@ -271,7 +271,8 @@ export class FuseBox {
                 if (storedConfigStr !== mainStr) this.context.nukeCache();
             }
 
-            fs.writeFile(configPath, mainStr, () => { });
+            if (isWin) fs.writeFileSync(configPath, mainStr);
+            else fs.writeFile(configPath, mainStr, () => { });
         }
     }
 
@@ -410,8 +411,6 @@ export class FuseBox {
 
     public initiateBundle(str: string, bundleReady?: any) {
         this.context.reset();
-        // Locking deferred calls until everything is written
-        this.context.defer.lock();
         this.triggerPre();
         this.context.source.init();
         this.addShims();
