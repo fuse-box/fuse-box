@@ -6,6 +6,7 @@ if (FuseBox.isServer) {
     cursor = ansi(process.stdout);
 }
 const $indentString = (str, amount) => {
+
     let lines = str.split(/\r?\n/);
     let newLines = [];
     let emptySpace = "";
@@ -54,7 +55,8 @@ const $printCaseError = (name, message) => {
         cursor.write("\n");
         cursor.reset();
         if (message) {
-            cursor.white().write($indentString(message, 10));
+
+            cursor.white().write($indentString(message.toString(), 10));
             cursor.write("\n");
         }
         cursor.reset();
@@ -80,6 +82,7 @@ const $printStats = (data, took) => {
             realm_utils_1.each(items, (info, item) => {
                 totalTasks += info.tasks.length;
                 realm_utils_1.each(info.tasks, (task) => {
+
                     if (task.data.success) {
                         passed++;
                     }
@@ -122,13 +125,15 @@ class FuseBoxTestReporter {
     }
     endClass() {}
     testCase(report) {
-        if (report.data.success) {
+
+        if (report.data && report.data.success) {
+
             $printCaseSuccess(report.item.title || report.item.method);
         } else {
+            //console.log(report);
+            let message = report.error ? report.error : report.data.error.message ? report.data.error.message : report.data.error;
 
-            let message = report.data.error.message ? report.data.error.message : report.data.error;
-
-            $printCaseError(report.item.title || report.item.method, message);
+            $printCaseError(report.item.title || report.item.method, report.error ? report.error.stack : message);
             if (report.data.error.stack) {
                 console.log($indentString(report.data.error.stack, 10));
             }

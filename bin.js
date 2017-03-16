@@ -5145,6 +5145,7 @@ ${JSON.stringify(expected, null, 2)}`);
                         realm_utils_1.each(items, (info, item) => {
                             totalTasks += info.tasks.length;
                             realm_utils_1.each(info.tasks, (task) => {
+
                                 if (task.data.success) {
                                     passed++;
                                 }
