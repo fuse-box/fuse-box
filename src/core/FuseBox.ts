@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as process from "process";
-import { Config } from "./../Config";
+//import { Config } from "./../Config";
 import { each, utils, chain, Chainable } from "realm-utils";
 import { ensureUserPath, contains } from "./../Utils";
 import { ShimCollection } from "./../ShimCollection";
@@ -12,9 +12,11 @@ import { WorkFlowContext, Plugin } from "./WorkflowContext";
 import { CollectionSource } from "./../CollectionSource";
 import { Arithmetic, BundleData } from "./../arithmetic/Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";
-import { BundleTestRunner } from "../BundleTestRunner";
+//import { BundleTestRunner } from "../BundleTestRunner";
 import { MagicalRollup } from "../rollup/MagicalRollup";
 import { UserOutput } from "./UserOutput";
+import { BundleFactory } from "./BundleFactory";
+import { Bundle } from "./Bundle";
 
 const appRoot = require("app-root-path");
 
@@ -40,7 +42,6 @@ export interface FuseBoxOptions {
     hash?: string | Boolean;
     customAPIFile?: string;
     output?: string;
-    outFile?: string; // deprecated
     debug?: boolean;
     files?: any;
     alias?: any;
@@ -62,6 +63,8 @@ export class FuseBox {
     public collectionSource: CollectionSource;
 
     public context: WorkFlowContext;
+
+    public factory = new BundleFactory(this);
 
     /**
      * Creates an instance of FuseBox.
@@ -220,8 +223,8 @@ export class FuseBox {
         }
         // In case of additional resources (or resourses to use with gulp)
         this.virtualFiles = opts.files;
-        if (opts.output || opts.outFile) {
-            this.context.output = new UserOutput(this.context, opts.output || opts.outFile);
+        if (opts.output) {
+            this.context.output = new UserOutput(this.context, opts.output);
         }
         this.context.initCache();
         this.compareConfig(this.opts);
@@ -243,23 +246,32 @@ export class FuseBox {
         this.context.triggerPluginsMethodOnce("postBundle", [this.context]);
     }
 
-    /**
-     * Make a Bundle (or bundles)
-     */
-    public bundle(str: string | { [bundleStr: string]: /** outFile */ string }, bundleReady?: any): Promise<any> {
-        if (utils.isString(str)) {
-            return this.initiateBundle(str as string, bundleReady);
-        }
-        if (utils.isPlainObject(str)) {
-            let items = str;
-            return each(items, (bundleStr: string, outFile: string) => {
-                let newConfig = Object.assign({}, this.opts, { outFile });
-                let fuse = FuseBox.init(newConfig);
 
-                return fuse.initiateBundle(bundleStr);
-            });
-        }
+    public bundle(name: string) {
+        const config = Object.assign({}, this.opts);
+        let fuse = FuseBox.init(config);
+        const bundle = new Bundle(name, fuse, this.factory);
+        this.factory.add(name, bundle);
+        return bundle;
     }
+
+    // /**
+    //  * Make a Bundle (or bundles)
+    //  */
+    // public bundle(str: string | { [bundleStr: string]: /** outFile */ string }, bundleReady?: any): Promise<any> {
+    //     if (utils.isString(str)) {
+    //         return this.initiateBundle(str as string, bundleReady);
+    //     }
+    //     if (utils.isPlainObject(str)) {
+    //         let items = str;
+    //         return each(items, (bundleStr: string, outFile: string) => {
+    //             let newConfig = Object.assign({}, this.opts, { outFile });
+    //             let fuse = FuseBox.init(newConfig);
+
+    //             return fuse.initiateBundle(bundleStr);
+    //         });
+    //     }
+    // }
 
     /**
      * @description if configs diff, clear cache
@@ -400,24 +412,24 @@ export class FuseBox {
         }
     }
 
-    public test(str: string = "**/*.test.ts", opts: any) {
-        opts = opts || {};
-        opts.reporter = opts.reporter || "fuse-test-reporter";
-        opts.exit = true;
+    // public test(str: string = "**/*.test.ts", opts: any) {
+    //     opts = opts || {};
+    //     opts.reporter = opts.reporter || "fuse-test-reporter";
+    //     opts.exit = true;
 
-        // include test files to the bundle
-        const clonedOpts = Object.assign({}, this.opts);
-        const testBundleFile = path.join(Config.TEMP_FOLDER, "tests", new Date().getTime().toString(), "/$name.js");
-        clonedOpts.output = testBundleFile;
+    //     // include test files to the bundle
+    //     const clonedOpts = Object.assign({}, this.opts);
+    //     const testBundleFile = path.join(Config.TEMP_FOLDER, "tests", new Date().getTime().toString(), "/$name.js");
+    //     clonedOpts.output = testBundleFile;
 
-        // adding fuse-test dependency to be bundled
-        str += ` +fuse-test-runner ${opts.reporter} -ansi`;
-        return FuseBox.init(clonedOpts).bundle(str, () => {
-            const bundle = require(testBundleFile);
-            let runner = new BundleTestRunner(bundle, opts);
-            return runner.start();
-        });
-    }
+    //     // adding fuse-test dependency to be bundled
+    //     str += ` +fuse-test-runner ${opts.reporter} -ansi`;
+    //     return FuseBox.init(clonedOpts).bundle(str, () => {
+    //         const bundle = require(testBundleFile);
+    //         let runner = new BundleTestRunner(bundle, opts);
+    //         return runner.start();
+    //     });
+    // }
 
     public initiateBundle(str: string, bundleReady?: any) {
         this.context.reset();

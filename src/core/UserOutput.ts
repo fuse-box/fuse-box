@@ -9,9 +9,15 @@ export class UserOutput {
     public template: string;
     public filename = "bundle.js";
     public useHash = false;
+    public lastWrittenPath;
     constructor(public context: WorkFlowContext, public original: string) {
         this.setup();
     }
+
+    public setName(name: string) {
+        this.filename = name;
+    }
+
     private setup() {
         // $name is require
         if (this.original.indexOf('$name') === -1) {
@@ -101,6 +107,7 @@ export class UserOutput {
                 if (e) {
                     return reject(e);
                 }
+                this.lastWrittenPath = fullpath;
                 return resolve(fullpath)
             })
         });

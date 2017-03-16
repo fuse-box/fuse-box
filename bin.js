@@ -3981,13 +3981,13 @@ mtime : ${cacheData.mtime}
                         if (realm_utils_1.utils.isPromise(reportResult)) {
                             reportResult.then(x => this.finish())
                                 .catch(e => {
-                                    console.error(e);
+                                    console.error(e.stack || e);
                                 });
                         } else {
                             this.finish();
                         }
                     }).catch(e => {
-                        console.log(e);
+                        console.error(e.stack || e);
                     });
                 }
                 convertToReadableName(str) {
@@ -5187,10 +5187,12 @@ ${JSON.stringify(expected, null, 2)}`);
                 }
                 endClass() {}
                 testCase(report) {
+
                     if (report.data.success) {
                         $printCaseSuccess(report.item.title || report.item.method);
                     } else {
                         let message = report.data.error.message ? report.data.error.message : report.data.error;
+                        console.log(report);
                         $printCaseError(report.item.title || report.item.method, message);
                     }
                 }

@@ -237,6 +237,7 @@ function $import(name, o) {
         var safeRegEx = new RegExp(ref.wildcard
             .replace(/\*/g, "@")
             .replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&")
+            .replace(/@@/g, ".*")
             .replace(/@/g, "[a-z0-9$_-]+"), "i");
         var pkg_1 = $packages[ref.pkgName];
         if (pkg_1) {

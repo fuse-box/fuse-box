@@ -45,4 +45,19 @@ export class UtilsTest {
             string2RegExp("^*.css")
         );
     }
+
+    "Should understand **"() {
+        should("libs/styles/hello.css").notMatch(
+            string2RegExp("libs/*")
+        );
+        should("libs/styles/hello.css").match(
+            string2RegExp("libs/**")
+        );
+    }
+
+    "Should understand just *"() {
+        should("libs/styles/hello.css").match(
+            string2RegExp("*")
+        );
+    }
 }

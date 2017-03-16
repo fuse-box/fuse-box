@@ -125,8 +125,13 @@ class FuseBoxTestReporter {
         if (report.data.success) {
             $printCaseSuccess(report.item.title || report.item.method);
         } else {
+
             let message = report.data.error.message ? report.data.error.message : report.data.error;
+
             $printCaseError(report.item.title || report.item.method, message);
+            if (report.data.error.stack) {
+                console.log($indentString(report.data.error.stack, 10));
+            }
         }
     }
     endTest(stats, took) {

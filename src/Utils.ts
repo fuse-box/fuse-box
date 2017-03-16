@@ -86,7 +86,9 @@ export function ensureDir(userPath: string) {
 export function string2RegExp(obj: any) {
     let escapedRegEx = obj
         .replace(/\*/g, "@")
+
         .replace(/[.?*+[\]-]/g, "\\$&")
+        .replace(/@@/g, ".*", "i")
         .replace(/@/g, "\\w{1,}", "i");
 
     if (escapedRegEx.indexOf("$") === -1) {
