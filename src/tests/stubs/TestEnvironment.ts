@@ -7,6 +7,9 @@ import { removeFolder } from "../../Utils";
 import * as fsExtra from "fs-extra";
 const jsdom = require("jsdom");
 
+export function getStubsFolder() {
+    return path.join(appRoot.path, "src/tests/stubs");
+}
 export function createEnv(opts: any) {
     const name = opts.name || `test-${new Date().getTime()}`;
 
