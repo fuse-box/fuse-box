@@ -1,14 +1,9 @@
-import { HotReloadPlugin } from "./../plugins/HotReloadPlugin";
 import { SocketServer } from "./SocketServer";
 import { ensureUserPath } from "../Utils";
 import { HTTPServer } from "./HTTPServer";
 import { FuseBox } from "../core/FuseBox";
 import { utils } from "realm-utils";
-import { ArithmeticStr } from "../Types";
 import * as process from "process";
-import * as path from "path";
-
-const watch = require("watch");
 
 export type HotReloadEmitter = (server: Server, sourceChangedInfo: any) => any;
 
@@ -49,11 +44,10 @@ export class Server {
      * Starts the server
      * @param str the default bundle arithmetic string
      */
-    public start(str: ArithmeticStr, opts?: ServerOptions): Server {
+    public start(opts?: ServerOptions): Server {
         opts = opts || {};
 
-        let buildPath = this.fuse.context.output.dir;
-        let rootDir = path.dirname(buildPath);
+        let rootDir = this.fuse.context.output.dir;
 
         const root: string | boolean = opts.root !== undefined
             ? (utils.isString(opts.root) ? ensureUserPath(opts.root as string) : false) : rootDir;
@@ -63,19 +57,13 @@ export class Server {
             setTimeout(() => {
                 this.fuse.context.log.echo(`HMR is enabled`);
             }, 1000);
-            this.fuse.context.plugins.push(
-                HotReloadPlugin({ port, uri: opts.socketURI })
-            );
+
         } else {
             setTimeout(() => { this.fuse.context.log.echo(`HMR is disabled. Caching should be enabled and {hmr} option should be NOT false`); }
                 , 1000);
 
         }
 
-        // allow user to override hot reload emitter
-        let emitter: HotReloadEmitter | false = utils.isFunction(opts.emitter) ? opts.emitter : false;
-
-        // let middlewares to connect
         this.httpServer = new HTTPServer(this.fuse);
 
         process.nextTick(() => {
@@ -84,28 +72,6 @@ export class Server {
             } else {
                 this.httpServer.launch({ root, port });
             }
-
-            this.socketServer = SocketServer.getInstance();
-
-            this.fuse.context.sourceChangedEmitter.on((info) => {
-                if (this.fuse.context.isFirstTime() === false) {
-                    this.fuse.context.log.echo(`Source changed for ${info.path}`);
-                    if (emitter) {
-                        emitter(this, info);
-                    } else {
-                        this.socketServer.send("source-changed", info);
-                    }
-                }
-            });
-            const defer = this.fuse.context.defer;
-            /**
-             * watches the home directory for changes and trigger re-bundling
-             */
-            watch.watchTree(this.fuse.context.homeDir, { interval: 0.2 }, () => {
-                defer.queue(this.fuse.context.homeDir, () => {
-                    this.fuse.initiateBundle(str);
-                });
-            });
         });
         return this;
     }

@@ -2,9 +2,12 @@ import { Bundle } from "./Bundle";
 import { FuseBox } from "./FuseBox";
 import * as chokidar from "chokidar";
 import { string2RegExp } from "../Utils";
+import { EventEmitter } from "events";
 
 export class BundleFactory {
     public bundles = new Map<string, Bundle>();
+    public hmrInjected = false;
+    public sharedEvents = new EventEmitter()
 
     constructor(public fuse: FuseBox) {
         // to make sure that all bundle are set up

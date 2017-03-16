@@ -255,6 +255,13 @@ export class FuseBox {
         return bundle;
     }
 
+
+    /** Starts the dev server and returns it */
+    public dev(opts?: ServerOptions) {
+        let server = new Server(this);
+        return server.start(opts);
+    }
+
     // /**
     //  * Make a Bundle (or bundles)
     //  */
@@ -298,11 +305,7 @@ export class FuseBox {
         }
     }
 
-    /** Starts the dev server and returns it */
-    public devServer(str: string, opts?: ServerOptions) {
-        let server = new Server(this);
-        return server.start(str, opts);
-    }
+
 
     public process(bundleData: BundleData, bundleReady?: () => any) {
         let bundleCollection = new ModuleCollection(this.context, this.context.defaultPackageName);
