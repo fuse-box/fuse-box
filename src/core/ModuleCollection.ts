@@ -283,9 +283,12 @@ export class ModuleCollection {
         // check for bundle data (in case of fuse.register)
         if (info.bundleData) {
             info.bundleData.including.forEach((inf, fname) => {
-                //const userFileInfo = collection.pm.init(fname);
-                //console.log(userFileInfo.fuseBoxPath);
-                //collection.dependencies.set(userFileInfo.fuseBoxPath, new File(this.context, userFileInfo));
+                const userFileInfo = collection.pm.init(fname);
+                if (!userFileInfo.isNodeModule) {
+                    let userFile = new File(this.context, userFileInfo);
+                    userFile.consume();
+                    collection.dependencies.set(userFileInfo.fuseBoxPath, userFile);
+                }
             })
         }
 
