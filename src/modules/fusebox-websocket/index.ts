@@ -32,7 +32,8 @@ export class SocketClient {
     }
 
     connect(fn?: OnOpenFn) {
-        console.log('connect', this.url);
+        console.log('%cConnecting to fusebox HMR at ' + this.url, 'color: #237abe');
+
         setTimeout(() => {
             this.client = new WebSocket(this.url);
             this.bindEvents(fn);
@@ -55,6 +56,7 @@ export class SocketClient {
     /** Wires up the socket client messages to be emitted on our event emitter */
     private bindEvents(fn?: OnOpenFn) {
         this.client.onopen = (event) => {
+            console.log('%cConnected', 'color: #237abe');
             if (fn) {
                 fn(this);
             }

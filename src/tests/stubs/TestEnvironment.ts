@@ -37,23 +37,24 @@ export function createEnv(opts: any) {
 
             moduleParams.tsConfig = path.join(appRoot.path, "test", "fixtures", "tsconfig.json");
             const fuse = FuseBox.init(moduleParams);
-            return fuse.bundle("index.js").exec(moduleParams.instructions).then(bundle => {
-                if (moduleParams.onDone) {
-                    moduleParams.onDone({
-                        localPath,
-                        filePath: moduleParams.output,
-                        projectDir: path.join(localPath, "project"),
-                    });
-                }
+            return fuse.bundle("index.js").instructions(moduleParams.instructions)
+                .exec().then(bundle => {
+                    if (moduleParams.onDone) {
+                        moduleParams.onDone({
+                            localPath,
+                            filePath: moduleParams.output,
+                            projectDir: path.join(localPath, "project"),
+                        });
+                    }
 
-                if (serverOnly) {
-                    output.modules[name] = require(moduleParams.output);
-                } else {
-                    scripts.push(moduleParams.output);
-                }
+                    if (serverOnly) {
+                        output.modules[name] = require(moduleParams.output);
+                    } else {
+                        scripts.push(moduleParams.output);
+                    }
 
-                return resolve();
-            }).catch(reject);
+                    return resolve();
+                }).catch(reject);
         });
     }).then(() => {
         const projectOptions = opts.project;
@@ -65,7 +66,8 @@ export function createEnv(opts: any) {
 
         const fuse = FuseBox.init(projectOptions);
 
-        return fuse.bundle("index.js").exec(projectOptions.instructions).then(bundle => {
+
+        return fuse.bundle("index.js").instructions(projectOptions.instructions).exec().then(bundle => {
             let contents = fs.readFileSync(projectOptions.output);
             const length = contents.buffer.byteLength;
             output.projectContents = contents;

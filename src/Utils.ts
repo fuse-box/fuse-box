@@ -2,7 +2,8 @@ import * as path from "path";
 import * as fs from "fs";
 import * as fsExtra from "fs-extra";
 import { utils } from "realm-utils";
-const appRoot = require("app-root-path");
+
+const userFuseDir = path.dirname(require.main.filename);
 
 const MBLACKLIST = [
     "freelist",
@@ -64,7 +65,7 @@ export function parseQuery(qstr) {
  */
 export function ensureUserPath(userPath: string) {
     if (!path.isAbsolute(userPath)) {
-        userPath = path.join(appRoot.path, userPath);
+        userPath = path.join(userFuseDir, userPath);
     }
     userPath = path.normalize(userPath);
     let dir = path.dirname(userPath);
@@ -75,7 +76,7 @@ export function ensureUserPath(userPath: string) {
 
 export function ensureDir(userPath: string) {
     if (!path.isAbsolute(userPath)) {
-        userPath = path.join(appRoot.path, userPath);
+        userPath = path.join(userFuseDir, userPath);
     }
     userPath = path.normalize(userPath);
 

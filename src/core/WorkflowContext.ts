@@ -14,6 +14,7 @@ import { SourceChangedEvent } from "../devServer/Server";
 import { registerDefaultAutoImportModules, AutoImportedModule } from "./AutoImportedModule";
 import { Defer } from "../Defer";
 import { UserOutput } from "./UserOutput";
+import { FuseBox } from "./FuseBox";
 
 
 /**
@@ -55,6 +56,8 @@ export interface Plugin {
  */
 export class WorkFlowContext {
     public shim: any;
+
+    public fuse: FuseBox;
 
     public sourceChangedEmitter = new EventEmitter<SourceChangedEvent>();
 

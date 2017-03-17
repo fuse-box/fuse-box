@@ -75,11 +75,12 @@ export class FuseBox {
      */
     constructor(public opts?: FuseBoxOptions) {
         this.context = new WorkFlowContext();
+        this.context.fuse = this;
         this.collectionSource = new CollectionSource(this.context);
         opts = opts || {};
         let homeDir = appRoot.path;
         if (opts.homeDir) {
-            homeDir = path.isAbsolute(opts.homeDir) ? opts.homeDir : path.join(appRoot.path, opts.homeDir);
+            homeDir = ensureUserPath(opts.homeDir)
         }
         if (opts.debug !== undefined) {
             this.context.debugMode = opts.debug;
@@ -91,8 +92,7 @@ export class FuseBox {
 
         if (opts.modulesFolder) {
             this.context.customModulesFolder =
-                path.isAbsolute(opts.modulesFolder)
-                    ? opts.modulesFolder : path.join(appRoot.path, opts.modulesFolder);
+                ensureUserPath(opts.modulesFolder);
         }
 
         if (opts.transformTypescript) {
@@ -247,10 +247,11 @@ export class FuseBox {
     }
 
 
-    public bundle(name: string) {
+    public bundle(name: string, arithmetics?: string) {
         const config = Object.assign({}, this.opts);
         let fuse = FuseBox.init(config);
         const bundle = new Bundle(name, fuse, this.factory);
+        bundle.arithmetics = arithmetics;
         this.factory.add(name, bundle);
         return bundle;
     }
@@ -258,27 +259,22 @@ export class FuseBox {
 
     /** Starts the dev server and returns it */
     public dev(opts?: ServerOptions) {
-        let server = new Server(this);
-        return server.start(opts);
+        this.factory.runner.bottom(() => {
+            let server = new Server(this);
+            return server.start(opts);
+        });
     }
 
-    // /**
-    //  * Make a Bundle (or bundles)
-    //  */
-    // public bundle(str: string | { [bundleStr: string]: /** outFile */ string }, bundleReady?: any): Promise<any> {
-    //     if (utils.isString(str)) {
-    //         return this.initiateBundle(str as string, bundleReady);
-    //     }
-    //     if (utils.isPlainObject(str)) {
-    //         let items = str;
-    //         return each(items, (bundleStr: string, outFile: string) => {
-    //             let newConfig = Object.assign({}, this.opts, { outFile });
-    //             let fuse = FuseBox.init(newConfig);
+    /** Top priority is to register packages first */
+    public register(packageName: string, opts: any) {
+        this.factory.runner.top(() => {
+            return this.factory.register(packageName, opts);
+        });
+    }
 
-    //             return fuse.initiateBundle(bundleStr);
-    //         });
-    //     }
-    // }
+    public run(opts: any) {
+        return this.factory.run(opts);
+    }
 
     /**
      * @description if configs diff, clear cache

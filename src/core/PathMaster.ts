@@ -360,6 +360,20 @@ export class PathMaster {
 
         let localLib = path.join(Config.FUSEBOX_MODULES, name);
         let modulePath = path.join(Config.NODE_MODULES_DIR, name);
+        // check for custom shared packages
+
+        if (this.context.fuse && this.context.fuse.factory.isShared(name)) {
+            let shared = this.context.fuse.factory.getSharedPackage(name);
+
+            return {
+                name,
+                custom: false,
+                root: shared.homeDir,
+                entry: shared.mainPath,
+                entryRoot: shared.mainDir,
+                version: "0.0.0",
+            }
+        }
 
         if (this.context.customModulesFolder) {
             let customFolder = path.join(this.context.customModulesFolder, name);

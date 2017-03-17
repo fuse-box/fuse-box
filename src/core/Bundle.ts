@@ -16,6 +16,8 @@ export class Bundle {
 
     constructor(public name: string, public fuse: FuseBox, public factory: BundleFactory) {
         this.context = fuse.context;
+        // re-assign the parent factory
+        fuse.factory = factory;
         this.setup();
     }
 
@@ -65,22 +67,24 @@ export class Bundle {
         return this;
     }
 
-    public exec(arithmetics: string, done?: any): Promise<Bundle> {
+    public instructions(arithmetics: string): Bundle {
         this.arithmetics = arithmetics;
+        return this;
+    }
+
+    public exec(): Promise<Bundle> {
         return new Promise((resolve, reject) => {
             this.fuse
-                .initiateBundle(arithmetics, () => {
+                .initiateBundle(this.arithmetics, () => {
                     this.process.setFilePath(this.fuse.context.output.lastWrittenPath);
                     if (this.onDoneCallback) {
                         this.onDoneCallback(this.process)
                     }
                     return resolve(this);
                 }).then(source => {
-                    if (done) {
-                        return done(source);
-                    }
+
                 }).catch(e => {
-                    console.error(e)
+                    console.error(e);
                     return resolve(reject);
                 });
             return this;

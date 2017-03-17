@@ -3,7 +3,7 @@
  */
 
 import { SocketClient } from '../fusebox-websocket';
-const Client : typeof SocketClient = require('fusebox-websocket').SocketClient;
+const Client: typeof SocketClient = require('fusebox-websocket').SocketClient;
 
 export const connect = (port: string, uri: string) => {
 
@@ -16,9 +16,10 @@ export const connect = (port: string, uri: string) => {
         uri,
     });
     client.connect();
-    console.log('connecting...');
+
+
     client.on('source-changed', (data) => {
-        console.log(`Updating "${data.path}" ...`);
+        console.info(`%cupdate "${data.path}"`, 'color: #237abe');
 
         /**
          * If a plugin handles this request then we don't have to do anything
