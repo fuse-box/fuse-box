@@ -1,5 +1,4 @@
 import * as path from "path";
-import * as fs from "fs";
 import * as escodegen from "escodegen";
 import { BundleSource } from "../BundleSource";
 import { File } from "./File";
@@ -15,6 +14,7 @@ import { registerDefaultAutoImportModules, AutoImportedModule } from "./AutoImpo
 import { Defer } from "../Defer";
 import { UserOutput } from "./UserOutput";
 import { FuseBox } from "./FuseBox";
+import { Bundle } from "./Bundle";
 
 
 /**
@@ -118,7 +118,9 @@ export class WorkFlowContext {
 
     public source: BundleSource;
 
-    public sourceMapConfig: any;
+    public sourceMapsProject: boolean = false;
+    public sourceMapsVendor: boolean = false;
+    public useSourceMaps = false;
 
     public initialLoad = true;
 
@@ -136,6 +138,7 @@ export class WorkFlowContext {
     }
     public autoImportConfig = {};
 
+    public bundle: Bundle;
 
     public storage: Map<string, any>;
 
@@ -145,7 +148,8 @@ export class WorkFlowContext {
 
     public customCodeGenerator: any;
 
-    public defer = new Defer
+    public defer = new Defer;
+
     public initCache() {
         this.cache = new ModuleCache(this);
     }
@@ -198,7 +202,6 @@ export class WorkFlowContext {
         this.resetNodeModules();
         removeFolder(this.cache.cacheFolder);
         this.cache.initialize();
-
     }
 
     public warning(str: string) {
@@ -374,7 +377,7 @@ export class WorkFlowContext {
 
         config.compilerOptions.module = "commonjs";
 
-        if (this.sourceMapConfig) {
+        if (this.useSourceMaps) {
             config.compilerOptions.sourceMap = true;
             config.compilerOptions.inlineSources = true;
         }
@@ -395,20 +398,25 @@ export class WorkFlowContext {
     public writeOutput(outFileWritten?: () => any) {
         this.initialLoad = false;
         const res = this.source.getResult();
-        // Writing sourcemaps
-        if (this.sourceMapConfig && this.sourceMapConfig.outFile) {
-            let target = ensureUserPath(this.sourceMapConfig.outFile);
-            fs.writeFile(target, res.sourceMap, () => { });
-        }
 
         if (this.output) {
             this.output.writeCurrent(res.content).then(() => {
+                this.writeSourceMaps(res);
                 this.defer.unlock();
                 if (utils.isFunction(outFileWritten)) {
                     outFileWritten();
                 }
             });
         }
+    }
+
+    protected writeSourceMaps(result: any) {
+        // Writing sourcemaps
+        if (this.sourceMapsProject || this.sourceMapsVendor) {
+
+            this.output.write(`${this.bundle.name}.js.map`, result.sourceMap);
+        }
+
     }
 
     public getNodeModule(name: string): ModuleCollection {

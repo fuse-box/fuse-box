@@ -61,13 +61,12 @@ export class ModuleCache {
      * @memberOf ModuleCache
      */
     constructor(public context: WorkFlowContext) {
-        this.initialize();
     }
 
     public initialize() {
+
         this.cacheFolder = path.join(Config.TEMP_FOLDER, "cache",
-            Config.FUSEBOX_VERSION,
-            encodeURIComponent(`${Config.PROJECT_FOLDER}${this.context.output ? this.context.output.filename : ""}`));
+            Config.FUSEBOX_VERSION, this.context.output.getUniqueHash());
 
         this.permanentCacheFolder = path.join(this.cacheFolder, "permanent");
         fsExtra.ensureDirSync(this.permanentCacheFolder);
@@ -109,6 +108,10 @@ export class ModuleCache {
         }
     }
 
+    public getStaticCacheKey(file: File) {
+        return encodeURIComponent(this.context.bundle.name + file.absPath);
+    }
+
     /**
      *
      *
@@ -121,7 +124,7 @@ export class ModuleCache {
 
         let stats = fs.statSync(file.absPath);
         let fileName = encodeURIComponent(file.info.fuseBoxPath);
-        let memCacheKey = encodeURIComponent(file.absPath);
+        let memCacheKey = this.getStaticCacheKey(file);
         let data;
 
         if (MEMORY_CACHE[memCacheKey]) {
@@ -161,7 +164,7 @@ export class ModuleCache {
      */
     public writeStaticCache(file: File, sourcemaps: string) {
         let fileName = encodeURIComponent(file.info.fuseBoxPath);
-        let memCacheKey = encodeURIComponent(file.absPath);
+        let memCacheKey = this.getStaticCacheKey(file);
         let dest = path.join(this.staticCacheFolder, fileName);
         let stats: any = fs.statSync(file.absPath);
 

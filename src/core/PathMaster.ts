@@ -361,9 +361,9 @@ export class PathMaster {
         let localLib = path.join(Config.FUSEBOX_MODULES, name);
         let modulePath = path.join(Config.NODE_MODULES_DIR, name);
         // check for custom shared packages
-
-        if (this.context.fuse && this.context.fuse.factory.isShared(name)) {
-            let shared = this.context.fuse.factory.getSharedPackage(name);
+        const producer = this.context.bundle.producer
+        if (producer && producer.isShared(name)) {
+            let shared = producer.getSharedPackage(name);
 
             return {
                 name,

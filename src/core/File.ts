@@ -310,8 +310,8 @@ export class File {
         if (/\.js(x)?$/.test(this.absPath)) {
             this.loadContents();
             this.tryPlugins();
-            const vendorSourceMaps = this.context.sourceMapConfig
-                && this.context.sourceMapConfig.vendor === true && this.collection.name !== this.context.defaultPackageName;
+            const vendorSourceMaps = this.context.sourceMapsVendor
+                && this.collection.name !== this.context.defaultPackageName;
             if (vendorSourceMaps) {
                 this.loadVendorSourceMap();
             } else {
@@ -337,7 +337,6 @@ export class File {
             this.makeAnalysis({ onToken: tokens });
             SourceMapGenerator.generate(this, tokens);
             this.generateCorrectSourceMap(key);
-
             this.context.cache.setPermanentCache(key, this.sourceMap);
         }
 
@@ -379,7 +378,7 @@ export class File {
         debug(`Transpile ${this.info.fuseBoxPath}`);
         let result = ts.transpileModule(this.contents, this.getTranspilationConfig());
 
-        if (result.sourceMapText && this.context.sourceMapConfig) {
+        if (result.sourceMapText && this.context.useSourceMaps) {
             let jsonSourceMaps = JSON.parse(result.sourceMapText);
             jsonSourceMaps.file = this.info.fuseBoxPath;
             jsonSourceMaps.sources = [this.info.fuseBoxPath.replace(/\.js(x?)$/, ".ts$1")];
@@ -395,6 +394,7 @@ export class File {
         if (this.context.useCache) {
             // emit new file
             this.context.emitJavascriptHotReload(this);
+
             this.context.cache.writeStaticCache(this, this.sourceMap);
         }
     }

@@ -36,8 +36,8 @@ export class SocketServer {
     public clients = new Set<any>();
 
     constructor(public server: any, public fuse: FuseBox) {
-        // emit only for this factory
-        this.fuse.factory.sharedEvents.emit("SocketServerReady", this);
+        // emit only for this producer
+        this.fuse.producer.sharedEvents.emit("SocketServerReady", this);
 
         server.on("connection", (ws) => {
             this.fuse.context.log.echo("Client connected");

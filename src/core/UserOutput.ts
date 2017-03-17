@@ -3,6 +3,7 @@ import { ensureDir, ensureUserPath } from "../Utils";
 import * as path from "path";
 import * as crypto from "crypto";
 import * as fs from "fs";
+import * as shortHash from "shorthash";
 
 export class UserOutput {
     public dir: string;
@@ -10,12 +11,17 @@ export class UserOutput {
     public filename = "bundle.js";
     public useHash = false;
     public lastWrittenPath;
+    public lastWrittenHash;
     constructor(public context: WorkFlowContext, public original: string) {
         this.setup();
     }
 
     public setName(name: string) {
         this.filename = name;
+    }
+
+    public getUniqueHash() {
+        return `${shortHash.unique(this.original)}-${encodeURIComponent(this.filename)}`;
     }
 
     private setup() {
@@ -99,7 +105,9 @@ export class UserOutput {
         let hash;
         if (this.useHash) {
             hash = this.generateHash(content.toString());
+            this.lastWrittenHash = hash;
         }
+
         let fullpath = this.getPath(userPath, hash);
         fullpath = ensureUserPath(fullpath);
         return new Promise((resolve, reject) => {

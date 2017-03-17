@@ -1,13 +1,12 @@
 import { Bundle } from "./Bundle";
 import { FuseBox } from "./FuseBox";
-import * as chokidar from "chokidar";
 import { string2RegExp, ensureUserPath } from "../Utils";
 import { EventEmitter } from "events";
 import { Arithmetic, BundleData } from "../arithmetic/Arithmetic";
 import { SharedCustomPackage } from "./SharedCustomPackage";
 import { BundleRunner } from "./BundleRunner";
-
-export class BundleFactory {
+import * as watch from "watch";
+export class BundleProducer {
     public bundles = new Map<string, Bundle>();
     public hmrInjected = false;
     public sharedEvents = new EventEmitter();
@@ -83,18 +82,22 @@ export class BundleFactory {
                 settings.set(bundle.name, string2RegExp(bundle.watchRule));
             }
         });
-        // Initiate watch if any of the bundles within factory requires a watcher
+        // Initiate watch if any of the bundles within producer requires a watcher
         if (!isRequired) {
             return;
         }
-        const watcher = chokidar.watch(this.fuse.context.homeDir);
-        watcher.on('ready', () =>
-            watcher.on("all", (event, path) => this.onChanges(settings, event, path))
-        );
+
+        watch.watchTree(this.fuse.context.homeDir, { interval: 0.2 }, (f, curr, prev) => {
+            if (typeof f == "object" && prev === null && curr === null) {
+                // Finished walking the tree
+            } else {
+                this.onChanges(settings, f)
+            }
+        });
     }
 
     /** Trigger bundles that are affected */
-    private onChanges(settings: Map<string, RegExp>, event: string, path: string) {
+    protected onChanges(settings: Map<string, RegExp>, path: string) {
         settings.forEach((expression, bundleName) => {
             if (expression.test(path)) {
                 const bundle = this.bundles.get(bundleName);

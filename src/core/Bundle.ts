@@ -1,9 +1,10 @@
 import { FuseBox } from "./FuseBox";
 import { WorkFlowContext } from "./WorkflowContext";
-import { BundleFactory } from "./BundleFactory";
+import { BundleProducer } from "./BundleProducer";
 import { FuseProcess } from "../FuseProcess";
 import { HotReloadPlugin } from "../plugins/HotReloadPlugin";
 import { SocketServer } from "../devServer/SocketServer";
+import { utils } from "realm-utils";
 
 export class Bundle {
 
@@ -14,10 +15,11 @@ export class Bundle {
     public process: FuseProcess = new FuseProcess(this);
     public onDoneCallback: any;
 
-    constructor(public name: string, public fuse: FuseBox, public factory: BundleFactory) {
+    constructor(public name: string, public fuse: FuseBox, public producer: BundleProducer) {
         this.context = fuse.context;
-        // re-assign the parent factory
-        fuse.factory = factory;
+        this.context.bundle = this;
+        // re-assign the parent producer
+        fuse.producer = producer;
         this.setup();
     }
 
@@ -30,7 +32,7 @@ export class Bundle {
     public hmr(opts: any): Bundle {
 
         /** Only one is allowed to hava HMR related code */
-        if (!this.factory.hmrInjected) {
+        if (!this.producer.hmrInjected) {
             opts = opts || {};
             opts.port = opts.port || 4445;
             let plugin = HotReloadPlugin({ port: opts.port, uri: opts.socketURI });
@@ -38,13 +40,13 @@ export class Bundle {
             this.context.plugins.push(plugin);
 
             // Should happen only once!
-            this.factory.hmrInjected = true;
+            this.producer.hmrInjected = true;
         }
         /** 
          * Whenever socket server is initialized 
-         * This will allow use to enable HMR on any bundle within current factory
+         * This will allow use to enable HMR on any bundle within current producer
         */
-        this.factory.sharedEvents.on("SocketServerReady", (server: SocketServer) => {
+        this.producer.sharedEvents.on("SocketServerReady", (server: SocketServer) => {
             this.fuse.context.sourceChangedEmitter.on((info) => {
                 if (this.fuse.context.isFirstTime() === false) {
                     this.fuse.context.log.echo(`Source changed for ${info.path}`);
@@ -72,8 +74,24 @@ export class Bundle {
         return this;
     }
 
+    public sourceMaps(params: any): Bundle {
+        if (typeof params === "boolean") {
+            this.context.sourceMapsProject = params;
+        } else {
+            if (utils.isPlainObject(params)) {
+                this.context.sourceMapsProject = params.project === true;
+                this.context.sourceMapsVendor = params.vendor === true;
+            }
+        }
+        if (this.context.sourceMapsProject || this.context.sourceMapsVendor) {
+            this.context.useSourceMaps = true;
+        }
+        return this;
+    }
+
     public exec(): Promise<Bundle> {
         return new Promise((resolve, reject) => {
+
             this.fuse
                 .initiateBundle(this.arithmetics, () => {
                     this.process.setFilePath(this.fuse.context.output.lastWrittenPath);
@@ -82,7 +100,6 @@ export class Bundle {
                     }
                     return resolve(this);
                 }).then(source => {
-
                 }).catch(e => {
                     console.error(e);
                     return resolve(reject);
@@ -99,5 +116,9 @@ export class Bundle {
     private setup() {
         // modifying the output name
         this.context.output.setName(this.name);
+        if (this.context.useCache) {
+            this.context.initCache();
+            this.context.cache.initialize();
+        }
     }
 }

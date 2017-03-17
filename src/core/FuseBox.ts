@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as process from "process";
-//import { Config } from "./../Config";
 import { each, utils, chain, Chainable } from "realm-utils";
 import { ensureUserPath, contains } from "./../Utils";
 import { ShimCollection } from "./../ShimCollection";
@@ -12,10 +11,9 @@ import { WorkFlowContext, Plugin } from "./WorkflowContext";
 import { CollectionSource } from "./../CollectionSource";
 import { Arithmetic, BundleData } from "./../arithmetic/Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";
-//import { BundleTestRunner } from "../BundleTestRunner";
 import { MagicalRollup } from "../rollup/MagicalRollup";
 import { UserOutput } from "./UserOutput";
-import { BundleFactory } from "./BundleFactory";
+import { BundleProducer } from "./BundleProducer";
 import { Bundle } from "./Bundle";
 
 const appRoot = require("app-root-path");
@@ -64,7 +62,7 @@ export class FuseBox {
 
     public context: WorkFlowContext;
 
-    public factory = new BundleFactory(this);
+    public producer = new BundleProducer(this);
 
     /**
      * Creates an instance of FuseBox.
@@ -179,44 +177,6 @@ export class FuseBox {
             this.context.customAPIFile = opts.customAPIFile;
         }
 
-
-
-
-
-        if (opts.sourceMap) {
-            // deprecated
-            this.context.sourceMapConfig = opts.sourceMap;
-            this.context.log.echoWarning("sourceMap is deprecated. Use { sourcemaps : true } instead");
-            //this.context.sourceMapConfig = opts.sourceMap;
-        }
-
-        const sourceMaps = opts.sourceMaps || opts.sourcemaps
-
-        if (sourceMaps) {
-            const sourceMapOptions: any = {};
-            let projectSourcMaps = false;
-            let vendorSourceMaps = false;
-            if (sourceMaps === true) {
-                projectSourcMaps = true;
-            } else if (utils.isPlainObject(sourceMaps)) {
-                if (sourceMaps.project) {
-                    projectSourcMaps = true;
-                }
-                if (sourceMaps.vendor === true) {
-                    vendorSourceMaps = true;
-                }
-            }
-            const mapsName = path.basename(this.context.output.filename) + ".map";
-            const mapsOutFile =
-                path.join(this.context.output.dir, mapsName);
-            if (projectSourcMaps) {
-                sourceMapOptions.outFile = mapsOutFile;
-                sourceMapOptions.bundleReference = mapsName;
-            }
-            sourceMapOptions.vendor = vendorSourceMaps;
-            this.context.sourceMapConfig = sourceMapOptions;
-        }
-
         this.context.setHomeDir(homeDir);
         if (opts.cache !== undefined) {
             this.context.setUseCache(opts.cache);
@@ -226,7 +186,6 @@ export class FuseBox {
         if (opts.output) {
             this.context.output = new UserOutput(this.context, opts.output);
         }
-        this.context.initCache();
         this.compareConfig(this.opts);
     }
 
@@ -249,17 +208,19 @@ export class FuseBox {
 
     public bundle(name: string, arithmetics?: string) {
         const config = Object.assign({}, this.opts);
+        config.plugins = [].concat(config.plugins || [])
         let fuse = FuseBox.init(config);
-        const bundle = new Bundle(name, fuse, this.factory);
+        const bundle = new Bundle(name, fuse, this.producer);
+
         bundle.arithmetics = arithmetics;
-        this.factory.add(name, bundle);
+        this.producer.add(name, bundle);
         return bundle;
     }
 
 
     /** Starts the dev server and returns it */
     public dev(opts?: ServerOptions) {
-        this.factory.runner.bottom(() => {
+        this.producer.runner.bottom(() => {
             let server = new Server(this);
             return server.start(opts);
         });
@@ -267,13 +228,13 @@ export class FuseBox {
 
     /** Top priority is to register packages first */
     public register(packageName: string, opts: any) {
-        this.factory.runner.top(() => {
-            return this.factory.register(packageName, opts);
+        this.producer.runner.top(() => {
+            return this.producer.register(packageName, opts);
         });
     }
 
     public run(opts: any) {
-        return this.factory.run(opts);
+        return this.producer.run(opts);
     }
 
     /**
