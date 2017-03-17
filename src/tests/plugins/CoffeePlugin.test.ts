@@ -1,7 +1,6 @@
-import {createEnv} from "./stubs/TestEnvironment";
-import {should} from "fuse-test-runner";
-import {CoffeePlugin} from "../plugins/js-transpilers/CoffeePlugin";
-import {RawPlugin} from "../plugins/RawPlugin";
+import { CoffeePlugin, RawPlugin } from "../../index";
+import { createEnv } from "../stubs/TestEnvironment";
+import { should } from "fuse-test-runner";
 
 const coffeeFileSource = `class Demo
                                            demo: -> 

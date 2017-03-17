@@ -222,7 +222,7 @@ export class ModuleCollection {
                 // node modules might need to resolved asynchronously
                 // like css plugins
                 .then(() => this.context.resolve())
-                .then(() => this.context.cache.buildMap(this))
+                .then(() => this.context.cache && this.context.cache.buildMap(this))
                 .catch(e => {
                     this.context.defer.unlock();
                     this.context.nukeCache();

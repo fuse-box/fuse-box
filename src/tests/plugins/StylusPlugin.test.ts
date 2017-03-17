@@ -1,7 +1,7 @@
-import {createEnv} from "./stubs/TestEnvironment";
-import {should} from "fuse-test-runner";
-import {CSSPlugin} from "../plugins/stylesheet/CSSplugin";
-import {StylusPlugin} from "../plugins/stylesheet/StylusPlugin";
+import { createEnv } from "./../stubs/TestEnvironment";
+import { should } from "fuse-test-runner";
+import { CSSPlugin } from "../../plugins/stylesheet/CSSplugin";
+import { StylusPlugin } from "../../plugins/stylesheet/StylusPlugin";
 
 export class StylusPluginTest {
     "Should import compiled css code"() {
@@ -19,7 +19,7 @@ export class StylusPluginTest {
             },
         }).then((result) => {
             const out = result.projectContents.toString();
-          should(out).findString(`color: #fff`);
+            should(out).findString(`color: #fff`);
         });
     }
 }

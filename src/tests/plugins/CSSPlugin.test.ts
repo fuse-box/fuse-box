@@ -1,11 +1,11 @@
-import { createEnv } from "./stubs/TestEnvironment";
+import { createEnv } from "./../stubs/TestEnvironment";
 import { should } from "fuse-test-runner";
 import * as path from "path";
 import * as appRoot from "app-root-path";
 import * as fs from "fs";
-import { CSSResourcePlugin } from "../plugins/stylesheet/CSSResourcePlugin";
-import { SassPlugin } from "../plugins/stylesheet/SassPlugin";
-import { CSSPlugin } from "../plugins/stylesheet/CSSplugin";
+import { CSSResourcePlugin } from "../../plugins/stylesheet/CSSResourcePlugin";
+import { SassPlugin } from "../../plugins/stylesheet/SassPlugin";
+import { CSSPlugin } from "../../plugins/stylesheet/CSSplugin";
 import * as fsExtra from "fs-extra";
 
 let tmp, shouldExist;

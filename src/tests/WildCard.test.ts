@@ -1,5 +1,6 @@
 import { createEnv } from "./stubs/TestEnvironment";
 import { should } from "fuse-test-runner";
+import { JSONPlugin } from "../index";
 
 export class WildCardTest {
     "Should import 2 javascript files without ext"() {
@@ -71,6 +72,7 @@ export class WildCardTest {
                     "foo/a.json": "module.exports = {a : 1}",
                     "foo/b.json": "module.exports = {b : 1}"
                 },
+                plugins: [JSONPlugin​​()],
                 instructions: "**/**.json"
             }
         }).then((result) => {
@@ -87,6 +89,7 @@ export class WildCardTest {
                     "foo/a.json": "module.exports = {a : 1}",
                     "foo/b.json": "module.exports = {b : 1}",
                 },
+                plugins: [JSONPlugin​​()],
                 instructions: "**/**.json"
             }
         }).then((result) => {
@@ -126,7 +129,7 @@ export class WildCardTest {
         });
     }
 
-     "Should import sub folders as well"() {
+    "Should import sub folders as well"() {
         return createEnv({
             project: {
                 files: {
@@ -136,10 +139,12 @@ export class WildCardTest {
                 instructions: "**/**.js"
             }
         }).then((result) => {
-            
+
             should(result.project.FuseBox.import("./foo/**"))
-                .deepEqual({ 'foo/a/b/c/bar.js': { bar: 1 },
-                            'foo/a/b/c/foo.js': { foo: 1 } });
+                .deepEqual({
+                    'foo/a/b/c/bar.js': { bar: 1 },
+                    'foo/a/b/c/foo.js': { foo: 1 }
+                });
         });
     }
 

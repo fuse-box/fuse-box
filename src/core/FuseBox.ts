@@ -233,7 +233,7 @@ export class FuseBox {
         });
     }
 
-    public run(opts: any) {
+    public run(opts?: any) {
         return this.producer.run(opts);
     }
 

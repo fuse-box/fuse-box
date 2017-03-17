@@ -200,8 +200,11 @@ export class WorkFlowContext {
 
     public nukeCache() {
         this.resetNodeModules();
-        removeFolder(this.cache.cacheFolder);
-        this.cache.initialize();
+        if (this.cache) {
+            removeFolder(this.cache.cacheFolder);
+            this.cache.initialize();
+        }
+
     }
 
     public warning(str: string) {
