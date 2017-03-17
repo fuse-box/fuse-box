@@ -26,12 +26,6 @@ export class BundleProducer {
     }
 
     public register(packageName: string, opts: any) {
-        /**
-        * Possible options:
-        * main : "index.js"
-        * homeDir : "blabla/"
-        * exec : 
-        */
 
         let instructions = opts.instructions;
         if (!packageName) {

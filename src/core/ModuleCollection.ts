@@ -280,6 +280,15 @@ export class ModuleCollection {
         // For caching
         this.nodeModules.set(moduleName, collection);
 
+        // check for bundle data (in case of fuse.register)
+        if (info.bundleData) {
+            info.bundleData.including.forEach((inf, fname) => {
+                //const userFileInfo = collection.pm.init(fname);
+                //console.log(userFileInfo.fuseBoxPath);
+                //collection.dependencies.set(userFileInfo.fuseBoxPath, new File(this.context, userFileInfo));
+            })
+        }
+
         // Handle explicit require differently
         // e.g require("lodash") - we require entry file
         // unlike require("requre/each") - points to an explicit file

@@ -4,6 +4,7 @@ import { ensurePublicExtension } from "../Utils";
 import { Config } from "../Config";
 import * as path from "path";
 import * as fs from "fs";
+import { BundleData } from "../arithmetic/Arithmetic";
 
 /**
  * If a import url isn't relative
@@ -32,6 +33,7 @@ export interface IPathInformation {
 export interface IPackageInformation {
     name: string;
     missing?: boolean;
+    bundleData?: BundleData​​;
     entry: string;
     version: string;
     root: string;
@@ -368,6 +370,7 @@ export class PathMaster {
             return {
                 name,
                 custom: false,
+                bundleData: shared.data,
                 root: shared.homeDir,
                 entry: shared.mainPath,
                 entryRoot: shared.mainDir,

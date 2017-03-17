@@ -37,7 +37,7 @@ export function createEnv(opts: any) {
 
             moduleParams.tsConfig = path.join(appRoot.path, "test", "fixtures", "tsconfig.json");
             const fuse = FuseBox.init(moduleParams);
-            fuse.bundle("index.js").instructions(moduleParams.instructions);
+            fuse.bundle("index.js").cache(false).instructions(moduleParams.instructions);
             return fuse.run().then(bundle => {
                 if (moduleParams.onDone) {
                     moduleParams.onDone({
@@ -67,7 +67,7 @@ export function createEnv(opts: any) {
         const fuse = FuseBox.init(projectOptions);
 
 
-        fuse.bundle("index.js").instructions(projectOptions.instructions)
+        fuse.bundle("index.js").cache(false).instructions(projectOptions.instructions)
         return fuse.run().then(bundle => {
             let contents = fs.readFileSync(projectOptions.output);
             const length = contents.buffer.byteLength;
