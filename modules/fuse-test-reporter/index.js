@@ -40,10 +40,16 @@ const $printLine = () => {
         cursor.reset();
     }
 };
-const $printCaseSuccess = (name) => {
+const $printCaseSuccess = (name, report) => {
+
     if (cursor) {
         cursor.green().write(`      ✓ `)
             .brightBlack().write(name);
+
+        if (report.data.ms > 30) {
+            let msCursor = report.data.ms > 400 ? cursor.red() : cursor.yellow();
+            msCursor.write(" (" + report.data.ms + " ms)");
+        }
         cursor.write("\n");
         cursor.reset();
     }
@@ -128,7 +134,7 @@ class FuseBoxTestReporter {
 
         if (report.data && report.data.success) {
 
-            $printCaseSuccess(report.item.title || report.item.method);
+            $printCaseSuccess(report.item.title || report.item.method.report, report);
         } else {
             //console.log(report);
             let message = report.error ? report.error : report.data.error.message ? report.data.error.message : report.data.error;
