@@ -1,7 +1,7 @@
-import { string2RegExp, replaceExt, findFileBackwards, replaceAliasRequireStatement } from "../Utils";
-import { should } from "fuse-test-runner";
+import {string2RegExp, replaceExt, findFileBackwards, replaceAliasRequireStatement, ensureFuseBoxPath} from "../Utils";
+import {should} from "fuse-test-runner";
 import * as path from "path";
-import { getStubsFolder } from "./stubs/TestEnvironment";
+import {getStubsFolder} from "./stubs/TestEnvironment";
 
 export class UtilsTest {
     "Should convert string to regex (1)"() {
@@ -65,7 +65,6 @@ export class UtilsTest {
     }
 
 
-
     "Should replaceExt correctly with ext"() {
 
         let res = replaceExt("a/hello.ts", ".js");
@@ -85,13 +84,15 @@ export class UtilsTest {
     }
 
     "Should find file backwards"() {
-        const rootFolder = path.join(getStubsFolder(), "foo");
+        let rootFolder = path.join(getStubsFolder(), "foo");
         let res = findFileBackwards(path.join(rootFolder, "a/b/c/tsconfig.json"), rootFolder);
+        res = ensureFuseBoxPath(res); // windows OS fix
         should(res).match(/\/a\/b\/tsconfig.json$/);
     }
 
     "Should replace alias"() {
-        const res = replaceAliasRequireStatement("foo/bar", "foo", "~/hello/world/foo/");
+        let res = replaceAliasRequireStatement("foo/bar", "foo", "~/hello/world/foo/");
+        res = ensureFuseBoxPath(res); // windows OS fix
         should(res).equal("~/hello/world/foo/bar");
 
     }
