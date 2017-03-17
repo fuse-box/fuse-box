@@ -1,8 +1,8 @@
-import { UserOutput } from "../core/UserOutput";
-import { should } from "fuse-test-runner";
-import { WorkFlowContext } from "../core/WorkflowContext";
+import {UserOutput} from "../core/UserOutput";
+import {should} from "fuse-test-runner";
+import {WorkFlowContext} from "../core/WorkflowContext";
 import * as fs from "fs";
-import { ensureFuseBoxPath } from "../Utils";
+import {ensureFuseBoxPath} from "../Utils";
 
 const testDir = ".fusebox/test-dir/$name.js";
 const foobarHash = "3858f62230ac3c915f300c664312c63f";
@@ -135,6 +135,7 @@ export class UserOutputTest {
 
         let file = output.write("foo", testContents);
         return file.then(name => {
+            name = ensureFuseBoxPath(name) // fixing slashes for windows
             should(name).findString(".fusebox/test-dir/foo.js");
             should(fs.readFileSync(name).toString()).equal(testContents)
         })
@@ -147,6 +148,7 @@ export class UserOutputTest {
         let output = new UserOutput(context, testDir);
         const testContents = `foobar`;
         return output.write("myFile", testContents).then(file => {
+            file = ensureFuseBoxPath(file) // fixing slashes for windows
             should(file).findString(`.fusebox/test-dir/myFile-${foobarHash}.js`);
             should(fs.readFileSync(file).toString()).equal(testContents)
         });
@@ -158,6 +160,7 @@ export class UserOutputTest {
         let output = new UserOutput(context, ".fusebox/test-dir/$name_____$hash___.js");
         const testContents = `foobar`;
         return output.write("myFile", testContents).then(file => {
+            file = ensureFuseBoxPath(file) // fixing slashes for windows
             should(file).findString(`.fusebox/test-dir/myFile_____${foobarHash}___.js`);
             should(fs.readFileSync(file).toString()).equal(testContents)
         });
