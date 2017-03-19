@@ -28,13 +28,18 @@ export class Bundle {
         return this;
     }
 
+    public globals(globals: any): Bundle {
+        this.context.globals = globals;
+        return this;
+    }
+
     /** Enable HMR in this bundle and inject HMR plugin */
     public hmr(opts: any): Bundle {
 
         /** Only one is allowed to hava HMR related code */
         if (!this.producer.hmrInjected) {
             opts = opts || {};
-            opts.port = opts.port || 4445;
+            opts.port = opts.port || this.producer.devServerOptions && this.producer.devServerOptions.port || 4444;
             let plugin = HotReloadPlugin({ port: opts.port, uri: opts.socketURI });
             this.context.plugins = this.context.plugins || [];
             this.context.plugins.push(plugin);
@@ -68,6 +73,35 @@ export class Bundle {
         this.context.doLog = log;
         return this;
     }
+
+    /**
+     * Adds a plugin or a chain of plugins 
+     * e.g
+     * in case of one plugin
+     * plugin(HTMLPlugin())
+     * In case of a chain:
+     * 
+     * plugin("*.html", HTMLPlugin())
+     * @param args Plugin
+     */
+    public plugin(...args): Bundle {
+        this.context.plugins = this.context.plugins || [];
+        this.context.plugins.push(args.length === 1 ? args[0] : args);
+        return this;
+    }
+
+    /**
+     * natives({ process : false })
+     * @param opts 
+     */
+    public natives(opts: any): Bundle {
+        this.context.natives = opts;
+        return this;
+    }
+
+
+
+
 
     public instructions(arithmetics: string): Bundle {
         this.arithmetics = arithmetics;

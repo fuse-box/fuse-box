@@ -6,12 +6,15 @@ import { Arithmetic, BundleData } from "../arithmetic/Arithmetic";
 import { SharedCustomPackage } from "./SharedCustomPackage";
 import { BundleRunner } from "./BundleRunner";
 import * as watch from "watch";
+import { ServerOptions } from "../devServer/Server";
+
 export class BundleProducer {
     public bundles = new Map<string, Bundle>();
     public hmrInjected = false;
     public sharedEvents = new EventEmitter();
     public sharedCustomPackages: Map<string, SharedCustomPackage​>;
     public runner: BundleRunner;
+    public devServerOptions: ServerOptions;
     constructor(public fuse: FuseBox) {
         this.runner = new BundleRunner(this.fuse);
         // to make sure that all bundle are set up

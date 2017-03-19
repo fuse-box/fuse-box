@@ -104,10 +104,6 @@ export class FuseBox {
             this.context.serverBundle = opts.serverBundle;
         }
 
-        if (utils.isPlainObject(opts.natives)) {
-            this.context.serverBundle = opts.serverBundle;
-        }
-
         this.context.plugins = opts.plugins || [JSONPlugin()];
 
         if (opts.package) {
@@ -220,6 +216,9 @@ export class FuseBox {
 
     /** Starts the dev server and returns it */
     public dev(opts?: ServerOptions) {
+        opts = opts || {};
+        opts.port = opts.port || 4444;
+        this.producer.devServerOptions = opts;
         this.producer.runner.bottom(() => {
             let server = new Server(this);
             return server.start(opts);
