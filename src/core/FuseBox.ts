@@ -32,9 +32,6 @@ export interface FuseBoxOptions {
     shim?: any;
     standalone?: boolean;
     sourceMaps?: any;
-    sourcemaps?: any;
-    sourceMap?: any;
-    ignoreGlobal?: string[];
     serverBundle?: boolean;
     rollup?: any;
     hash?: string | Boolean;
@@ -93,9 +90,6 @@ export class FuseBox {
                 ensureUserPath(opts.modulesFolder);
         }
 
-        if (opts.transformTypescript) {
-            this.context.transformTypescript = opts.transformTypescript;
-        }
         if (opts.tsConfig) {
             this.context.tsConfig = opts.tsConfig;
         }
@@ -159,10 +153,6 @@ export class FuseBox {
 
         if (opts.standalone !== undefined) {
             this.context.standaloneBundle = opts.standalone;
-        }
-
-        if (opts.ignoreGlobal) {
-            this.context.ignoreGlobal = opts.ignoreGlobal;
         }
 
         if (opts.rollup) {

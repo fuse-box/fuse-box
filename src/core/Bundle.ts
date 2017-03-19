@@ -34,7 +34,7 @@ export class Bundle {
     }
 
     /** Enable HMR in this bundle and inject HMR plugin */
-    public hmr(opts: any): Bundle {
+    public hmr(opts?: any): Bundle {
 
         /** Only one is allowed to hava HMR related code */
         if (!this.producer.hmrInjected) {
@@ -98,10 +98,6 @@ export class Bundle {
         this.context.natives = opts;
         return this;
     }
-
-
-
-
 
     public instructions(arithmetics: string): Bundle {
         this.arithmetics = arithmetics;

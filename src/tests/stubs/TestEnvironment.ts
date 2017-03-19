@@ -105,7 +105,7 @@ export function createEnv(opts: any) {
     }).then(() => {
         setTimeout(() => {
             removeFolder(localPath);
-        }, 200);
+        }, 5);
         return output;
     });
 }
