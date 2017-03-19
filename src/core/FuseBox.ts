@@ -192,7 +192,7 @@ export class FuseBox {
     }
 
 
-    public bundle(name: string, arithmetics?: string) {
+    public bundle(name: string, arithmetics?: string): Bundle {
         const config = Object.assign({}, this.opts);
         config.plugins = [].concat(config.plugins || [])
         let fuse = FuseBox.init(config);
