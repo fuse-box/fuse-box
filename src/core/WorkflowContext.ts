@@ -43,7 +43,7 @@ export interface Plugin {
     onTypescriptTransform?(file: File): any;
     bundleStart?(context: WorkFlowContext): any;
     bundleEnd?(context: WorkFlowContext): any;
-
+    onSparky?(): any;
     /**
      * If provided then the dependencies are loaded on the client
      *  before the plugin is invoked

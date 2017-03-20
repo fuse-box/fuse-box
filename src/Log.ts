@@ -16,9 +16,15 @@ export class Log {
     }
 
     public echoWith(str: string, opt: string) {
-      cursor.write(` `)[opt]().write(str);
-      cursor.write("\n");
-      cursor.reset();
+        cursor.write(` `)[opt]().write(str);
+        cursor.write("\n");
+        cursor.reset();
+    }
+
+    public echoHeader(str: string) {
+        cursor.write(` `).yellow().write(str);
+        cursor.write("\n");
+        cursor.reset();
     }
 
     public echo(str: string) {

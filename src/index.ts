@@ -23,3 +23,4 @@ export { RawPlugin } from "./plugins/RawPlugin";
 export { Fluent } from "./arithmetic/Fluent";
 
 export { FuseBox } from "./core/FuseBox";
+export { Sparky } from "./sparky/Sparky";
