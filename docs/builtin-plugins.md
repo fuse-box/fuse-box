@@ -282,6 +282,9 @@ export default `
 
 
 ## Markdown Plugin
+
+Markdown Plugin generates HTML from Markdown files.
+
 ```js
 plugins: [
   fsbx.MarkdownPlugin({
@@ -289,6 +292,12 @@ plugins: [
     /* marked options */
   }),
 ]
+```
+
+It depends on marked library, so it must be installed first :
+
+```bash
+npm install marked
 ```
 
 Toggle `useDefault` to make Markdown files export strings as `default` property.
