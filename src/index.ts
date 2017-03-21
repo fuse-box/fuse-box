@@ -14,6 +14,7 @@ export { CoffeePlugin } from "./plugins/js-transpilers/CoffeePlugin";
 export { LESSPlugin } from "./plugins/stylesheet/LESSPlugin";
 export { CSSPlugin } from "./plugins/stylesheet/CSSplugin";
 export { HTMLPlugin } from "./plugins/HTMLplugin";
+export { MarkdownPlugin } from "./plugins/Markdownplugin";
 export { JSONPlugin } from "./plugins/JSONplugin";
 export { BannerPlugin } from "./plugins/BannerPlugin";
 export { SassPlugin } from "./plugins/stylesheet/SassPlugin";
