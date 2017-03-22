@@ -172,6 +172,38 @@ sourceMaps: { project: true, vendor: true }
 Sourcemaps currently work with [typescript](#typescript) and [BabelPlugin](#babel-plugin)
 [see the SourceMapPlainJsPlugin](#sourcemapplainjsplugin)
 
+Single bundle :
+```js
+// will generate 2 files : index.js and index.js.map
+
+FuseBox.init({
+    cache: false,
+    sourceMaps: { project: true, vendor: true },
+    plugins: [
+        SourceMapPlainJsPlugin(),
+    ],
+    outFile: 'index.js',
+})
+.bundle('>index.ts');
+```
+
+Multiple bundle :
+```js
+// will generate 4 files : index.js, index.js.map, main.js, and main.js.map
+
+FuseBox.init({
+    cache: false,
+    sourceMaps: { project: true, vendor: true },
+    plugins: [
+        SourceMapPlainJsPlugin(),
+    ],
+})
+.bundle({
+  'index.js': '>index.ts +**.ts',
+  'main.js': '>main.ts +**.ts',
+});
+```
+
 ## Standalone
 
 By default FuseBox injects API in every bundle. That can be overridden by setting:
@@ -398,7 +430,7 @@ Don't run that bundle in a traditional browser.
 An example using the available config options might look similar to:
 ```js
 // remember, unless you transpile your fuse.js, es6 will not work in your fuse.js
-// so using `require` is the easiest. 
+// so using `require` is the easiest.
 // destructuring with `require` is supported with the current node version.
 //
 // importing can also be done with the syntax:
