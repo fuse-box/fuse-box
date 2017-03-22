@@ -5,8 +5,7 @@ import { ensureDir, string2RegExp } from "../Utils";
 import { SparkyFile } from "./SparkyFile";
 import { log } from "./Sparky";
 import { parse } from "./SparkyFilePattern";
-
-
+import * as  chokidar from "chokidar";
 
 export class SparkFlow {
     private activities = [];
@@ -31,7 +30,7 @@ export class SparkFlow {
         this.files = [];
         log.echoStatus(`Watch ${globString}`)
         this.activities.push(() => new Promise((resolve, reject) => {
-            const chokidar = require("chokidar")
+
             this.watcher = chokidar.watch(globString, opts || {})
                 .on('all', (event, fp) => {
                     if (this.initialWatch) {

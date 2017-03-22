@@ -66,22 +66,20 @@
         "reflect-metadata": "^0.1.8",
         "rollup": "^0.36.3",
         "run-sequence": "^1.2.2",
-
         "should": "^11.1.0",
         "sinon": "^1.17.6",
         "typescript": "^2.2.1",
-
         "wires-reactive": "^1.1.1"
     },
     "dependencies": {
         "acorn": "^4.0.3",
         "acorn-es7": "^0.1.0",
         "acorn-jsx": "^3.0.1",
-        "shorthash": "0.0.2",
         "ansi": "^0.3.1",
         "app-root-path": "^2.0.1",
         "base64-img": "^1.0.3",
         "base64-js": "^1.2.0",
+        "chokidar": "^1.6.1",
         "commander": "^2.9.0",
         "concat-with-sourcemaps": "^1.0.4",
         "escodegen": "^1.8.1",
@@ -95,6 +93,7 @@
         "prettysize": "0.0.3",
         "realm-utils": "^1.0.8",
         "request": "^2.79.0",
+        "shorthash": "0.0.2",
         "watch": "^1.0.1",
         "ws": "^1.1.1"
     }

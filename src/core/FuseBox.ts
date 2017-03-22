@@ -16,6 +16,7 @@ import { UserOutput } from "./UserOutput";
 import { BundleProducer } from "./BundleProducer";
 import { Bundle } from "./Bundle";
 
+const isWin = /^win/.test(process.platform);
 const appRoot = require("app-root-path");
 
 export interface FuseBoxOptions {
@@ -247,7 +248,8 @@ export class FuseBox {
                 if (storedConfigStr !== mainStr) this.context.nukeCache();
             }
 
-            fs.writeFile(configPath, mainStr, () => { });
+            if (isWin) fs.writeFileSync(configPath, mainStr);
+            else fs.writeFile(configPath, mainStr, () => { });
         }
     }
 
@@ -392,7 +394,6 @@ export class FuseBox {
         let parser = Arithmetic.parse(str);
         let bundle: BundleData;
         return Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
-
             bundle = data;
             if (bundle.tmpFolder) {
                 this.context.homeDir = bundle.tmpFolder;

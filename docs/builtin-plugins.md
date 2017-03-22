@@ -281,6 +281,43 @@ export default `
 ```
 
 
+## Markdown Plugin
+
+Markdown Plugin generates HTML from Markdown files.
+
+```js
+plugins: [
+  fsbx.MarkdownPlugin({
+    useDefault: false,
+    /* marked options */
+  }),
+]
+```
+
+It depends on marked library, so it must be installed first :
+
+```bash
+npm install marked
+```
+
+Toggle `useDefault` to make Markdown files export strings as `default` property.
+For example with `useDefault: true` you will be able to import Markdown files like so:
+
+```js
+import tpl from "~/views/file.md"
+```
+
+With `useDefault: true`, is as if the html file contains this:
+```jsx
+export default `
+  <!DOCTYPE html>
+  <title>eh</title>
+`
+```
+
+For other options, see https://github.com/chjj/marked.
+
+
 ## ImageBase64Plugin
 Works greatly if you want to have images bundled
 

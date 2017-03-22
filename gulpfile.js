@@ -233,6 +233,7 @@ gulp.task("installDevDeps", function(done) {
         "stylus",
         "less",
         "postcss",
+        "marked",
         "node-sass",
         "uglify-js",
         "source-map",
