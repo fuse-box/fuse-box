@@ -116,6 +116,13 @@ export function replaceExt(npath, ext): string {
         return npath + ext;
     }
 }
+
+export function isGlob(str: string): Boolean {
+    if (!str) {
+        return false;
+    }
+    return /\*/.test(str);
+}
 export function extractExtension(str: string) {
     const result = str.match(/\.([a-z0-9]+)\$?$/);
     if (!result) {

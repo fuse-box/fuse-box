@@ -1,16 +1,16 @@
 import * as glob from "glob";
-import * as path from "path";
 import { each } from "realm-utils";
 import * as fs from "fs-extra";
 import { ensureDir, string2RegExp } from "../Utils";
 import { SparkyFile } from "./SparkyFile";
-import { Config } from "../Config";
 import { log } from "./Sparky";
+import { parse } from "./SparkyFilePattern";
 
 
 
 export class SparkFlow {
     private activities = [];
+    private watcher: any;
     private files: SparkyFile[];
     private initialWatch = false;
 
@@ -21,21 +21,25 @@ export class SparkFlow {
         return this;
     }
 
+    public stopWatching() {
+        if (this.watcher) {
+            this.watcher.close();
+        }
+    }
+
     public watch(globString: string, opts: any): SparkFlow {
         this.files = [];
         log.echoStatus(`Watch ${globString}`)
         this.activities.push(() => new Promise((resolve, reject) => {
             const chokidar = require("chokidar")
-            chokidar.watch(globString, opts || {})
+            this.watcher = chokidar.watch(globString, opts || {})
                 .on('all', (event, fp) => {
                     if (this.initialWatch) {
                         this.files = [];
                         log.echoStatus(`Changed ${fp}`)
                     }
-                    let root = path.isAbsolute(fp) ? path.dirname(fp) : Config.PROJECT_ROOT;
-                    fp = path.isAbsolute(fp) ? fp : path.join(Config.PROJECT_ROOT, fp);
-
-                    this.files.push(new SparkyFile(fp, root))
+                    let info = parse(fp);
+                    this.files.push(new SparkyFile(info.filepath, info.root))
                     if (this.initialWatch) {
                         // call it again
                         this.exec();
@@ -50,17 +54,26 @@ export class SparkFlow {
         return this;
     }
 
+
     /** Gets all user files */
     protected getFiles(globString: string) {
-        let fp = path.join(Config.PROJECT_ROOT, globString);
+        this.files = [];
+        let info = parse(globString)
+        let root = info.root;
         return new Promise((resolve, reject) => {
-            glob(fp, (err, files: string[]) => {
+            let userFiles: SparkyFile[] = [];
+            if (!info.isGlob) {
+
+                this.files = [new SparkyFile(info.filepath, info.root)];
+                return resolve()
+            }
+            glob(info.glob, (err, files: string[]) => {
                 if (err) {
                     return reject(err);
                 }
-                let userFiles: SparkyFile[] = [];
                 files.forEach(file => {
-                    userFiles.push(new SparkyFile(file, Config.PROJECT_ROOT));
+
+                    userFiles.push(new SparkyFile(file, root));
                 });
                 this.files = userFiles;
                 return resolve(userFiles);
@@ -76,6 +89,7 @@ export class SparkFlow {
     public clean(dest: string): SparkFlow {
         this.activities.push(() =>
             new Promise((resolve, reject) => {
+
                 fs.remove(ensureDir(dest), err => {
                     if (err) return reject(err);
                     return resolve();

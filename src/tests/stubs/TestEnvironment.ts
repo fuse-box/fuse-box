@@ -7,6 +7,36 @@ import { removeFolder } from "../../Utils";
 import * as fsExtra from "fs-extra";
 const jsdom = require("jsdom");
 
+
+export class TestFolder {
+    folder: string;
+    constructor(public customName?: string) {
+
+    }
+    public make() {
+        this.folder = path.join(appRoot.path, ".fusebox", "tests", this.customName
+            ? this.customName : new Date().getTime().toString());
+        fsExtra.ensureDirSync(this.folder);
+    }
+
+    public shouldFindFile(file: string) {
+        let target = path.join(this.folder, file);
+        if (!fs.existsSync(target)) {
+            throw new Error(`Expected to find file ${target}`)
+        }
+        return target;
+    }
+
+    public readFile(file: string): string {
+        let target = this.shouldFindFile(file);
+        return fs.readFileSync(target).toString();
+    }
+
+    public clean() {
+        removeFolder(this.folder);
+    }
+}
+
 export function getStubsFolder() {
     return path.join(appRoot.path, "src/tests/stubs");
 }
