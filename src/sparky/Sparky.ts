@@ -42,7 +42,7 @@ export class Sparky {
         return flow.glob(str);
     }
 
-    public static watch(glob: string, opts: any) {
+    public static watch(glob: string, opts?: any) {
         const flow = new SparkFlow();
         return flow.watch(glob, opts);
     }

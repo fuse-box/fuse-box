@@ -32,6 +32,11 @@ export class TestFolder {
         return fs.readFileSync(target).toString();
     }
 
+    public writeFile(file: string, contents: string): void {
+        let target = this.shouldFindFile(file);
+        fs.writeFileSync(target, contents)
+    }
+
     public clean() {
         removeFolder(this.folder);
     }
