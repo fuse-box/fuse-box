@@ -12,7 +12,21 @@ Sparky is a Task-Runner like `Gulp` or `Grunt`, but what sets it apart is that i
 This is one of the best parts about `Sparky`, it comes built in `FuseBox` so if you install `FuseBox` this means you already have it.
 
 # usage
-`Sparky` does not require `CLI` or global installation. from your command line just type `node fuse [task name]`. for example, say you have a task called build, you can simply run it using `node fuse build`.
+`Sparky` does not require `CLI` or global installation. just create a file called `fuse.js` in your app root (it does no thave to be called `fuse.js`, you can name it anything and put it anywhere, it is just a `JavaScript` file), then from your command line just type `node fuse [task name]`. for example, say you have a task called build, you can simply run it using `node fuse build`.
+
+`c:/myProject/fuse.js`
+```js
+const { Sparky } = require("fsbx");
+
+Sparky.task("foo", () => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            return resolve();
+        }, 1000)
+    });
+});
+```
+`npm fuse.js foo`
 
 # API
 
@@ -38,6 +52,7 @@ Sparky.task("foo", async () => {
     return await someAsynchronousFunction();
 });
 ```
+to execute the task, run `node fuse foo` and enjoy :)
 
 ## Execution-flow
 `Sparky` has two modes for executing tasks, `waterfall` and `parallel`. in `waterfall` mode, tasks are executed sequentially based on the order they are defined. This is good if you require a task to wait until another task is completed. In `parallel` mode tasks are executed asynchronously, meaning they will not depend on each other's completion.
