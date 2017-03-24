@@ -1,5 +1,10 @@
 # Sparky
 
+Sparky is a Task-Runner like `Gulp` or `Grunt`, but what sets it apart is that it is built on top of `FuseBox` technology. This means that it takes benefit of the whole architecture behind, This includes ability to use `FuseBox` plugins and many other things.
+
+## installation
+THis is one of the best parts about `Sparky` it comes built in `FuseBox` so if you install `FuseBox` this means you already have it.
+
 ## Source
 
 ```
