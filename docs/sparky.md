@@ -3,13 +3,13 @@
 Sparky is a Task-Runner like `Gulp` or `Grunt`, but what sets it apart is that it is built on top of `FuseBox` technology. This means that it takes benefit of the whole architecture behind, This includes an ability to use `FuseBox` plugins and many other things.
 
 ## Benefits
-* Unlike `gulp` Sparky utilizes `FuseBox` power, so you don't need to create tasks to transpile `TypeScript`, `FuseBox` will do that for you. instead use `Sparky to do common tasks like copying, moving, deleting files, etc.
+* Unlike `gulp` Sparky utilizes `FuseBox` power, for example, you don't need to create tasks to transpile `TypeScript`, `FuseBox` will do that for you. instead use `Sparky to do common tasks like copying, moving, deleting files, etc. Of course that does not prevent you from doing that if you don't want to utilize `FuseBox` awesomeness.
 * simple intuitive API.
 * based on Promises, this means it is super fast and allows you to use `ES6` `async/await` syntax.
 * Ability to run tasks in parallel and sequentially (waterfall).
 
 ## installation
-This is one of the best parts about `Sparky` it comes built in `FuseBox` so if you install `FuseBox` this means you already have it.
+This is one of the best parts about `Sparky`, it comes built in `FuseBox` so if you install `FuseBox` this means you already have it.
 
 # usage
 `Sparky` does not require `CLI` or global installation. from your command line just type `node fuse [task name]`. for example, say you have a task called build, you can simply run it using `node fuse build`.
@@ -17,7 +17,7 @@ This is one of the best parts about `Sparky` it comes built in `FuseBox` so if y
 # API
 
 ## Task
-First thing you have to do with `Sparky` is to define a Task, A Task takes 2 parameters, Task's name and Function.
+First thing you have to do with `Sparky` is to define a Task, A Task takes two parameters, Task's name and a Function.
 ```js
 Sparky.task("foo", () => {
 });
@@ -32,7 +32,7 @@ Sparky.task("foo", () => {
     });
 });
 ```
-You can also use `ES6` `async/await` syntax
+You can also use `ES6` `async/await` syntax.
 ```js
 Sparky.task("foo", async () => {
     return await someAsynchronousFunction();
@@ -40,7 +40,7 @@ Sparky.task("foo", async () => {
 ```
 
 ## Execution-flow
-`Sparky` has two ways of executing tasks, `waterfall` and `parallel`. in `waterfall` mode, tasks are executed sequentially based on the order they are defined. This is good if you want a task to wait until another task is completed. In `parallel` mode tasks are executed asynchronously, meaning they will not depend on each other.
+`Sparky` has two modes for executing tasks, `waterfall` and `parallel`. in `waterfall` mode, tasks are executed sequentially based on the order they are defined. This is good if you require a task to wait until another task is completed. In `parallel` mode tasks are executed asynchronously, meaning they will not depend on each other's completion.
 
 ```js
 Sparky.task("foo", () => {
