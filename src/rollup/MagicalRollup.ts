@@ -1,4 +1,4 @@
-import { ensureDir, ensureUserPath, Concat } from "../Utils";
+import { ensureDir, Concat } from "../Utils";
 import { Config } from "../Config";
 import * as path from "path";
 import * as fs from "fs";
@@ -21,7 +21,6 @@ export class MagicalRollup {
         this.entryFile = context.rollupOptions.entry;
         this.contents = context.source.getResult().content.toString();
 
-        this.outFile = ensureUserPath(context.outFile);
     }
     public debug(msg: string) {
         this.context.debug("Rollup", msg);
@@ -77,7 +76,7 @@ export class MagicalRollup {
     private rollup(files: any) {
         const rollup = require("rollup");
 
-        const tmpFolder = path.join(Config.TEMP_FOLDER, "es6", encodeURIComponent(this.context.outFile), new Date().getTime().toString());
+        const tmpFolder = path.join(Config.TEMP_FOLDER, "es6", new Date().getTime().toString());
         ensureDir(tmpFolder);
 
         let virtualMap = new Map<string, VirtualFile>();

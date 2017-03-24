@@ -5,11 +5,12 @@ import { should } from "fuse-test-runner";
 export class RollupIntergationTest {
     "Should bundle correctly with typescript"() {
         return createEnv({
+            server: true,
             project: {
                 rollup: {
                     bundle: {
                         moduleName: "Test",
-                        format: "cjs",
+                        format: "cjs"
                     },
                     entry: `main.js`,
                 },

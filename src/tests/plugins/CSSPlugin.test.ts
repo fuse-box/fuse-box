@@ -1,11 +1,11 @@
-import { createEnv } from "./stubs/TestEnvironment";
+import { createEnv } from "./../stubs/TestEnvironment";
 import { should } from "fuse-test-runner";
 import * as path from "path";
 import * as appRoot from "app-root-path";
 import * as fs from "fs";
-import { CSSResourcePlugin } from "../plugins/stylesheet/CSSResourcePlugin";
-import { SassPlugin } from "../plugins/stylesheet/SassPlugin";
-import { CSSPlugin } from "../plugins/stylesheet/CSSplugin";
+import { CSSResourcePlugin } from "../../plugins/stylesheet/CSSResourcePlugin";
+import { SassPlugin } from "../../plugins/stylesheet/SassPlugin";
+import { CSSPlugin } from "../../plugins/stylesheet/CSSplugin";
 import * as fsExtra from "fs-extra";
 
 let tmp, shouldExist;
@@ -14,7 +14,7 @@ const makeTestFolder = () => {
     tmp = path.join(appRoot.path, ".fusebox", "css-test", new Date().getTime().toString());
     fsExtra.ensureDirSync(tmp);
     shouldExist = (name) => {
-        const fname = path.join(tmp, name); ;
+        const fname = path.join(tmp, name);;
         should(fs.existsSync(fname)).equal(true);
         return fs.readFileSync(fname).toString();
     };
@@ -162,9 +162,10 @@ export class CssPluginTest {
         }).then((result) => {
             const js = result.projectContents.toString();
             const contents = shouldExist("app.css");
-            should(contents).equal(`body {};
-h1 {};
-/*# sourceMappingURL=app.css.map */`);
+            should(contents)
+                .findString("body {};")
+                .findString("h1 {};")
+                .findString("/*# sourceMappingURL=app.css.map */")
 
             shouldExist("app.css.map");
             should(js).findString(`__fsbx_css("app.css");`);

@@ -123,7 +123,7 @@ export class Arithmetic {
      *
      * @memberOf Arithmetic
      */
-    public static getFiles(parser: PropParser, virtualFiles: string, homeDir: string): Promise<BundleData> {
+    public static getFiles(parser: PropParser, virtualFiles: any, homeDir: string): Promise<BundleData> {
         let tsMode = false;
         let collect = (list) => {
             let data = new Map<string, IBundleInformation>();

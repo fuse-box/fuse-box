@@ -1,6 +1,6 @@
-import {createEnv} from "./stubs/TestEnvironment";
-import {should} from "fuse-test-runner";
-import {HTMLPlugin} from "../plugins/HTMLplugin";
+import { createEnv } from "./../stubs/TestEnvironment";
+import { should } from "fuse-test-runner";
+import { HTMLPlugin } from "../../plugins/HTMLplugin";
 
 export class HtmlPluginTest {
     "Should get Template with Default as export"() {
@@ -26,7 +26,7 @@ export class HtmlPluginTest {
                     "index.ts": `const template= require('./index.html');`,
                     "index.html": `<h1>hello</h1>`,
                 },
-                plugins: [HTMLPlugin({useDefault: false})],
+                plugins: [HTMLPlugin({ useDefault: false })],
                 instructions: "> index.ts **/*.html",
             },
         }).then((result) => {
@@ -48,8 +48,8 @@ export class HtmlPluginTest {
         }).then((result) => {
             const out = result.project.FuseBox.import("./index.html");
             should(out).deepEqual({
-                    "default": "<h1>hello</h1>"
-                }
+                "default": "<h1>hello</h1>"
+            }
             );
         });
     }
@@ -61,7 +61,7 @@ export class HtmlPluginTest {
                     "index.ts": `const template= require('./index.html');`,
                     "index.html": `<h1>hello</h1>`,
                 },
-                plugins: [HTMLPlugin({useDefault: false})],
+                plugins: [HTMLPlugin({ useDefault: false })],
                 instructions: "> index.ts **/*.html",
             },
         }).then((result) => {

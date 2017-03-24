@@ -69,7 +69,7 @@ export class PathResolverTest {
                     "index.ts": `module.exports = require("./woo/hello");`,
                     "woo/hello/index.ts": "module.exports = {ok : 1 }",
                 },
-                instructions: "**/*.js",
+                instructions: "**/*.ts",
             },
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");

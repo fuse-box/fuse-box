@@ -6,6 +6,7 @@ export class Configuration {
     public FUSEBOX_MODULES = path.join(PROJECT_ROOT, "modules");
     public TEMP_FOLDER = path.join(appRoot.path, ".fusebox");
     public PROJECT_FOLDER = appRoot.path;
+    public PROJECT_ROOT = path.dirname(require.main.filename);
     public FUSEBOX_VERSION = process.env.FUSEBOX_VERSION || require(path.join(PROJECT_ROOT, "package.json")).version;
 }
 export let Config = new Configuration();

@@ -9,6 +9,7 @@ export class SocketServer {
         if (!this.server) {
             this.server = this.start(server, fuse);
         }
+
         return this.server;
     }
 
@@ -35,6 +36,9 @@ export class SocketServer {
     public clients = new Set<any>();
 
     constructor(public server: any, public fuse: FuseBox) {
+        // emit only for this producer
+        this.fuse.producer.sharedEvents.emit("SocketServerReady", this);
+
         server.on("connection", (ws) => {
             this.fuse.context.log.echo("Client connected");
             this.clients.add(ws);

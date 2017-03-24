@@ -210,11 +210,8 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         } else {
             this.concat.add(null, "(FuseBox)");
         }
-
-        if (this.context.sourceMapConfig) {
-            if (this.context.sourceMapConfig.bundleReference) {
-                this.concat.add(null, `//# sourceMappingURL=${this.context.sourceMapConfig.bundleReference}`);
-            }
+        if (this.context.sourceMapsProject || this.context.sourceMapsVendor) {
+            this.concat.add(null, `//# sourceMappingURL=${this.context.bundle.name}.js.map`);
         }
     }
 

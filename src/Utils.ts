@@ -2,7 +2,8 @@ import * as path from "path";
 import * as fs from "fs";
 import * as fsExtra from "fs-extra";
 import { utils } from "realm-utils";
-const appRoot = require("app-root-path");
+
+const userFuseDir = path.dirname(require.main.filename);
 
 const MBLACKLIST = [
     "freelist",
@@ -64,7 +65,7 @@ export function parseQuery(qstr) {
  */
 export function ensureUserPath(userPath: string) {
     if (!path.isAbsolute(userPath)) {
-        userPath = path.join(appRoot.path, userPath);
+        userPath = path.join(userFuseDir, userPath);
     }
     userPath = path.normalize(userPath);
     let dir = path.dirname(userPath);
@@ -75,7 +76,7 @@ export function ensureUserPath(userPath: string) {
 
 export function ensureDir(userPath: string) {
     if (!path.isAbsolute(userPath)) {
-        userPath = path.join(appRoot.path, userPath);
+        userPath = path.join(userFuseDir, userPath);
     }
     userPath = path.normalize(userPath);
 
@@ -86,7 +87,9 @@ export function ensureDir(userPath: string) {
 export function string2RegExp(obj: any) {
     let escapedRegEx = obj
         .replace(/\*/g, "@")
+
         .replace(/[.?*+[\]-]/g, "\\$&")
+        .replace(/@@/g, ".*", "i")
         .replace(/@/g, "\\w{1,}", "i");
 
     if (escapedRegEx.indexOf("$") === -1) {
@@ -112,6 +115,13 @@ export function replaceExt(npath, ext): string {
     } else {
         return npath + ext;
     }
+}
+
+export function isGlob(str: string): Boolean {
+    if (!str) {
+        return false;
+    }
+    return /\*/.test(str);
 }
 export function extractExtension(str: string) {
     const result = str.match(/\.([a-z0-9]+)\$?$/);
