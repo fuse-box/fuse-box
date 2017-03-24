@@ -3,7 +3,7 @@
 Sparky is a Task-Runner like `Gulp` or `Grunt`, but what sets it apart is that it is built on top of `FuseBox` technology. This means that it takes benefit of the whole architecture behind, This includes an ability to use `FuseBox` plugins and many other things.
 
 ## Benefits
-* Unlike `gulp` Sparky utilizes `FuseBox` power, for example, you don't need to create tasks to transpile `TypeScript`, `FuseBox` will do that for you. instead use `Sparky to do common tasks like copying, moving, deleting files, etc. Of course that does not prevent you from doing that if you don't want to utilize `FuseBox` awesomeness.
+* Unlike `gulp` Sparky utilizes `FuseBox` power, for example, you don't need to create tasks to transpile `TypeScript`, `FuseBox` will do that for you. instead use `Sparky to do common tasks like copying, moving, deleting files, etc. Of course, that does not prevent you from doing that if you don't want to utilize `FuseBox` awesomeness.
 * simple intuitive API.
 * based on Promises, this means it is super fast and allows you to use `ES6` `async/await` syntax.
 * Ability to run tasks in parallel and sequentially (waterfall).
@@ -69,14 +69,25 @@ Sparky.task("parallel", ["&foo", "&bar"], () => {
 
 });
 ```
+
 ## Source
+This method tells `Sparky` what files it needs to operate on.
+ ```js
+ Sparky.src("src/**/**.*")
+ ```
+The above will basically capture all files in your `src` folder.
 
-```
-Sparky.src("files/**/**.*")
-```
+Say you want to capture all `HTML` files in your `src` folder, do the following:
+ ```js
+ Sparky.src("src/**/*.html")
+ ```
+or you want to capture all images file formats
+ ```js
+ Sparky.src("src/**/*.(jpg|png|gif))")
+ ```
 
-Grabs files using globs
-
+## watch
+Same as `source` above, the only difference is that it is a daemon so it will always run whenever a file in the captured globing changes.
 ## Dest
 
 Copies files
