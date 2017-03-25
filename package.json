@@ -19,6 +19,7 @@
         "docs"
     ],
     "scripts": {
+        "fusetest": "node test",
         "help": "node bin/fsbx --help",
         "test": "TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js",
         "test:once": "gulp dist && TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js",
