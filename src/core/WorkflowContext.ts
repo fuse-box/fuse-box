@@ -58,7 +58,7 @@ export class WorkFlowContext {
      * defaults to app-root-path, but can be set by user
      * @see FuseBox
      */
-    public root: any = appRoot;
+    public root: any = appRoot.path;
 
     public shim: any;
 
