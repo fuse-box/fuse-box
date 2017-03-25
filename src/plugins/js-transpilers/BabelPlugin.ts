@@ -23,24 +23,45 @@ export class BabelPluginClass implements Plugin {
     public context: WorkFlowContext;
     private limit2project: boolean = true;
 
-    private config: any = {};
+    private config?: any = {};
     private configPrinted = false;
 
     constructor(opts: any) {
-        let babelRcConfig;
-        let babelRcPath = path.join(appRoot.path, `.babelrc`);
-        if (fs.existsSync(babelRcPath)) {
-            babelRcConfig = fs.readFileSync(babelRcPath).toString();
-            if (babelRcConfig) babelRcConfig = JSON.parse(babelRcConfig);
-        }
         opts = opts || {};
-        this.config = opts.config ? opts.config : babelRcConfig;
+
+        // if it is an object containing only a babel config
+        if (opts.test === undefined && opts.limit2project === undefined && Object.keys(opts).length) {
+          this.config = opts;
+          return
+        }
+
+        if (opts.config) {
+            this.config = opts.config;
+        }
         if (opts.test !== undefined) {
             this.test = opts.test;
         }
         if (opts.limit2project !== undefined) {
             this.limit2project = opts.limit2project;
         }
+    }
+
+    /**
+     * @see this.init
+     * @memberOf FuseBoxHTMLPlugin
+     */
+    private handleBabelRc() {
+      if (this.config) return
+
+      let babelRcConfig;
+      let babelRcPath = path.join(this.context.root, `.babelrc`);
+      if (fs.existsSync(babelRcPath)) {
+          babelRcConfig = fs.readFileSync(babelRcPath).toString();
+          if (babelRcConfig) babelRcConfig = JSON.parse(babelRcConfig);
+      }
+      if (babelRcConfig) {
+        this.config = babelRcConfig;
+      }
     }
 
     /**
@@ -53,6 +74,7 @@ export class BabelPluginClass implements Plugin {
     public init(context: WorkFlowContext) {
         this.context = context;
         context.allowExtension(".jsx");
+        this.handleBabelRc();
     }
 
     /**
@@ -63,17 +85,14 @@ export class BabelPluginClass implements Plugin {
      * @memberOf FuseBoxHTMLPlugin
      */
     public transform(file: File, ast: any) {
-
         if (!babelCore) {
             babelCore = require("babel-core");
         }
-        if (this.configPrinted === false) {
+        if (this.configPrinted === false && this.context.doLog === true) {
             file.context.debug("BabelPlugin", `\n\tConfiguration: ${JSON.stringify(this.config)}`);
-
             this.configPrinted = true;
         }
         if (this.context.useCache) {
-
             let cached = this.context.cache.getStaticCache(file);
             if (cached) {
                 if (cached.sourceMap) {
