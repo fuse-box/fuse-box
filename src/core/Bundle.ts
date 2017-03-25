@@ -47,8 +47,8 @@ export class Bundle {
             // Should happen only once!
             this.producer.hmrInjected = true;
         }
-        /** 
-         * Whenever socket server is initialized 
+        /**
+         * Whenever socket server is initialized
          * This will allow use to enable HMR on any bundle within current producer
         */
         this.producer.sharedEvents.on("SocketServerReady", (server: SocketServer) => {
@@ -75,12 +75,12 @@ export class Bundle {
     }
 
     /**
-     * Adds a plugin or a chain of plugins 
+     * Adds a plugin or a chain of plugins
      * e.g
      * in case of one plugin
      * plugin(HTMLPlugin())
      * In case of a chain:
-     * 
+     *
      * plugin("*.html", HTMLPlugin())
      * @param args Plugin
      */
@@ -92,7 +92,7 @@ export class Bundle {
 
     /**
      * natives({ process : false })
-     * @param opts 
+     * @param opts
      */
     public natives(opts: any): Bundle {
         this.context.natives = opts;

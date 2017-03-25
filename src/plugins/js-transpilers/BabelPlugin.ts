@@ -130,9 +130,7 @@ export class BabelPluginClass implements Plugin {
 
     }
 }
-;
 
 export const BabelPlugin = (opts: any) => {
     return new BabelPluginClass(opts);
 };
-

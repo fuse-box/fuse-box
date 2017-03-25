@@ -247,6 +247,7 @@ export class File {
             return this.context.queue(each(tasks, promise => promise()));
         }
     }
+
     /**
      *
      *
@@ -410,7 +411,8 @@ export class File {
     }
 
     /**
-     * Provides a file-specific transpilation config. This is needed so we can supply the filename to
+     * Provides a file-specific transpilation config.
+     * This is needed so we can supply the filename to
      * the TypeScript compiler.
      *
      * @private
