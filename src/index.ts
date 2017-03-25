@@ -21,6 +21,7 @@ export { SassPlugin } from "./plugins/stylesheet/SassPlugin";
 export { UglifyJSPlugin } from "./plugins/UglifyJSPlugin";
 export { SourceMapPlainJsPlugin } from "./plugins/SourceMapPlainJsPlugin";
 export { RawPlugin } from "./plugins/RawPlugin";
+export { OptimizeJSPlugin } from "./plugins/OptimizeJSPlugin";
 export { Fluent } from "./arithmetic/Fluent";
 
 export { FuseBox } from "./core/FuseBox";

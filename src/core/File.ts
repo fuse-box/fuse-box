@@ -7,8 +7,6 @@ import { utils, each } from "realm-utils";
 import * as fs from "fs";
 import * as path from "path";
 
-const appRoot = require("app-root-path");
-
 /**
  *
  *
@@ -222,7 +220,7 @@ export class File {
                 } else {
                     itemTest = item.test;
                 }
-                if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(path.relative(appRoot.path, this.absPath))) {
+                if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(path.relative(this.context.root, this.absPath))) {
                     target = item;
                 }
                 index++;
@@ -247,6 +245,7 @@ export class File {
             return this.context.queue(each(tasks, promise => promise()));
         }
     }
+
     /**
      *
      *
@@ -410,7 +409,8 @@ export class File {
     }
 
     /**
-     * Provides a file-specific transpilation config. This is needed so we can supply the filename to
+     * Provides a file-specific transpilation config.
+     * This is needed so we can supply the filename to
      * the TypeScript compiler.
      *
      * @private
