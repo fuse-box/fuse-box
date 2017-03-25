@@ -25,12 +25,11 @@ export class HTTPServer {
     public app: any;
     public opts: HTTPServerOptions;
 
-    constructor(
-        private fuse: FuseBox
-    ) {
+    constructor(private fuse: FuseBox) {
         this.app = express();
     }
 
+    // @TODO: should add .stop()
     public launch(opts: HTTPServerOptions): void {
         this.opts = opts || {};
         const port = this.opts.port || 4444;

@@ -1,7 +1,6 @@
 import { File } from "../../core/File";
 import { WorkFlowContext, Plugin } from "../../core/WorkflowContext";
 import * as path from "path";
-import * as appRoot from "app-root-path";
 import { Config } from "../../Config";
 
 let sass;
@@ -15,6 +14,7 @@ export class SassPluginClass implements Plugin {
 
     public test: RegExp = /\.scss$/;
     public options: any;
+    public context: WorkFlowContext;
 
     constructor(options: any) {
         this.options = options || {};
@@ -22,6 +22,7 @@ export class SassPluginClass implements Plugin {
 
     public init(context: WorkFlowContext) {
         context.allowExtension(".scss");
+        this.context = context;
     }
 
     public transform(file: File): Promise<any> {
@@ -34,7 +35,7 @@ export class SassPluginClass implements Plugin {
 
         const defaultMacro = {
             "$homeDir": file.context.homeDir,
-            "$appRoot": appRoot.path,
+            "$appRoot": this.context.root,
             "~": Config.NODE_MODULES_DIR + "/",
         };
 

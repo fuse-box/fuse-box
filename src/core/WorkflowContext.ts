@@ -16,6 +16,7 @@ import { UserOutput } from "./UserOutput";
 import { FuseBox } from "./FuseBox";
 import { Bundle } from "./Bundle";
 
+const appRoot = require("app-root-path");
 
 /**
  * All the plugin method names
@@ -28,8 +29,6 @@ export type PluginMethodName =
     | "bundleEnd"
     | "postBundle"
     | "postBuild";
-
-const appRoot = require("app-root-path");
 
 /**
  * Interface for a FuseBox plugin
@@ -55,6 +54,12 @@ export interface Plugin {
  * Gets passed to each plugin to track FuseBox configuration
  */
 export class WorkFlowContext {
+    /**
+     * defaults to app-root-path, but can be set by user
+     * @see FuseBox
+     */
+    public root: any = appRoot;
+
     public shim: any;
 
     public fuse: FuseBox;
@@ -365,7 +370,7 @@ export class WorkFlowContext {
             configFile = ensureUserPath(this.tsConfig);
         } else {
             url = path.join(this.homeDir, "tsconfig.json");
-            let tsconfig = findFileBackwards(url, appRoot.path);
+            let tsconfig = findFileBackwards(url, this.root);
             if (tsconfig) {
                 configFile = tsconfig;
             }
