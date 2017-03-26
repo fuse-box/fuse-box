@@ -5,6 +5,7 @@ import { FuseProcess } from "../FuseProcess";
 import { HotReloadPlugin } from "../plugins/HotReloadPlugin";
 import { SocketServer } from "../devServer/SocketServer";
 import { utils } from "realm-utils";
+import { File } from "./File";
 
 export class Bundle {
 
@@ -14,6 +15,7 @@ export class Bundle {
     public arithmetics: string;
     public process: FuseProcess = new FuseProcess(this);
     public onDoneCallback: any;
+    public splitFiles: Map<string, File>;
 
     constructor(public name: string, public fuse: FuseBox, public producer: BundleProducer) {
         this.context = fuse.context;
@@ -59,6 +61,9 @@ export class Bundle {
                 }
             });
         });
+        return this;
+    }
+    public split(rule: string, bundleName: string): Bundle {
         return this;
     }
 
@@ -150,5 +155,12 @@ export class Bundle {
             this.context.initCache();
             this.context.cache.initialize();
         }
+    }
+
+    protected addSplitFile(file: File) {
+        if (!this.splitFiles) {
+            this.splitFiles = new Map();
+        }
+        this.splitFiles.set(file.info.fuseBoxPath, file);
     }
 }

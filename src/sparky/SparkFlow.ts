@@ -104,6 +104,8 @@ export class SparkFlow {
         return this;
     }
 
+
+
     public plugin(plugin: Plugin): SparkFlow {
         this.activities.push(() => {
             //Promise.all(this.files.map(file => file.copy(dest)))

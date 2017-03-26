@@ -5,8 +5,8 @@ import { EventEmitter } from "events";
 import { Arithmetic, BundleData } from "../arithmetic/Arithmetic";
 import { SharedCustomPackage } from "./SharedCustomPackage";
 import { BundleRunner } from "./BundleRunner";
-import * as watch from "watch";
 import { ServerOptions } from "../devServer/Server";
+import * as  chokidar from "chokidar";
 
 export class BundleProducer {
     public bundles = new Map<string, Bundle>();
@@ -84,13 +84,15 @@ export class BundleProducer {
             return;
         }
 
-        watch.watchTree(this.fuse.context.homeDir, { interval: 0.2 }, (f, curr, prev) => {
-            if (typeof f == "object" && prev === null && curr === null) {
-                // Finished walking the tree
-            } else {
-                this.onChanges(settings, f)
-            }
-        });
+        let ready = false;
+        chokidar.watch(this.fuse.context.homeDir)
+            .on('all', (event, fp) => {
+                if (ready) {
+                    this.onChanges(settings, fp)
+                }
+            }).on('ready', () => {
+                ready = true;
+            });
     }
 
     /** Trigger bundles that are affected */
