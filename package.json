@@ -20,8 +20,11 @@
     ],
     "scripts": {
         "help": "node bin/fsbx --help",
-        "test": "TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js",
+        "test:all": "TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js",
         "test:once": "gulp dist && TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js",
+        "test:fuse": "node test",
+        "test:fuse:once": "npm run dist && node test",
+        "test": "node test",
         "start": "gulp watch",
         "devDeps": "gulp installDevDeps",
         "dist": "gulp dist"
