@@ -324,6 +324,12 @@ export class ModuleCollection {
         return Promise.all(promises);
     }
 
+    public resolveSplitFiles(files: File[]) {
+        return each(files, (file: File) => {
+            return this.resolve(file, true);
+        });
+    }
+
     /**
      *
      *

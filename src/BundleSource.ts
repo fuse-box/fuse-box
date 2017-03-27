@@ -32,6 +32,8 @@ export class BundleSource {
 
     private collectionSource: any;
 
+    public bundleInfoObject: any;
+
     /**
      * Creates an instance of BundleSource.
      *
@@ -168,6 +170,11 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             this.concat.add(null, `FuseBox.isServer = true;`);
         }
 
+        // writing other bundles info
+        if (this.bundleInfoObject) {
+            this.concat.add(null, `FuseBox.bundles(${JSON.stringify(this.bundleInfoObject)})`);
+        }
+
         // Handle globals
         if (context.globals) {
             let data = [];
@@ -197,6 +204,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         if (context.defaultPackageName !== "default") {
             this.concat.add(null, `FuseBox.defaultPackageName = ${JSON.stringify(context.defaultPackageName)};`);
         }
+
 
         this.concat.add(null, "})");
 

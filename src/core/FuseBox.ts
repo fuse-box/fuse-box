@@ -15,6 +15,7 @@ import { MagicalRollup } from "../rollup/MagicalRollup";
 import { UserOutput } from "./UserOutput";
 import { BundleProducer } from "./BundleProducer";
 import { Bundle } from "./Bundle";
+import { SplitConfig } from "./BundleSplit";
 
 const isWin = /^win/.test(process.platform);
 const appRoot = require("app-root-path");
@@ -23,7 +24,7 @@ export interface FuseBoxOptions {
     homeDir?: string;
     modulesFolder?: string;
     tsConfig?: string;
-    package?: string;
+    package?: any;
     cache?: boolean;
     log?: boolean;
     globals?: { [packageName: string]: /** Variable name */ string };
@@ -254,8 +255,34 @@ export class FuseBox {
             else fs.writeFile(configPath, mainStr, () => { });
         }
     }
-
-
+    /**
+     * Bundle files only
+     * @param files File[]
+     */
+    public createSplitBundle(conf: SplitConfig): Promise<SplitConfig> {
+        let files = conf.files;
+        let defaultCollection = new ModuleCollection(this.context, this.context.defaultPackageName);
+        defaultCollection.pm = new PathMaster(this.context, this.context.homeDir);
+        this.context.reset();
+        const bundleData = new BundleData();
+        this.context.source.init();
+        bundleData.entry = "";
+        //this.context.output.setName()
+        return defaultCollection.resolveSplitFiles(files).then(() => {
+            return this.collectionSource.get(defaultCollection).then((cnt: string) => {
+                this.context.log.echoDefaultCollection(defaultCollection, cnt);
+            });
+        }).then(() => {
+            return new Promise((resolve, reject) => {
+                this.context.source.finalize(bundleData);
+                this.triggerEnd();
+                this.triggerPost();
+                this.context.writeOutput(() => {
+                    return resolve(conf);
+                });
+            });
+        });
+    }
 
     public process(bundleData: BundleData, bundleReady?: () => any) {
         let bundleCollection = new ModuleCollection(this.context, this.context.defaultPackageName);
@@ -304,6 +331,10 @@ export class FuseBox {
                     };
                 }
 
+            }).then(() => {
+                if (self.context.bundle && self.context.bundle.bundleSplit) {
+                    return self.context.bundle.bundleSplit.beforeMasterWrite(self.context);
+                }
             }).then(result => {
                 let self = this;
 

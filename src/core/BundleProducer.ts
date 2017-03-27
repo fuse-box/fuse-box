@@ -23,10 +23,10 @@ export class BundleProducer {
     }
 
 
-    public run(opts: any) {
+    public run(opts: any): Promise<BundleProducer> {
         /** Collect information about watchers and start watching */
         this.watch();
-        return this.runner.run(opts);
+        return this.runner.run(opts).then(() => this)
     }
 
     public register(packageName: string, opts: any) {

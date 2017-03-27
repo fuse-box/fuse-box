@@ -405,26 +405,22 @@ export class WorkFlowContext {
         return this.initialLoad === true;
     }
 
-    public finalize(): Promise<any> {
-        if (this.bundle && this.bundle.bundleSplit) {
-            return this.bundle.bundleSplit.beforeMasterWrite();
-        }
-        return Promise.resolve();
-    }
+
+
     public writeOutput(outFileWritten?: () => any) {
         this.initialLoad = false;
-        return this.finalize().then(() => {
-            const res = this.source.getResult();
-            if (this.output) {
-                this.output.writeCurrent(res.content).then(() => {
-                    this.writeSourceMaps(res);
-                    this.defer.unlock();
-                    if (utils.isFunction(outFileWritten)) {
-                        outFileWritten();
-                    }
-                });
-            }
-        })
+
+        const res = this.source.getResult();
+        if (this.output) {
+            this.output.writeCurrent(res.content).then(() => {
+                this.writeSourceMaps(res);
+                this.defer.unlock();
+                if (utils.isFunction(outFileWritten)) {
+                    outFileWritten();
+                }
+            });
+        }
+
 
     }
 

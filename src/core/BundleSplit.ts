@@ -1,46 +1,72 @@
-import { string2RegExp } from "../Utils";
+import { string2RegExp, ensurePublicExtension } from "../Utils";
 import { File } from "./File";
 import { Bundle } from "./Bundle";
 import { FuseBox } from "./FuseBox";
+import { each } from "realm-utils";
+import { WorkFlowContext } from "./WorkflowContext";
 
+
+export class SplitConfig {
+    public fuse: FuseBox;
+    public name: string;
+    public main: string;
+    public files: File[] = [];
+    public rules: RegExp[] = [];
+}
 
 export class BundleSplit {
-    public rules = new Map<RegExp, string>();
-    public tasks = new Map<string, File[]>();
-    public bundles = new Map<string, FuseBox>();
-
+    public bundles = new Map<string, SplitConfig>();
     constructor(public bundle: Bundle) { }
-
     public addRule(rule: string, bundleName: string) {
-        this.rules.set(string2RegExp(rule), bundleName);
+        const conf = this.bundles.get(bundleName);
+        conf.rules.push(string2RegExp(rule));
     }
 
     /**
      * 
      * @param name 
      */
-    public createFuseBoxInstance(name: string): FuseBox {
+    public createFuseBoxInstance(name: string, mainFile: string): FuseBox {
+
         const producer = this.bundle.producer;
         const config = Object.assign({}, producer.fuse.opts);
         config.plugins = [].concat(config.plugins || [])
+        config.standalone = false;
         const fuse = FuseBox.init(config);
-        this.bundles.set(name, fuse);
+        fuse.context.output.setName(name)
+        let conf = new SplitConfig();
+        conf.fuse = fuse;
+        conf.name = name;
+        conf.main = mainFile;
+        this.bundles.set(name, conf);
         return fuse;
     }
 
 
-    public getFuseBoxInstance(name: string) {
+    public getFuseBoxInstance(name: string, mainFile: string) {
         if (this.bundles.get(name)) {
             return this.bundles.get(name);
         }
-        return this.createFuseBoxInstance(name);
+        return this.createFuseBoxInstance(name, mainFile);
     }
 
 
-    public beforeMasterWrite(): Promise<any> {
-        return new Promise((resolve, reject) => {
-            console.log(this.tasks);
-            return resolve();
+    public beforeMasterWrite(masterContext: WorkFlowContext): Promise<any> {
+        return each(this.bundles, (conf: SplitConfig, bundleName: string) => {
+            return conf.fuse.createSplitBundle(conf);
+        }).then((configs: SplitConfig[]) => {
+            // getting information on the paths
+            let obj: any = {
+
+            };
+            configs.forEach(config => {
+                let localFileName = config.fuse.context.output.lastGeneratedFileName;
+                obj[config.name] = {
+                    file: localFileName,
+                    main: ensurePublicExtension(config.main)
+                }
+            });
+            masterContext.source.bundleInfoObject = obj;
         });
     }
 
@@ -52,19 +78,16 @@ export class BundleSplit {
      * @param file File
      */
     public verify(file: File): boolean {
-        let targetBundleName;
-        this.rules.forEach((bundleName, regexp) => {
-            if (regexp.test(file.info.fuseBoxPath)) {
-                targetBundleName = bundleName;
-            }
+        let targetConfg: SplitConfig;
+        this.bundles.forEach(conf => {
+            conf.rules.forEach(rx => {
+                if (rx.test(file.info.fuseBoxPath)) {
+                    targetConfg = conf;
+                }
+            })
         });
-        if (targetBundleName) {
-            let tasks = this.tasks.get(targetBundleName);;
-            if (!tasks) {
-                tasks = [];
-                this.tasks.set(targetBundleName, tasks);
-            }
-            tasks.push(file);
+        if (targetConfg) {
+            targetConfg.files.push(file);
             return true;
         }
         return false;

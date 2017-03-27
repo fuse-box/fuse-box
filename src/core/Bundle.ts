@@ -19,7 +19,7 @@ export class Bundle {
     public onDoneCallback: any;
 
     public splitFiles: Map<string, File>;
-    public bundleSplit: BundleSplit​​;
+    public bundleSplit: BundleSplit;
 
 
     constructor(public name: string, public fuse: FuseBox, public producer: BundleProducer) {
@@ -47,7 +47,6 @@ export class Bundle {
         if (!this.producer.hmrInjected) {
             opts = opts || {};
             opts.port = this.producer.devServerOptions && this.producer.devServerOptions.port || 4444;
-
             let plugin = HotReloadPlugin({ port: opts.port, uri: opts.socketURI });
             this.context.plugins = this.context.plugins || [];
             this.context.plugins.push(plugin);
@@ -70,12 +69,19 @@ export class Bundle {
         return this;
     }
 
-    public split(rule: string, bundleName: string): Bundle {
+    public split(rule: string, str: string): Bundle {
+
+        const arithmetics = str.match(/(\S+)\s*>\s(\S+)/i)
+        if (!arithmetics) {
+            throw new Error("Can't parse split arithmetics. Should look like:")
+        }
+        const bundleName = arithmetics[1];
+        const mainFile = arithmetics[2];
+
         if (!this.bundleSplit) {
             this.bundleSplit = new BundleSplit(this);
         }
-        this.bundleSplit.getFuseBoxInstance(bundleName);
-
+        this.bundleSplit.getFuseBoxInstance(bundleName, mainFile);
         this.bundleSplit.addRule(rule, bundleName);
         return this;
     }
