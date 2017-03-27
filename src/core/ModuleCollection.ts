@@ -326,7 +326,7 @@ export class ModuleCollection {
 
     public resolveSplitFiles(files: File[]) {
         return each(files, (file: File) => {
-            return this.resolve(file, true);
+            this.dependencies.set(file.absPath, file);
         });
     }
 

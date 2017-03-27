@@ -44,8 +44,7 @@ type FSBX = {
     /** FuseBox events */
     e?: {
         "after-import"?: any;
-    },
-    bundles: any;
+    }
 };
 
 // Patching global variable
@@ -66,7 +65,6 @@ const $fsbx: FSBX = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
 if (!$isBrowser) {
     g["require"] = require;
 }
-$fsbx.bundles = {};
 /**
  * All packages are here
  *  Used to reference to the outside world
@@ -327,23 +325,6 @@ function $getRef(name: string, o: RefOpts): IReference {
     };
 };
 
-function $xmlhttp(path: string, cb: any) {
-    if ($isBrowser) {
-        var xmlhttp: XMLHttpRequest = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState == 4) {
-                if (xmlhttp.status == 200) {
-                    let contentType = xmlhttp.getResponseHeader("Content-Type");
-                    cb(xmlhttp);
-                } else {
-                    console.error(path, 'not found on request');
-                }
-            }
-        };
-        xmlhttp.open("GET", path, true);
-        xmlhttp.send();
-    }
-}
 /**
  * $async
  * Async request
@@ -351,20 +332,30 @@ function $xmlhttp(path: string, cb: any) {
  */
 function $async(file: string, cb: (imported?: any) => any) {
     if ($isBrowser) {
-        $xmlhttp(file, (resp) => {
-            let contentType = resp.getResponseHeader("Content-Type");
-            let content = resp.responseText;
-            if (/json/.test(contentType)) {
-                content = `module.exports = ${content}`;
-            } else {
-                if (!/javascript/.test(contentType)) {
-                    content = `module.exports = ${JSON.stringify(content)}`;
+        var xmlhttp: XMLHttpRequest = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == 4) {
+                if (xmlhttp.status == 200) {
+                    let contentType = xmlhttp.getResponseHeader("Content-Type");
+                    let content = xmlhttp.responseText;
+                    if (/json/.test(contentType)) {
+                        content = `module.exports = ${content}`;
+                    } else {
+                        if (!/javascript/.test(contentType)) {
+                            content = `module.exports = ${JSON.stringify(content)}`;
+                        }
+                    }
+                    let normalized = $pathJoin("./", file);
+                    FuseBox.dynamic(normalized, content);
+                    cb(FuseBox.import(file, {}));
+                } else {
+                    console.error(file, 'not found on request');
+                    cb(undefined);
                 }
             }
-            let normalized = $pathJoin("./", file);
-            FuseBox.dynamic(normalized, content);
-            cb(FuseBox.import(file, {}));
-        });
+        };
+        xmlhttp.open("GET", file, true);
+        xmlhttp.send();
     } else {
         if (/\.(js|json)$/.test(file)) return cb(g["require"](file));
         return cb("");
@@ -385,6 +376,7 @@ function $trigger(name: string, args: any) {
                 return false;
             }
         }
+        ;
     }
 };
 
@@ -501,7 +493,6 @@ class FuseBox {
     public static mainFile: string;
     public static isBrowser = $isBrowser !== undefined;
     public static isServer = !$isBrowser;
-    public static bundleConfig: any;
 
     public static global(key: string, obj?: any) {
         if (obj === undefined) return g[key];
@@ -538,26 +529,6 @@ class FuseBox {
         }
     }
 
-    public static bundles(conf) {
-        $fsbx.bundles = conf;
-    }
-
-    public static load(name: string, fn: any) {
-        const info = $fsbx.bundles[name];
-        if (!info) {
-            return console.error(`Bundle ${name} was not found`);
-        }
-        const main = `./${info.main}`;
-        console.log("oi...");
-        if (this.exists(main)) {
-            fn($import(main))
-        } else {
-            $xmlhttp(info.file, (res) => {
-                new Function(res.responseText)();
-                fn(FuseBox.import("~/" + info.main));
-            });
-        }
-    }
     /**
      * Removes a module
      */

@@ -11,7 +11,6 @@ var $fsbx = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
 if (!$isBrowser) {
     g["require"] = require;
 }
-$fsbx.bundles = {};
 var $packages = $fsbx.p = $fsbx.p || {};
 var $events = $fsbx.e = $fsbx.e || {};
 function $getNodeModuleName(name) {
@@ -175,41 +174,34 @@ function $getRef(name, o) {
     };
 }
 ;
-function $xmlhttp(path, cb) {
+function $async(file, cb) {
     if ($isBrowser) {
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4) {
                 if (xmlhttp.status == 200) {
                     var contentType = xmlhttp.getResponseHeader("Content-Type");
-                    cb(xmlhttp);
+                    var content = xmlhttp.responseText;
+                    if (/json/.test(contentType)) {
+                        content = "module.exports = " + content;
+                    }
+                    else {
+                        if (!/javascript/.test(contentType)) {
+                            content = "module.exports = " + JSON.stringify(content);
+                        }
+                    }
+                    var normalized = $pathJoin("./", file);
+                    FuseBox.dynamic(normalized, content);
+                    cb(FuseBox.import(file, {}));
                 }
                 else {
-                    console.error(path, 'not found on request');
+                    console.error(file, 'not found on request');
+                    cb(undefined);
                 }
             }
         };
-        xmlhttp.open("GET", path, true);
+        xmlhttp.open("GET", file, true);
         xmlhttp.send();
-    }
-}
-function $async(file, cb) {
-    if ($isBrowser) {
-        $xmlhttp(file, function (resp) {
-            var contentType = resp.getResponseHeader("Content-Type");
-            var content = resp.responseText;
-            if (/json/.test(contentType)) {
-                content = "module.exports = " + content;
-            }
-            else {
-                if (!/javascript/.test(contentType)) {
-                    content = "module.exports = " + JSON.stringify(content);
-                }
-            }
-            var normalized = $pathJoin("./", file);
-            FuseBox.dynamic(normalized, content);
-            cb(FuseBox.import(file, {}));
-        });
     }
     else {
         if (/\.(js|json)$/.test(file))
@@ -227,6 +219,7 @@ function $trigger(name, args) {
                 return false;
             }
         }
+        ;
     }
 }
 ;
@@ -312,26 +305,6 @@ var FuseBox = (function () {
         }
         catch (err) {
             return false;
-        }
-    };
-    FuseBox.bundles = function (conf) {
-        $fsbx.bundles = conf;
-    };
-    FuseBox.load = function (name, fn) {
-        var info = $fsbx.bundles[name];
-        if (!info) {
-            return console.error("Bundle " + name + " was not found");
-        }
-        var main = "./" + info.main;
-        console.log("oi...");
-        if (this.exists(main)) {
-            fn($import(main));
-        }
-        else {
-            $xmlhttp(info.file, function (res) {
-                new Function(res.responseText)();
-                fn(FuseBox.import("~/" + info.main));
-            });
         }
     };
     FuseBox.remove = function (path) {

@@ -172,7 +172,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
 
         // writing other bundles info
         if (this.bundleInfoObject) {
-            this.concat.add(null, `FuseBox.bundles(${JSON.stringify(this.bundleInfoObject)})`);
+            this.concat.add(null, `FuseBox.global("__fsbx__bundles__",${JSON.stringify(this.bundleInfoObject)})`);
         }
 
         // Handle globals
