@@ -5,14 +5,9 @@ import { FuseProcess } from "../FuseProcess";
 import { HotReloadPlugin } from "../plugins/HotReloadPlugin";
 import { SocketServer } from "../devServer/SocketServer";
 import { utils } from "realm-utils";
-<<<<<<< Updated upstream
 import { File } from "./File";
 import { BundleSplit } from "./BundleSplit";
-=======
-import { BundleSplit } from "./BundleSplit";
-//import { File } from "./File";
-//import { BundleSplit } from "./BundleSplit";
->>>>>>> Stashed changes
+
 
 export class Bundle {
 
@@ -22,12 +17,10 @@ export class Bundle {
     public arithmetics: string;
     public process: FuseProcess = new FuseProcess(this);
     public onDoneCallback: any;
-<<<<<<< Updated upstream
+
     public splitFiles: Map<string, File>;
     public bundleSplit: BundleSplit​​;
-=======
-    public bundleSplit: BundleSplit;
->>>>>>> Stashed changes
+
 
     constructor(public name: string, public fuse: FuseBox, public producer: BundleProducer) {
         this.context = fuse.context;
@@ -53,7 +46,8 @@ export class Bundle {
         /** Only one is allowed to hava HMR related code */
         if (!this.producer.hmrInjected) {
             opts = opts || {};
-            opts.port = opts.port || this.producer.devServerOptions && this.producer.devServerOptions.port || 4444;
+            opts.port = this.producer.devServerOptions && this.producer.devServerOptions.port || 4444;
+
             let plugin = HotReloadPlugin({ port: opts.port, uri: opts.socketURI });
             this.context.plugins = this.context.plugins || [];
             this.context.plugins.push(plugin);
@@ -179,16 +173,5 @@ export class Bundle {
         }
     }
 
-<<<<<<< Updated upstream
-
-    protected addSplitFile(file: File) {
-        if (!this.splitFiles) {
-            this.splitFiles = new Map();
-        }
-        this.splitFiles.set(file.info.fuseBoxPath, file);
-    }
 }
 
-=======
-}
->>>>>>> Stashed changes

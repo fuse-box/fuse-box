@@ -2,7 +2,7 @@ import { FuseBox } from "../";
 import { SocketServer } from "./SocketServer";
 import * as http from "http";
 import * as express from "express";
-import { ensureUserPath, Spinner } from "../Utils";
+import { ensureUserPath } from "../Utils";
 
 export interface HTTPServerOptions {
     /** Defaults to 4444 if not specified */
@@ -16,7 +16,7 @@ export interface HTTPServerOptions {
 }
 
 export class HTTPServer {
-    private spinner?: Spinner;
+    //private spinner?: Spinner;
     public static start(opts: any, fuse: FuseBox): HTTPServer {
         let server: HTTPServer = new HTTPServer(fuse);
         server.launch(opts);
@@ -40,9 +40,11 @@ export class HTTPServer {
         server.on("request", this.app);
         setTimeout(() => {
             server.listen(port, () => {
-                if (this.spinner) return;
+                //if (this.spinner) return;
                 const msg = `dev server running http://localhost:${port}`
-                this.spinner = new Spinner(msg);
+                this.fuse.context.log.echo(msg);
+                //console.log(this.spinner);
+                //this.spinner = new Spinner(msg);
             });
         }, 10);
     }
