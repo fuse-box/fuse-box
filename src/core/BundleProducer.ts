@@ -22,6 +22,7 @@ export class BundleProducer {
         //process.nextTick(() => this.watch())
     }
 
+
     public run(opts: any) {
         /** Collect information about watchers and start watching */
         this.watch();

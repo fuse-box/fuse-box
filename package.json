@@ -1,7 +1,7 @@
 {
+    "name": "fuse-box",
+    "version": "1.4.1-beta.0",
 
-    "name": "fsbx",
-    "version": "1.4.1-beta.1",
     "description": "Fuse-Box a bundler that does it right",
     "typings": "./dist/typings/index.d.ts",
     "main": "dist/commonjs/index.js",

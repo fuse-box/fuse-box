@@ -5,8 +5,14 @@ import { FuseProcess } from "../FuseProcess";
 import { HotReloadPlugin } from "../plugins/HotReloadPlugin";
 import { SocketServer } from "../devServer/SocketServer";
 import { utils } from "realm-utils";
+<<<<<<< Updated upstream
 import { File } from "./File";
 import { BundleSplit } from "./BundleSplit";
+=======
+import { BundleSplit } from "./BundleSplit";
+//import { File } from "./File";
+//import { BundleSplit } from "./BundleSplit";
+>>>>>>> Stashed changes
 
 export class Bundle {
 
@@ -16,8 +22,12 @@ export class Bundle {
     public arithmetics: string;
     public process: FuseProcess = new FuseProcess(this);
     public onDoneCallback: any;
+<<<<<<< Updated upstream
     public splitFiles: Map<string, File>;
     public bundleSplit: BundleSplit​​;
+=======
+    public bundleSplit: BundleSplit;
+>>>>>>> Stashed changes
 
     constructor(public name: string, public fuse: FuseBox, public producer: BundleProducer) {
         this.context = fuse.context;
@@ -65,19 +75,13 @@ export class Bundle {
         });
         return this;
     }
-    public split(rule: string, str: string): Bundle {
-        const arithmetics = str.match(/(\S+)\s?>\s?(\S+)/);
-        if (!arithmetics) {
-            throw new Error("Invalid split arithmetics! Should look like 'home > AboutComponent.ts'")
-        }
-        const bundleName = arithmetics[1];
-        //const mainFile = arithmetics[2];
 
-        // if (!bundleName.match(/\w+\s?>\s?\w+/i))
-        //     if (!this.bundleSplit) {
-        //         this.bundleSplit = new BundleSplit(this);
-        //     }
-        //   this.bundleSplit.getFuseBoxInstance(bundleName);
+    public split(rule: string, bundleName: string): Bundle {
+        if (!this.bundleSplit) {
+            this.bundleSplit = new BundleSplit(this);
+        }
+        this.bundleSplit.getFuseBoxInstance(bundleName);
+
         this.bundleSplit.addRule(rule, bundleName);
         return this;
     }
@@ -144,7 +148,7 @@ export class Bundle {
         return new Promise((resolve, reject) => {
 
             this.fuse
-                .initiateBundle(this.arithmetics, () => {
+                .initiateBundle(this.arithmetics || "", () => {
                     this.process.setFilePath(this.fuse.context.output.lastWrittenPath);
                     if (this.onDoneCallback) {
                         this.onDoneCallback(this.process)
@@ -164,6 +168,8 @@ export class Bundle {
         return this;
     }
 
+
+
     private setup() {
         // modifying the output name
         this.context.output.setName(this.name);
@@ -173,6 +179,7 @@ export class Bundle {
         }
     }
 
+<<<<<<< Updated upstream
 
     protected addSplitFile(file: File) {
         if (!this.splitFiles) {
@@ -182,3 +189,6 @@ export class Bundle {
     }
 }
 
+=======
+}
+>>>>>>> Stashed changes

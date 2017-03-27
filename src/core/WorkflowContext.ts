@@ -15,6 +15,7 @@ import { Defer } from "../Defer";
 import { UserOutput } from "./UserOutput";
 import { FuseBox } from "./FuseBox";
 import { Bundle } from "./Bundle";
+import { BundleProducer } from "./BundleProducer";
 
 const appRoot = require("app-root-path");
 
@@ -42,6 +43,7 @@ export interface Plugin {
     onTypescriptTransform?(file: File): any;
     bundleStart?(context: WorkFlowContext): any;
     bundleEnd?(context: WorkFlowContext): any;
+    producerEnd?(producer: BundleProducer): any;
     onSparky?(): any;
     /**
      * If provided then the dependencies are loaded on the client
@@ -403,28 +405,40 @@ export class WorkFlowContext {
         return this.initialLoad === true;
     }
 
+    public finalize(): Promise<any> {
+        if (this.bundle && this.bundle.bundleSplit) {
+            return this.bundle.bundleSplit.beforeMasterWrite();
+        }
+        return Promise.resolve();
+    }
     public writeOutput(outFileWritten?: () => any) {
         this.initialLoad = false;
-        const res = this.source.getResult();
+        return this.finalize().then(() => {
+            const res = this.source.getResult();
+            if (this.output) {
+                this.output.writeCurrent(res.content).then(() => {
+                    this.writeSourceMaps(res);
+                    this.defer.unlock();
+                    if (utils.isFunction(outFileWritten)) {
+                        outFileWritten();
+                    }
+                });
+            }
+        })
 
-        if (this.output) {
-            this.output.writeCurrent(res.content).then(() => {
-                this.writeSourceMaps(res);
-                this.defer.unlock();
-                if (utils.isFunction(outFileWritten)) {
-                    outFileWritten();
-                }
-            });
-        }
     }
 
     protected writeSourceMaps(result: any) {
         // Writing sourcemaps
         if (this.sourceMapsProject || this.sourceMapsVendor) {
-
             this.output.write(`${this.bundle.name}.js.map`, result.sourceMap);
         }
-
+    }
+    public shouldSplit(file: File): boolean {
+        if (this.bundle && this.bundle.bundleSplit) {
+            return this.bundle.bundleSplit.verify(file);
+        }
+        return false;
     }
 
     public getNodeModule(name: string): ModuleCollection {
