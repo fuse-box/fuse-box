@@ -222,7 +222,7 @@ export class ModuleCollection {
                 // node modules might need to resolved asynchronously
                 // like css plugins
                 .then(() => this.context.resolve())
-                .then(() => this.context.cache.buildMap(this))
+                .then(() => this.context.cache && this.context.cache.buildMap(this))
                 .catch(e => {
                     this.context.defer.unlock();
                     this.context.nukeCache();
@@ -279,6 +279,18 @@ export class ModuleCollection {
         // Setting it a node dependency, so later on we could build a dependency tree
         // For caching
         this.nodeModules.set(moduleName, collection);
+
+        // check for bundle data (in case of fuse.register)
+        if (info.bundleData) {
+            info.bundleData.including.forEach((inf, fname) => {
+                const userFileInfo = collection.pm.init(fname);
+                if (!userFileInfo.isNodeModule) {
+                    let userFile = new File(this.context, userFileInfo);
+                    userFile.consume();
+                    collection.dependencies.set(userFileInfo.fuseBoxPath, userFile);
+                }
+            })
+        }
 
         // Handle explicit require differently
         // e.g require("lodash") - we require entry file

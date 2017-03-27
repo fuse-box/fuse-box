@@ -7,8 +7,6 @@ import { utils, each } from "realm-utils";
 import * as fs from "fs";
 import * as path from "path";
 
-const appRoot = require("app-root-path");
-
 /**
  *
  *
@@ -222,7 +220,7 @@ export class File {
                 } else {
                     itemTest = item.test;
                 }
-                if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(path.relative(appRoot.path, this.absPath))) {
+                if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(path.relative(this.context.appRoot, this.absPath))) {
                     target = item;
                 }
                 index++;
@@ -247,6 +245,7 @@ export class File {
             return this.context.queue(each(tasks, promise => promise()));
         }
     }
+
     /**
      *
      *
@@ -310,8 +309,8 @@ export class File {
         if (/\.js(x)?$/.test(this.absPath)) {
             this.loadContents();
             this.tryPlugins();
-            const vendorSourceMaps = this.context.sourceMapConfig
-                && this.context.sourceMapConfig.vendor === true && this.collection.name !== this.context.defaultPackageName;
+            const vendorSourceMaps = this.context.sourceMapsVendor
+                && this.collection.name !== this.context.defaultPackageName;
             if (vendorSourceMaps) {
                 this.loadVendorSourceMap();
             } else {
@@ -337,7 +336,6 @@ export class File {
             this.makeAnalysis({ onToken: tokens });
             SourceMapGenerator.generate(this, tokens);
             this.generateCorrectSourceMap(key);
-
             this.context.cache.setPermanentCache(key, this.sourceMap);
         }
 
@@ -379,7 +377,7 @@ export class File {
         debug(`Transpile ${this.info.fuseBoxPath}`);
         let result = ts.transpileModule(this.contents, this.getTranspilationConfig());
 
-        if (result.sourceMapText && this.context.sourceMapConfig) {
+        if (result.sourceMapText && this.context.useSourceMaps) {
             let jsonSourceMaps = JSON.parse(result.sourceMapText);
             jsonSourceMaps.file = this.info.fuseBoxPath;
             jsonSourceMaps.sources = [this.info.fuseBoxPath.replace(/\.js(x?)$/, ".ts$1")];
@@ -395,6 +393,7 @@ export class File {
         if (this.context.useCache) {
             // emit new file
             this.context.emitJavascriptHotReload(this);
+
             this.context.cache.writeStaticCache(this, this.sourceMap);
         }
     }
@@ -410,7 +409,8 @@ export class File {
     }
 
     /**
-     * Provides a file-specific transpilation config. This is needed so we can supply the filename to
+     * Provides a file-specific transpilation config.
+     * This is needed so we can supply the filename to
      * the TypeScript compiler.
      *
      * @private

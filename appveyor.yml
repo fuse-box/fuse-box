@@ -1,0 +1,12 @@
+environment:
+  matrix:
+    - nodejs_version: "7"
+
+install:
+  - npm install
+  - npm install babel-core babel-generator babel-preset-latest babylon cheerio @angular/core stylus less postcss node-sass uglify-js source-map coffee-script @types/node rollup
+
+# Post-install test scripts.
+test_script:
+  # Output useful info for debugging.
+  - node test.js

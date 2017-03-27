@@ -1,5 +1,4 @@
 import * as path from "path";
-import * as fs from "fs";
 import * as escodegen from "escodegen";
 import { BundleSource } from "../BundleSource";
 import { File } from "./File";
@@ -11,9 +10,13 @@ import { EventEmitter } from "../EventEmitter";
 import { utils } from "realm-utils";
 import { ensureUserPath, findFileBackwards, ensureDir, removeFolder } from "../Utils";
 import { SourceChangedEvent } from "../devServer/Server";
-
 import { registerDefaultAutoImportModules, AutoImportedModule } from "./AutoImportedModule";
 import { Defer } from "../Defer";
+import { UserOutput } from "./UserOutput";
+import { FuseBox } from "./FuseBox";
+import { Bundle } from "./Bundle";
+
+const appRoot = require("app-root-path");
 
 /**
  * All the plugin method names
@@ -27,8 +30,6 @@ export type PluginMethodName =
     | "postBundle"
     | "postBuild";
 
-const appRoot = require("app-root-path");
-
 /**
  * Interface for a FuseBox plugin
  */
@@ -41,7 +42,7 @@ export interface Plugin {
     onTypescriptTransform?(file: File): any;
     bundleStart?(context: WorkFlowContext): any;
     bundleEnd?(context: WorkFlowContext): any;
-
+    onSparky?(): any;
     /**
      * If provided then the dependencies are loaded on the client
      *  before the plugin is invoked
@@ -53,7 +54,15 @@ export interface Plugin {
  * Gets passed to each plugin to track FuseBox configuration
  */
 export class WorkFlowContext {
+    /**
+     * defaults to app-root-path, but can be set by user
+     * @see FuseBox
+     */
+    public appRoot: any = appRoot.path;
+
     public shim: any;
+
+    public fuse: FuseBox;
 
     public sourceChangedEmitter = new EventEmitter<SourceChangedEvent>();
 
@@ -73,6 +82,10 @@ export class WorkFlowContext {
     public defaultEntryPoint: string;
 
     public rollupOptions: any;
+
+    public output: UserOutput;
+
+    public hash: string | Boolean;
     /**
      * Explicitly target bundle to server
      */
@@ -110,9 +123,9 @@ export class WorkFlowContext {
 
     public source: BundleSource;
 
-    public sourceMapConfig: any;
-
-    public outFile: string;
+    public sourceMapsProject: boolean = false;
+    public sourceMapsVendor: boolean = false;
+    public useSourceMaps = false;
 
     public initialLoad = true;
 
@@ -130,6 +143,7 @@ export class WorkFlowContext {
     }
     public autoImportConfig = {};
 
+    public bundle: Bundle;
 
     public storage: Map<string, any>;
 
@@ -139,7 +153,8 @@ export class WorkFlowContext {
 
     public customCodeGenerator: any;
 
-    public defer = new Defer
+    public defer = new Defer;
+
     public initCache() {
         this.cache = new ModuleCache(this);
     }
@@ -190,8 +205,10 @@ export class WorkFlowContext {
 
     public nukeCache() {
         this.resetNodeModules();
-        removeFolder(this.cache.cacheFolder);
-        this.cache.initialize();
+        if (this.cache) {
+            removeFolder(this.cache.cacheFolder);
+            this.cache.initialize();
+        }
 
     }
 
@@ -212,6 +229,21 @@ export class WorkFlowContext {
             return false;
         }
         return this.shim[name] !== undefined;
+    }
+
+    public isHashingRequired() {
+        const hashOption = this.hash;
+        let useHash = false;
+        if (typeof hashOption === "string") {
+            if (hashOption !== "md5") {
+                throw new Error(`Uknown algorythm ${hashOption}`)
+            }
+            useHash = true;
+        }
+        if (hashOption === true) {
+            useHash = true;
+        }
+        return useHash;
     }
 
     /**
@@ -338,14 +370,14 @@ export class WorkFlowContext {
             configFile = ensureUserPath(this.tsConfig);
         } else {
             url = path.join(this.homeDir, "tsconfig.json");
-            let tsconfig = findFileBackwards(url, appRoot.path);
+            let tsconfig = findFileBackwards(url, this.appRoot);
             if (tsconfig) {
                 configFile = tsconfig;
             }
         }
 
         if (configFile) {
-            this.log.echoStatus(`Typescript config:  ${configFile.replace(appRoot.path, "")}`);
+            this.log.echoStatus(`Typescript config:  ${configFile.replace(this.appRoot, "")}`);
             config = require(configFile);
         } else {
             this.log.echoStatus(`Typescript config file was not found. Improvising`);
@@ -353,7 +385,7 @@ export class WorkFlowContext {
 
         config.compilerOptions.module = "commonjs";
 
-        if (this.sourceMapConfig) {
+        if (this.useSourceMaps) {
             config.compilerOptions.sourceMap = true;
             config.compilerOptions.inlineSources = true;
         }
@@ -374,22 +406,25 @@ export class WorkFlowContext {
     public writeOutput(outFileWritten?: () => any) {
         this.initialLoad = false;
         const res = this.source.getResult();
-        // Writing sourcemaps
-        if (this.sourceMapConfig && this.sourceMapConfig.outFile) {
-            let target = ensureUserPath(this.sourceMapConfig.outFile);
-            fs.writeFile(target, res.sourceMap, () => { });
-        }
 
-        // writing target
-        if (this.outFile) {
-            let target = ensureUserPath(this.outFile);
-            fs.writeFile(target, res.content, () => {
+        if (this.output) {
+            this.output.writeCurrent(res.content).then(() => {
+                this.writeSourceMaps(res);
                 this.defer.unlock();
                 if (utils.isFunction(outFileWritten)) {
                     outFileWritten();
                 }
             });
         }
+    }
+
+    protected writeSourceMaps(result: any) {
+        // Writing sourcemaps
+        if (this.sourceMapsProject || this.sourceMapsVendor) {
+
+            this.output.write(`${this.bundle.name}.js.map`, result.sourceMap);
+        }
+
     }
 
     public getNodeModule(name: string): ModuleCollection {

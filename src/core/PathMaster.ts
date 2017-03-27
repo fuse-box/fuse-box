@@ -4,6 +4,7 @@ import { ensurePublicExtension } from "../Utils";
 import { Config } from "../Config";
 import * as path from "path";
 import * as fs from "fs";
+import { BundleData } from "../arithmetic/Arithmetic";
 
 /**
  * If a import url isn't relative
@@ -32,6 +33,7 @@ export interface IPathInformation {
 export interface IPackageInformation {
     name: string;
     missing?: boolean;
+    bundleData?: BundleData​​;
     entry: string;
     version: string;
     root: string;
@@ -360,6 +362,21 @@ export class PathMaster {
 
         let localLib = path.join(Config.FUSEBOX_MODULES, name);
         let modulePath = path.join(Config.NODE_MODULES_DIR, name);
+        // check for custom shared packages
+        const producer = this.context.bundle && this.context.bundle.producer
+        if (producer && producer.isShared(name)) {
+            let shared = producer.getSharedPackage(name);
+
+            return {
+                name,
+                custom: false,
+                bundleData: shared.data,
+                root: shared.homeDir,
+                entry: shared.mainPath,
+                entryRoot: shared.mainDir,
+                version: "0.0.0",
+            }
+        }
 
         if (this.context.customModulesFolder) {
             let customFolder = path.join(this.context.customModulesFolder, name);

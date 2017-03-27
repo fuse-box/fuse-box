@@ -2,7 +2,8 @@ import * as path from "path";
 import * as fs from "fs";
 import * as fsExtra from "fs-extra";
 import { utils } from "realm-utils";
-const appRoot = require("app-root-path");
+
+const userFuseDir = path.dirname(require.main.filename);
 
 const MBLACKLIST = [
     "freelist",
@@ -64,7 +65,7 @@ export function parseQuery(qstr) {
  */
 export function ensureUserPath(userPath: string) {
     if (!path.isAbsolute(userPath)) {
-        userPath = path.join(appRoot.path, userPath);
+        userPath = path.join(userFuseDir, userPath);
     }
     userPath = path.normalize(userPath);
     let dir = path.dirname(userPath);
@@ -75,7 +76,7 @@ export function ensureUserPath(userPath: string) {
 
 export function ensureDir(userPath: string) {
     if (!path.isAbsolute(userPath)) {
-        userPath = path.join(appRoot.path, userPath);
+        userPath = path.join(userFuseDir, userPath);
     }
     userPath = path.normalize(userPath);
 
@@ -86,7 +87,9 @@ export function ensureDir(userPath: string) {
 export function string2RegExp(obj: any) {
     let escapedRegEx = obj
         .replace(/\*/g, "@")
+
         .replace(/[.?*+[\]-]/g, "\\$&")
+        .replace(/@@/g, ".*", "i")
         .replace(/@/g, "\\w{1,}", "i");
 
     if (escapedRegEx.indexOf("$") === -1) {
@@ -112,6 +115,13 @@ export function replaceExt(npath, ext): string {
     } else {
         return npath + ext;
     }
+}
+
+export function isGlob(str: string): Boolean {
+    if (!str) {
+        return false;
+    }
+    return /\*/.test(str);
 }
 export function extractExtension(str: string) {
     const result = str.match(/\.([a-z0-9]+)\$?$/);
@@ -210,3 +220,69 @@ export function filter(items: any, fn: any) {
         return newObject;
     }
 }
+
+// converted and optimized from https://www.npmjs.com/package/cli-spinner
+const readline = require('readline');
+class Spinner {
+  public text: string = '';
+  public title: string = '';
+  public chars: string = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏";
+  public stream: any = process.stdout;
+  public id: number | any;
+  public delay: number = 60;
+
+  constructor(options: any) {
+    if (typeof options === "string"){
+      options = { text: options };
+    } else if (!options){
+      options = {};
+    }
+
+    if (options.text) this.text = options.text;
+    if (options.onTick) this.onTick = options.onTick;
+    if (options.stream) this.stream = options.stream;
+    if (options.title) this.title = options.title;
+    if (options.delay) this.delay = options.delay;
+  }
+
+  public start() {
+    let current = 0
+    this.id = setInterval(() => {
+      let msg = this.chars[current] + ' ' + this.text
+      if (this.text.includes('%s')) {
+        msg = this.text.replace('%s', this.chars[current])
+      }
+
+      this.onTick(msg)
+      current = ++current % this.chars.length
+    }, this.delay)
+    return this
+  }
+
+  public stop(clear: boolean) {
+    clearInterval(this.id)
+    this.id = undefined
+    if (clear) {
+      this.clearLine(this.stream)
+    }
+    return this
+  }
+
+  public isSpinning(): boolean {
+    return this.id !== undefined
+  }
+
+  public onTick(msg: any) {
+    this.clearLine(this.stream)
+    this.stream.write(msg)
+    return this
+  }
+
+  public clearLine(stream: any) {
+    readline.clearLine(stream, 0)
+    readline.cursorTo(stream, 0)
+    return this
+  }
+}
+
+export { Spinner };
