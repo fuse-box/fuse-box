@@ -35,7 +35,7 @@ export class SassPluginClass implements Plugin {
 
         const defaultMacro = {
             "$homeDir": file.context.homeDir,
-            "$appRoot": this.context.root,
+            "$appRoot": this.context.appRoot,
             "~": Config.NODE_MODULES_DIR + "/",
         };
 

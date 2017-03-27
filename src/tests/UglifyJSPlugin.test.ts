@@ -8,7 +8,7 @@ import { UglifyJSPlugin } from "../plugins/UglifyJSPlugin";
 export class UglifyJSPluginTest {
   "Should return compressed js 1"() {
     return createEnv({
-        modules: {
+        project: {
             files: {
                 "index.ts": `
                 var longVar = 'str1';
@@ -22,13 +22,13 @@ export class UglifyJSPluginTest {
     }).then((result) => {
         const out = result.project.FuseBox.import("./index");
         const contents = result.projectContents.toString();
-        should(result()).findString("str1 str2");
+        should(contents).findString("str1 str2");
     });
   }
 
   "Should return __compressed__ js 2"() {
       return createEnv({
-          modules: {
+          project: {
               files: {
                   "index.ts": `
                   var longVar = 'str1';
@@ -42,8 +42,8 @@ export class UglifyJSPluginTest {
           },
       }).then((result) => {
           const out = result.project.FuseBox.import("./index");
-          should(("__compressed__" in root)).beTrue();
-          should(root.__compressed__().findString("str1 str2");
+          should(("__compressed__" in result.project)).beTrue();
+          should(result.project.__compressed__()).findString("str1 str2");
       });
   }
 }

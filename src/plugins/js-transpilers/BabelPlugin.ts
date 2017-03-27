@@ -30,7 +30,7 @@ export class BabelPluginClass implements Plugin {
         opts = opts || {};
 
         // if it is an object containing only a babel config
-        if (opts.test === undefined && opts.limit2project === undefined && Object.keys(opts).length) {
+        if (opts.config === undefined && opts.test === undefined && opts.limit2project === undefined && Object.keys(opts).length) {
           this.config = opts;
           return
         }
@@ -54,7 +54,7 @@ export class BabelPluginClass implements Plugin {
       if (this.config) return
 
       let babelRcConfig;
-      let babelRcPath = path.join(this.context.root, `.babelrc`);
+      let babelRcPath = path.join(this.context.appRoot, `.babelrc`);
       if (fs.existsSync(babelRcPath)) {
           babelRcConfig = fs.readFileSync(babelRcPath).toString();
           if (babelRcConfig) babelRcConfig = JSON.parse(babelRcConfig);

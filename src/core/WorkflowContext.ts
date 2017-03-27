@@ -58,7 +58,7 @@ export class WorkFlowContext {
      * defaults to app-root-path, but can be set by user
      * @see FuseBox
      */
-    public root: any = appRoot.path;
+    public appRoot: any = appRoot.path;
 
     public shim: any;
 
@@ -370,14 +370,14 @@ export class WorkFlowContext {
             configFile = ensureUserPath(this.tsConfig);
         } else {
             url = path.join(this.homeDir, "tsconfig.json");
-            let tsconfig = findFileBackwards(url, this.root);
+            let tsconfig = findFileBackwards(url, this.appRoot);
             if (tsconfig) {
                 configFile = tsconfig;
             }
         }
 
         if (configFile) {
-            this.log.echoStatus(`Typescript config:  ${configFile.replace(appRoot.path, "")}`);
+            this.log.echoStatus(`Typescript config:  ${configFile.replace(this.appRoot, "")}`);
             config = require(configFile);
         } else {
             this.log.echoStatus(`Typescript config file was not found. Improvising`);
