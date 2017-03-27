@@ -6,6 +6,7 @@ import { HotReloadPlugin } from "../plugins/HotReloadPlugin";
 import { SocketServer } from "../devServer/SocketServer";
 import { utils } from "realm-utils";
 import { File } from "./File";
+import { BundleSplit } from "./BundleSplit";
 
 export class Bundle {
 
@@ -16,6 +17,7 @@ export class Bundle {
     public process: FuseProcess = new FuseProcess(this);
     public onDoneCallback: any;
     public splitFiles: Map<string, File>;
+    public bundleSplit: BundleSplit​​;
 
     constructor(public name: string, public fuse: FuseBox, public producer: BundleProducer) {
         this.context = fuse.context;
@@ -49,8 +51,8 @@ export class Bundle {
             // Should happen only once!
             this.producer.hmrInjected = true;
         }
-        /** 
-         * Whenever socket server is initialized 
+        /**
+         * Whenever socket server is initialized
          * This will allow use to enable HMR on any bundle within current producer
         */
         this.producer.sharedEvents.on("SocketServerReady", (server: SocketServer) => {
@@ -63,9 +65,23 @@ export class Bundle {
         });
         return this;
     }
-    public split(rule: string, bundleName: string): Bundle {
+    public split(rule: string, str: string): Bundle {
+        const arithmetics = str.match(/(\S+)\s?>\s?(\S+)/);
+        if (!arithmetics) {
+            throw new Error("Invalid split arithmetics! Should look like 'home > AboutComponent.ts'")
+        }
+        const bundleName = arithmetics[1];
+        //const mainFile = arithmetics[2];
+
+        // if (!bundleName.match(/\w+\s?>\s?\w+/i))
+        //     if (!this.bundleSplit) {
+        //         this.bundleSplit = new BundleSplit(this);
+        //     }
+        //   this.bundleSplit.getFuseBoxInstance(bundleName);
+        this.bundleSplit.addRule(rule, bundleName);
         return this;
     }
+
 
     /** Override cache option */
     public cache(cache: boolean): Bundle {
@@ -80,12 +96,12 @@ export class Bundle {
     }
 
     /**
-     * Adds a plugin or a chain of plugins 
+     * Adds a plugin or a chain of plugins
      * e.g
      * in case of one plugin
      * plugin(HTMLPlugin())
      * In case of a chain:
-     * 
+     *
      * plugin("*.html", HTMLPlugin())
      * @param args Plugin
      */
@@ -97,7 +113,7 @@ export class Bundle {
 
     /**
      * natives({ process : false })
-     * @param opts 
+     * @param opts
      */
     public natives(opts: any): Bundle {
         this.context.natives = opts;
@@ -157,6 +173,7 @@ export class Bundle {
         }
     }
 
+
     protected addSplitFile(file: File) {
         if (!this.splitFiles) {
             this.splitFiles = new Map();
@@ -164,3 +181,4 @@ export class Bundle {
         this.splitFiles.set(file.info.fuseBoxPath, file);
     }
 }
+

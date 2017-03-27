@@ -220,3 +220,69 @@ export function filter(items: any, fn: any) {
         return newObject;
     }
 }
+
+// converted and optimized from https://www.npmjs.com/package/cli-spinner
+const readline = require('readline');
+class Spinner {
+  public text: string = '';
+  public title: string = '';
+  public chars: string = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏";
+  public stream: any = process.stdout;
+  public id: number | any;
+  public delay: number = 60;
+
+  constructor(options: any) {
+    if (typeof options === "string"){
+      options = { text: options };
+    } else if (!options){
+      options = {};
+    }
+
+    if (options.text) this.text = options.text;
+    if (options.onTick) this.onTick = options.onTick;
+    if (options.stream) this.stream = options.stream;
+    if (options.title) this.title = options.title;
+    if (options.delay) this.delay = options.delay;
+  }
+
+  public start() {
+    let current = 0
+    this.id = setInterval(() => {
+      let msg = this.chars[current] + ' ' + this.text
+      if (this.text.includes('%s')) {
+        msg = this.text.replace('%s', this.chars[current])
+      }
+
+      this.onTick(msg)
+      current = ++current % this.chars.length
+    }, this.delay)
+    return this
+  }
+
+  public stop(clear: boolean) {
+    clearInterval(this.id)
+    this.id = undefined
+    if (clear) {
+      this.clearLine(this.stream)
+    }
+    return this
+  }
+
+  public isSpinning(): boolean {
+    return this.id !== undefined
+  }
+
+  public onTick(msg: any) {
+    this.clearLine(this.stream)
+    this.stream.write(msg)
+    return this
+  }
+
+  public clearLine(stream: any) {
+    readline.clearLine(stream, 0)
+    readline.cursorTo(stream, 0)
+    return this
+  }
+}
+
+export { Spinner };
