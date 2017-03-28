@@ -309,6 +309,28 @@ export class WorkFlowContext {
         }
     }
 
+    public addAlias(obj: any, value?: any) {
+        const aliases = [];
+        if (!value) {
+            for (const key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    if (path.isAbsolute(key)) {
+                        // dying in agony
+                        this.fatal(`Can't use absolute paths with alias "${key}"`);
+                    }
+
+                    aliases.push({ expr: new RegExp(`^(${key})(/|$)`), replacement: obj[key] });
+                }
+            }
+        } else {
+            aliases.push({ expr: new RegExp(`^(${obj})(/|$)`), replacement: value });
+        }
+
+
+        this.aliasCollection = this.aliasCollection || [];
+        this.aliasCollection = this.aliasCollection.concat(aliases)
+        this.experimentalAliasEnabled = true;
+    }
     public setHomeDir(dir: string) {
         this.homeDir = ensureDir(dir);
     }
