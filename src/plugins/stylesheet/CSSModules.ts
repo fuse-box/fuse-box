@@ -25,7 +25,7 @@ export class CSSModulesClass implements Plugin {
             return postcss([
                 require('postcss-modules')({
                     root: file.info.absDir,
-                    getJSON: function (cssFileName, json) {
+                    getJSON: (cssFileName, json) => {
                         let exportsKey = this.useDefault ? "module.exports.default" : "module.exports";
                         file.addAlternativeContent(`${exportsKey} = ${JSON.stringify(json)};`);
                     }
