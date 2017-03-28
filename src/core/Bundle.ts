@@ -69,6 +69,11 @@ export class Bundle {
         return this;
     }
 
+    public alias(key: any, value: any): Bundle {
+        this.context.addAlias(key, value);
+        return this;
+    }
+
     public split(rule: string, str: string): Bundle {
 
         const arithmetics = str.match(/(\S+)\s*>\s(\S+)/i)

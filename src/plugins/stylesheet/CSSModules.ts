@@ -4,16 +4,20 @@ import { Plugin } from "../../core/WorkflowContext";
 import * as postcss from "postcss";
 
 export interface CSSModulesOptions {
-
+    useDefault?: boolean;
 }
 
 export class CSSModulesClass implements Plugin {
 
     public test: RegExp = /\.css$/;
     public options: CSSModulesOptions;
+    public useDefault = true;
 
     constructor(options: CSSModulesOptions = {}) {
         this.options = options;
+        if (this.options.useDefault !== undefined) {
+            this.useDefault = this.options.useDefault;
+        }
     }
 
     public init(context: WorkFlowContext) {
@@ -26,8 +30,9 @@ export class CSSModulesClass implements Plugin {
             return postcss([
                 require('postcss-modules')({
                     root: file.info.absDir,
-                    getJSON: function (cssFileName, json) {
-                        file.addAlternativeContent(`module.exports.default = ${JSON.stringify(json)};`);
+                    getJSON: (cssFileName, json) => {
+                        let exportsKey = this.useDefault ? "module.exports.default" : "module.exports";
+                        file.addAlternativeContent(`${exportsKey} = ${JSON.stringify(json)};`);
                     }
                 })
             ]).process(file.contents, {})

@@ -33,12 +33,26 @@ export class SassPluginClass implements Plugin {
     }
 
     public transform(file: File): Promise<any> {
+
+        if (this.context.useCache && this.options.cache) {
+            let cached = this.context.cache.getStaticCache(file);
+            if (cached) {
+                if (cached.sourceMap) {
+                    file.sourceMap = cached.sourceMap;
+                }
+                file.isLoaded = true;
+                file.contents = cached.contents;
+                return;
+            }
+        }
+
         file.loadContents();
         if (!file.contents) {
             return;
         }
 
         if (!sass) { sass = require("node-sass"); }
+
 
         const defaultMacro = {
             "$homeDir": file.context.homeDir,
@@ -59,7 +73,7 @@ export class SassPluginClass implements Plugin {
                 options.includePaths.push(path);
             });
         }
-        options.macros = Object.assign(defaultMacro, this.options.macros || {},);
+        options.macros = Object.assign(defaultMacro, this.options.macros || {}, );
 
         if (this.options.importer === true) {
             options.importer = (url, prev, done) => {
