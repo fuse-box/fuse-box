@@ -3915,7 +3915,8 @@ mtime : ${cacheData.mtime}
                     this.fuse = bundle.FuseBox;
                 }
                 start() {
-                    const FuseBoxTestRunner = this.fuse.import("fuse-test-runner").FuseBoxTestRunner;
+                    const FuseBoxTestRunner = this.fuse.import("fuse-test-runner").FuseBoxTestRunner
+
                     const runner = new FuseBoxTestRunner(this.opts);
                     runner.start();
                 }

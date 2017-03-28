@@ -114,6 +114,8 @@ export class ModuleCollection {
      */
     private delayedResolve = false;
 
+    public isDefault = false;
+
     /**
      * Creates an instance of ModuleCollection.
      *
@@ -123,7 +125,9 @@ export class ModuleCollection {
      *
      * @memberOf ModuleCollection
      */
-    constructor(public context: WorkFlowContext, public name: string, public info?: IPackageInformation) { }
+    constructor(public context: WorkFlowContext, public name: string, public info?: IPackageInformation) {
+        this.isDefault = this.name === this.context.defaultPackageName;
+    }
 
     /**
      *
@@ -320,6 +324,12 @@ export class ModuleCollection {
         return Promise.all(promises);
     }
 
+    public resolveSplitFiles(files: File[]) {
+        return each(files, (file: File) => {
+            this.dependencies.set(file.absPath, file);
+        });
+    }
+
     /**
      *
      *
@@ -367,6 +377,11 @@ export class ModuleCollection {
             // Consuming file
             // Here we read it and return a list of require statements
             file.consume();
+
+            // if a file belong to a split bundle, pipe it there
+            if (this.isDefault && this.context.shouldSplit(file)) {
+                return;
+            }
 
             this.dependencies.set(file.absPath, file);
             let fileLimitPath;

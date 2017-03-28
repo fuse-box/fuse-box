@@ -109,6 +109,10 @@ export class File {
 
     public groupHandler: Plugin;
 
+    public addAlternativeContent(str: string) {
+        this.alternativeContent = this.alternativeContent || "";
+        this.alternativeContent += "\n" + str;
+    }
     /**
      * Creates an instance of File.
      *
@@ -220,7 +224,7 @@ export class File {
                 } else {
                     itemTest = item.test;
                 }
-                if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(path.relative(this.context.root, this.absPath))) {
+                if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(path.relative(this.context.appRoot, this.absPath))) {
                     target = item;
                 }
                 index++;

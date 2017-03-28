@@ -5,6 +5,9 @@ import { FuseProcess } from "../FuseProcess";
 import { HotReloadPlugin } from "../plugins/HotReloadPlugin";
 import { SocketServer } from "../devServer/SocketServer";
 import { utils } from "realm-utils";
+import { File } from "./File";
+import { BundleSplit } from "./BundleSplit";
+
 
 export class Bundle {
 
@@ -14,6 +17,10 @@ export class Bundle {
     public arithmetics: string;
     public process: FuseProcess = new FuseProcess(this);
     public onDoneCallback: any;
+
+    public splitFiles: Map<string, File>;
+    public bundleSplit: BundleSplit;
+
 
     constructor(public name: string, public fuse: FuseBox, public producer: BundleProducer) {
         this.context = fuse.context;
@@ -39,7 +46,7 @@ export class Bundle {
         /** Only one is allowed to hava HMR related code */
         if (!this.producer.hmrInjected) {
             opts = opts || {};
-            opts.port = opts.port || this.producer.devServerOptions && this.producer.devServerOptions.port || 4444;
+            opts.port = this.producer.devServerOptions && this.producer.devServerOptions.port || 4444;
             let plugin = HotReloadPlugin({ port: opts.port, uri: opts.socketURI });
             this.context.plugins = this.context.plugins || [];
             this.context.plugins.push(plugin);
@@ -61,6 +68,29 @@ export class Bundle {
         });
         return this;
     }
+
+    public alias(key: any, value: any): Bundle {
+        this.context.addAlias(key, value);
+        return this;
+    }
+
+    public split(rule: string, str: string): Bundle {
+
+        const arithmetics = str.match(/(\S+)\s*>\s(\S+)/i)
+        if (!arithmetics) {
+            throw new Error("Can't parse split arithmetics. Should look like:")
+        }
+        const bundleName = arithmetics[1];
+        const mainFile = arithmetics[2];
+
+        if (!this.bundleSplit) {
+            this.bundleSplit = new BundleSplit(this);
+        }
+        this.bundleSplit.getFuseBoxInstance(bundleName, mainFile);
+        this.bundleSplit.addRule(rule, bundleName);
+        return this;
+    }
+
 
     /** Override cache option */
     public cache(cache: boolean): Bundle {
@@ -123,7 +153,7 @@ export class Bundle {
         return new Promise((resolve, reject) => {
 
             this.fuse
-                .initiateBundle(this.arithmetics, () => {
+                .initiateBundle(this.arithmetics || "", () => {
                     this.process.setFilePath(this.fuse.context.output.lastWrittenPath);
                     if (this.onDoneCallback) {
                         this.onDoneCallback(this.process)
@@ -143,6 +173,8 @@ export class Bundle {
         return this;
     }
 
+
+
     private setup() {
         // modifying the output name
         this.context.output.setName(this.name);
@@ -151,4 +183,6 @@ export class Bundle {
             this.context.cache.initialize();
         }
     }
+
 }
+

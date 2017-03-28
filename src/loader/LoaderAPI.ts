@@ -415,7 +415,7 @@ function $import(name: string, o: any = {}) {
             .replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&")
             .replace(/@@/g, ".*")
             .replace(/@/g, "[a-z0-9$_-]+"), "i");
-        
+
         let pkg = $packages[ref.pkgName];
         if (pkg) {
             let batch = {};

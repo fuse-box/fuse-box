@@ -15,6 +15,7 @@ import { Defer } from "../Defer";
 import { UserOutput } from "./UserOutput";
 import { FuseBox } from "./FuseBox";
 import { Bundle } from "./Bundle";
+import { BundleProducer } from "./BundleProducer";
 
 const appRoot = require("app-root-path");
 
@@ -42,6 +43,7 @@ export interface Plugin {
     onTypescriptTransform?(file: File): any;
     bundleStart?(context: WorkFlowContext): any;
     bundleEnd?(context: WorkFlowContext): any;
+    producerEnd?(producer: BundleProducer): any;
     onSparky?(): any;
     /**
      * If provided then the dependencies are loaded on the client
@@ -58,7 +60,7 @@ export class WorkFlowContext {
      * defaults to app-root-path, but can be set by user
      * @see FuseBox
      */
-    public root: any = appRoot;
+    public appRoot: any = appRoot.path;
 
     public shim: any;
 
@@ -307,6 +309,28 @@ export class WorkFlowContext {
         }
     }
 
+    public addAlias(obj: any, value?: any) {
+        const aliases = [];
+        if (!value) {
+            for (const key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    if (path.isAbsolute(key)) {
+                        // dying in agony
+                        this.fatal(`Can't use absolute paths with alias "${key}"`);
+                    }
+
+                    aliases.push({ expr: new RegExp(`^(${key})(/|$)`), replacement: obj[key] });
+                }
+            }
+        } else {
+            aliases.push({ expr: new RegExp(`^(${obj})(/|$)`), replacement: value });
+        }
+
+
+        this.aliasCollection = this.aliasCollection || [];
+        this.aliasCollection = this.aliasCollection.concat(aliases)
+        this.experimentalAliasEnabled = true;
+    }
     public setHomeDir(dir: string) {
         this.homeDir = ensureDir(dir);
     }
@@ -370,14 +394,14 @@ export class WorkFlowContext {
             configFile = ensureUserPath(this.tsConfig);
         } else {
             url = path.join(this.homeDir, "tsconfig.json");
-            let tsconfig = findFileBackwards(url, this.root);
+            let tsconfig = findFileBackwards(url, this.appRoot);
             if (tsconfig) {
                 configFile = tsconfig;
             }
         }
 
         if (configFile) {
-            this.log.echoStatus(`Typescript config:  ${configFile.replace(appRoot.path, "")}`);
+            this.log.echoStatus(`Typescript config:  ${configFile.replace(this.appRoot, "")}`);
             config = require(configFile);
         } else {
             this.log.echoStatus(`Typescript config file was not found. Improvising`);
@@ -403,10 +427,12 @@ export class WorkFlowContext {
         return this.initialLoad === true;
     }
 
+
+
     public writeOutput(outFileWritten?: () => any) {
         this.initialLoad = false;
-        const res = this.source.getResult();
 
+        const res = this.source.getResult();
         if (this.output) {
             this.output.writeCurrent(res.content).then(() => {
                 this.writeSourceMaps(res);
@@ -416,15 +442,21 @@ export class WorkFlowContext {
                 }
             });
         }
+
+
     }
 
     protected writeSourceMaps(result: any) {
         // Writing sourcemaps
         if (this.sourceMapsProject || this.sourceMapsVendor) {
-
             this.output.write(`${this.bundle.name}.js.map`, result.sourceMap);
         }
-
+    }
+    public shouldSplit(file: File): boolean {
+        if (this.bundle && this.bundle.bundleSplit) {
+            return this.bundle.bundleSplit.verify(file);
+        }
+        return false;
     }
 
     public getNodeModule(name: string): ModuleCollection {

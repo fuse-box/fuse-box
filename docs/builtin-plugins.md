@@ -125,6 +125,47 @@ import "jstree/dist/themes/default/style.css";
 `style.css` has relative resources (images, fonts), which need to be copied in order to use it. CSSResourcePlugin solves this problem.
 It re-writes the URL and copies files to a destination specified by user,
 
+## CSSModules
+
+CSSModules plugin is available in `> 1.4.1`
+
+Install
+
+```bash
+yarn add postcss-modules --dev
+npm install postcss-modules --save-dev
+```
+
+Import the plugin from `fuse-box`
+
+```js
+const {  CSSModules, CSSPlugin } = require("fuse-box");
+```
+
+Add it to your chain
+
+
+### Development mode (inlining) + HMR
+
+```js
+fuse.bundle("app")
+    .plugin(CSSModules(), CSSPlugin())
+    .instructions("> index.ts");
+```
+
+### Production mode (grouping - no HMR)
+
+```js
+fuse.bundle("app")
+    .plugin(CSSModules(), CSSPlugin({
+        group: "bundle.css",
+        outFile: `dist/bundle.css`
+    }))
+    .instructions("> index.ts");
+```
+
+
+
 
 ### Copy files
 
@@ -157,10 +198,12 @@ plugins: [
 > HINT: disable cache while playing with the options, as npm modules along with css files are heavily cached
 
 ## Less Plugin
-Install less first.
+Install [less](http://lesscss.org/) first.
 ```bash
+yarn add less --dev
 npm install less --save-dev
 ```
+
 The less plugin generates CSS, and must be chained prior to the CSSPlugin to be used:
 
 ```js
@@ -173,9 +216,10 @@ plugins:[
 
 
 ## PostCSS
-Install postcss and any postcss plugins first
+Install [postcss](https://github.com/postcss/postcss) and any postcss plugins first
 
 ```bash
+yarn add precss postcss --dev
 npm install precss postcss --save-dev
 ```
 
@@ -218,10 +262,11 @@ For example `RawPlugin(["asdf"])` will throw an error. `RawPlugin(["hello.txt"])
 
 ## SassPlugin
 
-Sass generates CSS, and must be chained prior to the CSSPlugin to be used:
+[Sass](http://sass-lang.com/) generates CSS, and must be chained prior to the CSSPlugin to be used:
 
 ```bash
-npm install node-sass
+yarn add node-less --dev
+npm install node-sass --save-dev
 ```
 
 Usage:
@@ -294,10 +339,11 @@ plugins: [
 ]
 ```
 
-It depends on marked library, so it must be installed first :
+It depends on [marked](https://github.com/chjj/marked) library, so it must be installed first :
 
 ```bash
-npm install marked
+yarn add marked --dev
+npm install marked --save-dev
 ```
 
 Toggle `useDefault` to make Markdown files export strings as `default` property.
@@ -344,7 +390,8 @@ The npm `babel-core` package must be installed to use the babel plugin.
 For example, to transpile JSX, you can use this configuration:
 
 ```bash
-npm install babel-core babel-preset-es2015 babel-plugin-transform-react-jsx
+yarn add babel-core babel-preset-es2015 babel-plugin-transform-react-jsx --dev
+npm install babel-core babel-preset-es2015 babel-plugin-transform-react-jsx --save-dev
 ```
 ```js
  plugins: [
@@ -524,7 +571,8 @@ let fuse = fsbx.FuseBox.init({
 You can have access to the entire environment of a file, using reflect-metadata. Make sure you have it installed first
 
 ```bash
-npm install reflect-metadata
+yarn add reflect-metadata --dev
+npm install reflect-metadata --save-dev
 ```
 
 Then, include it in your entry point

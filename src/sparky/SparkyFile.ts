@@ -3,6 +3,8 @@ import { replaceExt, ensureUserPath } from "../Utils";
 import * as path from "path";
 import { Config } from "../Config";
 import { Plugin } from "../core/WorkflowContext";
+import * as Mustache from "mustache";
+
 export class SparkyFile {
     public homePath: string;
     public name: string;
@@ -27,6 +29,11 @@ export class SparkyFile {
         return this;
     }
 
+    public template(obj: any) {
+        if (!this.contents) { this.read(); }
+        this.contents = Mustache.render(this.contents.toString(), obj);
+        this.savingRequired = true;
+    }
     public save(): SparkyFile {
         this.savingRequired = false;
         if (this.contents) {

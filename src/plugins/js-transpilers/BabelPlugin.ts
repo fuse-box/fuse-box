@@ -25,14 +25,15 @@ export class BabelPluginClass implements Plugin {
 
     private config?: any = {};
     private configPrinted = false;
+    private configLoaded = false;
 
     constructor(opts: any) {
         opts = opts || {};
 
         // if it is an object containing only a babel config
-        if (opts.test === undefined && opts.limit2project === undefined && Object.keys(opts).length) {
-          this.config = opts;
-          return
+        if (opts.config === undefined && opts.test === undefined && opts.limit2project === undefined && Object.keys(opts).length) {
+            this.config = opts;
+            return
         }
 
         if (opts.config) {
@@ -51,17 +52,18 @@ export class BabelPluginClass implements Plugin {
      * @memberOf FuseBoxHTMLPlugin
      */
     private handleBabelRc() {
-      if (this.config) return
+        if (this.configLoaded) return
 
-      let babelRcConfig;
-      let babelRcPath = path.join(this.context.root, `.babelrc`);
-      if (fs.existsSync(babelRcPath)) {
-          babelRcConfig = fs.readFileSync(babelRcPath).toString();
-          if (babelRcConfig) babelRcConfig = JSON.parse(babelRcConfig);
-      }
-      if (babelRcConfig) {
-        this.config = babelRcConfig;
-      }
+        let babelRcConfig;
+        let babelRcPath = path.join(this.context.appRoot, `.babelrc`);
+        if (fs.existsSync(babelRcPath)) {
+            babelRcConfig = fs.readFileSync(babelRcPath).toString();
+            if (babelRcConfig) babelRcConfig = JSON.parse(babelRcConfig);
+        }
+        if (babelRcConfig) {
+            this.config = babelRcConfig;
+        }
+        this.configLoaded = true;
     }
 
     /**

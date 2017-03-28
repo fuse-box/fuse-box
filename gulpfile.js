@@ -128,6 +128,10 @@ gulp.task("publish", ["dist-cdn-loader-js"], function(done) {
     runSequence("dist", "increment-version", "commit-release", "npm-publish", done);
 });
 
+gulp.task("beta", ["dist-cdn-loader-js"], function(done) {
+    runSequence("dist", "increment-beta", "commit-beta", "npm-publish-beta", done);
+});
+
 gulp.task("changelog", function(done) {
     fs.writeFileSync(path.join(__dirname, "docs/changelog.md"), "");
     const storedToken = getGitHubToken();
@@ -147,6 +151,19 @@ gulp.task("increment-version", function() {
         .pipe(bump())
         .pipe(gulp.dest("./"));
 });
+
+gulp.task("increment-beta", function() {
+    let json = require("./package.json");
+    let main = json.version;
+    let matched = main.match(/(.*)(beta\.)(\d{1,})/i);
+    if (matched) {
+        json.version = `${matched[1]}${matched[2]}${(matched[3] * 1) + 1}`;
+        fs.writeFileSync(__dirname + "/package.json", JSON.stringify(json, 2, 2));
+    } else {
+        throw new Error("Invalid beta template")
+    }
+});
+
 gulp.task("commit-release", function(done) {
     let json = JSON.parse(fs.readFileSync(__dirname + "/package.json").toString());
     exec(`git add .; git commit -m "Release ${json.version}" -a; git tag v${json.version}; git push origin master --tags`, (error, stdout, stderr) => {
@@ -159,6 +176,20 @@ gulp.task("commit-release", function(done) {
         done();
     });
 });
+
+gulp.task("commit-beta", function(done) {
+    let json = JSON.parse(fs.readFileSync(__dirname + "/package.json").toString());
+    exec(`git add .; git commit -m "Release ${json.version}" -a; git tag v${json.version}; git push origin 1.4.1`, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`exec error: ${error}`);
+            return;
+        }
+        console.log(`stdout: ${stdout}`);
+        console.log(`stderr: ${stderr}`);
+        done();
+    });
+});
+
 gulp.task("npm-publish", function(done) {
     var publish = spawn("npm", ["publish"], {
         stdio: "inherit",
@@ -170,6 +201,19 @@ gulp.task("npm-publish", function(done) {
         done();
     });
 });
+
+gulp.task("npm-publish-beta", function(done) {
+    var publish = spawn("npm", ["publish", "--tag", "beta"], {
+        stdio: "inherit",
+    });
+    publish.on("close", function(code) {
+        if (code === 8) {
+            gulp.log("Error detected, waiting for changes...");
+        }
+        done();
+    });
+});
+
 
 gulp.task("make-test-runner", (done) => {
     const { FuseBox, JSONPlugin } = require("./dist/commonjs/index");

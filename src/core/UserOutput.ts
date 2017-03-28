@@ -12,6 +12,7 @@ export class UserOutput {
     public useHash = false;
     public lastWrittenPath;
     public lastWrittenHash;
+    public lastGeneratedFileName: string;
     constructor(public context: WorkFlowContext, public original: string) {
         this.setup();
     }
@@ -84,6 +85,7 @@ export class UserOutput {
                 .replace('$name', basename)
                 .replace('$hash', "")
         }
+        this.lastGeneratedFileName = fname;
         let result = path.join(this.dir, dirname, fname);
         return result;
     }

@@ -86,7 +86,6 @@ export class SparkFlow {
         });
     }
 
-
     /**
      * Removes folder if exists
      * @param dest 
@@ -103,6 +102,8 @@ export class SparkFlow {
         );
         return this;
     }
+
+
 
     public plugin(plugin: Plugin): SparkFlow {
         this.activities.push(() => {
