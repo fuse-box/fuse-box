@@ -86,7 +86,6 @@ export class SparkFlow {
         });
     }
 
-
     /**
      * Removes folder if exists
      * @param dest 
