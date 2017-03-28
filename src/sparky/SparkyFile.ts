@@ -99,7 +99,6 @@ export class SparkyFile {
                 this.filepath = dest;
                 // save is required
                 if (this.savingRequired) {
-                    console.log("reuired....");
                     this.save();
                 }
                 return resolve();
