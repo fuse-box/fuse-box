@@ -7,9 +7,12 @@ export class CSSModulesClass implements Plugin {
 
     public test: RegExp = /\.css$/;
     public options: any;
-
+    public useDefault = true;
     constructor(options: any) {
         this.options = options || {};
+        if (this.options.useDefault !== undefined) {
+            this.useDefault = this.options.options.useDefault;
+        }
     }
 
     public init(context: WorkFlowContext) {
@@ -23,7 +26,8 @@ export class CSSModulesClass implements Plugin {
                 require('postcss-modules')({
                     root: file.info.absDir,
                     getJSON: function (cssFileName, json) {
-                        file.addAlternativeContent(`module.exports.default = ${JSON.stringify(json)};`);
+                        let exportsKey = this.useDefault ? "module.exports.default" : "module.exports";
+                        file.addAlternativeContent(`${exportsKey} = ${JSON.stringify(json)};`);
                     }
                 })
             ]).process(file.contents, {})
