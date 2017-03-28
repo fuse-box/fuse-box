@@ -11,7 +11,7 @@ export class CSSModulesClass implements Plugin {
     constructor(options: any) {
         this.options = options || {};
         if (this.options.useDefault !== undefined) {
-            this.useDefault = this.options.options.useDefault;
+            this.useDefault = this.options.useDefault;
         }
     }
 
