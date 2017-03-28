@@ -21,6 +21,7 @@ Join [gitter channel](https://gitter.im/fusebox-bundler/Lobby), we are active! /
 ## Installation
 
 ```bash
+yarn add fuse-box --save-dev
 npm install fuse-box --save-dev
 ```
 

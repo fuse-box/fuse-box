@@ -26,7 +26,7 @@ Sparky.task("foo", () => {
     });
 });
 ```
-To run the above do `npm fuse.js foo`
+To run the above do `node fuse foo`
 
 # API
 

@@ -3,6 +3,7 @@
 Typescript works out of the box, additional configuration is not required. Make sure you have the typescript compiler installed.
 
 ```bash
+yarn add typescript --dev
 npm install typescript --save-dev
 ```
 

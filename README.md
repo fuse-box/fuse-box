@@ -34,15 +34,10 @@ You have created an awesome plugin? Add it to the [list](https://github.com/fuse
 
 ## Installation
 
-FuseBox has many plugins in place to help you get started. All you need to do is install `fuse-box` from npm.
+FuseBox has many plugins in place to help you get started. All you need to do is install `fuse-box` from npm or yarn.
 
 ```bash
 npm install fuse-box --save-dev
-```
-
-Or install using Yarn:
-
-```bash
 yarn add fuse-box --dev
 ```
 
