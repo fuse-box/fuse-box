@@ -1,18 +1,22 @@
 import { WorkFlowContext } from "../core/WorkflowContext";
 import { Plugin } from "../core/WorkflowContext";
 
+export interface EnvPluginOptions {
+    [key: string]: any;
+}
+
 /**
  * @export
  * @class BannerPluginClass
  * @implements {Plugin}
  */
 export class EnvPluginClass implements Plugin {
-    constructor(private env: any) { }
+    constructor(private env: EnvPluginOptions) { }
     public bundleStart(context: WorkFlowContext) {
         context.source.addContent(`var __process_env__ = ${JSON.stringify(this.env)};`);
     }
 }
 
-export const EnvPlugin = (banner: any) => {
+export const EnvPlugin = (banner: EnvPluginOptions) => {
     return new EnvPluginClass(banner);
 };

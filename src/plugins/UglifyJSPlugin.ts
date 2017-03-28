@@ -1,6 +1,11 @@
 import { Plugin } from "../core/WorkflowContext";
 import { BundleSource } from "../BundleSource";
 
+// TODO get typings for UglifyJS opts
+export interface UglifyJSPluginOptions {
+    [key: string]: any;
+}
+
 /**
  * @export
  * @class UglifyJSPluginClass
@@ -11,11 +16,8 @@ export class UglifyJSPluginClass implements Plugin {
 	 * @type {any}
 	 * @memberOf UglifyJSPluginClass
 	 */
-    public options: any;
 
-    constructor(options: any) {
-        this.options = options || {};
-    }
+    constructor(public options: UglifyJSPluginOptions = {}) {}
 
     public postBundle(context) {
         const mainOptions : any = {

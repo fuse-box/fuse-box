@@ -2,6 +2,10 @@ import { File } from "../core/File";
 import { WorkFlowContext } from "../core/WorkflowContext";
 import { Plugin } from "../core/WorkflowContext";
 
+export interface HTMLPluginOptions {
+    useDefault?: boolean;
+}
+
 /**
  *
  *
@@ -11,7 +15,7 @@ import { Plugin } from "../core/WorkflowContext";
  */
 export class FuseBoxHTMLPlugin implements Plugin {
     private useDefault = true;
-    constructor(opts: any = {}) {
+    constructor(opts: HTMLPluginOptions = {}) {
         if (opts.useDefault !== undefined) {
             this.useDefault = opts.useDefault;
         }

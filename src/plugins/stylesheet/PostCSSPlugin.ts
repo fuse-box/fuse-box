@@ -2,6 +2,12 @@ import { File } from "../../core/File";
 import { WorkFlowContext } from "../../core/WorkflowContext";
 import { Plugin } from "../../core/WorkflowContext";
 
+export interface PostCSSPluginOptions {
+    [key: string]: any;
+}
+
+export type Processors = (() => any)[];
+
 let postcss;
 /**
  *
@@ -19,10 +25,7 @@ export class PostCSSPluginClass implements Plugin {
      */
     public test: RegExp = /\.css$/;
     public dependencies = [];
-    constructor(public processors: any, public opts: any) {
-        this.opts = this.opts || {};
-        this.processors = this.processors || [];
-    }
+    constructor(public processors: Processors = [], public opts?: PostCSSPluginOptions) { }
     /**
      *
      *
@@ -55,6 +58,6 @@ export class PostCSSPluginClass implements Plugin {
     }
 }
 
-export const PostCSS = (processors?: any, opts?: any) => {
+export const PostCSS = (processors?: Processors, opts?: PostCSSPluginOptions) => {
     return new PostCSSPluginClass(processors, opts);
 };

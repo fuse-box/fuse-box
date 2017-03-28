@@ -2,6 +2,14 @@ import { File } from "../../core/File";
 import { WorkFlowContext } from "../../core/WorkflowContext";
 import { Plugin } from "../../core/WorkflowContext";
 
+export interface StylusPluginOptions {
+    sourcemap?: { [key: string]: boolean | string };
+}
+
+interface InternalOpts {
+    filename?: string;
+}
+
 let stylus;
 
 /**
@@ -15,19 +23,16 @@ export class StylusPluginClass implements Plugin {
 	 * @memberOf StylusPluginClass
 	 */
     public test: RegExp = /\.styl$/;
-    public options: any;
 
-    constructor(options: any) {
-        this.options = options || {};
-    }
+    constructor(public options: StylusPluginOptions = {}) { }
 
     public init(context: WorkFlowContext) {
         context.allowExtension(".styl");
     }
 
     public transform(file: File): Promise<any> {
-        const context : WorkFlowContext = file.context;
-        const options = { ...this.options };
+        const context: WorkFlowContext = file.context;
+        const options: StylusPluginOptions & InternalOpts = { ...this.options };
         const sourceMapDef = {
             comment: false,
             sourceRoot: file.info.absDir,

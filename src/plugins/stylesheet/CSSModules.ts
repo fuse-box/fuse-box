@@ -3,17 +3,17 @@ import { WorkFlowContext } from "../../core/WorkflowContext";
 import { Plugin } from "../../core/WorkflowContext";
 import * as postcss from "postcss";
 
-export interface Opts {
+export interface CSSModulesOptions {
 
 }
 
 export class CSSModulesClass implements Plugin {
 
     public test: RegExp = /\.css$/;
-    public options: Opts;
+    public options: CSSModulesOptions;
 
-    constructor(options?: Opts) {
-        this.options = options || {};
+    constructor(options: CSSModulesOptions = {}) {
+        this.options = options;
     }
 
     public init(context: WorkFlowContext) {

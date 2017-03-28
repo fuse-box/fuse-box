@@ -7,10 +7,14 @@ import { Plugin } from "../../core/WorkflowContext";
 import { utils } from "realm-utils";
 import { Concat, ensureUserPath, write } from "../../Utils";
 
-export interface Opts {
-    outFile?: (file: string) => string;
+export interface CSSPluginOptions {
+    outFile?: (file: string) => string | string;
     inject?: (file: string) => string | boolean;
     group?: string;
+    raw?: boolean;
+    write?: any;
+    minify?: boolean;
+    serve?: any;
 }
 
 /**
@@ -30,14 +34,12 @@ export class CSSPluginClass implements Plugin {
     public test: RegExp = /\.css$/;
     private raw = false;
     private minify = false;
-    public opts: Opts;
+    public opts: CSSPluginOptions;
     private serve: any;
 
     private writeOptions: any;
 
-    constructor(opts: any) {
-        opts = opts || {};
-
+    constructor(opts: CSSPluginOptions = {}) {
         this.opts = opts;
 
         if (opts.raw !== undefined) {
@@ -230,6 +232,6 @@ export class CSSPluginClass implements Plugin {
     }
 }
 
-export const CSSPlugin = (opts?: Opts) => {
+export const CSSPlugin = (opts?: CSSPluginOptions) => {
     return new CSSPluginClass(opts);
 };
