@@ -176,6 +176,7 @@ export class CSSPluginClass implements Plugin {
          * 2 files combined will be written or inlined to "bundle.css"
          */
         if (this.opts.group) {
+            file.sourceMap = undefined;
             const bundleName = this.opts.group;
             let fileGroup = context.getFileGroup(bundleName);
             if (!fileGroup) {
