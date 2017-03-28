@@ -7,7 +7,8 @@ At the moment it works only on typescript projects, this is because typescript i
 ## Installation
 
 ```bash
-npm install rollup typescript
+yarn add rollup typescript --dev
+npm install rollup typescript --save-dev
 ```
 
 ## Requirements
