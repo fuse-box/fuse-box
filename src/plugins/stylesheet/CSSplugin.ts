@@ -78,7 +78,7 @@ export class CSSPluginClass implements Plugin {
         // noop the contents if a user wants to manually inject it
         const result = options.inject !== false ? `__fsbx_css("${resolvedPath}");` : "";
         if (alternative) {
-            file.alternativeContent = result;
+            file.addAlternativeContent(result);
         } else {
             file.contents = result;
         }
@@ -152,7 +152,7 @@ export class CSSPluginClass implements Plugin {
 
         file.loadContents();
 
-        let contents;
+
         let filePath = file.info.fuseBoxPath;
 
         let context = file.context;
@@ -175,12 +175,10 @@ export class CSSPluginClass implements Plugin {
             }
             // Adding current file (say a.txt) as a subFile
             fileGroup.addSubFile(file);
-            debug(`  grouping -> ${bundleName}`);
-
-            const chainExports = file.getProperty("exports");
+            debug(`  grouping -> ${bundleName}`)
 
             // Respect other plugins to override the output
-            file.alternativeContent = `module.exports = ${chainExports && contents ? chainExports : "require('./" + bundleName + "')"}`;
+            file.addAlternativeContent(`require("./${bundleName}")`);
             return;
         }
 
@@ -199,7 +197,7 @@ export class CSSPluginClass implements Plugin {
         if (outFileFunction) {
             const userPath = ensureUserPath(outFileFunction(file.info.fuseBoxPath));
             // reset the content so it won't get bundled
-            file.alternativeContent = "";
+
             this.inject(file, this.opts, true);
             // writing ilfe
             return write(userPath, file.contents).then(() => {
@@ -217,7 +215,7 @@ export class CSSPluginClass implements Plugin {
                 content: file.contents,
                 path: file.info.fuseBoxPath,
             });
-            file.alternativeContent = `__fsbx_css("${filePath}", ${safeContents});`;
+            file.addAlternativeContent(`__fsbx_css("${filePath}", ${safeContents})`);
         }
     }
 

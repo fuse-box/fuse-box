@@ -1,6 +1,6 @@
 {
   "name": "fuse-box",
-  "version": "1.4.1-beta.5",
+  "version": "1.4.1-beta.6",
   "description": "Fuse-Box a bundler that does it right",
   "typings": "./dist/typings/index.d.ts",
   "main": "dist/commonjs/index.js",
@@ -85,7 +85,7 @@
     "escodegen": "^1.8.1",
     "express": "^4.14.0",
     "fs-extra": "^2.0.0",
-    "fuse-tools": "^1.0.1",
+    "fuse-tools": "^1.0.3",
     "glob": "^7.1.1",
     "ieee754": "^1.1.8",
     "inquirer": "^3.0.6",

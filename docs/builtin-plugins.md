@@ -125,6 +125,46 @@ import "jstree/dist/themes/default/style.css";
 `style.css` has relative resources (images, fonts), which need to be copied in order to use it. CSSResourcePlugin solves this problem.
 It re-writes the URL and copies files to a destination specified by user,
 
+## CSSModules
+
+CSSModules plugin is available in `> 1.4.1`
+
+Install
+
+```bash
+yarn add postcss-modules --save-dev
+```
+
+Import the plugin from `fuse-box`
+
+```js
+const {  CSSModules, CSSPlugin } = require("fuse-box");
+```
+
+Add it to your chain
+
+
+### Development mode (inlining) + HMR
+
+```js
+fuse.bundle("app")
+    .plugin(CSSModules(), CSSPlugin())
+    .instructions("> index.ts");
+```
+
+### Production mode (grouping - no HMR)
+
+```js
+fuse.bundle("app")
+    .plugin(CSSModules(), CSSPlugin({
+        group: "bundle.css",
+        outFile: `dist/bundle.css`
+    }))
+    .instructions("> index.ts");
+```
+
+
+
 
 ### Copy files
 

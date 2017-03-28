@@ -23,6 +23,6 @@ export { SourceMapPlainJsPlugin } from "./plugins/SourceMapPlainJsPlugin";
 export { RawPlugin } from "./plugins/RawPlugin";
 export { OptimizeJSPlugin } from "./plugins/OptimizeJSPlugin";
 export { Fluent } from "./arithmetic/Fluent";
-
 export { FuseBox } from "./core/FuseBox";
 export { Sparky } from "./sparky/Sparky";
+export { CSSModules } from "./plugins/stylesheet/CSSModules";

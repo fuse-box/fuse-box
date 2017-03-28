@@ -109,6 +109,10 @@ export class File {
 
     public groupHandler: Plugin;
 
+    public addAlternativeContent(str: string) {
+        this.alternativeContent = this.alternativeContent || "";
+        this.alternativeContent += "\n" + str;
+    }
     /**
      * Creates an instance of File.
      *
