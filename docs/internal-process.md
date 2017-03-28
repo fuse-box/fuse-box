@@ -9,7 +9,7 @@
     -
 - [workflow context][src-workflow-context] is reset
 - [preBundle](#preBundle) is triggered
-- [shims][#shimming] are added
+- [shims](#shimming) are added
 - [bundleStart](#bundleStart) is triggered
 - [Arithmetics][src-arithmetic] are parsed
 
