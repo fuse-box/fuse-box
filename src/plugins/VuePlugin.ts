@@ -2,14 +2,15 @@ import { File } from "../core/File";
 import { WorkFlowContext } from "../core/WorkflowContext";
 import { Plugin } from "../core/WorkflowContext";
 
+export interface VuePluginOptions {
+
+}
+
 let vueCompiler;
 export class VuePluginClass implements Plugin {
     public test: RegExp = /\.vue$/;
 
-    public opts: any;
-    constructor(opts) {
-        this.opts = opts || {};
-    }
+    constructor(public opts: VuePluginOptions = {}) { }
 
     public init(context: WorkFlowContext) {
         context.allowExtension(".vue");

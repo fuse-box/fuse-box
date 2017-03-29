@@ -5,6 +5,11 @@ import { Plugin } from "../core/WorkflowContext";
 import * as acorn from "acorn";
 import * as SourceMap from "source-map";
 
+export interface SourceMapPlainJsPluginOptions {
+    ext?: string;
+    test?: RegExp;
+}
+
 /**
  * @export
  * @class SourceMapPlainJsPluginClass
@@ -27,11 +32,13 @@ export class SourceMapPlainJsPluginClass implements Plugin {
 	 */
     private context: WorkFlowContext;
 
-    constructor(options?: any) {
-        options = options || {};
-
-        if ("test" in options) this.test = options.test;
-        if ("ext" in options) this.ext = options.ext;
+    constructor(options: SourceMapPlainJsPluginOptions = {}) {
+        if (options.test) {
+            this.test = options.test;
+        }
+        if (options.ext) {
+            this.ext = options.ext;
+        }
     }
 
     init(context: WorkFlowContext) {

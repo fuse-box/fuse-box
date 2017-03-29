@@ -2,6 +2,18 @@ import { File } from "../core/File";
 import { WorkFlowContext } from "../core/WorkflowContext";
 import { Plugin } from "../core/WorkflowContext";
 
+export interface MarkdownPluginOptions {
+    gfm?: boolean;
+    tables?: boolean;
+    breaks?: boolean;
+    pedantic?: boolean,
+    sanitize?: boolean,
+    smartLists?: boolean,
+    smartypants?: boolean
+    useDefault?: boolean;
+    renderer?: () => any;
+}
+
 let marked;
 
 /**
@@ -14,7 +26,7 @@ let marked;
 export class FuseBoxMarkdownPlugin implements Plugin {
     private useDefault = true;
 
-    private options: any = {
+    private options: MarkdownPluginOptions = {
         gfm: true,
         tables: true,
         breaks: false,
@@ -24,7 +36,7 @@ export class FuseBoxMarkdownPlugin implements Plugin {
         smartypants: false
     };
 
-    constructor(opts: any = {}) {
+    constructor(opts: MarkdownPluginOptions = {}) {
         if (opts.useDefault !== undefined) {
             this.useDefault = opts.useDefault;
         }
@@ -71,11 +83,11 @@ export class FuseBoxMarkdownPlugin implements Plugin {
         file.loadContents();
 
         if (!marked) {
-          marked = require("marked");
+            marked = require("marked");
         }
 
         if (this.options.renderer) {
-          this.options.renderer = new marked.Renderer();
+            this.options.renderer = new marked.Renderer();
         }
 
         // Transform the markdown using marked

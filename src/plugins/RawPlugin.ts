@@ -4,6 +4,12 @@ import { Plugin } from "../core/WorkflowContext";
 import { utils } from "realm-utils";
 import { extractExtension, string2RegExp } from "../Utils";
 
+export interface RawPluginOptionsObj {
+    extensions: string[];
+}
+
+export type RawPluginOptions = RawPluginOptionsObj | string[];
+
 /**
  * @export
  * @class RawPluginClass
@@ -21,9 +27,9 @@ export class RawPluginClass implements Plugin {
 	 */
     public extensions: Array<string>;
 
-    constructor(options: any) {
+    constructor(options?: RawPluginOptions | string[]) {
         if (utils.isPlainObject(options)) {
-            if ("extensions" in (options || {})) this.extensions = options.extensions;
+            if ("extensions" in (options || {})) this.extensions = (options as RawPluginOptionsObj).extensions;
         }
         if (utils.isArray(options)) {
             this.extensions = [];

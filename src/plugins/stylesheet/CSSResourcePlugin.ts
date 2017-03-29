@@ -56,6 +56,12 @@ const generateNewFileName = (str): string => {
     return fname;
 };
 
+export interface CSSResourcePluginOptions {
+    dist?: string;
+    inline?: boolean;
+    resolve?: (path: string) => any;
+}
+
 /**
  * @export
  * @class RawPluginClass
@@ -65,13 +71,11 @@ export class CSSResourcePluginClass implements Plugin {
 
     public test: RegExp = /\.css$/;
     public distFolder: string;
-    public inlineImages: false;
-    constructor(opts: any) {
-        opts = opts || {};
+    public inlineImages: boolean;
+    constructor(opts: CSSResourcePluginOptions = {}) {
         if (opts.dist) {
             this.distFolder = ensureDir(opts.dist);
         }
-
         if (opts.inline) {
             this.inlineImages = opts.inline;
         }

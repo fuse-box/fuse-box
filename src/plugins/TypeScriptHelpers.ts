@@ -3,6 +3,11 @@ import { File } from "../core/File";
 import { WorkFlowContext, Plugin } from "../core/WorkflowContext";
 import * as fs from "fs";
 import * as path from "path";
+
+export interface TypeScriptHelpersOptions {
+
+}
+
 /**
  *
  *
@@ -21,9 +26,7 @@ export class TypeScriptHelpersClass implements Plugin {
 
     private registeredHelpers: Map<string, string> = new Map();
 
-    constructor(opts: any) {
-        opts = opts || {};
-
+    constructor(opts: TypeScriptHelpersOptions = {}) {
         let folder = path.join(Config.FUSEBOX_MODULES, "fuse-typescript-helpers");
         let files = fs.readdirSync(folder);
         files.forEach(fileName => {

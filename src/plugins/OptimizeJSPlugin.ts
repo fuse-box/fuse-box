@@ -1,16 +1,20 @@
 import { WorkFlowContext } from "../core/WorkflowContext";
 
+// interface OptimizeJSPluginOptions {
+
+// }
+
 export class OptimizeJSClass {
   public test: RegExp = /\.(j|t)s(x)?$/;
-  public config?: Object | any = null;
+  public opts?: Object | any = null;
   public context: WorkFlowContext;
 
   public static init(config: any) {
       return new OptimizeJSClass(config);
   };
 
-  constructor(config: any) {
-    if (config !== null) this.config = config
+  constructor(opts?: any) {
+    if (opts !== null) this.opts = opts
   }
 
   public init(context: WorkFlowContext) {
@@ -21,12 +25,12 @@ export class OptimizeJSClass {
     const optimizeJs = require('optimize-js')
     let output
     try {
-      output = optimizeJs(file.contents, this.config)
+      output = optimizeJs(file.contents, this.opts)
       if (this.context.doLog === true) {
         file
           .context
           .debug("OptimizeJSPlugin",
-            `\n\tOptimized: ${JSON.stringify(this.config)}`);
+            `\n\tOptimized: ${JSON.stringify(this.opts)}`);
       }
       file.contents = output
     } catch (error) {

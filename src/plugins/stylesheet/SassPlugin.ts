@@ -3,6 +3,17 @@ import { WorkFlowContext, Plugin } from "../../core/WorkflowContext";
 import * as path from "path";
 import { Config } from "../../Config";
 
+export interface SassPluginOptions {
+    includePaths?: string[];
+    macros?: {[key: string]: string};
+    importer?: boolean | ImporterFunc;
+    cache?: boolean;
+}
+
+export interface ImporterFunc {
+    (url: string, prev: string, done: (opts: {url?: string; file?: string;}) => any): any;
+}
+
 let sass;
 
 /**
@@ -13,12 +24,9 @@ let sass;
 export class SassPluginClass implements Plugin {
 
     public test: RegExp = /\.scss$/;
-    public options: any;
     public context: WorkFlowContext;
 
-    constructor(options: any) {
-        this.options = options || {};
-    }
+    constructor(public options: SassPluginOptions = {}) { }
 
     public init(context: WorkFlowContext) {
         context.allowExtension(".scss");

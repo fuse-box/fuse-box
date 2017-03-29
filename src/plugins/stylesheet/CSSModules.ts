@@ -3,13 +3,18 @@ import { WorkFlowContext } from "../../core/WorkflowContext";
 import { Plugin } from "../../core/WorkflowContext";
 import * as postcss from "postcss";
 
+export interface CSSModulesOptions {
+    useDefault?: boolean;
+}
+
 export class CSSModulesClass implements Plugin {
 
     public test: RegExp = /\.css$/;
-    public options: any;
+    public options: CSSModulesOptions;
     public useDefault = true;
-    constructor(options: any) {
-        this.options = options || {};
+
+    constructor(options: CSSModulesOptions = {}) {
+        this.options = options;
         if (this.options.useDefault !== undefined) {
             this.useDefault = this.options.useDefault;
         }

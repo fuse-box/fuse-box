@@ -1,11 +1,15 @@
 import { File } from "../core/File";
 import { Plugin } from "../core/WorkflowContext";
 
+export interface ReplacePluginOptions {
+    [key: string]: string;
+}
+
 export class ReplacePluginClass implements Plugin {
 
     public test: RegExp = /.*/;
     public extensions: Array<string>;
-    constructor(public options: any) { };
+    constructor(public options: ReplacePluginOptions = {}) { };
     transform(file: File) {
         for (let key in this.options) {
             if (this.options.hasOwnProperty(key)) {
@@ -16,6 +20,6 @@ export class ReplacePluginClass implements Plugin {
     }
 }
 
-export const ReplacePlugin = (options) => {
+export const ReplacePlugin = (options: ReplacePluginOptions = {}) => {
     return new ReplacePluginClass(options);
 };

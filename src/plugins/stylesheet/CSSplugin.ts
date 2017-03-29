@@ -7,10 +7,15 @@ import { Plugin } from "../../core/WorkflowContext";
 import { utils } from "realm-utils";
 import { Concat, ensureUserPath, write } from "../../Utils";
 
+
 export interface Opts {
     outFile?: { (file: string): string } | string;
     inject?: boolean | { (file: string): string }
     group?: string;
+    raw?: boolean;
+    write?: any;
+    minify?: boolean;
+    serve?: any;
 }
 
 /**
@@ -30,14 +35,12 @@ export class CSSPluginClass implements Plugin {
     public test: RegExp = /\.css$/;
     private raw = false;
     private minify = false;
-    public opts: Opts;
+    public opts: CSSPluginOptions;
     private serve: any;
 
     private writeOptions: any;
 
-    constructor(opts: any) {
-        opts = opts || {};
-
+    constructor(opts: CSSPluginOptions = {}) {
         this.opts = opts;
 
         if (opts.raw !== undefined) {
@@ -174,6 +177,7 @@ export class CSSPluginClass implements Plugin {
          * 2 files combined will be written or inlined to "bundle.css"
          */
         if (this.opts.group) {
+            file.sourceMap = undefined;
             const bundleName = this.opts.group;
             let fileGroup = context.getFileGroup(bundleName);
             if (!fileGroup) {
@@ -230,6 +234,6 @@ export class CSSPluginClass implements Plugin {
     }
 }
 
-export const CSSPlugin = (opts?: Opts) => {
+export const CSSPlugin = (opts?: CSSPluginOptions) => {
     return new CSSPluginClass(opts);
 };

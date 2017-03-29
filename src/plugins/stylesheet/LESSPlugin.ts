@@ -3,6 +3,14 @@ import { WorkFlowContext } from "./../../core/WorkflowContext";
 import { Plugin } from "../../core/WorkflowContext";
 let less;
 
+export interface LESSPluginOptions {
+    sourceMap?: any;
+}
+
+export interface LESSPluginInternalOpts {
+    filename?: string;
+}
+
 /**
  * @export
  * @class LESSPluginClass
@@ -14,10 +22,10 @@ export class LESSPluginClass implements Plugin {
      * @memberOf LESSPluginClass
      */
     public test: RegExp = /\.less$/;
-    public options: any;
+    public options: LESSPluginOptions & LESSPluginInternalOpts;
 
-    constructor(options: any) {
-        this.options = options || {};
+    constructor(options: LESSPluginOptions = {}) {
+        this.options = options;
     }
 
     public init(context: WorkFlowContext) {
