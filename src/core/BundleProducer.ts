@@ -17,9 +17,6 @@ export class BundleProducer {
     public devServerOptions: ServerOptions;
     constructor(public fuse: FuseBox) {
         this.runner = new BundleRunner(this.fuse);
-        // to make sure that all bundle are set up
-        // we will make decision on the next tick
-        //process.nextTick(() => this.watch())
     }
 
 

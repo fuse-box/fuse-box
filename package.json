@@ -85,7 +85,7 @@
     "escodegen": "^1.8.1",
     "express": "^4.14.0",
     "fs-extra": "^2.0.0",
-    "fuse-tools": "^1.0.3",
+    "fuse-tools": "^1.0.4",
     "glob": "^7.1.1",
     "ieee754": "^1.1.8",
     "inquirer": "^3.0.6",

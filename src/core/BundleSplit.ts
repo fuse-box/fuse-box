@@ -16,6 +16,8 @@ export class SplitConfig {
 
 export class BundleSplit {
     public bundles = new Map<string, SplitConfig>();
+    public browserPath = "/";
+    public serverPath = `./`;
     constructor(public bundle: Bundle) { }
     public addRule(rule: string, bundleName: string) {
         const conf = this.bundles.get(bundleName);
@@ -57,11 +59,13 @@ export class BundleSplit {
         }).then((configs: SplitConfig[]) => {
             // getting information on the paths
             let obj: any = {
-
+                bundles: {},
+                browser: this.browserPath,
+                server: this.serverPath,
             };
             configs.forEach(config => {
                 let localFileName = config.fuse.context.output.lastGeneratedFileName;
-                obj[config.name] = {
+                obj.bundles[config.name] = {
                     file: localFileName,
                     main: ensurePublicExtension(config.main)
                 }

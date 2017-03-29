@@ -98,6 +98,19 @@ export class Bundle {
         return this;
     }
 
+    public splitConfig(opts: any): Bundle {
+        if (!this.bundleSplit) {
+            this.bundleSplit = new BundleSplit(this);
+        }
+        if (opts.browser) {
+            this.bundleSplit.browserPath = opts.browser;
+        }
+        if (opts.server) {
+            this.bundleSplit.serverPath = opts.server;
+        }
+        return this;
+    }
+
     /** Log */
     public log(log: boolean): Bundle {
         this.context.doLog = log;
