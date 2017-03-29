@@ -31,7 +31,7 @@ FuseBox.init({
 ## File list
 
 AssetsPlugin accepts `files` which should be an array. All expressions must be `simplified Regexp` strings. 
-You can set an extension to make it globally available, or define a specific path if you wish to hanle files only in one particular folder.
+You can set an extension to make it globally available, or define a specific path if you wish to handle files only in one particular folder.
 
 Globall:
 
@@ -46,7 +46,7 @@ AssetsPlugin({ files: ["static/*.txt", "static/some/**.png"] })
 
 ## Output destination
 
-Customise server path by providing `dest` option. Not, that your global `output` configuration is considered to be the root.
+Customise server path by providing `dest` option. Note, that your global `output` configuration is considered to be the root.
 Don't set an absolute path as it will break the overal cosistency (global settings for hashing for example)
 
 Globall:
