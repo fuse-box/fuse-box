@@ -94,7 +94,7 @@ export class AutoImportTest {
 
     "Should not inject a variable woops case 1"() {
 
-        createEnv({
+        return createEnv({
             modules: {
                 superFoo2: {
                     files: {
@@ -127,7 +127,7 @@ export class AutoImportTest {
 
     "Should inject a variable Inferno"() {
 
-        createEnv({
+        return createEnv({
             modules: {
                 inferno: {
                     files: {

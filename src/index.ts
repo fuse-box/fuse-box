@@ -26,3 +26,4 @@ export { Fluent } from "./arithmetic/Fluent";
 export { FuseBox } from "./core/FuseBox";
 export { Sparky } from "./sparky/Sparky";
 export { CSSModules } from "./plugins/stylesheet/CSSModules";
+export { AssetsPlugin } from "./plugins/AssetsPlugin";

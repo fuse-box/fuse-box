@@ -74,6 +74,9 @@ export function ensureUserPath(userPath: string) {
     return userPath;
 }
 
+export function joinFuseBoxPath(...any): string {
+    return ensureFuseBoxPath(path.join.apply(path, arguments));
+}
 export function ensureDir(userPath: string) {
     if (!path.isAbsolute(userPath)) {
         userPath = path.join(userFuseDir, userPath);
@@ -123,6 +126,18 @@ export function isGlob(str: string): Boolean {
     }
     return /\*/.test(str);
 }
+
+export function hashString(text: string) {
+    var hash = 5381,
+        index = text.length;
+
+    while (index) {
+        hash = (hash * 33) ^ text.charCodeAt(--index);
+    }
+    let data = hash >>> 0;
+    return data.toString(16);
+}
+
 export function extractExtension(str: string) {
     const result = str.match(/\.([a-z0-9]+)\$?$/);
     if (!result) {
@@ -224,65 +239,65 @@ export function filter(items: any, fn: any) {
 // converted and optimized from https://www.npmjs.com/package/cli-spinner
 const readline = require('readline');
 class Spinner {
-  public text: string = '';
-  public title: string = '';
-  public chars: string = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏";
-  public stream: any = process.stdout;
-  public id: number | any;
-  public delay: number = 60;
+    public text: string = '';
+    public title: string = '';
+    public chars: string = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏";
+    public stream: any = process.stdout;
+    public id: number | any;
+    public delay: number = 60;
 
-  constructor(options: any) {
-    if (typeof options === "string"){
-      options = { text: options };
-    } else if (!options){
-      options = {};
+    constructor(options: any) {
+        if (typeof options === "string") {
+            options = { text: options };
+        } else if (!options) {
+            options = {};
+        }
+
+        if (options.text) this.text = options.text;
+        if (options.onTick) this.onTick = options.onTick;
+        if (options.stream) this.stream = options.stream;
+        if (options.title) this.title = options.title;
+        if (options.delay) this.delay = options.delay;
     }
 
-    if (options.text) this.text = options.text;
-    if (options.onTick) this.onTick = options.onTick;
-    if (options.stream) this.stream = options.stream;
-    if (options.title) this.title = options.title;
-    if (options.delay) this.delay = options.delay;
-  }
+    public start() {
+        let current = 0
+        this.id = setInterval(() => {
+            let msg = this.chars[current] + ' ' + this.text
+            if (this.text.includes('%s')) {
+                msg = this.text.replace('%s', this.chars[current])
+            }
 
-  public start() {
-    let current = 0
-    this.id = setInterval(() => {
-      let msg = this.chars[current] + ' ' + this.text
-      if (this.text.includes('%s')) {
-        msg = this.text.replace('%s', this.chars[current])
-      }
-
-      this.onTick(msg)
-      current = ++current % this.chars.length
-    }, this.delay)
-    return this
-  }
-
-  public stop(clear: boolean) {
-    clearInterval(this.id)
-    this.id = undefined
-    if (clear) {
-      this.clearLine(this.stream)
+            this.onTick(msg)
+            current = ++current % this.chars.length
+        }, this.delay)
+        return this
     }
-    return this
-  }
 
-  public isSpinning(): boolean {
-    return this.id !== undefined
-  }
+    public stop(clear: boolean) {
+        clearInterval(this.id)
+        this.id = undefined
+        if (clear) {
+            this.clearLine(this.stream)
+        }
+        return this
+    }
 
-  public onTick(msg: any) {
-    this.clearLine(this.stream)
-    this.stream.write(msg)
-    return this
-  }
+    public isSpinning(): boolean {
+        return this.id !== undefined
+    }
 
-  public clearLine(stream: any) {
-    readline.clearLine(stream, 0)
-    readline.cursorTo(stream, 0)
-    return this
-  }
+    public onTick(msg: any) {
+        this.clearLine(this.stream)
+        this.stream.write(msg)
+        return this
+    }
+
+    public clearLine(stream: any) {
+        readline.clearLine(stream, 0)
+        readline.cursorTo(stream, 0)
+        return this
+    }
 }
 
 export { Spinner };

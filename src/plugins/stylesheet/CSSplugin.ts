@@ -7,9 +7,10 @@ import { Plugin } from "../../core/WorkflowContext";
 import { utils } from "realm-utils";
 import { Concat, ensureUserPath, write } from "../../Utils";
 
-export interface CSSPluginOptions {
-    outFile?: (file: string) => string | string;
-    inject?: (file: string) => string | boolean;
+
+export interface Opts {
+    outFile?: { (file: string): string } | string;
+    inject?: boolean | { (file: string): string }
     group?: string;
     raw?: boolean;
     write?: any;
