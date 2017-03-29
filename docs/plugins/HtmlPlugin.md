@@ -64,7 +64,7 @@ module.exports = "
 ```
 
 ## Notes:
-Remember to bundle your `HTML` files when using this plugin if you use the normal `ES6` import syntax import  tpl from "./views/file.html". see below example:
+Remember to bundle your `HTML` files when using this plugin if you use the normal `ES6` import syntax import  tpl from `"./views/file.html"`. see below example:
 
 ```js
 const clientBundle = fuse.bundle("client/app")
@@ -73,4 +73,4 @@ const clientBundle = fuse.bundle("client/app")
      .instructions(" > client/app.ts **/*.+(html|css)")
 ```
 
-but if you intend to use `FuseBox` Lazy Load feature like `FuseBox.import("./views/file.html") then no need for bundling your `HTML` files.
+but if you intend to use `FuseBox` Lazy Load feature like `FuseBox.import("./views/file.html")` then no need for bundling your `HTML` files.
