@@ -100,6 +100,7 @@ export class BabelPluginClass implements Plugin {
                 if (cached.sourceMap) {
                     file.sourceMap = cached.sourceMap;
                 }
+                file.cached = true;
                 file.analysis.skip();
                 file.analysis.dependencies = cached.dependencies;
                 file.contents = cached.contents;

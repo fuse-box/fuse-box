@@ -248,12 +248,15 @@ export class FuseBox {
      */
     public createSplitBundle(conf: SplitConfig): Promise<SplitConfig> {
         let files = conf.files;
+
         let defaultCollection = new ModuleCollection(this.context, this.context.defaultPackageName);
         defaultCollection.pm = new PathMaster(this.context, this.context.homeDir);
         this.context.reset();
         const bundleData = new BundleData();
         this.context.source.init();
         bundleData.entry = "";
+
+        this.context.log.subBundleStart(this.context.output.filename, conf.parent.name);
         //this.context.output.setName()
         return defaultCollection.resolveSplitFiles(files).then(() => {
             return this.collectionSource.get(defaultCollection).then((cnt: string) => {
@@ -403,6 +406,8 @@ export class FuseBox {
     // }
 
     public initiateBundle(str: string, bundleReady?: any) {
+
+
         this.context.reset();
         // Locking deferred calls until everything is written
         this.context.defer.lock();

@@ -11,6 +11,7 @@ export class SplitConfig {
     public name: string;
     public main: string;
     public dest: string;
+    public parent: Bundle;
     public files: File[] = [];
     public rules: RegExp[] = [];
 }
@@ -41,6 +42,7 @@ export class BundleSplit {
         let conf = new SplitConfig();
         conf.fuse = fuse;
         conf.name = name;
+        conf.parent = this.bundle;
         conf.dest = this.dest;
         conf.main = mainFile;
         this.bundles.set(name, conf);

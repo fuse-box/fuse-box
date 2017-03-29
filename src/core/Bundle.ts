@@ -26,6 +26,7 @@ export class Bundle {
     constructor(public name: string, public fuse: FuseBox, public producer: BundleProducer) {
         this.context = fuse.context;
         this.context.bundle = this;
+        this.context.log.bundleStart(this.name)
         // re-assign the parent producer
         fuse.producer = producer;
         this.setup();

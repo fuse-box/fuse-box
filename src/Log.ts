@@ -23,6 +23,31 @@ export class Log {
         }
     }
 
+    public bundleStart(name: string) {
+        if (this.printLog) {
+            cursor.reset()
+                .cyan().bold().write("\n" + name + " -> \n\n")
+            cursor.reset();
+        }
+    }
+    public subBundleStart(name: string, parent: string) {
+        if (this.printLog) {
+            cursor.reset()
+                .cyan().write("\n" + name + ` (child of ${parent}) -> \n\n`)
+            cursor.reset();
+        }
+    }
+
+    public bundleEnd(name: string, collection: ModuleCollection) {
+        if (this.printLog) {
+            let took = process.hrtime(this.timeStart) as [number, number];
+            cursor.reset().write(`-> Finished `)
+                .green().write(name)
+                .green().write(` ${collection.cachedName || collection.name}`)
+                .yellow().write(`took: ${prettyTime(took, "ms")}`);
+        }
+    }
+
     public echoHeader(str: string) {
         if (this.printLog) {
             cursor.write(` `).yellow().write(str);
@@ -110,9 +135,8 @@ export class Log {
             return;
         }
         cursor.write("\n")
-            .green().write(`    ${header}\n`)
-            .yellow().write(`    Size: ${prettysize(size)} \n`)
-            .yellow().write(`    Time: ${prettyTime(took, "ms")}`)
+            .yellow().write(`    Size: ${prettysize(size)}`)
+            .write(` in ${prettyTime(took, "ms")}`)
             .write("\n").reset();
     }
 }
