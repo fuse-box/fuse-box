@@ -1,5 +1,5 @@
 import { createEnv } from "./../stubs/TestEnvironment";
-import { AssetsPlugin } from "../../plugins/AssetsPlugin";
+import { CopyPlugin } from "../../plugins/CopyPlugin";
 import { should } from "fuse-test-runner";
 
 
@@ -15,7 +15,7 @@ export class CssPluginTest {
                     "hello.txt": "ololo"
 
                 },
-                plugins: [AssetsPlugin({ files: [".txt"] })],
+                plugins: [CopyPlugin({ files: [".txt"] })],
                 instructions: "> index.ts",
             },
         }).then((result) => {
@@ -34,7 +34,7 @@ export class CssPluginTest {
                     "hello.txt": "ololo"
 
                 },
-                plugins: [AssetsPlugin({ dest: "static-files", files: [".txt"] })],
+                plugins: [CopyPlugin({ dest: "static-files", files: [".txt"] })],
                 instructions: "> index.ts",
             },
         }).then((result) => {
@@ -53,7 +53,7 @@ export class CssPluginTest {
                     "hello.txt": "ololo"
 
                 },
-                plugins: [AssetsPlugin({ useDefault: false, files: [".txt"] })],
+                plugins: [CopyPlugin({ useDefault: false, files: [".txt"] })],
                 instructions: "> index.ts",
             },
         }).then((result) => {
@@ -70,7 +70,7 @@ export class CssPluginTest {
                     "index.ts": `require("./hello.txt")`,
                     "hello.txt": "ololo"
                 },
-                plugins: [AssetsPlugin({ resolve: "/static/", files: [".txt"] })],
+                plugins: [CopyPlugin({ resolve: "/static/", files: [".txt"] })],
                 instructions: "> index.ts",
             },
         }).then((result) => {
@@ -94,7 +94,7 @@ export class CssPluginTest {
                     "hello.txt": "ololo"
 
                 },
-                plugins: [AssetsPlugin({ files: [".txt"] })],
+                plugins: [CopyPlugin({ files: [".txt"] })],
                 instructions: "> index.ts",
             },
         }).then((result) => {
@@ -114,7 +114,7 @@ export class CssPluginTest {
                     "hello.txt": "ololo"
 
                 },
-                plugins: [AssetsPlugin({ dest: "static-files", files: [".txt"] })],
+                plugins: [CopyPlugin({ dest: "static-files", files: [".txt"] })],
                 instructions: "> index.ts",
             },
         }).then((result) => {
@@ -134,7 +134,7 @@ export class CssPluginTest {
                     "hello.txt": "ololo"
 
                 },
-                plugins: [AssetsPlugin({ useDefault: false, files: [".txt"] })],
+                plugins: [CopyPlugin({ useDefault: false, files: [".txt"] })],
                 instructions: "> index.ts",
             },
         }).then((result) => {
@@ -152,7 +152,7 @@ export class CssPluginTest {
                     "index.ts": `require("./hello.txt")`,
                     "hello.txt": "ololo"
                 },
-                plugins: [AssetsPlugin({ resolve: "/static/", files: [".txt"] })],
+                plugins: [CopyPlugin({ resolve: "/static/", files: [".txt"] })],
                 instructions: "> index.ts",
             },
         }).then((result) => {

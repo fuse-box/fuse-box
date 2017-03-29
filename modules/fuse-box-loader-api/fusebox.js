@@ -369,9 +369,12 @@ var FuseBox = (function () {
     return FuseBox;
 }());
 FuseBox.packages = $packages;
-FuseBox.isBrowser = $isBrowser !== undefined;
+FuseBox.isBrowser = $isBrowser;
 FuseBox.isServer = !$isBrowser;
 FuseBox.plugins = [];
+if (!$isBrowser) {
+    g["FuseBox"] = FuseBox;
+}
 
 
 return __root__["FuseBox"] = FuseBox; } )(this)

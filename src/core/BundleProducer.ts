@@ -17,16 +17,16 @@ export class BundleProducer {
     public devServerOptions: ServerOptions;
     constructor(public fuse: FuseBox) {
         this.runner = new BundleRunner(this.fuse);
-        // to make sure that all bundle are set up
-        // we will make decision on the next tick
-        //process.nextTick(() => this.watch())
     }
 
 
     public run(opts: any): Promise<BundleProducer> {
         /** Collect information about watchers and start watching */
         this.watch();
-        return this.runner.run(opts).then(() => this)
+        return this.runner.run(opts).then(() => {
+            this.sharedEvents.emit("producer-done");
+            return this;
+        })
     }
 
     public register(packageName: string, opts: any) {

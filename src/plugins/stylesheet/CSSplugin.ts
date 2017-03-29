@@ -12,10 +12,14 @@ export interface CSSPluginOptions {
     outFile?: { (file: string): string } | string;
     inject?: boolean | { (file: string): string }
     group?: string;
+<<<<<<< HEAD
     raw?: boolean;
     write?: any;
     minify?: boolean;
     serve?: any;
+=======
+    minify?: boolean;
+>>>>>>> 536c1ff477d8c8c6bfb8e5c02270d7bd27e40cda
 }
 
 /**
@@ -33,30 +37,20 @@ export class CSSPluginClass implements Plugin {
      * @memberOf FuseBoxCSSPlugin
      */
     public test: RegExp = /\.css$/;
-    private raw = false;
     private minify = false;
     public opts: CSSPluginOptions;
+<<<<<<< HEAD
     private serve: any;
 
     private writeOptions: any;
+=======
+>>>>>>> 536c1ff477d8c8c6bfb8e5c02270d7bd27e40cda
 
     constructor(opts: CSSPluginOptions = {}) {
         this.opts = opts;
 
-        if (opts.raw !== undefined) {
-            this.raw = opts.raw;
-        }
-
-        if (opts.write) {
-            this.writeOptions = opts.write;
-        }
-
         if (opts.minify !== undefined) {
             this.minify = opts.minify;
-        }
-
-        if (opts.serve !== undefined) {
-            this.serve = opts.serve;
         }
     }
     /**

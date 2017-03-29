@@ -11,7 +11,7 @@ import * as path from "path";
  * @class AssetPluginClass
  * @implements {Plugin}
  */
-export class AssetsPluginClass implements Plugin {
+export class CopyPluginClass implements Plugin {
     public extensions: Array<string>;
     public test: RegExp = /.*/;
     private useDefault = true;
@@ -70,6 +70,6 @@ export class AssetsPluginClass implements Plugin {
     }
 }
 
-export const AssetsPlugin = (opts?: any) => {
-    return new AssetsPluginClass(opts);
+export const CopyPlugin = (opts?: any) => {
+    return new CopyPluginClass(opts);
 };

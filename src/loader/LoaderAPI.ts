@@ -51,6 +51,7 @@ type FSBX = {
 if ($isBrowser) {
     g["global"] = window;
 }
+
 // Set root
 // __fbx__dnm__ is a variable that is used in dynamic imports
 // In order for dynamic imports to work, we need to switch window to module.exports
@@ -491,7 +492,7 @@ interface LoaderPlugin {
 class FuseBox {
     public static packages = $packages;
     public static mainFile: string;
-    public static isBrowser = $isBrowser !== undefined;
+    public static isBrowser = $isBrowser;
     public static isServer = !$isBrowser;
 
     public static global(key: string, obj?: any) {
@@ -626,6 +627,10 @@ class FuseBox {
     public static addPlugin(plugin: LoaderPlugin) {
         this.plugins.push(plugin);
     }
+}
+
+if (!$isBrowser) {
+    g["FuseBox"] = FuseBox;
 }
 
 /**
