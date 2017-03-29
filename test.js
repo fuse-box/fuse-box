@@ -7,6 +7,7 @@ process.env.FUSEBOX_DIST_ROOT = __dirname;
 process.env.FUSEBOX_VERSION = '1.3.122';
 process.env.PROJECT_NODE_MODULES = path.join(__dirname, 'node_modules');
 process.env.SPARKY_LOG = false;
+process.env.LOGGING = false;
 const { FuseBox } = fuse.FuseBox.import('fuse-box4-test/FuseBox');
 
 let file = process.argv[2];

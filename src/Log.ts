@@ -7,15 +7,23 @@ const prettysize = require("prettysize");
 const prettyTime = require("pretty-time");
 
 export class Log {
-    private timeStart = process.hrtime();
+    public timeStart = process.hrtime();
+    public printLog = true;
     private totalSize = 0;
-    private printLog = true;
+
 
     constructor(public context: WorkFlowContext) {
         this.printLog = context.doLog;
     }
 
+
+    public reset() {
+        this.timeStart = process.hrtime();
+        this.totalSize = 0;
+    }
+
     public echoWith(str: string, opt: string) {
+
         if (this.printLog) {
             cursor.write(` `)[opt]().write(str);
             cursor.write("\n");

@@ -118,7 +118,8 @@ export class FuseBox {
         }
 
         if (opts.log !== undefined) {
-            this.context.doLog = opts.log ? true : false;
+            this.context.doLog = opts.log;
+            this.context.log.printLog = opts.log;
         }
 
         if (opts.hash !== undefined) {
@@ -406,8 +407,6 @@ export class FuseBox {
     // }
 
     public initiateBundle(str: string, bundleReady?: any) {
-
-
         this.context.reset();
         // Locking deferred calls until everything is written
         this.context.defer.lock();

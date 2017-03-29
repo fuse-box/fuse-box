@@ -26,7 +26,6 @@ export class Bundle {
     constructor(public name: string, public fuse: FuseBox, public producer: BundleProducer) {
         this.context = fuse.context;
         this.context.bundle = this;
-        this.context.log.bundleStart(this.name)
         // re-assign the parent producer
         fuse.producer = producer;
         this.setup();
@@ -120,6 +119,7 @@ export class Bundle {
     /** Log */
     public log(log: boolean): Bundle {
         this.context.doLog = log;
+        this.context.log.printLog = log;
         return this;
     }
 
@@ -169,10 +169,13 @@ export class Bundle {
     }
 
     public exec(): Promise<Bundle> {
-        return new Promise((resolve, reject) => {
 
+
+        return new Promise((resolve, reject) => {
+            this.fuse.context.log.bundleStart(this.name);
             this.fuse
                 .initiateBundle(this.arithmetics || "", () => {
+
                     this.process.setFilePath(this.fuse.context.output.lastWrittenPath);
                     if (this.onDoneCallback) {
                         this.onDoneCallback(this.process)

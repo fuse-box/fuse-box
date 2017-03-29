@@ -12,9 +12,6 @@ export interface CSSPluginOptions {
     outFile?: { (file: string): string } | string;
     inject?: boolean | { (file: string): string }
     group?: string;
-    raw?: boolean;
-    write?: any;
-    serve?: any;
     minify?: boolean;
 }
 
