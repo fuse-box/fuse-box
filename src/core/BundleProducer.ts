@@ -26,7 +26,10 @@ export class BundleProducer {
     public run(opts: any): Promise<BundleProducer> {
         /** Collect information about watchers and start watching */
         this.watch();
-        return this.runner.run(opts).then(() => this)
+        return this.runner.run(opts).then(() => {
+            this.sharedEvents.emit("producer-done");
+            return this;
+        })
     }
 
     public register(packageName: string, opts: any) {
