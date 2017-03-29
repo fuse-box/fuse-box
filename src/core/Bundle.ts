@@ -22,6 +22,7 @@ export class Bundle {
     public bundleSplit: BundleSplit;
 
 
+
     constructor(public name: string, public fuse: FuseBox, public producer: BundleProducer) {
         this.context = fuse.context;
         this.context.bundle = this;
@@ -108,6 +109,10 @@ export class Bundle {
         if (opts.server) {
             this.bundleSplit.serverPath = opts.server;
         }
+
+        if (opts.dest) {
+            this.bundleSplit.dest = opts.dest;
+        }
         return this;
     }
 
@@ -185,8 +190,6 @@ export class Bundle {
         this.onDoneCallback = fn;
         return this;
     }
-
-
 
     private setup() {
         // modifying the output name

@@ -1,4 +1,4 @@
-import { string2RegExp, ensurePublicExtension } from "../Utils";
+import { string2RegExp, ensurePublicExtension, joinFuseBoxPath } from "../Utils";
 import { File } from "./File";
 import { Bundle } from "./Bundle";
 import { FuseBox } from "./FuseBox";
@@ -10,6 +10,7 @@ export class SplitConfig {
     public fuse: FuseBox;
     public name: string;
     public main: string;
+    public dest: string;
     public files: File[] = [];
     public rules: RegExp[] = [];
 }
@@ -17,6 +18,7 @@ export class SplitConfig {
 export class BundleSplit {
     public bundles = new Map<string, SplitConfig>();
     public browserPath = "/";
+    public dest = "./";
     public serverPath = `./`;
     constructor(public bundle: Bundle) { }
     public addRule(rule: string, bundleName: string) {
@@ -35,10 +37,11 @@ export class BundleSplit {
         config.plugins = [].concat(config.plugins || [])
         config.standalone = false;
         const fuse = FuseBox.init(config);
-        fuse.context.output.setName(name)
+        fuse.context.output.setName(joinFuseBoxPath(this.dest, name))
         let conf = new SplitConfig();
         conf.fuse = fuse;
         conf.name = name;
+        conf.dest = this.dest;
         conf.main = mainFile;
         this.bundles.set(name, conf);
         return fuse;
