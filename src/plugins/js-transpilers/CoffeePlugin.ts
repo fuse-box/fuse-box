@@ -2,6 +2,16 @@ import { WorkFlowContext } from "../../core/WorkflowContext";
 import { Plugin } from "../../core/WorkflowContext";
 import { File } from "../../core/File";
 
+export interface CoffeePluginOptions {
+    bare?: boolean,
+    sourceMap?: boolean,
+    sourceRoot?: string,
+    literate?: boolean,
+    filename?: boolean,
+    sourceFiles?: boolean,
+    generatedFile?: boolean,
+}
+
 let coffee;
 
 /**
@@ -15,17 +25,17 @@ export class CoffeePluginClass implements Plugin {
 
     public test: RegExp = /\.coffee$/
 
-  // When dependencies is set it creates an
-  // "Invalid labeled declaration" error :(
-  // public dependencies = ['coffee-script']
+    // When dependencies is set it creates an
+    // "Invalid labeled declaration" error :(
+    // public dependencies = ['coffee-script']
 
-    private options: Object
+    public options: CoffeePluginOptions
 
-  /**
-   * @param {Object} options - Options for coffee compiler
-   */
-    constructor(options: Object) {
-        this.options = Object.assign({}, {
+    /**
+     * @param {Object} options - Options for coffee compiler
+     */
+    constructor(options: CoffeePluginOptions = {}) {
+        this.options = Object.assign({
             bare: true,
             sourceMap: false,
             sourceRoot: "",
@@ -62,6 +72,6 @@ export class CoffeePluginClass implements Plugin {
     }
 }
 
-export const CoffeePlugin = (options: Object = {}) => {
+export const CoffeePlugin = (options?: CoffeePluginOptions) => {
     return new CoffeePluginClass(options);
 };

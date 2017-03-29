@@ -66,6 +66,6 @@ export class StylusPluginClass implements Plugin {
     }
 }
 
-export const StylusPlugin = (options: any) => {
+export const StylusPlugin = (options?: StylusPluginOptions) => {
     return new StylusPluginClass(options);
 };

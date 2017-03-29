@@ -164,6 +164,6 @@ export class CSSResourcePluginClass implements Plugin {
     }
 }
 
-export const CSSResourcePlugin = (options) => {
+export const CSSResourcePlugin = (options?: CSSResourcePluginOptions) => {
     return new CSSResourcePluginClass(options);
 };

@@ -10,7 +10,7 @@ let vueCompiler;
 export class VuePluginClass implements Plugin {
     public test: RegExp = /\.vue$/;
 
-    constructor(public opts: VuePluginOptions = {}) { }
+    constructor(public options: VuePluginOptions = {}) { }
 
     public init(context: WorkFlowContext) {
         context.allowExtension(".vue");
@@ -40,7 +40,7 @@ export class VuePluginClass implements Plugin {
             vueCompiler = require("vue-template-compiler");
         }
 
-        let result = vueCompiler.parseComponent(file.contents, this.opts);
+        let result = vueCompiler.parseComponent(file.contents, this.options);
         if (result.template && result.template.type === "template") {
             let html = result.template.content;
             //let parsed = vueCompiler.compile(html);
@@ -67,6 +67,6 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
     }
 };
 
-export const VuePlugin = (opts) => {
-    return new VuePluginClass(opts);
+export const VuePlugin = (options?: VuePluginOptions) => {
+    return new VuePluginClass(options);
 };

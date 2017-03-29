@@ -25,7 +25,7 @@ export class PostCSSPluginClass implements Plugin {
      */
     public test: RegExp = /\.css$/;
     public dependencies = [];
-    constructor(public processors: Processors = [], public opts?: PostCSSPluginOptions) { }
+    constructor(public processors: Processors = [], public options?: PostCSSPluginOptions) { }
     /**
      *
      *
@@ -50,7 +50,7 @@ export class PostCSSPluginClass implements Plugin {
             postcss = require("postcss");
         }
         return postcss(this.processors)
-            .process(file.contents, this.opts)
+            .process(file.contents, this.options)
             .then(result => {
                 file.contents = result.css;
                 return result.css;

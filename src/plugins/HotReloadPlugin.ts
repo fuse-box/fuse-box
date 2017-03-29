@@ -29,7 +29,7 @@ export class HotReloadPluginClass implements Plugin {
     }
 };
 
-export const HotReloadPlugin = (opts?: HotReloadPluginOptions) => {
-    return new HotReloadPluginClass(opts);
+export const HotReloadPlugin = (options?: HotReloadPluginOptions) => {
+    return new HotReloadPluginClass(options);
 };
 

@@ -67,6 +67,6 @@ export class LESSPluginClass implements Plugin {
     }
 }
 
-export const LESSPlugin = (opts: any) => {
+export const LESSPlugin = (opts?: LESSPluginOptions) => {
     return new LESSPluginClass(opts);
 };

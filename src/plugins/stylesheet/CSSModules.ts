@@ -44,6 +44,6 @@ export class CSSModulesClass implements Plugin {
     }
 }
 
-export const CSSModules = (options: any) => {
+export const CSSModules = (options?: CSSModulesOptions) => {
     return new CSSModulesClass(options);
 };

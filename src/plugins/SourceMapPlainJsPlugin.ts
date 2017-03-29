@@ -103,6 +103,6 @@ export class SourceMapPlainJsPluginClass implements Plugin {
     }
 }
 
-export const SourceMapPlainJsPlugin = (options?: any) => {
+export const SourceMapPlainJsPlugin = (options?: SourceMapPlainJsPluginOptions) => {
     return new SourceMapPlainJsPluginClass(options);
 };

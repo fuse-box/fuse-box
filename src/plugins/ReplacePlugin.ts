@@ -20,6 +20,6 @@ export class ReplacePluginClass implements Plugin {
     }
 }
 
-export const ReplacePlugin = (options: ReplacePluginOptions = {}) => {
+export const ReplacePlugin = (options?: ReplacePluginOptions) => {
     return new ReplacePluginClass(options);
 };

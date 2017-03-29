@@ -27,7 +27,7 @@ export class RawPluginClass implements Plugin {
 	 */
     public extensions: Array<string>;
 
-    constructor(options?: RawPluginOptions | string[]) {
+    constructor(options: RawPluginOptions | string[] = []) {
         if (utils.isPlainObject(options)) {
             if ("extensions" in (options || {})) this.extensions = (options as RawPluginOptionsObj).extensions;
         }
@@ -66,6 +66,6 @@ export class RawPluginClass implements Plugin {
     }
 }
 
-export const RawPlugin = (options) => {
+export const RawPlugin = (options?: RawPluginOptions) => {
     return new RawPluginClass(options);
 };
