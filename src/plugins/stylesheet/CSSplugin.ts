@@ -5,7 +5,7 @@ import { File } from "../../core/File";
 import { WorkFlowContext } from "../../core/WorkflowContext";
 import { Plugin } from "../../core/WorkflowContext";
 import { utils } from "realm-utils";
-import { Concat, ensureUserPath, write } from "../../Utils";
+import { Concat, ensureUserPath, write, isStylesheetExtension } from "../../Utils";
 
 
 export interface CSSPluginOptions {
@@ -99,14 +99,6 @@ export class CSSPluginClass implements Plugin {
             debug(`Writing ${outFile}`);
             return write(outFile, concat.content).then(() => {
                 this.inject(group, options);
-                // emitting changes
-                // need to reload a file if possible
-                group.context.sourceChangedEmitter.emit({
-                    type: "css-file",
-                    content: "",
-                    path: group.info.fuseBoxPath,
-                });
-
                 // Writing sourcemaps
                 const sourceMapsFile = ensureUserPath(path.join(bundleDir, sourceMapsName));
                 return write(sourceMapsFile, concat.sourceMap);
@@ -114,17 +106,26 @@ export class CSSPluginClass implements Plugin {
         } else {
             debug(`Inlining ${group.info.fuseBoxPath}`);
             const safeContents = JSON.stringify(cssContents.toString());
-            group.contents = `__fsbx_css("${group.info.fuseBoxPath}", ${safeContents});`;
+            group.addAlternativeContent(`__fsbx_css("${group.info.fuseBoxPath}", ${safeContents});`)
         }
 
-        // emitting changes
-        group.context.sourceChangedEmitter.emit({
-            type: "css",
-            content: cssContents.toString(),
-            path: group.info.fuseBoxPath,
-        });
+        this.emitHMR(group);
     }
-
+    public emitHMR(file: File) {
+        let emitRequired = true;
+        const bundle = file.context.bundle;
+        // We want to emit CSS Changes only if an actual CSS file was changed.
+        if (bundle && bundle.lastChangedFile) {
+            emitRequired = isStylesheetExtension​​(bundle.lastChangedFile);
+        }
+        if (emitRequired) {
+            file.context.sourceChangedEmitter.emit({
+                type: "js",
+                content: file.alternativeContent,
+                path: file.info.fuseBoxPath,
+            });
+        }
+    }
     /**
      *
      *
@@ -169,7 +170,7 @@ export class CSSPluginClass implements Plugin {
             debug(`  grouping -> ${bundleName}`)
 
             // Respect other plugins to override the output
-            file.addAlternativeContent(`require("./${bundleName}")`);
+            file.addAlternativeContent(`require("~/${bundleName}")`);
             return;
         }
 
@@ -201,12 +202,11 @@ export class CSSPluginClass implements Plugin {
         } else {
             let safeContents = JSON.stringify(file.contents);
             file.sourceMap = undefined;
-            file.context.sourceChangedEmitter.emit({
-                type: "css",
-                content: file.contents,
-                path: file.info.fuseBoxPath,
-            });
+
             file.addAlternativeContent(`__fsbx_css("${filePath}", ${safeContents})`);
+
+            // We want to emit CSS Changes only if an actual CSS file was changed.
+            this.emitHMR(file);
         }
     }
 

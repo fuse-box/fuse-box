@@ -41,6 +41,7 @@ export class SassPluginClass implements Plugin {
                 if (cached.sourceMap) {
                     file.sourceMap = cached.sourceMap;
                 }
+                file.cached = true;
                 file.isLoaded = true;
                 file.contents = cached.contents;
                 return;

@@ -89,7 +89,6 @@ export class ModuleCache {
 
     public setPermanentCache(key: string, contents: string) {
         key = encodeURIComponent(key);
-
         let filePath = path.join(this.permanentCacheFolder, key);
         fs.writeFile(filePath, contents, () => { });
         MEMORY_CACHE[filePath] = contents;

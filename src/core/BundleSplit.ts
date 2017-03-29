@@ -21,7 +21,11 @@ export class BundleSplit {
     public browserPath = "/";
     public dest = "./";
     public serverPath = `./`;
-    constructor(public bundle: Bundle) { }
+    public bundleBrowserConfig: any;
+    constructor(public bundle: Bundle) {
+
+        //getManifest
+    }
     public addRule(rule: string, bundleName: string) {
         const conf = this.bundles.get(bundleName);
         conf.rules.push(string2RegExp(rule));
@@ -59,24 +63,49 @@ export class BundleSplit {
 
 
     public beforeMasterWrite(masterContext: WorkFlowContext): Promise<any> {
-        return each(this.bundles, (conf: SplitConfig, bundleName: string) => {
-            return conf.fuse.createSplitBundle(conf);
-        }).then((configs: SplitConfig[]) => {
-            // getting information on the paths
-            let obj: any = {
+        if (!this.bundleBrowserConfig) {
+            let localManifest = masterContext.output.getManifest();;
+            this.bundleBrowserConfig = localManifest || {
                 bundles: {},
                 browser: this.browserPath,
+                hash: masterContext.output.useHash,
                 server: this.serverPath,
             };
+        }
+        return each(this.bundles, (conf: SplitConfig, bundleName: string) => {
+            let nchanged = true; // nothing changed here
+            conf.files.forEach(file => {
+                if (!file.cached) nchanged = false;
+            });
+            /// if stored manifest is missing a file OR
+            // hash option has been changed, clearly we need to re-render regardless of file cache
+            if (!this.bundleBrowserConfig.bundles[conf.name] || this.bundleBrowserConfig.hash !== masterContext.output.useHash) {
+                nchanged = false;
+            }
+            if (nchanged) {
+                this.bundle.context.log.echo(`Bundle "${conf.name}" is cached`);
+            }
+            return !nchanged ? conf.fuse.createSplitBundle(conf) : false;
+        }).then((configs: SplitConfig[]) => {
+            // getting information on the paths
             configs.forEach(config => {
-                let localFileName = config.fuse.context.output.lastGeneratedFileName;
-                obj.bundles[config.name] = {
-                    file: localFileName,
-                    main: ensurePublicExtension(config.main)
+                if (config) {
+                    let localFileName = config.fuse.context.output.lastGeneratedFileName;
+                    this.bundleBrowserConfig.bundles[config.name] = {
+                        file: localFileName,
+                        main: ensurePublicExtension(config.main)
+                    }
                 }
             });
-            masterContext.source.bundleInfoObject = obj;
-        });
+
+            masterContext.source.bundleInfoObject = this.bundleBrowserConfig;
+            return masterContext.output.writeManifest(this.bundleBrowserConfig);
+        }).then(() => {
+            // reset all config files otherwise we will end up in memory leak
+            this.bundles.forEach(conf => {
+                conf.files = [];
+            });
+        })
     }
 
 

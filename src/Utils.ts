@@ -4,7 +4,7 @@ import * as fsExtra from "fs-extra";
 import { utils } from "realm-utils";
 
 const userFuseDir = path.dirname(require.main.filename);
-
+const stylesheetExtensions = new Set<string>([".css", ".scss", ".styl", ".less"]);
 const MBLACKLIST = [
     "freelist",
     "sys",
@@ -86,7 +86,10 @@ export function ensureDir(userPath: string) {
     fsExtra.ensureDirSync(userPath);
     return userPath;
 }
-
+export function isStylesheetExtension(str: string) {
+    let ext = path.extname(str);
+    return stylesheetExtensions.has(ext);
+}
 export function string2RegExp(obj: any) {
     let escapedRegEx = obj
         .replace(/\*/g, "@")

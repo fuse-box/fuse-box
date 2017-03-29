@@ -1,4 +1,4 @@
-var __fsbx_css = function(__filename: string, contents?: string): void {
+FuseBox.global("__fsbx_css", function (__filename: string, contents?: string): void {
     if (FuseBox.isServer) {
         return;
     }
@@ -22,13 +22,13 @@ var __fsbx_css = function(__filename: string, contents?: string): void {
             exists.innerHTML = contents;
         }
     }
-};
+});
 
 /**
  * Listens to 'async' requets and if the name is a css file
  * wires it to `__fsbx_css`
  */
-FuseBox.on('async', function(name) {
+FuseBox.on('async', function (name) {
     if (FuseBox.isServer) {
         return;
     }
