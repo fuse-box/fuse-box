@@ -40,7 +40,7 @@ import  tpl from "./views/file.html"
 ```
 ## Options
 
-### ES6 Default
+### useDefault
 default` is enable by default. So a transpiled code would look like:
 
 ```js
