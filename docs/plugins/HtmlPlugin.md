@@ -30,13 +30,13 @@ FuseBox.init({
 ### Require file in your code
 With `useDefault : false`
 ```js
-import * as tpl from "~/views/file.html"
+import * as tpl from "./views/file.html"
 ```
 
 With `useDefault : true`
 
 ```js
-import  tpl from "~/views/file.html"
+import  tpl from "./views/file.html"
 ```
 ## Options
 
@@ -52,7 +52,7 @@ module.exports.default =  "
 You can override it and drop back to `module.exports` by switching to `useDefault : false`
 
 ```js
-CopyPlugin({ useDefault : false, files: [".txt", ".png"] })
+HtmlPlugin({ useDefault : false, files: [".txt", ".png"] })
 ```
 
 Will result in:
@@ -64,7 +64,7 @@ module.exports = "
 ```
 
 ## Notes:
-Remember to bundle your `HTML` files when using this plugin.
+Remember to bundle your `HTML` files when using this plugin if you use the normal `ES6` import syntax import  tpl from "./views/file.html". see below example:
 
 ```js
 const clientBundle = fuse.bundle("client/app")
@@ -72,3 +72,5 @@ const clientBundle = fuse.bundle("client/app")
      .hmr()
      .instructions(" > client/app.ts **/*.+(html|css)")
 ```
+
+but if you intend to use `FuseBox` Lazy Load feature like `FuseBox.import("./views/file.html") then no need for bundling your `HTML` files.
