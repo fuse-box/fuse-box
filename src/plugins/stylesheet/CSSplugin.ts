@@ -8,14 +8,11 @@ import { utils } from "realm-utils";
 import { Concat, ensureUserPath, write } from "../../Utils";
 
 
-export interface Opts {
+export interface CSSPluginOptions {
     outFile?: { (file: string): string } | string;
     inject?: boolean | { (file: string): string }
     group?: string;
-    raw?: boolean;
-    write?: any;
     minify?: boolean;
-    serve?: any;
 }
 
 /**
@@ -33,30 +30,14 @@ export class CSSPluginClass implements Plugin {
      * @memberOf FuseBoxCSSPlugin
      */
     public test: RegExp = /\.css$/;
-    private raw = false;
     private minify = false;
     public opts: CSSPluginOptions;
-    private serve: any;
-
-    private writeOptions: any;
 
     constructor(opts: CSSPluginOptions = {}) {
         this.opts = opts;
 
-        if (opts.raw !== undefined) {
-            this.raw = opts.raw;
-        }
-
-        if (opts.write) {
-            this.writeOptions = opts.write;
-        }
-
         if (opts.minify !== undefined) {
             this.minify = opts.minify;
-        }
-
-        if (opts.serve !== undefined) {
-            this.serve = opts.serve;
         }
     }
     /**
