@@ -6,6 +6,13 @@ import { extractExtension, string2RegExp, hashString, joinFuseBoxPath } from "..
 import * as fs from "fs-extra";
 import * as path from "path";
 
+export interface CopyPluginOptions {
+    files?: string[];
+    useDefault?: boolean;
+    dest?: string;
+    resolve?: string;
+}
+
 /**
  * @export
  * @class AssetPluginClass
@@ -18,7 +25,7 @@ export class CopyPluginClass implements Plugin {
     private resolve = "/assets/";
     private dest = "assets";
 
-    constructor(public options?: any) {
+    constructor(public options: CopyPluginOptions = {}) {
         options = options || {};
         if (options.useDefault !== undefined) {
             this.useDefault = options.useDefault;
@@ -70,6 +77,6 @@ export class CopyPluginClass implements Plugin {
     }
 }
 
-export const CopyPlugin = (opts?: any) => {
-    return new CopyPluginClass(opts);
+export const CopyPlugin = (options?: CopyPluginOptions) => {
+    return new CopyPluginClass(options);
 };

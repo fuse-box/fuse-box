@@ -36,7 +36,7 @@ export type PluginMethodName =
  */
 export interface Plugin {
     test?: RegExp;
-    opts?: any;
+    options?: any;
     init?(context: WorkFlowContext): any;
     transform?(file: File, ast?: any): any;
     transformGroup?(file: File): any;

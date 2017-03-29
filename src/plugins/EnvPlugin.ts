@@ -17,6 +17,6 @@ export class EnvPluginClass implements Plugin {
     }
 }
 
-export const EnvPlugin = (banner: EnvPluginOptions) => {
-    return new EnvPluginClass(banner);
+export const EnvPlugin = (options: EnvPluginOptions) => {
+    return new EnvPluginClass(options);
 };

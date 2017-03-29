@@ -82,7 +82,7 @@ export class ConcatPluginClass implements Plugin {
 
 };
 
-export const ConcatPlugin = (opts?: any) => {
-    return new ConcatPluginClass(opts);
+export const ConcatPlugin = (options?: ConcatPluginOptions) => {
+    return new ConcatPluginClass(options);
 };
 

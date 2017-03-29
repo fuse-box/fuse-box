@@ -57,6 +57,6 @@ export class UglifyJSPluginClass implements Plugin {
     }
 }
 
-export const UglifyJSPlugin = (options: any) => {
+export const UglifyJSPlugin = (options?: UglifyJSPluginOptions) => {
     return new UglifyJSPluginClass(options);
 };

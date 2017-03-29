@@ -93,6 +93,6 @@ export class TypeScriptHelpersClass implements Plugin {
     }
 }
 
-export let TypeScriptHelpers = () => {
-    return new TypeScriptHelpersClass({});
+export let TypeScriptHelpers = (options?: TypeScriptHelpersOptions) => {
+    return new TypeScriptHelpersClass(options);
 };

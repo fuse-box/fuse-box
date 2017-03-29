@@ -107,6 +107,6 @@ export class SassPluginClass implements Plugin {
     }
 }
 
-export const SassPlugin = (options: SassPluginOptions = {}) => {
+export const SassPlugin = (options?: SassPluginOptions) => {
     return new SassPluginClass(options);
 };

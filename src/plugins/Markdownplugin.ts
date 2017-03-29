@@ -26,7 +26,7 @@ let marked;
 export class FuseBoxMarkdownPlugin implements Plugin {
     private useDefault = true;
 
-    private options: MarkdownPluginOptions = {
+    public options: MarkdownPluginOptions = {
         gfm: true,
         tables: true,
         breaks: false,
@@ -107,6 +107,6 @@ export class FuseBoxMarkdownPlugin implements Plugin {
     }
 };
 
-export const MarkdownPlugin = (opts?: any) => {
-    return new FuseBoxMarkdownPlugin(opts);
+export const MarkdownPlugin = (options?: MarkdownPluginOptions) => {
+    return new FuseBoxMarkdownPlugin(options);
 };

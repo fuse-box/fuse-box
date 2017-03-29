@@ -71,7 +71,7 @@ export class FuseBoxHTMLPlugin implements Plugin {
     }
 };
 
-export const HTMLPlugin = (opts?: any) => {
-    return new FuseBoxHTMLPlugin(opts);
+export const HTMLPlugin = (options?: HTMLPluginOptions) => {
+    return new FuseBoxHTMLPlugin(options);
 };
 

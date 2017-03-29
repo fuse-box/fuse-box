@@ -12,14 +12,10 @@ export interface CSSPluginOptions {
     outFile?: { (file: string): string } | string;
     inject?: boolean | { (file: string): string }
     group?: string;
-<<<<<<< HEAD
     raw?: boolean;
     write?: any;
-    minify?: boolean;
     serve?: any;
-=======
     minify?: boolean;
->>>>>>> 536c1ff477d8c8c6bfb8e5c02270d7bd27e40cda
 }
 
 /**
@@ -38,16 +34,10 @@ export class CSSPluginClass implements Plugin {
      */
     public test: RegExp = /\.css$/;
     private minify = false;
-    public opts: CSSPluginOptions;
-<<<<<<< HEAD
-    private serve: any;
-
-    private writeOptions: any;
-=======
->>>>>>> 536c1ff477d8c8c6bfb8e5c02270d7bd27e40cda
+    public options: CSSPluginOptions;
 
     constructor(opts: CSSPluginOptions = {}) {
-        this.opts = opts;
+        this.options = opts;
 
         if (opts.minify !== undefined) {
             this.minify = opts.minify;
@@ -98,7 +88,7 @@ export class CSSPluginClass implements Plugin {
             concat.add(file.info.fuseBoxPath, file.contents, file.generateCorrectSourceMap());
         });
 
-        let options = group.groupHandler.opts || {};
+        let options = group.groupHandler.options || {};
         const cssContents = concat.content;
 
         // writing
@@ -170,9 +160,9 @@ export class CSSPluginClass implements Plugin {
          *
          * 2 files combined will be written or inlined to "bundle.css"
          */
-        if (this.opts.group) {
+        if (this.options.group) {
             file.sourceMap = undefined;
-            const bundleName = this.opts.group;
+            const bundleName = this.options.group;
             let fileGroup = context.getFileGroup(bundleName);
             if (!fileGroup) {
                 fileGroup = context.createFileGroup(bundleName, file.collection, this);
@@ -190,11 +180,11 @@ export class CSSPluginClass implements Plugin {
          * An option just to write files to a specific path
          */
         let outFileFunction;
-        if (this.opts.outFile !== undefined) {
-            if (!utils.isFunction(this.opts.outFile)) {
+        if (this.options.outFile !== undefined) {
+            if (!utils.isFunction(this.options.outFile)) {
                 context.fatal(`Error in CSSConfig. outFile is expected to be a function that resolves a path`);
             } else {
-                outFileFunction = this.opts.outFile;
+                outFileFunction = this.options.outFile;
             }
         }
 
@@ -202,7 +192,7 @@ export class CSSPluginClass implements Plugin {
             const userPath = ensureUserPath(outFileFunction(file.info.fuseBoxPath));
             // reset the content so it won't get bundled
 
-            this.inject(file, this.opts, true);
+            this.inject(file, this.options, true);
             // writing ilfe
             return write(userPath, file.contents).then(() => {
                 if (file.sourceMap) {
