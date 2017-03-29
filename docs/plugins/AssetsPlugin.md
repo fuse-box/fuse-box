@@ -6,6 +6,7 @@ your files into `assets` folder
 
 ## Usage
 
+### Setting up
 Import from FuseBox
 ```js
 const {AssetsPlugin} = require("fuse-box");
@@ -26,7 +27,40 @@ FuseBox.init({
     ]
 });
 ```
+
+### Require file in your code
+With `useDefault : false`
+```js
+import * as foo from "./foo.txt"
+```
+
+With `useDefault : true`
+
+```js
+import foo from "./foo.txt"
+```
 ## Options
+
+## ES6 Default
+
+`default` is enable by default. So a transpiled code would look like:
+
+```js
+module.exports.default = "/assets/43e9685c-foo.txt";
+```
+
+You can override it and drop back to `module.exports` by switching to `useDefault : false`
+
+```js
+AssetsPlugin({ useDefault : false, files: [".txt", ".png"] })
+```
+
+Will result in:
+
+```js
+module.exports = "/assets/43e9685c-foo.txt";
+```
+
 
 ## File list
 
