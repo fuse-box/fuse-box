@@ -6,7 +6,8 @@ import { Config } from "../../Config";
 export interface SassPluginOptions {
     includePaths?: string[];
     macros?: {[key: string]: string};
-    importer?: boolean | ImporterFunc ;
+    importer?: boolean | ImporterFunc;
+    cache?: boolean;
 }
 
 export interface ImporterFunc {
