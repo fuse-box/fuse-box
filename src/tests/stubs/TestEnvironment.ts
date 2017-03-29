@@ -103,11 +103,29 @@ export function createEnv(opts: any) {
 
 
         fuse.bundle("index.js").cache(false).instructions(projectOptions.instructions)
-        return fuse.run().then(bundle => {
+        return fuse.run().then(producer => {
+
+            if (producer.bundles) {
+                producer.bundles.forEach(bundle => {
+                    projectOptions.output = bundle.context.output.lastWrittenPath
+                })
+            }
+
+
+
             let contents = fs.readFileSync(projectOptions.output);
             const length = contents.buffer.byteLength;
             output.projectContents = contents;
+            output.dist = path.dirname(projectOptions.output)
+
             output.projectSize = length;
+            output.shouldExistInDist = (name) => {
+                let target = path.join(output.dist, name);
+
+                if (!fs.existsSync(target)) {
+                    throw new Error(`Expected to find ${name} in dist!`);
+                }
+            }
             if (serverOnly) {
                 output.project = require(projectOptions.output);
             } else {

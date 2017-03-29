@@ -8,8 +8,8 @@ import { utils } from "realm-utils";
 import { Concat, ensureUserPath, write } from "../../Utils";
 
 export interface Opts {
-    outFile?: (file: string) => string;
-    inject?: (file: string) => string | boolean;
+    outFile?: { (file: string): string } | string;
+    inject?: boolean | { (file: string): string }
     group?: string;
 }
 

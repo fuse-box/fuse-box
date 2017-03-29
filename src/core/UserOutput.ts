@@ -1,10 +1,16 @@
 import { WorkFlowContext } from "./WorkflowContext";
-import { ensureDir, ensureUserPath } from "../Utils";
+import { ensureDir, ensureUserPath, hashString } from "../Utils";
 import * as path from "path";
 import * as crypto from "crypto";
 import * as fs from "fs";
 import * as shortHash from "shorthash";
 
+
+export class UserOutputResult {
+    public path: string;
+    public hash: string;
+    public filename: string;
+}
 export class UserOutput {
     public dir: string;
     public template: string;
@@ -43,8 +49,8 @@ export class UserOutput {
      * @param content 
      */
     public generateHash(content: string) {
-        return crypto.createHash("md5").update(content, "utf8")
-            .digest('hex')
+        return hashString(crypto.createHash("md5").update(content, "utf8")
+            .digest('hex'))
     }
 
     /**
@@ -74,7 +80,7 @@ export class UserOutput {
         let fname;
         if (hash) {
             if (template.indexOf('$hash') === -1) {
-                fname = template.replace('$name', basename + "-" + hash);
+                fname = template.replace('$name', hash + "-" + basename);
             } else {
                 fname = template
                     .replace('$name', basename)
@@ -103,7 +109,7 @@ export class UserOutput {
      * 
      * @memberOf UserOutput
      */
-    public write(userPath: string, content: string | Buffer): Promise<string> {
+    public write(userPath: string, content: string | Buffer): Promise<UserOutputResult> {
         let hash;
         if (this.useHash) {
             hash = this.generateHash(content.toString());
@@ -112,18 +118,23 @@ export class UserOutput {
 
         let fullpath = this.getPath(userPath, hash);
         fullpath = ensureUserPath(fullpath);
+        let result = new UserOutputResult();
         return new Promise((resolve, reject) => {
             fs.writeFile(fullpath, content, (e) => {
                 if (e) {
                     return reject(e);
                 }
+                result.path = fullpath;
+                result.hash = hash;
+                result.filename = path.basename(fullpath);
+
                 this.lastWrittenPath = fullpath;
-                return resolve(fullpath)
+                return resolve(result)
             })
         });
     }
 
-    public writeCurrent(content: string | Buffer): Promise<string> {
+    public writeCurrent(content: string | Buffer): Promise<UserOutputResult> {
         return this.write(this.filename, content);
     }
 }
