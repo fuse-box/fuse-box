@@ -1,7 +1,7 @@
-# HTML Plugin
+# JSON Plugin
 
 ## Description
-Allows importing of `HTML` files as a string in your code.
+Allows `.json` files to be imported as javascript objects
 
 ## Usage
 
@@ -9,14 +9,14 @@ Allows importing of `HTML` files as a string in your code.
 Import from FuseBox
 
 ```js
-const {HTMLPlugin} = require("fuse-box");
+const {JSONPlugin} = require("fuse-box");
 ```
 
 Inject into a chain
 
 ```js
 fuse.plugin(
-     HTMLPlugin()
+     JSONPlugin()
 )
 ```
 
@@ -25,63 +25,22 @@ Or add it to the main config plugins list to make it available across bundles
 ```js
 FuseBox.init({
     plugins : [
-         HTMLPlugin()
+         JSONPlugin()
     ]
 });
 ```
 
 ### Require file in your code
-With `useDefault : false`
 
 ```js
-import * as tpl from "./views/file.html"
-```
-
-With `useDefault : true`
-
-```js
-import  tpl from "./views/file.html"
+import * as config from "./config.json"
 ```
 
 ## Options
-
-### useDefault
-`useDefault` is enable by default. So a transpiled code would look like:
-
-```js
-module.exports.default =  "
-  <!DOCTYPE html>
-  <title>eh</title>"
-```
-
-You can override it and drop back to `module.exports` by switching to `useDefault : false`
-
-```js
-HTMLPlugin({ useDefault : false})
-```
-
-Which will result in:
-
-```js
-module.exports = "
-  <!DOCTYPE html>
-  <title>eh</title>"
-```
-
-## Notes:
-If you use the normal `ES6` import syntax  like `import  tpl from "./views/file.html"`, then there is no need for bundling your `HTML` files.
-
-but if you intend to use `FuseBox` Lazy Load feature like `FuseBox.import("./views/file.html")` then you need to bundle them. see below example:
-
-```js
-const clientBundle = fuse.bundle("client/app")
-     .watch()
-     .hmr()
-     .instructions(" > client/app.ts **/*.+(html|css)")
-```
+None.
 
 ## Test
 To run tests
 ```
-node test --file=HTMLPlugin.test.ts
+node test --file=JSONPlugin.test.ts
 ```
