@@ -7,18 +7,21 @@ Allows importing of `HTML` files as a string in your code.
 
 ### Setup
 Import from FuseBox
+
 ```js
 const {HtmlPlugin} = require("fuse-box");
 ```
 
 Inject into a chain
+
 ```js
 fuse.plugin(
      HtmlPlugin()
 )
 ```
 
-Or add it to the plugin list to make available across bundles
+Or add it to the main config plugins list to make it available across bundles
+
 ```js
 FuseBox.init({
     plugins : [
@@ -29,6 +32,7 @@ FuseBox.init({
 
 ### Require file in your code
 With `useDefault : false`
+
 ```js
 import * as tpl from "./views/file.html"
 ```
@@ -38,10 +42,11 @@ With `useDefault : true`
 ```js
 import  tpl from "./views/file.html"
 ```
+
 ## Options
 
 ### useDefault
-default` is enable by default. So a transpiled code would look like:
+`useDefault` is enable by default. So a transpiled code would look like:
 
 ```js
 module.exports.default =  "
@@ -52,10 +57,10 @@ module.exports.default =  "
 You can override it and drop back to `module.exports` by switching to `useDefault : false`
 
 ```js
-HtmlPlugin({ useDefault : false, files: [".txt", ".png"] })
+HtmlPlugin({ useDefault : false})
 ```
 
-Will result in:
+Which will result in:
 
 ```js
 module.exports = "
@@ -64,7 +69,9 @@ module.exports = "
 ```
 
 ## Notes:
-Remember to bundle your `HTML` files when using this plugin if you use the normal `ES6` import syntax import  tpl from `"./views/file.html"`. see below example:
+If you use the normal `ES6` import syntax  like `import  tpl from "./views/file.html"`, then there is no need for bundling your `HTML` files.
+
+but if you intend to use `FuseBox` Lazy Load feature like `FuseBox.import("./views/file.html")` then you need to bundle them. see below example:
 
 ```js
 const clientBundle = fuse.bundle("client/app")
@@ -72,5 +79,3 @@ const clientBundle = fuse.bundle("client/app")
      .hmr()
      .instructions(" > client/app.ts **/*.+(html|css)")
 ```
-
-but if you intend to use `FuseBox` Lazy Load feature like `FuseBox.import("./views/file.html")` then no need for bundling your `HTML` files.
