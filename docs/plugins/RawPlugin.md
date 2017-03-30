@@ -33,7 +33,7 @@ FuseBox.init({
 ### Require file in your code
 
 ```js
-import * as rawText from "./test.ts";
+import * as rawText from "./test.js";
 ```
 
 And `test.js` content is `console.log(`This is raw content and wont be executed`)`.
