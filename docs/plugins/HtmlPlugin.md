@@ -79,3 +79,9 @@ const clientBundle = fuse.bundle("client/app")
      .hmr()
      .instructions(" > client/app.ts **/*.+(html|css)")
 ```
+
+## Test
+To run tests
+```
+node test --file=HTMLPlugin.test.ts
+```

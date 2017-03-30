@@ -47,7 +47,7 @@ import foo from "./foo.txt"
 
 ## useDefault
 
-`useDefault` is enable by default. So a transpiled code would look like:
+`useDefault` is enabled by default. So a transpiled code would look like:
 
 ```js
 module.exports.default = "/assets/43e9685c-foo.txt";
