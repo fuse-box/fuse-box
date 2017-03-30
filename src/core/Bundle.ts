@@ -42,6 +42,11 @@ export class Bundle {
         return this;
     }
 
+    public tsConfig(fpath: string): Bundle {
+        this.context.tsConfig = fpath;
+        return this;
+    }
+
     /** Enable HMR in this bundle and inject HMR plugin */
     public hmr(opts?: any): Bundle {
 
