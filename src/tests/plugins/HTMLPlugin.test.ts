@@ -11,7 +11,7 @@ export class HtmlPluginTest {
                     "index.html": `<h1>hello</h1>`,
                 },
                 plugins: [HTMLPlugin()],
-                instructions: "> index.ts **/*.html",
+                instructions: "> index.ts",
             },
         }).then((result) => {
             const contents = result.projectContents.toString();
@@ -27,7 +27,7 @@ export class HtmlPluginTest {
                     "index.html": `<h1>hello</h1>`,
                 },
                 plugins: [HTMLPlugin({ useDefault: false })],
-                instructions: "> index.ts **/*.html",
+                instructions: "> index.ts",
             },
         }).then((result) => {
             const contents = result.projectContents.toString();
@@ -43,7 +43,7 @@ export class HtmlPluginTest {
                     "index.html": `<h1>hello</h1>`,
                 },
                 plugins: [HTMLPlugin()],
-                instructions: "> index.ts **/*.html",
+                instructions: "> index.ts",
             },
         }).then((result) => {
             const out = result.project.FuseBox.import("./index.html");
@@ -62,7 +62,7 @@ export class HtmlPluginTest {
                     "index.html": `<h1>hello</h1>`,
                 },
                 plugins: [HTMLPlugin({ useDefault: false })],
-                instructions: "> index.ts **/*.html",
+                instructions: "> index.ts",
             },
         }).then((result) => {
             const out = result.project.FuseBox.import("./index.html");
