@@ -1,4 +1,4 @@
-# Html Plugin
+# HTML Plugin
 
 ## Description
 Allows importing of `HTML` files as a string in your code.
@@ -9,14 +9,14 @@ Allows importing of `HTML` files as a string in your code.
 Import from FuseBox
 
 ```js
-const {HtmlPlugin} = require("fuse-box");
+const {HTMLPlugin} = require("fuse-box");
 ```
 
 Inject into a chain
 
 ```js
 fuse.plugin(
-     HtmlPlugin()
+     HTMLPlugin()
 )
 ```
 
@@ -25,7 +25,7 @@ Or add it to the main config plugins list to make it available across bundles
 ```js
 FuseBox.init({
     plugins : [
-         HtmlPlugin()
+         HTMLPlugin()
     ]
 });
 ```
@@ -57,7 +57,7 @@ module.exports.default =  "
 You can override it and drop back to `module.exports` by switching to `useDefault : false`
 
 ```js
-HtmlPlugin({ useDefault : false})
+HTMLPlugin({ useDefault : false})
 ```
 
 Which will result in:
