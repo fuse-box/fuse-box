@@ -197,12 +197,15 @@ export class FuseBox {
 
 
     /** Starts the dev server and returns it */
-    public dev(opts?: ServerOptions) {
+    public dev(opts?: ServerOptions, fn?: { (server: Server) }) {
         opts = opts || {};
         opts.port = opts.port || 4444;
         this.producer.devServerOptions = opts;
         this.producer.runner.bottom(() => {
             let server = new Server(this);
+            if (fn) {
+                fn(server);
+            }
             return server.start(opts);
         });
     }
