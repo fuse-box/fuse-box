@@ -1,4 +1,4 @@
-# JSON Plugin
+# CoffeeScript Plugin
 
 ## Description
 Allows [CoffeeScript](http://coffeescript.org/) compilation of `.coffee` files
