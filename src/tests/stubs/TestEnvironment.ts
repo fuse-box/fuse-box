@@ -102,7 +102,7 @@ export function createEnv(opts: any) {
         const fuse = FuseBox.init(projectOptions);
 
 
-        fuse.bundle("index.js").cache(false).instructions(projectOptions.instructions)
+        fuse.bundle("index.js").cache(false).log(false).instructions(projectOptions.instructions)
         return fuse.run().then(producer => {
 
             if (producer.bundles) {

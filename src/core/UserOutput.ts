@@ -99,6 +99,17 @@ export class UserOutput {
     public getBundlePath() {
 
     }
+    public writeManifest(obj: any) {
+        let fullpath = this.getPath(`${this.context.bundle.name}.manifest.json`);
+        fs.writeFileSync(fullpath, JSON.stringify(obj, null, 2));
+    }
+
+    public getManifest() {
+        let fullpath = this.getPath(`${this.context.bundle.name}.manifest.json`);
+        if (fs.existsSync(fullpath)) {
+            return require(fullpath)
+        }
+    }
 
     /**
      * 

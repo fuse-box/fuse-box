@@ -12,6 +12,7 @@ export class RawPluginTest {
     "Should return wrapped file content"() {
         return createEnv({
             project: {
+                log: false,
                 files: {
                     "index.js": `
 				require('./file1.raw');

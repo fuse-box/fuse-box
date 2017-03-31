@@ -30,6 +30,8 @@ export class File {
     public notFound: boolean;
 
     public params: Map<string, string>;
+
+    public cached = false;
     /**
      *
      *
@@ -360,9 +362,10 @@ export class File {
             let cached = this.context.cache.getStaticCache(this);
             if (cached) {
                 this.isLoaded = true;
+
                 this.sourceMap = cached.sourceMap;
                 this.contents = cached.contents;
-
+                this.cached = true;
                 if (cached.headerContent) {
                     this.headerContent = cached.headerContent;
                 }

@@ -17,6 +17,7 @@ export class Bundle {
     public arithmetics: string;
     public process: FuseProcess = new FuseProcess(this);
     public onDoneCallback: any;
+    public lastChangedFile: string;
 
     public splitFiles: Map<string, File>;
     public bundleSplit: BundleSplit;
@@ -38,6 +39,11 @@ export class Bundle {
 
     public globals(globals: any): Bundle {
         this.context.globals = globals;
+        return this;
+    }
+
+    public tsConfig(fpath: string): Bundle {
+        this.context.tsConfig = fpath;
         return this;
     }
 
@@ -119,6 +125,7 @@ export class Bundle {
     /** Log */
     public log(log: boolean): Bundle {
         this.context.doLog = log;
+        this.context.log.printLog = log;
         return this;
     }
 
@@ -168,10 +175,13 @@ export class Bundle {
     }
 
     public exec(): Promise<Bundle> {
-        return new Promise((resolve, reject) => {
 
+
+        return new Promise((resolve, reject) => {
+            this.fuse.context.log.bundleStart(this.name);
             this.fuse
                 .initiateBundle(this.arithmetics || "", () => {
+
                     this.process.setFilePath(this.fuse.context.output.lastWrittenPath);
                     if (this.onDoneCallback) {
                         this.onDoneCallback(this.process)

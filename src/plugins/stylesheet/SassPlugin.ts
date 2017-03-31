@@ -5,13 +5,13 @@ import { Config } from "../../Config";
 
 export interface SassPluginOptions {
     includePaths?: string[];
-    macros?: {[key: string]: string};
+    macros?: { [key: string]: string };
     importer?: boolean | ImporterFunc;
     cache?: boolean;
 }
 
 export interface ImporterFunc {
-    (url: string, prev: string, done: (opts: {url?: string; file?: string;}) => any): any;
+    (url: string, prev: string, done: (opts: { url?: string; file?: string; }) => any): any;
 }
 
 let sass;
@@ -99,7 +99,9 @@ export class SassPluginClass implements Plugin {
                 }
                 file.sourceMap = result.map && result.map.toString();
                 file.contents = result.css.toString();
-
+                if (this.context.useCache && this.options.cache) {
+                    this.context.cache.writeStaticCache(file, file.sourceMap);
+                }
                 return resolve();
             });
         });

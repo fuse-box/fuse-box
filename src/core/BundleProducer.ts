@@ -98,10 +98,12 @@ export class BundleProducer {
 
     /** Trigger bundles that are affected */
     protected onChanges(settings: Map<string, RegExp>, path: string) {
+
         settings.forEach((expression, bundleName) => {
             if (expression.test(path)) {
                 const bundle = this.bundles.get(bundleName);
                 const defer = bundle.fuse.context.defer;
+                bundle.lastChangedFile = path;
                 // to ensure new process is not kicked in before the previous has completed
                 defer.queue(bundleName, () => bundle.exec());
             }

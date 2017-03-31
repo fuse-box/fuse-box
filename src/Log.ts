@@ -7,19 +7,52 @@ const prettysize = require("prettysize");
 const prettyTime = require("pretty-time");
 
 export class Log {
-    private timeStart = process.hrtime();
+    public timeStart = process.hrtime();
+    public printLog = true;
     private totalSize = 0;
-    private printLog = true;
+
 
     constructor(public context: WorkFlowContext) {
         this.printLog = context.doLog;
     }
 
+
+    public reset() {
+        this.timeStart = process.hrtime();
+        this.totalSize = 0;
+    }
+
     public echoWith(str: string, opt: string) {
+
         if (this.printLog) {
             cursor.write(` `)[opt]().write(str);
             cursor.write("\n");
             cursor.reset();
+        }
+    }
+
+    public bundleStart(name: string) {
+        if (this.printLog) {
+            cursor.reset()
+                .cyan().bold().write("\n" + name + " -> \n\n")
+            cursor.reset();
+        }
+    }
+    public subBundleStart(name: string, parent: string) {
+        if (this.printLog) {
+            cursor.reset()
+                .cyan().write("\n" + name + ` (child of ${parent}) -> \n\n`)
+            cursor.reset();
+        }
+    }
+
+    public bundleEnd(name: string, collection: ModuleCollection) {
+        if (this.printLog) {
+            let took = process.hrtime(this.timeStart) as [number, number];
+            cursor.reset().write(`-> Finished `)
+                .green().write(name)
+                .green().write(` ${collection.cachedName || collection.name}`)
+                .yellow().write(`took: ${prettyTime(took, "ms")}`);
         }
     }
 
@@ -110,9 +143,8 @@ export class Log {
             return;
         }
         cursor.write("\n")
-            .green().write(`    ${header}\n`)
-            .yellow().write(`    Size: ${prettysize(size)} \n`)
-            .yellow().write(`    Time: ${prettyTime(took, "ms")}`)
+            .yellow().write(`    Size: ${prettysize(size)}`)
+            .write(` in ${prettyTime(took, "ms")}`)
             .write("\n").reset();
     }
 }

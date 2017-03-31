@@ -133,7 +133,7 @@ export class WorkFlowContext {
 
     public debugMode = false;
 
-    public log: Log = new Log(this)
+    public log: Log = new Log(this);
 
     public pluginTriggers: Map<string, Set<String>>;
 
@@ -252,7 +252,7 @@ export class WorkFlowContext {
      * Resets significant class members
      */
     public reset() {
-        this.log = new Log(this);
+        this.log.reset();
         this.storage = new Map();
         this.source = new BundleSource(this);
         this.nodeModules = new Map();

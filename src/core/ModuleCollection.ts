@@ -394,7 +394,6 @@ export class ModuleCollection {
             // Process file dependencies recursively
 
             return each(file.analysis.dependencies, name => {
-
                 return this.resolve(new File(this.context,
                     this.pm.resolve(name, file.info.absDir, fileLimitPath)), shouldIgnoreDeps);
             });

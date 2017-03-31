@@ -118,7 +118,8 @@ export class FuseBox {
         }
 
         if (opts.log !== undefined) {
-            this.context.doLog = opts.log ? true : false;
+            this.context.doLog = opts.log;
+            this.context.log.printLog = opts.log;
         }
 
         if (opts.hash !== undefined) {
@@ -196,13 +197,16 @@ export class FuseBox {
 
 
     /** Starts the dev server and returns it */
-    public dev(opts?: ServerOptions) {
+    public dev(opts?: ServerOptions, fn?: { (server: Server) }) {
         opts = opts || {};
         opts.port = opts.port || 4444;
         this.producer.devServerOptions = opts;
         this.producer.runner.bottom(() => {
             let server = new Server(this);
-            return server.start(opts);
+            server.start(opts);
+            if (fn) {
+                fn(server);
+            }
         });
     }
 
@@ -247,13 +251,17 @@ export class FuseBox {
      * @param files File[]
      */
     public createSplitBundle(conf: SplitConfig): Promise<SplitConfig> {
+
         let files = conf.files;
+
         let defaultCollection = new ModuleCollection(this.context, this.context.defaultPackageName);
         defaultCollection.pm = new PathMaster(this.context, this.context.homeDir);
         this.context.reset();
         const bundleData = new BundleData();
         this.context.source.init();
         bundleData.entry = "";
+
+        this.context.log.subBundleStart(this.context.output.filename, conf.parent.name);
         //this.context.output.setName()
         return defaultCollection.resolveSplitFiles(files).then(() => {
             return this.collectionSource.get(defaultCollection).then((cnt: string) => {
