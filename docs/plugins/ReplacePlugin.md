@@ -43,6 +43,31 @@ plugins: [
 
 ## Notes
 The [EnvPlugin](#EnvPlugin) will define a value for you, but if somewhere along the line that value changes (for example, something setting process.env.NODE_ENV = 'magic';), the value will change. In contrast, the ReplacePlugin will replace that key, with the value you provide, for example, instead of process.env.NODE_ENV, the value is replaced with a string. This allows [UglifyJSPlugin](#UglifyJSPlugin) to remove "dead code" and enables you to use production mode with modules that rely on this behaviour.
+
+Example
+
+#### your config
+```js
+plugins: [
+  ReplacePlugin({ "process.env.NODE_ENV": JSON.stringify("production") }),
+],
+```
+
+#### your code
+```js
+if (process.env.NODE_ENV === 'production') console.log('production!')
+```
+
+#### result
+```js
+if ('production' === 'production') console.log('production!')
+```
+
+#### after uglifying
+```js
+console.log('production!')
+```
+
 ## Test
 To run tests
 ```
