@@ -1,7 +1,7 @@
-# JSON Plugin
+# SVG Plugin
 
 ## Description
-Allows `.json` files to be imported as javascript objects
+Allows  importing `.svg` graphics files into javascript source for use in styles and as image source.
 
 ## Usage
 
@@ -9,14 +9,14 @@ Allows `.json` files to be imported as javascript objects
 Import from FuseBox
 
 ```js
-const {JSONPlugin} = require("fuse-box");
+const {SVGPlugin} = require("fuse-box");
 ```
 
 Inject into a chain
 
 ```js
 fuse.plugin(
-     JSONPlugin()
+     SVGPlugin()
 )
 ```
 
@@ -25,7 +25,7 @@ Or add it to the main config plugins list to make it available across bundles
 ```js
 FuseBox.init({
     plugins : [
-         JSONPlugin()
+         SVGPlugin()
     ]
 });
 ```
@@ -33,8 +33,10 @@ FuseBox.init({
 ### Require file in your code
 
 ```js
-import * as config from "./config.json"
+import logo from './logo.svg';
 ```
+
+Here is an [example](https://github.com/fuse-box/react-example/blob/master/fuse.js) usage, and the [source](https://github.com/fuse-box/react-example/blob/master/src/App.jsx#L10) file that imports the SVG.
 
 ## Options
 None.
@@ -42,5 +44,5 @@ None.
 ## Test
 To run tests
 ```
-node test --file=JSONPlugin.test.ts
+node test --file=SVGPlugin.test.ts
 ```
