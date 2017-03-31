@@ -8,6 +8,10 @@ import { utils } from "realm-utils";
 import { File } from "./File";
 import { BundleSplit } from "./BundleSplit";
 
+export interface HMROpts {
+    port?: number;
+    socketURI?: string;
+}
 
 export class Bundle {
 
@@ -48,12 +52,12 @@ export class Bundle {
     }
 
     /** Enable HMR in this bundle and inject HMR plugin */
-    public hmr(opts?: any): Bundle {
+    public hmr(opts?: HMROpts): Bundle {
 
         /** Only one is allowed to hava HMR related code */
         if (!this.producer.hmrInjected) {
             opts = opts || {};
-            opts.port = this.producer.devServerOptions && this.producer.devServerOptions.port || 4444;
+            opts.port = opts.port || this.producer.devServerOptions && this.producer.devServerOptions.port || 4444;
             let plugin = HotReloadPlugin({ port: opts.port, uri: opts.socketURI });
             this.context.plugins = this.context.plugins || [];
             this.context.plugins.push(plugin);
