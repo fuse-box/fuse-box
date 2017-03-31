@@ -30,7 +30,7 @@ FuseBox.init({
 });
 ```
 
-### Usage
+### Require file in your code
 Say you want to pass  `Node_env`  as global variable to your application, you can do :
 ```js
 plugins: [
@@ -38,7 +38,7 @@ plugins: [
 ]
 ```
 
-Then in your code you can access it in your code like `process.env.${ENVIRONMENT_VARIABLE_NAME}` which translates to the same as `console.log(process.env.NODE_ENV)`.
+Then in your code you can access it in your code like `process.env.${process.env.NODE_ENV}` which translates to the same as `console.log(process.env.NODE_ENV)`.
  
 ## Options
 `EnvPlugin` accepts a `key/value` object as a parameter. For example `{myVarName: "production"}`
