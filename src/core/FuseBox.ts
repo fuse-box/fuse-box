@@ -203,10 +203,10 @@ export class FuseBox {
         this.producer.devServerOptions = opts;
         this.producer.runner.bottom(() => {
             let server = new Server(this);
+            server.start(opts);
             if (fn) {
                 fn(server);
             }
-            return server.start(opts);
         });
     }
 
