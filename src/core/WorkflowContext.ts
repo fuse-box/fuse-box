@@ -399,7 +399,7 @@ export class WorkFlowContext {
     /**
      * @param fn if provided, its called once the plugin method has been triggered
      */
-    public triggerPluginsMethodOnce(name: PluginMethodName, args: any, fn?: { (plugin: Plugin) }) {
+    public triggerPluginsMethodOnce(name: PluginMethodName, args: any, fn?: { (plugin: Plugin): void }) {
         this.plugins.forEach(plugin => {
             if (Array.isArray(plugin)) {
                 plugin.forEach(p => {
