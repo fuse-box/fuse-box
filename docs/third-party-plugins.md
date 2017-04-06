@@ -7,7 +7,7 @@
 | Closure Compiler | Fusebox Google Closure Compiler Plugin   | [matthiasak/fusebox-closure-plugin](https://github.com/matthiasak/fusebox-closure-plugin) |
 | proxying / stubbing imports | Fusebox proxying / stubbing imports  Plugin| [tomitrescak/proxyrequire](https://github.com/tomitrescak/proxyrequire) |
 | Process | Run any tasks (npm, tsc, etc.) after fuse-box bundled your code | [RPDeshaies/fuse-box-process-plugin](https://github.com/RPDeshaies/fuse-box-process-plugin) |
-
+| ng2-fused | Wraps url strings for templateUrl and styleUrls inside of require statements. Inspired by angular2-template-loader for webpack. | https://github.com/alex-klock/ng2-fused
 
 # Examples
 
