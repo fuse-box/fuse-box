@@ -16,7 +16,7 @@ There are few things that you need to consider before jumping it:
 
 * All your modules need to be using es6 imports
 * Use external library that support ONLY ["jsnext:main"](https://github.com/jsforum/jsforum/issues/5)
-* Read [rollup documentation](rollupjs.org)
+* Read [rollup documentation](https://rollupjs.org)
 * FuseBox API will NOT be included. You won't be able to use ANY of the FuseBox features.
 
 If you are comfortable with the above setup, you can proceed by [checking out the fuse-box-rollup-example](https://github.com/fuse-box/fuse-box-rollup-example):
