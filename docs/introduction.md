@@ -15,8 +15,25 @@ It is packed with features, and unfolds limitless possibilities of extending the
 
 Join [gitter channel](https://gitter.im/fusebox-bundler/Lobby), we are active! / View on [github](https://github.com/fuse-box/fuse-box) / Submit an [issue](https://github.com/fuse-box/fuse-box/issues/new) / Contribute to this [documentation](https://github.com/fuse-box/fuse-box/tree/master/docs)
 
+## Features
+
+FuseBox is a new generation bundler and module loader, it is the result of our years of experience dealing with complex projects requirements and many of the development tools out there.
+
+steps:
+    * Speed
+    It takes 50ms for a regular project, 100ms for a big project to re-bundle. It applies aggressive but responsible module caching, which makes it fly.
+    * Effortless bundling
+    You have an npm library in mind? You can bundle it without any extra configuration. babel-core with all plugins? No problem, fusebox will take care of everything you need.
+    * First class TypeScript support
+    Just point it to a typescript file, and FuseBox will do the rest - no additional steps required
+    * Simplicity
+    FuseBox will take care of all nodejs dependencies. We offer a comprehensive list of nodejs modules for browser out of the box. No worries, no matter what are you trying to bundle. It will work.
+    * API first
+    Whatever you tempted mind would want - you can get it all here. Apply hacks, intercept require statements, use an amazing dynamic module loading, and many many other neat features!
+
 ## Minimum requirement
-**Node v6.0.0**
+
+You need NodeJs 6+. FuseBox will not run on an earlier version of node. If you have an SSD that will help you a lot as FuseBox uses filesystem cache extensively 
 
 ## Installation
 
@@ -24,62 +41,3 @@ Join [gitter channel](https://gitter.im/fusebox-bundler/Lobby), we are active! /
 yarn add fuse-box --save-dev
 npm install fuse-box --save-dev
 ```
-
-FuseBox has many plugins in place to help you get started. All you need to do is install `fuse-box` from npm.
-
-## Sample projects
-
-Learn how [easy it](https://github.com/fuse-box/angular2-example) is to fuse angular with `less` in __50ms__!
-
-[react-example](https://github.com/fuse-box/react-example) 50ms to fuse!
-
-# Why?
-
-## Effortless bundling
-You have an npm library in mind? You can bundle it without any extra configuration. babel-core with all plugins? No problem, fusebox will take care of everything you need.
-
-__Typescript__! Oh! We love typescript. You know what you need to do, to start transpiling and bundling typescript at the same time? `Change .js to .ts` [Are you ready?](https://github.com/fuse-box/angular2-example)
-
-FuseBox will take care of __ALL__ nodejs dependencies. We offer a comprehensive list of nodejs modules for browser out of the box. No worries, no matter what are you trying to bundle. It will work.
-
-There is nothing that cannot be fused. Create a 3 liner config and bundle some heavy project! Do conventional import statements, use shared bundles, hack API, create crazy plugins!
-
-And bundle it fast. Jaw-dropping fast.
-
-## Speed
-
-It takes 50ms for a regular project, 100ms for a big project to re-bundle. It applies aggressive but responsible module caching, which makes it fly.
-
-Check this [benchmark](https://github.com/fuse-box/benchmark):
-
-1200 files to bundle
-
-|         |            |
-| ------------- |:-------------:|
-| FuseBox      | 0.234s |
-| Webpack      | 1.376s |
-
-
-1000 files to bundle / 10 times
-
-|         |            |
-| ------------- |:-------------:|
-| FuseBox      | 2.257s |
-| Webpack      | 13.591s |
-
-
-## Built-in typescript support.
-
-FuseBox is written in typescript, so I could not just proceed without a seamless typescript integration. In fact, you don't need to configure anything! Just point it to a typescript file, and FuseBox will do the rest.
-
-```js
-fuse.bundle(">index.ts");
-```
-
-## Comprehensive Loader API
-
-Whatever you tempted mind would want - you can get it all here. Apply hacks, intercept require statements, use an amazing dynamic module loading, and many many other neat features!
-
-## Extensive plugins
-
-Have an idea in mind? Just develop a plugin, it's extremely easy to make one. Besides, we have [a few plugins](#built-in-plugins), that will help you get started. Want to develop one? Read up [here](#plugin-api)

@@ -2,74 +2,102 @@
 
 The concept of FuseBox is simple. Bundle anything for frontend and server without a headache. Simply put, you can copy paste a simple config down below and bundle some heavy module like `babel-core` or `babel-generator`. But let's get started and break down all available options in fusebox.
 
-
-## App Root Path
-
-Your paths will be pointed to `fuse.js` location.
-
-> We resolve a few relative paths to `appRootPath` for your convenience. Generally it's the folder containing `package.json`.
-
 ## Initialisation
 
-Initialise a fuse-box instance like so. Each instance will handle 1 bundle.
+Initialise a fuse-box instance like so. 
 ```js
 FuseBox.init({ /* you config is here */ })
 ```
 
 ## Home directory
 
-That's your _source_ folder. It can be an absolute path, Or relative to [appRootPath](#app-root-path).
+That's your _source_ folder. FuseBox locks your project to it. FuseBox will resolve it relatively your `fuse.js` file location
 
 ```js
 FuseBox.init({
-  homeDir: "./src",
+  homeDir: "src/",
 })
 ```
 
-* bundling input files are relative to `homeDir`.
-* this is the folder that we watch for changes when using the `devServer`.
-* this is the folder we check for any `tsconfig.json` (can be changed using the `tsConfig` option).
-* see [imports](http://fuse-box.org/#import) for even more available features.
+files:
+stuff
+ src
+  index.ts
+ fuse.js
+node_modules
+ library
+  index.js
 
 
-## Out file
+In the example above your `homeDir` will be pointing to `stuff/src` next to `fuse.js` file.
 
-That's your _bundle_ file. It can be an absolute path, Or relative to [appRootPath](#app-root-path).
+note: it's not recommended using absolute paths. It reduces readability
 
-> fuse-box takes care of creating required directory structure for you!
+
+## Output
+
+Output is a string which is used by FuseBox to determine where and how to place your bundles in the file system.
 
 ```js
 FuseBox.init({
-  homeDir: "./src",
-  outFile: "./build/bundle.js",
+  homeDir: "src",
+  output: "build/$name.js",
 })
 ```
 
+There are few macros available.
+
+| Name  | Description |
+| ------------- | ------------- |
+| $name  | The name of your bundle  |
+| $hash  | Applying hash when available  |
+
+`$hash` is used when the hash option is set, otherwise it will be removed. FuseBox will create folders automatically, so you don't need to worry if a folder is present. FuseBox will also tolerate an absense of `$name` macro, converting it internally into a template
+
+For example this:
+
+```js
+ output: "build/out.js"
+```
+
+Will be converted accordingly to:
+
+```js
+ output: "build/$name.js"
+```
+
+However it is strongly recommended to use `$name` in your output template, as `out.js` will be ignored
 
 ## Cache
 
 You can turn off caching if you like. By default caching is on. FuseBox will create a folder `.fusebox` in your project path, and store related files. Don't forget to add it to .gitignore.
 
-> If things go wrong or things are not updating, delete the `.fusebox` folder to force clear the cache.
+note: If things go wrong or things are not updating, delete the `.fusebox` folder to force clear the cache.
 
 ```js
-FuseBox.init({
-  homeDir: "./src",
-  outFile: "./build/bundle.js",
-  cache: true,
+const fuse = FuseBox.init({
+  homeDir: "src",
+  output: "build/$name.js",
+  cache: true
 })
 ```
 
-Alternatively, you can disable cache by adding `^` to the arithmetic instructions
+Alternatively, you can disable cache by using chainable API
+
+```js
+fuse.bundle("app")
+    .cache(false)
+    .instructions("> index.ts")
+```
 
 ## Debug and Log
 Additional logging and debugging can be enabled, but keep in mind they can reduce performance.
 ```js
-FuseBox.init({
-  homeDir: "./src",
-  outFile: "./build/bundle.js",
+const fuse = FuseBox.init({
+  homeDir: "src",
+  output: "build/$name.js",
   log: true,
-  debug: true,
+  debug: true
 })
 ```
 
@@ -80,13 +108,23 @@ You probably would want to test a package some day, or just have an abstraction 
 
 ```js
 FuseBox.init({
-    modulesFolder: "src/modules",
+    modulesFolder: "modules",
 })
 ```
 
+
 You local `npm` will have the highest priority. In essence, you can override fusebox's [path](https://github.com/fuse-box/fuse-box/blob/master/modules/path/index.js) of [fs](https://github.com/fuse-box/fuse-box/blob/master/modules/fs/index.js) module if you like. Customize you packages in your own manner!
 
+files:
+modules
+ foo
+  index.js
+src
+ index.ts
+
 You don't need to create `package.json` - `index.js` will work just fine. It will be [cached](#cache) like any other npm module with version `0.0.0`, so remember to toggle cache property in the config
+
+
 
 
 ## Package name
