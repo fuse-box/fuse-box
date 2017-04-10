@@ -33,7 +33,7 @@ In this case, you will get everything that is required in the index, as well as 
 * ` ^ ` disables cache
 * ` > ` executes a file, it should be an entry point, not a glob
 * ` [ ] ` matches everything inside without dependencies
-* ` **/*.ts ` matches every file using globs, with dependencies, experiment with [globtester](www.globtester.com)
+* ` **/*.ts ` matches every file using globs, with dependencies, experiment with [globtester](http://globtester.com)
 
 ### Examples for better understanding
 `> index.js [**/*.js]` - Bundle everything without dependencies, and execute `index.js`.
