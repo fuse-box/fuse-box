@@ -149,18 +149,19 @@ FuseBox.init({
     },
 })
 ```
-If you don't want to have your package execute on load, make sure your instruction does not have `>` in it.
+note: If you don't want to have your package execute on load, make sure your instruction does not have `>` in it.
 
 Here is an example how make a package:
 ```js
-FuseBox.init({
+const fuse = FuseBox.init({
+    homeDir: `src-package`,
+    outFile: `build/$name.js`,
     package: {
         name: "super-name",
         entry: "index.ts",
     },
-    homeDir: `/src-package`,
-    outFile: `build/packages/super-name.js`,
-}).bundle("index.ts")
+});
+fuse.bundle("app").instructions("index.ts")
 ```
 
 
@@ -193,7 +194,14 @@ FuseBox.init({
 
 ```
 
-Please, note, that in order to expose your package, a bundle must have a [package name](#package-name)
+You can use the chainable API if you like:
+
+```js
+fuse.bundle("app").globals(/* configuration */)
+```
+
+note: In order to expose your package, a bundle must have a [package name](#package-name)
+
 
 ## Sourcemaps
 
@@ -209,10 +217,16 @@ You can also provide an object to allow vendor sourcemaps:
 sourceMaps: { project: true, vendor: true }
 ```
 
-> vendor sourcemaps will be generated correctly with disabled cache. It's a known bug
+Alternatively via chainable API
 
-Sourcemaps currently work with [typescript](#typescript) and [BabelPlugin](#babel-plugin)
-[see the SourceMapPlainJsPlugin](#sourcemapplainjsplugin)
+```js
+fuse.bundle("app").sourceMaps(true)
+```
+
+
+warning: vendor sourcemaps will be generated correctly with disabled cache. It's a known bug
+
+Sourcemaps currently work with typescript, BabelPlugin and SourceMapPlainJsPlugin
 
 ## Standalone
 
@@ -222,11 +236,12 @@ By default FuseBox injects API in every bundle. That can be overridden by settin
 { standalone : false }
 ```
 
-Alternatively, you add `!` symbol to the arithmetics
+Alternatively, you add `!` symbol to the arithmetics, for example
 
+```js
+fuse.bundle("app").instructions("!>index.ts")
 ```
-! >index.ts
-```
+
 
 Load the API from the CDN:
 
@@ -234,40 +249,38 @@ Load the API from the CDN:
 <script type="text/javascript" src="https://unpkg.com/fuse-box/dist/fusebox.min.js"></script>
 ```
 
-## List of plugins
+## Plugins
 
-`plugins` option expects an array of plugins, See [Plugin API](#plugin-api)
+`plugins` option expects an array of plugins
+
 ```js
 FuseBox.init({
     plugins:[
-        fsbx.TypeScriptHelpers(),
-        fsbx.JSONPlugin(),
-        [fsbx.LESSPlugin(), fsbx.CSSPlugin()],
+        TypeScriptHelpers(),
+        JSONPlugin(),
+        [LESSPlugin(), CSSPlugin()],
     ],
 })
 ```
 
-## Plugin chaining
-
-A plugin can be chained. For example, if you want to make SassPlugin work:
+Chaining is achieved by wrapping a list using array
 
 ```js
-FuseBox.init({
-    plugins:[
-        [fsbx.SassPlugin(), fsbx.CSSPlugin()],
-    ]
-})
+[LESSPlugin(), CSSPlugin()]
 ```
 
-How it works:
-
-FuseBox tests each file running it through the plugin list. If it sees an array, it test for the first Plugin on the list test (which is `.scss` in our case. First element on the list could be a Regular Expression or a [simplified](#simplified-regExp) version of it:
+You can provided a RegEx or a simplified RegEx as a first element to override the initial match of a group:
 
 ```js
+["less/*.less",LESSPlugin(), CSSPlugin()]
+```
 
-[".scss",fsbx.SassPlugin(), fsbx.CSSPlugin()] // simple and clean
-[/\.scss$/,fsbx.SassPlugin(), fsbx.CSSPlugin()] // more verbose
 
+FuseBox tests each file running it through the plugin list. If it sees an array, it test for the first Plugin on the list test (which is `.scss` in our case. 
+
+```js
+[".scss", SassPlugin(), CSSPlugin()] // simple and clean
+[/\.scss$/, SassPlugin(), CSSPlugin()] // more verbose
 ```
 
 ## Simplified RegExp
@@ -283,10 +296,12 @@ plugins : [
 ]
 ```
 
-* `.css` -> /\\.css$/
-* `*.css$|*.js$` -> /\w{1,}\\.css$\|\w{1,}\.js$/
-* `components/*.css` -> /components\/\w{1,}\\.css$/
-* `components/*.(css\|scss)` -> /components\/\w{1,}\\.(css|scss)$/
+| Name  | Description |
+| ------------- | ------------- |
+| `.css`  | Matches all files ending with .css  |
+| `components/*.css`  | Matches all css files in components folder  |
+| `components/**.css`  | Matches all css files in components and under  |
+
 
 
 
@@ -339,9 +354,6 @@ Use `stream`, `process`, `Buffer`, `http` keys to override default settings.
 ## Alias
 If you are coming from WebPack this feature might be helpful.
 
-> Alias is an experimental feature; the API might change in the future.
-> using Alias breaks sourcemaps of a file where it's being used as it is required to re-generated the source code (this will be fixed soon)
-
 ```js
 FuseBox.init({
     alias: {
@@ -353,6 +365,8 @@ FuseBox.init({
 * The tilde is required to resolve your `homeDir`
 * Aliases will not work with absolute paths (it goes against the concept of FuseBox)
 
+
+
 You can also alias npm packages:
 
 ```js
@@ -362,6 +376,15 @@ FuseBox.init({
     },
 })
 ```
+
+Alternatively you can use the chainable API
+
+```js
+fuse.bundle("app")
+    .alias("foo", "~/foo/f")
+    .alias("bar", "~/bar/b")
+```
+
 
 In your code, you would use it in a way similar to this:
 ```js
@@ -416,168 +439,3 @@ Now you can reference it like  `window.ReactNative`, and require function is at 
 Important to note, shims will not be analyzed, which means they should be transpiled before importing, or imported into an environment that does not need them to be transpiled. Shimming works similar to [requirejs](http://requirejs.org/) and [jspm](http://jspm.io/).
 
 For an example, see [shimming in the fuse config](https://github.com/fuse-box/shimming-and-css-example/blob/master/fuse.js#L7) and [how it can be accessed in your code](https://github.com/fuse-box/shimming-and-css-example/blob/master/src/index.ts#L4)
-
-
-## Server Bundle
-
-
-In case you are running your bundle in `electron` for example,
-you might want to make fuse think that it is running on server.
-
-```js
-FuseBox.init({
-    serverBundle: true,
-})
-```
-> Use it ONLY for electron environment. This is a very special case that allows FuseBox to be run in browser but behave as if it's running on server.
-
-Don't run that bundle in a traditional browser.
-
-
-
-
-## Full Config
-An example using the available config options might look similar to:
-```js
-// remember, unless you transpile your fuse.js, es6 will not work in your fuse.js
-// so using `require` is the easiest. 
-// destructuring with `require` is supported with the current node version.
-//
-// importing can also be done with the syntax:
-// import {FuseBox, BabelPlugin} from "fuse-box"
-import fsbx from "fuse-box"
-const FuseBox = fsbx.FuseBox
-
-const config = {
-  homeDir: "./src",
-  outFile: "./build/bundle.js",
-  log: true,
-  debug: true,
-  plugins:[
-    fsbx.BabelPlugin({
-      // test is optional
-      // this would make it only parse `.jsx` files
-      // it defaults to `js` and `jsx`
-      test: /\.jsx$/,
-
-      // if no config is passed in,
-      // it will use the .babelrc closest to homeDir
-      config: {
-        "sourceMaps": true,
-        "presets": ["latest"],
-        "plugins": [
-          "transform-react-jsx",
-          "transform-object-rest-spread",
-          "transform-decorators-legacy",
-          "transform-class-properties",
-          "add-module-exports",
-        ],
-      },
-
-      // this is default `true`
-      // setting this to false
-      // means babel will parse _all imported node modules_
-      limit2project: true,
-    }),
-
-    fsbx.TypeScriptHelpers(),
-    fsbx.JSONPlugin(),
-    fsbx.HTMLPlugin({ useDefault: false })
-
-    // these css plugins are chained
-    [
-      fsbx.LESSPlugin(),
-      fsbx.CSSPlugin({
-        // file is the file.info.absPath
-        // more info on that in the `Plugin API` section
-        outFile: (file) => `./tmp/${file}`
-      })
-    ],
-
-    fsbx.SourceMapPlainJsPlugin(),
-  ],
-
-  shim: {
-    "react-native-web": {
-      exports: `require("react-native")`,
-    },
-  },
-
-  alias: {
-    // node modules
-    "babel-utils": "babel/dist/something/here/utils",
-
-    // homeDir
-    "faraway": "~/somewhere/far/away/",
-  },
-
-  // this works in a similar way to how things such as `process.env`
-  // are automatically added for the browser
-  autoImport: {
-    // used any time we do `Inferno.anything` in the source code
-    Inferno: "inferno",
-  },
-
-  // is for the package `canadaEh`
-  // will export everything that your entry point
-  // think of it as `entry point exports`
-  // and it also adds the exports to `global` or `window`
-  globals: { "canadaEh": "*" },
-
-  // package can just be a string naming your package
-  package: {
-    // name must be unique
-    name: "canadaEh",
-    // main is optional, it is used as an optional entry point
-    main: "index.ts",
-  },
-
-  sourceMap: {
-    bundleReference: "sourcemaps.js.map",
-    outFile: "sourcemaps.js.map",
-  },
-}
-
-if (process.env.NODE_ENV === 'production') {
-  // [options] - UglifyJS2 options
-  const prodPlugins = [
-    fsbx.UglifyJSPlugin(options),
-    fsbx.EnvPlugin({ NODE_ENV: "production" }),
-  ]
-  config.plugins = config.plugins.concat(prodPlugins)
-}
-
-// this is the same as
-// const fuse = new FuseBox(config)
-const fuse = FuseBox.init(config)
-
-// --- bundling
-
-let frontEndDev = true
-let vendors = [
-  'commander',
-  'tosource',
-  'flipbox',
-  'path',
-  'fs',
-]
-const vendorInst = "[async-registry.js]" + vendors.map(vendor => ' +' + vendor).join('')
-const appInst = ">[index.ts]" + vendors.map(vendor => ' -' + vendor).join('')
-
-const multipleBundles = {
-    "./build/vendorBundle.js": vendorInst,
-    "./build/appBundle.js": appInst,
-}
-
-const singleBundle = `
-    > [index.ts]
-    + [**/*.html]
-    + [**/*.js]
-    + [**/*.ts]
-    + [**/*.css]
-`
-
-if (frontEndDev) fuse.devServer(singleBundle)
-else fuse.bundle(multipleBundles)
-
-```
