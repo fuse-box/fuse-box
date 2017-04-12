@@ -1,0 +1,15 @@
+engines:
+ eslint:
+   enabled: true
+ tslint:
+   enabled: true
+   channel: beta
+
+ratings:
+ paths:
+ - "**.js"
+ - "**.ts"
+ 
+exclude_paths:
+- "test/"
+- "docs/"
