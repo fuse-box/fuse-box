@@ -43,7 +43,7 @@ export class LESSPluginClass implements Plugin {
             less = require("less");
         }
 
-        options.filename = file.info.fuseBoxPath;
+        options.filename = options.filename || file.info.fuseBoxPath;
 
         if ("sourceMapConfig" in context) {
             options.sourceMap = { ...sourceMapDef, ...options.sourceMap || {} };
