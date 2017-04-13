@@ -1,16 +1,66 @@
 # Bundle
 
+Bundling in FuseBox starts with the basic configuration. All bundles within the same scope will share the same config.
+It will be possible to override every single object.
+
+## Master configuration
+
+Let's initiate FuseBox
+
+```js
+const production = false;
+const fuse = FuseBox.init({
+    homeDir: "src",
+    output: "dist$name.js",
+    hash: production,
+    cache: !production,
+    plugins: [
+        EnvPlugin({ NODE_ENV: production ? "production" : "development" }),
+        CSSPlugin(), production && UglifyJSPlugin()
+    ]
+});
+```
+
+This is a pretty basic configuration that will work with typescript. 
+`fuse` in our case if a `BundleProducer`. You can create as many bundles as you like. `production` variable enables hash and disables cache for production builds. 
+
+note: It's important to disable cache for production builds. After you have defined your master `producer`, let's move on to creating some bundles.
+
+## Creating a bundle
+
+Having your producer `fuse` in place this code will be enough to create your first bundle
+```js
+
+const fuse = FuseBox.init({
+    homeDir: "src",
+    output: "dist/$name.js",
+});
+fuse.bundle("app")
+    .instructions(`>app.tsx`);
+
+fuse.run()
+```       
+
+`fuse.run()` should be executed once after all bundles are defined. `app` is bundle name - it will processed through `output: "dist/$name.js"` resulting in `dist/app.js` file.
+
+`app.tsx` should be place inside your `homeDir`. Following tree will help you better understand the structure:
+
+files:
+my-awesome-project
+ node_modules
+  placeholder.js
+ src
+  app.tsx
+ fuse.js
+
+
 ## Arithmetic instructions
+
+
 FuseBox uses an arithmetic approach to bundling. We don't support anything else, as this approach is the most simple and flexible.
 
 ```js
-let fuse = FuseBox.init({
-    homeDir: "src/",
-    globals: { default: "myLib"},
-    outFile: "./out.js"
-});
-
-fuse.bundle(">index.js");
+fuse.bundle("app").instructions(`>app.tsx`);
 ```
 
 * If you want a bundle to be executed on load, add `>` in front of your entry file. In case your bundle serves as an individual library, you would not want to make an automatic execution.
@@ -20,99 +70,184 @@ fuse.bundle(">index.js");
 With arithmetic instructions, you can explicitly define which files go to the bundle, which files skip external dependencies e.g.
 
 ```js
-fuse.bundle(">index.ts [lib/**/*.ts]");
+fuse.bundle("app").instructions(`>index.ts [lib/**/*.ts]`);
 ```
 
 In this case, you will get everything that is required in the index, as well as everything that lies under `lib/` folder with one condition - any external libraries will be ignored.
 
-### Arithmetic Symbols
+## Arithmetic Symbols
 
-* ` + ` adds a package / file
-* ` - ` excludes a package / file
-* ` ! ` removes the loader API from a bundle
-* ` ^ ` disables cache
-* ` > ` executes a file, it should be an entry point, not a glob
-* ` [ ] ` matches everything inside without dependencies
-* ` **/*.ts ` matches every file using globs, with dependencies, experiment with [globtester](www.globtester.com)
+| Symbol | Meaning |
+| ------------- | ------------- |
+| ` > `   | Automatically executes a file on load  |
+| ` + `   | adds a package / file  |
+| ` - `   | excludes a package / file  |
+| ` ! `   | removes the loader API from a bundle  |
+| ` ^ `   | disables cache  |
+| ` ~ `   | Extract all external dependencies. Ignores the actual project files. Used to create vendors. `~ index.ts`  |
+| ` [ ] ` | matches everything inside without dependencies |
+| ` **/*.ts ` | matches every file using globs, with dependencies, experiment with [globtester](http://globtester.com) |
 
-### Examples for better understanding
-`> index.js [**/*.js]` - Bundle everything without dependencies, and execute `index.js`.
 
-`[lib/*.js] +path +fs` - Bundle all files in lib folder, ignore node modules except for `path` and `fs`
-
-`[**/*.js]` - Bundle everything without dependencies
-
-`**/*.js` - Bundle everything with dependencies
-
-`**/*.js -path` - Bundle everything with dependencies except for module `path`
-
-## Making many bundles at once
-You can specify many `{ outFile: bundleStr }`. Your config (excluding `outFile`) will be copied for every single process.
-
-For example:
+For most cases just pointing it your entry point will be enough, as FuseBox will walk recursively the dependency tree and bundle everything related
 
 ```js
-fuse.bundle({
-    "_build/test_vendor.js": "+path",
-    "_build/app.js": ">[index.ts]"
+instructions(`>index.ts `);
+``` 
+
+However, there are cases that require special treatment. For example files that don't have references need to be added manually
+
+
+```js
+instructions(`>index.ts + lib/**/**.ts`);
+``` 
+
+## Creating vendors
+
+Creating vendors in FuseBox is extremely easy. All you need to is to add `~` this symbol to your entry point.
+
+```js
+const vendor = fuse.bundle("vendor")
+        .instructions(`~ **/**.{ts,tsx}`);
+    if (!production) { vendor.hmr(); }
+``` 
+In this case every single `ts` and `tsx` modules will be processed, resulting in `vendor.js` that will contain all required dependencies. Actuall project files will be omited.
+
+```js
+if (!production) { vendor.hmr(); }
+```
+
+Is a nice trick to avoid `hmr` related code in a production build. If you are not planning on having code splitting, having following will be enough:
+
+```js
+fuse.bundle("vendor")
+        .instructions(`~ index.ts`);
+```
+
+note: Don't forget to run the producer by adding fuse.run() at the very end of your script!
+
+Usually vendors contain the `FuseBox` api (The actual universal loader in browser and on server). Make sure every other bundle has `!` symbol in the arithmetic instructions. You don't want to have dependencies bundled either (in your `app.js`)
+
+```js
+
+const fuse = FuseBox.init({
+    homeDir: "src",
+    output: "dist/$name.js"
 });
+fuse.bundle("vendor")
+        .instructions(`~ index.ts`);
+
+fuse.bundle("app")
+        .instructions(`!> [index.ts]`);
+
+fuse.run()
 ```
 
-## Fluent
-Arithmetic instructions can be expressed using a more verbose, fluent api:
-[see tests for more examples here](https://github.com/fuse-box/fuse-box/blob/master/src/tests/ArithmeticsAsFluent.test.ts)
+The code above will make sure that:
 
-### Single Fluent Bundle
+steps:
+  * Vendor
+    vendor.js contains all project dependencies + the FuseBox API
+  * Application
+    app.js Contain only project files without dependencies (e.g react) and does not have FuseBox API (as vendor.js has it all).
+
+`[index.ts]` means that your bundle will contain everything related to `index.ts` without external dependencies like `react` or `angular`
+
+
+## Option override
+
+You can use the chainable API which will allow you to override options (plugins e.t.c). For example:
+
+
 ```js
-const instructions = fsbx.Fluent
-  .init()
-  .startBundle('./dist/noflo.js')
-  .excludeDeps() // also can be used as .ignoreDeps
-  .execute("src/lib/NoFlo.coffee")
-  .add("src/lib/*.coffee")
-  .exclude('fs') // also can be used as .ignore
-  .include('process')
-  .noApi()
-  .noCache()
-  .finishBundle()
-  .finish()
 
-// becomes:
-// ^ ! >[src/lib/NoFlo.coffee] -fs +process
-const bundle = fuse.bundle(instructions)
+const fuse = FuseBox.init({
+    homeDir: "src",
+    output: "dist/$name.js",
+    plugins : [HTMLPlugin()]
+});
+
+fuse.bundle("bundle1")
+      .plugin(CSSPlugin())
+      .instructions(`~ index.ts`);
+
+fuse.bundle("bundle2")
+      .instructions(`~ index.ts`);
+
+fuse.run()
 ```
 
-### Multi Fluent Bundle
+In this case `bundle1` will have only `CSSPlugin` plugin. Bundle 2 will inherit the master configuration
+
+## Chainable API
+
+Everything bundle returns a chain. For example
+
 ```js
-const instructions = fsbx.Fluent
-  .init()
-
-  .startBundle('./dist/noflo.js')
-  .excludeDeps()
-  .execute("src/lib/NoFlo.coffee")
-  .finishBundle()
-
-  .startBundle('./dist/bundle.js')
-  .excludeDeps()
-  .add("spec/**/*.coffee")
-  .finishBundle()
-
-  .startBundle('./dist/specs.js')
-  .includeDeps()
-  .add("spec/**/*.coffee")
-  .exclude('path')
-  .finishBundle()
-
-  .finish()
-
-// becomes:
-// {
-//   './dist/noflo.js': '>[src/lib/NoFlo.coffee]',
-//   './dist/bundle.js': '+[spec/**/*.coffee]',
-//   './dist/specs.js': '+spec/**/*.coffee -path'
-// }
-const bundles = fuse.bundle(instructions)
+fuse.bundle("app")
+    .watch()
+    .plugin(SassPlugin(), CSSPlugin())
+    .plugin(HTMLPlugin())
+    .hmr()
+    .instructions(`~ index.ts`);
 ```
+
+Available methods:
+
+
+| Name | Meaning |
+| ------------- | ------------- |
+| ` watch() `   | Automatically watches and reload a bundle. Read `development` section  |
+| ` globals() `   | Set [globals](/page/configuration#global-variables)  |
+| ` tsConfig() `   | Sets `tsconfig.json` location for typescript  |
+| ` hmr() `   | Enables HMR. Read up [development](/page/development)  |
+| ` alias() `   | Sets up [aliases](/page/configuration#alias) |
+| ` split() `   | Defines [code splitting](/page/code-splitting) rules.  |
+| ` splitConfig() `   | Defines [code splitting](/page/code-splitting) configuration.  |
+| ` cache() `   | Toggles cache  |
+| ` log() `   | Toggles logging  |
+| ` plugin() `   | Add a plugin or a chain of plugins  |
+| ` natives() `   | Set [natives](/page/configuration#natives)  |
+| ` instructions() `   | Defines [arithmetic instructions](/page/bundle#arithmetic-instructions)  |
+| ` sourceMaps() `   | Toggles [sourcemaps](/page/configuration#sourcemaps)  |
+| ` exec() `   | Executes a bundle individually from `fuse.run()` |
+| ` completed() `   | A callback when a bundle is ready.  |
+
+
+
+## Launching on server
+
+You can capture an event when a single bundle is completed. You will have access to `FuseProcess` that will help you to launch your application on server.
+
+
+```js
+
+fuse.bundle("bundle2")
+    .instructions(`~ index.ts`);
+    .completed(proc => proc.start())
+
+fuse.run()
+```
+
+### Executing a bundle
+
+
+```js
+completed(proc => proc.exec())
+```
+
+The following code will spawn a separate nodejs process once.
+
+### Start / restart
+
+
+```js
+completed(proc => proc.start())
+```
+
+The following code will spawn a separate nodejs process, if a process is already running FuseBox will kill and spawn a  new one.
+
+
 
 
 ## Bundle in a bundle
@@ -140,10 +275,8 @@ const exports = bundled.FuseBox.import("./yourBundle.js");
 ```
 
 or you can import the file directly using FuseBox
-```
-const fsbx = require("fuse-box")
-const FuseBox = fsbx.FuseBox
 
+```js
 const bundled = require("./magic/yourOutFile.js")
 const bundled = FuseBox.import("./yourBundle.js")
 ```

@@ -7,7 +7,9 @@ import { SocketServer } from "../devServer/SocketServer";
 import { utils } from "realm-utils";
 import { File } from "./File";
 import { BundleSplit } from "./BundleSplit";
-
+import * as path from "path";
+import { BundleTestRunner } from "../BundleTestRunner";
+import { Config } from "../Config";
 
 export class Bundle {
 
@@ -172,6 +174,29 @@ export class Bundle {
             this.context.useSourceMaps = true;
         }
         return this;
+    }
+
+    public test​​(str: string = "**/*.test.ts", opts: any) {
+        opts = opts || {};
+        opts.reporter = opts.reporter || "fuse-test-reporter";
+        opts.exit = true;
+
+        // include test files to the bundle
+        const clonedOpts = Object.assign({}, this.fuse.opts);
+        const testBundleFile = path.join(Config.TEMP_FOLDER, "tests", new Date().getTime().toString(), "/$name.js");
+        clonedOpts.output = testBundleFile;
+
+        // adding fuse-test dependency to be bundled
+        str += ` +fuse-test-runner ${opts.reporter} -ansi`;
+        const fuse = FuseBox.init(clonedOpts);
+        fuse.bundle("test")
+            .instructions(str)
+            .completed(proc => {
+                const bundle = require(proc.filePath);
+                let runner = new BundleTestRunner(bundle, opts);
+                runner.start();
+            });
+        fuse.run();
     }
 
     public exec(): Promise<Bundle> {

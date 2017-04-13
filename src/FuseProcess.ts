@@ -3,7 +3,7 @@ import { ChildProcess, spawn } from "child_process";
 
 export class FuseProcess {
     public node: ChildProcess;
-    private filePath: string;
+    public filePath: string;
     constructor(public bundle: Bundle) { }
 
     public setFilePath(filePath: string) {
