@@ -1,13 +1,38 @@
 # Bundle
 
-Bundling in FuseBox starts with the basic configuration. All bundles within the same scope will share the same config.
-It will be possible to override every single object.
+Bundling in FuseBox starts with the basic configuration. All bundles within the same scope will share the same config but can be overridden.
 
-## Master configuration
 
-Let's initiate FuseBox
+steps:
+    * Bundle producer
+    A producer is a master configuration that retains a context, plugins and other settings
+    * Config inheritance
+     Each bundle inherits configuration except for homeDir and output
+    * Run
+     After you bundles are defined you can execute fuse.run() which will execute them all. A producer knows about the order, in a way it's an orchestrator
+
+The following diagramm illustrates the process:
+
+```
+graph TB
+    main(Producer)
+    main --> commonConfig(Common Configuration)
+    commonConfig --> a(Bundle A)
+    commonConfig --> b(Bundle B)
+    a --> override(config override)
+    b --> override2(config override)
+    main --> run((Execute bundles))
+```
+
+You can create infinite amount of bundles as well as infinite amount of `Producers`. 
+
+## Producer
+
+A parent configuration called `Producer`. It's where we define global configuration for all bundles. Some of the options, however, cannot be changed like `homeDir` and `output`.
 
 ```js
+const {FuseBox, EnvPlugin, CSSPlugin, UglifyJSPlugin} = require("fuse-box");
+
 const production = false;
 const fuse = FuseBox.init({
     homeDir: "src",
@@ -24,7 +49,7 @@ const fuse = FuseBox.init({
 This is a pretty basic configuration that will work with typescript. 
 `fuse` in our case if a `BundleProducer`. You can create as many bundles as you like. `production` variable enables hash and disables cache for production builds. 
 
-note: It's important to disable cache for production builds. After you have defined your master `producer`, let's move on to creating some bundles.
+note: It's important to disable cache for production builds. 
 
 ## Creating a bundle
 
@@ -56,11 +81,10 @@ my-awesome-project
 
 ## Arithmetic instructions
 
-
-FuseBox uses an arithmetic approach to bundling. We don't support anything else, as this approach is the most simple and flexible.
+FuseBox uses an arithmetic approach to bundling.
 
 ```js
-fuse.bundle("app").instructions(`>app.tsx`);
+fuse.bundle("app").instructions(">app.tsx");
 ```
 
 * If you want a bundle to be executed on load, add `>` in front of your entry file. In case your bundle serves as an individual library, you would not want to make an automatic execution.
@@ -70,7 +94,7 @@ fuse.bundle("app").instructions(`>app.tsx`);
 With arithmetic instructions, you can explicitly define which files go to the bundle, which files skip external dependencies e.g.
 
 ```js
-fuse.bundle("app").instructions(`>index.ts [lib/**/*.ts]`);
+fuse.bundle("app").instructions(">index.ts [lib/**/*.ts]");
 ```
 
 In this case, you will get everything that is required in the index, as well as everything that lies under `lib/` folder with one condition - any external libraries will be ignored.
@@ -92,14 +116,14 @@ In this case, you will get everything that is required in the index, as well as 
 For most cases just pointing it your entry point will be enough, as FuseBox will walk recursively the dependency tree and bundle everything related
 
 ```js
-instructions(`>index.ts `);
+instructions(">index.ts");
 ``` 
 
 However, there are cases that require special treatment. For example files that don't have references need to be added manually
 
 
 ```js
-instructions(`>index.ts + lib/**/**.ts`);
+instructions(">index.ts + lib/**/**.ts");
 ``` 
 
 ## Creating vendors
