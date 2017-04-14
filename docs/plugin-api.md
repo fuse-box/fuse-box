@@ -34,7 +34,7 @@ interface Plugin {
 ### test [RegExp]
 
 Defining `test` will filter files into your plugin. For example `\.js$`
-If specified you plugin's `transform` will get triggered upon transformation. It's optional.
+If specified you plugin's `transform` will get triggered upon transformation. It's optional. Experiment with [regex101](http://regex101.com/) to see it will match.
 
 ### dependencies
 
