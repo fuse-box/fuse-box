@@ -3,7 +3,7 @@
         { "file": "introduction.md", "title": "Introduction", "home": true },
         { "file": "configuration.md" },
         { "file": "bundle.md" },
-        { "file": "devserver.md", "title": "Development" },
+        { "file": "development.md", "title": "Development" },
         { "file": "loader-api.md" },
         { "file": "plugin-api.md" },
         { "file": "sparky.md" },
