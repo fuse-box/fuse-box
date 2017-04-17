@@ -176,7 +176,7 @@ export class Bundle {
         return this;
     }
 
-    public test​​(str: string = "**/*.test.ts", opts: any) {
+    public test(str: string = "**/*.test.ts", opts: any) {
         opts = opts || {};
         opts.reporter = opts.reporter || "fuse-test-reporter";
         opts.exit = true;
