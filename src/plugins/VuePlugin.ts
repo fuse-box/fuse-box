@@ -52,7 +52,7 @@ export class VuePluginClass implements Plugin {
 var _p = {};
 var _v = function(exports){${jsTranspiled.outputText}};
 _p.template = ${JSON.stringify(html)};
-let _e = {}; _v(_e); _p = Object.assign(_e.default, _p)
+var _e = {}; _v(_e); _p = Object.assign(_e.default, _p)
 module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             `;
             file.contents = tsResult;
