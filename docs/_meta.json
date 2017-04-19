@@ -11,17 +11,46 @@
         { "file": "sparky.md" },
         { "file": "typescript.md" }
     ],
-    "plugins": [
-        { "file": "plugins/JSONPlugin.md" },
-        { "file": "plugins/BannerPlugin.md" },
-        { "file": "plugins/CoffeePlugin.md" },
-        { "file": "plugins/EnvPlugin.md" },
-        { "file": "plugins/HTMLPlugin.md" },
-        { "file": "plugins/ImageBase64Plugin.md" },
-        { "file": "plugins/RawPlugin.md" },
-        { "file": "plugins/ReplacePlugin.md" },
-        { "file": "plugins/SVGPlugin.md" },
-        { "file": "plugins/TypeScriptHelpers.md" },
-        { "file": "plugins/UglifyJSPlugin.md" }
-    ]
+    "plugins": [{
+        "group": "CSS Plugins",
+        "files": [
+            "plugins/css/CSSPlugin.md",
+            "plugins/css/CSSModules.md",
+            "plugins/css/CSSResourcePlugin.md",
+            "plugins/css/LessPlugin.md",
+            "plugins/css/PostCSSPlugin.md",
+            "plugins/css/SassPlugin.md",
+            "plugins/css/StylusPlugin.md"
+        ]
+    }, {
+        "group": "HTML",
+        "files": [
+            "plugins/html/HTMLPlugin.md",
+            "plugins/html/MarkdownPlugin.md"
+        ]
+    }, {
+        "group": "Images",
+        "files": [
+            "plugins/images/ImageBase64Plugin.md",
+            "plugins/images/SVGPlugin.md"
+        ]
+    }, {
+        "group": "Transpilers",
+        "files": [
+            "plugins/transpilers/BabelPlugin.md",
+            "plugins/transpilers/CoffeePlugin.md"
+        ]
+    }, {
+        "group": "Miscellaneous",
+        "files": [
+            "plugins/misc/BannerPlugin.md",
+            "plugins/misc/CopyPlugin.md",
+            "plugins/misc/EnvPlugin.md",
+            "plugins/misc/JSONPlugin.md",
+            "plugins/misc/ReplacePlugin.md",
+            "plugins/misc/SourceMapPlainJsPlugin.md",
+            "plugins/misc/TypeScriptHelpers.md",
+            "plugins/misc/UglifyJSPlugin.md"
+        ]
+    }]
 }
