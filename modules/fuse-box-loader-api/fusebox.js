@@ -134,7 +134,7 @@ function $getRef(name, o) {
     }
     var pkg = $packages[pkgName];
     if (!pkg) {
-        if ($isBrowser) {
+        if ($isBrowser && FuseBox.target !== "electron") {
             throw "Package not found " + pkgName;
         }
         else {

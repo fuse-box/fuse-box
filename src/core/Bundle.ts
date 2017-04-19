@@ -161,6 +161,11 @@ export class Bundle {
         return this;
     }
 
+    public target(target: string): Bundle {
+        this.context.target = target;
+        return this;
+    }
+
     public sourceMaps(params: any): Bundle {
         if (typeof params === "boolean") {
             this.context.sourceMapsProject = params;

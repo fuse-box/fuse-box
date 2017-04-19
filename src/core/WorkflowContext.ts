@@ -88,6 +88,8 @@ export class WorkFlowContext {
     public output: UserOutput;
 
     public hash: string | Boolean;
+
+    public target: string = "universal";
     /**
      * Explicitly target bundle to server
      */

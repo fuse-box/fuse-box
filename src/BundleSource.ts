@@ -201,6 +201,10 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         if (mainEntry) {
             this.concat.add(null, `FuseBox.main("${mainEntry}");`);
         }
+
+        if (this.context.target === "electron") {
+            this.concat.add(null, `FuseBox.target = "electron"`);
+        }
         if (context.defaultPackageName !== "default") {
             this.concat.add(null, `FuseBox.defaultPackageName = ${JSON.stringify(context.defaultPackageName)};`);
         }

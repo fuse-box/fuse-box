@@ -267,7 +267,7 @@ function $getRef(name: string, o: RefOpts): IReference {
     let pkg = $packages[pkgName];
 
     if (!pkg) {
-        if ($isBrowser) {
+        if ($isBrowser && FuseBox.target !== "electron") {
             throw "Package not found " + pkgName;
         } else {
             // Return "real" node module
@@ -617,7 +617,7 @@ class FuseBox {
         };
         return fn(pkg.s);
     }
-
+    public static target: string;
     /**
      * Loader plugins
      */

@@ -4,10 +4,24 @@
         { "file": "configuration.md" },
         { "file": "bundle.md" },
         { "file": "development.md", "title": "Development" },
+        { "file": "Plugins", "title": "Plugins", "link": "/plugins" },
         { "file": "code-splitting.md" },
         { "file": "loader-api.md" },
         { "file": "plugin-api.md" },
         { "file": "sparky.md" },
         { "file": "typescript.md" }
+    ],
+    "plugins": [
+        { "file": "plugins/JSONPlugin.md" },
+        { "file": "plugins/BannerPlugin.md" },
+        { "file": "plugins/CoffeePlugin.md" },
+        { "file": "plugins/EnvPlugin.md" },
+        { "file": "plugins/HTMLPlugin.md" },
+        { "file": "plugins/ImageBase64Plugin.md" },
+        { "file": "plugins/RawPlugin.md" },
+        { "file": "plugins/ReplacePlugin.md" },
+        { "file": "plugins/SVGPlugin.md" },
+        { "file": "plugins/TypeScriptHelpers.md" },
+        { "file": "plugins/UglifyJSPlugin.md" }
     ]
 }
