@@ -166,6 +166,10 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
 
         // handle server bundle
 
+        if (this.context.target === "electron") {
+            this.concat.add(null, `FuseBox.target = "electron"`);
+        }
+
         if (context.serverBundle) {
             this.concat.add(null, `FuseBox.isServer = true;`);
         }
@@ -202,9 +206,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             this.concat.add(null, `FuseBox.main("${mainEntry}");`);
         }
 
-        if (this.context.target === "electron") {
-            this.concat.add(null, `FuseBox.target = "electron"`);
-        }
+
         if (context.defaultPackageName !== "default") {
             this.concat.add(null, `FuseBox.defaultPackageName = ${JSON.stringify(context.defaultPackageName)};`);
         }
