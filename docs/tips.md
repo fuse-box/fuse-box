@@ -15,7 +15,7 @@ for example to import a file just use `FuseBox.import('./myfile')`
 * You don't have to worry about `module` option in **TypeScript** compiler options, Fuse will automatically set it up for you, even if you forget to add it.
 
 
-## Electron tips
+## Electron tips 
 
 [Electron](http://electron.atom.io/) has 2 JavaScript environments. One is Node JS (called main) and one is Chromium (called renderer).
 
