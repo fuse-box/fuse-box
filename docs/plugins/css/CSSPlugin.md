@@ -1,7 +1,6 @@
 # CSS Plugin
 
 ## Description
-
 CSSPlugin is used to handle .css syntax.  As such, it should always be at the end of any CSS processing chain (see [#list-of-plugins](Plugin configuration) for examples of plugin chains), as it handles everything that is relating to bundling, reloading and grouping css styles.
 
 
