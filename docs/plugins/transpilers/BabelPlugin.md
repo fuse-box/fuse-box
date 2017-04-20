@@ -4,31 +4,52 @@
 The babel plugin is used to transpile code to different dialects of javascript.
 
 ## Install
-The npm `babel-core` package must be installed to use the babel plugin.
-
-For example, to transpile JSX, you can use this configuration:
+This package depends on the `babel-core` module.
 
 ```bash
 yarn add babel-core babel-preset-es2015 babel-plugin-transform-react-jsx --dev
 npm install babel-core babel-preset-es2015 babel-plugin-transform-react-jsx --save-dev
 ```
-## Usage
 
+##### Parameters
+
+| Name | Type | Description | ?Default |
+| ---- | ---- | ----------- | -------- |
+| config | `Object`  | when using other fuse-box only properties, babel config is passed in as .config |  |
+| limit2project | `boolean`  | to use this plugin across an entire project (including other modules like npm) | `true` |
+| test | `Regex`  | files to match | <code>/\.(j&#124;t)s(x)?$/</code> |
+
+
+
+
+## Examples
+
+### JSX
 
 ```js
 const {BabelPlugin} = require("fuse-box");
 
 plugins: [
     BabelPlugin({
-        config: {
-            sourceMaps: true,
-            presets: ["es2015"],
-            plugins: [
-                ["transform-react-jsx"],
-            ],
-        },
+      config: {
+        sourceMaps: true,
+        presets: ["es2015"],
+        plugins: [
+            ["transform-react-jsx"],
+        ],
+      },
     })
 ]
 ```
 
-`limit2project` is default true, to use this plugin across an entire project (including other modules like npm)
+### Shorthand
+
+when only passing in a babel config, there is no need for .config
+
+```js
+plugins: [
+  BabelPlugin({
+    presets: ["es2015"]
+  })
+]
+```
