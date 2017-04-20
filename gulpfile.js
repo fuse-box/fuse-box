@@ -179,7 +179,7 @@ gulp.task("commit-release", function(done) {
 
 gulp.task("commit-beta", function(done) {
     let json = JSON.parse(fs.readFileSync(__dirname + "/package.json").toString());
-    exec(`git add .; git commit -m "Release ${json.version}" -a; git tag v${json.version}; git push origin 1.4.1`, (error, stdout, stderr) => {
+    exec(`git add .; git commit -m "Release ${json.version}" -a; git tag v${json.version}; git push origin 2.0.0`, (error, stdout, stderr) => {
         if (error) {
             console.error(`exec error: ${error}`);
             return;
