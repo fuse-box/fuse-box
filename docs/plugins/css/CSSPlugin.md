@@ -36,7 +36,7 @@ With the example above and default configuration, `FuseBox` will converts `main.
 
 ## Options
 
-## outFile
+### outFile
 
 The outFile option is used to bundle the `CSS` and write them to a file in your bundle folder. `outFile` accepts a string or a function as parameter, if string is used the file that will be written to disk will have the name defined in the string, on the other hand, If a function is passed you would have more flexibility by defining placeholders that will formulate the path of the file to be written. for example :
 
@@ -50,7 +50,7 @@ plugins: [
 ```
 The above will write the `CSS` file into your bundle folder as follows `myProject/dist/tmp/myBundle.css`
 
-## inject
+### inject
 By default it is `true`. `FuseBox` will automatically inject your files into the HEAD using link tags when imported. For example:
 
 ```js
@@ -80,7 +80,7 @@ The above will result in:
 <link rel="stylesheet" type="text/css" href="custom/main.css">
 ```
 
-## group
+### group
 You can group many css files into a single file.  Imports of any individual file will be converted into imports of the grouped file. For Example:
 
 
