@@ -2,7 +2,7 @@
 # Less Plugin
 
 ## Description
-Handles [Less is a CSS pre-processor](http://lesscss.org/)
+Handles Less is a CSS pre-processor files.
 
 ## Install
 
@@ -12,7 +12,7 @@ npm install less --save-dev
 ```
 
 ## Usage
-
+check [Less website](http://lesscss.org/) for more information.
 note: The less plugin generates CSS, Therefor it must be chained prior to the CSSPlugin to be used.
 
 ### Setup
