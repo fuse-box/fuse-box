@@ -88,7 +88,9 @@ npm install typescript fuse-box --save-dev
 ```
 
 ```ts
-FuseBox.init({
+const fsbx = require("fuse-box");
+
+fsbx.FuseBox.init({
     homeDir: "src/",
     sourceMap: {
          bundleReference: "./sourcemaps.js.map",
