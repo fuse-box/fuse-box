@@ -2,7 +2,7 @@
 # Less Plugin
 
 ## Description
-Handles Less is a CSS pre-processor files.
+Handles Less CSS pre-processor files.
 
 ## Install
 
