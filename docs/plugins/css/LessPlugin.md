@@ -2,23 +2,54 @@
 # Less Plugin
 
 ## Description
-Handles Less
+Handles [Less is a CSS pre-processor](http://lesscss.org/)
 
 ## Install
-
-Install [less](http://lesscss.org/) first.
 
 ```bash
 yarn add less --dev
 npm install less --save-dev
 ```
 
-The less plugin generates CSS, and must be chained prior to the CSSPlugin to be used:
+## Usage
+
+note: The less plugin generates CSS, Therefor it must be chained prior to the CSSPlugin to be used.
+
+### Setup
+
+Inject into a chain.
 
 ```js
-plugins:[
-  [LESSPlugin(), CSSPlugin()],
-],
+fuse.plugin(
+     [LESSPlugin(), CSSPlugin()]
+)
+```
+
+Or add it to the main config plugins list to make it available across bundles.
+
+```js
+FuseBox.init({
+    plugins : [
+         [LESSPlugin(), CSSPlugin()]
+    ]
+});
+```
+
+### Require file in your code
+```js
+import "./styles/main.less"
+```
+
+## Options
+
+`LessPlugin` accepts a `key/value` `Less` object options as a parameter. For example:
+
+```js
+fuse.plugin(
+    [LESSPlugin({
+        paths: [path.join(__dirname, 'less', 'includes')]
+    }), CSSPlugin()]
+)
 ```
 
 note: Sourcemaps are not yet properly handled.  Development is ongoing on this feature
