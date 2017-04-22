@@ -11,6 +11,10 @@ CSSPlugin is used to handle .css syntax.  As such, it should always be at the en
 
 Import from FuseBox
 
+```js
+const {CSSPlugin} = require("fuse-box");
+```
+
 Inject into a chain
 
 ```js

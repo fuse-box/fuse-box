@@ -1,4 +1,3 @@
-
 # Less Plugin
 
 ## Description
@@ -16,6 +15,12 @@ check [Less website](http://lesscss.org/) for more information.
 note: The less plugin generates CSS, Therefor it must be chained prior to the CSSPlugin to be used.
 
 ### Setup
+
+Import from FuseBox
+
+```js
+const {LESSPlugin} = require("fuse-box");
+```
 
 Inject into a chain.
 
