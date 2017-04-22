@@ -7,6 +7,7 @@ Handles Less CSS pre-processor files.
 
 ```bash
 yarn add less --dev
+// OR
 npm install less --save-dev
 ```
 

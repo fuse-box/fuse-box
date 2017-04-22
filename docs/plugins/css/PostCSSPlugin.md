@@ -7,6 +7,7 @@ Allows using PostCSS, A tool for transforming CSS with JavaScript.
 
 ```bash
 yarn add postcss --dev
+// OR
 npm install postcss --save-dev
 ```
 
