@@ -17,7 +17,7 @@ Join [gitter channel](https://gitter.im/fusebox-bundler/Lobby), we are active! /
 
 ## Features
 
-FuseBox is a new generation bundler and module loader, it is the result of our years of experience dealing with complex projects requirements and many of the development tools out there.
+FuseBox is a next generation bundler and module loader, it is the result of our years of experience dealing with complex projects requirements and many of the development tools out there.
 
 steps:
     * Speed
@@ -29,7 +29,7 @@ steps:
     * Simplicity
     FuseBox will take care of all nodejs dependencies. We offer a comprehensive list of nodejs modules for browser out of the box. No worries, no matter what are you trying to bundle. It will work.
     * API first
-    Whatever you tempted mind would want - you can get it all here. Apply hacks, intercept require statements, use an amazing dynamic module loading, and many many other neat features!
+    Whatever your usage scenario, FuseBox provides you the flexibility to get it done. Apply hacks, intercept require statements, use an amazing dynamic module loading, and many many other neat features!
 
 ## Minimum requirement
 
