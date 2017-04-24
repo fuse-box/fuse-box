@@ -78,6 +78,20 @@ my-awesome-project
   app.tsx
  fuse.js
 
+github_example: simple-bundle
+
+After the bundling is done, you will see similar output:
+
+```bash
+└── default (3 files,  907 Bytes)
+      index.js
+      Bar.js
+      Foo.js
+
+    Size: 907 Bytes in 22ms
+```
+
+You can test the bundle on server by running `node dist/app.js`
 
 ## Arithmetic instructions
 
@@ -177,6 +191,9 @@ steps:
 
 `[index.ts]` means that your bundle will contain everything related to `index.ts` without external dependencies like `react` or `angular`
 
+github_example: vendor-splitting
+
+You can now visit `http://localhost:4445` to see how it works
 
 ## Option override
 
