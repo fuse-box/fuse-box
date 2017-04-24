@@ -1,25 +1,67 @@
-# SassPlugin
+# Sass Plugin
 
 ## Description
-Generates CSS, and must be chained prior to the CSSPlugin to be used:
+Allows using Sass, A professional grade CSS extension language.
 
-[Sass](http://sass-lang.com/)
+## Install
 
 ```bash
-yarn add node-less --dev
+yarn add node-sass --dev
+// OR
 npm install node-sass --save-dev
 ```
 
-## Usage:
+## Usage
+check [Sass website](http://sass-lang.com/) for more information.
+note: The Sass plugin generates CSS, Therefor it must be chained prior to the CSSPlugin to be used.
+
+### Setup
+
+Import from FuseBox
+
 ```js
-plugins:[
-  [SassPlugin({ /* options */ }), CSSPlugin()],
-],
+const {SassPlugin} = require("fuse-box");
+```
+
+Inject into a chain.
+
+```js
+fuse.plugin(
+     [SassPlugin(), CSSPlugin()]
+)
+```
+
+Or add it to the main config plugins list to make it available across bundles.
+
+```js
+FuseBox.init({
+    plugins : [
+         [SassPlugin(), CSSPlugin()]
+    ]
+});
+```
+
+### Require file in your code
+```js
+import "./styles/main.scss"
+```
+
+## Options
+
+`SassPlugin` accepts a `key/value` `Sass` object options as a parameter. For example:
+
+```js
+fuse.plugin(
+    [StylusPlugin({
+       compress: true
+    }), CSSPlugin()]
+)
 ```
 
 ## Macros
 
-To enable macros add:
+Macros is a unique feature available onl yin `FuseBox` to give you more flexibility on how to define paths for importing files in `SASS` . To enable macros add:
+
 ```js
 SassPlugin({importer : true})
 ```
@@ -37,7 +79,8 @@ Your application root.
 @import '$appRoot/src/test.scss';
 ```
 
-`Tilde` that points to node_modules
+`Tilde` that points to `node_modules`
+
 ```css
 @import '~bootstrap/dist/bootstrap.css';
 ```

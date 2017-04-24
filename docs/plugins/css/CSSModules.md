@@ -1,4 +1,4 @@
-# CSSModules
+# CSSModules Plugin
 
 ## Description
 CSSModules allow you to include stylesheets as key value map of the
@@ -21,9 +21,13 @@ After that you can use the `CSSModules` and `CSSPlugin` in your
 configuration in either the chainable or in the following verbose
 manner.
 
+Import from FuseBox
+
 ```js
 import {Fusebox, CSSModules, CSSPlugin} from 'fuse-box'
+```
 
+```js
 Fusebox.init({
   homeDir: 'src',
   output: 'dist/$name.js',
@@ -50,6 +54,9 @@ export default () => <button className={styles.button}>Warp Drive<button>
 ```
 
 ## Options
+
+### useDefault
+
 By default, `postcss-modules` uses the default export of your `css`
 file. To disable that pass `useDefault: false` when initializing the
 plugin.
