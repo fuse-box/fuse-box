@@ -74,6 +74,12 @@ export function ensureUserPath(userPath: string) {
     return userPath;
 }
 
+export function ensureAbsolutePath(userPath: string) {
+    if (!path.isAbsolute(userPath)) {
+        return path.join(userFuseDir, userPath);
+    }
+    return userPath;
+}
 export function joinFuseBoxPath(...any): string {
     return ensureFuseBoxPath(path.join.apply(path, arguments));
 }

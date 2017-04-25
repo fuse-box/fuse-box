@@ -7,6 +7,7 @@ import { SharedCustomPackage } from "./SharedCustomPackage";
 import { BundleRunner } from "./BundleRunner";
 import { ServerOptions } from "../devServer/Server";
 import * as  chokidar from "chokidar";
+import { utils } from "realm-utils";
 
 export class BundleProducer {
     public bundles = new Map<string, Bundle>();
@@ -25,6 +26,13 @@ export class BundleProducer {
         this.watch();
         return this.runner.run(opts).then(() => {
             this.sharedEvents.emit("producer-done");
+            this.bundles.forEach(bundle => {
+                bundle.context.plugins.forEach(plugin => {
+                    if (utils.isFunction(plugin.producerEnd)) {
+                        plugin.producerEnd(this);
+                    }
+                })
+            })
             return this;
         })
     }

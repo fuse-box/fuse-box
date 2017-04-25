@@ -28,7 +28,8 @@
         "group": "HTML",
         "files": [
             "plugins/html/HTMLPlugin.md",
-            "plugins/html/MarkdownPlugin.md"
+            "plugins/html/MarkdownPlugin.md",
+            "plugins/html/WebIndexPlugin.md"
         ]
     }, {
         "group": "Images",

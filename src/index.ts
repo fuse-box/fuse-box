@@ -27,3 +27,4 @@ export { FuseBox } from "./core/FuseBox";
 export { Sparky } from "./sparky/Sparky";
 export { CSSModules } from "./plugins/stylesheet/CSSModules";
 export { CopyPlugin } from "./plugins/CopyPlugin";
+export { WebIndexPlugin } from "./plugins/WebIndexPlugin";

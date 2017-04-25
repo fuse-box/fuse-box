@@ -120,14 +120,14 @@ export class UserOutput {
      * 
      * @memberOf UserOutput
      */
-    public write(userPath: string, content: string | Buffer): Promise<UserOutputResult> {
+    public write(userPath: string, content: string | Buffer, ignoreHash?: boolean): Promise<UserOutputResult> {
         let hash;
         if (this.useHash) {
             hash = this.generateHash(content.toString());
             this.lastWrittenHash = hash;
         }
 
-        let fullpath = this.getPath(userPath, hash);
+        let fullpath = this.getPath(userPath, !ignoreHash ? hash : undefined);
         fullpath = ensureUserPath(fullpath);
         let result = new UserOutputResult();
         return new Promise((resolve, reject) => {
