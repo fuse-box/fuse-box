@@ -4,7 +4,6 @@ import { BundleProducer } from "./BundleProducer";
 import { FuseProcess } from "../FuseProcess";
 import { HotReloadPlugin } from "../plugins/HotReloadPlugin";
 import { SocketServer } from "../devServer/SocketServer";
-import { utils } from "realm-utils";
 import { File } from "./File";
 import { BundleSplit } from "./BundleSplit";
 import * as path from "path";
