@@ -9,6 +9,7 @@
         { "file": "loader-api.md" },
         { "file": "plugin-api.md" },
         { "file": "sparky.md" },
+        { "file": "test-runner.md" },
         { "file": "typescript.md" },
         { "file": "rollup.md" }
     ],
