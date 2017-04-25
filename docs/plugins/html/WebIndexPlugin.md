@@ -6,6 +6,8 @@ Generates a HTML file once a producer's job is completed
 
 note: This plugin is under development
 
+
+
 ## Usage
 
 ### Setup
@@ -34,7 +36,7 @@ fuse.plugin(
 
 
 
-### Custom template
+## Custom template
 
 A custom template has the following macro available:
 
@@ -42,3 +44,5 @@ A custom template has the following macro available:
 | ------------- | ------------- |
 | ` $title `   | Html Title  |
 | ` $bundles `   | A list of script tags |
+
+github_example: vendor-splitting
