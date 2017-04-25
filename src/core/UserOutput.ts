@@ -19,6 +19,7 @@ export class UserOutput {
     public lastWrittenPath;
     public lastWrittenHash;
     public lastGeneratedFileName: string;
+    public lastPrimaryOutput: UserOutputResult;
     constructor(public context: WorkFlowContext, public original: string) {
         this.setup();
     }
@@ -146,6 +147,9 @@ export class UserOutput {
     }
 
     public writeCurrent(content: string | Buffer): Promise<UserOutputResult> {
-        return this.write(this.filename, content);
+        return this.write(this.filename, content).then(out => {
+            this.lastPrimaryOutput = out;
+            return out;
+        });
     }
 }

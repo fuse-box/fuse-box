@@ -27,7 +27,7 @@ export class WebIndexPluginClass implements Plugin {
             if (pass) {
                 bundlePaths.push(
                     path.join(this.opts.path ? this.opts.path : "/",
-                        bundle.context.output.lastGeneratedFileName)
+                        bundle.context.output.lastPrimaryOutput.filename)
                 )
             }
         });
