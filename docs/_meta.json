@@ -9,7 +9,8 @@
         { "file": "loader-api.md" },
         { "file": "plugin-api.md" },
         { "file": "sparky.md" },
-        { "file": "typescript.md" }
+        { "file": "typescript.md" },
+        { "file": "rollup.md" }
     ],
     "plugins": [{
         "group": "CSS Plugins",
