@@ -34,7 +34,6 @@ export interface FuseBoxOptions {
     shim?: any;
     standalone?: boolean;
     sourceMaps?: any;
-    serverBundle?: boolean;
     rollup?: any;
     hash?: string | Boolean;
     customAPIFile?: string;
@@ -42,7 +41,6 @@ export interface FuseBoxOptions {
     debug?: boolean;
     files?: any;
     alias?: any;
-    transformTypescript?: (contents: string) => string;
 }
 
 /**
@@ -96,8 +94,8 @@ export class FuseBox {
             this.context.tsConfig = opts.tsConfig;
         }
 
-        if (opts.serverBundle !== undefined) {
-            this.context.serverBundle = opts.serverBundle;
+        if (opts.sourceMaps) {
+            this.context.setSourceMapsProperty(opts.sourceMaps);
         }
 
         this.context.plugins = opts.plugins || [JSONPlugin()];

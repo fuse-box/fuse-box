@@ -167,17 +167,7 @@ export class Bundle {
     }
 
     public sourceMaps(params: any): Bundle {
-        if (typeof params === "boolean") {
-            this.context.sourceMapsProject = params;
-        } else {
-            if (utils.isPlainObject(params)) {
-                this.context.sourceMapsProject = params.project === true;
-                this.context.sourceMapsVendor = params.vendor === true;
-            }
-        }
-        if (this.context.sourceMapsProject || this.context.sourceMapsVendor) {
-            this.context.useSourceMaps = true;
-        }
+        this.context.setSourceMapsProperty(params);
         return this;
     }
 

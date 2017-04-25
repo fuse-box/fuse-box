@@ -125,7 +125,23 @@ src
 You don't need to create `package.json` - `index.js` will work just fine. It will be [cached](#cache) like any other npm module with version `0.0.0`, so remember to toggle cache property in the config
 
 
+## tsConfig
 
+A path to typescript configuration `tsconfig` can be overridden like so:
+
+```js
+FuseBox.init({
+    tsConfig : "src/myconfig.json"
+})
+```
+
+Or using the chain API
+
+```js
+fuse
+    .bundle("app")
+    .tsConfig("src/myconfig.json")
+```
 
 ## Package name
 You default package name is `default`, You don't need to change it if you are not planning on having isolated bundles.
@@ -201,6 +217,17 @@ fuse.bundle("app").globals(/* configuration */)
 ```
 
 note: In order to expose your package, a bundle must have a [package name](#package-name)
+
+## Hash
+Hashing is enabled by adding `hash` property
+
+Make sure you checked the [output](#output) section
+
+```js
+FuseBox.init({
+    hash : true
+})
+```
 
 
 ## Sourcemaps

@@ -3,15 +3,17 @@
 Sparky is a Task-Runner like `Gulp` or `Grunt`, but what sets it apart is that it is built on top of `FuseBox` technology. This means that it takes benefit of the whole architecture behind, This includes an ability to use `FuseBox` plugins and many other things.
 
 ## Benefits
-* Unlike `gulp` Sparky utilizes `FuseBox` power, for example, you don't need to create tasks to transpile `TypeScript`, `FuseBox` will do that for you. instead use `Sparky` to do common tasks like copying, moving, deleting files, etc. Of course, that does not prevent you from doing that if you don't want to utilize `FuseBox` awesomeness.
-* simple intuitive API.
-* based on Promises, this means it is super fast and allows you to use `ES6` `async/await` syntax.
-* Ability to run tasks in parallel and sequentially (waterfall).
 
-## installation
+steps:
+    * Unlike `gulp` Sparky utilizes `FuseBox` power, for example, you don't need to create tasks to transpile `TypeScript`, `FuseBox` will do that for you. instead use `Sparky` to do common tasks like copying, moving, deleting files, etc. Of course, that does not prevent you from doing that if you don't want to utilize `FuseBox` awesomeness.
+    * Simple intuitive API.
+    * Based on Promises, this means it is super fast and allows you to use `ES6` `async/await` syntax.
+    * Ability to run tasks in parallel and sequentially (waterfall).
+
+## Installation
 This is one of the best parts about `Sparky`, it comes built in `FuseBox` so if you install `FuseBox` this means you already have it.
 
-# usage
+# Usage
 `Sparky` does not require `CLI` or global installation. just create a file called `fuse.js` in your app root (it does no thave to be called `fuse.js`, you can name it anything and put it anywhere, it is just a `JavaScript` file), then from your command line just type `node fuse [task name]`. for example, say you have a task called build, you can simply run it using `node fuse build`.
 
 `c:/myProject/fuse.js`
@@ -108,6 +110,15 @@ Same as `source` above, the only difference is that it is a daemon so it will al
 Copies files
 `.dest("dist/")`
 
+
+## Launching tasks manually
+
+You can launch a task manually:
+
+```js
+Sparky.task("bar", () => {})
+Sparky.start("bar")
+```
 ## File API
 
 Capture 1 file

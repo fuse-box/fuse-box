@@ -216,6 +216,20 @@ export class WorkFlowContext {
 
     }
 
+    public setSourceMapsProperty(params: any) {
+        if (typeof params === "boolean") {
+            this.sourceMapsProject = params;
+        } else {
+            if (utils.isPlainObject(params)) {
+                this.sourceMapsProject = params.project === true;
+                this.sourceMapsVendor = params.vendor === true;
+            }
+        }
+        if (this.sourceMapsProject || this.sourceMapsVendor) {
+            this.useSourceMaps = true;
+        }
+    }
+
     public warning(str: string) {
         return this.log.echoWarning(str);
     }

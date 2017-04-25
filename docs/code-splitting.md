@@ -166,13 +166,7 @@ lazyLoad("about").then(module => {
 })
 ```
 
-## Example
 
-See a fully working react application with code splitting [here](https://github.com/fuse-box/fuse-box-examples/tree/master/examples/react-code-splitting)
+See a fully working react application with code splitting 
 
-```bash
-git clone git@github.com:fuse-box/fuse-box-examples.git
-npm install
-cd examples/react-code-splitting
-node fuse.js
-```
+github_example: react-code-splitting
