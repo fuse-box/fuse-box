@@ -36,10 +36,10 @@ export class WebIndexPluginClass implements Plugin {
 <html>
 <head>
     <title>$title</title>
-    $bundles
 </head>
 <body>
 </body>
+$bundles
 </html>`;
         if (this.opts.template) {
             let filePath = ensureAbsolutePath(this.opts.template);
