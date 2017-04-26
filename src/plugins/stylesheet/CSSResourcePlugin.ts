@@ -60,6 +60,7 @@ export interface CSSResourcePluginOptions {
     dist?: string;
     inline?: boolean;
     resolve?: (path: string) => any;
+    macros?: any;
 }
 
 /**
@@ -72,12 +73,16 @@ export class CSSResourcePluginClass implements Plugin {
     public test: RegExp = /\.css$/;
     public distFolder: string;
     public inlineImages: boolean;
+    public macros: any;
     constructor(opts: CSSResourcePluginOptions = {}) {
         if (opts.dist) {
             this.distFolder = ensureDir(opts.dist);
         }
         if (opts.inline) {
             this.inlineImages = opts.inline;
+        }
+        if (opts.macros) {
+            this.macros = opts.macros;
         }
         if (utils.isFunction(opts.resolve)) {
             this.resolveFn = opts.resolve;
@@ -105,16 +110,23 @@ export class CSSResourcePluginClass implements Plugin {
     public transform(file: File) {
         file.loadContents();
         let contents = file.contents;
+
         if (this.distFolder) {
             this.createResouceFolder(file);
         }
+
         const currentFolder = file.info.absDir;
         const files = {};
         const tasks = [];
 
         return postcss([PostCSSResourcePlugin({
             fn: (url) => {
-                let urlFile = path.resolve(currentFolder, url);
+                if (this.macros) {
+                    for (let key in this.macros) {
+                        url = url.replace('$' + key, this.macros[key])
+                    }
+                }
+                let urlFile = path.isAbsolute(url) ? url : path.resolve(currentFolder, url);
                 urlFile = urlFile.replace(/[?\#].*$/, "");
                 if (this.inlineImages) {
                     if (IMG_CACHE[urlFile]) {

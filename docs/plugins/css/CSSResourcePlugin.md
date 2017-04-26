@@ -89,3 +89,26 @@ plugins: [
 ```
 
 note: disable cache while playing with the options, as npm modules along with css files are heavily cached.
+
+
+### Macros
+
+If you have problems resolving the paths, you can define macros:
+
+
+
+```js
+CSSResourcePlugin({
+    dist: `${__dirname}/dist/css-resources/`,
+    resolve: (file) =>  `/css-resources/${file}`},
+    macros: { static: `${__dirname}/src/static/` }
+})
+```
+
+And use it in your css like so:
+
+```css
+body {
+    background: url("$static/logo.png");
+}
+```
