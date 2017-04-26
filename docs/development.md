@@ -1,6 +1,6 @@
 # Development flow
 
-FuseBox offers a very convenient fully customisable development server and a Hot Module Reload module, which is flexible and can can any project needs
+FuseBox offers a very convenient fully customisable development server and a Hot Module Reload module, which is flexible and can support any project needs
 
 ## Development Server
 
