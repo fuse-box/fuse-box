@@ -112,6 +112,45 @@ const vendor = fuse.bundle("vendor")
     if (!production) { vendor.hmr(); }
 ```
 
+## Custom HMR
+
+You can tell which files FuseBox needs to reload. In fact you implement the entire logic yourself. In order to do that, place `hmr.ts` somewhere in your project, and put these contents:
+
+```js
+
+const customizedHMRPlugin = {
+    hmrUpdate: ({ type, path, content }) => {
+        if (type === "js") {
+            FuseBox.flush();
+            FuseBox.dynamic(path, content);
+            if (FuseBox.mainFile) {
+                FuseBox.import(FuseBox.mainFile)
+            }
+            return true;
+        }
+    }
+}
+
+let alreadyRegistered = false;
+if (!process.env.hmrRegistered) {
+    process.env.hmrRegistered = false;
+    FuseBox.addPlugin(customizedHMRPlugin);
+}
+```
+
+note: This a RUNTIME plugin, don't attempt on adding addPlugin to your configuration
+
+Import that file in your entry point:
+
+```js
+import "./hmr"
+// code below
+```
+| Name  | Description |
+| ------------- | ------------- |
+| ` FuseBox.flush() ` | Removes files from memory  |
+| ` FuseBox.dynamic(path, content) `  | Registers a new module dynamically |
+|` FuseBox.import(FuseBox.mainFile) `| Imports an entry point|
 
 ## Custom socket URI
 Sometimes, especially when dealing with `HTTPS` on a localhost, it is required to modify the socket URI to work with `ws` instead of `wss://`
