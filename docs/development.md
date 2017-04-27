@@ -150,7 +150,19 @@ import "./hmr"
 | ------------- | ------------- |
 | ` FuseBox.flush() ` | Removes files from memory  |
 | ` FuseBox.dynamic(path, content) `  | Registers a new module dynamically |
-|` FuseBox.import(FuseBox.mainFile) `| Imports an entry point|
+| ` FuseBox.import(FuseBox.mainFile) `| Imports an entry point|
+
+
+You can flush files selectively by providing a callback to the `flush` function
+
+```js
+FuseBox.flush(file => {
+    if( /store/.test(file)){
+        return false;
+    }
+    return true;
+})
+```
 
 ## Custom socket URI
 Sometimes, especially when dealing with `HTTPS` on a localhost, it is required to modify the socket URI to work with `ws` instead of `wss://`
