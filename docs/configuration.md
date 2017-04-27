@@ -310,6 +310,23 @@ FuseBox tests each file running it through the plugin list. If it sees an array,
 [/\.scss$/, SassPlugin(), CSSPlugin()] // more verbose
 ```
 
+## Target
+
+At this moment target exists only to switch to [electron](https://electron.atom.io/) mode
+
+```js
+fuse.bundle("app").target("electron")
+```
+
+### Example
+```bash
+git clone https://github.com/fuse-box/fuse-box-electron-seed.git
+npm install
+npm start
+```
+
+It's planned to introduce `browser` and `server` target that would affect the build. At this very moment, your builds are universal, that means that you can execute them on browser and on server accordingly.
+
 ## Simplified RegExp
 
 FuseBox understands wildcards which are converted to RegExp
