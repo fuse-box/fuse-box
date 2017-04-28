@@ -9,9 +9,8 @@ module.exports = 'file2';
 `;
 
 const defConf = {
-    sourceMap: {
-        bundleReference: "sourcemaps.js.map",
-    },
+    sourceMaps: true,
+    outFile: 'sourcemaps.js',
     plugins: [build.SourceMapPlainJsPlugin()],
 };
 
@@ -24,7 +23,7 @@ describe("SourceMapPlainJsPlugin", function() {
             "file2.js": file2,
         }, ">index.js", defConf, true).then(concat => {
 
-            concat.sourceMap.should.be.okay;
+            concat._sourceMap.should.be.okay;
             (concat.content.toString().match(/\/\/#\ssourceMappingURL=sourcemaps\.js\.map$/) !== null).should.equal(true);
 
             return true;
@@ -42,7 +41,7 @@ describe("SourceMapPlainJsPlugin", function() {
                 build.SourceMapPlainJsPlugin(),
             ],
         }), true).then(concat => {
-            concat.sourceMap.should.be.okay;
+            concat._sourceMap.should.be.okay;
             (concat.content.toString().match(/\/\/#\ssourceMappingURL=sourcemaps\.js\.map$/) !== null).should.equal(true);
 
             return true;

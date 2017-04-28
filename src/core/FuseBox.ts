@@ -194,13 +194,18 @@ export class FuseBox {
                     vendorSourceMaps = true;
                 }
             }
-            const mapsName = path.basename(this.context.outFile) + ".map";
-            const mapsOutFile =
-                path.join(path.dirname(this.context.outFile), mapsName);
-            if (projectSourcMaps) {
-                sourceMapOptions.outFile = mapsOutFile;
-                sourceMapOptions.bundleReference = mapsName;
+
+            if (this.context.outFile) {
+                const mapsName = path.basename(this.context.outFile) + ".map";
+                const mapsOutFile =
+                   path.join(path.dirname(this.context.outFile), mapsName);
+
+                if (projectSourcMaps) {
+                    sourceMapOptions.outFile = mapsOutFile;
+                    sourceMapOptions.bundleReference = mapsName;
+                }
             }
+
             sourceMapOptions.vendor = vendorSourceMaps;
             this.context.sourceMapConfig = sourceMapOptions;
         }
