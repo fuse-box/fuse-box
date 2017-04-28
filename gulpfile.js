@@ -9,7 +9,7 @@ const bump = require("gulp-bump");
 const wrap = require("gulp-wrap");
 const uglify = require("gulp-uglify");
 const changelog = require("gulp-changelog-generator");
-const { exec, spawn } = require("child_process");
+const { exec, spawn, execSync, spawnSync } = require("child_process");
 const homedir = require("homedir");
 const fs = require("fs");
 const header = require('gulp-header');
@@ -21,7 +21,6 @@ const getGitHubToken = () => {
         return fs.readFileSync(f).toString().trim();
     }
 }
-
 
 /**
  * Fail on error if not in watch mode
@@ -172,7 +171,6 @@ gulp.task("npm-publish", function(done) {
     });
 });
 
-
 gulp.task("make-test-runner", (done) => {
     const { FuseBox, JSONPlugin } = require("./dist/commonjs/index");
     const version = require("./package.json").version;
@@ -206,7 +204,6 @@ gulp.task("dist", ["dist-main", "dist-loader", "dist-modules"]);
  */
 
 gulp.task('watch', ['dist', 'copy-to-random', "copy-api-to-random"], function() {
-
     watching = true;
 
     gulp.watch(["src/loader/**/*.ts"], () => {
@@ -221,6 +218,7 @@ gulp.task('watch', ['dist', 'copy-to-random', "copy-api-to-random"], function() 
         runSequence('dist-main', 'copy-to-random');
     });
 });
+
 // npm install babel-core babel-generator babel-preset-latest babylon cheerio @angular/core stylus less postcss node-sass uglify-js source-map coffee-script @types/node rollup
 gulp.task("installDevDeps", function(done) {
     var deps = [
@@ -239,9 +237,27 @@ gulp.task("installDevDeps", function(done) {
         "source-map",
         "coffee-script",
         "@types/node",
-        "rollup"
-    ];
-    var installDeps = spawn("npm", ["install"].concat(deps), {
+        "rollup",
+    ].filter(dep => {
+      try {
+        require(dep);
+        return false;
+      } catch (e) {
+        return true;
+      }
+    });
+
+    if (deps.length) {
+      spawnSync("npm", ["install"].concat(deps), {
+          stdio: "inherit",
+      });
+    }
+
+    // to test cli
+    spawnSync("npm", ["install"].concat(["https://github.com/aretecode/fuse-box#cli-test"]), {
+        stdio: "inherit",
+    });
+    execSync("npm run --help", {
         stdio: "inherit",
     });
 });

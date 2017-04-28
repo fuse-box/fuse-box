@@ -51,6 +51,7 @@ export interface FuseBoxOptions {
  * @class FuseBox
  */
 export class FuseBox {
+    public static version: number | string = Config.FUSEBOX_VERSION
     public static init(opts?: FuseBoxOptions) {
         return new FuseBox(opts);
     }

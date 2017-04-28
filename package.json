@@ -5,13 +5,19 @@
     "typings": "./dist/typings/index.d.ts",
     "main": "dist/commonjs/index.js",
     "types": "dist/typings/index.ts",
+    "bin": {
+        "fusebox": "bin/fsbx"
+    },
     "directories": {
+        "bin": "bin",
         "test": "test",
         "modules": "modules",
         "lib": "dist/commonjs",
-        "typings": "dist/typings"
+        "typings": "dist/typings",
+        "docs": "docs"
     },
     "files": [
+        "bin",
         "src",
         "dist",
         "modules",
@@ -19,8 +25,11 @@
         "docs"
     ],
     "scripts": {
+        "test-cli": "fusebox",
         "help": "node bin/fsbx --help",
-        "test": "TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js",
+        "lint-fix": "eslint src/*.ts src/**/*.ts src/**/**/*.ts test/*.js test/**/*.js --fix",
+        "lint-fix-quiet": "npm run lint-fix -- --quiet",
+        "test": "TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js && npm run test-cli",
         "test:once": "gulp dist && TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js",
         "start": "gulp watch",
         "devDeps": "gulp installDevDeps",
