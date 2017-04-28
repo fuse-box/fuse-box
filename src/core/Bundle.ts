@@ -48,6 +48,10 @@ export class Bundle {
         return this;
     }
 
+    public shim(shimConfig: any): Bundle {
+        this.context.shim = shimConfig;
+        return this;
+    }
     /** Enable HMR in this bundle and inject HMR plugin */
     public hmr(opts?: any): Bundle {
 
