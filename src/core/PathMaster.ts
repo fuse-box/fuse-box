@@ -33,7 +33,7 @@ export interface IPathInformation {
 export interface IPackageInformation {
     name: string;
     missing?: boolean;
-    bundleData?: BundleData​​;
+    bundleData?: BundleData;
     entry: string;
     version: string;
     root: string;
@@ -378,7 +378,9 @@ export class PathMaster {
             }
         }
 
+
         if (this.context.customModulesFolder) {
+
             let customFolder = path.join(this.context.customModulesFolder, name);
             if (fs.existsSync(customFolder)) {
                 return readMainFile(customFolder, false);
@@ -391,9 +393,10 @@ export class PathMaster {
 
         if (this.rootPackagePath) {// handle a conflicting library
 
-            let nestedNodeModule = path.join(this.rootPackagePath, "node_modules", name);
+            let nodeModules = path.join(this.rootPackagePath, "node_modules");
+            let nestedNodeModule = path.join(nodeModules, name);
             if (fs.existsSync(nestedNodeModule)) {
-                return readMainFile(nestedNodeModule, true);
+                return readMainFile(nestedNodeModule, nodeModules !== Config.NODE_MODULES_DIR);
             } else {
                 // climb up (sometimes it can be in a parent)
                 let upperNodeModule = path.join(this.rootPackagePath, "../", name);
