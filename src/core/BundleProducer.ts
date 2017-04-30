@@ -1,6 +1,6 @@
 import { Bundle } from "./Bundle";
 import { FuseBox } from "./FuseBox";
-import { string2RegExp, ensureUserPath } from "../Utils";
+import { string2RegExp, ensureUserPath, ensureFuseBoxPath } from "../Utils";
 import { EventEmitter } from "events";
 import { Arithmetic, BundleData } from "../arithmetic/Arithmetic";
 import { SharedCustomPackage } from "./SharedCustomPackage";
@@ -106,7 +106,7 @@ export class BundleProducer {
 
     /** Trigger bundles that are affected */
     protected onChanges(settings: Map<string, RegExp>, path: string) {
-
+        path = ensureFuseBoxPath​​(path);
         settings.forEach((expression, bundleName) => {
             if (expression.test(path)) {
                 const bundle = this.bundles.get(bundleName);
