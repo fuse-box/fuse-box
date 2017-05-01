@@ -110,11 +110,16 @@ export class BundleProducer {
         settings.forEach((expression, bundleName) => {
             if (expression.test(path)) {
                 const bundle = this.bundles.get(bundleName);
-                this.sharedEvents.emit("file-changed", [bundle, path]);
+
                 const defer = bundle.fuse.context.defer;
                 bundle.lastChangedFile = path;
                 // to ensure new process is not kicked in before the previous has completed
-                defer.queue(bundleName, () => bundle.exec());
+                defer.queue(bundleName, () => {
+                    return bundle.exec().then(result => {
+                        this.sharedEvents.emit("file-changed", [bundle, path]);
+                        return result;
+                    });
+                });
             }
         });
     }
