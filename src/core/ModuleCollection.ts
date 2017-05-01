@@ -200,8 +200,7 @@ export class ModuleCollection {
             this.dependencies = new Map<string, File>();
         });
     }
-    public collectBundle(data: BundleData): Promise<ModuleCollection> {
-
+    public collectBundle(data: BundleData): Promise<void> {
         this.bundle = data;
         this.delayedResolve = true;
         this.initPlugins();
