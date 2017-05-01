@@ -24,7 +24,8 @@
     "test:once": "gulp dist && TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js",
     "start": "gulp watch",
     "devDeps": "gulp installDevDeps",
-    "dist": "gulp dist"
+    "dist": "gulp dist",
+    "prepublish": "gulp dist"
   },
   "engines": {
     "node": ">= 6.9.5",
