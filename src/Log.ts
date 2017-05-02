@@ -75,7 +75,7 @@ export class Log {
             min = min < 10 ? `0${min}` : min;
             sec = sec < 10 ? `0${sec}` : sec;
 
-            cursor.write("\n");
+
             cursor.yellow().write(`${hour}:${min}:${sec} : `)
                 .green().write(str);
             cursor.write("\n");

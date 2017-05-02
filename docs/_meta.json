@@ -46,6 +46,7 @@
     }, {
         "group": "Miscellaneous",
         "files": [
+            "plugins/misc/PlainJSPlugin.md",
             "plugins/misc/BannerPlugin.md",
             "plugins/misc/CopyPlugin.md",
             "plugins/misc/EnvPlugin.md",

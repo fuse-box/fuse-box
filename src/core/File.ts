@@ -330,6 +330,25 @@ export class File {
         }
     }
 
+    public loadFromCache(): boolean {
+        let cached = this.context.cache.getStaticCache(this);
+        if (cached) {
+            if (cached.sourceMap) {
+                this.sourceMap = cached.sourceMap;
+            }
+            this.isLoaded = true;
+            this.cached = true;
+            if (cached.headerContent) {
+                this.headerContent = cached.headerContent;
+            }
+            this.analysis.skip();
+            this.analysis.dependencies = cached.dependencies;
+            this.contents = cached.contents;
+            return true;
+        }
+        return false;
+    }
+
     public loadVendorSourceMap() {
         const key = `vendor/${this.collection.name}/${this.info.fuseBoxPath}`;
         this.context.debug("File", `Vendor sourcemap ${key}`);
@@ -356,22 +375,9 @@ export class File {
      * @memberOf File
      */
     private handleTypescript() {
-        const debug = (str: string) => this.context.debug("TypeScript", str);
 
         if (this.context.useCache) {
-            let cached = this.context.cache.getStaticCache(this);
-            if (cached) {
-                this.isLoaded = true;
-
-                this.sourceMap = cached.sourceMap;
-                this.contents = cached.contents;
-                this.cached = true;
-                if (cached.headerContent) {
-                    this.headerContent = cached.headerContent;
-                }
-                debug(`From cache ${this.info.fuseBoxPath}`);
-
-                this.analysis.dependencies = cached.dependencies;
+            if (this.loadFromCache()) {
                 this.tryPlugins();
                 return;
             }
@@ -381,7 +387,8 @@ export class File {
         this.loadContents();
         // Calling it before transpileModule on purpose
         this.tryTypescriptPlugins();
-        debug(`Transpile ${this.info.fuseBoxPath}`);
+        this.context.debug("TypeScript", `Transpile ${this.info.fuseBoxPath}`)
+
         let result = ts.transpileModule(this.contents, this.getTranspilationConfig());
 
         if (result.sourceMapText && this.context.useSourceMaps) {

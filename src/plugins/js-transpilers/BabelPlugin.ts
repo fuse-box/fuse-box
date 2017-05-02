@@ -94,16 +94,9 @@ export class BabelPluginClass implements Plugin {
             file.context.debug("BabelPlugin", `\n\tConfiguration: ${JSON.stringify(this.config)}`);
             this.configPrinted = true;
         }
+
         if (this.context.useCache) {
-            let cached = this.context.cache.getStaticCache(file);
-            if (cached) {
-                if (cached.sourceMap) {
-                    file.sourceMap = cached.sourceMap;
-                }
-                file.cached = true;
-                file.analysis.skip();
-                file.analysis.dependencies = cached.dependencies;
-                file.contents = cached.contents;
+            if (file.loadFromCache()) {
                 return;
             }
         }
