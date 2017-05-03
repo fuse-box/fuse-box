@@ -2,8 +2,9 @@ import * as path from "path";
 import * as fs from "fs";
 import * as fsExtra from "fs-extra";
 import { utils } from "realm-utils";
+import { Config } from "./Config";
 
-const userFuseDir = path.dirname(require.main.filename);
+const userFuseDir = Config.PROJECT_ROOT;
 const stylesheetExtensions = new Set<string>([".css", ".scss", ".styl", ".less"]);
 const MBLACKLIST = [
     "freelist",

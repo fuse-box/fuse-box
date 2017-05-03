@@ -20,6 +20,6 @@ export class PlainJSPluginClass implements Plugin {
 };
 
 export const PlainJSPlugin = () => {
-    return new PlainJSPluginClass​​();
+    return new PlainJSPluginClass
 };
 
