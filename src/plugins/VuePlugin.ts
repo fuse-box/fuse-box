@@ -48,12 +48,11 @@ export class VuePluginClass implements Plugin {
             const ts = require("typescript");
 
             const jsTranspiled = ts.transpileModule(jsContent, file.context.getTypeScriptConfig());
-            const tsResult = `var View = require('vue/dist/vue.js');
-var _p = {};
+            const tsResult = `var _p = {};
 var _v = function(exports){${jsTranspiled.outputText}};
 _p.template = ${JSON.stringify(html)};
 var _e = {}; _v(_e); _p = Object.assign(_e.default, _p)
-module.exports ={render : function(el){_p.el = el; return new View(_p)}}
+module.exports =_p
             `;
             file.contents = tsResult;
             file.analysis.parseUsingAcorn();
