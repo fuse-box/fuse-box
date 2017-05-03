@@ -41,7 +41,8 @@
         "group": "Transpilers",
         "files": [
             "plugins/transpilers/BabelPlugin.md",
-            "plugins/transpilers/CoffeePlugin.md"
+            "plugins/transpilers/CoffeePlugin.md",
+            "plugins/transpilers/VuePlugin.md"
         ]
     }, {
         "group": "Miscellaneous",
