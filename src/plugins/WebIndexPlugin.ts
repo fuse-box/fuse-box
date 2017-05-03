@@ -9,6 +9,7 @@ export interface IndexPluginOptions {
     title?: string;
     bundles?: string[];
     path?: string;
+    target?: string;
     template?: string;
 }
 export class WebIndexPluginClass implements Plugin {
@@ -58,7 +59,7 @@ $bundles
             html = html.replace('$' + key, macro[key])
         }
         producer.fuse.context
-            .output.write("index.html", html, true);
+            .output.write(this.opts.target || "index.html", html, true);
     }
 };
 

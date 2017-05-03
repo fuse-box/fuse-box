@@ -1,6 +1,7 @@
 {
     "docs": [
         { "file": "introduction.md", "title": "Introduction", "home": true },
+        { "file": "getting-started.md" },
         { "file": "configuration.md" },
         { "file": "bundle.md" },
         { "file": "development.md", "title": "Development" },
