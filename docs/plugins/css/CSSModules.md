@@ -32,8 +32,7 @@ Fusebox.init({
   homeDir: 'src',
   output: 'dist/$name.js',
   plugins: [
-    CSSModules(),
-    CSSPlugin(),
+    [ CSSModules(), CSSPlugin() ]
   ],
 })
 .bundle('app')
@@ -57,7 +56,7 @@ export default () => <button className={styles.button}>Warp Drive<button>
 
 ### useDefault
 
-By default, `postcss-modules` uses the default export of your `css`
+By default, `CSSModules` uses the default export of your `css`
 file. To disable that pass `useDefault: false` when initializing the
 plugin.
 
