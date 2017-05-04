@@ -1,7 +1,7 @@
 # Image Base64 Plugin
 
 ## Description
-Allows images to be bundled as `base64` data.
+Allows images to be bundled as `base64` data. Supports most image formats, including SVGs.
 
 ## Usage
 
@@ -30,13 +30,33 @@ FuseBox.init({
 });
 ```
 
-### Require file in your code
+### Require file in your code (Babel)
 An example of how to use it with `react`:
 
 ```js
 const image = require("./icons/image.png")
 <img src={image} />
 ```
+
+### Require file in your code (Typescript)
+An example of how to use it with `react` in Typescript:
+
+```js
+import * as image from "./icons/image.png"
+<img src={image} />
+```
+
+Note: in order to make your asset imports play nice with TSLint, you can add the following module declarations to your project:
+
+```ts
+declare module '*.jpeg';
+declare module '*.jpg';
+declare module '*.gif';
+declare module '*.png';
+declare module '*.svg';
+```
+
+Add any other image formats you need to import.
 
 ## Options
 None.
