@@ -113,7 +113,7 @@ export class ModuleCache {
 
     public encodeCacheFileName(str: string) {
         let ext = path.extname(str);
-        if (ext === ".json") {
+        if (ext !== ".js") {
             str = str + ".js"
         }
         return encodeURIComponent(str);
