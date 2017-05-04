@@ -34,8 +34,19 @@ export class FuseBoxJSONPlugin implements Plugin {
      * @memberOf FuseBoxHTMLPlugin
      */
     public transform(file: File) {
+        const context = file.context;
+        if (context.useCache) {
+            if (file.loadFromCache()) {
+                return;
+            }
+        }
+
         file.loadContents();
         file.contents = `module.exports = ${file.contents || {}};`;
+        if (context.useCache) {
+            context.emitJavascriptHotReload(file);
+            context.cache.writeStaticCache(file, file.sourceMap);
+        }
     }
 };
 
