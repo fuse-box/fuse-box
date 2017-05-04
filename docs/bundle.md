@@ -28,7 +28,7 @@ You can create infinite amount of bundles as well as infinite amount of `Produce
 
 ## Producer
 
-A parent configuration called `Producer`. It's where we define global configuration for all bundles. Some of the options, however, cannot be changed like `homeDir` and/or `output`.
+A parent configuration called `Producer`. It's where we define global configuration for all bundles. Some of the options, however, cannot be changed like `homeDir` and ... or `output`.
 
 ```js
 const {FuseBox, EnvPlugin, CSSPlugin, UglifyJSPlugin} = require("fuse-box");
