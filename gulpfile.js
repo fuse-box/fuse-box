@@ -282,6 +282,9 @@ gulp.task("installDevDeps", function(done) {
         "coffee-script",
         "@types/node",
         "rollup",
+        "vue-template-compiler",
+        "vue-template-es2015-compiler",
+        "rollup",
     ];
     var installDeps = spawn("npm", ["install"].concat(deps), {
         stdio: "inherit",
