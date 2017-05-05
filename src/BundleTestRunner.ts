@@ -10,6 +10,9 @@ export class BundleTestRunner {
     }
 
     public start() {
+        if (this.bundle.registerGlobals) {
+            this.bundle.registerGlobals();
+        }
         const FuseBoxTestRunner = this.fuse.import("fuse-test-runner").FuseBoxTestRunner;
         const runner = new FuseBoxTestRunner(this.opts);
         runner.start();
