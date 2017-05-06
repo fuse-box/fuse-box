@@ -80,18 +80,18 @@ new Vue({
 
 By defining the `lang` attribute of the `<template>` tag, content can be compiled to HTML using your favorite template engine.
 
-View a list of all [supported template engines](https://github.com/tj/consolidate.js#supported-template-engines).
+The `consolidate` module must be installed in addition to the template engine module you want to use.
 
-Remember to install the template engine module first.
+View a list of all [supported template engines](https://github.com/tj/consolidate.js#supported-template-engines).
 
 ### Example using Pug:
 
 ```bash
 # Using yarn:
-yarn add pug --dev
+yarn add consolidate pug --dev
 
 # Using npm:
-npm install pug --save-dev
+npm install consolidate pug --save-dev
 ```
 
 ```html
