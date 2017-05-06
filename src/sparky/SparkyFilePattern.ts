@@ -19,11 +19,11 @@ export function parse(str: string, opts?: SparkyFilePatternOptions): SparkyFileP
     let root, filepath, glob;
     if (!isGlob) {
         root = isAbsolutePath ? path.dirname(str) : path.join(Config.PROJECT_ROOT, base);
-        filepath = isAbsolutePath ? str : path.join(Config.PROJECT_ROOT, base, str);
+        filepath = isAbsolutePath ? path.normalize(str) : path.join(Config.PROJECT_ROOT, base, str);
     } else {
         if (isAbsolutePath) {
-            root = str.split("*")[0]
-            glob = str;
+            root = path.normalize(str.split("*")[0])
+            glob = path.normalize(str);
         } else {
             glob = path.join(Config.PROJECT_ROOT, base, str);
             root = path.join(Config.PROJECT_ROOT, base);

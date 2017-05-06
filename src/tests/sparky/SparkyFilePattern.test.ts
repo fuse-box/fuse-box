@@ -39,4 +39,10 @@ export class SparkyFilePatternTest {
         should(result.glob).equal(path.normalize("/a/b/**/**.js"));
         should(result.root).equal(path.normalize("/a/b/"));
     }
+
+    "Should understand 'base' option"() {
+        const result = parse("./b/file.js", { base: "./a" });
+        should(result.filepath).equal(path.join(Config.PROJECT_ROOT, "./a/b/file.js"))
+        should(result.root).equal(path.join(Config.PROJECT_ROOT, "./a"))
+    }
 }
