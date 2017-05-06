@@ -9,7 +9,10 @@ This package depends on the `vue-template-compiler`, `vue-template-es2015-compil
 Also, if you want to include Vue library into the bundle, remember to install `vue` module too.
 
 ```bash
+# Using yarn:
 yarn add vue-template-compiler vue-template-es2015-compiler typescript vue --dev
+
+# Using npm:
 npm install vue-template-compiler vue-template-es2015-compiler typescript vue --save-dev
 ```
 
@@ -64,6 +67,44 @@ new Vue({
 <script>
     export default {
         name: 'app',
+        data () {
+            return {
+                msg: 'Welcome to Your Vue.js App'
+            }
+        }
+    }
+</script>
+```
+
+## Template engine preprocessor
+
+By defining the `lang` attribute of the `<template>` tag, content can be compiled to HTML using your favorite template engine.
+
+View a list of all [supported template engines](https://github.com/tj/consolidate.js#supported-template-engines).
+
+Remember to install the template engine module first.
+
+### Example using Pug:
+
+```bash
+# Using yarn:
+yarn add pug --dev
+
+# Using npm:
+npm install pug --save-dev
+```
+
+```html
+<!-- src/components/App.vue -->
+
+<template lang="pug">
+    .content
+        p {{ msg }}
+        input(type="text", v-model="msg")
+</template>
+
+<script>
+    export default {
         data () {
             return {
                 msg: 'Welcome to Your Vue.js App'
