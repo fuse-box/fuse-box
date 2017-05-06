@@ -7,6 +7,7 @@ export interface VuePluginOptions {
 }
 
 let vueCompiler;
+let vueTranspiler;
 export class VuePluginClass implements Plugin {
     public test: RegExp = /\.vue$/;
 
@@ -38,19 +39,22 @@ export class VuePluginClass implements Plugin {
 
         if (!vueCompiler) {
             vueCompiler = require("vue-template-compiler");
+            vueTranspiler = require("vue-template-es2015-compiler");
         }
 
         let result = vueCompiler.parseComponent(file.contents, this.options);
         if (result.template && result.template.type === "template") {
             let html = result.template.content;
-            //let parsed = vueCompiler.compile(html);
+            let compiled = vueCompiler.compile(html);
+
             let jsContent = result.script.content;
             const ts = require("typescript");
 
             const jsTranspiled = ts.transpileModule(jsContent, file.context.getTypeScriptConfig());
             const tsResult = `var _p = {};
 var _v = function(exports){${jsTranspiled.outputText}};
-_p.template = ${JSON.stringify(html)};
+_p.render = ` + toFunction(compiled.render) + `
+_p.staticRenderFns = [ ` + compiled.staticRenderFns.map(toFunction).join(',')  + ` ];
 var _e = {}; _v(_e); _p = Object.assign(_e.default, _p)
 module.exports =_p
             `;
@@ -65,6 +69,10 @@ module.exports =_p
         }
     }
 };
+
+function toFunction (code) {
+  return vueTranspiler('function render () {' + code + '}')
+}
 
 export const VuePlugin = (options?: VuePluginOptions) => {
     return new VuePluginClass(options);
