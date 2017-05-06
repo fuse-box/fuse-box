@@ -81,11 +81,11 @@ function toFunction (code) {
 }
 
 function compileTemplateContent (context: any, engine: string, content: string) {
-    const cons = require('consolidate');
     return new Promise((resolve, reject) => {
-        if (!engine || !cons[engine]) {
-            return content;
-        }
+        if (!engine) { return content; }
+        
+        const cons = require('consolidate');
+        if (!cons[engine]) { return content; }
     
         cons[engine].render(content, {
             basedir: context.homeDir,
