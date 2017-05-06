@@ -7,6 +7,10 @@ import { log } from "./Sparky";
 import { parse, SparkyFilePatternOptions } from "./SparkyFilePattern";
 import * as  chokidar from "chokidar";
 
+export interface SparkFlowWatchOptions {
+    base? : string;
+}
+
 export class SparkFlow {
     private activities = [];
     private watcher: any;
