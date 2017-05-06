@@ -26,7 +26,7 @@ export function parse(str: string, opts?: SparkyFilePatternOptions): SparkyFileP
             glob = str;
         } else {
             glob = path.join(Config.PROJECT_ROOT, base, str);
-            root = path.join(Config.PROJECT_ROOT. base);
+            root = path.join(Config.PROJECT_ROOT, base);
         }
     }
 
