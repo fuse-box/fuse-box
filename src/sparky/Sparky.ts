@@ -1,5 +1,6 @@
 import { SparkTask } from "./SparkTask";
 import { SparkFlow } from "./SparkFlow";
+import { SparkyFilePatternOptions } from "./SparkyFilePattern";
 import { each } from "realm-utils";
 import { WorkFlowContext } from "../core/WorkflowContext";
 import { Log } from "../Log";
@@ -37,12 +38,12 @@ export class Sparky {
         return this;
     }
 
-    public static src(str: string): SparkFlow {
+    public static src(str: string, opts?: SparkyFilePatternOptions): SparkFlow {
         const flow = new SparkFlow();
-        return flow.glob(str);
+        return flow.glob(str, opts);
     }
 
-    public static watch(glob: string, opts?: any) {
+    public static watch(glob: string, opts?: SparkyFilePatternOptions) {
         const flow = new SparkFlow();
         return flow.watch(glob, opts);
     }
