@@ -4,8 +4,12 @@ import * as fs from "fs-extra";
 import { ensureDir, string2RegExp } from "../Utils";
 import { SparkyFile } from "./SparkyFile";
 import { log } from "./Sparky";
-import { parse } from "./SparkyFilePattern";
+import { parse, SparkyFilePatternOptions } from "./SparkyFilePattern";
 import * as  chokidar from "chokidar";
+
+export interface SparkFlowWatchOptions {
+    base? : string;
+}
 
 export class SparkFlow {
     private activities = [];
@@ -16,8 +20,8 @@ export class SparkFlow {
 
     constructor() { }
 
-    public glob(globString: string): SparkFlow {
-        this.activities.push(() => this.getFiles(globString));
+    public glob(globString: string, opts?: SparkyFilePatternOptions): SparkFlow {
+        this.activities.push(() => this.getFiles(globString, opts));
         return this;
     }
 
@@ -27,18 +31,22 @@ export class SparkFlow {
         }
     }
 
-    public watch(globString: string, opts: any): SparkFlow {
+    public watch(globString: string, opts?: SparkyFilePatternOptions): SparkFlow {
         this.files = [];
         log.echoStatus(`Watch ${globString}`)
         this.activities.push(() => new Promise((resolve, reject) => {
 
-            this.watcher = chokidar.watch(globString, opts || {})
+            var chokidarOptions = {
+                cwd: opts ? opts.base : null
+            };
+
+            this.watcher = chokidar.watch(globString, chokidarOptions)
                 .on('all', (event, fp) => {
                     if (this.initialWatch) {
                         this.files = [];
                         log.echoStatus(`Changed ${fp}`)
                     }
-                    let info = parse(fp);
+                    let info = parse(fp, opts);
                     this.files.push(new SparkyFile(info.filepath, info.root))
                     if (this.initialWatch) {
                         // call it again
@@ -61,9 +69,9 @@ export class SparkFlow {
 
 
     /** Gets all user files */
-    protected getFiles(globString: string) {
+    protected getFiles(globString: string, opts?: SparkyFilePatternOptions) {
         this.files = [];
-        let info = parse(globString)
+        let info = parse(globString, opts)
         let root = info.root;
         return new Promise((resolve, reject) => {
             let userFiles: SparkyFile[] = [];

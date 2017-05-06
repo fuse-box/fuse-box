@@ -6,23 +6,27 @@ export interface SparkyFilePattern {
     root: string;
     glob: string;
     filepath: string;
-
 }
-export function parse(str: string): SparkyFilePattern {
 
+export interface SparkyFilePatternOptions {
+    base?: string; // Will be ignored when parsing absolute paths
+}
+
+export function parse(str: string, opts?: SparkyFilePatternOptions): SparkyFilePattern {
+    const base = opts ? (opts.base || '') : '';
     const isGlob = /[*{}}]/.test(str);
     const isAbsolutePath = path.isAbsolute(str);
     let root, filepath, glob;
     if (!isGlob) {
-        root = isAbsolutePath ? path.dirname(str) : Config.PROJECT_ROOT;
-        filepath = isAbsolutePath ? str : path.join(Config.PROJECT_ROOT, str);
+        root = isAbsolutePath ? path.dirname(str) : path.join(Config.PROJECT_ROOT, base);
+        filepath = isAbsolutePath ? str : path.join(Config.PROJECT_ROOT, base, str);
     } else {
         if (isAbsolutePath) {
             root = str.split("*")[0]
             glob = str;
         } else {
-            glob = path.join(Config.PROJECT_ROOT, str);
-            root = Config.PROJECT_ROOT;
+            glob = path.join(Config.PROJECT_ROOT, base, str);
+            root = path.join(Config.PROJECT_ROOT. base);
         }
     }
 
