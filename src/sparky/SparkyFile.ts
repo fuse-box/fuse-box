@@ -11,11 +11,14 @@ export class SparkyFile {
     public contents: Buffer | string;
     public extension: string;
     public filepath: string;
+    public root: string;
     private savingRequired = false;
 
-    constructor(filepath: string, public root: string) {
+    constructor(filepath: string, root: string) {
         this.filepath = path.normalize(filepath);
-        let hp = this.filepath.split(root)[1];
+        this.root = path.normalize(root);
+
+        let hp = path.relative(this.root, this.filepath);
         this.homePath = path.isAbsolute(hp) ? hp.slice(1) : hp;
         this.name = path.basename(this.filepath);
     }
