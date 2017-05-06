@@ -103,6 +103,22 @@ or you want to capture all images file formats
  Sparky.src("src/**/*.(jpg|png|gif))")
  ```
 
+Source method also accepts a second parameter to inject some options:
+
+### options.base
+
+Sets the base path from which the path names will be resolved.
+
+For example: If we have an `asset` folder, and inside that, a file called `logo.png`...
+
+```js
+Sparky.src("./src/assets/*.png").dest('./dist')
+// Result: dist/src/assets/logo.png
+
+Sparky.src("./assets/*.png", { base: './src' }).dest('./dist')
+// Result: dist/assets/logo.png
+```
+
 ## watch
 Same as `source` above, the only difference is that it is a daemon so it will always run whenever a file in the captured globing changes.
 ## Dest

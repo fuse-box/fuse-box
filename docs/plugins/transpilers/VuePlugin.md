@@ -4,13 +4,13 @@
 The Vue plugin is used to transpile .vue files into Javascript.
 
 ## Install
-This package depends on the `vue-template-compiler` and `typescript` modules.
+This package depends on the `vue-template-compiler`, `vue-template-es2015-compiler` and `typescript` modules.
 
 Also, if you want to include Vue library into the bundle, remember to install `vue` module too.
 
 ```bash
-yarn add vue-template-compiler typescript vue --dev
-npm install vue-template-compiler typescript vue --save-dev
+yarn add vue-template-compiler vue-template-es2015-compiler typescript vue --dev
+npm install vue-template-compiler vue-template-es2015-compiler typescript vue --save-dev
 ```
 
 ## Example
