@@ -82,7 +82,7 @@ function toFunction (code) {
 
 function compileTemplateContent (context: any, engine: string, content: string) {
     return new Promise((resolve, reject) => {
-        if (!engine) { return content; }
+        if (!engine) { return resolve(content); }
         
         const cons = require('consolidate');
         if (!cons[engine]) { return content; }
