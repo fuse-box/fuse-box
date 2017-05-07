@@ -4,6 +4,9 @@ import * as path from "path";
 import { SVG2Base64 } from "../../lib/SVG2Base64";
 const base64Img = require("base64-img");
 
+export interface ImageBase64PluginOptions {
+    useDefault?: boolean;
+}
 /**
  *
  *
@@ -12,6 +15,10 @@ const base64Img = require("base64-img");
  * @implements {Plugin}
  */
 export class ImageBase64PluginClass implements Plugin {
+    public opts: ImageBase64PluginOptions;
+    constructor(opts?: ImageBase64PluginOptions) {
+        this.opts = opts || {};
+    }
     /**
      *
      *
@@ -57,12 +64,14 @@ export class ImageBase64PluginClass implements Plugin {
             }
             file.isLoaded = true;
             const data = base64Img.base64Sync(file.absPath);
-            file.contents = `module.exports = ${JSON.stringify(data)}`;
+
+            let exportsKey = this.opts.useDefault ? "module.exports.default" : "module.exports";
+            file.contents = `${exportsKey} = ${JSON.stringify(data)}`;
             context.cache.writeStaticCache(file, undefined);
         }
     }
 };
 
-export const ImageBase64Plugin = () => {
-    return new ImageBase64PluginClass();
+export const ImageBase64Plugin = (opts?: ImageBase64PluginOptions) => {
+    return new ImageBase64PluginClass(opts);
 };

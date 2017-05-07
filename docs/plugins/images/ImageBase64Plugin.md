@@ -59,7 +59,30 @@ declare module '*.svg';
 Add any other image formats you need to import.
 
 ## Options
-None.
+
+### useDefault
+
+If you wish to use `import` statements, you would probably want to enable `default` option
+
+```js
+ImageBase64Plugin({
+  useDefault: true
+})
+```
+
+And import your images like this:
+
+```js
+import png from "./images/foo.png" 
+```
+
+You need to use something like below without that option:
+
+```js
+import * as png from "./images/foo.png" 
+```
+
+
 
 ## Test
 To run tests
