@@ -3,7 +3,7 @@ import * as path from "path";
 const PROJECT_ROOT = process.env.FUSEBOX_DIST_ROOT || path.join(__dirname, "../../");
 
 const MAIN_FILE = require.main.filename;
-if (MAIN_FILE.indexOf("gulp.js") > -1) {
+if (MAIN_FILE.indexOf("gulp.js") > -1 && !process.env.PROJECT_ROOT) {
     console.warn("FuseBox wasn't able to detect your project root! You are running gulp!")
     console.warn("Please set process.env.PROJECT_ROOT");
 }

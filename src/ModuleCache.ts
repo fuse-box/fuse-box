@@ -111,6 +111,13 @@ export class ModuleCache {
         return encodeURIComponent(this.context.bundle.name + file.absPath);
     }
 
+    public encodeCacheFileName(str: string) {
+        let ext = path.extname(str);
+        if (ext !== ".js") {
+            str = str + ".js"
+        }
+        return encodeURIComponent(str);
+    }
     /**
      *
      *
@@ -122,7 +129,7 @@ export class ModuleCache {
     public getStaticCache(file: File) {
 
         let stats = fs.statSync(file.absPath);
-        let fileName = encodeURIComponent(file.info.fuseBoxPath);
+        let fileName = this.encodeCacheFileName(file.info.fuseBoxPath);
         let memCacheKey = this.getStaticCacheKey(file);
         let data;
 
@@ -162,7 +169,7 @@ export class ModuleCache {
      * @memberOf ModuleCache
      */
     public writeStaticCache(file: File, sourcemaps: string) {
-        let fileName = encodeURIComponent(file.info.fuseBoxPath);
+        let fileName = this.encodeCacheFileName(file.info.fuseBoxPath);
         let memCacheKey = this.getStaticCacheKey(file);
         let dest = path.join(this.staticCacheFolder, fileName);
         let stats: any = fs.statSync(file.absPath);

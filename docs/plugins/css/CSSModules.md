@@ -32,8 +32,7 @@ Fusebox.init({
   homeDir: 'src',
   output: 'dist/$name.js',
   plugins: [
-    CSSModules(),
-    CSSPlugin(),
+    [ CSSModules(), CSSPlugin() ]
   ],
 })
 .bundle('app')
@@ -53,11 +52,50 @@ import styles from './styles.css'
 export default () => <button className={styles.button}>Warp Drive<button>
 ```
 
+### Use with SassPlugin
+Yes, you can chain this with the SassPlugin (and other CSS pre-processor plugins). Here's an example:
+
+Set up FuseBox
+
+```js
+Fusebox.init({
+  homeDir: 'src',
+  output: 'dist/$name.js',
+  plugins: [
+    [SassPlugin(), CSSModules(), CSSPlugin()]
+  ]
+})
+.bundle('app')
+.instructions('>index.js')
+```
+
+Use in code:
+
+CSS
+```css
+.myClass {
+  color: red;
+}
+```
+
+TS
+```ts
+import styles from './Home.scss';
+
+<h1 className={styles.myClass}>Welcome homes!</h1>
+```
+
+Note: in order to make your asset imports play nice with TSLint, you can add the following module declarations to your project:
+
+```ts
+declare module '*.scss';
+```
+
 ## Options
 
 ### useDefault
 
-By default, `postcss-modules` uses the default export of your `css`
+By default, `CSSModules` uses the default export of your `css`
 file. To disable that pass `useDefault: false` when initializing the
 plugin.
 

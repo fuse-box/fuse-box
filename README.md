@@ -10,6 +10,10 @@
 
 # FuseBox
 http://fuse-box.org/
+
+## Version 2.0
+http://fuse-box.org:3333 (soon to be released)
+
 FuseBox is a bundler/module loader that combines the power of webpack, JSPM and SystemJS. 
 
 It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convenient for developers. It requires zero configuration to bundle such monsters like `babel-core`.
@@ -51,15 +55,6 @@ Todo App built on the latest Angular2 (compiles in 50-80ms!)
 
 Simple example using React with babel (compiles in 50ms!)
 
-### [Benchmark](https://github.com/fuse-box/benchmark)
-
-Speed matters. Check out our benchmark example for a real world demo! 
-__1200 files to bundle__:
-
-* FuseBox __0.234s__
-* Webpack 1.376s
-
-
 ## Highlights
 
 * No headache, minimal configuration
@@ -98,7 +93,7 @@ FuseBox.init({
 * [Typescript + React + Reflux + Sass + Code Splitting](https://github.com/fuse-box/fuse-box-ts-react-reflux-seed)
 * [Vue.js Seed](https://github.com/fuse-box/fuse-box-vue-seed) 
 * [Express seed](https://github.com/fuse-box/fuse-box-express-seed)
-* [Electron + babel + live-reload seed](https://github.com/fuse-box/electron-fuse-box-babel-live-reload-boilerplate)
+* [Electron seed](https://github.com/fuse-box/fuse-box-electron-seed)
 
 ---
 Join our [gitter channel](https://gitter.im/fusebox-bundler/Lobby) we are very active and friendly!
