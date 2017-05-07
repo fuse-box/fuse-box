@@ -18,8 +18,9 @@ export class VuePluginClass implements Plugin {
     }
 
     public transform(file: File) {
-        // caching ...
         const context = file.context;
+
+        // caching ...
         if (context.useCache) {
             let cached = context.cache.getStaticCache(file);
             if (cached) {
@@ -44,34 +45,56 @@ export class VuePluginClass implements Plugin {
 
         let result = vueCompiler.parseComponent(file.contents, this.options);
         if (result.template && result.template.type === "template") {
-            let html = result.template.content;
-            let compiled = vueCompiler.compile(html);
+            let templateLang = (result.template.attrs) ? result.template.attrs.lang : null;
+            return compileTemplateContent(context, templateLang, result.template.content).then(html => {
+                let compiled = vueCompiler.compile(html);
 
-            let jsContent = result.script.content;
-            const ts = require("typescript");
+                let jsContent = result.script.content;
+                const ts = require("typescript");
 
-            const jsTranspiled = ts.transpileModule(jsContent, file.context.getTypeScriptConfig());
-            const tsResult = `var _p = {};
+                const jsTranspiled = ts.transpileModule(jsContent, file.context.getTypeScriptConfig());
+                const tsResult = `var _p = {};
 var _v = function(exports){${jsTranspiled.outputText}};
 _p.render = ` + toFunction(compiled.render) + `
 _p.staticRenderFns = [ ` + compiled.staticRenderFns.map(toFunction).join(',')  + ` ];
 var _e = {}; _v(_e); _p = Object.assign(_e.default, _p)
 module.exports =_p
-            `;
-            file.contents = tsResult;
-            file.analysis.parseUsingAcorn();
-            file.analysis.analyze();
+                `;
+                file.contents = tsResult;
+                file.analysis.parseUsingAcorn();
+                file.analysis.analyze();
 
-            if (context.useCache) {
-                context.emitJavascriptHotReload(file);
-                context.cache.writeStaticCache(file, file.sourceMap);
-            }
+                if (context.useCache) {
+                    context.emitJavascriptHotReload(file);
+                    context.cache.writeStaticCache(file, file.sourceMap);
+                }
+                return true
+            }).catch(err => {
+                console.error(err);
+            });
         }
     }
 };
 
 function toFunction (code) {
   return vueTranspiler('function render () {' + code + '}')
+}
+
+function compileTemplateContent (context: any, engine: string, content: string) {
+    return new Promise((resolve, reject) => {
+        if (!engine) { return content; }
+        
+        const cons = require('consolidate');
+        if (!cons[engine]) { return content; }
+    
+        cons[engine].render(content, {
+            basedir: context.homeDir,
+            includeDir: context.homeDir
+        }, (err, html) => {
+            if (err) { return reject(err); }
+            resolve(html)
+        });
+    });
 }
 
 export const VuePlugin = (options?: VuePluginOptions) => {
