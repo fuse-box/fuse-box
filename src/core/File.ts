@@ -350,6 +350,9 @@ export class File {
     }
 
     public loadVendorSourceMap() {
+        if (!this.context.cache) {
+            return this.makeAnalysis();
+        }
         const key = `vendor/${this.collection.name}/${this.info.fuseBoxPath}`;
         this.context.debug("File", `Vendor sourcemap ${key}`);
         let cachedMaps = this.context.cache.getPermanentCache(key);
