@@ -6,6 +6,7 @@ import { SourceMapGenerator } from "./SourceMapGenerator";
 import { utils, each } from "realm-utils";
 import * as fs from "fs";
 import * as path from "path";
+import { ensureFuseBoxPath } from "../Utils";
 
 /**
  *
@@ -39,6 +40,8 @@ export class File {
      * @memberOf File
      */
     public absPath: string;
+
+    public relativePath: string;
     /**
      *
      *
@@ -128,6 +131,8 @@ export class File {
             this.params = info.params;
         }
         this.absPath = info.absPath;
+        this.relativePath = ensureFuseBoxPath​​(path.relative(this.context.appRoot, this.absPath));
+
     }
 
     public static createByName(collection: ModuleCollection, name: string): File {
@@ -212,6 +217,8 @@ export class File {
             while (!target && index < this.context.plugins.length) {
                 let item = this.context.plugins[index];
                 let itemTest: RegExp;
+
+
                 if (Array.isArray(item)) {
                     let el = item[0];
                     // for some reason on windows OS it gives false sometimes...
@@ -226,7 +233,7 @@ export class File {
                 } else {
                     itemTest = item.test;
                 }
-                if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(path.relative(this.context.appRoot, this.absPath))) {
+                if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(this.relativePath)) {
                     target = item;
                 }
                 index++;
