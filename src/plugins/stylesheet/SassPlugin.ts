@@ -34,9 +34,9 @@ export class SassPluginClass implements Plugin {
     }
 
     public transform(file: File): Promise<any> {
-
-        if (this.context.useCache && this.options.cache) {
-            let cached = this.context.cache.getStaticCache(file);
+        const context = file.context;
+        if (context.useCache && this.options.cache) {
+            let cached = context.cache.getStaticCache(file);
             if (cached) {
                 if (cached.sourceMap) {
                     file.sourceMap = cached.sourceMap;
@@ -57,7 +57,7 @@ export class SassPluginClass implements Plugin {
 
         const defaultMacro = {
             "$homeDir": file.context.homeDir,
-            "$appRoot": this.context.appRoot,
+            "$appRoot": context.appRoot,
             "~": Config.NODE_MODULES_DIR + "/",
         };
 
@@ -99,8 +99,8 @@ export class SassPluginClass implements Plugin {
                 }
                 file.sourceMap = result.map && result.map.toString();
                 file.contents = result.css.toString();
-                if (this.context.useCache && this.options.cache) {
-                    this.context.cache.writeStaticCache(file, file.sourceMap);
+                if (context.useCache && this.options.cache) {
+                    context.cache.writeStaticCache(file, file.sourceMap);
                 }
                 return resolve();
             });
