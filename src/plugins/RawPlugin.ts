@@ -58,6 +58,7 @@ export class RawPluginClass implements Plugin {
             }
         }
         file.loadContents();
+        file.sourceMap = undefined;
         file.contents = `module.exports = ${JSON.stringify(file.contents)}`;
         if (context.useCache) {
             context.emitJavascriptHotReload(file);
