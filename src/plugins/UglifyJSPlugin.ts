@@ -21,9 +21,12 @@ export class UglifyJSPluginClass implements Plugin {
 
     public postBundle(context) {
         const mainOptions : any = {
-            fromString: true,
         };
         const UglifyJs = require("uglify-js");
+		//TODO: there may be a better way to test for v2
+		if(UglifyJs.mangle_properties !== undefined) {
+			mainOptions.fromString = true;
+		}
 
         const concat = context.source.getResult();
         const source = concat.content.toString();
