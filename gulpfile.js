@@ -281,9 +281,10 @@ gulp.task("installDevDeps", function(done) {
         "source-map",
         "coffee-script",
         "@types/node",
-        "rollup",
         "vue-template-compiler",
         "vue-template-es2015-compiler",
+		"vue",
+		"vue-server-renderer",
         "rollup",
     ];
     var installDeps = spawn("npm", ["install"].concat(deps), {
