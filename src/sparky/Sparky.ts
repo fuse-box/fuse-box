@@ -38,14 +38,16 @@ export class Sparky {
         return this;
     }
 
-    public static src(str: string, opts?: SparkyFilePatternOptions): SparkFlow {
+    public static src(glob: string | string[], opts?: SparkyFilePatternOptions): SparkFlow {
         const flow = new SparkFlow();
-        return flow.glob(str, opts);
+        let globs = Array.isArray(glob) ? glob : [glob]
+        return flow.glob(globs, opts);
     }
 
-    public static watch(glob: string, opts?: SparkyFilePatternOptions) {
+    public static watch(glob: string | string[], opts?: SparkyFilePatternOptions) {
         const flow = new SparkFlow();
-        return flow.watch(glob, opts);
+        let globs = Array.isArray(glob) ? glob : [glob]
+        return flow.watch(globs, opts);
     }
     public static start(tname?: string): Promise<any> {
         const taskName = tname || process.argv[2] || "default";

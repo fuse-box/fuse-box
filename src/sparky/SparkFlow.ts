@@ -16,8 +16,8 @@ export class SparkFlow {
 
     constructor() { }
 
-    public glob(globString: string, opts?: SparkyFilePatternOptions): SparkFlow {
-        this.activities.push(() => this.getFiles(globString, opts));
+    public glob(globs: string[], opts?: SparkyFilePatternOptions): SparkFlow {
+        this.activities.push(() => this.getFiles(globs, opts));
         return this;
     }
 
@@ -27,16 +27,16 @@ export class SparkFlow {
         }
     }
 
-    public watch(globString: string, opts?: SparkyFilePatternOptions): SparkFlow {
+    public watch(globs: string[], opts?: SparkyFilePatternOptions): SparkFlow {
         this.files = [];
-        log.echoStatus(`Watch ${globString}`)
+        log.echoStatus(`Watch ${globs}`)
         this.activities.push(() => new Promise((resolve, reject) => {
 
             var chokidarOptions = {
                 cwd: opts ? opts.base : null
             };
 
-            this.watcher = chokidar.watch(globString, chokidarOptions)
+            this.watcher = chokidar.watch(globs, chokidarOptions)
                 .on('all', (event, fp) => {
                     if (this.initialWatch) {
                         this.files = [];
@@ -65,27 +65,31 @@ export class SparkFlow {
 
 
     /** Gets all user files */
-    protected getFiles(globString: string, opts?: SparkyFilePatternOptions) {
+    protected getFiles(globs: string[], opts?: SparkyFilePatternOptions) {
         this.files = [];
-        let info = parse(globString, opts)
-        let root = info.root;
-        return new Promise((resolve, reject) => {
-            let userFiles: SparkyFile[] = [];
-            if (!info.isGlob) {
+        const getFilePromises = new Array<Promise<Array<SparkyFile>>>();
+        globs.forEach(g => {
+            getFilePromises.push(this.getFile(g, opts))
+        })
+        return Promise.all(getFilePromises)
+            .then(results => {
+                this.files = [].concat.apply([], results);
+                return this.files;
+            })
+    }
 
-                this.files = [new SparkyFile(info.filepath, info.root)];
-                return resolve()
+    protected getFile(globString, opts?: SparkyFilePatternOptions) {
+        let info = parse(globString, opts)
+
+        return new Promise((resolve, reject) => {
+            if (!info.isGlob) {
+                return resolve([new SparkyFile(info.filepath, info.root)])
             }
             glob(info.glob, (err, files: string[]) => {
                 if (err) {
                     return reject(err);
                 }
-                files.forEach(file => {
-
-                    userFiles.push(new SparkyFile(file, root));
-                });
-                this.files = userFiles;
-                return resolve(userFiles);
+                return resolve(files.map(file => new SparkyFile(file, info.root)))
             });
         });
     }
