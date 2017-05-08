@@ -53,6 +53,7 @@ export class RawPluginClass implements Plugin {
             if (cached) {
                 file.isLoaded = true;
                 file.analysis.skip();
+                file.sourceMap = undefined;
                 file.contents = cached.contents;
                 return;
             }
