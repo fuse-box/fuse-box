@@ -137,4 +137,21 @@ export class SparkyTest {
             testFolder.clean();
         });
     }
+
+    "Should accept an array and copy both files"() {
+        const testFolder = new TestFolder('testingArray');
+        Sparky.flush();
+        testFolder.make();
+
+        Sparky.task("default", () => {
+            return Sparky.src([
+                'src/tests/stubs/sparky/foo/a.html',
+                'src/tests/stubs/sparky/foo/b.html']).dest(`${testFolder.folder}/$name`)
+        });
+        return Sparky.start("default").then(() => {
+            testFolder.shouldFindFile("a.html");
+            testFolder.shouldFindFile("b.html");
+            testFolder.clean();
+        });
+    }
 }
