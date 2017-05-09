@@ -13,7 +13,7 @@
         { "file": "test-runner.md" },
         { "file": "typescript.md" },
         { "file": "rollup.md" },
-        { "file": "examples-seeds.md", "title": "Example and seeds" }
+        { "file": "examples-seeds.md", "title": "Examples and seeds" }
     ],
     "plugins": [{
         "group": "CSS Plugins",
