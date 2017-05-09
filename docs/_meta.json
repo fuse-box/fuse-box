@@ -12,7 +12,8 @@
         { "file": "sparky.md" },
         { "file": "test-runner.md" },
         { "file": "typescript.md" },
-        { "file": "rollup.md" }
+        { "file": "rollup.md" },
+        { "file": "examples-seeds.md", "title": "Example and seeds" }
     ],
     "plugins": [{
         "group": "CSS Plugins",
