@@ -131,7 +131,10 @@ export class File {
             this.params = info.params;
         }
         this.absPath = info.absPath;
-        this.relativePath = ensureFuseBoxPath​​(path.relative(this.context.appRoot, this.absPath));
+        if (this.absPath) {
+            this.relativePath = ensureFuseBoxPath(path.relative(this.context.appRoot, this.absPath));
+        }
+
 
     }
 
@@ -211,7 +214,7 @@ export class File {
      * @memberOf File
      */
     public tryPlugins(_ast?: any) {
-        if (this.context.plugins) {
+        if (this.context.plugins && this.relativePath) {
             let target: Plugin;
             let index = 0;
             while (!target && index < this.context.plugins.length) {
