@@ -283,11 +283,11 @@ gulp.task("installDevDeps", function(done) {
         "@types/node",
         "vue-template-compiler",
         "vue-template-es2015-compiler",
-		"vue",
-		"vue-server-renderer",
+        "vue",
+        "vue-server-renderer",
         "rollup",
     ];
-    var installDeps = spawn("npm", ["install"].concat(deps), {
+    var installDeps = spawn("yarn", ["add"].concat(deps), {
         stdio: "inherit",
     });
 });
