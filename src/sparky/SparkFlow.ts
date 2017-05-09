@@ -38,6 +38,7 @@ export class SparkFlow {
 
             this.watcher = chokidar.watch(globs, chokidarOptions)
                 .on('all', (event, fp) => {
+                    if (event === 'addDir' || event === 'unlinkDir') return
                     if (this.initialWatch) {
                         this.files = [];
                         log.echoStatus(`Changed ${fp}`)
