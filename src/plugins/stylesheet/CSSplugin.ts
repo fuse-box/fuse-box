@@ -116,7 +116,7 @@ export class CSSPluginClass implements Plugin {
         const bundle = file.context.bundle;
         // We want to emit CSS Changes only if an actual CSS file was changed.
         if (bundle && bundle.lastChangedFile) {
-            emitRequired = isStylesheetExtension​​(bundle.lastChangedFile);
+            emitRequired = isStylesheetExtension(bundle.lastChangedFile);
         }
         if (emitRequired) {
             file.context.sourceChangedEmitter.emit({
@@ -196,7 +196,9 @@ export class CSSPluginClass implements Plugin {
                 if (file.sourceMap) {
                     const fileDir = path.dirname(userPath);
                     const sourceMapPath = path.join(fileDir, path.basename(userPath) + ".map");
-                    return write(sourceMapPath, file.sourceMap);
+                    return write(sourceMapPath, file.sourceMap).then(() => {
+                        file.sourceMap = undefined;
+                    })
                 }
             });
         } else {
