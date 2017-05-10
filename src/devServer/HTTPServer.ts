@@ -2,7 +2,7 @@ import * as http from "http";
 import * as express from "express";
 import { FuseBox } from "../";
 import { SocketServer } from "./SocketServer";
-import { ensureUserPath, Spinner } from "../Utils";
+import { ensureUserPath } from "../Utils";
 
 export interface HTTPServerOptions {
     /** Defaults to 4444 if not specified */
@@ -16,7 +16,7 @@ export interface HTTPServerOptions {
 }
 
 export class HTTPServer {
-    private spinner?: Spinner;
+
     public static start(opts: any, fuse: FuseBox): HTTPServer {
         let server: HTTPServer = new HTTPServer(fuse);
         server.launch(opts);
