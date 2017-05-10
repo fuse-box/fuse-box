@@ -49,7 +49,7 @@ let projectModule = ts.createProject("src/modules/tsconfig.json");
 /**
  * Our commonjs only files
  */
-let filesMain = ["src/**/*.ts", "!./**/*test*.ts", "!./src/loader/LoaderAPI.ts", "!./src/modules/**/*.ts"];
+let filesMain = ["src/**/*.ts", "!./**/tests/**/**", "!./src/loader/LoaderAPI.ts", "!./src/modules/**/*.ts"];
 
 /**
  * Loader API building

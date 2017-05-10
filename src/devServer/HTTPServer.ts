@@ -40,9 +40,14 @@ export class HTTPServer {
         server.on("request", this.app);
         setTimeout(() => {
             server.listen(port, () => {
-                const msg = `\ndev server running http://localhost:${port}`
-                this.spinner = new Spinner(msg);
-                this.spinner.start()
+                const msg = `
+---------------------------------------------------
+Development server running http://localhost:${port}
+---------------------------------------------------
+`
+                console.log(msg);
+                //this.spinner = new Spinner(msg);
+                //this.spinner.start()
             });
         }, 10);
     }
