@@ -139,5 +139,3 @@ A skeleton for Aurelia using FuseBox.
 
 https://github.com/fuse-box/fuse-box-aurelia-seed
 
-warning: Requires 2.0 update! You at your own risk
-
