@@ -4,7 +4,7 @@ import { PathMaster } from "../core/PathMaster";
 import { WorkFlowContext } from "../core/WorkflowContext";
 import { should } from "fuse-test-runner";
 
-const testFolder = path.join(appRoot.path, "test/fixtures/path-test");
+const testFolder = path.join(appRoot.path, "src/tests/fixtures/path-test");
 const getTestFolder = (name) => {
     return path.join(testFolder, name);
 };

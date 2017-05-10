@@ -70,7 +70,7 @@ export function createEnv(opts: any) {
             moduleParams.cache = false;
             moduleParams.log = false;
 
-            moduleParams.tsConfig = path.join(appRoot.path, "test", "fixtures", "tsconfig.json");
+            moduleParams.tsConfig = path.join(appRoot.path, "src/tests/fixtures", "tsconfig.json");
             const fuse = FuseBox.init(moduleParams);
             fuse.bundle("index.js").cache(false).instructions(moduleParams.instructions);
             return fuse.run().then(bundle => {
@@ -96,7 +96,7 @@ export function createEnv(opts: any) {
         projectOptions.output = path.join(localPath, "project", "index.js");
         projectOptions.cache = false;
         projectOptions.log = false;
-        projectOptions.tsConfig = path.join(appRoot.path, "test", "fixtures", "tsconfig.json");
+        projectOptions.tsConfig = path.join(appRoot.path, "src/tests/fixtures", "tsconfig.json");
         projectOptions.modulesFolder = modulesFolder;
 
         const fuse = FuseBox.init(projectOptions);
