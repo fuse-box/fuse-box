@@ -42,6 +42,7 @@ export class BundleSplit {
         config.plugins = [].concat(config.plugins || [])
         config.standalone = false;
         const fuse = FuseBox.init(config);
+        new Bundle(name, fuse, producer);
         fuse.context.output.setName(joinFuseBoxPath(this.dest, name))
         let conf = new SplitConfig();
         conf.fuse = fuse;
