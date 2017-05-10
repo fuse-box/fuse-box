@@ -11,20 +11,14 @@
 # FuseBox
 http://fuse-box.org/
 
-## Version 2.0
-http://fuse-box.org:3333 (soon to be released)
-
 FuseBox is a bundler/module loader that combines the power of webpack, JSPM and SystemJS. 
 
 It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convenient for developers. It requires zero configuration to bundle such monsters like `babel-core`.
 
 FuseBox loves __typescript__, and does not require any additional configuration. It will compile and bundle your code within a fraction of a second, yet offering a comprehensive loader API. It is packed with features, and unfolds limitless possibilities of extending the API.
 
-Watch a [4 minute intro video on youtube](https://www.youtube.com/watch?v=gCfWVRsWoKA).
 
 Follow us on [twitter](https://twitter.com/FuseBoxJS)
-
-Upvote your [favourite feature](https://productpains.com/product/fusebox)
 
 You have created an awesome plugin? Add it to the [list](https://github.com/fuse-box/fuse-box/blob/master/docs/third-party-plugins.md)
 
@@ -78,24 +72,20 @@ npm install typescript fuse-box --save-dev
 ```
 
 ```ts
-FuseBox.init({
-    homeDir: "src/",
-    sourceMap: {
-         bundleReference: "./sourcemaps.js.map",
-         outFile: "sourcemaps.js.map",
-    },
-    outFile: "./out.js"
-}).bundle(">index.ts");
+const { FuseBox } = require("fuse-box");
+const fuse = FuseBox.init({
+    homeDir: "src",
+    output: "dist/$name.js",
+});
+fuse.bundle("app")
+    .instructions(`>index.ts`);
+
+fuse.run();
 ```
 
-## Seeds
+## [Examples and seeds](http://fuse-box.org:3333/page/examples-and-seeds)
 
-* [Typescript + React + Reflux + Sass + Code Splitting](https://github.com/fuse-box/fuse-box-ts-react-reflux-seed)
-* [Vue.js Seed](https://github.com/fuse-box/fuse-box-vue-seed) 
-* [Express seed](https://github.com/fuse-box/fuse-box-express-seed)
-* [Electron seed](https://github.com/fuse-box/fuse-box-electron-seed)
 
----
 Join our [gitter channel](https://gitter.im/fusebox-bundler/Lobby) we are very active and friendly!
 
 Special thanks to [devmondo](https://github.com/devmondo) for incredible ideas, giving inspiration and relentless testing/contributing to the project.  
