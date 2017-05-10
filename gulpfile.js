@@ -287,7 +287,7 @@ gulp.task("installDevDeps", function(done) {
         "vue-server-renderer",
         "rollup",
     ];
-    var installDeps = spawn("yarn", ["add"].concat(deps), {
+    var installDeps = spawn("npm", ["install"].concat(deps), {
         stdio: "inherit",
     });
 });
