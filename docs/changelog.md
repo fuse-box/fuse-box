@@ -1,5 +1,12 @@
 # Changelog
 
+### [2.0.0](https://github.com/fuse-box/fuse-box/milestone/18)
+    
+
+<p>Da Beast  release features a complete API re-write.</p>
+
+                
+
 ### [1.3.128](https://github.com/fuse-box/fuse-box/milestone/17)
     
 
@@ -132,7 +139,7 @@
 | Reference | Description | Date |
 | --------- | ------------| ---- |
 |[ISSUE 111](https://github.com/fuse-box/fuse-box/issues/111) | Allow real aliasing | February 21, 2017 9:33 AM|
-|[ISSUE 159](https://github.com/fuse-box/fuse-box/issues/159) | EnvPlugin: The global process is not available after hot-reload | February 20, 2017 9:52 PM|
+|[ISSUE 159](https://github.com/fuse-box/fuse-box/issues/159) | EnvPlugin: The global process is not available after hot-reload | May 10, 2017 12:28 AM|
 |[ISSUE 165](https://github.com/fuse-box/fuse-box/issues/165) | Error > Buffer is not defined | February 20, 2017 3:20 PM|
 |[ISSUE 166](https://github.com/fuse-box/fuse-box/issues/166) | NodeJs Native Libraries | February 20, 2017 3:20 PM|
 |[ISSUE 177](https://github.com/fuse-box/fuse-box/issues/177) | CSSPlugin brushup | February 20, 2017 1:08 PM|
