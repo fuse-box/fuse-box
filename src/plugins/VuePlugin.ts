@@ -54,7 +54,8 @@ export class VuePluginClass implements Plugin {
 
                 const jsTranspiled = ts.transpileModule(jsContent, file.context.getTypeScriptConfig());
                 const tsResult = `var _p = {};
-var _v = function(exports){${jsTranspiled.outputText}};
+var _v = function(exports){${jsTranspiled.outputText}
+};
 _p.render = ` + toFunction(compiled.render) + `
 _p.staticRenderFns = [ ` + compiled.staticRenderFns.map(toFunction).join(',')  + ` ];
 var _e = {}; _v(_e); _p = Object.assign(_e.default, _p)
