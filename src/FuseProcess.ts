@@ -41,7 +41,7 @@ export class FuseProcess {
 									cached.default.close() : //if a `close` function is exported by the default export
 								console.warn(`Bundle ${this.bundle.name} doesn't export a close() function and no close was given`);
 						} catch(x) {
-							console.error(`Exception while closeping bundle ${this.bundle.name}.`);
+							console.error(`Exception while closing bundle ${this.bundle.name}.`);
 							reject(x);
 						}
 					} else if(close) {
