@@ -52,7 +52,12 @@ export class FuseProcess {
 				if(!(closePromise instanceof Promise))
 					closePromise = Promise.resolve(true);
 				closePromise.then(
-					()=> resolve(getMainExport(require(this.filePath))),
+					() => {
+						var exps = false;
+						try { exps = getMainExport(require(this.filePath)); }
+						catch(x) { reject(x); }
+						if(exps) resolve(exps);
+					},
 					x=> reject(x)
 				);
 			});
