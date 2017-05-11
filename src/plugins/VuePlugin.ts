@@ -89,6 +89,7 @@ function compileTemplateContent (context: any, engine: string, content: string) 
         if (!cons[engine]) { return content; }
     
         cons[engine].render(content, {
+            filename: 'base',
             basedir: context.homeDir,
             includeDir: context.homeDir
         }, (err, html) => {
