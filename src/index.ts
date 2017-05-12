@@ -7,6 +7,7 @@ export { EnvPlugin } from "./plugins/EnvPlugin";
 export { ConcatPlugin } from "./plugins/ConcatPlugin";
 export { StylusPlugin } from "./plugins/stylesheet/StylusPlugin";
 export { PostCSS } from "./plugins/stylesheet/PostCSSPlugin";
+export { PostCSS as PostCSSPlugin } from "./plugins/stylesheet/PostCSSPlugin";
 export { TypeScriptHelpers } from "./plugins/TypeScriptHelpers";
 export { SVGPlugin } from "./plugins/images/SVGPlugin";
 export { BabelPlugin } from "./plugins/js-transpilers/BabelPlugin";
