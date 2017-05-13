@@ -288,8 +288,31 @@ completed(proc => proc.start())
 
 The following code will spawn a separate nodejs process, if a process is already running FuseBox will kill and spawn a  new one.
 
+### Require
 
+```js
+completed(proc => proc.require())
+```
+[See an example](https://github.com/fuse-box/fuse-box-examples/tree/master/examples/recursive)
 
+The following code will require the file in the same process than the fuse process instead of launching a new node process.
+The differences are :
+* The bundle is executed in a `Promise` and its exports are available to the fuse caller : `proc.require().then(exports => void)`. 
+* The bundle has access to the same loaded libraries than the fuser, they share the same global object.
+* The bundle is inspected if fuse is inspected: `node --debug fuse.js` debugs the bundle too.
+* To free the allocated resources when the bundle is restarted, there is no clean `process.kill` option; the bundle must therefore export a `close` function, or a default that has such a function.
+
+An express bundle would for example `export default app.listen(process.env.PORT);`
+
+#### Close function
+
+If the bundle as no main file, a `close()=> Promise` function can be given as a parameter to `require`. If the bundle has a main file, the first of these functions is called :
+* A function `close(exports)=> Promise` given as an argument to `require`
+* An `export function close(): Promise` in the bundle
+* A default export who has a `close()=> Promise` function.
+
+If the close function returns a promise, this one will be awaited before requireing the new version of the bundle. If it returns anything else than a promise, the value is ignored.
+The `require` function by itself returns a promise that resolves to the loaded bundle main-file exports.
 
 ## Bundle in a bundle
 The super powers of FuseBox allow merging bundles inside of bundles without code redundancy. The API of a second bundle will be removed, and 2 bundles will be fused together, keeping only one shared Fusebox API.
