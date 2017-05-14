@@ -20,3 +20,19 @@ export function createDefaultPackageAbstraction(map: Map<string, string>): Packa
     });
     return packageAbstraction;
 }
+
+export function createBundleAbstraction(obj: any): BundleAbstraction {
+    let producerAbstraction = new ProducerAbstraction();
+    let bundleAbstraction = new BundleAbstraction("app", producerAbstraction)
+
+    for (let pgkName in obj) {
+        let packageAbstraction = new PackageAbstraction(pgkName, bundleAbstraction);
+        const pkgObj = obj[pgkName];;
+        const files = pkgObj.files || {};
+        for (let filepath in files) {
+            const file = new FileAbstraction(filepath, packageAbstraction)
+            file.loadString(files[filepath]);
+        }
+    }
+    return bundleAbstraction;
+}
