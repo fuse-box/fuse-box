@@ -52,9 +52,9 @@ import "./styles/main.scss"
 
 ```js
 fuse.plugin(
-    [StylusPlugin({
-       compress: true
-    }), CSSPlugin()]
+    SassPlugin({
+       outputStyle: 'compressed'
+    }), CSSPlugin()
 )
 ```
 
