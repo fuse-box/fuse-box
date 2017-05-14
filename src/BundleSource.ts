@@ -101,7 +101,7 @@ export class BundleSource {
     public endCollection(collection: ModuleCollection) {
         let entry = collection.entryFile ? collection.entryFile.info.fuseBoxPath : "";
 
-        if (entry) {
+        if (entry && collection.acceptFiles) {
             this.collectionSource.add(null, `return ___scope___.entry = "${entry}";`);
         }
         this.collectionSource.add(null, "});");
