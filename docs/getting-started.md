@@ -56,7 +56,7 @@ fuse.bundle("app")
 fuse.run();
 ```
 
-That's is, our configuration is ready.
+That's it, our configuration is ready!
 
 
 | Symbol | Meaning |
