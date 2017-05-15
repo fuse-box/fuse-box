@@ -3,6 +3,7 @@ import * as fs from "fs";
 import * as fsExtra from "fs-extra";
 import { utils } from "realm-utils";
 import { Config } from "./Config";
+import { LegoCondition } from "./plugins/optimised-api/LegoCondition";
 
 const userFuseDir = Config.PROJECT_ROOT;
 const stylesheetExtensions = new Set<string>([".css", ".scss", ".styl", ".less"]);
@@ -31,38 +32,23 @@ export function replaceAliasRequireStatement(requireStatement: string, aliasName
 }
 
 export function jsCommentTemplate(fname: string, conditions: any) {
+    const contents = fs.readFileSync(fname).toString()
+    const lego = new LegoCondition().conditions(conditions)
+    const startIfRegex = /^\s*\/\*\s*@if\s([\w]+)+\s*\*\//
+    const endIfRegex = /^\s*\/\*\s*@end\s*\*\//
+    const lines = contents.split(/\r?\n/)
 
-    const contents = fs.readFileSync(fname).toString();
-    const lines = contents.split(/\r?\n/);
-    let result = [];
-    let consume = true;
     lines.forEach(line => {
-        const condition = line.match(/^\s*\/\*\s*@if\s([\w]+)+\s*\*\//)
-        const endCondition = line.match(/^\s*\/\*\s*@end\s*\*\//);
-        if (condition || endCondition) {
-            if (condition) {
-                const variableName = condition[1];
-                if (!conditions[variableName]) {
-                    consume = false;
-                }
-            }
-            if (endCondition) {
-                consume = true;
-            }
-        } else {
-            if (consume) {
+        const startIf = line.match(startIfRegex)
+        const endIf = line.match(endIfRegex)
+        if (!startIf && !endIf) return lego.add(line)
+        if (startIf) return lego.start(startIf[1])
+        if (endIf) return lego.end()
+    })
 
-
-                if (!/^\s+$/.test(line) && line) {
-
-                    result.push(line);
-                }
-
-            }
-        }
-    });
-    return result.join("\n");
+    return lego.toString()
 }
+
 export function write(fileName: string, contents: any) {
     return new Promise((resolve, reject) => {
         fs.writeFile(fileName, contents, (e) => {
