@@ -38,6 +38,6 @@ You need NodeJs 6+. FuseBox will not run on an earlier version of node. If you h
 ## Installation
 
 ```bash
-yarn add fuse-box --save-dev
+yarn add fuse-box --dev
 npm install fuse-box --save-dev
 ```
