@@ -7,12 +7,15 @@ import { SharedCustomPackage } from "./SharedCustomPackage";
 import { BundleRunner } from "./BundleRunner";
 import { ServerOptions } from "../devServer/Server";
 import * as  chokidar from "chokidar";
-import { utils } from "realm-utils";
+import { utils, each } from "realm-utils";
+import { BundleAbstraction } from "../bundle-abstraction/BundleAbstraction";
+import { ProducerAbstraction } from "../bundle-abstraction/ProducerAbstraction";
 
 export class BundleProducer {
     public bundles = new Map<string, Bundle>();
     public hmrInjected = false;
     public sharedEvents = new EventEmitter();
+    public writeBundles = true;
     public sharedCustomPackages: Map<string, SharedCustomPackage​>;
     public runner: BundleRunner;
     public devServerOptions: ServerOptions;
@@ -24,17 +27,28 @@ export class BundleProducer {
     public run(opts: any): Promise<BundleProducer> {
         /** Collect information about watchers and start watching */
         this.watch();
+
         return this.runner.run(opts).then(() => {
+
             this.sharedEvents.emit("producer-done");
-            this.bundles.forEach(bundle => {
-                bundle.context.plugins.forEach(plugin => {
-                    if (utils.isFunction(plugin.producerEnd)) {
-                        plugin.producerEnd(this);
-                    }
-                })
-            })
-            return this;
-        })
+            return each(this.fuse.context.plugins, plugin => {
+                if (utils.isFunction(plugin.producerEnd)) {
+                    return plugin.producerEnd(this);
+                }
+            });
+        }).then(() => this)
+    }
+
+    public generateAbstraction(): Promise<ProducerAbstraction> {
+
+        const abstraction = new ProducerAbstraction();
+
+        return each(this.bundles, (bundle: Bundle) => {
+            const bundleAbstraction = new BundleAbstraction(bundle.name, abstraction);
+            return bundleAbstraction.parse(bundle.generatedCode.toString());
+        }).then(() => {
+            return abstraction;
+        });
     }
 
     public register(packageName: string, opts: any) {

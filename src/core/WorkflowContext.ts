@@ -64,6 +64,8 @@ export class WorkFlowContext {
 
     public shim: any;
 
+    public writeBundles = true;
+
     public fuse: FuseBox;
 
     public sourceChangedEmitter = new EventEmitter<SourceChangedEvent>();
@@ -449,17 +451,20 @@ export class WorkFlowContext {
         this.initialLoad = false;
 
         const res = this.source.getResult();
-        if (this.output) {
-            this.output.writeCurrent(res.content).then(() => {
+        this.bundle.generatedCode = res.content;
+        if (this.output && this.bundle.producer.writeBundles) {
+            this.output.writeCurrent(this.bundle.generatedCode).then(() => {
                 this.writeSourceMaps(res);
                 this.defer.unlock();
                 if (utils.isFunction(outFileWritten)) {
                     outFileWritten();
                 }
             });
+        } else {
+
+            this.defer.unlock();
+            outFileWritten();
         }
-
-
     }
 
     protected writeSourceMaps(result: any) {

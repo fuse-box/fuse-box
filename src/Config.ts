@@ -9,6 +9,7 @@ if (MAIN_FILE.indexOf("gulp.js") > -1 && !process.env.PROJECT_ROOT) {
 }
 export class Configuration {
     public NODE_MODULES_DIR = process.env.PROJECT_NODE_MODULES || path.join(appRoot.path, "node_modules");
+    public FUSEBOX_ROOT = PROJECT_ROOT;
     public FUSEBOX_MODULES = path.join(PROJECT_ROOT, "modules");
     public TEMP_FOLDER = path.join(appRoot.path, ".fusebox");
     public PROJECT_FOLDER = appRoot.path;

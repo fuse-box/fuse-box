@@ -100,8 +100,8 @@ export class BundleSource {
      */
     public endCollection(collection: ModuleCollection) {
         let entry = collection.entryFile ? collection.entryFile.info.fuseBoxPath : "";
-
-        if (entry) {
+        
+        if (entry && collection.acceptFiles) {
             this.collectionSource.add(null, `return ___scope___.entry = "${entry}";`);
         }
         this.collectionSource.add(null, "});");
@@ -133,6 +133,7 @@ export class BundleSource {
      * @memberOf BundleSource
      */
     public addFile(file: File) {
+        
         if (file.info.isRemoteFile || file.notFound
             || file.collection && file.collection.acceptFiles === false) {
             return;

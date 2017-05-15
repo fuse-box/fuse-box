@@ -36,6 +36,7 @@ export class OwnBundle {
 
     public static onEnd(file: File) {
         const analysis = file.analysis;
+        
         if (analysis.fuseBoxMainFile) {
             // Reset all dependencies if a fusebox bundle is spotted
             file.analysis.dependencies = [];
@@ -43,9 +44,11 @@ export class OwnBundle {
             // No need in extra footers
             this.removeFuseBoxApiFromBundle(file);
             const externalCollection = file.collection.name !== file.context.defaultPackageName;
+            
             if (externalCollection) {
                 // Ignore this collection as it will be override by the actual bundle
                 file.collection.acceptFiles = false;
+                console.log("here..", file.collection.name);
             } else {
                 // otherwise we know that user is referring to a file which is a FuseBox bundle
                 // We pnt to the package with entry point

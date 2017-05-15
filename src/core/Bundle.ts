@@ -18,6 +18,7 @@ export class Bundle {
     public arithmetics: string;
     public process: FuseProcess = new FuseProcess(this);
     public onDoneCallback: any;
+    public generatedCode: Buffer;
     public lastChangedFile: string;
 
     public splitFiles: Map<string, File>;
