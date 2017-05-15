@@ -3,7 +3,7 @@ import * as fs from "fs";
 import * as fsExtra from "fs-extra";
 import { utils } from "realm-utils";
 import { Config } from "./Config";
-import { LegoCondition } from "./plugins/optimised-api/LegoCondition";
+import { LegoAPI } from "lego-api";
 
 const userFuseDir = Config.PROJECT_ROOT;
 const stylesheetExtensions = new Set<string>([".css", ".scss", ".styl", ".less"]);
@@ -33,20 +33,7 @@ export function replaceAliasRequireStatement(requireStatement: string, aliasName
 
 export function jsCommentTemplate(fname: string, conditions: any) {
     const contents = fs.readFileSync(fname).toString()
-    const lego = new LegoCondition().conditions(conditions)
-    const startIfRegex = /^\s*\/\*\s*@if\s([\w]+)+\s*\*\//
-    const endIfRegex = /^\s*\/\*\s*@end\s*\*\//
-    const lines = contents.split(/\r?\n/)
-
-    lines.forEach(line => {
-        const startIf = line.match(startIfRegex)
-        const endIf = line.match(endIfRegex)
-        if (!startIf && !endIf) return lego.add(line)
-        if (startIf) return lego.start(startIf[1])
-        if (endIf) return lego.end()
-    })
-
-    return lego.toString()
+    return LegoAPI.parse(contents).render(conditions)
 }
 
 export function write(fileName: string, contents: any) {
