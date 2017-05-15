@@ -11,18 +11,10 @@ let bubleCore;
  * @implements {Plugin}
  */
 export class BublePluginClass implements Plugin {
-  /**
-   * We can add tsx and ts here as well
-   * Because Babel won't capture it just being a Plugin
-   * Typescript files are handled before any external plugin is executed
-   */
   public test: RegExp = /\.(j|t)s(x)?$/;
   public context: WorkFlowContext;
-  private limit2project: boolean = true;
-
   private config?: any = {};
   private configPrinted = false;
-  private configLoaded = false;
 
   /**
    * @param {any} config BubleOptions + .test
