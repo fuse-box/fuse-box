@@ -23,29 +23,30 @@ export class FuseProcess {
         return this;
     }
 
-		require(close?: ((exports: any) => void)|(() => void)) {
+		require(opts: {close?: ((fuseBox: any) => void)} = {}) {
 			function getMainExport(mdl) {
 				return mdl && mdl.FuseBox && mdl.FuseBox.mainFile ?
 						mdl.FuseBox.import(mdl.FuseBox.mainFile) :
 						mdl;
 			}
 			return new Promise((resolve, reject)=> {
-				var cache = (<any>require).cache, cached = cache[this.filePath], closePromise;
+				var cache = (<any>require).cache, cached = cache[this.filePath], closePromise, exps;
 				if(cached) {
-					cached = getMainExport(cached.exports);
-					if(cached) {
-						try {
-							closePromise = close ? (<(exps: any) => void>close)(cached) :	//if a close function is given in parameter
-								cached.close ? cached.close() : //if a `close` function is exported by the bundle
-								cached.default && cached.default.close ?
-									cached.default.close() : //if a `close` function is exported by the default export
-								console.warn(`Bundle ${this.bundle.name} doesn't export a close() function and no close was given`);
-						} catch(x) {
-							console.error(`Exception while closing bundle ${this.bundle.name}.`);
-							reject(x);
+					try {
+						if(opts.close)	//if a close function is given in parameter
+							closePromise = opts.close(cached.exports.FuseBox);
+						else {
+							exps = getMainExport(cached.exports);
+							if(exps) {
+									closePromise = exps.close ? cached.close() : //if a `close` function is exported by the bundle
+										exps.default && exps.default.close ?
+											exps.default.close() : //if a `close` function is exported by the default export
+										console.warn(`Bundle ${this.bundle.name} doesn't export a close() function and no close was given`);
+							}
 						}
-					} else if(close) {
-						closePromise = (<() => void>close)();
+					} catch(x) {
+						console.error(`Exception while closing bundle ${this.bundle.name}.`);
+						reject(x);
 					}
 					delete cache[this.filePath];
 				}
@@ -54,7 +55,7 @@ export class FuseProcess {
 				closePromise.then(
 					() => {
 						var exps = false;
-						try { exps = getMainExport(require(this.filePath)); }
+						try { exps = require(this.filePath).FuseBox; }
 						catch(x) { reject(x); }
 						if(exps) resolve(exps);
 					},
