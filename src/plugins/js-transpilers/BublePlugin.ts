@@ -17,15 +17,15 @@ export class BublePluginClass implements Plugin {
     private configPrinted = false;
 
     /**
-     * @param {any} opts BubleOptions + .test
+     * @param {any} config BubleOptions + .test
      */
-    constructor(opts: any) {
-        this.opts = opts || {};
+    constructor(config: any) {
+        this.config = config || {};
 
         // so we do not pass it to buble, yet can use a flat config
-        if (opts.test !== undefined) {
-            this.test = opts.test;
-            delete opts.test;
+        if (config.test !== undefined) {
+            this.test = config.test;
+            delete config.test;
         }
     }
 
