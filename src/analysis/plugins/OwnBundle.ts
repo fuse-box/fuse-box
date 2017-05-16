@@ -1,6 +1,13 @@
 import { File } from "../../core/File";
 import * as escodegen from "escodegen";
 
+
+function extractMainFileFromPackageEntry(input: string) {
+    let res = input.split("/");
+    if (res.length > 1) {
+        return res.splice(1).join("/");
+    }
+}
 /**
  * This plugin exists to understand FuseBox bundles.
  * For example if you bundle fusebox bundle this plugin will ensure
@@ -24,6 +31,10 @@ export class OwnBundle {
                             if (parent.arguments) {
                                 let f = parent.arguments[0];
                                 if (f && analysis.nodeIsString(f)) {
+                                    const extractedEntry = extractMainFileFromPackageEntry(f.value);
+                                    if (extractedEntry) {
+                                        file.collection.entryFile.info.fuseBoxPath = extractedEntry;
+                                    }
                                     analysis.fuseBoxMainFile = f.value;
                                 }
                             }
