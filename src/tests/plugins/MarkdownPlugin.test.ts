@@ -1,6 +1,6 @@
-import {createEnv} from "./stubs/TestEnvironment";
-import {should} from "fuse-test-runner";
-import {MarkdownPlugin} from "../plugins/Markdownplugin";
+import { createEnv } from "./../stubs/TestEnvironment";
+import { should } from "fuse-test-runner";
+import { MarkdownPlugin } from "../../plugins/Markdownplugin";
 
 export class MarkdownPluginTest {
     "Should get Template with Default as export"() {

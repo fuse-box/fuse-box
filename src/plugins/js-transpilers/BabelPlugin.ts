@@ -5,11 +5,10 @@ import { WorkFlowContext } from "../../core/WorkflowContext";
 import { Plugin } from "../../core/WorkflowContext";
 
 let babelCore;
+
 /**
- *
- *
  * @export
- * @class FuseBoxHTMLPlugin
+ * @class FuseBoxBabelPlugin
  * @implements {Plugin}
  */
 export class BabelPluginClass implements Plugin {
@@ -49,7 +48,6 @@ export class BabelPluginClass implements Plugin {
 
     /**
      * @see this.init
-     * @memberOf FuseBoxHTMLPlugin
      */
     private handleBabelRc() {
         if (this.configLoaded) return
@@ -67,11 +65,7 @@ export class BabelPluginClass implements Plugin {
     }
 
     /**
-     *
-     *
      * @param {WorkFlowContext} context
-     *
-     * @memberOf FuseBoxHTMLPlugin
      */
     public init(context: WorkFlowContext) {
         this.context = context;
@@ -80,11 +74,7 @@ export class BabelPluginClass implements Plugin {
     }
 
     /**
-     *
-     *
      * @param {File} file
-     *
-     * @memberOf FuseBoxHTMLPlugin
      */
     public transform(file: File, ast: any) {
         if (!babelCore) {
@@ -101,6 +91,9 @@ export class BabelPluginClass implements Plugin {
             }
         }
 
+        // whether we should transform the contents
+        // @TODO needs improvement for the regex matching of what to include
+        //       with globs & regex
         if (this.limit2project === false || file.collection.name === file.context.defaultPackageName) {
             let result;
             try {
@@ -113,10 +106,10 @@ export class BabelPluginClass implements Plugin {
 
             // By default we would want to limit the babel
             // And use acorn instead (it's faster)
-
             if (result.ast) {
                 file.analysis.loadAst(result.ast);
                 let sourceMaps = result.map;
+
                 // escodegen does not realy like babel
                 // so a custom function handles tranformation here if needed
                 // This happens only when the code is required regeneration
@@ -129,6 +122,7 @@ export class BabelPluginClass implements Plugin {
 
                 file.contents = result.code;
                 file.analysis.analyze();
+                
                 if (sourceMaps) {
                     sourceMaps.file = file.info.fuseBoxPath;
                     sourceMaps.sources = [file.info.fuseBoxPath];
