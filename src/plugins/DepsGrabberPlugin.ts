@@ -1,7 +1,7 @@
 import { Plugin } from "../core/WorkflowContext";
 import { File } from "../core/File";
 
-export type DepsBasket = {[dependency: string]: string[]}
+export type DepsBasket = {[bundle: string]: {[dependency: string]: string[]} }
 export type DepsAnalyser = (requirement: string, file: File) => void;
 
 /**
@@ -14,14 +14,16 @@ export class DepsGrabberPluginClass implements Plugin {
      * @type {RegExp}
      * @memberOf DepsGrabberPluginClass
      */
-    public test: RegExp = /\.(jsx?|ts)$/;
+    public test: RegExp = /\.(js|ts)x?$/;
     public grabber : DepsAnalyser;
 
-    constructor(grabber: DepsBasket|DepsAnalyser) {
+    constructor(grabber?: DepsBasket|DepsAnalyser) {
 			this.grabber = 'function'=== typeof grabber ? grabber :
 				(requirement, file) => {
+					var bundleName = file.context.bundle.name,
+						bundleDep = grabber[bundleName] || (grabber[bundleName] = {});
 					if('.'!== requirement[0])
-						(grabber[requirement] || (grabber[requirement] = [])).push(file.relativePath);
+						(bundleDep[requirement] || (bundleDep[requirement] = [])).push(file.relativePath);
 				};
     }
 		transform(file: File, ast) {
