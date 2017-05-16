@@ -12,7 +12,7 @@ export type DepsAnalyser = (requirement: string, file: File) => void;
 export class DepsGrabberPluginClass implements Plugin {
     /**
      * @type {RegExp}
-     * @memberOf BannerPluginClass
+     * @memberOf DepsGrabberPluginClass
      */
     public test: RegExp = /\.(jsx?|ts)$/;
     public grabber : DepsAnalyser;
