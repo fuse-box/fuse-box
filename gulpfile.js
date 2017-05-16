@@ -60,7 +60,6 @@ gulp.task("dist-loader-js", () => {
         .pipe(wrap(`(function(__root__){
 if (__root__["FuseBox"]) return __root__["FuseBox"];
 <%= contents %>
-
 return __root__["FuseBox"] = FuseBox; } )(this)`))
         .pipe(rename("fusebox.js"))
         .pipe(gulp.dest("modules/fuse-box-loader-api"))
@@ -286,6 +285,7 @@ gulp.task("installDevDeps", function(done) {
         "vue",
         "vue-server-renderer",
         "rollup",
+        "buble",
     ];
     var installDeps = spawn("npm", ["install"].concat(deps), {
         stdio: "inherit",

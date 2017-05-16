@@ -63,7 +63,7 @@ That's is, our configuration is ready.
 | ------------- | ------------- |
 | ` homeDir `   | Our [home directory](/page/configuration#home-directory)  |
 | ` output `   | [Output](/page/configuration#output) configuration  |
-| ` budnle("app") `   | Bundle [name](/page/bundle#creating-a-bundle)  |
+| ` bundle("app") `   | Bundle [name](/page/bundle#creating-a-bundle)  |
 | ` instructions(">index.ts") `   | Tell FuseBox what [to do](/page/bundle#arithmetic-instructions) with your source code |
 
 

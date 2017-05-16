@@ -1,5 +1,6 @@
 import { Bundle } from "./core/Bundle";
 import { ChildProcess, spawn } from "child_process";
+declare function require(name:string);
 
 export class FuseProcess {
     public node: ChildProcess;
@@ -22,6 +23,45 @@ export class FuseProcess {
         return this;
     }
 
+		require(close?: ((exports: any) => void)|(() => void)) {
+			function getMainExport(mdl) {
+				return mdl && mdl.FuseBox && mdl.FuseBox.mainFile ?
+						mdl.FuseBox.import(mdl.FuseBox.mainFile) :
+						mdl;
+			}
+			return new Promise((resolve, reject)=> {
+				var cache = (<any>require).cache, cached = cache[this.filePath], closePromise;
+				if(cached) {
+					cached = getMainExport(cached.exports);
+					if(cached) {
+						try {
+							closePromise = close ? (<(exps: any) => void>close)(cached) :	//if a close function is given in parameter
+								cached.close ? cached.close() : //if a `close` function is exported by the bundle
+								cached.default && cached.default.close ?
+									cached.default.close() : //if a `close` function is exported by the default export
+								console.warn(`Bundle ${this.bundle.name} doesn't export a close() function and no close was given`);
+						} catch(x) {
+							console.error(`Exception while closing bundle ${this.bundle.name}.`);
+							reject(x);
+						}
+					} else if(close) {
+						closePromise = (<() => void>close)();
+					}
+					delete cache[this.filePath];
+				}
+				if(!(closePromise instanceof Promise))
+					closePromise = Promise.resolve(true);
+				closePromise.then(
+					() => {
+						var exps = false;
+						try { exps = getMainExport(require(this.filePath)); }
+						catch(x) { reject(x); }
+						if(exps) resolve(exps);
+					},
+					x=> reject(x)
+				);
+			});
+		}
     /** Spawns another proces */
     public exec(): FuseProcess {
         const node = spawn("node", [this.filePath], {

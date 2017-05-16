@@ -123,6 +123,15 @@ npm install
 npm start
 ```
 
+### NPM Package seed
+
+Create and publish your npm packages with FuseBox
+
+```bash
+git clone https://github.com/fuse-box/fuse-box-npm-package-seed.git
+npm install
+node fuse
+```
 
 ### Electron seed
 
