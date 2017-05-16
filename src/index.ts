@@ -30,3 +30,4 @@ export { CSSModules } from "./plugins/stylesheet/CSSModules";
 export { CopyPlugin } from "./plugins/CopyPlugin";
 export { WebIndexPlugin } from "./plugins/WebIndexPlugin";
 export { PlainJSPlugin } from "./plugins/PlainJSPlugin";
+export { DepsGrabberPlugin } from "./plugins/DepsGrabberPlugin";
