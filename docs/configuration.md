@@ -143,11 +143,11 @@ fuse
     .tsConfig("src/myconfig.json")
 ```
 
-## Package name
-You default package name is `default`, You don't need to change it if you are not planning on having isolated bundles.
-Any bundle added as a script tag will share `default` package, keep that in mind. If you want to release a package (say to npm), you probably would want set a different name (to avoid scope collision)
+## Package Name
+Your default package name is `default`. You don't need to change it if you are not planning on having isolated bundles.
+Any bundle added as a script tag will share the `default` package, keep that in mind. If you want to release a package (say to NPM), you probably would want set a different name (to avoid scope collision)
 
-It's imperative having a __unique name__ (matching an npm package) when publishing a bundle to NPM.
+It's imperative to have a __unique name__ (matching an npm package) when publishing a bundle to NPM.
 
 
 ```js
@@ -181,9 +181,9 @@ fuse.bundle("app").instructions("index.ts")
 ```
 
 
-## Global variables
+## Global Variables
 
-You can expose your package variables to `window` (in browser) and `exports`in node respectively.
+You can expose your package variables to `window` (in browsers) or `exports` (in Node).
 
 ```js
 FuseBox.init({
@@ -192,9 +192,10 @@ FuseBox.init({
 })
 ```
 
-Whereas key is the name of a package and value is an alias that groups exports. "default" is your current project.
+<!--Whereas key is the name of a package and value is an alias that groups exports. "default" is your current project.-->
+Each key in the `globals` hash is the name of a package, and its value is an alias that groups exports. "default" is your current project.
 
-You can also expose your packages exports to `window` or `exports`.
+You can also expose your package's exports to `window` or `exports`.
 
 ```js
 // assuming mySuperLib exports a "handler" and "logger" property
@@ -219,9 +220,10 @@ fuse.bundle("app").globals(/* configuration */)
 note: In order to expose your package, a bundle must have a [package name](#package-name)
 
 ## Hash
-Hashing is enabled by adding `hash` property
 
-Make sure you checked the [output](#output) section
+Hashing is enabled by adding a `hash` property and setting it to `true`.
+
+Make sure you checked the [output](#output) section.
 
 ```js
 FuseBox.init({
@@ -229,29 +231,29 @@ FuseBox.init({
 })
 ```
 
-
 ## Sourcemaps
 
-Sourcemaps in FuseBox are enabled by setting the sourceMaps property in a FuseBox configuration object:
+Project in FuseBox are enabled by setting the `sourceMaps` property and setting it to `true`:
 
 ```js
-sourceMaps: true
+FuseBox.init({
+    sourceMaps: true
+})
 ```
 
-You can also provide an object to allow vendor sourcemaps:
+You can also provide an object to the `sourceMaps` property and then choose between project _and_ vendor sourcemaps:
 
 ```js
-sourceMaps: { project: true, vendor: true }
+FuseBox.init({
+    sourceMaps: { project: true, vendor: true }
+})
 ```
 
-Alternatively via chainable API
+`sourceMaps` can also be configured via the chainable API:
 
 ```js
 fuse.bundle("app").sourceMaps(true)
 ```
-
-
-warning: vendor sourcemaps will be generated correctly with disabled cache. It's a known bug
 
 Sourcemaps currently work with typescript, BabelPlugin and SourceMapPlainJsPlugin
 
@@ -263,7 +265,7 @@ By default FuseBox injects API in every bundle. That can be overridden by settin
 { standalone : false }
 ```
 
-Alternatively, you add `!` symbol to the arithmetics, for example
+Alternatively, you add the `!` symbol to the arithmetics, for example
 
 ```js
 fuse.bundle("app").instructions("!>index.ts")
@@ -347,9 +349,6 @@ plugins : [
 | `components/**.css`  | Matches all css files in components and under  |
 
 
-
-
-
 ## Auto import
 
 If you are into black magic, this API is for you.
@@ -361,10 +360,10 @@ FuseBox.init({
     },
 })
 ```
-Whereas the key `Inferno` (uppercase) is a variable name, and `inferno` (lowercase) is a require statement.
+Here, the key `Inferno` (uppercase) is a variable name, and `inferno` (lowercase) is the argument to a `require` statement.
 
-Your code is being analysed for variable declarations. If you use the `Inferno` variale in your code in any way but declaring it,
-FuseBox will inject the require statement `var Inferno = require("inferno")`
+Your code is being analysed for variable declarations. If you use the `Inferno` variable in your code in any way without declaring it,
+FuseBox will inject the require statement `var Inferno = require("inferno")`.
 
 Example:
 ```js
@@ -378,24 +377,29 @@ var Inferno = require("inferno");
 Inferno.doMagic()
 ```
 
-However `var Inferno = {};` will do nothing.
+However, `var Inferno = {};` will do nothing.
 
 ## Natives
-FuseBox automatically imports this packages `stream`, `process`, `Buffer`, `http`
 
-Some cases, however, require omitting:
+FuseBox automatically imports the following packages:
+- `stream`
+- `process`
+- `Buffer`
+- `http`
+
+In some cases, however, you may want to omit them. You can do so by setting `false` on 
+each package's corresponding key within a `natives` hash:
 
 ```js
 FuseBox.init({
-   natives : {
-      process : false
+   natives: {
+      process: false
    }
 })
 ```
 
-Use `stream`, `process`, `Buffer`, `http` keys to override default settings.
-
 ## Alias
+
 If you are coming from WebPack this feature might be helpful.
 
 ```js
@@ -408,7 +412,6 @@ FuseBox.init({
 
 * The tilde is required to resolve your `homeDir`
 * Aliases will not work with absolute paths (it goes against the concept of FuseBox)
-
 
 
 You can also alias npm packages:
@@ -432,16 +435,16 @@ fuse.bundle("app")
 
 In your code, you would use it in a way similar to this:
 ```js
-import utils from "babel-utils"
-import faraway from "faraway"
+import utils from "babel-utils";
+import faraway from "faraway";
 
 console.log(utils, faraway);
 ```
 
 Behind the scenes, (assuming the previous code block is `homeDir/src/index.js`) this code is actually transformed into:
 ```js
-import utils from "../node_modules/babel/dist/something/here/utils"
-import faraway from "../somewhere/far/away/"
+import utils from "../node_modules/babel/dist/something/here/utils";
+import faraway from "../somewhere/far/away/";
 
 console.log(utils, faraway);
 ```
@@ -466,7 +469,7 @@ You can remove `source` option if you load a library using the script tag (for e
 you can use FuseBox API, or import/require statement to obtain it.
 
 ```js
-import * as foo from "jquery"
+import * as foo from "jquery";
 console.log(foo);
 ```
 
@@ -480,13 +483,13 @@ shim: {
 ```
 Now you can reference it like  `window.ReactNative`, and require function is at your convenience.
 
-note: shims will not be analyzed, which means they should be transpiled before importing, or imported into an environment that does not need them to be transpiled. Shimming works similar to [requirejs](http://requirejs.org/) and [jspm](http://jspm.io/).
+note: Shims will not be analyzed, which means they should be transpiled before importing, or imported into an environment that does not need them to be transpiled. Shimming works similar to [requirejs](http://requirejs.org/) and [jspm](http://jspm.io/).
 
 For an example, see [shimming in the fuse config](https://github.com/fuse-box/shimming-and-css-example/blob/master/fuse.js#L7) and [how it can be accessed in your code](https://github.com/fuse-box/shimming-and-css-example/blob/master/src/index.ts#L4)
 
-note:  shimming does not work on the server. so if you use shared configuration for both your server and client bundle, remove the shimming option from the global one, and add shim() to your client bundle configuration only. For example:
+note: Shimming does not work on the server. so if you use shared configuration for both your server and client bundle, remove the shimming option from the global one, and add shim() to your client bundle configuration only. For example:
 
-```.js
+```js
 const fuse = FuseBox.init({
     homeDir: "src",
     output: "dist/$name.js",

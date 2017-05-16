@@ -4,7 +4,7 @@
     var storage = isBrowser ? window : global;
     if (storage.$fsx) {
         return
-    }
+    };
     var $fsx = storage.$fsx = {}
 
     /* @end */
@@ -13,14 +13,14 @@
     var $fsx = windows.$fsx = {}
     if ($fsx.r) {
         return;
-    }
+    };
     /* @end */
 
     /* @if server */
     var $fsx = global.$fsx = {}
     if ($fsx.r) {
         return;
-    }
+    };
     /* @end */
 
     /* @if hashes */
@@ -31,7 +31,7 @@
             var char = text.charCodeAt(i);
             hash = ((hash << 5) - hash) + char;
             hash = hash & hash; // Convert to 32bit integer
-        }
+        };
         return hash.toString(16);
     }
     /* @end */
@@ -45,7 +45,7 @@
         let parts = [];
         for (let i = 0, l = arguments.length; i < l; i++) {
             parts = parts.concat(arguments[i].split("/"));
-        }
+        };
         let newParts = [];
         for (let i = 0, l = parts.length; i < l; i++) {
             let part = parts[i];
@@ -55,7 +55,7 @@
             } else {
                 newParts.push(part);
             }
-        }
+        };
         if (parts[0] === "") newParts.unshift("");
         return newParts.join("/") || (newParts.length ? "/" : ".");
     };
@@ -64,14 +64,14 @@
     function findModule(id, path) {
         if (!$fsx.s[id]) {
             return;
-        }
+        };
         var target = $join($fsx.s[id][1], path);
         var pkg = $fsx.s[id][0];
         var targetStr = pkg + "/" + target;
         var combo = [targetStr]
         if (!/\.js$/.test(target)) {
             combo.push(targetStr + ".js", targetStr + "/index.js")
-        }
+        };
         var dest;
         var index = 0;
         while (!dest && index < combo.length) {
@@ -80,10 +80,10 @@
                 dest = hash;
             }
             index++;
-        }
+        };
         if (dest) {
             return $fsx.r(dest);
-        }
+        };
         return dest;
     }
 
@@ -109,9 +109,9 @@
             return cached;
         }
         var file = $fsx.f[id];
-        if (!file) {
+        if (!file)
             return;
-        }
+
         cached = $fsx.m[id] = {};
         cached.exports = {};
         cached.module = { exports: cached.exports };
@@ -119,5 +119,6 @@
             return $fsx.r(p);
         });
         return cached.module.exports;
-    }
+    };
+
 })()
