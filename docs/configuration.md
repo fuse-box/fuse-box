@@ -219,6 +219,14 @@ fuse.bundle("app").globals(/* configuration */)
 
 note: In order to expose your package, a bundle must have a [package name](#package-name)
 
+To see it in action, clone [this](https://github.com/fuse-box/fuse-box-globals-example) repository
+
+```bash
+git clone https://github.com/fuse-box/fuse-box-globals-example
+npm install
+node fuse
+```
+
 ## Hash
 
 Hashing is enabled by adding a `hash` property and setting it to `true`.
@@ -437,14 +445,6 @@ In your code, you would use it in a way similar to this:
 ```js
 import utils from "babel-utils";
 import faraway from "faraway";
-
-console.log(utils, faraway);
-```
-
-Behind the scenes, (assuming the previous code block is `homeDir/src/index.js`) this code is actually transformed into:
-```js
-import utils from "../node_modules/babel/dist/something/here/utils";
-import faraway from "../somewhere/far/away/";
 
 console.log(utils, faraway);
 ```
