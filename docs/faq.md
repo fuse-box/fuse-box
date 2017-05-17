@@ -44,3 +44,25 @@ That's because typescript is not Babel. If you can configure it by adding a [Bab
 import * as lodash from "_"
 ```
 
+### Why my node modules are not transpiled?
+
+Because FuseBox does not transpile them. But you can easily do that by setting up the BabelPlugin like so:
+
+```js
+plugins : [
+    BabelPlugin({limit2project : false})
+]
+```
+
+You can target the Babel Plugin to resolve a failing library like so:
+
+```js
+plugins : [
+    [ "node_modules/es6-lib/*", BabelPlugin({limit2project : false}) ]
+]
+```
+
+
+FuseBox deliberately limits `Babel` to increase the overal performance. That's why `limit2project` is required 
+
+
