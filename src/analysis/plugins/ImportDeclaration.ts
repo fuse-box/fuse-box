@@ -39,6 +39,18 @@ export class ImportDeclaration {
      */
     private static handleAliasReplacement(file: File, requireStatement: string): string {
 
+        // checking for browser override (asap) case
+        // these people ...
+        // https://github.com/defunctzombie/package-browser-field-spec
+        if (file.info.nodeModuleInfo) {
+            const overrides = file.info.nodeModuleInfo.browserOverrides;
+            if (overrides) {
+                if (overrides[requireStatement]) {
+                    requireStatement = overrides[requireStatement];
+                }
+            }
+        }
+
         if (!file.context.experimentalAliasEnabled) {
             return requireStatement;
         }

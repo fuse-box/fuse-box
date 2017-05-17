@@ -60,6 +60,7 @@ gulp.task("dist-loader-js", () => {
         .pipe(wrap(`(function(__root__){
 if (__root__["FuseBox"]) return __root__["FuseBox"];
 <%= contents %>
+
 return __root__["FuseBox"] = FuseBox; } )(this)`))
         .pipe(rename("fusebox.js"))
         .pipe(gulp.dest("modules/fuse-box-loader-api"))
@@ -230,14 +231,11 @@ gulp.task("make-test-runner", (done) => {
 });
 
 gulp.task("copy-to-random", () => {
-    gulp.src("dist/**/**.**")
-        .pipe(gulp.dest("../react-example/node_modules/fuse-box/dist/"));
-    gulp.src("modules/fuse-box-responsive-api/**/**.**")
-        .pipe(gulp.dest("../react-example/node_modules/fuse-box/modules/fuse-box-responsive-api"));
+    // return gulp.src("dist/**/**.**")
+    //     .pipe(gulp.dest("../development_plaground/node_modules/fuse-box/dist/"));
 });
 gulp.task("copy-api-to-random", () => {
-    // return gulp.src("modules/fuse-box-loader-api/**/**.js")
-    //     .pipe(gulp.dest("../react-example/node_modules/fuse-box/modules/fuse-box-loader-api"))
+    // return gulp.src("modules/fuse-box-loader-api/**/**.js").pipe(gulp.dest("../random/fusemob-ssr/node_modules/fuse-box/modules/fuse-box-loader-api"))
 });
 
 /**
@@ -288,7 +286,6 @@ gulp.task("installDevDeps", function(done) {
         "vue",
         "vue-server-renderer",
         "rollup",
-        "buble",
     ];
     var installDeps = spawn("npm", ["install"].concat(deps), {
         stdio: "inherit",

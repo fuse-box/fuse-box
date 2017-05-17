@@ -175,6 +175,10 @@ export class WorkFlowContext {
         this.pendingPromises.push(obj);
     }
 
+    public isBrowserTarget() {
+        return this.target === "browser";
+    }
+
     public getHeaderImportsConfiguration() {
 
     }

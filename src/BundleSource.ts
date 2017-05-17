@@ -215,8 +215,6 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         if (context.defaultPackageName !== "default") {
             this.concat.add(null, `FuseBox.defaultPackageName = ${JSON.stringify(context.defaultPackageName)};`);
         }
-
-
         this.concat.add(null, "})");
 
         if (context.standaloneBundle) {
@@ -225,6 +223,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
                 fuseboxLibFile = ensureUserPath(this.context.customAPIFile);
             }
             let wrapper = fs.readFileSync(fuseboxLibFile).toString();
+
             this.concat.add(null, `(${wrapper})`);
         } else {
             this.concat.add(null, "(FuseBox)");
