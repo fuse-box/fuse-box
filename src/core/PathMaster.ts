@@ -39,6 +39,7 @@ export interface IPackageInformation {
     root: string;
     entryRoot: string,
     custom: boolean;
+    browserOverrides?: any;
     customBelongsTo?: string;
 }
 
@@ -320,14 +321,19 @@ export class PathMaster {
                 // Getting an entry point
                 let entryFile;
                 let entryRoot;
+                let browserOverrides;
                 if (json.browser) {
-                    if (typeof json.browser === "object" && json.browser[json.main]) {
+
+                    if (this.context.isBrowserTarget() &&
+                        typeof json.browser === "object" && json.browser[json.main]) {
+                        browserOverrides = json.browser;
                         entryFile = json.browser[json.main];
                     }
                     if (typeof json.browser === "string") {
                         entryFile = json.browser;
                     }
                 }
+
                 if (this.context.rollupOptions && json["jsnext:main"]) {
                     entryFile = path.join(folder, json["jsnext:main"]);
                 } else {
