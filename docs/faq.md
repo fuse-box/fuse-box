@@ -27,7 +27,7 @@ fuse.bundle("app")
 
 warning: Please double check the chain! It's very important!!!
 
-note: An array should be inside a plugin array! That's how the chaining in fusebox is achived.
+note: An array should be inside a plugin array! That's how the chaining in fusebox is achieved.
 
 ### Default exports do not work
 
