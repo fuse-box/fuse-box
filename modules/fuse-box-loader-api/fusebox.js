@@ -323,7 +323,7 @@ var FuseBox = (function () {
             var alias = obj[k].alias;
             var xp = $import(obj[k].pkg);
             if (alias === "*") {
-                $loopObjKey(xp, function (exportKey, value) { __root__[exportKey] = value; });
+                $loopObjKey(xp, function (exportKey, value) { return __root__[exportKey] = value; });
             }
             else if (typeof alias === "object") {
                 $loopObjKey(alias, function (exportKey, value) { return __root__[value] = xp[exportKey]; });
