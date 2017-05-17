@@ -6,8 +6,8 @@ Frequently asked questions
 
 Questions related to CSS
 
-### Why my CSS plugin does not work?
-You chain is most likely not set up correctly. 
+### Why doesn't my CSSPlugin work?
+Your chain is most likely not set up correctly. 
 
 In case of the global config, make sure it looks like this:
 
@@ -44,7 +44,7 @@ That's because typescript is not Babel. If you can configure it by adding a [Bab
 import * as lodash from "_"
 ```
 
-### Why my node modules are not transpiled?
+### Why aren't my node modules transpiled?
 
 Because FuseBox does not transpile them. But you can easily do that by setting up the BabelPlugin like so:
 
