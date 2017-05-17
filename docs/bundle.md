@@ -304,12 +304,14 @@ The differences are :
 
 An `express` bundle would for example `export default app.listen(process.env.PORT);`
 #### Options
-* `close(FuseBox)=> Promise`: A closing function
+* `close(bundleExport)=> Promise`: A closing function.
+
+The exports of the main file can be retrieved with `bundleExport.FuseBox.import(bundleExport.FuseBox.mainFile)`
 
 #### Closing function
 
 When the module is unloaded, the first of these functions is called :
-* A function `close(FuseBox)=> Promise` given as an option to `require`
+* A function `close(bundleExport)=> Promise` given as an option to `require`
 
 After, if the bundle has a main file, 
 
