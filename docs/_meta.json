@@ -14,7 +14,7 @@
         { "file": "typescript.md" },
         { "file": "rollup.md" },
         { "file": "examples-seeds.md", "title": "Examples and seeds" },
-        { "file": "faq.md" },
+        { "file": "faq.md" }
     ],
     "plugins": [{
         "group": "CSS Plugins",
