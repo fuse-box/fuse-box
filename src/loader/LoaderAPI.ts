@@ -551,7 +551,7 @@ class FuseBox {
             let alias = obj[k].alias;
             let xp = $import(obj[k].pkg);
             if (alias === "*") {
-                $loopObjKey(xp, (exportKey, value) => { __root__[exportKey] = value });
+                $loopObjKey(xp, (exportKey, value) => __root__[exportKey] = value);
             } else if (typeof alias === "object") {
                 $loopObjKey(alias, (exportKey, value) => __root__[value] = xp[exportKey]);
             } else {
