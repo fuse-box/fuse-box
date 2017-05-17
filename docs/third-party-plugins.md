@@ -8,17 +8,3 @@
 | proxying / stubbing imports | Fusebox proxying / stubbing imports  Plugin| [tomitrescak/proxyrequire](https://github.com/tomitrescak/proxyrequire) |
 | Process | Run any tasks (npm, tsc, etc.) after fuse-box bundled your code | [RPDeshaies/fuse-box-process-plugin](https://github.com/RPDeshaies/fuse-box-process-plugin) |
 | ng2-fused | Wraps url strings for templateUrl and styleUrls inside of require statements. Inspired by angular2-template-loader for webpack. | https://github.com/alex-klock/ng2-fused
-
-# Examples
-
-- https://github.com/fuse-box/development-playground/tree/master/src
-- https://github.com/fuse-box/mastering-css
-- https://github.com/fuse-box/shimming-and-css-example
-- https://github.com/fuse-box/fuse-box-aurelia-seed
-- https://github.com/fuse-box/angular2-example
-- https://github.com/fuse-box/fuse-box-ionic2-seed
-- https://github.com/fuse-box/fuse-box-scopes-example/tree/master/shared
-- https://github.com/fuse-box/fuse-box-ts-react-reflux-seed
-- https://github.com/fuse-box/react-example
-- https://github.com/fuse-box/fuse-box-production-test-project
-- https://github.com/fuse-box/fuse-box-production-test-package
