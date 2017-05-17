@@ -322,11 +322,22 @@ FuseBox tests each file running it through the plugin list. If it sees an array,
 
 ## Target
 
-At this moment target exists only to switch to [electron](https://electron.atom.io/) mode
+At this moment target exists  to switch to [electron](https://electron.atom.io/) mode
+and [browser case](https://github.com/defunctzombie/package-browser-field-spec)
+
+for electron:
 
 ```js
 fuse.bundle("app").target("electron")
 ```
+
+for browser (for example lib asap)
+
+```js
+fuse.bundle("app").target("browser")
+```
+
+We keep extending this functionality to provide more platform specific features.
 
 ### Example
 ```bash
