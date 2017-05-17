@@ -34,7 +34,7 @@ export class FuseProcess {
 				if(cached) {
 					try {
 						if(opts.close)	//if a close function is given in parameter
-							closePromise = opts.close(cached.exports.FuseBox);
+							closePromise = opts.close(cached.exports);
 						else {
 							exps = getMainExport(cached.exports);
 							if(exps) {
@@ -55,7 +55,7 @@ export class FuseProcess {
 				closePromise.then(
 					() => {
 						var exps = false;
-						try { exps = require(this.filePath).FuseBox; }
+						try { exps = require(this.filePath); }
 						catch(x) { reject(x); }
 						if(exps) resolve(exps);
 					},
