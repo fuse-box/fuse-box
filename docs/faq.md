@@ -37,7 +37,7 @@ Why my default exports doesn't work? It works with webpack?!
 import lodash from "_"
 ```
 
-That's because typescript is not Babel. If you can configure it by adding a [BabelPlugin](/plugins/babelplugin).  To solve this issue with typescript import a library like that:
+That's because typescript is not Babel. If you can configure it by adding a [BabelPlugin](/plugins/babelplugin).  To solve this issue with typescript import your libraries as follows:
 
 
 ```js
