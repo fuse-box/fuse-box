@@ -29,6 +29,9 @@ warning: Please double check the chain! It's very important!!!
 
 note: An array should be inside a plugin array! That's how the chaining in fusebox is achieved.
 
+## Imports / Exports
+Questions related to imports/exports
+
 ### Default exports do not work
 
 Why my default exports doesn't work? It works with webpack?!
@@ -43,6 +46,8 @@ That's because typescript is not Babel. If you can configure it by adding a [Bab
 ```js
 import * as lodash from "_"
 ```
+
+## Bundling
 
 ### Why aren't my node modules transpiled?
 
