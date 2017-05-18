@@ -252,7 +252,7 @@ WebIndexPlugin({
 
 ### Hashes and bundles
 
-You retreive bundle names from a [producer](/page/bundle#producer) like so:
+You can retreive bundle names from a [producer](/page/bundle#producer) like so:
 
 ```js
 fuse.run().then(producer => {
