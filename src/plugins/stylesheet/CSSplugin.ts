@@ -33,12 +33,18 @@ export class CSSPluginClass implements Plugin {
     private minify = false;
     public options: CSSPluginOptions;
 
+    public dependencies: ["fuse-box-css"];
+
     constructor(opts: CSSPluginOptions = {}) {
         this.options = opts;
 
         if (opts.minify !== undefined) {
             this.minify = opts.minify;
         }
+    }
+
+    public injectFuseModule(file: File) {
+        file.analysis.dependencies.push("fuse-box-css")
     }
     /**
      *
@@ -51,11 +57,10 @@ export class CSSPluginClass implements Plugin {
         context.allowExtension(".css");
     }
 
-    public bundleStart(context: WorkFlowContext) {
-
-        let lib = path.join(Config.FUSEBOX_MODULES, "fsbx-default-css-plugin", "index.js");
-        context.source.addContent(fs.readFileSync(lib).toString());
+    public getFunction() {
+        return `require("fuse-box-css")`
     }
+
 
     public inject(file: File, options: any, alternative?: boolean) {
         // Inject properties
@@ -66,7 +71,7 @@ export class CSSPluginClass implements Plugin {
             ? options.inject(file.info.fuseBoxPath) : file.info.fuseBoxPath;
 
         // noop the contents if a user wants to manually inject it
-        const result = options.inject !== false ? `__fsbx_css("${resolvedPath}");` : "";
+        const result = options.inject !== false ? `${this.getFunction()}("${resolvedPath}");` : "";
         if (alternative) {
             file.addAlternativeContent(result);
         } else {
@@ -106,7 +111,7 @@ export class CSSPluginClass implements Plugin {
         } else {
             debug(`Inlining ${group.info.fuseBoxPath}`);
             const safeContents = JSON.stringify(cssContents.toString());
-            group.addAlternativeContent(`__fsbx_css("${group.info.fuseBoxPath}", ${safeContents});`)
+            group.addAlternativeContent(`${this.getFunction()}("${group.info.fuseBoxPath}", ${safeContents});`)
         }
 
         this.emitHMR(group);
@@ -138,6 +143,7 @@ export class CSSPluginClass implements Plugin {
         if (file.hasSubFiles()) {
             return;
         }
+        this.injectFuseModule(file);
 
         const debug = (text: string) => file.context.debugPlugin(this, text);
 
@@ -205,7 +211,7 @@ export class CSSPluginClass implements Plugin {
             let safeContents = JSON.stringify(file.contents);
             file.sourceMap = undefined;
 
-            file.addAlternativeContent(`__fsbx_css("${filePath}", ${safeContents})`);
+            file.addAlternativeContent(`${this.getFunction()}("${filePath}", ${safeContents})`);
 
             // We want to emit CSS Changes only if an actual CSS file was changed.
             this.emitHMR(file);
