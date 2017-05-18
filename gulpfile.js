@@ -231,8 +231,8 @@ gulp.task("make-test-runner", (done) => {
 });
 
 gulp.task("copy-to-random", () => {
-    return gulp.src("dist/**/**.**")
-        .pipe(gulp.dest("../random/fuseboxbugmaybe/node_modules/fuse-box/dist/"));
+    // return gulp.src("dist/**/**.**")
+    //     .pipe(gulp.dest("../development_plaground/node_modules/fuse-box/dist/"));
 });
 gulp.task("copy-api-to-random", () => {
     // return gulp.src("modules/fuse-box-loader-api/**/**.js").pipe(gulp.dest("../random/fusemob-ssr/node_modules/fuse-box/modules/fuse-box-loader-api"))
@@ -247,7 +247,7 @@ gulp.task("dist", ["dist-main", "dist-loader", "dist-modules"]);
  * For development workflow
  */
 
-gulp.task("watch", ["dist", "copy-to-random", "copy-api-to-random"], function() {
+gulp.task("watch-and-copy", ["dist", "copy-to-random", "copy-api-to-random"], function() {
 
     watching = true;
 
@@ -261,6 +261,12 @@ gulp.task("watch", ["dist", "copy-to-random", "copy-api-to-random"], function() 
 
     gulp.watch(filesMain, () => {
         runSequence("dist-main", "copy-to-random");
+    });
+});
+gulp.task("watch", ["dist"], function() {
+
+    gulp.watch(filesMain, () => {
+        runSequence("dist-main");
     });
 });
 // npm install babel-core babel-generator babel-preset-latest babylon cheerio @angular/core stylus less postcss node-sass uglify-js source-map coffee-script @types/node rollup
