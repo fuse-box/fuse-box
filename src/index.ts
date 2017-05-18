@@ -1,3 +1,4 @@
+export { OptimisedBundlePlugin } from "./plugins/optimised-api/OptimisedBundlePlugin";
 export { ReplacePlugin } from "./plugins/ReplacePlugin";
 export { VuePlugin } from "./plugins/VuePlugin";
 export { ImageBase64Plugin } from "./plugins/images/ImageBase64Plugin";

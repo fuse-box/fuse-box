@@ -162,7 +162,10 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         const context = this.context;
         if (entry) {
             entry = ensurePublicExtension(entry);
+            context.fuse.producer.entryPackageName = this.context.defaultPackageName;
+            context.fuse.producer.entryPackageFile = entry;
         }
+
         let mainEntry;
 
         // handle server bundle
@@ -198,6 +201,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             }
             this.concat.add(null, `FuseBox.expose(${JSON.stringify(data)});`);
         }
+
 
         if (entry) {
             mainEntry = `${context.defaultPackageName}/${entry}`;

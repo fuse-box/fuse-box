@@ -106,7 +106,7 @@
         var cached = $fsx.m[id];
         // resolve if in cache
         if (cached) {
-            return cached;
+            return cached.module.exports;
         }
         var file = $fsx.f[id];
         if (!file)

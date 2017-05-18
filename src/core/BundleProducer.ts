@@ -19,6 +19,8 @@ export class BundleProducer {
     public sharedCustomPackages: Map<string, SharedCustomPackage​>;
     public runner: BundleRunner;
     public devServerOptions: ServerOptions;
+    public entryPackageName: string;
+    public entryPackageFile: string;
     constructor(public fuse: FuseBox) {
         this.runner = new BundleRunner(this.fuse);
     }

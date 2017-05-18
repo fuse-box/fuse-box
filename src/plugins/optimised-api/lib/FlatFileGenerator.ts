@@ -2,6 +2,7 @@ import { FileAbstraction } from "../../../bundle-abstraction/FileAbstraction";
 
 export class FlatFileGenerator {
     public contents = [];
+    public entryId;
     constructor() {
 
     }
@@ -22,10 +23,19 @@ export class FlatFileGenerator {
         if (args.length) {
             file.wrapWithFunction(args);
         }
-        this.contents.push(`$fsx.f[${JSON.stringify(file.getID())}] = ${file.generate()}`);
+        let fileId = file.getID();
+        if (file.isEntryPoint) {
+            this.entryId = fileId;
+        }
+        this.contents.push(`$fsx.f[${JSON.stringify(fileId)}] = ${file.generate()}`);
+
+
     }
 
     public render() {
+        if (this.entryId !== undefined) {
+            this.contents.push(`$fsx.r(${JSON.stringify(this.entryId)})`);
+        }
         this.contents.push("})($fsx)");
         return this.contents.join("\n");
     }
