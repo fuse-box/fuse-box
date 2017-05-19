@@ -30,9 +30,9 @@ export class RequireStatement {
                 if (moduleValue.charAt(0) === '@') {
                     this.nodeModuleName = moduleValue
                 } else {
-                    const [moduleName, partialRequire] = moduleValue.split("/");
+                    const [moduleName, ...partialRequire] = moduleValue.split("/");
                     this.nodeModuleName = moduleName;
-                    this.nodeModulePartialRequire = partialRequire;
+                    this.nodeModulePartialRequire = partialRequire.join("/");
                 }
             }
         } else {
@@ -66,6 +66,7 @@ export class RequireStatement {
             return;
         }
         const pkgName = !this.isNodeModule ? this.file.packageAbstraction.name : this.nodeModuleName;
+
         let resolvedName;
         const producerAbstraction = this.file.packageAbstraction.bundleAbstraction.producerAbstraction;
         if (!this.isNodeModule) {

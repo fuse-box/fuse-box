@@ -16,8 +16,12 @@ export class FileAbstraction {
     public fuseBoxDir;
 
     public requireStatements = new Set<RequireStatement​​>();
+
     public fuseboxIsServerConditions = new Set<FuseBoxIsServerCondition>();
     public fuseboxIsBrowserConditions = new Set<FuseBoxIsBrowserCondition>();
+
+    public isEntryPoint = false;
+
     public wrapperArguments: string[];
     private globalVariables = new Set<string>();
 
@@ -93,6 +97,11 @@ export class FileAbstraction {
     public isExportInUse() {
         return this.globalVariables.has("exports") || this.globalVariables.has("module");
     }
+
+    public setEnryPoint() {
+        this.isEntryPoint = true;
+    }
+
 
     public generate() {
         let code = escodegen.generate(this.ast);

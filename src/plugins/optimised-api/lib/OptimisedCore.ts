@@ -39,15 +39,25 @@ export class OptimisedCore {
 
     public setFileIds(bundleAbstraction: BundleAbstraction) {
         // set ids first
+        let entryId;
+        if (this.producer.entryPackageFile && this.producer.entryPackageName) {
+            entryId = `${this.producer.entryPackageName}/${this.producer.entryPackageFile}`;
+        }
         bundleAbstraction.packageAbstractions.forEach(packageAbstraction => {
             packageAbstraction.fileAbstractions.forEach(fileAbstraction => {
+                let fileId = `${packageAbstraction.name}/${fileAbstraction.fuseBoxPath}`;
                 let id;
                 if (this.producerAbstraction.useNumbers) {
                     id = this.index;
                     this.index++;
                 } else {
-                    id = fastHash(`${packageAbstraction.name}/${fileAbstraction.fuseBoxPath}`);
+                    id = fastHash(fileId);
                 }
+
+                if (fileId === entryId) {
+                    fileAbstraction.setEnryPoint();
+                }
+
                 fileAbstraction.setID(id)
             });
         });

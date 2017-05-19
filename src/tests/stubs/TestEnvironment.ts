@@ -63,9 +63,11 @@ export function createFlatEnv(opts: any) {
     };
     const scripts = [];
 
+    let modulesFolder = path.join(localPath, "modules");
+    if (opts.stubs) {
+        modulesFolder = path.join(appRoot.path, "src/tests/stubs/test_modules");
+    }
 
-
-    const modulesFolder = path.join(localPath, "modules");
     // creating modules
     return each(opts.modules, (moduleParams, name) => {
         return new Promise((resolve, reject) => {
@@ -104,7 +106,9 @@ export function createFlatEnv(opts: any) {
 
         fuse.bundle("index.js").cache(false).log(false).instructions(projectOptions.instructions)
         return fuse.run().then(producer => {
+            const contents = {};
             producer.bundles.forEach(bundle => {
+                contents[bundle.name] = bundle.generatedCode.toString()
                 scripts.push(bundle.context.output.lastPrimaryOutput.path)
             });
             return new Promise((resolve, reject) => {
@@ -117,6 +121,7 @@ export function createFlatEnv(opts: any) {
                         if (err) {
                             return reject(err);
                         }
+                        output.contents = contents;
                         output.window = window
                         // output.projectSize = length;
                         // output.querySelector = window.document.querySelector
