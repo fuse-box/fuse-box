@@ -5,6 +5,8 @@ import { RequireStatement } from "./nodes/RequireStatement";
 import * as escodegen from "escodegen";
 import * as path from "path";
 import { ensureFuseBoxPath } from "../Utils";
+import { FuseBoxIsServerCondition } from "./nodes/FuseBoxIsServerCondition";
+import { FuseBoxIsBrowserCondition } from "./nodes/FuseBoxIsBrowserCondition";
 
 
 export class FileAbstraction {
@@ -14,8 +16,12 @@ export class FileAbstraction {
     public fuseBoxDir;
 
     public requireStatements = new Set<RequireStatement​​>();
+    public fuseboxIsServerConditions = new Set<FuseBoxIsServerCondition>();
+    public fuseboxIsBrowserConditions = new Set<FuseBoxIsBrowserCondition>();
     public wrapperArguments: string[];
     private globalVariables = new Set<string>();
+
+
     constructor(public fuseBoxPath: string, public packageAbstraction: PackageAbstraction) {
         this.fuseBoxDir = ensureFuseBoxPath(path.dirname(fuseBoxPath));
         this.setID(fuseBoxPath);
@@ -136,6 +142,24 @@ export class FileAbstraction {
                         // treat it like any any other require statements
                         this.requireStatements.add(new RequireStatement(this, parent));
                     }
+
+
+                    if (node.property.name === "isServer") {
+                        parent.callee = {
+                            type: "Identifier",
+                            name: "$isServer"
+                        }
+                        this.fuseboxIsServerConditions.add(new FuseBoxIsServerCondition(this, parent));
+                    }
+
+                    if (node.property.name === "isBrowser") {
+                        parent.callee = {
+                            type: "Identifier",
+                            name: "$isBrowser"
+                        }
+                        this.fuseboxIsServerConditions.add(new FuseBoxIsBrowserCondition(this, parent));
+                    }
+
                     return false;
                 }
 

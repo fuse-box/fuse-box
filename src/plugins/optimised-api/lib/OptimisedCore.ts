@@ -7,12 +7,13 @@ import { fastHash } from "../../../Utils";
 import { FileAbstraction } from "../../../bundle-abstraction/FileAbstraction";
 import { ResponsiveAPI } from "./ResponsiveAPI";
 import { Bundle } from "../../../core/Bundle";
+import { OptimisedPluginOptions } from "./OptimisedPluginOptions";
 
 export class OptimisedCore {
     public producerAbstraction: ProducerAbstraction;
     public api = new ResponsiveAPI();
     public index = 0;
-    constructor(public producer: BundleProducer​​) {
+    constructor(public producer: BundleProducer, public opts: OptimisedPluginOptions​​) {
 
     }
     public consume() {
