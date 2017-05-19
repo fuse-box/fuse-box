@@ -71,3 +71,6 @@ plugins : [
 FuseBox deliberately limits `Babel` to increase the overal performance. That's why `limit2project` is required 
 
 
+### Why doesn't HMR work?
+
+[HMR](/page/development#hot-module-reload) doesn't work with disabled cached. Enable it.
