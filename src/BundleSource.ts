@@ -218,7 +218,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         this.concat.add(null, "})");
 
         if (context.standaloneBundle) {
-            let fuseboxLibFile = path.join(Config.FUSEBOX_MODULES, "fuse-box-loader-api", "fusebox.min.js");
+            let fuseboxLibFile = path.join(Config.FUSEBOX_MODULES, "fuse-box-loader-api", context.debugMode?"fusebox.js":"fusebox.min.js");
             if (this.context.customAPIFile) {
                 fuseboxLibFile = ensureUserPath(this.context.customAPIFile);
             }
