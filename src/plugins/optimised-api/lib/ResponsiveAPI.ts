@@ -1,12 +1,13 @@
 import * as path from "path";
 import { jsCommentTemplate } from "../../../Utils";
 import { Config } from "../../../Config";
+import { OptimisedCore } from "./OptimisedCore";
 export class ResponsiveAPI {
     private computedStatements = false;
     private hashes = false;
     private isServerFunction = false;
     private isBrowserFunction = false;
-    constructor(public target: string = "universal") {
+    constructor(public core: OptimisedCore) {
 
     }
 
@@ -25,9 +26,9 @@ export class ResponsiveAPI {
 
     public render() {
         const options = {
-            browser: this.target === "browser",
-            universal: this.target === "universal",
-            server: this.target === "server",
+            browser: this.core.opts.isTargetBrowser(),
+            universal: this.core.opts.isTargetUniveral(),
+            server: this.core.opts.isTargetServer(),
             isServerFunction: this.isServerFunction,
             isBrowserFunction: this.isBrowserFunction,
             computedStatements: this.computedStatements,

@@ -14,10 +14,10 @@ import { EnvironmentConditionModification } from "./modifications/EnvironmentCon
 
 export class OptimisedCore {
     public producerAbstraction: ProducerAbstraction;
-    public api = new ResponsiveAPI();
+    public api: ResponsiveAPI;
     public index = 0;
     constructor(public producer: BundleProducer, public opts: OptimisedPluginOptions​​) {
-
+        this.api = new ResponsiveAPI(this)
     }
     public consume() {
 

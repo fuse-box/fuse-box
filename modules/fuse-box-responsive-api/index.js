@@ -10,10 +10,11 @@
     /* @end */
 
     /* @if browser */
-    var $fsx = windows.$fsx = {}
-    if ($fsx.r) {
+    if (window.$fsx) {
         return;
     };
+    var $fsx = window.$fsx = {}
+
     /* @end */
 
     /* @if server */
