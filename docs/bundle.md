@@ -293,16 +293,23 @@ The following code will spawn a separate nodejs process, if a process is already
 ```js
 completed(proc => proc.require(opts))
 ```
-[See an example](https://github.com/fuse-box/fuse-box-examples/tree/master/examples/recursive)
 
-The following code will require the file in the same process than the fuse process instead of launching a new node process.
+The following code will require a file in the same process as the fuse process instead of launching a new one.
+
 The differences are :
-* The bundle is executed in a `Promise` and its exports are available to the fuse caller : `proc.require().then(exports => void)`. 
-* The bundle has access to the same loaded libraries than the fuser, they share the same global object.
-* The bundle is inspected if fuse is inspected: `node --debug fuse.js` debugs the bundle too.
-* To free the allocated resources when the bundle is restarted, there is no clean `process.kill` option; the bundle must therefore export a `close` function, or a default that has such a function.
+* A bundle is executed in a `Promise` and its exports are available to the fuse caller : `proc.require().then(exports => void)`. 
+* A bundle has access to the same loaded libraries than the fuser, they share the same global object.
+* A bundle is inspected if fuse is inspected: `node --debug fuse.js` debugs the bundle too.
+* To free the allocated resources when a bundle is restarted, there is no clean `process.kill` option; it must therefore export a `close` function, or a default that has such a function.
 
-An `express` bundle would for example `export default app.listen(process.env.PORT);`
+An `express` bundle would look as follows:
+
+```js
+export default app.listen(process.env.PORT);
+```
+
+github_example: recursive
+
 #### Options
 * `close(bundleExport)=> Promise`: A closing function.
 
