@@ -381,6 +381,8 @@ function $trigger(name: string, args: any) {
     }
 }
 
+var $lazyLoadingPackages = {};
+
 /**
  * Imports File
  * With opt provided it's possible to set:
@@ -442,7 +444,11 @@ function $import(name: string, o: any = {}) {
     // pkgName
     let pkg = ref.pkgName;
 
-    if (file.locals && file.locals.module) return file.locals.module.exports;
+    if (file.locals && file.locals.module) {
+			if(file.locals.promise && !o.lazyLoadPackage)
+				throw new Error(`"${name}" cannot be loaded asyncronously but is not done loading (${o})`);
+			return file.locals.promise || file.locals.module.exports;
+		}
     let locals: any = file.locals = {};
 
     // @NOTE: is fuseBoxDirname
@@ -466,7 +472,11 @@ function $import(name: string, o: any = {}) {
 					else ((i, impName)=> {	//isolate `i` and `impName` from scope
 						if(!o.lazyLoadPackage)
 							throw new Error(`"${name}" cannot be loaded asyncronously but "${impName}" cannot be loaded syncronously (${o})`);
-						promises.push(o.lazyLoadPackage(package).then(
+						let promise = $lazyLoadingPackages[package] ||
+							($lazyLoadingPackages[package] = o.lazyLoadPackage(package).then(()=> {
+								delete $lazyLoadingPackages[package];
+							});
+						promises.push(promise.then(
 							p=> args[i] = locals.require(impName),
 							x=> {
 								console.error(`${impName} errored on loading : impossible to load ${pkg}/${path}`);
@@ -499,6 +509,7 @@ function $import(name: string, o: any = {}) {
 		if(locals.promise) {
 			return locals.promise = locals.promise.then(()=> {
 				$trigger("after-import", args);
+				delete locals.promise;
 				return locals.module.exports;
 			});
 		} else {
