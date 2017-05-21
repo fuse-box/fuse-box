@@ -12,6 +12,7 @@
         "noImplicitUseStrict": false,
         "removeComments": true,
         "noLib": false,
+    		"lib": ["es2015", "dom"],
         "outDir": "build/",
         "preserveConstEnums": true,
         "suppressImplicitAnyIndexErrors": true

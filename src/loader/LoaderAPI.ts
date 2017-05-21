@@ -324,7 +324,7 @@ function $getRef(name: string, o: RefOpts): IReference {
         filePath,
         validPath,
     };
-};
+}
 
 /**
  * $async
@@ -361,7 +361,7 @@ function $async(file: string, cb: (imported?: any) => any) {
         if (/\.(js|json)$/.test(file)) return cb(g["require"](file));
         return cb("");
     }
-};
+}
 
 /**
  * Trigger events
@@ -379,7 +379,7 @@ function $trigger(name: string, args: any) {
         }
         ;
     }
-};
+}
 
 /**
  * Imports File
@@ -453,27 +453,27 @@ function $import(name: string, o: any = {}) {
 		locals.define = function(imports, cb) {
 			var args = [], promises = [];
 			for(let i in imports) {
-				let import = imports[i];
-				if(locals.hasOwnProperty(import))
+				let impName = imports[i];
+				if(locals.hasOwnProperty(impName))
 				//require, exports
-					args[i] = locals[import];
+					args[i] = locals[impName];
 				else {
-					let nodeModule = $getNodeModuleName(import)
+					let nodeModule = $getNodeModuleName(impName),
 						package = nodeModule && nodeModule[0];
 					if(!nodeModule || $packages[package])
 					//if internal to this package or the package is already loaded
-						args[i] = locals.require(import);
-					else ((i, import)=> {	//isolate `i` and `import` from scope
+						args[i] = locals.require(impName);
+					else ((i, impName)=> {	//isolate `i` and `impName` from scope
 						if(!o.lazyLoadPackage)
-							throw new Error(`"${name}" cannot be loaded asyncronously but "${import}" cannot be loaded syncronously (${o})`);
-						promises.push(lazyLoadPackage(package).then(
-							p=> args[i] = locals.require(import),
+							throw new Error(`"${name}" cannot be loaded asyncronously but "${impName}" cannot be loaded syncronously (${o})`);
+						promises.push(o.lazyLoadPackage(package).then(
+							p=> args[i] = locals.require(impName),
 							x=> {
-								console.error(`${import} errored on loading : impossible to load ${pkg}/${path}`);
+								console.error(`${impName} errored on loading : impossible to load ${pkg}/${path}`);
 								throw x;
 							}
 						));
-					})(i, import);
+					})(i, impName);
 				}
 			}
 			if(promises.length)
@@ -505,7 +505,7 @@ function $import(name: string, o: any = {}) {
 			$trigger("after-import", args);
 			return locals.module.exports
 		}
-};
+}
 
 type SourceChangedEvent = {
     type: "js" | "css",
