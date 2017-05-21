@@ -30,7 +30,7 @@ export class ImportDeclaration {
 								if('ArrayExpression'=== arg1.type) {
 									for(let importName of arg1.elements) {
 										if (analysis.nodeIsString(importName)) {
-											if(!~['require', 'exports'].indexOf(importName)) {
+											if (!~['require', 'exports'].indexOf(importName.value)) {
 												let requireStatement = this.handleAliasReplacement(file, importName.value);
 												importName.value = requireStatement;
 												analysis.addDependency(requireStatement);
