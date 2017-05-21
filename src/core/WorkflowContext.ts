@@ -435,7 +435,7 @@ export class WorkFlowContext {
         }
         // switch to target es6
         if (this.rollupOptions) {
-            this.debug("Typescript", "Forcing es6 output for typescript. Rollup deteced");
+            this.debug("Typescript", "Forcing es6 output for typescript. Rollup detected");
             config.compilerOptions.module = "es6";
             config.compilerOptions.target = "es6";
         }
