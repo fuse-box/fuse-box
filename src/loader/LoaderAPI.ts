@@ -456,7 +456,7 @@ function $import(name: string, o: any = {}) {
 		
     locals.exports = {};
     locals.module = { exports: locals.exports };
-		locals.define = function(imports, cb) {
+		locals.define = function(imports, callBack) {
 			var args = [], promises = [];
 			for(let i in imports) {
 				let impName = imports[i];
@@ -485,8 +485,12 @@ function $import(name: string, o: any = {}) {
 					})(i, impName);
 				}
 			}
+			function effect() {
+				callBack.apply(null, args);
+			}
 			if(promises.length)
-				locals.promise = Promise.all(promises);
+				locals.promise = Promise.all(promises).then(effect);
+			else effect();
 		}
     locals.require = (name: string) => {
         return $import(name, {
