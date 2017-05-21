@@ -475,7 +475,7 @@ function $import(name: string, o: any = {}) {
 						let promise = $lazyLoadingPackages[package] ||
 							($lazyLoadingPackages[package] = o.lazyLoadPackage(package).then(()=> {
 								delete $lazyLoadingPackages[package];
-							});
+							}));
 						promises.push(promise.then(
 							p=> args[i] = locals.require(impName),
 							x=> {
