@@ -1,0 +1,24 @@
+import { FlatFileGenerator } from "../FlatFileGenerator";
+import { FileAbstraction } from "../../../../bundle-abstraction/FileAbstraction";
+import { OptimisedCore } from "../OptimisedCore";
+import { each } from "realm-utils";
+import { RequireStatement } from "../../../../bundle-abstraction/nodes/RequireStatement";
+
+export class StatementModification {
+    public static perform(core: OptimisedCore, generator: FlatFileGenerator, file: FileAbstraction): Promise<void> {
+        return each(file.requireStatements, (statement: RequireStatement) => {
+            if (statement.isComputed) {
+                statement.setFunctionName("$fsx.c")
+                statement.bindID(file.getID())
+                // file map is requested with computed require statements
+                file.addFileMap();
+            } else {
+                let resolvedFile = statement.resolve();
+                if (resolvedFile) {
+                    statement.setFunctionName('$fsx.r')
+                    statement.setValue(resolvedFile.getID());
+                }
+            }
+        });
+    }
+}

@@ -36,6 +36,18 @@
     }
     /* @end */
 
+
+    /* @if isServerFunction */
+    $fsx.cs = !isBrowser
+
+    /* @end */
+
+    /* @if isBrowserFunction */
+    $fsx.cb = isBrowser
+
+    /* @end */
+
+
     /* @if computedStatements */
     // define a collection of file names based on id
     // so here $fsx.s["f9ee3k"] = "foo/bar.js"

@@ -154,19 +154,12 @@ export class FileAbstraction {
 
 
                     if (node.property.name === "isServer") {
-                        parent.callee = {
-                            type: "Identifier",
-                            name: "$isServer"
-                        }
-                        this.fuseboxIsServerConditions.add(new FuseBoxIsServerCondition(this, parent));
+                        this.fuseboxIsServerConditions.add(new FuseBoxIsServerCondition(this, parent, prop, idx));
                     }
 
                     if (node.property.name === "isBrowser") {
-                        parent.callee = {
-                            type: "Identifier",
-                            name: "$isBrowser"
-                        }
-                        this.fuseboxIsServerConditions.add(new FuseBoxIsBrowserCondition(this, parent));
+
+                        this.fuseboxIsBrowserConditions.add(new FuseBoxIsBrowserCondition(this, parent, prop, idx));
                     }
 
                     return false;

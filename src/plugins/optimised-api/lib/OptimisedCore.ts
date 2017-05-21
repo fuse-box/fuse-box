@@ -8,6 +8,9 @@ import { FileAbstraction } from "../../../bundle-abstraction/FileAbstraction";
 import { ResponsiveAPI } from "./ResponsiveAPI";
 import { Bundle } from "../../../core/Bundle";
 import { OptimisedPluginOptions } from "./OptimisedPluginOptions";
+import { StatementModification } from "./modifications/StatementModifaction";
+import { PackageAbstraction } from "../../../bundle-abstraction/PackageAbstraction";
+import { EnvironmentConditionModification } from "./modifications/EnvironmentConditionModification";
 
 export class OptimisedCore {
     public producerAbstraction: ProducerAbstraction;
@@ -67,34 +70,26 @@ export class OptimisedCore {
         this.setFileIds(bundleAbstraction);
         const generator = new FlatFileGenerator();
         generator.init();
-        bundleAbstraction.packageAbstractions.forEach(packageAbstraction => {
-            packageAbstraction.fileAbstractions.forEach(fileAbstraction => {
+        return each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
+            return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) => {
                 return this.generateFile(generator, fileAbstraction);
-            });
+            })
+        }).then(() => {
+            const bundleCode = generator.render();
+            // set generated code to bundles
+            this.producer.bundles.get(bundleAbstraction.name).generatedCode = new Buffer(bundleCode);
         });
-        const bundleCode = generator.render();
-
-
-        // set generated code to bundles
-        this.producer.bundles.get(bundleAbstraction.name).generatedCode = new Buffer(bundleCode);
     }
 
     public generateFile(generator: FlatFileGenerator, file: FileAbstraction) {
-        file.requireStatements.forEach(statement => {
-            if (statement.isComputed) {
-                statement.setFunctionName("$fsx.c")
-                statement.bindID(file.getID())
-                // file map is requested with computed require statements
-                file.addFileMap();
-            } else {
-                let resolvedFile = statement.resolve();
-                if (resolvedFile) {
-                    statement.setFunctionName('$fsx.r')
-                    statement.setValue(resolvedFile.getID());
-                }
-            }
-        });
-        generator.addFile(file);
+        const modifications = [
+            // require statements firsr
+            () => StatementModification.perform(this, generator, file),
+            () => EnvironmentConditionModification.perform(this, generator, file)
+        ];
+        return each(modifications, mod => mod())
+            .then(() => generator.addFile(file));
+
     }
 
     public writeBundles() {

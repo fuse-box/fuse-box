@@ -12,15 +12,15 @@ export class OptimisedPluginOptions {
         }
     }
 
-    public isUniveral() {
+    public isTargetUniveral() {
         return this.optsTarget === "universal";
     }
 
-    public isServer() {
+    public isTargetServer() {
         return this.optsTarget === "server";
     }
 
-    public isBrowser() {
+    public isTargetBrowser() {
         return this.optsTarget === "browser";
     }
 }

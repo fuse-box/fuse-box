@@ -26,10 +26,13 @@ export class WebIndexPluginClass implements Plugin {
                 }
             }
             if (pass) {
-                bundlePaths.push(
-                    path.join(this.opts.path ? this.opts.path : "/",
-                        bundle.context.output.lastPrimaryOutput.filename)
-                )
+                if (bundle.context.output && bundle.context.output.lastPrimaryOutput) {
+                    bundlePaths.push(
+                        path.join(this.opts.path ? this.opts.path : "/",
+                            bundle.context.output.lastPrimaryOutput.filename)
+                    )
+                }
+
             }
         });
 
