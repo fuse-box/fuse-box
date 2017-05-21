@@ -331,8 +331,11 @@ function $getRef(name: string, o: RefOpts): IReference {
  * Async request
  * Makes it possible to request files asynchronously
  */
-function $async(file: string, cb: (imported?: any) => any) {
+function $async(file: string, cb: (imported?: any) => any, o: any = {}) {
     if ($isBrowser) {
+        if(o && o.ajaxed === file) {
+            return console.error(file, 'does not provide a module');
+        }
         var xmlhttp: XMLHttpRequest = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4) {
@@ -348,7 +351,7 @@ function $async(file: string, cb: (imported?: any) => any) {
                     }
                     let normalized = $pathJoin("./", file);
                     FuseBox.dynamic(normalized, content);
-                    cb(FuseBox.import(file, {}));
+                    cb(FuseBox.import(file, {ajaxed: file}));
                 } else {
                     console.error(file, 'not found on request');
                     cb(undefined);
@@ -435,7 +438,7 @@ function $import(name: string, o: any = {}) {
         if (processStopped === false) {
             return;
         }
-        return $async(name, (result) => asyncMode ? o(result) : null);
+        return $async(name, (result) => asyncMode ? o(result) : null, o);
         // throw `File not found ${ref.validPath}`;
     }
 

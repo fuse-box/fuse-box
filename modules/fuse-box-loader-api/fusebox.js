@@ -174,8 +174,12 @@ function $getRef(name, o) {
     };
 }
 ;
-function $async(file, cb) {
+function $async(file, cb, o) {
+    if (o === void 0) { o = {}; }
     if ($isBrowser) {
+        if (o && o.ajaxed === file) {
+            return console.error(file, 'does not provide a module');
+        }
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4) {
@@ -192,7 +196,7 @@ function $async(file, cb) {
                     }
                     var normalized = $pathJoin("./", file);
                     FuseBox.dynamic(normalized, content);
-                    cb(FuseBox.import(file, {}));
+                    cb(FuseBox.import(file, { ajaxed: file }));
                 }
                 else {
                     console.error(file, 'not found on request');
@@ -256,7 +260,7 @@ function $import(name, o) {
         if (processStopped === false) {
             return;
         }
-        return $async(name, function (result) { return asyncMode_1 ? o(result) : null; });
+        return $async(name, function (result) { return asyncMode_1 ? o(result) : null; }, o);
     }
     var pkg = ref.pkgName;
     if (file.locals && file.locals.module)
