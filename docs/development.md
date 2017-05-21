@@ -87,6 +87,13 @@ A typical configuration for production builds would look like:
 ```js
 if (!production) { app.hmr().watch() }
 ```
+### Chokidar options
+
+Additionally, you can provide [chokidar](https://github.com/paulmillr/chokidar) options to producers' `run()` 
+
+```js
+fuse.run({chokidar : {ignored: /(^|[\/\\])\../} })
+```
 
 ## Hot Module Reload
 
