@@ -38,7 +38,7 @@ If specified you plugin's `transform` will get triggered upon transformation. It
 
 ### dependencies
 
-`dependencies` a list of npm dependencies your plugin might require. If provided, then the dependencies are loaded on the client before the plugin is invoked. For example [this case](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/CSSplugin.ts#L23)
+`dependencies` a list of npm dependencies your plugin might require. If provided, then the dependencies are loaded on the client before the plugin is invoked. For example [this case](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/stylesheet/CSSplugin.ts#L23)
 
 ### init
 
