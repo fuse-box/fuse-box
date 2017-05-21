@@ -16,14 +16,19 @@ export class BundleProducer {
     public sharedCustomPackages: Map<string, SharedCustomPackage​>;
     public runner: BundleRunner;
     public devServerOptions: ServerOptions;
+    private chokidarOptions: any;
     constructor(public fuse: FuseBox) {
         this.runner = new BundleRunner(this.fuse);
     }
 
 
-    public run(opts: any): Promise<BundleProducer> {
+    public run(opts: { chokidar?: any, runType?: string }): Promise<BundleProducer> {
         /** Collect information about watchers and start watching */
         this.watch();
+        if (opts) {
+            this.chokidarOptions = opts.chokidar;
+        }
+
         return this.runner.run(opts).then(() => {
             this.sharedEvents.emit("producer-done");
             this.bundles.forEach(bundle => {
@@ -94,7 +99,7 @@ export class BundleProducer {
         }
 
         let ready = false;
-        chokidar.watch(this.fuse.context.homeDir)
+        chokidar.watch(this.fuse.context.homeDir, this.chokidarOptions || {})
             .on('all', (event, fp) => {
                 if (ready) {
                     this.onChanges(settings, fp)

@@ -37,9 +37,9 @@ export class BundleRunner {
     }
 
     /** Run all tasks */
-    public run(runType: string = "waterfall"): Promise<any> {
+    public run(opts: { runType?: string } = { runType: "waterall" }): Promise<any> {
         return this.executeTop()
-            .then(() => this.executeBundles(runType))
+            .then(() => this.executeBundles(opts.runType))
             .then(() => this.executeBottom())
     }
 }
