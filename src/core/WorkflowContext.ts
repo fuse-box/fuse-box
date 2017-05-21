@@ -427,8 +427,6 @@ export class WorkFlowContext {
             this.log.echoStatus(`Typescript config file was not found. Improvising`);
         }
 
-        config.compilerOptions.module = "commonjs";
-
         if (this.useSourceMaps) {
             config.compilerOptions.sourceMap = true;
             config.compilerOptions.inlineSources = true;
