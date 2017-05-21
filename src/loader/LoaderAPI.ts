@@ -447,10 +447,39 @@ function $import(name: string, o: any = {}) {
 
     // @NOTE: is fuseBoxDirname
     const path = $getDir(ref.validPath);
-
+		
     locals.exports = {};
     locals.module = { exports: locals.exports };
-    locals.require = (name: string, optionalCallback: any) => {
+		locals.define = function(imports, cb) {
+			var args = [], promises = [];
+			for(let i in imports) {
+				let import = imports[i];
+				if(locals.hasOwnProperty(import))
+				//require, exports
+					args[i] = locals[import];
+				else {
+					let nodeModule = $getNodeModuleName(import)
+						package = nodeModule && nodeModule[0];
+					if(!nodeModule || $packages[package])
+					//if internal to this package or the package is already loaded
+						args[i] = locals.require(import);
+					else ((i, import)=> {	//isolate `i` and `import` from scope
+						if(!o.lazyLoadPackage)
+							throw new Error(`"${name}" cannot be loaded asyncronously but "${import}" cannot be loaded syncronously (${o})`);
+						promises.push(lazyLoadPackage(package).then(
+							p=> args[i] = locals.require(import),
+							x=> {
+								console.error(`${import} errored on loading : impossible to load ${pkg}/${path}`);
+								throw x;
+							}
+						));
+					})(i, import);
+				}
+			}
+			if(promises.length)
+				locals.promise = Promise.all(promises);
+		}
+    locals.require = (name: string) => {
         return $import(name, {
             pkg,
             path,
@@ -462,13 +491,20 @@ function $import(name: string, o: any = {}) {
         paths: $isBrowser ? [] : g["require"].main.paths,
     };
 
-    let args = [locals.module.exports, locals.require, locals.module, ref.validPath, path, pkg];
+    let args = [locals.module.exports, locals.require, locals.define, locals.module, ref.validPath, path, pkg];
     $trigger("before-import", args);
 
     file.fn.apply(0, args);
-    // fn(locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName)
-    $trigger("after-import", args);
-    return locals.module.exports;
+    // fn(locals.module.exports, locals.require, locals.define, locals.module, validPath, fuseBoxDirname, pkgName)
+		if(locals.promise) {
+			return locals.promise = locals.promise.then(()=> {
+				$trigger("after-import", args);
+				return locals.module.exports;
+			});
+		} else {
+			$trigger("after-import", args);
+			return locals.module.exports
+		}
 };
 
 type SourceChangedEvent = {
