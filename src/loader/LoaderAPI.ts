@@ -460,8 +460,7 @@ function $import(name: string, o: any = {}) {
 			var args = [], promises = [];
 			for(let i in imports) {
 				let impName = imports[i];
-				if(locals.hasOwnProperty(impName))
-				//require, exports
+				if(~['require', 'exports'].indexOf(impName))
 					args[i] = locals[impName];
 				else {
 					let nodeModule = $getNodeModuleName(impName),
