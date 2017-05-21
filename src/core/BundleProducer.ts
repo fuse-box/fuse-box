@@ -7,50 +7,39 @@ import { SharedCustomPackage } from "./SharedCustomPackage";
 import { BundleRunner } from "./BundleRunner";
 import { ServerOptions } from "../devServer/Server";
 import * as  chokidar from "chokidar";
-import { utils, each } from "realm-utils";
-import { BundleAbstraction } from "../bundle-abstraction/BundleAbstraction";
-import { ProducerAbstraction } from "../bundle-abstraction/ProducerAbstraction";
+import { utils } from "realm-utils";
 
 export class BundleProducer {
     public bundles = new Map<string, Bundle>();
     public hmrInjected = false;
     public sharedEvents = new EventEmitter();
-    public writeBundles = true;
     public sharedCustomPackages: Map<string, SharedCustomPackage​>;
     public runner: BundleRunner;
     public devServerOptions: ServerOptions;
-    public entryPackageName: string;
-    public entryPackageFile: string;
+    private chokidarOptions: any;
     constructor(public fuse: FuseBox) {
         this.runner = new BundleRunner(this.fuse);
     }
 
 
-    public run(opts: any): Promise<BundleProducer> {
+    public run(opts: { chokidar?: any, runType?: string }): Promise<BundleProducer> {
         /** Collect information about watchers and start watching */
         this.watch();
+        if (opts) {
+            this.chokidarOptions = opts.chokidar;
+        }
 
         return this.runner.run(opts).then(() => {
-
             this.sharedEvents.emit("producer-done");
-            return each(this.fuse.context.plugins, plugin => {
-                if (utils.isFunction(plugin.producerEnd)) {
-                    return plugin.producerEnd(this);
-                }
-            });
-        }).then(() => this)
-    }
-
-    public generateAbstraction(): Promise<ProducerAbstraction> {
-
-        const abstraction = new ProducerAbstraction();
-
-        return each(this.bundles, (bundle: Bundle) => {
-            const bundleAbstraction = new BundleAbstraction(bundle.name, abstraction);
-            return bundleAbstraction.parse(bundle.generatedCode.toString());
-        }).then(() => {
-            return abstraction;
-        });
+            this.bundles.forEach(bundle => {
+                bundle.context.plugins.forEach(plugin => {
+                    if (utils.isFunction(plugin.producerEnd)) {
+                        plugin.producerEnd(this);
+                    }
+                })
+            })
+            return this;
+        })
     }
 
     public register(packageName: string, opts: any) {
@@ -110,7 +99,7 @@ export class BundleProducer {
         }
 
         let ready = false;
-        chokidar.watch(this.fuse.context.homeDir)
+        chokidar.watch(this.fuse.context.homeDir, this.chokidarOptions || {})
             .on('all', (event, fp) => {
                 if (ready) {
                     this.onChanges(settings, fp)
