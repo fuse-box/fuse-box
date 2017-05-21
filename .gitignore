@@ -1,6 +1,7 @@
 .project
 .settings
 node_modules/
+modules/fuse-box-loader-api/
 .vscode/
 .alm/
 yarn.lock

@@ -81,7 +81,7 @@ export class Bundle {
         return this;
     }
 
-    public alias(key: any, value: any): Bundle {
+    public alias(key: any, value?: any): Bundle {
         this.context.addAlias(key, value);
         return this;
     }
