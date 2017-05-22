@@ -52,22 +52,10 @@ if ($isBrowser) {
     g["global"] = window;
 }
 
-// Set root in order to be able to be bundled by other engines
-// In order for dynamic imports to work, we need to switch window to the used export system
-// FuseBox module.exports will always be used first when possible
-declare function define(root: ()=> any): void;
-if (typeof module !== 'undefined' && module.exports) {
-	// Node.js or FuseBox specific `module.exports`
-		__root__ = module.exports;
-} else if (typeof exports !== 'undefined') {
-	// CommonJs support
-		__root__ = exports;
-} else if (typeof define === 'function' && define['amd']) {
-// AMD support
-	__root__ = {};
-	define(function () { return __root__; });
-// CommonJS and Node.js module support.
-}
+// Set root
+// __fbx__dnm__ is a variable that is used in dynamic imports
+// In order for dynamic imports to work, we need to switch window to module.exports
+__root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports : __root__;
 
 /**
  * A runtime storage for FuseBox
