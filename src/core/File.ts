@@ -18,6 +18,8 @@ export class File {
 
     public isFuseBoxBundle = false;
 
+
+    public es6module = false;
     /**
      * In order to keep bundle in a bundle
      * We can't destory the original contents
