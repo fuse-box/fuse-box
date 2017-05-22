@@ -617,16 +617,16 @@ class FuseBox {
      * Registers a dynamic path
      *
      * @param str a function that is invoked with
-     *  - `true, exports,require,module,__filename,__dirname,__root__`
+     *  - `true, exports,require,define,module,__filename,__dirname,__root__`
      */
     public static dynamic(path: string, str: string, opts?: {
         /** The name of the package */
         pkg: string
     }) {
         this.pkg(opts && opts.pkg || "default", {}, function (___scope___: any) {
-            ___scope___.file(path, function (exports: any, require: any, module: any, __filename: string, __dirname: string) {
-                var res = new Function("__fbx__dnm__", "exports", "require", "module", "__filename", "__dirname", "__root__", str);
-                res(true, exports, require, module, __filename, __dirname, __root__);
+            ___scope___.file(path, function (exports: any, require: any, define: any, module: any, __filename: string, __dirname: string) {
+                var res = new Function("__fbx__dnm__", "exports", "require", "define", "module", "__filename", "__dirname", "__root__", str);
+                res(true, exports, require, define, module, __filename, __dirname, __root__);
             });
         });
     }
