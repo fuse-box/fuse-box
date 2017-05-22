@@ -52,10 +52,22 @@ if ($isBrowser) {
     g["global"] = window;
 }
 
-// Set root
-// __fbx__dnm__ is a variable that is used in dynamic imports
-// In order for dynamic imports to work, we need to switch window to module.exports
-__root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports : __root__;
+// Set root in order to be able to be bundled by other engines
+// In order for dynamic imports to work, we need to switch window to the used export system
+// FuseBox module.exports will always be used first when possible
+declare function define(root: ()=> any): void;
+if (typeof module !== 'undefined' && module.exports) {
+	// Node.js or FuseBox specific `module.exports`
+		__root__ = module.exports;
+} else if (typeof exports !== 'undefined') {
+	// CommonJs support
+		__root__ = exports;
+} else if (typeof define === 'function' && define['amd']) {
+// AMD support
+	__root__ = {};
+	define(function () { return __root__; });
+// CommonJS and Node.js module support.
+}
 
 /**
  * A runtime storage for FuseBox
@@ -231,6 +243,7 @@ type RefOpts = {
     pkg?: string;
     v?: PackageVersions;
 		lazyLoadPackage?: (packageName: string)=> Promise<any>;
+		ajaxed?: string;
 };
 function $getRef(name: string, o: RefOpts): IReference {
     let basePath = o.path || "./";
@@ -269,10 +282,12 @@ function $getRef(name: string, o: RefOpts): IReference {
 
     if (!pkg) {
         if ($isBrowser && FuseBox.target !== "electron") {
-					if(o.lazyLoadPackage)
+					if(o.ajaxed === pkgName)
+            throw new Error(`${pkgName} does not provide a module`);
+					else if(o.lazyLoadPackage)
 						return o.lazyLoadPackage(pkgName);
 					else
-						throw "Package not found syncronously" + pkgName;
+						throw new Error(`${pkgName}: Package not found syncronously`);
         } else {
             // Return "real" node module
             return $serverRequire(pkgName + (name ? "/" + name : ""));
@@ -413,7 +428,7 @@ function $import(name: string, o: any = {}) {
 
     let ref = $getRef(name, o);
 		if(ref instanceof Promise)
-			return ref.then(()=> $import(name, o));
+			return ref.then(()=> $import(name, {ajaxed: name, ...o}));
     if (ref.server) {
         return ref.server;
     }
