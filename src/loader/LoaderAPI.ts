@@ -230,6 +230,7 @@ type RefOpts = {
     path?: string;
     pkg?: string;
     v?: PackageVersions;
+		lazyLoadPackage?: (packageName: string)=> Promise<any>;
 };
 function $getRef(name: string, o: RefOpts): IReference {
     let basePath = o.path || "./";
@@ -268,7 +269,10 @@ function $getRef(name: string, o: RefOpts): IReference {
 
     if (!pkg) {
         if ($isBrowser && FuseBox.target !== "electron") {
-            throw "Package not found " + pkgName;
+					if(o.lazyLoadPackage)
+						return o.lazyLoadPackage(pkgName);
+					else
+						throw "Package not found syncronously" + pkgName;
         } else {
             // Return "real" node module
             return $serverRequire(pkgName + (name ? "/" + name : ""));
@@ -408,6 +412,8 @@ function $import(name: string, o: any = {}) {
     }
 
     let ref = $getRef(name, o);
+		if(ref instanceof Promise)
+			return ref.then(()=> $import(name, o));
     if (ref.server) {
         return ref.server;
     }
