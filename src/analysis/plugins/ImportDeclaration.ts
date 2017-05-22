@@ -19,9 +19,29 @@ export class ImportDeclaration {
                     let requireStatement = this.handleAliasReplacement(file, arg1.value);
                     arg1.value = requireStatement;
                     analysis.addDependency(requireStatement);
-                }
+                } else {
+									//todo: import is not a constant string => calculate/error/warn
+								}
             }
         }
+        if (node.type === "CallExpression" && node.callee) {
+            if (node.callee.type === "Identifier" && node.callee.name === "define") {
+                let arg1 = node.arguments[0];
+								if('ArrayExpression'=== arg1.type) {
+									for(let importName of arg1.elements) {
+										if (analysis.nodeIsString(importName)) {
+											if (!~['require', 'exports'].indexOf(importName.value)) {
+												let requireStatement = this.handleAliasReplacement(file, importName.value);
+												importName.value = requireStatement;
+												analysis.addDependency(requireStatement);
+											}
+										} else {
+											//todo: import is not a constant string => calculate/error/warn
+										}
+									}
+								}
+						}
+				}
         if (node.type === "ImportDeclaration") {
             if (node.source && analysis.nodeIsString(node.source)) {
                 let requireStatement = this.handleAliasReplacement(file, node.source.value);

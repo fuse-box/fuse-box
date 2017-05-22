@@ -426,8 +426,16 @@ export class WorkFlowContext {
         } else {
             this.log.echoStatus(`Typescript config file was not found. Improvising`);
         }
-
-        config.compilerOptions.module = "commonjs";
+        
+				if(!~['commonjs', 'amd'].indexOf(config.compilerOptions.module)) {
+					let specified = config.compilerOptions.module, reason = specified ?
+						`"${specified}" is not supported` :
+						'no module have been specified';
+					this.log[specified?'echoWarning':'echo'](
+						`The only supported module typescript option are "amd" and "commonjs". As ${reason}, "commonjs" will be used.`
+					);
+					config.compilerOptions.module = "commonjs";
+				}
 
         if (this.useSourceMaps) {
             config.compilerOptions.sourceMap = true;

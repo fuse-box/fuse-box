@@ -15,7 +15,7 @@ export class ImportEventTest {
         }).then(result => {
             let results = [];
 
-            result.project.FuseBox.on("after-import", (exports, require, module, __filename, __dirname, pkg) => {
+            result.project.FuseBox.on("after-import", (exports, require, module, define, __filename, __dirname, pkg) => {
                 results.push([exports, __filename, __dirname, pkg]);
             });
             result.project.FuseBox.import("./index");
@@ -40,7 +40,7 @@ export class ImportEventTest {
             },
         }).then(result => {
             let results = [];
-            result.project.FuseBox.on("before-import", (exports, require, module, __filename, __dirname, pkg) => {
+            result.project.FuseBox.on("before-import", (exports, require, module, define, __filename, __dirname, pkg) => {
 
                 results.push([exports, __filename, __dirname, pkg]);
             });

@@ -10,7 +10,7 @@ exports.bar = 2;
 // console.log(require(dynamicPath));
 // var generator = require('cheerio')
 // console.log(generator);
-// FuseBox.intercept(["default", "cheerio"], /\.js$/, (exports, require, module, filename, dirname, moduleName) => {
+// FuseBox.intercept(["default", "cheerio"], /\.js$/, (exports, require, module, define, filename, dirname, moduleName) => {
 //     console.log(moduleName);
 //     FuseBox.exists(moduleName, "bar.js")
 // });

@@ -230,6 +230,8 @@ type RefOpts = {
     path?: string;
     pkg?: string;
     v?: PackageVersions;
+		lazyLoadPackage?: (packageName: string)=> Promise<any>;
+		ajaxed?: string;
 };
 function $getRef(name: string, o: RefOpts): IReference {
     let basePath = o.path || "./";
@@ -268,7 +270,12 @@ function $getRef(name: string, o: RefOpts): IReference {
 
     if (!pkg) {
         if ($isBrowser && FuseBox.target !== "electron") {
-            throw "Package not found " + pkgName;
+					if(o.ajaxed === pkgName)
+            throw new Error(`${pkgName} does not provide a module`);
+					else if(o.lazyLoadPackage)
+						return o.lazyLoadPackage(pkgName);
+					else
+						throw new Error(`${pkgName}: Package not found syncronously`);
         } else {
             // Return "real" node module
             return $serverRequire(pkgName + (name ? "/" + name : ""));
@@ -324,7 +331,7 @@ function $getRef(name: string, o: RefOpts): IReference {
         filePath,
         validPath,
     };
-};
+}
 
 /**
  * $async
@@ -364,7 +371,7 @@ function $async(file: string, cb: (imported?: any) => any, o: any = {}) {
         if (/\.(js|json)$/.test(file)) return cb(g["require"](file));
         return cb("");
     }
-};
+}
 
 /**
  * Trigger events
@@ -382,7 +389,9 @@ function $trigger(name: string, args: any) {
         }
         ;
     }
-};
+}
+
+var $lazyLoadingPackages = {};
 
 /**
  * Imports File
@@ -406,6 +415,8 @@ function $import(name: string, o: any = {}) {
     }
 
     let ref = $getRef(name, o);
+		if(ref instanceof Promise)
+			return ref.then(()=> $import(name, {ajaxed: name, ...o}));
     if (ref.server) {
         return ref.server;
     }
@@ -445,15 +456,55 @@ function $import(name: string, o: any = {}) {
     // pkgName
     let pkg = ref.pkgName;
 
-    if (file.locals && file.locals.module) return file.locals.module.exports;
+    if (file.locals && file.locals.module) {
+			if(file.locals.promise && !o.lazyLoadPackage)
+				throw new Error(`"${name}" cannot be loaded asyncronously but is not done loading (${o})`);
+			return file.locals.promise || file.locals.module.exports;
+		}
     let locals: any = file.locals = {};
 
     // @NOTE: is fuseBoxDirname
     const path = $getDir(ref.validPath);
-
+		
     locals.exports = {};
     locals.module = { exports: locals.exports };
-    locals.require = (name: string, optionalCallback: any) => {
+		locals.define = function(imports, callBack) {
+			var args = [], promises = [];
+			for(let i in imports) {
+				let impName = imports[i];
+				if(~['require', 'exports'].indexOf(impName))
+					args[i] = locals[impName];
+				else {
+					let nodeModule = $getNodeModuleName(impName),
+						package = nodeModule && nodeModule[0];
+					if(!nodeModule || $packages[package])
+					//if internal to this package or the package is already loaded
+						args[i] = locals.require(impName);
+					else ((i, impName)=> {	//isolate `i` and `impName` from scope
+						if(!o.lazyLoadPackage)
+							throw new Error(`"${name}" cannot be loaded asyncronously but "${impName}" cannot be loaded syncronously (${o})`);
+						let promise = $lazyLoadingPackages[package] ||
+							($lazyLoadingPackages[package] = o.lazyLoadPackage(package).then(()=> {
+								delete $lazyLoadingPackages[package];
+							}));
+						promises.push(promise.then(
+							p=> args[i] = locals.require(impName),
+							x=> {
+								console.error(`${impName} errored on loading : impossible to load ${pkg}/${path}`);
+								throw x;
+							}
+						));
+					})(i, impName);
+				}
+			}
+			function effect() {
+				callBack.apply(null, args);
+			}
+			if(promises.length)
+				locals.promise = Promise.all(promises).then(effect);
+			else effect();
+		}
+    locals.require = (name: string) => {
         return $import(name, {
             pkg,
             path,
@@ -465,14 +516,22 @@ function $import(name: string, o: any = {}) {
         paths: $isBrowser ? [] : g["require"].main.paths,
     };
 
-    let args = [locals.module.exports, locals.require, locals.module, ref.validPath, path, pkg];
+    let args = [locals.module.exports, locals.require, locals.module, locals.define, ref.validPath, path, pkg];
     $trigger("before-import", args);
 
     file.fn.apply(0, args);
-    // fn(locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName)
-    $trigger("after-import", args);
-    return locals.module.exports;
-};
+    // fn(locals.module.exports, locals.require, locals.module,locals.define,  validPath, fuseBoxDirname, pkgName)
+		if(locals.promise) {
+			return locals.promise = locals.promise.then(()=> {
+				$trigger("after-import", args);
+				delete locals.promise;
+				return locals.module.exports;
+			});
+		} else {
+			$trigger("after-import", args);
+			return locals.module.exports
+		}
+}
 
 type SourceChangedEvent = {
     type: "js" | "css",
@@ -567,16 +626,16 @@ class FuseBox {
      * Registers a dynamic path
      *
      * @param str a function that is invoked with
-     *  - `true, exports,require,module,__filename,__dirname,__root__`
+     *  - `true, exports,require,module,define,__filename,__dirname,__root__`
      */
     public static dynamic(path: string, str: string, opts?: {
         /** The name of the package */
         pkg: string
     }) {
         this.pkg(opts && opts.pkg || "default", {}, function (___scope___: any) {
-            ___scope___.file(path, function (exports: any, require: any, module: any, __filename: string, __dirname: string) {
-                var res = new Function("__fbx__dnm__", "exports", "require", "module", "__filename", "__dirname", "__root__", str);
-                res(true, exports, require, module, __filename, __dirname, __root__);
+            ___scope___.file(path, function (exports: any, require: any, module: any, define: any, __filename: string, __dirname: string) {
+                var res = new Function("__fbx__dnm__", "exports", "require", "module", "define", "__filename", "__dirname", "__root__", str);
+                res(true, exports, require, module, define, __filename, __dirname, __root__);
             });
         });
     }
