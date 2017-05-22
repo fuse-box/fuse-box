@@ -24,7 +24,9 @@ export class ImportDeclaration {
         }
 
         if (node.type === "ImportDeclaration" || node.type === "ExportNamedDeclaration") {
-            file.es6module = true;
+            if (!file.context.rollupOptions) {
+                file.es6module = true;
+            }
             if (node.source && analysis.nodeIsString(node.source)) {
                 let requireStatement = this.handleAliasReplacement(file, node.source.value);
                 node.source.value = requireStatement;
