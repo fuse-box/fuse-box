@@ -1,7 +1,7 @@
 (function(FuseBox) {
     FuseBox.$fuse$ = FuseBox;
     FuseBox.pkg("fuse-box4-test", {}, function(___scope___) {
-        ___scope___.file("index.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("index.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -59,7 +59,7 @@
             exports.FuseBox = FuseBox_1.FuseBox;
 
         });
-        ___scope___.file("plugins/VuePlugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/VuePlugin.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -120,7 +120,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             };
 
         });
-        ___scope___.file("plugins/images/ImageBase64Plugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/images/ImageBase64Plugin.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -165,7 +165,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             };
 
         });
-        ___scope___.file("lib/SVG2Base64.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("lib/SVG2Base64.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -182,7 +182,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             exports.SVG2Base64 = SVG2Base64;
 
         });
-        ___scope___.file("plugins/stylesheet/CSSResourcePlugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/stylesheet/CSSResourcePlugin.js", function(exports, require, module, define, __filename, __dirname) {
             /* fuse:injection: */
             var Buffer = require("buffer").Buffer;
             /* fuse:injection: */
@@ -337,7 +337,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             };
 
         });
-        ___scope___.file("Utils.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("Utils.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -491,7 +491,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             exports.findFileBackwards = findFileBackwards;
 
         });
-        ___scope___.file("lib/postcss/PostCSSResourcePlugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("lib/postcss/PostCSSResourcePlugin.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -535,7 +535,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             });
 
         });
-        ___scope___.file("plugins/HotReloadPlugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/HotReloadPlugin.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -562,7 +562,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             };
 
         });
-        ___scope___.file("plugins/EnvPlugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/EnvPlugin.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -580,7 +580,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             };
 
         });
-        ___scope___.file("plugins/ConcatPlugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/ConcatPlugin.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -628,7 +628,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             };
 
         });
-        ___scope___.file("plugins/stylesheet/StylusPlugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/stylesheet/StylusPlugin.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -675,7 +675,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             };
 
         });
-        ___scope___.file("plugins/stylesheet/PostCSSPlugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/stylesheet/PostCSSPlugin.js", function(exports, require, module, define, __filename, __dirname) {
             /* fuse:injection: */
             var process = require("process");
             "use strict";
@@ -712,7 +712,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             };
 
         });
-        ___scope___.file("plugins/TypeScriptHelpers.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/TypeScriptHelpers.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -770,7 +770,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             };
 
         });
-        ___scope___.file("Config.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("Config.js", function(exports, require, module, define, __filename, __dirname) {
             /* fuse:injection: */
             var process = require("process");
             "use strict";
@@ -791,7 +791,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             exports.Config = new Configuration();
 
         });
-        ___scope___.file("plugins/images/SVGPlugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/images/SVGPlugin.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -820,7 +820,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             };
 
         });
-        ___scope___.file("plugins/js-transpilers/BabelPlugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/js-transpilers/BabelPlugin.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -900,7 +900,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             };
 
         });
-        ___scope___.file("plugins/js-transpilers/CoffeePlugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/js-transpilers/CoffeePlugin.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -945,7 +945,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             };
 
         });
-        ___scope___.file("plugins/stylesheet/LESSPlugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/stylesheet/LESSPlugin.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -987,7 +987,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             };
 
         });
-        ___scope___.file("plugins/stylesheet/CSSplugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/stylesheet/CSSplugin.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -1154,7 +1154,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             };
 
         });
-        ___scope___.file("plugins/stylesheet/CSSPluginDeprecated.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/stylesheet/CSSPluginDeprecated.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -1204,7 +1204,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             exports.CSSPluginDeprecated = CSSPluginDeprecated;
 
         });
-        ___scope___.file("plugins/HTMLplugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/HTMLplugin.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -1247,7 +1247,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             };
 
         });
-        ___scope___.file("plugins/JSONplugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/JSONplugin.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -1269,7 +1269,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             };
 
         });
-        ___scope___.file("plugins/BannerPlugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/BannerPlugin.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -1288,7 +1288,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             };
 
         });
-        ___scope___.file("plugins/stylesheet/SassPlugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/stylesheet/SassPlugin.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -1340,7 +1340,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             };
 
         });
-        ___scope___.file("plugins/UglifyJSPlugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/UglifyJSPlugin.js", function(exports, require, module, define, __filename, __dirname) {
             /* fuse:injection: */
             var process = require("process");
             /* fuse:injection: */
@@ -1383,7 +1383,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
             };
 
         });
-        ___scope___.file("BundleSource.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("BundleSource.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -1435,7 +1435,7 @@ module.exports ={render : function(el){_p.el = el; return new View(_p)}}
                         file.collection && file.collection.acceptFiles === false) {
                         return;
                     }
-                    this.collectionSource.add(null, `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, define, module, __filename, __dirname){ 
+                    this.collectionSource.add(null, `___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, define, __filename, __dirname){ 
 ${file.headerContent ? file.headerContent.join("\n") : ""}`);
                     this.collectionSource.add(null, file.alternativeContent !== undefined ? file.alternativeContent : file.contents, file.sourceMap);
                     this.collectionSource.add(null, "});");
@@ -1498,7 +1498,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             exports.BundleSource = BundleSource;
 
         });
-        ___scope___.file("plugins/SourceMapPlainJsPlugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/SourceMapPlainJsPlugin.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -1568,7 +1568,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             };
 
         });
-        ___scope___.file("plugins/RawPlugin.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("plugins/RawPlugin.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -1594,7 +1594,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             };
 
         });
-        ___scope___.file("WorkflowContext.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("WorkflowContext.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -1846,7 +1846,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             exports.WorkFlowContext = WorkFlowContext;
 
         });
-        ___scope___.file("File.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("File.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -2063,7 +2063,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             exports.File = File;
 
         });
-        ___scope___.file("FileAnalysis.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("FileAnalysis.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -2249,7 +2249,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             exports.FileAnalysis = FileAnalysis;
 
         });
-        ___scope___.file("ASTTraverse.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("ASTTraverse.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -2296,7 +2296,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             exports.ASTTraverse = ASTTraverse;
 
         });
-        ___scope___.file("PrettyError.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("PrettyError.js", function(exports, require, module, define, __filename, __dirname) {
             /* fuse:injection: */
             var process = require("process");
             "use strict";
@@ -2336,7 +2336,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             exports.PrettyError = PrettyError;
 
         });
-        ___scope___.file("HeaderImport.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("HeaderImport.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -2386,7 +2386,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             exports.nativeModules = headerCollection;
 
         });
-        ___scope___.file("Log.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("Log.js", function(exports, require, module, define, __filename, __dirname) {
             /* fuse:injection: */
             var process = require("process");
             /* fuse:injection: */
@@ -2481,7 +2481,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             exports.Log = Log;
 
         });
-        ___scope___.file("PathMaster.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("PathMaster.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -2733,7 +2733,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             exports.PathMaster = PathMaster;
 
         });
-        ___scope___.file("ModuleCache.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("ModuleCache.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -2962,7 +2962,7 @@ mtime : ${cacheData.mtime}
             exports.ModuleCache = ModuleCache;
 
         });
-        ___scope___.file("ModuleCollection.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("ModuleCollection.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -3115,7 +3115,7 @@ mtime : ${cacheData.mtime}
             exports.ModuleCollection = ModuleCollection;
 
         });
-        ___scope___.file("EventEmitter.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("EventEmitter.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -3147,7 +3147,7 @@ mtime : ${cacheData.mtime}
             exports.EventEmitter = EventEmitter;
 
         });
-        ___scope___.file("arithmetic/Arithmetic.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("arithmetic/Arithmetic.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -3294,7 +3294,7 @@ mtime : ${cacheData.mtime}
             exports.Arithmetic = Arithmetic;
 
         });
-        ___scope___.file("arithmetic/ArithmeticStringParser.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("arithmetic/ArithmeticStringParser.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -3434,7 +3434,7 @@ mtime : ${cacheData.mtime}
             exports.PropParser = PropParser;
 
         });
-        ___scope___.file("FuseBox.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("FuseBox.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -3680,7 +3680,7 @@ mtime : ${cacheData.mtime}
             exports.FuseBox = FuseBox;
 
         });
-        ___scope___.file("ShimCollection.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("ShimCollection.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -3707,7 +3707,7 @@ mtime : ${cacheData.mtime}
             exports.ShimCollection = ShimCollection;
 
         });
-        ___scope___.file("devServer/Server.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("devServer/Server.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -3766,7 +3766,7 @@ mtime : ${cacheData.mtime}
             exports.Server = Server;
 
         });
-        ___scope___.file("devServer/SocketServer.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("devServer/SocketServer.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -3821,7 +3821,7 @@ mtime : ${cacheData.mtime}
             exports.SocketServer = SocketServer;
 
         });
-        ___scope___.file("devServer/HTTPServer.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("devServer/HTTPServer.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -3864,7 +3864,7 @@ mtime : ${cacheData.mtime}
             exports.HTTPServer = HTTPServer;
 
         });
-        ___scope___.file("CollectionSource.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("CollectionSource.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -3903,7 +3903,7 @@ mtime : ${cacheData.mtime}
             exports.CollectionSource = CollectionSource;
 
         });
-        ___scope___.file("testRunner/BundleTestRunner.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("testRunner/BundleTestRunner.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -3927,7 +3927,7 @@ mtime : ${cacheData.mtime}
         return ___scope___.entry = "index.js";
     });
     FuseBox.pkg("fuse-test-runner", {}, function(___scope___) {
-        ___scope___.file("dist/commonjs/index.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("dist/commonjs/index.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -3937,7 +3937,7 @@ mtime : ${cacheData.mtime}
             exports.should = Should_1.should;
 
         });
-        ___scope___.file("dist/commonjs/FuseBoxTestRunner.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("dist/commonjs/FuseBoxTestRunner.js", function(exports, require, module, define, __filename, __dirname) {
             /* fuse:injection: */
             var process = require("process");
             "use strict";
@@ -4183,7 +4183,7 @@ mtime : ${cacheData.mtime}
             exports.FuseBoxTestRunner = FuseBoxTestRunner;
 
         });
-        ___scope___.file("dist/commonjs/Awaiting.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("dist/commonjs/Awaiting.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -4242,7 +4242,7 @@ mtime : ${cacheData.mtime}
             exports.Awaiting = Awaiting;
 
         });
-        ___scope___.file("dist/commonjs/Exception.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("dist/commonjs/Exception.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -4255,7 +4255,7 @@ mtime : ${cacheData.mtime}
             exports.Exception = Exception;
 
         });
-        ___scope___.file("dist/commonjs/Reporter.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("dist/commonjs/Reporter.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -4303,7 +4303,7 @@ mtime : ${cacheData.mtime}
             exports.Reporter = Reporter;
 
         });
-        ___scope___.file("dist/commonjs/Should.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("dist/commonjs/Should.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
@@ -4514,7 +4514,7 @@ ${JSON.stringify(expected, null, 2)}`);
         return ___scope___.entry = "dist/commonjs/index.js";
     });
     FuseBox.pkg("realm-utils", {}, function(___scope___) {
-        ___scope___.file("dist/commonjs/index.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("dist/commonjs/index.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
 
@@ -4526,7 +4526,7 @@ ${JSON.stringify(expected, null, 2)}`);
             var utils_1 = require('./utils');
             exports.utils = utils_1.Utils;
         });
-        ___scope___.file("dist/commonjs/each.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("dist/commonjs/each.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
 
@@ -4637,7 +4637,7 @@ ${JSON.stringify(expected, null, 2)}`);
                 });
             };
         });
-        ___scope___.file("dist/commonjs/utils.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("dist/commonjs/utils.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
 
@@ -4789,7 +4789,7 @@ ${JSON.stringify(expected, null, 2)}`);
 
             exports.Utils = Utils;
         });
-        ___scope___.file("dist/commonjs/chain.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("dist/commonjs/chain.js", function(exports, require, module, define, __filename, __dirname) {
 
             "use strict";
 
@@ -4918,7 +4918,7 @@ ${JSON.stringify(expected, null, 2)}`);
         return ___scope___.entry = "dist/commonjs/index.js";
     });
     FuseBox.pkg("process", {}, function(___scope___) {
-        ___scope___.file("index.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("index.js", function(exports, require, module, define, __filename, __dirname) {
 
             // From https://github.com/defunctzombie/node-process/blob/master/browser.js
             // shim for using process in browser
@@ -5031,7 +5031,7 @@ ${JSON.stringify(expected, null, 2)}`);
         return ___scope___.entry = "index.js";
     });
     FuseBox.pkg("object-assign-polyfill", {}, function(___scope___) {
-        ___scope___.file("index.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("index.js", function(exports, require, module, define, __filename, __dirname) {
 
             if (typeof Object.assign != 'function') {
                 Object.assign = function(target, varArgs) { // .length of function is 2
@@ -5061,7 +5061,7 @@ ${JSON.stringify(expected, null, 2)}`);
         return ___scope___.entry = "index.js";
     });
     FuseBox.pkg("fuse-test-reporter", {}, function(___scope___) {
-        ___scope___.file("index.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("index.js", function(exports, require, module, define, __filename, __dirname) {
             /* fuse:injection: */
             var process = require("process");
             "use strict";
@@ -5209,7 +5209,7 @@ ${JSON.stringify(expected, null, 2)}`);
         return ___scope___.entry = "index.js";
     });
     FuseBox.pkg("ansi", {}, function(___scope___) {
-        ___scope___.file("lib/ansi.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("lib/ansi.js", function(exports, require, module, define, __filename, __dirname) {
 
 
             /**
@@ -5619,7 +5619,7 @@ ${JSON.stringify(expected, null, 2)}`);
             }
 
         });
-        ___scope___.file("lib/newlines.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("lib/newlines.js", function(exports, require, module, define, __filename, __dirname) {
 
 
             /**
@@ -5697,7 +5697,7 @@ ${JSON.stringify(expected, null, 2)}`);
         return ___scope___.entry = "lib/ansi.js";
     });
     FuseBox.pkg("assert", {}, function(___scope___) {
-        ___scope___.file("index.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("index.js", function(exports, require, module, define, __filename, __dirname) {
 
             /*
              * From https://github.com/defunctzombie/commonjs-assert/blob/master/assert.js
@@ -6063,7 +6063,7 @@ ${JSON.stringify(expected, null, 2)}`);
         return ___scope___.entry = "index.js";
     });
     FuseBox.pkg("util", {}, function(___scope___) {
-        ___scope___.file("index.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("index.js", function(exports, require, module, define, __filename, __dirname) {
 
             /*
              * Fork of https://raw.githubusercontent.com/defunctzombie/node-util
@@ -6688,7 +6688,7 @@ ${JSON.stringify(expected, null, 2)}`);
                 return Object.prototype.hasOwnProperty.call(obj, prop);
             }
         });
-        ___scope___.file("isBuffer.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("isBuffer.js", function(exports, require, module, define, __filename, __dirname) {
             /* fuse:injection: */
             var Buffer = require("buffer").Buffer;
             /*
@@ -6708,7 +6708,7 @@ ${JSON.stringify(expected, null, 2)}`);
         return ___scope___.entry = "index.js";
     });
     FuseBox.pkg("buffer", {}, function(___scope___) {
-        ___scope___.file("index.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("index.js", function(exports, require, module, define, __filename, __dirname) {
 
             if (FuseBox.isServer) {
 
@@ -8425,7 +8425,7 @@ ${JSON.stringify(expected, null, 2)}`);
         return ___scope___.entry = "index.js";
     });
     FuseBox.pkg("base64-js", {}, function(___scope___) {
-        ___scope___.file("index.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("index.js", function(exports, require, module, define, __filename, __dirname) {
 
             'use strict'
 
@@ -8546,7 +8546,7 @@ ${JSON.stringify(expected, null, 2)}`);
         return ___scope___.entry = "index.js";
     });
     FuseBox.pkg("ieee754", {}, function(___scope___) {
-        ___scope___.file("index.js", function(exports, require, define, module, __filename, __dirname) {
+        ___scope___.file("index.js", function(exports, require, module, define, __filename, __dirname) {
 
             exports.read = function(buffer, offset, isLE, mLen, nBytes) {
                 var e, m
@@ -8737,9 +8737,8 @@ ${JSON.stringify(expected, null, 2)}`);
             if (a.locals && a.locals.module) return a.locals.module.exports;
             var w = a.locals = {},
                 y = o(x);
-            w.exports = {}, w.module = { exports: w.exports }, w.require = function(e, r) { return g(e, { pkg: _, path: y, v: i.versions }) }, w.require.main = { filename: r ? "./" : global.require.main.filename, paths: r ? [] : global.require.main.paths };
-						w.define = null;
-            var b = [w.module.exports, w.require, w.define, w.module, x, y, _];
+            w.define = null, w.exports = {}, w.module = { exports: w.exports }, w.require = function(e, r) { return g(e, { pkg: _, path: y, v: i.versions }) }, w.require.main = { filename: r ? "./" : global.require.main.filename, paths: r ? [] : global.require.main.paths };
+            var b = [w.module.exports, w.require, w.module, w.define, x, y, _];
             p("before-import", b);
             var j = a.fn;
             return j.apply(0, b), p("after-import", b), w.module.exports
