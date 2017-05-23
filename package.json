@@ -24,7 +24,8 @@
         "test:once": "gulp dist && TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js",
         "start": "gulp watch",
         "devDeps": "gulp installDevDeps",
-        "dist": "gulp dist"
+        "dist": "gulp dist",
+        "postinstall": "opencollective postinstall"
     },
     "engines": {
         "node": ">= 6.9.5",
@@ -98,5 +99,10 @@
         "shorthash": "0.0.2",
         "watch": "^1.0.1",
         "ws": "^1.1.1"
+    },
+    "collective": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/fuse-box",
+        "logo": "https://opencollective.com/opencollective/logo.txt"
     }
 }
