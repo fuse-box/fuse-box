@@ -91,6 +91,7 @@
         "ieee754": "^1.1.8",
         "inquirer": "^3.0.6",
         "mustache": "^2.3.0",
+        "opencollective": "^1.0.3",
         "postcss": "^6.0.1",
         "pretty-time": "^0.2.0",
         "prettysize": "0.0.3",
