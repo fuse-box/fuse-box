@@ -8,27 +8,37 @@ import { BundleRunner } from "./BundleRunner";
 import { ServerOptions } from "../devServer/Server";
 import * as  chokidar from "chokidar";
 import { utils, each } from "realm-utils";
-import { BundleAbstraction } from "../bundle-abstraction/BundleAbstraction";
-import { ProducerAbstraction } from "../bundle-abstraction/ProducerAbstraction";
+import { ProducerAbstraction } from "../bundle-abstraction/core/ProducerAbstraction";
+import { BundleAbstraction } from "../bundle-abstraction/core/BundleAbstraction";
 
 export class BundleProducer {
     public bundles = new Map<string, Bundle>();
     public hmrInjected = false;
+
     public sharedEvents = new EventEmitter();
     public writeBundles = true;
     public sharedCustomPackages: Map<string, SharedCustomPackage​>;
     public runner: BundleRunner;
     public devServerOptions: ServerOptions;
+
     public entryPackageName: string;
     public entryPackageFile: string;
+
+    private chokidarOptions: any;
+
     constructor(public fuse: FuseBox) {
         this.runner = new BundleRunner(this.fuse);
     }
 
 
-    public run(opts: any): Promise<BundleProducer> {
+    public run(opts: { chokidar?: any, runType?: string }): Promise<BundleProducer> {
         /** Collect information about watchers and start watching */
         this.watch();
+
+        if (opts) {
+            this.chokidarOptions = opts.chokidar;
+        }
+
 
         return this.runner.run(opts).then(() => {
 
@@ -110,7 +120,7 @@ export class BundleProducer {
         }
 
         let ready = false;
-        chokidar.watch(this.fuse.context.homeDir)
+        chokidar.watch(this.fuse.context.homeDir, this.chokidarOptions || {})
             .on('all', (event, fp) => {
                 if (ready) {
                     this.onChanges(settings, fp)

@@ -1,7 +1,7 @@
 import * as path from "path";
-import { jsCommentTemplate } from "../../../Utils";
-import { Config } from "../../../Config";
 import { OptimisedCore } from "./OptimisedCore";
+import { jsCommentTemplate } from "../../Utils";
+import { Config } from "../../Config";
 export class ResponsiveAPI {
     private computedStatements = false;
     private hashes = false;

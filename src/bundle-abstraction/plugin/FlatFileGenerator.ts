@@ -1,4 +1,4 @@
-import { FileAbstraction } from "../../../bundle-abstraction/FileAbstraction";
+import { FileAbstraction } from "../core/FileAbstraction";
 
 export class FlatFileGenerator {
     public contents = [];

@@ -13,7 +13,9 @@
         { "file": "test-runner.md" },
         { "file": "typescript.md" },
         { "file": "rollup.md" },
-        { "file": "examples-seeds.md", "title": "Examples and seeds" }
+        { "file": "examples-seeds.md", "title": "Examples and seeds" },
+        { "file": "third-party-plugins.md" },
+        { "file": "faq.md" }
     ],
     "plugins": [{
         "group": "CSS Plugins",
@@ -58,6 +60,7 @@
             "plugins/misc/ReplacePlugin.md",
             "plugins/misc/SourceMapPlainJsPlugin.md",
             "plugins/misc/TypeScriptHelpers.md",
+            "plugins/misc/UglifyESPlugin.md",
             "plugins/misc/UglifyJSPlugin.md"
         ]
     }]

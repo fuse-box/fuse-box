@@ -1,13 +1,17 @@
-import { acornParse } from "../analysis/FileAnalysis";
+import { acornParse } from "../../analysis/FileAnalysis";
 import { PackageAbstraction } from "./PackageAbstraction";
-import { ASTTraverse } from "../ASTTraverse";
+import { ASTTraverse } from "../../ASTTraverse";
 import { RequireStatement } from "./nodes/RequireStatement";
 import * as escodegen from "escodegen";
 import * as path from "path";
-import { ensureFuseBoxPath } from "../Utils";
+import { ensureFuseBoxPath } from "../../Utils";
 import { FuseBoxIsServerCondition } from "./nodes/FuseBoxIsServerCondition";
 import { FuseBoxIsBrowserCondition } from "./nodes/FuseBoxIsBrowserCondition";
+import { matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty } from "./AstUtils";
+import { ExportsInterop } from "./nodes/ExportsInterop";
+import { UseStrict } from "./nodes/UseStrict";
 
+const globalNames = new Set<string>(["__filename", "__dirname", "exports", "module"]);
 
 export class FileAbstraction {
     private id: string;
@@ -15,10 +19,12 @@ export class FileAbstraction {
     public ast: any;
     public fuseBoxDir;
 
+    /** FILE CONTENTS */
     public requireStatements = new Set<RequireStatement​​>();
-
     public fuseboxIsServerConditions = new Set<FuseBoxIsServerCondition>();
     public fuseboxIsBrowserConditions = new Set<FuseBoxIsBrowserCondition>();
+    public exportsInterop = new Set<ExportsInterop>();
+    public useStrict = new Set<UseStrict>();
 
     public isEntryPoint = false;
 
@@ -124,61 +130,73 @@ export class FileAbstraction {
 
         return code;
     }
+    /**
+     * 
+     * @param node 
+     * @param parent 
+     * @param prop 
+     * @param idx 
+     */
+    private onNode(node, parent, prop, idx) {
+        // Object.defineProperty(exports, '__esModule', { value: true });
+
+        if (matcheObjectDefineProperty(node, "exports")) {
+
+            this.exportsInterop.add(new ExportsInterop(parent, prop, node));
+        }
+        if (matchesAssignmentExpression(node, 'exports', '__esModule')) {
+            this.exportsInterop.add(new ExportsInterop(parent, prop, node));
+        }
+        if (matchesLiteralStringExpression(node, "use strict")) {
+            this.useStrict.add(new UseStrict(parent, prop, node));
+        }
+
+        // require statements
+        if (matchesSingleFunction(node, "require")) {
+            // adding a require statement
+            this.requireStatements.add(new RequireStatement(this, node));
+        }
+
+        // FuseBox features
+        if (matchesDoubleMemberExpression(node, "FuseBox")) {
+
+            if (node.property.name === "import") {
+                // replace it right away with require statement
+                parent.callee = {
+                    type: "Identifier",
+                    name: "require"
+                }
+                // treat it like any any other require statements
+                this.requireStatements.add(new RequireStatement(this, parent));
+            }
+            if (node.property.name === "isServer") {
+                this.fuseboxIsServerConditions.add(new FuseBoxIsServerCondition(this, parent, prop, idx));
+            }
+            if (node.property.name === "isBrowser") {
+                this.fuseboxIsBrowserConditions.add(new FuseBoxIsBrowserCondition(this, parent, prop, idx));
+            }
+            return false;
+        }
+        // global vars
+        if (node && node.type === "Identifier") {
+            let globalVariable;
+            if (globalNames.has(node.name)) {
+                globalVariable = node.name;
+            }
+            if (globalVariable) {
+                if (!this.globalVariables.has(globalVariable)) {
+                    this.globalVariables.add(globalVariable);
+                }
+            }
+        }
+    }
+
 
     public analyse() {
-        const globalNames = new Set<string>(["__filename", "__dirname", "exports", "module"]);
+
         //console.log(JSON.stringify(this.ast, null, 2));
         ASTTraverse.traverse(this.ast, {
-            pre: (node, parent, prop, idx) => {
-                // require statements
-                if (node.callee && node.callee.type === "Identifier" && node.callee.name === "require") {
-                    // adding a require statement
-                    this.requireStatements.add(new RequireStatement(this, node));
-                }
-
-                // FuseBox features
-                if (node.type === "MemberExpression"
-                    && node.object
-                    && node.object.type === "Identifier"
-                    && node.object.name === "FuseBox" && node.property) {
-
-                    if (node.property.name === "import") {
-                        // replace it right away with require statement
-                        parent.callee = {
-                            type: "Identifier",
-                            name: "require"
-                        }
-                        // treat it like any any other require statements
-                        this.requireStatements.add(new RequireStatement(this, parent));
-                    }
-
-
-                    if (node.property.name === "isServer") {
-                        this.fuseboxIsServerConditions.add(new FuseBoxIsServerCondition(this, parent, prop, idx));
-                    }
-
-                    if (node.property.name === "isBrowser") {
-
-                        this.fuseboxIsBrowserConditions.add(new FuseBoxIsBrowserCondition(this, parent, prop, idx));
-                    }
-
-                    return false;
-                }
-
-
-                // global vars
-                if (node && node.type === "Identifier") {
-                    let globalVariable;
-                    if (globalNames.has(node.name)) {
-                        globalVariable = node.name;
-                    }
-                    if (globalVariable) {
-                        if (!this.globalVariables.has(globalVariable)) {
-                            this.globalVariables.add(globalVariable);
-                        }
-                    }
-                }
-            },
+            pre: (node, parent, prop, idx) => this.onNode(node, parent, prop, idx)
         });
     }
 }

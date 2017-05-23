@@ -1,6 +1,6 @@
 import { BundleAbstraction } from "./BundleAbstraction";
 import { FileAbstraction } from "./FileAbstraction";
-import { ASTTraverse } from "../ASTTraverse";
+import { ASTTraverse } from "../../ASTTraverse";
 
 export class PackageAbstraction {
     public fileAbstractions = new Map<string, FileAbstraction>();

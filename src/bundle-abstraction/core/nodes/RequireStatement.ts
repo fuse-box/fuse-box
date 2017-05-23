@@ -1,6 +1,7 @@
 import { FileAbstraction } from "../FileAbstraction";
-import { joinFuseBoxPath } from "../../Utils";
+
 import * as path from "path";
+import { joinFuseBoxPath } from "../../../Utils";
 function isString(node: any): boolean {
     return node.type === "Literal" || node.type === "StringLiteral";
 }

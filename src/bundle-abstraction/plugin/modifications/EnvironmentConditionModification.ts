@@ -1,9 +1,11 @@
 import { OptimisedCore } from "../OptimisedCore";
 import { FlatFileGenerator } from "../FlatFileGenerator";
-import { FileAbstraction } from "../../../../bundle-abstraction/FileAbstraction";
-import { FuseBoxIsServerCondition } from "../../../../bundle-abstraction/nodes/FuseBoxIsServerCondition";
 import { each } from "realm-utils";
-import { FuseBoxIsBrowserCondition } from "../../../../bundle-abstraction/nodes/FuseBoxIsBrowserCondition";
+import { FuseBoxIsBrowserCondition } from "../../core/nodes/FuseBoxIsBrowserCondition";
+import { FuseBoxIsServerCondition } from "../../core/nodes/FuseBoxIsServerCondition";
+import { FileAbstraction } from "../../core/FileAbstraction";
+
+
 
 export class EnvironmentConditionModification {
     public static perform(core: OptimisedCore, generator: FlatFileGenerator, file: FileAbstraction) {

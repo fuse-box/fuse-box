@@ -1,4 +1,4 @@
-export { OptimisedBundlePlugin } from "./plugins/optimised-api/OptimisedBundlePlugin";
+export { OptimisedBundlePlugin } from "./bundle-abstraction/plugin/FuseBoxOptimisedBundlePlugin";
 export { ReplacePlugin } from "./plugins/ReplacePlugin";
 export { VuePlugin } from "./plugins/VuePlugin";
 export { ImageBase64Plugin } from "./plugins/images/ImageBase64Plugin";
@@ -21,6 +21,7 @@ export { MarkdownPlugin } from "./plugins/Markdownplugin";
 export { JSONPlugin } from "./plugins/JSONplugin";
 export { BannerPlugin } from "./plugins/BannerPlugin";
 export { SassPlugin } from "./plugins/stylesheet/SassPlugin";
+export { UglifyESPlugin } from "./plugins/UglifyESPlugin";
 export { UglifyJSPlugin } from "./plugins/UglifyJSPlugin";
 export { SourceMapPlainJsPlugin } from "./plugins/SourceMapPlainJsPlugin";
 export { RawPlugin } from "./plugins/RawPlugin";

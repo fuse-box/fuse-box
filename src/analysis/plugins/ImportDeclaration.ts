@@ -22,22 +22,52 @@ export class ImportDeclaration {
                 }
             }
         }
-        if (node.type === "ImportDeclaration") {
+
+        if (node.type === "ImportDeclaration" || node.type === "ExportNamedDeclaration") {
+            if (!file.context.rollupOptions) {
+                file.es6module = true;
+            }
             if (node.source && analysis.nodeIsString(node.source)) {
                 let requireStatement = this.handleAliasReplacement(file, node.source.value);
                 node.source.value = requireStatement;
                 analysis.addDependency(requireStatement);
-
             }
         }
     }
 
-    public static onEnd() { }
+    public static onEnd(file: File) {
+
+        // We detect that imports are used
+        // Now we need to transpile the code 
+        if (file.es6module) {
+            const ts = require("typescript");
+            let tsconfg: any = {
+                compilerOptions: {
+                    module: "commonjs",
+                    target: "es5"
+                },
+            };;
+            let result = ts.transpileModule(file.contents, tsconfg);
+            file.contents = result.outputText;
+        }
+    }
 
     /**
      * Replace aliases using the context collection
      */
     private static handleAliasReplacement(file: File, requireStatement: string): string {
+
+        // checking for browser override (asap) case
+        // these people ...
+        // https://github.com/defunctzombie/package-browser-field-spec
+        if (file.info.nodeModuleInfo) {
+            const overrides = file.info.nodeModuleInfo.browserOverrides;
+            if (overrides) {
+                if (overrides[requireStatement]) {
+                    requireStatement = overrides[requireStatement];
+                }
+            }
+        }
 
         if (!file.context.experimentalAliasEnabled) {
             return requireStatement;

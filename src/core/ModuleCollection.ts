@@ -300,7 +300,7 @@ export class ModuleCollection {
         // unlike require("requre/each") - points to an explicit file
         // So we might never resolve the entry (if only a partial require was mentioned)
         return file.info.nodeModuleExplicitOriginal && collection.pm
-            ? collection.resolve(new File(this.context, collection.pm.init(file.info.absPath)))
+            ? collection.resolve(new File(this.context, collection.pm.init(file.info.absPath, file.info.fuseBoxAlias)))
             : collection.resolveEntry();
     }
 

@@ -6,6 +6,7 @@ import * as path from "path";
 import * as fs from "fs";
 import { BundleData } from "../arithmetic/Arithmetic";
 
+
 /**
  * If a import url isn't relative
  * and only has ascii + @ in the name it is considered a node module
@@ -14,10 +15,12 @@ const NODE_MODULE = /^([a-z@](?!:).*)$/;
 
 export interface INodeModuleRequire {
     name: string;
+    fuseBoxPath?: string;
     target?: string;
 }
 
 export interface IPathInformation {
+    fuseBoxAlias?: string;
     isRemoteFile?: boolean;
     remoteURL?: string;
     isNodeModule: boolean;
@@ -39,6 +42,7 @@ export interface IPackageInformation {
     root: string;
     entryRoot: string,
     custom: boolean;
+    browserOverrides?: any;
     customBelongsTo?: string;
 }
 
@@ -68,11 +72,16 @@ export class AllowedExtenstions {
 export class PathMaster {
 
     private tsMode: boolean = false;
+    private fuseBoxAlias: string;
 
     constructor(public context: WorkFlowContext, public rootPackagePath?: string) { }
 
-    public init(name: string) {
-        return this.resolve(name, this.rootPackagePath);
+    public init(name: string, fuseBoxPath?: string) {
+        const resolved = this.resolve(name, this.rootPackagePath);
+        if (fuseBoxPath) {
+            resolved.fuseBoxPath = fuseBoxPath;
+        }
+        return resolved;
     }
 
     public setTypeScriptMode() {
@@ -80,7 +89,6 @@ export class PathMaster {
     }
 
     public resolve(name: string, root?: string, rootEntryLimit?: string): IPathInformation {
-
         let data = <IPathInformation>{};
 
         if (/^(http(s)?:|\/\/)/.test(name)) {
@@ -119,20 +127,32 @@ export class PathMaster {
 
             if (info.target) {
                 // Explicit require from a libary e.g "lodash/dist/each" -> "dist/each"
-                data.absPath = this.getAbsolutePath(info.target, data.nodeModuleInfo.root, undefined, true);
+                const absPath = this.getAbsolutePath(info.target, data.nodeModuleInfo.root, undefined, true);
+                if (absPath.alias) {
+                    data.fuseBoxAlias = absPath.alias;
+                }
+                data.absPath = absPath.resolved;
                 data.absDir = path.dirname(data.absPath);
                 data.nodeModuleExplicitOriginal = info.target;
             } else {
                 data.absPath = data.nodeModuleInfo.entry;
                 data.absDir = data.nodeModuleInfo.root;
             }
+
             if (data.absPath) {
                 data.fuseBoxPath = this.getFuseBoxPath(data.absPath, data.nodeModuleInfo.root);
+            }
+            if (this.fuseBoxAlias) {
+                data.fuseBoxPath = this.fuseBoxAlias;
             }
 
         } else {
             if (root) {
-                data.absPath = this.getAbsolutePath(name, root, rootEntryLimit);
+                const absPath = this.getAbsolutePath(name, root, rootEntryLimit);
+                if (absPath.alias) {
+                    data.fuseBoxAlias = absPath.alias;
+                }
+                data.absPath = absPath.resolved;
                 data.absDir = path.dirname(data.absPath);
                 data.fuseBoxPath = this.getFuseBoxPath(data.absPath, this.rootPackagePath);
             }
@@ -154,7 +174,6 @@ export class PathMaster {
         }
         // Some smart asses like "react-router"
         // Skip .js for their main entry points.
-        // HATE HATE HATE
         let ext = path.extname(name);
         if (!ext) {
             name += ".js";
@@ -173,37 +192,27 @@ export class PathMaster {
      *
      * @memberOf PathMaster
      */
-    public getAbsolutePath(name: string, root: string, rootEntryLimit?: string, explicit = false) {
-        let url = this.ensureFolderAndExtensions(name, root, explicit);
+    public getAbsolutePath(name: string, root: string, rootEntryLimit?: string, explicit = false): {
+        resolved: string,
+        alias?: string
+    } {
+
+        const data = this.ensureFolderAndExtensions(name, root, explicit);
+        const url = data.resolved;
+        const alias = data.alias;
 
         let result = path.resolve(root, url);
 
-        // A check for tsx
-        // Simple a hack..
-        // ensureFolderAndExtensions needs to be re-writted
-        // We should list a folder and pick matching file
-        // if (this.tsMode) {
-        //     if (!fs.existsSync(result)) {
-        //         let tsxVersion = replaceExt(result, ".tsx");
-        //         if (fs.existsSync(tsxVersion)) {
-        //             return tsxVersion;
-        //         } else {
-        //             // yet another hack
-        //             // final check for .js extension
-        //             // I know, it's not pretty ;-( Let's find a way to fix that
-        //             let jsVersion = replaceExt(result, ".js");
-        //             return jsVersion;
-        //         }
-        //     }
-        // }
 
         // Fixing node_modules package .json limits.
         if (rootEntryLimit && name.match(/\.\.\/$/)) {
             if (result.indexOf(path.dirname(rootEntryLimit)) < 0) {
-                return rootEntryLimit;
+                return { resolved: rootEntryLimit, alias: alias };
             }
         }
-        return result;
+        const output = { resolved: result, alias: alias };
+        //RESOLUTION_CACHE.set(cacheKey, output);
+        return output;
     }
 
     public getParentFolderName(): string {
@@ -255,16 +264,16 @@ export class PathMaster {
         }
     }
 
-    private ensureFolderAndExtensions(name: string, root: string, explicit = false) {
-        // Would be great to list a folder and prob for a file.
-        // So, let's say, user did not specify an extension
-        // So we list a folder, get something like this:
-        // .
-        // target.jsx
-        // target.tsx
-        // target.ts
-        // In case of tsMode we choose target.ts if available
-        //      if target.ts is missing, we choose target.tsx and so on
+    private ensureNodeModuleExtension(input: string) {
+        let ext = path.extname(input);
+        if (!ext) {
+            return input + ".js";
+        }
+        return input;
+    }
+
+    private ensureFolderAndExtensions(name: string, root: string, explicit = false):
+        { resolved: string, alias?: string } {
 
         let ext = path.extname(name);
         let fileExt = this.tsMode && !explicit ? ".ts" : ".js";
@@ -273,23 +282,42 @@ export class PathMaster {
             name = "." + name.slice(1, name.length);
             name = path.join(this.rootPackagePath, name);
         }
+        if (explicit) {
+
+            if (!ext) {
+                // handle cases with
+                // require("@angular/platform-browser/animations");
+                // where animation contains package.json pointing to a different file
+                const folderJsonPath = path.join(root, name, "package.json");
+
+                if (fs.existsSync(folderJsonPath)) {
+                    const folderJSON = require(folderJsonPath);
+                    if (folderJSON.main) {
+                        return {
+                            resolved: path.resolve(root, name, folderJSON.main),
+                            alias: this.ensureNodeModuleExtension(name)
+                        }
+                    }
+                }
+            }
+        }
 
         if (!AllowedExtenstions.has(ext)) {
             let folder = path.isAbsolute(name) ? name : path.join(root, name);
             const folderPath = this.testFolder(folder, name);
             if (folderPath) {
-                return folderPath;
+                return { resolved: folderPath }
             } else {
                 let fileNameCheck = this.checkFileName(root, name);
                 if (fileNameCheck) {
-                    return fileNameCheck;
+                    return { resolved: fileNameCheck };
                 } else {
                     name += fileExt;
                 }
             }
         }
 
-        return name;
+        return { resolved: name };
     }
 
     private getNodeModuleInfo(name: string): INodeModuleRequire {
@@ -297,9 +325,13 @@ export class PathMaster {
         if (name[0] === "@") {
             let s = name.split("/");
             let target = s.splice(2, s.length).join("/");
+            let fuseBoxPath;
+            if (target) {
+                fuseBoxPath = this.ensureNodeModuleExtension(target);
+            }
             return {
                 name: `${s[0]}/${s[1]}`,
-                target: target || undefined,
+                target: target
             };
         }
         let data = name.split(/\/(.+)?/);
@@ -320,14 +352,19 @@ export class PathMaster {
                 // Getting an entry point
                 let entryFile;
                 let entryRoot;
+                let browserOverrides;
                 if (json.browser) {
-                    if (typeof json.browser === "object" && json.browser[json.main]) {
+
+                    if (this.context.isBrowserTarget() &&
+                        typeof json.browser === "object" && json.browser[json.main]) {
+                        browserOverrides = json.browser;
                         entryFile = json.browser[json.main];
                     }
                     if (typeof json.browser === "string") {
                         entryFile = json.browser;
                     }
                 }
+
                 if (this.context.rollupOptions && json["jsnext:main"]) {
                     entryFile = path.join(folder, json["jsnext:main"]);
                 } else {

@@ -1,10 +1,10 @@
-import { createFlatEnv } from "../stubs/TestEnvironment";
 import { should } from "fuse-test-runner";
+import { createOptimisedBundleEnv } from "../stubs/TestEnvironment";
 
 export class ServerEnvironmentConditionTest {
     "Should handle FuseBox.isServer"() {
         // gets a module from src/tests/stubs/test_modules/fbjs
-        return createFlatEnv({
+        return createOptimisedBundleEnv({
             stubs: true,
             project: {
                 files: {
@@ -20,7 +20,7 @@ export class ServerEnvironmentConditionTest {
 
     "Should handle FuseBox.isBrowser"() {
         // gets a module from src/tests/stubs/test_modules/fbjs
-        return createFlatEnv({
+        return createOptimisedBundleEnv({
             stubs: true,
             project: {
                 files: {
@@ -37,7 +37,7 @@ export class ServerEnvironmentConditionTest {
 
     "Should handle  isServer in a list"() {
         // gets a module from src/tests/stubs/test_modules/fbjs
-        return createFlatEnv({
+        return createOptimisedBundleEnv({
             stubs: true,
             project: {
                 files: {
@@ -52,7 +52,7 @@ export class ServerEnvironmentConditionTest {
     }
     "Should handle  isServer and isBrowser in a list"() {
         // gets a module from src/tests/stubs/test_modules/fbjs
-        return createFlatEnv({
+        return createOptimisedBundleEnv({
             stubs: true,
             project: {
                 files: {

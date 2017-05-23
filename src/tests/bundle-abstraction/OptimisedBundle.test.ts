@@ -1,10 +1,11 @@
 
-import { createFlatEnv } from "../stubs/TestEnvironment";
+
 import { should } from "fuse-test-runner";
+import { createOptimisedBundleEnv } from "../stubs/TestEnvironment";
 
 export class FlatAPItest {
     "Should create a simple univeral API"() {
-        return createFlatEnv({
+        return createOptimisedBundleEnv({
             project: {
                 files: {
                     "index.js": `exports.something = require("./foo")`,
@@ -21,7 +22,7 @@ export class FlatAPItest {
     }
 
     "Should give directory name"() {
-        return createFlatEnv({
+        return createOptimisedBundleEnv({
             project: {
                 files: {
                     "index.js": `exports.out = __dirname`,
@@ -37,7 +38,7 @@ export class FlatAPItest {
     }
 
     "Should give filename"() {
-        return createFlatEnv({
+        return createOptimisedBundleEnv({
             project: {
                 files: {
                     "index.js": `exports.out = __filename`,
@@ -53,7 +54,7 @@ export class FlatAPItest {
     }
 
     "Should understand computed statements"() {
-        return createFlatEnv({
+        return createOptimisedBundleEnv({
             project: {
                 files: {
                     "foo/hello.js": `
@@ -73,7 +74,7 @@ export class FlatAPItest {
 
 
     "Should understand computed statements with FuseBox.import"() {
-        return createFlatEnv({
+        return createOptimisedBundleEnv({
             project: {
                 files: {
                     "foo/hello.js": `
@@ -92,7 +93,7 @@ export class FlatAPItest {
 
     "Should execute an entry point"() {
         let random = new Date().getTime().toString();
-        return createFlatEnv({
+        return createOptimisedBundleEnv({
             project: {
                 files: {
                     "index.ts": `
@@ -109,7 +110,7 @@ export class FlatAPItest {
     }
 
     "Should execute twice without errors"() {
-        return createFlatEnv({
+        return createOptimisedBundleEnv({
             project: {
                 files: {
                     "index.js": `exports.something = require("./foo")`,
@@ -125,7 +126,7 @@ export class FlatAPItest {
 
     "Should bundle a partial function"() {
         // gets a module from src/tests/stubs/test_modules/fbjs
-        return createFlatEnv({
+        return createOptimisedBundleEnv({
             stubs: true,
             project: {
                 files: {

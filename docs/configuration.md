@@ -239,6 +239,36 @@ FuseBox.init({
 })
 ```
 
+There are 2 ways to get to the generated file names
+
+### Hashes and WebIndexPlugin
+
+Use [WebIndexPlugin](/plugins/webindexplugin#webindexplugin) which will take care of everything. Generated files names will be in your script tags
+```js
+WebIndexPlugin({
+    title: "My awesome website",
+})
+```
+
+### Hashes and bundles
+
+You can retreive bundle names from a [producer](/page/bundle#producer) like so:
+
+```js
+fuse.run().then(producer => {
+    producer.bundles.forEach((bundle, name) => {
+       bundle.output.lastPrimaryOutput.filename
+    });
+})
+```
+lastPrimaryOutput contains the following information
+
+| Property  | Description |
+| ------------- | ------------- |
+| `path`  | Full path to the file  |
+| `hash`  | Generated hash  |
+| `filename`  | Filename  |
+
 ## Sourcemaps
 
 Project in FuseBox are enabled by setting the `sourceMaps` property and setting it to `true`:
@@ -322,11 +352,22 @@ FuseBox tests each file running it through the plugin list. If it sees an array,
 
 ## Target
 
-At this moment target exists only to switch to [electron](https://electron.atom.io/) mode
+At this moment target exists  to switch to [electron](https://electron.atom.io/) mode
+and [browser case](https://github.com/defunctzombie/package-browser-field-spec)
+
+for electron:
 
 ```js
 fuse.bundle("app").target("electron")
 ```
+
+for browser (for example lib asap)
+
+```js
+fuse.bundle("app").target("browser")
+```
+
+We keep extending this functionality to provide more platform specific features.
 
 ### Example
 ```bash

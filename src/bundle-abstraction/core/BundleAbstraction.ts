@@ -1,7 +1,8 @@
 import { ProducerAbstraction } from "./ProducerAbstraction";
 import { PackageAbstraction } from "./PackageAbstraction";
-import { acornParse } from "../analysis/FileAnalysis";
-import { ASTTraverse } from "../ASTTraverse";
+import { ASTTraverse } from "../../ASTTraverse";
+import { acornParse } from "../../analysis/FileAnalysis";
+
 
 export class BundleAbstraction {
     public packageAbstractions = new Map<string, PackageAbstraction​​>();

@@ -5,7 +5,8 @@ import * as fs from "fs";
 import * as appRoot from "app-root-path";
 import { removeFolder } from "../../Utils";
 import * as fsExtra from "fs-extra";
-import { OptimisedBundlePlugin } from "../../plugins/optimised-api/OptimisedBundlePlugin";
+import { OptimisedBundlePlugin } from "../../index";
+
 
 const jsdom = require("jsdom");
 
@@ -49,11 +50,11 @@ export function getStubsFolder() {
 }
 
 
-export function createFlatEnv(opts: any) {
+export function createOptimisedBundleEnv(opts: any) {
     const name = opts.name || `test-${new Date().getTime()}`;
 
     let tmpFolder = path.join(appRoot.path, ".fusebox", "tests", name);
-
+    const optimisedBundleOpts = opts.options || {}
 
     fsExtra.ensureDirSync(tmpFolder);
     let localPath = path.join(tmpFolder, name);
@@ -100,7 +101,7 @@ export function createFlatEnv(opts: any) {
         projectOptions.modulesFolder = modulesFolder;
 
         projectOptions.plugins = projectOptions.plugins || [];
-        projectOptions.plugins.push(OptimisedBundlePlugin())
+        projectOptions.plugins.push(OptimisedBundlePlugin(optimisedBundleOpts))
         const fuse = FuseBox.init(projectOptions);
 
 
