@@ -284,6 +284,7 @@ gulp.task("installDevDeps", function(done) {
         "marked",
         "node-sass",
         "uglify-js",
+        "uglify-es",
         "source-map",
         "coffee-script",
         "@types/node",
