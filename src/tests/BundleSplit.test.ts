@@ -61,6 +61,30 @@ export class BundleSplitTest {
 		});
 	}
 
+    "Should split bundles - tested via separate testing environment"() {
+        const fuse = createFuseBox({
+            files: {
+                "index.js": `
+                        export function bar(){return foo() + 1}
+                    `,
+                "foo.js": `
+                        export function foo(){return 1}
+                    `
+            },
+        });
+        fuse.bundle("index")
+            .split("foo.js", "foobundle > foo.js")
+            .instructions('> index.js + foo.js');
+
+        return fuse.runAndLoad(["index"],({index}, dist) => {
+            const fuseLoader = index.FuseBox;
+            should(fuseLoader.exists("./foo.js")).beFalse();
+
+            const cfg = fuseLoader.global("__fsbx__bundles__");
+            should(cfg.bundles["foobundle"]).beObject();
+        });
+    }
+
     "Should support source maps for split bundles - tested via separate testing environment"() {
         const fuse = createFuseBox({
             files: {
