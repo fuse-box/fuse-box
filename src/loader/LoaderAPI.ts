@@ -528,9 +528,9 @@ class FuseBox {
     /**
      * Check if a file exists in path
      */
-    public static exists(path: string) {
+    public static exists(path: string, o: any = {}) {
         try {
-            let ref = $getRef(path, {});
+            let ref = $getRef(path, o);
             return ref.file !== undefined;
         }
         catch (err) {
