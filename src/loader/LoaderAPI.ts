@@ -446,7 +446,7 @@ function $import(name: string, o: any = {}) {
         return $async(name, (result) => asyncMode ? o(result) : null, o);
         // throw `File not found ${ref.validPath}`;
     }
-		
+
     // pkgName
     let pkg = ref.pkgName;
 
