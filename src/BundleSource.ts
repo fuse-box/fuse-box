@@ -224,7 +224,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             this.concat.add(null, "(FuseBox)");
         }
         if (this.context.sourceMapsProject || this.context.sourceMapsVendor) {
-            let sourceName = /[^\/]*$/.exec(this.context.bundle.name)[0];
+            let sourceName = this.context.output.filename;
             this.concat.add(null, `//# sourceMappingURL=${sourceName}.js.map`);
         }
     }

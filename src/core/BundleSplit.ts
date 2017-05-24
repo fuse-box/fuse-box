@@ -90,7 +90,7 @@ export class BundleSplit {
             // getting information on the paths
             configs.forEach(config => {
                 if (config) {
-                    let localFileName = config.fuse.context.output.lastGeneratedFileName;
+                    let localFileName = config.fuse.context.output.lastPrimaryOutput.filename;
                     this.bundleBrowserConfig.bundles[config.name] = {
                         file: localFileName,
                         main: ensurePublicExtension(config.main)
