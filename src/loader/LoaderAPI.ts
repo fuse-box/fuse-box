@@ -435,9 +435,6 @@ function $import(name: string, o: any = {}) {
         }
     }
 
-		if(o.meta) {
-			return file?file.meta:false;
-		}
     if (!file) {
         let asyncMode = typeof o === "function";
         let processStopped = $trigger("async", [name, o]);
@@ -447,6 +444,9 @@ function $import(name: string, o: any = {}) {
         return $async(name, (result) => asyncMode ? o(result) : null, o);
         // throw `File not found ${ref.validPath}`;
     }
+		if(o.meta) {
+			return file.meta;
+		}
     // pkgName
     let pkg = ref.pkgName;
 
