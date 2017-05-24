@@ -1,6 +1,6 @@
 import { Plugin, WorkFlowContext } from "../core/WorkflowContext";
 import { should } from "fuse-test-runner";
-import { createEnv } from "./stubs/TestEnvironment";
+import { createEnv, createFuseBox } from "./stubs/TestEnvironment";
 import { joinFuseBoxPath } from "../Utils";
 import * as fs from "fs";
 
@@ -60,5 +60,30 @@ export class BundleSplitTest {
 			should(contents).findString("//# sourceMappingURL=foobundle.js.map");
 		});
 	}
+
+    "Should support source maps for split bundles - tested via separate testing environment"() {
+        const fuse = createFuseBox({
+            files: {
+                "index.js": `
+                        export function bar(){return foo() + 1}
+                    `,
+                "foo.js": `
+                        export function foo(){return 1}
+                    `
+            },
+            sourceMaps: true,
+            hash: true,
+        });
+        fuse.bundle("index")
+            .split("foo.js", "foobundle > foo.js")
+            .instructions('> index.js + foo.js');
+
+        return fuse.runAndLoad(["index"],({index}, dist) => {
+            const cfg = index.FuseBox.global("__fsbx__bundles__");
+            const file = joinFuseBoxPath(dist, cfg.bundles["foobundle"].file);
+            const contents = fs.readFileSync(file).toString();
+            should(contents).findString("//# sourceMappingURL=foobundle.js.map");
+        });
+    }
 }
 
