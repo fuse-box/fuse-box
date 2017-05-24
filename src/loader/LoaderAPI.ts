@@ -435,6 +435,9 @@ function $import(name: string, o: any = {}) {
         }
     }
 
+		if(o.meta) {
+			return file?file.meta:false;
+		}
     if (!file) {
         let asyncMode = typeof o === "function";
         let processStopped = $trigger("async", [name, o]);
@@ -444,9 +447,6 @@ function $import(name: string, o: any = {}) {
         return $async(name, (result) => asyncMode ? o(result) : null, o);
         // throw `File not found ${ref.validPath}`;
     }
-		if(o.meta) {
-			return file.meta;
-		}
     // pkgName
     let pkg = ref.pkgName;
 
@@ -580,10 +580,10 @@ class FuseBox {
 				meta?: any
     }) {
         this.pkg(opts && opts.pkg || "default", {}, function (___scope___: any) {
-            ___scope___.file(path, opts.meta, function (exports: any, require: any, module: any, __filename: string, __dirname: string) {
+            ___scope___.file(path, function (exports: any, require: any, module: any, __filename: string, __dirname: string) {
                 var res = new Function("__fbx__dnm__", "exports", "require", "module", "__filename", "__dirname", "__root__", str);
                 res(true, exports, require, module, __filename, __dirname, __root__);
-            }), opts.meta;
+            }, opts&&opts.meta);
         });
     }
 
