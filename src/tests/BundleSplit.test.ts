@@ -48,6 +48,7 @@ export class BundleSplitTest {
                     `
 				},
 				sourceMaps: true,
+				hash: true,
 				plugins: [new ModifyTestEnvPlugin()],
 				instructions: "> index.js",
 			},
