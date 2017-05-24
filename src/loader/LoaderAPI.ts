@@ -29,6 +29,8 @@ type PackageDetails = {
             fn: Function
             /** Locals if any */
             locals?: any
+						/** Run-time meta information if any */
+						meta?: any
         }
     },
     v: PackageVersions,
@@ -572,12 +574,13 @@ class FuseBox {
     public static dynamic(path: string, str: string, opts?: {
         /** The name of the package */
         pkg: string
+				meta?: any
     }) {
         this.pkg(opts && opts.pkg || "default", {}, function (___scope___: any) {
-            ___scope___.file(path, function (exports: any, require: any, module: any, __filename: string, __dirname: string) {
+            ___scope___.file(path, opts.meta, function (exports: any, require: any, module: any, __filename: string, __dirname: string) {
                 var res = new Function("__fbx__dnm__", "exports", "require", "module", "__filename", "__dirname", "__root__", str);
                 res(true, exports, require, module, __filename, __dirname, __root__);
-            });
+            }), opts.meta;
         });
     }
 
@@ -616,7 +619,7 @@ class FuseBox {
         // scope
         pkg.s = {
             // Scope file
-            file: (name: string, fn: any) => pkg.f[name] = { fn },
+            file: (name: string, fn: any, meta?: any) => pkg.f[name] = { fn, meta },
         };
         return fn(pkg.s);
     }

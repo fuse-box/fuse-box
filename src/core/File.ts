@@ -18,6 +18,7 @@ export class File {
 
     public isFuseBoxBundle = false;
 
+		public meta: any = null;
 
     public es6module = false;
     /**
