@@ -391,6 +391,7 @@ function $trigger(name: string, args: any) {
  * With opt provided it's possible to set:
  *   1) Base directory
  *   2) Target package name
+ *   3) `meta: trueish` to retrieve meta-information instead of importing the file
  */
 function $import(name: string, o: any = {}) {
 
@@ -427,7 +428,7 @@ function $import(name: string, o: any = {}) {
             let batch = {};
             for (let n in pkg.f) {
                 if (safeRegEx.test(n)) {
-                    batch[n] = $import(`${ref.pkgName}/${n}`);
+                    batch[n] = $import(`${ref.pkgName}/${n}`, o);
                 }
             }
             return batch;
@@ -443,7 +444,9 @@ function $import(name: string, o: any = {}) {
         return $async(name, (result) => asyncMode ? o(result) : null, o);
         // throw `File not found ${ref.validPath}`;
     }
-
+		if(o.meta) {
+			return file.meta;
+		}
     // pkgName
     let pkg = ref.pkgName;
 
