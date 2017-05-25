@@ -23,13 +23,14 @@ let sass;
  */
 export class SassPluginClass implements Plugin {
 
-    public test: RegExp = /\.scss$/;
+    public test: RegExp = /\.(scss|sass)$/;
     public context: WorkFlowContext;
 
     constructor(public options: SassPluginOptions = {}) { }
 
     public init(context: WorkFlowContext) {
         context.allowExtension(".scss");
+        context.allowExtension(".sass");
         this.context = context;
     }
 
@@ -66,6 +67,7 @@ export class SassPluginClass implements Plugin {
             sourceMap: true,
             outFile: file.info.fuseBoxPath,
             sourceMapContents: true,
+            indentedSyntax: true
         }, this.options);
 
         options.includePaths = [];
