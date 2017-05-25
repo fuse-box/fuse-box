@@ -98,11 +98,12 @@ export class BundleSplitTest {
             sourceMaps: true,
             hash: true,
         });
-        fuse.bundle("index")
+        fuse.bundle("zzz/index")
             .split("foo.js", "foobundle > foo.js")
             .instructions('> index.js + foo.js');
 
-        return fuse.runAndLoad(["index"],({index}, dist) => {
+        return fuse.runAndLoad(["zzz/index"],(bundles, dist) => {
+        	const index = bundles["zzz/index"];
             const cfg = index.FuseBox.global("__fsbx__bundles__");
             const file = joinFuseBoxPath(dist, cfg.bundles["foobundle"].file);
             const contents = fs.readFileSync(file).toString();
