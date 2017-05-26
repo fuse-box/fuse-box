@@ -1,9 +1,9 @@
 /**
-    * Listens to 'async' requets and if the name is a css file
-    * wires it to `__fsbx_css`
-    */
-if (FuseBox.isBrowser) {
-    FuseBox.on('async', function (name) {
+ * Listens to 'async' requets and if the name is a css file
+ * wires it to `__fsbx_css`
+ */
+if (typeof FuseBox !== "undefined" && FuseBox.isBrowser) {
+    FuseBox.on('async', function(name) {
         if (FuseBox.isServer) {
             return;
         }
@@ -14,7 +14,7 @@ if (FuseBox.isBrowser) {
     });
 }
 
-module.exports = function (__filename, contents) {
+module.exports = function(__filename, contents) {
     if (!FuseBox.isServer) {
         var styleId = __filename.replace(/[\.\/]+/g, '-');
         if (styleId.charAt(0) === '-') styleId = styleId.substring(1);

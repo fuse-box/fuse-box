@@ -1,8 +1,9 @@
 import { FlatFileGenerator } from "../FlatFileGenerator";
-import { FileAbstraction } from "../../../../bundle-abstraction/FileAbstraction";
 import { OptimisedCore } from "../OptimisedCore";
 import { each } from "realm-utils";
-import { RequireStatement } from "../../../../bundle-abstraction/nodes/RequireStatement";
+import { RequireStatement } from "../../core/nodes/RequireStatement";
+import { FileAbstraction } from "../../core/FileAbstraction";
+
 
 export class StatementModification {
     public static perform(core: OptimisedCore, generator: FlatFileGenerator, file: FileAbstraction): Promise<void> {

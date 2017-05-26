@@ -55,7 +55,9 @@ export class Bundle {
     }
     /** Enable HMR in this bundle and inject HMR plugin */
     public hmr(opts?: any): Bundle {
-
+        if (!this.producer.hmrAllowed) {
+            return this;
+        }
         /** Only one is allowed to hava HMR related code */
         if (!this.producer.hmrInjected) {
             opts = opts || {};

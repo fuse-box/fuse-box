@@ -1,7 +1,8 @@
 import { ProducerAbstraction } from "./ProducerAbstraction";
 import { PackageAbstraction } from "./PackageAbstraction";
-import { acornParse } from "../analysis/FileAnalysis";
-import { ASTTraverse } from "../ASTTraverse";
+import { ASTTraverse } from "../../ASTTraverse";
+import { acornParse } from "../../analysis/FileAnalysis";
+
 
 export class BundleAbstraction {
     public packageAbstractions = new Map<string, PackageAbstraction​​>();
@@ -25,7 +26,10 @@ export class BundleAbstraction {
                         && node.property.name === "pkg"
                         && parent.arguments && parent.arguments.length === 3
                     ) {
-                        const pkgName = parent.arguments[0].value;
+                        let pkgName = parent.arguments[0].value;
+                        if (pkgName.charAt(0) !== "@") {
+                            pkgName = pkgName.split('@')[0];
+                        }
                         const packageAst = parent.arguments[2].body;
                         let packageAbstraction;
                         if (this.packageAbstractions.get(pkgName)) {
