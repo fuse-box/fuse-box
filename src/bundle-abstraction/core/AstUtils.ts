@@ -57,6 +57,11 @@ export function matchesSingleFunction(node: any, name: string) {
     return node.callee && node.callee.type === "Identifier" && node.callee.name === "require"
 }
 
+export function matchesTypeOf(node: any, name: string) {
+    return node && node.operator === "typeof"
+        && node.argument && node.argument.type === "Identifier" && node.argument.name === name;
+}
+
 export function matchesDoubleMemberExpression(node: any, part1: string, part2?: string) {
     const matches = node.type === "MemberExpression"
         && node.object

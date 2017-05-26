@@ -15,6 +15,7 @@ import { PackageAbstraction } from "../core/PackageAbstraction";
 import { FileAbstraction } from "../core/FileAbstraction";
 import { ResponsiveAPI } from "./ResponsiveAPI";
 import { Log } from "../../Log";
+import { TypeOfModifications } from "./modifications/TypeOfModifications";
 
 
 export class OptimisedCore {
@@ -107,7 +108,9 @@ export class OptimisedCore {
             // remove exports.__esModule = true 
             InteropModifications,
             // removes "use strict" if required
-            UseStrictModification
+            UseStrictModification,
+            // replace typeof module, typeof exports, typeof window
+            TypeOfModifications
         ];
         return each(modifications, (modification: IPerformable) => modification.perform(this, generator, file))
             .then(() => generator.addFile(file, this.opts.shouldEnsureES5()));

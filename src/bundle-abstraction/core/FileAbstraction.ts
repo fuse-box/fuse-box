@@ -7,9 +7,12 @@ import * as path from "path";
 import { ensureFuseBoxPath, transpileToEs5 } from "../../Utils";
 import { FuseBoxIsServerCondition } from "./nodes/FuseBoxIsServerCondition";
 import { FuseBoxIsBrowserCondition } from "./nodes/FuseBoxIsBrowserCondition";
-import { matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6 } from "./AstUtils";
+import { matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf } from "./AstUtils";
 import { ExportsInterop } from "./nodes/ExportsInterop";
 import { UseStrict } from "./nodes/UseStrict";
+import { TypeOfExportsKeyword } from "./nodes/TypeOfExportsKeyword";
+import { TypeOfModuleKeyword } from "./nodes/TypeOfModuleKeyword";
+import { TypeOfWindowKeyword } from "./nodes/TypeOfWindowKeyword";
 
 const globalNames = new Set<string>(["__filename", "__dirname", "exports", "module"]);
 
@@ -27,6 +30,11 @@ export class FileAbstraction {
     public fuseboxIsBrowserConditions = new Set<FuseBoxIsBrowserCondition>();
     public exportsInterop = new Set<ExportsInterop>();
     public useStrict = new Set<UseStrict>();
+    public typeofExportsKeywords = new Set<TypeOfExportsKeyword>();
+    public typeofModulesKeywords = new Set<TypeOfModuleKeyword>();
+    public typeofWindowKeywords = new Set<TypeOfWindowKeyword>();
+
+
 
     public isEntryPoint = false;
 
@@ -167,7 +175,18 @@ export class FileAbstraction {
         if (matchesLiteralStringExpression(node, "use strict")) {
             this.useStrict.add(new UseStrict(parent, prop, node));
         }
-
+        // typeof module
+        if (matchesTypeOf(node, "module")) {
+            this.typeofModulesKeywords.add(new TypeOfModuleKeyword(parent, prop, node));
+        }
+        // typeof exports
+        if (matchesTypeOf(node, "exports")) {
+            this.typeofExportsKeywords.add(new TypeOfExportsKeyword(parent, prop, node));
+        }
+        // typeof window
+        if (matchesTypeOf(node, "window")) {
+            this.typeofWindowKeywords.add(new TypeOfWindowKeyword(parent, prop, node))
+        }
         // require statements
         if (matchesSingleFunction(node, "require")) {
             // adding a require statement
