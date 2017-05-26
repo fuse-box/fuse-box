@@ -236,7 +236,7 @@ export class File {
                         itemTest = el.test;
                     }
                 } else {
-                    itemTest = item.test;
+                    itemTest = item && item.test;
                 }
                 if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(this.relativePath)) {
                     target = item;

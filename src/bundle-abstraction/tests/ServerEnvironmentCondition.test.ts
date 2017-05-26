@@ -1,5 +1,6 @@
 import { should } from "fuse-test-runner";
-import { createOptimisedBundleEnv } from "../stubs/TestEnvironment";
+import { createOptimisedBundleEnv } from "../../tests/stubs/TestEnvironment";
+
 
 export class ServerEnvironmentConditionTest {
     "Should handle FuseBox.isServer"() {

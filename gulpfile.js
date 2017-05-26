@@ -229,9 +229,23 @@ gulp.task("make-test-runner", (done) => {
     }).bundle(`[index.ts] +fuse-test-runner +fuse-test-reporter`, done);
 });
 
+
+gulp.task("copy-to-dev", () => {
+    const devFolder = "angular2-example";
+
+    gulp.src("modules/fuse-box-css/**/**.**")
+        .pipe(gulp.dest(`../${devFolder}/node_modules/fuse-box/modules/fuse-box-css`));
+
+    gulp.src("modules/fuse-box-responsive-api/**/**.**")
+        .pipe(gulp.dest(`../${devFolder}/node_modules/fuse-box/modules/fuse-box-responsive-api`));
+
+    return gulp.src("dist/**/**.**")
+        .pipe(gulp.dest(`../${devFolder}/node_modules/fuse-box/dist/`));
+});
+
 gulp.task("copy-to-random", () => {
     gulp.src("modules/fuse-box-responsive-api/**/**.**")
-        .pipe(gulp.dest("../react-example/node_modules/fuse-box/modules/fuse-box-responsive-api"));
+        .pipe(gulp.dest("../angular2-example/node_modules/fuse-box/modules/fuse-box-responsive-api"));
 });
 gulp.task("copy-api-to-random", () => {
     // return gulp.src("modules/fuse-box-loader-api/**/**.js")
@@ -263,10 +277,10 @@ gulp.task("watch-and-copy", ["dist", "copy-to-random", "copy-api-to-random"], fu
         runSequence("dist-main", "copy-to-random");
     });
 });
-gulp.task("watch", ["dist"], function() {
+gulp.task("watch", ["dist", "copy-to-dev"], function() {
     watching = true;
     gulp.watch(filesMain, () => {
-        runSequence("dist-main");
+        runSequence("dist-main", "copy-to-dev");
     });
 });
 // npm install babel-core babel-generator babel-preset-latest babylon cheerio @angular/core stylus less postcss node-sass uglify-js source-map coffee-script @types/node rollup

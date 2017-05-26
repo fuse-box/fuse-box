@@ -6,7 +6,9 @@ export class BundleWriter {
     constructor(public core: OptimisedCore) { }
 
     private getUglifyJSOptions(): any {
-        const mainOptions: any = {};
+        const mainOptions: any = {
+
+        };
         return {
             ...this.core.opts.shouldUglify() || {},
             ...mainOptions
@@ -29,10 +31,16 @@ export class BundleWriter {
         return each(producer.bundles, (bundle: Bundle) => {
             if (this.core.opts.shouldUglify()) {
                 const UglifyJs = require("uglify-js");
+                this.core.log.echoInfo(`Uglifying ${bundle.name}`);
                 const result = UglifyJs.minify(bundle.generatedCode.toString(), this.getUglifyJSOptions());
                 bundle.generatedCode = result.code;
+                this.core.log.echoInfo(`Done Uglifying ${bundle.name}`)
             }
             return bundle.context.output.writeCurrent(bundle.generatedCode);
-        });
+        }).then(() => {
+            if (this.core.opts.webIndexPlugin) {
+                return this.core.opts.webIndexPlugin.producerEnd(producer)
+            }
+        })
     }
 }

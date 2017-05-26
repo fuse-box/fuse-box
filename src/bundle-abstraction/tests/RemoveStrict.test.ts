@@ -1,12 +1,13 @@
-import { createOptimisedBundleEnv } from "../stubs/TestEnvironment";
+
 import { should } from "fuse-test-runner";
+import { createOptimisedBundleEnv } from "../../tests/stubs/TestEnvironment";
 
 export class RemoveStrictTest {
-    "should keep intreop mode in a bundle"() {
+    "should keep strict mode in a bundle"() {
         return createOptimisedBundleEnv({
             stubs: true,
             options: {
-                removeExportsInterop: false
+                removeUseStrict: false
             },
             project: {
                 files: {
@@ -16,16 +17,15 @@ export class RemoveStrictTest {
             },
         }).then((result) => {
             const contents = result.contents["index.js"];
-
-            should(contents).findString("Object.defineProperty(exports");
+            should(contents).findString("use strict");
         });
     }
 
-    "should remove intreop mode in a bundle"() {
+    "should remove strict mode in a bundle with option"() {
         return createOptimisedBundleEnv({
             stubs: true,
             options: {
-                removeExportsInterop: true
+                removeUseStrict: true
             },
             project: {
                 files: {
@@ -35,12 +35,10 @@ export class RemoveStrictTest {
             },
         }).then((result) => {
             const contents = result.contents["index.js"];
-
-            should(contents).notFindString("Object.defineProperty(exports");
+            should(contents).notFindString("use strict");
         });
     }
-
-    "should remove intreop mode in a bundle by default"() {
+    "should remove strict mode in a bundle by default"() {
         return createOptimisedBundleEnv({
             stubs: true,
             options: {
@@ -54,8 +52,7 @@ export class RemoveStrictTest {
             },
         }).then((result) => {
             const contents = result.contents["index.js"];
-
-            should(contents).notFindString("Object.defineProperty(exports");
+            should(contents).notFindString("use strict");
         });
     }
 }

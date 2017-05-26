@@ -1,12 +1,13 @@
-import { createOptimisedBundleEnv } from "../stubs/TestEnvironment";
+
 import { should } from "fuse-test-runner";
+import { createOptimisedBundleEnv } from "../../tests/stubs/TestEnvironment";
 
 export class RemoveStrictTest {
-    "should keep strict mode in a bundle"() {
+    "should keep intreop mode in a bundle"() {
         return createOptimisedBundleEnv({
             stubs: true,
             options: {
-                removeUseStrict: false
+                removeExportsInterop: false
             },
             project: {
                 files: {
@@ -16,15 +17,16 @@ export class RemoveStrictTest {
             },
         }).then((result) => {
             const contents = result.contents["index.js"];
-            should(contents).findString("use strict");
+
+            should(contents).findString("Object.defineProperty(exports");
         });
     }
 
-    "should remove strict mode in a bundle with option"() {
+    "should remove intreop mode in a bundle"() {
         return createOptimisedBundleEnv({
             stubs: true,
             options: {
-                removeUseStrict: true
+                removeExportsInterop: true
             },
             project: {
                 files: {
@@ -34,10 +36,12 @@ export class RemoveStrictTest {
             },
         }).then((result) => {
             const contents = result.contents["index.js"];
-            should(contents).notFindString("use strict");
+
+            should(contents).notFindString("Object.defineProperty(exports");
         });
     }
-    "should remove strict mode in a bundle by default"() {
+
+    "should remove intreop mode in a bundle by default"() {
         return createOptimisedBundleEnv({
             stubs: true,
             options: {
@@ -51,7 +55,8 @@ export class RemoveStrictTest {
             },
         }).then((result) => {
             const contents = result.contents["index.js"];
-            should(contents).notFindString("use strict");
+
+            should(contents).notFindString("Object.defineProperty(exports");
         });
     }
 }

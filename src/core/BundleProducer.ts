@@ -14,6 +14,7 @@ import { BundleAbstraction } from "../bundle-abstraction/core/BundleAbstraction"
 export class BundleProducer {
     public bundles = new Map<string, Bundle>();
     public hmrInjected = false;
+    public hmrAllowed = true;
 
     public sharedEvents = new EventEmitter();
     public writeBundles = true;

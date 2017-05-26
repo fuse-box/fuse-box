@@ -176,6 +176,18 @@ export function ensureFuseBoxPath(input: string) {
     return input.replace(/\\/g, "/");
 }
 
+export function transpileToEs5(contents: string) {
+    const ts = require("typescript");
+    let tsconfg: any = {
+        compilerOptions: {
+            module: "commonjs",
+            target: "es5"
+        },
+    };;
+    let result = ts.transpileModule(contents, tsconfg);
+    return result.outputText;
+}
+
 export function ensurePublicExtension(url: string) {
     let ext = path.extname(url);
     if (ext === ".ts") {

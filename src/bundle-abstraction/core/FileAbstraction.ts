@@ -4,10 +4,10 @@ import { ASTTraverse } from "../../ASTTraverse";
 import { RequireStatement } from "./nodes/RequireStatement";
 import * as escodegen from "escodegen";
 import * as path from "path";
-import { ensureFuseBoxPath } from "../../Utils";
+import { ensureFuseBoxPath, transpileToEs5 } from "../../Utils";
 import { FuseBoxIsServerCondition } from "./nodes/FuseBoxIsServerCondition";
 import { FuseBoxIsBrowserCondition } from "./nodes/FuseBoxIsBrowserCondition";
-import { matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty } from "./AstUtils";
+import { matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6 } from "./AstUtils";
 import { ExportsInterop } from "./nodes/ExportsInterop";
 import { UseStrict } from "./nodes/UseStrict";
 
@@ -18,6 +18,8 @@ export class FileAbstraction {
     private fileMapRequested = false;
     public ast: any;
     public fuseBoxDir;
+
+    public isEcmaScript6 = false;
 
     /** FILE CONTENTS */
     public requireStatements = new Set<RequireStatement​​>();
@@ -100,6 +102,14 @@ export class FileAbstraction {
         return this.globalVariables.has("__filename");
     }
 
+
+    public isExportStatementInUse() {
+        return this.globalVariables.has("exports");
+    }
+
+    public isModuleStatementInUse() {
+        return this.globalVariables.has("module");
+    }
     public isExportInUse() {
         return this.globalVariables.has("exports") || this.globalVariables.has("module");
     }
@@ -109,8 +119,13 @@ export class FileAbstraction {
     }
 
 
-    public generate() {
+    public generate(ensureEs5: boolean = false) {
         let code = escodegen.generate(this.ast);
+
+        if (ensureEs5 && this.isEcmaScript6) {
+            code = transpileToEs5(code)
+        }
+
         //if (this.wrapperArguments) {
         let fn = ["function(", this.wrapperArguments ? this.wrapperArguments.join(",") : "", '){\n'];
         // inject __dirname
@@ -138,10 +153,12 @@ export class FileAbstraction {
      * @param idx 
      */
     private onNode(node, parent, prop, idx) {
+        // detecting es6
+        if (matchesEcmaScript6(node)) {
+            this.isEcmaScript6 = true;
+        }
         // Object.defineProperty(exports, '__esModule', { value: true });
-
         if (matcheObjectDefineProperty(node, "exports")) {
-
             this.exportsInterop.add(new ExportsInterop(parent, prop, node));
         }
         if (matchesAssignmentExpression(node, 'exports', '__esModule')) {

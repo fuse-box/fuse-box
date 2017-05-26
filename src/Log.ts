@@ -92,6 +92,20 @@ export class Log {
         }
     }
 
+    public echoInfo(str: string) {
+        cursor.green().write(`  → `)
+            .write(str);
+        cursor.write("\n");
+        cursor.reset();
+    }
+
+    public echoBreak() {
+        cursor.write("\n");
+        cursor.green().write(`  --------------`)
+        cursor.write("\n");
+        cursor.reset();
+    }
+
     public echoWarning(str: string) {
         cursor.red().write(`  → WARNING `)
             .write(str);

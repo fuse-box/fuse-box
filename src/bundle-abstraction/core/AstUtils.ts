@@ -37,6 +37,22 @@ export function matchesLiteralStringExpression(node: any, text: string) {
         && node.expression.value === text
 }
 
+const ES6_TYPES = new Set([
+    "ClassDeclaration",
+    "SpreadElement",
+    "ArrowFunctionExpression"
+]);
+export function matchesEcmaScript6(node) {
+    if (node) {
+        if (ES6_TYPES.has(node.type)) {
+            return true;
+        }
+        if (node.type === "VariableDeclaration" && node.kind !== "var") {
+            return true;
+        }
+    }
+    return false;
+}
 export function matchesSingleFunction(node: any, name: string) {
     return node.callee && node.callee.type === "Identifier" && node.callee.name === "require"
 }

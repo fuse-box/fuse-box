@@ -1,8 +1,11 @@
+import { WebIndexPluginClass } from "../../plugins/WebIndexPlugin";
 export interface IOptimisedPluginParms {
     target?: string;
     uglify?: any;
     removeExportsInterop?: boolean;
     removeUseStrict?: boolean;
+    webIndexPlugin?: WebIndexPluginClass;
+    ensureES5?: boolean;
 }
 export class OptimisedPluginOptions {
 
@@ -10,6 +13,8 @@ export class OptimisedPluginOptions {
     private uglify: any;
     private removeExportsInterop = true;
     private removeUseStrict = true;
+    private ensureES5 = true;
+    public webIndexPlugin: WebIndexPluginClass;
     constructor(opts: IOptimisedPluginParms) {
         opts = opts || {};
         if (opts.target) {
@@ -25,12 +30,20 @@ export class OptimisedPluginOptions {
         if (opts.removeUseStrict !== undefined) {
             this.removeUseStrict = opts.removeUseStrict;
         }
+        if (opts.webIndexPlugin) {
+            this.webIndexPlugin = opts.webIndexPlugin;
+        }
+        if (opts.ensureES5 !== undefined) {
+            this.ensureES5 = opts.ensureES5;
+        }
     }
 
     public shouldRemoveUseStrict() {
         return this.removeUseStrict;
     }
-
+    public shouldEnsureES5() {
+        return this.ensureES5;
+    }
     public shouldUglify() {
         return this.uglify;
     }
