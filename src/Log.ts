@@ -11,7 +11,10 @@ export class Log {
 
     constructor(public context: WorkFlowContext) {
         this.printLog = context.doLog;
-        log.filter(() => this.printLog)
+        log.filter((arg) => {
+          if (this.printLog === false) return false
+          return null
+        })
     }
 
     public reset(): Log {
@@ -30,15 +33,17 @@ export class Log {
     public bundleEnd(name: string, collection: ModuleCollection) {
         let took = process.hrtime(this.timeStart) as [number, number];
 
+        const named = log
+          .chalk()
+          .green(` ${collection.cachedName || collection.name}`)
+
         log
           .text(`-> Finished `).echo()
-          .green(name).echo()
-          .green(` ${collection.cachedName || collection.name}`).echo()
-          .yellow(`took: ${prettyTime(took, "ms")}`).echo()
+          .yellow(`${named} took: ${prettyTime(took, "ms")}`).echo()
     }
 
     public echoHeader(str: string) {
-      log.yellow(` ${str} \n`).echo()
+      log.yellow(` ${str}`).echo()
     }
 
     public echo(str: string) {
@@ -47,22 +52,15 @@ export class Log {
 
     public echoStatus(str: string) {
       log
-        .text(`  → `).echo()
-        .cyan(str + "\n").echo()
+        .title(`→ \n `).cyan(`${str} \n`).echo()
     }
 
     public echoInfo(str: string) {
-        cursor.green().write(`  → `)
-            .write(str);
-        cursor.write("\n");
-        cursor.reset();
+      log.preset('info').green(`  → ${str}`).echo()
     }
 
     public echoBreak() {
-        cursor.write("\n");
-        cursor.green().write(`  --------------`)
-        cursor.write("\n");
-        cursor.reset();
+      log.green(`\n  -------------- \n`).echo()
     }
 
     public echoWarning(str: string) {
@@ -77,10 +75,14 @@ export class Log {
         let size = prettysize(bytes);
         this.totalSize += bytes;
 
+        const chalk = log.chalk()
+        const yellowSize = chalk.yellow(` (${collection.dependencies.size} files,  ${size})`)
+        const greenName = chalk.green(` ${collection.cachedName || collection.name} `)
+
         log
-          .text(`└──`).echo()
-          .green(` ${collection.cachedName || collection.name}`).echo()
-          .yellow(` (${collection.dependencies.size} files,  ${size})\n`).echo()
+          .title(`└──`)
+          .text(`${greenName} ${yellowSize}`)
+          .echo()
 
         collection.dependencies.forEach(file => {
             if (!file.info.isRemoteFile) {
@@ -102,7 +104,7 @@ export class Log {
           .text(`└──`).echo()
           .green(` ${collection.cachedName || collection.name}`).echo()
           .text(` (${collection.dependencies.size} files)`).echo()
-          .yellow(` ${size} \n`).echo()
+          .yellow(` ${size} `).echo()
     }
 
     public end(header?: string) {
@@ -111,9 +113,7 @@ export class Log {
     }
 
     public echoBundleStats(header: string, size: number, took: [number, number]) {
-      log
-        .text(`\n`).echo()
-        .yellow(`    Size: ${prettysize(size)}`).echo()
-        .text(` in ${prettyTime(took, "ms")}\n`).echo()
+      const sized = log.chalk().yellow(`Size: ${prettysize(size)} `)
+      log.text(`${sized} in ${prettyTime(took, "ms")}` ).echo()
     }
 }
