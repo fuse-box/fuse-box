@@ -113,6 +113,7 @@ export class UserOutput {
     }
     public writeManifest(obj: any) {
         let fullpath = this.getPath(`${this.context.bundle.name}.manifest.json`);
+        fullpath = ensureUserPath(fullpath);
         fs.writeFileSync(fullpath, JSON.stringify(obj, null, 2));
     }
 
