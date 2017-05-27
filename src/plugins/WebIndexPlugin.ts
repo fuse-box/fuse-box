@@ -11,7 +11,7 @@ export interface IndexPluginOptions {
     path?: string;
     target?: string;
     template?: string;
-    async?: boolean
+    async?: boolean;
 }
 export class WebIndexPluginClass implements Plugin {
     constructor(public opts?: IndexPluginOptions) {
