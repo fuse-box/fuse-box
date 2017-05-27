@@ -49,7 +49,7 @@ $bundles
         }
 
         let jsTags = bundlePaths.map(bundle =>
-            `<script ${opts.async ? 'async' : ''} type="text/javascript" src="${bundle}"></script>`
+            `<script ${this.opts.async ? 'async' : ''} type="text/javascript" src="${bundle}"></script>`
         ).join("\n");
 
         let macro = {
