@@ -66,8 +66,7 @@ export class SassPluginClass implements Plugin {
             data: file.contents,
             sourceMap: true,
             outFile: file.info.fuseBoxPath,
-            sourceMapContents: true,
-            indentedSyntax: true
+            sourceMapContents: true
         }, this.options);
 
         options.includePaths = [];
