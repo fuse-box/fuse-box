@@ -58,7 +58,7 @@ fuse.plugin(
 )
 ```
 
-In order to use Sass indented syntax set `indentedSyntax` option.
+In order to use Sass indented syntax set `indentedSyntax` option:
 
 ```js
 fuse.plugin(
