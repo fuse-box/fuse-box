@@ -11,6 +11,7 @@ export interface IndexPluginOptions {
     path?: string;
     target?: string;
     template?: string;
+    async?: boolean
 }
 export class WebIndexPluginClass implements Plugin {
     constructor(public opts?: IndexPluginOptions) {
@@ -48,7 +49,7 @@ $bundles
         }
 
         let jsTags = bundlePaths.map(bundle =>
-            `<script type="text/javascript" src="${bundle}"></script>`
+            `<script ${async ? 'async' : ''} type="text/javascript" src="${bundle}"></script>`
         ).join("\n");
 
         let macro = {
