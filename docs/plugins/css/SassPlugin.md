@@ -58,6 +58,16 @@ fuse.plugin(
 )
 ```
 
+In order to use Sass indented syntax set `indentedSyntax` option:
+
+```js
+fuse.plugin(
+    SassPlugin({
+       indentedSyntax: true
+    }), CSSPlugin()
+)
+```
+
 ## Macros
 
 Macros is a unique feature available onl yin `FuseBox` to give you more flexibility on how to define paths for importing files in `SASS` . To enable macros add:
