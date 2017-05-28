@@ -57,6 +57,30 @@ export function matchesSingleFunction(node: any, name: string) {
     return node.callee && node.callee.type === "Identifier" && node.callee.name === "require"
 }
 
+export function trackRequireMember(node: any, name: string): string {
+    if (node && node.type === "MemberExpression") {
+        if (node.object && node.object.type === "Identifier" && node.object.name === name) {
+            if (node.property && node.property.type === "Identifier") {
+                return node.property.name;
+            }
+        }
+    }
+}
+
+export function matchRequireIdentifier(node: any): string {
+    let name;
+    if (node && node.type === "VariableDeclarator") {
+        if (node.id && node.id.type === "Identifier") {
+            name = node.id.name;
+            if (node.init && node.init.type === "CallExpression") {
+                if (matchesSingleFunction(node.init, "require")) {
+                    return name;
+                }
+            }
+        }
+    }
+}
+
 export function matchesTypeOf(node: any, name: string) {
     return node && node.operator === "typeof"
         && node.argument && node.argument.type === "Identifier" && node.argument.name === name;

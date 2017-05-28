@@ -7,7 +7,7 @@ import * as path from "path";
 import { ensureFuseBoxPath, transpileToEs5 } from "../../Utils";
 import { FuseBoxIsServerCondition } from "./nodes/FuseBoxIsServerCondition";
 import { FuseBoxIsBrowserCondition } from "./nodes/FuseBoxIsBrowserCondition";
-import { matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf } from "./AstUtils";
+import { matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier } from "./AstUtils";
 import { ExportsInterop } from "./nodes/ExportsInterop";
 import { UseStrict } from "./nodes/UseStrict";
 import { TypeOfExportsKeyword } from "./nodes/TypeOfExportsKeyword";
@@ -23,6 +23,8 @@ export class FileAbstraction {
     public fuseBoxDir;
 
     public isEcmaScript6 = false;
+
+    public namedRequireStatements = new Map<string, RequireStatement​​>();
 
     /** FILE CONTENTS */
     public requireStatements = new Set<RequireStatement​​>();
@@ -187,6 +189,14 @@ export class FileAbstraction {
         if (matchesTypeOf(node, "window")) {
             this.typeofWindowKeywords.add(new TypeOfWindowKeyword(parent, prop, node))
         }
+        const requireIdentifier = matchRequireIdentifier(node)
+        if (requireIdentifier) {
+            const identifiedRequireStatement = new RequireStatement(this, node.init);
+            this.namedRequireStatements.set(requireIdentifier, identifiedRequireStatement);
+            this.requireStatements.add(identifiedRequireStatement);
+            return false;
+        }
+
         // require statements
         if (matchesSingleFunction(node, "require")) {
             // adding a require statement
