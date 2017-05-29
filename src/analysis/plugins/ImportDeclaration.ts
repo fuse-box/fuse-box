@@ -22,6 +22,10 @@ export class ImportDeclaration {
                 }
             }
         }
+        if (node.type === "ExportAllDeclaration") {
+            file.es6module = true;
+            analysis.addDependency(node.source.value);
+        }
 
         if (node.type === "ImportDeclaration" || node.type === "ExportNamedDeclaration") {
             if (!file.context.rollupOptions) {

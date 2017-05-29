@@ -86,6 +86,27 @@ export function matchesTypeOf(node: any, name: string) {
         && node.argument && node.argument.type === "Identifier" && node.argument.name === name;
 }
 
+export function isExportMisused(node: any, fn: { (name: string) }) {
+    const isMisused = astQuery(node, [
+        "/MemberExpression", ".object", "/MemberExpression",
+        ".object", ".name"
+    ], "exports");
+    if (isMisused) {
+        if (node.object.property && node.object.property.name) {
+            return fn(node.object.property.name);
+        }
+    }
+}
+export function matchNamedExport(node: any, fn: any) {
+    if (astQuery(node, ["/ExpressionStatement",
+        ".expression", "/AssignmentExpression", ".left", "/MemberExpression",
+        ".object", ".name"], "exports")) {
+        if (node.expression.left.property.type === "Identifier") {
+            fn(node.expression.left.property.name);
+            return true;
+        }
+    }
+}
 export function matchesDoubleMemberExpression(node: any, part1: string, part2?: string) {
     const matches = node.type === "MemberExpression"
         && node.object

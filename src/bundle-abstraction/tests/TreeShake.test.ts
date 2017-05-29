@@ -20,6 +20,7 @@ export class TreeShakeTest {
                         class Foo2 {}
                         exports.Foo1 = Foo1;
                         exports.Foo2 = Foo2;
+                        
                     `
                 },
                 instructions: "index.ts",
@@ -27,7 +28,7 @@ export class TreeShakeTest {
         }).then((result) => {
             const contents = result.contents["index.js"];
 
-            should(contents).findString("'object' === 'object'");
+            console.log(contents);
         });
     }
 
