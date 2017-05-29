@@ -8,11 +8,17 @@ export class TreeShake {
     constructor(public core: OptimisedCore) {
 
     }
+    /**
+     * Initiate tree shaking
+     */
     public shake(): Promise<any> {
         return this.eachFile(file => this.shakeExports(file))
             .then(() => this.removeUnusedExports());
     }
 
+    /**
+     * Remove exports if allowed and expose dead code to uglifyjs
+     */
     private removeUnusedExports() {
         return this.eachFile(file => {
             file.namedExports.forEach(fileExport => {
@@ -24,18 +30,10 @@ export class TreeShake {
             })
         });
     }
-
-    private eachFile(fn: { (file: FileAbstraction) }) {
-        return each(this.core.producerAbstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
-            return each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
-                return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) => {
-                    return fn(fileAbstraction);
-                });
-            })
-        });
-    }
-
-
+    /**
+     * Figure out if we can actually tree shake a file
+     * @param target 
+     */
     private shakeExports(target: FileAbstraction) {
         return this.eachFile(file => {
             const dependencies = file.getDependencies();
@@ -50,7 +48,6 @@ export class TreeShake {
                         target.restrictTreeShaking();
                     }
                     target.namedExports.forEach(fileExport => {
-
                         // now we check if file exports matches a name
                         const nameIsUsed = statement.usedNames.has(fileExport.name);
                         // if an exports is used, mark
@@ -61,8 +58,17 @@ export class TreeShake {
                     });
                 });
             }
-        })
-
+        });
     }
 
+
+    private eachFile(fn: { (file: FileAbstraction) }) {
+        return each(this.core.producerAbstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
+            return each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
+                return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) => {
+                    return fn(fileAbstraction);
+                });
+            })
+        });
+    }
 }
