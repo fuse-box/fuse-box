@@ -7,19 +7,29 @@ import * as path from "path";
 import { ensureFuseBoxPath, transpileToEs5 } from "../../Utils";
 import { FuseBoxIsServerCondition } from "./nodes/FuseBoxIsServerCondition";
 import { FuseBoxIsBrowserCondition } from "./nodes/FuseBoxIsBrowserCondition";
-import { matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6 } from "./AstUtils";
+import { matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier, trackRequireMember, matchNamedExport, isExportMisused } from "./AstUtils";
 import { ExportsInterop } from "./nodes/ExportsInterop";
 import { UseStrict } from "./nodes/UseStrict";
+import { TypeOfExportsKeyword } from "./nodes/TypeOfExportsKeyword";
+import { TypeOfModuleKeyword } from "./nodes/TypeOfModuleKeyword";
+import { TypeOfWindowKeyword } from "./nodes/TypeOfWindowKeyword";
+import { NamedExport } from "./nodes/NamedExport";
 
 const globalNames = new Set<string>(["__filename", "__dirname", "exports", "module"]);
 
 export class FileAbstraction {
     private id: string;
     private fileMapRequested = false;
+    private treeShakingRestricted = false;
+    private dependencies = new Map<FileAbstraction, Set<RequireStatement​​>>();
     public ast: any;
     public fuseBoxDir;
 
     public isEcmaScript6 = false;
+    public shakable = false;
+
+
+    public namedRequireStatements = new Map<string, RequireStatement​​>();
 
     /** FILE CONTENTS */
     public requireStatements = new Set<RequireStatement​​>();
@@ -27,6 +37,12 @@ export class FileAbstraction {
     public fuseboxIsBrowserConditions = new Set<FuseBoxIsBrowserCondition>();
     public exportsInterop = new Set<ExportsInterop>();
     public useStrict = new Set<UseStrict>();
+    public typeofExportsKeywords = new Set<TypeOfExportsKeyword>();
+    public typeofModulesKeywords = new Set<TypeOfModuleKeyword>();
+    public typeofWindowKeywords = new Set<TypeOfWindowKeyword>();
+    public namedExports = new Map<string, NamedExport>();
+
+
 
     public isEntryPoint = false;
 
@@ -58,7 +74,28 @@ export class FileAbstraction {
     public addFileMap() {
         this.fileMapRequested = true;
     }
+    public isTreeShakingAllowed() {
+        return this.treeShakingRestricted === false && this.shakable;
+    }
 
+    public restrictTreeShaking() {
+        this.treeShakingRestricted = true;
+    }
+
+    public addDependency(file: FileAbstraction, statement: RequireStatement) {
+        let list: Set<RequireStatement>;
+        if (this.dependencies.has(file)) {
+            list = this.dependencies.get(file);
+        } else {
+            list = new Set<RequireStatement>()
+            this.dependencies.set(file, list);
+        }
+        list.add(statement)
+    }
+
+    public getDependencies() {
+        return this.dependencies;
+    }
     /**
      * Initiates with AST
      */
@@ -157,6 +194,54 @@ export class FileAbstraction {
         if (matchesEcmaScript6(node)) {
             this.isEcmaScript6 = true;
         }
+        this.namedRequireStatements.forEach((statement, key) => {
+            const importedName = trackRequireMember(node, key)
+            if (importedName) {
+                statement.usedNames.add(importedName);
+            }
+        });
+        // trying to match a case where an export is misused
+        // for example exports.foo.bar.prototype
+        // we can't tree shake this exports
+        isExportMisused(node, name => {
+            const createdExports = this.namedExports.get(name);
+            if (createdExports) {
+                createdExports.eligibleForTreeShaking = false;
+            }
+        });
+
+        matchNamedExport(node, (name) => {
+            // const namedExport = new NamedExport(parent, prop, node);
+            // namedExport.name = name;
+            // this.namedExports.set(name, namedExport);
+
+            let namedExport: NamedExport;
+            //namedExport.name = name;
+            if (!this.namedExports.get(name)) {
+                namedExport = new NamedExport();
+                namedExport.name = name;
+                this.namedExports.set(name, namedExport)
+            } else {
+                namedExport = this.namedExports.get(name);
+            }
+
+            namedExport.addNode(parent, prop, node);
+        });
+        // require statements
+        if (matchesSingleFunction(node, "require")) {
+            // adding a require statement
+            this.requireStatements.add(new RequireStatement(this, node));
+        }
+        // typeof module
+        if (matchesTypeOf(node, "module")) {
+            this.typeofModulesKeywords.add(new TypeOfModuleKeyword(parent, prop, node));
+        }
+        // typeof exports
+        if (matchesTypeOf(node, "exports")) {
+            this.typeofExportsKeywords.add(new TypeOfExportsKeyword(parent, prop, node));
+        }
+
+
         // Object.defineProperty(exports, '__esModule', { value: true });
         if (matcheObjectDefineProperty(node, "exports")) {
             this.exportsInterop.add(new ExportsInterop(parent, prop, node));
@@ -168,11 +253,20 @@ export class FileAbstraction {
             this.useStrict.add(new UseStrict(parent, prop, node));
         }
 
-        // require statements
-        if (matchesSingleFunction(node, "require")) {
-            // adding a require statement
-            this.requireStatements.add(new RequireStatement(this, node));
+
+        // typeof window
+        if (matchesTypeOf(node, "window")) {
+            this.typeofWindowKeywords.add(new TypeOfWindowKeyword(parent, prop, node))
         }
+        const requireIdentifier = matchRequireIdentifier(node)
+        if (requireIdentifier) {
+            const identifiedRequireStatement = new RequireStatement(this, node.init);
+            this.namedRequireStatements.set(requireIdentifier, identifiedRequireStatement);
+            this.requireStatements.add(identifiedRequireStatement);
+            return false;
+        }
+
+
 
         // FuseBox features
         if (matchesDoubleMemberExpression(node, "FuseBox")) {

@@ -15,6 +15,9 @@ import { PackageAbstraction } from "../core/PackageAbstraction";
 import { FileAbstraction } from "../core/FileAbstraction";
 import { ResponsiveAPI } from "./ResponsiveAPI";
 import { Log } from "../../Log";
+import { TypeOfModifications } from "./modifications/TypeOfModifications";
+import { TreeShake } from "./TreeShake";
+
 
 
 export class OptimisedCore {
@@ -39,13 +42,15 @@ export class OptimisedCore {
             this.producerAbstraction = abstraction;
             this.log.echoInfo("Abstraction generated");
             return each(abstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
-
-                return this.modifyBundle(bundleAbstraction)
+                return this.processBundle(bundleAbstraction);
             });
-        }).then(() => {
-            this.compriseAPI()
-            return this.writer.process();
-        });
+        })
+            .then(() => this.treeShake())
+            .then(() => this.render())
+            .then(() => {
+                this.compriseAPI()
+                return this.writer.process();
+            })
     }
 
     public compriseAPI() {
@@ -78,27 +83,40 @@ export class OptimisedCore {
         });
     }
 
-    public modifyBundle(bundleAbstraction: BundleAbstraction) {
+    public processBundle(bundleAbstraction: BundleAbstraction) {
         this.log.echoInfo(`Process bundle ${bundleAbstraction.name}`);
         this.setFileIds(bundleAbstraction);
-        const generator = new FlatFileGenerator();
-        generator.init();
         return each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
             const fileSize = packageAbstraction.fileAbstractions.size;
             this.log.echoInfo(`Process package ${packageAbstraction.name} `);
             this.log.echoInfo(`  Files: ${fileSize} `);
-            return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) => {
-                return this.generateFile(generator, fileAbstraction);
-            })
-        }).then(() => {
-            this.log.echoInfo(`Render bundle ${bundleAbstraction.name}`);
-            const bundleCode = generator.render();
-            // set generated code to bundles
-            this.producer.bundles.get(bundleAbstraction.name).generatedCode = new Buffer(bundleCode);
+            return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) =>
+                this.modify(fileAbstraction))
         });
     }
 
-    public generateFile(generator: FlatFileGenerator, file: FileAbstraction) {
+    public treeShake() {
+        const shaker = new TreeShake(this);
+        return shaker.shake();
+    }
+    public render() {
+        return each(this.producerAbstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
+            const generator = new FlatFileGenerator();
+            generator.init();
+            return each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
+                return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) =>
+                    generator.addFile(fileAbstraction, this.opts.shouldEnsureES5()))
+            }).then(() => {
+                this.log.echoInfo(`Render bundle ${bundleAbstraction.name}`);
+                const bundleCode = generator.render();
+                this.producer.bundles.get(bundleAbstraction.name).generatedCode = new Buffer(bundleCode);
+            });
+        });
+    }
+
+
+
+    public modify(file: FileAbstraction) {
         const modifications = [
             // modify require statements: require -> $fsx.r
             StatementModification,
@@ -107,9 +125,10 @@ export class OptimisedCore {
             // remove exports.__esModule = true 
             InteropModifications,
             // removes "use strict" if required
-            UseStrictModification
+            UseStrictModification,
+            // replace typeof module, typeof exports, typeof window
+            TypeOfModifications
         ];
-        return each(modifications, (modification: IPerformable) => modification.perform(this, generator, file))
-            .then(() => generator.addFile(file, this.opts.shouldEnsureES5()));
+        return each(modifications, (modification: IPerformable) => modification.perform(this, file));
     }
 }

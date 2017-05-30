@@ -1,5 +1,5 @@
 import { OptimisedCore } from "../OptimisedCore";
-import { FlatFileGenerator } from "../FlatFileGenerator";
+
 import { each } from "realm-utils";
 import { FuseBoxIsBrowserCondition } from "../../core/nodes/FuseBoxIsBrowserCondition";
 import { FuseBoxIsServerCondition } from "../../core/nodes/FuseBoxIsServerCondition";
@@ -8,7 +8,7 @@ import { FileAbstraction } from "../../core/FileAbstraction";
 
 
 export class EnvironmentConditionModification {
-    public static perform(core: OptimisedCore, generator: FlatFileGenerator, file: FileAbstraction) {
+    public static perform(core: OptimisedCore, file: FileAbstraction) {
         // FuseBox.isServer
         return each(file.fuseboxIsServerConditions, (isServerCondition: FuseBoxIsServerCondition) => {
             if (core.opts.isTargetUniveral()) {

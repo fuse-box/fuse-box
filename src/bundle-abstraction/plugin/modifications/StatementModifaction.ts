@@ -1,4 +1,3 @@
-import { FlatFileGenerator } from "../FlatFileGenerator";
 import { OptimisedCore } from "../OptimisedCore";
 import { each } from "realm-utils";
 import { RequireStatement } from "../../core/nodes/RequireStatement";
@@ -6,7 +5,7 @@ import { FileAbstraction } from "../../core/FileAbstraction";
 
 
 export class StatementModification {
-    public static perform(core: OptimisedCore, generator: FlatFileGenerator, file: FileAbstraction): Promise<void> {
+    public static perform(core: OptimisedCore, file: FileAbstraction): Promise<void> {
         return each(file.requireStatements, (statement: RequireStatement) => {
             if (statement.isComputed) {
                 statement.setFunctionName("$fsx.c")

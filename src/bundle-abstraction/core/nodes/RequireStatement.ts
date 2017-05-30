@@ -13,7 +13,13 @@ export class RequireStatement {
     public isComputed = false;
     public nodeModuleName: string;
     public nodeModulePartialRequire: string;
+    public usedNames = new Set<string>();
+
+    private resolvedAbstraction: FileAbstraction;
+    private resolved = false;
+
     constructor(public file: FileAbstraction, public ast: any) {
+
 
         const arg1 = ast.arguments[0];
         this.functionName = ast.callee.name;
@@ -65,26 +71,40 @@ export class RequireStatement {
         this.ast.arguments[0].value = str;
     }
 
-
-
     public resolve(): FileAbstraction {
-        // cannot resolve dynamic imports
-        if (this.isComputed) {
-            return;
-        }
-        const pkgName = !this.isNodeModule ? this.file.packageAbstraction.name : this.nodeModuleName;
+        return this.resolveAbstraction();
+    }
 
-        let resolvedName;
-        const producerAbstraction = this.file.packageAbstraction.bundleAbstraction.producerAbstraction;
-        if (!this.isNodeModule) {
-            if (/^~\//.test(this.value)) {
-                resolvedName = this.value.slice(2)
-            } else {
-                resolvedName = joinFuseBoxPath(path.dirname(this.file.fuseBoxPath), this.value);
+
+
+    private resolveAbstraction(): FileAbstraction {
+        let resolved: FileAbstraction;
+        if (!this.resolved) {
+            this.resolved = true;
+            // cannot resolve dynamic imports
+            if (this.isComputed) {
+                return;
             }
-            return producerAbstraction.findFileAbstraction(pkgName, resolvedName);
-        } else {
-            return producerAbstraction.findFileAbstraction(pkgName, this.nodeModulePartialRequire);
+            const pkgName = !this.isNodeModule ? this.file.packageAbstraction.name : this.nodeModuleName;
+
+            let resolvedName;
+            const producerAbstraction = this.file.packageAbstraction.bundleAbstraction.producerAbstraction;
+            if (!this.isNodeModule) {
+                if (/^~\//.test(this.value)) {
+                    resolvedName = this.value.slice(2)
+                } else {
+                    resolvedName = joinFuseBoxPath(path.dirname(this.file.fuseBoxPath), this.value);
+                }
+                resolved = producerAbstraction.findFileAbstraction(pkgName, resolvedName);
+            } else {
+                resolved = producerAbstraction.findFileAbstraction(pkgName, this.nodeModulePartialRequire);
+            }
+            if (resolved) {
+                // register dependency
+                this.file.addDependency(resolved, this);
+            }
+            this.resolvedAbstraction = resolved;
         }
+        return this.resolvedAbstraction;
     }
 }

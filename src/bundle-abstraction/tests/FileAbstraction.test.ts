@@ -180,4 +180,33 @@ export class BundleAsbtractionTest {
         should(worldReference).beOkay();
 
     }
+
+    "Should find require references (usedNames) "() {
+        const file = createAbstractFile("index.js");
+        file.loadString(`
+            var foo = require("./foo");
+            console.log(foo.bar)
+            console.log(foo.woo)
+        `);
+        const first = [...file.requireStatements][0];
+        should([...first.usedNames]).deepEqual(['bar', 'woo']);
+    }
+
+    "Should find named exports "() {
+        const file = createAbstractFile("index.js");
+        file.loadString(`
+            class Foo {
+
+            }
+            class Bar {
+
+            }
+            exports.Foo = Foo
+            exports.Bar = Bar
+        `);
+
+        should(file.namedExports.get("Foo")).beOkay();
+        should(file.namedExports.get("Bar")).beOkay();
+
+    }
 }
