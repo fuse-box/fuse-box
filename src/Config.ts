@@ -11,7 +11,7 @@ export class Configuration {
     public NODE_MODULES_DIR = process.env.PROJECT_NODE_MODULES || path.join(appRoot.path, "node_modules");
     public FUSEBOX_ROOT = PROJECT_ROOT;
     public FUSEBOX_MODULES = path.join(PROJECT_ROOT, "modules");
-    public TEMP_FOLDER = path.join(appRoot.path, ".fusebox");
+    public TEMP_FOLDER = process.env.FUSEBOX_TEMP_FOLDER || path.join(appRoot.path, ".fusebox");
     public PROJECT_FOLDER = appRoot.path;
     public PROJECT_ROOT = process.env.PROJECT_ROOT || path.dirname(MAIN_FILE);
     public FUSEBOX_VERSION = process.env.FUSEBOX_VERSION || require(path.join(PROJECT_ROOT, "package.json")).version;

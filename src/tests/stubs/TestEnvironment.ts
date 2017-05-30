@@ -1,6 +1,6 @@
 import * as path from "path";
 import { each } from "realm-utils";
-import { FuseBox } from "../../core/FuseBox";
+import {FuseBox, FuseBoxOptions} from "../../core/FuseBox";
 import * as fs from "fs";
 import * as appRoot from "app-root-path";
 import { removeFolder } from "../../Utils";
@@ -258,4 +258,54 @@ export function createEnv(opts: any) {
         }, 5);
         return output;
     });
+}
+
+
+export class TestingFuseBox extends FuseBox {
+    constructor(opts: FuseBoxOptions, public tmpFolder: string) {
+        super(opts);
+    }
+
+    public runAndLoad(modules:string[], callback:(any, string)=>any) {
+        // todo: move cleanup to afterAll
+        const cleanup = (result) => {
+            setTimeout(() => {
+                removeFolder(this.tmpFolder);
+            }, 15);
+            return result;
+        };
+
+        return this.run().then(producer =>{
+            return modules.reduce((acc, m) =>
+            {
+                const bundle = producer.bundles.get(m);
+                if(!bundle) {
+                    throw new Error(`Module ${m} not found`);
+                }
+                acc[m] = require(bundle.context.output.lastPrimaryOutput.path);
+                return acc;
+            }, {});
+        })
+        .then(loaded => callback(loaded, path.dirname(this.opts.output)) || loaded)
+        .then(cleanup, (e) => { throw cleanup(e); });
+    }
+}
+
+export function createFuseBox(opts: any):TestingFuseBox {
+    const name = opts.name || `test-${new Date().getTime()}`;
+
+    let tmpFolder = path.join(appRoot.path, ".fusebox", "tests", name);
+
+    fsExtra.ensureDirSync(tmpFolder);
+
+    const defaultProjectOptions = {
+        output: path.join(tmpFolder, "dist", "$name.js"),
+        cache: false,
+        log: false,
+        tsConfig: path.join(appRoot.path, "src/tests/fixtures", "tsconfig.json")
+    };
+
+    const projectOptions = Object.assign({}, defaultProjectOptions, opts);
+
+    return new TestingFuseBox(projectOptions, tmpFolder);
 }
