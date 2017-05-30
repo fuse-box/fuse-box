@@ -5,7 +5,7 @@ import * as fs from "fs";
 import * as appRoot from "app-root-path";
 import { removeFolder } from "../../Utils";
 import * as fsExtra from "fs-extra";
-import { OptimisedBundlePlugin } from "../../index";
+import { QuantumPlugin } from "../../index";
 
 
 const jsdom = require("jsdom");
@@ -101,7 +101,7 @@ export function createOptimisedBundleEnv(opts: any) {
         projectOptions.modulesFolder = modulesFolder;
 
         projectOptions.plugins = projectOptions.plugins || [];
-        projectOptions.plugins.push(OptimisedBundlePlugin(optimisedBundleOpts))
+        projectOptions.plugins.push(QuantumPlugin(optimisedBundleOpts))
         const fuse = FuseBox.init(projectOptions);
 
 

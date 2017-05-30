@@ -21,13 +21,18 @@ export class TreeShake {
      */
     private removeUnusedExports() {
         return this.eachFile(file => {
+            //let fileCanBeRemoved = file.namedExports.size > 0;
             file.namedExports.forEach(fileExport => {
                 if (!fileExport.isUsed && file.isTreeShakingAllowed()
                     && fileExport.eligibleForTreeShaking) {
-                    console.log(`Remove ${fileExport.name} from ${file.fuseBoxPath}`);
+                    console.log(`Remove > ${fileExport.name} from ${file.fuseBoxPath}`);
                     fileExport.remove();
+                } else {
+                    // gotta sleep on it.... 
+                    // fileCanBeRemoved = false; 
                 }
-            })
+            });
+            //if (fileCanBeRemoved) { file.canBeRemoved = true; }
         });
     }
     /**

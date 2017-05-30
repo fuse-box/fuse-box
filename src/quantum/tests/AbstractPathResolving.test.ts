@@ -1,6 +1,7 @@
 import { should } from "fuse-test-runner";
 import { createDefaultPackageAbstraction, createBundleAbstraction } from "./helper";
-import { FileAbstraction } from "../../bundle-abstraction/core/FileAbstraction";
+import { FileAbstraction } from "../core/FileAbstraction";
+
 
 
 export class AbstractPathResolving {

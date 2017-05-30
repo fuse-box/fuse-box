@@ -1,6 +1,5 @@
 import { FlatFileGenerator } from "./FlatFileGenerator";
 import { each } from "realm-utils";
-import { OptimisedPluginOptions } from "./OptimisedPluginOptions";
 import { StatementModification } from "./modifications/StatementModifaction";
 import { EnvironmentConditionModification } from "./modifications/EnvironmentConditionModification";
 import { BundleWriter } from "./BundleWriter";
@@ -17,6 +16,7 @@ import { ResponsiveAPI } from "./ResponsiveAPI";
 import { Log } from "../../Log";
 import { TypeOfModifications } from "./modifications/TypeOfModifications";
 import { TreeShake } from "./TreeShake";
+import { QuantumOptions } from "./QuantumOptions";
 
 
 
@@ -25,15 +25,14 @@ export class OptimisedCore {
     public api: ResponsiveAPI;
     public index = 0;
     public log: Log;
-    public opts: OptimisedPluginOptions​​;
+    public opts: QuantumOptions;
     public writer = new BundleWriter(this)
-    constructor(public producer: BundleProducer, opts: OptimisedPluginOptions​​) {
+    constructor(public producer: BundleProducer, opts: QuantumOptions) {
         this.opts = opts;
         this.api = new ResponsiveAPI(this);
         this.log = producer.fuse.context.log;
         this.log.echoBreak();
         this.log.echoInfo("Start optimisation");
-
     }
 
     public consume() {
@@ -65,6 +64,7 @@ export class OptimisedCore {
         if (this.producer.entryPackageFile && this.producer.entryPackageName) {
             entryId = `${this.producer.entryPackageName}/${this.producer.entryPackageFile}`;
         }
+
         bundleAbstraction.packageAbstractions.forEach(packageAbstraction => {
             packageAbstraction.fileAbstractions.forEach(fileAbstraction => {
                 let fileId = `${packageAbstraction.name}/${fileAbstraction.fuseBoxPath}`;
@@ -96,8 +96,10 @@ export class OptimisedCore {
     }
 
     public treeShake() {
-        const shaker = new TreeShake(this);
-        return shaker.shake();
+        if (this.opts.shouldTreeShake()) {
+            const shaker = new TreeShake(this);
+            return shaker.shake();
+        }
     }
     public render() {
         return each(this.producerAbstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {

@@ -1,14 +1,15 @@
 import { Plugin, WorkFlowContext } from "../../core/WorkflowContext";
 import { BundleProducer } from "../../core/BundleProducer";
 import { OptimisedCore } from "./OptimisedCore";
-import { OptimisedPluginOptions, IOptimisedPluginParms } from "./OptimisedPluginOptions";
+
 import { WebIndexPluginClass } from "../../plugins/WebIndexPlugin";
+import { IQuantumExtensionParams, QuantumOptions } from "./QuantumOptions";
 
 
 
-export class OptimisedBundlePluginClass implements Plugin {
-    public coreOpts: IOptimisedPluginParms;
-    constructor(coreOpts?: IOptimisedPluginParms) {
+export class QuantumPluginClass implements Plugin {
+    public coreOpts: IQuantumExtensionParams;
+    constructor(coreOpts?: IQuantumExtensionParams) {
         this.coreOpts = coreOpts || {};
     }
     init(context: WorkFlowContext) {
@@ -38,11 +39,11 @@ export class OptimisedBundlePluginClass implements Plugin {
 
     }
     producerEnd(producer: BundleProducer) {
-        let core = new OptimisedCore(producer, new OptimisedPluginOptions(this.coreOpts));
+        let core = new OptimisedCore(producer, new QuantumOptions(this.coreOpts));
         return core.consume();
     }
 };
 
-export const OptimisedBundlePlugin = (opts?: IOptimisedPluginParms) => {
-    return new OptimisedBundlePluginClass(opts);
+export const QuantumPlugin = (opts?: IQuantumExtensionParams) => {
+    return new QuantumPluginClass(opts);
 };

@@ -8,8 +8,9 @@ import { BundleRunner } from "./BundleRunner";
 import { ServerOptions } from "../devServer/Server";
 import * as  chokidar from "chokidar";
 import { utils, each } from "realm-utils";
-import { ProducerAbstraction } from "../bundle-abstraction/core/ProducerAbstraction";
-import { BundleAbstraction } from "../bundle-abstraction/core/BundleAbstraction";
+import { ProducerAbstraction } from "../quantum/core/ProducerAbstraction";
+import { BundleAbstraction } from "../quantum/core/BundleAbstraction";
+
 
 export class BundleProducer {
     public bundles = new Map<string, Bundle>();

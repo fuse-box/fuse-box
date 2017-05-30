@@ -1,9 +1,7 @@
-
-
-import { ProducerAbstraction } from "../../bundle-abstraction/core/ProducerAbstraction";
-import { BundleAbstraction } from "../../bundle-abstraction/core/BundleAbstraction";
-import { PackageAbstraction } from "../../bundle-abstraction/core/PackageAbstraction";
-import { FileAbstraction } from "../../bundle-abstraction/core/FileAbstraction";
+import { ProducerAbstraction } from "../core/ProducerAbstraction";
+import { BundleAbstraction } from "../core/BundleAbstraction";
+import { PackageAbstraction } from "../core/PackageAbstraction";
+import { FileAbstraction } from "../core/FileAbstraction";
 
 export function createAbstractFile(name: string) {
     let producerAbstraction = new ProducerAbstraction();

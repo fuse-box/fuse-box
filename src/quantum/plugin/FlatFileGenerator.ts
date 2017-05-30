@@ -15,6 +15,9 @@ export class FlatFileGenerator {
     }
 
     public addFile(file: FileAbstraction, ensureES5 = false) {
+        // if (file.canBeRemoved) {
+        //     return;
+        // }
         let args: string[] = [];
 
         if (file.isExportInUse()) {

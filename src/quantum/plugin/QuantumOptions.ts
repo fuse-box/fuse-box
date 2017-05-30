@@ -1,21 +1,23 @@
 import { WebIndexPluginClass } from "../../plugins/WebIndexPlugin";
-export interface IOptimisedPluginParms {
+export interface IQuantumExtensionParams {
     target?: string;
     uglify?: any;
     removeExportsInterop?: boolean;
     removeUseStrict?: boolean;
     webIndexPlugin?: WebIndexPluginClass;
     ensureES5?: boolean;
+    treeshake?: boolean;
 }
-export class OptimisedPluginOptions {
+export class QuantumOptions {
 
     private optsTarget: string = "browser";
     private uglify: any;
     private removeExportsInterop = true;
     private removeUseStrict = true;
     private ensureES5 = true;
+    public treeshake = true;
     public webIndexPlugin: WebIndexPluginClass;
-    constructor(opts: IOptimisedPluginParms) {
+    constructor(opts: IQuantumExtensionParams) {
         opts = opts || {};
         if (opts.target) {
             this.optsTarget = opts.target;
@@ -36,6 +38,9 @@ export class OptimisedPluginOptions {
         if (opts.ensureES5 !== undefined) {
             this.ensureES5 = opts.ensureES5;
         }
+        if (opts.treeshake !== undefined) {
+            this.treeshake = opts.treeshake;
+        }
     }
 
     public shouldRemoveUseStrict() {
@@ -48,6 +53,9 @@ export class OptimisedPluginOptions {
         return this.uglify;
     }
 
+    public shouldTreeShake() {
+        return this.treeshake;
+    }
     public shouldRemoveExportsInterop() {
         return this.removeExportsInterop;
     }

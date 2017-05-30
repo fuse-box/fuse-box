@@ -27,7 +27,7 @@ export class FileAbstraction {
 
     public isEcmaScript6 = false;
     public shakable = false;
-
+    public canBeRemoved = false;
 
     public namedRequireStatements = new Map<string, RequireStatement​​>();
 
@@ -53,6 +53,8 @@ export class FileAbstraction {
     constructor(public fuseBoxPath: string, public packageAbstraction: PackageAbstraction) {
         this.fuseBoxDir = ensureFuseBoxPath(path.dirname(fuseBoxPath));
         this.setID(fuseBoxPath);
+
+
         packageAbstraction.registerFileAbstraction(this);
     }
 
@@ -153,6 +155,7 @@ export class FileAbstraction {
 
     public setEnryPoint() {
         this.isEntryPoint = true;
+        this.treeShakingRestricted = true;
     }
 
 

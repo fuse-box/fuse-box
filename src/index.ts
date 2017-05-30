@@ -1,4 +1,4 @@
-export { OptimisedBundlePlugin } from "./bundle-abstraction/plugin/FuseBoxOptimisedBundlePlugin";
+export { QuantumPlugin } from "./quantum/plugin/QuantumPlugin";
 export { ReplacePlugin } from "./plugins/ReplacePlugin";
 export { VuePlugin } from "./plugins/VuePlugin";
 export { ImageBase64Plugin } from "./plugins/images/ImageBase64Plugin";

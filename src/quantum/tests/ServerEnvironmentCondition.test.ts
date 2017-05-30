@@ -11,9 +11,10 @@ export class ServerEnvironmentConditionTest {
                 files: {
                     "index.js": `exports.something = FuseBox.isServer`
                 },
-                instructions: "index.js",
+                instructions: "> index.js",
             },
         }).then((result) => {
+
             const first = result.window.$fsx.r(0);
             should(first).deepEqual({ something: false });
         });
