@@ -7,7 +7,6 @@ export class GenericAst {
 
     public remove() {
         let target = this.ast[this.astProp];
-
         if (target instanceof Array) {
             let idx = target.indexOf(this.node)
             target.splice(idx, 1);
@@ -15,7 +14,9 @@ export class GenericAst {
     }
 
     public replaceWithString(value: string) {
+
         if (this.astProp) {
+
             this.ast[this.astProp] = {
                 type: "Literal",
                 value: value

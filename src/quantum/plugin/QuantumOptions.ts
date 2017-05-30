@@ -4,6 +4,7 @@ export interface IQuantumExtensionParams {
     uglify?: any;
     removeExportsInterop?: boolean;
     removeUseStrict?: boolean;
+    replaceProcessEnv?: boolean;
     webIndexPlugin?: WebIndexPluginClass;
     ensureES5?: boolean;
     treeshake?: boolean;
@@ -15,6 +16,7 @@ export class QuantumOptions {
     private removeExportsInterop = true;
     private removeUseStrict = true;
     private ensureES5 = true;
+    private replaceProcessEnv = true;
     public treeshake = true;
     public webIndexPlugin: WebIndexPluginClass;
     constructor(opts: IQuantumExtensionParams) {
@@ -28,6 +30,9 @@ export class QuantumOptions {
         // stupid exports.__esModule = true;
         if (opts.removeExportsInterop !== undefined) {
             this.removeExportsInterop = opts.removeExportsInterop;
+        }
+        if (opts.replaceProcessEnv !== undefined) {
+            this.replaceProcessEnv = this.replaceProcessEnv;
         }
         if (opts.removeUseStrict !== undefined) {
             this.removeUseStrict = opts.removeUseStrict;
@@ -60,6 +65,9 @@ export class QuantumOptions {
         return this.removeExportsInterop;
     }
 
+    public shouldReplaceProcessEnv() {
+        return this.replaceProcessEnv;
+    }
 
     public isTargetUniveral() {
         return this.optsTarget === "universal";

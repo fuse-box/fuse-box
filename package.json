@@ -83,6 +83,7 @@
     "base64-img": "^1.0.3",
     "base64-js": "^1.2.0",
     "chokidar": "^1.6.1",
+    "cli-spinners": "^1.0.0",
     "concat-with-sourcemaps": "^1.0.4",
     "escodegen": "^1.8.1",
     "express": "^4.14.0",

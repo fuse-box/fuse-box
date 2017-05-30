@@ -7,13 +7,14 @@ import * as path from "path";
 import { ensureFuseBoxPath, transpileToEs5 } from "../../Utils";
 import { FuseBoxIsServerCondition } from "./nodes/FuseBoxIsServerCondition";
 import { FuseBoxIsBrowserCondition } from "./nodes/FuseBoxIsBrowserCondition";
-import { matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier, trackRequireMember, matchNamedExport, isExportMisused } from "./AstUtils";
+import { matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier, trackRequireMember, matchNamedExport, isExportMisused, matchesNodeEnv } from "./AstUtils";
 import { ExportsInterop } from "./nodes/ExportsInterop";
 import { UseStrict } from "./nodes/UseStrict";
 import { TypeOfExportsKeyword } from "./nodes/TypeOfExportsKeyword";
 import { TypeOfModuleKeyword } from "./nodes/TypeOfModuleKeyword";
 import { TypeOfWindowKeyword } from "./nodes/TypeOfWindowKeyword";
 import { NamedExport } from "./nodes/NamedExport";
+import { GenericAst } from "./nodes/GenericAst";
 
 const globalNames = new Set<string>(["__filename", "__dirname", "exports", "module"]);
 
@@ -40,7 +41,11 @@ export class FileAbstraction {
     public typeofExportsKeywords = new Set<TypeOfExportsKeyword>();
     public typeofModulesKeywords = new Set<TypeOfModuleKeyword>();
     public typeofWindowKeywords = new Set<TypeOfWindowKeyword>();
+    public typeofGlobalKeywords = new Set<GenericAst>();
+    public typeofDefineKeywords = new Set<GenericAst>();
+
     public namedExports = new Map<string, NamedExport>();
+    public processNodeEnv = new Set<GenericAst>();
 
 
 
@@ -243,6 +248,9 @@ export class FileAbstraction {
         if (matchesTypeOf(node, "exports")) {
             this.typeofExportsKeywords.add(new TypeOfExportsKeyword(parent, prop, node));
         }
+        if (matchesNodeEnv(node)) {
+            this.processNodeEnv.add(new GenericAst(parent, prop, node));
+        }
 
 
         // Object.defineProperty(exports, '__esModule', { value: true });
@@ -256,10 +264,16 @@ export class FileAbstraction {
             this.useStrict.add(new UseStrict(parent, prop, node));
         }
 
+        if (matchesTypeOf(node, "global")) {
+            this.typeofGlobalKeywords.add(new GenericAst(parent, prop, node))
+        }
+        if (matchesTypeOf(node, "define")) {
+            this.typeofDefineKeywords.add(new GenericAst(parent, prop, node))
+        }
 
         // typeof window
         if (matchesTypeOf(node, "window")) {
-            this.typeofWindowKeywords.add(new TypeOfWindowKeyword(parent, prop, node))
+            this.typeofWindowKeywords.add(new GenericAst(parent, prop, node))
         }
         const requireIdentifier = matchRequireIdentifier(node)
         if (requireIdentifier) {

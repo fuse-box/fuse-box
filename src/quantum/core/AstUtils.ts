@@ -42,6 +42,26 @@ const ES6_TYPES = new Set([
     "SpreadElement",
     "ArrowFunctionExpression"
 ]);
+
+export function matchesNodeEnv(node) {
+    let isProcess, isEnv, isNodeEnv;
+    isProcess = astQuery(node,
+        ["/MemberExpression", ".object", "/MemberExpression", ".object", ".name"], 'process')
+    if (!isProcess) {
+        return false
+    }
+    isEnv =
+        astQuery(node, ["/MemberExpression", ".object", "/MemberExpression", ".property", ".name"], "env");
+    if (!isEnv) {
+        return false;
+    }
+    isNodeEnv =
+        astQuery(node, ["/MemberExpression", ".property", ".name"], "NODE_ENV")
+    if (!isNodeEnv) {
+        return false;
+    }
+    return true;
+}
 export function matchesEcmaScript6(node) {
     if (node) {
         if (ES6_TYPES.has(node.type)) {

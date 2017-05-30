@@ -17,6 +17,8 @@ import { Log } from "../../Log";
 import { TypeOfModifications } from "./modifications/TypeOfModifications";
 import { TreeShake } from "./TreeShake";
 import { QuantumOptions } from "./QuantumOptions";
+import { QuantumLog } from "../QuantumLog";
+import { ProcessEnvModification } from "./modifications/ProcessEnvModification";
 
 
 
@@ -32,7 +34,8 @@ export class OptimisedCore {
         this.api = new ResponsiveAPI(this);
         this.log = producer.fuse.context.log;
         this.log.echoBreak();
-        this.log.echoInfo("Start optimisation");
+        QuantumLog.spinStart("Launching quantum core");
+        //this.log.echoInfo("Start optimisation");
     }
 
     public consume() {
@@ -129,7 +132,9 @@ export class OptimisedCore {
             // removes "use strict" if required
             UseStrictModification,
             // replace typeof module, typeof exports, typeof window
-            TypeOfModifications
+            TypeOfModifications,
+            // process.env removal
+            ProcessEnvModification,
         ];
         return each(modifications, (modification: IPerformable) => modification.perform(this, file));
     }
