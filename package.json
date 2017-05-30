@@ -44,6 +44,7 @@
   "devDependencies": {
     "@types/node": "^6.0.41",
     "cheerio": "0.22.0",
+    "fliplog": "^0.3.3",
     "fuse-box-test-using-old-version": "^1.0.0",
     "fuse-box-testcase1": "^1.0.0",
     "fuse-box-testcase3": "^1.0.3",
@@ -85,7 +86,6 @@
     "concat-with-sourcemaps": "^1.0.4",
     "escodegen": "^1.8.1",
     "express": "^4.14.0",
-    "fliplog": "^0.3.0",
     "fs-extra": "^2.0.0",
     "fuse-tools": "^1.0.4",
     "glob": "^7.1.1",
