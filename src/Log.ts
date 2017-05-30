@@ -1,6 +1,6 @@
 import { ModuleCollection } from "./core/ModuleCollection";
 import { WorkFlowContext } from "./core/WorkflowContext";
-import * as log from "fliplog";
+const log = require("fliplog");
 const prettysize = require("prettysize");
 const prettyTime = require("pretty-time");
 
@@ -23,27 +23,29 @@ export class Log {
         return this
     }
 
+    // @TODO add spinners here
+    // @TODO combine logs here, output when needed
+    // @TODO combine this and subBundleStart
     public bundleStart(name: string) {
-        log.cyan().bold("\n" + name + " -> \n\n").echo()
+        log.bold(`${name} ->`).echo()
     }
     public subBundleStart(name: string, parent: string) {
-        log.cyan().bold("\n" + name + ` (child of ${parent}) -> \n\n`).echo()
+        log.bold(`${name} (child of ${parent}) ->`).echo()
     }
 
     public bundleEnd(name: string, collection: ModuleCollection) {
         let took = process.hrtime(this.timeStart) as [number, number];
 
-        const named = log
-          .chalk()
-          .green(` ${collection.cachedName || collection.name}`)
-
         log
-          .text(`-> Finished `).echo()
-          .yellow(`${named} took: ${prettyTime(took, "ms")}`).echo()
+          .ansi()
+          .write(`-> Finished`)
+          .green(collection.cachedName || collection.name)
+          .yellow(`took: ${prettyTime(took, "ms")}`)
+          .echo()
     }
 
     public echoHeader(str: string) {
-      log.yellow(` ${str}`).echo()
+        log.yellow(` ${str}`).echo()
     }
 
     public echo(str: string) {
@@ -51,16 +53,15 @@ export class Log {
     }
 
     public echoStatus(str: string) {
-      log
-        .title(`→ \n `).cyan(`${str} \n`).echo()
+        log.title(`→`).cyan(`${str}`).echo()
     }
 
     public echoInfo(str: string) {
-      log.preset('info').green(`  → ${str}`).echo()
+        log.preset('info').green(`  → ${str}`).echo()
     }
 
     public echoBreak() {
-      log.green(`\n  -------------- \n`).echo()
+        log.green(`\n  -------------- \n`).echo()
     }
 
     public echoWarning(str: string) {
@@ -68,43 +69,38 @@ export class Log {
     }
 
     public echoDefaultCollection(collection: ModuleCollection, contents: string) {
-        if (!this.printLog) {
-            return;
-        }
+        if (this.printLog === false) return;
         let bytes = Buffer.byteLength(contents, "utf8");
         let size = prettysize(bytes);
         this.totalSize += bytes;
 
-        const chalk = log.chalk()
-        const yellowSize = chalk.yellow(` (${collection.dependencies.size} files,  ${size})`)
-        const greenName = chalk.green(` ${collection.cachedName || collection.name} `)
-
         log
-          .title(`└──`)
-          .text(`${greenName} ${yellowSize}`)
+          .ansi()
+          .write(`└──`)
+          .yellow(` (${collection.dependencies.size} files,  ${size})`)
+          .green(collection.cachedName || collection.name)
           .echo()
 
+        // @TODO auto indent as with ansi
         collection.dependencies.forEach(file => {
-            if (!file.info.isRemoteFile) {
-              // should auto indent
-              log.text(`      ${file.info.fuseBoxPath}\n`).echo()
-            }
+            if (file.info.isRemoteFile) return
+            log.title(`     `).dim(`${file.info.fuseBoxPath}`).echo()
         });
     }
 
     public echoCollection(collection: ModuleCollection, contents: string) {
-        if (!this.printLog) {
-            return;
-        }
+        if (this.printLog === false) return;
         let bytes = Buffer.byteLength(contents, "utf8");
         let size = prettysize(bytes);
         this.totalSize += bytes;
 
         log
-          .text(`└──`).echo()
-          .green(` ${collection.cachedName || collection.name}`).echo()
-          .text(` (${collection.dependencies.size} files)`).echo()
-          .yellow(` ${size} `).echo()
+          .ansi()
+          .write(`└──`)
+          .green(collection.cachedName || collection.name)
+          .yellow(size)
+          .write(`(${collection.dependencies.size} files)`)
+          .echo()
     }
 
     public end(header?: string) {
@@ -113,7 +109,7 @@ export class Log {
     }
 
     public echoBundleStats(header: string, size: number, took: [number, number]) {
-      const sized = log.chalk().yellow(`Size: ${prettysize(size)} `)
-      log.text(`${sized} in ${prettyTime(took, "ms")}` ).echo()
+        const sized = log.chalk().yellow(`Size: ${prettysize(size)}`)
+        log.text(`${sized} in ${prettyTime(took, "ms")}` ).echo()
     }
 }
