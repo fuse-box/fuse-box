@@ -3,7 +3,7 @@ import { Plugin } from "../core/WorkflowContext";
 import { BundleProducer } from "../core/BundleProducer";
 import * as path from "path";
 import * as fs from "fs";
-import { ensureAbsolutePath } from "../Utils";
+import { ensureAbsolutePath, joinFuseBoxPath } from "../Utils";
 
 export interface IndexPluginOptions {
     title?: string;
@@ -28,7 +28,7 @@ export class WebIndexPluginClass implements Plugin {
             }
             if (pass) {
                 bundlePaths.push(
-                    path.join(this.opts.path ? this.opts.path : "/",
+                    joinFuseBoxPath(this.opts.path ? this.opts.path : "/",
                         bundle.context.output.lastPrimaryOutput.filename)
                 )
             }
