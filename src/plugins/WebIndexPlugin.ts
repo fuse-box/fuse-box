@@ -1,7 +1,6 @@
 import { } from "../core/File";
 import { Plugin } from "../core/WorkflowContext";
 import { BundleProducer } from "../core/BundleProducer";
-import * as path from "path";
 import * as fs from "fs";
 import { ensureAbsolutePath, joinFuseBoxPath } from "../Utils";
 
@@ -27,9 +26,10 @@ export class WebIndexPluginClass implements Plugin {
                 }
             }
             if (pass) {
+                const output = bundle.context.output;
                 bundlePaths.push(
-                    joinFuseBoxPath(this.opts.path ? this.opts.path : "/",
-                        bundle.context.output.lastPrimaryOutput.filename)
+                    joinFuseBoxPath(this.opts.path ? this.opts.path : "/", output.folderFromBundleName || "/",
+                        output.lastPrimaryOutput.filename)
                 )
             }
         });

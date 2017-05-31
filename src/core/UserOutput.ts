@@ -19,6 +19,7 @@ export class UserOutput {
     public lastWrittenPath;
     public lastWrittenHash;
     public lastGeneratedFileName: string;
+    public folderFromBundleName: string;
     public lastPrimaryOutput: UserOutputResult;
     constructor(public context: WorkFlowContext, public original: string) {
         this.setup();
@@ -26,6 +27,10 @@ export class UserOutput {
 
     public setName(name: string) {
         this.filename = name;
+        const split = name.split("/");
+        if (split.length > 1) {
+            this.folderFromBundleName = split.splice(0, split.length - 1).join("/");
+        }
     }
 
     public getUniqueHash() {
