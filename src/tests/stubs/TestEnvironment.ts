@@ -1,6 +1,6 @@
 import * as path from "path";
 import { each } from "realm-utils";
-import {FuseBox, FuseBoxOptions} from "../../core/FuseBox";
+import { FuseBox, FuseBoxOptions } from "../../core/FuseBox";
 import * as fs from "fs";
 import * as appRoot from "app-root-path";
 import { removeFolder } from "../../Utils";
@@ -113,24 +113,31 @@ export function createOptimisedBundleEnv(opts: any) {
                 scripts.push(bundle.context.output.lastPrimaryOutput.path)
             });
             return new Promise((resolve, reject) => {
-                jsdom.env({
-                    html: "<html><head></head><body></body></html>",
-                    scripts: scripts,
-                    virtualConsole: jsdom.createVirtualConsole().sendTo(console),
-                    done: function (err, window) {
+                if (optimisedBundleOpts && optimisedBundleOpts.target === "server") {
+                    let results = []
+                    scripts.forEach(script => {
+                        results.push(require(script));
+                    });
+                    output.bundles = results;
 
-                        if (err) {
-                            return reject(err);
+                    return resolve(output);
+                } else {
+                    jsdom.env({
+                        html: "<html><head></head><body></body></html>",
+                        scripts: scripts,
+                        virtualConsole: jsdom.createVirtualConsole().sendTo(console),
+                        done: function (err, window) {
+
+                            if (err) {
+                                return reject(err);
+                            }
+                            output.contents = contents;
+                            output.window = window
+                            return resolve(output);
                         }
-                        output.contents = contents;
-                        output.window = window
-                        // output.projectSize = length;
-                        // output.querySelector = window.document.querySelector
-                        // output.querySelectorAll = window.document.querySelectorAll;
-                        // output.projectContents = contents;
-                        return resolve(output);
-                    }
-                });
+                    });
+                }
+
             });
         });
     }).then(() => {
@@ -266,7 +273,7 @@ export class TestingFuseBox extends FuseBox {
         super(opts);
     }
 
-    public runAndLoad(modules:string[], callback:(any, string)=>any) {
+    public runAndLoad(modules: string[], callback: (any, string) => any) {
         // todo: move cleanup to afterAll
         const cleanup = (result) => {
             setTimeout(() => {
@@ -275,23 +282,22 @@ export class TestingFuseBox extends FuseBox {
             return result;
         };
 
-        return this.run().then(producer =>{
-            return modules.reduce((acc, m) =>
-            {
+        return this.run().then(producer => {
+            return modules.reduce((acc, m) => {
                 const bundle = producer.bundles.get(m);
-                if(!bundle) {
+                if (!bundle) {
                     throw new Error(`Module ${m} not found`);
                 }
                 acc[m] = require(bundle.context.output.lastPrimaryOutput.path);
                 return acc;
             }, {});
         })
-        .then(loaded => callback(loaded, path.dirname(this.opts.output)) || loaded)
-        .then(cleanup, (e) => { throw cleanup(e); });
+            .then(loaded => callback(loaded, path.dirname(this.opts.output)) || loaded)
+            .then(cleanup, (e) => { throw cleanup(e); });
     }
 }
 
-export function createFuseBox(opts: any):TestingFuseBox {
+export function createFuseBox(opts: any): TestingFuseBox {
     const name = opts.name || `test-${new Date().getTime()}`;
 
     let tmpFolder = path.join(appRoot.path, ".fusebox", "tests", name);

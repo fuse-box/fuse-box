@@ -455,9 +455,13 @@ export class WorkFlowContext {
         this.initialLoad = false;
 
         const res = this.source.getResult();
-        this.bundle.generatedCode = res.content;
-        if (this.output && this.bundle.producer.writeBundles) {
-            this.output.writeCurrent(this.bundle.generatedCode).then(() => {
+        if (this.bundle) {
+            this.bundle.generatedCode = res.content;
+        }
+
+
+        if (this.output && (!this.bundle || this.bundle && this.bundle.producer.writeBundles)) {
+            this.output.writeCurrent(res.content).then(() => {
                 this.writeSourceMaps(res);
                 this.defer.unlock();
                 if (utils.isFunction(outFileWritten)) {
@@ -474,7 +478,7 @@ export class WorkFlowContext {
     protected writeSourceMaps(result: any) {
         // Writing sourcemaps
         if (this.sourceMapsProject || this.sourceMapsVendor) {
-           this.output.write(`${this.output.filename}.js.map`, result.sourceMap, true);
+            this.output.write(`${this.output.filename}.js.map`, result.sourceMap, true);
         }
     }
     public shouldSplit(file: File): boolean {

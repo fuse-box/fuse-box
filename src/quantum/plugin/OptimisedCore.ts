@@ -9,7 +9,6 @@ import { UseStrictModification } from "./modifications/UseStrictModification";
 import { ProducerAbstraction } from "../core/ProducerAbstraction";
 import { BundleProducer } from "../../core/BundleProducer";
 import { BundleAbstraction } from "../core/BundleAbstraction";
-import { fastHash } from "../../Utils";
 import { PackageAbstraction } from "../core/PackageAbstraction";
 import { FileAbstraction } from "../core/FileAbstraction";
 import { ResponsiveAPI } from "./ResponsiveAPI";
@@ -19,6 +18,7 @@ import { TreeShake } from "./TreeShake";
 import { QuantumOptions } from "./QuantumOptions";
 import { QuantumLog } from "../QuantumLog";
 import { ProcessEnvModification } from "./modifications/ProcessEnvModification";
+import { fastHash } from "../../Utils";
 
 
 
@@ -68,6 +68,13 @@ export class OptimisedCore {
             entryId = `${this.producer.entryPackageName}/${this.producer.entryPackageFile}`;
         }
 
+        // define globals
+        const globals = this.producer.fuse.context.globals;
+        let globalsName;
+        if (globals) {
+            for (let i in globals) { globalsName = globals[i] }
+        }
+
         bundleAbstraction.packageAbstractions.forEach(packageAbstraction => {
             packageAbstraction.fileAbstractions.forEach(fileAbstraction => {
                 let fileId = `${packageAbstraction.name}/${fileAbstraction.fuseBoxPath}`;
@@ -79,7 +86,7 @@ export class OptimisedCore {
                     id = fastHash(fileId);
                 }
                 if (fileId === entryId) {
-                    fileAbstraction.setEnryPoint();
+                    fileAbstraction.setEnryPoint(globalsName);
                 }
                 fileAbstraction.setID(id)
             });
@@ -106,7 +113,7 @@ export class OptimisedCore {
     }
     public render() {
         return each(this.producerAbstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
-            const generator = new FlatFileGenerator();
+            const generator = new FlatFileGenerator(this);
             generator.init();
             return each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
                 return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) =>

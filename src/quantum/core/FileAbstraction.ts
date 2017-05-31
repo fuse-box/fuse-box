@@ -28,6 +28,7 @@ export class FileAbstraction {
 
     public isEcmaScript6 = false;
     public shakable = false;
+    public globalsName: string;
     public canBeRemoved = false;
 
     public namedRequireStatements = new Map<string, RequireStatement​​>();
@@ -158,8 +159,9 @@ export class FileAbstraction {
         return this.globalVariables.has("exports") || this.globalVariables.has("module");
     }
 
-    public setEnryPoint() {
+    public setEnryPoint(globalsName?: string) {
         this.isEntryPoint = true;
+        this.globalsName = globalsName;
         this.treeShakingRestricted = true;
     }
 

@@ -1,4 +1,6 @@
 (function() {
+
+
     /* @if universal */
     var isBrowser = typeof window !== "undefined";
     var storage = isBrowser ? window : global;
@@ -107,10 +109,6 @@
     }
 
     /* @end */
-
-
-
-
     $fsx.f = {}
 
     // cached modules
@@ -128,9 +126,7 @@
         cached = $fsx.m[id] = {};
         cached.exports = {};
         cached.module = { exports: cached.exports };
-        file(cached.module, cached.exports, function(p) {
-            return $fsx.r(p);
-        });
+        file(cached.module, cached.exports);
         return cached.module.exports;
     };
 
