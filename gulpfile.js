@@ -128,7 +128,7 @@ gulp.task("publish", ["dist-cdn-loader-js"], function(done) {
     runSequence("dist", "increment-version", "commit-release", "npm-publish", done);
 });
 
-gulp.task("beta", ["dist-cdn-loader-js"], function(done) {
+gulp.task("beta", [], function(done) {
     runSequence("dist", "increment-beta", "commit-beta", "npm-publish-beta", done);
 });
 
@@ -294,7 +294,7 @@ gulp.task("installDevDeps", function(done) {
         "vue-server-renderer",
         "rollup",
     ];
-    var installDeps = spawn("npm", ["install"].concat(deps), {
+    var installDeps = spawn("npm", ["install", "--no-save"].concat(deps), {
         stdio: "inherit",
     });
 });
