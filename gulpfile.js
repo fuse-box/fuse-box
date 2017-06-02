@@ -14,6 +14,7 @@ const homedir = require("homedir");
 const fs = require("fs");
 const header = require("gulp-header");
 const path = require("path");
+const os = require('os');
 
 const getGitHubToken = () => {
     const f = path.join(homedir(), ".github-token");
@@ -294,7 +295,13 @@ gulp.task("installDevDeps", function(done) {
         "vue-server-renderer",
         "rollup",
     ];
-    var installDeps = spawn("npm", ["install", "--no-save"].concat(deps), {
-        stdio: "inherit",
-    });
+
+    if (os.platform().match(/^win/)) {
+        let windowsCommands = ["start", "cmd.exe", "/K", "npm", "install", "--no-save", ...deps];
+        exec(windowsCommands.join(" "), () => { })
+    } else {
+        var installDeps = spawn("npm", ["install", "--no-save"].concat(deps), {
+            stdio: "inherit",
+        });
+    }
 });
