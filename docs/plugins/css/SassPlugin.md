@@ -70,7 +70,7 @@ fuse.plugin(
 
 ## Macros
 
-Macros is a unique feature available onl yin `FuseBox` to give you more flexibility on how to define paths for importing files in `SASS` . To enable macros add:
+Macros is a unique feature available only in `FuseBox` to give you more flexibility on how to define paths for importing files in `SASS` . To enable macros add:
 
 ```js
 SassPlugin({importer : true})
