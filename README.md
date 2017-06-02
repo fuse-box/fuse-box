@@ -108,14 +108,14 @@ Simple example using React with babel (compiles in 50ms!)
 ## Highlights
 
 * No headache, minimal configuration
-* First class [typescript](http://fuse-box.org/#typescript) support
-* Built-in [Rollup](http://fuse-box.org/#rollup) support
-* Arithmetic [instructions](http://fuse-box.org/#arithmetic-instructions)
+* First class [typescript](http://fuse-box.org/page/typescript) support
+* Built-in [Rollup](http://fuse-box.org/page/rollup) support
+* [Arithmetic instructions](http://fuse-box.org/page/bundle#arithmetic-instructions)
 * Blazing fast bundle time
-* [Wildcard imports](http://fuse-box.org/#wildcard-import)
-* [Dynamic modules](http://fuse-box.org/#dynamic-modules) at runtime
-* [Tilde support](http://fuse-box.org/#point-to-the-root)
-* [DevServer and HMR](http://fuse-box.org/#dev-server-and-hmr) integrate with existing HTTP apps in 1 second!
+* [Wildcard imports](http://fuse-box.org/page/loader-api#wildcard-import)
+* [Dynamic modules](http://fuse-box.org/page/loader-api#dynamic-modules) at runtime
+* [Tilde support](http://fuse-box.org/page/loader-api#point-to-the-root)
+* [DevServer and HMR](http://fuse-box.org/page/development) integrate with existing HTTP apps in 1 second!
 * Metadata e.g `__filename` for decorators.
 * Works everywhere for easy universal applications!
 
@@ -147,6 +147,3 @@ Join our [gitter channel](https://gitter.im/fusebox-bundler/Lobby) we are very a
 Special thanks to [devmondo](https://github.com/devmondo) for incredible ideas, giving inspiration and relentless testing/contributing to the project.  
 
 If you like the project, don't forget to star it!
-
-
-
