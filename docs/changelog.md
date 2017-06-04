@@ -1,5 +1,27 @@
 # Changelog
 
+### [2.0.1](https://github.com/fuse-box/fuse-box/milestone/19)
+    
+
+<p></p>
+
+| Reference | Description | Date |
+| --------- | ------------| ---- |
+|[ISSUE 258](https://github.com/fuse-box/fuse-box/issues/258) | Support browser directive of package.json | May 22, 2017 11:23 PM|
+|[ISSUE 324](https://github.com/fuse-box/fuse-box/issues/324) | Importing new @angular/platform-browser/animations bundle | May 22, 2017 4:14 PM|
+|[PR 517](https://github.com/fuse-box/fuse-box/pull/517) | VuePlugin: relative includes requires filename option (pug) | May 11, 2017 1:09 PM|
+|[PR 521](https://github.com/fuse-box/fuse-box/pull/521) | proc.require() | May 13, 2017 12:37 AM|
+|[PR 534](https://github.com/fuse-box/fuse-box/pull/534) | [wip]  BublePlugin | May 16, 2017 9:22 AM|
+|[PR 535](https://github.com/fuse-box/fuse-box/pull/535) | Improvements & typo fixes for `getting-started` & `configuration` docs | May 15, 2017 9:33 PM|
+|[PR 536](https://github.com/fuse-box/fuse-box/pull/536) | Bundler abstraction template | May 15, 2017 4:08 PM|
+|[PR 549](https://github.com/fuse-box/fuse-box/pull/549) | Fix infinite requests caused by server's 200OK | May 21, 2017 7:57 PM|
+|[PR 554](https://github.com/fuse-box/fuse-box/pull/554) | Unminified version of the API on debug | May 20, 2017 5:34 PM|
+|[ISSUE 560](https://github.com/fuse-box/fuse-box/issues/560) | Transpile es6 modules in node_modules automatically | May 30, 2017 10:44 PM|
+|[PR 561](https://github.com/fuse-box/fuse-box/pull/561) | UglifyESPlugin | May 23, 2017 11:18 AM|
+|[PR 565](https://github.com/fuse-box/fuse-box/pull/565) | possibility to configure the temp folder | May 24, 2017 1:13 PM|
+|[PR 579](https://github.com/fuse-box/fuse-box/pull/579) | adding async tag to the injected scripts | May 28, 2017 1:24 PM|
+                
+
 ### [2.0.0](https://github.com/fuse-box/fuse-box/milestone/18)
     
 

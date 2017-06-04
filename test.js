@@ -10,6 +10,7 @@ process.env.SPARKY_LOG = false;
 process.env.LOGGING = false;
 const { FuseBox } = fuse.FuseBox.import('fuse-box4-test/FuseBox');
 
+
 let file = process.argv[2];
 let special = file && file.match(/^--file=(.*)/);
 let mask = '*.test.ts';

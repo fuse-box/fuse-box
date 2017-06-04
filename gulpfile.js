@@ -15,6 +15,7 @@ const fs = require("fs");
 const header = require("gulp-header");
 const path = require("path");
 const os = require('os');
+
 const getGitHubToken = () => {
     const f = path.join(homedir(), ".github-token");
     if (fs.existsSync(f)) {
@@ -127,7 +128,7 @@ gulp.task("publish", ["dist-cdn-loader-js"], function (done) {
     runSequence("dist", "increment-version", "commit-release", "npm-publish", done);
 });
 
-gulp.task("beta", ["dist-cdn-loader-js"], function (done) {
+gulp.task("beta", [], function(done) {
     runSequence("dist", "increment-beta", "commit-beta", "npm-publish-beta", done);
 });
 
@@ -311,10 +312,10 @@ gulp.task("installDevDeps", function (done) {
     ];
 
     if (os.platform().match(/^win/)) {
-        let windowsCommands = ["start", "cmd.exe", "/K", 'npm', 'install', ...deps];
+        let windowsCommands = ["start", "cmd.exe", "/K", "npm", "install", "--no-save", ...deps];
         exec(windowsCommands.join(" "), () => { })
     } else {
-        var installDeps = spawn("npm", ["install"].concat(deps), {
+        var installDeps = spawn("npm", ["install", "--no-save"].concat(deps), {
             stdio: "inherit",
         });
     }

@@ -36,6 +36,7 @@ export interface FuseBoxOptions {
     sourceMaps?: any;
     rollup?: any;
     hash?: string | Boolean;
+    ignoreModules?: string[],
     customAPIFile?: string;
     output?: string;
     debug?: boolean;
@@ -81,7 +82,9 @@ export class FuseBox {
             this.context.debugMode = opts.debug;
         }
 
-
+        if (opts.ignoreModules) {
+            this.context.ignoreGlobal = opts.ignoreModules;
+        }
 
         this.context.debugMode = opts.debug !== undefined ? opts.debug : contains(process.argv, "--debug");
 
