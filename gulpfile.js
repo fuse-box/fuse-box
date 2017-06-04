@@ -124,7 +124,7 @@ gulp.task("dist-main", ["dist-typings", "dist-commonjs"]);
 /**
  *   NPM deploy management
  */
-gulp.task("publish", ["dist-cdn-loader-js"], function (done) {
+gulp.task("publish", ["dist-cdn-loader-js"], function(done) {
     runSequence("dist", "increment-version", "commit-release", "npm-publish", done);
 });
 
@@ -132,7 +132,7 @@ gulp.task("beta", [], function(done) {
     runSequence("dist", "increment-beta", "commit-beta", "npm-publish-beta", done);
 });
 
-gulp.task("changelog", function (done) {
+gulp.task("changelog", function(done) {
     fs.writeFileSync(path.join(__dirname, "docs/changelog.md"), "");
     const storedToken = getGitHubToken();
     var config = {
@@ -146,13 +146,13 @@ gulp.task("changelog", function (done) {
         .pipe(gulp.dest("./"))
         .pipe(done);
 });
-gulp.task("increment-version", function () {
+gulp.task("increment-version", function() {
     return gulp.src("./package.json")
         .pipe(bump())
         .pipe(gulp.dest("./"));
 });
 
-gulp.task("increment-beta", function () {
+gulp.task("increment-beta", function() {
     let json = require("./package.json");
     let main = json.version;
     let matched = main.match(/(.*)(beta\.)(\d{1,})/i);
@@ -164,7 +164,7 @@ gulp.task("increment-beta", function () {
     }
 });
 
-gulp.task("commit-release", function (done) {
+gulp.task("commit-release", function(done) {
     let json = JSON.parse(fs.readFileSync(__dirname + "/package.json").toString());
     exec(`git add .; git commit -m "Release ${json.version}" -a; git tag v${json.version}; git push origin master --tags`, (error, stdout, stderr) => {
         if (error) {
@@ -177,7 +177,7 @@ gulp.task("commit-release", function (done) {
     });
 });
 
-gulp.task("commit-beta", function (done) {
+gulp.task("commit-beta", function(done) {
     let json = JSON.parse(fs.readFileSync(__dirname + "/package.json").toString());
     exec(`git add .; git commit -m "Release ${json.version}" -a; git tag v${json.version}; git push origin master`, (error, stdout, stderr) => {
         if (error) {
@@ -190,11 +190,11 @@ gulp.task("commit-beta", function (done) {
     });
 });
 
-gulp.task("npm-publish", function (done) {
+gulp.task("npm-publish", function(done) {
     var publish = spawn("npm", ["publish"], {
         stdio: "inherit",
     });
-    publish.on("close", function (code) {
+    publish.on("close", function(code) {
         if (code === 8) {
             gulp.log("Error detected, waiting for changes...");
         }
@@ -202,11 +202,11 @@ gulp.task("npm-publish", function (done) {
     });
 });
 
-gulp.task("npm-publish-beta", function (done) {
+gulp.task("npm-publish-beta", function(done) {
     var publish = spawn("npm", ["publish", "--tag", "beta"], {
         stdio: "inherit",
     });
-    publish.on("close", function (code) {
+    publish.on("close", function(code) {
         if (code === 8) {
             gulp.log("Error detected, waiting for changes...");
         }
@@ -262,7 +262,7 @@ gulp.task("dist", ["dist-main", "dist-loader", "dist-modules"]);
  * For development workflow
  */
 
-gulp.task("watch-and-copy", ["dist", "copy-to-random", "copy-api-to-random"], function () {
+gulp.task("watch-and-copy", ["dist", "copy-to-random", "copy-api-to-random"], function() {
 
     watching = true;
 
@@ -278,14 +278,14 @@ gulp.task("watch-and-copy", ["dist", "copy-to-random", "copy-api-to-random"], fu
         runSequence("dist-main", "copy-to-random");
     });
 });
-gulp.task("watch", ["dist", "copy-to-dev"], function () {
+gulp.task("watch", ["dist", "copy-to-dev"], function() {
     watching = true;
     gulp.watch(filesMain, () => {
         runSequence("dist-main", "copy-to-dev");
     });
 });
 // npm install babel-core babel-generator babel-preset-latest babylon cheerio @angular/core stylus less postcss node-sass uglify-js source-map coffee-script @types/node rollup
-gulp.task("installDevDeps", function (done) {
+gulp.task("installDevDeps", function(done) {
     var deps = [
         "babel-core",
         "babel-generator",
@@ -313,9 +313,9 @@ gulp.task("installDevDeps", function (done) {
 
     if (os.platform().match(/^win/)) {
         let windowsCommands = ["start", "cmd.exe", "/K", "npm", "install", "--no-save", ...deps];
-        exec(windowsCommands.join(" "), () => { })
+        exec(windowsCommands.join(" "), () => {})
     } else {
-        var installDeps = spawn("npm", ["install", "--no-save"].concat(deps), {
+        var installDeps = spawn("yarn", ["add", "--no-save"].concat(deps), {
             stdio: "inherit",
         });
     }
