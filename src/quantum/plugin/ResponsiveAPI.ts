@@ -1,13 +1,13 @@
 import * as path from "path";
-import { OptimisedCore } from "./OptimisedCore";
 import { jsCommentTemplate } from "../../Utils";
 import { Config } from "../../Config";
+import { QuantumCore } from "./QuantumCore";
 export class ResponsiveAPI {
     private computedStatements = false;
     private hashes = false;
     private isServerFunction = false;
     private isBrowserFunction = false;
-    constructor(public core: OptimisedCore) {
+    constructor(public core: QuantumCore) {
 
     }
 

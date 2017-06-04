@@ -22,13 +22,13 @@ import { fastHash } from "../../Utils";
 
 
 
-export class OptimisedCore {
+export class QuantumCore {
     public producerAbstraction: ProducerAbstraction;
     public api: ResponsiveAPI;
     public index = 0;
     public log: Log;
     public opts: QuantumOptions;
-    public writer = new BundleWriter(this)
+    public writer = new BundleWriter(this);
     constructor(public producer: BundleProducer, opts: QuantumOptions) {
         this.opts = opts;
         this.api = new ResponsiveAPI(this);
@@ -52,7 +52,7 @@ export class OptimisedCore {
             .then(() => {
                 this.compriseAPI()
                 return this.writer.process();
-            })
+            });
     }
 
     public compriseAPI() {
@@ -72,7 +72,7 @@ export class OptimisedCore {
         const globals = this.producer.fuse.context.globals;
         let globalsName;
         if (globals) {
-            for (let i in globals) { globalsName = globals[i] }
+            for (let i in globals) { globalsName = globals[i]; }
         }
 
         bundleAbstraction.packageAbstractions.forEach(packageAbstraction => {
@@ -88,7 +88,7 @@ export class OptimisedCore {
                 if (fileId === entryId) {
                     fileAbstraction.setEnryPoint(globalsName);
                 }
-                fileAbstraction.setID(id)
+                fileAbstraction.setID(id);
             });
         });
     }
@@ -101,7 +101,7 @@ export class OptimisedCore {
             this.log.echoInfo(`Process package ${packageAbstraction.name} `);
             this.log.echoInfo(`  Files: ${fileSize} `);
             return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) =>
-                this.modify(fileAbstraction))
+                this.modify(fileAbstraction));
         });
     }
 
@@ -117,7 +117,7 @@ export class OptimisedCore {
             generator.init();
             return each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
                 return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) =>
-                    generator.addFile(fileAbstraction, this.opts.shouldEnsureES5()))
+                    generator.addFile(fileAbstraction, this.opts.shouldEnsureES5()));
             }).then(() => {
                 this.log.echoInfo(`Render bundle ${bundleAbstraction.name}`);
                 const bundleCode = generator.render();

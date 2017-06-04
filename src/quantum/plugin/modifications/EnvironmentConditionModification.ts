@@ -1,25 +1,22 @@
-import { OptimisedCore } from "../OptimisedCore";
-
 import { each } from "realm-utils";
 import { FuseBoxIsBrowserCondition } from "../../core/nodes/FuseBoxIsBrowserCondition";
 import { FuseBoxIsServerCondition } from "../../core/nodes/FuseBoxIsServerCondition";
 import { FileAbstraction } from "../../core/FileAbstraction";
-
-
+import { QuantumCore } from "../QuantumCore";
 
 export class EnvironmentConditionModification {
-    public static perform(core: OptimisedCore, file: FileAbstraction) {
+    public static perform(core: QuantumCore, file: FileAbstraction) {
         // FuseBox.isServer
         return each(file.fuseboxIsServerConditions, (isServerCondition: FuseBoxIsServerCondition) => {
             if (core.opts.isTargetUniveral()) {
                 core.api.addIsServerFunction();
-                isServerCondition.setFunctionName("$fsx.cs")
+                isServerCondition.setFunctionName("$fsx.cs");
             } else {
                 if (core.opts.isTargetBrowser()) {
-                    isServerCondition.setFunctionName("false")
+                    isServerCondition.setFunctionName("false");
                 }
                 if (core.opts.isTargetServer()) {
-                    isServerCondition.setFunctionName("true")
+                    isServerCondition.setFunctionName("true");
                 }
             }
         }).then(() => {
@@ -37,7 +34,7 @@ export class EnvironmentConditionModification {
                         isBrowserCondition.setFunctionName("false")
                     }
                 }
-            })
-        })
+            });
+        });
     }
 }

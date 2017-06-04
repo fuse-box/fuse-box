@@ -1,11 +1,10 @@
-import { OptimisedCore } from "../OptimisedCore";
 import { each } from "realm-utils";
 import { FileAbstraction } from "../../core/FileAbstraction";
 import { GenericAst } from "../../core/nodes/GenericAst";
-
+import { QuantumCore } from "../QuantumCore";
 
 export class TypeOfModifications {
-    public static perform(core: OptimisedCore, file: FileAbstraction): Promise<void> {
+    public static perform(core: QuantumCore, file: FileAbstraction): Promise<void> {
         return each(file.typeofExportsKeywords, (keyword: GenericAst) => {
             keyword.replaceWithString("object");
         }).then(() => {
@@ -34,6 +33,6 @@ export class TypeOfModifications {
             return each(file.typeofDefineKeywords, (keyword: GenericAst) => {
                 keyword.replaceWithString("undefined");
             });
-        })
+        });
     }
 }

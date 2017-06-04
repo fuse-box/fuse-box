@@ -1,11 +1,12 @@
 import { FileAbstraction } from "../core/FileAbstraction";
-import { OptimisedCore } from "./OptimisedCore";
+import { QuantumCore } from "./QuantumCore";
+
 
 export class FlatFileGenerator {
     public contents = [];
     public entryId;
     public globalsName: string;
-    constructor(public core: OptimisedCore) { }
+    constructor(public core: QuantumCore) { }
     public addGlobal(code: string) {
         this.contents.push(code);
     }

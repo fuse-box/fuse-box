@@ -1,11 +1,11 @@
-import { OptimisedCore } from "./OptimisedCore";
 import { BundleAbstraction } from "../core/BundleAbstraction";
 import { each } from "realm-utils";
 import { PackageAbstraction } from "../core/PackageAbstraction";
 import { FileAbstraction } from "../core/FileAbstraction";
+import { QuantumCore } from "./QuantumCore";
 
 export class TreeShake {
-    constructor(public core: OptimisedCore) {
+    constructor(public core: QuantumCore) {
 
     }
     /**

@@ -1,11 +1,8 @@
 import { Plugin, WorkFlowContext } from "../../core/WorkflowContext";
 import { BundleProducer } from "../../core/BundleProducer";
-import { OptimisedCore } from "./OptimisedCore";
-
 import { WebIndexPluginClass } from "../../plugins/WebIndexPlugin";
 import { IQuantumExtensionParams, QuantumOptions } from "./QuantumOptions";
-
-
+import { QuantumCore } from "./QuantumCore";
 
 export class QuantumPluginClass implements Plugin {
     public coreOpts: IQuantumExtensionParams;
@@ -35,11 +32,11 @@ export class QuantumPluginClass implements Plugin {
                     delete plugins[index];
                 }
             })
-        })
+        });
 
     }
     producerEnd(producer: BundleProducer) {
-        let core = new OptimisedCore(producer, new QuantumOptions(this.coreOpts));
+        let core = new QuantumCore(producer, new QuantumOptions(this.coreOpts));
         return core.consume();
     }
 };

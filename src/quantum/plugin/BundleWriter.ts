@@ -1,11 +1,11 @@
-import { OptimisedCore } from "./OptimisedCore";
 import { each } from "realm-utils";
 import { Bundle } from "../../core/Bundle";
 import { ensureUserPath } from "../../Utils";
 import * as fs from "fs";
+import { QuantumCore } from "./QuantumCore";
 export class BundleWriter {
     private bundles = new Map<string, Bundle>();
-    constructor(public core: OptimisedCore) { }
+    constructor(public core: QuantumCore) { }
 
     private getUglifyJSOptions(): any {
         const mainOptions: any = {
@@ -17,7 +17,7 @@ export class BundleWriter {
         }
     }
 
-private createBundle(name: string, code: string): Bundle {
+    private createBundle(name: string, code: string): Bundle {
         let bundle = new Bundle(name, this.core.producer.fuse.copy(), this.core.producer);
         bundle.generatedCode = new Buffer(code);
         this.bundles.set(bundle.name, bundle);
