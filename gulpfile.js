@@ -315,7 +315,7 @@ gulp.task("installDevDeps", function(done) {
         let windowsCommands = ["start", "cmd.exe", "/K", "npm", "install", "--no-save", ...deps];
         exec(windowsCommands.join(" "), () => {})
     } else {
-        var installDeps = spawn("yarn", ["add", "--no-save"].concat(deps), {
+        var installDeps = spawn("npm", ["install", "--no-save"].concat(deps), {
             stdio: "inherit",
         });
     }

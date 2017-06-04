@@ -22,11 +22,11 @@ Quantum bundles are in fact a bit smaller than the ones produced with Rollup.
 
 if FuseBox, `Quantum` is the minimum amount of javascript code involded in an interaction.
 
-Quantum should be used only for making production builds. It has a few limitations that aren't solved just yet, but it works perfectly for most projects.
+Quantum should be used only for making production builds. It has a few limitations when it gets to compatibility with original's FuseBox api which aren't solved just yet, but it works perfectly for most projects.
 
 
 ## Installation
-Quantum does extreme amount of operations, but it's very simple to confure:
+Quantum does extreme amount of operations, but it's very simple to configure:
 
 Add a plugin like so:
 
@@ -54,9 +54,9 @@ Make sure you are using [WebIndexPlugin](/plugins/webindexplugin#webindexplugin)
 
 ## How it works?
 
-FuseBox original API structure is a very flexible one, but it has redundancies.
+FuseBox original API structure is a very flexible one, but it contains some amount of code that won't be necessary required during runtime. 
 
-Quantum creates an abstraction on top of the original bundle. Let's see a `hello world` build with original API and with the Quantum.
+Quantum creates an abstraction on top of the original bundle. 
 
 Original FuseBox bundle + 5kb API
 
@@ -65,7 +65,6 @@ Original FuseBox bundle + 5kb API
     FuseBox.$fuse$ = FuseBox;
     FuseBox.pkg("default", {}, function(___scope___) {
         ___scope___.file("index.js", function(exports, require, module, __filename, __dirname) {
-
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
             var foo_1 = require("./foo");
@@ -73,16 +72,12 @@ Original FuseBox bundle + 5kb API
 
         });
         ___scope___.file("foo.js", function(exports, require, module, __filename, __dirname) {
-
             "use strict";
             Object.defineProperty(exports, "__esModule", { value: true });
-
             function Foo() {}
             exports.Foo = Foo;
-
         });
     });
-
     FuseBox.import("default/index.js");
     FuseBox.main("default/index.js");
 })
@@ -110,6 +105,7 @@ Let's look at the same code built with Quantum:
 
 Many things were removed, like `"use strict"` and `Object.defineProperty(exports, "__esModule", { value: true })`. However, it's all configurable.
 
+github_example: quantum_simple
 
 ## Quantum API
 
@@ -130,4 +126,133 @@ Let's minify the example above, and see how it looks:
 
 Impressive, right?
 
+It doesn't mean that the original FuseBox API is bad, it's just Quantum serves a different purpose and targets for those who desire a minimal friction in the code and don't use FuseBox dynamic modules (however we will support the latter very soon with Quantum)
+
 ## Tree shaking
+
+Unlike rollup and webpack, static tree shaking in FuseBox Quantum works for commonjs modules too. Commonjs tree shaking, however, has limitations.
+
+Below is the perfect candidate for tree shaking in Quantum:
+
+```js
+var hello = function(){}
+exports.hello = hello;
+```
+
+But it will not work if you start playing around with module and exports and start re-assigning values. Quantum performs the tree-shaking algorythm on modules that conform to certain standards. For example, transplied from es6 to es5.
+
+Quantum doesn't not really remove `var hello = function(){}` and leaves it up for UglifyJS to decide, that's why it's important to enable it.
+
+So in our case the resulting code will look as follows:
+
+```js
+var hello = function(){}
+```
+
+which makes `hello` an unused variable, hence will be stripped out from the code by UglifyJS
+
+The following code, however, will get the entire statement removed:
+
+ 
+```js
+exports.hello = function(){
+    alert(1)
+}
+```
+
+github_example: quantum_tree_shaking
+
+## Configuration
+
+
+Some operations are implicit
+
+| Statement | Description |
+| ------------- | ------------- |
+| ` typeof module`   | Replaced with "object" in case of a server target, "undefined" for browser   |
+| ` typeof exports`   | Replaced with "object" in case of a server target, "undefined" for browser   |
+| ` typeof window`   | Replaced with "object" in case of a browser target, "undefined" for server   |
+| ` typeof define`   | Replaced with "undefined" (Sorry AMD)  |
+
+
+Here is a list of what you can configure:
+
+
+### Target
+Default value: `browser`
+Possible values `server`, `browser`
+
+```js
+QuantumPlugin({
+    target : 'browser'
+})
+```
+
+
+These options define the API, for example, if you choose `browser` the API will have no checks for browser and target it directly.
+
+
+### removeExportsInterop
+Default value: `true`
+
+```js
+QuantumPlugin({
+    removeExportsInterop : true
+})
+```
+
+Removes `Object.defineProperty(exports, '__esModule', { value: true });` or `exports.__esModule = true` from the bundle.
+It is required however for babel transpiled projects, You have to set it to `false` when dealing with certain builds of react.
+
+
+### removeUseStrict
+Default value: `true`
+
+```js
+QuantumPlugin({
+    removeUseStrict : true
+})
+```
+
+Removes `"use strict"` from the code
+
+
+
+### replaceProcessEnv
+Default value: `true`
+
+```js
+QuantumPlugin({
+    replaceProcessEnv : true
+})
+```
+
+Replaces `process.env.NODE_ENV` with a string identifier `"production"`
+
+
+### ensureES5
+Default value: `true`
+```js
+QuantumPlugin({
+    ensureES5 : true
+})
+```
+
+
+Ensures that all code that is in es5
+
+
+### treeshake
+Default value: `true`
+```js
+QuantumPlugin({
+    ensureES5 : true
+})
+```
+
+Enables the tree shaking
+
+
+
+
+
