@@ -17,7 +17,7 @@ export class BundleWriter {
         }
     }
 
-    private createBundle(name: string, code: string): Bundle {
+private createBundle(name: string, code: string): Bundle {
         let bundle = new Bundle(name, this.core.producer.fuse.copy(), this.core.producer);
         bundle.generatedCode = new Buffer(code);
         this.bundles.set(bundle.name, bundle);
