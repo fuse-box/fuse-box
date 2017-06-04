@@ -115,9 +115,10 @@
     $fsx.m = {};
     $fsx.r = function(id) {
         var cached = $fsx.m[id];
+
         // resolve if in cache
         if (cached) {
-            return cached.module.exports;
+            return cached.m.exports;
         }
         var file = $fsx.f[id];
         if (!file)
@@ -125,9 +126,9 @@
 
         cached = $fsx.m[id] = {};
         cached.exports = {};
-        cached.module = { exports: cached.exports };
-        file(cached.module, cached.exports);
-        return cached.module.exports;
+        cached.m = { exports: cached.exports };
+        file(cached.m, cached.exports);
+        return cached.m.exports;
     };
 
 })()

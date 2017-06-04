@@ -246,10 +246,7 @@ export class FileAbstraction {
         if (matchesTypeOf(node, "module")) {
             this.typeofModulesKeywords.add(new TypeOfModuleKeyword(parent, prop, node));
         }
-        // typeof exports
-        if (matchesTypeOf(node, "exports")) {
-            this.typeofExportsKeywords.add(new TypeOfExportsKeyword(parent, prop, node));
-        }
+
         if (matchesNodeEnv(node)) {
             this.processNodeEnv.add(new GenericAst(parent, prop, node));
         }
@@ -258,9 +255,14 @@ export class FileAbstraction {
         // Object.defineProperty(exports, '__esModule', { value: true });
         if (matcheObjectDefineProperty(node, "exports")) {
             this.exportsInterop.add(new ExportsInterop(parent, prop, node));
+            return false;
         }
         if (matchesAssignmentExpression(node, 'exports', '__esModule')) {
             this.exportsInterop.add(new ExportsInterop(parent, prop, node));
+        }
+
+        if (matchesTypeOf(node, "exports")) {
+            this.typeofExportsKeywords.add(new TypeOfExportsKeyword(parent, prop, node));
         }
         if (matchesLiteralStringExpression(node, "use strict")) {
             this.useStrict.add(new UseStrict(parent, prop, node));

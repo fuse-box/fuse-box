@@ -1,8 +1,10 @@
 import { OptimisedCore } from "./OptimisedCore";
 import { each } from "realm-utils";
 import { Bundle } from "../../core/Bundle";
-
+import { ensureUserPath } from "../../Utils";
+import * as fs from "fs";
 export class BundleWriter {
+    private bundles = new Map<string, Bundle>();
     constructor(public core: OptimisedCore) { }
 
     private getUglifyJSOptions(): any {
@@ -14,20 +16,51 @@ export class BundleWriter {
             ...mainOptions
         }
     }
+
+    private createBundle(name: string, code: string): Bundle {
+        let bundle = new Bundle(name, this.core.producer.fuse.copy(), this.core.producer);
+        bundle.generatedCode = new Buffer(code);
+        this.bundles.set(bundle.name, bundle);
+        return bundle;
+    }
+
+    private addShims() {
+        const producer = this.core.producer;
+        // check for shims
+        if (producer.fuse.context.shim) {
+            const shims = [];
+            for (let name in producer.fuse.context.shim) {
+                let item = producer.fuse.context.shim[name];
+                if (item.source) {
+                    let shimPath = ensureUserPath(item.source);
+                    if (!fs.existsSync(shimPath)) {
+                        console.warn(`Shim erro: Not found: ${shimPath}`);
+                    } else {
+                        shims.push(fs.readFileSync(shimPath).toString())
+                    }
+                }
+            }
+            if (shims.length) {
+                this.createBundle("shims.js", shims.join("\n"));
+            }
+        }
+    }
+
+
+
     public process() {
         const producer = this.core.producer;
-        // create api bundle
-        let bundle = new Bundle("api.js", this.core.producer.fuse, producer);
 
-        bundle.generatedCode = new Buffer(this.core.api.render());
-        // api.js has to come first, therefore we need to re-initialise the map
-        let newMap = new Map<string, Bundle>();
-        newMap.set(bundle.name, bundle)
+
+        // create api bundle
+
+        this.createBundle("api.js", this.core.api.render());
+        this.addShims();
 
         producer.bundles.forEach(bundle => {
-            newMap.set(bundle.name, bundle)
+            this.bundles.set(bundle.name, bundle)
         });
-        producer.bundles = newMap;
+        producer.bundles = this.bundles;
         return each(producer.bundles, (bundle: Bundle) => {
             if (this.core.opts.shouldUglify()) {
                 const UglifyJs = require("uglify-js");

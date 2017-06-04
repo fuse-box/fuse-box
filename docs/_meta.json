@@ -5,6 +5,7 @@
         { "file": "configuration.md" },
         { "file": "bundle.md" },
         { "file": "development.md", "title": "Development" },
+        { "file": "quantum.md" },
         { "file": "Plugins", "title": "Plugins", "link": "/plugins" },
         { "file": "code-splitting.md" },
         { "file": "loader-api.md" },
