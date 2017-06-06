@@ -1,18 +1,18 @@
 # Quantum
 
-FuseBox Quantum is an extension on top of FuseBox that creates highly optimised bundles.
-QuantumAPI is extremely small (~200bytes) and very performant.
+FuseBox Quantum is an extension on top of FuseBox that creates highly optimized bundles.
+QuantumAPI is extremely small, around (~200bytes) and extremely performant.
 
 ## Features
 
 steps:
  * Optimising require statements
    All require statements in quantum API will be converted to direct calls (unlike the Vanilla API that processes statements before execution)
- * Removing Redundancy  
+ * Removing Redundancy
    Quantum will try to remove redundancy, like "use-strict" and other parts that don't affect the runtime
  * Static Tree Shaking
-   Quantum features a static tree shaking algorythm. Unlike rollup, quantum tree shaking works with commonjs, however the code should resemble es6 imports
-  
+   Quantum features a static tree shaking algorithm. Unlike rollup, quantum tree shaking works with commonjs, however, the code should resemble es6 imports
+
 
 Quantum bundles are in fact a bit smaller than the ones produced with Rollup.
 
@@ -20,9 +20,9 @@ Quantum bundles are in fact a bit smaller than the ones produced with Rollup.
 
 > In physics, a quantum (plural: quanta) is the minimum amount of any physical entity involved in an interaction
 
-if FuseBox, `Quantum` is the minimum amount of javascript code involded in an interaction.
+In FuseBox world, `Quantum` is the minimum amount of javascript code involved in an interaction.
 
-Quantum should be used only for making production builds. It has a few limitations when it gets to compatibility with original's FuseBox api which aren't solved just yet, but it works perfectly for most projects.
+Quantum should be used only for making production builds. It has a few limitations when it gets to the compatibility with original's FuseBox API which aren't solved just yet, but it works perfectly for most projects.
 
 
 ## Installation
@@ -54,9 +54,9 @@ Make sure you are using [WebIndexPlugin](/plugins/webindexplugin#webindexplugin)
 
 ## How it works?
 
-FuseBox original API structure is a very flexible one, but it contains some amount of code that won't be necessary required during runtime. 
+FuseBox original API structure is a very flexible one, but it contains some amount of code that won't be necessary required during runtime.
 
-Quantum creates an abstraction on top of the original bundle. 
+Quantum creates an abstraction on top of the original bundle.
 
 Original FuseBox bundle + 5kb API
 
@@ -83,7 +83,7 @@ Original FuseBox bundle + 5kb API
 })
 ```
 
-As you can see lots of happening here.
+As you can see, a lot is happening here.
 
 Let's look at the same code built with Quantum:
 
@@ -126,7 +126,7 @@ Let's minify the example above, and see how it looks:
 
 Impressive, right?
 
-It doesn't mean that the original FuseBox API is bad, it's just Quantum serves a different purpose and targets for those who desire a minimal friction in the code and don't use FuseBox dynamic modules (however we will support the latter very soon with Quantum)
+It doesn't mean that the original FuseBox API is bad, it's just that Quantum serves a different purpose and targets for those who desire a minimal friction in the code and don't use FuseBox dynamic modules (however we will support the latter very soon with Quantum)
 
 ## Tree shaking
 
@@ -139,9 +139,9 @@ var hello = function(){}
 exports.hello = hello;
 ```
 
-But it will not work if you start playing around with module and exports and start re-assigning values. Quantum performs the tree-shaking algorythm on modules that conform to certain standards. For example, transplied from es6 to es5.
+But it will not work if you start playing around with module and exports and start re-assigning values. Quantum performs the tree-shaking algorithm on modules that conform to certain standards. For example, transplied from es6 to es5.
 
-Quantum doesn't not really remove `var hello = function(){}` and leaves it up for UglifyJS to decide, that's why it's important to enable it.
+Quantum doesn't really remove `var hello = function(){}`, it actually leaves it up for UglifyJS to decide, that's why it's important to enable it.
 
 So in our case the resulting code will look as follows:
 
@@ -153,7 +153,7 @@ which makes `hello` an unused variable, hence will be stripped out from the code
 
 The following code, however, will get the entire statement removed:
 
- 
+
 ```js
 exports.hello = function(){
     alert(1)
@@ -251,7 +251,6 @@ QuantumPlugin({
 ```
 
 Enables the tree shaking
-
 
 
 
