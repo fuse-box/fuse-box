@@ -81,7 +81,7 @@ export class Sparky {
             return log.echoWarning(`Task with such name ${name} was not found!`);
         }
         log.echoHeader(` Resolve "${name}"`);
-        return this.execute(this.tasks.get(name).fn());
+        return this.start(name).then(() => this.execute(this.tasks.get(name).fn()));
     }
 
 }
