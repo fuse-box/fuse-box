@@ -16,7 +16,7 @@ import { Log } from "../../Log";
 import { TypeOfModifications } from "./modifications/TypeOfModifications";
 import { TreeShake } from "./TreeShake";
 import { QuantumOptions } from "./QuantumOptions";
-import { QuantumLog } from "../QuantumLog";
+
 import { ProcessEnvModification } from "./modifications/ProcessEnvModification";
 import { fastHash } from "../../Utils";
 
@@ -34,8 +34,7 @@ export class QuantumCore {
         this.api = new ResponsiveAPI(this);
         this.log = producer.fuse.context.log;
         this.log.echoBreak();
-        QuantumLog.spinStart("Launching quantum core");
-        //this.log.echoInfo("Start optimisation");
+        this.log.echoInfo("Launching quantum core");
     }
 
     public consume() {
@@ -52,6 +51,16 @@ export class QuantumCore {
             .then(() => {
                 this.compriseAPI()
                 return this.writer.process();
+            }).then(() => {
+                this.log.printOptions("Finished with settings", {
+                    target: this.opts.optsTarget,
+                    uglify: this.opts.shouldUglify(),
+                    removeExportsInterop: this.opts.shouldRemoveExportsInterop(),
+                    removeUseStrict: this.opts.shouldRemoveUseStrict(),
+                    replaceProcessEnv: this.opts.shouldReplaceProcessEnv(),
+                    ensureES5: this.opts.shouldEnsureES5(),
+                    treeshake: this.opts.shouldTreeShake(),
+                });
             });
     }
 

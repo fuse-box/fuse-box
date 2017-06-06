@@ -12,8 +12,8 @@ export class Log {
     constructor(public context: WorkFlowContext) {
         this.printLog = context.doLog;
         log.filter((arg) => {
-          if (this.printLog === false) return false
-          return null
+            if (this.printLog === false) return false
+            return null
         })
     }
 
@@ -29,6 +29,14 @@ export class Log {
     public bundleStart(name: string) {
         log.bold(`${name} ->`).echo()
     }
+
+    public printOptions(title: string, obj: any) {
+        log.bold().yellow(`  → ${title}`).echo()
+
+        for (let i in obj) {
+            log.green(`      ${i} : ${obj[i]}`).echo();
+        }
+    }
     public subBundleStart(name: string, parent: string) {
         log.bold(`${name} (child of ${parent}) ->`).echo()
     }
@@ -37,11 +45,11 @@ export class Log {
         let took = process.hrtime(this.timeStart) as [number, number];
 
         log
-          .ansi()
-          .write(`-> Finished`)
-          .green(collection.cachedName || collection.name)
-          .yellow(`took: ${prettyTime(took, "ms")}`)
-          .echo()
+            .ansi()
+            .write(`-> Finished`)
+            .green(collection.cachedName || collection.name)
+            .yellow(`took: ${prettyTime(took, "ms")}`)
+            .echo()
     }
 
     public echoHeader(str: string) {
@@ -75,11 +83,11 @@ export class Log {
         this.totalSize += bytes;
 
         log
-          .ansi()
-          .write(`└──`)
-          .yellow(` (${collection.dependencies.size} files,  ${size})`)
-          .green(collection.cachedName || collection.name)
-          .echo()
+            .ansi()
+            .write(`└──`)
+            .yellow(` (${collection.dependencies.size} files,  ${size})`)
+            .green(collection.cachedName || collection.name)
+            .echo()
 
         // @TODO auto indent as with ansi
         collection.dependencies.forEach(file => {
@@ -95,12 +103,12 @@ export class Log {
         this.totalSize += bytes;
 
         log
-          .ansi()
-          .write(`└──`)
-          .green(collection.cachedName || collection.name)
-          .yellow(size)
-          .write(`(${collection.dependencies.size} files)`)
-          .echo()
+            .ansi()
+            .write(`└──`)
+            .green(collection.cachedName || collection.name)
+            .yellow(size)
+            .write(`(${collection.dependencies.size} files)`)
+            .echo()
     }
 
     public end(header?: string) {
@@ -110,6 +118,6 @@ export class Log {
 
     public echoBundleStats(header: string, size: number, took: [number, number]) {
         const sized = log.chalk().yellow(`Size: ${prettysize(size)}`)
-        log.text(`${sized} in ${prettyTime(took, "ms")}` ).echo()
+        log.text(`${sized} in ${prettyTime(took, "ms")}`).echo()
     }
 }

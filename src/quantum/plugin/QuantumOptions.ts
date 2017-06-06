@@ -11,12 +11,13 @@ export interface IQuantumExtensionParams {
 }
 export class QuantumOptions {
 
-    private optsTarget: string = "browser";
+
     private uglify: any;
     private removeExportsInterop = true;
     private removeUseStrict = true;
     private ensureES5 = true;
     private replaceProcessEnv = true;
+    public optsTarget: string = "browser";
     public treeshake = true;
     public webIndexPlugin: WebIndexPluginClass;
     constructor(opts: IQuantumExtensionParams) {
@@ -55,7 +56,7 @@ export class QuantumOptions {
         return this.ensureES5;
     }
     public shouldUglify() {
-        return this.uglify;
+        return this.uglify === true;
     }
 
     public shouldTreeShake() {
