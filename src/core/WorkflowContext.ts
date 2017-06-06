@@ -478,7 +478,7 @@ export class WorkFlowContext {
     protected writeSourceMaps(result: any) {
         // Writing sourcemaps
         if (this.sourceMapsProject || this.sourceMapsVendor) {
-           this.output.write(`${this.output.filename}.js.map`, result.sourceMap, true);
+            this.output.write(`${this.output.filename}.js.map`, result.sourceMap, true);
         }
     }
     public shouldSplit(file: File): boolean {
@@ -509,7 +509,7 @@ export class WorkFlowContext {
                     }
                 });
             }
-            if (utils.isFunction(plugin[name])) {
+            if (plugin && utils.isFunction(plugin[name])) {
                 if (this.pluginRequiresTriggering(plugin, name)) {
                     plugin[name].apply(plugin, args);
                     if (fn) {

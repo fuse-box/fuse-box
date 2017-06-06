@@ -449,3 +449,7 @@ export class FuseBox {
         });
     }
 }
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.log(reason.stack);
+});

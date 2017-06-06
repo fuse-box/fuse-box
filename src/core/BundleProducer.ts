@@ -46,7 +46,7 @@ export class BundleProducer {
 
             this.sharedEvents.emit("producer-done");
             return each(this.fuse.context.plugins, plugin => {
-                if (utils.isFunction(plugin.producerEnd)) {
+                if (plugin && utils.isFunction(plugin.producerEnd)) {
                     return plugin.producerEnd(this);
                 }
             });
