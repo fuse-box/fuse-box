@@ -1,5 +1,16 @@
 # Changelog
 
+### [2.0.2](https://github.com/fuse-box/fuse-box/milestone/20)
+    
+
+<p></p>
+
+| Reference | Description | Date |
+| --------- | ------------| ---- |
+|[ISSUE 83](https://github.com/fuse-box/fuse-box/issues/83) | Throw an error if homeDir and modulesFolder points to the same directory | June 2, 2017 6:59 PM|
+|[ISSUE 593](https://github.com/fuse-box/fuse-box/issues/593) | Sparky tasks should be recursive | June 6, 2017 11:36 PM|
+                
+
 ### [2.0.1](https://github.com/fuse-box/fuse-box/milestone/19)
     
 
@@ -11,7 +22,7 @@
 |[ISSUE 324](https://github.com/fuse-box/fuse-box/issues/324) | Importing new @angular/platform-browser/animations bundle | May 22, 2017 4:14 PM|
 |[PR 517](https://github.com/fuse-box/fuse-box/pull/517) | VuePlugin: relative includes requires filename option (pug) | May 11, 2017 1:09 PM|
 |[PR 521](https://github.com/fuse-box/fuse-box/pull/521) | proc.require() | May 13, 2017 12:37 AM|
-|[PR 534](https://github.com/fuse-box/fuse-box/pull/534) | [wip]  BublePlugin | May 16, 2017 9:22 AM|
+|[PR 534](https://github.com/fuse-box/fuse-box/pull/534) | BublePlugin | May 16, 2017 9:22 AM|
 |[PR 535](https://github.com/fuse-box/fuse-box/pull/535) | Improvements & typo fixes for `getting-started` & `configuration` docs | May 15, 2017 9:33 PM|
 |[PR 536](https://github.com/fuse-box/fuse-box/pull/536) | Bundler abstraction template | May 15, 2017 4:08 PM|
 |[PR 549](https://github.com/fuse-box/fuse-box/pull/549) | Fix infinite requests caused by server's 200OK | May 21, 2017 7:57 PM|
