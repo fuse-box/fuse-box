@@ -140,6 +140,10 @@ export class CSSResourcePluginClass implements Plugin {
                     if (!fs.existsSync(urlFile)) {
                         if (this.resolveMissingFn) {
                             urlFile = this.resolveMissingFn(urlFile, this)
+                            if (!urlFile || !fs.existsSync(urlFile)) {
+                                file.context.debug("CSSResourcePlugin", `Can't find (resolved) file ${urlFile}`);
+                                return
+                            }
                         }
                         else {
                             file.context.debug("CSSResourcePlugin", `Can't find file ${urlFile}`);
