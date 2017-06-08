@@ -99,9 +99,9 @@ If you have problems resolving the paths, you can define macros:
 
 ```js
 CSSResourcePlugin({
+    resolve: file => `/css-resources/${file}`,
+    macros: {static: `${__dirname}/src/static/`},
     dist: `${__dirname}/dist/css-resources/`,
-    resolve: (file) =>  `/css-resources/${file}`},
-    macros: { static: `${__dirname}/src/static/` }
 })
 ```
 
