@@ -25,6 +25,7 @@ export class CSSModulesClass implements Plugin {
     }
 
     public transform(file: File): Promise<any> {
+        file.addStringDependency("fuse-box-css");
         return new Promise((resolve, reject) => {
             file.loadContents();
             return postcss([

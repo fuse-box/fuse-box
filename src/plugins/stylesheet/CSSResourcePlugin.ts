@@ -108,6 +108,7 @@ export class CSSResourcePluginClass implements Plugin {
     }
 
     public transform(file: File) {
+        file.addStringDependency("fuse-box-css");
         file.loadContents();
         let contents = file.contents;
 

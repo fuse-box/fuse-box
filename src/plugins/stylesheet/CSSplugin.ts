@@ -42,7 +42,7 @@ export class CSSPluginClass implements Plugin {
     }
 
     public injectFuseModule(file: File) {
-        file.analysis.dependencies.push("fuse-box-css")
+        file.addStringDependency("fuse-box-css");
     }
     /**
      *
@@ -56,7 +56,7 @@ export class CSSPluginClass implements Plugin {
     }
 
     public getFunction() {
-        return `require("fuse-box-css")`
+        return `require("fuse-box-css")`;
     }
 
 

@@ -6,7 +6,7 @@ import { Config } from "./Config";
 import { LegoAPI } from "lego-api";
 
 const userFuseDir = Config.PROJECT_ROOT;
-const stylesheetExtensions = new Set<string>([".css", ".scss", ".styl", ".less"]);
+const stylesheetExtensions = new Set<string>([".css", ".sass", ".scss", ".styl", ".less"]);
 const MBLACKLIST = [
     "freelist",
     "sys",
