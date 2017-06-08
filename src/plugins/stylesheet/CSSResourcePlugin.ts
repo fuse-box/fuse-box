@@ -61,6 +61,7 @@ export interface CSSResourcePluginOptions {
     inline?: boolean;
     resolve?: (path: string) => any;
     macros?: any;
+    resolveMissing?: any,
 }
 
 /**
@@ -74,6 +75,7 @@ export class CSSResourcePluginClass implements Plugin {
     public distFolder: string;
     public inlineImages: boolean;
     public macros: any;
+    public resolveMissingFn: any;
     constructor(opts: CSSResourcePluginOptions = {}) {
         if (opts.dist) {
             this.distFolder = ensureDir(opts.dist);
@@ -86,6 +88,9 @@ export class CSSResourcePluginClass implements Plugin {
         }
         if (utils.isFunction(opts.resolve)) {
             this.resolveFn = opts.resolve;
+        }
+        if (utils.isFunction(opts.resolveMissing)) {
+            this.resolveMissingFn = opts.resolveMissing;
         }
     }
 
@@ -133,8 +138,13 @@ export class CSSResourcePluginClass implements Plugin {
                         return IMG_CACHE[urlFile];
                     }
                     if (!fs.existsSync(urlFile)) {
-                        file.context.debug("CSSResourcePlugin", `Can't find file ${urlFile}`);
-                        return;
+                        if (this.resolveMissingFn) {
+                            urlFile = this.resolveMissingFn(urlFile, this)
+                        }
+                        else {
+                            file.context.debug("CSSResourcePlugin", `Can't find file ${urlFile}`);
+                            return;
+                        }
                     }
                     const ext = path.extname(urlFile);
                     let fontsExtensions = {
