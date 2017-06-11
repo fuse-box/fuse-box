@@ -1,5 +1,12 @@
 # Changelog
 
+### [2.1.0](https://github.com/fuse-box/fuse-box/milestone/21)
+    
+
+<p>Quantum Release</p>
+
+                
+
 ### [2.0.2](https://github.com/fuse-box/fuse-box/milestone/20)
     
 
