@@ -162,6 +162,10 @@ exports.hello = function(){
 
 github_example: quantum_tree_shaking
 
+## Code splitting
+
+Code splitting is not solved yet, but it will have a nice comeback after the module has been thoroughly tested by the users.
+
 ## Configuration
 
 
@@ -253,5 +257,153 @@ QuantumPlugin({
 Enables the tree shaking
 
 
+### warnings
+Default value: `true`
+```js
+QuantumPlugin({
+    warnings : false
+})
+```
+
+## Computed statement resolution
+
+### Prerequisites
+
+Computed require statement is an issue that cannot be solved automatically. As mentioned earlier, most of the libraries
+work out of the box, however a lib that is poorly designed or has an implementation that requires dynamic modules resolution may give a headache.
+
+FuseBox spits out warnigs:
+
+```bash
+Warnings:
+Your quantum bundle might not work
+  - Computed statement warning in moment/moment.js
+```
+
+Which means that FuseBox Quantum has switched to use `hashes` instead of numbers on the file identification. For example, in a successful case, your will have something like that:
+
+```js
+$fsx.f[1] = function(module, exports){}
+``` 
+
+However, if a computed require statement cannot be resolved, Quantum switches to hashes istead of number on the entire project
+
+```js
+$fsx.f["33c70bf3"] = function(module, exports){}
+```
+
+This will result in larger bundles and sometimes (if a computed statement is a complicated one) will fail at runtime. Quantum does everything what's possible to resolve it without your attention, however, you can help Quantum detect and solve related problems.
+
+### Problem
+
+You can see the entire solution [here](https://github.com/fuse-box/fuse-box-examples/tree/master/examples/quantum_computed_resolve)
+
+Let's just say that you have a function
+
+```js
+export function getHTMLContents(name: string) {
+    return require("./views/" + name + ".html");
+}
+```
+
+Clearly it's hard to tell how to automatically resolve the following statement. Quantum build will still work, however, a simple trick will roll back the mode to the `optimised` one and start using numbers instead of hashes (to gain the performance and descrese the size of your bundle)
+
+You will see the following output:
+
+```bash
+Warnings:
+Your quantum bundle might not work
+  - Computed statement warning in default/foo.js
+```
+
+Now we know the the problem in your `default` package (basically your project) in a file `foo.js`.
+
+### Solution
+
+Now as we indentified the problem, we can now solve it by mapping files to numbers.
+
+Let's imagine the following:
+```
+{"default/views/first.html":2,"default/views/second.html":3}
+```
+
+This map contains all our problematic html files mapped to numbers. The only thing left is to modify our require statement. And in order to do that you would need to hack into QuantumAPI and register a special mapping class
 
 
+```js
+QuantumPlugin({
+    api: (core) => {
+        core.solveComputed("default/foo.js", {
+            mapping: "views/*.html",
+            fn: (statement, core) =>
+                statement.setExpression(`"default/views/" + name + ".html"`)
+        });
+    }
+})
+```
+
+`mapping: "views/*.html"`  tells Quantum to memorize all files id's that match the pattern above. That's how we can that nice JSON injected into the `api.js`.
+But unfortunately, that's not enough. We need to solve the path relativity problem. 
+
+
+
+Let's identify what cannot be resolved:
+```js
+fn: (statement, core) =>{
+  console.log(statement.ast.arguments)
+})
+```
+
+You will get something like that:
+
+```js
+[
+  {
+    "type": "BinaryExpression",
+    "left": {
+      "type": "BinaryExpression",
+      "left": {
+        "type": "Literal",
+        "value": "./views/",
+      },
+      "operator": "+",
+      "right": {
+        "type": "Identifier",
+        "name": "name"
+      },
+    },
+    "operator": "+",
+    "right": {
+      "type": "Literal",
+      "value": ".html",
+    }
+  }
+]
+```
+
+note: You don't need to learn AST the solve the problem. The example above is for advanced users
+
+From the ast above, we see that a variable `name` is included into the `BinaryExpression`. Needless to say, you don't need to check an AST in order to  figure out the compounds, you can just take a peek at the bundle's code. Or simply at your source code. 
+
+Knowing which variable (and it's important to keep the same name) is including in the computed statement, we can now re-write it to our mappings.
+
+```js
+statement.setExpression(`"default/views/" + name + ".html"`)
+```
+
+And the resulting code will look like:
+
+```js
+function getHTMLContents(name) {
+    return $fsx.p('default/views/' + name + '.html');
+}
+```
+
+Whereas `$fsx.p` is a function that resolves defined mapping
+
+github_example: quantum_computed_resolve
+
+### Improvements
+
+It should be possible to create a simple FuseBox plugin, for example `QuantumMomentJsSolution` to be shared with other people.
+  
