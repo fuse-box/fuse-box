@@ -27,10 +27,13 @@ export class WebIndexPluginClass implements Plugin {
             }
             if (pass) {
                 const output = bundle.context.output;
-                bundlePaths.push(
-                    joinFuseBoxPath(this.opts.path ? this.opts.path : "/", output.folderFromBundleName || "/",
-                        output.lastPrimaryOutput.filename)
-                )
+                if (output && output.lastPrimaryOutput) {
+                    bundlePaths.push(
+                        joinFuseBoxPath(this.opts.path ? this.opts.path : "/", output.folderFromBundleName || "/",
+                            output.lastPrimaryOutput.filename)
+                    )
+                }
+
             }
         });
 

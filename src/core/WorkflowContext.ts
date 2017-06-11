@@ -64,6 +64,8 @@ export class WorkFlowContext {
 
     public shim: any;
 
+    public writeBundles = true;
+
     public fuse: FuseBox;
 
     public sourceChangedEmitter = new EventEmitter<SourceChangedEvent>();
@@ -453,7 +455,12 @@ export class WorkFlowContext {
         this.initialLoad = false;
 
         const res = this.source.getResult();
-        if (this.output) {
+        if (this.bundle) {
+            this.bundle.generatedCode = res.content;
+        }
+
+
+        if (this.output && (!this.bundle || this.bundle && this.bundle.producer.writeBundles)) {
             this.output.writeCurrent(res.content).then(() => {
                 this.writeSourceMaps(res);
                 this.defer.unlock();
@@ -461,15 +468,17 @@ export class WorkFlowContext {
                     outFileWritten();
                 }
             });
+        } else {
+
+            this.defer.unlock();
+            outFileWritten();
         }
-
-
     }
 
     protected writeSourceMaps(result: any) {
         // Writing sourcemaps
         if (this.sourceMapsProject || this.sourceMapsVendor) {
-           this.output.write(`${this.output.filename}.js.map`, result.sourceMap, true);
+            this.output.write(`${this.output.filename}.js.map`, result.sourceMap, true);
         }
     }
     public shouldSplit(file: File): boolean {
@@ -500,7 +509,7 @@ export class WorkFlowContext {
                     }
                 });
             }
-            if (utils.isFunction(plugin[name])) {
+            if (plugin && utils.isFunction(plugin[name])) {
                 if (this.pluginRequiresTriggering(plugin, name)) {
                     plugin[name].apply(plugin, args);
                     if (fn) {

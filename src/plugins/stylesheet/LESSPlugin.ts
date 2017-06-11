@@ -37,7 +37,8 @@ export class LESSPluginClass implements Plugin {
      * @memberOf LESSPluginClass
      */
     public transform(file: File) {
-        const context : WorkFlowContext = file.context;
+        file.addStringDependency("fuse-box-css");
+        const context: WorkFlowContext = file.context;
         const options = { ...this.options };
 
         file.loadContents();
@@ -51,7 +52,7 @@ export class LESSPluginClass implements Plugin {
             less = require("less");
         }
 
-        options.filename = file.context.homeDir + ( options.filename || file.info.fuseBoxPath);
+        options.filename = file.context.homeDir + (options.filename || file.info.fuseBoxPath);
 
         if ("sourceMapConfig" in context) {
             options.sourceMap = { ...sourceMapDef, ...options.sourceMap || {} };

@@ -182,11 +182,14 @@ export class FuseBox {
         this.context.triggerPluginsMethodOnce("postBundle", [this.context]);
     }
 
-
-    public bundle(name: string, arithmetics?: string): Bundle {
+    public copy(): FuseBox {
         const config = Object.assign({}, this.opts);
         config.plugins = [].concat(config.plugins || [])
-        let fuse = FuseBox.init(config);
+        return FuseBox.init(config);
+    }
+
+    public bundle(name: string, arithmetics?: string): Bundle {
+        let fuse = this.copy();
         const bundle = new Bundle(name, fuse, this.producer);
 
         bundle.arithmetics = arithmetics;
@@ -446,3 +449,7 @@ export class FuseBox {
         });
     }
 }
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.log(reason.stack);
+});

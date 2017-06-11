@@ -5,7 +5,7 @@ import { utils } from "realm-utils";
 import { Config } from "./Config";
 
 const userFuseDir = Config.PROJECT_ROOT;
-const stylesheetExtensions = new Set<string>([".css", ".scss", ".styl", ".less"]);
+const stylesheetExtensions = new Set<string>([".css", ".sass", ".scss", ".styl", ".less"]);
 const MBLACKLIST = [
     "freelist",
     "sys",
@@ -29,6 +29,44 @@ export function replaceAliasRequireStatement(requireStatement: string, aliasName
     requireStatement = path.normalize(requireStatement);
     return requireStatement;
 }
+
+export function legoApi(fname: string, conditions: any) {
+    const contents = fs.readFileSync(fname).toString();
+    const lines = contents.split(/\r?\n/);
+    let result = [];
+    let consume = true;
+    lines.forEach(line => {
+        const condition = line.match(/^\s*\/\*\s*@if\s([\w]+)+\s*\*\//)
+        const endCondition = line.match(/^\s*\/\*\s*@end\s*\*\//);
+        if (condition || endCondition) {
+            if (condition) {
+                const variableName = condition[1];
+                if (!conditions[variableName]) {
+                    consume = false;
+                }
+            }
+            if (endCondition) {
+                consume = true;
+            }
+        } else {
+            if (consume) {
+                if (!/^\s+$/.test(line) && line) {
+                    result.push(line);
+                }
+            }
+        }
+    });
+    return result.join("\n");
+}
+
+export function jsCommentTemplate(fname: string, conditions: any, variables: any) {
+    let data = legoApi(fname, conditions);
+    for (let varName in variables) {
+        data = data.replace(`$${varName}$`, JSON.stringify(variables[varName]));
+    }
+    return data;
+}
+
 export function write(fileName: string, contents: any) {
     return new Promise((resolve, reject) => {
         fs.writeFile(fileName, contents, (e) => {
@@ -148,6 +186,16 @@ export function hashString(text: string) {
     return data.toString(16);
 }
 
+export function fastHash(text: string) {
+    let hash = 0;
+    if (text.length == 0) return hash;
+    for (let i = 0; i < text.length; i++) {
+        let char = text.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash.toString(16);
+}
 export function extractExtension(str: string) {
     const result = str.match(/\.([a-z0-9]+)\$?$/);
     if (!result) {
@@ -157,6 +205,18 @@ export function extractExtension(str: string) {
 }
 export function ensureFuseBoxPath(input: string) {
     return input.replace(/\\/g, "/");
+}
+
+export function transpileToEs5(contents: string) {
+    const ts = require("typescript");
+    let tsconfg: any = {
+        compilerOptions: {
+            module: "commonjs",
+            target: "es5"
+        },
+    };;
+    let result = ts.transpileModule(contents, tsconfg);
+    return result.outputText;
 }
 
 export function ensurePublicExtension(url: string) {

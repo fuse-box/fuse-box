@@ -45,6 +45,7 @@ export class PostCSSPluginClass implements Plugin {
      * @memberOf FuseBoxCSSPlugin
      */
     public transform(file: File) {
+        file.addStringDependency("fuse-box-css");
         file.loadContents();
         if (!postcss) {
             postcss = require("postcss");
