@@ -53,8 +53,18 @@ export class BundleWriter {
 
 
         // create api bundle
+        let apiName2bake = this.core.opts.shouldBakeApiIntoBundle()
+        if (apiName2bake) {
+            let targetBundle = producer.bundles.get(apiName2bake);
+            if (!targetBundle) {
+                this.core.log.echoBoldRed(`  → Error. Can't find bundle name ${targetBundle}`);
+            } else {
+                targetBundle.generatedCode = new Buffer(this.core.api.render() + "\n" + targetBundle.generatedCode);
+            }
+        } else {
+            this.createBundle("api.js", this.core.api.render());
+        }
 
-        this.createBundle("api.js", this.core.api.render());
         this.addShims();
 
         producer.bundles.forEach(bundle => {

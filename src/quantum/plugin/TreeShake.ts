@@ -25,7 +25,7 @@ export class TreeShake {
             file.namedExports.forEach(fileExport => {
                 if (!fileExport.isUsed && file.isTreeShakingAllowed()
                     && fileExport.eligibleForTreeShaking) {
-                    console.log(`Remove > ${fileExport.name} from ${file.fuseBoxPath}`);
+                    this.core.log.echoInfo(`tree shaking: Remove ${fileExport.name} from ${file.fuseBoxPath}`)
                     fileExport.remove();
                 } else {
                     // gotta sleep on it.... 

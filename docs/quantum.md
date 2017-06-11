@@ -193,9 +193,19 @@ QuantumPlugin({
 })
 ```
 
-
 These options define the API, for example, if you choose `browser` the API will have no checks for browser and target it directly.
 
+
+### bakeApiIntoBundle 
+Instead of creating a separate file with the api, you can chose to bake it into an existing bundle. 
+
+note: A bundle name should match your registered bundle name in the producer.
+
+```js
+QuantumPlugin({
+    bakeApiIntoBundle : 'app'
+})
+```
 
 ### removeExportsInterop
 Default value: `true`

@@ -11,6 +11,7 @@ export interface IQuantumExtensionParams {
     treeshake?: boolean;
     api?: { (core: QuantumCore): void }
     warnings?: boolean;
+    bakeApiIntoBundle?: string;
 }
 export class QuantumOptions {
 
@@ -20,6 +21,7 @@ export class QuantumOptions {
     private removeUseStrict = true;
     private ensureES5 = true;
     private replaceProcessEnv = true;
+    private bakeApiIntoBundle: string;
     private showWarnings = true;
     public apiCallback: { (core: QuantumCore): void }
     public optsTarget: string = "browser";
@@ -52,6 +54,10 @@ export class QuantumOptions {
         if (opts.webIndexPlugin) {
             this.webIndexPlugin = opts.webIndexPlugin;
         }
+
+        if (opts.bakeApiIntoBundle) {
+            this.bakeApiIntoBundle = opts.bakeApiIntoBundle;
+        }
         if (opts.ensureES5 !== undefined) {
             this.ensureES5 = opts.ensureES5;
         }
@@ -73,6 +79,10 @@ export class QuantumOptions {
 
     public shouldUglify() {
         return this.uglify === true;
+    }
+
+    public shouldBakeApiIntoBundle() {
+        return this.bakeApiIntoBundle;
     }
 
     public shouldTreeShake() {
