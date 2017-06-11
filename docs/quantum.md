@@ -1,7 +1,7 @@
 # Quantum
 
 FuseBox Quantum is an extension on top of FuseBox that creates highly optimized bundles.
-QuantumAPI is extremely small, around (~200bytes) and extremely performant.
+QuantumAPI is extremely small, around (~200bytes) and very performant.
 
 ## Features
 
@@ -49,6 +49,7 @@ Via yarn:
 ```bash
 yarn install uglify-js
 ```
+note: Make sure you have the LATEST uglify-js
 
 Make sure you are using [WebIndexPlugin](/plugins/webindexplugin#webindexplugin) as Quantum may produce more bundles than configured in the first place.
 
