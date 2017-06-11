@@ -30,8 +30,7 @@ export function replaceAliasRequireStatement(requireStatement: string, aliasName
     return requireStatement;
 }
 
-export function lgoApi(fname: string, conditions: any) {
-
+export function legoApi(fname: string, conditions: any) {
     const contents = fs.readFileSync(fname).toString();
     const lines = contents.split(/\r?\n/);
     let result = [];
@@ -61,7 +60,7 @@ export function lgoApi(fname: string, conditions: any) {
 }
 
 export function jsCommentTemplate(fname: string, conditions: any, variables: any) {
-    let data = lgoApi(fname, conditions);
+    let data = legoApi(fname, conditions);
     for (let varName in variables) {
         data = data.replace(`$${varName}$`, JSON.stringify(variables[varName]));
     }
