@@ -44,6 +44,7 @@ export class FileAbstraction {
     public typeofWindowKeywords = new Set<TypeOfWindowKeyword>();
     public typeofGlobalKeywords = new Set<GenericAst>();
     public typeofDefineKeywords = new Set<GenericAst>();
+    public typeofRequireKeywords = new Set<GenericAst>();
 
     public namedExports = new Map<string, NamedExport>();
     public processNodeEnv = new Set<GenericAst>();
@@ -64,6 +65,10 @@ export class FileAbstraction {
         packageAbstraction.registerFileAbstraction(this);
     }
 
+
+    public getFuseBoxFullPath() {
+        return `${this.packageAbstraction.name}/${this.fuseBoxPath}`;
+    }
     /**
      * Initiates an abstraction from string
      */
@@ -245,6 +250,10 @@ export class FileAbstraction {
         // typeof module
         if (matchesTypeOf(node, "module")) {
             this.typeofModulesKeywords.add(new TypeOfModuleKeyword(parent, prop, node));
+        }
+
+        if (matchesTypeOf(node, "require")) {
+            this.typeofRequireKeywords.add(new GenericAst(parent, prop, node));
         }
 
         if (matchesNodeEnv(node)) {

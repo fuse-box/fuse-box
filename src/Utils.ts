@@ -31,9 +31,14 @@ export function replaceAliasRequireStatement(requireStatement: string, aliasName
     return requireStatement;
 }
 
-export function jsCommentTemplate(fname: string, conditions: any) {
+export function jsCommentTemplate(fname: string, conditions: any, variables: any) {
     const contents = fs.readFileSync(fname).toString()
-    return LegoAPI.parse(contents).render(conditions)
+    let data = LegoAPI.parse(contents).render(conditions);
+    for (let varName in variables) {
+        data = data.replace(`$${varName}$`, JSON.stringify(variables[varName]));
+    }
+    return data;
+
 }
 
 export function write(fileName: string, contents: any) {

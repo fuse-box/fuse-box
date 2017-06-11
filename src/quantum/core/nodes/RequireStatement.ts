@@ -2,6 +2,7 @@ import { FileAbstraction } from "../FileAbstraction";
 
 import * as path from "path";
 import { joinFuseBoxPath } from "../../../Utils";
+import { acornParse } from "../../../analysis/FileAnalysis";
 function isString(node: any): boolean {
     return node.type === "Literal" || node.type === "StringLiteral";
 }
@@ -24,6 +25,7 @@ export class RequireStatement {
         const arg1 = ast.arguments[0];
         this.functionName = ast.callee.name;
         const producer = file.packageAbstraction.bundleAbstraction.producerAbstraction;
+        const customComputedStatementPaths = producer.opts.customComputedStatementPaths;
         // if it's a string
         if (ast.arguments.length === 1 && isString(arg1)) {
 
@@ -49,14 +51,26 @@ export class RequireStatement {
                 }
             }
         } else {
+            let showWarning = true;
+            let matched = false;
             // notify producer
-            producer.useComputedRequireStatements = true;
-            producer.useNumbers = false;
+            customComputedStatementPaths.forEach((regexp, path) => {
+
+                if (regexp.test(file.getFuseBoxFullPath())) {
+                    matched = true;
+                    showWarning = false;
+                }
+            });
+            if (!matched) {
+                producer.useComputedRequireStatements = true;
+                producer.useNumbers = false;
+            }
             // we assume it's a dynamic import
             this.isComputed = true;
+            if (showWarning) {
+                producer.addWarning(`Computed statement warning in ${this.file.packageAbstraction.name}/${this.file.fuseBoxPath}`);
+            }
         }
-
-
     }
 
     public setFunctionName(name: string) {
@@ -69,6 +83,17 @@ export class RequireStatement {
 
     public setValue(str: string) {
         this.ast.arguments[0].value = str;
+    }
+
+    public setExpression(raw: string) {
+        const astStatemet = acornParse​​(raw);
+        if (astStatemet.body[0].expression) {
+            this.ast.arguments = [astStatemet.body[0].expression];
+        }
+    }
+
+    public getValue(): string {
+        return this.ast.arguments[0].value;
     }
 
     public resolve(): FileAbstraction {

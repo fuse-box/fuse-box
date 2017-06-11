@@ -18,10 +18,15 @@ import { TreeShake } from "./TreeShake";
 import { QuantumOptions } from "./QuantumOptions";
 
 import { ProcessEnvModification } from "./modifications/ProcessEnvModification";
-import { fastHash } from "../../Utils";
+import { fastHash, string2RegExp } from "../../Utils";
+import { ComputedStatementRule } from "./ComputerStatementRule";
+import { RequireStatement } from "../core/nodes/RequireStatement";
 
 
-
+export interface QuantumStatementMapping {
+    statement: RequireStatement,
+    core: QuantumCore
+}
 export class QuantumCore {
     public producerAbstraction: ProducerAbstraction;
     public api: ResponsiveAPI;
@@ -29,17 +34,39 @@ export class QuantumCore {
     public log: Log;
     public opts: QuantumOptions;
     public writer = new BundleWriter(this);
+    public requiredMappings = new Set<RegExp>();
+    public customStatementSolutions = new Set<RegExp>();
+    public computedStatementRules = new Map<string, ComputedStatementRule>();
     constructor(public producer: BundleProducer, opts: QuantumOptions) {
         this.opts = opts;
         this.api = new ResponsiveAPI(this);
         this.log = producer.fuse.context.log;
         this.log.echoBreak();
         this.log.echoInfo("Launching quantum core");
+        if (this.opts.apiCallback) {
+            this.opts.apiCallback(this);
+        }
+    }
+
+    public solveComputed(path: string, rules: { mapping: string, fn: { (statement: RequireStatement, core: QuantumCore) } }) {
+        this.customStatementSolutions.add(string2RegExp(path));
+        this.requiredMappings.add(string2RegExp(rules.mapping));
+        this.computedStatementRules.set(path, new ComputedStatementRule(path, rules));
+    }
+
+    public getCustomSolution(file: FileAbstraction): ComputedStatementRule {
+        let fullPath = file.getFuseBoxFullPath();
+        let computedRule = this.computedStatementRules.get(fullPath);
+        if (computedRule) {
+            return computedRule;
+        }
     }
 
     public consume() {
         this.log.echoInfo("Generating abstraction, this may take a while");
-        return this.producer.generateAbstraction().then(abstraction => {
+        return this.producer.generateAbstraction({
+            customComputedStatementPaths: this.customStatementSolutions
+        }).then(abstraction => {
             this.producerAbstraction = abstraction;
             this.log.echoInfo("Abstraction generated");
             return each(abstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
@@ -49,19 +76,38 @@ export class QuantumCore {
             .then(() => this.treeShake())
             .then(() => this.render())
             .then(() => {
-                this.compriseAPI()
+                this.compriseAPI();
                 return this.writer.process();
             }).then(() => {
-                this.log.printOptions("Finished with settings", {
-                    target: this.opts.optsTarget,
-                    uglify: this.opts.shouldUglify(),
-                    removeExportsInterop: this.opts.shouldRemoveExportsInterop(),
-                    removeUseStrict: this.opts.shouldRemoveUseStrict(),
-                    replaceProcessEnv: this.opts.shouldReplaceProcessEnv(),
-                    ensureES5: this.opts.shouldEnsureES5(),
-                    treeshake: this.opts.shouldTreeShake(),
-                });
+                this.printStat();
             });
+    }
+    private printStat() {
+        let apiStyle = "Optimised numbers (Best performance)";
+        if (this.api.hashesUsed()) {
+            apiStyle = "Hashes (Might cause issues)";
+        }
+        this.log.printOptions("Stats", {
+            warnings: this.producerAbstraction.warnings.size,
+            apiStyle: apiStyle,
+            target: this.opts.optsTarget,
+            uglify: this.opts.shouldUglify(),
+            removeExportsInterop: this.opts.shouldRemoveExportsInterop(),
+            removeUseStrict: this.opts.shouldRemoveUseStrict(),
+            replaceProcessEnv: this.opts.shouldReplaceProcessEnv(),
+            ensureES5: this.opts.shouldEnsureES5(),
+            treeshake: this.opts.shouldTreeShake(),
+        });
+        if (this.opts.shouldShowWarnings()) {
+            this.producerAbstraction.warnings.forEach(warning => {
+                this.log.echoBreak();
+                this.log.echoYellow("Warnings:");
+                this.log.echoYellow("Your quantum bundle might not work");
+                this.log.echoYellow(`  - ${warning.msg}`);
+                this.log.echoGray("");
+                this.log.echoGray("  * Set { warnings : false } if you want to hide these messages");
+            });
+        }
     }
 
     public compriseAPI() {
@@ -70,6 +116,13 @@ export class QuantumCore {
         }
     }
 
+    public handleMappings(fuseBoxFullPath: string, id: any) {
+        this.requiredMappings.forEach(regexp => {
+            if (regexp.test(fuseBoxFullPath)) {
+                this.api.addMapping(fuseBoxFullPath, id);
+            }
+        });
+    }
     public setFileIds(bundleAbstraction: BundleAbstraction) {
         // set ids first
         let entryId;
@@ -86,10 +139,11 @@ export class QuantumCore {
 
         bundleAbstraction.packageAbstractions.forEach(packageAbstraction => {
             packageAbstraction.fileAbstractions.forEach(fileAbstraction => {
-                let fileId = `${packageAbstraction.name}/${fileAbstraction.fuseBoxPath}`;
+                let fileId = fileAbstraction.getFuseBoxFullPath();
                 let id;
                 if (this.producerAbstraction.useNumbers) {
                     id = this.index;
+                    this.handleMappings(fileId, id);
                     this.index++;
                 } else {
                     id = fastHash(fileId);

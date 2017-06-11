@@ -8,7 +8,7 @@ import { BundleRunner } from "./BundleRunner";
 import { ServerOptions } from "../devServer/Server";
 import * as  chokidar from "chokidar";
 import { utils, each } from "realm-utils";
-import { ProducerAbstraction } from "../quantum/core/ProducerAbstraction";
+import { ProducerAbstraction, ProducerAbtractionOptions } from "../quantum/core/ProducerAbstraction";
 import { BundleAbstraction } from "../quantum/core/BundleAbstraction";
 
 
@@ -53,9 +53,8 @@ export class BundleProducer {
         }).then(() => this)
     }
 
-    public generateAbstraction(): Promise<ProducerAbstraction> {
-
-        const abstraction = new ProducerAbstraction();
+    public generateAbstraction(opts?: ProducerAbtractionOptions): Promise<ProducerAbstraction> {
+        const abstraction = new ProducerAbstraction(opts);
 
         return each(this.bundles, (bundle: Bundle) => {
             const bundleAbstraction = new BundleAbstraction(bundle.name, abstraction);

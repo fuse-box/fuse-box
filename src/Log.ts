@@ -68,13 +68,30 @@ export class Log {
         log.preset('info').green(`  → ${str}`).echo()
     }
 
+
+    public echoBoldRed(msg) {
+        log.red().bold(msg).echo();
+    }
+
+    public echoRed(msg) {
+        log.red(msg).echo();
+    }
     public echoBreak() {
         log.green(`\n  -------------- \n`).echo()
     }
 
     public echoWarning(str: string) {
-        log.red(`  → WARNING ${str}`).echo()
+        log.yellow(`  → WARNING ${str}`).echo()
     }
+
+    public echoYellow(str: string) {
+        log.yellow(str).echo()
+    }
+
+    public echoGray(str: string) {
+        log.gray(str).echo()
+    }
+
 
     public echoDefaultCollection(collection: ModuleCollection, contents: string) {
         if (this.printLog === false) return;

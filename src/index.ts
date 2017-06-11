@@ -1,3 +1,4 @@
+export { ComputedStatementRule } from "./quantum/plugin/ComputerStatementRule";
 export { QuantumPlugin } from "./quantum/plugin/QuantumPlugin";
 export { ReplacePlugin } from "./plugins/ReplacePlugin";
 export { VuePlugin } from "./plugins/VuePlugin";

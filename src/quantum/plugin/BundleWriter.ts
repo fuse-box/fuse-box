@@ -66,14 +66,21 @@ export class BundleWriter {
                 const UglifyJs = require("uglify-js");
                 this.core.log.echoInfo(`Uglifying ${bundle.name}`);
                 const result = UglifyJs.minify(bundle.generatedCode.toString(), this.getUglifyJSOptions());
+                if (result.error) {
+                    this.core.log.echoBoldRed(`  → Error during uglifying ${bundle.name}`);
+                    throw result.error;
+                }
                 bundle.generatedCode = result.code;
                 this.core.log.echoInfo(`Done Uglifying ${bundle.name}`)
             }
             return bundle.context.output.writeCurrent(bundle.generatedCode);
         }).then(() => {
+
             if (this.core.opts.webIndexPlugin) {
                 return this.core.opts.webIndexPlugin.producerEnd(producer)
             }
         })
     }
+
+
 }

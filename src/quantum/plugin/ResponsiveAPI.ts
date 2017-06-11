@@ -7,6 +7,8 @@ export class ResponsiveAPI {
     private hashes = false;
     private isServerFunction = false;
     private isBrowserFunction = false;
+    private customMappings = {};
+    private customStatementResolve = false;
     constructor(public core: QuantumCore) {
 
     }
@@ -14,6 +16,15 @@ export class ResponsiveAPI {
     public addComputedRequireStatetements() {
         this.computedStatements = true;
         this.hashes = true;
+    }
+
+    public hashesUsed() {
+        return this.hashes;
+    }
+
+    public addMapping(fuseBoxPath: string, id: any) {
+        this.customMappings[fuseBoxPath] = id;
+        this.customStatementResolve = true;
     }
 
     public addIsServerFunction() {
@@ -32,8 +43,14 @@ export class ResponsiveAPI {
             isServerFunction: this.isServerFunction,
             isBrowserFunction: this.isBrowserFunction,
             computedStatements: this.computedStatements,
-            hashes: this.hashes
+            hashes: this.hashes,
+            customStatementResolve: this.customStatementResolve
         }
-        return jsCommentTemplate(path.join(Config.FUSEBOX_MODULES, "fuse-box-responsive-api/index.js"), options)
+        const variables: any = {};
+        if (Object.keys(this.customMappings).length > 0) {
+
+            variables.customMappings = this.customMappings;
+        }
+        return jsCommentTemplate(path.join(Config.FUSEBOX_MODULES, "fuse-box-responsive-api/index.js"), options, variables);
     }
 }

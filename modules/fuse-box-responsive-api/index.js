@@ -52,18 +52,19 @@
 
 
     /* @if computedStatements */
+
     // define a collection of file names based on id
     // so here $fsx.s["f9ee3k"] = "foo/bar.js"
     $fsx.s = {};
 
     function $join() {
-        let parts = [];
-        for (let i = 0, l = arguments.length; i < l; i++) {
+        var parts = [];
+        for (var i = 0, l = arguments.length; i < l; i++) {
             parts = parts.concat(arguments[i].split("/"));
         };
-        let newParts = [];
-        for (let i = 0, l = parts.length; i < l; i++) {
-            let part = parts[i];
+        var newParts = [];
+        for (var i = 0, l = parts.length; i < l; i++) {
+            var part = parts[i];
             if (!part || part === ".") continue;
             if (part === "..") {
                 newParts.pop();
@@ -110,6 +111,20 @@
 
     /* @end */
     $fsx.f = {}
+
+
+    /* @if customStatementResolve  */
+    $fsx.z = $customMappings$;
+    $fsx.p = function(id) {
+        var id;
+        if ((id = $fsx.z[id])) {
+            return $fsx.r(id)
+        }
+    }
+
+    /* @end */
+
+
 
     // cached modules
     $fsx.m = {};

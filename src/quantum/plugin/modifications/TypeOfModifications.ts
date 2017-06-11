@@ -33,6 +33,10 @@ export class TypeOfModifications {
             return each(file.typeofDefineKeywords, (keyword: GenericAst) => {
                 keyword.replaceWithString("undefined");
             });
-        });
+        }).then(() => {
+            return each(file.typeofRequireKeywords, (keyword: GenericAst) => {
+                keyword.replaceWithString("function");
+            });
+        })
     }
 }

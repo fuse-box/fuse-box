@@ -1,4 +1,5 @@
 import { WebIndexPluginClass } from "../../plugins/WebIndexPlugin";
+import { QuantumCore } from "./QuantumCore";
 export interface IQuantumExtensionParams {
     target?: string;
     uglify?: any;
@@ -8,6 +9,8 @@ export interface IQuantumExtensionParams {
     webIndexPlugin?: WebIndexPluginClass;
     ensureES5?: boolean;
     treeshake?: boolean;
+    api?: { (core: QuantumCore): void }
+    warnings?: boolean;
 }
 export class QuantumOptions {
 
@@ -17,6 +20,8 @@ export class QuantumOptions {
     private removeUseStrict = true;
     private ensureES5 = true;
     private replaceProcessEnv = true;
+    private showWarnings = true;
+    public apiCallback: { (core: QuantumCore): void }
     public optsTarget: string = "browser";
     public treeshake = true;
     public webIndexPlugin: WebIndexPluginClass;
@@ -25,8 +30,14 @@ export class QuantumOptions {
         if (opts.target) {
             this.optsTarget = opts.target;
         }
+        if (opts.api) {
+            this.apiCallback = opts.api;
+        }
         if (opts.uglify) {
             this.uglify = opts.uglify;
+        }
+        if (opts.warnings !== undefined) {
+            this.showWarnings = opts.warnings;
         }
         // stupid exports.__esModule = true;
         if (opts.removeExportsInterop !== undefined) {
@@ -55,6 +66,11 @@ export class QuantumOptions {
     public shouldEnsureES5() {
         return this.ensureES5;
     }
+
+    public shouldShowWarnings() {
+        return this.showWarnings;
+    }
+
     public shouldUglify() {
         return this.uglify === true;
     }
