@@ -166,6 +166,12 @@ export class File {
         this.properties.set(key, obj);
     }
 
+    public addStringDependency(name: string) {
+        let deps = this.analysis.dependencies;
+        if (deps.indexOf(name) === -1) {
+            deps.push(name);
+        }
+    }
     public getProperty(key: string): any {
         return this.properties.get(key);
     }
@@ -236,7 +242,7 @@ export class File {
                         itemTest = el.test;
                     }
                 } else {
-                    itemTest = item.test;
+                    itemTest = item && item.test;
                 }
                 if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(this.relativePath)) {
                     target = item;

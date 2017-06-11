@@ -33,7 +33,7 @@ export class CssPluginTest {
             },
         }).then((result) => {
             const js = result.projectContents.toString();
-            should(js).findString(`__fsbx_css("main.css", "body {}")`);
+            should(js).findString(`require("fuse-box-css")("main.css", "body {}")`);
         });
     }
 
@@ -55,7 +55,7 @@ export class CssPluginTest {
         }).then((result) => {
             const js = result.projectContents.toString();
             shouldExist("main.css");
-            should(js).findString(`__fsbx_css("main.css");`);
+            should(js).findString(`require("fuse-box-css")("main.css");`);
         });
     }
 
@@ -78,7 +78,7 @@ export class CssPluginTest {
         }).then((result) => {
             const js = result.projectContents.toString();
             shouldExist("main.css");
-            should(js).notFindString(`__fsbx_css("main.css");`);
+            should(js).notFindString(`require("fuse-box-css")("main.css");`);
         });
     }
 
@@ -101,7 +101,7 @@ export class CssPluginTest {
         }).then((result) => {
             const js = result.projectContents.toString();
             shouldExist("main.css");
-            should(js).findString(`__fsbx_css("main.css");`);
+            should(js).findString(`require("fuse-box-css")("main.css");`);
         });
     }
 
@@ -124,7 +124,7 @@ export class CssPluginTest {
         }).then((result) => {
             const js = result.projectContents.toString();
             shouldExist("main.css");
-            should(js).findString(`__fsbx_css("custom/main.css");`);
+            should(js).findString(`require("fuse-box-css")("custom/main.css");`);
         });
     }
 
@@ -142,7 +142,7 @@ export class CssPluginTest {
             },
         }).then((result) => {
             const js = result.projectContents.toString();
-            should(js).findString(`__fsbx_css("app.css", "body {};\\nh1 {};");`);
+            should(js).findString(`require("fuse-box-css")("app.css", "body {};\\nh1 {};");`);
         });
     }
 
@@ -168,7 +168,7 @@ export class CssPluginTest {
                 .findString("/*# sourceMappingURL=app.css.map */")
 
             shouldExist("app.css.map");
-            should(js).findString(`__fsbx_css("app.css");`);
+            should(js).findString(`require("fuse-box-css")("app.css");`);
         });
     }
 
@@ -188,7 +188,7 @@ export class CssPluginTest {
         }).then((result) => {
             const js = result.projectContents.toString();
             shouldExist("app.css");
-            should(js).notFindString(`__fsbx_css("app.css");`);
+            should(js).notFindString(`require("fuse-box-css")("app.css");`);
         });
     }
 
@@ -214,7 +214,7 @@ export class CssPluginTest {
         }).then((result) => {
             const js = result.projectContents.toString();
             shouldExist("app.css");
-            should(js).findString(`__fsbx_css("custom/app.css");`);
+            should(js).findString(`require("fuse-box-css")("custom/app.css");`);
         });
     }
 
@@ -233,7 +233,7 @@ export class CssPluginTest {
             },
         }).then((result) => {
             const js = result.projectContents.toString();
-            should(js).findString(`__fsbx_css("main.css", "body {}")`);
+            should(js).findString(`require("fuse-box-css")("main.css", "body {}")`);
         });
     }
     // failing here....
@@ -255,7 +255,7 @@ export class CssPluginTest {
         }).then((result) => {
 
             const js = result.projectContents.toString();
-            should(js).findString(`__fsbx_css("all.css", "`);
+            should(js).findString(`require("fuse-box-css")("all.css", "`);
         });
     }
 
@@ -275,7 +275,7 @@ export class CssPluginTest {
             },
         }).then((result) => {
             const js = result.projectContents.toString();
-            should(js).findString(`__fsbx_css("all.css", "`);
+            should(js).findString(`require("fuse-box-css")("all.css", "`);
         });
     }
 }

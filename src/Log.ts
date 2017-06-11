@@ -1,8 +1,6 @@
 import { ModuleCollection } from "./core/ModuleCollection";
 import { WorkFlowContext } from "./core/WorkflowContext";
-
-const ansi = require("ansi");
-const cursor = ansi(process.stdout);
+const log = require("fliplog");
 const prettysize = require("prettysize");
 const prettyTime = require("pretty-time");
 
@@ -11,126 +9,123 @@ export class Log {
     public printLog = true;
     private totalSize = 0;
 
-
     constructor(public context: WorkFlowContext) {
         this.printLog = context.doLog;
+        log.filter((arg) => {
+            if (this.printLog === false) return false
+            return null
+        })
     }
 
-
-    public reset() {
+    public reset(): Log {
         this.timeStart = process.hrtime();
         this.totalSize = 0;
+        return this
     }
 
-    public echoWith(str: string, opt: string) {
-
-        if (this.printLog) {
-            cursor.write(` `)[opt]().write(str);
-            cursor.write("\n");
-            cursor.reset();
-        }
-    }
-
+    // @TODO add spinners here
+    // @TODO combine logs here, output when needed
+    // @TODO combine this and subBundleStart
     public bundleStart(name: string) {
-        if (this.printLog) {
-            cursor.reset()
-                .cyan().bold().write("\n" + name + " -> \n\n")
-            cursor.reset();
+        log.bold(`${name} ->`).echo()
+    }
+
+    public printOptions(title: string, obj: any) {
+        log.bold().yellow(`  → ${title}`).echo()
+
+        for (let i in obj) {
+            log.green(`      ${i} : ${obj[i]}`).echo();
         }
     }
     public subBundleStart(name: string, parent: string) {
-        if (this.printLog) {
-            cursor.reset()
-                .cyan().write("\n" + name + ` (child of ${parent}) -> \n\n`)
-            cursor.reset();
-        }
+        log.bold(`${name} (child of ${parent}) ->`).echo()
     }
 
     public bundleEnd(name: string, collection: ModuleCollection) {
-        if (this.printLog) {
-            let took = process.hrtime(this.timeStart) as [number, number];
-            cursor.reset().write(`-> Finished `)
-                .green().write(name)
-                .green().write(` ${collection.cachedName || collection.name}`)
-                .yellow().write(`took: ${prettyTime(took, "ms")}`);
-        }
+        let took = process.hrtime(this.timeStart) as [number, number];
+
+        log
+            .ansi()
+            .write(`-> Finished`)
+            .green(collection.cachedName || collection.name)
+            .yellow(`took: ${prettyTime(took, "ms")}`)
+            .echo()
     }
 
     public echoHeader(str: string) {
-        if (this.printLog) {
-            cursor.write(` `).yellow().write(str);
-            cursor.write("\n");
-            cursor.reset();
-        }
+        log.yellow(` ${str}`).echo()
     }
 
     public echo(str: string) {
-        if (this.printLog) {
-            let data = new Date();
-            let hour: any = data.getHours();
-            let min: any = data.getMinutes();
-            let sec: any = data.getSeconds();
-
-            hour = hour < 10 ? `0${hour}` : hour;
-            min = min < 10 ? `0${min}` : min;
-            sec = sec < 10 ? `0${sec}` : sec;
-
-
-            cursor.yellow().write(`${hour}:${min}:${sec} : `)
-                .green().write(str);
-            cursor.write("\n");
-            cursor.reset();
-        }
+        log.time(true).green(str).echo()
     }
 
     public echoStatus(str: string) {
-        if (this.printLog) {
-            cursor.write(`  → `)
-                .cyan().write(str);
-            cursor.write("\n");
-            cursor.reset();
-        }
+        log.title(`→`).cyan(`${str}`).echo()
+    }
+
+    public echoInfo(str: string) {
+        log.preset('info').green(`  → ${str}`).echo()
+    }
+
+
+    public echoBoldRed(msg) {
+        log.red().bold(msg).echo();
+    }
+
+    public echoRed(msg) {
+        log.red(msg).echo();
+    }
+    public echoBreak() {
+        log.green(`\n  -------------- \n`).echo()
     }
 
     public echoWarning(str: string) {
-        cursor.red().write(`  → WARNING `)
-            .write(str);
-        cursor.write("\n");
-        cursor.reset();
+        log.yellow(`  → WARNING ${str}`).echo()
     }
 
+    public echoYellow(str: string) {
+        log.yellow(str).echo()
+    }
+
+    public echoGray(str: string) {
+        log.gray(str).echo()
+    }
+
+
     public echoDefaultCollection(collection: ModuleCollection, contents: string) {
-        if (!this.printLog) {
-            return;
-        }
+        if (this.printLog === false) return;
         let bytes = Buffer.byteLength(contents, "utf8");
         let size = prettysize(bytes);
         this.totalSize += bytes;
-        cursor.reset().write(`└──`)
-            .green().write(` ${collection.cachedName || collection.name}`)
-            .yellow().write(` (${collection.dependencies.size} files,  ${size})`);
 
-        cursor.write("\n");
+        log
+            .ansi()
+            .write(`└──`)
+            .yellow(` (${collection.dependencies.size} files,  ${size})`)
+            .green(collection.cachedName || collection.name)
+            .echo()
+
+        // @TODO auto indent as with ansi
         collection.dependencies.forEach(file => {
-            if (!file.info.isRemoteFile) {
-                cursor.reset().write(`      ${file.info.fuseBoxPath}`).write("\n");
-            }
+            if (file.info.isRemoteFile) return
+            log.title(`     `).dim(`${file.info.fuseBoxPath}`).echo()
         });
-        cursor.reset();
     }
 
     public echoCollection(collection: ModuleCollection, contents: string) {
-        if (!this.printLog) {
-            return;
-        }
+        if (this.printLog === false) return;
         let bytes = Buffer.byteLength(contents, "utf8");
         let size = prettysize(bytes);
         this.totalSize += bytes;
-        cursor.reset().write(`└──`)
-            .green().write(` ${collection.cachedName || collection.name}`)
-            .reset().write(` (${collection.dependencies.size} files)`)
-            .yellow().write(` ${size}`)
-            .write("\n").reset();
+
+        log
+            .ansi()
+            .write(`└──`)
+            .green(collection.cachedName || collection.name)
+            .yellow(size)
+            .write(`(${collection.dependencies.size} files)`)
+            .echo()
     }
 
     public end(header?: string) {
@@ -139,12 +134,7 @@ export class Log {
     }
 
     public echoBundleStats(header: string, size: number, took: [number, number]) {
-        if (!this.printLog) {
-            return;
-        }
-        cursor.write("\n")
-            .yellow().write(`    Size: ${prettysize(size)}`)
-            .write(` in ${prettyTime(took, "ms")}`)
-            .write("\n").reset();
+        const sized = log.chalk().yellow(`Size: ${prettysize(size)}`)
+        log.text(`${sized} in ${prettyTime(took, "ms")}`).echo()
     }
 }

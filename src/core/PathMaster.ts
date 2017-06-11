@@ -368,7 +368,11 @@ export class PathMaster {
                 if (this.context.rollupOptions && json["jsnext:main"]) {
                     entryFile = path.join(folder, json["jsnext:main"]);
                 } else {
+                    // if (json.module) {
+                    //     entryFile = path.join(folder, entryFile || json.module || "index.js");
+                    // } else {
                     entryFile = path.join(folder, entryFile || json.main || "index.js");
+                    //}
                     entryRoot = path.dirname(entryFile);
                 }
                 return {

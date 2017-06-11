@@ -31,6 +31,7 @@ export class StylusPluginClass implements Plugin {
     }
 
     public transform(file: File): Promise<any> {
+        file.addStringDependency("fuse-box-css");
         const context: WorkFlowContext = file.context;
         const options: StylusPluginOptions & InternalOpts = { ...this.options };
         const sourceMapDef = {

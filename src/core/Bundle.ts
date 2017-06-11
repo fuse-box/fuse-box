@@ -18,6 +18,7 @@ export class Bundle {
     public arithmetics: string;
     public process: FuseProcess = new FuseProcess(this);
     public onDoneCallback: any;
+    public generatedCode: Buffer;
     public lastChangedFile: string;
 
     public splitFiles: Map<string, File>;
@@ -54,7 +55,9 @@ export class Bundle {
     }
     /** Enable HMR in this bundle and inject HMR plugin */
     public hmr(opts?: any): Bundle {
-
+        if (!this.producer.hmrAllowed) {
+            return this;
+        }
         /** Only one is allowed to hava HMR related code */
         if (!this.producer.hmrInjected) {
             opts = opts || {};
@@ -198,8 +201,6 @@ export class Bundle {
     }
 
     public exec(): Promise<Bundle> {
-
-
         return new Promise((resolve, reject) => {
             this.fuse.context.log.bundleStart(this.name);
             this.fuse

@@ -50,6 +50,17 @@ export class UserOutput {
         this.useHash = this.context.isHashingRequired();
     }
 
+    public read(fname: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            fs.readFile(fname, (err, data) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(data.toString())
+            })
+        });
+    }
+
     /**
      * Md5 hash
      * @param content 
@@ -130,11 +141,14 @@ export class UserOutput {
     public write(userPath: string, content: string | Buffer, ignoreHash?: boolean): Promise<UserOutputResult> {
         let hash;
         if (this.useHash) {
+
             hash = this.generateHash(content.toString());
+
             this.lastWrittenHash = hash;
         }
 
         let fullpath = this.getPath(userPath, !ignoreHash ? hash : undefined);
+
         fullpath = ensureUserPath(fullpath);
         let result = new UserOutputResult();
         return new Promise((resolve, reject) => {
@@ -142,6 +156,7 @@ export class UserOutput {
                 if (e) {
                     return reject(e);
                 }
+
                 result.path = fullpath;
                 result.hash = hash;
                 result.filename = path.basename(fullpath);
@@ -155,6 +170,7 @@ export class UserOutput {
     public writeCurrent(content: string | Buffer): Promise<UserOutputResult> {
         return this.write(this.filename, content).then(out => {
             this.lastPrimaryOutput = out;
+
             return out;
         });
     }

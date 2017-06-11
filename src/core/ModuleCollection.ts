@@ -172,7 +172,7 @@ export class ModuleCollection {
             if (utils.isArray(plugin) && utils.isString(plugin[0])) {
                 plugin.splice(0, 1, string2RegExp(plugin[0]));
             } else {
-                if (utils.isString(plugin.test)) {
+                if (plugin && utils.isString(plugin.test)) {
                     plugin.test = string2RegExp(plugin.test);
                 }
             }

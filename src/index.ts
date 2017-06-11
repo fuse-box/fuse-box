@@ -1,3 +1,5 @@
+export { ComputedStatementRule } from "./quantum/plugin/ComputerStatementRule";
+export { QuantumPlugin } from "./quantum/plugin/QuantumPlugin";
 export { ReplacePlugin } from "./plugins/ReplacePlugin";
 export { VuePlugin } from "./plugins/VuePlugin";
 export { ImageBase64Plugin } from "./plugins/images/ImageBase64Plugin";
@@ -11,6 +13,7 @@ export { PostCSS as PostCSSPlugin } from "./plugins/stylesheet/PostCSSPlugin";
 export { TypeScriptHelpers } from "./plugins/TypeScriptHelpers";
 export { SVGPlugin } from "./plugins/images/SVGPlugin";
 export { BabelPlugin } from "./plugins/js-transpilers/BabelPlugin";
+export { BublePlugin } from "./plugins/js-transpilers/BublePlugin";
 export { CoffeePlugin } from "./plugins/js-transpilers/CoffeePlugin";
 export { LESSPlugin } from "./plugins/stylesheet/LESSPlugin";
 export { CSSPlugin } from "./plugins/stylesheet/CSSplugin";
