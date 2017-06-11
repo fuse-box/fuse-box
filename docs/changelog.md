@@ -5,6 +5,9 @@
 
 <p>Quantum Release</p>
 
+| Reference | Description | Date |
+| --------- | ------------| ---- |
+|[ISSUE 599](https://github.com/fuse-box/fuse-box/issues/599) | FuseBox Quantum  | June 11, 2017 10:47 PM|
                 
 
 ### [2.0.2](https://github.com/fuse-box/fuse-box/milestone/20)
