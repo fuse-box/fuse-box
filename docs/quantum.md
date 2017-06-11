@@ -317,7 +317,7 @@ export function getHTMLContents(name: string) {
 }
 ```
 
-Clearly it's hard to tell how to automatically resolve the following statement. Quantum build will still work, however, a simple trick will roll back the mode to the `optimised` one and start using numbers instead of hashes (to gain the performance and descrese the size of your bundle)
+Clearly it's hard to tell how to automatically resolve the following statement. Quantum build will still work, however, a simple trick will roll back the mode to the `optimised` one and start using numbers instead of hashes (to gain the performance and decrease the size of your bundle)
 
 You will see the following output:
 
