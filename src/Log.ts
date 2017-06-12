@@ -13,41 +13,66 @@ const zlib = require("zlib");
  */
 export class Log {
     public timeStart = process.hrtime();
-    public printLog = true;
+    public printLog: any = true;
+    public debugMode: any = false;
     private totalSize = 0;
 
     constructor(public context: WorkFlowContext) {
         this.printLog = context.doLog;
+        this.debugMode = context.debugMode;
+
         log.filter((arg) => {
-            if (this.printLog === false) return false
+            // conditions for filtering specific tags
+            const debug = this.debugMode
+            const level = this.printLog
+
+            // when off, silent
+            if (level === false) return false
+
+            // counting this as verbose for now
+            if (level === true && debug === true) return null
+
+            if (level == 'error') {
+                if (!arg.tags.includes('error')) return false
+            }
+            // could be verbose, reasoning, etc
+            if (arg.tags.includes('magic')) {
+                if (!debug && !level.includes('magic')) return false
+            }
+
+            // if not false and conditions pass, log it
             return null
         })
     }
+
+    // --- config ---
 
     public reset(): Log {
         this.timeStart = process.hrtime();
         this.totalSize = 0;
         return this
     }
-
-    // @TODO add spinners here
-    // @TODO combine logs here, output when needed
-    // @TODO combine this and subBundleStart
-    public bundleStart(name: string) {
-        log.bold(`${name} ->`).echo()
-    }
-
     public printOptions(title: string, obj: any) {
         log.bold().yellow(`  → ${title}`).echo()
 
         for (let i in obj) {
             log.green(`      ${i} : ${obj[i]}`).echo();
         }
+        return this
+    }
+
+    // --- start end ---
+    // @TODO add spinners here
+    // @TODO combine logs here, output when needed
+    // @TODO combine this and subBundleStart
+    public bundleStart(name: string) {
+        log.bold(`${name} ->`).echo()
+        return this
     }
     public subBundleStart(name: string, parent: string) {
         log.bold(`${name} (child of ${parent}) ->`).echo()
+        return this
     }
-
     public bundleEnd(name: string, collection: ModuleCollection) {
         let took = process.hrtime(this.timeStart) as [number, number];
 
@@ -59,49 +84,10 @@ export class Log {
             .echo()
     }
 
-    public echoHeader(str: string) {
-        log.yellow(` ${str}`).echo()
-    }
-
-    public echo(str: string) {
-        log.time(true).green(str).echo()
-    }
-
-    public echoStatus(str: string) {
-        log.title(`→`).cyan(`${str}`).echo()
-    }
-
-    public echoInfo(str: string) {
-        log.preset('info').green(`  → ${str}`).echo()
-    }
-
-
-    public echoBoldRed(msg) {
-        log.red().bold(msg).echo();
-    }
-
-    public echoRed(msg) {
-        log.red(msg).echo();
-    }
-    public echoBreak() {
-        log.green(`\n  -------------- \n`).echo()
-    }
-
-    public echoWarning(str: string) {
-        log.yellow(`  → WARNING ${str}`).echo()
-    }
-
-    public echoYellow(str: string) {
-        log.yellow(str).echo()
-    }
-
-    public echoGray(str: string) {
-        log.gray(str).echo()
-    }
-
+    // --- collection stats ---
 
     public echoDefaultCollection(collection: ModuleCollection, contents: string) {
-        if (this.printLog === false) return;
+        if (this.printLog === false) return this;
         let bytes = Buffer.byteLength(contents, "utf8");
         let size = prettysize(bytes);
         this.totalSize += bytes;
@@ -118,10 +104,11 @@ export class Log {
             if (file.info.isRemoteFile) return
             log.title(`     `).dim(`${file.info.fuseBoxPath}`).echo()
         });
+        return this
     }
 
     public echoCollection(collection: ModuleCollection, contents: string) {
-        if (this.printLog === false) return;
+        if (this.printLog === false) return this;
         let bytes = Buffer.byteLength(contents, "utf8");
         let size = prettysize(bytes);
         this.totalSize += bytes;
@@ -133,22 +120,32 @@ export class Log {
             .yellow(size)
             .write(`(${collection.dependencies.size} files)`)
             .echo()
+
+        return this
     }
 
     public end(header?: string) {
         let took = process.hrtime(this.timeStart) as [number, number];
         this.echoBundleStats(header || "Bundle", this.totalSize, took);
+        return this
     }
 
     /**
      * @TODO
      *  - [ ] ensure header will not conflict if it is used in echoBundleStats
      */
-    public echoGzipSize(size: string | number) {
+    public echoGzip(size: string | number, msg: string | any = '') {
+        if (!size) return this
         const yellow = log.chalk().yellow
         const gzipped = zlib.gzipSync(size, { level: 9 }).length
-        const prettyGzip = yellow(prettysize(gzipped))
-        log.text(`gzip: ${prettyGzip}`).echo()
+        const prettyGzip = yellow(prettysize(gzipped) + ' (gzipped)')
+        log
+            .when(msg,
+                () => log.text(msg),
+                () => log.bold('size: '))
+            .data(prettyGzip)
+            .echo()
+        return this
     }
 
     /**
@@ -161,5 +158,76 @@ export class Log {
         const yellow = log.chalk().yellow
         const sized = yellow(`${prettysize(size)}`)
         log.text(`size: ${sized} in ${prettyTime(took, "ms")}`).echo()
+        return this
+    }
+
+    // --- bundle specifics ---
+
+    public echoHeader(str: string) {
+        log.yellow(` ${str}`).echo()
+        return this
+    }
+    public echoStatus(str: string) {
+        log.title(`→`).cyan(`${str}`).echo()
+        return this
+    }
+
+    // --- generalized ---
+
+    public echoInfo(str: string) {
+        log.preset('info').green(`  → ${str}`).echo()
+        return this
+    }
+    public error(error: Error) {
+        // @TODO: finish forking notifier & dep chain
+        // if (this.printLog.includes('notify')) {
+        //     log.factory().notify({title: error.message, message: error.stack}).echo()
+        // }
+
+        log.tags('error').data(error).echo()
+        return this
+    }
+
+    // @NOTE: later this will be used with preset tags
+    public magicReason(str: string, metadata: any = false) {
+        if (metadata) {
+            log.data(metadata)
+        }
+        log.tags('magic').magenta(str).echo()
+        return this
+    }
+
+
+    // -----------
+    // simplified shorthands for external formatting
+    // @TODO: anything using these should be fomatted inside of the logger
+    // -----------
+    public echo(str: string) {
+        log.time(true).green(str).echo()
+        return this
+    }
+    public echoBoldRed(msg) {
+        log.red().bold(msg).echo();
+        return this
+    }
+    public echoRed(msg) {
+        log.red(msg).echo();
+        return this
+    }
+    public echoBreak() {
+        log.green(`\n  -------------- \n`).echo()
+        return this
+    }
+    public echoWarning(str: string) {
+        log.yellow(`  → WARNING ${str}`).echo()
+        return this
+    }
+    public echoYellow(str: string) {
+        log.yellow(str).echo()
+        return this
+    }
+    public echoGray(str: string) {
+        log.gray(str).echo()
+        return this
     }
 }
