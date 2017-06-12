@@ -15,6 +15,7 @@ export class Log {
     public timeStart = process.hrtime();
     public printLog: any = true;
     public debugMode: any = false;
+    public spinner: any;
     private totalSize = 0;
 
     constructor(public context: WorkFlowContext) {
@@ -82,6 +83,22 @@ export class Log {
             .green(collection.cachedName || collection.name)
             .yellow(`took: ${prettyTime(took, "ms")}`)
             .echo()
+    }
+
+    // --- spinner ---
+    public startSpinner(text: string) {
+        this.spinner = log.requirePkg('ora')(text)
+        this.spinner.start(text)
+        this.spinner.text = text
+        return this
+    }
+    public stopSpinner() {
+        if (this.spinner) {
+            const reference = this.spinner
+            // it's too fast!
+            // setTimeout(() => reference.succeed(), 1000)
+        }
+        return this
     }
 
     // --- collection stats ---
