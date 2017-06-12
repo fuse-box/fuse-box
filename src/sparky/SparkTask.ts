@@ -1,5 +1,4 @@
 export class SparkTask {
-
     public parallelDependencies: string[] = [];
     public waterfallDependencies: string[] = [];
 

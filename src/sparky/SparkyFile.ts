@@ -1,9 +1,9 @@
 import * as fs from "fs-extra";
-import { replaceExt, ensureUserPath } from "../Utils";
 import * as path from "path";
+import * as Mustache from "mustache";
+import { replaceExt, ensureUserPath } from "../Utils";
 import { Config } from "../Config";
 import { Plugin } from "../core/WorkflowContext";
-import * as Mustache from "mustache";
 
 export class SparkyFile {
     public homePath: string;
