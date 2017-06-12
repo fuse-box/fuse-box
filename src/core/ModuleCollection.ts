@@ -351,9 +351,7 @@ export class ModuleCollection {
         }
 
         if (file.info.isNodeModule) {
-
             if (this.context.isGlobalyIgnored(file.info.nodeModuleName)) {
-
                 return;
             }
 

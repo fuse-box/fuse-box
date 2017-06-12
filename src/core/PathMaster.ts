@@ -432,10 +432,11 @@ export class PathMaster {
             return readMainFile(localLib, false);
         }
 
-        if (this.rootPackagePath) {// handle a conflicting library
-
+        // handle a conflicting library
+        if (this.rootPackagePath) {
             let nodeModules = path.join(this.rootPackagePath, "node_modules");
             let nestedNodeModule = path.join(nodeModules, name);
+
             if (fs.existsSync(nestedNodeModule)) {
                 return readMainFile(nestedNodeModule, nodeModules !== Config.NODE_MODULES_DIR);
             } else {

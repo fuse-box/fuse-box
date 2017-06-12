@@ -7,9 +7,7 @@ export class SharedCustomPackage {
 
     public mainPath;
     public mainDir;
-    constructor(public name: string, public data: BundleData) {
-
-    }
+    constructor(public name: string, public data: BundleData) {}
 
     public init(homeDir: string, main: string) {
         this.main = main;
@@ -17,5 +15,4 @@ export class SharedCustomPackage {
         this.mainPath = path.join(homeDir, main);
         this.mainDir = path.dirname(this.mainPath);
     }
-
 }
