@@ -145,7 +145,8 @@ export class Log {
      *  - [ ] ensure header will not conflict if it is used in echoBundleStats
      */
     public echoGzipSize(size: string | number) {
-        const gzipped = zlib.gzipSync(header, { level: 9 }).length
+        const yellow = log.chalk().yellow
+        const gzipped = zlib.gzipSync(size, { level: 9 }).length
         const prettyGzip = yellow(prettysize(gzipped))
         log.text(`gzip: ${prettyGzip}`).echo()
     }
