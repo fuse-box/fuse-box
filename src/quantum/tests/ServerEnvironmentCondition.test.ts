@@ -1,7 +1,6 @@
 import { should } from "fuse-test-runner";
 import { createOptimisedBundleEnv } from "../../tests/stubs/TestEnvironment";
 
-
 export class ServerEnvironmentConditionTest {
     "Should handle FuseBox.isServer"() {
         // gets a module from src/tests/stubs/test_modules/fbjs

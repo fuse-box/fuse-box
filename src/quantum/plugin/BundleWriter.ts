@@ -1,8 +1,9 @@
 import { each } from "realm-utils";
 import { Bundle } from "../../core/Bundle";
 import { ensureUserPath } from "../../Utils";
-import * as fs from "fs";
 import { QuantumCore } from "./QuantumCore";
+import * as fs from "fs";
+
 export class BundleWriter {
     private bundles = new Map<string, Bundle>();
     constructor(public core: QuantumCore) { }
@@ -51,7 +52,6 @@ export class BundleWriter {
     public process() {
         const producer = this.core.producer;
 
-
         // create api bundle
         let apiName2bake = this.core.opts.shouldBakeApiIntoBundle()
         if (apiName2bake) {
@@ -85,7 +85,6 @@ export class BundleWriter {
             }
             return bundle.context.output.writeCurrent(bundle.generatedCode);
         }).then(() => {
-
             if (this.core.opts.webIndexPlugin) {
                 return this.core.opts.webIndexPlugin.producerEnd(producer)
             }

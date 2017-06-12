@@ -5,9 +5,8 @@ import { FileAbstraction } from "../core/FileAbstraction";
 import { QuantumCore } from "./QuantumCore";
 
 export class TreeShake {
-    constructor(public core: QuantumCore) {
+    constructor(public core: QuantumCore) {}
 
-    }
     /**
      * Initiate tree shaking
      */
@@ -28,8 +27,8 @@ export class TreeShake {
                     this.core.log.echoInfo(`tree shaking: Remove ${fileExport.name} from ${file.fuseBoxPath}`)
                     fileExport.remove();
                 } else {
-                    // gotta sleep on it.... 
-                    // fileCanBeRemoved = false; 
+                    // gotta sleep on it....
+                    // fileCanBeRemoved = false;
                 }
             });
             //if (fileCanBeRemoved) { file.canBeRemoved = true; }
@@ -37,7 +36,7 @@ export class TreeShake {
     }
     /**
      * Figure out if we can actually tree shake a file
-     * @param target 
+     * @param target
      */
     private shakeExports(target: FileAbstraction) {
         return this.eachFile(file => {
@@ -65,7 +64,6 @@ export class TreeShake {
             }
         });
     }
-
 
     private eachFile(fn: { (file: FileAbstraction) }) {
         return each(this.core.producerAbstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {

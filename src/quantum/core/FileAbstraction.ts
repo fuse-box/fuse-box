@@ -49,18 +49,14 @@ export class FileAbstraction {
     public namedExports = new Map<string, NamedExport>();
     public processNodeEnv = new Set<GenericAst>();
 
-
-
     public isEntryPoint = false;
 
     public wrapperArguments: string[];
     private globalVariables = new Set<string>();
 
-
     constructor(public fuseBoxPath: string, public packageAbstraction: PackageAbstraction) {
         this.fuseBoxDir = ensureFuseBoxPath(path.dirname(fuseBoxPath));
         this.setID(fuseBoxPath);
-
 
         packageAbstraction.registerFileAbstraction(this);
     }
@@ -198,11 +194,11 @@ export class FileAbstraction {
         return code;
     }
     /**
-     * 
-     * @param node 
-     * @param parent 
-     * @param prop 
-     * @param idx 
+     *
+     * @param node
+     * @param parent
+     * @param prop
+     * @param idx
      */
     private onNode(node, parent, prop, idx) {
         // detecting es6
@@ -334,8 +330,7 @@ export class FileAbstraction {
 
 
     public analyse() {
-
-        //console.log(JSON.stringify(this.ast, null, 2));
+        // console.log(JSON.stringify(this.ast, null, 2));
         ASTTraverse.traverse(this.ast, {
             pre: (node, parent, prop, idx) => this.onNode(node, parent, prop, idx)
         });
