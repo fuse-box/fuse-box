@@ -3,7 +3,14 @@ import { WorkFlowContext } from "./core/WorkflowContext";
 const log = require("fliplog");
 const prettysize = require("prettysize");
 const prettyTime = require("pretty-time");
+const zlib = require("zlib");
 
+/**
+ * @TODO:
+ * - [ ] should add filters for outputing fs
+ * - [ ] should .tree the files
+ * - [ ] fix the →→→→→→→
+ */
 export class Log {
     public timeStart = process.hrtime();
     public printLog = true;
@@ -133,8 +140,26 @@ export class Log {
         this.echoBundleStats(header || "Bundle", this.totalSize, took);
     }
 
+    /**
+     * @TODO
+     *  - [ ] ensure header will not conflict if it is used in echoBundleStats
+     */
+    public echoGzipSize(size: string | number) {
+        const yellow = log.chalk().yellow
+        const gzipped = zlib.gzipSync(size, { level: 9 }).length
+        const prettyGzip = yellow(prettysize(gzipped))
+        log.text(`gzip: ${prettyGzip}`).echo()
+    }
+
+    /**
+     * @TODO @FIXME
+     * - [ ] bundle stats are wrong because they use accumulated size,
+     *       not the uglified end result size
+     *       use uglified and QuantumPlugin output
+     */
     public echoBundleStats(header: string, size: number, took: [number, number]) {
-        const sized = log.chalk().yellow(`Size: ${prettysize(size)}`)
-        log.text(`${sized} in ${prettyTime(took, "ms")}`).echo()
+        const yellow = log.chalk().yellow
+        const sized = yellow(`${prettysize(size)}`)
+        log.text(`size: ${sized} in ${prettyTime(took, "ms")}`).echo()
     }
 }

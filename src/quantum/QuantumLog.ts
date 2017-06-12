@@ -2,7 +2,6 @@
 
 export class QuantumLog {
     public static spinStart(text: string) {
-
         //log.bold().startSpinner('loading...')
     }
 

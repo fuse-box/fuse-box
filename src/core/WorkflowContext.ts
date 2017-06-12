@@ -219,7 +219,6 @@ export class WorkFlowContext {
             removeFolder(this.cache.cacheFolder);
             this.cache.initialize();
         }
-
     }
 
     public setSourceMapsProperty(params: any) {
@@ -449,8 +448,6 @@ export class WorkFlowContext {
         return this.initialLoad === true;
     }
 
-
-
     public writeOutput(outFileWritten?: () => any) {
         this.initialLoad = false;
 
@@ -458,7 +455,6 @@ export class WorkFlowContext {
         if (this.bundle) {
             this.bundle.generatedCode = res.content;
         }
-
 
         if (this.output && (!this.bundle || this.bundle && this.bundle.producer.writeBundles)) {
             this.output.writeCurrent(res.content).then(() => {

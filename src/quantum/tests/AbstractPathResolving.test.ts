@@ -2,10 +2,7 @@ import { should } from "fuse-test-runner";
 import { createDefaultPackageAbstraction, createBundleAbstraction } from "./helper";
 import { FileAbstraction } from "../core/FileAbstraction";
 
-
-
 export class AbstractPathResolving {
-
     "Should resolve an abstract 'js' file"() {
         const files = new Map<string, string>();
         files.set("foo/bar/index.js", "require('./world')");

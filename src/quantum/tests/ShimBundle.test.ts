@@ -1,9 +1,7 @@
 import { should } from "fuse-test-runner";
 import { createOptimisedBundleEnv } from "../../tests/stubs/TestEnvironment";
 
-
 export class ShimBundleTest {
-
     "Should create a separate bundle with shims"() {
         return createOptimisedBundleEnv({
             project: {
@@ -26,6 +24,4 @@ export class ShimBundleTest {
             should(result.contents["shims.js"]).beOkay();
         });
     }
-
-
 }

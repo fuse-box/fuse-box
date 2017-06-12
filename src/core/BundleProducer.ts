@@ -6,11 +6,10 @@ import { Arithmetic, BundleData } from "../arithmetic/Arithmetic";
 import { SharedCustomPackage } from "./SharedCustomPackage";
 import { BundleRunner } from "./BundleRunner";
 import { ServerOptions } from "../devServer/Server";
-import * as  chokidar from "chokidar";
+import * as chokidar from "chokidar";
 import { utils, each } from "realm-utils";
 import { ProducerAbstraction, ProducerAbtractionOptions } from "../quantum/core/ProducerAbstraction";
 import { BundleAbstraction } from "../quantum/core/BundleAbstraction";
-
 
 export class BundleProducer {
     public bundles = new Map<string, Bundle>();
@@ -32,7 +31,6 @@ export class BundleProducer {
         this.runner = new BundleRunner(this.fuse);
     }
 
-
     public run(opts: { chokidar?: any, runType?: string }): Promise<BundleProducer> {
         /** Collect information about watchers and start watching */
         this.watch();
@@ -40,7 +38,6 @@ export class BundleProducer {
         if (opts) {
             this.chokidarOptions = opts.chokidar;
         }
-
 
         return this.runner.run(opts).then(() => {
 
@@ -65,7 +62,6 @@ export class BundleProducer {
     }
 
     public register(packageName: string, opts: any) {
-
         let instructions = opts.instructions;
         if (!packageName) {
             throw new Error("Package name is required");

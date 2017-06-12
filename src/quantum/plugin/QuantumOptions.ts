@@ -1,5 +1,6 @@
 import { WebIndexPluginClass } from "../../plugins/WebIndexPlugin";
 import { QuantumCore } from "./QuantumCore";
+
 export interface IQuantumExtensionParams {
     target?: string;
     uglify?: any;
@@ -13,9 +14,8 @@ export interface IQuantumExtensionParams {
     warnings?: boolean;
     bakeApiIntoBundle?: string;
 }
+
 export class QuantumOptions {
-
-
     private uglify: any;
     private removeExportsInterop = true;
     private removeUseStrict = true;
@@ -27,6 +27,7 @@ export class QuantumOptions {
     public optsTarget: string = "browser";
     public treeshake = true;
     public webIndexPlugin: WebIndexPluginClass;
+
     constructor(opts: IQuantumExtensionParams) {
         opts = opts || {};
         if (opts.target) {

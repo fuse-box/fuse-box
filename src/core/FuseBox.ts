@@ -54,6 +54,7 @@ export class FuseBox {
     public static init(opts?: FuseBoxOptions) {
         return new FuseBox(opts);
     }
+
     public virtualFiles: any;
 
     public collectionSource: CollectionSource;
@@ -199,7 +200,6 @@ export class FuseBox {
 
 
 
-
     /** Starts the dev server and returns it */
     public dev(opts?: ServerOptions, fn?: { (server: Server) }) {
         opts = opts || {};
@@ -255,7 +255,6 @@ export class FuseBox {
      * @param files File[]
      */
     public createSplitBundle(conf: SplitConfig): Promise<SplitConfig> {
-
         let files = conf.files;
 
         let defaultCollection = new ModuleCollection(this.context, this.context.defaultPackageName);
@@ -348,7 +347,8 @@ export class FuseBox {
                         return self.context.source.getResult();
                     });
                 } else {
-
+                    // @NOTE: content is here, but this is not the uglified content
+                    // self.context.source.getResult().content.toString()
                     self.context.log.end();
                     this.triggerEnd();
                     self.context.source.finalize(bundleData);

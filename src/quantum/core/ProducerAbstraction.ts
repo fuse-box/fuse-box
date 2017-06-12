@@ -1,6 +1,7 @@
 import { BundleAbstraction } from "./BundleAbstraction";
 import { generateFileCombinations } from "./utils";
 import { ProducerWarning } from "./ProducerWarning";
+
 export interface ProducerAbtractionOptions {
     customComputedStatementPaths?: Set<RegExp>
 }
@@ -10,11 +11,13 @@ export class ProducerAbstraction {
     public opts: ProducerAbtractionOptions;
     public useNumbers = true;
     public useComputedRequireStatements = false;
+
     constructor(opts?: ProducerAbtractionOptions) {
         this.opts = opts || {};
 
         this.opts.customComputedStatementPaths = this.opts.customComputedStatementPaths || new Set();
     }
+
     public registerBundleAbstraction(bundleAbstraction: BundleAbstraction) {
         this.bundleAbstractions.set(bundleAbstraction.name, bundleAbstraction);
     }
@@ -22,8 +25,6 @@ export class ProducerAbstraction {
     public addWarning(msg: string) {
         this.warnings.add(new ProducerWarning(msg));
     }
-
-
 
     public findFileAbstraction(packageName: string, resolvedPathRaw: string) {
         let combinations: string[] = generateFileCombinations(resolvedPathRaw);

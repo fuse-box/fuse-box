@@ -1,4 +1,3 @@
-
 import { should } from "fuse-test-runner";
 import { createOptimisedBundleEnv } from "../../tests/stubs/TestEnvironment";
 
@@ -20,7 +19,7 @@ export class TreeShakeTest {
                         class Foo2 {}
                         exports.Foo1 = Foo1;
                         exports.Foo2 = Foo2;
-                        
+
                     `
                 },
                 instructions: "index.ts",
@@ -49,7 +48,7 @@ export class TreeShakeTest {
                         class Foo2 {}
                         exports.Foo1 = Foo1;
                         exports.Foo2 = Foo2;
-                        
+
                     `
                 },
                 instructions: "index.ts",

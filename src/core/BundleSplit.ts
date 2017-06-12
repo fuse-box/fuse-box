@@ -5,7 +5,6 @@ import { FuseBox } from "./FuseBox";
 import { each } from "realm-utils";
 import { WorkFlowContext } from "./WorkflowContext";
 
-
 export class SplitConfig {
     public fuse: FuseBox;
     public name: string;
@@ -22,37 +21,41 @@ export class BundleSplit {
     public dest = "./";
     public serverPath = `./`;
     public bundleBrowserConfig: any;
-    constructor(public bundle: Bundle) {
 
-        //getManifest
+    constructor(public bundle: Bundle) {
+        // getManifest
     }
+
     public addRule(rule: string, bundleName: string) {
         const conf = this.bundles.get(bundleName);
         conf.rules.push(string2RegExp(rule));
     }
 
     /**
-     * 
-     * @param name 
+     *
+     * @param name
      */
     public createFuseBoxInstance(name: string, mainFile: string): FuseBox {
-
         const producer = this.bundle.producer;
         const config = Object.assign({}, producer.fuse.opts);
+
         config.plugins = [].concat(config.plugins || [])
         config.standalone = false;
+
         const fuse = FuseBox.init(config);
         fuse.context.output.setName(joinFuseBoxPath(this.dest, name))
+
         let conf = new SplitConfig();
         conf.fuse = fuse;
         conf.name = name;
         conf.parent = this.bundle;
         conf.dest = this.dest;
         conf.main = mainFile;
+
         this.bundles.set(name, conf);
+
         return fuse;
     }
-
 
     public getFuseBoxInstance(name: string, mainFile: string) {
         if (this.bundles.get(name)) {
@@ -60,7 +63,6 @@ export class BundleSplit {
         }
         return this.createFuseBoxInstance(name, mainFile);
     }
-
 
     public beforeMasterWrite(masterContext: WorkFlowContext): Promise<any> {
         if (!this.bundleBrowserConfig) {
@@ -107,8 +109,6 @@ export class BundleSplit {
             });
         })
     }
-
-
 
     /**
      * Checks if a file should go to a master bundle

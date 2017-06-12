@@ -11,8 +11,6 @@ import { BundleTestRunner } from "../BundleTestRunner";
 import { Config } from "../Config";
 
 export class Bundle {
-
-
     public context: WorkFlowContext;
     public watchRule: string;
     public arithmetics: string;
@@ -23,8 +21,6 @@ export class Bundle {
 
     public splitFiles: Map<string, File>;
     public bundleSplit: BundleSplit;
-
-
 
     constructor(public name: string, public fuse: FuseBox, public producer: BundleProducer) {
         this.context = fuse.context;
@@ -235,4 +231,3 @@ export class Bundle {
     }
 
 }
-
