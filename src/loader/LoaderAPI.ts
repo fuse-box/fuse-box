@@ -29,6 +29,8 @@ type PackageDetails = {
             fn: Function
             /** Locals if any */
             locals?: any
+						/** Run-time meta information if any */
+						meta?: any
         }
     },
     v: PackageVersions,
@@ -389,6 +391,7 @@ function $trigger(name: string, args: any) {
  * With opt provided it's possible to set:
  *   1) Base directory
  *   2) Target package name
+ *   3) `meta: trueish` to retrieve meta-information instead of importing the file
  */
 function $import(name: string, o: any = {}) {
 
@@ -425,12 +428,14 @@ function $import(name: string, o: any = {}) {
             let batch = {};
             for (let n in pkg.f) {
                 if (safeRegEx.test(n)) {
-                    batch[n] = $import(`${ref.pkgName}/${n}`);
+                    batch[n] = $import(`${ref.pkgName}/${n}`, o);
                 }
             }
             return batch;
         }
     }
+
+		if(o.meta) return {ref, file};
 
     if (!file) {
         let asyncMode = typeof o === "function";
@@ -523,9 +528,9 @@ class FuseBox {
     /**
      * Check if a file exists in path
      */
-    public static exists(path: string) {
+    public static exists(path: string, o: any = {}) {
         try {
-            let ref = $getRef(path, {});
+            let ref = $getRef(path, o);
             return ref.file !== undefined;
         }
         catch (err) {
@@ -572,12 +577,13 @@ class FuseBox {
     public static dynamic(path: string, str: string, opts?: {
         /** The name of the package */
         pkg: string
+				meta?: any
     }) {
         this.pkg(opts && opts.pkg || "default", {}, function (___scope___: any) {
             ___scope___.file(path, function (exports: any, require: any, module: any, __filename: string, __dirname: string) {
                 var res = new Function("__fbx__dnm__", "exports", "require", "module", "__filename", "__dirname", "__root__", str);
                 res(true, exports, require, module, __filename, __dirname, __root__);
-            });
+            }, opts&&opts.meta);
         });
     }
 
@@ -616,7 +622,7 @@ class FuseBox {
         // scope
         pkg.s = {
             // Scope file
-            file: (name: string, fn: any) => pkg.f[name] = { fn },
+            file: (name: string, fn: any, meta?: any) => pkg.f[name] = { fn, meta },
         };
         return fn(pkg.s);
     }
