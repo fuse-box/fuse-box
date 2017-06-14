@@ -5,6 +5,51 @@ const prettysize = require("prettysize");
 const prettyTime = require("pretty-time");
 const zlib = require("zlib");
 
+// @TODO: I've moved this into fliplog in v1, migrate to that
+export class Indenter {
+    public store: Map<string, any> = new Map()
+    constructor() {
+        this.set('indent', 0)
+    }
+
+    // easy set/set
+    public set(key: string, val: any): Indenter {
+        this.store.set(key, val)
+        return this
+    }
+    public get(key: string) {
+        return this.store.get(key)
+    }
+    // back to 0
+    public reset(): Indenter {
+        return this.set('indent', 0)
+    }
+    // tap value
+    public tap(key: string, cb: Function): Indenter {
+        const updated = cb(this.store.get(key))
+        return this.set(key, updated)
+    }
+    // increment
+    public indent(level: number): Indenter {
+        return this.tap('indent', indent => indent + level)
+    }
+    // specific number
+    public level(level: number): Indenter {
+        return this.set('indent', level)
+    }
+    // string repeat indent
+    public toString(): string {
+        return ' '.repeat(this.get('indent'))
+    }
+    public toNumber(): number {
+        return this.get('indent')
+    }
+    public [Symbol.toPrimitive](hint: string) {
+        if (hint === 'number') return this.toNumber()
+        return this.toString()
+    }
+}
+
 /**
  * @TODO:
  * - [ ] should add filters for outputing fs
@@ -16,6 +61,7 @@ export class Log {
     public printLog: any = true;
     public debugMode: any = false;
     public spinner: any;
+    public indent: Indenter = new Indenter();
     private totalSize = 0;
 
     constructor(public context: WorkFlowContext) {
@@ -26,6 +72,10 @@ export class Log {
             // conditions for filtering specific tags
             const debug = this.debugMode
             const level = this.printLog
+            const hasTag = tag =>
+                arg.tags.includes(tag)
+            const levelHas = tag =>
+                debug || (level && level.includes(tag) && !level.includes('!' + tag))
 
             // when off, silent
             if (level === false) return false
@@ -34,11 +84,14 @@ export class Log {
             if (level === true && debug === true) return null
 
             if (level == 'error') {
-                if (!arg.tags.includes('error')) return false
+                if (!hasTag('error')) return false
             }
             // could be verbose, reasoning, etc
-            if (arg.tags.includes('magic')) {
-                if (!debug && !level.includes('magic')) return false
+            if (hasTag('magic')) {
+                if (!levelHas('magic')) return false
+            }
+            if (hasTag('filelist')) {
+                if (!levelHas('filelist')) return false
             }
 
             // if not false and conditions pass, log it
@@ -54,11 +107,27 @@ export class Log {
         return this
     }
     public printOptions(title: string, obj: any) {
-        log.bold().yellow(`  → ${title}`).echo()
+        let indent = this.indent.level(2) + ''
 
-        for (let i in obj) {
-            log.green(`      ${i} : ${obj[i]}`).echo();
-        }
+        let indent2 = this.indent.level(4) + ''
+
+        // @TODO: moved this into fliplog v1, migrate
+        log.addPreset('min', instance => {
+            instance.formatter(data => {
+                return log.inspector()(data).split('\n')
+                .map(data => indent2 + data)
+                .map(data => data.replace(/[{},]/, ''))
+                .join('\n')
+            })
+        })
+
+        log.bold().yellow(`${indent}→ ${title}\n`).preset('min').data(obj).echo()
+
+        // for (let i in obj) {
+        //     indent = this.indent.level(6) + ''
+        //     log.green(`${indent}${i} : ${obj[i]}`).echo();
+        // }
+        // this.indent.indent(-2)
         return this
     }
 
@@ -67,7 +136,7 @@ export class Log {
     // @TODO combine logs here, output when needed
     // @TODO combine this and subBundleStart
     public bundleStart(name: string) {
-        log.bold(`${name} ->`).echo()
+        log.bold(`${name}: `).echo()
         return this
     }
     public subBundleStart(name: string, parent: string) {
@@ -87,16 +156,47 @@ export class Log {
 
     // --- spinner ---
     public startSpinner(text: string) {
-        this.spinner = log.requirePkg('ora')(text)
-        this.spinner.start(text)
-        this.spinner.text = text
+        if (!this.printLog) return this
+
+        // spinner opts
+        const indentStr = this.indent.toString()
+        const indent = +this.indent
+        const interval = 20
+        const frames = [ '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏' ].map(frame => indentStr + frame)
+        const spinner = {frames, interval}
+
+        // @TODO @FIXME the spinner needs to be scoped inside of fliplog, has todo to update
+        // instantiate
+        this.spinner = log.requirePkg('ora')({text, indent, spinner})
+        this.spinner.start()
+        this.spinner.indent = +this.indent
+        this.spinner.succeeded = false
+
+        // safety for if errors happen so it does not keep spinning
+        setTimeout(() => {
+            if (this.spinner.succeeded === false) {
+                this.spinner.fail()
+            }
+        }, 1000)
+
         return this
     }
-    public stopSpinner() {
-        if (this.spinner) {
+    public stopSpinner(text?: string) {
+        if (!this.printLog) return this
+        // safety, mark as success
+        if (this.spinner && this.spinner.succeeded === false) {
+            this.spinner.succeeded = true
             const reference = this.spinner
+            const indent = this.indent.level(this.spinner.indent).toString()
+
+            // @override success to indent
+            // reference.succeed()
+            const success = log.chalk().green(`${indent}✔ `)
+            text = text || reference.text
+            reference.stopAndPersist({symbol: success, text});
+
             // it's too fast!
-            // setTimeout(() => reference.succeed(), 1000)
+            // setTimeout(() => reference.succeed(), 1)
         }
         return this
     }
@@ -109,18 +209,27 @@ export class Log {
         let size = prettysize(bytes);
         this.totalSize += bytes;
 
+        const indent = this.indent.reset().indent(+1).toString()
+
         log
             .ansi()
             .write(`└──`)
-            .yellow(` (${collection.dependencies.size} files,  ${size})`)
+            .yellow(`${indent}(${collection.dependencies.size} files,  ${size})`)
             .green(collection.cachedName || collection.name)
             .echo()
 
         // @TODO auto indent as with ansi
         collection.dependencies.forEach(file => {
             if (file.info.isRemoteFile) return
-            log.title(`     `).dim(`${file.info.fuseBoxPath}`).echo()
+            this.indent.level(4)
+
+            log
+                .tags('filelist')
+                .title(this.indent.toString())
+                .dim(`${file.info.fuseBoxPath}`)
+                .echo()
         });
+        this.indent.level(0)
         return this
     }
 
@@ -129,6 +238,7 @@ export class Log {
         let bytes = Buffer.byteLength(contents, "utf8");
         let size = prettysize(bytes);
         this.totalSize += bytes;
+        this.indent.reset();
 
         log
             .ansi()
@@ -150,13 +260,18 @@ export class Log {
     /**
      * @TODO
      *  - [ ] ensure header will not conflict if it is used in echoBundleStats
+     *
+     * string | number | Buffer
      */
-    public echoGzip(size: string | number, msg: string | any = '') {
+    public echoGzip(size: any, msg: string | any = '') {
         if (!size) return this
         const yellow = log.chalk().yellow
         const gzipped = zlib.gzipSync(size, { level: 9 }).length
-        const prettyGzip = yellow(prettysize(gzipped) + ' (gzipped)')
+        const gzippedSize = prettysize(gzipped) + ' (gzipped)'
+        const compressedSize = prettysize(size.length)
+        const prettyGzip = yellow(`${compressedSize}, ${gzippedSize}`)
         log
+            .title(this.indent + '')
             .when(msg,
                 () => log.text(msg),
                 () => log.bold('size: '))
@@ -172,6 +287,7 @@ export class Log {
      *       use uglified and QuantumPlugin output
      */
     public echoBundleStats(header: string, size: number, took: [number, number]) {
+        this.indent.reset()
         const yellow = log.chalk().yellow
         const sized = yellow(`${prettysize(size)}`)
         log.text(`size: ${sized} in ${prettyTime(took, "ms")}`).echo()
@@ -181,7 +297,8 @@ export class Log {
     // --- bundle specifics ---
 
     public echoHeader(str: string) {
-        log.yellow(` ${str}`).echo()
+        this.indent.level(1)
+        log.yellow(`${this.indent}${str}`).echo()
         return this
     }
     public echoStatus(str: string) {
@@ -190,9 +307,13 @@ export class Log {
     }
 
     // --- generalized ---
-
+    public groupHeader(str: string) {
+        log.color('bold.underline').text(`${str}`).echo()
+        return this
+    }
     public echoInfo(str: string) {
-        log.preset('info').green(`  → ${str}`).echo()
+        const indent = this.indent.level(2)
+        log.preset('info').green(`${indent}→ ${str}`).echo()
         return this
     }
     public error(error: Error) {

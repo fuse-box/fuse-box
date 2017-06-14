@@ -43,7 +43,7 @@ export class QuantumCore {
         this.api = new ResponsiveAPI(this);
         this.log = producer.fuse.context.log;
         this.log.echoBreak();
-        this.log.echoInfo("Launching quantum core");
+        this.log.groupHeader("Launching quantum core");
         if (this.opts.apiCallback) {
             this.opts.apiCallback(this);
         }
