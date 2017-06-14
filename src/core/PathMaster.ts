@@ -353,10 +353,8 @@ export class PathMaster {
                 let entryFile;
                 let entryRoot;
                 let browserOverrides;
-                if (json.browser) {
-
-                    if (this.context.isBrowserTarget() &&
-                        typeof json.browser === "object" && json.browser[json.main]) {
+                if (this.context.isBrowserTarget() && json.browser) {
+                    if (typeof json.browser === "object" && json.browser[json.main]) {
                         browserOverrides = json.browser;
                         entryFile = json.browser[json.main];
                     }
