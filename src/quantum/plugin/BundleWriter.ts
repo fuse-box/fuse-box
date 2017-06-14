@@ -84,8 +84,8 @@ export class BundleWriter {
                     throw result.error;
                 }
                 bundle.generatedCode = result.code;
-                this.core.log.stopSpinner()
-                this.core.log.echoGzip(result.code, `Done Uglifying ${bundle.name}`)
+                this.core.log.stopSpinner(`Done Uglifying ${bundle.name}`)
+                this.core.log.echoGzip(result.code)
             }
             return bundle.context.output.writeCurrent(bundle.generatedCode);
         }).then(() => {
