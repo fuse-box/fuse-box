@@ -23,6 +23,38 @@ export class UglifyJSPluginTest {
         });
     }
 
+    // @TODO: throws error about a string not being a buffer...
+    // "Should respect config"() {
+    //     return createEnv({
+    //         project: {
+    //             files: {
+    //                 "index.ts": `
+    //                 var objectWithProps = {
+    //                   uglifyme: true,
+    //                   nestedEven: {
+    //                     down: {
+    //                       down: {
+    //                         down: true,
+    //                       },
+    //                     },
+    //                   },
+    //                 }
+    //
+    //                 export default objectWithProps
+    //               `,
+    //             },
+    //             globals: { default: "__compressed__" },
+    //             plugins: [UglifyJSPlugin({mangle: {
+    //                 props: true,
+    //             }})],
+    //             instructions: ">index.ts",
+    //         },
+    //     }).then((result) => {
+    //         const out = result.project.FuseBox.import("./index");
+    //         should(("nestedEven" in result.project)).beFalse();
+    //     });
+    // }
+
     "Should return __compressed__ js 2"() {
         return createEnv({
             project: {

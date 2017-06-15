@@ -75,7 +75,7 @@ export function createOptimisedBundleEnv(opts: any) {
             moduleParams.output = path.join(modulesFolder, name, "index.js");
             moduleParams.package = name;
             moduleParams.cache = false;
-            moduleParams.log = false;
+            moduleParams.log = moduleParams.log || false;
 
             moduleParams.tsConfig = path.join(appRoot.path, "src/tests/fixtures", "tsconfig.json");
             const fuse = FuseBox.init(moduleParams);
@@ -96,7 +96,7 @@ export function createOptimisedBundleEnv(opts: any) {
         const projectOptions = opts.project;
         projectOptions.output = path.join(localPath, "project", "index.js");
         projectOptions.cache = false;
-        projectOptions.log = false;
+        projectOptions.log = projectOptions.log || false;
         projectOptions.tsConfig = path.join(appRoot.path, "src/tests/fixtures", "tsconfig.json");
         projectOptions.modulesFolder = modulesFolder;
 
