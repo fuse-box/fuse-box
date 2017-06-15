@@ -9,44 +9,44 @@ import * as zlib from "zlib";
 export class Indenter {
     public store: Map<string, any> = new Map()
     constructor() {
-        this.set('indent', 0)
+        this.set('indent', 0);
     }
 
     // easy set/set
     public set(key: string, val: any): Indenter {
         this.store.set(key, val)
-        return this
+        return this;
     }
     public get(key: string) {
-        return this.store.get(key)
+        return this.store.get(key);
     }
     // back to 0
     public reset(): Indenter {
-        return this.set('indent', 0)
+        return this.set('indent', 0);
     }
     // tap value
     public tap(key: string, cb: Function): Indenter {
-        const updated = cb(this.store.get(key))
-        return this.set(key, updated)
+        const updated = cb(this.store.get(key));
+        return this.set(key, updated);
     }
     // increment
     public indent(level: number): Indenter {
-        return this.tap('indent', indent => indent + level)
+        return this.tap('indent', indent => indent + level);
     }
     // specific number
     public level(level: number): Indenter {
-        return this.set('indent', level)
+        return this.set('indent', level);
     }
     // string repeat indent
     public toString(): string {
         return ' '.repeat(this.get('indent'))
     }
     public toNumber(): number {
-        return this.get('indent')
+        return this.get('indent');
     }
     public [Symbol.toPrimitive](hint: string) {
-        if (hint === 'number') return this.toNumber()
-        return this.toString()
+        if (hint === 'number') { return this.toNumber(); }
+        return this.toString();;
     }
 }
 
@@ -96,7 +96,7 @@ export class Log {
 
             // if not false and conditions pass, log it
             return null;
-        })
+        });;
     }
 
     // --- config ---
@@ -104,12 +104,12 @@ export class Log {
     public reset(): Log {
         this.timeStart = process.hrtime();
         this.totalSize = 0;
-        return this
+        return this;;
     }
     public printOptions(title: string, obj: any) {
-        let indent = this.indent.level(2) + ''
+        let indent = this.indent.level(2) + '';;
 
-        let indent2 = this.indent.level(4) + ''
+        let indent2 = this.indent.level(4) + '';;
 
         // @TODO: moved this into fliplog v1, migrate
         log.addPreset('min', instance => {
@@ -117,7 +117,7 @@ export class Log {
                 return log.inspector()(data).split('\n')
                     .map(data => indent2 + data)
                     .map(data => data.replace(/[{},]/, ''))
-                    .join('\n')
+                    .join('\n');;
             });
         });
 
@@ -156,7 +156,7 @@ export class Log {
 
     // --- spinner ---
     public startSpinner(text: string) {
-        if (!this.printLog) return this;
+        if (!this.printLog) { return this; }
 
         // spinner opts
         const indentStr = this.indent.toString();
@@ -175,14 +175,14 @@ export class Log {
         // safety for if errors happen so it does not keep spinning
         setTimeout(() => {
             if (this.spinner.succeeded === false) {
-                this.spinner.fail()
+                this.spinner.fail();;
             }
         }, 1000);
 
         return this;
     }
     public stopSpinner(text?: string) {
-        if (!this.printLog) return this;
+        if (!this.printLog) { return this; }
         // safety, mark as success
         if (this.spinner && this.spinner.succeeded === false) {
             this.spinner.succeeded = true;
