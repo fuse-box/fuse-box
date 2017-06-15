@@ -77,6 +77,7 @@ export class Log {
             const levelHas = tag =>
                 debug || (level && level.includes && level.includes(tag) && !level.includes('!' + tag));
 
+
             // when off, silent
             if (level === false) return false;
 
@@ -104,7 +105,8 @@ export class Log {
     public reset(): Log {
         this.timeStart = process.hrtime();
         this.totalSize = 0;
-        return this;;
+        this.indent.reset();
+        return this;
     }
     public printOptions(title: string, obj: any) {
         let indent = this.indent.level(2) + '';;
@@ -203,6 +205,7 @@ export class Log {
 
     // --- collection stats ---
 
+    // @TODO: list vendor files as filter
     public echoDefaultCollection(collection: ModuleCollection, contents: string) {
         if (this.printLog === false) return this;
         let bytes = Buffer.byteLength(contents, "utf8");
@@ -211,6 +214,17 @@ export class Log {
 
         const indent = this.indent.reset().indent(+1).toString();
 
+        // @example └──  (5 files, 7.6 kB) default
+        // @TODO auto indent as with ansi
+        collection.dependencies.forEach(file => {
+            if (file.info.isRemoteFile) return
+            const indent = this.indent.level(4).toString()
+            log
+                .tags('filelist')
+                .dim(`${indent}${file.info.fuseBoxPath}`)
+                .echo()
+        });
+
         log
             .ansi()
             .write(`└──`)
@@ -218,31 +232,23 @@ export class Log {
             .green(collection.cachedName || collection.name)
             .echo();
 
-        // @TODO auto indent as with ansi
-        collection.dependencies.forEach(file => {
-            if (file.info.isRemoteFile) return;
-            this.indent.level(4);
-
-            log
-                .tags('filelist')
-                .title(this.indent.toString())
-                .dim(`${file.info.fuseBoxPath}`)
-                .echo();
-        });
         this.indent.level(0);
         return this;
     }
 
+    // @example
+    // └── fuse-box-css 1.5 kB (1 files)
+    // └── lodash 14.2 kB (12 files)
     public echoCollection(collection: ModuleCollection, contents: string) {
         if (this.printLog === false) return this;
         let bytes = Buffer.byteLength(contents, "utf8");
         let size = prettysize(bytes);
         this.totalSize += bytes;
-        this.indent.reset();
+        const indent = this.indent.toString(); // reset
 
         log
             .ansi()
-            .write(`└──`)
+            .write(`${indent}└──`)
             .green(collection.cachedName || collection.name)
             .yellow(size)
             .write(`(${collection.dependencies.size} files)`)
