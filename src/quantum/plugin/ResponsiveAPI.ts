@@ -8,6 +8,7 @@ export class ResponsiveAPI {
     private isServerFunction = false;
     private isBrowserFunction = false;
     private customMappings = {};
+    private lazyLoading = false;
     private customStatementResolve = false;
     constructor(public core: QuantumCore) {
 
@@ -16,6 +17,10 @@ export class ResponsiveAPI {
     public addComputedRequireStatetements() {
         this.computedStatements = true;
         this.hashes = true;
+    }
+
+    public addLazyLoading() {
+        this.lazyLoading = true;
     }
 
     public hashesUsed() {
@@ -44,7 +49,8 @@ export class ResponsiveAPI {
             isBrowserFunction: this.isBrowserFunction,
             computedStatements: this.computedStatements,
             hashes: this.hashes,
-            customStatementResolve: this.customStatementResolve
+            customStatementResolve: this.customStatementResolve,
+            lazyLoading: this.lazyLoading,
         }
         const variables: any = {};
         if (Object.keys(this.customMappings).length > 0) {

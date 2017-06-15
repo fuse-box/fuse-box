@@ -52,7 +52,15 @@ export class BundleWriter {
         const producer = this.core.producer;
 
 
-        // create api bundle
+
+
+        this.addShims();
+
+        producer.bundles.forEach(bundle => {
+            this.bundles.set(bundle.name, bundle)
+        });
+
+        // create api bundle (should be the last)
         let apiName2bake = this.core.opts.shouldBakeApiIntoBundle()
         if (apiName2bake) {
             let targetBundle = producer.bundles.get(apiName2bake);
@@ -65,13 +73,10 @@ export class BundleWriter {
             this.createBundle("api.js", this.core.api.render());
         }
 
-        this.addShims();
-
-        producer.bundles.forEach(bundle => {
-            this.bundles.set(bundle.name, bundle)
-        });
         producer.bundles = this.bundles;
         return each(producer.bundles, (bundle: Bundle) => {
+
+
             if (this.core.opts.shouldUglify()) {
                 const UglifyJs = require("uglify-js");
                 this.core.log.echoInfo(`Uglifying ${bundle.name}`);
@@ -83,7 +88,17 @@ export class BundleWriter {
                 bundle.generatedCode = result.code;
                 this.core.log.echoInfo(`Done Uglifying ${bundle.name}`)
             }
-            return bundle.context.output.writeCurrent(bundle.generatedCode);
+
+
+            return bundle.context.output.writeCurrent(bundle.generatedCode).then(output => {
+                // if this bundle belongs to splitting
+                // we need to remember the generated file name and store 
+                // and then pass to the API
+                if (bundle.quantumItem) {
+
+                }
+
+            });
         }).then(() => {
 
             if (this.core.opts.webIndexPlugin) {

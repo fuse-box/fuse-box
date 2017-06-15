@@ -25,7 +25,13 @@ export class StatementModification {
                     statement.setFunctionName('$fsx.r');
                     statement.setValue(resolvedFile.getID());
                 } else {
-                    core.producerAbstraction.addWarning(`Failed to resolve require("${statement.getValue()}") at ${file.packageAbstraction.name}${file.fuseBoxPath}`)
+                    if (core.context.quantumSplitConfig) {
+                        core.api.addLazyLoading();
+                        statement.setFunctionName('$fsx.l');
+                    } else {
+                        core.producerAbstraction.addWarning(`Failed to resolve require("${statement.getValue()}") at ${file.packageAbstraction.name}${file.fuseBoxPath}`)
+                    }
+
                 }
             }
         });

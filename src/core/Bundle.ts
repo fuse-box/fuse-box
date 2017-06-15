@@ -9,6 +9,7 @@ import { BundleSplit } from "./BundleSplit";
 import * as path from "path";
 import { BundleTestRunner } from "../BundleTestRunner";
 import { Config } from "../Config";
+import { QuantumItem } from "./QuantumSplit";
 
 export class Bundle {
 
@@ -20,10 +21,10 @@ export class Bundle {
     public onDoneCallback: any;
     public generatedCode: Buffer;
     public lastChangedFile: string;
-
+    public webIndexed = true;
     public splitFiles: Map<string, File>;
     public bundleSplit: BundleSplit;
-
+    public quantumItem: QuantumItem;
 
 
     constructor(public name: string, public fuse: FuseBox, public producer: BundleProducer) {
@@ -98,11 +99,12 @@ export class Bundle {
         const bundleName = arithmetics[1];
         const mainFile = arithmetics[2];
 
-        if (!this.bundleSplit) {
-            this.bundleSplit = new BundleSplit(this);
-        }
-        this.bundleSplit.getFuseBoxInstance(bundleName, mainFile);
-        this.bundleSplit.addRule(rule, bundleName);
+        this.producer.fuse.context.quantumSplit(rule, bundleName, mainFile);
+        // if (!this.bundleSplit) {
+        //     this.bundleSplit = new BundleSplit(this);
+        // }
+        // this.bundleSplit.getFuseBoxInstance(bundleName, mainFile);
+        // this.bundleSplit.addRule(rule, bundleName);
         return this;
     }
 
@@ -214,7 +216,7 @@ export class Bundle {
                 }).then(source => {
                 }).catch(e => {
                     console.error(e);
-                    return resolve(reject);
+                    return reject(reject);
                 });
             return this;
         });

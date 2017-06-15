@@ -125,6 +125,14 @@
     /* @end */
 
 
+    /* @if lazyLoading  */
+    $fsx.l = function(id) {
+        console.log("lazy load ", id);
+    }
+
+    /* @end */
+
+
 
     // cached modules
     $fsx.m = {};

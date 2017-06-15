@@ -15,6 +15,7 @@ import { TypeOfModuleKeyword } from "./nodes/TypeOfModuleKeyword";
 import { TypeOfWindowKeyword } from "./nodes/TypeOfWindowKeyword";
 import { NamedExport } from "./nodes/NamedExport";
 import { GenericAst } from "./nodes/GenericAst";
+import { QuantumItem } from "../../core/QuantumSplit";
 
 const globalNames = new Set<string>(["__filename", "__dirname", "exports", "module"]);
 
@@ -30,6 +31,7 @@ export class FileAbstraction {
     public shakable = false;
     public globalsName: string;
     public canBeRemoved = false;
+    public quantumItem: QuantumItem;
 
     public namedRequireStatements = new Map<string, RequireStatement​​>();
 
@@ -78,6 +80,15 @@ export class FileAbstraction {
     }
     public setID(id: any) {
         this.id = id;
+    }
+
+    public referenceQuantumSplit(item: QuantumItem) {
+        item.addFile(this);
+        this.quantumItem = item;
+    }
+
+    public getSplitReference(): QuantumItem {
+        return this.quantumItem;
     }
 
     public getID() {

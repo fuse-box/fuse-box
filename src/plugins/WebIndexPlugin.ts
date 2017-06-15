@@ -25,6 +25,7 @@ export class WebIndexPluginClass implements Plugin {
                     pass = false;
                 }
             }
+            pass = bundle.webIndexed;
             if (pass) {
                 const output = bundle.context.output;
                 if (output && output.lastPrimaryOutput) {
