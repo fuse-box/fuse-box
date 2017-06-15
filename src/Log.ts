@@ -75,10 +75,10 @@ export class Log {
             const hasTag = tag =>
                 arg.tags.includes(tag)
             const levelHas = tag =>
-                debug || (level && level.includes(tag) && !level.includes('!' + tag))
+                debug || (level && level.includes && level.includes(tag) && !level.includes('!' + tag))
 
             // when off, silent
-            if (level === false) return false
+            if (level === false) return false;
 
             // counting this as verbose for now
             if (level === true && debug === true) return null
@@ -115,9 +115,9 @@ export class Log {
         log.addPreset('min', instance => {
             instance.formatter(data => {
                 return log.inspector()(data).split('\n')
-                .map(data => indent2 + data)
-                .map(data => data.replace(/[{},]/, ''))
-                .join('\n')
+                    .map(data => indent2 + data)
+                    .map(data => data.replace(/[{},]/, ''))
+                    .join('\n')
             })
         })
 
@@ -162,12 +162,12 @@ export class Log {
         const indentStr = this.indent.toString()
         const indent = +this.indent
         const interval = 20
-        const frames = [ '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏' ].map(frame => indentStr + frame)
-        const spinner = {frames, interval}
+        const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'].map(frame => indentStr + frame)
+        const spinner = { frames, interval }
 
         // @TODO @FIXME the spinner needs to be scoped inside of fliplog, has todo to update
         // instantiate
-        this.spinner = log.requirePkg('ora')({text, indent, spinner})
+        this.spinner = log.requirePkg('ora')({ text, indent, spinner })
         this.spinner.start()
         this.spinner.indent = +this.indent
         this.spinner.succeeded = false
@@ -193,7 +193,7 @@ export class Log {
             // reference.succeed()
             const success = log.chalk().green(`${indent}✔ `)
             text = text || reference.text
-            reference.stopAndPersist({symbol: success, text});
+            reference.stopAndPersist({ symbol: success, text });
 
             // it's too fast!
             // setTimeout(() => reference.succeed(), 1)
@@ -273,8 +273,8 @@ export class Log {
         log
             .title(this.indent + '')
             .when(msg,
-                () => log.text(msg),
-                () => log.bold('size: '))
+            () => log.text(msg),
+            () => log.bold('size: '))
             .data(prettyGzip)
             .echo()
         return this
