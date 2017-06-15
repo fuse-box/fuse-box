@@ -3,7 +3,6 @@ import { PackageAbstraction } from "./PackageAbstraction";
 import { ASTTraverse } from "../../ASTTraverse";
 import { acornParse } from "../../analysis/FileAnalysis";
 
-
 export class BundleAbstraction {
     public packageAbstractions = new Map<string, PackageAbstraction​​>();
     constructor(public name: string, public producerAbstraction: ProducerAbstraction) {
@@ -46,4 +45,3 @@ export class BundleAbstraction {
 
     }
 }
-

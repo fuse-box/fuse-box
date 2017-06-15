@@ -41,12 +41,13 @@ export class QuantumCore {
     public requiredMappings = new Set<RegExp>();
     public customStatementSolutions = new Set<RegExp>();
     public computedStatementRules = new Map<string, ComputedStatementRule>();
+
     constructor(public producer: BundleProducer, opts: QuantumOptions) {
         this.opts = opts;
         this.api = new ResponsiveAPI(this);
         this.log = producer.fuse.context.log;
         this.log.echoBreak();
-        this.log.echoInfo("Launching quantum core");
+        this.log.groupHeader("Launching quantum core");
         if (this.opts.apiCallback) {
             this.opts.apiCallback(this);
         }
@@ -112,8 +113,6 @@ export class QuantumCore {
                 this.log.echoGray("");
                 this.log.echoGray("  * Set { warnings : false } if you want to hide these messages");
                 this.log.echoGray("  * Read up on the subject http://fuse-box.org/page/quantum#computed-statement-resolution");
-
-
             });
         }
     }
@@ -237,15 +236,13 @@ export class QuantumCore {
         });
     }
 
-
-
     public modify(file: FileAbstraction) {
         const modifications = [
             // modify require statements: require -> $fsx.r
             StatementModification,
             // modify FuseBox.isServer and FuseBox.isBrowser
             EnvironmentConditionModification,
-            // remove exports.__esModule = true 
+            // remove exports.__esModule = true
             InteropModifications,
             // removes "use strict" if required
             UseStrictModification,

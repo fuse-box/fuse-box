@@ -6,9 +6,11 @@ import { QuantumCore } from "./QuantumCore";
 
 export class QuantumPluginClass implements Plugin {
     public coreOpts: IQuantumExtensionParams;
+
     constructor(coreOpts?: IQuantumExtensionParams) {
         this.coreOpts = coreOpts || {};
     }
+
     init(context: WorkFlowContext) {
         context.bundle.producer.writeBundles = false;
         context.bundle.producer.hmrAllowed = false;
@@ -33,8 +35,8 @@ export class QuantumPluginClass implements Plugin {
                 }
             })
         });
-
     }
+
     producerEnd(producer: BundleProducer) {
         let core = new QuantumCore(producer, new QuantumOptions(this.coreOpts));
         return core.consume();

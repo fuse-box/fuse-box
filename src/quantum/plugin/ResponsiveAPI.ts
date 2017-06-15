@@ -2,6 +2,7 @@ import * as path from "path";
 import { jsCommentTemplate } from "../../Utils";
 import { Config } from "../../Config";
 import { QuantumCore } from "./QuantumCore";
+
 export class ResponsiveAPI {
     private computedStatements = false;
     private hashes = false;
@@ -10,9 +11,8 @@ export class ResponsiveAPI {
     private customMappings = {};
     private lazyLoading = false;
     private customStatementResolve = false;
-    constructor(public core: QuantumCore) {
 
-    }
+    constructor(public core: QuantumCore) {}
 
     public addComputedRequireStatetements() {
         this.computedStatements = true;

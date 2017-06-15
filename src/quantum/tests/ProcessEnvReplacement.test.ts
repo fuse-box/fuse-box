@@ -20,6 +20,4 @@ export class ProcessEnvReplacement {
             should(contents).findString("exports.env = 'production'");
         });
     }
-
-
 }

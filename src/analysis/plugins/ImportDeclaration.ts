@@ -40,10 +40,13 @@ export class ImportDeclaration {
     }
 
     public static onEnd(file: File) {
-
         // We detect that imports are used
-        // Now we need to transpile the code 
+        // Now we need to transpile the code
         if (file.es6module) {
+            file.context.log.magicReason(
+                'used typescript to compile because an import was used',
+                file.info.fuseBoxPath)
+
             const ts = require("typescript");
             let tsconfg: any = {
                 compilerOptions: {

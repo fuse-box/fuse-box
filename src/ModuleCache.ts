@@ -60,11 +60,9 @@ export class ModuleCache {
      *
      * @memberOf ModuleCache
      */
-    constructor(public context: WorkFlowContext) {
-    }
+    constructor(public context: WorkFlowContext) {}
 
     public initialize() {
-
         this.cacheFolder = path.join(Config.TEMP_FOLDER, "cache",
             Config.FUSEBOX_VERSION, this.context.output.getUniqueHash());
 

@@ -4,6 +4,7 @@ import { SparkyFilePatternOptions } from "./SparkyFilePattern";
 import { each } from "realm-utils";
 import { WorkFlowContext } from "../core/WorkflowContext";
 import { Log } from "../Log";
+
 const context = new WorkFlowContext();
 context.doLog = process.env.SPARKY_LOG !== 'false';
 export const log = new Log(context);

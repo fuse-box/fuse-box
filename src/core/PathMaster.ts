@@ -353,10 +353,8 @@ export class PathMaster {
                 let entryFile;
                 let entryRoot;
                 let browserOverrides;
-                if (json.browser) {
-
-                    if (this.context.isBrowserTarget() &&
-                        typeof json.browser === "object" && json.browser[json.main]) {
+                if (this.context.isBrowserTarget() && json.browser) {
+                    if (typeof json.browser === "object" && json.browser[json.main]) {
                         browserOverrides = json.browser;
                         entryFile = json.browser[json.main];
                     }
@@ -432,10 +430,11 @@ export class PathMaster {
             return readMainFile(localLib, false);
         }
 
-        if (this.rootPackagePath) {// handle a conflicting library
-
+        // handle a conflicting library
+        if (this.rootPackagePath) {
             let nodeModules = path.join(this.rootPackagePath, "node_modules");
             let nestedNodeModule = path.join(nodeModules, name);
+
             if (fs.existsSync(nestedNodeModule)) {
                 return readMainFile(nestedNodeModule, nodeModules !== Config.NODE_MODULES_DIR);
             } else {

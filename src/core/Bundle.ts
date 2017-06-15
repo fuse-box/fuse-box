@@ -12,8 +12,6 @@ import { Config } from "../Config";
 import { QuantumItem } from "./QuantumSplit";
 
 export class Bundle {
-
-
     public context: WorkFlowContext;
     public watchRule: string;
     public arithmetics: string;
@@ -25,7 +23,6 @@ export class Bundle {
     public splitFiles: Map<string, File>;
     public bundleSplit: BundleSplit;
     public quantumItem: QuantumItem;
-
 
     constructor(public name: string, public fuse: FuseBox, public producer: BundleProducer) {
         this.context = fuse.context;
@@ -237,4 +234,3 @@ export class Bundle {
     }
 
 }
-

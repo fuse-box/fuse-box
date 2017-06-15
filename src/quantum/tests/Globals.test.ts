@@ -1,7 +1,6 @@
 import { should } from "fuse-test-runner";
 import { createOptimisedBundleEnv } from "../../tests/stubs/TestEnvironment";
 
-
 export class GlobalsTest {
     "Should expose globals (all *) for browser"() {
         return createOptimisedBundleEnv({

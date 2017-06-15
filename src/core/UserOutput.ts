@@ -5,12 +5,12 @@ import * as crypto from "crypto";
 import * as fs from "fs";
 import * as shortHash from "shorthash";
 
-
 export class UserOutputResult {
     public path: string;
     public hash: string;
     public filename: string;
 }
+
 export class UserOutput {
     public dir: string;
     public template: string;
@@ -21,6 +21,7 @@ export class UserOutput {
     public lastGeneratedFileName: string;
     public folderFromBundleName: string;
     public lastPrimaryOutput: UserOutputResult;
+
     constructor(public context: WorkFlowContext, public original: string) {
         this.setup();
     }
@@ -63,7 +64,7 @@ export class UserOutput {
 
     /**
      * Md5 hash
-     * @param content 
+     * @param content
      */
     public generateHash(content: string) {
         return hashString(crypto.createHash("md5").update(content, "utf8")
@@ -71,13 +72,13 @@ export class UserOutput {
     }
 
     /**
-     * Gets path 
+     * Gets path
      * Processes a template + hash if required by Context
-     * 
+     *
      * @param {string} str
      * @param {string} [hash]
      * @returns
-     * 
+     *
      * @memberOf UserOutput
      */
     public getPath(str: string, hash?: string) {
@@ -85,7 +86,6 @@ export class UserOutput {
 
         const userExt = path.extname(str);
         const templateExt = path.extname(template);
-
 
         // making use user has a priority on extensions
         if (userExt && templateExt) {
@@ -113,9 +113,8 @@ export class UserOutput {
         return result;
     }
 
-    public getBundlePath() {
+    public getBundlePath() {}
 
-    }
     public writeManifest(obj: any) {
         let fullpath = this.getPath(`${this.context.bundle.name}.manifest.json`);
         fullpath = ensureUserPath(fullpath);
@@ -130,20 +129,18 @@ export class UserOutput {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param {string} userPath
      * @param {(string | Buffer)} content
      * @returns {string}
-     * 
+     *
      * @memberOf UserOutput
      */
     public write(userPath: string, content: string | Buffer, ignoreHash?: boolean): Promise<UserOutputResult> {
         let hash;
         if (this.useHash) {
-
             hash = this.generateHash(content.toString());
-
             this.lastWrittenHash = hash;
         }
 

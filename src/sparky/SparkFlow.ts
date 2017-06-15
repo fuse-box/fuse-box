@@ -1,11 +1,11 @@
 import * as glob from "glob";
-import { each } from "realm-utils";
 import * as fs from "fs-extra";
+import * as chokidar from "chokidar";
+import { each } from "realm-utils";
 import { ensureDir, string2RegExp } from "../Utils";
 import { SparkyFile } from "./SparkyFile";
 import { log } from "./Sparky";
 import { parse, SparkyFilePatternOptions } from "./SparkyFilePattern";
-import * as  chokidar from "chokidar";
 
 export class SparkFlow {
     private activities = [];
@@ -97,7 +97,7 @@ export class SparkFlow {
 
     /**
      * Removes folder if exists
-     * @param dest 
+     * @param dest
      */
     public clean(dest: string): SparkFlow {
         this.activities.push(() =>

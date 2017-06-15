@@ -4,6 +4,7 @@ import { filter } from "../Utils";
 export class AutoImportedModule {
     public pkg: string;
     public statement: string;
+
     constructor(public variable: string, pkg: any) {
         if (utils.isPlainObject(pkg)) {
             let options: any = pkg;
@@ -21,7 +22,6 @@ export class AutoImportedModule {
 }
 
 export function registerDefaultAutoImportModules(userConfig) {
-
     let nativeImports: any = {};
     nativeImports.stream = new AutoImportedModule("stream", {
         pkg: "stream",
@@ -35,8 +35,8 @@ export function registerDefaultAutoImportModules(userConfig) {
     });
     nativeImports.http = new AutoImportedModule("http", "http");
 
-
-    return userConfig ? filter(nativeImports, (value, key) =>
-        userConfig[key] === undefined || userConfig[key] === true
-    ) : nativeImports;
+    return userConfig
+        ? filter(nativeImports, (value, key) =>
+            userConfig[key] === undefined || userConfig[key] === true)
+        : nativeImports;
 }

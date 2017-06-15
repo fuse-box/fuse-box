@@ -2,11 +2,11 @@ import { FuseBox } from "./FuseBox";
 import { Bundle } from "./Bundle";
 import { each } from "realm-utils";
 
-
 export class BundleRunner {
     private topTasks = [];
     private bundles: Bundle[] = [];
     private bottomTasks = [];
+
     constructor(public fuse: FuseBox) { }
 
     public top(fn: any) {

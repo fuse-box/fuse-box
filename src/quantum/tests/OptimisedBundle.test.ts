@@ -1,8 +1,5 @@
-
-
 import { should } from "fuse-test-runner";
 import { createOptimisedBundleEnv } from "../../tests/stubs/TestEnvironment";
-
 
 export class FlatAPItest {
     // "Should create a simple univeral API"() {
@@ -157,10 +154,4 @@ export class FlatAPItest {
             should(first).deepEqual({ something: { hello: '@bar/animations/browser' } })
         });
     }
-
-
-
-
-
-
 }

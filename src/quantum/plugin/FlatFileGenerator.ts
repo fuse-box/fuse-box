@@ -1,7 +1,6 @@
 import { FileAbstraction } from "../core/FileAbstraction";
 import { QuantumCore } from "./QuantumCore";
 
-
 export class FlatFileGenerator {
     public contents = [];
     public entryId;
@@ -39,8 +38,6 @@ export class FlatFileGenerator {
         }
         this.contents.push(`// ${file.packageAbstraction.name}/${file.fuseBoxPath}`);
         this.contents.push(`$fsx.f[${JSON.stringify(fileId)}] = ${file.generate(ensureES5)}`);
-
-
     }
 
     public render() {

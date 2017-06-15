@@ -1,15 +1,15 @@
 /** Defers a callback
- * 
+ *
  * A callback will be called once requested and unlocked
  */
 export class Defer {
-
     public queued: Map<string, any>;
     public locked = false;
 
     constructor() {
         this.reset();
     }
+
     /** Flush the map */
     public reset() {
         this.queued = new Map<string, any>();
