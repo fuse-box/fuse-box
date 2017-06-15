@@ -1,9 +1,9 @@
 import { ModuleCollection } from "./core/ModuleCollection";
 import { WorkFlowContext } from "./core/WorkflowContext";
-const log = require("fliplog");
-const prettysize = require("prettysize");
-const prettyTime = require("pretty-time");
-const zlib = require("zlib");
+import * as log from "fliplog";
+import * as prettysize from "prettysize";
+import * as  prettyTime from "pretty-time";
+import * as zlib from "zlib";
 
 // @TODO: I've moved this into fliplog in v1, migrate to that
 export class Indenter {
@@ -75,27 +75,27 @@ export class Log {
             const hasTag = tag =>
                 arg.tags.includes(tag)
             const levelHas = tag =>
-                debug || (level && level.includes(tag) && !level.includes('!' + tag))
+                debug || (level && level.includes && level.includes(tag) && !level.includes('!' + tag));
 
             // when off, silent
-            if (level === false) return false
+            if (level === false) return false;
 
             // counting this as verbose for now
-            if (level === true && debug === true) return null
+            if (level === true && debug === true) { return null; }
 
             if (level == 'error') {
-                if (!hasTag('error')) return false
+                if (!hasTag('error')) { return false; }
             }
             // could be verbose, reasoning, etc
             if (hasTag('magic')) {
-                if (!levelHas('magic')) return false
+                if (!levelHas('magic')) { return false; }
             }
             if (hasTag('filelist')) {
-                if (!levelHas('filelist')) return false
+                if (!levelHas('filelist')) { return false; }
             }
 
             // if not false and conditions pass, log it
-            return null
+            return null;
         })
     }
 
@@ -115,20 +115,20 @@ export class Log {
         log.addPreset('min', instance => {
             instance.formatter(data => {
                 return log.inspector()(data).split('\n')
-                .map(data => indent2 + data)
-                .map(data => data.replace(/[{},]/, ''))
-                .join('\n')
-            })
-        })
+                    .map(data => indent2 + data)
+                    .map(data => data.replace(/[{},]/, ''))
+                    .join('\n')
+            });
+        });
 
-        log.bold().yellow(`${indent}→ ${title}\n`).preset('min').data(obj).echo()
+        log.bold().yellow(`${indent}→ ${title}\n`).preset('min').data(obj).echo();
 
         // for (let i in obj) {
         //     indent = this.indent.level(6) + ''
         //     log.green(`${indent}${i} : ${obj[i]}`).echo();
         // }
         // this.indent.indent(-2)
-        return this
+        return this;
     }
 
     // --- start end ---
@@ -136,12 +136,12 @@ export class Log {
     // @TODO combine logs here, output when needed
     // @TODO combine this and subBundleStart
     public bundleStart(name: string) {
-        log.bold(`${name}: `).echo()
-        return this
+        log.bold(`${name}: `).echo();
+        return this;
     }
     public subBundleStart(name: string, parent: string) {
-        log.bold(`${name} (child of ${parent}) ->`).echo()
-        return this
+        log.bold(`${name} (child of ${parent}) ->`).echo();
+        return this;
     }
     public bundleEnd(name: string, collection: ModuleCollection) {
         let took = process.hrtime(this.timeStart) as [number, number];
@@ -151,54 +151,54 @@ export class Log {
             .write(`-> Finished`)
             .green(collection.cachedName || collection.name)
             .yellow(`took: ${prettyTime(took, "ms")}`)
-            .echo()
+            .echo();
     }
 
     // --- spinner ---
     public startSpinner(text: string) {
-        if (!this.printLog) return this
+        if (!this.printLog) return this;
 
         // spinner opts
-        const indentStr = this.indent.toString()
-        const indent = +this.indent
-        const interval = 20
-        const frames = [ '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏' ].map(frame => indentStr + frame)
-        const spinner = {frames, interval}
+        const indentStr = this.indent.toString();
+        const indent = +this.indent;
+        const interval = 20;
+        const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'].map(frame => indentStr + frame);
+        const spinner = { frames, interval };
 
         // @TODO @FIXME the spinner needs to be scoped inside of fliplog, has todo to update
         // instantiate
-        this.spinner = log.requirePkg('ora')({text, indent, spinner})
-        this.spinner.start()
-        this.spinner.indent = +this.indent
-        this.spinner.succeeded = false
+        this.spinner = log.requirePkg('ora')({ text, indent, spinner });
+        this.spinner.start();
+        this.spinner.indent = +this.indent;
+        this.spinner.succeeded = false;
 
         // safety for if errors happen so it does not keep spinning
         setTimeout(() => {
             if (this.spinner.succeeded === false) {
                 this.spinner.fail()
             }
-        }, 1000)
+        }, 1000);
 
-        return this
+        return this;
     }
     public stopSpinner(text?: string) {
-        if (!this.printLog) return this
+        if (!this.printLog) return this;
         // safety, mark as success
         if (this.spinner && this.spinner.succeeded === false) {
-            this.spinner.succeeded = true
-            const reference = this.spinner
-            const indent = this.indent.level(this.spinner.indent).toString()
+            this.spinner.succeeded = true;
+            const reference = this.spinner;
+            const indent = this.indent.level(this.spinner.indent).toString();
 
             // @override success to indent
             // reference.succeed()
-            const success = log.chalk().green(`${indent}✔ `)
-            text = text || reference.text
-            reference.stopAndPersist({symbol: success, text});
+            const success = log.chalk().green(`${indent}✔ `);
+            text = text || reference.text;
+            reference.stopAndPersist({ symbol: success, text });
 
             // it's too fast!
             // setTimeout(() => reference.succeed(), 1)
         }
-        return this
+        return this;
     }
 
     // --- collection stats ---
@@ -209,28 +209,28 @@ export class Log {
         let size = prettysize(bytes);
         this.totalSize += bytes;
 
-        const indent = this.indent.reset().indent(+1).toString()
+        const indent = this.indent.reset().indent(+1).toString();
 
         log
             .ansi()
             .write(`└──`)
             .yellow(`${indent}(${collection.dependencies.size} files,  ${size})`)
             .green(collection.cachedName || collection.name)
-            .echo()
+            .echo();
 
         // @TODO auto indent as with ansi
         collection.dependencies.forEach(file => {
-            if (file.info.isRemoteFile) return
-            this.indent.level(4)
+            if (file.info.isRemoteFile) return;
+            this.indent.level(4);
 
             log
                 .tags('filelist')
                 .title(this.indent.toString())
                 .dim(`${file.info.fuseBoxPath}`)
-                .echo()
+                .echo();
         });
-        this.indent.level(0)
-        return this
+        this.indent.level(0);
+        return this;
     }
 
     public echoCollection(collection: ModuleCollection, contents: string) {
@@ -246,15 +246,15 @@ export class Log {
             .green(collection.cachedName || collection.name)
             .yellow(size)
             .write(`(${collection.dependencies.size} files)`)
-            .echo()
+            .echo();
 
-        return this
+        return this;
     }
 
     public end(header?: string) {
         let took = process.hrtime(this.timeStart) as [number, number];
         this.echoBundleStats(header || "Bundle", this.totalSize, took);
-        return this
+        return this;
     }
 
     /**
@@ -264,20 +264,20 @@ export class Log {
      * string | number | Buffer
      */
     public echoGzip(size: any, msg: string | any = '') {
-        if (!size) return this
-        const yellow = log.chalk().yellow
-        const gzipped = zlib.gzipSync(size, { level: 9 }).length
-        const gzippedSize = prettysize(gzipped) + ' (gzipped)'
-        const compressedSize = prettysize(size.length)
-        const prettyGzip = yellow(`${compressedSize}, ${gzippedSize}`)
+        if (!size) return this;
+        const yellow = log.chalk().yellow;
+        const gzipped = zlib.gzipSync(size, { level: 9 }).length;
+        const gzippedSize = prettysize(gzipped) + ' (gzipped)';
+        const compressedSize = prettysize(size.length);
+        const prettyGzip = yellow(`${compressedSize}, ${gzippedSize}`);
         log
             .title(this.indent + '')
             .when(msg,
-                () => log.text(msg),
-                () => log.bold('size: '))
+            () => log.text(msg),
+            () => log.bold('size: '))
             .data(prettyGzip)
-            .echo()
-        return this
+            .echo();
+        return this;
     }
 
     /**
@@ -287,34 +287,34 @@ export class Log {
      *       use uglified and QuantumPlugin output
      */
     public echoBundleStats(header: string, size: number, took: [number, number]) {
-        this.indent.reset()
-        const yellow = log.chalk().yellow
-        const sized = yellow(`${prettysize(size)}`)
-        log.text(`size: ${sized} in ${prettyTime(took, "ms")}`).echo()
-        return this
+        this.indent.reset();
+        const yellow = log.chalk().yellow;
+        const sized = yellow(`${prettysize(size)}`);
+        log.text(`size: ${sized} in ${prettyTime(took, "ms")}`).echo();
+        return this;
     }
 
     // --- bundle specifics ---
 
     public echoHeader(str: string) {
-        this.indent.level(1)
-        log.yellow(`${this.indent}${str}`).echo()
-        return this
+        this.indent.level(1);
+        log.yellow(`${this.indent}${str}`).echo();
+        return this;
     }
     public echoStatus(str: string) {
-        log.title(`→`).cyan(`${str}`).echo()
-        return this
+        log.title(`→`).cyan(`${str}`).echo();
+        return this;
     }
 
     // --- generalized ---
     public groupHeader(str: string) {
-        log.color('bold.underline').text(`${str}`).echo()
-        return this
+        log.color('bold.underline').text(`${str}`).echo();
+        return this;
     }
     public echoInfo(str: string) {
-        const indent = this.indent.level(2)
-        log.preset('info').green(`${indent}→ ${str}`).echo()
-        return this
+        const indent = this.indent.level(2);
+        log.preset('info').green(`${indent}→ ${str}`).echo();
+        return this;
     }
     public error(error: Error) {
         // @TODO: finish forking notifier & dep chain
@@ -322,17 +322,17 @@ export class Log {
         //     log.factory().notify({title: error.message, message: error.stack}).echo()
         // }
 
-        log.tags('error').data(error).echo()
-        return this
+        log.tags('error').data(error).echo();
+        return this;
     }
 
     // @NOTE: later this will be used with preset tags
     public magicReason(str: string, metadata: any = false) {
         if (metadata) {
-            log.data(metadata)
+            log.data(metadata);
         }
-        log.tags('magic').magenta(str).echo()
-        return this
+        log.tags('magic').magenta(str).echo();
+        return this;
     }
 
 
@@ -341,31 +341,31 @@ export class Log {
     // @TODO: anything using these should be fomatted inside of the logger
     // -----------
     public echo(str: string) {
-        log.time(true).green(str).echo()
-        return this
+        log.time(true).green(str).echo();
+        return this;
     }
     public echoBoldRed(msg) {
         log.red().bold(msg).echo();
-        return this
+        return this;
     }
     public echoRed(msg) {
         log.red(msg).echo();
-        return this
+        return this;
     }
     public echoBreak() {
-        log.green(`\n  -------------- \n`).echo()
-        return this
+        log.green(`\n  -------------- \n`).echo();
+        return this;
     }
     public echoWarning(str: string) {
-        log.yellow(`  → WARNING ${str}`).echo()
-        return this
+        log.yellow(`  → WARNING ${str}`).echo();
+        return this;
     }
     public echoYellow(str: string) {
-        log.yellow(str).echo()
-        return this
+        log.yellow(str).echo();
+        return this;
     }
     public echoGray(str: string) {
-        log.gray(str).echo()
-        return this
+        log.gray(str).echo();
+        return this;
     }
 }
