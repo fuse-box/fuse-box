@@ -75,7 +75,10 @@ export class Log {
             const hasTag = tag =>
                 arg.tags.includes(tag)
             const levelHas = tag =>
-                debug || (level && level.includes(tag) && !level.includes('!' + tag))
+                debug || (level &&
+                    level.includes &&
+                    level.includes(tag) &&
+                    !level.includes('!' + tag))
 
             // when off, silent
             if (level === false) return false
