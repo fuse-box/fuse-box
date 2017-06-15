@@ -22,13 +22,14 @@ import { fastHash, string2RegExp } from "../../Utils";
 import { ComputedStatementRule } from "./ComputerStatementRule";
 import { RequireStatement } from "../core/nodes/RequireStatement";
 import { WorkFlowContext } from "../../core/WorkflowContext";
-import { QuantumItem } from "../../core/QuantumSplit";
+
 import { Bundle } from "../../core/Bundle";
+import { QuantumItem } from "./QuantumSplit";
 
 
 export interface QuantumStatementMapping {
     statement: RequireStatement,
-    core: QuantumCore
+    core: QuantumCore;
 }
 export class QuantumCore {
     public producerAbstraction: ProducerAbstraction;
@@ -162,6 +163,9 @@ export class QuantumCore {
                 fileAbstraction.setID(id);
                 const quantumItem = this.context.requiresQuantumSplitting(fileAbstraction.fuseBoxPath)
                 if (quantumItem) {
+                    if (quantumItem.entry === fileAbstraction.fuseBoxPath) {
+                        quantumItem.entryId = fileAbstraction.getID();
+                    }
                     // reference the item
                     // it will be removed from this bundle later
                     fileAbstraction.referenceQuantumSplit(quantumItem);
@@ -207,20 +211,25 @@ export class QuantumCore {
                 this.producer.bundles.get(bundleAbstraction.name).generatedCode = new Buffer(bundleCode);
             });
         }).then(() => {
+            const config = this.context.quantumSplitConfig;
             // generate extra bundles required by code splitting
-            if (this.context.quantumSplitConfig) {
+            if (config) {
+                this.api.useCodeSplitting();
                 this.log.echoInfo(`Dealing with code splitting`);
-                const items = this.context.quantumSplitConfig.getItems();
+                const items = config.getItems();
                 // every split item contains file abstractions
                 return each(items, (item: QuantumItem) => {
-
                     const files = item.getFiles();
                     this.log.echoInfo(`Code splitting: bundle ${item.name} (files: ${files.size})`);
                     const fusebox = this.context.fuse.copy();
-                    const bundle = new Bundle(item.name, fusebox, this.producer);
+                    const bundleName = config.resolve(item.name);
+                    const bundle = new Bundle(bundleName, fusebox, this.producer);
                     // set the reference
                     bundle.quantumItem = item;
-                    this.producer.bundles.set(item.name, bundle);
+
+                    // take into consideration resolve options
+                    this.producer.bundles.set(bundleName, bundle);
+
                     // don't allow WebIndexPlugin to include it to script tags
                     bundle.webIndexed = false;
                     const generator = new FlatFileGenerator(this);

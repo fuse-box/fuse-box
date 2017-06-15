@@ -125,12 +125,95 @@
     /* @end */
 
 
+    /** ******************** LAZY LOADING ********************  */
+    /* @if ajaxRequired */
+    function aj(url, cb) {
+        var f = window.fetch;
+        if (f) return f(url).then(function(res) { return res.text().then(function(data) { cb(null, data) }) }).catch(cb)
+
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                cb(this.status == 200 ? 0 : 1, this.responseText);
+            }
+        };
+        request.open("GET", url, true);
+        request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        request.send();
+        cb(null, require(url));
+    }
+    /* @end */
+
+
     /* @if lazyLoading  */
+    function req(url, cb) {
+        /* @if browser */
+        aj(url, cb);
+        /* @end */
+
+        /* @if universal */
+        isBrowser ? aj(url, cb) : cb(null, require(url));
+        /* @end */
+
+        /* @if server */
+        cb(null, require(url));
+        /* @end */
+    }
+
+    /* @if codeSplitting */
+    var bMapping = $bundleMapping$;
+    /* @end */
+
+    function evaluateModule(id, code) {
+        var fn = new Function('module', 'exports', code);
+        var moduleExports = {};
+        var moduleObject = { exports: moduleExports };
+        fn(moduleObject, moduleExports);
+        return moduleObject.exports;
+    }
+
     $fsx.l = function(id) {
-        console.log("lazy load ", id);
+        return new Promise(function(resolve, reject) {
+            /* @if codeSplitting */
+            if (bMapping.i && bMapping.i[id]) {
+                var data = bMapping.i[id];
+                req(bMapping.c.b + data[0], function(err, result) {
+                    /* @if browser */
+                    if (!err) { new Function(result)(); }
+                    /* @end */
+
+                    /* @if universal */
+                    if (!err && isBrowser) { new Function(result)(); }
+                    /* @end */
+
+                    resolve($fsx.r(data[1]));
+
+                });
+            } else {
+                /* @end */
+                req(id, function(err, result) {
+                    if (!err) {
+                        /* @if browser */
+                        resolve(evaluateModule(id, result));
+                        /* @end */
+
+                        /* @if server */
+                        resolve(result);
+                        /* @end */
+
+                        /* @if universal */
+                        isBrowser ? resolve(evaluateModule(id, result)) : resolve(result);
+                        /* @end */
+                    }
+                });
+                /* @if codeSplitting */
+            }
+            /* @end */
+        });
     }
 
     /* @end */
+    /** ********************************************  */
 
 
 
@@ -153,5 +236,4 @@
         file(cached.m, cached.exports);
         return cached.m.exports;
     };
-
-})()
+})();

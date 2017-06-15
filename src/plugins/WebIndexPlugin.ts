@@ -18,10 +18,21 @@ export class WebIndexPluginClass implements Plugin {
     }
     producerEnd(producer: BundleProducer) {
         let bundlePaths = [];
-        producer.bundles.forEach((bundle, name) => {
+        let bundles = [...producer.bundles.values()];
+        bundles = bundles.sort((a, b) => {
+            if (a.webIndexPriority < b.webIndexPriority) {
+                return 1;
+            }
+            if (a.webIndexPriority > b.webIndexPriority) {
+                return -1;
+            }
+            return 0;
+        });
+
+        bundles.forEach((bundle) => {
             let pass = true;
             if (this.opts.bundles) {
-                if (this.opts.bundles.indexOf(name) == -1) {
+                if (this.opts.bundles.indexOf(bundle.name) === -1) {
                     pass = false;
                 }
             }

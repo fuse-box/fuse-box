@@ -11,8 +11,10 @@ export class ResponsiveAPI {
     private customMappings = {};
     private lazyLoading = false;
     private customStatementResolve = false;
-
-    constructor(public core: QuantumCore) {}
+    private bundleMapping: any;
+    private ajaxRequired = false;
+    private codeSplitting = false;
+    constructor(public core: QuantumCore) { }
 
     public addComputedRequireStatetements() {
         this.computedStatements = true;
@@ -21,6 +23,16 @@ export class ResponsiveAPI {
 
     public addLazyLoading() {
         this.lazyLoading = true;
+        if (this.core.opts.isTargetUniveral()) {
+            this.ajaxRequired = true;
+        }
+        if (this.core.opts.isTargetBrowser()) {
+            this.ajaxRequired = true;
+        }
+    }
+
+    public useCodeSplitting() {
+        this.codeSplitting = true;
     }
 
     public hashesUsed() {
@@ -30,6 +42,10 @@ export class ResponsiveAPI {
     public addMapping(fuseBoxPath: string, id: any) {
         this.customMappings[fuseBoxPath] = id;
         this.customStatementResolve = true;
+    }
+
+    public setBundleMapping(data: any) {
+        this.bundleMapping = data;
     }
 
     public addIsServerFunction() {
@@ -51,11 +67,15 @@ export class ResponsiveAPI {
             hashes: this.hashes,
             customStatementResolve: this.customStatementResolve,
             lazyLoading: this.lazyLoading,
+            codeSplitting: this.codeSplitting,
+            ajaxRequired: this.ajaxRequired
         }
         const variables: any = {};
         if (Object.keys(this.customMappings).length > 0) {
-
             variables.customMappings = this.customMappings;
+        }
+        if (this.bundleMapping) {
+            variables.bundleMapping = this.bundleMapping;
         }
         return jsCommentTemplate(path.join(Config.FUSEBOX_MODULES, "fuse-box-responsive-api/index.js"), options, variables);
     }

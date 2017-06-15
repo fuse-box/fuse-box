@@ -21,17 +21,13 @@ export class StatementModification {
                 }
             } else {
                 let resolvedFile = statement.resolve();
+
                 if (resolvedFile) {
                     statement.setFunctionName('$fsx.r');
                     statement.setValue(resolvedFile.getID());
                 } else {
-                    if (core.context.quantumSplitConfig) {
-                        core.api.addLazyLoading();
-                        statement.setFunctionName('$fsx.l');
-                    } else {
-                        core.producerAbstraction.addWarning(`Failed to resolve require("${statement.getValue()}") at ${file.packageAbstraction.name}${file.fuseBoxPath}`)
-                    }
-
+                    core.api.addLazyLoading();
+                    statement.setFunctionName('$fsx.l');
                 }
             }
         });

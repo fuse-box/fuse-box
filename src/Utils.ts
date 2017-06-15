@@ -3,6 +3,7 @@ import * as fs from "fs";
 import * as fsExtra from "fs-extra";
 import { utils } from "realm-utils";
 import { Config } from "./Config";
+import * as LegoAPI from "lego-api";
 
 const userFuseDir = Config.PROJECT_ROOT;
 const stylesheetExtensions = new Set<string>([".css", ".sass", ".scss", ".styl", ".less"]);
@@ -30,37 +31,38 @@ export function replaceAliasRequireStatement(requireStatement: string, aliasName
     return requireStatement;
 }
 
-export function legoApi(fname: string, conditions: any) {
-    const contents = fs.readFileSync(fname).toString();
-    const lines = contents.split(/\r?\n/);
-    let result = [];
-    let consume = true;
-    lines.forEach(line => {
-        const condition = line.match(/^\s*\/\*\s*@if\s([\w]+)+\s*\*\//)
-        const endCondition = line.match(/^\s*\/\*\s*@end\s*\*\//);
-        if (condition || endCondition) {
-            if (condition) {
-                const variableName = condition[1];
-                if (!conditions[variableName]) {
-                    consume = false;
-                }
-            }
-            if (endCondition) {
-                consume = true;
-            }
-        } else {
-            if (consume) {
-                if (!/^\s+$/.test(line) && line) {
-                    result.push(line);
-                }
-            }
-        }
-    });
-    return result.join("\n");
-}
+// export function legoApi(fname: string, conditions: any) {
+//     const contents = fs.readFileSync(fname).toString();
+//     const lines = contents.split(/\r?\n/);
+//     let result = [];
+//     let consume = true;
+//     lines.forEach(line => {
+//         const condition = line.match(/^\s*\/\*\s*@if\s([\w]+)+\s*\*\//)
+//         const endCondition = line.match(/^\s*\/\*\s*@end\s*\*\//);
+//         if (condition || endCondition) {
+//             if (condition) {
+//                 const variableName = condition[1];
+//                 if (!conditions[variableName]) {
+//                     consume = false;
+//                 }
+//             }
+//             if (endCondition) {
+//                 consume = true;
+//             }
+//         } else {
+//             if (consume) {
+//                 if (!/^\s+$/.test(line) && line) {
+//                     result.push(line);
+//                 }
+//             }
+//         }
+//     });
+//     return result.join("\n");
+// }
 
 export function jsCommentTemplate(fname: string, conditions: any, variables: any) {
-    let data = legoApi(fname, conditions);
+    const contents = fs.readFileSync(fname).toString();
+    let data = LegoAPI.parse(contents).render(conditions);
     for (let varName in variables) {
         data = data.replace(`$${varName}$`, JSON.stringify(variables[varName]));
     }

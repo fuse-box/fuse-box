@@ -15,7 +15,7 @@ import { TypeOfModuleKeyword } from "./nodes/TypeOfModuleKeyword";
 import { TypeOfWindowKeyword } from "./nodes/TypeOfWindowKeyword";
 import { NamedExport } from "./nodes/NamedExport";
 import { GenericAst } from "./nodes/GenericAst";
-import { QuantumItem } from "../../core/QuantumSplit";
+import { QuantumItem } from "../plugin/QuantumSplit";
 
 const globalNames = new Set<string>(["__filename", "__dirname", "exports", "module"]);
 

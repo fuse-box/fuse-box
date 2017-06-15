@@ -1,5 +1,5 @@
 import { WorkFlowContext } from "./WorkflowContext";
-import { ensureDir, ensureUserPath, hashString } from "../Utils";
+import { ensureDir, ensureUserPath, hashString, joinFuseBoxPath } from "../Utils";
 import * as path from "path";
 import * as crypto from "crypto";
 import * as fs from "fs";
@@ -9,6 +9,7 @@ export class UserOutputResult {
     public path: string;
     public hash: string;
     public filename: string;
+    public relativePath?: string;
 }
 
 export class UserOutput {
@@ -113,7 +114,7 @@ export class UserOutput {
         return result;
     }
 
-    public getBundlePath() {}
+    public getBundlePath() { }
 
     public writeManifest(obj: any) {
         let fullpath = this.getPath(`${this.context.bundle.name}.manifest.json`);
@@ -157,6 +158,7 @@ export class UserOutput {
                 result.path = fullpath;
                 result.hash = hash;
                 result.filename = path.basename(fullpath);
+                result.relativePath = joinFuseBoxPath(this.folderFromBundleName || ".", result.filename);
 
                 this.lastWrittenPath = fullpath;
                 return resolve(result)

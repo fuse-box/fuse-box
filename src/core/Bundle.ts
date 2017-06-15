@@ -9,7 +9,7 @@ import { BundleSplit } from "./BundleSplit";
 import * as path from "path";
 import { BundleTestRunner } from "../BundleTestRunner";
 import { Config } from "../Config";
-import { QuantumItem } from "./QuantumSplit";
+import { QuantumItem, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
 
 export class Bundle {
     public context: WorkFlowContext;
@@ -17,6 +17,7 @@ export class Bundle {
     public arithmetics: string;
     public process: FuseProcess = new FuseProcess(this);
     public onDoneCallback: any;
+    public webIndexPriority = 0;
     public generatedCode: Buffer;
     public lastChangedFile: string;
     public webIndexed = true;
@@ -112,7 +113,7 @@ export class Bundle {
         return this;
     }
 
-    public splitConfig(opts: any): Bundle {
+    public splitConfig(opts: QuantumSplitResolveConfiguration): Bundle {
         if (!this.bundleSplit) {
             this.bundleSplit = new BundleSplit(this);
         }
@@ -126,6 +127,7 @@ export class Bundle {
         if (opts.dest) {
             this.bundleSplit.dest = opts.dest;
         }
+        this.producer.fuse.context.configureQuantumSplitResolving(opts);
         return this;
     }
 

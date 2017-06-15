@@ -16,7 +16,8 @@ import { UserOutput } from "./UserOutput";
 import { FuseBox } from "./FuseBox";
 import { Bundle } from "./Bundle";
 import { BundleProducer } from "./BundleProducer";
-import { QuantumSplitConfig, QuantumItem } from "./QuantumSplit";
+import { QuantumSplitConfig, QuantumItem, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
+
 
 const appRoot = require("app-root-path");
 
@@ -190,6 +191,13 @@ export class WorkFlowContext {
             this.quantumSplitConfig = new QuantumSplitConfig(this);
         }
         this.quantumSplitConfig.register(rule, bundleName, entryFile);
+    }
+
+    public configureQuantumSplitResolving(opts: QuantumSplitResolveConfiguration) {
+        if (!this.quantumSplitConfig) {
+            this.quantumSplitConfig = new QuantumSplitConfig(this);
+        }
+        this.quantumSplitConfig.resolveOptions = opts;
     }
 
     public requiresQuantumSplitting(path: string): QuantumItem {
