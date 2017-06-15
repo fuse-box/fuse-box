@@ -68,6 +68,21 @@ fuse.plugin(
 )
 ```
 
+In order to use custom functions set `functions` option. See [node-sass documentation](https://github.com/sass/node-sass) for more info.
+
+```js
+fuse.plugin(
+    SassPlugin({
+       functions: {
+           'torem($size)': function(size) {
+                size.setUnit('rem');
+                return size;
+            },
+       }
+    }), CSSPlugin()
+)
+```
+
 ## Macros
 
 Macros is a unique feature available only in `FuseBox` to give you more flexibility on how to define paths for importing files in `SASS` . To enable macros add:
