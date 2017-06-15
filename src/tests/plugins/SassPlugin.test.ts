@@ -143,4 +143,38 @@ export class CssPluginTest {
         });
     }
 
+    "Should compile with custom functions"() {
+        return createEnv({
+            project: {
+                files: {
+                    "index.ts": `exports.hello = { bar : require("./a.scss") }`,
+                    "a.scss": `
+                        .foo { font-size: foo(1); } 
+                        .bar { font-size: bar(2, 2); }
+                    `,
+                },
+                plugins: [
+                    [SassPlugin({
+                        functions: {
+                            "foo($a)": (a) => {
+                                a.setUnit("rem");
+                                return a;
+                            },
+                            "bar($a,$b)": (a, b) => {
+                                a.setValue(a.getValue() * b.getValue());
+                                a.setUnit("rem");
+                                return a;
+                            }
+                        }
+                    }), CSSPlugin()],
+                ],
+                instructions: "index.ts",
+            },
+        }).then((result) => {
+            const js = result.projectContents.toString();
+
+            should(js).findString(`font-size: 1rem;`).findString(`font-size: 4rem;`);
+        });
+    }
+
 }

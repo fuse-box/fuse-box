@@ -8,6 +8,7 @@ export interface SassPluginOptions {
     macros?: { [key: string]: string };
     importer?: boolean | ImporterFunc;
     cache?: boolean;
+    functions?: { [key: string]: (...args: any[]) => any }
 }
 
 export interface ImporterFunc {
