@@ -7,7 +7,6 @@ export class DynamicImportStatementsModifications {
     public static perform(core: QuantumCore, file: FileAbstraction): Promise<void> {
         return each(file.dynamicImportStatements, (statement: RequireStatement) => {
             core.api.considerStatement(statement);
-            console.log("here....");
             statement.setFunctionName('$fsx.l');
         });
     }

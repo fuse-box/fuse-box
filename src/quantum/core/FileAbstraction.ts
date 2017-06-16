@@ -258,7 +258,6 @@ export class FileAbstraction {
         // Fusebox converts new imports to $fsmp$
         if (matchesSingleFunction(node, "$fsmp$")) {
             // adding a require statement
-            console.log("yes.......", node);
             this.dynamicImportStatements.add(new RequireStatement(this, node));
         }
 
