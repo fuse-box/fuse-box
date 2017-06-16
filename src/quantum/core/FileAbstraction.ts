@@ -267,7 +267,7 @@ export class FileAbstraction {
             return false;
         }
         if (matchesAssignmentExpression(node, 'exports', '__esModule')) {
-            if (this.globalVariables.has("exports")) {
+            if (!this.globalVariables.has("exports")) {
                 this.globalVariables.add("exports");
             }
             this.exportsInterop.add(new ExportsInterop(parent, prop, node));
