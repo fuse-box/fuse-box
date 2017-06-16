@@ -260,7 +260,7 @@ export class FileAbstraction {
 
         // Object.defineProperty(exports, '__esModule', { value: true });
         if (matcheObjectDefineProperty(node, "exports")) {
-            if (this.globalVariables.has("exports")) {
+            if (!this.globalVariables.has("exports")) {
                 this.globalVariables.add("exports");
             }
             this.exportsInterop.add(new ExportsInterop(parent, prop, node));
