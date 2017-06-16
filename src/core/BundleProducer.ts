@@ -63,6 +63,20 @@ export class BundleProducer {
         }
     }
 
+    public sortBundles(): Bundle[] {
+        let bundles = [...this.bundles.values()];
+        bundles = bundles.sort((a, b) => {
+            if (a.webIndexPriority < b.webIndexPriority) {
+                return 1;
+            }
+            if (a.webIndexPriority > b.webIndexPriority) {
+                return -1;
+            }
+            return 0;
+        });
+        return bundles;
+    }
+
     public generateAbstraction(opts?: ProducerAbtractionOptions): Promise<ProducerAbstraction> {
         const abstraction = new ProducerAbstraction(opts);
 

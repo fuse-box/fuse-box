@@ -18,16 +18,7 @@ export class WebIndexPluginClass implements Plugin {
     }
     producerEnd(producer: BundleProducer) {
         let bundlePaths = [];
-        let bundles = [...producer.bundles.values()];
-        bundles = bundles.sort((a, b) => {
-            if (a.webIndexPriority < b.webIndexPriority) {
-                return 1;
-            }
-            if (a.webIndexPriority > b.webIndexPriority) {
-                return -1;
-            }
-            return 0;
-        });
+        let bundles = producer.sortBundles();
 
         bundles.forEach((bundle) => {
             let pass = true;

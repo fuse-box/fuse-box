@@ -98,13 +98,15 @@ export class Bundle {
         }
         const bundleName = arithmetics[1];
         const mainFile = arithmetics[2];
-
-        this.producer.fuse.context.quantumSplit(rule, bundleName, mainFile);
-        // if (!this.bundleSplit) {
-        //     this.bundleSplit = new BundleSplit(this);
-        // }
-        // this.bundleSplit.getFuseBoxInstance(bundleName, mainFile);
-        // this.bundleSplit.addRule(rule, bundleName);
+        if (this.context.experimentalFeaturesEnabled) {
+            this.producer.fuse.context.quantumSplit(rule, bundleName, mainFile);
+        } else {
+            if (!this.bundleSplit) {
+                this.bundleSplit = new BundleSplit(this);
+            }
+            this.bundleSplit.getFuseBoxInstance(bundleName, mainFile);
+            this.bundleSplit.addRule(rule, bundleName);
+        }
         return this;
     }
 

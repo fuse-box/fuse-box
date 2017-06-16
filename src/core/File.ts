@@ -34,6 +34,8 @@ export class File {
     public params: Map<string, string>;
 
     public cached = false;
+
+    public devLibsRequired;
     /**
      *
      *
@@ -314,6 +316,7 @@ export class File {
             if (expression.test(this.contents)) {
                 this.contents = this.contents.replace(expression, "$1$fsmp$(");
                 if (this.context.fuse && this.context.fuse.producer) {
+                    this.devLibsRequired = ["fuse-imports"]
                     if (!this.context.fuse.producer.devCodeHasBeenInjected("fuse-imports")) {
                         this.context.fuse.producer.injectDevCode("fuse-imports",
                             readFuseBoxModule("fuse-box-responsive-api/dev-imports.js"));
@@ -375,6 +378,14 @@ export class File {
             }
             this.isLoaded = true;
             this.cached = true;
+            if (cached.devLibsRequired) {
+                cached.devLibsRequired.forEach(item => {
+                    if (!this.context.fuse.producer.devCodeHasBeenInjected(item)) {
+                        this.context.fuse.producer.injectDevCode(item,
+                            readFuseBoxModule("fuse-box-responsive-api/dev-imports.js"));
+                    }
+                })
+            }
             if (cached.headerContent) {
                 this.headerContent = cached.headerContent;
             }

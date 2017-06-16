@@ -166,6 +166,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             context.fuse.producer.entryPackageFile = entry;
         }
         if (context.fuse.producer) {
+
             const injections = context.fuse.producer.getDevInjections();
             if (injections) {
                 injections.forEach(code => {

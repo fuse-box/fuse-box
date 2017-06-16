@@ -85,6 +85,8 @@ export class WorkFlowContext {
 
     public customAPIFile: string;
 
+    public experimentalFeaturesEnabled = false;
+
     public defaultEntryPoint: string;
 
     public rollupOptions: any;
@@ -506,8 +508,10 @@ export class WorkFlowContext {
         }
     }
     public shouldSplit(file: File): boolean {
-        if (this.bundle && this.bundle.bundleSplit) {
-            return this.bundle.bundleSplit.verify(file);
+        if (!this.experimentalFeaturesEnabled) {
+            if (this.bundle && this.bundle.bundleSplit) {
+                return this.bundle.bundleSplit.verify(file);
+            }
         }
         return false;
     }

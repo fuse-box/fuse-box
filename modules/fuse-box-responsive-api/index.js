@@ -1,6 +1,5 @@
 (function() {
 
-
     /* @if universal */
     var isBrowser = typeof window !== "undefined";
     var storage = isBrowser ? window : global;
