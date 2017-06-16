@@ -165,6 +165,15 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             context.fuse.producer.entryPackageName = this.context.defaultPackageName;
             context.fuse.producer.entryPackageFile = entry;
         }
+        if (context.fuse.producer) {
+            const injections = context.fuse.producer.getDevInjections();
+            if (injections) {
+                injections.forEach(code => {
+                    this.concat.add(null, code);
+                });
+            }
+
+        }
 
         let mainEntry;
 
@@ -218,7 +227,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         this.concat.add(null, "})");
 
         if (context.standaloneBundle) {
-            let fuseboxLibFile = path.join(Config.FUSEBOX_MODULES, "fuse-box-loader-api", context.debugMode?"fusebox.js":"fusebox.min.js");
+            let fuseboxLibFile = path.join(Config.FUSEBOX_MODULES, "fuse-box-loader-api", context.debugMode ? "fusebox.js" : "fusebox.min.js");
             if (this.context.customAPIFile) {
                 fuseboxLibFile = ensureUserPath(this.context.customAPIFile);
             }

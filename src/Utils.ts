@@ -69,6 +69,10 @@ export function jsCommentTemplate(fname: string, conditions: any, variables: any
     return data;
 }
 
+export function readFuseBoxModule(target: string) {
+    return fs.readFileSync(path.join(Config.FUSEBOX_MODULES, target)).toString();
+}
+
 export function write(fileName: string, contents: any) {
     return new Promise((resolve, reject) => {
         fs.writeFile(fileName, contents, (e) => {

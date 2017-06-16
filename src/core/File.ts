@@ -6,7 +6,7 @@ import { SourceMapGenerator } from "./SourceMapGenerator";
 import { utils, each } from "realm-utils";
 import * as fs from "fs";
 import * as path from "path";
-import { ensureFuseBoxPath } from "../Utils";
+import { ensureFuseBoxPath, readFuseBoxModule } from "../Utils";
 
 /**
  *
@@ -304,6 +304,26 @@ export class File {
     }
 
     /**
+     * Replacing import() with a special function
+     * that will recognised by Vanilla Api and Quantum
+     * Injecting a development functionality
+     */
+    public replaceDynamicImports() {
+        if (this.contents && this.collection.name === this.context.defaultPackageName) {
+            const expression = /(\s+|^)(import\()/g;
+            if (expression.test(this.contents)) {
+                this.contents = this.contents.replace(expression, "$1$fsmp$(");
+                if (this.context.fuse && this.context.fuse.producer) {
+                    if (!this.context.fuse.producer.devCodeHasBeenInjected("fuse-imports")) {
+                        this.context.fuse.producer.injectDevCode("fuse-imports",
+                            readFuseBoxModule("fuse-box-responsive-api/dev-imports.js"));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      *
      *
      * @returns
@@ -323,12 +343,14 @@ export class File {
         }
 
         if (/\.ts(x)?$/.test(this.absPath)) {
+
             this.context.debug("Typescript", `Captured  ${this.info.fuseBoxPath}`);
             return this.handleTypescript();
         }
 
         if (/\.js(x)?$/.test(this.absPath)) {
             this.loadContents();
+            this.replaceDynamicImports();
             this.tryPlugins();
             const vendorSourceMaps = this.context.sourceMapsVendor
                 && this.collection.name !== this.context.defaultPackageName;
@@ -403,6 +425,8 @@ export class File {
         const ts = require("typescript");
 
         this.loadContents();
+        // handle import()
+        this.replaceDynamicImports();
         // Calling it before transpileModule on purpose
         this.tryTypescriptPlugins();
         this.context.debug("TypeScript", `Transpile ${this.info.fuseBoxPath}`)

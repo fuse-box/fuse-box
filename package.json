@@ -91,7 +91,7 @@
     "glob": "^7.1.1",
     "ieee754": "^1.1.8",
     "inquirer": "^3.0.6",
-    "lego-api": "^1.0.1",
+    "lego-api": "^1.0.5",
     "mustache": "^2.3.0",
     "opencollective": "^1.0.3",
     "postcss": "^6.0.1",

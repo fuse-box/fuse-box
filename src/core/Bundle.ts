@@ -22,6 +22,7 @@ export class Bundle {
     public lastChangedFile: string;
     public webIndexed = true;
     public splitFiles: Map<string, File>;
+
     public bundleSplit: BundleSplit;
     public quantumItem: QuantumItem;
 
@@ -47,6 +48,7 @@ export class Bundle {
         this.context.tsConfig = fpath;
         return this;
     }
+
 
     public shim(shimConfig: any): Bundle {
         this.context.shim = shimConfig;

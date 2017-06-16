@@ -172,6 +172,40 @@
         return moduleObject.exports;
     }
 
+    /* @if cssLoader */
+    // CSS LOADER ******************************************
+
+    /* @if !server */
+    function loadCSS(id) {
+        return Promise.resolve().then(function() {
+            let d = document;
+            var head = d.getElementsByTagName("head")[0];
+            var target = d.createElement("link");
+            target.rel = "stylesheet";
+            target.type = "text/css";
+            target.href = id;
+            head.insertBefore(target, head.firstChild);
+        });
+    }
+    /* @end */
+    $fsx.a = function(id) {
+        /* @if universal */
+        if (isBrowser) { return loadCSS(id); }
+        /* @end */
+
+        /* @if browser */
+        return loadCSS(id);
+        /* @end */
+
+        /* @if server */
+        return Promise.reject("Can't load css on server!");
+        /* @end */
+    }
+
+    // ******************************************************
+    /* @end */
+
+
     $fsx.l = function(id) {
         return new Promise(function(resolve, reject) {
             /* @if codeSplitting */

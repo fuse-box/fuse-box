@@ -14,6 +14,8 @@ export class ResponsiveAPI {
     private bundleMapping: any;
     private ajaxRequired = false;
     private codeSplitting = false;
+    private jsonLoader = false;
+    private cssLoader = false;
     constructor(public core: QuantumCore) { }
 
     public addComputedRequireStatetements() {
@@ -33,6 +35,14 @@ export class ResponsiveAPI {
 
     public useCodeSplitting() {
         this.codeSplitting = true;
+    }
+
+    public addJSONLoader() {
+        this.jsonLoader = true;
+    }
+
+    public addCSSLoader() {
+        this.cssLoader = true;
     }
 
     public hashesUsed() {
@@ -68,7 +78,9 @@ export class ResponsiveAPI {
             customStatementResolve: this.customStatementResolve,
             lazyLoading: this.lazyLoading,
             codeSplitting: this.codeSplitting,
-            ajaxRequired: this.ajaxRequired
+            ajaxRequired: this.ajaxRequired,
+            jsonLoader: this.jsonLoader,
+            cssLoader: this.cssLoader
         }
         const variables: any = {};
         if (Object.keys(this.customMappings).length > 0) {
