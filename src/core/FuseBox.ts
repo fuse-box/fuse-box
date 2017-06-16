@@ -271,7 +271,7 @@ export class FuseBox {
                 this.context.log.echoDefaultCollection(defaultCollection, cnt);
             });
         }).then(() => {
-            return new Promise((resolve, reject) => {
+            return new Promise<SplitConfig>((resolve, reject) => {
                 this.context.source.finalize(bundleData);
                 this.triggerEnd();
                 this.triggerPost();

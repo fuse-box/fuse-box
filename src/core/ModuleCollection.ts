@@ -323,7 +323,7 @@ export class ModuleCollection {
         return Promise.all(promises);
     }
 
-    public resolveSplitFiles(files: File[]) {
+    public resolveSplitFiles(files: File[]): Promise<void> {
         return each(files, (file: File) => {
             this.dependencies.set(file.absPath, file);
         });
