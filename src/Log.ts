@@ -1,211 +1,73 @@
-import {ModuleCollection} from './core/ModuleCollection';
-import {WorkFlowContext} from './core/WorkflowContext';
-import * as log from 'fliplog';
-import * as prettysize from 'prettysize';
-import * as prettyTime from 'pretty-time';
-import * as zlib from 'zlib';
+import { ModuleCollection } from "./core/ModuleCollection";
+import { WorkFlowContext } from "./core/WorkflowContext";
+import * as log from "fliplog";
+import * as prettysize from "prettysize";
+import * as  prettyTime from "pretty-time";
+import * as zlib from "zlib";
 
-const chalk = log.chalk();
-const {yellow, green} = chalk;
-
-export type seconds = number;
-export type nanoseconds = number;
-export type StrNum = string | number | any;
-export type StrNums = StrNum[] | StrNum;
-export type hrtimes = [seconds, nanoseconds];
-export type ContentSize = string | number | Buffer | any;
-export type Obj = Object | any;
-export type anys = any | [any, any] | [any] | [any, any, any];
-export type Filter = string | Function | boolean | null | undefined | any;
-
-// should name them so we can do groups later
-export class Stats {
-    public totalSize: number = 0;
-
-    public handle(contents: StrNum): StrNum {
-        const [bytes, size] = Stats.prettyBytes(contents);
-        this.totalSize += bytes;
-        return size;
-    }
-    public reset(): Stats {
-        this.totalSize = 0;
-        return this;
-    }
-
-    // --- getters
-
-    public [Symbol.toPrimitive](hint: string): any {
-        if (hint === 'number') return this.totalSize;
-        return this.totalSize + '';
-    }
-
-    // --- utils
-
-    public static gzip(size: ContentSize): StrNums {
-        const gzipped = zlib.gzipSync(size, {level: 9}).length;
-        const gzippedSize = prettysize(gzipped) + ' (gzipped)';
-        const compressedSize = prettysize(size.length);
-        return [compressedSize, gzippedSize];
-    }
-    public static pretty(content: StrNum): StrNum {
-        return Stats.prettyBytes(content).pop();
-    }
-    public static prettyBytes(content: StrNum): StrNums {
-        const bytes = typeof content === 'string'
-            ? Stats.byteLength(content)
-            : content;
-        const pretty = prettysize(bytes);
-        return [bytes, pretty];
-    }
-    public static byteLength(content: StrNum): number {
-        return Buffer.byteLength(content, 'utf8');
-    }
-}
-
-export class Timer {
-    public times: Obj = {};
-    public laps: Obj = {};
-    public current: Obj = {diff: 0};
-    public index: StrNum = 0;
-
+// @TODO: I've moved this into fliplog in v1, migrate to that
+export class Indenter {
+    public store: Map<string, any> = new Map()
     constructor() {
-        this.start('fusebox');
+        this.set('indent', 0);
     }
-    public reset(): Timer {
-        this.times = {};
-        this.laps = {};
-        this.current = {diff: 0};
+
+    // easy set/set
+    public set(key: string, val: any): Indenter {
+        this.store.set(key, val)
         return this;
     }
-    public delete(name: StrNum): Timer {
-        this.times[name] = {};
-        return this;
+    public get(key: string) {
+        return this.store.get(key);
     }
-
-    // default lap false
-    public start(name?: StrNum, lappable: boolean = false): Timer {
-        if (name === null) {
-            name = ++this.index;
-        }
-        if (this.times[name] && this.times[name].start && lappable === true) {
-            return this.lap(name);
-        }
-
-        this.times[name] = {};
-        this.times[name].start = process.hrtime();
-        this.current = this.times[name];
-        return this;
+    // back to 0
+    public reset(): Indenter {
+        return this.set('indent', 0);
     }
-    public stop(name?: StrNum, lappable: boolean = false): Timer {
-        if (!name) {
-            name = this.index;
-        }
-
-        if (this.times[name] && this.times[name].end && lappable) {
-            return this.lap(name);
-        }
-
-        if (!this.times[name]) {
-            // console.log('had no times for ' + name)
-            return this;
-        }
-
-        this.times[name].end = process.hrtime();
-        this.times[name].diff = this.diff(
-            this.times[name].end,
-            this.times[name].start
-        );
-
-        return this;
+    // tap value
+    public tap(key: string, cb: Function): Indenter {
+        const updated = cb(this.store.get(key));
+        return this.set(key, updated);
     }
-
-    // lap could go in another class too
-    public lap(name?: StrNum): Timer {
-        if (!this.times[name]) return this.start(name);
-        if (name === null) name = this.index;
-
-        if (this.laps[name]) {
-            const prevEnd = this.laps[name].slice(0).pop().end;
-            const end = process.hrtime();
-            const diff = this.diff(prevEnd, end);
-            this.laps[name].push({diff, end});
-            return this;
-        }
-
-        this.laps[name] = [];
-        const end = process.hrtime();
-        const start = this.times[name]
-            ? this.times[name].start
-            : [Infinity, Infinity];
-        const diff = this.diff(start);
-        this.laps[name].push({end, diff});
-        return this;
+    // increment
+    public indent(level: number): Indenter {
+        return this.tap('indent', indent => indent + level);
     }
-
-    // getters
-
-    public pretty(arg: anys) {
-        // do a diff
-        if (Array.isArray(arg)) {
-            return this.diff(arg);
-        }
-        if (typeof arg === 'string') {
-            // do we have it
-            if (this.times[arg]) {
-                return this.times[arg].diff;
-            } else {
-                // already formatted
-                return arg;
-            }
-        }
-        return this.toString();
+    // specific number
+    public level(level: number): Indenter {
+        return this.set('indent', level);
     }
-
-    // @TODO: checks for arrays... should just parse...
-    public diff(start: StrNums, end?: StrNums): string {
-        let diff = start;
-        if (!!end) diff = end;
-
-        let took: any = process.hrtime(start); // as [number, number];
-        return prettyTime(took, 'ms');
+    // string repeat indent
+    public toString(): string {
+        return ' '.repeat(this.get('indent'))
     }
-    public [Symbol.toPrimitive](hint: string): StrNums {
-        let pretty = this.current.diff;
-
-        if (hint === 'number') {
-            if (!pretty) return 0;
-            const matches = pretty.match(/\d+/);
-            if (Array.isArray(matches)) {
-                return matches.shift();
-            } else {
-                return Infinity;
-            }
-        }
-
-        return pretty || '';
+    public toNumber(): number {
+        return this.get('indent');
+    }
+    public [Symbol.toPrimitive](hint: string) {
+        if (hint === 'number') { return this.toNumber(); }
+        return this.toString();;
     }
 }
 
 /**
  * @TODO:
+ * - [ ] should add filters for outputing fs
  * - [ ] should .tree the files
  * - [ ] fix the →→→→→→→
  */
 export class Log {
+    public timeStart = process.hrtime();
     public printLog: any = true;
     public debugMode: any = false;
     public spinner: any;
-    public indent: any = log.indenter();
-    public stats: Stats = new Stats();
-    public timer: Timer = new Timer();
+    public indent: Indenter = new Indenter();
+    private totalSize = 0;
 
     constructor(public context: WorkFlowContext) {
-        this.printLog = context.doLog || true;
-        this.debugMode = context.debugMode || true;
-        this.indent.level = num => this.indent.indent(0).indent(num);
-        this.indent.reset = () => this.indent.clear().indent(0);
+        this.printLog = context.doLog;
+        this.debugMode = context.debugMode;
 
-        /* prettier-ignore */
         log.filter((arg) => {
             // conditions for filtering specific tags
             const debug = this.debugMode
@@ -215,11 +77,12 @@ export class Log {
             const levelHas = tag =>
                 debug || (level && level.includes && level.includes(tag) && !level.includes('!' + tag));
 
+
             // when off, silent
             if (level === false) return false;
 
             // counting this as verbose for now
-            if (level === true && debug === true) { return true; }
+            if (level === true && debug === true) { return null; }
 
             if (level == 'error') {
                 if (!hasTag('error')) { return false; }
@@ -233,39 +96,40 @@ export class Log {
             }
 
             // if not false and conditions pass, log it
-            return true;
-        });
+            return null;
+        });;
     }
 
     // --- config ---
 
     public reset(): Log {
-        this.timer.start();
-        this.stats.reset();
+        this.timeStart = process.hrtime();
+        this.totalSize = 0;
         this.indent.reset();
         return this;
     }
-    public printOptions(title: string, obj: Obj): Log {
-        let indent = this.indent.level(2).toString();
-        let indent2 = this.indent.level(4).toString();
+    public printOptions(title: string, obj: any) {
+        let indent = this.indent.level(2) + '';;
+
+        let indent2 = this.indent.level(4) + '';;
 
         // @TODO: moved this into fliplog v1, migrate
-        const fmt = obj => {
-            return (
-                indent2 +
-                log
-                    .inspector()(obj)
-                    .split('\n')
-                    .map(data => indent2 + data.trim())
+        log.addPreset('min', instance => {
+            instance.formatter(data => {
+                return log.inspector()(data).split('\n')
+                    .map(data => indent2 + data)
                     .map(data => data.replace(/[{},]/, ''))
-                    .join('\n')
-                    .trim()
-            );
-        };
+                    .join('\n');;
+            });
+        });
 
-        log.bold().yellow(`${indent}→ ${title}`).echo();
-        log.text(fmt(obj)).echo();
+        log.bold().yellow(`${indent}→ ${title}\n`).preset('min').data(obj).echo();
 
+        // for (let i in obj) {
+        //     indent = this.indent.level(6) + ''
+        //     log.green(`${indent}${i} : ${obj[i]}`).echo();
+        // }
+        // this.indent.indent(-2)
         return this;
     }
 
@@ -277,42 +141,35 @@ export class Log {
         log.bold(`${name}: `).echo();
         return this;
     }
-
-    // @TODO subBundleStop???
     public subBundleStart(name: string, parent: string) {
-        this.timer.start(name);
         log.bold(`${name} (child of ${parent}) ->`).echo();
         return this;
     }
     public bundleEnd(name: string, collection: ModuleCollection) {
-        const took = this.timer.stop(name).toString();
+        let took = process.hrtime(this.timeStart) as [number, number];
 
         log
             .ansi()
             .write(`-> Finished`)
             .green(collection.cachedName || collection.name)
-            .yellow(`took: ${took}`)
+            .yellow(`took: ${prettyTime(took, "ms")}`)
             .echo();
     }
 
     // --- spinner ---
     public startSpinner(text: string) {
-        if (!this.printLog) {
-            return this;
-        }
+        if (!this.printLog) { return this; }
 
         // spinner opts
         const indentStr = this.indent.toString();
         const indent = +this.indent;
         const interval = 20;
-        const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'].map(
-            frame => indentStr + frame
-        );
-        const spinner = {frames, interval};
+        const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'].map(frame => indentStr + frame);
+        const spinner = { frames, interval };
 
-        // @TODO @FIXME the spinner needs to be scoped inside of fliplog,
-        // has todo to update
-        this.spinner = log.requirePkg('ora')({text, indent, spinner});
+        // @TODO @FIXME the spinner needs to be scoped inside of fliplog, has todo to update
+        // instantiate
+        this.spinner = log.requirePkg('ora')({ text, indent, spinner });
         this.spinner.start();
         this.spinner.indent = +this.indent;
         this.spinner.succeeded = false;
@@ -320,16 +177,14 @@ export class Log {
         // safety for if errors happen so it does not keep spinning
         setTimeout(() => {
             if (this.spinner.succeeded === false) {
-                this.spinner.fail();
+                this.spinner.fail();;
             }
         }, 1000);
 
         return this;
     }
     public stopSpinner(text?: string) {
-        if (!this.printLog) {
-            return this;
-        }
+        if (!this.printLog) { return this; }
         // safety, mark as success
         if (this.spinner && this.spinner.succeeded === false) {
             this.spinner.succeeded = true;
@@ -337,10 +192,10 @@ export class Log {
             const indent = this.indent.level(this.spinner.indent).toString();
 
             // @override success to indent
-            // reference.succeed()✔
-            const success = green(`${indent}→ `);
-            text = green(text || reference.text);
-            reference.stopAndPersist({symbol: success, text});
+            // reference.succeed()
+            const success = log.chalk().green(`${indent}✔ `);
+            text = text || reference.text;
+            reference.stopAndPersist({ symbol: success, text });
 
             // it's too fast!
             // setTimeout(() => reference.succeed(), 1)
@@ -350,22 +205,17 @@ export class Log {
 
     // --- collection stats ---
 
-    /* prettier-ignore */
-    /**
-     * @example └──  (5 files,  7.6 kB) default
-     *          └── fuse-box-css 1.5 kB (1 files)
-     *          └── lodash 14.2 kB (12 files)
-     * @TODO: list vendor files as filter
-     */
-    public echoDefaultCollection(collection: ModuleCollection, contents: ContentSize) {
+    // @TODO: list vendor files as filter
+    public echoDefaultCollection(collection: ModuleCollection, contents: string) {
         if (this.printLog === false) return this;
+        let bytes = Buffer.byteLength(contents, "utf8");
+        let size = prettysize(bytes);
+        this.totalSize += bytes;
 
-        const size = this.stats.handle(contents)
         const indent = this.indent.reset().indent(+1).toString();
 
-        /**
-         * @example └──  (5 files, 7.6 kB) default
-         */
+        // @example └──  (5 files, 7.6 kB) default
+        // @TODO auto indent as with ansi
         collection.dependencies.forEach(file => {
             if (file.info.isRemoteFile) return
             const indent = this.indent.level(4).toString()
@@ -378,7 +228,7 @@ export class Log {
         log
             .ansi()
             .write(`└──`)
-            .yellow(`${indent}(${collection.dependencies.size} files, ${size})`)
+            .yellow(`${indent}(${collection.dependencies.size} files,  ${size})`)
             .green(collection.cachedName || collection.name)
             .echo();
 
@@ -386,16 +236,15 @@ export class Log {
         return this;
     }
 
-    /**
-     * @example
-     * └── fuse-box-css 1.5 kB (1 files)
-     * └── lodash 14.2 kB (12 files)
-     */
-    public echoCollection(collection: ModuleCollection, contents: ContentSize) {
+    // @example
+    // └── fuse-box-css 1.5 kB (1 files)
+    // └── lodash 14.2 kB (12 files)
+    public echoCollection(collection: ModuleCollection, contents: string) {
         if (this.printLog === false) return this;
-
+        let bytes = Buffer.byteLength(contents, "utf8");
+        let size = prettysize(bytes);
+        this.totalSize += bytes;
         const indent = this.indent.toString(); // reset
-        const size = Stats.pretty(contents);
 
         log
             .ansi()
@@ -409,8 +258,8 @@ export class Log {
     }
 
     public end(header?: string) {
-        const took = this.timer.stop('fusebox').toString();
-        this.echoBundleStats(header || 'Bundle', +this.stats, took);
+        let took = process.hrtime(this.timeStart) as [number, number];
+        this.echoBundleStats(header || "Bundle", this.totalSize, took);
         return this;
     }
 
@@ -420,37 +269,42 @@ export class Log {
      *
      * string | number | Buffer
      */
-    public echoGzip(size: any, str: string | any = ''): Log {
+    public echoGzip(size: any, msg: string | any = '') {
         if (!size) return this;
-
-        const [compressedSize, gzippedSize] = Stats.gzip(size);
-        const gzip = yellow(`${compressedSize}, ${gzippedSize}`);
-
+        const yellow = log.chalk().yellow;
+        const gzipped = zlib.gzipSync(size, { level: 9 }).length;
+        const gzippedSize = prettysize(gzipped) + ' (gzipped)';
+        const compressedSize = prettysize(size.length);
+        const prettyGzip = yellow(`${compressedSize}, ${gzippedSize}`);
         log
-            .title(this.indent.toString())
-            .when(str, () => log.text(str), () => log.bold('size: '))
-            .data(gzip)
+            .title(this.indent + '')
+            .when(msg,
+            () => log.text(msg),
+            () => log.bold('size: '))
+            .data(prettyGzip)
             .echo();
-
         return this;
     }
 
-    /* prettier-ignore */
     /**
-     * @example size: 23.2 kB in 583ms
+     * @TODO @FIXME
+     * - [ ] bundle stats are wrong because they use accumulated size,
+     *       not the uglified end result size
+     *       use uglified and QuantumPlugin output
      */
-    public echoBundleStats(header: string, size: StrNum, took: hrtimes | StrNum): Log {
+    public echoBundleStats(header: string, size: number, took: [number, number]) {
         this.indent.reset();
-        const sized = yellow(`${Stats.pretty(size)}`);
-        log.text(`size: ${sized} in ${this.timer.pretty(took)}`).echo();
+        const yellow = log.chalk().yellow;
+        const sized = yellow(`${prettysize(size)}`);
+        log.text(`size: ${sized} in ${prettyTime(took, "ms")}`).echo();
         return this;
     }
 
     // --- bundle specifics ---
 
     public echoHeader(str: string) {
-        const indent = this.indent.level(1).toString();
-        log.yellow(`${indent}${str}`).echo();
+        this.indent.level(1);
+        log.yellow(`${this.indent}${str}`).echo();
         return this;
     }
     public echoStatus(str: string) {
@@ -459,8 +313,6 @@ export class Log {
     }
 
     // --- generalized ---
-
-    // @NOTE: mostly just quantum
     public groupHeader(str: string) {
         log.color('bold.underline').text(`${str}`).echo();
         return this;
@@ -471,7 +323,7 @@ export class Log {
         return this;
     }
     public error(error: Error) {
-        // @TODO: use this - is implemented
+        // @TODO: finish forking notifier & dep chain
         // if (this.printLog.includes('notify')) {
         //     log.factory().notify({title: error.message, message: error.stack}).echo()
         // }
@@ -489,6 +341,7 @@ export class Log {
         return this;
     }
 
+
     // -----------
     // simplified shorthands for external formatting
     // @TODO: anything using these should be fomatted inside of the logger
@@ -497,12 +350,12 @@ export class Log {
         log.time(true).green(str).echo();
         return this;
     }
-    public echoBoldRed(str: string) {
-        log.red().bold(str).echo();
+    public echoBoldRed(msg) {
+        log.red().bold(msg).echo();
         return this;
     }
-    public echoRed(str: string) {
-        log.red(str).echo();
+    public echoRed(msg) {
+        log.red(msg).echo();
         return this;
     }
     public echoBreak() {
