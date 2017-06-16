@@ -25,7 +25,7 @@ export class TreeShake {
                 if (!fileExport.isUsed && file.isTreeShakingAllowed()
                     && fileExport.eligibleForTreeShaking) {
                     const isDangerous = fileExport.name === "__esModule" || fileExport.name === "default";
-                    if (!isDangerous && this.core.opts.shouldRemoveExportsInterop()) {
+                    if (!isDangerous) {
                         this.core.log.echoInfo(`tree shaking: Remove ${fileExport.name} from ${file.fuseBoxPath}`)
                         fileExport.remove();
                     }
