@@ -17,7 +17,8 @@ npm install babel-core babel-preset-es2015 babel-plugin-transform-react-jsx --sa
 | ---- | ---- | ----------- | -------- |
 | config | `Object`  | when using other fuse-box only properties, babel config is passed in as .config |  |
 | limit2project | `boolean`  | to use this plugin across an entire project (including other modules like npm) | `true` |
-| test | `Regex`  | files to match | <code>/\.(j&#124;t)s(x)?$/</code> |
+| extensions | `Array<string>`  | file extensions to allow with fuse-box | `[".jsx"]`
+| test | `Regex`  | files to match | <code>/\\.(j&#124;t)s(x)?$/</code> |
 
 
 

@@ -246,10 +246,12 @@ export class Log {
         this.totalSize += bytes;
         const indent = this.indent.toString(); // reset
 
+        const name = (collection.cachedName || collection.name).trim();
+
         log
             .ansi()
             .write(`${indent}└──`)
-            .green(collection.cachedName || collection.name)
+            .green(name)
             .yellow(size)
             .write(`(${collection.dependencies.size} files)`)
             .echo();

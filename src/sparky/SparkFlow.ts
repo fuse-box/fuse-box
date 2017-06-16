@@ -70,7 +70,7 @@ export class SparkFlow {
         this.files = [];
         const getFilePromises = [];
         globs.forEach(g => {
-            getFilePromises.push(this.getFile(g, opts))
+            getFilePromises.push(this.getFile(g, opts));
         })
         return Promise.all(getFilePromises)
             .then(results => {

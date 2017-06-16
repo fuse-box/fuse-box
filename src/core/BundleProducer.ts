@@ -32,12 +32,11 @@ export class BundleProducer {
     }
 
     public run(opts: { chokidar?: any, runType?: string }): Promise<BundleProducer> {
-        /** Collect information about watchers and start watching */
-        this.watch();
-
         if (opts) {
             this.chokidarOptions = opts.chokidar;
         }
+        /** Collect information about watchers and start watching */
+        this.watch();
 
         return this.runner.run(opts).then(() => {
 
