@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { File } from "../../core/File";
+import { string2RegExp } from "../../Utils";
 import { WorkFlowContext } from "../../core/WorkflowContext";
 import { Plugin } from "../../core/WorkflowContext";
 
@@ -18,6 +19,7 @@ export class BabelPluginClass implements Plugin {
      * Because Babel won't capture it just being a Plugin
      * Typescript files are handled before any external plugin is executed
      */
+    public extensions: Array<string> = [".jsx"];
     public test: RegExp = /\.(j|t)s(x)?$/;
     public context: WorkFlowContext;
     private limit2project: boolean = true;
@@ -30,13 +32,19 @@ export class BabelPluginClass implements Plugin {
         opts = opts || {};
 
         // if it is an object containing only a babel config
-        if (opts.config === undefined && opts.test === undefined && opts.limit2project === undefined && Object.keys(opts).length) {
+        if (opts.config === undefined && opts.test === undefined && opts.limit2project === undefined && opts.extensions === undefined && Object.keys(opts).length) {
             this.config = opts;
             return
         }
 
         if (opts.config) {
             this.config = opts.config;
+        }
+        if (opts.extensions !== undefined) {
+            this.extensions = opts.extensions;
+            if (opts.test === undefined) {
+                this.test = string2RegExp(opts.extensions.join("|"));
+            }
         }
         if (opts.test !== undefined) {
             this.test = opts.test;
@@ -69,7 +77,9 @@ export class BabelPluginClass implements Plugin {
      */
     public init(context: WorkFlowContext) {
         this.context = context;
-        context.allowExtension(".jsx");
+        if (Array.isArray(this.extensions)) {
+            this.extensions.forEach(ext => context.allowExtension(ext));
+        }
         this.handleBabelRc();
     }
 
@@ -90,6 +100,9 @@ export class BabelPluginClass implements Plugin {
                 return;
             }
         }
+
+        // contents might not be loaded if using a custom file extension
+        file.loadContents();
 
         // whether we should transform the contents
         // @TODO needs improvement for the regex matching of what to include
