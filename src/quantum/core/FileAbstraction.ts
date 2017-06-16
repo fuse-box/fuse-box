@@ -84,6 +84,7 @@ export class FileAbstraction {
         this.fileMapRequested = true;
     }
     public isTreeShakingAllowed() {
+
         return this.treeShakingRestricted === false && this.shakable;
     }
 
@@ -171,7 +172,7 @@ export class FileAbstraction {
         let code = escodegen.generate(this.ast);
 
         if (ensureEs5 && this.isEcmaScript6) {
-            code = transpileToEs5(code)
+            code = transpileToEs5(code);
         }
 
         //if (this.wrapperArguments) {
@@ -259,10 +260,16 @@ export class FileAbstraction {
 
         // Object.defineProperty(exports, '__esModule', { value: true });
         if (matcheObjectDefineProperty(node, "exports")) {
+            if (this.globalVariables.has("exports")) {
+                this.globalVariables.add("exports");
+            }
             this.exportsInterop.add(new ExportsInterop(parent, prop, node));
             return false;
         }
         if (matchesAssignmentExpression(node, 'exports', '__esModule')) {
+            if (this.globalVariables.has("exports")) {
+                this.globalVariables.add("exports");
+            }
             this.exportsInterop.add(new ExportsInterop(parent, prop, node));
         }
 

@@ -5,7 +5,7 @@ import { FileAbstraction } from "../core/FileAbstraction";
 import { QuantumCore } from "./QuantumCore";
 
 export class TreeShake {
-    constructor(public core: QuantumCore) {}
+    constructor(public core: QuantumCore) { }
 
     /**
      * Initiate tree shaking
@@ -24,8 +24,11 @@ export class TreeShake {
             file.namedExports.forEach(fileExport => {
                 if (!fileExport.isUsed && file.isTreeShakingAllowed()
                     && fileExport.eligibleForTreeShaking) {
-                    this.core.log.echoInfo(`tree shaking: Remove ${fileExport.name} from ${file.fuseBoxPath}`)
-                    fileExport.remove();
+                    const isDangerous = fileExport.name === "__esModule" || fileExport.name === "default";
+                    if (!isDangerous && this.core.opts.shouldRemoveExportsInterop()) {
+                        this.core.log.echoInfo(`tree shaking: Remove ${fileExport.name} from ${file.fuseBoxPath}`)
+                        fileExport.remove();
+                    }
                 } else {
                     // gotta sleep on it....
                     // fileCanBeRemoved = false;
