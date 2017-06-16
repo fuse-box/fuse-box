@@ -25,6 +25,7 @@ import { WorkFlowContext } from "../../core/WorkflowContext";
 
 import { Bundle } from "../../core/Bundle";
 import { QuantumItem } from "./QuantumSplit";
+import { DynamicImportStatementsModifications } from "./modifications/DynamicImportStatements";
 
 
 export interface QuantumStatementMapping {
@@ -249,6 +250,10 @@ export class QuantumCore {
         const modifications = [
             // modify require statements: require -> $fsx.r
             StatementModification,
+
+            // modify dynamic statements
+            DynamicImportStatementsModifications,
+
             // modify FuseBox.isServer and FuseBox.isBrowser
             EnvironmentConditionModification,
             // remove exports.__esModule = true

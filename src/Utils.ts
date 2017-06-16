@@ -62,6 +62,7 @@ export function replaceAliasRequireStatement(requireStatement: string, aliasName
 
 export function jsCommentTemplate(fname: string, conditions: any, variables: any) {
     const contents = fs.readFileSync(fname).toString();
+
     let data = LegoAPI.parse(contents).render(conditions);
     for (let varName in variables) {
         data = data.replace(`$${varName}$`, JSON.stringify(variables[varName]));

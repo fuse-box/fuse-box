@@ -74,7 +74,7 @@ export function matchesEcmaScript6(node) {
     return false;
 }
 export function matchesSingleFunction(node: any, name: string) {
-    return node.callee && node.callee.type === "Identifier" && node.callee.name === "require"
+    return node.callee && node.callee.type === "Identifier" && node.callee.name === name
 }
 
 export function trackRequireMember(node: any, name: string): string {

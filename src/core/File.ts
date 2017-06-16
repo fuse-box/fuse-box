@@ -311,7 +311,8 @@ export class File {
      * Injecting a development functionality
      */
     public replaceDynamicImports() {
-        if (this.contents && this.collection.name === this.context.defaultPackageName) {
+        if (this.context.experimentalFeaturesEnabled
+            && this.contents && this.collection.name === this.context.defaultPackageName) {
             const expression = /(\s+|^)(import\()/g;
             if (expression.test(this.contents)) {
                 this.contents = this.contents.replace(expression, "$1$fsmp$(");

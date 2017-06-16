@@ -2,6 +2,7 @@ import * as path from "path";
 import { jsCommentTemplate } from "../../Utils";
 import { Config } from "../../Config";
 import { QuantumCore } from "./QuantumCore";
+import { RequireStatement } from "../core/nodes/RequireStatement";
 
 export class ResponsiveAPI {
     private computedStatements = false;
@@ -15,6 +16,7 @@ export class ResponsiveAPI {
     private ajaxRequired = false;
     private codeSplitting = false;
     private jsonLoader = false;
+    private loadRemoteScript = false;
     private cssLoader = false;
     constructor(public core: QuantumCore) { }
 
@@ -45,6 +47,10 @@ export class ResponsiveAPI {
         this.cssLoader = true;
     }
 
+    public addRemoteLoading() {
+        this.loadRemoteScript = true;
+    }
+
     public hashesUsed() {
         return this.hashes;
     }
@@ -66,6 +72,23 @@ export class ResponsiveAPI {
         this.isBrowserFunction = true;
     }
 
+    public considerStatement(statement: RequireStatement) {
+        this.addLazyLoading();
+
+        if (statement.isRemoteURL()) {
+            this.addRemoteLoading();
+        }
+
+        if (statement.isCSSRequested()) {
+            this.loadRemoteScript = true;
+            this.addCSSLoader();
+        }
+
+        if (statement.isJSONRequested()) {
+            this.addJSONLoader();
+        }
+    }
+
     public render() {
         const options = {
             browser: this.core.opts.isTargetBrowser(),
@@ -80,8 +103,9 @@ export class ResponsiveAPI {
             codeSplitting: this.codeSplitting,
             ajaxRequired: this.ajaxRequired,
             jsonLoader: this.jsonLoader,
-            cssLoader: this.cssLoader
-        }
+            cssLoader: this.cssLoader,
+            loadRemoteScript: this.loadRemoteScript,
+        };
         const variables: any = {};
         if (Object.keys(this.customMappings).length > 0) {
             variables.customMappings = this.customMappings;

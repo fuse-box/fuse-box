@@ -37,6 +37,7 @@ export class FileAbstraction {
 
     /** FILE CONTENTS */
     public requireStatements = new Set<RequireStatement​​>();
+    public dynamicImportStatements = new Set<RequireStatement​​>();
     public fuseboxIsServerConditions = new Set<FuseBoxIsServerCondition>();
     public fuseboxIsBrowserConditions = new Set<FuseBoxIsBrowserCondition>();
     public exportsInterop = new Set<ExportsInterop>();
@@ -254,6 +255,13 @@ export class FileAbstraction {
             // adding a require statement
             this.requireStatements.add(new RequireStatement(this, node));
         }
+        // Fusebox converts new imports to $fsmp$
+        if (matchesSingleFunction(node, "$fsmp$")) {
+            // adding a require statement
+            console.log("yes.......", node);
+            this.dynamicImportStatements.add(new RequireStatement(this, node));
+        }
+
         // typeof module
         if (matchesTypeOf(node, "module")) {
             this.typeofModulesKeywords.add(new TypeOfModuleKeyword(parent, prop, node));

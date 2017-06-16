@@ -20,21 +20,14 @@ export class StatementModification {
                     file.addFileMap();
                 }
             } else {
+
                 let resolvedFile = statement.resolve();
                 if (resolvedFile) {
                     statement.setFunctionName('$fsx.r');
                     statement.setValue(resolvedFile.getID());
                 } else {
-                    core.api.addLazyLoading();
-                    if (statement.isCSSRequested()) {
-                        core.api.addCSSLoader();
-                        statement.setFunctionName('$fsx.a');
-                    } else if (statement.isJSONRequested()) {
-                        core.api.addJSONLoader();
-                        statement.setFunctionName('$fsx.b');
-                    } else {
-                        statement.setFunctionName('$fsx.l');
-                    }
+                    core.api.considerStatement(statement);
+                    statement.setFunctionName('$fsx.l');
                 }
             }
         });

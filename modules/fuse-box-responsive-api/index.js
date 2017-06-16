@@ -123,28 +123,85 @@
 
     /* @end */
 
-
-    /** ******************** LAZY LOADING ********************  */
     /* @if ajaxRequired */
     function aj(url, cb) {
-        var f = window.fetch;
-        if (f) return f(url).then(function(res) { return res.text().then(function(data) { cb(null, data) }) }).catch(cb)
-
         var request = new XMLHttpRequest();
         request.onreadystatechange = function() {
             if (this.readyState == 4) {
-                cb(this.status == 200 ? 0 : 1, this.responseText);
+                cb(this.status == 200 ? 0 : 1, this.responseText, request.getResponseHeader("Content-Type"));
             }
         };
         request.open("GET", url, true);
         request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         request.send();
-        cb(null, require(url));
+    }
+    /* @end */
+
+    /* @if loadRemoteScript  */
+    function loadRemoteScript(url, isCSS) {
+        /* @if server */
+        return Promise.resolve();
+        /* @end */
+
+        /* @if browser || universal */
+        return Promise.resolve().then(function() {
+            /* @if universal */
+            if (!isBrowser) { return }
+            /* @end */
+
+            var d = document;
+            var head = d.getElementsByTagName("head")[0];
+            var target;
+            /* @if cssLoader */
+            if (isCSS) {
+                target = d.createElement("link");
+                target.rel = "stylesheet";
+                target.type = "text/css";
+                target.href = url;
+            } else {
+                /* @end */
+
+                target = d.createElement("script");
+                target.type = "text/javascript";
+                target.src = url;
+                target.async = true;
+
+                /* @if cssLoader */
+            }
+            /* @end */
+            head.insertBefore(target, head.firstChild);
+        });
+        /* @end */
     }
     /* @end */
 
 
-    /* @if lazyLoading  */
+
+    /* @if codeSplitting */
+    var bMapping = $bundleMapping$;
+    /* @end */
+
+
+    /* @if lazyLoading */
+
+
+
+    function evaluateModule(id, code, type) {
+        if (/javascript/.test(type)) {
+            var fn = new Function('module', 'exports', code);
+            var moduleExports = {};
+            var moduleObject = { exports: moduleExports };
+            fn(moduleObject, moduleExports);
+            return moduleObject.exports;
+        }
+        /* @if jsonLoader  */
+        if (/json/.test(type)) {
+            return JSON.parse(code);
+        }
+        /* @end */
+    }
+
+
     function req(url, cb) {
         /* @if browser */
         aj(url, cb);
@@ -158,52 +215,6 @@
         cb(null, require(url));
         /* @end */
     }
-
-    /* @if codeSplitting */
-    var bMapping = $bundleMapping$;
-    /* @end */
-
-    function evaluateModule(id, code) {
-        var fn = new Function('module', 'exports', code);
-        var moduleExports = {};
-        var moduleObject = { exports: moduleExports };
-        fn(moduleObject, moduleExports);
-        return moduleObject.exports;
-    }
-
-    /* @if cssLoader */
-    // CSS LOADER ******************************************
-
-    /* @if !server */
-    function loadCSS(id) {
-        return Promise.resolve().then(function() {
-            let d = document;
-            var head = d.getElementsByTagName("head")[0];
-            var target = d.createElement("link");
-            target.rel = "stylesheet";
-            target.type = "text/css";
-            target.href = id;
-            head.insertBefore(target, head.firstChild);
-        });
-    }
-    /* @end */
-    $fsx.a = function(id) {
-        /* @if universal */
-        if (isBrowser) { return loadCSS(id); }
-        /* @end */
-
-        /* @if browser */
-        return loadCSS(id);
-        /* @end */
-
-        /* @if server */
-        return Promise.reject("Can't load css on server!");
-        /* @end */
-    }
-
-    // ******************************************************
-    /* @end */
-
 
     $fsx.l = function(id) {
         return new Promise(function(resolve, reject) {
@@ -224,10 +235,22 @@
                 });
             } else {
                 /* @end */
-                req(id, function(err, result) {
+
+                /* @if loadRemoteScript */
+                var isCSS;
+
+                /* @if cssLoader */
+                isCSS = /\.css$/.test(id);
+                /* @end */
+
+                if ((id.charCodeAt(4) === 58 || id.charCodeAt(5) === 58) || isCSS) {
+                    return loadRemoteScript(id, isCSS);
+                }
+                /* @end */
+                req(id, function(err, result, ctype) {
                     if (!err) {
                         /* @if browser */
-                        resolve(evaluateModule(id, result));
+                        resolve(evaluateModule(id, result, ctype));
                         /* @end */
 
                         /* @if server */
@@ -235,7 +258,7 @@
                         /* @end */
 
                         /* @if universal */
-                        isBrowser ? resolve(evaluateModule(id, result)) : resolve(result);
+                        isBrowser ? resolve(evaluateModule(id, result, ctype)) : resolve(result);
                         /* @end */
                     }
                 });
@@ -246,7 +269,7 @@
     }
 
     /* @end */
-    /** ********************************************  */
+
 
 
 

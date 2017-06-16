@@ -84,6 +84,10 @@ export class RequireStatement {
     public isCSSRequested() {
         return path.extname(this.value) === ".css";
     }
+
+    public isRemoteURL() {
+        return /^http(s):/.test(this.value.toString());
+    }
     public isJSONRequested() {
         return path.extname(this.value) === ".json";
     }
@@ -106,8 +110,6 @@ export class RequireStatement {
     public resolve(): FileAbstraction {
         return this.resolveAbstraction();
     }
-
-
 
     private resolveAbstraction(): FileAbstraction {
         let resolved: FileAbstraction;
