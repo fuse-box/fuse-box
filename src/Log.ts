@@ -250,7 +250,7 @@ export class Log {
 
         log
             .ansi()
-            .write(`└──`)
+            .write(`${indent}└──`)
             .green(name)
             .yellow(size)
             .write(`(${collection.dependencies.size} files)`)
