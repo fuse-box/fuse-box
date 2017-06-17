@@ -21,6 +21,11 @@ export class DynamicImportStatementsModifications {
                         statement.setValue(config.name);
                         core.api.considerStatement(statement);
                     }
+                } else {
+                    // otherwise resolve it regularly
+
+                    //statement.setFunctionName('$fsx.r');        
+                    //statement.setValue(target.getID());
                 }
             } else {
                 core.api.considerStatement(statement);

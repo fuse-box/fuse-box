@@ -370,12 +370,12 @@ var FuseBox = (function () {
     FuseBox.addPlugin = function (plugin) {
         this.plugins.push(plugin);
     };
+    FuseBox.packages = $packages;
+    FuseBox.isBrowser = $isBrowser;
+    FuseBox.isServer = !$isBrowser;
+    FuseBox.plugins = [];
     return FuseBox;
 }());
-FuseBox.packages = $packages;
-FuseBox.isBrowser = $isBrowser;
-FuseBox.isServer = !$isBrowser;
-FuseBox.plugins = [];
 if (!$isBrowser) {
     g["FuseBox"] = FuseBox;
 }

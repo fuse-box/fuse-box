@@ -79,16 +79,13 @@ window.$fsmp$ = (function() {
                     } else if (/json/.test(type)) {
                         data = JSON.parse(contents);
                     } else if (!/javascript/.test(type)) {
-                        data = content;
+                        data = contents;
                     }
                 } else {
                     data = contents;
                 }
                 return resolve(data);
             });
-
-
-            console.log(id);
         });
     };
 })();

@@ -74,7 +74,11 @@ export class ResponsiveAPI {
 
     public considerStatement(statement: RequireStatement) {
         this.addLazyLoading();
-
+        if (statement.isComputed) {
+            this.addRemoteLoading();
+            this.addCSSLoader();
+            this.addJSONLoader();
+        }
         if (statement.isRemoteURL()) {
             this.addRemoteLoading();
         }
