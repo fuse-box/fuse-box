@@ -51,25 +51,29 @@ export class RequireStatement {
                 }
             }
         } else {
-            let showWarning = true;
-            let matched = false;
-            // notify producer
-            customComputedStatementPaths.forEach((regexp, path) => {
-
-                if (regexp.test(file.getFuseBoxFullPath())) {
-                    matched = true;
-                    showWarning = false;
-                }
-            });
-            if (!matched) {
-                producer.useComputedRequireStatements = true;
-                producer.useNumbers = false;
-            }
-            // we assume it's a dynamic import
             this.isComputed = true;
-            if (showWarning) {
-                producer.addWarning(`Computed statement warning in ${this.file.packageAbstraction.name}/${this.file.fuseBoxPath}`);
+            // limit it to require
+            if (this.functionName === "require") {
+                let showWarning = true;
+                let matched = false;
+                // notify producer
+                customComputedStatementPaths.forEach((regexp, path) => {
+
+                    if (regexp.test(file.getFuseBoxFullPath())) {
+                        matched = true;
+                        showWarning = false;
+                    }
+                });
+                if (!matched) {
+                    producer.useComputedRequireStatements = true;
+                    producer.useNumbers = false;
+                }
+                // we assume it's a dynamic import
+                if (showWarning) {
+                    producer.addWarning(`Computed statement warning in ${this.file.packageAbstraction.name}/${this.file.fuseBoxPath}`);
+                }
             }
+
         }
     }
 
@@ -82,14 +86,14 @@ export class RequireStatement {
     }
 
     public isCSSRequested() {
-        return path.extname(this.value) === ".css";
+        return this.value && path.extname(this.value) === ".css";
     }
 
     public isRemoteURL() {
-        return /^http(s):/.test(this.value.toString());
+        return this.value && /^http(s):/.test(this.value);
     }
     public isJSONRequested() {
-        return path.extname(this.value) === ".json";
+        return this.value && path.extname(this.value) === ".json";
     }
 
     public setValue(str: string) {

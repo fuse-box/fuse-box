@@ -50,6 +50,16 @@ export class QuantumSplitConfig {
         return this.items;
     }
 
+    public findByEntry(file: FileAbstraction): QuantumItem {
+        let config;
+        this.items.forEach(value => {
+            if (value.entry === file.fuseBoxPath) {
+                config = value;
+            }
+        });
+        return config;
+    }
+
     public matches(path: string): QuantumItem {
         let target: QuantumItem;
         this.items.forEach(item => {
