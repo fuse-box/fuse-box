@@ -15,6 +15,7 @@ import { TypeOfModuleKeyword } from "./nodes/TypeOfModuleKeyword";
 import { TypeOfWindowKeyword } from "./nodes/TypeOfWindowKeyword";
 import { NamedExport } from "./nodes/NamedExport";
 import { GenericAst } from "./nodes/GenericAst";
+import { QuantumItem } from "../plugin/QuantumSplit";
 
 const globalNames = new Set<string>(["__filename", "__dirname", "exports", "module"]);
 
@@ -30,11 +31,13 @@ export class FileAbstraction {
     public shakable = false;
     public globalsName: string;
     public canBeRemoved = false;
+    public quantumItem: QuantumItem;
 
     public namedRequireStatements = new Map<string, RequireStatement​​>();
 
     /** FILE CONTENTS */
     public requireStatements = new Set<RequireStatement​​>();
+    public dynamicImportStatements = new Set<RequireStatement​​>();
     public fuseboxIsServerConditions = new Set<FuseBoxIsServerCondition>();
     public fuseboxIsBrowserConditions = new Set<FuseBoxIsBrowserCondition>();
     public exportsInterop = new Set<ExportsInterop>();
@@ -74,6 +77,15 @@ export class FileAbstraction {
     }
     public setID(id: any) {
         this.id = id;
+    }
+
+    public referenceQuantumSplit(item: QuantumItem) {
+        item.addFile(this);
+        this.quantumItem = item;
+    }
+
+    public getSplitReference(): QuantumItem {
+        return this.quantumItem;
     }
 
     public getID() {
@@ -244,6 +256,12 @@ export class FileAbstraction {
             // adding a require statement
             this.requireStatements.add(new RequireStatement(this, node));
         }
+        // Fusebox converts new imports to $fsmp$
+        if (matchesSingleFunction(node, "$fsmp$")) {
+            // adding a require statement
+            this.dynamicImportStatements.add(new RequireStatement(this, node));
+        }
+
         // typeof module
         if (matchesTypeOf(node, "module")) {
             this.typeofModulesKeywords.add(new TypeOfModuleKeyword(parent, prop, node));

@@ -333,7 +333,7 @@ function $getRef(name: string, o: RefOpts): IReference {
  */
 function $async(file: string, cb: (imported?: any) => any, o: any = {}) {
     if ($isBrowser) {
-        if(o && o.ajaxed === file) {
+        if (o && o.ajaxed === file) {
             return console.error(file, 'does not provide a module');
         }
         var xmlhttp: XMLHttpRequest = new XMLHttpRequest();
@@ -351,7 +351,7 @@ function $async(file: string, cb: (imported?: any) => any, o: any = {}) {
                     }
                     let normalized = $pathJoin("./", file);
                     FuseBox.dynamic(normalized, content);
-                    cb(FuseBox.import(file, {ajaxed: file}));
+                    cb(FuseBox.import(file, { ajaxed: file }));
                 } else {
                     console.error(file, 'not found on request');
                     cb(undefined);

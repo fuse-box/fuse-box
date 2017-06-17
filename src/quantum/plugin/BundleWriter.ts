@@ -18,9 +18,12 @@ export class BundleWriter {
         }
     }
 
-    private createBundle(name: string, code: string): Bundle {
+    private createBundle(name: string, code?: string): Bundle {
         let bundle = new Bundle(name, this.core.producer.fuse.copy(), this.core.producer);
-        bundle.generatedCode = new Buffer(code);
+        if (code) {
+            bundle.generatedCode = new Buffer(code);
+        }
+
         this.bundles.set(bundle.name, bundle);
         return bundle;
     }
@@ -47,47 +50,89 @@ export class BundleWriter {
         }
     }
 
-
+    private uglifyBundle(bundle: Bundle) {
+        this.core.log.startSpinner(`Uglifying ${bundle.name}...`);
+        const UglifyJs = require("uglify-js");
+        const result = UglifyJs.minify(bundle.generatedCode.toString(), this.getUglifyJSOptions());
+        if (result.error) {
+            this.core.log
+                .echoBoldRed(`  → Error during uglifying ${bundle.name}`)
+                .error(result.error);
+            throw result.error;
+        }
+        bundle.generatedCode = result.code;
+        this.core.log.stopSpinner(`Done Uglifying ${bundle.name}`)
+        this.core.log.echoGzip(result.code);
+    }
 
     public process() {
         const producer = this.core.producer;
-
-        // create api bundle
-        let apiName2bake = this.core.opts.shouldBakeApiIntoBundle()
-        if (apiName2bake) {
-            let targetBundle = producer.bundles.get(apiName2bake);
-            if (!targetBundle) {
-                this.core.log.echoBoldRed(`  → Error. Can't find bundle name ${targetBundle}`);
-            } else {
-                targetBundle.generatedCode = new Buffer(this.core.api.render() + "\n" + targetBundle.generatedCode);
-            }
-        } else {
-            this.createBundle("api.js", this.core.api.render());
-        }
-
         this.addShims();
 
         producer.bundles.forEach(bundle => {
             this.bundles.set(bundle.name, bundle)
         });
-        producer.bundles = this.bundles;
-        return each(producer.bundles, (bundle: Bundle) => {
-            if (this.core.opts.shouldUglify()) {
-                this.core.log.startSpinner(`Uglifying ${bundle.name}...`);
 
-                const UglifyJs = require("uglify-js");
-                const result = UglifyJs.minify(bundle.generatedCode.toString(), this.getUglifyJSOptions());
-                if (result.error) {
-                    this.core.log
-                        .echoBoldRed(`  → Error during uglifying ${bundle.name}`)
-                        .error(result.error);
-                    throw result.error;
+        // create api bundle (should be the last)
+        let apiName2bake = this.core.opts.shouldBakeApiIntoBundle()
+        if (!apiName2bake) {
+            this.createBundle("api.js");
+        }
+
+        producer.bundles = this.bundles;
+        const splitConfig = this.core.context.quantumSplitConfig;
+        let splitFileOptions: any;
+        if (splitConfig) {
+            splitFileOptions = {
+                c: { b: splitConfig.resolveOptions.browser || "./", "s": splitConfig.resolveOptions.server || "./" },
+                i: {}
+            };
+            this.core.api.setBundleMapping(splitFileOptions);
+        }
+
+        let index = 1;
+        const writeBundle = (bundle: Bundle) => {
+            return bundle.context.output.writeCurrent(bundle.generatedCode).then(output => {
+                // if this bundle belongs to splitting
+                // we need to remember the generated file name and store 
+                // and then pass to the API
+                if (bundle.quantumItem) {
+                    splitFileOptions.i[bundle.quantumItem.name] = [output.relativePath, bundle.quantumItem.entryId];
                 }
-                bundle.generatedCode = result.code;
-                this.core.log.stopSpinner(`Done Uglifying ${bundle.name}`)
-                this.core.log.echoGzip(result.code)
+            });
+        }
+
+        return each(producer.bundles, (bundle: Bundle) => {
+            if (bundle.name === "api.js") {
+                // has to be the highest priority
+                // assuming that u user won't make more than 1000 bundles...
+                bundle.webIndexPriority = 1000;
+                bundle.generatedCode = new Buffer(this.core.api.render());
+            } else {
+                bundle.webIndexPriority = 1000 - index;
             }
-            return bundle.context.output.writeCurrent(bundle.generatedCode);
+            // if the api wants to be  baked it, we have to skip generation now
+
+            if (apiName2bake !== bundle.name) {
+                if (this.core.opts.shouldUglify()) {
+                    this.uglifyBundle(bundle);
+                }
+                index++;
+                return writeBundle(bundle);
+            }
+        }).then(() => {
+            if (apiName2bake) {
+                let targetBundle = producer.bundles.get(apiName2bake);
+                if (!targetBundle) {
+                    this.core.log.echoBoldRed(`  → Error. Can't find bundle name ${targetBundle}`);
+                } else {
+                    targetBundle.generatedCode = new Buffer(this.core.api.render() + "\n" + targetBundle.generatedCode);
+                    if (this.core.opts.shouldUglify()) {
+                        this.uglifyBundle(targetBundle);
+                    }
+                }
+                return writeBundle(targetBundle);
+            }
         }).then(() => {
             if (this.core.opts.webIndexPlugin) {
                 return this.core.opts.webIndexPlugin.producerEnd(producer)

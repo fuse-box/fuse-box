@@ -81,6 +81,17 @@ export class RequireStatement {
         this.ast.callee.name += `.bind({id:${JSON.stringify(id)}})`
     }
 
+    public isCSSRequested() {
+        return path.extname(this.value) === ".css";
+    }
+
+    public isRemoteURL() {
+        return /^http(s):/.test(this.value.toString());
+    }
+    public isJSONRequested() {
+        return path.extname(this.value) === ".json";
+    }
+
     public setValue(str: string) {
         this.ast.arguments[0].value = str;
     }
@@ -99,8 +110,6 @@ export class RequireStatement {
     public resolve(): FileAbstraction {
         return this.resolveAbstraction();
     }
-
-
 
     private resolveAbstraction(): FileAbstraction {
         let resolved: FileAbstraction;

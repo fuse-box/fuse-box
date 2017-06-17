@@ -60,7 +60,7 @@ export class ModuleCache {
      *
      * @memberOf ModuleCache
      */
-    constructor(public context: WorkFlowContext) {}
+    constructor(public context: WorkFlowContext) { }
 
     public initialize() {
         this.cacheFolder = path.join(Config.TEMP_FOLDER, "cache",
@@ -172,18 +172,23 @@ export class ModuleCache {
         let dest = path.join(this.staticCacheFolder, fileName);
         let stats: any = fs.statSync(file.absPath);
 
-        let cacheData = {
+
+        let cacheData: any = {
             contents: file.contents,
             dependencies: file.analysis.dependencies,
             sourceMap: sourcemaps || {},
             headerContent: file.headerContent,
-            mtime: stats.mtime.getTime(),
+            mtime: stats.mtime.getTime()
         };
+        if (file.devLibsRequired) {
+            cacheData.devLibsRequired = file.devLibsRequired;
+        }
         let data = `module.exports = { contents: ${JSON.stringify(cacheData.contents)},
 dependencies: ${JSON.stringify(cacheData.dependencies)},
 sourceMap: ${JSON.stringify(cacheData.sourceMap)},
 headerContent: ${JSON.stringify(cacheData.headerContent)},
-mtime: ${cacheData.mtime}
+mtime: ${cacheData.mtime},
+devLibsRequired : ${JSON.stringify(cacheData.devLibsRequired)}
 };`;
         MEMORY_CACHE[memCacheKey] = cacheData;
 

@@ -24,7 +24,7 @@ export class BundleProducer {
 
     public entryPackageName: string;
     public entryPackageFile: string;
-
+    private injectedCode = new Map<string, string>();
     private chokidarOptions: any;
 
     constructor(public fuse: FuseBox) {
@@ -46,7 +46,35 @@ export class BundleProducer {
                     return plugin.producerEnd(this);
                 }
             });
-        }).then(() => this)
+        }).then(() => this);
+    }
+
+    public devCodeHasBeenInjected(key: string) {
+        return this.injectedCode.has(key);
+    }
+
+    public getDevInjections(): Map<string, string> {
+        return this.injectedCode;
+    }
+
+    public injectDevCode(key: string, code: string) {
+        if (!this.injectedCode.has(key)) {
+            this.injectedCode.set(key, code)
+        }
+    }
+
+    public sortBundles(): Bundle[] {
+        let bundles = [...this.bundles.values()];
+        bundles = bundles.sort((a, b) => {
+            if (a.webIndexPriority < b.webIndexPriority) {
+                return 1;
+            }
+            if (a.webIndexPriority > b.webIndexPriority) {
+                return -1;
+            }
+            return 0;
+        });
+        return bundles;
     }
 
     public generateAbstraction(opts?: ProducerAbtractionOptions): Promise<ProducerAbstraction> {

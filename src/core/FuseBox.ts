@@ -38,6 +38,7 @@ export interface FuseBoxOptions {
     hash?: string | Boolean;
     ignoreModules?: string[],
     customAPIFile?: string;
+    experimentalFeatures?: boolean;
     output?: string;
     debug?: boolean;
     files?: any;
@@ -76,6 +77,10 @@ export class FuseBox {
         this.collectionSource = new CollectionSource(this.context);
         opts = opts || {};
         let homeDir = appRoot.path;
+
+        if (opts.experimentalFeatures !== undefined) {
+            this.context.experimentalFeaturesEnabled = opts.experimentalFeatures;
+        }
         if (opts.homeDir) {
             homeDir = ensureUserPath(opts.homeDir)
         }
