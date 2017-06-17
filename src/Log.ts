@@ -1,12 +1,12 @@
-import {ModuleCollection} from './core/ModuleCollection';
-import {WorkFlowContext} from './core/WorkflowContext';
+import { ModuleCollection } from './core/ModuleCollection';
+import { WorkFlowContext } from './core/WorkflowContext';
 import * as log from 'fliplog';
 import * as prettysize from 'prettysize';
 import * as prettyTime from 'pretty-time';
 import * as zlib from 'zlib';
 
 const chalk = log.chalk();
-const {yellow, green} = chalk;
+const { yellow, green, blue } = chalk;
 
 export type seconds = number;
 export type nanoseconds = number;
@@ -42,7 +42,7 @@ export class Stats {
     // --- utils
 
     public static gzip(size: ContentSize): StrNums {
-        const gzipped = zlib.gzipSync(size, {level: 9}).length;
+        const gzipped = zlib.gzipSync(size, { level: 9 }).length;
         const gzippedSize = prettysize(gzipped) + ' (gzipped)';
         const compressedSize = prettysize(size.length);
         return [compressedSize, gzippedSize];
@@ -65,7 +65,7 @@ export class Stats {
 export class Timer {
     public times: Obj = {};
     public laps: Obj = {};
-    public current: Obj = {diff: 0};
+    public current: Obj = { diff: 0 };
     public index: StrNum = 0;
 
     constructor() {
@@ -74,7 +74,7 @@ export class Timer {
     public reset(): Timer {
         this.times = {};
         this.laps = {};
-        this.current = {diff: 0};
+        this.current = { diff: 0 };
         return this;
     }
     public delete(name: StrNum): Timer {
@@ -84,8 +84,9 @@ export class Timer {
 
     // default lap false
     public start(name?: StrNum, lappable: boolean = false): Timer {
-        if (name === null) {
-            name = ++this.index;
+        if (!name) {
+            this.index = this.index + 1;
+            name = this.index;
         }
         if (this.times[name] && this.times[name].start && lappable === true) {
             return this.lap(name);
@@ -98,6 +99,7 @@ export class Timer {
     }
     public stop(name?: StrNum, lappable: boolean = false): Timer {
         if (!name) {
+            this.index = this.index + 1;
             name = this.index;
         }
 
@@ -111,10 +113,7 @@ export class Timer {
         }
 
         this.times[name].end = process.hrtime();
-        this.times[name].diff = this.diff(
-            this.times[name].end,
-            this.times[name].start
-        );
+        this.times[name].diff = this.diff(this.times[name].start);
 
         return this;
     }
@@ -122,13 +121,13 @@ export class Timer {
     // lap could go in another class too
     public lap(name?: StrNum): Timer {
         if (!this.times[name]) return this.start(name);
-        if (name === null) name = this.index;
+        if (!name) name = this.index;
 
         if (this.laps[name]) {
             const prevEnd = this.laps[name].slice(0).pop().end;
             const end = process.hrtime();
             const diff = this.diff(prevEnd, end);
-            this.laps[name].push({diff, end});
+            this.laps[name].push({ diff, end });
             return this;
         }
 
@@ -138,7 +137,7 @@ export class Timer {
             ? this.times[name].start
             : [Infinity, Infinity];
         const diff = this.diff(start);
-        this.laps[name].push({end, diff});
+        this.laps[name].push({ end, diff });
         return this;
     }
 
@@ -149,7 +148,7 @@ export class Timer {
         if (Array.isArray(arg)) {
             return this.diff(arg);
         }
-        if (typeof arg === 'string') {
+        if (typeof arg === 'string' && arg !== '') {
             // do we have it
             if (this.times[arg]) {
                 return this.times[arg].diff;
@@ -169,8 +168,12 @@ export class Timer {
         let took: any = process.hrtime(start); // as [number, number];
         return prettyTime(took, 'ms');
     }
+    public toString(): string {
+        return this[Symbol.toPrimitive]('string')
+    }
     public [Symbol.toPrimitive](hint: string): StrNums {
-        let pretty = this.current.diff;
+        let pretty = this.current || this.times.fusebox;
+        if (pretty && pretty.start && !pretty.diff) pretty = this.diff(pretty.start)
 
         if (hint === 'number') {
             if (!pretty) return 0;
@@ -308,11 +311,11 @@ export class Log {
         const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'].map(
             frame => indentStr + frame
         );
-        const spinner = {frames, interval};
+        const spinner = { frames, interval };
 
         // @TODO @FIXME the spinner needs to be scoped inside of fliplog,
         // has todo to update
-        this.spinner = log.requirePkg('ora')({text, indent, spinner});
+        this.spinner = log.requirePkg('ora')({ text, indent, spinner });
         this.spinner.start();
         this.spinner.indent = +this.indent;
         this.spinner.succeeded = false;
@@ -340,7 +343,7 @@ export class Log {
             // reference.succeed()✔
             const success = green(`${indent}→ `);
             text = green(text || reference.text);
-            reference.stopAndPersist({symbol: success, text});
+            reference.stopAndPersist({ symbol: success, text });
 
             // it's too fast!
             // setTimeout(() => reference.succeed(), 1)
@@ -397,10 +400,12 @@ export class Log {
         const indent = this.indent.toString(); // reset
         const size = Stats.pretty(contents);
 
+        const name = (collection.cachedName || collection.name).trim();
+
         log
             .ansi()
             .write(`${indent}└──`)
-            .green(collection.cachedName || collection.name)
+            .green(name)
             .yellow(size)
             .write(`(${collection.dependencies.size} files)`)
             .echo();
@@ -442,7 +447,8 @@ export class Log {
     public echoBundleStats(header: string, size: StrNum, took: hrtimes | StrNum): Log {
         this.indent.reset();
         const sized = yellow(`${Stats.pretty(size)}`);
-        log.text(`size: ${sized} in ${this.timer.pretty(took)}`).echo();
+        const timed = blue(`${this.timer.pretty(took)} `);
+        log.text(`size: ${sized} in ${timed}`).echo();
         return this;
     }
 
@@ -506,7 +512,7 @@ export class Log {
         return this;
     }
     public echoBreak() {
-        log.green(`\n  -------------- \n`).echo();
+        log.green(`\n-------------- \n`).echo();
         return this;
     }
     public echoWarning(str: string) {
