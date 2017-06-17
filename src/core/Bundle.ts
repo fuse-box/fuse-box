@@ -210,7 +210,7 @@ export class Bundle {
                 }).then(source => {
                 }).catch(e => {
                     console.error(e);
-                    return resolve(reject);
+                    return reject(reject);
                 });
             return this;
         });

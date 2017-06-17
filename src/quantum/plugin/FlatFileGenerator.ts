@@ -23,10 +23,10 @@ export class FlatFileGenerator {
         let args: string[] = [];
 
         if (file.isExportInUse()) {
-            args.push("module")
+            args.push("module");
         }
         if (file.isExportStatementInUse()) {
-            args.push("exports")
+            args.push("exports");
         }
         if (args.length) {
             file.wrapWithFunction(args);

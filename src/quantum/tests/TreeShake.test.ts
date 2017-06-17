@@ -56,7 +56,6 @@ export class TreeShakeTest {
         }).then((result) => {
             const contents = result.contents["index.js"];
             should(contents).notFindString(`exports.Foo2`);
-
         });
     }
 

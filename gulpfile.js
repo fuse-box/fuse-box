@@ -232,7 +232,7 @@ gulp.task("make-test-runner", (done) => {
 
 
 gulp.task("copy-to-dev", () => {
-    const devFolder = "angular2-example";
+    const devFolder = "random/fuse-box-quantum-test";
 
     gulp.src("modules/fuse-box-css/**/**.**")
         .pipe(gulp.dest(`../${devFolder}/node_modules/fuse-box/modules/fuse-box-css`));

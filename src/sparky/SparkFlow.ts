@@ -66,11 +66,11 @@ export class SparkFlow {
 
 
     /** Gets all user files */
-    protected getFiles(globs: string[], opts?: SparkyFilePatternOptions) {
+    protected getFiles(globs: string[], opts?: SparkyFilePatternOptions): Promise<SparkyFile[]> {
         this.files = [];
-        const getFilePromises = new Array<Promise<Array<SparkyFile>>>();
+        const getFilePromises = [];
         globs.forEach(g => {
-            getFilePromises.push(this.getFile(g, opts))
+            getFilePromises.push(this.getFile(g, opts));
         })
         return Promise.all(getFilePromises)
             .then(results => {
