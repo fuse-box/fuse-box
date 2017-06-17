@@ -67,11 +67,12 @@ export class ImportDeclaration {
         // checking for browser override (asap) case
         // these people ...
         // https://github.com/defunctzombie/package-browser-field-spec
-        if (file.info.nodeModuleInfo) {
-            const overrides = file.info.nodeModuleInfo.browserOverrides;
+        if (file.collection && file.collection.info && file.collection.info.browserOverrides) {
+            const overrides = file.collection.info.browserOverrides;
             if (overrides) {
                 if (overrides[requireStatement]) {
                     requireStatement = overrides[requireStatement];
+                    file.analysis.requiresRegeneration = true;
                 }
             }
         }

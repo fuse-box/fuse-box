@@ -219,7 +219,9 @@ export class WorkFlowContext {
 
     public generateCode(ast: any) {
         if (this.customCodeGenerator) {
-            return this.customCodeGenerator(ast);
+            try {
+                return this.customCodeGenerator(ast);
+            } catch (e) { }
         }
         return escodegen.generate(ast);
     }
