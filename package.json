@@ -43,6 +43,9 @@
   "homepage": "https://github.com/fuse-box/fuse-box#readme",
   "devDependencies": {
     "@types/node": "^6.0.74",
+    "acorn": "^5.0.3",
+    "acorn-es7": "^0.1.0",
+    "acorn-jsx": "^4.0.1",
     "cheerio": "^0.22.0",
     "fuse-box-test-using-old-version": "^1.0.0",
     "fuse-box-testcase1": "^1.0.0",
@@ -74,9 +77,9 @@
     "wires-reactive": "^1.1.1"
   },
   "dependencies": {
-    "acorn": "^4.0.3",
+    "acorn": "^5.0.3",
     "acorn-es7": "^0.1.0",
-    "acorn-jsx": "^3.0.1",
+    "acorn-jsx": "^4.0.1",
     "ansi": "^0.3.1",
     "app-root-path": "^2.0.1",
     "base64-img": "^1.0.3",
