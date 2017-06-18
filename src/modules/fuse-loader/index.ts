@@ -3,4 +3,4 @@
 /**
  * Exports the global FuseBox loader api as a module
  */
-export const Loader = FuseBox;
+export const Loader = typeof FuseBox !== "undefined" ? FuseBox : undefined;
