@@ -206,7 +206,7 @@ export class FuseBox {
 
 
     /** Starts the dev server and returns it */
-    public dev(opts?: ServerOptions, fn?: { (server: Server) }) {
+    public dev(opts?: ServerOptions, fn?: { (server: Server): void }) {
         opts = opts || {};
         opts.port = opts.port || 4444;
         this.producer.devServerOptions = opts;
