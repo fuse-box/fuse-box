@@ -10,6 +10,7 @@ import * as path from "path";
 import { BundleTestRunner } from "../BundleTestRunner";
 import { Config } from "../Config";
 import { QuantumItem, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
+import { ensurePublicExtension } from "../Utils";
 
 export class Bundle {
     public context: WorkFlowContext;
@@ -102,6 +103,9 @@ export class Bundle {
         if (this.context.experimentalFeaturesEnabled) {
             this.producer.fuse.context.quantumSplit(rule, bundleName, mainFile);
         } else {
+            if (!this.bundleSplit) {
+                this.bundleSplit = new BundleSplit(this);
+            }
 
             this.bundleSplit.getFuseBoxInstance(bundleName, mainFile);
             this.bundleSplit.addRule(rule, bundleName);
@@ -123,6 +127,7 @@ export class Bundle {
             if (!this.bundleSplit) {
                 this.bundleSplit = new BundleSplit(this);
             }
+
             if (opts.browser) {
                 this.bundleSplit.browserPath = opts.browser;
             }
