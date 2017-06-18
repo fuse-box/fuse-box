@@ -10,7 +10,6 @@ import * as path from "path";
 import { BundleTestRunner } from "../BundleTestRunner";
 import { Config } from "../Config";
 import { QuantumItem, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
-import { ensurePublicExtension } from "../Utils";
 
 export class Bundle {
     public context: WorkFlowContext;
