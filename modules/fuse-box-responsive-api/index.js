@@ -128,7 +128,11 @@
         var request = new XMLHttpRequest();
         request.onreadystatechange = function() {
             if (this.readyState == 4) {
-                cb(this.status == 200 ? 0 : 1, this.responseText, request.getResponseHeader("Content-Type"));
+                let err;
+                if (this.status !== 200) {
+                    err = { code: this.status, msg: this.statusText }
+                }
+                cb(err, this.responseText, request.getResponseHeader("Content-Type"));
             }
         };
         request.open("GET", url, true);
@@ -222,6 +226,7 @@
             if (bMapping.i && bMapping.i[id]) {
                 var data = bMapping.i[id];
                 req(bMapping.c.b + data[0], function(err, result) {
+
                     /* @if browser */
                     if (!err) { new Function(result)(); }
                     /* @end */
@@ -230,7 +235,7 @@
                     if (!err && isBrowser) { new Function(result)(); }
                     /* @end */
 
-                    resolve($fsx.r(data[1]));
+                    !err ? resolve($fsx.r(data[1])) : reject(err);
 
                 });
             } else {
@@ -260,6 +265,8 @@
                         /* @if universal */
                         isBrowser ? resolve(evaluateModule(id, result, ctype)) : resolve(result);
                         /* @end */
+                    } else {
+                        reject(err);
                     }
                 });
                 /* @if codeSplitting */

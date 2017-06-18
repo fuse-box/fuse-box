@@ -6,8 +6,6 @@ import * as appRoot from "app-root-path";
 import { removeFolder } from "../../Utils";
 import * as fsExtra from "fs-extra";
 import { QuantumPlugin } from "../../index";
-
-
 const jsdom = require("jsdom");
 
 
@@ -237,6 +235,7 @@ export function createEnv(opts: any) {
             } else {
                 scripts.push(projectOptions.output);
                 return new Promise((resolve, reject) => {
+
                     jsdom.env({
                         html: "<html><head></head><body></body></html>",
                         scripts: scripts,

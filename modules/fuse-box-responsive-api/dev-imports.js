@@ -1,4 +1,5 @@
-window.$fsmp$ = (function() {
+var $fsmp$ = (function() {
+
     function loadRemoteScript(url) {
         return Promise.resolve().then(function() {
             if (FuseBox.isBrowser) {
