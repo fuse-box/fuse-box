@@ -202,6 +202,17 @@ export class WorkFlowContext {
         this.quantumSplitConfig.resolveOptions = opts;
     }
 
+    public getQuantumDevelepmentConfig() {
+        if (this.quantumSplitConfig) {
+            let opts: any = this.quantumSplitConfig.resolveOptions;
+            opts.bundles = {};
+            this.quantumSplitConfig.getItems().forEach(item => {
+                opts.bundles[item.name] = { main: item.entry };
+            });
+            return opts;
+        }
+    }
+
     public requiresQuantumSplitting(path: string): QuantumItem {
         if (!this.quantumSplitConfig) {
             return;
@@ -209,13 +220,11 @@ export class WorkFlowContext {
         return this.quantumSplitConfig.matches(path);
     }
 
-    public getHeaderImportsConfiguration() {
-
-    }
-
     public setCodeGenerator(fn: any) {
         this.customCodeGenerator = fn;
     }
+
+
 
     public generateCode(ast: any) {
         if (this.customCodeGenerator) {
