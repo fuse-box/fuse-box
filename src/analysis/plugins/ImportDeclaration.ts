@@ -70,8 +70,10 @@ export class ImportDeclaration {
         if (file.collection && file.collection.info && file.collection.info.browserOverrides) {
             const overrides = file.collection.info.browserOverrides;
             if (overrides) {
-                if (overrides[requireStatement]) {
-                    requireStatement = overrides[requireStatement];
+                //require statement without file ext and override with ext
+                let requireStatementWithExt = requireStatement + '.js';
+                if (overrides[requireStatement] || overrides[requireStatementWithExt]) {
+                    requireStatement = overrides[requireStatement] || overrides[requireStatementWithExt];
                     file.analysis.requiresRegeneration = true;
                 }
             }
