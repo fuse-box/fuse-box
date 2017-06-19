@@ -13,6 +13,7 @@ export interface IQuantumExtensionParams {
     api?: { (core: QuantumCore): void }
     warnings?: boolean;
     bakeApiIntoBundle?: string;
+    extendServerImport?: boolean;
 }
 
 export class QuantumOptions {
@@ -23,6 +24,7 @@ export class QuantumOptions {
     private replaceProcessEnv = true;
     private bakeApiIntoBundle: string;
     private showWarnings = true;
+    private extendServerImport = false;
     public apiCallback: { (core: QuantumCore): void }
     public optsTarget: string = "browser";
     public treeshake = true;
@@ -59,6 +61,10 @@ export class QuantumOptions {
         if (opts.bakeApiIntoBundle) {
             this.bakeApiIntoBundle = opts.bakeApiIntoBundle;
         }
+
+        if (opts.extendServerImport !== undefined) {
+            this.extendServerImport = opts.extendServerImport;
+        }
         if (opts.ensureES5 !== undefined) {
             this.ensureES5 = opts.ensureES5;
         }
@@ -72,6 +78,10 @@ export class QuantumOptions {
     }
     public shouldEnsureES5() {
         return this.ensureES5;
+    }
+
+    public shouldExtendServerImport() {
+        return this.extendServerImport;
     }
 
     public shouldShowWarnings() {

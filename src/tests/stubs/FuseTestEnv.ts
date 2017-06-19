@@ -82,7 +82,8 @@ export class FuseTestEnv {
             fs.writeFileSync(forkedFile, scripts.join("\n"));
             const proc = fork(forkedFile);
             proc.on('message', (m) => {
-                return resolve(m);
+
+                return resolve(fn(m));
             });
             proc.on('data', (data) => {
                 console.log(`stdout: ${data}`);

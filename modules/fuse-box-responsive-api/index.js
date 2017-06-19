@@ -128,9 +128,6 @@
 
     function aj(url, cb) {
         var request = new XMLHttpRequest();
-        if (ajaxCache[url]) {
-
-        }
         request.onreadystatechange = function() {
             if (this.readyState == 4) {
                 var err;
@@ -195,9 +192,9 @@
 
 
 
-    function evaluateModule(id, code, type) {
+    function evaluateModule(id, input, type) {
         if (/javascript/.test(type)) {
-            var fn = new Function('module', 'exports', code);
+            var fn = new Function('module', 'exports', input);
             var moduleExports = {};
             var moduleObject = { exports: moduleExports };
             fn(moduleObject, moduleExports);
@@ -205,9 +202,11 @@
         }
         /* @if jsonLoader  */
         if (/json/.test(type)) {
-            return JSON.parse(code);
+            return JSON.parse(input);
         }
         /* @end */
+
+        return input;
     }
 
 
@@ -217,11 +216,49 @@
         /* @end */
 
         /* @if universal */
-        isBrowser ? aj(url, cb) : cb(null, require(url));
+        if (isBrowser) aj(url, cb)
+        else try {
+            /* @if extendServerImport */
+            if (/\.(js|json)$/.test(url)) {
+                cb(null, require(url))
+            } else {
+                cb(null, require("fs")
+                    .readFile(require("path")
+                        .join(__dirname, url)),
+                    function(err, result) {
+                        if (err) { reject(err) } else { resolve(result.toString()) }
+                    });
+            }
+
+            /* @end */
+
+            /* @if !extendServerImport */
+            cb(null, require(url))
+
+            /* @end */
+
+        } catch (e) { cb(e) }
+
         /* @end */
 
         /* @if server */
-        cb(null, require(url));
+        try {
+            /* @if extendServerImport  */
+            if (/\.(js|json)$/.test(url)) {
+                cb(null, require(url))
+            } else {
+                cb(null, require("fs")
+                    .readFileSync(require("path")
+                        .join(__dirname, url)).toString());
+            }
+            /* @end */
+
+            /* @if !extendServerImport  */
+            cb(null, require(url))
+                /* @end */
+
+        } catch (e) { cb(e) }
+
         /* @end */
     }
     var $cache = {}

@@ -3,7 +3,7 @@ import * as fs from "fs";
 import * as fsExtra from "fs-extra";
 import { utils } from "realm-utils";
 import { Config } from "./Config";
-import * as LegoAPI from "lego-api";
+import * as LegoAPI from "fuse-lego-api";
 
 const userFuseDir = Config.PROJECT_ROOT;
 const stylesheetExtensions = new Set<string>([".css", ".sass", ".scss", ".styl", ".less"]);
@@ -17,7 +17,7 @@ export type Concat = {
     sourceMap: string;
 };
 export type ConcatModule = {
-    new (generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
+    new(generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
 };
 export const Concat: ConcatModule = require("concat-with-sourcemaps");
 

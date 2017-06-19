@@ -109,6 +109,7 @@ export class ResponsiveAPI {
             jsonLoader: this.jsonLoader,
             cssLoader: this.cssLoader,
             loadRemoteScript: this.loadRemoteScript,
+            extendServerImport: this.core.opts.shouldExtendServerImport()
         };
         const variables: any = {};
         if (Object.keys(this.customMappings).length > 0) {

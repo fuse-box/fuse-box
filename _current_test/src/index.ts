@@ -1,4 +1,5 @@
-export function getRemoteFile(){ 
-                        return import("./hello.js")
 
-                    }
+                        export function getRemoteFile(){ 
+                            return import("./hello1.txt")
+                        }
+                        
