@@ -124,8 +124,13 @@
     /* @end */
 
     /* @if ajaxRequired */
+    var ajaxCache = {};
+
     function aj(url, cb) {
         var request = new XMLHttpRequest();
+        if (ajaxCache[url]) {
+
+        }
         request.onreadystatechange = function() {
             if (this.readyState == 4) {
                 let err;
@@ -219,9 +224,10 @@
         cb(null, require(url));
         /* @end */
     }
-
+    var $cache = {}
     $fsx.l = function(id) {
         return new Promise(function(resolve, reject) {
+            if ($cache[id]) { return resolve($cache[id]) }
             /* @if codeSplitting */
             if (bMapping.i && bMapping.i[id]) {
                 var data = bMapping.i[id];
@@ -235,8 +241,8 @@
                     if (!err && isBrowser) { new Function(result)(); }
                     /* @end */
 
-                    !err ? resolve($fsx.r(data[1])) : reject(err);
-
+                    $cache[id] = $fsx.r(data[1]);
+                    !err ? resolve($cache[id]) : reject(err);
                 });
             } else {
                 /* @end */
@@ -255,7 +261,7 @@
                 req(id, function(err, result, ctype) {
                     if (!err) {
                         /* @if browser */
-                        resolve(evaluateModule(id, result, ctype));
+                        resolve($cache[id] = evaluateModule(id, result, ctype));
                         /* @end */
 
                         /* @if server */
@@ -263,7 +269,7 @@
                         /* @end */
 
                         /* @if universal */
-                        isBrowser ? resolve(evaluateModule(id, result, ctype)) : resolve(result);
+                        isBrowser ? resolve($cache[id] = evaluateModule(id, result, ctype)) : resolve(result);
                         /* @end */
                     } else {
                         reject(err);
