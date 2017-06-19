@@ -133,7 +133,7 @@
         }
         request.onreadystatechange = function() {
             if (this.readyState == 4) {
-                let err;
+                var err;
                 if (this.status !== 200) {
                     err = { code: this.status, msg: this.statusText }
                 }
