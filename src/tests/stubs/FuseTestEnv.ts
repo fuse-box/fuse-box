@@ -67,6 +67,13 @@ export class FuseTestEnv {
         });
     }
 
+    public config(fn: { (fuse: FuseBox): any }): Promise<FuseTestEnv> {
+        return Promise.resolve(fn(this.fuse)).then(() => this.fuse.run()).then(producer => {
+            this.producer = producer;
+            return this;
+        });
+    }
+
     public server(message, fn: { (response): any }): Promise<FuseTestEnv> {
         return new Promise((resolve, reject) => {
             const scripts = [];
