@@ -32,7 +32,7 @@ export class OwnBundle {
                                 let f = parent.arguments[0];
                                 if (f && analysis.nodeIsString(f)) {
                                     const extractedEntry = extractMainFileFromPackageEntry(f.value);
-                                    if (extractedEntry) {
+                                    if (extractedEntry && file.collection) {
                                         file.collection.entryFile.info.fuseBoxPath = extractedEntry;
                                     }
                                     analysis.fuseBoxMainFile = f.value;
@@ -47,7 +47,7 @@ export class OwnBundle {
 
     public static onEnd(file: File) {
         const analysis = file.analysis;
-        
+
         if (analysis.fuseBoxMainFile) {
             // Reset all dependencies if a fusebox bundle is spotted
             file.analysis.dependencies = [];
@@ -55,7 +55,7 @@ export class OwnBundle {
             // No need in extra footers
             this.removeFuseBoxApiFromBundle(file);
             const externalCollection = file.collection.name !== file.context.defaultPackageName;
-            
+
             if (externalCollection) {
                 // Ignore this collection as it will be override by the actual bundle
                 file.collection.acceptFiles = false;
