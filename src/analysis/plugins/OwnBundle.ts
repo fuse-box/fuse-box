@@ -20,7 +20,7 @@ export class OwnBundle {
 
     public static onNode(file: File, node: any, parent: any) {
         const analysis = file.analysis;
-        if (file.collection.entryFile && node.type === "MemberExpression") {
+        if (file.collection && file.collection.entryFile && node.type === "MemberExpression") {
             if (parent.type === "CallExpression") {
                 if (node.object && node.object.type === "Identifier" &&
                     node.object.name === analysis.fuseBoxVariable) {
