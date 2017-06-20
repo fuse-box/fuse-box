@@ -12,6 +12,7 @@ export class ResponsiveAPI {
     private customMappings = {};
     private lazyLoading = false;
     private customStatementResolve = false;
+
     private bundleMapping: any;
     private ajaxRequired = false;
     private codeSplitting = false;
@@ -109,6 +110,7 @@ export class ResponsiveAPI {
             jsonLoader: this.jsonLoader,
             cssLoader: this.cssLoader,
             loadRemoteScript: this.loadRemoteScript,
+            isContained: this.core.opts.isContained(),
             extendServerImport: this.core.opts.shouldExtendServerImport()
         };
         const variables: any = {};

@@ -3,7 +3,7 @@ import * as fs from "fs";
 import * as fsExtra from "fs-extra";
 import { utils } from "realm-utils";
 import { Config } from "./Config";
-import * as LegoAPI from "fuse-lego-api";
+import * as LegoAPI from "lego-api";
 
 const userFuseDir = Config.PROJECT_ROOT;
 const stylesheetExtensions = new Set<string>([".css", ".sass", ".scss", ".styl", ".less"]);

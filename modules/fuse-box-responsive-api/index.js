@@ -1,28 +1,53 @@
+/* @if !isContained */
 (function() {
+    /* @end */
 
     /* @if universal */
     var isBrowser = typeof window !== "undefined";
+
+    /* @if !isContained */
     var storage = isBrowser ? window : global;
     if (storage.$fsx) {
         return
     };
+    /* @end */
+
+    /* @if isContained */
+    var storage = {}
+
+    /* @end */
+
+
     var $fsx = storage.$fsx = {}
 
     /* @end */
 
     /* @if browser */
+    /* @if !isContained */
     if (window.$fsx) {
         return;
     };
     var $fsx = window.$fsx = {}
+        /* @end */
+
+    /* @if isContained */
+    var $fsx = {};
+    /* @end */
 
     /* @end */
 
+
+
     /* @if server */
+    /* @if !isContained */
     var $fsx = global.$fsx = {}
     if ($fsx.r) {
         return;
     };
+    /* @end */
+    /* @if isContained */
+    var $fsx = {};
+    /* @end */
     /* @end */
 
     /* @if hashes */
@@ -342,4 +367,7 @@
         file(cached.m, cached.exports);
         return cached.m.exports;
     };
+
+    /* @if !isContained */
 })();
+/* @end */

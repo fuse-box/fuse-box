@@ -14,6 +14,7 @@ export interface IQuantumExtensionParams {
     warnings?: boolean;
     bakeApiIntoBundle?: string;
     extendServerImport?: boolean;
+    containedAPI?: boolean
 }
 
 export class QuantumOptions {
@@ -22,6 +23,7 @@ export class QuantumOptions {
     private removeUseStrict = true;
     private ensureES5 = true;
     private replaceProcessEnv = true;
+    private containedAPI = false;
     private bakeApiIntoBundle: string;
     private showWarnings = true;
     private extendServerImport = false;
@@ -43,6 +45,10 @@ export class QuantumOptions {
         }
         if (opts.warnings !== undefined) {
             this.showWarnings = opts.warnings;
+        }
+
+        if (opts.containedAPI !== undefined) {
+            this.containedAPI = opts.containedAPI;
         }
         // stupid exports.__esModule = true;
         if (opts.removeExportsInterop !== undefined) {
@@ -71,6 +77,22 @@ export class QuantumOptions {
         if (opts.treeshake !== undefined) {
             this.treeshake = opts.treeshake;
         }
+    }
+
+    public enableContainedAPI() {
+        return this.containedAPI = true;
+    }
+
+    public isContained() {
+        return this.containedAPI;
+    }
+
+    public throwContainedAPIError() {
+        throw new Error(`
+           - Can't use contained api with more than 1 bundle
+           - Use only 1 bundle and bake the API e.g {bakeApiIntoBundle : "app"}
+           - Make sure code splitting is not in use 
+        `);
     }
 
     public shouldRemoveUseStrict() {

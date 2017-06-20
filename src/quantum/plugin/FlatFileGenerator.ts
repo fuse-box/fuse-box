@@ -12,7 +12,15 @@ export class FlatFileGenerator {
 
     public init() {
         if (this.core.opts.isTargetBrowser() || this.core.opts.isTargetUniveral()) {
-            this.contents.push("(function($fsx){")
+            if (this.core.opts.isContained()) {
+                this.contents.push("(function(){\n/*$$CONTAINED_API_PLACEHOLDER$$*/");
+            } else {
+                this.contents.push("(function($fsx){");
+            }
+        } else {
+            if (this.core.opts.isContained()) {
+                this.contents.push("/*$$CONTAINED_API_PLACEHOLDER$$*/");
+            }
         }
     }
 
@@ -63,7 +71,11 @@ export class FlatFileGenerator {
         }
         // finish wrapping
         if (this.core.opts.isTargetBrowser() || this.core.opts.isTargetUniveral()) {
-            this.contents.push("})($fsx)");
+            if (this.core.opts.isContained()) {
+                this.contents.push("})();");
+            } else {
+                this.contents.push("})($fsx);");
+            }
         }
         return this.contents.join("\n");
     }

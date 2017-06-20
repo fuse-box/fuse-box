@@ -73,6 +73,10 @@ export class BundleWriter {
             this.bundles.set(bundle.name, bundle)
         });
 
+        if (this.core.opts.isContained() && producer.bundles.size > 1) {
+            this.core.opts.throwContainedAPIError();
+        }
+
         // create api bundle (should be the last)
         let apiName2bake = this.core.opts.shouldBakeApiIntoBundle()
         if (!apiName2bake) {
@@ -107,6 +111,9 @@ export class BundleWriter {
                 // has to be the highest priority
                 // assuming that u user won't make more than 1000 bundles...
                 bundle.webIndexPriority = 1000;
+                if (this.core.opts.isContained()) {
+                    this.core.opts.throwContainedAPIError();
+                }
                 bundle.generatedCode = new Buffer(this.core.api.render());
             } else {
                 bundle.webIndexPriority = 1000 - index;
@@ -126,7 +133,12 @@ export class BundleWriter {
                 if (!targetBundle) {
                     this.core.log.echoBoldRed(`  → Error. Can't find bundle name ${targetBundle}`);
                 } else {
-                    targetBundle.generatedCode = new Buffer(this.core.api.render() + "\n" + targetBundle.generatedCode);
+                    const generatedAPIBundle = this.core.api.render();
+                    if (this.core.opts.isContained()) {
+                        targetBundle.generatedCode = new Buffer(targetBundle.generatedCode.toString().replace("/*$$CONTAINED_API_PLACEHOLDER$$*/", generatedAPIBundle.toString()));
+                    } else {
+                        targetBundle.generatedCode = new Buffer(generatedAPIBundle + "\n" + targetBundle.generatedCode);
+                    }
                     if (this.core.opts.shouldUglify()) {
                         this.uglifyBundle(targetBundle);
                     }
