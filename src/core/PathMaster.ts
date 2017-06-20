@@ -353,10 +353,15 @@ export class PathMaster {
                 let entryFile;
                 let entryRoot;
                 let browserOverrides;
+
+                if (json.browser && !this.context.isBrowserTarget()) {
+                    this.context.fuse.producer.addWarning("json.browser",
+                        `Library "${name}" contains "browser" field. Set .target("browser") to avoid problems with your browser build!`);
+                }
                 if (this.context.isBrowserTarget() && json.browser) {
                     if (typeof json.browser === "object") {
                         browserOverrides = json.browser;
-                        if(json.browser[json.main]){
+                        if (json.browser[json.main]) {
                             entryFile = json.browser[json.main];
                         }
                     }
