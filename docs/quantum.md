@@ -207,6 +207,42 @@ QuantumPlugin({
 })
 ```
 
+### containedAPI
+Default value: `false`
+
+Quantum bundles are similar to original FuseBox API where the scope is shared, meaning if you import (load) 2 bundles they will share the same virtual file system.
+But there is the other side to it. Quantum bundles unlike non-Quantum have to be bundled within one project. All files have numbers instead of strings (to speed up module loading) therefore if you publish a Quantum bundle to npm, it may collide with the current project bundled, once installed. To solve this, Quantum has an option called `containedAPI` which doesn't share NOR store it's virtual system on window but does it locally instead.
+
+```js
+QuantumPlugin({
+    bakeApiIntoBundle : 'app',
+    containedAPI : true
+})
+```
+
+In order to use it, you need ensure that you have only 1 bundle in the output and the API is baked into it. It will not work with split bundles or vendor bundles.
+
+Produced bundles will look similar to this example below:
+
+```js
+(function() {
+    var $fsx = {};
+    $fsx.f = {}
+    $fsx.m = {};
+    $fsx.r = function(id) {
+        // contents omited
+    };
+    // default/index.js
+    $fsx.f[0] = function(module, exports) {
+        function hello() {}
+        exports.hello = hello;
+    }
+})();
+```
+
+Whereas $fsx is a local variable
+
+
 ### removeExportsInterop
 Default value: `true`
 
