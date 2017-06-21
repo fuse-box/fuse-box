@@ -113,3 +113,6 @@ var $fsmp$ = (function() {
         });
     };
 })();
+if (FuseBox.isBrowser) {
+    window.$fsmp$ = $fsmp$;
+}

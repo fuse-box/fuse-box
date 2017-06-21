@@ -31,10 +31,12 @@ Quantum does extreme amount of operations, but it's very simple to configure:
 Add a plugin like so:
 
 ```js
-const { QuantumPlugin, WebIndexPlugin,UglifyJSPlugin } = require("fuse-box");
+const { FuseBox, QuantumPlugin, WebIndexPlugin } = require("fuse-box");
 FuseBox.init({
-    WebIndexPlugin(),
-    isProduction && QuantumPlugin()
+    plugins : [
+        WebIndexPlugin(),
+        isProduction && QuantumPlugin()
+    ]
 });
 ```
 
