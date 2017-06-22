@@ -139,6 +139,17 @@ export function matchesDoubleMemberExpression(node: any, part1: string, part2?: 
 
     return node.property && node.property.name === part2;
 }
+
+export function matchesExportReference(node: any): string {
+    if (node.type === "MemberExpression"
+        && node.object
+        && node.object.type === "Identifier"
+        && node.object && node.object.name === "exports" && node.property) {
+        if (node.property.type === "Identifier") {
+            return node.property.name;
+        }
+    }
+}
 export function matcheObjectDefineProperty(node, name: string) {
     if (astQuery(node, ["/ExpressionStatement", ".expression", "/CallExpression",
         ".callee", "/MemberExpression",

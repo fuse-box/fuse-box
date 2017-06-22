@@ -82,10 +82,68 @@ export class TreeShakeTest {
             },
         }).then((result) => {
             const contents = result.contents["index.js"];
-            console.log(contents);
+            //console.log(contents);
             //should(contents).notFindString(`exports.Foo2`);
 
         });
     }
 
+
+    "Should not tree shake local usage"() {
+        return createOptimisedBundleEnv({
+            stubs: true,
+            options: {
+                treeshake: true
+            },
+            project: {
+                files: {
+                    "index.ts": `
+                        var Reflux = require("./reflux")
+
+                        Reflux.createAction();
+                    `,
+                    "reflux.ts": `
+                        exports.createAction = () => {
+                            return exports.createSomething();
+                        }
+                        exports.createSomething = () => {}
+
+                    `
+                },
+                instructions: "index.ts",
+            },
+        }).then((result) => {
+            const contents = result.contents["index.js"];
+            should(contents).findString(`exports.createSomething`);
+        });
+    }
+
+    "Should not tree shake local usage if not used"() {
+        return createOptimisedBundleEnv({
+            stubs: true,
+            options: {
+                treeshake: true
+            },
+            project: {
+                files: {
+                    "index.ts": `
+                        var Reflux = require("./reflux")
+
+                        Reflux.createAction();
+                    `,
+                    "reflux.ts": `
+                        exports.createAction = () => {
+                            //return exports.createSomething();
+                        }
+                        exports.createSomething = () => {}
+
+                    `
+                },
+                instructions: "index.ts",
+            },
+        }).then((result) => {
+            const contents = result.contents["index.js"];
+            should(contents).notFindString(`exports.createSomething`);
+        });
+    }
 }

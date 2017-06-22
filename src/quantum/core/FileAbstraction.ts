@@ -7,7 +7,7 @@ import * as path from "path";
 import { ensureFuseBoxPath, transpileToEs5 } from "../../Utils";
 import { FuseBoxIsServerCondition } from "./nodes/FuseBoxIsServerCondition";
 import { FuseBoxIsBrowserCondition } from "./nodes/FuseBoxIsBrowserCondition";
-import { matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier, trackRequireMember, matchNamedExport, isExportMisused, matchesNodeEnv } from "./AstUtils";
+import { matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier, trackRequireMember, matchNamedExport, isExportMisused, matchesNodeEnv, matchesExportReference } from "./AstUtils";
 import { ExportsInterop } from "./nodes/ExportsInterop";
 import { UseStrict } from "./nodes/UseStrict";
 import { TypeOfExportsKeyword } from "./nodes/TypeOfExportsKeyword";
@@ -55,7 +55,9 @@ export class FileAbstraction {
     public isEntryPoint = false;
 
     public wrapperArguments: string[];
+    public localExportUsageAmount = new Map<string, number>();
     private globalVariables = new Set<string>();
+
 
     constructor(public fuseBoxPath: string, public packageAbstraction: PackageAbstraction) {
         this.fuseBoxDir = ensureFuseBoxPath(path.dirname(fuseBoxPath));
@@ -219,8 +221,10 @@ export class FileAbstraction {
             this.isEcmaScript6 = true;
         }
         this.namedRequireStatements.forEach((statement, key) => {
+
             const importedName = trackRequireMember(node, key)
             if (importedName) {
+
                 statement.usedNames.add(importedName);
             }
         });
@@ -233,7 +237,24 @@ export class FileAbstraction {
                 createdExports.eligibleForTreeShaking = false;
             }
         });
-
+        /**
+         * Matching how many times an export has been used within one file
+         * For example
+         * exports.createAction = () => {
+         *   return exports.createSomething();
+         * }
+         * exports.createSomething = () => {}
+         * The example above creates a conflicting situation if createSomething wasn't used externally
+         */
+        const matchesExportIdentifier = matchesExportReference(node);
+        if (matchesExportIdentifier) {
+            let ref = this.localExportUsageAmount.get(matchesExportIdentifier)
+            if (ref === undefined) {
+                this.localExportUsageAmount.set(matchesExportIdentifier, 1)
+            } else {
+                this.localExportUsageAmount.set(matchesExportIdentifier, ++ref)
+            }
+        }
         matchNamedExport(node, (name) => {
             // const namedExport = new NamedExport(parent, prop, node);
             // namedExport.name = name;

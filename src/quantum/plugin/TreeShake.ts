@@ -61,6 +61,11 @@ export class TreeShake {
                         // mark it
                         if (nameIsUsed) {
                             fileExport.isUsed = true;
+                        } else {
+                            if (target.localExportUsageAmount.get(fileExport.name)
+                                && target.localExportUsageAmount.get(fileExport.name) > 1) {
+                                fileExport.isUsed = true;
+                            }
                         }
                     });
                 });
