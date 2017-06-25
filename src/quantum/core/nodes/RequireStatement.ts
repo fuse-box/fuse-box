@@ -15,12 +15,13 @@ export class RequireStatement {
     public nodeModuleName: string;
     public nodeModulePartialRequire: string;
     public usedNames = new Set<string>();
+    public identifiedStatementsAst: any;
+    public identifier: string;
 
     private resolvedAbstraction: FileAbstraction;
     private resolved = false;
 
-    constructor(public file: FileAbstraction, public ast: any) {
-
+    constructor(public file: FileAbstraction, public ast: any, public parentAst?: any) {
 
         const arg1 = ast.arguments[0];
         this.functionName = ast.callee.name;
@@ -74,6 +75,23 @@ export class RequireStatement {
                 }
             }
 
+        }
+    }
+
+    public removeWithIdentifier() {
+        const declarator = this.parentAst;
+        const declaration = declarator.$parent;
+        const index = declaration.declarations.indexOf(declarator);
+        declaration.declarations.splice(index, 1);
+        if (declaration.declarations.length === 0) {
+            const body = declaration.$parent;
+            const prop = declaration.$prop;
+            if (Array.isArray(body[prop]) && declaration.$idx !== undefined) {
+                const arrayIndex = body[prop].indexOf(declaration);
+                if (arrayIndex > -1) {
+                    body[prop].splice(arrayIndex, 1);
+                }
+            }
         }
     }
 

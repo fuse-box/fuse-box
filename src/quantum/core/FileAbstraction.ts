@@ -66,6 +66,10 @@ export class FileAbstraction {
         packageAbstraction.registerFileAbstraction(this);
     }
 
+    public registerHoistedIdentifiers(identifier: string, statement: RequireStatement, resolvedFile: FileAbstraction) {
+        const bundle = this.packageAbstraction.bundleAbstraction;
+        bundle.registerHoistedIdentifiers(identifier, statement, resolvedFile);
+    }
 
     public getFuseBoxFullPath() {
         return `${this.packageAbstraction.name}/${this.fuseBoxPath}`;
@@ -330,9 +334,18 @@ export class FileAbstraction {
         if (matchesTypeOf(node, "window")) {
             this.typeofWindowKeywords.add(new GenericAst(parent, prop, node))
         }
-        const requireIdentifier = matchRequireIdentifier(node)
+
+        /**
+         * Matching 
+         * var name = require('module')
+         * Gethering identifiers name to do:
+         * 1) Hoisting
+         * 2) Detect which variables are used in exports to do tree shaking later on
+         */
+        const requireIdentifier = matchRequireIdentifier(node);
         if (requireIdentifier) {
-            const identifiedRequireStatement = new RequireStatement(this, node.init);
+            const identifiedRequireStatement = new RequireStatement(this, node.init, node);
+            identifiedRequireStatement.identifier = requireIdentifier;
             this.namedRequireStatements.set(requireIdentifier, identifiedRequireStatement);
             this.requireStatements.add(identifiedRequireStatement);
             return false;

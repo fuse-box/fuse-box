@@ -10,6 +10,8 @@ import * as path from "path";
 import { BundleTestRunner } from "../BundleTestRunner";
 import { Config } from "../Config";
 import { QuantumItem, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
+import { BundleAbstraction } from "../quantum/core/BundleAbstraction";
+import { PackageAbstraction } from "../quantum/core/PackageAbstraction";
 
 export class Bundle {
     public context: WorkFlowContext;
@@ -19,6 +21,8 @@ export class Bundle {
     public onDoneCallback: any;
     public webIndexPriority = 0;
     public generatedCode: Buffer;
+    public bundleAbstraction: BundleAbstraction;
+    public packageAbstraction: PackageAbstraction;
     public lastChangedFile: string;
     public webIndexed = true;
     public splitFiles: Map<string, File>;

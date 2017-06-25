@@ -1,11 +1,12 @@
 import { FileAbstraction } from "../core/FileAbstraction";
 import { QuantumCore } from "./QuantumCore";
+import { BundleAbstraction } from "../core/BundleAbstraction";
 
 export class FlatFileGenerator {
     public contents = [];
     public entryId;
     public globalsName: string;
-    constructor(public core: QuantumCore) { }
+    constructor(public core: QuantumCore, public bundleAbstraction?: BundleAbstraction​​) { }
     public addGlobal(code: string) {
         this.contents.push(code);
     }
@@ -48,7 +49,18 @@ export class FlatFileGenerator {
         this.contents.push(`$fsx.f[${JSON.stringify(fileId)}] = ${file.generate(ensureES5)}`);
     }
 
+    public addHoistedVariables() {
+
+        this.bundleAbstraction.hoisted.forEach((item, key) => {
+            this.contents.push(`var ${key} = $fsx.r(${item.getID()});`);
+        });
+    }
+
     public render() {
+        if (this.bundleAbstraction) {
+
+            this.addHoistedVariables();
+        }
         if (this.entryId !== undefined) {
             const req = `$fsx.r(${JSON.stringify(this.entryId)})`;
 

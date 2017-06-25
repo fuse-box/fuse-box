@@ -7,12 +7,16 @@ export class ASTTraverse {
         const skipProperty = options.skipProperty;
 
         let visit = (node, parent, prop?, idx?) => {
+
             if (!node || typeof node.type !== "string") {
                 return;
             }
             if (node._visited) {
                 return;
             }
+            node.$parent = parent;
+            node.$prop = prop;
+            node.$idx = idx;
             let res = undefined;
             if (pre) {
                 res = pre(node, parent, prop, idx);
