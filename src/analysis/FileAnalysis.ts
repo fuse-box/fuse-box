@@ -11,7 +11,12 @@ import { DynamicImportStatement } from "./plugins/DynamicImportStatement";
 require("acorn-es7")(acorn);
 require("acorn-jsx/inject")(acorn);
 
-const plugins: any = [AutoImport, OwnVariable, OwnBundle, ImportDeclaration, DynamicImportStatement];
+export interface TraversalPlugin {
+    onNode(file: File, node: any, parent: any): void
+    onEnd(file: File): void
+}
+
+const plugins: TraversalPlugin[] = [AutoImport, OwnVariable, OwnBundle, ImportDeclaration, DynamicImportStatement];
 
 export function acornParse(contents, options?: any) {
     return acorn.parse(contents, {
@@ -123,18 +128,23 @@ export class FileAnalysis {
         return node.type === "Literal" || node.type === "StringLiteral";
     }
 
-    public analyze() {
+    public analyze(traversalOptions?: { plugins: TraversalPlugin[] }) {
         // We don't want to make analysis 2 times
         if (this.wasAnalysed || this.skipAnalysis) {
             return;
         }
+        
+        let traversalPlugins = plugins
+        if (traversalOptions && Array.isArray(traversalOptions.plugins)) {
+            traversalPlugins = plugins.concat(traversalOptions.plugins)
+        }
 
         ASTTraverse.traverse(this.ast, {
             pre: (node, parent, prop, idx) =>
-                plugins.forEach(plugin => plugin.onNode(this.file, node, parent)),
+                traversalPlugins.forEach(plugin => plugin.onNode(this.file, node, parent)),
         });
 
-        plugins.forEach(plugin => plugin.onEnd(this.file));
+        traversalPlugins.forEach(plugin => plugin.onEnd(this.file));
 
         this.wasAnalysed = true;
         // regenerate content
