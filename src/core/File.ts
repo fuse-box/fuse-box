@@ -1,5 +1,5 @@
 import { ModuleCollection } from "./ModuleCollection";
-import { FileAnalysis } from "../analysis/FileAnalysis";
+import { FileAnalysis, TraversalPlugin } from "../analysis/FileAnalysis";
 import { WorkFlowContext, Plugin } from "./WorkflowContext";
 import { IPathInformation, IPackageInformation } from "./PathMaster";
 import { SourceMapGenerator } from "./SourceMapGenerator";
@@ -298,7 +298,7 @@ export class File {
         this.isLoaded = true;
     }
 
-    public makeAnalysis(parserOptions?: any, traversalOptions?: { plugins: any[] }) {
+    public makeAnalysis(parserOptions?: any, traversalOptions?: { plugins: TraversalPlugin[] }) {
         if (!this.analysis.astIsLoaded()) {
             this.analysis.parseUsingAcorn(parserOptions);
         }
