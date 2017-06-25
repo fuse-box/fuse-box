@@ -298,11 +298,11 @@ export class File {
         this.isLoaded = true;
     }
 
-    public makeAnalysis(parserOptions?: any) {
+    public makeAnalysis(parserOptions?: any, traversalOptions?: { plugins: any[] }) {
         if (!this.analysis.astIsLoaded()) {
             this.analysis.parseUsingAcorn(parserOptions);
         }
-        this.analysis.analyze();
+        this.analysis.analyze(traversalOptions);
     }
 
     /**

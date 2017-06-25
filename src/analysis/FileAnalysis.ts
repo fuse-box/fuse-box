@@ -123,18 +123,23 @@ export class FileAnalysis {
         return node.type === "Literal" || node.type === "StringLiteral";
     }
 
-    public analyze() {
+    public analyze(traversalOptions?: { plugins: any[] }) {
         // We don't want to make analysis 2 times
         if (this.wasAnalysed || this.skipAnalysis) {
             return;
         }
+        
+        let traversalPlugins = plugins
+        if (traversalOptions && Array.isArray(traversalOptions.plugins)) {
+            traversalPlugins = plugins.concat(traversalOptions.plugins)
+        }
 
         ASTTraverse.traverse(this.ast, {
             pre: (node, parent, prop, idx) =>
-                plugins.forEach(plugin => plugin.onNode(this.file, node, parent)),
+                traversalPlugins.forEach(plugin => plugin.onNode(this.file, node, parent)),
         });
 
-        plugins.forEach(plugin => plugin.onEnd(this.file));
+        traversalPlugins.forEach(plugin => plugin.onEnd(this.file));
 
         this.wasAnalysed = true;
         // regenerate content
