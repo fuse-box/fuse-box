@@ -78,6 +78,13 @@ export class QuantumCore {
         }).then(abstraction => {
             this.producerAbstraction = abstraction;
             this.log.echoInfo("Abstraction generated");
+
+            return each(abstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
+                if (!bundleAbstraction.splitAbstraction) {
+                    return this.prepareFiles(bundleAbstraction);
+                }
+            }).then(() => abstraction)
+        }).then(abstraction => {
             return each(abstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
                 if (!bundleAbstraction.splitAbstraction) {
                     return this.processBundle(bundleAbstraction);
@@ -216,13 +223,13 @@ export class QuantumCore {
 
     public processBundle(bundleAbstraction: BundleAbstraction) {
         this.log.echoInfo(`Process bundle ${bundleAbstraction.name}`);
-        this.prepareFiles(bundleAbstraction);
         return each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
             const fileSize = packageAbstraction.fileAbstractions.size;
             this.log.echoInfo(`Process package ${packageAbstraction.name} `);
             this.log.echoInfo(`  Files: ${fileSize} `);
-            return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) =>
-                this.modify(fileAbstraction));
+            return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) => {
+                return this.modify(fileAbstraction);
+            });
         })
             .then(() => each(this.splitFiles, (file: FileAbstraction) => this.modify(file)))
             .then(() => this.hoist());
