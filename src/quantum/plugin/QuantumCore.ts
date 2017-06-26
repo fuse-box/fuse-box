@@ -253,7 +253,7 @@ export class QuantumCore {
     }
 
     public hoist() {
-        if (!this.api.hashesUsed()) {
+        if (!this.api.hashesUsed() && this.opts.shouldDoHoisting()) {
             let hoisting = new Hoisting(this);
             return hoisting.start();
         }
