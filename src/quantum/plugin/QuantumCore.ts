@@ -80,15 +80,13 @@ export class QuantumCore {
             this.log.echoInfo("Abstraction generated");
 
             return each(abstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
-                if (!bundleAbstraction.splitAbstraction) {
-                    return this.prepareFiles(bundleAbstraction);
-                }
-            }).then(() => abstraction)
+                return this.prepareFiles(bundleAbstraction);
+            })
+                .then(() => this.prepareSplitFiles())
+                .then(() => abstraction);
         }).then(abstraction => {
             return each(abstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
-                if (!bundleAbstraction.splitAbstraction) {
-                    return this.processBundle(bundleAbstraction);
-                }
+                return this.processBundle(bundleAbstraction);
             });
         })
             .then(() => this.treeShake())
@@ -142,6 +140,55 @@ export class QuantumCore {
             }
         });
     }
+
+    public prepareSplitFiles() {
+        let bundle: Bundle;
+        const splitConfig = this.context.quantumSplitConfig;
+        if (!splitConfig) {
+            return;
+        }
+
+        let items = splitConfig.getItems();
+        items.forEach(quantumItem => {
+            quantumItem.getFiles().forEach(file => {
+
+                // create a bundle if not exists
+                // de-reference items
+                if (!this.producer.bundles.get(quantumItem.name)) {
+                    this.log.echoInfo(`Create split bundle ${quantumItem.name}`);
+                    const fusebox = this.context.fuse.copy();
+                    const bundleName = splitConfig.resolve(quantumItem.name);
+                    bundle = new Bundle(bundleName, fusebox, this.producer);
+                    this.producer.bundles.set(quantumItem.name, bundle);
+                    // don't allow WebIndexPlugin to include it to script tags
+                    bundle.webIndexed = false;
+                    // set the reference
+                    bundle.quantumItem = quantumItem;
+                    // bundle abtraction needs to be created to have an isolated scope for hoisting
+                    const bnd = new BundleAbstraction(quantumItem.name);
+                    bnd.splitAbstraction = true;
+                    let pkg = new PackageAbstraction(file.packageAbstraction.name, bnd);
+                    this.producerAbstraction.registerBundleAbstraction(bnd);
+                    bundle.bundleAbstraction = bnd;
+                    bundle.packageAbstraction = pkg;
+                } else {
+                    bundle = this.producer.bundles.get(quantumItem.name);
+                }
+                this.log.echoInfo(`Adding ${file.fuseBoxPath} to ${quantumItem.name}`);
+
+                // removing the file from the current package
+                file.packageAbstraction.fileAbstractions.delete(file.fuseBoxPath);
+
+                bundle.packageAbstraction.registerFileAbstraction(file);
+
+
+                // add it to an additional list
+                // we need to modify it later on, cuz of the loop we are in
+                file.packageAbstraction = bundle.packageAbstraction;
+            });
+        });
+
+    }
     public prepareFiles(bundleAbstraction: BundleAbstraction) {
         // set ids first
         let entryId;
@@ -156,8 +203,6 @@ export class QuantumCore {
         if (globals) {
             for (let i in globals) { globalsName = globals[i]; }
         }
-
-        let newBundleAbstractions: BundleAbstraction[] = [];
         bundleAbstraction.packageAbstractions.forEach(packageAbstraction => {
             packageAbstraction.fileAbstractions.forEach((fileAbstraction, key: string) => {
                 let fileId = fileAbstraction.getFuseBoxFullPath();
@@ -179,40 +224,6 @@ export class QuantumCore {
                         quantumItem.entryId = fileAbstraction.getID();
                     }
                     this.api.useCodeSplitting();
-                    let bundle: Bundle;
-                    // create a bundle if not exists
-                    // de-reference items
-                    if (!this.producer.bundles.get(quantumItem.name)) {
-                        this.log.echoInfo(`Create split bundle ${quantumItem.name}`);
-                        const fusebox = this.context.fuse.copy();
-                        const bundleName = splitConfig.resolve(quantumItem.name);
-                        bundle = new Bundle(bundleName, fusebox, this.producer);
-                        this.producer.bundles.set(bundleName, bundle);
-                        // don't allow WebIndexPlugin to include it to script tags
-                        bundle.webIndexed = false;
-                        // set the reference
-                        bundle.quantumItem = quantumItem;
-                        // bundle abtraction needs to be created to have an isolated scope for hoisting
-                        const bnd = new BundleAbstraction(bundleName, this.producerAbstraction);
-                        bnd.splitAbstraction = true;
-                        let pkg = new PackageAbstraction(packageAbstraction.name, bnd);
-
-                        bundle.bundleAbstraction = bnd;
-                        bundle.packageAbstraction = pkg;
-                        newBundleAbstractions.push(bnd);
-                    } else {
-                        bundle = this.producer.bundles.get(quantumItem.name);
-                    }
-                    this.log.echoInfo(`Adding ${fileAbstraction.fuseBoxPath} to ${quantumItem.name}`);
-
-                    bundle.packageAbstraction.registerFileAbstraction(fileAbstraction);
-                    // removing the file from the current package
-                    packageAbstraction.fileAbstractions.delete(fileAbstraction.fuseBoxPath);
-
-                    // add it to an additional list
-                    // we need to modify it later on, cuz of the loop we are in
-                    this.splitFiles.add(fileAbstraction);
-                    fileAbstraction.packageAbstraction = bundle.packageAbstraction;
                     // reference the item
                     // it will be removed from this bundle later
                     fileAbstraction.referenceQuantumSplit(quantumItem);
@@ -230,9 +241,7 @@ export class QuantumCore {
             return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) => {
                 return this.modify(fileAbstraction);
             });
-        })
-            .then(() => each(this.splitFiles, (file: FileAbstraction) => this.modify(file)))
-            .then(() => this.hoist());
+        }).then(() => this.hoist());
     }
 
     public treeShake() {

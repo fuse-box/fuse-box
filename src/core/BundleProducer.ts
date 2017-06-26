@@ -105,7 +105,8 @@ export class BundleProducer {
         const abstraction = new ProducerAbstraction(opts);
 
         return each(this.bundles, (bundle: Bundle) => {
-            const bundleAbstraction = new BundleAbstraction(bundle.name, abstraction);
+            const bundleAbstraction = new BundleAbstraction(bundle.name);
+            abstraction.registerBundleAbstraction(bundleAbstraction);
             return bundleAbstraction.parse(bundle.generatedCode.toString());
         }).then(() => {
             return abstraction;

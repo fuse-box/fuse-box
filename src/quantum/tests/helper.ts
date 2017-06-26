@@ -5,14 +5,16 @@ import { FileAbstraction } from "../core/FileAbstraction";
 
 export function createAbstractFile(name: string) {
     let producerAbstraction = new ProducerAbstraction();
-    let bundleAbstraction = new BundleAbstraction("app", producerAbstraction)
+    let bundleAbstraction = new BundleAbstraction("app")
+    producerAbstraction.registerBundleAbstraction(bundleAbstraction);
     let packageAbstraction = new PackageAbstraction("default", bundleAbstraction);
     return new FileAbstraction(name, packageAbstraction)
 }
 
 export function createDefaultPackageAbstraction(map: Map<string, string>): PackageAbstraction {
     let producerAbstraction = new ProducerAbstraction();
-    let bundleAbstraction = new BundleAbstraction("app", producerAbstraction)
+    let bundleAbstraction = new BundleAbstraction("app")
+    producerAbstraction.registerBundleAbstraction(bundleAbstraction);
     let packageAbstraction = new PackageAbstraction("default", bundleAbstraction);
     map.forEach((contents, filepath) => {
         const file = new FileAbstraction(filepath, packageAbstraction)
@@ -23,7 +25,8 @@ export function createDefaultPackageAbstraction(map: Map<string, string>): Packa
 
 export function createBundleAbstraction(obj: any): BundleAbstraction {
     let producerAbstraction = new ProducerAbstraction();
-    let bundleAbstraction = new BundleAbstraction("app", producerAbstraction)
+    let bundleAbstraction = new BundleAbstraction("app")
+    producerAbstraction.registerBundleAbstraction(bundleAbstraction);
 
     for (let pgkName in obj) {
         let packageAbstraction = new PackageAbstraction(pgkName, bundleAbstraction);

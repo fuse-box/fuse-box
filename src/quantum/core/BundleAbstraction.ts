@@ -8,6 +8,7 @@ import { RequireStatement } from "./nodes/RequireStatement";
 export class BundleAbstraction {
     public splitAbstraction = false;
     public packageAbstractions = new Map<string, PackageAbstraction​​>();
+    public producerAbstraction: ProducerAbstraction;
     /**
      * 
      * { "React" : [ 1,2,3,4 ] } 
@@ -19,8 +20,8 @@ export class BundleAbstraction {
 
     public hoisted = new Map<string, FileAbstraction>();
 
-    constructor(public name: string, public producerAbstraction: ProducerAbstraction) {
-        producerAbstraction.registerBundleAbstraction(this);
+    constructor(public name: string) {
+        //producerAbstraction.registerBundleAbstraction(this);
     }
 
     public registerHoistedIdentifiers(identifier: string, statement: RequireStatement, file: FileAbstraction) {
