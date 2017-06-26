@@ -14,7 +14,7 @@ export interface IQuantumExtensionParams {
     warnings?: boolean;
     bakeApiIntoBundle?: string;
     extendServerImport?: boolean;
-    hoisting?: boolean;
+    hoisting?: boolean | { names: string[] };
     containedAPI?: boolean
 }
 
@@ -28,7 +28,8 @@ export class QuantumOptions {
     private bakeApiIntoBundle: string;
 
     private showWarnings = true;
-    private hoisting = true;
+    private hoisting = false;
+    private hoistedNames: string[];
     private extendServerImport = false;
     public apiCallback: { (core: QuantumCore): void }
     public optsTarget: string = "browser";
@@ -68,7 +69,13 @@ export class QuantumOptions {
         }
 
         if (opts.hoisting !== undefined) {
-            this.hoisting = opts.hoisting;
+            if (typeof opts.hoisting === "boolean") {
+                this.hoisting = opts.hoisting as boolean;
+            } else {
+                this.hoisting = true;
+                const hoistingOptions = opts.hoisting as { names: string[] };
+                this.hoistedNames = hoistingOptions.names;
+            }
         }
 
         if (opts.bakeApiIntoBundle) {
@@ -111,6 +118,18 @@ export class QuantumOptions {
 
     public shouldDoHoisting() {
         return this.hoisting;
+    }
+
+    public getHoistedNames(): string[] {
+        return this.hoistedNames;
+    }
+
+    public isHoistingAllowed(name: string) {
+
+        if (this.hoistedNames) {
+            return this.hoistedNames.indexOf(name) > -1;
+        }
+        return true;
     }
 
     public shouldExtendServerImport() {

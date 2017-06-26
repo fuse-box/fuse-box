@@ -35,6 +35,7 @@ export class TreeShakeTest {
         return createOptimisedBundleEnv({
             stubs: true,
             options: {
+                hoisting: true,
                 treeshake: true
             },
             project: {
@@ -60,6 +61,7 @@ export class TreeShakeTest {
         return createOptimisedBundleEnv({
             stubs: true,
             options: {
+                hoisting: true,
                 treeshake: true
             },
             project: {
