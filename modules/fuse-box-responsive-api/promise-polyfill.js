@@ -208,4 +208,4 @@ if (typeof window !== "undefined" && !window.Promise) {
         };
         return Promise;
     })();
-}
+};

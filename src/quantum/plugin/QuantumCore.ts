@@ -158,8 +158,9 @@ export class QuantumCore {
                     this.log.echoInfo(`Create split bundle ${quantumItem.name}`);
                     const fusebox = this.context.fuse.copy();
                     const bundleName = splitConfig.resolve(quantumItem.name);
+
                     bundle = new Bundle(bundleName, fusebox, this.producer);
-                    bundle.context = this.producer.fuse.context;
+                    //bundle.context = this.producer.fuse.context;
                     this.producer.bundles.set(quantumItem.name, bundle);
                     // don't allow WebIndexPlugin to include it to script tags
                     bundle.webIndexed = false;
