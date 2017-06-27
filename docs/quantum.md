@@ -209,6 +209,24 @@ QuantumPlugin({
 })
 ```
 
+
+### polyfills
+
+Some polyfills can be injected automatically into the API. It comes quite handy if you target your builds for IE11 which doesn't support Promises
+
+```js
+QuantumPlugin({
+    polyfills : ["Promise"]
+})
+```
+
+
+| Polyfill name  | Description
+| ------------- | ------------- 
+| Promise  | Promise polyfill (for IE)
+
+
+
 ### containedAPI
 Default value: `false`
 

@@ -1,5 +1,6 @@
 import { WebIndexPluginClass } from "../../plugins/WebIndexPlugin";
 import { QuantumCore } from "./QuantumCore";
+import { readFuseBoxModule } from "../../Utils";
 
 export interface IQuantumExtensionParams {
     target?: string;
@@ -14,6 +15,7 @@ export interface IQuantumExtensionParams {
     warnings?: boolean;
     bakeApiIntoBundle?: string;
     extendServerImport?: boolean;
+    polyfills?: string[];
     hoisting?: boolean | { names: string[] };
     containedAPI?: boolean
 }
@@ -29,6 +31,7 @@ export class QuantumOptions {
 
     private showWarnings = true;
     private hoisting = false;
+    private polyfills: string[];
     private hoistedNames: string[];
     private extendServerImport = false;
     public apiCallback: { (core: QuantumCore): void }
@@ -53,6 +56,10 @@ export class QuantumOptions {
 
         if (opts.containedAPI !== undefined) {
             this.containedAPI = opts.containedAPI;
+        }
+
+        if (Array.isArray(opts.polyfills)) {
+            this.polyfills = opts.polyfills;
         }
         // stupid exports.__esModule = true;
         if (opts.removeExportsInterop !== undefined) {
@@ -95,6 +102,12 @@ export class QuantumOptions {
 
     public enableContainedAPI() {
         return this.containedAPI = true;
+    }
+
+    public getPromisePolyfill() {
+        if (this.polyfills && this.polyfills.indexOf("Promise") > -1) {
+            return readFuseBoxModule("fuse-box-responsive-api/promise-polyfill.js");
+        }
     }
 
     public isContained() {

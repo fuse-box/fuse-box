@@ -95,7 +95,8 @@ export class ResponsiveAPI {
     }
 
     public render() {
-        const options = {
+        const promisePolyfill = this.core.opts.getPromisePolyfill();
+        const options: any = {
             browser: this.core.opts.isTargetBrowser(),
             universal: this.core.opts.isTargetUniveral(),
             server: this.core.opts.isTargetServer(),
@@ -109,17 +110,25 @@ export class ResponsiveAPI {
             ajaxRequired: this.ajaxRequired,
             jsonLoader: this.jsonLoader,
             cssLoader: this.cssLoader,
+            promisePolyfill: false,
             loadRemoteScript: this.loadRemoteScript,
             isContained: this.core.opts.isContained(),
             extendServerImport: this.core.opts.shouldExtendServerImport()
         };
+
         const variables: any = {};
+        const raw: any = {};
         if (Object.keys(this.customMappings).length > 0) {
             variables.customMappings = this.customMappings;
+        }
+
+        if (promisePolyfill) {
+            options.promisePolyfill = true;
+            raw.promisePolyfill = promisePolyfill;
         }
         if (this.bundleMapping) {
             variables.bundleMapping = this.bundleMapping;
         }
-        return jsCommentTemplate(path.join(Config.FUSEBOX_MODULES, "fuse-box-responsive-api/index.js"), options, variables);
+        return jsCommentTemplate(path.join(Config.FUSEBOX_MODULES, "fuse-box-responsive-api/index.js"), options, variables, raw);
     }
 }

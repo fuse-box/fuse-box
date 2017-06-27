@@ -2,6 +2,11 @@
 (function() {
     /* @end */
 
+
+    /* @if promisePolyfill */
+    $promisePolyfill$
+    /* @end */
+
     /* @if universal */
     var isBrowser = typeof window !== "undefined";
 
