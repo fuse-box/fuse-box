@@ -3,7 +3,7 @@ export class ASTTraverse {
 
         options = options || {};
         const pre = options.pre;
-        const post = options.post;
+        //        const post = options.post;
         const skipProperty = options.skipProperty;
 
         let visit = (node, parent, prop?, idx?) => {
@@ -39,10 +39,9 @@ export class ASTTraverse {
                     }
                 }
             }
-
-            if (post) {
-                post(node, parent, prop, idx);
-            }
+            // if (post) {
+            //     post(node, parent, prop, idx);
+            // }
         };
         visit(root, null);
     }

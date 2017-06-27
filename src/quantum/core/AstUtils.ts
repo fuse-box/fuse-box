@@ -43,6 +43,29 @@ const ES6_TYPES = new Set([
     "ArrowFunctionExpression"
 ]);
 
+export function matchesDeadProcessEnvCode(node: any, envString: string) {
+    if (node.type && node.type === "IfStatement") {
+        if (node.test && node.test.type === "BinaryExpression") {
+            if (node.test.left) {
+                if (matchesNodeEnv(node.test.left)) {
+                    const right = node.test.right;
+                    if (right && right.type === "Literal") {
+                        const value = right.value;
+                        const operator = node.test.operator;
+                        if (operator === "===" || operator === "==") {
+                            //if ( "production" === "production" ) {}
+                            return value !== envString;
+                        }
+                        if (operator === "!==" || operator === "!=") {
+                            //if ( "production" !== "production" ) {}
+                            return value === envString;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 export function matchesNodeEnv(node) {
     let isProcess, isEnv, isNodeEnv;
     isProcess = astQuery(node,

@@ -7,7 +7,7 @@ import * as path from "path";
 import { ensureFuseBoxPath, transpileToEs5 } from "../../Utils";
 import { FuseBoxIsServerCondition } from "./nodes/FuseBoxIsServerCondition";
 import { FuseBoxIsBrowserCondition } from "./nodes/FuseBoxIsBrowserCondition";
-import { matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier, trackRequireMember, matchNamedExport, isExportMisused, matchesNodeEnv, matchesExportReference } from "./AstUtils";
+import { matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier, trackRequireMember, matchNamedExport, isExportMisused, matchesNodeEnv, matchesExportReference, matchesDeadProcessEnvCode } from "./AstUtils";
 import { ExportsInterop } from "./nodes/ExportsInterop";
 import { UseStrict } from "./nodes/UseStrict";
 import { TypeOfExportsKeyword } from "./nodes/TypeOfExportsKeyword";
@@ -220,6 +220,13 @@ export class FileAbstraction {
      * @param idx
      */
     private onNode(node, parent, prop, idx) {
+
+        if (matchesDeadProcessEnvCode(node, "production")) {
+            // dead code...all require statements within should be removed
+            //this.processNodeEnv.add(new GenericAst(node.test, "left", node.test.left));
+            //return false;
+        }
+
         // detecting es6
         if (matchesEcmaScript6(node)) {
             this.isEcmaScript6 = true;
@@ -296,10 +303,10 @@ export class FileAbstraction {
             this.typeofRequireKeywords.add(new GenericAst(parent, prop, node));
         }
 
+
         if (matchesNodeEnv(node)) {
             this.processNodeEnv.add(new GenericAst(parent, prop, node));
         }
-
 
         // Object.defineProperty(exports, '__esModule', { value: true });
         if (matcheObjectDefineProperty(node, "exports")) {
