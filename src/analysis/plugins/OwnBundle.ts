@@ -59,7 +59,6 @@ export class OwnBundle {
             if (externalCollection) {
                 // Ignore this collection as it will be override by the actual bundle
                 file.collection.acceptFiles = false;
-                console.log("here..", file.collection.name);
             } else {
                 // otherwise we know that user is referring to a file which is a FuseBox bundle
                 // We pnt to the package with entry point
