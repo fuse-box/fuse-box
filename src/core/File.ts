@@ -367,7 +367,8 @@ export class File {
         }
         this.tryPlugins();
         if (!this.isLoaded) {
-            throw { message: `File contents for ${this.absPath} were not loaded. Missing a plugin?` };
+            this.contents = "";
+            this.context.fuse.producer.addWarning("missing-plugin", `The contents of ${this.absPath} weren't loaded. Missing a plugin?`);
         }
     }
 
