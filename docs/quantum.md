@@ -223,7 +223,7 @@ QuantumPlugin({
 
 | Polyfill name  | Description
 | ------------- | ------------- 
-| Promise  | Promise polyfill (for IE)
+| Promise  | [Promise](https://github.com/fuse-box/fuse-box/blob/master/modules/fuse-box-responsive-api/promise-polyfill.js) polyfill (for IE)
 
 
 
