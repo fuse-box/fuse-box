@@ -47,7 +47,7 @@ export class WebIndexPluginClass implements Plugin {
         let html = `<!DOCTYPE html>
 <html>
 <head>
-    $title
+    <title>$title</title>
     $charset
     $description
     $keywords
@@ -67,7 +67,7 @@ export class WebIndexPluginClass implements Plugin {
         ).join("\n");
 
         let macro = {
-            title: this.opts.title ? `<title>${this.opts.title}</title>` : "",
+            title: this.opts.title ? this.opts.title : "",
             charset: this.opts.charset ? `<meta charset="${this.opts.charset}">` : "",
             description: this.opts.description ? `<meta name="description" content="${this.opts.description}">` : "",
             keywords: this.opts.keywords ? `<meta name="keywords" content="${this.opts.keywords}">` : "",
