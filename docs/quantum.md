@@ -342,6 +342,7 @@ In the example above, the file`foo.js` will not be removed, as it was restricted
 
 
 note: Make sure you application has en entry point, otherwise some files can be removed due to uknown to Quantum use case.
+
 ### warnings
 Default value: `true`
 ```js
