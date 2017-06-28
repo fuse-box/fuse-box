@@ -234,6 +234,10 @@ export class FileAbstraction {
         if (matchesDeadProcessEnvCode(node, "production")) {
             // dead code...all require statements within should be removed
             this.processNodeEnv.add(new GenericAst(node.test, "left", node.test.left));
+            if (node.alternate) {
+                // passing through the  consequent
+                return node.alternate;
+            }
             return false;
         }
 

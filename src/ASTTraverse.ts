@@ -24,6 +24,10 @@ export class ASTTraverse {
 
             node._visited = true;
 
+            if (typeof res === "object" && res.type) {
+                return visit(res, null);
+            }
+
             if (res !== false) {
                 for (let prop in node) {
                     if (skipProperty ? skipProperty(prop, node) : prop[0] === "$") {
