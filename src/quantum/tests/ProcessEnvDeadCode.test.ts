@@ -19,11 +19,11 @@ export class RemoveStrictTest {
                     }`,
                     "dev.ts": ``
                 },
-                instructions: "index.ts",
+                instructions: "> index.ts",
             },
         }).then((result) => {
             const contents = result.contents["index.js"];
-            //console.log(contents);
+            console.log(contents);
             //should(contents).findString("Object.defineProperty(exports");
         });
     }

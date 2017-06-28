@@ -30,6 +30,7 @@ export class FileAbstraction {
     public isEcmaScript6 = false;
     public shakable = false;
     public globalsName: string;
+    public amountOfReferences = 0;
     public canBeRemoved = false;
     public quantumItem: QuantumItem;
 
@@ -73,6 +74,15 @@ export class FileAbstraction {
 
     public getFuseBoxFullPath() {
         return `${this.packageAbstraction.name}/${this.fuseBoxPath}`;
+    }
+
+    public isNotUsedAnywhere() {
+        return this.getID().toString() !== "0"
+            && this.amountOfReferences === 0 && !this.quantumItem && !this.isEntryPoint;
+    }
+
+    public markForRemoval() {
+        this.canBeRemoved = true;
     }
     /**
      * Initiates an abstraction from string
@@ -223,8 +233,8 @@ export class FileAbstraction {
 
         if (matchesDeadProcessEnvCode(node, "production")) {
             // dead code...all require statements within should be removed
-            //this.processNodeEnv.add(new GenericAst(node.test, "left", node.test.left));
-            //return false;
+            this.processNodeEnv.add(new GenericAst(node.test, "left", node.test.left));
+            return false;
         }
 
         // detecting es6

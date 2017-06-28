@@ -22,6 +22,7 @@ export class StatementModification {
             } else {
                 let resolvedFile = statement.resolve();
                 if (resolvedFile) {
+                    resolvedFile.amountOfReferences++;
                     // trying to setup hoisting here
                     if (statement.identifier) {
                         file.registerHoistedIdentifiers(statement.identifier, statement, resolvedFile);

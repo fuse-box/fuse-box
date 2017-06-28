@@ -34,7 +34,11 @@ export class TreeShake {
                     // fileCanBeRemoved = false;
                 }
             });
-            //if (fileCanBeRemoved) { file.canBeRemoved = true; }
+            //console.log(this.core.opts.canBeRemovedByTreeShaking(file));
+
+            if (file.isNotUsedAnywhere() && this.core.opts.canBeRemovedByTreeShaking(file)) {
+                file.markForRemoval();
+            }
         });
     }
     /**

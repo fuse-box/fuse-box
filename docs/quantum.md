@@ -314,16 +314,34 @@ Ensures that all code that is in es5
 
 
 ### treeshake
-Default value: `true`
+Default value: `false`
 ```js
 QuantumPlugin({
-    ensureES5 : true
+    treeshake : true
 })
 ```
 
 Enables the tree shaking
 
+Accepts additional option `shouldRemove` to prevent some files from being removed (as FuseBox considers them useless user might think differently)
 
+
+```js
+QuantumPlugin({
+    treeshake: {
+        shouldRemove: file => {
+            if (file.fuseBoxPath === "foo.js") {
+                return false;
+            }
+        }
+    }
+});
+```
+
+In the example above, the file`foo.js` will not be removed, as it was restricted by user.
+
+
+note: Make sure you application has en entry point, otherwise some files can be removed due to uknown to Quantum use case.
 ### warnings
 Default value: `true`
 ```js

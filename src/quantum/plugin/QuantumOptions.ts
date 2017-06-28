@@ -1,7 +1,10 @@
 import { WebIndexPluginClass } from "../../plugins/WebIndexPlugin";
 import { QuantumCore } from "./QuantumCore";
 import { readFuseBoxModule } from "../../Utils";
-
+import { FileAbstraction } from "../core/FileAbstraction";
+export interface ITreeShakeOptions {
+    shouldRemove: { (file: FileAbstraction): void }
+}
 export interface IQuantumExtensionParams {
     target?: string;
     uglify?: any;
@@ -10,7 +13,7 @@ export interface IQuantumExtensionParams {
     replaceProcessEnv?: boolean;
     webIndexPlugin?: WebIndexPluginClass;
     ensureES5?: boolean;
-    treeshake?: boolean;
+    treeshake?: boolean | ITreeShakeOptions;
     api?: { (core: QuantumCore): void }
     warnings?: boolean;
     bakeApiIntoBundle?: string;
@@ -30,13 +33,14 @@ export class QuantumOptions {
     private bakeApiIntoBundle: string;
 
     private showWarnings = true;
+    private treeshakeOptions: ITreeShakeOptions;
     private hoisting = false;
     private polyfills: string[];
     private hoistedNames: string[];
     private extendServerImport = false;
     public apiCallback: { (core: QuantumCore): void }
     public optsTarget: string = "browser";
-    public treeshake = true;
+    public treeshake = false;
     public webIndexPlugin: WebIndexPluginClass;
 
     constructor(opts: IQuantumExtensionParams) {
@@ -96,7 +100,12 @@ export class QuantumOptions {
             this.ensureES5 = opts.ensureES5;
         }
         if (opts.treeshake !== undefined) {
-            this.treeshake = opts.treeshake;
+            if (typeof opts.treeshake === "boolean") {
+                this.treeshake = opts.treeshake;
+            } else {
+                this.treeshake = true;
+                this.treeshakeOptions = opts.treeshake as ITreeShakeOptions;
+            }
         }
     }
 
@@ -108,6 +117,15 @@ export class QuantumOptions {
         if (this.polyfills && this.polyfills.indexOf("Promise") > -1) {
             return readFuseBoxModule("fuse-box-responsive-api/promise-polyfill.js");
         }
+    }
+
+    public canBeRemovedByTreeShaking(file: FileAbstraction) {
+        if (this.treeshakeOptions) {
+            if (this.treeshakeOptions.shouldRemove) {
+                return this.treeshakeOptions.shouldRemove(file);
+            }
+        }
+        return true;
     }
 
     public isContained() {
