@@ -26,7 +26,7 @@ export class TreeShake {
                     && fileExport.eligibleForTreeShaking) {
                     const isDangerous = fileExport.name === "__esModule" || fileExport.name === "default";
                     if (!isDangerous) {
-                        this.core.log.echoInfo(`tree shaking: Remove ${fileExport.name} from ${file.fuseBoxPath}`)
+                        this.core.log.echoInfo(`tree shaking: Remove ${fileExport.name} from ${file.getFuseBoxFullPath()}`)
                         fileExport.remove();
                     }
                 } else {
@@ -37,6 +37,7 @@ export class TreeShake {
             //console.log(this.core.opts.canBeRemovedByTreeShaking(file));
 
             if (file.isNotUsedAnywhere() && this.core.opts.canBeRemovedByTreeShaking(file)) {
+                this.core.log.echoInfo(`tree shaking: Mark for removal ${file.getFuseBoxFullPath()}`)
                 file.markForRemoval();
             }
         });
