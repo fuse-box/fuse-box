@@ -6,6 +6,10 @@ import { ensureAbsolutePath, joinFuseBoxPath } from "../Utils";
 
 export interface IndexPluginOptions {
     title?: string;
+    charset?: string;
+    description?: string;
+    keywords?: string;
+    author?: string;
     bundles?: string[];
     path?: string;
     target?: string;
@@ -44,10 +48,14 @@ export class WebIndexPluginClass implements Plugin {
 <html>
 <head>
     <title>$title</title>
+    $charset
+    $description
+    $keywords
+    $author
 </head>
 <body>
+    $bundles
 </body>
-$bundles
 </html>`;
         if (this.opts.template) {
             let filePath = ensureAbsolutePath(this.opts.template);
@@ -60,6 +68,10 @@ $bundles
 
         let macro = {
             title: this.opts.title ? this.opts.title : "",
+            charset: this.opts.charset ? `<meta charset="${this.opts.charset}">` : "",
+            description: this.opts.description ? `<meta name="description" content="${this.opts.description}">` : "",
+            keywords: this.opts.keywords ? `<meta name="keywords" content="${this.opts.keywords}">` : "",
+            author: this.opts.author ? `<meta name="author" content="${this.opts.author}">` : "",
             bundles: jsTags
         }
         for (let key in macro) {
