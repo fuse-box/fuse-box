@@ -259,7 +259,6 @@ export class Log {
 
     // @TODO subBundleStop???
     public subBundleStart(name: string, parent: string) {
-        console.log('sub bundle?', name, parent)
         this.timer.start(name)
         log.bold(`${name} (child of ${parent}) ->`).echo()
         return this
