@@ -14,18 +14,18 @@ const extractValue = (input) => {
     }
     return input;
 };
-export const PostCSSResourcePlugin = postcss.plugin("css-resource", function(opts) {
+export const PostCSSResourcePlugin = postcss.plugin("css-resource", function (opts) {
     opts = opts || {};
     return (css, result) => {
         css.walkDecls(declaration => {
             if (declaration.prop) {
-                if (declaration.prop.indexOf("background") === 0 || declaration.prop.indexOf("src") === 0) {
-                    let re = /url\((.*?)\)/g;
-                    let match;
-                    // tslint:disable-next-line:no-conditional-assignment
-                    while (match = re.exec(declaration.value)) {
-                        const value = match[1];
 
+                if (declaration.prop.indexOf("background") === 0 || declaration.prop.indexOf("src") === 0) {
+                    let re = /url\(([^\)]+)/gm;
+                    let match;
+                    const v = declaration.value;
+                    while (match = re.exec(v)) {
+                        const value = match[1];
                         const url = extractValue(value);
                         if (typeof opts.fn === "function" && url) {
                             const result = opts.fn(url);
