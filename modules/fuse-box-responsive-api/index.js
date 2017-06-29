@@ -1,6 +1,5 @@
 (function() {
 
-
     /* @if universal */
     var isBrowser = typeof window !== "undefined";
     var storage = isBrowser ? window : global;
@@ -124,6 +123,154 @@
 
     /* @end */
 
+    /* @if ajaxRequired */
+    function aj(url, cb) {
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                cb(this.status == 200 ? 0 : 1, this.responseText, request.getResponseHeader("Content-Type"));
+            }
+        };
+        request.open("GET", url, true);
+        request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        request.send();
+    }
+    /* @end */
+
+    /* @if loadRemoteScript  */
+    function loadRemoteScript(url, isCSS) {
+        /* @if server */
+        return Promise.resolve();
+        /* @end */
+
+        /* @if browser || universal */
+        return Promise.resolve().then(function() {
+            /* @if universal */
+            if (!isBrowser) { return }
+            /* @end */
+
+            var d = document;
+            var head = d.getElementsByTagName("head")[0];
+            var target;
+            /* @if cssLoader */
+            if (isCSS) {
+                target = d.createElement("link");
+                target.rel = "stylesheet";
+                target.type = "text/css";
+                target.href = url;
+            } else {
+                /* @end */
+
+                target = d.createElement("script");
+                target.type = "text/javascript";
+                target.src = url;
+                target.async = true;
+
+                /* @if cssLoader */
+            }
+            /* @end */
+            head.insertBefore(target, head.firstChild);
+        });
+        /* @end */
+    }
+    /* @end */
+
+
+
+    /* @if codeSplitting */
+    var bMapping = $bundleMapping$;
+    /* @end */
+
+
+    /* @if lazyLoading */
+
+
+
+    function evaluateModule(id, code, type) {
+        if (/javascript/.test(type)) {
+            var fn = new Function('module', 'exports', code);
+            var moduleExports = {};
+            var moduleObject = { exports: moduleExports };
+            fn(moduleObject, moduleExports);
+            return moduleObject.exports;
+        }
+        /* @if jsonLoader  */
+        if (/json/.test(type)) {
+            return JSON.parse(code);
+        }
+        /* @end */
+    }
+
+
+    function req(url, cb) {
+        /* @if browser */
+        aj(url, cb);
+        /* @end */
+
+        /* @if universal */
+        isBrowser ? aj(url, cb) : cb(null, require(url));
+        /* @end */
+
+        /* @if server */
+        cb(null, require(url));
+        /* @end */
+    }
+
+    $fsx.l = function(id) {
+        return new Promise(function(resolve, reject) {
+            /* @if codeSplitting */
+            if (bMapping.i && bMapping.i[id]) {
+                var data = bMapping.i[id];
+                req(bMapping.c.b + data[0], function(err, result) {
+                    /* @if browser */
+                    if (!err) { new Function(result)(); }
+                    /* @end */
+
+                    /* @if universal */
+                    if (!err && isBrowser) { new Function(result)(); }
+                    /* @end */
+
+                    resolve($fsx.r(data[1]));
+
+                });
+            } else {
+                /* @end */
+
+                /* @if loadRemoteScript */
+                var isCSS;
+
+                /* @if cssLoader */
+                isCSS = /\.css$/.test(id);
+                /* @end */
+
+                if ((id.charCodeAt(4) === 58 || id.charCodeAt(5) === 58) || isCSS) {
+                    return loadRemoteScript(id, isCSS);
+                }
+                /* @end */
+                req(id, function(err, result, ctype) {
+                    if (!err) {
+                        /* @if browser */
+                        resolve(evaluateModule(id, result, ctype));
+                        /* @end */
+
+                        /* @if server */
+                        resolve(result);
+                        /* @end */
+
+                        /* @if universal */
+                        isBrowser ? resolve(evaluateModule(id, result, ctype)) : resolve(result);
+                        /* @end */
+                    }
+                });
+                /* @if codeSplitting */
+            }
+            /* @end */
+        });
+    }
+
+    /* @end */
+
+
 
 
     // cached modules
@@ -145,5 +292,4 @@
         file(cached.m, cached.exports);
         return cached.m.exports;
     };
-
-})()
+})();

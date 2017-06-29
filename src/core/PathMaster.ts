@@ -374,6 +374,7 @@ export class PathMaster {
                     entryRoot = path.dirname(entryFile);
                 }
                 return {
+                    browserOverrides: browserOverrides,
                     name,
                     custom: isCustom,
                     root: folder,

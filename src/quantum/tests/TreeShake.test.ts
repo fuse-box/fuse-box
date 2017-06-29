@@ -59,4 +59,33 @@ export class TreeShakeTest {
         });
     }
 
+    "Should not shake an imidiate require"() {
+        return createOptimisedBundleEnv({
+            stubs: true,
+            options: {
+                treeshake: true
+            },
+            project: {
+                files: {
+                    "index.js": `
+                        require('./bar');
+                    `,
+                    "foo.ts": `
+                        class Foo1 {}
+                        class Foo2 {}
+                        exports.Foo1 = Foo1;
+                        exports.Foo2 = Foo2;
+
+                    `
+                },
+                instructions: "index.js",
+            },
+        }).then((result) => {
+            const contents = result.contents["index.js"];
+            console.log(contents);
+            //should(contents).notFindString(`exports.Foo2`);
+
+        });
+    }
+
 }

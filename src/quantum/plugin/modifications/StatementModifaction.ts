@@ -20,12 +20,14 @@ export class StatementModification {
                     file.addFileMap();
                 }
             } else {
+
                 let resolvedFile = statement.resolve();
                 if (resolvedFile) {
                     statement.setFunctionName('$fsx.r');
                     statement.setValue(resolvedFile.getID());
                 } else {
-                    core.producerAbstraction.addWarning(`Failed to resolve require("${statement.getValue()}") at ${file.packageAbstraction.name}${file.fuseBoxPath}`)
+                    core.api.considerStatement(statement);
+                    statement.setFunctionName('$fsx.l');
                 }
             }
         });

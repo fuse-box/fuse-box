@@ -21,11 +21,16 @@ import { ProcessEnvModification } from "./modifications/ProcessEnvModification";
 import { fastHash, string2RegExp } from "../../Utils";
 import { ComputedStatementRule } from "./ComputerStatementRule";
 import { RequireStatement } from "../core/nodes/RequireStatement";
+import { WorkFlowContext } from "../../core/WorkflowContext";
+
+import { Bundle } from "../../core/Bundle";
+import { QuantumItem } from "./QuantumSplit";
+import { DynamicImportStatementsModifications } from "./modifications/DynamicImportStatements";
 
 
 export interface QuantumStatementMapping {
     statement: RequireStatement,
-    core: QuantumCore
+    core: QuantumCore;
 }
 export class QuantumCore {
     public producerAbstraction: ProducerAbstraction;
@@ -34,6 +39,7 @@ export class QuantumCore {
     public log: Log;
     public opts: QuantumOptions;
     public writer = new BundleWriter(this);
+    public context: WorkFlowContext;
     public requiredMappings = new Set<RegExp>();
     public customStatementSolutions = new Set<RegExp>();
     public computedStatementRules = new Map<string, ComputedStatementRule>();
@@ -47,6 +53,7 @@ export class QuantumCore {
         if (this.opts.apiCallback) {
             this.opts.apiCallback(this);
         }
+        this.context = this.producer.fuse.context;
     }
 
     public solveComputed(path: string, rules: { mapping: string, fn: { (statement: RequireStatement, core: QuantumCore) } }) {
@@ -125,7 +132,7 @@ export class QuantumCore {
             }
         });
     }
-    public setFileIds(bundleAbstraction: BundleAbstraction) {
+    public prepareFiles(bundleAbstraction: BundleAbstraction) {
         // set ids first
         let entryId;
         if (this.producer.entryPackageFile && this.producer.entryPackageName) {
@@ -140,7 +147,8 @@ export class QuantumCore {
         }
 
         bundleAbstraction.packageAbstractions.forEach(packageAbstraction => {
-            packageAbstraction.fileAbstractions.forEach(fileAbstraction => {
+
+            packageAbstraction.fileAbstractions.forEach((fileAbstraction, key: string) => {
                 let fileId = fileAbstraction.getFuseBoxFullPath();
                 let id;
                 if (this.producerAbstraction.useNumbers) {
@@ -154,13 +162,22 @@ export class QuantumCore {
                     fileAbstraction.setEnryPoint(globalsName);
                 }
                 fileAbstraction.setID(id);
+                const quantumItem = this.context.requiresQuantumSplitting(fileAbstraction.fuseBoxPath)
+                if (quantumItem) {
+                    if (quantumItem.entry === fileAbstraction.fuseBoxPath) {
+                        quantumItem.entryId = fileAbstraction.getID();
+                    }
+                    // reference the item
+                    // it will be removed from this bundle later
+                    fileAbstraction.referenceQuantumSplit(quantumItem);
+                }
             });
         });
     }
 
     public processBundle(bundleAbstraction: BundleAbstraction) {
         this.log.echoInfo(`Process bundle ${bundleAbstraction.name}`);
-        this.setFileIds(bundleAbstraction);
+        this.prepareFiles(bundleAbstraction);
         return each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
             const fileSize = packageAbstraction.fileAbstractions.size;
             this.log.echoInfo(`Process package ${packageAbstraction.name} `);
@@ -181,13 +198,51 @@ export class QuantumCore {
             const generator = new FlatFileGenerator(this);
             generator.init();
             return each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
-                return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) =>
-                    generator.addFile(fileAbstraction, this.opts.shouldEnsureES5()));
+                return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) => {
+                    // split references belong to other bundles
+                    // which will be created later
+                    if (!fileAbstraction.getSplitReference()) {
+                        return generator.addFile(fileAbstraction, this.opts.shouldEnsureES5());
+                    }
+                });
+
             }).then(() => {
                 this.log.echoInfo(`Render bundle ${bundleAbstraction.name}`);
                 const bundleCode = generator.render();
                 this.producer.bundles.get(bundleAbstraction.name).generatedCode = new Buffer(bundleCode);
             });
+        }).then(() => {
+            const config = this.context.quantumSplitConfig;
+            // generate extra bundles required by code splitting
+            if (config) {
+                this.api.useCodeSplitting();
+                this.log.echoInfo(`Dealing with code splitting`);
+                const items = config.getItems();
+                // every split item contains file abstractions
+                return each(items, (item: QuantumItem) => {
+                    const files = item.getFiles();
+                    this.log.echoInfo(`Code splitting: bundle ${item.name} (files: ${files.size})`);
+                    const fusebox = this.context.fuse.copy();
+                    const bundleName = config.resolve(item.name);
+                    const bundle = new Bundle(bundleName, fusebox, this.producer);
+                    // set the reference
+                    bundle.quantumItem = item;
+
+                    // take into consideration resolve options
+                    this.producer.bundles.set(bundleName, bundle);
+
+                    // don't allow WebIndexPlugin to include it to script tags
+                    bundle.webIndexed = false;
+                    const generator = new FlatFileGenerator(this);
+                    generator.init();
+                    // register files
+                    files.forEach(file => {
+                        generator.addFile(file, this.opts.shouldEnsureES5());
+                    });
+                    bundle.generatedCode = new Buffer(generator.render());
+                });
+            }
+
         });
     }
 
@@ -195,6 +250,10 @@ export class QuantumCore {
         const modifications = [
             // modify require statements: require -> $fsx.r
             StatementModification,
+
+            // modify dynamic statements
+            DynamicImportStatementsModifications,
+
             // modify FuseBox.isServer and FuseBox.isBrowser
             EnvironmentConditionModification,
             // remove exports.__esModule = true

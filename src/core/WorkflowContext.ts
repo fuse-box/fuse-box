@@ -16,6 +16,8 @@ import { UserOutput } from "./UserOutput";
 import { FuseBox } from "./FuseBox";
 import { Bundle } from "./Bundle";
 import { BundleProducer } from "./BundleProducer";
+import { QuantumSplitConfig, QuantumItem, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
+
 
 const appRoot = require("app-root-path");
 
@@ -83,6 +85,8 @@ export class WorkFlowContext {
 
     public customAPIFile: string;
 
+    public experimentalFeaturesEnabled = false;
+
     public defaultEntryPoint: string;
 
     public rollupOptions: any;
@@ -137,9 +141,13 @@ export class WorkFlowContext {
 
     public debugMode = false;
 
+    public quantumSplitConfig: QuantumSplitConfig;
+
     public log: Log = new Log(this);
 
     public pluginTriggers: Map<string, Set<String>>;
+
+
 
     public natives = {
         process: true,
@@ -161,6 +169,7 @@ export class WorkFlowContext {
 
     public defer = new Defer;
 
+
     public initCache() {
         this.cache = new ModuleCache(this);
     }
@@ -179,6 +188,27 @@ export class WorkFlowContext {
         return this.target === "browser";
     }
 
+    public quantumSplit(rule: string, bundleName: string, entryFile: string) {
+        if (!this.quantumSplitConfig) {
+            this.quantumSplitConfig = new QuantumSplitConfig(this);
+        }
+        this.quantumSplitConfig.register(rule, bundleName, entryFile);
+    }
+
+    public configureQuantumSplitResolving(opts: QuantumSplitResolveConfiguration) {
+        if (!this.quantumSplitConfig) {
+            this.quantumSplitConfig = new QuantumSplitConfig(this);
+        }
+        this.quantumSplitConfig.resolveOptions = opts;
+    }
+
+    public requiresQuantumSplitting(path: string): QuantumItem {
+        if (!this.quantumSplitConfig) {
+            return;
+        }
+        return this.quantumSplitConfig.matches(path);
+    }
+
     public getHeaderImportsConfiguration() {
 
     }
@@ -189,7 +219,9 @@ export class WorkFlowContext {
 
     public generateCode(ast: any) {
         if (this.customCodeGenerator) {
-            return this.customCodeGenerator(ast);
+            try {
+                return this.customCodeGenerator(ast);
+            } catch (e) { }
         }
         return escodegen.generate(ast);
     }
@@ -478,8 +510,10 @@ export class WorkFlowContext {
         }
     }
     public shouldSplit(file: File): boolean {
-        if (this.bundle && this.bundle.bundleSplit) {
-            return this.bundle.bundleSplit.verify(file);
+        if (!this.experimentalFeaturesEnabled) {
+            if (this.bundle && this.bundle.bundleSplit) {
+                return this.bundle.bundleSplit.verify(file);
+            }
         }
         return false;
     }

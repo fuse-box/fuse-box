@@ -6,11 +6,12 @@ import { AutoImport } from "./plugins/AutoImport";
 import { OwnVariable } from "./plugins/OwnVariable";
 import { OwnBundle } from "./plugins/OwnBundle";
 import { ImportDeclaration } from "./plugins/ImportDeclaration";
+import { DynamicImportStatement } from "./plugins/DynamicImportStatement";
 
 require("acorn-es7")(acorn);
 require("acorn-jsx/inject")(acorn);
 
-const plugins: any = [AutoImport, OwnVariable, OwnBundle, ImportDeclaration];
+const plugins: any = [AutoImport, OwnVariable, OwnBundle, ImportDeclaration, DynamicImportStatement];
 
 export function acornParse(contents, options?: any) {
     return acorn.parse(contents, {
