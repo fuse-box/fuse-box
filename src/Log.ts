@@ -5,6 +5,7 @@ import * as prettysize from 'prettysize'
 import * as prettyTime from 'pretty-time'
 import * as zlib from 'zlib'
 
+// log.trackConsole()
 const chalk = log.chalk()
 const { yellow, green, blue, dim, underline, italic } = chalk
 
@@ -177,43 +178,61 @@ export class Log {
     // public indent: any = log.indenter();
     public stats: Stats = new Stats()
     public timer: Timer = new Timer()
+    public bundleNames: Array<any> = []
 
     constructor(public context: WorkFlowContext) {
         this.printLog = context.doLog
         this.debugMode = context.debugMode
+
+        let filter
+        if (typeof this.printLog === 'function') {
+            filter = this.printLog(log)
+        }
+        else {
+            filter = (arg) => {
+                // conditions for filtering specific tags
+                const debug = this.debugMode
+                const level = this.printLog
+                const hasTag = tag =>
+                    arg.tags.includes(tag)
+                const levelHas = tag =>
+                    debug || level === true ||
+                    (level && level.includes && level.includes(tag) && !level.includes('!' + tag));
+
+                // when off, silent
+                if (level === false) {
+                    return false;
+                }
+
+                // counting this as verbose for now
+                if (level === true && debug === true) {
+                    return true;
+                }
+
+                if (level == 'error') {
+                    if (!hasTag('error')) {
+                        return false;
+                    }
+                }
+                // could be verbose, reasoning, etc
+                if (hasTag('magic')) {
+                    if (!levelHas('magic')) {
+                        return false;
+                    }
+                }
+                // if (!levelHas('filelist') && hasTag('filelist')) {
+                //     if (!levelHas('filelist')) { return false; }
+                // }
+
+                // if not false and conditions pass, log it
+                return true;
+            }
+        }
+
         // this.indent.reset = () => this.indent.clear().set('indent', 0).indent(0);
         // this.indent.level = num => this.indent.reset().indent(num);
         /* prettier-ignore */
-        log.filter((arg) => {
-            // conditions for filtering specific tags
-            const debug = this.debugMode
-            const level = this.printLog
-            const hasTag = tag =>
-                arg.tags.includes(tag)
-            const levelHas = tag =>
-                debug || level === true ||
-                (level && level.includes && level.includes(tag) && !level.includes('!' + tag));
-
-            // when off, silent
-            if (level === false) return false;
-
-            // counting this as verbose for now
-            if (level === true && debug === true) { return true; }
-
-            if (level == 'error') {
-                if (!hasTag('error')) { return false; }
-            }
-            // could be verbose, reasoning, etc
-            if (hasTag('magic')) {
-                if (!levelHas('magic')) { return false; }
-            }
-            if (hasTag('filelist')) {
-                if (!levelHas('filelist')) { return false; }
-            }
-
-            // if not false and conditions pass, log it
-            return true;
-        });
+        log.filter(filter);
     }
 
     // --- config ---
@@ -253,7 +272,8 @@ export class Log {
     // @TODO combine logs here, output when needed
     // @TODO combine this and subBundleStart
     public bundleStart(name: string) {
-        log.bold(`${name}: `).echo()
+        this.bundleNames.push(name)
+        // log.bold(`${name}: `).echo()
         return this
     }
 
@@ -274,59 +294,6 @@ export class Log {
             .echo()
     }
 
-    // --- spinner ---
-    public startSpinner(text: string) {
-        if (!this.printLog) {
-            return this
-        }
-
-        // spinner opts
-        const indentStr = indents(4)
-        const indent = 4
-        const interval = 20
-        const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'].map(
-            frame => indentStr + frame
-        )
-        const spinner = { frames, interval }
-
-        // @TODO @FIXME the spinner needs to be scoped inside of fliplog,
-        // has todo to update
-        this.spinner = log.requirePkg('ora')({ text, indent, spinner })
-        this.spinner.start()
-        this.spinner.indent = indent // +this.indent;
-        this.spinner.succeeded = false
-
-        // safety for if errors happen so it does not keep spinning
-        setTimeout(() => {
-            if (this.spinner.succeeded === false) {
-                this.spinner.fail()
-            }
-        }, 1000)
-
-        return this
-    }
-    public stopSpinner(text?: string) {
-        if (!this.printLog) {
-            return this
-        }
-        // safety, mark as success
-        if (this.spinner && this.spinner.succeeded === false) {
-            this.spinner.succeeded = true
-            const reference = this.spinner
-            // const indent = this.indent.level(this.spinner.indent).toString();
-
-            // @override success to indent
-            // reference.succeed()✔
-            const success = green(`${indents(4)}→ `)
-            text = green(text || reference.text)
-            reference.stopAndPersist({ symbol: success, text })
-
-            // it's too fast!
-            // setTimeout(() => reference.succeed(), 1)
-        }
-        return this
-    }
-
     // --- collection stats ---
 
     /* prettier-ignore */
@@ -338,6 +305,11 @@ export class Log {
      */
     public echoDefaultCollection(collection: ModuleCollection, contents: ContentSize) {
         if (this.printLog === false) return this;
+
+        const heading = this.bundleNames.shift()
+        if (heading) {
+            log.bold(`${heading}: `).echo()
+        }
 
         const size = this.stats.handle(contents)
         // const indent = indents(1);
@@ -378,6 +350,12 @@ export class Log {
     public echoCollection(collection: ModuleCollection, contents: ContentSize) {
         if (this.printLog === false) return this
 
+        const heading = this.bundleNames.shift()
+        if (heading) {
+            log.bold(`${heading}: `).echo()
+        }
+
+
         // const indent = indents(2); // reset
         const size = Stats.pretty(contents)
 
@@ -404,6 +382,7 @@ export class Log {
      * @TODO
      *  - [ ] ensure header will not conflict if it is used in echoBundleStats
      *
+     * @example size:  1.5 kB, 808 Bytes (gzipped)
      * string | number | Buffer
      */
     public echoGzip(size: any, str: string | any = ''): Log {
@@ -513,6 +492,61 @@ export class Log {
     }
     public echoGray(str: string) {
         log.gray(str).echo()
+        return this
+    }
+
+    // ----- spinner ---
+
+    // --- spinner ---
+    public startSpinner(text: string) {
+        if (!this.printLog) {
+            return this
+        }
+
+        // spinner opts
+        const indentStr = indents(4)
+        const indent = 4
+        const interval = 20
+        const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'].map(
+            frame => indentStr + frame
+        )
+        const spinner = { frames, interval }
+
+        // @TODO @FIXME the spinner needs to be scoped inside of fliplog,
+        // has todo to update
+        this.spinner = log.requirePkg('ora')({ text, indent, spinner })
+        this.spinner.start()
+        this.spinner.indent = indent // +this.indent;
+        this.spinner.succeeded = false
+
+        // safety for if errors happen so it does not keep spinning
+        setTimeout(() => {
+            if (this.spinner.succeeded === false) {
+                this.spinner.fail()
+            }
+        }, 1000)
+
+        return this
+    }
+    public stopSpinner(text?: string) {
+        if (!this.printLog) {
+            return this
+        }
+        // safety, mark as success
+        if (this.spinner && this.spinner.succeeded === false) {
+            this.spinner.succeeded = true
+            const reference = this.spinner
+            // const indent = this.indent.level(this.spinner.indent).toString();
+
+            // @override success to indent
+            // reference.succeed()✔
+            const success = green(`${indents(4)}→ `)
+            text = green(text || reference.text)
+            reference.stopAndPersist({ symbol: success, text })
+
+            // it's too fast!
+            // setTimeout(() => reference.succeed(), 1)
+        }
         return this
     }
 }
