@@ -19,6 +19,7 @@ export class ProducerAbstraction {
     }
 
     public registerBundleAbstraction(bundleAbstraction: BundleAbstraction) {
+        bundleAbstraction.producerAbstraction = this;
         this.bundleAbstractions.set(bundleAbstraction.name, bundleAbstraction);
     }
 

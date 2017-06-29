@@ -31,10 +31,12 @@ Quantum does extreme amount of operations, but it's very simple to configure:
 Add a plugin like so:
 
 ```js
-const { QuantumPlugin, WebIndexPlugin,UglifyJSPlugin } = require("fuse-box");
+const { FuseBox, QuantumPlugin, WebIndexPlugin } = require("fuse-box");
 FuseBox.init({
-    WebIndexPlugin(),
-    isProduction && QuantumPlugin()
+    plugins : [
+        WebIndexPlugin(),
+        isProduction && QuantumPlugin()
+    ]
 });
 ```
 
@@ -207,6 +209,60 @@ QuantumPlugin({
 })
 ```
 
+
+### polyfills
+
+Some polyfills can be injected automatically into the API. It comes quite handy if you target your builds for IE11 which doesn't support Promises
+
+```js
+QuantumPlugin({
+    polyfills : ["Promise"]
+})
+```
+
+
+| Polyfill name  | Description
+| ------------- | ------------- 
+| Promise  | [Promise](https://github.com/fuse-box/fuse-box/blob/master/modules/fuse-box-responsive-api/promise-polyfill.js) polyfill (for IE)
+
+
+
+### containedAPI
+Default value: `false`
+
+Quantum bundles are similar to original FuseBox API where the scope is shared, meaning if you import (load) 2 bundles they will share the same virtual file system.
+But there is the other side to it. Quantum bundles unlike non-Quantum have to be bundled within one project. All files have numbers instead of strings (to speed up module loading) therefore if you publish a Quantum bundle to npm, it may collide with the current project bundled, once installed. To solve this, Quantum has an option called `containedAPI` which doesn't share NOR store it's virtual system on window but does it locally instead.
+
+```js
+QuantumPlugin({
+    bakeApiIntoBundle : 'app',
+    containedAPI : true
+})
+```
+
+In order to use it, you need ensure that you have only 1 bundle in the output and the API is baked into it. It will not work with split bundles or vendor bundles.
+
+Produced bundles will look similar to this example below:
+
+```js
+(function() {
+    var $fsx = {};
+    $fsx.f = {}
+    $fsx.m = {};
+    $fsx.r = function(id) {
+        // contents omited
+    };
+    // default/index.js
+    $fsx.f[0] = function(module, exports) {
+        function hello() {}
+        exports.hello = hello;
+    }
+})();
+```
+
+Whereas $fsx is a local variable
+
+
 ### removeExportsInterop
 Default value: `true`
 
@@ -258,15 +314,34 @@ Ensures that all code that is in es5
 
 
 ### treeshake
-Default value: `true`
+Default value: `false`
 ```js
 QuantumPlugin({
-    ensureES5 : true
+    treeshake : true
 })
 ```
 
 Enables the tree shaking
 
+Accepts additional option `shouldRemove` to prevent some files from being removed (as FuseBox considers them useless user might think differently)
+
+
+```js
+QuantumPlugin({
+    treeshake: {
+        shouldRemove: file => {
+            if (file.fuseBoxPath === "foo.js") {
+                return false;
+            }
+        }
+    }
+});
+```
+
+In the example above, the file`foo.js` will not be removed, as it was restricted by user.
+
+
+note: Make sure you application has en entry point, otherwise some files can be removed due to uknown to Quantum use case.
 
 ### warnings
 Default value: `true`

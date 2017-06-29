@@ -1,6 +1,10 @@
 import { WebIndexPluginClass } from "../../plugins/WebIndexPlugin";
 import { QuantumCore } from "./QuantumCore";
-
+import { readFuseBoxModule } from "../../Utils";
+import { FileAbstraction } from "../core/FileAbstraction";
+export interface ITreeShakeOptions {
+    shouldRemove: { (file: FileAbstraction): void }
+}
 export interface IQuantumExtensionParams {
     target?: string;
     uglify?: any;
@@ -9,10 +13,14 @@ export interface IQuantumExtensionParams {
     replaceProcessEnv?: boolean;
     webIndexPlugin?: WebIndexPluginClass;
     ensureES5?: boolean;
-    treeshake?: boolean;
+    treeshake?: boolean | ITreeShakeOptions;
     api?: { (core: QuantumCore): void }
     warnings?: boolean;
     bakeApiIntoBundle?: string;
+    extendServerImport?: boolean;
+    polyfills?: string[];
+    hoisting?: boolean | { names: string[] };
+    containedAPI?: boolean
 }
 
 export class QuantumOptions {
@@ -21,11 +29,18 @@ export class QuantumOptions {
     private removeUseStrict = true;
     private ensureES5 = true;
     private replaceProcessEnv = true;
+    private containedAPI = false;
     private bakeApiIntoBundle: string;
+
     private showWarnings = true;
+    private treeshakeOptions: ITreeShakeOptions;
+    private hoisting = false;
+    private polyfills: string[];
+    private hoistedNames: string[];
+    private extendServerImport = false;
     public apiCallback: { (core: QuantumCore): void }
     public optsTarget: string = "browser";
-    public treeshake = true;
+    public treeshake = false;
     public webIndexPlugin: WebIndexPluginClass;
 
     constructor(opts: IQuantumExtensionParams) {
@@ -42,6 +57,14 @@ export class QuantumOptions {
         if (opts.warnings !== undefined) {
             this.showWarnings = opts.warnings;
         }
+
+        if (opts.containedAPI !== undefined) {
+            this.containedAPI = opts.containedAPI;
+        }
+
+        if (Array.isArray(opts.polyfills)) {
+            this.polyfills = opts.polyfills;
+        }
         // stupid exports.__esModule = true;
         if (opts.removeExportsInterop !== undefined) {
             this.removeExportsInterop = opts.removeExportsInterop;
@@ -56,15 +79,65 @@ export class QuantumOptions {
             this.webIndexPlugin = opts.webIndexPlugin;
         }
 
+        if (opts.hoisting !== undefined) {
+            if (typeof opts.hoisting === "boolean") {
+                this.hoisting = opts.hoisting as boolean;
+            } else {
+                this.hoisting = true;
+                const hoistingOptions = opts.hoisting as { names: string[] };
+                this.hoistedNames = hoistingOptions.names;
+            }
+        }
+
         if (opts.bakeApiIntoBundle) {
             this.bakeApiIntoBundle = opts.bakeApiIntoBundle;
+        }
+
+        if (opts.extendServerImport !== undefined) {
+            this.extendServerImport = opts.extendServerImport;
         }
         if (opts.ensureES5 !== undefined) {
             this.ensureES5 = opts.ensureES5;
         }
         if (opts.treeshake !== undefined) {
-            this.treeshake = opts.treeshake;
+            if (typeof opts.treeshake === "boolean") {
+                this.treeshake = opts.treeshake;
+            } else {
+                this.treeshake = true;
+                this.treeshakeOptions = opts.treeshake as ITreeShakeOptions;
+            }
         }
+    }
+
+    public enableContainedAPI() {
+        return this.containedAPI = true;
+    }
+
+    public getPromisePolyfill() {
+        if (this.polyfills && this.polyfills.indexOf("Promise") > -1) {
+            return readFuseBoxModule("fuse-box-responsive-api/promise-polyfill.js");
+        }
+    }
+
+    public canBeRemovedByTreeShaking(file: FileAbstraction) {
+        if (this.treeshakeOptions) {
+            if (this.treeshakeOptions.shouldRemove) {
+                return this.treeshakeOptions.shouldRemove(file);
+            }
+        }
+        return true;
+    }
+
+    public isContained() {
+        return this.containedAPI;
+    }
+
+    public throwContainedAPIError() {
+        throw new Error(`
+           - Can't use contained api with more than 1 bundle
+           - Use only 1 bundle and bake the API e.g {bakeApiIntoBundle : "app"}
+           - Make sure code splitting is not in use 
+        `);
     }
 
     public shouldRemoveUseStrict() {
@@ -72,6 +145,26 @@ export class QuantumOptions {
     }
     public shouldEnsureES5() {
         return this.ensureES5;
+    }
+
+    public shouldDoHoisting() {
+        return this.hoisting;
+    }
+
+    public getHoistedNames(): string[] {
+        return this.hoistedNames;
+    }
+
+    public isHoistingAllowed(name: string) {
+
+        if (this.hoistedNames) {
+            return this.hoistedNames.indexOf(name) > -1;
+        }
+        return true;
+    }
+
+    public shouldExtendServerImport() {
+        return this.extendServerImport;
     }
 
     public shouldShowWarnings() {

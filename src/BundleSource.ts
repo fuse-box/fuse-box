@@ -193,6 +193,14 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             this.concat.add(null, `FuseBox.global("__fsbx__bundles__",${JSON.stringify(this.bundleInfoObject)})`);
         }
 
+        if (this.context.fuse && this.context.fuse.producer) {
+            const masterContext = this.context.fuse.producer.fuse.context;
+            const splitConfig = masterContext.getQuantumDevelepmentConfig();
+            if (splitConfig) {
+                this.concat.add(null, `FuseBox.global("__fsbx__bundles__",${JSON.stringify(splitConfig)})`);
+            }
+        }
+
         // Handle globals
         if (context.globals) {
             let data = [];

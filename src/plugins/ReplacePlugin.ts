@@ -11,6 +11,7 @@ export class ReplacePluginClass implements Plugin {
     public extensions: Array<string>;
     constructor(public options: ReplacePluginOptions = {}) { };
     transform(file: File) {
+        file.loadContents();
         for (let key in this.options) {
             if (this.options.hasOwnProperty(key)) {
                 const regexp = new RegExp(key, 'g');

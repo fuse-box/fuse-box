@@ -10,6 +10,8 @@ import * as path from "path";
 import { BundleTestRunner } from "../BundleTestRunner";
 import { Config } from "../Config";
 import { QuantumItem, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
+import { BundleAbstraction } from "../quantum/core/BundleAbstraction";
+import { PackageAbstraction } from "../quantum/core/PackageAbstraction";
 
 export class Bundle {
     public context: WorkFlowContext;
@@ -19,6 +21,8 @@ export class Bundle {
     public onDoneCallback: any;
     public webIndexPriority = 0;
     public generatedCode: Buffer;
+    public bundleAbstraction: BundleAbstraction;
+    public packageAbstraction: PackageAbstraction;
     public lastChangedFile: string;
     public webIndexed = true;
     public splitFiles: Map<string, File>;
@@ -98,12 +102,14 @@ export class Bundle {
         }
         const bundleName = arithmetics[1];
         const mainFile = arithmetics[2];
+
         if (this.context.experimentalFeaturesEnabled) {
             this.producer.fuse.context.quantumSplit(rule, bundleName, mainFile);
         } else {
             if (!this.bundleSplit) {
                 this.bundleSplit = new BundleSplit(this);
             }
+
             this.bundleSplit.getFuseBoxInstance(bundleName, mainFile);
             this.bundleSplit.addRule(rule, bundleName);
         }
@@ -118,20 +124,24 @@ export class Bundle {
     }
 
     public splitConfig(opts: QuantumSplitResolveConfiguration): Bundle {
-        if (!this.bundleSplit) {
-            this.bundleSplit = new BundleSplit(this);
-        }
-        if (opts.browser) {
-            this.bundleSplit.browserPath = opts.browser;
-        }
-        if (opts.server) {
-            this.bundleSplit.serverPath = opts.server;
-        }
+        if (this.context.experimentalFeaturesEnabled) {
+            this.producer.fuse.context.configureQuantumSplitResolving(opts);
+        } else {
+            if (!this.bundleSplit) {
+                this.bundleSplit = new BundleSplit(this);
+            }
 
-        if (opts.dest) {
-            this.bundleSplit.dest = opts.dest;
+            if (opts.browser) {
+                this.bundleSplit.browserPath = opts.browser;
+            }
+            if (opts.server) {
+                this.bundleSplit.serverPath = opts.server;
+            }
+
+            if (opts.dest) {
+                this.bundleSplit.dest = opts.dest;
+            }
         }
-        this.producer.fuse.context.configureQuantumSplitResolving(opts);
         return this;
     }
 

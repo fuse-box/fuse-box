@@ -15,6 +15,7 @@ _dist
 npm-debug.log*
 playground
 _playground
+_current_test
 
 # FuseBox Loader API built type definition
 # Which is then exported as a module from `src`

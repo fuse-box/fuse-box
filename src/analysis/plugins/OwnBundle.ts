@@ -20,7 +20,7 @@ export class OwnBundle {
 
     public static onNode(file: File, node: any, parent: any) {
         const analysis = file.analysis;
-        if (file.collection.entryFile && node.type === "MemberExpression") {
+        if (file.collection && file.collection.entryFile && node.type === "MemberExpression") {
             if (parent.type === "CallExpression") {
                 if (node.object && node.object.type === "Identifier" &&
                     node.object.name === analysis.fuseBoxVariable) {
@@ -32,7 +32,7 @@ export class OwnBundle {
                                 let f = parent.arguments[0];
                                 if (f && analysis.nodeIsString(f)) {
                                     const extractedEntry = extractMainFileFromPackageEntry(f.value);
-                                    if (extractedEntry) {
+                                    if (extractedEntry && file.collection) {
                                         file.collection.entryFile.info.fuseBoxPath = extractedEntry;
                                     }
                                     analysis.fuseBoxMainFile = f.value;
@@ -47,7 +47,7 @@ export class OwnBundle {
 
     public static onEnd(file: File) {
         const analysis = file.analysis;
-        
+
         if (analysis.fuseBoxMainFile) {
             // Reset all dependencies if a fusebox bundle is spotted
             file.analysis.dependencies = [];
@@ -55,11 +55,10 @@ export class OwnBundle {
             // No need in extra footers
             this.removeFuseBoxApiFromBundle(file);
             const externalCollection = file.collection.name !== file.context.defaultPackageName;
-            
+
             if (externalCollection) {
                 // Ignore this collection as it will be override by the actual bundle
                 file.collection.acceptFiles = false;
-                console.log("here..", file.collection.name);
             } else {
                 // otherwise we know that user is referring to a file which is a FuseBox bundle
                 // We pnt to the package with entry point

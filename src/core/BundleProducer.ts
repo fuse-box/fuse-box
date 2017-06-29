@@ -26,7 +26,7 @@ export class BundleProducer {
     public entryPackageFile: string;
     private injectedCode = new Map<string, string>();
     private chokidarOptions: any;
-
+    private warnings = new Map<string, string[]>();
     constructor(public fuse: FuseBox) {
         this.runner = new BundleRunner(this.fuse);
     }
@@ -41,12 +41,36 @@ export class BundleProducer {
         return this.runner.run(opts).then(() => {
 
             this.sharedEvents.emit("producer-done");
+            this.printWarnings();
             return each(this.fuse.context.plugins, plugin => {
                 if (plugin && utils.isFunction(plugin.producerEnd)) {
                     return plugin.producerEnd(this);
                 }
             });
         }).then(() => this);
+    }
+
+    public printWarnings() {
+        if (this.warnings.size > 0) {
+            this.fuse.context.log.echoBreak();
+            this.warnings.forEach(warnings => {
+                warnings.forEach(list => {
+                    this.fuse.context.log.echoWarning(list);
+                });
+            });
+            this.fuse.context.log.echoBreak();
+        }
+    }
+
+    public addWarning(key: string, message: string) {
+        let list;
+        if (!this.warnings.has(key)) {
+            list = []
+            this.warnings.set(key, list)
+        } else {
+            list = this.warnings.get(key)
+        }
+        list.push(message);
     }
 
     public devCodeHasBeenInjected(key: string) {
@@ -81,7 +105,8 @@ export class BundleProducer {
         const abstraction = new ProducerAbstraction(opts);
 
         return each(this.bundles, (bundle: Bundle) => {
-            const bundleAbstraction = new BundleAbstraction(bundle.name, abstraction);
+            const bundleAbstraction = new BundleAbstraction(bundle.name);
+            abstraction.registerBundleAbstraction(bundleAbstraction);
             return bundleAbstraction.parse(bundle.generatedCode.toString());
         }).then(() => {
             return abstraction;

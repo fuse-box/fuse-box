@@ -7,7 +7,7 @@ import * as path from "path";
 import { ensureFuseBoxPath, transpileToEs5 } from "../../Utils";
 import { FuseBoxIsServerCondition } from "./nodes/FuseBoxIsServerCondition";
 import { FuseBoxIsBrowserCondition } from "./nodes/FuseBoxIsBrowserCondition";
-import { matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier, trackRequireMember, matchNamedExport, isExportMisused, matchesNodeEnv } from "./AstUtils";
+import { matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier, trackRequireMember, matchNamedExport, isExportMisused, matchesNodeEnv, matchesExportReference, matchesDeadProcessEnvCode } from "./AstUtils";
 import { ExportsInterop } from "./nodes/ExportsInterop";
 import { UseStrict } from "./nodes/UseStrict";
 import { TypeOfExportsKeyword } from "./nodes/TypeOfExportsKeyword";
@@ -30,6 +30,7 @@ export class FileAbstraction {
     public isEcmaScript6 = false;
     public shakable = false;
     public globalsName: string;
+    public amountOfReferences = 0;
     public canBeRemoved = false;
     public quantumItem: QuantumItem;
 
@@ -55,7 +56,9 @@ export class FileAbstraction {
     public isEntryPoint = false;
 
     public wrapperArguments: string[];
+    public localExportUsageAmount = new Map<string, number>();
     private globalVariables = new Set<string>();
+
 
     constructor(public fuseBoxPath: string, public packageAbstraction: PackageAbstraction) {
         this.fuseBoxDir = ensureFuseBoxPath(path.dirname(fuseBoxPath));
@@ -64,9 +67,22 @@ export class FileAbstraction {
         packageAbstraction.registerFileAbstraction(this);
     }
 
+    public registerHoistedIdentifiers(identifier: string, statement: RequireStatement, resolvedFile: FileAbstraction) {
+        const bundle = this.packageAbstraction.bundleAbstraction;
+        bundle.registerHoistedIdentifiers(identifier, statement, resolvedFile);
+    }
 
     public getFuseBoxFullPath() {
         return `${this.packageAbstraction.name}/${this.fuseBoxPath}`;
+    }
+
+    public isNotUsedAnywhere() {
+        return this.getID().toString() !== "0"
+            && this.amountOfReferences === 0 && !this.quantumItem && !this.isEntryPoint;
+    }
+
+    public markForRemoval() {
+        this.canBeRemoved = true;
     }
     /**
      * Initiates an abstraction from string
@@ -214,13 +230,26 @@ export class FileAbstraction {
      * @param idx
      */
     private onNode(node, parent, prop, idx) {
+
+        if (matchesDeadProcessEnvCode(node, "production")) {
+            // dead code...all require statements within should be removed
+            this.processNodeEnv.add(new GenericAst(node.test, "left", node.test.left));
+            if (node.alternate) {
+                // passing through the  consequent
+                return node.alternate;
+            }
+            return false;
+        }
+
         // detecting es6
         if (matchesEcmaScript6(node)) {
             this.isEcmaScript6 = true;
         }
         this.namedRequireStatements.forEach((statement, key) => {
+
             const importedName = trackRequireMember(node, key)
             if (importedName) {
+
                 statement.usedNames.add(importedName);
             }
         });
@@ -233,7 +262,24 @@ export class FileAbstraction {
                 createdExports.eligibleForTreeShaking = false;
             }
         });
-
+        /**
+         * Matching how many times an export has been used within one file
+         * For example
+         * exports.createAction = () => {
+         *   return exports.createSomething();
+         * }
+         * exports.createSomething = () => {}
+         * The example above creates a conflicting situation if createSomething wasn't used externally
+         */
+        const matchesExportIdentifier = matchesExportReference(node);
+        if (matchesExportIdentifier) {
+            let ref = this.localExportUsageAmount.get(matchesExportIdentifier)
+            if (ref === undefined) {
+                this.localExportUsageAmount.set(matchesExportIdentifier, 1)
+            } else {
+                this.localExportUsageAmount.set(matchesExportIdentifier, ++ref)
+            }
+        }
         matchNamedExport(node, (name) => {
             // const namedExport = new NamedExport(parent, prop, node);
             // namedExport.name = name;
@@ -271,10 +317,10 @@ export class FileAbstraction {
             this.typeofRequireKeywords.add(new GenericAst(parent, prop, node));
         }
 
+
         if (matchesNodeEnv(node)) {
             this.processNodeEnv.add(new GenericAst(parent, prop, node));
         }
-
 
         // Object.defineProperty(exports, '__esModule', { value: true });
         if (matcheObjectDefineProperty(node, "exports")) {
@@ -309,9 +355,18 @@ export class FileAbstraction {
         if (matchesTypeOf(node, "window")) {
             this.typeofWindowKeywords.add(new GenericAst(parent, prop, node))
         }
-        const requireIdentifier = matchRequireIdentifier(node)
+
+        /**
+         * Matching 
+         * var name = require('module')
+         * Gethering identifiers name to do:
+         * 1) Hoisting
+         * 2) Detect which variables are used in exports to do tree shaking later on
+         */
+        const requireIdentifier = matchRequireIdentifier(node);
         if (requireIdentifier) {
-            const identifiedRequireStatement = new RequireStatement(this, node.init);
+            const identifiedRequireStatement = new RequireStatement(this, node.init, node);
+            identifiedRequireStatement.identifier = requireIdentifier;
             this.namedRequireStatements.set(requireIdentifier, identifiedRequireStatement);
             this.requireStatements.add(identifiedRequireStatement);
             return false;

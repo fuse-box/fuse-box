@@ -43,6 +43,29 @@ const ES6_TYPES = new Set([
     "ArrowFunctionExpression"
 ]);
 
+export function matchesDeadProcessEnvCode(node: any, envString: string) {
+    if (node.type && node.type === "IfStatement") {
+        if (node.test && node.test.type === "BinaryExpression") {
+            if (node.test.left) {
+                if (matchesNodeEnv(node.test.left)) {
+                    const right = node.test.right;
+                    if (right && right.type === "Literal") {
+                        const value = right.value;
+                        const operator = node.test.operator;
+                        if (operator === "===" || operator === "==") {
+                            //if ( "production" === "production" ) {}
+                            return value !== envString;
+                        }
+                        if (operator === "!==" || operator === "!=") {
+                            //if ( "production" !== "production" ) {}
+                            return value === envString;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 export function matchesNodeEnv(node) {
     let isProcess, isEnv, isNodeEnv;
     isProcess = astQuery(node,
@@ -138,6 +161,17 @@ export function matchesDoubleMemberExpression(node: any, part1: string, part2?: 
     }
 
     return node.property && node.property.name === part2;
+}
+
+export function matchesExportReference(node: any): string {
+    if (node.type === "MemberExpression"
+        && node.object
+        && node.object.type === "Identifier"
+        && node.object && node.object.name === "exports" && node.property) {
+        if (node.property.type === "Identifier") {
+            return node.property.name;
+        }
+    }
 }
 export function matcheObjectDefineProperty(node, name: string) {
     if (astQuery(node, ["/ExpressionStatement", ".expression", "/CallExpression",

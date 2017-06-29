@@ -17,7 +17,7 @@ export type Concat = {
     sourceMap: string;
 };
 export type ConcatModule = {
-    new (generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
+    new(generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
 };
 export const Concat: ConcatModule = require("concat-with-sourcemaps");
 
@@ -60,12 +60,16 @@ export function replaceAliasRequireStatement(requireStatement: string, aliasName
 //     return result.join("\n");
 // }
 
-export function jsCommentTemplate(fname: string, conditions: any, variables: any) {
+export function jsCommentTemplate(fname: string, conditions: any, variables: any, raw: any) {
     const contents = fs.readFileSync(fname).toString();
 
     let data = LegoAPI.parse(contents).render(conditions);
     for (let varName in variables) {
         data = data.replace(`$${varName}$`, JSON.stringify(variables[varName]));
+    }
+
+    for (let varName in raw) {
+        data = data.replace(`$${varName}$`, raw[varName]);
     }
     return data;
 }

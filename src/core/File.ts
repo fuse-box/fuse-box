@@ -1,5 +1,5 @@
 import { ModuleCollection } from "./ModuleCollection";
-import { FileAnalysis } from "../analysis/FileAnalysis";
+import { FileAnalysis, TraversalPlugin } from "../analysis/FileAnalysis";
 import { WorkFlowContext, Plugin } from "./WorkflowContext";
 import { IPathInformation, IPackageInformation } from "./PathMaster";
 import { SourceMapGenerator } from "./SourceMapGenerator";
@@ -298,11 +298,11 @@ export class File {
         this.isLoaded = true;
     }
 
-    public makeAnalysis(parserOptions?: any) {
+    public makeAnalysis(parserOptions?: any, traversalOptions?: { plugins: TraversalPlugin[] }) {
         if (!this.analysis.astIsLoaded()) {
             this.analysis.parseUsingAcorn(parserOptions);
         }
-        this.analysis.analyze();
+        this.analysis.analyze(traversalOptions);
     }
 
     /**
@@ -367,7 +367,8 @@ export class File {
         }
         this.tryPlugins();
         if (!this.isLoaded) {
-            throw { message: `File contents for ${this.absPath} were not loaded. Missing a plugin?` };
+            this.contents = "";
+            this.context.fuse.producer.addWarning("missing-plugin", `The contents of ${this.absPath} weren't loaded. Missing a plugin?`);
         }
     }
 

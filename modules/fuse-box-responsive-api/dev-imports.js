@@ -1,4 +1,5 @@
-window.$fsmp$ = (function() {
+var $fsmp$ = (function() {
+
     function loadRemoteScript(url) {
         return Promise.resolve().then(function() {
             if (FuseBox.isBrowser) {
@@ -23,12 +24,27 @@ window.$fsmp$ = (function() {
 
     function request(url, cb) {
         if (FuseBox.isServer) {
-            cb(null, require(url));
+            try {
+                if (/\.(js|json)$/.test(url)) {
+                    cb(null, require(url))
+                } else {
+                    cb(null, require("fs")
+                        .readFileSync(require("path")
+                            .join(__dirname, url)).toString());
+                }
+
+            } catch (e) { cb(e) }
         } else {
             var request = new XMLHttpRequest();
             request.onreadystatechange = function() {
+                var err;
                 if (this.readyState == 4) {
-                    cb(this.status == 200 ? 0 : 1, this.responseText, request.getResponseHeader("Content-Type"));
+                    if (this.status !== 200) {
+                        err = { code: this.status, msg: this.statusText }
+                    }
+                    this.status
+
+                    cb(err, this.responseText, request.getResponseHeader("Content-Type"));
                 }
             };
             request.open("GET", url, true);
@@ -46,6 +62,7 @@ window.$fsmp$ = (function() {
     }
 
     return function(id) {
+
         return new Promise((resolve, reject) => {
             if (FuseBox.exists(id)) {
                 return resolve(FuseBox.import(id));
@@ -72,7 +89,11 @@ window.$fsmp$ = (function() {
             }
 
             request(id, function(error, contents, type) {
+                if (error) {
+                    return reject(error);
+                }
                 var data;
+
                 if (type && FuseBox.isBrowser) {
                     if (/javascript/.test(type)) {
                         data = evaluateModule(id, contents);
@@ -80,12 +101,18 @@ window.$fsmp$ = (function() {
                         data = JSON.parse(contents);
                     } else if (!/javascript/.test(type)) {
                         data = contents;
+                    } else {
+                        data = contents;
                     }
                 } else {
                     data = contents;
                 }
+
                 return resolve(data);
             });
         });
     };
 })();
+if (FuseBox.isBrowser) {
+    window.$fsmp$ = $fsmp$;
+}

@@ -2,11 +2,37 @@ import { ProducerAbstraction } from "./ProducerAbstraction";
 import { PackageAbstraction } from "./PackageAbstraction";
 import { ASTTraverse } from "../../ASTTraverse";
 import { acornParse } from "../../analysis/FileAnalysis";
+import { FileAbstraction } from "./FileAbstraction";
+import { RequireStatement } from "./nodes/RequireStatement";
 
 export class BundleAbstraction {
+    public splitAbstraction = false;
     public packageAbstractions = new Map<string, PackageAbstraction​​>();
-    constructor(public name: string, public producerAbstraction: ProducerAbstraction) {
-        producerAbstraction.registerBundleAbstraction(this);
+    public producerAbstraction: ProducerAbstraction;
+    /**
+     * 
+     * { "React" : [ 1,2,3,4 ] } 
+     * 
+     * @memberof BundleAbstraction
+     */
+    public identifiers = new Map<string,
+        Set<{ statement: RequireStatement, file: FileAbstraction }>>();
+
+    public hoisted = new Map<string, FileAbstraction>();
+
+    constructor(public name: string) {
+        //producerAbstraction.registerBundleAbstraction(this);
+    }
+
+    public registerHoistedIdentifiers(identifier: string, statement: RequireStatement, file: FileAbstraction) {
+        let list: Set<{ statement: RequireStatement, file: FileAbstraction }>
+        if (!this.identifiers.has(identifier)) {
+            list = new Set<{ statement: RequireStatement, file: FileAbstraction }>();
+            this.identifiers.set(identifier, list);
+        } else {
+            list = this.identifiers.get(identifier);
+        }
+        list.add({ statement: statement, file: file });
     }
 
     public registerPackageAbstraction(packageAbstraction: PackageAbstraction​​) {

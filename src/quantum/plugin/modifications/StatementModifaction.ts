@@ -20,9 +20,14 @@ export class StatementModification {
                     file.addFileMap();
                 }
             } else {
-
                 let resolvedFile = statement.resolve();
                 if (resolvedFile) {
+                    resolvedFile.amountOfReferences++;
+                    // trying to setup hoisting here
+                    if (statement.identifier) {
+                        file.registerHoistedIdentifiers(statement.identifier, statement, resolvedFile);
+                    }
+
                     statement.setFunctionName('$fsx.r');
                     statement.setValue(resolvedFile.getID());
                 } else {

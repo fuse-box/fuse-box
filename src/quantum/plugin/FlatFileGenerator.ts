@@ -1,25 +1,34 @@
 import { FileAbstraction } from "../core/FileAbstraction";
 import { QuantumCore } from "./QuantumCore";
+import { BundleAbstraction } from "../core/BundleAbstraction";
 
 export class FlatFileGenerator {
     public contents = [];
     public entryId;
     public globalsName: string;
-    constructor(public core: QuantumCore) { }
+    constructor(public core: QuantumCore, public bundleAbstraction?: BundleAbstraction​​) { }
     public addGlobal(code: string) {
         this.contents.push(code);
     }
 
     public init() {
         if (this.core.opts.isTargetBrowser() || this.core.opts.isTargetUniveral()) {
-            this.contents.push("(function($fsx){")
+            if (this.core.opts.isContained()) {
+                this.contents.push("(function(){\n/*$$CONTAINED_API_PLACEHOLDER$$*/");
+            } else {
+                this.contents.push("(function($fsx){");
+            }
+        } else {
+            if (this.core.opts.isContained()) {
+                this.contents.push("/*$$CONTAINED_API_PLACEHOLDER$$*/");
+            }
         }
     }
 
     public addFile(file: FileAbstraction, ensureES5 = false) {
-        // if (file.canBeRemoved) {
-        //     return;
-        // }
+        if (file.canBeRemoved) {
+            return;
+        }
         let args: string[] = [];
 
         if (file.isExportInUse()) {
@@ -40,7 +49,18 @@ export class FlatFileGenerator {
         this.contents.push(`$fsx.f[${JSON.stringify(fileId)}] = ${file.generate(ensureES5)}`);
     }
 
+    public addHoistedVariables() {
+
+        this.bundleAbstraction.hoisted.forEach((item, key) => {
+            this.contents.push(`var ${key} = $fsx.r(${item.getID()});`);
+        });
+    }
+
     public render() {
+        if (this.bundleAbstraction) {
+
+            this.addHoistedVariables();
+        }
         if (this.entryId !== undefined) {
             const req = `$fsx.r(${JSON.stringify(this.entryId)})`;
 
@@ -63,7 +83,11 @@ export class FlatFileGenerator {
         }
         // finish wrapping
         if (this.core.opts.isTargetBrowser() || this.core.opts.isTargetUniveral()) {
-            this.contents.push("})($fsx)");
+            if (this.core.opts.isContained()) {
+                this.contents.push("})();");
+            } else {
+                this.contents.push("})($fsx);");
+            }
         }
         return this.contents.join("\n");
     }

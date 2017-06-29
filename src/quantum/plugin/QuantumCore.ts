@@ -24,8 +24,8 @@ import { RequireStatement } from "../core/nodes/RequireStatement";
 import { WorkFlowContext } from "../../core/WorkflowContext";
 
 import { Bundle } from "../../core/Bundle";
-import { QuantumItem } from "./QuantumSplit";
 import { DynamicImportStatementsModifications } from "./modifications/DynamicImportStatements";
+import { Hoisting } from "./Hoisting";
 
 
 export interface QuantumStatementMapping {
@@ -43,6 +43,7 @@ export class QuantumCore {
     public requiredMappings = new Set<RegExp>();
     public customStatementSolutions = new Set<RegExp>();
     public computedStatementRules = new Map<string, ComputedStatementRule>();
+    public splitFiles = new Set<FileAbstraction>();
 
     constructor(public producer: BundleProducer, opts: QuantumOptions) {
         this.opts = opts;
@@ -56,7 +57,7 @@ export class QuantumCore {
         this.context = this.producer.fuse.context;
     }
 
-    public solveComputed(path: string, rules: { mapping: string, fn: { (statement: RequireStatement, core: QuantumCore) } }) {
+    public solveComputed(path: string, rules: { mapping: string, fn: { (statement: RequireStatement, core: QuantumCore): void } }) {
         this.customStatementSolutions.add(string2RegExp(path));
         this.requiredMappings.add(string2RegExp(rules.mapping));
         this.computedStatementRules.set(path, new ComputedStatementRule(path, rules));
@@ -77,6 +78,13 @@ export class QuantumCore {
         }).then(abstraction => {
             this.producerAbstraction = abstraction;
             this.log.echoInfo("Abstraction generated");
+
+            return each(abstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
+                return this.prepareFiles(bundleAbstraction);
+            })
+                .then(() => this.prepareSplitFiles())
+                .then(() => abstraction);
+        }).then(abstraction => {
             return each(abstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
                 return this.processBundle(bundleAbstraction);
             });
@@ -132,12 +140,64 @@ export class QuantumCore {
             }
         });
     }
+
+    public prepareSplitFiles() {
+        let bundle: Bundle;
+        const splitConfig = this.context.quantumSplitConfig;
+        if (!splitConfig) {
+            return;
+        }
+
+        let items = splitConfig.getItems();
+        items.forEach(quantumItem => {
+            quantumItem.getFiles().forEach(file => {
+
+                // create a bundle if not exists
+                // de-reference items
+                if (!this.producer.bundles.get(quantumItem.name)) {
+                    this.log.echoInfo(`Create split bundle ${quantumItem.name}`);
+                    const fusebox = this.context.fuse.copy();
+                    const bundleName = splitConfig.resolve(quantumItem.name);
+
+                    bundle = new Bundle(bundleName, fusebox, this.producer);
+                    //bundle.context = this.producer.fuse.context;
+                    this.producer.bundles.set(quantumItem.name, bundle);
+                    // don't allow WebIndexPlugin to include it to script tags
+                    bundle.webIndexed = false;
+                    // set the reference
+                    bundle.quantumItem = quantumItem;
+                    // bundle abtraction needs to be created to have an isolated scope for hoisting
+                    const bnd = new BundleAbstraction(quantumItem.name);
+                    bnd.splitAbstraction = true;
+                    let pkg = new PackageAbstraction(file.packageAbstraction.name, bnd);
+                    this.producerAbstraction.registerBundleAbstraction(bnd);
+                    bundle.bundleAbstraction = bnd;
+                    bundle.packageAbstraction = pkg;
+                } else {
+                    bundle = this.producer.bundles.get(quantumItem.name);
+                }
+                this.log.echoInfo(`Adding ${file.fuseBoxPath} to ${quantumItem.name}`);
+
+                // removing the file from the current package
+                file.packageAbstraction.fileAbstractions.delete(file.fuseBoxPath);
+
+                bundle.packageAbstraction.registerFileAbstraction(file);
+
+
+                // add it to an additional list
+                // we need to modify it later on, cuz of the loop we are in
+                file.packageAbstraction = bundle.packageAbstraction;
+            });
+        });
+
+    }
     public prepareFiles(bundleAbstraction: BundleAbstraction) {
         // set ids first
         let entryId;
         if (this.producer.entryPackageFile && this.producer.entryPackageName) {
             entryId = `${this.producer.entryPackageName}/${this.producer.entryPackageFile}`;
         }
+        const splitConfig = this.context.quantumSplitConfig;
 
         // define globals
         const globals = this.producer.fuse.context.globals;
@@ -145,9 +205,7 @@ export class QuantumCore {
         if (globals) {
             for (let i in globals) { globalsName = globals[i]; }
         }
-
         bundleAbstraction.packageAbstractions.forEach(packageAbstraction => {
-
             packageAbstraction.fileAbstractions.forEach((fileAbstraction, key: string) => {
                 let fileId = fileAbstraction.getFuseBoxFullPath();
                 let id;
@@ -163,10 +221,11 @@ export class QuantumCore {
                 }
                 fileAbstraction.setID(id);
                 const quantumItem = this.context.requiresQuantumSplitting(fileAbstraction.fuseBoxPath)
-                if (quantumItem) {
+                if (quantumItem && splitConfig) {
                     if (quantumItem.entry === fileAbstraction.fuseBoxPath) {
                         quantumItem.entryId = fileAbstraction.getID();
                     }
+                    this.api.useCodeSplitting();
                     // reference the item
                     // it will be removed from this bundle later
                     fileAbstraction.referenceQuantumSplit(quantumItem);
@@ -177,14 +236,14 @@ export class QuantumCore {
 
     public processBundle(bundleAbstraction: BundleAbstraction) {
         this.log.echoInfo(`Process bundle ${bundleAbstraction.name}`);
-        this.prepareFiles(bundleAbstraction);
         return each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
             const fileSize = packageAbstraction.fileAbstractions.size;
             this.log.echoInfo(`Process package ${packageAbstraction.name} `);
             this.log.echoInfo(`  Files: ${fileSize} `);
-            return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) =>
-                this.modify(fileAbstraction));
-        });
+            return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) => {
+                return this.modify(fileAbstraction);
+            });
+        }).then(() => this.hoist());
     }
 
     public treeShake() {
@@ -195,15 +254,12 @@ export class QuantumCore {
     }
     public render() {
         return each(this.producerAbstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
-            const generator = new FlatFileGenerator(this);
+
+            const generator = new FlatFileGenerator(this, bundleAbstraction);
             generator.init();
             return each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
                 return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) => {
-                    // split references belong to other bundles
-                    // which will be created later
-                    if (!fileAbstraction.getSplitReference()) {
-                        return generator.addFile(fileAbstraction, this.opts.shouldEnsureES5());
-                    }
+                    return generator.addFile(fileAbstraction, this.opts.shouldEnsureES5());
                 });
 
             }).then(() => {
@@ -211,39 +267,14 @@ export class QuantumCore {
                 const bundleCode = generator.render();
                 this.producer.bundles.get(bundleAbstraction.name).generatedCode = new Buffer(bundleCode);
             });
-        }).then(() => {
-            const config = this.context.quantumSplitConfig;
-            // generate extra bundles required by code splitting
-            if (config) {
-                this.api.useCodeSplitting();
-                this.log.echoInfo(`Dealing with code splitting`);
-                const items = config.getItems();
-                // every split item contains file abstractions
-                return each(items, (item: QuantumItem) => {
-                    const files = item.getFiles();
-                    this.log.echoInfo(`Code splitting: bundle ${item.name} (files: ${files.size})`);
-                    const fusebox = this.context.fuse.copy();
-                    const bundleName = config.resolve(item.name);
-                    const bundle = new Bundle(bundleName, fusebox, this.producer);
-                    // set the reference
-                    bundle.quantumItem = item;
-
-                    // take into consideration resolve options
-                    this.producer.bundles.set(bundleName, bundle);
-
-                    // don't allow WebIndexPlugin to include it to script tags
-                    bundle.webIndexed = false;
-                    const generator = new FlatFileGenerator(this);
-                    generator.init();
-                    // register files
-                    files.forEach(file => {
-                        generator.addFile(file, this.opts.shouldEnsureES5());
-                    });
-                    bundle.generatedCode = new Buffer(generator.render());
-                });
-            }
-
         });
+    }
+
+    public hoist() {
+        if (!this.api.hashesUsed() && this.opts.shouldDoHoisting()) {
+            let hoisting = new Hoisting(this);
+            return hoisting.start();
+        }
     }
 
     public modify(file: FileAbstraction) {

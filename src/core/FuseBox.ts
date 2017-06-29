@@ -26,6 +26,7 @@ export interface FuseBoxOptions {
     tsConfig?: string;
     package?: any;
     cache?: boolean;
+    target?: "browser" | "server" | "universal",
     log?: boolean;
     globals?: { [packageName: string]: /** Variable name */ string };
     plugins?: Plugin[];
@@ -77,6 +78,10 @@ export class FuseBox {
         this.collectionSource = new CollectionSource(this.context);
         opts = opts || {};
         let homeDir = appRoot.path;
+
+        if (opts.target !== undefined) {
+            this.context.target = opts.target;
+        }
 
         if (opts.experimentalFeatures !== undefined) {
             this.context.experimentalFeaturesEnabled = opts.experimentalFeatures;
@@ -206,7 +211,7 @@ export class FuseBox {
 
 
     /** Starts the dev server and returns it */
-    public dev(opts?: ServerOptions, fn?: { (server: Server) }) {
+    public dev(opts?: ServerOptions, fn?: { (server: Server): void }) {
         opts = opts || {};
         opts.port = opts.port || 4444;
         this.producer.devServerOptions = opts;

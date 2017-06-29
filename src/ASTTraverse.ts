@@ -3,22 +3,30 @@ export class ASTTraverse {
 
         options = options || {};
         const pre = options.pre;
-        const post = options.post;
+        //        const post = options.post;
         const skipProperty = options.skipProperty;
 
         let visit = (node, parent, prop?, idx?) => {
+
             if (!node || typeof node.type !== "string") {
                 return;
             }
             if (node._visited) {
                 return;
             }
+            node.$parent = parent;
+            node.$prop = prop;
+            node.$idx = idx;
             let res = undefined;
             if (pre) {
                 res = pre(node, parent, prop, idx);
             }
 
             node._visited = true;
+
+            if (typeof res === "object" && res.type) {
+                return visit(res, null);
+            }
 
             if (res !== false) {
                 for (let prop in node) {
@@ -35,10 +43,9 @@ export class ASTTraverse {
                     }
                 }
             }
-
-            if (post) {
-                post(node, parent, prop, idx);
-            }
+            // if (post) {
+            //     post(node, parent, prop, idx);
+            // }
         };
         visit(root, null);
     }
