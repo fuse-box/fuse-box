@@ -14,7 +14,7 @@ steps:
 This is one of the best parts about `Sparky`, it comes built in `FuseBox` so if you install `FuseBox` this means you already have it.
 
 # Usage
-`Sparky` does not require `CLI` or global installation. just create a file called `fuse.js` in your app root (it does no thave to be called `fuse.js`, you can name it anything and put it anywhere, it is just a `JavaScript` file), then from your command line just type `node fuse [task name]`. for example, say you have a task called build, you can simply run it using `node fuse build`.
+`Sparky` does not require `CLI` or global installation. just create a file called `fuse.js` in your app root (it does not have to be called `fuse.js`, you can name it anything and put it anywhere, it is just a `JavaScript` file), then from your command line just type `node fuse [task name]`. for example, say you have a task called build, you can simply run it using `node fuse build`.
 
 `c:/myProject/fuse.js`
 ```js
