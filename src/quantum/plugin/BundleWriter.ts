@@ -1,6 +1,6 @@
 import { each } from "realm-utils";
 import { Bundle } from "../../core/Bundle";
-import { ensureUserPath } from "../../Utils";
+import { ensureUserPath, uglify } from "../../Utils";
 import { QuantumCore } from "./QuantumCore";
 import * as fs from "fs";
 
@@ -52,8 +52,8 @@ export class BundleWriter {
 
     private uglifyBundle(bundle: Bundle) {
         this.core.log.startSpinner(`Uglifying ${bundle.name}...`);
-        const UglifyJs = require("uglify-js");
-        const result = UglifyJs.minify(bundle.generatedCode.toString(), this.getUglifyJSOptions());
+
+        const result = uglify(bundle.generatedCode, this.getUglifyJSOptions());
         if (result.error) {
             this.core.log
                 .echoBoldRed(`  → Error during uglifying ${bundle.name}`)
