@@ -5,6 +5,9 @@ In compliance with the upcoming [es6 proposal-dynamic-import](https://github.com
 On of the standard functionality, FuseBox offers much more. [Quantum](/page/quantum) supports all the features listed below.
 
 You can start working with it already installing `2.2.0-beta.16`
+
+note: In order to use dynamic imports, add experimentalFeatures : true to the config. The option will be removed with the next major release
+
 ## Loading JSON
 
 JSON files can be loaded asynchronously
