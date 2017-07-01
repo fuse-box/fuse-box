@@ -380,6 +380,7 @@ $fsx.f["33c70bf3"] = function(module, exports){}
 
 This will result in larger bundles and sometimes (if a computed statement is a complicated one) will fail at runtime. Quantum does everything what's possible to resolve it without your attention, however, you can help Quantum detect and solve related problems.
 
+
 ### Problem
 
 You can see the entire solution [here](https://github.com/fuse-box/fuse-box-examples/tree/master/examples/quantum_computed_resolve)
@@ -403,6 +404,21 @@ Your quantum bundle might not work
 ```
 
 Now we know the the problem in your `default` package (basically your project) in a file `foo.js`.
+
+### Easy solution
+If you don't really want to dive into someone's code, you could try resolving it using a simple api tweak
+
+```js
+QuantumPlugin({
+    api: (core) => {
+        core.solveComputed("encoding/lib/iconv-loader.js");
+    }
+})
+```
+Whereas `"encoding/lib/iconv-loader.js"` is a path printed out in the warning.
+
+If you really need to fix it and make it work with Quantum, keep on reading
+
 
 ### Solution
 
