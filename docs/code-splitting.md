@@ -157,16 +157,13 @@ src
 
 ## Lazy load
 
-Finally, we can lazy load from out master bundle. To make your life easier FuseBox offers a great tool for resolving named bundles.
+Documentation on dynamic import is available [here](/page/dynamic-import)
 
 ```js
-import { lazyLoad } from "fuse-tools";
-lazyLoad("about").then(module => {
+import("about").then(module => {
   // routes/about/AboutComponent.tsx has arrived
 })
 ```
 
-
-See a fully working react application with code splitting 
 
 github_example: react-code-splitting
