@@ -12,6 +12,10 @@ steps:
    Quantum will try to remove redundancy, like "use-strict" and other parts that don't affect the runtime
  * Static Tree Shaking
    Quantum features a static tree shaking algorithm. Unlike rollup, quantum tree shaking works with commonjs, however, the code should resemble es6 imports
+ * Production environments
+   All development related functionlity will be removed
+ * Hoisting (experimental) 
+   Repetetive require statements will be hoisted
 
 
 Quantum bundles are in fact a bit smaller than the ones produced with Rollup.
@@ -366,19 +370,7 @@ Your quantum bundle might not work
   - Computed statement warning in moment/moment.js
 ```
 
-Which means that FuseBox Quantum has switched to use `hashes` instead of numbers on the file identification. For example, in a successful case, your will have something like that:
-
-```js
-$fsx.f[1] = function(module, exports){}
-``` 
-
-However, if a computed require statement cannot be resolved, Quantum switches to hashes istead of number on the entire project
-
-```js
-$fsx.f["33c70bf3"] = function(module, exports){}
-```
-
-This will result in larger bundles and sometimes (if a computed statement is a complicated one) will fail at runtime. Quantum does everything what's possible to resolve it without your attention, however, you can help Quantum detect and solve related problems.
+The statement will return `undefined` in this case. You can continue ignoring the message if it doesn't break your build. But if does, read up!
 
 
 ### Problem

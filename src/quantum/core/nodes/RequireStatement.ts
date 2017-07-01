@@ -65,10 +65,10 @@ export class RequireStatement {
                         showWarning = false;
                     }
                 });
-                if (!matched) {
-                    producer.useComputedRequireStatements = true;
-                    producer.useNumbers = false;
-                }
+                //if (!matched) {
+                //producer.useComputedRequireStatements = true;
+                //producer.useNumbers = false;
+                //}
                 // we assume it's a dynamic import
                 if (showWarning) {
                     producer.addWarning(`Computed statement warning in ${this.file.packageAbstraction.name}/${this.file.fuseBoxPath}`);

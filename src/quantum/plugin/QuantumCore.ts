@@ -18,7 +18,7 @@ import { TreeShake } from "./TreeShake";
 import { QuantumOptions } from "./QuantumOptions";
 
 import { ProcessEnvModification } from "./modifications/ProcessEnvModification";
-import { fastHash, string2RegExp } from "../../Utils";
+import { string2RegExp } from "../../Utils";
 import { ComputedStatementRule } from "./ComputerStatementRule";
 import { RequireStatement } from "../core/nodes/RequireStatement";
 import { WorkFlowContext } from "../../core/WorkflowContext";
@@ -210,14 +210,9 @@ export class QuantumCore {
         bundleAbstraction.packageAbstractions.forEach(packageAbstraction => {
             packageAbstraction.fileAbstractions.forEach((fileAbstraction, key: string) => {
                 let fileId = fileAbstraction.getFuseBoxFullPath();
-                let id;
-                if (this.producerAbstraction.useNumbers) {
-                    id = this.index;
-                    this.handleMappings(fileId, id);
-                    this.index++;
-                } else {
-                    id = fastHash(fileId);
-                }
+                const id = this.index;
+                this.handleMappings(fileId, id);
+                this.index++;
                 if (fileId === entryId) {
                     fileAbstraction.setEnryPoint(globalsName);
                 }

@@ -198,7 +198,6 @@ export class FileAbstraction {
 
     public generate(ensureEs5: boolean = false) {
         let code = escodegen.generate(this.ast);
-
         if (ensureEs5 && this.isEcmaScript6) {
             code = transpileToEs5(code);
         }
@@ -213,15 +212,10 @@ export class FileAbstraction {
             fn.push(`var __filename = ${JSON.stringify(this.fuseBoxPath)};` + "\n");
         }
         fn.push(code, '\n}');
-        if (this.fileMapRequested) {
-            const pkg = JSON.stringify(this.packageAbstraction.name);
-            const name = JSON.stringify(this.fuseBoxDir);
-            fn.push("\n" + `$fsx.s[${JSON.stringify(this.getID())}] = [${pkg},${name} ]`);
-        }
         code = fn.join("");
-
         return code;
     }
+
     /**
      *
      * @param node

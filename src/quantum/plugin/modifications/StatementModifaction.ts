@@ -16,10 +16,11 @@ export class StatementModification {
                     }
                     statement.setFunctionName("$fsx.p");
                 } else {
-                    statement.setFunctionName("$fsx.c");
-                    statement.bindID(file.getID());
+                    statement.setFunctionName("$fsx.r");
+                    //statement.setFunctionName("$fsx.c");
+                    //statement.bindID(file.getID());
                     // file map is requested with computed require statements
-                    file.addFileMap();
+                    //file.addFileMap();
                 }
             } else {
                 let resolvedFile = statement.resolve();
