@@ -31,36 +31,37 @@ export class TreeShakeTest {
         });
     }
 
-    "Should throw & log an error in uglify with invalid syntax if log=error"() {
-        log.startCapturing()
-        return createOptimisedBundleEnv({
-            stubs: false,
-            options: {
-                treeshake: false,
-                uglify: true,
-                ensureES5: false,
-            },
-            project: {
-                log: 'error,notify',
-                files: {
-                    "index.js": `
-                        // const {...eh} = {...{canada: true}}
-                        function* generator() {
-                            console.log(yeild)
-                        }
-                        let fs = 1
-                        module.exports = {[fs]: fs}
-                    `,
-                },
-                plugins: [],
-                instructions: ">index.js",
-            },
-        }).then(result => {
-        })
-        .catch(e => {
-            log.stopCapturing()
-            should(log.savedLog.join('')).findString('uglify-js')
-            should(e).beInstanceOf(Error);
-        };
-    }
+    // @TODO: for error logs
+    // "Should throw & log an error in uglify with invalid syntax if log=error"() {
+    //     log.startCapturing()
+    //     return createOptimisedBundleEnv({
+    //         stubs: false,
+    //         options: {
+    //             treeshake: false,
+    //             uglify: true,
+    //             ensureES5: false,
+    //         },
+    //         project: {
+    //             log: 'error,notify',
+    //             files: {
+    //                 "index.js": `
+    //                     // const {...eh} = {...{canada: true}}
+    //                     function* generator() {
+    //                         console.log(yeild)
+    //                     }
+    //                     let fs = 1
+    //                     module.exports = {[fs]: fs}
+    //                 `,
+    //             },
+    //             plugins: [],
+    //             instructions: ">index.js",
+    //         },
+    //     }).then(result => {
+    //     })
+    //     .catch(e => {
+    //         log.stopCapturing()
+    //         should(log.savedLog.join('')).findString('uglify-js')
+    //         should(e).beInstanceOf(Error);
+    //     };
+    // }
 }
