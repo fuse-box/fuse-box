@@ -1,3 +1,8 @@
+export { Bundle } from "./core/Bundle";
+export { BundleProducer } from "./core/BundleProducer";
+export { FuseBoxOptions } from "./core/FuseBox";
+export { IQuantumExtensionParams } from "./quantum/plugin/QuantumOptions";
+
 export { ComputedStatementRule } from "./quantum/plugin/ComputerStatementRule";
 export { QuantumPlugin } from "./quantum/plugin/QuantumPlugin";
 export { ReplacePlugin } from "./plugins/ReplacePlugin";
