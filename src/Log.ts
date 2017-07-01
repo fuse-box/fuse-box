@@ -176,7 +176,7 @@ export class Log {
 
         // safety for if errors happen so it does not keep spinning
         setTimeout(() => {
-            if (this.spinner.succeeded === false) {
+            if (this.spinner.succeeded === false && this.spinner.fail) {
                 this.spinner.fail();;
             }
         }, 1000);

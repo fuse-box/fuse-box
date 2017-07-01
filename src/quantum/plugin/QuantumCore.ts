@@ -59,7 +59,9 @@ export class QuantumCore {
 
     public solveComputed(path: string, rules: { mapping: string, fn: { (statement: RequireStatement, core: QuantumCore): void } }) {
         this.customStatementSolutions.add(string2RegExp(path));
-        this.requiredMappings.add(string2RegExp(rules.mapping));
+        if (rules && rules.mapping) {
+            this.requiredMappings.add(string2RegExp(rules.mapping));
+        }
         this.computedStatementRules.set(path, new ComputedStatementRule(path, rules));
     }
 

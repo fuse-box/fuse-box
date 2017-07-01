@@ -11,7 +11,9 @@ export class StatementModification {
                 let customSolution = core.getCustomSolution(file);
 
                 if (customSolution && !core.api.hashesUsed()) {
-                    customSolution.rules.fn(statement, core);
+                    if (customSolution.rules) {
+                        customSolution.rules.fn(statement, core);
+                    }
                     statement.setFunctionName("$fsx.p");
                 } else {
                     statement.setFunctionName("$fsx.c");
