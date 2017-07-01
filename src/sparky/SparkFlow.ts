@@ -11,7 +11,7 @@ export class SparkFlow {
     private activities = [];
     private watcher: any;
     private files: SparkyFile[];
-    private complatedCallback: any;
+    private completedCallback: any;
     private initialWatch = false;
 
     constructor() { }
@@ -60,7 +60,7 @@ export class SparkFlow {
     }
 
     public completed(fn: any): SparkFlow {
-        this.complatedCallback = fn;
+        this.completedCallback = fn;
         return this;
     }
 
@@ -149,8 +149,8 @@ export class SparkFlow {
     public exec() {
         return each(this.activities, (activity: any) => activity && activity())
             .then(() => {
-                if (this.complatedCallback) {
-                    this.complatedCallback(this.files);
+                if (this.completedCallback) {
+                    this.completedCallback(this.files);
                 }
                 this.files = [];
             });
