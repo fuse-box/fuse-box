@@ -78,25 +78,25 @@ export class HeavyNodeModules {
         });
     }
 
-    "Should bundle babylon"() {
-        return createEnv({
-            project: {
-                files: {
-                    "index.js": `
-                       var generator = require('babel-generator')
-                        var babylon = require('babylon')
-                        const code = 'class Example {}';
-                        const ast = babylon.parse(code);
+    // "Should bundle babylon"() {
+    //     return createEnv({
+    //         project: {
+    //             files: {
+    //                 "index.js": `
+    //                    var generator = require('babel-generator')
+    //                     var babylon = require('babylon')
+    //                     const code = 'class Example {}';
+    //                     const ast = babylon.parse(code);
 
-                        exports.test = generator.default(ast, {}, code);
-                    `
-                },
-                plugins: [JSONPlugin()],
-                instructions: "index.js",
-            },
-        }).then((result) => {
-            const out = result.project.FuseBox.import("./index");
-            should(out.test.code).equal("class Example {}");
-        });
-    }
+    //                     exports.test = generator.default(ast, {}, code);
+    //                 `
+    //             },
+    //             plugins: [JSONPlugin()],
+    //             instructions: "index.js",
+    //         },
+    //     }).then((result) => {
+    //         const out = result.project.FuseBox.import("./index");
+    //         should(out.test.code).equal("class Example {}");
+    //     });
+    // }
 }

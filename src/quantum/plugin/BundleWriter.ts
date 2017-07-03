@@ -156,7 +156,6 @@ export class BundleWriter {
             }
         }).then(() => {
             const manifestPath = this.core.opts.getManifestFilePath();
-            console.log("manifestPath", manifestPath);
             if (manifestPath) {
                 this.core.producer.fuse.context.output.write(manifestPath,
                     JSON.stringify(bundleManifest, null, 2), true);
