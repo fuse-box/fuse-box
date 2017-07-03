@@ -67,6 +67,7 @@ export class BundleWriter {
 
     public process() {
         const producer = this.core.producer;
+        const bundleManifest: any = {};
         this.addShims();
 
         producer.bundles.forEach(bundle => {
@@ -97,6 +98,13 @@ export class BundleWriter {
         let index = 1;
         const writeBundle = (bundle: Bundle) => {
             return bundle.context.output.writeCurrent(bundle.generatedCode).then(output => {
+                bundleManifest[bundle.name] = {
+                    fileName: output.filename,
+                    hash: output.hash,
+                    absPath: output.path,
+                    webIndexed: !bundle.quantumItem,
+                    relativePath: output.relativePath
+                };
                 // if this bundle belongs to splitting
                 // we need to remember the generated file name and store 
                 // and then pass to the API
@@ -118,6 +126,7 @@ export class BundleWriter {
             } else {
                 bundle.webIndexPriority = 1000 - index;
             }
+
             // if the api wants to be  baked it, we have to skip generation now
 
             if (apiName2bake !== bundle.name) {
@@ -146,10 +155,16 @@ export class BundleWriter {
                 return writeBundle(targetBundle);
             }
         }).then(() => {
+            const manifestPath = this.core.opts.getManifestFilePath();
+            console.log("manifestPath", manifestPath);
+            if (manifestPath) {
+                this.core.producer.fuse.context.output.write(manifestPath,
+                    JSON.stringify(bundleManifest, null, 2), true);
+            }
             if (this.core.opts.webIndexPlugin) {
                 return this.core.opts.webIndexPlugin.producerEnd(producer)
             }
-        })
+        });
     }
 
 

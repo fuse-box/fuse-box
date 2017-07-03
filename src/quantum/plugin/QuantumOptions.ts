@@ -20,7 +20,8 @@ export interface IQuantumExtensionParams {
     extendServerImport?: boolean;
     polyfills?: string[];
     hoisting?: boolean | { names: string[] };
-    containedAPI?: boolean
+    containedAPI?: boolean,
+    manifest?: boolean | string,
 }
 
 export class QuantumOptions {
@@ -38,6 +39,7 @@ export class QuantumOptions {
     private polyfills: string[];
     private hoistedNames: string[];
     private extendServerImport = false;
+    private manifestFile: string;
     public apiCallback: { (core: QuantumCore): void }
     public optsTarget: string = "browser";
     public treeshake = false;
@@ -50,6 +52,15 @@ export class QuantumOptions {
         }
         if (opts.api) {
             this.apiCallback = opts.api;
+        }
+
+        if (opts.manifest !== undefined) {
+            if (typeof opts.manifest === "string") {
+                this.manifestFile = opts.manifest;
+            }
+            if (opts.manifest === true) {
+                this.manifestFile = "manifest.json";
+            }
         }
         if (opts.uglify) {
             this.uglify = opts.uglify;
@@ -117,6 +128,10 @@ export class QuantumOptions {
         if (this.polyfills && this.polyfills.indexOf("Promise") > -1) {
             return readFuseBoxModule("fuse-box-responsive-api/promise-polyfill.js");
         }
+    }
+
+    public getManifestFilePath(): string {
+        return this.manifestFile;
     }
 
     public canBeRemovedByTreeShaking(file: FileAbstraction) {

@@ -267,6 +267,37 @@ Produced bundles will look similar to this example below:
 Whereas $fsx is a local variable
 
 
+### manifest
+Default value: `true`
+```js
+QuantumPlugin({
+    manifest : true
+})
+```
+
+Generates `manifest.json` (file name can be customised by setting a string instead of a true value)
+which contains the information on the generated bundles. An example below:
+
+```js
+{
+  "app": {
+    "fileName": "1fd5d933-app.js",
+    "hash": "1fd5d933",
+    "absPath": "$userpath/src/splitting/code-splitting/dist/1fd5d933-app.js",
+    "webIndexed": true,
+    "relativePath": "1fd5d933-app.js"
+  },
+  "home": {
+    "fileName": "72a031dc-home.js",
+    "hash": "72a031dc",
+    "absPath": "$userpath//src/splitting/code-splitting/dist/72a031dc-home.js",
+    "webIndexed": false,
+    "relativePath": "72a031dc-home.js"
+  }
+}
+```
+`webIndexed` is false when a bundle should not be loaded as a script tag (split bundle)
+
 ### removeExportsInterop
 Default value: `true`
 
