@@ -463,10 +463,10 @@ export class WorkFlowContext {
         }
 
         if (configFile) {
-            this.log.echoStatus(`Typescript config:  ${configFile.replace(this.appRoot, "")}`);
+            //this.log.echoStatus(`Typescript config:  ${configFile.replace(this.appRoot, "")}`);
             config = require(configFile);
         } else {
-            this.log.echoStatus(`Typescript config file was not found. Improvising`);
+            //this.log.echoStatus(`Typescript config file was not found. Improvising`);
         }
 
         config.compilerOptions.module = "commonjs";

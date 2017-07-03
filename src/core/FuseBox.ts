@@ -302,6 +302,7 @@ export class FuseBox {
         }
 
         let self = this;
+        this.context.log.bundleStart(this.context.bundle.name);
         return bundleCollection.collectBundle(bundleData).then(module => {
 
             return chain(class extends Chainable {
@@ -310,6 +311,7 @@ export class FuseBox {
                 public defaultContents: string;
                 public globalContents = [];
                 public setDefaultCollection() {
+
                     return bundleCollection;
                 }
 

@@ -217,7 +217,6 @@ export class Bundle {
 
     public exec(): Promise<Bundle> {
         return new Promise((resolve, reject) => {
-            this.fuse.context.log.bundleStart(this.name);
             this.fuse
                 .initiateBundle(this.arithmetics || "", () => {
 

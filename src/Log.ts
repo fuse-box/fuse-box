@@ -138,7 +138,10 @@ export class Log {
     // @TODO combine logs here, output when needed
     // @TODO combine this and subBundleStart
     public bundleStart(name: string) {
-        log.bold(`${name}: `).echo();
+        log.gray(``).echo();
+        log.gray(`--------------------------`).echo();
+        log.magenta(`Bundle "${name}" `).echo();
+        log.gray(``).echo();
         return this;
     }
     public subBundleStart(name: string, parent: string) {
@@ -217,11 +220,11 @@ export class Log {
         // @example └──  (5 files, 7.6 kB) default
         // @TODO auto indent as with ansi
         collection.dependencies.forEach(file => {
-            if (file.info.isRemoteFile) return
+            if (file.info.isRemoteFile) { return; }
             const indent = this.indent.level(4).toString()
             log
-                .tags('filelist')
-                .dim(`${indent}${file.info.fuseBoxPath}`)
+                // .tags('filelist')
+                .gray(`${indent}${file.info.fuseBoxPath}`)
                 .echo()
         });
 
@@ -240,7 +243,7 @@ export class Log {
     // └── fuse-box-css 1.5 kB (1 files)
     // └── lodash 14.2 kB (12 files)
     public echoCollection(collection: ModuleCollection, contents: string) {
-        if (this.printLog === false) return this;
+        if (this.printLog === false) { return this; }
         let bytes = Buffer.byteLength(contents, "utf8");
         let size = prettysize(bytes);
         this.totalSize += bytes;
