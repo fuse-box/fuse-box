@@ -268,7 +268,7 @@ Whereas $fsx is a local variable
 
 
 ### manifest
-Default value: `true`
+Default value: `false`
 ```js
 QuantumPlugin({
     manifest : true
