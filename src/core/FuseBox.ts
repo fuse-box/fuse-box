@@ -302,9 +302,8 @@ export class FuseBox {
         }
 
         let self = this;
-        this.context.log.bundleStart(this.context.bundle.name);
         return bundleCollection.collectBundle(bundleData).then(module => {
-
+            this.context.log.bundleStart(this.context.bundle.name);
             return chain(class extends Chainable {
                 public defaultCollection: ModuleCollection;
                 public nodeModules: Map<string, ModuleCollection>;
