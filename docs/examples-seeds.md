@@ -72,6 +72,11 @@ npm install
 node fuse
 ```
 
+### Angular Universal
+Seed project for Angular Universal apps featuring Server-Side Rendering (SSR), FuseBox, dev/prod builds, Brotli/Gzip compression, SCSS, favicon generation, @types, unit testing w/ Jest, SEO and OG meta social sharing tags, automatic sitemap generator, ad-block detection service, CDN origin injection, and more! 
+
+https://github.com/patrickmichalina/fusebox-angular-universal-starter
+
 ### FuseBox + rollup
 
 How to use rollup with FuseBox
