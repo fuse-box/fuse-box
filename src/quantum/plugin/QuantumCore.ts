@@ -57,7 +57,7 @@ export class QuantumCore {
         this.context = this.producer.fuse.context;
     }
 
-    public solveComputed(path: string, rules: { mapping: string, fn: { (statement: RequireStatement, core: QuantumCore): void } }) {
+    public solveComputed(path: string, rules?: { mapping: string, fn: { (statement: RequireStatement, core: QuantumCore): void } }) {
         this.customStatementSolutions.add(string2RegExp(path));
         if (rules && rules.mapping) {
             this.requiredMappings.add(string2RegExp(rules.mapping));
@@ -76,8 +76,10 @@ export class QuantumCore {
     public consume() {
         this.log.echoInfo("Generating abstraction, this may take a while");
         return this.producer.generateAbstraction({
+            quantumCore: this,
             customComputedStatementPaths: this.customStatementSolutions
         }).then(abstraction => {
+            abstraction.quantumCore = this;
             this.producerAbstraction = abstraction;
             this.log.echoInfo("Abstraction generated");
 

@@ -135,6 +135,7 @@ export class WorkFlowContext {
 
     public sourceMapsProject: boolean = false;
     public sourceMapsVendor: boolean = false;
+    public inlineSourceMaps: boolean = true;
     public useSourceMaps = false;
 
     public initialLoad = true;
@@ -267,8 +268,12 @@ export class WorkFlowContext {
             this.sourceMapsProject = params;
         } else {
             if (utils.isPlainObject(params)) {
-                this.sourceMapsProject = params.project === true;
+                this.sourceMapsProject = params.project !== undefined ? params.project : true;
                 this.sourceMapsVendor = params.vendor === true;
+                if (params.inline !== undefined) {
+
+                    this.inlineSourceMaps = params.inline;
+                }
             }
         }
         if (this.sourceMapsProject || this.sourceMapsVendor) {

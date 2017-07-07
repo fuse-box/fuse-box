@@ -431,8 +431,9 @@ export class File {
 
         if (this.context.useCache) {
             if (this.loadFromCache()) {
-                this.tryPlugins();
-                return;
+                // console.log("from cache");
+                // this.tryPlugins();
+                // return;
             }
         }
         const ts = require("typescript");
@@ -450,6 +451,11 @@ export class File {
             let jsonSourceMaps = JSON.parse(result.sourceMapText);
             jsonSourceMaps.file = this.info.fuseBoxPath;
             jsonSourceMaps.sources = [this.info.fuseBoxPath.replace(/\.js(x?)$/, ".ts$1")];
+
+            if (!this.context.inlineSourceMaps) {
+                delete jsonSourceMaps.sourcesContent;
+                jsonSourceMaps.sources = [`src/${jsonSourceMaps.sources}`];
+            }
             result.outputText = result.outputText.replace("//# sourceMappingURL=module.js.map", "");
             this.sourceMap = JSON.stringify(jsonSourceMaps);
         }

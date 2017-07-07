@@ -16,6 +16,7 @@ import { TypeOfWindowKeyword } from "./nodes/TypeOfWindowKeyword";
 import { NamedExport } from "./nodes/NamedExport";
 import { GenericAst } from "./nodes/GenericAst";
 import { QuantumItem } from "../plugin/QuantumSplit";
+import { QuantumCore } from "../plugin/QuantumCore";
 
 const globalNames = new Set<string>(["__filename", "__dirname", "exports", "module"]);
 
@@ -52,6 +53,7 @@ export class FileAbstraction {
 
     public namedExports = new Map<string, NamedExport>();
     public processNodeEnv = new Set<GenericAst>();
+    public core: QuantumCore;
 
     public isEntryPoint = false;
 
@@ -63,8 +65,8 @@ export class FileAbstraction {
     constructor(public fuseBoxPath: string, public packageAbstraction: PackageAbstraction) {
         this.fuseBoxDir = ensureFuseBoxPath(path.dirname(fuseBoxPath));
         this.setID(fuseBoxPath);
-
         packageAbstraction.registerFileAbstraction(this);
+        this.core = this.packageAbstraction.bundleAbstraction.producerAbstraction.quantumCore;
     }
 
     public registerHoistedIdentifiers(identifier: string, statement: RequireStatement, resolvedFile: FileAbstraction) {
@@ -382,9 +384,15 @@ export class FileAbstraction {
             }
             if (node.property.name === "isServer") {
                 this.fuseboxIsServerConditions.add(new FuseBoxIsServerCondition(this, parent, prop, idx));
+                if (this.core.opts.isTargetBrowser()) {
+                    return;
+                }
             }
             if (node.property.name === "isBrowser") {
                 this.fuseboxIsBrowserConditions.add(new FuseBoxIsBrowserCondition(this, parent, prop, idx));
+                if (this.core.opts.isTargetServer()) {
+                    return;
+                }
             }
             return false;
         }

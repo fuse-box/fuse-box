@@ -1,19 +1,23 @@
 import { BundleAbstraction } from "./BundleAbstraction";
 import { generateFileCombinations } from "./utils";
 import { ProducerWarning } from "./ProducerWarning";
+import { QuantumCore } from "../plugin/QuantumCore";
 
 export interface ProducerAbtractionOptions {
-    customComputedStatementPaths?: Set<RegExp>
+    customComputedStatementPaths?: Set<RegExp>;
+    quantumCore?: QuantumCore;
 }
 export class ProducerAbstraction {
     public warnings = new Set<ProducerWarning>();
     public bundleAbstractions = new Map<string, BundleAbstraction>();
     public opts: ProducerAbtractionOptions;
     public useNumbers = true;
+    public quantumCore: QuantumCore;
     public useComputedRequireStatements = false;
 
     constructor(opts?: ProducerAbtractionOptions) {
         this.opts = opts || {};
+        this.quantumCore = opts.quantumCore;
 
         this.opts.customComputedStatementPaths = this.opts.customComputedStatementPaths || new Set();
     }
