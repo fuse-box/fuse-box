@@ -384,13 +384,13 @@ export class FileAbstraction {
             }
             if (node.property.name === "isServer") {
                 this.fuseboxIsServerConditions.add(new FuseBoxIsServerCondition(this, parent, prop, idx));
-                if (this.core.opts.isTargetBrowser()) {
+                if (this.core && this.core.opts.isTargetBrowser()) {
                     return;
                 }
             }
             if (node.property.name === "isBrowser") {
                 this.fuseboxIsBrowserConditions.add(new FuseBoxIsBrowserCondition(this, parent, prop, idx));
-                if (this.core.opts.isTargetServer()) {
+                if (this.core && this.core.opts.isTargetServer()) {
                     return;
                 }
             }

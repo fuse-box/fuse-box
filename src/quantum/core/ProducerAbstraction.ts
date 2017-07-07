@@ -17,7 +17,7 @@ export class ProducerAbstraction {
 
     constructor(opts?: ProducerAbtractionOptions) {
         this.opts = opts || {};
-        this.quantumCore = opts.quantumCore;
+        this.quantumCore = this.opts.quantumCore;
 
         this.opts.customComputedStatementPaths = this.opts.customComputedStatementPaths || new Set();
     }

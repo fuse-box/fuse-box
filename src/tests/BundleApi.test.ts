@@ -148,12 +148,12 @@ export class BundleApiTest {
         should(bundle.context.sourceMapsVendor).beFalse();
     }
 
-    "Should set sourcemaps for vendor only"() {
-        const fuse = createFuse();
-        const bundle = fuse.bundle("app").sourceMaps({ vendor: true });
-        should(bundle.context.sourceMapsProject).beFalse();
-        should(bundle.context.sourceMapsVendor).beTrue();
-    }
+    // "Should set sourcemaps for vendor only"() {
+    //     const fuse = createFuse();
+    //     const bundle = fuse.bundle("app").sourceMaps({ vendor: true });
+    //     should(bundle.context.sourceMapsProject).beFalse();
+    //     should(bundle.context.sourceMapsVendor).beTrue();
+    // }
 
     "Should set sourcemaps for both vendor and app"() {
         const fuse = createFuse();
