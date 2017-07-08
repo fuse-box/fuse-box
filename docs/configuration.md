@@ -295,6 +295,18 @@ fuse.bundle("app").sourceMaps(true)
 
 Sourcemaps currently work with typescript, BabelPlugin and SourceMapPlainJsPlugin
 
+### Hosting source files
+
+By default FuseBox inlines sources, that can be changed
+
+```js
+FuseBox.init({
+    sourceMaps: { inline: false }
+})
+```
+
+In this scenario, your `homeDir` will be exposed to the development server. If you are running your own, make sure you have mapped `src/` to your actual source code folder.
+
 ## Standalone
 
 By default FuseBox injects API in every bundle. That can be overridden by setting:
