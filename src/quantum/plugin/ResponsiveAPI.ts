@@ -12,7 +12,7 @@ export class ResponsiveAPI {
     private customMappings = {};
     private lazyLoading = false;
     private customStatementResolve = false;
-
+    private serverRequire = false;
     private bundleMapping: any;
     private ajaxRequired = false;
     private codeSplitting = false;
@@ -73,6 +73,10 @@ export class ResponsiveAPI {
         this.isBrowserFunction = true;
     }
 
+    public useServerRequire() {
+        this.serverRequire = true;
+    }
+
     public considerStatement(statement: RequireStatement) {
         this.addLazyLoading();
         if (statement.isComputed) {
@@ -104,6 +108,7 @@ export class ResponsiveAPI {
             isBrowserFunction: this.isBrowserFunction,
             computedStatements: this.computedStatements,
             hashes: this.hashes,
+            serverRequire: this.serverRequire,
             customStatementResolve: this.customStatementResolve,
             lazyLoading: this.lazyLoading,
             codeSplitting: this.codeSplitting,

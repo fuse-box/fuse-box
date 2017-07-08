@@ -34,8 +34,13 @@ export class StatementModification {
                     statement.setFunctionName('$fsx.r');
                     statement.setValue(resolvedFile.getID());
                 } else {
-                    core.api.considerStatement(statement);
-                    statement.setFunctionName('$fsx.l');
+                    if (core.opts.isTargetServer() || core.opts.isTargetUniveral()) {
+                        core.api.useServerRequire();
+                        statement.setFunctionName('$fsx.s');
+                    } else {
+                        statement.setFunctionName('$fsx.r');
+                    }
+
                 }
             }
         });
