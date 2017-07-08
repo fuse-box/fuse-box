@@ -13,6 +13,13 @@ export interface CSSPluginOptions {
     minify?: boolean;
 }
 
+const ensureCSSExtension = (file: File): string => {
+    const ext = path.extname(file.info.fuseBoxPath);
+    if (ext !== ".css") {
+        return file.info.fuseBoxPath.replace(ext, ".css")
+    }
+    return file.info.fuseBoxPath;
+}
 /**
  *
  *
@@ -66,7 +73,7 @@ export class CSSPluginClass implements Plugin {
         // { inject : false } -> do not inject anything. User will manually put the script tag
         // No inject at all, means automatic injection with default path
         const resolvedPath = utils.isFunction(options.inject)
-            ? options.inject(file.info.fuseBoxPath) : file.info.fuseBoxPath;
+            ? options.inject(ensureCSSExtension(file)) : ensureCSSExtension(file);
 
         // noop the contents if a user wants to manually inject it
         const result = options.inject !== false ? `${this.getFunction()}("${resolvedPath}");` : "";
@@ -93,9 +100,10 @@ export class CSSPluginClass implements Plugin {
 
         // writing
         if (options.outFile) {
-            let outFile = ensureUserPath(options.outFile);
+            let outFile = ensureUserPath(ensureCSSExtension(options.outFile));
+
             const bundleDir = path.dirname(outFile);
-            const sourceMapsName = path.basename(outFile) + ".map";
+            const sourceMapsName = path.basename(options.outFile) + ".map";
 
             concat.add(null, `/*# sourceMappingURL=${sourceMapsName} */`);
 
@@ -137,6 +145,9 @@ export class CSSPluginClass implements Plugin {
      * @memberOf FuseBoxCSSPlugin
      */
     public transform(file: File) {
+        if (!file.context.sourceMapsProject) {
+            file.sourceMap = undefined;
+        }
         // no bundle groups here
         if (file.hasSubFiles()) {
             return;
@@ -178,6 +189,9 @@ export class CSSPluginClass implements Plugin {
             return;
         }
 
+        if (file.sourceMap) {
+            file.sourceMap = file.generateCorrectSourceMap();
+        }
         /**
          * An option just to write files to a specific path
          */
@@ -191,18 +205,20 @@ export class CSSPluginClass implements Plugin {
         }
 
         if (outFileFunction) {
-            const userPath = ensureUserPath(outFileFunction(file.info.fuseBoxPath));
+            const userPath = ensureUserPath(outFileFunction(ensureCSSExtension(file)));
+            const utouchedPath = outFileFunction(file.info.fuseBoxPath);
             // reset the content so it won't get bundled
 
             this.inject(file, this.options, true);
             // writing ilfe
             return write(userPath, file.contents).then(() => {
-                if (file.sourceMap) {
+                if (file.sourceMap && file.context.sourceMapsProject) {
                     const fileDir = path.dirname(userPath);
-                    const sourceMapPath = path.join(fileDir, path.basename(userPath) + ".map");
+                    const sourceMapPath = path.join(fileDir,
+                        path.basename(utouchedPath) + ".map");
                     return write(sourceMapPath, file.sourceMap).then(() => {
                         file.sourceMap = undefined;
-                    })
+                    });
                 }
             });
         } else {

@@ -475,7 +475,10 @@ export class File {
         if (this.sourceMap) {
             let jsonSourceMaps = JSON.parse(this.sourceMap);
             jsonSourceMaps.file = this.info.fuseBoxPath;
-            jsonSourceMaps.sources = [fname || this.info.fuseBoxPath];
+            jsonSourceMaps.sources = ["src/" + (fname || this.info.fuseBoxPath)];
+            if (!this.context.inlineSourceMaps) {
+                delete jsonSourceMaps.sourcesContent;
+            }
             this.sourceMap = JSON.stringify(jsonSourceMaps);
         }
         return this.sourceMap;
