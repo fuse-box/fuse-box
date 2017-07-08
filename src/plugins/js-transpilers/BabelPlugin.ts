@@ -135,10 +135,14 @@ export class BabelPluginClass implements Plugin {
 
                 file.contents = result.code;
                 file.analysis.analyze();
-                
+
                 if (sourceMaps) {
                     sourceMaps.file = file.info.fuseBoxPath;
-                    sourceMaps.sources = [file.info.fuseBoxPath];
+                    sourceMaps.sources = ["src/" + file.info.fuseBoxPath];
+                    if (!file.context.inlineSourceMaps) {
+                        delete sourceMaps.sourcesContent;
+                    }
+
                     file.sourceMap = JSON.stringify(sourceMaps);
                 }
 
