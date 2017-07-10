@@ -13,12 +13,13 @@ export interface CSSPluginOptions {
     minify?: boolean;
 }
 
-const ensureCSSExtension = (file: File): string => {
-    const ext = path.extname(file.info.fuseBoxPath);
+const ensureCSSExtension = (file: File | string): string => {
+    let str = file instanceof File ? file.info.fuseBoxPath : file;
+    const ext = path.extname(str);
     if (ext !== ".css") {
-        return file.info.fuseBoxPath.replace(ext, ".css")
+        return str.replace(ext, ".css")
     }
-    return file.info.fuseBoxPath;
+    return str;
 }
 /**
  *
