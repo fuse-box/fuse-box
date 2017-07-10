@@ -51,7 +51,7 @@ export class BundleWriter {
     }
 
     private uglifyBundle(bundle: Bundle) {
-        this.core.log.startSpinner(`Uglifying ${bundle.name}...`);
+        this.core.log.echoInfo(`Uglifying ${bundle.name}...`);
 
         const result = uglify(bundle.generatedCode, this.getUglifyJSOptions());
         if (result.error) {
@@ -61,7 +61,7 @@ export class BundleWriter {
             throw result.error;
         }
         bundle.generatedCode = result.code;
-        this.core.log.stopSpinner(`Done Uglifying ${bundle.name}`)
+        this.core.log.echoInfo(`Done Uglifying ${bundle.name}`)
         this.core.log.echoGzip(result.code);
     }
 
