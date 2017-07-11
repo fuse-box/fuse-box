@@ -449,7 +449,7 @@ export class File {
         if (result.sourceMapText && this.context.useSourceMaps) {
             let jsonSourceMaps = JSON.parse(result.sourceMapText);
             jsonSourceMaps.file = this.info.fuseBoxPath;
-            jsonSourceMaps.sources = ["src/" + this.info.fuseBoxPath.replace(/\.js(x?)$/, ".ts$1")];
+            jsonSourceMaps.sources = [this.context.sourceMapsRoot + "/" + this.info.fuseBoxPath.replace(/\.js(x?)$/, ".ts$1")];
 
             if (!this.context.inlineSourceMaps) {
                 delete jsonSourceMaps.sourcesContent;
@@ -475,7 +475,7 @@ export class File {
         if (this.sourceMap) {
             let jsonSourceMaps = JSON.parse(this.sourceMap);
             jsonSourceMaps.file = this.info.fuseBoxPath;
-            jsonSourceMaps.sources = ["src/" + (fname || this.info.fuseBoxPath)];
+            jsonSourceMaps.sources = [this.context.sourceMapsRoot + "/" + (fname || this.info.fuseBoxPath)];
             if (!this.context.inlineSourceMaps) {
                 delete jsonSourceMaps.sourcesContent;
             }

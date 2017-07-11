@@ -34,7 +34,7 @@ export interface FuseBoxOptions {
     natives?: any;
     shim?: any;
     standalone?: boolean;
-    sourceMaps?: any;
+    sourceMaps?: boolean | { vendor?: boolean, inline?: boolean, project?: boolean, sourceRoot?: string };
     rollup?: any;
     hash?: string | Boolean;
     ignoreModules?: string[],

@@ -63,7 +63,7 @@ Development server running http://localhost:${port}
                 this.fuse.context.log.echoInfo(`You have chosen not to inline source maps`);
                 this.fuse.context.log.echoInfo("You source code is exposed at src/");
                 this.fuse.context.log.echoWarning("Make sure you are not using dev server for production!")
-                this.app.use("/src", express.static(this.fuse.context.homeDir));
+                this.app.use(this.fuse.context.sourceMapsRoot, express.static(this.fuse.context.homeDir));
             }
         }
     }

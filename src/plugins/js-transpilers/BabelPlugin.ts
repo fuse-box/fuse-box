@@ -138,7 +138,7 @@ export class BabelPluginClass implements Plugin {
 
                 if (sourceMaps) {
                     sourceMaps.file = file.info.fuseBoxPath;
-                    sourceMaps.sources = ["src/" + file.info.fuseBoxPath];
+                    sourceMaps.sources = [file.context.sourceMapsRoot + "/" + file.info.fuseBoxPath];
                     if (!file.context.inlineSourceMaps) {
                         delete sourceMaps.sourcesContent;
                     }
