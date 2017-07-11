@@ -169,10 +169,6 @@ exports.hello = function(){
 
 github_example: quantum_tree_shaking
 
-## Code splitting
-
-Code splitting is not solved yet, but it will have a nice comeback after the module has been thoroughly tested by the users.
-
 ## Configuration
 
 
