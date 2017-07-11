@@ -305,7 +305,7 @@ FuseBox.init({
 })
 ```
 
-In you would like to serve your sourcemaps from your `homeDir`, you can use `sourceRoot`property to define the route mapped to your development server. Otherwise, you have to define manually mapped it to your `src/` to your actual source code folder.
+If you want to serve your sourcemaps from the `homeDir`, you can use `sourceRoot`property to define the route mapped to your development server. The default value is `src/`
 
 ```js
 FuseBox.init({
