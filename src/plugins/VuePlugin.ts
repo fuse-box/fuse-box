@@ -12,7 +12,7 @@ let vueCompiler;
 let vueTranspiler;
 let typescriptTranspiler;
 let babelCore;
-let babelConfig : any = {};
+let babelConfig;
 export class VuePluginClass implements Plugin {
     public test: RegExp = /\.vue$/;
 
@@ -123,6 +123,9 @@ function compileBabel(options, context, html, script) : string {
                 if (babelRcConfig)
                     babelConfig = JSON.parse(babelRcConfig);
             }
+        }
+        if (babelConfig === undefined) {
+            babelConfig = { plugins: ['transform-es2015-modules-commonjs'] }
         }
     }
     try {

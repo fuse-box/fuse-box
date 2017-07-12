@@ -81,17 +81,7 @@ export class VuePluginTest {
                 files: {
                     "app.vue": vueBabelFileSource
                 },
-                plugins: [
-                    [
-                        VuePlugin({
-                            babel: {
-                                config: {
-                                    "plugins": ["transform-es2015-modules-commonjs"]
-                                }
-                            }
-                        })
-                    ]
-                ],
+                plugins: [VuePlugin()],
                 instructions: "app.vue",
             },
         }).then((result) => {

@@ -82,10 +82,10 @@ By default `VuePlugin` uses `typescript` to compile contents of `<script></scrip
 
 ### Babel
 
-If `babel` attribute is given, VuePlugin will load babel config from there, otherwise VuePlugin will load `.babelrc` from the root of the project. Packages `babel-core` and `babel-plugin-transform-es2015-modules-commonjs` must be installed to use babel.
+If `babel` attribute is given, VuePlugin will load babel config from there, otherwise VuePlugin will load `.babelrc` from the root of the project. If no config given and no rc found, it uses default config. Packages `babel-core` and `babel-plugin-transform-es2015-modules-commonjs` must be installed to use babel.
 
 ```js
-// Configuring babel in fuse.js
+// Configuring babel in fuse.js (Default)
 VuePlugin({
     babel: {
         config: {
