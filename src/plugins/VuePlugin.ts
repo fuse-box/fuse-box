@@ -5,18 +5,19 @@ import * as fs from "fs";
 import * as path from "path";
 
 export interface VuePluginOptions {
-
+    babel?: any,
 }
 
 let vueCompiler;
 let vueTranspiler;
 let typescriptTranspiler;
 let babelCore;
-let babelRcConfig;
+let babelConfig : any = {};
 export class VuePluginClass implements Plugin {
     public test: RegExp = /\.vue$/;
 
-    constructor(public options: VuePluginOptions = {}) { }
+    //
+    constructor(public options: VuePluginOptions = {}) {}
 
     public init(context: WorkFlowContext) {
         context.allowExtension(".vue");
@@ -53,7 +54,7 @@ export class VuePluginClass implements Plugin {
             let templateLang = (result.template.attrs) ? result.template.attrs.lang : null;
             return compileTemplateContent(context, templateLang, result.template.content).then(html => {
 
-                file.contents = compileScript(context, html, result.script);
+                file.contents = compileScript(this.options, context, html, result.script)
                 file.analysis.parseUsingAcorn();
                 file.analysis.analyze();
 
@@ -90,51 +91,52 @@ function compileTemplateContent (context: any, engine: string, content: string) 
         });
     });
 }
-function compileScript(context, html, script) : string {
+function compileScript(options, context, html, script) : string {
     let lang = script.attrs.lang;
     if (lang === 'babel') {
-        return compileBabel(context, html, script);
+        return compileBabel(options, context, html, script);
     } else {
-        return compileTypeScript(context, html, script);
+        return compileTypeScript(options, context, html, script);
     }
 }
-function compileTypeScript(context, html, script) : string {
+function compileTypeScript(options, context, html, script) : string {
     if (!typescriptTranspiler) {
         typescriptTranspiler = require("typescript");
     }
-    const jsTranspiled = typescriptTranspiler.transpileModule(script.content, context.getTypeScriptConfig());
-    const compiled = vueCompiler.compile(html);
-    return `var _p = {};
-var _v = function(exports){${jsTranspiled.outputText}
-};
-_p.render = ` + toFunction(compiled.render) + `
-_p.staticRenderFns = [ ` + compiled.staticRenderFns.map(toFunction).join(',')  + ` ];
-var _e = {}; _v(_e); _p = Object.assign(_e.default, _p)
-module.exports =_p
-    `;
+    try {
+        const jsTranspiled = typescriptTranspiler.transpileModule(script.content, context.getTypeScriptConfig());
+        return reduceVueToScript(jsTranspiled.outputText, html)
+    } catch (err) {
+        console.log(err)
+    }
+    return ''
 }
-function compileBabel(context, html, jsContent) : string {
+function compileBabel(options, context, html, script) : string {
     if (!babelCore) {
         babelCore = require("babel-core");
-        let babelRcPath = path.join(context.appRoot, `.babelrc`);
-        if (fs.existsSync(babelRcPath)) {
-            babelRcConfig = fs.readFileSync(babelRcPath).toString();
-            if (babelRcConfig)
-                babelRcConfig = JSON.parse(babelRcConfig);
+        if (options.babel !== undefined) {
+            babelConfig = options.babel.config;
+        } else {
+            let babelRcPath = path.join(context.appRoot, `.babelrc`);
+            if (fs.existsSync(babelRcPath)) {
+                let babelRcConfig = fs.readFileSync(babelRcPath).toString();
+                if (babelRcConfig)
+                    babelConfig = JSON.parse(babelRcConfig);
+            }
         }
     }
-    let jsTranspiled;
     try {
-        jsTranspiled = babelCore.transform(jsContent, babelRcConfig);
+        let jsTranspiled = babelCore.transform(script.content, babelConfig);
+        return reduceVueToScript(jsTranspiled.code, html)
+    } catch (err) {
+        console.log(err)
     }
-    catch (e) {
-        console.error(e);
-        return '';
-    }
-
+    return '';
+}
+function reduceVueToScript(jsContent, html) : string {
     const compiled = vueCompiler.compile(html);
     return `var _p = {};
-var _v = function(exports){${jsTranspiled.code}
+var _v = function(exports){${jsContent}
 };
 _p.render = ` + toFunction(compiled.render) + `
 _p.staticRenderFns = [ ` + compiled.staticRenderFns.map(toFunction).join(',') + ` ];

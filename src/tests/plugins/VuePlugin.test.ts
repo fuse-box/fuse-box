@@ -29,12 +29,12 @@ const vueBabelFileSource = `<template>
 </template>
 
 <script lang="babel">
-    console.log("Babel")
+    let language = 'Babel';
     export default {
         name: 'app',
         data () {
             return {
-                msg: 'Welcome to Your Vue.js App'
+                msg: 'Welcome to Your Vue.js App, ' + language
             }
         }
     }
@@ -42,11 +42,11 @@ const vueBabelFileSource = `<template>
 `;
 
 export class VuePluginTest {
-    "Should return compiled vue code with render functions"() {
+    "Should return compiled TS vue code with render functions"() {
         return createEnv({
             project: {
                 files: {
-					"app.vue": vueFileSource
+                    "app.vue": vueFileSource
                 },
                 plugins: [
                     [ VuePlugin() ]
@@ -54,24 +54,65 @@ export class VuePluginTest {
                 instructions: "app.vue",
             },
         }).then((result) => {
-			const component = result.project.FuseBox.import('./app.vue');
+            const component = result.project.FuseBox.import('./app.vue');
 
-			// //test for render functions
-			should( component.render ).notEqual( undefined );
-			should( component.staticRenderFns ).notEqual( undefined );
+            // //test for render functions
+            should( component.render ).notEqual( undefined );
+            should( component.staticRenderFns ).notEqual( undefined );
 
-			// //test for not having a template string (would not work with runtime-only-vue)
-			should( component.template ).equal( undefined );
+            // //test for not having a template string (would not work with runtime-only-vue)
+            should( component.template ).equal( undefined );
 
-			//test html output
-			const Vue = require('vue')
-			const renderer = require('vue-server-renderer').createRenderer()
+            //test html output
+            const Vue = require('vue')
+            const renderer = require('vue-server-renderer').createRenderer()
 
-			const app = new Vue(component)
-			renderer.renderToString(app, (err, html) => {
-				should(html).findString('<p>Welcome to Your Vue.js App</p>');
-				should(html).findString('<input type="text" value="Welcome to Your Vue.js App">');
-			})
+            const app = new Vue(component)
+            renderer.renderToString(app, (err, html) => {
+                should(html).findString('<p>Welcome to Your Vue.js App</p>');
+                should(html).findString('<input type="text" value="Welcome to Your Vue.js App">');
+            })
+        });
+    }
+
+    "Should return compiled Babel vue code with render functions"() {
+        return createEnv({
+            project: {
+                files: {
+                    "app.vue": vueBabelFileSource
+                },
+                plugins: [
+                    [
+                        VuePlugin({
+                            babel: {
+                                config: {
+                                    "plugins": ["transform-es2015-modules-commonjs"]
+                                }
+                            }
+                        })
+                    ]
+                ],
+                instructions: "app.vue",
+            },
+        }).then((result) => {
+            const component = result.project.FuseBox.import('./app.vue');
+
+            // //test for render functions
+            should( component.render ).notEqual( undefined );
+            should( component.staticRenderFns ).notEqual( undefined );
+
+            // //test for not having a template string (would not work with runtime-only-vue)
+            should( component.template ).equal( undefined );
+
+            //test html output
+            const Vue = require('vue')
+            const renderer = require('vue-server-renderer').createRenderer()
+
+            const app = new Vue(component)
+            renderer.renderToString(app, (err, html) => {
+                should(html).findString('<p>Welcome to Your Vue.js App, Babel</p>');
+                should(html).findString('<input type="text" value="Welcome to Your Vue.js App, Babel">');
+            })
         });
     }
 
