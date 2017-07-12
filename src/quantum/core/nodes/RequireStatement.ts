@@ -22,7 +22,7 @@ export class RequireStatement {
     private resolved = false;
 
     constructor(public file: FileAbstraction, public ast: any, public parentAst?: any) {
-
+        ast.arguments = ast.arguments || [];
         const arg1 = ast.arguments[0];
         this.functionName = ast.callee.name;
         const producer = file.packageAbstraction.bundleAbstraction.producerAbstraction;

@@ -163,7 +163,15 @@ export class BundleWriter {
             if (this.core.opts.webIndexPlugin) {
                 return this.core.opts.webIndexPlugin.producerEnd(producer)
             }
-        });
+        }).then(() => {
+            // calling completed()
+            this.core.producer.bundles.forEach(bundle => {
+                if (bundle.onDoneCallback) {
+                    bundle.process.setFilePath(bundle.fuse.context.output.lastWrittenPath);
+                    bundle.onDoneCallback(bundle.process);
+                }
+            })
+        })
     }
 
 
