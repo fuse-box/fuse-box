@@ -21,6 +21,26 @@ const vueFileSource = `<template>
 </script>
 `;
 
+const vueBabelFileSource = `<template>
+    <div>
+        <p>{{ msg }}</p>
+        <input type="text" v-model="msg" />
+    </div>
+</template>
+
+<script lang="babel">
+    console.log("Babel")
+    export default {
+        name: 'app',
+        data () {
+            return {
+                msg: 'Welcome to Your Vue.js App'
+            }
+        }
+    }
+</script>
+`;
+
 export class VuePluginTest {
     "Should return compiled vue code with render functions"() {
         return createEnv({
@@ -42,7 +62,7 @@ export class VuePluginTest {
 
 			// //test for not having a template string (would not work with runtime-only-vue)
 			should( component.template ).equal( undefined );
-			
+
 			//test html output
 			const Vue = require('vue')
 			const renderer = require('vue-server-renderer').createRenderer()
