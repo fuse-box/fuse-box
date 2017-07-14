@@ -169,6 +169,55 @@ exports.hello = function(){
 
 github_example: quantum_tree_shaking
 
+## Dead code elimination
+
+Quantum eliminates dead code on some if conditions. For example;
+
+```js
+console.log(1)
+if ( process.env.NODE_ENV === "production" ){
+    console.log("production")
+} else {
+    console.log("development")
+}
+console.log(2)
+```
+
+Will result in:
+
+```js
+console.log(1)
+console.log("production")
+console.log(1)
+```
+
+Good thing about it, that you don't need uglify-js for this operation. However, you should not de-reference process.env.$key, as it won't be understood by quantum
+
+For example:
+```js
+const key = process.env.NODE_ENV
+if ( key === "production" ){
+    console.log("production")
+} else {
+    console.log("development")
+}
+```
+
+Will result in 
+```js
+var key = "production";
+if ( key === "production" ){
+    console.log("production")
+} else {
+    console.log("development")
+}
+```
+
+Which is less efficient than just declaring it in the if statement.
+
+Quantum works with [EnvPlugin](/plugins/env-plugin#usage) therefore all the environmental variables will be replaced accordingly.
+
+
 ## Configuration
 
 
