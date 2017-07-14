@@ -21,7 +21,7 @@ export const PostCSSResourcePlugin = postcss.plugin("css-resource", function (op
             if (declaration.prop) {
 
                 if (declaration.prop.indexOf("background") === 0 || declaration.prop.indexOf("src") === 0) {
-                    let re = /url\(([^\)]+)/gm;
+                    let re = /url\(([^\)]+)\)/gm;
                     let match;
                     const v = declaration.value;
                     while (match = re.exec(v)) {

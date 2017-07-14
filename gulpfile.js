@@ -290,6 +290,7 @@ gulp.task("installDevDeps", function(done) {
         "babel-core",
         "babel-generator",
         "babel-preset-latest",
+        "babel-plugin-transform-es2015-modules-commonjs",
         "babylon",
         "cheerio",
         "@angular/core",

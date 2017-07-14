@@ -24,7 +24,7 @@ graph TB
     main --> run((Execute bundles))
 ```
 
-You can create infinite amount of bundles as well as infinite amount of `Producers`. 
+You can create infinite amount of bundles as well as infinite amount of `Producers`.
 
 ## Producer
 
@@ -46,10 +46,10 @@ const fuse = FuseBox.init({
 });
 ```
 
-This is a pretty basic configuration that will work with typescript. 
-`fuse` in our case if a `BundleProducer`. You can create as many bundles as you like. `production` variable enables hash and disables cache for production builds. 
+This is a pretty basic configuration that will work with typescript.
+`fuse` in our case if a `BundleProducer`. You can create as many bundles as you like. `production` variable enables hash and disables cache for production builds.
 
-note: It's important to disable cache for production builds. 
+note: It's important to disable cache for production builds.
 
 ## Creating a bundle
 
@@ -64,7 +64,7 @@ fuse.bundle("app")
     .instructions(`>app.tsx`);
 
 fuse.run()
-```       
+```
 
 `fuse.run()` should be executed once after all bundles are defined. `app` is bundle name - it will processed through `output: "dist/$name.js"` resulting in `dist/app.js` file.
 
@@ -131,14 +131,14 @@ For most cases just pointing it your entry point will be enough, as FuseBox will
 
 ```js
 instructions(">index.ts");
-``` 
+```
 
 However, there are cases that require special treatment. For example files that don't have references need to be added manually
 
 
 ```js
 instructions(">index.ts + lib/**/**.ts");
-``` 
+```
 
 ## Creating vendors
 
@@ -148,7 +148,7 @@ Creating vendors in FuseBox is extremely easy. All you need to is to add `~` thi
 const vendor = fuse.bundle("vendor")
         .instructions(`~ **/**.{ts,tsx}`);
     if (!production) { vendor.hmr(); }
-``` 
+```
 In this case every single `ts` and `tsx` modules will be processed, resulting in `vendor.js` that will contain all required dependencies. Actuall project files will be omited.
 
 ```js
@@ -197,28 +197,33 @@ You can now visit `http://localhost:4445` to see how it works
 
 ## Option override
 
-You can use the chainable API which will allow you to override options (plugins e.t.c). For example:
+You can use the chainable API which will allow you to override options (shim, e.t.c). For example:
 
 
 ```js
 
 const fuse = FuseBox.init({
     homeDir: "src",
+    shim: { 'react-native-web': { exports: 'require("react-native")' } },
     output: "dist/$name.js",
     plugins : [HTMLPlugin()]
 });
 
 fuse.bundle("bundle1")
-      .plugin(CSSPlugin())
-      .instructions(`~ index.ts`);
+    .shim: {},
+    .instructions(`~ index.ts`);
 
 fuse.bundle("bundle2")
-      .instructions(`~ index.ts`);
+    .plugin(CSSPlugin())
+    .instructions(`~ index.ts`);
 
 fuse.run()
+
+>
+
 ```
 
-In this case `bundle1` will have only `CSSPlugin` plugin. Bundle 2 will inherit the master configuration
+In this case both `bundle1` and `bundle2` will inherit `homedir`, `shim`, `output`, and `plugins`. `bundle1` will override the `shim` option with an empty shim, and `bundle2` will add an additional plugin, so that `bundle2`'s plugins will be: `[HTMLPlugin(), CSSPlugin()]`
 
 ## Chainable API
 
@@ -297,7 +302,7 @@ completed(proc => proc.require(opts))
 The following code will require a file in the same process as the fuse process instead of launching a new one.
 
 The differences are :
-* A bundle is executed in a `Promise` and its exports are available to the fuse caller : `proc.require().then(exports => void)`. 
+* A bundle is executed in a `Promise` and its exports are available to the fuse caller : `proc.require().then(exports => void)`.
 * A bundle has access to the same loaded libraries than the fuser, they share the same global object.
 * A bundle is inspected if fuse is inspected: `node --debug fuse.js` debugs the bundle too.
 * To free the allocated resources when a bundle is restarted, there is no clean `process.kill` option; it must therefore export a `close` function, or a default that has such a function.
@@ -320,7 +325,7 @@ The exports of the main file can be retrieved with `bundleExport.FuseBox.import(
 When the module is unloaded, the first of these functions is called :
 * A function `close(bundleExport)=> Promise` given as an option to `require`
 
-After, if the bundle has a main file, 
+After, if the bundle has a main file,
 
 * An `export function close(): Promise` in the bundle
 * A default export who has a `close()=> Promise` function.
