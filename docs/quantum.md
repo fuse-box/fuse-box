@@ -170,7 +170,9 @@ exports.hello = function(){
 github_example: quantum_tree_shaking
 
 ## Dead code elimination
+Quantum eliminates dead code on some if conditions. Optimising it even before uglify-js kicks in.
 
+### Process
 Quantum eliminates dead code on some if conditions. For example;
 
 ```js
@@ -188,7 +190,7 @@ Will result in:
 ```js
 console.log(1)
 console.log("production")
-console.log(1)
+console.log(2)
 ```
 
 Good thing about it, that you don't need uglify-js for this operation. However, you should not de-reference process.env.$key, as it won't be understood by quantum
