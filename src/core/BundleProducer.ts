@@ -20,6 +20,7 @@ export class BundleProducer {
     public writeBundles = true;
     public sharedCustomPackages: Map<string, SharedCustomPackage​>;
     public runner: BundleRunner;
+    public userEnvVariables: any = { NODE_ENV: "production" };
     public devServerOptions: ServerOptions;
 
     public entryPackageName: string;
@@ -50,6 +51,9 @@ export class BundleProducer {
         }).then(() => this);
     }
 
+    public addUserProcessEnvVariables(data: any) {
+        this.userEnvVariables = Object.assign(this.userEnvVariables, data);
+    }
     public printWarnings() {
         if (this.warnings.size > 0) {
             this.fuse.context.log.echoBreak();

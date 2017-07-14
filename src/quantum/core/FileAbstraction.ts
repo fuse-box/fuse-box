@@ -17,6 +17,7 @@ import { NamedExport } from "./nodes/NamedExport";
 import { GenericAst } from "./nodes/GenericAst";
 import { QuantumItem } from "../plugin/QuantumSplit";
 import { QuantumCore } from "../plugin/QuantumCore";
+import { ReplaceableBlock } from "./nodes/ReplaceableBlock";
 
 const globalNames = new Set<string>(["__filename", "__dirname", "exports", "module"]);
 
@@ -24,6 +25,7 @@ export class FileAbstraction {
     private id: string;
     private fileMapRequested = false;
     private treeShakingRestricted = false;
+    public dependents = new Set<FileAbstraction>();
     private dependencies = new Map<FileAbstraction, Set<RequireStatement​​>>();
     public ast: any;
     public fuseBoxDir;
@@ -52,7 +54,7 @@ export class FileAbstraction {
     public typeofRequireKeywords = new Set<GenericAst>();
 
     public namedExports = new Map<string, NamedExport>();
-    public processNodeEnv = new Set<GenericAst>();
+    public processNodeEnv = new Set<ReplaceableBlock>();
     public core: QuantumCore;
 
     public isEntryPoint = false;
@@ -67,6 +69,21 @@ export class FileAbstraction {
         this.setID(fuseBoxPath);
         packageAbstraction.registerFileAbstraction(this);
         this.core = this.packageAbstraction.bundleAbstraction.producerAbstraction.quantumCore;
+
+        // removing process polyfill if not required
+        // techincally this is not necessary when tree shaking is enable. Because of:
+        // StatementModification.ts lines:
+        // if (resolvedFile.isProcessPolyfill() && !core.opts.shouldBundleProcessPolyfill()) {
+        //   return statement.removeWithIdentifier();
+        // }
+        // Which doesn't add the references
+        if (this.core && !this.core.opts.shouldBundleProcessPolyfill() && this.isProcessPolyfill()) {
+            this.markForRemoval();
+        }
+    }
+
+    public isProcessPolyfill() {
+        return this.getFuseBoxFullPath() === "process/index.js";
     }
 
     public registerHoistedIdentifiers(identifier: string, statement: RequireStatement, resolvedFile: FileAbstraction) {
@@ -78,11 +95,15 @@ export class FileAbstraction {
         return `${this.packageAbstraction.name}/${this.fuseBoxPath}`;
     }
 
+
     public isNotUsedAnywhere() {
         return this.getID().toString() !== "0"
-            && this.amountOfReferences === 0 && !this.quantumItem && !this.isEntryPoint;
+            && this.dependents.size === 0 && !this.quantumItem && !this.isEntryPoint;
     }
 
+    public releaseDependent(file: FileAbstraction) {
+        this.dependents.delete(file);
+    }
     public markForRemoval() {
         this.canBeRemoved = true;
     }
@@ -227,25 +248,33 @@ export class FileAbstraction {
      */
     private onNode(node, parent, prop, idx) {
 
-        if (matchesDeadProcessEnvCode(node, "production")) {
-            // dead code...all require statements within should be removed
-            this.processNodeEnv.add(new GenericAst(node.test, "left", node.test.left));
-            if (node.alternate) {
-                // passing through the  consequent
-                return node.alternate;
+        // process.env
+        if (this.core) {
+            for (const processEnvKey in this.core.producer.userEnvVariables) {
+                const processEnvValue = this.core.producer.userEnvVariables[processEnvKey];
+                let deadProcessEnv = matchesDeadProcessEnvCode(node, processEnvKey, processEnvValue);
+                if (deadProcessEnv !== undefined) {
+                    // dead code...all require statements within should be removed
+                    const processNode = new ReplaceableBlock(node.test, "left", node.test.left);
+                    this.processNodeEnv.add(processNode);
+                    return processNode.conditionalAnalysis(node, deadProcessEnv);
+                }
+                if (matchesNodeEnv(node, processEnvKey)) {
+                    const env = new ReplaceableBlock(parent, prop, node);
+                    env.setValue(processEnvValue);
+                    this.processNodeEnv.add(env);
+                }
             }
-            return false;
         }
+
 
         // detecting es6
         if (matchesEcmaScript6(node)) {
             this.isEcmaScript6 = true;
         }
         this.namedRequireStatements.forEach((statement, key) => {
-
-            const importedName = trackRequireMember(node, key)
+            const importedName = trackRequireMember(node, key);
             if (importedName) {
-
                 statement.usedNames.add(importedName);
             }
         });
@@ -314,9 +343,6 @@ export class FileAbstraction {
         }
 
 
-        if (matchesNodeEnv(node)) {
-            this.processNodeEnv.add(new GenericAst(parent, prop, node));
-        }
 
         // Object.defineProperty(exports, '__esModule', { value: true });
         if (matcheObjectDefineProperty(node, "exports")) {

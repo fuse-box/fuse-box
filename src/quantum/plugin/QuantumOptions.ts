@@ -19,6 +19,7 @@ export interface IQuantumExtensionParams {
     bakeApiIntoBundle?: string;
     extendServerImport?: boolean;
     polyfills?: string[];
+    processPolyfill?: boolean;
     hoisting?: boolean | { names: string[] };
     containedAPI?: boolean,
     manifest?: boolean | string,
@@ -31,6 +32,7 @@ export class QuantumOptions {
     private ensureES5 = true;
     private replaceProcessEnv = true;
     private containedAPI = false;
+    private processPolyfill = false;
     private bakeApiIntoBundle: string;
 
     private showWarnings = true;
@@ -64,6 +66,10 @@ export class QuantumOptions {
         }
         if (opts.uglify) {
             this.uglify = opts.uglify;
+        }
+
+        if (opts.processPolyfill !== undefined) {
+            this.processPolyfill = opts.processPolyfill;
         }
         if (opts.warnings !== undefined) {
             this.showWarnings = opts.warnings;
@@ -118,6 +124,9 @@ export class QuantumOptions {
                 this.treeshakeOptions = opts.treeshake as ITreeShakeOptions;
             }
         }
+    }
+    public shouldBundleProcessPolyfill() {
+        return this.processPolyfill === true;
     }
 
     public enableContainedAPI() {

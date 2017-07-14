@@ -43,22 +43,22 @@ const ES6_TYPES = new Set([
     "ArrowFunctionExpression"
 ]);
 
-export function matchesDeadProcessEnvCode(node: any, envString: string) {
+export function matchesDeadProcessEnvCode(node: any, variableName: string, envString: string) {
     if (node.type && node.type === "IfStatement") {
         if (node.test && node.test.type === "BinaryExpression") {
             if (node.test.left) {
-                if (matchesNodeEnv(node.test.left)) {
+                if (matchesNodeEnv(node.test.left, variableName)) {
                     const right = node.test.right;
                     if (right && right.type === "Literal") {
                         const value = right.value;
                         const operator = node.test.operator;
                         if (operator === "===" || operator === "==") {
                             //if ( "production" === "production" ) {}
-                            return value !== envString;
+                            return value === envString;
                         }
                         if (operator === "!==" || operator === "!=") {
                             //if ( "production" !== "production" ) {}
-                            return value === envString;
+                            return value !== envString;
                         }
                     }
                 }
@@ -66,7 +66,7 @@ export function matchesDeadProcessEnvCode(node: any, envString: string) {
         }
     }
 }
-export function matchesNodeEnv(node) {
+export function matchesNodeEnv(node, veriableName: string = "NODE_ENV") {
     let isProcess, isEnv, isNodeEnv;
     isProcess = astQuery(node,
         ["/MemberExpression", ".object", "/MemberExpression", ".object", ".name"], 'process')
@@ -79,7 +79,7 @@ export function matchesNodeEnv(node) {
         return false;
     }
     isNodeEnv =
-        astQuery(node, ["/MemberExpression", ".property", ".name"], "NODE_ENV")
+        astQuery(node, ["/MemberExpression", ".property", ".name"], veriableName);
     if (!isNodeEnv) {
         return false;
     }

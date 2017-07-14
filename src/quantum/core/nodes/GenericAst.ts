@@ -14,14 +14,18 @@ export class GenericAst {
     }
 
     public replaceWithString(value: string) {
-
         if (this.astProp) {
-
-            this.ast[this.astProp] = {
-                type: "Literal",
-                value: value
+            if (Array.isArray(this.ast[this.astProp]) && this.node.$idx > -1) {
+                this.ast[this.astProp][this.node.$idx] = {
+                    type: "Literal",
+                    value: value
+                }
+            } else {
+                this.ast[this.astProp] = {
+                    type: "Literal",
+                    value: value
+                };
             }
         }
     }
-
 }

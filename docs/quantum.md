@@ -306,6 +306,17 @@ QuantumPlugin({
 Removes `Object.defineProperty(exports, '__esModule', { value: true });` or `exports.__esModule = true` from the bundle.
 It is required however for babel transpiled projects, You have to set it to `false` when dealing with certain builds of react.
 
+When babel introduced ES2015 Modules => CommonJS, the spec wasn't completed. However, everyone was using it. The spec came along and stipulated that you cannot request a default import (ie. import Foo from 'x') from a module that doesn't have one. 
+
+Instead, you must import * as Foo from 'x'.
+
+FuseBox alings with the specifications and doesn't allow this kind of heresy in the code and removes it without any mercy. 
+However many react users are still using it.
+
+### processPolyfill
+Default value: `false`
+
+Removes all references to process. The most common use of process if `process.env` which is replaced nicely with Quantum. Therefore, if a use bundles it by mistake all the refences and the module will be removed even without tree shaking.
 
 ### removeUseStrict
 Default value: `true`

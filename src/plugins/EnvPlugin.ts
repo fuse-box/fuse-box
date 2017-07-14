@@ -13,6 +13,10 @@ export interface EnvPluginOptions {
 export class EnvPluginClass implements Plugin {
     constructor(private env: EnvPluginOptions) { }
     public bundleStart(context: WorkFlowContext) {
+        const producer = context.bundle.producer;
+        if (producer) {
+            producer.addUserProcessEnvVariables(this.env);
+        }
         context.source.addContent(`var __process_env__ = ${JSON.stringify(this.env)};`);
     }
 }

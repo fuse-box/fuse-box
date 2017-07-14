@@ -73,6 +73,8 @@ export class QuantumCore {
         }
     }
 
+
+
     public consume() {
         this.log.echoInfo("Generating abstraction, this may take a while");
         return this.producer.generateAbstraction({

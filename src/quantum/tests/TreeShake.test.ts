@@ -273,4 +273,84 @@ export class TreeShakeTest {
             should(contents).notFindString('exports.foo')
         });
     }
+
+
+    "Should remove deeply"() {
+        return createOptimisedBundleEnv({
+            stubs: true,
+            options: {
+                treeshake: true
+            },
+
+            project: {
+                natives: {
+                    process: false
+                },
+                files: {
+                    "index.ts": `
+                        if ( process.env.NODE_ENV !== "production"){
+                            require("./bar")
+                        } else {
+                            console.log("Production")
+                        }
+                    `,
+                    "bar.ts": `
+                        console.log('i am bar');
+                        exports.bar = require("./foo");
+
+                    `,
+                    "foo.ts": `
+                        console.log('i am foo');
+                        exports.foo = 1;
+
+                    `
+                },
+                instructions: "> index.ts",
+            },
+        }).then((result) => {
+            const contents = result.contents["index.js"];
+            should(contents).notFindString('i am bar')
+            should(contents).notFindString('i am foo')
+        });
+    }
+
+    "Should not remove a module that is cross referenced"() {
+        return createOptimisedBundleEnv({
+            stubs: true,
+            options: {
+                treeshake: true
+            },
+
+            project: {
+                natives: {
+                    process: false
+                },
+                files: {
+                    "index.ts": `
+                        if ( process.env.NODE_ENV !== "production"){
+                            require("./bar")
+                        } else {
+                            require("./foo")
+                            console.log("Production")
+                        }
+                    `,
+                    "bar.ts": `
+                        console.log('i am bar');
+                        exports.bar = require("./foo");
+
+                    `,
+                    "foo.ts": `
+                        console.log('i am foo');
+                        exports.foo = 1;
+
+                    `
+                },
+                instructions: "> index.ts",
+            },
+        }).then((result) => {
+            const contents = result.contents["index.js"];
+            should(contents).notFindString('i am bar')
+            should(contents).findString('i am foo')
+        });
+    }
 }

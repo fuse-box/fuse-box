@@ -25,6 +25,12 @@ export class StatementModification {
             } else {
                 let resolvedFile = statement.resolve();
                 if (resolvedFile) {
+                    if (resolvedFile.isProcessPolyfill() && !core.opts.shouldBundleProcessPolyfill()) {
+                        return statement.removeWithIdentifier();
+                    }
+                    if (!resolvedFile.dependents.has(file)) {
+                        resolvedFile.dependents.add(file);
+                    }
                     resolvedFile.amountOfReferences++;
                     // trying to setup hoisting here
                     if (statement.identifier) {

@@ -12,15 +12,23 @@ export class TreeShake {
      */
     public shake(): Promise<any> {
         return this.eachFile(file => this.shakeExports(file))
+            .then(() => this.releaseReferences())
             .then(() => this.removeUnusedExports());
     }
 
+
+    private releaseReferences() {
+        return this.eachFile(file => {
+            if (file.isNotUsedAnywhere() && this.core.opts.canBeRemovedByTreeShaking(file)) {
+                return this.eachFile(target => target.releaseDependent(file));
+            }
+        });
+    }
     /**
      * Remove exports if allowed and expose dead code to uglifyjs
      */
     private removeUnusedExports() {
         return this.eachFile(file => {
-            //let fileCanBeRemoved = file.namedExports.size > 0;
             file.namedExports.forEach(fileExport => {
                 if (!fileExport.isUsed && file.isTreeShakingAllowed()
                     && fileExport.eligibleForTreeShaking) {
@@ -29,13 +37,8 @@ export class TreeShake {
                         this.core.log.echoInfo(`tree shaking: Remove ${fileExport.name} from ${file.getFuseBoxFullPath()}`)
                         fileExport.remove();
                     }
-                } else {
-                    // gotta sleep on it....
-                    // fileCanBeRemoved = false;
                 }
             });
-            //console.log(this.core.opts.canBeRemovedByTreeShaking(file));
-
             if (file.isNotUsedAnywhere() && this.core.opts.canBeRemovedByTreeShaking(file)) {
                 this.core.log.echoInfo(`tree shaking: Mark for removal ${file.getFuseBoxFullPath()}`)
                 file.markForRemoval();
