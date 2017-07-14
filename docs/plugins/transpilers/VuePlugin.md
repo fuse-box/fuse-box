@@ -4,16 +4,16 @@
 The Vue plugin is used to transpile .vue files into Javascript.
 
 ## Install
-This package depends on the `vue-template-compiler`, `vue-template-es2015-compiler` and `typescript` modules.
+This package depends on the `vue-template-compiler`, `vue-template-es2015-compiler` and one of `typescript` and `babel-core` modules.
 
 Also, if you want to include Vue library into the bundle, remember to install `vue` module too.
 
 ```bash
 # Using yarn:
-yarn add vue-template-compiler vue-template-es2015-compiler typescript vue --dev
+yarn add vue-template-compiler vue-template-es2015-compiler typescript babel-core vue --dev
 
 # Using npm:
-npm install vue-template-compiler vue-template-es2015-compiler typescript vue --save-dev
+npm install vue-template-compiler vue-template-es2015-compiler typescript babel-core vue --save-dev
 ```
 
 ## Example
@@ -74,6 +74,30 @@ new Vue({
         }
     }
 </script>
+```
+
+## Script transpiler
+
+By default `VuePlugin` uses `typescript` to compile contents of `<script></script>`. By defining the `lang` attribute of the `<script>` tag, content can be compiled using desired transpiler. Currently only `ts` and `babel` are supported.
+
+### Babel
+
+If `babel` attribute is given, VuePlugin will load babel config from there, otherwise VuePlugin will load `.babelrc` from the root of the project. If no config given and no rc found, it uses default config. Packages `babel-core` and `babel-plugin-transform-es2015-modules-commonjs` must be installed to use babel.
+
+```js
+// Configuring babel in fuse.js (Default)
+VuePlugin({
+    babel: {
+        config: {
+            "plugins": ["transform-es2015-modules-commonjs"]
+        }
+    }
+})
+
+// .babelrc
+{
+ "plugins": ["transform-es2015-modules-commonjs"]
+}
 ```
 
 ## Template engine preprocessor
