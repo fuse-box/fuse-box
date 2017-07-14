@@ -365,7 +365,7 @@ However many react users are still using it.
 ### processPolyfill
 Default value: `false`
 
-Removes all references to process. The most common use of process if `process.env` which is replaced nicely with Quantum. Therefore, if a use bundles it by mistake all the refences and the module will be removed even without tree shaking.
+Removes all references to process. The most common use of process if `process.env` which is replaced nicely with Quantum. Therefore, if a user bundles it by mistake all the refences and the module will be removed even without tree shaking.
 
 ### removeUseStrict
 Default value: `true`
