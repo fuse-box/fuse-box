@@ -460,10 +460,12 @@ function $import(name: string, o: any = {}) {
             v: ref.versions,
         });
     };
-    locals.require.main = {
-        filename: $isBrowser ? "./" : g["require"].main.filename,
-        paths: $isBrowser ? [] : g["require"].main.paths,
-    };
+
+    if ($isBrowser || !g["require"].main) {
+        locals.require.main = { filename: "./", paths: [] };
+    } else {
+        locals.require.main = g["require"].main;
+    }
 
     let args = [locals.module.exports, locals.require, locals.module, ref.validPath, path, pkg];
     $trigger("before-import", args);
