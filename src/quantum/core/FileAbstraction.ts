@@ -5,8 +5,7 @@ import { RequireStatement } from "./nodes/RequireStatement";
 import * as escodegen from "escodegen";
 import * as path from "path";
 import { ensureFuseBoxPath, transpileToEs5 } from "../../Utils";
-import { FuseBoxIsServerCondition } from "./nodes/FuseBoxIsServerCondition";
-import { FuseBoxIsBrowserCondition } from "./nodes/FuseBoxIsBrowserCondition";
+
 import {
     matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier,
     trackRequireMember, matchNamedExport,
