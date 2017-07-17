@@ -224,7 +224,7 @@ export class Log {
             const indent = this.indent.level(4).toString()
             log
                 // .tags('filelist')
-                .gray(`${indent}${file.info.fuseBoxPath}`)
+                .white(`${indent}${file.info.fuseBoxPath}`)
                 .echo()
         });
 
