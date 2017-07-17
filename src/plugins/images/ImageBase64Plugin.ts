@@ -55,17 +55,17 @@ export class ImageBase64PluginClass implements Plugin {
             file.isLoaded = true;
             file.contents = cached.contents;
         } else {
+            let exportsKey = this.opts.useDefault ? "module.exports.default" : "module.exports";
             const ext = path.extname(file.absPath);
             if (ext === ".svg") {
                 file.loadContents();
                 let content = SVG2Base64.get(file.contents);
-                file.contents = `module.exports = ${JSON.stringify(content)}`;
+                file.contents = `${exportsKey} = ${JSON.stringify(content)}`;
                 return;
             }
             file.isLoaded = true;
             const data = base64Img.base64Sync(file.absPath);
 
-            let exportsKey = this.opts.useDefault ? "module.exports.default" : "module.exports";
             file.contents = `${exportsKey} = ${JSON.stringify(data)}`;
             context.cache.writeStaticCache(file, undefined);
         }
