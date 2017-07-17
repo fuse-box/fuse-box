@@ -7,7 +7,12 @@ import * as path from "path";
 import { ensureFuseBoxPath, transpileToEs5 } from "../../Utils";
 import { FuseBoxIsServerCondition } from "./nodes/FuseBoxIsServerCondition";
 import { FuseBoxIsBrowserCondition } from "./nodes/FuseBoxIsBrowserCondition";
-import { matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier, trackRequireMember, matchNamedExport, isExportMisused, matchesNodeEnv, matchesExportReference, matchesDeadProcessEnvCode } from "./AstUtils";
+import {
+    matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier,
+    trackRequireMember, matchNamedExport,
+    isExportMisused, matchesNodeEnv, matchesExportReference,
+    matchesIfStatementProcessEnv, compareStatement, matchesIfStatementFuseBoxIsEnvironment
+} from "./AstUtils";
 import { ExportsInterop } from "./nodes/ExportsInterop";
 import { UseStrict } from "./nodes/UseStrict";
 import { TypeOfExportsKeyword } from "./nodes/TypeOfExportsKeyword";
@@ -42,8 +47,8 @@ export class FileAbstraction {
     /** FILE CONTENTS */
     public requireStatements = new Set<RequireStatement​​>();
     public dynamicImportStatements = new Set<RequireStatement​​>();
-    public fuseboxIsServerConditions = new Set<FuseBoxIsServerCondition>();
-    public fuseboxIsBrowserConditions = new Set<FuseBoxIsBrowserCondition>();
+    public fuseboxIsEnvConditions = new Set<ReplaceableBlock>();
+
     public exportsInterop = new Set<ExportsInterop>();
     public useStrict = new Set<UseStrict>();
     public typeofExportsKeywords = new Set<TypeOfExportsKeyword>();
@@ -250,19 +255,53 @@ export class FileAbstraction {
 
         // process.env
         if (this.core) {
-            for (const processEnvKey in this.core.producer.userEnvVariables) {
-                const processEnvValue = this.core.producer.userEnvVariables[processEnvKey];
-                let deadProcessEnv = matchesDeadProcessEnvCode(node, processEnvKey, processEnvValue);
-                if (deadProcessEnv !== undefined) {
-                    // dead code...all require statements within should be removed
-                    const processNode = new ReplaceableBlock(node.test, "left", node.test.left);
-                    this.processNodeEnv.add(processNode);
-                    return processNode.conditionalAnalysis(node, deadProcessEnv);
-                }
-                if (matchesNodeEnv(node, processEnvKey)) {
+            const processKeyInIfStatement = matchesIfStatementProcessEnv(node);
+            const value = this.core.producer.userEnvVariables[processKeyInIfStatement];
+            if (processKeyInIfStatement) {
+                const result = compareStatement(node, value);
+                const processNode = new ReplaceableBlock(node.test, "left", node.test.left);
+                this.processNodeEnv.add(processNode);
+                return processNode.conditionalAnalysis(node, result);
+            } else {
+                const inlineProcessKey = matchesNodeEnv(node);
+                if (inlineProcessKey) {
+                    const value = this.core.producer.userEnvVariables[inlineProcessKey];
                     const env = new ReplaceableBlock(parent, prop, node);
-                    env.setValue(processEnvValue);
+                    value === undefined ? env.setUndefinedValue() : env.setValue(value);
                     this.processNodeEnv.add(env);
+                }
+            }
+
+            const isEnvName = matchesIfStatementFuseBoxIsEnvironment(node);
+            if (isEnvName) {
+                let value;
+                if (isEnvName === "isServer") {
+                    value = this.core.opts.isTargetServer();
+                }
+                if (isEnvName === "isBrowser") {
+                    value = this.core.opts.isTargetBrowser();
+                }
+                if (!this.core.opts.isTargetUniveral()) {
+                    const isEnvNode = new ReplaceableBlock(node, "", node.test);
+                    isEnvNode.identifier = isEnvName;
+                    this.fuseboxIsEnvConditions.add(isEnvNode);
+                    return isEnvNode.conditionalAnalysis(node, value);
+                }
+            }
+            if (matchesDoubleMemberExpression(node, "FuseBox")) {
+                let envName = node.property.name;
+                if (envName === "isServer" || envName === "isBrowser") {
+                    let value;
+                    if (envName === "isServer") {
+                        value = this.core.opts.isTargetServer();
+                    }
+                    if (envName === "isBrowser") {
+                        value = this.core.opts.isTargetBrowser();
+                    }
+                    const envNode = new ReplaceableBlock(parent, prop, node);
+                    envNode.identifier = envName;
+                    envNode.setValue(value);
+                    this.fuseboxIsEnvConditions.add(envNode);
                 }
             }
         }
@@ -408,18 +447,7 @@ export class FileAbstraction {
                 // treat it like any any other require statements
                 this.requireStatements.add(new RequireStatement(this, parent));
             }
-            if (node.property.name === "isServer") {
-                this.fuseboxIsServerConditions.add(new FuseBoxIsServerCondition(this, parent, prop, idx));
-                if (this.core && this.core.opts.isTargetBrowser()) {
-                    return false;
-                }
-            }
-            if (node.property.name === "isBrowser") {
-                this.fuseboxIsBrowserConditions.add(new FuseBoxIsBrowserCondition(this, parent, prop, idx));
-                if (this.core && this.core.opts.isTargetServer()) {
-                    return false;
-                }
-            }
+
             return false;
         }
         // global vars

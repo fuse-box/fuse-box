@@ -2,13 +2,34 @@ import { GenericAst } from "./GenericAst";
 
 export class ReplaceableBlock extends GenericAst {
     public value: string;
+    public undefinedValue = false;
     public isConditional = false;
     public activeAST: any;
     public ifStatementAST: any;
     public markedForRemoval = false;
-
+    public identifier: string;
     public setValue(value: string) {
         this.value = value;
+    }
+
+    public setUndefinedValue() {
+        this.undefinedValue = true;
+    }
+
+    public setFunctionName(name: string) {
+        let target = this.node.$parent;;
+        const $idx = this.node.$idx;
+        if (target instanceof Array && $idx !== undefined) {
+            this.ast[this.astProp][$idx] = {
+                type: "Identifier",
+                name: name
+            }
+        } else {
+            this.ast[this.astProp] = {
+                type: "Identifier",
+                name: name
+            }
+        }
     }
 
     public setIFStatementAST(ast: any) {
@@ -44,6 +65,8 @@ export class ReplaceableBlock extends GenericAst {
     public setActiveAST(ast: any) {
         this.activeAST = ast;
     }
+
+
     public handleActiveCode() {
         const parent = this.ifStatementAST.$parent;
         const prop = this.ifStatementAST.$prop;
@@ -70,8 +93,12 @@ export class ReplaceableBlock extends GenericAst {
         }
     }
     public replaceWithValue() {
-        if (this.value) {
-            this.replaceWithString(this.value);
+        if (this.undefinedValue) {
+            this.replaceWithString();
+        } else {
+            if (this.value !== undefined) {
+                this.replaceWithString(this.value);
+            }
         }
     }
 }

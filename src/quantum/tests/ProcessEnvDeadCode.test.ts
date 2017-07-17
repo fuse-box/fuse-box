@@ -29,6 +29,33 @@ export class RemoveStrictTest {
         });
     }
 
+    "Should not bundle with undefined value"() {
+
+        return createOptimisedBundleEnv({
+            stubs: true,
+            options: {
+                removeExportsInterop: false
+            },
+            project: {
+                natives: {
+                    process: false
+                },
+                files: {
+                    "index.ts": `
+                    if ( process.env.FOO !== undefined) {
+                        console.log("hello")
+                    }`,
+                    "dev.ts": ``
+                },
+                instructions: "> index.ts",
+            },
+        }).then((result) => {
+
+            const contents = result.contents["index.js"];
+            should(contents).notFindString('hello');
+        });
+    }
+
     "Should unwrap condition"() {
 
         return createOptimisedBundleEnv({
@@ -79,8 +106,8 @@ export class RemoveStrictTest {
             },
         }).then((result) => {
             const contents = result.contents["index.js"];
-            should(contents).notFindString('if')
-            should(contents).findString('hello')
+            should(contents).notFindString('if');
+            should(contents).findString('hello');
         });
     }
 
@@ -156,11 +183,11 @@ export class RemoveStrictTest {
                 plugins: [EnvPlugin({ foo: "eh" })],
                 files: {
                     "index.ts": `
-                    
+
                     if ( process.env.foo === "bar") {
                         console.log("hello")
                     }
-                    
+
                     `,
                     "dev.ts": ``
                 },
@@ -184,13 +211,13 @@ export class RemoveStrictTest {
                 plugins: [EnvPlugin({ foo: "eh" })],
                 files: {
                     "index.ts": `
-                    
+
                     if ( process.env.foo === "bar") {
                         console.log("wrong")
                     } else {
                         console.log("correct")
                     }
-                    
+
                     `,
                     "dev.ts": ``
                 },

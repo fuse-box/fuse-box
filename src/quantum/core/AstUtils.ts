@@ -43,31 +43,59 @@ const ES6_TYPES = new Set([
     "ArrowFunctionExpression"
 ]);
 
-export function matchesDeadProcessEnvCode(node: any, variableName: string, envString: string) {
+export function matchesIfStatementProcessEnv(node): string {
     if (node.type && node.type === "IfStatement") {
         if (node.test && node.test.type === "BinaryExpression") {
             if (node.test.left) {
-                if (matchesNodeEnv(node.test.left, variableName)) {
-                    const right = node.test.right;
-                    if (right && right.type === "Literal") {
-                        const value = right.value;
-                        const operator = node.test.operator;
-                        if (operator === "===" || operator === "==") {
-                            //if ( "production" === "production" ) {}
-                            return value === envString;
-                        }
-                        if (operator === "!==" || operator === "!=") {
-                            //if ( "production" !== "production" ) {}
-                            return value !== envString;
-                        }
-                    }
-                }
+                const variableName = matchesNodeEnv(node.test.left);
+                return variableName;
             }
         }
     }
 }
-export function matchesNodeEnv(node, veriableName: string = "NODE_ENV") {
-    let isProcess, isEnv, isNodeEnv;
+
+export function matchesIfStatementFuseBoxIsEnvironment(node) {
+    if (node.type && node.type === "IfStatement") {
+        if (node.test && node.test.type === "MemberExpression") {
+            const test = node.test;
+            if (test.object.type === "Identifier" && test.object.name === "FuseBox" && test.property) {
+                return test.property.name;
+            }
+        }
+    }
+}
+export function compareStatement(node: any, input: string | undefined) {
+    const right = node.test.right;
+
+    if (right) {
+        const operator = node.test.operator;
+        if (right.type === "Literal") {
+            const value = right.value;
+
+
+            if (operator === "===" || operator === "==") {
+                //if ( "production" === "production" ) {}
+                return value === input;
+            }
+            if (operator === "!==" || operator === "!=") {
+                //if ( "production" !== "production" ) {}
+                return value !== input;
+            }
+        }
+        if (right.type === "Identifier" && right.name === "undefined") {
+            if (operator === "!==" || operator === "!=") {
+                return input !== undefined;
+            }
+            if (operator === "===" || operator === "==") {
+                return input === undefined;
+            }
+        }
+
+    }
+}
+
+export function matchesNodeEnv(node, veriableName?: string) {
+    let isProcess, isEnv;
     isProcess = astQuery(node,
         ["/MemberExpression", ".object", "/MemberExpression", ".object", ".name"], 'process')
     if (!isProcess) {
@@ -78,13 +106,10 @@ export function matchesNodeEnv(node, veriableName: string = "NODE_ENV") {
     if (!isEnv) {
         return false;
     }
-    isNodeEnv =
-        astQuery(node, ["/MemberExpression", ".property", ".name"], veriableName);
-    if (!isNodeEnv) {
-        return false;
-    }
-    return true;
+    return astQuery(node, ["/MemberExpression", ".property", ".name"], veriableName);
 }
+
+
 export function matchesEcmaScript6(node) {
     if (node) {
         if (ES6_TYPES.has(node.type)) {
@@ -182,7 +207,7 @@ export function matcheObjectDefineProperty(node, name: string) {
     }
 }
 
-export function astQuery(node, args: any[], value: string) {
+export function astQuery(node, args: any[], value?: string) {
     let obj = node;
     for (const i in args) {
         if (obj === undefined) {
@@ -220,5 +245,8 @@ export function astQuery(node, args: any[], value: string) {
             obj = obj[item];
         }
     }
-    return obj === value;
+    if (value !== undefined) {
+        return obj === value;
+    }
+    return obj;
 }
