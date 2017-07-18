@@ -27,7 +27,8 @@ export interface ServerOptions {
     emitter?: HotReloadEmitter;
     httpServer?: boolean;
     socketURI?: string;
-    hmr?: boolean
+    hmr?: boolean;
+    open?: boolean;
 }
 
 /**

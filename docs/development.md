@@ -40,6 +40,20 @@ fuse.dev({
 })
 ```
 
+
+## Opening in browser
+
+Specify `open` option to open the url in your default browser
+
+
+```js
+fuse.dev({
+    open : true
+    port : 8080
+})
+```
+note: You need opn package to be installed.
+
 ## Express application access
 
 You can access `express()` application once initialised like so:

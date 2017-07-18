@@ -222,6 +222,15 @@ export class FuseBox {
         this.producer.runner.bottom(() => {
             let server = new Server(this);
             server.start(opts);
+            if (opts.open) {
+                try {
+                    const opn = require('opn');
+                    opn(`http://localhost:${opts.port}`);
+                } catch (e) {
+                    this.context.log.echoRed('If you want to open the browser, please install "opn" package. "npm install opn --save-dev"')
+                }
+
+            }
             if (fn) {
                 fn(server);
             }
