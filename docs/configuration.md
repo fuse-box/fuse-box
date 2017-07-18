@@ -271,7 +271,7 @@ lastPrimaryOutput contains the following information
 
 ## writeBundles
 
-If you which to write bundles yourself, set 
+If you wish to write bundles yourself, set 
 ```js
 FuseBox.init({
     writeBundles : false
