@@ -17,6 +17,7 @@ import { FuseBox } from "./FuseBox";
 import { Bundle } from "./Bundle";
 import { BundleProducer } from "./BundleProducer";
 import { QuantumSplitConfig, QuantumItem, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
+import { isPolyfilledByFuseBox } from "./ServerPolyfillList";
 
 
 const appRoot = require("app-root-path");
@@ -334,10 +335,12 @@ export class WorkFlowContext {
     }
 
     public initAutoImportConfig(userNatives, userImports) {
-        this.autoImportConfig = registerDefaultAutoImportModules(userNatives);
-        if (utils.isPlainObject(userImports)) {
-            for (let varName in userImports) {
-                this.autoImportConfig[varName] = new AutoImportedModule(varName, userImports[varName]);
+        if (this.target !== "server") {
+            this.autoImportConfig = registerDefaultAutoImportModules(userNatives);
+            if (utils.isPlainObject(userImports)) {
+                for (let varName in userImports) {
+                    this.autoImportConfig[varName] = new AutoImportedModule(varName, userImports[varName]);
+                }
             }
         }
     }
@@ -439,7 +442,13 @@ export class WorkFlowContext {
     }
 
     public isGlobalyIgnored(name: string): boolean {
-        return this.ignoreGlobal.indexOf(name) > -1;
+        if (this.ignoreGlobal.indexOf(name) > -1) {
+            return true;
+        }
+        if (this.target === "server") {
+            return isPolyfilledByFuseBox(name)
+        }
+
     }
 
     public resetNodeModules() {
