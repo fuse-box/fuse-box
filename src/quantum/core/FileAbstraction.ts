@@ -10,7 +10,7 @@ import {
     matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier,
     trackRequireMember, matchNamedExport,
     isExportMisused, matchesNodeEnv, matchesExportReference,
-    matchesIfStatementProcessEnv, compareStatement, matchesIfStatementFuseBoxIsEnvironment
+    matchesIfStatementProcessEnv, compareStatement, matchesIfStatementFuseBoxIsEnvironment, isExportComputed
 } from "./AstUtils";
 import { ExportsInterop } from "./nodes/ExportsInterop";
 import { UseStrict } from "./nodes/UseStrict";
@@ -316,6 +316,12 @@ export class FileAbstraction {
                 statement.usedNames.add(importedName);
             }
         });
+        // restrict tree shaking if there is even a hint on computed properties
+        isExportComputed(node, (isComputed) => {
+            if (isComputed) {
+                this.restrictTreeShaking();
+            }
+        })
         // trying to match a case where an export is misused
         // for example exports.foo.bar.prototype
         // we can't tree shake this exports

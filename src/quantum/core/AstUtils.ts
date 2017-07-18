@@ -154,6 +154,15 @@ export function matchesTypeOf(node: any, name: string) {
         && node.argument && node.argument.type === "Identifier" && node.argument.name === name;
 }
 
+
+export function isExportComputed(node: any, fn: { (result: boolean) }) {
+    if (astQuery(node, [
+        "/MemberExpression", ".object", ".name"
+    ], "exports")) {
+        return fn(node.computed === true);
+    }
+}
+
 export function isExportMisused(node: any, fn: { (name: string) }) {
     const isMisused = astQuery(node, [
         "/MemberExpression", ".object", "/MemberExpression",
