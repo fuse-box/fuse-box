@@ -35,6 +35,7 @@ export class TreeShake {
                     const isDangerous = fileExport.name === "__esModule" || fileExport.name === "default";
                     if (!isDangerous) {
                         this.core.log.echoInfo(`tree shaking: Remove ${fileExport.name} from ${file.getFuseBoxFullPath()}`)
+                        //file.localExportUsageAmount.get(fileExport.)
                         fileExport.remove();
                     }
                 }
@@ -45,6 +46,7 @@ export class TreeShake {
             }
         });
     }
+
     /**
      * Figure out if we can actually tree shake a file
      * @param target
