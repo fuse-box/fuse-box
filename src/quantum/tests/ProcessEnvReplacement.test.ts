@@ -23,6 +23,24 @@ export class ProcessEnvReplacement {
         });
     }
 
+    "Should replace process env NODE_ENV with string literal"() {
+        return createOptimisedBundleEnv({
+            stubs: true,
+            options: {
+                treeshake: false,
+            },
+            project: {
+                files: {
+                    "index.ts": `exports.env = process.env["NODE_ENV"]`
+                },
+                instructions: "index.ts",
+            },
+        }).then((result) => {
+            const contents = result.contents["index.js"];
+            should(contents).findString("exports.env = 'production'");
+        });
+    }
+
     "Should replace process env (uknown variable to undefined)"() {
         return createOptimisedBundleEnv({
             stubs: true,
@@ -104,6 +122,5 @@ export class ProcessEnvReplacement {
             should(contents).findString("hello(1, 'foo')");
         });
     }
-
 
 }

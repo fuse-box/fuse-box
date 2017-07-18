@@ -106,7 +106,16 @@ export function matchesNodeEnv(node, veriableName?: string) {
     if (!isEnv) {
         return false;
     }
-    return astQuery(node, ["/MemberExpression", ".property", ".name"], veriableName);
+    if (node.property) {
+        let value;
+        if (node.property.type === "Literal") {
+            value = node.property.value;
+        }
+        if (node.property.type === "Identifier") {
+            value = node.property.name;
+        }
+        return veriableName !== undefined ? veriableName === value : value;
+    }
 }
 
 

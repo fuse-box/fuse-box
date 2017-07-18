@@ -29,6 +29,32 @@ export class RemoveStrictTest {
         });
     }
 
+    "Should not bundle dead code with process.env['NODE_ENV']"() {
+
+        return createOptimisedBundleEnv({
+            stubs: true,
+            options: {
+                removeExportsInterop: false
+            },
+            project: {
+                natives: {
+                    process: false
+                },
+                files: {
+                    "index.ts": `
+                    if ( process.env["NODE_ENV"] !== "production") {
+                        console.log("hello")
+                    }`,
+                    "dev.ts": ``
+                },
+                instructions: "> index.ts",
+            },
+        }).then((result) => {
+            const contents = result.contents["index.js"];
+            should(contents).notFindString('hello');
+        });
+    }
+
     "Should not bundle with undefined value"() {
 
         return createOptimisedBundleEnv({
