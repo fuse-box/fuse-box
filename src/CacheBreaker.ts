@@ -10,7 +10,8 @@ import * as log from "fliplog";
  * @export
  */
 export function breakCache() {
-    const mainFile = process.argv[1];
+
+    const mainFile = require.main.filename;
     const fileKey = fastHash(mainFile);
     const currentStat = fs.statSync(mainFile);
     const fileModificationTime = currentStat.mtime.getTime()

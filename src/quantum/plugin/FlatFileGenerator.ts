@@ -69,6 +69,10 @@ export class FlatFileGenerator {
                     this.contents.push(`module.exports = ${req}`);
                 }
 
+                if (this.core.opts.isTargetUniveral()) {
+                    //this.contents.push(`module.exports = ${req}`);
+                }
+
                 if (this.core.opts.isTargetBrowser()) {
                     if (this.globalsName === "*") {
                         this.contents.push(`var r = ${req}`);
