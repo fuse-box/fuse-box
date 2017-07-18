@@ -70,6 +70,8 @@ export class WorkFlowContext {
 
     public fuse: FuseBox;
 
+    public userWriteBundles = true;
+
     public sourceChangedEmitter = new EventEmitter<SourceChangedEvent>();
 
     /**
@@ -519,6 +521,7 @@ export class WorkFlowContext {
             outFileWritten();
         }
     }
+
 
     protected writeSourceMaps(result: any) {
         // Writing sourcemaps

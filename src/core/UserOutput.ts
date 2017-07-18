@@ -10,6 +10,7 @@ export class UserOutputResult {
     public hash: string;
     public filename: string;
     public relativePath?: string;
+    public content?: string | Buffer;
 }
 
 export class UserOutput {
@@ -150,19 +151,22 @@ export class UserOutput {
         fullpath = ensureUserPath(fullpath);
         let result = new UserOutputResult();
         return new Promise((resolve, reject) => {
-            fs.writeFile(fullpath, content, (e) => {
-                if (e) {
-                    return reject(e);
-                }
-
-                result.path = fullpath;
-                result.hash = hash;
-                result.filename = path.basename(fullpath);
-                result.relativePath = joinFuseBoxPath(this.folderFromBundleName || ".", result.filename);
-
-                this.lastWrittenPath = fullpath;
-                return resolve(result)
-            })
+            result.path = fullpath;
+            result.hash = hash;
+            result.filename = path.basename(fullpath);
+            result.relativePath = joinFuseBoxPath(this.folderFromBundleName || ".", result.filename);
+            this.lastWrittenPath = fullpath;
+            if (this.context.userWriteBundles) {
+                fs.writeFile(fullpath, content, (e) => {
+                    if (e) {
+                        return reject(e);
+                    }
+                    return resolve(result)
+                })
+            } else {
+                result.content = content;
+                return resolve(result);
+            }
         });
     }
 

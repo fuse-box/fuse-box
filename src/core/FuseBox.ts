@@ -33,6 +33,7 @@ export interface FuseBoxOptions {
     autoImport?: any;
     natives?: any;
     shim?: any;
+    writeBundles?: boolean;
     standalone?: boolean;
     sourceMaps?: boolean | { vendor?: boolean, inline?: boolean, project?: boolean, sourceRoot?: string };
     rollup?: any;
@@ -78,6 +79,9 @@ export class FuseBox {
         this.collectionSource = new CollectionSource(this.context);
         opts = opts || {};
         let homeDir = appRoot.path;
+        if (opts.writeBundles !== undefined) {
+            this.context.userWriteBundles = opts.writeBundles;
+        }
 
         if (opts.target !== undefined) {
             this.context.target = opts.target;

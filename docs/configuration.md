@@ -269,6 +269,25 @@ lastPrimaryOutput contains the following information
 | `hash`  | Generated hash  |
 | `filename`  | Filename  |
 
+## writeBundles
+
+If you which to write bundles yourself, set 
+```js
+FuseBox.init({
+    writeBundles : false
+})
+```
+Then in your `fuse.js` add the following code:
+```js
+fuse.run().then(producer => {
+    producer.bundles.forEach(bundle => {
+        console.log(bundle.context.output.lastPrimaryOutput);
+    });
+})
+```
+
+`lastPrimaryOutput` will contain all the information you might require
+
 ## Sourcemaps
 
 Project in FuseBox are enabled by setting the `sourceMaps` property and setting it to `true`:
