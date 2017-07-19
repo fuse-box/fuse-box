@@ -221,53 +221,30 @@ export class File {
      * @memberOf File
      */
     public tryPlugins(_ast?: any) {
+        const tasks = [];
         if (this.context.plugins && this.relativePath) {
-            let target: Plugin;
-            let index = 0;
-            while (!target && index < this.context.plugins.length) {
-                let item = this.context.plugins[index];
+            const addTask = item => {
+                if (utils.isFunction(item.transform)) {
+                    this.context.debugPlugin(item, `Captured ${this.info.fuseBoxPath}`);
+                    tasks.push(() => item.transform.apply(item, [this]));
+                }
+            };
+
+            this.context.plugins.forEach(item => {
                 let itemTest: RegExp;
-
-
                 if (Array.isArray(item)) {
                     let el = item[0];
-                    // for some reason on windows OS it gives false sometimes...
-                    // if (el instanceof RegExp) {
-                    //     itemTest = el;
-                    // }
-                    if (el && typeof el.test === "function") {
-                        itemTest = el;
-                    } else {
-                        itemTest = el.test;
-                    }
+                    itemTest = (el && utils.isFunction(el.test)) ? el : el.test;
                 } else {
                     itemTest = item && item.test;
                 }
                 if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(this.relativePath)) {
-                    target = item;
+                     Array.isArray(item) ? item.forEach(addTask, this) :	addTask(item);
                 }
-                index++;
-            }
-            const tasks = [];
-            if (target) {
-
-                if (Array.isArray(target)) {
-                    target.forEach(plugin => {
-                        if (utils.isFunction(plugin.transform)) {
-                            this.context.debugPlugin(plugin, `Captured ${this.info.fuseBoxPath}`);
-                            tasks.push(() => plugin.transform.apply(plugin, [this]));
-                        }
-                    });
-                } else {
-                    if (utils.isFunction(target.transform)) {
-                        this.context.debugPlugin(target, `Captured ${this.info.fuseBoxPath}`);
-                        tasks.push(() => target.transform.apply(target, [this]));
-                    }
-                }
+            }, this);
             }
             return this.context.queue(each(tasks, promise => promise()));
         }
-    }
 
     /**
      *
