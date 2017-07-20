@@ -460,6 +460,9 @@ export class FileAbstraction {
             if (globalNames.has(node.name)) {
                 globalVariable = node.name;
             }
+            if (node.name === "global") {
+                this.packageAbstraction.bundleAbstraction.globalVariableRequired = true;
+            }
             if (globalVariable) {
                 if (!this.globalVariables.has(globalVariable)) {
                     this.globalVariables.add(globalVariable);
