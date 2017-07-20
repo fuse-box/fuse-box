@@ -16,11 +16,12 @@ export class StatementModification {
                     }
                     statement.setFunctionName("$fsx.p");
                 } else {
-                    statement.setFunctionName("$fsx.r");
-                    //statement.setFunctionName("$fsx.c");
-                    //statement.bindID(file.getID());
-                    // file map is requested with computed require statements
-                    //file.addFileMap();
+                    if (core.opts.isTargetServer() || core.opts.isTargetUniveral()) {
+                        core.api.useServerRequire();
+                        statement.setFunctionName('$fsx.s');
+                    } else {
+                        statement.setFunctionName('$fsx.r');
+                    }
                 }
             } else {
                 let resolvedFile = statement.resolve();
@@ -40,6 +41,7 @@ export class StatementModification {
                     statement.setFunctionName('$fsx.r');
                     statement.setValue(resolvedFile.getID());
                 } else {
+
                     if (core.opts.isTargetServer() || core.opts.isTargetUniveral()) {
                         core.api.useServerRequire();
                         statement.setFunctionName('$fsx.s');

@@ -394,7 +394,6 @@ export class FileAbstraction {
                 this.globalVariables.add("exports");
             }
             this.exportsInterop.add(new ExportsInterop(parent, prop, node));
-            return false;
         }
         if (matchesAssignmentExpression(node, 'exports', '__esModule')) {
             if (!this.globalVariables.has("exports")) {
