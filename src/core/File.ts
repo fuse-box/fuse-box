@@ -221,7 +221,7 @@ export class File {
      * @memberOf File
      */
     public tryPlugins(_ast?: any) {
-        if (this.context.runAllMatchedPlugins) { this.tryAllPlugins(_ast) }
+        if (this.context.runAllMatchedPlugins) { return this.tryAllPlugins(_ast) }
         if (this.context.plugins && this.relativePath) {
             let target: Plugin;
             let index = 0;
