@@ -112,6 +112,8 @@ export class WorkFlowContext {
 
     public printLogs = true;
 
+    public runAllMatchedPlugins = false;
+
     public plugins: Plugin[];
 
     public fileGroups: Map<string, File>;

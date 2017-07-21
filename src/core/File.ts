@@ -221,6 +221,7 @@ export class File {
      * @memberOf File
      */
     public tryPlugins(_ast?: any) {
+        if (this.context.runAllMatchedPlugins) { return this.tryAllPlugins(_ast) }
         if (this.context.plugins && this.relativePath) {
             let target: Plugin;
             let index = 0;
@@ -269,6 +270,38 @@ export class File {
         }
     }
 
+    /**
+     *
+     *
+     * @param {*} [_ast]
+     *
+     * @memberOf File
+     */
+    public tryAllPlugins(_ast?: any) {
+        const tasks = [];
+        if (this.context.plugins && this.relativePath) {
+            const addTask = item => {
+                if (utils.isFunction(item.transform)) {
+                    this.context.debugPlugin(item, `Captured ${this.info.fuseBoxPath}`);
+                    tasks.push(() => item.transform.apply(item, [this]));
+                }
+            };
+
+            this.context.plugins.forEach(item => {
+                let itemTest: RegExp;
+                if (Array.isArray(item)) {
+                    let el = item[0];
+                    itemTest = (el && utils.isFunction(el.test)) ? el : el.test;
+                } else {
+                    itemTest = item && item.test;
+                }
+                if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(this.relativePath)) {
+                     Array.isArray(item) ? item.forEach(addTask, this) :	addTask(item);
+                }
+            }, this);
+        }
+        return this.context.queue(each(tasks, promise => promise()));
+    }
     /**
      *
      *
