@@ -44,7 +44,7 @@ FuseBox.init({
 });
 ```
 
-UglifyJs is enabled by default, don't forget it install it
+UglifyJs is used optionally and activated with `{uglify : true}` option, don't forget it install it
 
 Via NPM:
 ```bash
@@ -58,6 +58,8 @@ yarn install uglify-js
 note: Make sure you have the LATEST uglify-js
 
 Make sure you are using [WebIndexPlugin](/plugins/webindexplugin#webindexplugin) as Quantum may produce more bundles than configured in the first place.
+
+note: Remove UglifyJSPlugin from the plugin list, it will conflict with Quantum
 
 ## How it works?
 
