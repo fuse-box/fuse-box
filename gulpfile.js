@@ -114,18 +114,18 @@ gulp.task("dist-typings", () => {
         .pipe(gulp.dest("dist/typings"));
 });
 gulp.task("dist-commonjs", () => {
-	const distDir = "dist/commonjs";
+    const distDir = "dist/commonjs";
     return gulp.src(filesMain)
         .pipe(sourcemaps.init())
-		.pipe(projectCommonjs()).on("error", onError).js
-		.pipe(sourcemaps.mapSources((sourcePath, file) => {
-			let filePath = path.relative("..", sourcePath);
-			let outDir = path.join(distDir, path.dirname(filePath));
-			let srcPath = path.join("src",filePath);
-			let outPath = path.relative(outDir, srcPath);
-			return outPath;
-		}))
-		.pipe(sourcemaps.write(".", { includeContent: false }))
+        .pipe(projectCommonjs()).on("error", onError).js
+        .pipe(sourcemaps.mapSources((sourcePath, file) => {
+            let filePath = path.relative("..", sourcePath);
+            let outDir = path.join(distDir, path.dirname(filePath));
+            let srcPath = path.join("src", filePath);
+            let outPath = path.relative(outDir, srcPath);
+            return outPath;
+        }))
+        .pipe(sourcemaps.write(".", { includeContent: false }))
         .pipe(gulp.dest(distDir));
 });
 gulp.task("dist-main", ["dist-typings", "dist-commonjs"]);
@@ -135,6 +135,11 @@ gulp.task("dist-main", ["dist-typings", "dist-commonjs"]);
  */
 gulp.task("publish", ["dist-cdn-loader-js"], function(done) {
     runSequence("dist", "increment-version", "commit-release", "npm-publish", done);
+});
+
+gulp.task("format-package", function(done) {
+    let json = require("./package.json");
+    fs.writeFileSync(__dirname + "/package.json", JSON.stringify(json, 2, 2));
 });
 
 gulp.task("beta", [], function(done) {
