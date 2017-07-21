@@ -62,15 +62,10 @@ export class FlatFileGenerator {
         }
         if (this.bundleAbstraction) {
             if (this.bundleAbstraction.globalVariableRequired) {
-                const defineGlobalFn = "$fsx.$g = $fsx.$g || {};\nvar global = $fsx.$g";
-
+                const defineGlobalFn = "var global = window";
                 if (this.core.opts.isTargetBrowser()) {
                     this.contents.push(defineGlobalFn);
                 }
-                // if (this.core.opts.isTargetUniveral()) {
-                //     this.contents.push(`if (typeof window !== "undefined"){${defineGlobalFn}}`);
-                // }
-
             }
         }
         if (this.entryId !== undefined) {
