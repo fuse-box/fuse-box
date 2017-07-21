@@ -195,6 +195,20 @@ console.log(2)
 
 Good thing about it, that you don't need uglify-js for this operation. However, you should not de-reference process.env.$key, as it won't be understood by quantum
 
+
+Quantum merges `process.env` with `{NODE_ENV : "production"}`. It's made on purpose to avoid mistakes, as Quantum builds are made for production. You can override `NODE_ENV` variable by using [EnvPlugin](/plugins/env-plugin#usage) 
+
+```js
+EnvPlugin({ NODE_ENV: "stage" })
+```
+
+And in your code
+```js
+if (process.env.NODE_ENV === "stage") {
+    console.log("staging env");
+}
+```
+
 For example:
 ```js
 const key = process.env.NODE_ENV
