@@ -31,6 +31,7 @@ export class ProducerAbstraction {
         this.warnings.add(new ProducerWarning(msg));
     }
 
+
     public findFileAbstraction(packageName: string, resolvedPathRaw: string) {
         let combinations: string[] = generateFileCombinations(resolvedPathRaw);
 
@@ -41,23 +42,26 @@ export class ProducerAbstraction {
             const pkg = bundle.packageAbstractions.get(packageName);
             if (pkg) {
                 const entryFile = pkg.entryFile;
-                pkg.fileAbstractions.forEach(file => {
-                    if (requiredFileAbstraction) { return; };
-                    // if no combinations
-                    // which means we are dealing with external package require
-                    // like require("foo")
-                    if (!combinations) {
-                        combinations = generateFileCombinations(entryFile);
-                    }
-                    combinations.some(combination => {
-                        let found = file.fuseBoxPath === combination;
+                // if no combinations
+                // which means we are dealing with external package require
+                // like require("foo")
+                if (!combinations) {
+                    combinations = generateFileCombinations(entryFile);
+                }
 
+                combinations.some(combination => {
+                    let found;
+                    pkg.fileAbstractions.forEach(file => {
+                        if (requiredFileAbstraction) { return; };
+                        found = file.fuseBoxPath === combination;
+                        //console.log(found, combination);
                         if (found) {
                             requiredFileAbstraction = file;
                         }
-                        return found;
                     });
+                    return found;
                 });
+
             }
         });
         return requiredFileAbstraction;
