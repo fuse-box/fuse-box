@@ -114,10 +114,19 @@ gulp.task("dist-typings", () => {
         .pipe(gulp.dest("dist/typings"));
 });
 gulp.task("dist-commonjs", () => {
+	const distDir = "dist/commonjs";
     return gulp.src(filesMain)
         .pipe(sourcemaps.init())
-        .pipe(projectCommonjs()).on("error", onError).js
-        .pipe(gulp.dest("dist/commonjs"));
+		.pipe(projectCommonjs()).on("error", onError).js
+		.pipe(sourcemaps.mapSources((sourcePath, file) => {
+			let filePath = path.relative("..", sourcePath);
+			let outDir = path.join(distDir, path.dirname(filePath));
+			let srcPath = path.join("src",filePath);
+			let outPath = path.relative(outDir, srcPath);
+			return outPath;
+		}))
+		.pipe(sourcemaps.write(".", { includeContent: false }))
+        .pipe(gulp.dest(distDir));
 });
 gulp.task("dist-main", ["dist-typings", "dist-commonjs"]);
 
