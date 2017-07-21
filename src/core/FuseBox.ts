@@ -45,6 +45,7 @@ export interface FuseBoxOptions {
     debug?: boolean;
     files?: any;
     alias?: any;
+    runAllMatchedPlugins?: boolean;
 }
 
 /**
@@ -116,6 +117,7 @@ export class FuseBox {
             this.context.setSourceMapsProperty(opts.sourceMaps);
         }
 
+        this.context.runAllMatchedPlugins = !!opts.runAllMatchedPlugins
         this.context.plugins = opts.plugins || [JSONPlugin()];
 
         if (opts.package) {

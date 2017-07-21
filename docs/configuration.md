@@ -391,6 +391,19 @@ FuseBox tests each file running it through the plugin list. If it sees an array,
 [/\.scss$/, SassPlugin(), CSSPlugin()] // more verbose
 ```
 
+By default only the first plugin to match a file will be applied to the file. E.g., in the following:
+```js
+new FuseBox({
+    plugins: [
+		ReplacePlugin({ __PRODUCTION__: isProduction }),
+		ReplacePlugin({ __SERVER__: false })
+	]
+  }).plugin(ReplacePlugin({ __IOS__: true }))
+```
+... only the `ReplacePlugin({ __PRODUCTION__: isProduction })` will be run on the files.
+
+To make all of the plugins run, set `{ runAllMatchedPlugins: true }`.
+
 ## Target
 
 At this moment target exists  to switch to [electron](https://electron.atom.io/) mode
