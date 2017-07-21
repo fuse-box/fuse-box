@@ -77,6 +77,11 @@ Seed project for Angular Universal apps featuring Server-Side Rendering (SSR), F
 
 https://github.com/patrickmichalina/fusebox-angular-universal-starter
 
+## FuseBox debug
+https://github.com/andrew-w-ross/fuse-debug
+A demo on how to debug a fuse-box project in vscode
+
+https://github.com/andrew-w-ross/fuse-debug
 ### FuseBox + rollup
 
 How to use rollup with FuseBox
