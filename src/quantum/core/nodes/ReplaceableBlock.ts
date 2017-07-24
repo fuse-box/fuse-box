@@ -84,8 +84,13 @@ export class ReplaceableBlock extends GenericAst {
                 if (parent[prop]) {
                     if (Array.isArray(parent[prop])) {
                         const index = parent[prop].indexOf(this.ifStatementAST);
+                        // console.log(this.activeAST);
                         if (index > -1) {
-                            parent[prop][index] = this.activeAST;
+                            if (prop === "body" && this.activeAST.body) {
+                                parent[prop].splice(index, 1, ...this.activeAST.body);
+                            } else {
+                                parent[prop][index] = this.activeAST;
+                            }
                         }
                     }
                 }
