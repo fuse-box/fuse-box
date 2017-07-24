@@ -2,19 +2,8 @@
  * Listens to 'async' requets and if the name is a css file
  * wires it to `__fsbx_css`
  */
-if (typeof FuseBox !== "undefined" && FuseBox.isBrowser) {
-    FuseBox.on('async', function(name) {
-        if (FuseBox.isServer) {
-            return;
-        }
-        if (/\.css$/.test(name)) {
-            __fsbx_css(name);
-            return false;
-        }
-    });
-}
 
-module.exports = function(__filename, contents) {
+var cssHandler = function(__filename, contents) {
     if (!FuseBox.isServer) {
         var styleId = __filename.replace(/[\.\/]+/g, '-');
         if (styleId.charAt(0) === '-') styleId = styleId.substring(1);
@@ -38,3 +27,16 @@ module.exports = function(__filename, contents) {
         }
     }
 }
+if (typeof FuseBox !== "undefined" && FuseBox.isBrowser) {
+    FuseBox.on('async', function(name) {
+        if (FuseBox.isServer) {
+            return;
+        }
+        if (/\.css$/.test(name)) {
+            cssHandler(name);
+            return false;
+        }
+    });
+}
+
+module.exports = cssHandler;
