@@ -243,7 +243,14 @@ There are 2 ways to get to the generated file names
 
 
 ### useJsNext
-If this option is `true` FuseBox will take "json:next" or "module" properties if avaialable
+If this option is `true` FuseBox will take "json:next" or "module" properties from `package.json` if avaialable
+
+```js
+FuseBox.init({
+    useJsNext : true
+})
+```
+
 
 ### Hashes and WebIndexPlugin
 

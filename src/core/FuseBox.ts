@@ -90,7 +90,7 @@ export class FuseBox {
         }
 
         if (opts.useJsNext !== undefined) {
-            this.context.useJsNext = true;
+            this.context.useJsNext = opts.useJsNext;
         }
 
         if (opts.experimentalFeatures !== undefined) {
