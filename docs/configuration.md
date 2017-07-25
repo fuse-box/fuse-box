@@ -241,6 +241,10 @@ FuseBox.init({
 
 There are 2 ways to get to the generated file names
 
+
+### useJsNext
+If this option is `true` FuseBox will take "json:next" or "module" properties if avaialable
+
 ### Hashes and WebIndexPlugin
 
 Use [WebIndexPlugin](/plugins/webindexplugin#webindexplugin) which will take care of everything. Generated files names will be in your script tags

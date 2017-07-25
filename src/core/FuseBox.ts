@@ -45,6 +45,7 @@ export interface FuseBoxOptions {
     debug?: boolean;
     files?: any;
     alias?: any;
+    useJsNext?: boolean,
     runAllMatchedPlugins?: boolean;
 }
 
@@ -86,6 +87,10 @@ export class FuseBox {
 
         if (opts.target !== undefined) {
             this.context.target = opts.target;
+        }
+
+        if (opts.useJsNext !== undefined) {
+            this.context.useJsNext = true;
         }
 
         if (opts.experimentalFeatures !== undefined) {

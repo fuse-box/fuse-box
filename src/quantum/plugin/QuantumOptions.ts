@@ -27,7 +27,7 @@ export interface IQuantumExtensionParams {
 
 export class QuantumOptions {
     private uglify: any;
-    private removeExportsInterop = true;
+    private removeExportsInterop = false;
     private removeUseStrict = true;
     private ensureES5 = true;
     private replaceProcessEnv = true;
