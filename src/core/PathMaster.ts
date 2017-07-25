@@ -39,6 +39,7 @@ export interface IPackageInformation {
     bundleData?: BundleData;
     entry: string;
     version: string;
+    jsNext?: boolean;
     root: string;
     entryRoot: string,
     custom: boolean;
@@ -352,6 +353,7 @@ export class PathMaster {
                 // Getting an entry point
                 let entryFile;
                 let entryRoot;
+                let jsNext = false;
                 let browserOverrides;
 
                 if (json.browser && !this.context.isBrowserTarget()) {
@@ -374,6 +376,7 @@ export class PathMaster {
                     entryFile = path.join(folder, json["jsnext:main"]);
                 } else {
                     if (this.context.useJsNext && (json["jsnext:main"] || json.module)) {
+                        jsNext = true;
                         entryFile = path.join(folder, json["jsnext:main"] || json.module);
                     } else {
                         entryFile = path.join(folder, entryFile || json.main || "index.js");
@@ -383,6 +386,7 @@ export class PathMaster {
                 return {
                     browserOverrides: browserOverrides,
                     name,
+                    jsNext,
                     custom: isCustom,
                     root: folder,
                     missing: false,

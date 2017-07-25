@@ -133,11 +133,17 @@ export class FileAnalysis {
         if (this.wasAnalysed || this.skipAnalysis) {
             return;
         }
-        
-        let traversalPlugins = plugins
+        // setting es6 module
+        // to transpile it with typescrip
+        if (this.file.collection && this.file.collection.info && this.file.collection.info.jsNext) {
+            this.file.es6module = true;
+        }
+
+        let traversalPlugins = plugins;
         if (traversalOptions && Array.isArray(traversalOptions.plugins)) {
             traversalPlugins = plugins.concat(traversalOptions.plugins)
         }
+
 
         ASTTraverse.traverse(this.ast, {
             pre: (node, parent, prop, idx) =>
