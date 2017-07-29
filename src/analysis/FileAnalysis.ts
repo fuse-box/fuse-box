@@ -10,6 +10,7 @@ import { DynamicImportStatement } from "./plugins/DynamicImportStatement";
 
 require("acorn-es7")(acorn);
 require("acorn-jsx/inject")(acorn);
+require('acorn-es7-plugin')(acorn);
 
 export interface TraversalPlugin {
     onNode(file: File, node: any, parent: any): void

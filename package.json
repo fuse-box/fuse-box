@@ -79,6 +79,7 @@
   "dependencies": {
     "acorn": "^5.0.3",
     "acorn-es7": "^0.1.0",
+    "acorn-es7-plugin": "^1.1.7",
     "acorn-jsx": "^4.0.1",
     "ansi": "^0.3.1",
     "app-root-path": "^2.0.1",
