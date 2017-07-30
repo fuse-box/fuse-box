@@ -138,6 +138,8 @@ Tests are available [here](https://github.com/fuse-box/fuse-box/blob/master/src/
 
 Split bundles can be retrieved by name or by referencing an actual module
 
+note: Physical code splitting (when the bundles are actually created) works ONLY in Quantum. For development purposes your split bundles will be present in the master bundle BY DESIGN
+
 Define the config first
 
 ```js
