@@ -74,7 +74,9 @@ fuse.dev({
 });
 ```
 
-Whereas key is a path and options are passed directly to [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware)
+Whereas key is a path and options are passed directly to [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware) module
+
+note: run "npm install http-proxy-middleware"
 
 
 ## Express application access
