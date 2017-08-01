@@ -29,6 +29,14 @@ export interface ServerOptions {
     socketURI?: string;
     hmr?: boolean;
     open?: boolean;
+    proxy?: {
+        [key: string]: {
+            target: string,
+            changeOrigin?: boolean,
+            pathRewrite: { [key: string]: string },
+            router: { [key: string]: string }
+        }
+    }
 }
 
 /**
@@ -71,7 +79,7 @@ export class Server {
             if (opts.httpServer === false) {
                 SocketServer.startSocketServer(port, this.fuse);
             } else {
-                this.httpServer.launch({ root, port });
+                this.httpServer.launch({ root, port }, opts);
             }
         });
         return this;
