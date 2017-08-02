@@ -27,7 +27,12 @@ Inject into a chain.
 
 ```js
 fuse.plugin(
-     [LESSPlugin(), CSSPlugin()]
+     [
+          LESSPlugin({
+               paths: [path.resolve(__dirname, 'node_modules')]
+          }),
+          CSSPlugin()
+     ]
 )
 ```
 
@@ -36,7 +41,13 @@ Or add it to the main config plugins list to make it available across bundles.
 ```js
 FuseBox.init({
     plugins : [
-         [LESSPlugin(), CSSPlugin()]
+         [
+             LESSPlugin({
+                 paths: [
+                     path.resolve(__dirname, 'node_modules')
+                 ]
+             }),
+             CSSPlugin()]
     ]
 });
 ```
@@ -53,9 +64,22 @@ import "./styles/main.less"
 ```js
 fuse.plugin(
     [LESSPlugin({
-        paths: [path.join(__dirname, 'less', 'includes')]
+        paths: [
+            path.join(__dirname, 'less', 'includes'),
+            path.resolve(__dirname, 'node_modules')
+        ]
     }), CSSPlugin()]
 )
 ```
 
-note: Sourcemaps are not yet properly handled.  Development is ongoing on this feature
+Passing paths with node_modules allows one to import node module less files within less a file using the following:
+```css
+@import "example/dist/styles.less"
+```
+instead of
+```css
+@import "node_modules/example/dist/style.less"
+```
+## Known Issues
+
+* Sourcemaps are not working. Development is ongoing on this feature
