@@ -120,6 +120,11 @@ export class File {
 
     public groupHandler: Plugin;
 
+    /**
+     * Flag to indicate to fusebox whether or not contents has been set to consumable javascript
+     */
+    public transpiled: Boolean = false;
+
     public addAlternativeContent(str: string) {
         this.alternativeContent = this.alternativeContent || "";
         this.alternativeContent += "\n" + str;
@@ -393,7 +398,6 @@ export class File {
             this.addStringDependency('fuse-heresy-default');
         }
         if (/\.ts(x)?$/.test(this.absPath)) {
-
             this.context.debug("Typescript", `Captured  ${this.info.fuseBoxPath}`);
             return this.handleTypescript();
         }
@@ -543,30 +547,30 @@ export class File {
                 return;
             }
         }
-        const ts = require("typescript");
-
         this.loadContents();
         // handle import()
         this.replaceDynamicImports();
         // Calling it before transpileModule on purpose
         this.tryTypescriptPlugins();
-        this.context.debug("TypeScript", `Transpile ${this.info.fuseBoxPath}`)
+        if (!this.transpiled) {
+            const ts = require("typescript");
+            this.context.debug("TypeScript", `Transpile ${this.info.fuseBoxPath}`)
 
-        let result = ts.transpileModule(this.contents, this.getTranspilationConfig());
+            let result = ts.transpileModule(this.contents, this.getTranspilationConfig());
 
-        if (result.sourceMapText && this.context.useSourceMaps) {
-            let jsonSourceMaps = JSON.parse(result.sourceMapText);
-            jsonSourceMaps.file = this.info.fuseBoxPath;
-            jsonSourceMaps.sources = [this.context.sourceMapsRoot + "/" + this.info.fuseBoxPath.replace(/\.js(x?)$/, ".ts$1")];
+            if (result.sourceMapText && this.context.useSourceMaps) {
+                let jsonSourceMaps = JSON.parse(result.sourceMapText);
+                jsonSourceMaps.file = this.info.fuseBoxPath;
+                jsonSourceMaps.sources = [this.context.sourceMapsRoot + "/" + this.info.fuseBoxPath.replace(/\.js(x?)$/, ".ts$1")];
 
-            if (!this.context.inlineSourceMaps) {
-                delete jsonSourceMaps.sourcesContent;
+                if (!this.context.inlineSourceMaps) {
+                    delete jsonSourceMaps.sourcesContent;
+                }
+                result.outputText = result.outputText.replace("//# sourceMappingURL=module.js.map", "");
+                this.sourceMap = JSON.stringify(jsonSourceMaps);
             }
-            result.outputText = result.outputText.replace("//# sourceMappingURL=module.js.map", "");
-            this.sourceMap = JSON.stringify(jsonSourceMaps);
+            this.contents = result.outputText;
         }
-        this.contents = result.outputText;
-
         // consuming transpiled javascript
         this.makeAnalysis();
         this.tryPlugins();
