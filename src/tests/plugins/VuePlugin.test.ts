@@ -54,7 +54,7 @@ export class VuePluginTest {
                 instructions: "app.vue",
             },
         }).then((result) => {
-            const component = result.project.FuseBox.import('./app.vue');
+            const component = result.project.FuseBox.import('./app.vue').default;
 
             // //test for render functions
             should( component.render ).notEqual( undefined );
