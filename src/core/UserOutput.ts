@@ -108,7 +108,7 @@ export class UserOutput {
         } else {
             fname = template
                 .replace('$name', basename)
-                .replace(/([-_]?\$hash[-_]?)/, "")
+                .replace(/([-_]*\$hash[-_]*)/, "")
         }
         this.lastGeneratedFileName = fname;
         let result = path.join(this.dir, dirname, fname);
