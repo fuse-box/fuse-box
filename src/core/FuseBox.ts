@@ -32,6 +32,7 @@ export interface FuseBoxOptions {
     plugins?: Plugin[];
     autoImport?: any;
     natives?: any;
+    warnings?: boolean,
     shim?: any;
     writeBundles?: boolean;
     standalone?: boolean;
@@ -101,6 +102,14 @@ export class FuseBox {
         }
         if (opts.debug !== undefined) {
             this.context.debugMode = opts.debug;
+        }
+
+        if (opts.debug !== undefined) {
+            this.context.debugMode = opts.debug;
+        }
+
+        if (opts.warnings !== undefined) {
+            this.context.showWarnings = opts.warnings;
         }
 
         if (opts.ignoreModules) {

@@ -55,7 +55,7 @@ export class BundleProducer {
         this.userEnvVariables = Object.assign(this.userEnvVariables, data);
     }
     public printWarnings() {
-        if (this.warnings.size > 0) {
+        if (this.warnings.size > 0 && this.fuse.context.showWarnings) {
             this.fuse.context.log.echoBreak();
             this.warnings.forEach(warnings => {
                 warnings.forEach(list => {

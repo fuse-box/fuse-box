@@ -296,7 +296,7 @@ export class File {
                     itemTest = item && item.test;
                 }
                 if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(this.relativePath)) {
-                     Array.isArray(item) ? item.forEach(addTask, this) :	addTask(item);
+                    Array.isArray(item) ? item.forEach(addTask, this) : addTask(item);
                 }
             }, this);
         }
@@ -375,6 +375,11 @@ export class File {
             return;
         }
         if (!fs.existsSync(this.info.absPath)) {
+
+            if (/\.js$/.test(this.info.fuseBoxPath) && this.context.fuse && this.context.fuse.producer) {
+                this.context.fuse.producer.addWarning('unresolved',
+                    `Statement "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
+            }
             this.notFound = true;
             return;
         }

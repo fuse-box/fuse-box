@@ -73,6 +73,8 @@ export class WorkFlowContext {
 
     public userWriteBundles = true;
 
+    public showWarnings = true;
+
     public useJsNext = false;
 
     public sourceChangedEmitter = new EventEmitter<SourceChangedEvent>();
