@@ -133,11 +133,9 @@ export class CSSPluginClass implements Plugin {
             const lastFile = file.context.convertToFuseBoxPath(bundle.lastChangedFile);
             if (isStylesheetExtension(bundle.lastChangedFile) && lastFile === file.info.fuseBoxPath) {
                 emitRequired = true;
-                console.log('yes', lastFile, file.info.fuseBoxPath);
             }
         }
         if (emitRequired) {
-            console.log("emiting.......", file.info.fuseBoxPath);
             file.context.sourceChangedEmitter.emit({
                 type: "css",
                 content: file.alternativeContent,
