@@ -196,7 +196,7 @@ export class QuantumOptions {
     }
 
     public shouldUglify() {
-        return this.uglify === true;
+        return this.uglify;
     }
 
     public shouldBakeApiIntoBundle() {
