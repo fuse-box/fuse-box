@@ -124,15 +124,22 @@ export class CSSPluginClass implements Plugin {
         this.emitHMR(group);
     }
     public emitHMR(file: File) {
-        let emitRequired = true;
+        let emitRequired = false;
         const bundle = file.context.bundle;
         // We want to emit CSS Changes only if an actual CSS file was changed.
+
         if (bundle && bundle.lastChangedFile) {
-            emitRequired = isStylesheetExtension(bundle.lastChangedFile);
+
+            const lastFile = file.context.convertToFuseBoxPath(bundle.lastChangedFile);
+            if (isStylesheetExtension(bundle.lastChangedFile) && lastFile === file.info.fuseBoxPath) {
+                emitRequired = true;
+                console.log('yes', lastFile, file.info.fuseBoxPath);
+            }
         }
         if (emitRequired) {
+            console.log("emiting.......", file.info.fuseBoxPath);
             file.context.sourceChangedEmitter.emit({
-                type: "js",
+                type: "css",
                 content: file.alternativeContent,
                 path: file.info.fuseBoxPath,
             });

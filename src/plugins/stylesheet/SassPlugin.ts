@@ -38,6 +38,7 @@ export class SassPluginClass implements Plugin {
     public transform(file: File): Promise<any> {
         file.addStringDependency("fuse-box-css");
         const context = file.context;
+
         if (context.useCache && this.options.cache) {
             let cached = context.cache.getStaticCache(file);
             if (cached) {

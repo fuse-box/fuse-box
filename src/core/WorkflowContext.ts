@@ -195,6 +195,14 @@ export class WorkFlowContext {
         this.pendingPromises.push(obj);
     }
 
+
+    public convertToFuseBoxPath(name: string) {
+        let root = this.homeDir;
+        name = name.replace(/\\/g, "/");
+        root = root.replace(/\\/g, "/");
+        name = name.replace(root, "").replace(/^\/|\\/, "");
+        return name;
+    }
     public isBrowserTarget() {
         return this.target === "browser";
     }
