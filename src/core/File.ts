@@ -540,4 +540,8 @@ export class File {
             }
         );
     }
+
+    public addError (message: string) {
+        this.context.bundle.addError(message)
+    }
 }

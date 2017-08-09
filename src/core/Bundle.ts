@@ -26,6 +26,7 @@ export class Bundle {
     public lastChangedFile: string;
     public webIndexed = true;
     public splitFiles: Map<string, File>;
+    private errors: string[] = [];
 
     public bundleSplit: BundleSplit;
     public quantumItem: QuantumItem;
@@ -217,12 +218,14 @@ export class Bundle {
 
     public exec(): Promise<Bundle> {
         return new Promise((resolve, reject) => {
+            this.clearErrors()
             this.fuse
                 .initiateBundle(this.arithmetics || "", () => {
                     this.process.setFilePath(this.fuse.context.output.lastWrittenPath);
                     if (this.onDoneCallback && this.producer.writeBundles === true) {
                         this.onDoneCallback(this.process);
                     }
+                    this.printErrors()
                     return resolve(this);
                 }).then(source => {
                 }).catch(e => {
@@ -247,4 +250,24 @@ export class Bundle {
         }
     }
 
+    private clearErrors() {
+        this.errors = []
+    }
+
+    public addError(message: string) {
+        this.errors.push(message)
+    }
+
+    public getErrors() {
+        return this.errors.slice()
+    }
+
+    public printErrors() {
+        if (this.errors.length && this.fuse.context.showErrors) {
+            this.fuse.context.log.echoBreak()
+            this.fuse.context.log.echoBoldRed(`Errors for ${this.name} bundle`)
+            this.errors.forEach(error => this.fuse.context.log.echoError(error))
+            this.fuse.context.log.echoBreak()
+        }
+    }
 }

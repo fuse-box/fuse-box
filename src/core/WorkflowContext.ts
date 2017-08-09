@@ -75,6 +75,8 @@ export class WorkFlowContext {
 
     public showWarnings = true;
 
+    public showErrors = true;
+
     public useJsNext = false;
 
     public sourceChangedEmitter = new EventEmitter<SourceChangedEvent>();

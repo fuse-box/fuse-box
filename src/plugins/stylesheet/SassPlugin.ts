@@ -96,11 +96,12 @@ export class SassPluginClass implements Plugin {
         }
 
         options.includePaths.push(file.info.absDir);
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             return sass.render(options, (err, result) => {
                 if (err) {
+                    const errorFile = err.file === 'stdin' ? file.absPath : err.file
                     file.contents = "";
-                    console.log(err.stack || err)
+                    file.addError(`${err.message}\n      at ${errorFile}:${err.line}:${err.column}`)
                     return resolve();
                 }
                 file.sourceMap = result.map && result.map.toString();

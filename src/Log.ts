@@ -359,6 +359,9 @@ export class Log {
         log.red().bold(msg).echo();
         return this;
     }
+    public echoError(str: string) {
+        log.red(`  → ERROR ${str}`).echo()
+    }
     public echoRed(msg) {
         log.red(msg).echo();
         return this;
