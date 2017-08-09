@@ -245,13 +245,13 @@ export class WorkFlowContext {
 
 
 
-    public generateCode(ast: any) {
+    public generateCode(ast: any, opts?: any) {
         if (this.customCodeGenerator) {
             try {
                 return this.customCodeGenerator(ast);
             } catch (e) { }
         }
-        return escodegen.generate(ast);
+        return escodegen.generate(ast, opts);
     }
 
     public emitJavascriptHotReload(file: File) {
