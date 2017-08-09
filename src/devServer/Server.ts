@@ -8,8 +8,8 @@ import * as process from "process";
 export type HotReloadEmitter = (server: Server, sourceChangedInfo: any) => any;
 
 export type SourceChangedEvent = {
-    type: "js" | "css" | "css-file",
-    content: string,
+    type: "js" | "css" | "css-file" | "hosted-css",
+    content?: string,
     path: string
 };
 

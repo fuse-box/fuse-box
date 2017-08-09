@@ -21,6 +21,21 @@ export const connect = (port: string, uri: string) => {
     client.on('source-changed', (data) => {
         console.info(`%cupdate "${data.path}"`, 'color: #237abe');
 
+        if (data.type === "hosted-css") {
+            var fileId = data.path.replace(/[\.\/]+/g, '-')
+            var existing = document.getElementById(fileId);
+            if (existing) {
+                existing.setAttribute("href", data.path + "?" + new Date().getTime());
+            } else {
+                var node = document.createElement('link');
+                node.id = fileId;
+                node.type = 'text/css';
+                node.rel = 'stylesheet';
+                node.href = data.path;
+                document.getElementsByTagName('head')[0].appendChild(node);
+            }
+        }
+
         /**
          * If a plugin handles this request then we don't have to do anything
          **/
@@ -30,6 +45,7 @@ export const connect = (port: string, uri: string) => {
                 return;
             }
         }
+
 
         if (data.type === 'js' || data.type === "css") {
             FuseBox.flush();
