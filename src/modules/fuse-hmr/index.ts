@@ -2,7 +2,7 @@ import { Loader } from '../fuse-loader';
 
 const customizedHMRPlugin = {
     hmrUpdate: ({ type, path, content }) => {
-        if (type === 'js') {
+        if (type === 'js' || type === 'css') {
             const isModuleStateful = (path) => statefulModuleCheck(path);
 
             /** If a stateful module has changed reload the window */
@@ -11,7 +11,7 @@ const customizedHMRPlugin = {
             }
 
             /** Otherwise flush the other modules */
-            Loader.flush(function(fileName) {
+            Loader.flush(function (fileName) {
                 return !isModuleStateful(fileName);
             });
 
@@ -45,7 +45,7 @@ const customizedHMRPlugin = {
 let alreadyRegistered = false;
 
 /** Current names of stateful modules */
-let statefulModuleCheck : (moduleName : string) => boolean = () => false;
+let statefulModuleCheck: (moduleName: string) => boolean = () => false;
 
 /**
  * Registers given module names as being stateful
