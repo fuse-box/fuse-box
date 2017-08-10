@@ -12,6 +12,7 @@ import { Config } from "../Config";
 import { QuantumItem, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
 import { BundleAbstraction } from "../quantum/core/BundleAbstraction";
 import { PackageAbstraction } from "../quantum/core/PackageAbstraction";
+import { EventEmitter } from '../EventEmitter'
 
 export class Bundle {
     public context: WorkFlowContext;
@@ -27,6 +28,8 @@ export class Bundle {
     public webIndexed = true;
     public splitFiles: Map<string, File>;
     private errors: string[] = [];
+    private errorEmitter = new EventEmitter<string>()
+    private clearErrorEmitter = new EventEmitter<null>()
 
     public bundleSplit: BundleSplit;
     public quantumItem: QuantumItem;
@@ -86,6 +89,21 @@ export class Bundle {
                     server.send("source-changed", info);
                 }
             });
+
+            if (this.context.showErrorsInBrowser) {
+                this.errorEmitter.on(message => {
+                    server.send("bundle-error", {
+                        bundleName: this.name,
+                        message
+                    })
+                });
+
+                this.clearErrorEmitter.on(() => {
+                    server.send("clear-bundle-errors", {
+                        bundleName: this.name
+                    })
+                });
+            }
         });
         return this;
     }
@@ -252,10 +270,12 @@ export class Bundle {
 
     private clearErrors() {
         this.errors = []
+        this.clearErrorEmitter.emit(null)
     }
 
     public addError(message: string) {
         this.errors.push(message)
+        this.errorEmitter.emit(message)
     }
 
     public getErrors() {
