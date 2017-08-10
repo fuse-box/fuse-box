@@ -48,6 +48,8 @@ export interface FuseBoxOptions {
     alias?: any;
     useJsNext?: boolean,
     runAllMatchedPlugins?: boolean;
+    showErrors?: boolean
+    showErrorsInBrowser?: boolean
 }
 
 /**
@@ -110,6 +112,18 @@ export class FuseBox {
 
         if (opts.warnings !== undefined) {
             this.context.showWarnings = opts.warnings;
+        }
+
+        if (opts.showErrors !== undefined) {
+            this.context.showErrors = opts.showErrors;
+
+            if (opts.showErrorsInBrowser === undefined) {
+                this.context.showErrorsInBrowser = opts.showErrors
+            }
+        }
+
+        if (opts.showErrorsInBrowser !== undefined) {
+            this.context.showErrorsInBrowser = opts.showErrorsInBrowser;
         }
 
         if (opts.ignoreModules) {
