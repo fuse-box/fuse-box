@@ -179,9 +179,8 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         let mainEntry;
 
         // handle server bundle
-
-        if (this.context.target === "electron") {
-            this.concat.add(null, `FuseBox.target = "electron"`);
+        if (this.context.target) {
+            this.concat.add(null, `FuseBox.target = "${this.context.target}"`);
         }
 
         if (context.serverBundle) {

@@ -26,7 +26,7 @@ export interface FuseBoxOptions {
     tsConfig?: string;
     package?: any;
     cache?: boolean;
-    target?: "browser" | "server" | "universal",
+    target?: "browser" | "server" | "universal" | "electron",
     log?: boolean;
     globals?: { [packageName: string]: /** Variable name */ string };
     plugins?: Plugin[];

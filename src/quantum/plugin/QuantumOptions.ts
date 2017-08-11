@@ -214,12 +214,19 @@ export class QuantumOptions {
         return this.replaceProcessEnv;
     }
 
+    public getTarget() {
+        return this.optsTarget;
+    }
+
+    public isTargetElectron() {
+        return this.optsTarget === "electron";
+    }
     public isTargetUniveral() {
         return this.optsTarget === "universal";
     }
 
     public isTargetServer() {
-        return this.optsTarget === "server";
+        return this.optsTarget === "server" || this.optsTarget === "electron";
     }
 
     public isTargetBrowser() {
