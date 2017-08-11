@@ -280,6 +280,10 @@ export class FileAbstraction {
                 if (isEnvName === "isBrowser") {
                     value = this.core.opts.isTargetBrowser();
                 }
+
+                if (isEnvName === "target") {
+                    value = this.core.opts.getTarget();
+                }
                 if (!this.core.opts.isTargetUniveral()) {
                     const isEnvNode = new ReplaceableBlock(node, "", node.test);
                     isEnvNode.identifier = isEnvName;
@@ -289,13 +293,16 @@ export class FileAbstraction {
             }
             if (matchesDoubleMemberExpression(node, "FuseBox")) {
                 let envName = node.property.name;
-                if (envName === "isServer" || envName === "isBrowser") {
+                if (envName === "isServer" || envName === "isBrowser" || envName === "target") {
                     let value;
                     if (envName === "isServer") {
                         value = this.core.opts.isTargetServer();
                     }
                     if (envName === "isBrowser") {
                         value = this.core.opts.isTargetBrowser();
+                    }
+                    if (envName === "target") {
+                        value = this.core.opts.getTarget();
                     }
                     const envNode = new ReplaceableBlock(parent, prop, node);
                     envNode.identifier = envName;

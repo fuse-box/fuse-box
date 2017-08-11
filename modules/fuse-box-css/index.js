@@ -3,8 +3,10 @@
  * wires it to `__fsbx_css`
  */
 
+var runningInBrowser = FuseBox.isBrowser || FuseBox.target === "electron";
+
 var cssHandler = function(__filename, contents) {
-    if (!FuseBox.isServer) {
+    if (runningInBrowser) {
         var styleId = __filename.replace(/[\.\/]+/g, '-');
         if (styleId.charAt(0) === '-') styleId = styleId.substring(1);
         var exists = document.getElementById(styleId);
@@ -27,11 +29,8 @@ var cssHandler = function(__filename, contents) {
         }
     }
 }
-if (typeof FuseBox !== "undefined" && FuseBox.isBrowser) {
+if (typeof FuseBox !== "undefined" && runningInBrowser) {
     FuseBox.on('async', function(name) {
-        if (FuseBox.isServer) {
-            return;
-        }
         if (/\.css$/.test(name)) {
             cssHandler(name);
             return false;
