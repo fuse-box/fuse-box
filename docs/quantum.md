@@ -254,7 +254,7 @@ Here is a list of what you can configure:
 
 ### Target
 Default value: `browser`
-Possible values `server`, `browser`
+Possible values `server`, `browser`, `universal`,  `electron`
 
 ```js
 QuantumPlugin({

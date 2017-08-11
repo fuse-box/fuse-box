@@ -242,14 +242,7 @@ FuseBox.init({
 There are 2 ways to get to the generated file names
 
 
-### useJsNext
-If this option is `true` FuseBox will take "json:next" or "module" properties from `package.json` if avaialable
 
-```js
-FuseBox.init({
-    useJsNext : true
-})
-```
 
 
 ### Hashes and WebIndexPlugin
@@ -279,6 +272,17 @@ lastPrimaryOutput contains the following information
 | `path`  | Full path to the file  |
 | `hash`  | Generated hash  |
 | `filename`  | Filename  |
+
+
+## useJsNext
+If this option is `true` FuseBox will take "json:next" or "module" properties from `package.json` if avaialable
+
+```js
+FuseBox.init({
+    useJsNext : true
+})
+```
+
 
 ## writeBundles
 
