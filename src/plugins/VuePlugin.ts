@@ -144,7 +144,7 @@ var _v = function(exports){${jsContent}
 _p.render = ` + toFunction(compiled.render) + `
 _p.staticRenderFns = [ ` + compiled.staticRenderFns.map(toFunction).join(',') + ` ];
 var _e = {}; _v(_e); Object.assign(_e.default.options||_e.default, _p)
-module.exports = _e.default
+module.exports = _e
     `;
 }
 
