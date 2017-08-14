@@ -219,7 +219,8 @@ export class Bundle {
         return new Promise((resolve, reject) => {
             this.fuse
                 .initiateBundle(this.arithmetics || "", () => {
-                    this.process.setFilePath(this.fuse.context.output.lastPrimaryOutput.path);
+                    const output = this.fuse.context.output;
+                    this.process.setFilePath(output.lastPrimaryOutput ? output.lastPrimaryOutput.path : output.lastGeneratedFileName);
                     if (this.onDoneCallback && this.producer.writeBundles === true) {
                         this.onDoneCallback(this.process);
                     }
