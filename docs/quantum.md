@@ -254,7 +254,7 @@ Here is a list of what you can configure:
 
 ### Target
 Default value: `browser`
-Possible values `server`, `browser`, `universal`,  `electron`
+Possible values `server`, `browser`, `universal`,  `electron`, `npm`
 
 ```js
 QuantumPlugin({
@@ -264,6 +264,7 @@ QuantumPlugin({
 
 These options define the API, for example, if you choose `browser` the API will have no checks for browser and target it directly.
 
+note: With an `npm` target, `bakeApiIntoBundle` should be used and `containedAPI` should be `true`. Also, no vendor should be produced while the bundle is specified with the `[ ]` arithmetics to avoid bundling dependencies.
 
 ### bakeApiIntoBundle 
 Instead of creating a separate file with the api, you can chose to bake it into an existing bundle. 
