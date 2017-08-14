@@ -74,6 +74,11 @@ export class ImportDeclaration {
                 let requireStatementWithExt = requireStatement + '.js';
                 if (overrides[requireStatement] || overrides[requireStatementWithExt]) {
                     requireStatement = overrides[requireStatement] || overrides[requireStatementWithExt];
+                    if (requireStatement[0] === ".") {
+                        requireStatement = "~" + requireStatement.slice(1);
+                    } else {
+                        requireStatement = "~/" + requireStatement;
+                    }
                     file.analysis.requiresRegeneration = true;
                 }
             }
