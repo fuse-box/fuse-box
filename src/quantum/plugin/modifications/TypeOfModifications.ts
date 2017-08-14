@@ -9,27 +9,40 @@ export class TypeOfModifications {
             return;
         }
         return each(file.typeofExportsKeywords, (keyword: GenericAst) => {
-            keyword.replaceWithString("object");
+            if (!file.definedLocally.has("exports")) {
+                keyword.replaceWithString("object");
+            }
         }).then(() => {
             return each(file.typeofModulesKeywords, (keyword: GenericAst) => {
-                keyword.replaceWithString("object");
+                if (!file.definedLocally.has("module")) {
+                    keyword.replaceWithString("object");
+                }
             });
         }).then(() => {
             return each(file.typeofGlobalKeywords, (keyword: GenericAst) => {
                 if (core.opts.isTargetBrowser()) {
-                    keyword.replaceWithString("undefined");
+                    if (!file.definedLocally.has("global")) {
+                        keyword.replaceWithString("undefined");
+                    }
                 }
                 if (core.opts.isTargetServer()) {
-                    keyword.replaceWithString("object");
+                    if (!file.definedLocally.has("global")) {
+                        keyword.replaceWithString("object");
+                    }
                 }
             });
         }).then(() => {
             return each(file.typeofWindowKeywords, (keyword: GenericAst) => {
                 if (core.opts.isTargetBrowser()) {
-                    keyword.replaceWithString("object");
+                    if (!file.definedLocally.has("window")) {
+                        keyword.replaceWithString("object");
+                    }
                 }
                 if (core.opts.isTargetServer()) {
-                    keyword.replaceWithString("undefined");
+                    if (!file.definedLocally.has("window")) {
+                        keyword.replaceWithString("undefined");
+                    }
+
                 }
             });
         }).then(() => {
@@ -38,7 +51,9 @@ export class TypeOfModifications {
             });
         }).then(() => {
             return each(file.typeofRequireKeywords, (keyword: GenericAst) => {
-                keyword.replaceWithString("function");
+                if (!file.definedLocally.has("require")) {
+                    keyword.replaceWithString("function");
+                }
             });
         })
     }
