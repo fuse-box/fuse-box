@@ -76,7 +76,7 @@ export class FlatFileGenerator {
                     this.contents.push(`module.exports = ${req}`);
                 }
 
-                if (this.core.opts.isTargetUniveral()) {
+                if (this.core.opts.isTargetNpm()) {
                     this.contents.push(`module.exports = ${req}`);
                 }
 
