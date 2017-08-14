@@ -41,8 +41,8 @@ export class StatementModification {
                     statement.setFunctionName('$fsx.r');
                     statement.setValue(resolvedFile.getID());
                 } else {
-					if(core.opts.isTargetUniveral()) {
-						statement.setFunctionName('require');
+                    if(core.opts.isTargetUniveral()) {
+                        statement.setFunctionName('require');
                     } else if (core.opts.isTargetServer()) {
                         core.api.useServerRequire();
                         statement.setFunctionName('$fsx.s');
