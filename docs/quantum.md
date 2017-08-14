@@ -385,6 +385,11 @@ Default value: `false`
 
 Removes all references to process. The most common use of process if `process.env` which is replaced nicely with Quantum. Therefore, if a user bundles it by mistake all the refences and the module will be removed even without tree shaking.
 
+### replaceTypeOf
+Default value: `true`
+
+Replaces `typeof module`, `typeof exports`, `typeof window`, `typeof define`, `typeof require` keywords to corresponding values at build time
+
 ### removeUseStrict
 Default value: `true`
 

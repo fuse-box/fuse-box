@@ -5,6 +5,9 @@ import { QuantumCore } from "../QuantumCore";
 
 export class TypeOfModifications {
     public static perform(core: QuantumCore, file: FileAbstraction): Promise<void> {
+        if (!core.opts.shouldReplaceTypeOf()) {
+            return;
+        }
         return each(file.typeofExportsKeywords, (keyword: GenericAst) => {
             keyword.replaceWithString("object");
         }).then(() => {
