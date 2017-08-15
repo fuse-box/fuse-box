@@ -166,6 +166,10 @@ npm install
 node fuse
 ```
 
+### Typescript With Electron React-kit
+
+https://github.com/skellock/typescript-with-electron-react-kit
+
 ### Aurelia seed
 A skeleton for Aurelia using FuseBox.
 
