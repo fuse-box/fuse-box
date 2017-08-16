@@ -41,12 +41,18 @@ export class StatementModification {
                     statement.setFunctionName('$fsx.r');
                     statement.setValue(resolvedFile.getID());
                 } else {
-                    if(core.opts.isTargetNpm()) {
+
+                    // Unresolved modules are handled differently here.
+                    // with target npm we preserve original require statements
+                    // in order for other bundlers to pick it up
+                    if (core.opts.isTargetNpm()) {
                         statement.setFunctionName('require');
                     } else if (core.opts.isTargetServer() || core.opts.isTargetUniveral()) {
+                        // server or universal targets will detect the environment
                         core.api.useServerRequire();
                         statement.setFunctionName('$fsx.s');
                     } else {
+                        // if it's a browser, we use async
                         statement.setFunctionName('$fsx.r');
                     }
 
