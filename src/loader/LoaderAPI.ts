@@ -231,6 +231,7 @@ type RefOpts = {
     pkg?: string;
     v?: PackageVersions;
 };
+
 function $getRef(name: string, o: RefOpts): IReference {
     let basePath = o.path || "./";
     let pkgName = o.pkg || "default";
@@ -293,13 +294,10 @@ function $getRef(name: string, o: RefOpts): IReference {
         wildcard = validPath;
     }
     if (!file && !wildcard) {
-        // try folder index.js
-        validPath = $pathJoin(filePath, "/", "index.js");
+        validPath = filePath + ".js";
         file = pkg.f[validPath];
-        // last resort try adding .js extension
-        // Some libraries have a weired convention of naming file lile "foo.bar""
         if (!file) {
-            validPath = filePath + ".js";
+            validPath = $pathJoin(filePath, "/", "index.js");
             file = pkg.f[validPath];
         }
 

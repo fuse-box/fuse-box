@@ -150,10 +150,10 @@ function $getRef(name, o) {
         wildcard = validPath;
     }
     if (!file && !wildcard) {
-        validPath = $pathJoin(filePath, "/", "index.js");
+        validPath = filePath + ".js";
         file = pkg.f[validPath];
         if (!file) {
-            validPath = filePath + ".js";
+            validPath = $pathJoin(filePath, "/", "index.js");
             file = pkg.f[validPath];
         }
         if (!file) {

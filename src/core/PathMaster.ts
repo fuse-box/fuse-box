@@ -304,20 +304,20 @@ export class PathMaster {
         }
 
         if (!AllowedExtenstions.has(ext)) {
-            let folder = path.isAbsolute(name) ? name : path.join(root, name);
-            const folderPath = this.testFolder(folder, name);
-            if (folderPath) {
-                return { resolved: folderPath }
+            let fileNameCheck = this.checkFileName(root, name);
+            if (fileNameCheck) {
+                return { resolved: fileNameCheck };
             } else {
-                let fileNameCheck = this.checkFileName(root, name);
-                if (fileNameCheck) {
-                    return { resolved: fileNameCheck };
+                let folder = path.isAbsolute(name) ? name : path.join(root, name);
+                const folderPath = this.testFolder(folder, name);
+                if (folderPath) {
+                    return { resolved: folderPath }
                 } else {
                     name += fileExt;
+                    return { resolved: name };
                 }
             }
         }
-
         return { resolved: name };
     }
 
