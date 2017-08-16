@@ -230,7 +230,10 @@ export class QuantumOptions {
         return this.optsTarget === "electron";
     }
     public isTargetUniveral() {
-        return this.optsTarget === "universal";
+        return this.optsTarget === "universal" || this.optsTarget === "npm";
+    }
+    public isTargetNpm() {
+        return this.optsTarget === "npm";
     }
 
     public isTargetServer() {
