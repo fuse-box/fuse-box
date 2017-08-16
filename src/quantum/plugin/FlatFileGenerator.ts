@@ -72,12 +72,8 @@ export class FlatFileGenerator {
             const req = `$fsx.r(${JSON.stringify(this.entryId)})`;
 
             if (this.globalsName) {
-                if (this.core.opts.isTargetServer()) {
+                if (this.core.opts.isTargetNpm() || this.core.opts.isTargetServer()) {
                     this.contents.push(`module.exports = ${req}`);
-                }
-
-                if (this.core.opts.isTargetUniveral()) {
-                    //this.contents.push(`module.exports = ${req}`);
                 }
 
                 if (this.core.opts.isTargetBrowser()) {
