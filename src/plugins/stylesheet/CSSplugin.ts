@@ -133,7 +133,7 @@ export class CSSPluginClass implements Plugin {
             const lastFile = file.context.convertToFuseBoxPath(bundle.lastChangedFile);
             if (isStylesheetExtension(bundle.lastChangedFile)) {
                 if (lastFile === file.info.fuseBoxPath ||
-                    file.context.getItem("HMR_FILE_REQUIRED") === file.info.fuseBoxPath) {
+                    file.context.getItem("HMR_FILE_REQUIRED", []).indexOf(file.info.fuseBoxPath) > -1) {
                     emitRequired = true;
                 }
 

@@ -364,8 +364,8 @@ export class WorkFlowContext {
         this.storage.set(key, obj);
     }
 
-    public getItem(key: string): any {
-        return this.storage.get(key);
+    public getItem(key: string, defaultValue?: any): any {
+        return this.storage.get(key) !== undefined ? this.storage.get(key) : defaultValue;
     }
 
 
