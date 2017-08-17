@@ -15,7 +15,7 @@ export class CssPluginTest {
                     "a.scss": `
                         @import 'reset';
                         body { font-size:12px }
-                        
+
                     `,
                     "reset.scss": "h1 { color:red}",
                 },
@@ -139,6 +139,7 @@ export class CssPluginTest {
             },
         }).then((result) => {
             const js = result.projectContents.toString();
+
             should(js).findString(`color: purple`).findString("font-size: 12px");
         });
     }

@@ -18,6 +18,7 @@ import { Bundle } from "./Bundle";
 import { BundleProducer } from "./BundleProducer";
 import { QuantumSplitConfig, QuantumItem, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
 import { isPolyfilledByFuseBox } from "./ServerPolyfillList";
+import { CSSDependencyExtractor, ICSSDependencyExtractorOptions } from "../lib/CSSDependencyExtractor";
 
 
 const appRoot = require("app-root-path");
@@ -367,6 +368,25 @@ export class WorkFlowContext {
         return this.storage.get(key);
     }
 
+
+    public setCSSDependencies(file: File, userDeps: string[]) {
+        let collection = this.getItem("cssDependencies") || {};
+        collection[file.info.absPath] = userDeps;
+        this.setItem("cssDependencies", collection);
+    }
+
+    public extractCSSDependencies(file: File, opts: ICSSDependencyExtractorOptions): string[] {
+        const extractor = CSSDependencyExtractor.init(opts);
+        this.setCSSDependencies(file, extractor.getDependencies())
+        return extractor.getDependencies();
+    }
+
+
+
+    public getCSSDependencies(file: File): string[] {
+        let collection = this.getItem("cssDependencies") || {};
+        return collection[file.info.absPath];
+    }
     /**
      * Create a new file group
      * Mocks up file
