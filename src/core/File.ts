@@ -361,7 +361,7 @@ export class File {
     }
 
     public belongsToProject() {
-        return this.collection.name !== this.context.defaultPackageName
+        return this.collection.name === this.context.defaultPackageName;
     }
     /**
      *
@@ -401,7 +401,7 @@ export class File {
             }
             this.tryPlugins();
             const vendorSourceMaps = this.context.sourceMapsVendor
-                && this.belongsToProject();
+                && !this.belongsToProject();
             if (vendorSourceMaps) {
                 this.loadVendorSourceMap();
             } else {
