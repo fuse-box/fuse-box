@@ -35,6 +35,7 @@ export interface FuseBoxOptions {
     warnings?: boolean,
     shim?: any;
     writeBundles?: boolean;
+    useTypescriptCompiler?: boolean;
     standalone?: boolean;
     sourceMaps?: boolean | { vendor?: boolean, inline?: boolean, project?: boolean, sourceRoot?: string };
     rollup?: any;
@@ -92,6 +93,9 @@ export class FuseBox {
 
         if (opts.useJsNext !== undefined) {
             this.context.useJsNext = opts.useJsNext;
+        }
+        if (opts.useTypescriptCompiler !== undefined) {
+            this.context.useTypescriptCompiler = opts.useTypescriptCompiler;
         }
 
         if (opts.experimentalFeatures !== undefined) {

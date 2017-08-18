@@ -72,6 +72,8 @@ export class WorkFlowContext {
 
     public fuse: FuseBox;
 
+    public useTypescriptCompiler = false;
+
     public userWriteBundles = true;
 
     public showWarnings = true;

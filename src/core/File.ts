@@ -360,6 +360,9 @@ export class File {
         }
     }
 
+    public belongsToProject() {
+        return this.collection.name !== this.context.defaultPackageName
+    }
     /**
      *
      *
@@ -393,9 +396,12 @@ export class File {
         if (/\.js(x)?$/.test(this.absPath)) {
             this.loadContents();
             this.replaceDynamicImports();
+            if (this.context.useTypescriptCompiler && this.belongsToProject()) {
+                return this.handleTypescript();
+            }
             this.tryPlugins();
             const vendorSourceMaps = this.context.sourceMapsVendor
-                && this.collection.name !== this.context.defaultPackageName;
+                && this.belongsToProject();
             if (vendorSourceMaps) {
                 this.loadVendorSourceMap();
             } else {
