@@ -9,6 +9,7 @@
 
     /* @if universal */
     var isBrowser = typeof window !== "undefined";
+    
     /* @if !isContained */
     var storage = isBrowser ? window : global;
     if (storage.$fsx) {
