@@ -136,7 +136,7 @@ export class FuseBox {
         }
 
         this.context.runAllMatchedPlugins = !!opts.runAllMatchedPlugins
-        this.context.plugins = opts.plugins || [JSONPlugin()];
+        this.context.plugins = opts.plugins as Plugin[] || [JSONPlugin()];
 
         if (opts.package) {
             if (utils.isPlainObject(opts.package)) {
