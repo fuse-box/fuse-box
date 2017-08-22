@@ -8,6 +8,7 @@
     /* @end */
 
     /* @if universal */
+    var isBrowser = typeof window !== "undefined";
     /* @if !npm */
     var isBrowser = typeof window !== "undefined";
     if (!isBrowser) {
