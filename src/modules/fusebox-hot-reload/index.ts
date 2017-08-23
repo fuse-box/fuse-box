@@ -22,7 +22,7 @@ export const connect = (port: string, uri: string) => {
         console.info(`%cupdate "${data.path}"`, 'color: #237abe');
 
         if (data.type === "hosted-css") {
-            var fileId = data.path.replace(/[\.\/]+/g, '-')
+            var fileId = data.path.replace(/^\//, '').replace(/[\.\/]+/g, '-');
             var existing = document.getElementById(fileId);
             if (existing) {
                 existing.setAttribute("href", data.path + "?" + new Date().getTime());
