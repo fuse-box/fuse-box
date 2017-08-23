@@ -169,6 +169,14 @@ exports.hello = function(){
 }
 ```
 
+In order to achieve the best treeshaking experience, you need to understand [useJsNext](/page/configuration#usejsnext) option.
+
+FuseBox won't read `module` and `js:next` properties from `package.json` unless configured. This is done by design, as many libraries will simply get broken when transpiled with typescript. (FuseBox uses typescript to transpile es6 modules). For example you can't use `react-router` with [useJsNext](/page/configuration#usejsnext) option,
+because it uses non-standard javascript in the code base, e.g - `import React from "react"` where React doesn't export `default`
+
+Therefore you must select the libraries with caution. FuseBox, however, will still try to treeshake `commonjs` libraries, in fact it works well in many cases, for example it does a nice job with React library, removing several files entirely from es5 build.
+
+
 github_example: quantum_tree_shaking
 
 ## Dead code elimination
@@ -436,12 +444,6 @@ QuantumPlugin({
 })
 ```
 
-In order to achieve the best treeshaking experience, you need to understand [useJsNext](/page/configuration#usejsnext) option.
-
-FuseBox won't read `module` and `js:next` properties from `package.json` unless configured. This is done by design, as many libraries will simply get broken when transpiled with typescript. (FuseBox uses typescript to transpile es6 modules). For example you can't use `react-router` with [useJsNext](/page/configuration#usejsnext) option,
-because it uses non-standard javascript in the code base, e.g - `import React from "react"` where React doesn't export `default`
-
-Therefore you must select the libraries with caution. FuseBox, however, will still try to treeshake `commonjs` libraries, in fact it works well in many cases, for example it does a nice job with React library, removing several files entirely from es5 build.
 
 
 
