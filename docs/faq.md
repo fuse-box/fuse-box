@@ -49,6 +49,15 @@ import * as lodash from "_"
 
 ## Bundling
 
+### It says that "default" is undefined, why is that?
+
+When babel introduced ES2015 Modules => CommonJS, the spec wasn't completed. However, everyone was using it. The spec came along and stipulated that you cannot request a default `import (ie. import Foo from 'x')` from a module that doesn't have one. 
+
+Instead, you must do `import * as Foo from 'x'`
+
+
+
+
 ### Why aren't my node modules transpiled?
 
 Because FuseBox does not transpile them. But you can easily do that by setting up the BabelPlugin like so:

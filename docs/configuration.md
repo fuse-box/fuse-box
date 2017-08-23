@@ -283,6 +283,15 @@ FuseBox.init({
 })
 ```
 
+Alternatively you can pass a array of strings telling FuseBox which modules should try for js:next
+
+```js
+FuseBox.init({
+    useJsNext : ["antd"]
+})
+```
+
+
 
 ## writeBundles
 
