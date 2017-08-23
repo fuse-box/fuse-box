@@ -78,7 +78,7 @@ export class WorkFlowContext {
 
     public showWarnings = true;
 
-    public useJsNext = false;
+    public useJsNext: boolean | string[] = false;
 
     public sourceChangedEmitter = new EventEmitter<SourceChangedEvent>();
 
@@ -208,6 +208,16 @@ export class WorkFlowContext {
     }
     public isBrowserTarget() {
         return this.target === "browser";
+    }
+
+    public shouldUseJsNext(libName: string) {
+        if (this.useJsNext === true) {
+            return true;
+        }
+        if (Array.isArray(this.useJsNext)) {
+
+            return this.useJsNext.indexOf(libName) > -1
+        }
     }
 
     public quantumSplit(rule: string, bundleName: string, entryFile: string) {

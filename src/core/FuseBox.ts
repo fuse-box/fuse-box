@@ -47,7 +47,7 @@ export interface FuseBoxOptions {
     debug?: boolean;
     files?: any;
     alias?: any;
-    useJsNext?: boolean,
+    useJsNext?: boolean | string[],
     runAllMatchedPlugins?: boolean;
 }
 

@@ -375,7 +375,7 @@ export class PathMaster {
                 if (this.context.rollupOptions && json["jsnext:main"]) {
                     entryFile = path.join(folder, json["jsnext:main"]);
                 } else {
-                    if (this.context.useJsNext && (json["jsnext:main"] || json.module)) {
+                    if (this.context.shouldUseJsNext(name) && (json["jsnext:main"] || json.module)) {
                         jsNext = true;
                         entryFile = path.join(folder, json["jsnext:main"] || json.module);
                     } else {

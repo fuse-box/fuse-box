@@ -36,7 +36,6 @@ export class TreeShake {
                     && fileExport.eligibleForTreeShaking) {
                     const isDangerous = fileExport.name === "__esModule" || fileExport.name === "default";
                     if (!isDangerous) {
-
                         this.core.log.echoInfo(`tree shaking: Remove ${fileExport.name} from ${file.getFuseBoxFullPath()}`)
                         //file.localExportUsageAmount.get(fileExport.)
                         fileExport.remove();
@@ -50,6 +49,7 @@ export class TreeShake {
                         if (fileExport.referencedVariableName) {
                             file.requireStatements.forEach(s => {
                                 if (s.identifier === fileExport.referencedVariableName) {
+                                    s.localReferences--;
                                     uknownStatements.add(s);
                                 }
                             });
@@ -58,7 +58,18 @@ export class TreeShake {
                 }
             });
             uknownStatements.forEach(statement => {
+                // of nobody is using this require statement
+                if (statement.localReferences === 0) {
 
+                    // releasing statement file so it can be removed;
+                    let targetFile = statement.resolve();
+                    if (targetFile) {
+                        targetFile.releaseDependent(file);
+                    }
+
+                    //statement.file.releaseDependent(file);
+                    statement.removeWithIdentifier();
+                }
             });
             if (file.isNotUsedAnywhere() && this.core.opts.canBeRemovedByTreeShaking(file)) {
                 this.core.log.echoInfo(`tree shaking: Mark for removal ${file.getFuseBoxFullPath()}`)

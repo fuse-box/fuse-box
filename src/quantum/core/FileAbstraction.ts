@@ -39,7 +39,7 @@ export class FileAbstraction {
     public isEcmaScript6 = false;
     public shakable = false;
     public globalsName: string;
-    //public amountOfReferences = 0;
+    public amountOfReferences = 0;
     public canBeRemoved = false;
     public quantumItem: QuantumItem;
 
@@ -314,6 +314,7 @@ export class FileAbstraction {
                     this.fuseboxIsEnvConditions.add(envNode);
                 }
             }
+
         }
 
 
@@ -324,8 +325,10 @@ export class FileAbstraction {
         this.namedRequireStatements.forEach((statement, key) => {
             const importedName = trackRequireMember(node, key);
             if (importedName) {
+                statement.localReferences++;
                 statement.usedNames.add(importedName);
             }
+
         });
         // restrict tree shaking if there is even a hint on computed properties
         isExportComputed(node, (isComputed) => {

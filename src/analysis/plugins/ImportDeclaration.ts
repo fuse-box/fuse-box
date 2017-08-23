@@ -49,8 +49,7 @@ export class ImportDeclaration {
         if (file.es6module) {
             file.context.log.magicReason(
                 'used typescript to compile because an import was used',
-                file.info.fuseBoxPath)
-
+                file.info.fuseBoxPath);
             const ts = require("typescript");
             let tsconfg: any = {
                 compilerOptions: {
