@@ -3,6 +3,7 @@ import { each } from "realm-utils";
 import { PackageAbstraction } from "../core/PackageAbstraction";
 import { FileAbstraction } from "../core/FileAbstraction";
 import { QuantumCore } from "./QuantumCore";
+import { RequireStatement } from "../core/nodes/RequireStatement";
 
 export class TreeShake {
     constructor(public core: QuantumCore) { }
@@ -29,16 +30,35 @@ export class TreeShake {
      */
     private removeUnusedExports() {
         return this.eachFile(file => {
+            let uknownStatements = new Set<RequireStatement>()
             file.namedExports.forEach(fileExport => {
                 if (!fileExport.isUsed && file.isTreeShakingAllowed()
                     && fileExport.eligibleForTreeShaking) {
                     const isDangerous = fileExport.name === "__esModule" || fileExport.name === "default";
                     if (!isDangerous) {
+
                         this.core.log.echoInfo(`tree shaking: Remove ${fileExport.name} from ${file.getFuseBoxFullPath()}`)
                         //file.localExportUsageAmount.get(fileExport.)
                         fileExport.remove();
+
+                        // check for the referenced name
+                        // for example
+                        // var bar_1 = $fsx.r(2);
+                        // exports.bar = bar_1.bar;
+                        // when removing "exports.bar" "bar_1" is left out, we need to find in require statements check if it's not used and remove it too
+                        // and of course de-refence the file as well
+                        if (fileExport.referencedVariableName) {
+                            file.requireStatements.forEach(s => {
+                                if (s.identifier === fileExport.referencedVariableName) {
+                                    uknownStatements.add(s);
+                                }
+                            });
+                        }
                     }
                 }
+            });
+            uknownStatements.forEach(statement => {
+
             });
             if (file.isNotUsedAnywhere() && this.core.opts.canBeRemovedByTreeShaking(file)) {
                 this.core.log.echoInfo(`tree shaking: Mark for removal ${file.getFuseBoxFullPath()}`)

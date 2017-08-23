@@ -39,7 +39,7 @@ export class FileAbstraction {
     public isEcmaScript6 = false;
     public shakable = false;
     public globalsName: string;
-    public amountOfReferences = 0;
+    //public amountOfReferences = 0;
     public canBeRemoved = false;
     public quantumItem: QuantumItem;
 
@@ -360,7 +360,7 @@ export class FileAbstraction {
                 this.localExportUsageAmount.set(matchesExportIdentifier, ++ref)
             }
         }
-        matchNamedExport(node, (name) => {
+        matchNamedExport(node, (name, referencedVariableName) => {
             // const namedExport = new NamedExport(parent, prop, node);
             // namedExport.name = name;
             // this.namedExports.set(name, namedExport);
@@ -375,7 +375,7 @@ export class FileAbstraction {
                 namedExport = this.namedExports.get(name);
             }
 
-            namedExport.addNode(parent, prop, node);
+            namedExport.addNode(parent, prop, node, referencedVariableName);
         });
         // require statements
         if (matchesSingleFunction(node, "require")) {
