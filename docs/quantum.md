@@ -125,7 +125,7 @@ Quantum api is a lego-like. The more FuseBox features you use, the bigger it get
 r.r=function(o){var t=r.m[o];if(t)return t.m.exports;
 var f=r.f[o];if(f)return t=r.m[o]={},t.exports={},t.m={exports:t.exports},f(t.m,t.exports),t.m.exports}}}();
 ```
-Which is 225kb minified.
+Which is 225 bytes minified.
 
 Let's minify the example above, and see how it looks:
 
