@@ -314,6 +314,7 @@ export class FileAbstraction {
                     this.fuseboxIsEnvConditions.add(envNode);
                 }
             }
+
         }
 
 
@@ -324,8 +325,10 @@ export class FileAbstraction {
         this.namedRequireStatements.forEach((statement, key) => {
             const importedName = trackRequireMember(node, key);
             if (importedName) {
+                statement.localReferences++;
                 statement.usedNames.add(importedName);
             }
+
         });
         // restrict tree shaking if there is even a hint on computed properties
         isExportComputed(node, (isComputed) => {
@@ -360,7 +363,7 @@ export class FileAbstraction {
                 this.localExportUsageAmount.set(matchesExportIdentifier, ++ref)
             }
         }
-        matchNamedExport(node, (name) => {
+        matchNamedExport(node, (name, referencedVariableName) => {
             // const namedExport = new NamedExport(parent, prop, node);
             // namedExport.name = name;
             // this.namedExports.set(name, namedExport);
@@ -375,7 +378,7 @@ export class FileAbstraction {
                 namedExport = this.namedExports.get(name);
             }
 
-            namedExport.addNode(parent, prop, node);
+            namedExport.addNode(parent, prop, node, referencedVariableName);
         });
         // require statements
         if (matchesSingleFunction(node, "require")) {

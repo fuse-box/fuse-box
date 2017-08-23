@@ -17,6 +17,7 @@ export class RequireStatement {
     public usedNames = new Set<string>();
     public identifiedStatementsAst: any;
     public identifier: string;
+    public localReferences = 0;
 
     private resolvedAbstraction: FileAbstraction;
     private resolved = false;
