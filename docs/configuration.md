@@ -274,6 +274,8 @@ lastPrimaryOutput contains the following information
 | `filename`  | Filename  |
 
 
+
+
 ## useJsNext
 If this option is `true` FuseBox will take "json:next" or "module" properties from `package.json` if avaialable
 
@@ -291,6 +293,42 @@ FuseBox.init({
 })
 ```
 
+## polyfillNonStandardDefaultUsage
+
+Fixes non-standard import `default` whereas a package doesn't export one. For example:
+```js
+FuseBox.init({
+    useJsNext : ["react", "react-dom"],
+    polyfillNonStandardDefaultUsage : true
+})
+```
+
+```js
+import React from "react"
+``` 
+
+This functionality will not work in your project (people should stop relying on it, it's limited by design), but it's targeted to dependencies where `useJsNext` is interconnected.
+
+it's strongly recommended NOT to use libraries that don't conform to javascript standards, like `react-router`, you may continue using it, but in this case don't toggle `useJsNext`
+
+This option will polyfill every single file in a package, it won't affect much the size in Quantum, as it will be transpiled into:
+
+```js
+$fsx.r(122)(module.exports)
+```
+
+You may optionally choose packages to polyfill 
+```js
+FuseBox.init({
+    useJsNext : ["react", "react-dom"],
+    polyfillNonStandardDefaultUsage : ["react", "react-dom"]
+})
+```
+And as a reminder, a proper way of importing React is as follows:
+
+```js
+import * as React from "react"
+```
 
 
 ## writeBundles
