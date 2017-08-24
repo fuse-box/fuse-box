@@ -148,7 +148,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         this.annotate(`/* fuse:end-file "${file.info.fuseBoxPath}"*/`);
 
         if (this.context.shouldPolyfillNonStandardDefault(file)) {
-            this.collectionSource.add(null, "typeof module.exports === 'object' && module.exports.default === undefined ? module.exports.default = module.exports : void 0");
+            this.collectionSource.add(null, "require('fuse-heresy-default')(module.exports)");
         }
 
         this.collectionSource.add(null, "});");

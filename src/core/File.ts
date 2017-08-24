@@ -361,7 +361,7 @@ export class File {
     }
 
     public belongsToProject() {
-        return this.collection.name === this.context.defaultPackageName;
+        return this.collection && this.collection.name === this.context.defaultPackageName;
     }
     /**
      *
@@ -386,7 +386,9 @@ export class File {
             this.notFound = true;
             return;
         }
-
+        if (this.context.polyfillNonStandardDefaultUsage) {
+            this.addStringDependency('fuse-heresy-default');
+        }
         if (/\.ts(x)?$/.test(this.absPath)) {
 
             this.context.debug("Typescript", `Captured  ${this.info.fuseBoxPath}`);

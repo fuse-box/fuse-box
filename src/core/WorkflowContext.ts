@@ -217,12 +217,14 @@ export class WorkFlowContext {
         if (file.belongsToProject()) {
             return false;
         }
-
+        let collectionName = file.collection && file.collection.name;
+        if (collectionName === "fuse-heresy-default") {
+            return false;
+        }
         if (this.polyfillNonStandardDefaultUsage === true) {
             return true;
         }
         if (Array.isArray(this.polyfillNonStandardDefaultUsage)) {
-            let collectionName = file.collection && file.collection.name;
             return this.polyfillNonStandardDefaultUsage.indexOf(collectionName) > -1
         }
     }
