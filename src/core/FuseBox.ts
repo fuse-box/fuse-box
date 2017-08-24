@@ -49,6 +49,7 @@ export interface FuseBoxOptions {
     alias?: any;
     useJsNext?: boolean | string[],
     runAllMatchedPlugins?: boolean;
+    polyfillNonStandardDefaultUsage?: boolean | string[];
 }
 
 /**
@@ -89,6 +90,9 @@ export class FuseBox {
 
         if (opts.target !== undefined) {
             this.context.target = opts.target;
+        }
+        if (opts.polyfillNonStandardDefaultUsage !== undefined) {
+            this.context.polyfillNonStandardDefaultUsage = opts.polyfillNonStandardDefaultUsage;
         }
 
         if (opts.useJsNext !== undefined) {

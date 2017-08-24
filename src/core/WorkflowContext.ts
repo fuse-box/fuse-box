@@ -93,6 +93,8 @@ export class WorkFlowContext {
 
     public pendingPromises: Promise<any>[] = [];
 
+    public polyfillNonStandardDefaultUsage: boolean | string[] = false;
+
     public customAPIFile: string;
 
     public experimentalFeaturesEnabled = false;
@@ -199,6 +201,7 @@ export class WorkFlowContext {
     }
 
 
+
     public convertToFuseBoxPath(name: string) {
         let root = this.homeDir;
         name = name.replace(/\\/g, "/");
@@ -208,6 +211,20 @@ export class WorkFlowContext {
     }
     public isBrowserTarget() {
         return this.target === "browser";
+    }
+
+    public shouldPolyfillNonStandardDefault(file: File) {
+        if (file.belongsToProject()) {
+            return false;
+        }
+
+        if (this.polyfillNonStandardDefaultUsage === true) {
+            return true;
+        }
+        if (Array.isArray(this.polyfillNonStandardDefaultUsage)) {
+            let collectionName = file.collection && file.collection.name;
+            return this.polyfillNonStandardDefaultUsage.indexOf(collectionName) > -1
+        }
     }
 
     public shouldUseJsNext(libName: string) {

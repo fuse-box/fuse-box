@@ -147,6 +147,10 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         this.collectionSource.add(null, file.alternativeContent !== undefined ? file.alternativeContent : file.contents, file.sourceMap);
         this.annotate(`/* fuse:end-file "${file.info.fuseBoxPath}"*/`);
 
+        if (this.context.shouldPolyfillNonStandardDefault(file)) {
+            this.collectionSource.add(null, "typeof module.exports === 'object' ? module.exports.default = module.exports : void 0");
+        }
+
         this.collectionSource.add(null, "});");
     }
 
