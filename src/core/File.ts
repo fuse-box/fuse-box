@@ -33,6 +33,9 @@ export class File {
 
     public params: Map<string, string>;
 
+
+    public wasTranspiled = false;
+
     public cached = false;
 
     public devLibsRequired;
@@ -402,6 +405,16 @@ export class File {
                 return this.handleTypescript();
             }
             this.tryPlugins();
+
+            if (!this.wasTranspiled && this.belongsToProject()) {
+                if (this.loadFromCache()) {
+                    return;
+                }
+
+                if (this.context.useCache) {
+                    this.context.cache.writeStaticCache(this, this.sourceMap);
+                }
+            }
             const vendorSourceMaps = this.context.sourceMapsVendor
                 && !this.belongsToProject();
             if (vendorSourceMaps) {
@@ -523,7 +536,7 @@ export class File {
      * @memberOf File
      */
     private handleTypescript() {
-
+        this.wasTranspiled = true;
         if (this.context.useCache) {
             if (this.loadFromCache()) {
                 this.tryPlugins();
