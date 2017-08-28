@@ -406,7 +406,7 @@ export class File {
             }
             this.tryPlugins();
 
-            if (!this.wasTranspiled && this.belongsToProject()) {
+            if (!this.wasTranspiled && this.context.cache && this.belongsToProject()) {
                 if (this.loadFromCache()) {
                     return;
                 }
