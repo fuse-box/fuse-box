@@ -37,14 +37,14 @@ Questions related to imports/exports
 Why my default exports doesn't work? It works with webpack?!
 
 ```js
-import lodash from "_"
+import _ from "lodash"
 ```
 
 That's because typescript is not Babel. If you can configure it by adding a [BabelPlugin](/plugins/babelplugin).  To solve this issue with typescript import your libraries as follows:
 
 
 ```js
-import * as lodash from "_"
+import * as _ from "lodash"
 ```
 
 ## Bundling
