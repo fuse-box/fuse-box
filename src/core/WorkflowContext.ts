@@ -18,6 +18,7 @@ import { Bundle } from "./Bundle";
 import { BundleProducer } from "./BundleProducer";
 import { QuantumSplitConfig, QuantumItem, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
 import { isPolyfilledByFuseBox } from "./ServerPolyfillList";
+import { CSSDependencyExtractor, ICSSDependencyExtractorOptions } from "../lib/CSSDependencyExtractor";
 
 
 const appRoot = require("app-root-path");
@@ -71,15 +72,17 @@ export class WorkFlowContext {
 
     public fuse: FuseBox;
 
+    public useTypescriptCompiler = false;
+
     public userWriteBundles = true;
 
     public showWarnings = true;
 
+    public useJsNext: boolean | string[] = false;
     public showErrors = true;
 
     public showErrorsInBrowser = true;
 
-    public useJsNext = false;
 
     public sourceChangedEmitter = new EventEmitter<SourceChangedEvent>();
 
@@ -93,6 +96,8 @@ export class WorkFlowContext {
     public ignoreGlobal: string[] = [];
 
     public pendingPromises: Promise<any>[] = [];
+
+    public polyfillNonStandardDefaultUsage: boolean | string[] = false;
 
     public customAPIFile: string;
 
@@ -200,6 +205,7 @@ export class WorkFlowContext {
     }
 
 
+
     public convertToFuseBoxPath(name: string) {
         let root = this.homeDir;
         name = name.replace(/\\/g, "/");
@@ -209,6 +215,32 @@ export class WorkFlowContext {
     }
     public isBrowserTarget() {
         return this.target === "browser";
+    }
+
+    public shouldPolyfillNonStandardDefault(file: File) {
+        if (file.belongsToProject()) {
+            return false;
+        }
+        let collectionName = file.collection && file.collection.name;
+        if (collectionName === "fuse-heresy-default") {
+            return false;
+        }
+        if (this.polyfillNonStandardDefaultUsage === true) {
+            return true;
+        }
+        if (Array.isArray(this.polyfillNonStandardDefaultUsage)) {
+            return this.polyfillNonStandardDefaultUsage.indexOf(collectionName) > -1
+        }
+    }
+
+    public shouldUseJsNext(libName: string) {
+        if (this.useJsNext === true) {
+            return true;
+        }
+        if (Array.isArray(this.useJsNext)) {
+
+            return this.useJsNext.indexOf(libName) > -1
+        }
     }
 
     public quantumSplit(rule: string, bundleName: string, entryFile: string) {
@@ -367,10 +399,29 @@ export class WorkFlowContext {
         this.storage.set(key, obj);
     }
 
-    public getItem(key: string): any {
-        return this.storage.get(key);
+    public getItem(key: string, defaultValue?: any): any {
+        return this.storage.get(key) !== undefined ? this.storage.get(key) : defaultValue;
     }
 
+
+    public setCSSDependencies(file: File, userDeps: string[]) {
+        let collection = this.getItem("cssDependencies") || {};
+        collection[file.info.absPath] = userDeps;
+        this.setItem("cssDependencies", collection);
+    }
+
+    public extractCSSDependencies(file: File, opts: ICSSDependencyExtractorOptions): string[] {
+        const extractor = CSSDependencyExtractor.init(opts);
+        this.setCSSDependencies(file, extractor.getDependencies())
+        return extractor.getDependencies();
+    }
+
+
+
+    public getCSSDependencies(file: File): string[] {
+        let collection = this.getItem("cssDependencies") || {};
+        return collection[file.info.absPath];
+    }
     /**
      * Create a new file group
      * Mocks up file

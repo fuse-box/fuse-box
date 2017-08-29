@@ -166,8 +166,16 @@ npm install
 node fuse
 ```
 
+### Typescript With Electron React-kit
+
+https://github.com/skellock/typescript-with-electron-react-kit
+
 ### Aurelia seed
 A skeleton for Aurelia using FuseBox.
 
 https://github.com/fuse-box/fuse-box-aurelia-seed
 
+### Web application seed (express+js-data+vue)
+A complete minimal web application, managing from the browser to the database, fused with express, [js-data](http://www.js-data.io/docs/home) and [vue](https://vuejs.org/).
+
+https://github.com/eddow/otheca

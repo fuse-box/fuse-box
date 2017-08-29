@@ -22,10 +22,14 @@ export class ImportDeclaration {
                 }
             }
         }
+        if (node.type === "ExportDefaultDeclaration") {
+            file.es6module = true;
+        }
         if (node.type === "ExportAllDeclaration") {
             file.es6module = true;
             analysis.addDependency(node.source.value);
         }
+
 
         if (node.type === "ImportDeclaration" || node.type === "ExportNamedDeclaration") {
             if (!file.context.rollupOptions) {
@@ -45,8 +49,7 @@ export class ImportDeclaration {
         if (file.es6module) {
             file.context.log.magicReason(
                 'used typescript to compile because an import was used',
-                file.info.fuseBoxPath)
-
+                file.info.fuseBoxPath);
             const ts = require("typescript");
             let tsconfg: any = {
                 compilerOptions: {
@@ -74,6 +77,11 @@ export class ImportDeclaration {
                 let requireStatementWithExt = requireStatement + '.js';
                 if (overrides[requireStatement] || overrides[requireStatementWithExt]) {
                     requireStatement = overrides[requireStatement] || overrides[requireStatementWithExt];
+                    if (/^\.\//.test(requireStatement)) {
+                        requireStatement = "~" + requireStatement.slice(1);
+                    } else {
+                        requireStatement = "~/" + requireStatement;
+                    }
                     file.analysis.requiresRegeneration = true;
                 }
             }

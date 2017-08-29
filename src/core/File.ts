@@ -6,7 +6,7 @@ import { SourceMapGenerator } from "./SourceMapGenerator";
 import { utils, each } from "realm-utils";
 import * as fs from "fs";
 import * as path from "path";
-import { ensureFuseBoxPath, readFuseBoxModule } from "../Utils";
+import { ensureFuseBoxPath, readFuseBoxModule, isStylesheetExtension } from "../Utils";
 
 /**
  *
@@ -32,6 +32,9 @@ export class File {
     public notFound: boolean;
 
     public params: Map<string, string>;
+
+
+    public wasTranspiled = false;
 
     public cached = false;
 
@@ -360,6 +363,9 @@ export class File {
         }
     }
 
+    public belongsToProject() {
+        return this.collection && this.collection.name === this.context.defaultPackageName;
+    }
     /**
      *
      *
@@ -383,7 +389,9 @@ export class File {
             this.notFound = true;
             return;
         }
-
+        if (this.context.polyfillNonStandardDefaultUsage) {
+            this.addStringDependency('fuse-heresy-default');
+        }
         if (/\.ts(x)?$/.test(this.absPath)) {
 
             this.context.debug("Typescript", `Captured  ${this.info.fuseBoxPath}`);
@@ -393,9 +401,22 @@ export class File {
         if (/\.js(x)?$/.test(this.absPath)) {
             this.loadContents();
             this.replaceDynamicImports();
+            if (this.context.useTypescriptCompiler && this.belongsToProject()) {
+                return this.handleTypescript();
+            }
             this.tryPlugins();
+
+            if (!this.wasTranspiled && this.context.cache && this.belongsToProject()) {
+                if (this.loadFromCache()) {
+                    return;
+                }
+
+                if (this.context.useCache) {
+                    this.context.cache.writeStaticCache(this, this.sourceMap);
+                }
+            }
             const vendorSourceMaps = this.context.sourceMapsVendor
-                && this.collection.name !== this.context.defaultPackageName;
+                && !this.belongsToProject();
             if (vendorSourceMaps) {
                 this.loadVendorSourceMap();
             } else {
@@ -408,6 +429,55 @@ export class File {
             this.contents = "";
             this.context.fuse.producer.addWarning("missing-plugin", `The contents of ${this.absPath} weren't loaded. Missing a plugin?`);
         }
+    }
+
+    public fileDependsOnLastChangedCSS() {
+
+        const bundle = this.context.bundle;
+        if (bundle && bundle.lastChangedFile) {
+            if (!isStylesheetExtension(bundle.lastChangedFile)) {
+                return false;
+            }
+            let collection = this.context.getItem("cssDependencies");
+            if (!collection) {
+                return false;
+            }
+            if (!collection[this.info.absPath]) {
+                return false;
+            }
+            let HMR_FILE_REQUIRED = this.context.getItem("HMR_FILE_REQUIRED", []);
+            for (let i = 0; i < collection[this.info.absPath].length; i++) {
+                if (collection[this.info.absPath][i].indexOf(bundle.lastChangedFile) > -1) {
+                    this.context.log.echoInfo(`CSS Dependency: ${bundle.lastChangedFile} depends on ${this.info.fuseBoxPath}`)
+                    HMR_FILE_REQUIRED.push(this.info.fuseBoxPath);
+                    this.context.setItem("HMR_FILE_REQUIRED", HMR_FILE_REQUIRED);
+                    return true;
+                }
+            }
+        }
+
+    }
+
+    public isCSSCached() {
+        if (!this.context || !this.context.cache) {
+            return;
+        }
+        if (!this.context.useCache) {
+            return false;
+        }
+        let cached = this.context.cache.getStaticCache(this);
+        if (cached) {
+            if (cached.sourceMap) {
+                this.sourceMap = cached.sourceMap;
+            }
+            this.context.setCSSDependencies(this, cached.dependencies);
+            if (!this.fileDependsOnLastChangedCSS()) {
+                this.isLoaded = true;
+                this.contents = cached.contents;
+                return true;
+            }
+        }
+        return false;
     }
 
     public loadFromCache(): boolean {
@@ -466,7 +536,7 @@ export class File {
      * @memberOf File
      */
     private handleTypescript() {
-
+        this.wasTranspiled = true;
         if (this.context.useCache) {
             if (this.loadFromCache()) {
                 this.tryPlugins();

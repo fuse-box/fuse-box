@@ -29,12 +29,13 @@ export interface FuseBoxOptions {
     target?: "browser" | "server" | "universal" | "electron",
     log?: boolean;
     globals?: { [packageName: string]: /** Variable name */ string };
-    plugins?: Plugin[];
+    plugins?: Plugin[] | [Plugin[]];
     autoImport?: any;
     natives?: any;
     warnings?: boolean,
     shim?: any;
     writeBundles?: boolean;
+    useTypescriptCompiler?: boolean;
     standalone?: boolean;
     sourceMaps?: boolean | { vendor?: boolean, inline?: boolean, project?: boolean, sourceRoot?: string };
     rollup?: any;
@@ -46,10 +47,11 @@ export interface FuseBoxOptions {
     debug?: boolean;
     files?: any;
     alias?: any;
-    useJsNext?: boolean,
+    useJsNext?: boolean | string[],
     runAllMatchedPlugins?: boolean;
     showErrors?: boolean
     showErrorsInBrowser?: boolean
+    polyfillNonStandardDefaultUsage?: boolean | string[];
 }
 
 /**
@@ -91,9 +93,15 @@ export class FuseBox {
         if (opts.target !== undefined) {
             this.context.target = opts.target;
         }
+        if (opts.polyfillNonStandardDefaultUsage !== undefined) {
+            this.context.polyfillNonStandardDefaultUsage = opts.polyfillNonStandardDefaultUsage;
+        }
 
         if (opts.useJsNext !== undefined) {
             this.context.useJsNext = opts.useJsNext;
+        }
+        if (opts.useTypescriptCompiler !== undefined) {
+            this.context.useTypescriptCompiler = opts.useTypescriptCompiler;
         }
 
         if (opts.experimentalFeatures !== undefined) {
@@ -146,7 +154,7 @@ export class FuseBox {
         }
 
         this.context.runAllMatchedPlugins = !!opts.runAllMatchedPlugins
-        this.context.plugins = opts.plugins || [JSONPlugin()];
+        this.context.plugins = opts.plugins as Plugin[] || [JSONPlugin()];
 
         if (opts.package) {
             if (utils.isPlainObject(opts.package)) {

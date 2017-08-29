@@ -9,7 +9,8 @@ export interface IQuantumExtensionParams {
     target?: string;
     uglify?: any;
     removeExportsInterop?: boolean;
-    removeUseStrict?: boolean;
+    removeUseStrict?: boolean
+    replaceTypeOf?: boolean;
     replaceProcessEnv?: boolean;
     webIndexPlugin?: WebIndexPluginClass;
     ensureES5?: boolean;
@@ -34,6 +35,7 @@ export class QuantumOptions {
     private containedAPI = false;
     private processPolyfill = false;
     private bakeApiIntoBundle: string;
+    private replaceTypeOf: boolean = true;
 
     private showWarnings = true;
     private treeshakeOptions: ITreeShakeOptions;
@@ -74,7 +76,9 @@ export class QuantumOptions {
         if (opts.warnings !== undefined) {
             this.showWarnings = opts.warnings;
         }
-
+        if (opts.replaceTypeOf !== undefined) {
+            this.replaceTypeOf = opts.replaceTypeOf;
+        }
         if (opts.containedAPI !== undefined) {
             this.containedAPI = opts.containedAPI;
         }
@@ -131,6 +135,10 @@ export class QuantumOptions {
 
     public enableContainedAPI() {
         return this.containedAPI = true;
+    }
+
+    public shouldReplaceTypeOf() {
+        return this.replaceTypeOf;
     }
 
     public getPromisePolyfill() {
@@ -224,9 +232,12 @@ export class QuantumOptions {
     public isTargetUniveral() {
         return this.optsTarget === "universal";
     }
+    public isTargetNpm() {
+        return this.optsTarget === "npm";
+    }
 
     public isTargetServer() {
-        return this.optsTarget === "server" || this.optsTarget === "electron";
+        return this.optsTarget === "server" || this.optsTarget === "electron" || this.optsTarget === "npm";
     }
 
     public isTargetBrowser() {

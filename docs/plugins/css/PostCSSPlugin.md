@@ -60,3 +60,25 @@ fuse.plugin(
     }), CSSPlugin()]
 )
 ```
+
+## Paths for HMR
+If you are using `postcss-import` plugin, you would need to provide paths to FuseBox config too, if you want
+HMR to work and detect css dependendies automatically.
+
+You don't need to add paths if all you are resolving is relative paths (to the processed file)
+
+```js
+plugins: [
+        WebIndexPlugin({
+            template: "src/index.html",
+        }),
+
+        [
+            PostCSSPlugin({
+                plugins : [require("postcss-import")({ path: ["src"]})],
+                paths : [ path.resolve(__dirname, "src/shared" )]
+            }),
+            CSSPlugin()
+        ]
+    ]
+```

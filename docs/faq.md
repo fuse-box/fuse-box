@@ -37,17 +37,26 @@ Questions related to imports/exports
 Why my default exports doesn't work? It works with webpack?!
 
 ```js
-import lodash from "_"
+import _ from "lodash"
 ```
 
 That's because typescript is not Babel. If you can configure it by adding a [BabelPlugin](/plugins/babelplugin).  To solve this issue with typescript import your libraries as follows:
 
 
 ```js
-import * as lodash from "_"
+import * as _ from "lodash"
 ```
 
 ## Bundling
+
+### It says that "default" is undefined, why is that?
+
+When babel introduced ES2015 Modules => CommonJS, the spec wasn't completed. However, everyone was using it. The spec came along and stipulated that you cannot request a default `import (ie. import Foo from 'x')` from a module that doesn't have one. 
+
+Instead, you must do `import * as Foo from 'x'`
+
+
+
 
 ### Why aren't my node modules transpiled?
 

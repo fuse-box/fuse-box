@@ -116,6 +116,8 @@ export class ModuleCache {
         }
         return encodeURIComponent(str);
     }
+
+
     /**
      *
      *
@@ -150,6 +152,38 @@ export class ModuleCache {
                     return;
                 }
 
+                MEMORY_CACHE[memCacheKey] = data;
+                return data;
+            }
+        }
+
+    }
+
+    public getCSSCache(file: File) {
+
+        let stats = fs.statSync(file.absPath);
+        let fileName = this.encodeCacheFileName(file.info.fuseBoxPath);
+        let memCacheKey = this.getStaticCacheKey(file);
+        let data;
+
+        if (MEMORY_CACHE[memCacheKey]) {
+            data = MEMORY_CACHE[memCacheKey];
+            if (data.mtime !== stats.mtime.getTime()) {
+                return;
+            }
+            return data;
+        } else {
+            let dest = path.join(this.staticCacheFolder, fileName);
+            if (fs.existsSync(dest)) {
+                try {
+                    data = require(dest);
+                } catch (e) {
+                    console.log(e);
+                    return;
+                }
+                if (data.mtime !== stats.mtime.getTime()) {
+                    return;
+                }
                 MEMORY_CACHE[memCacheKey] = data;
                 return data;
             }
@@ -194,6 +228,8 @@ devLibsRequired : ${JSON.stringify(cacheData.devLibsRequired)}
 
         fs.writeFileSync(dest, data);
     }
+
+
 
     /**
      *

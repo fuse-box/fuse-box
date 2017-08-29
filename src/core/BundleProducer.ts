@@ -197,7 +197,8 @@ export class BundleProducer {
                 const bundle = this.bundles.get(bundleName);
 
                 const defer = bundle.fuse.context.defer;
-                bundle.lastChangedFile = path;
+
+                bundle.lastChangedFile = bundle.fuse.context.convertToFuseBoxPath(path);
                 // to ensure new process is not kicked in before the previous has completed
                 defer.queue(bundleName, () => {
                     return bundle.exec().then(result => {

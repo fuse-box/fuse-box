@@ -13,6 +13,7 @@ let vueTranspiler;
 let typescriptTranspiler;
 let babelCore;
 let babelConfig;
+
 export class VuePluginClass implements Plugin {
     public test: RegExp = /\.vue$/;
 
@@ -53,8 +54,10 @@ export class VuePluginClass implements Plugin {
         if (result.template && result.template.type === "template") {
             let templateLang = (result.template.attrs) ? result.template.attrs.lang : null;
             return compileTemplateContent(context, templateLang, result.template.content).then(html => {
-
-                file.contents = compileScript(this.options, context, html, result.script)
+                var styles = extractStyle(result.styles);
+                if(styles.some)
+                    file.addStringDependency("fuse-box-css");
+                file.contents = compileScript(file, this.options, context, html, result.script, styles);
                 file.analysis.parseUsingAcorn();
                 file.analysis.analyze();
 
@@ -69,7 +72,19 @@ export class VuePluginClass implements Plugin {
         }
     }
 };
-
+function extractStyle (styleList) {
+    var rv = {scoped: '', global: '', some: false};
+    if(styleList) for(let s in styleList) {
+        let style = styleList[s], content = style.content;
+        //todo here : if(style.lang === "stylus", ...)
+        if(style.lang)
+            console.error('Not supported yet: vue single-file-component style languages other than CSS')
+        if('style'=== style.type)
+            rv[style.scoped?'scoped':'global'] += content;
+    }
+    rv.some = !!(rv.global || rv.scoped);
+    return rv;
+}
 function toFunction (code) {
   return vueTranspiler('function render () {' + code + '}')
 }
@@ -91,27 +106,27 @@ function compileTemplateContent (context: any, engine: string, content: string) 
         });
     });
 }
-function compileScript(options, context, html, script) : string {
+function compileScript(file, options, context, html, script, styles) : string {
     let lang = script.attrs.lang;
     if (lang === 'babel') {
-        return compileBabel(options, context, html, script);
+        return compileBabel(file, options, context, html, script, styles);
     } else {
-        return compileTypeScript(options, context, html, script);
+        return compileTypeScript(file, options, context, html, script, styles);
     }
 }
-function compileTypeScript(options, context, html, script) : string {
+function compileTypeScript(file, options, context, html, script, styles) : string {
     if (!typescriptTranspiler) {
         typescriptTranspiler = require("typescript");
     }
     try {
         const jsTranspiled = typescriptTranspiler.transpileModule(script.content, context.getTypeScriptConfig());
-        return reduceVueToScript(jsTranspiled.outputText, html)
+        return reduceVueToScript(file, jsTranspiled.outputText, html, styles)
     } catch (err) {
         console.log(err)
     }
     return ''
 }
-function compileBabel(options, context, html, script) : string {
+function compileBabel(file, options, context, html, script, styles) : string {
     if (!babelCore) {
         babelCore = require("babel-core");
         if (options.babel !== undefined) {
@@ -130,21 +145,32 @@ function compileBabel(options, context, html, script) : string {
     }
     try {
         let jsTranspiled = babelCore.transform(script.content, babelConfig);
-        return reduceVueToScript(jsTranspiled.code, html)
+        return reduceVueToScript(file, jsTranspiled.code, html, styles)
     } catch (err) {
         console.log(err)
     }
     return '';
 }
-function reduceVueToScript(jsContent, html) : string {
+function reduceVueToScript(file, jsContent, html, styles) : string {
     const compiled = vueCompiler.compile(html);
+    var cssInclude = '';
+    if(styles.global)
+        cssInclude += styles.global;
+    if(styles.scoped)
+        console.error('Functionality not yet supported: scoped style')
+    if(cssInclude) cssInclude =
+        'require("fuse-box-css")('+
+        JSON.stringify(file.info.fuseBoxPath)+
+        ','+
+        JSON.stringify(cssInclude)+
+        ');'
     return `var _p = {};
 var _v = function(exports){${jsContent}
-};
+};${cssInclude}
 _p.render = ` + toFunction(compiled.render) + `
 _p.staticRenderFns = [ ` + compiled.staticRenderFns.map(toFunction).join(',') + ` ];
 var _e = {}; _v(_e); Object.assign(_e.default.options||_e.default, _p)
-module.exports = _e.default
+module.exports = _e
     `;
 }
 

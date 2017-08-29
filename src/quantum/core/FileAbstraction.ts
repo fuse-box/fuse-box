@@ -25,6 +25,8 @@ import { ReplaceableBlock } from "./nodes/ReplaceableBlock";
 
 const globalNames = new Set<string>(["__filename", "__dirname", "exports", "module"]);
 
+const SystemVars = new Set<string>(["module", "exports", "require", "window", "global"]);
+
 export class FileAbstraction {
     private id: string;
     private fileMapRequested = false;
@@ -47,6 +49,8 @@ export class FileAbstraction {
     public requireStatements = new Set<RequireStatement​​>();
     public dynamicImportStatements = new Set<RequireStatement​​>();
     public fuseboxIsEnvConditions = new Set<ReplaceableBlock>();
+
+    public definedLocally = new Set<string>();
 
     public exportsInterop = new Set<ExportsInterop>();
     public useStrict = new Set<UseStrict>();
@@ -310,6 +314,7 @@ export class FileAbstraction {
                     this.fuseboxIsEnvConditions.add(envNode);
                 }
             }
+
         }
 
 
@@ -320,8 +325,10 @@ export class FileAbstraction {
         this.namedRequireStatements.forEach((statement, key) => {
             const importedName = trackRequireMember(node, key);
             if (importedName) {
+                statement.localReferences++;
                 statement.usedNames.add(importedName);
             }
+
         });
         // restrict tree shaking if there is even a hint on computed properties
         isExportComputed(node, (isComputed) => {
@@ -356,7 +363,7 @@ export class FileAbstraction {
                 this.localExportUsageAmount.set(matchesExportIdentifier, ++ref)
             }
         }
-        matchNamedExport(node, (name) => {
+        matchNamedExport(node, (name, referencedVariableName) => {
             // const namedExport = new NamedExport(parent, prop, node);
             // namedExport.name = name;
             // this.namedExports.set(name, namedExport);
@@ -371,7 +378,7 @@ export class FileAbstraction {
                 namedExport = this.namedExports.get(name);
             }
 
-            namedExport.addNode(parent, prop, node);
+            namedExport.addNode(parent, prop, node, referencedVariableName);
         });
         // require statements
         if (matchesSingleFunction(node, "require")) {
@@ -470,10 +477,38 @@ export class FileAbstraction {
             if (node.name === "global") {
                 this.packageAbstraction.bundleAbstraction.globalVariableRequired = true;
             }
+            this.detectLocallyDefinedSystemVariables(node);
+
             if (globalVariable) {
                 if (!this.globalVariables.has(globalVariable)) {
                     this.globalVariables.add(globalVariable);
                 }
+            }
+        }
+    }
+
+    private detectLocallyDefinedSystemVariables(node: any) {
+        let definedName;
+        // detecting if the Indentifer is in SystemVars (module, exports, require e.tc)
+        if (SystemVars.has(node.name)) {
+            // if it's define within a local function
+            if (node.$prop === "params") {
+                if (node.$parent && node.$parent.type === "FunctionDeclaration") {
+                    definedName = node.name;
+                }
+            }
+            // if it's a variable declaration
+            // var module = 1;
+            if (node.$prop === "id") {
+                if (node.$parent && node.$parent.type == "VariableDeclarator") {
+                    definedName = node.name;
+                }
+            }
+        }
+
+        if (definedName) {
+            if (!this.definedLocally.has(definedName)) {
+                this.definedLocally.add(definedName);
             }
         }
     }

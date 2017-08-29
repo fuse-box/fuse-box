@@ -8,6 +8,7 @@ export interface SassPluginOptions {
     macros?: { [key: string]: string };
     importer?: boolean | ImporterFunc;
     cache?: boolean;
+    indentedSyntax?: boolean,
     functions?: { [key: string]: (...args: any[]) => any }
 }
 
@@ -39,18 +40,9 @@ export class SassPluginClass implements Plugin {
         file.addStringDependency("fuse-box-css");
         const context = file.context;
 
-        if (context.useCache && this.options.cache) {
-            let cached = context.cache.getStaticCache(file);
-            if (cached) {
-                if (cached.sourceMap) {
-                    file.sourceMap = cached.sourceMap;
-                }
-                file.isLoaded = true;
-                file.contents = cached.contents;
-                return;
-            }
+        if (file.isCSSCached()) {
+            return;
         }
-
         file.loadContents();
         if (!file.contents) {
             return;
@@ -78,6 +70,7 @@ export class SassPluginClass implements Plugin {
                 options.includePaths.push(path);
             });
         }
+
         options.macros = Object.assign(defaultMacro, this.options.macros || {}, );
 
         if (this.options.importer === true) {
@@ -85,7 +78,6 @@ export class SassPluginClass implements Plugin {
                 if (/https?:/.test(url)) {
                     return done({ url });
                 }
-
                 for (let key in options.macros) {
                     if (options.macros.hasOwnProperty(key)) {
                         url = url.replace(key, options.macros[key]);
@@ -96,7 +88,14 @@ export class SassPluginClass implements Plugin {
         }
 
         options.includePaths.push(file.info.absDir);
-        return new Promise((resolve) => {
+
+        const cssDependencies = file.context.extractCSSDependencies(file, {
+            paths: options.includePaths,
+            content: file.contents,
+            importer: options.importer as any,
+            extensions: ["css", options.indentedSyntax ? "sass" : "scss"]
+        })
+        return new Promise((resolve, reject) => {
             return sass.render(options, (err, result) => {
                 if (err) {
                     const errorFile = err.file === 'stdin' ? file.absPath : err.file
@@ -104,10 +103,13 @@ export class SassPluginClass implements Plugin {
                     file.addError(`${err.message}\n      at ${errorFile}:${err.line}:${err.column}`)
                     return resolve();
                 }
+
                 file.sourceMap = result.map && result.map.toString();
                 file.contents = result.css.toString();
-                if (context.useCache && this.options.cache) {
+                if (context.useCache) {
+                    file.analysis.dependencies = cssDependencies;
                     context.cache.writeStaticCache(file, file.sourceMap);
+                    file.analysis.dependencies = [];
                 }
                 return resolve();
             });
