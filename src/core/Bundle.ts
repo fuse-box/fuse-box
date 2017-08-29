@@ -91,18 +91,29 @@ export class Bundle {
             });
 
             if (this.context.showErrorsInBrowser) {
+                const type = "update-bundle-errors",
+                    getData = () => ({
+                        bundleName: this.name,
+                        messages: this.errors
+                    })
+
                 this.errorEmitter.on(message => {
                     server.send("bundle-error", {
                         bundleName: this.name,
                         message
                     })
-                });
+                })
 
                 this.clearErrorEmitter.on(() => {
-                    server.send("clear-bundle-errors", {
-                        bundleName: this.name
-                    })
-                });
+                    server.send(type, getData())
+                })
+
+                server.server.on("connection", client => {
+                    client.send(JSON.stringify({
+                        type,
+                        data: getData()
+                    }))
+                })
             }
         });
         return this;
