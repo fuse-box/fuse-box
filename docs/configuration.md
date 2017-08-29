@@ -293,6 +293,22 @@ FuseBox.init({
 })
 ```
 
+## useTypescriptCompiler
+
+You can transpile normal javascript with typescript compiler. All you need to do is toggle this flag
+```js
+FuseBox.init({
+    useTypescriptCompiler : true
+})
+```
+
+And install typescript
+
+```
+npm install typescript --save-dev
+```
+
+
 ## polyfillNonStandardDefaultUsage
 
 Fixes non-standard import `default` whereas a package doesn't export one. For example:
