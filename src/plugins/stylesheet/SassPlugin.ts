@@ -92,6 +92,7 @@ export class SassPluginClass implements Plugin {
         const cssDependencies = file.context.extractCSSDependencies(file, {
             paths: options.includePaths,
             content: file.contents,
+            sassStyle: true,
             importer: options.importer as any,
             extensions: ["css", options.indentedSyntax ? "sass" : "scss"]
         })
