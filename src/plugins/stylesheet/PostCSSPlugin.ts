@@ -51,7 +51,7 @@ export class PostCSSPluginClass implements Plugin {
         file.addStringDependency("fuse-box-css");
 
 
-        if (file.isCSSCached()) {
+        if (file.isCSSCached("postcss")) {
             return;
         }
 
@@ -84,7 +84,7 @@ export class PostCSSPluginClass implements Plugin {
 
                 if (file.context.useCache) {
                     file.analysis.dependencies = cssDependencies;
-                    file.context.cache.writeStaticCache(file, file.sourceMap);
+                    file.context.cache.writeStaticCache(file, file.sourceMap, "postcss");
                     file.analysis.dependencies = [];
                 }
                 return result.css;

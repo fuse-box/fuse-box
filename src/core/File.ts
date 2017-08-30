@@ -458,14 +458,14 @@ export class File {
 
     }
 
-    public isCSSCached() {
+    public isCSSCached(type: string = "css") {
         if (!this.context || !this.context.cache) {
             return;
         }
         if (!this.context.useCache) {
             return false;
         }
-        let cached = this.context.cache.getStaticCache(this);
+        let cached = this.context.cache.getStaticCache(this, type);
         if (cached) {
             if (cached.sourceMap) {
                 this.sourceMap = cached.sourceMap;
