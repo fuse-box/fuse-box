@@ -40,7 +40,7 @@ export class SassPluginClass implements Plugin {
         file.addStringDependency("fuse-box-css");
         const context = file.context;
 
-        if (file.isCSSCached("scss")) {
+        if (file.isCSSCached("sass")) {
             return;
         }
         file.loadContents();
