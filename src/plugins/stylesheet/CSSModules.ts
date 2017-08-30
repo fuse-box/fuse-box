@@ -33,7 +33,12 @@ export class CSSModulesClass implements Plugin {
                     root: file.info.absDir,
                     getJSON: (cssFileName, json) => {
                         let exportsKey = this.useDefault ? "module.exports.default" : "module.exports";
-                        file.addAlternativeContent(`${exportsKey} = ${JSON.stringify(json)};`);
+                        const cnt = [];
+                        if (this.useDefault) {
+                            cnt.push(`Object.defineProperty(exports, "__esModule", { value: true });`);
+                        }
+                        cnt.push(`${exportsKey} = ${JSON.stringify(json)};`);
+                        file.addAlternativeContent(cnt.join('\n'));
                     }
                 })
             ]).process(file.contents, {})
