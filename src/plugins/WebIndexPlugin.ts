@@ -78,7 +78,7 @@ export class WebIndexPluginClass implements Plugin {
             html = html.replace('$' + key, macro[key])
         }
         producer.fuse.context
-            .output.write(this.opts.target || "index.html", html, true);
+            .output.writeToOutputFolder(this.opts.target || "index.html", html);
     }
 };
 
