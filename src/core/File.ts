@@ -62,6 +62,8 @@ export class File {
      * @memberOf File
      */
     public isLoaded = false;
+
+
     /**
      *
      *
@@ -457,8 +459,11 @@ export class File {
         }
 
     }
-
+    public bustCSSCache = false;
     public isCSSCached(type: string = "css") {
+        if (this.bustCSSCache) {
+            return false;
+        }
         if (!this.context || !this.context.cache) {
             return;
         }

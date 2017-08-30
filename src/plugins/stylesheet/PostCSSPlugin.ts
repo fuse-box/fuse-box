@@ -54,7 +54,7 @@ export class PostCSSPluginClass implements Plugin {
         if (file.isCSSCached("postcss")) {
             return;
         }
-
+        file.bustCSSCache = true;
         file.loadContents();
 
         let paths: string[] = this.options && this.options.paths || [];

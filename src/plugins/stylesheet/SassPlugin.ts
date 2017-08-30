@@ -43,6 +43,7 @@ export class SassPluginClass implements Plugin {
         if (file.isCSSCached("sass")) {
             return;
         }
+        file.bustCSSCache = true;
         file.loadContents();
         if (!file.contents) {
             return;
