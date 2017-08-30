@@ -217,7 +217,7 @@ gulp.task("npm-publish", function(done) {
 });
 
 gulp.task("npm-publish-beta", function(done) {
-    var publish = spawn("npm", ["publish", "--tag", "beta"], {
+    var publish = spawn("npm", ["publish", "--tag", "next"], {
         stdio: "inherit",
     });
     publish.on("close", function(code) {
