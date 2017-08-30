@@ -31,7 +31,7 @@ fuse.plugin(
 | ------------- | ------------- |
 | ` title `   | Sets the title  |
 | ` bundles ` | Provide a list of bundle names (if not set all registered bundles are through) |
-| ` path `   | Joins a string with bundles. For example `/assets`  |
+| ` path `   | The relative url bundles are served from. Default is `/`. Empty is set with `.`  |
 | ` template `   | Provide a path to your own template  |
 | ` target `   | The main filename. Default is `index.html`  |
 
