@@ -5,12 +5,14 @@ export interface ICSSDependencyExtractorOptions {
     paths: string[];
     extensions: string[],
     content: string;
+    sassStyle?: boolean;
     importer?: { (f: string, prev: any, done: { (info: { file: string }): void }): string }
 }
 
 export class CSSDependencyExtractor {
     private dependencies: string[] = [];
     constructor(public opts: ICSSDependencyExtractorOptions) {
+
         this.extractDepsFromString(opts.content);
     }
 
@@ -35,16 +37,25 @@ export class CSSDependencyExtractor {
         return this.dependencies;
     }
 
-    private tryFile(filePath: string): boolean {
+    private tryFile(filePath: string): string {
         // restrict node_module
         // we don't want to detect stuff from there
         if (filePath.indexOf("node_modules") > -1) {
-            return false;
+            return;
         }
+
+        let fname = path.basename(filePath);
+        // if a filename doesn't have _ we need to try it with _ for sass cases
+        if (this.opts.sassStyle && !/^_/.test(fname)) {
+            const pathWithUnderScore = path.join(path.dirname(filePath), "_" + fname);
+            if (fs.existsSync(pathWithUnderScore)) {
+                return pathWithUnderScore;
+            }
+        }
+
         if (fs.existsSync(filePath)) {
-            return true;
+            return filePath;
         }
-        return false;
     }
 
     private getPath(suggested: string, fileName: string) {
@@ -58,8 +69,8 @@ export class CSSDependencyExtractor {
             return target;
         }
         return path.join(suggested, target);
-
     }
+
     private findTarget(fileName: string): string {
         let targetFile: any;
         let extName = path.extname(fileName);
@@ -67,7 +78,8 @@ export class CSSDependencyExtractor {
             for (let p = 0; p < this.opts.paths.length; p++) {
                 for (let e = 0; e < this.opts.extensions.length; e++) {
                     let filePath = this.getPath(this.opts.paths[p], fileName + "." + this.opts.extensions[e]);
-                    if (this.tryFile(filePath)) {
+                    filePath = this.tryFile(filePath);
+                    if (filePath) {
                         return filePath;
                     }
                 }
