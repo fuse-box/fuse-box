@@ -9,7 +9,9 @@ fuse.bundle("app")
     .test("[**/**.test.ts]")
 ```
 
-Just remove instructions, create an isolated task, and `test()`.  The entire FuseBox is powered by FuseBox tests. Check them out [here](https://github.com/fuse-box/fuse-box/tree/master/src/tests):
+Just replace `bundle.instructions()` with `bundle.test()`.
+
+The entire FuseBox is powered by FuseBox tests. Check them out [here](https://github.com/fuse-box/fuse-box/tree/master/src/tests):
 
 
 github_example: test-runner
@@ -17,11 +19,17 @@ github_example: test-runner
 ## Default pattern
 
 FuseBox will take this pattern `[**/**.test.ts]` which can be overriden.
-warning: Don't change the ending - `test.ts`. The test runner is at its very early stage
 
-## Test file
+## Exposing tests
 
-You FuseBox `should` assertion library to chain and validate your objects.
+The following rules are required:
+
+1. Filename must end with `test.ts` 
+2. Classes must be exported
+
+Otherwise the file or class will be silently ignored.
+
+## Example
 
 ```js
 import { should } from "fuse-test-runner";
@@ -41,11 +49,12 @@ export class BarTest {
 }
 ```
 
-Methods can be written as strings to improve the readability.
+Note:
 
-steps:
- * Test runner respects returns promises as well as done callbacks
- * All tests are execute in order they were defined
+* You can use any assertion library (`chai`, `should`, `jsverify`, etc.) to chain and validate your objects.
+* Methods can be written as strings to improve the readability.
+* Test runner respects return promises as well as done callbacks
+* All tests are executed in order they were defined
 
 ## Before and After
 
@@ -62,7 +71,7 @@ export class BarTest {
 
 ## Assertion API
 
-Install first:
+If you choose to use the FuseBox assertion api, install first:
 
 ```bash
 npm install fuse-test-runner
