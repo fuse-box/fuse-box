@@ -396,8 +396,12 @@ export class ModuleCollection {
             // Process file dependencies recursively
 
             return each(file.analysis.dependencies, name => {
-                return this.resolve(new File(this.context,
-                    this.pm.resolve(name, file.info.absDir, fileLimitPath)), shouldIgnoreDeps);
+                const newFile = new File(this.context,
+                    this.pm.resolve(name, file.info.absDir, fileLimitPath));
+                if (file.belongsToProject()) {
+                    this.context.registerDependant(newFile, file);
+                }
+                return this.resolve(newFile, shouldIgnoreDeps);
             });
         }
     }

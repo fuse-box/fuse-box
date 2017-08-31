@@ -3,6 +3,7 @@ import * as escodegen from "escodegen";
 import { BundleSource } from "../BundleSource";
 import { File, ScriptTarget } from "./File";
 import { Log } from "../Log";
+import * as NativeEmitter from "events";
 import { IPackageInformation, IPathInformation, AllowedExtenstions } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "../ModuleCache";
@@ -86,6 +87,8 @@ export class WorkFlowContext {
 
     public sourceChangedEmitter = new EventEmitter<SourceChangedEvent>();
 
+    public emitter = new NativeEmitter();
+
     /**
      * The default package name or the package name configured in options
      */
@@ -148,6 +151,8 @@ export class WorkFlowContext {
     public tsMode = false;
 
     public loadedTsConfig: string;
+
+    public dependents = new Map<string, Set<string>>();
 
     public globals: { [packageName: string]: /** Variable name */ string };
 
@@ -296,14 +301,20 @@ export class WorkFlowContext {
 
     public emitJavascriptHotReload(file: File) {
         let content = file.contents;
-        if (file.headerContent) {
-            content = file.headerContent.join("\n") + "\n" + content;
-        }
-
-        this.sourceChangedEmitter.emit({
-            type: "js",
-            content,
-            path: file.info.fuseBoxPath,
+        this.emitter.addListener("bundle-collected", () => {
+            if (file.headerContent) {
+                content = file.headerContent.join("\n") + "\n" + content;
+            }
+            let dependants = {};
+            this.dependents.forEach((set, key) => {
+                dependants[key] = [...set];
+            });
+            this.sourceChangedEmitter.emit({
+                type: "js",
+                content,
+                dependants: dependants,
+                path: file.info.fuseBoxPath,
+            });
         });
     }
 
@@ -380,12 +391,28 @@ export class WorkFlowContext {
      */
     public reset() {
         this.log.reset();
+        this.dependents = new Map<string, Set<string>>();
+        this.emitter = new NativeEmitter();
         this.storage = new Map();
         this.source = new BundleSource(this);
         this.nodeModules = new Map();
         this.pluginTriggers = new Map();
         this.fileGroups = new Map();
         this.libPaths = new Map();
+    }
+
+    public registerDependant(target: File, dependant: File) {
+
+        let fileSet: Set<string>;
+        if (!this.dependents.has(target.info.fuseBoxPath)) {
+            fileSet = new Set<string>();
+            this.dependents.set(target.info.fuseBoxPath, fileSet);
+        } else {
+            fileSet = this.dependents.get(target.info.fuseBoxPath);
+        }
+        if (!fileSet.has(dependant.info.fuseBoxPath)) {
+            fileSet.add(dependant.info.fuseBoxPath);
+        }
     }
 
     public initAutoImportConfig(userNatives, userImports) {
