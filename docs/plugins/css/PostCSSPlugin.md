@@ -69,10 +69,6 @@ You don't need to add paths if all you are resolving is relative paths (to the p
 
 ```js
 plugins: [
-        WebIndexPlugin({
-            template: "src/index.html",
-        }),
-
         [
             PostCSSPlugin({
                 plugins : [require("postcss-import")({ path: ["src"]})],
@@ -82,3 +78,22 @@ plugins: [
         ]
     ]
 ```
+
+## Disable sourceMaps
+
+You can internally disable sourceMaps if you wish to preserve earlier generated source maps, (by Sass for example)
+
+
+```js
+plugins: [
+        [
+            SassPlugin(),
+            PostCSSPlugin({
+                plugins : [require("postcss-import")({ path: ["src"]})],
+                sourceMaps : false
+            }),
+            CSSPlugin()
+        ]
+    ]
+```
+

@@ -5,6 +5,7 @@ import { Plugin } from "../../core/WorkflowContext";
 export interface PostCSSPluginOptions {
     [key: string]: any;
     paths?: string[],
+    sourceMaps?: boolean;
     plugins?: any[]
 }
 
@@ -69,12 +70,16 @@ export class PostCSSPluginClass implements Plugin {
         if (!postcss) {
             postcss = require("postcss");
         }
+        let generateSourceMaps = true;
         let postCSSPlugins = [];
         if (Array.isArray(this.options)) {
-            postCSSPlugins = this.options
+            postCSSPlugins = this.options;
         } else {
-            if (this.options && Array.isArray(this.options.plugins)) {
+            if (Array.isArray(this.options.plugins)) {
                 postCSSPlugins = this.options.plugins;
+            }
+            if (this.options && this.options.sourceMaps !== undefined) {
+                generateSourceMaps = this.options.sourceMaps;
             }
         }
         return postcss(this.processors)
@@ -84,7 +89,7 @@ export class PostCSSPluginClass implements Plugin {
 
                 if (file.context.useCache) {
                     file.analysis.dependencies = cssDependencies;
-                    file.context.cache.writeStaticCache(file, file.sourceMap, "postcss");
+                    file.context.cache.writeStaticCache(file, generateSourceMaps && file.sourceMap, "postcss");
                     file.analysis.dependencies = [];
                 }
                 return result.css;
