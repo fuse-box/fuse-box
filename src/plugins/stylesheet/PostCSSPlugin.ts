@@ -75,11 +75,13 @@ export class PostCSSPluginClass implements Plugin {
         if (Array.isArray(this.options)) {
             postCSSPlugins = this.options;
         } else {
-            if (Array.isArray(this.options.plugins)) {
-                postCSSPlugins = this.options.plugins;
-            }
-            if (this.options && this.options.sourceMaps !== undefined) {
-                generateSourceMaps = this.options.sourceMaps;
+            if (this.options) {
+                if (Array.isArray(this.options.plugins)) {
+                    postCSSPlugins = this.options.plugins;
+                }
+                if (this.options.sourceMaps !== undefined) {
+                    generateSourceMaps = this.options.sourceMaps;
+                }
             }
         }
         return postcss(this.processors)
