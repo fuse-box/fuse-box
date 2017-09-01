@@ -87,7 +87,8 @@ export class CSSDependencyExtractor {
         } else {
             for (let p = 0; p < this.opts.paths.length; p++) {
                 let filePath = this.getPath(this.opts.paths[p], fileName);
-                if (this.tryFile(filePath)) {
+                filePath = this.tryFile(filePath);
+                if (filePath) {
                     return filePath;
                 }
 
