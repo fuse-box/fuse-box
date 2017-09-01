@@ -449,7 +449,8 @@ export class File {
             }
             let HMR_FILE_REQUIRED = this.context.getItem("HMR_FILE_REQUIRED", []);
             for (let i = 0; i < collection[this.info.absPath].length; i++) {
-                if (collection[this.info.absPath][i].indexOf(bundle.lastChangedFile) > -1) {
+                const absPath = ensureFuseBoxPath(collection[this.info.absPath][i]);
+                if (absPath.indexOf(bundle.lastChangedFile) > -1) {
                     this.context.log.echoInfo(`CSS Dependency: ${bundle.lastChangedFile} depends on ${this.info.fuseBoxPath}`)
                     HMR_FILE_REQUIRED.push(this.info.fuseBoxPath);
                     this.context.setItem("HMR_FILE_REQUIRED", HMR_FILE_REQUIRED);
