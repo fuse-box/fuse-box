@@ -1,5 +1,5 @@
 import { File } from "../../core/File";
-
+import * as path from "path";
 /**
  * Handles require and ImportDeclarations
  * At the moment does not transpile
@@ -67,21 +67,17 @@ export class ImportDeclaration {
      */
     private static handleAliasReplacement(file: File, requireStatement: string): string {
 
-        // checking for browser override (asap) case
+        // checking for browser override (asa) case
         // these people ...
         // https://github.com/defunctzombie/package-browser-field-spec
         if (file.collection && file.collection.info && file.collection.info.browserOverrides) {
             const overrides = file.collection.info.browserOverrides;
+            const pm = file.collection.pm;
             if (overrides) {
-                //require statement without file ext and override with ext
-                let requireStatementWithExt = requireStatement + '.js';
-                if (overrides[requireStatement] || overrides[requireStatementWithExt]) {
-                    requireStatement = overrides[requireStatement] || overrides[requireStatementWithExt];
-                    if (/^\.\//.test(requireStatement)) {
-                        requireStatement = "~" + requireStatement.slice(1);
-                    } else {
-                        requireStatement = "~/" + requireStatement;
-                    }
+                const resolved = pm.resolve(requireStatement, file.info.absDir)
+                const fuseBoxPath = pm.getFuseBoxPath(resolved.absPath, file.collection.entryFile.info.absDir);
+                if (overrides[fuseBoxPath]) {
+                    requireStatement = overrides[fuseBoxPath];
                     file.analysis.requiresRegeneration = true;
                 }
             }

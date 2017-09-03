@@ -273,8 +273,7 @@ export class PathMaster {
         return input;
     }
 
-    private ensureFolderAndExtensions(name: string, root: string, explicit = false):
-        { resolved: string, alias?: string } {
+    private ensureFolderAndExtensions(name: string, root: string, explicit = false): { resolved: string, alias?: string } {
 
         let ext = path.extname(name);
         let fileExt = this.tsMode && !explicit ? ".ts" : ".js";
@@ -342,6 +341,25 @@ export class PathMaster {
         };
     }
 
+    private fixBrowserOverrides(browserOverrides: { [key: string]: string }): { [key: string]: string } {
+        let newOverrides = {};
+        for (let key in browserOverrides) {
+            let value = browserOverrides[key];
+            if (/\.\//.test(key)) {
+                key = key.slice(2);
+            }
+            if (/\.\//.test(value)) {
+                value = "~/" + value.slice(2);
+            } else {
+                value = "~/" + value;
+            }
+            if (!/.js$/.test(value)) {
+                value = value + ".js";
+            }
+            newOverrides[key] = value;
+        }
+        return newOverrides;
+    }
     private getNodeModuleInformation(name: string): IPackageInformation {
 
         const readMainFile = (folder, isCustom: boolean) => {
@@ -362,7 +380,7 @@ export class PathMaster {
                 }
                 if (this.context.isBrowserTarget() && json.browser) {
                     if (typeof json.browser === "object") {
-                        browserOverrides = json.browser;
+                        browserOverrides = this.fixBrowserOverrides(json.browser);
                         if (json.browser[json.main]) {
                             entryFile = json.browser[json.main];
                         }
