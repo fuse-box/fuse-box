@@ -1,5 +1,4 @@
 import { File } from "../../core/File";
-import * as path from "path";
 /**
  * Handles require and ImportDeclarations
  * At the moment does not transpile
