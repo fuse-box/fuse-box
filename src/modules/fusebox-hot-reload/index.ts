@@ -137,6 +137,16 @@ export const connect = (port: string, uri: string) => {
     client.on('source-changed', (data) => {
         console.info(`%cupdate "${data.path}"`, 'color: #237abe');
 
+        /**
+         * If a plugin handles this request then we don't have to do anything
+         **/
+        for (var index = 0; index < FuseBox.plugins.length; index++) {
+            var plugin = FuseBox.plugins[index];
+            if (plugin.hmrUpdate && plugin.hmrUpdate(data)) {
+                return;
+            }
+        }
+
         if (data.type === "hosted-css") {
             var fileId = data.path.replace(/^\//, '').replace(/[\.\/]+/g, '-');
             var existing = document.getElementById(fileId);
@@ -151,17 +161,6 @@ export const connect = (port: string, uri: string) => {
                 document.getElementsByTagName('head')[0].appendChild(node);
             }
         }
-
-        /**
-         * If a plugin handles this request then we don't have to do anything
-         **/
-        for (var index = 0; index < FuseBox.plugins.length; index++) {
-            var plugin = FuseBox.plugins[index];
-            if (plugin.hmrUpdate && plugin.hmrUpdate(data)) {
-                return;
-            }
-        }
-
 
         if (data.type === 'js' || data.type === "css") {
             FuseBox.flush();
