@@ -589,7 +589,14 @@ export class File {
         if (this.sourceMap) {
             let jsonSourceMaps = JSON.parse(this.sourceMap);
             jsonSourceMaps.file = this.info.fuseBoxPath;
-            jsonSourceMaps.sources = [this.context.sourceMapsRoot + "/" + (fname || this.info.fuseBoxPath)];
+            jsonSourceMaps.sources = jsonSourceMaps.sources.map((source : string) => {
+                if(source.indexOf('stdin') !== -1) {
+                    return this.context.sourceMapsRoot + "/" + (fname || this.info.fuseBoxPath);
+                }
+                
+                return this.context.sourceMapsRoot + "/" + source;
+            });
+            
             if (!this.context.inlineSourceMaps) {
                 delete jsonSourceMaps.sourcesContent;
             }
