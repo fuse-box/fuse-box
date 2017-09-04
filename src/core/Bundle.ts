@@ -12,6 +12,7 @@ import { Config } from "../Config";
 import { QuantumItem, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
 import { BundleAbstraction } from "../quantum/core/BundleAbstraction";
 import { PackageAbstraction } from "../quantum/core/PackageAbstraction";
+import { EventEmitter } from '../EventEmitter'
 
 export class Bundle {
     public context: WorkFlowContext;
@@ -26,6 +27,9 @@ export class Bundle {
     public lastChangedFile: string;
     public webIndexed = true;
     public splitFiles: Map<string, File>;
+    private errors: string[] = [];
+    private errorEmitter = new EventEmitter<string>()
+    private clearErrorEmitter = new EventEmitter<null>()
 
     public bundleSplit: BundleSplit;
     public quantumItem: QuantumItem;
@@ -85,6 +89,32 @@ export class Bundle {
                     server.send("source-changed", info);
                 }
             });
+
+            if (this.context.showErrorsInBrowser) {
+                const type = "update-bundle-errors",
+                    getData = () => ({
+                        bundleName: this.name,
+                        messages: this.errors
+                    })
+
+                this.errorEmitter.on(message => {
+                    server.send("bundle-error", {
+                        bundleName: this.name,
+                        message
+                    })
+                })
+
+                this.clearErrorEmitter.on(() => {
+                    server.send(type, getData())
+                })
+
+                server.server.on("connection", client => {
+                    client.send(JSON.stringify({
+                        type,
+                        data: getData()
+                    }))
+                })
+            }
         });
         return this;
     }
@@ -217,6 +247,7 @@ export class Bundle {
 
     public exec(): Promise<Bundle> {
         return new Promise((resolve, reject) => {
+            this.clearErrors()
             this.fuse
                 .initiateBundle(this.arithmetics || "", () => {
                     const output = this.fuse.context.output;
@@ -224,6 +255,7 @@ export class Bundle {
                     if (this.onDoneCallback && this.producer.writeBundles === true) {
                         this.onDoneCallback(this.process);
                     }
+                    this.printErrors()
                     return resolve(this);
                 }).then(source => {
                 }).catch(e => {
@@ -248,4 +280,26 @@ export class Bundle {
         }
     }
 
+    private clearErrors() {
+        this.errors = []
+        this.clearErrorEmitter.emit(null)
+    }
+
+    public addError(message: string) {
+        this.errors.push(message)
+        this.errorEmitter.emit(message)
+    }
+
+    public getErrors() {
+        return this.errors.slice()
+    }
+
+    public printErrors() {
+        if (this.errors.length && this.fuse.context.showErrors) {
+            this.fuse.context.log.echoBreak()
+            this.fuse.context.log.echoBoldRed(`Errors for ${this.name} bundle`)
+            this.errors.forEach(error => this.fuse.context.log.echoError(error))
+            this.fuse.context.log.echoBreak()
+        }
+    }
 }
