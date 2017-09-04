@@ -108,7 +108,7 @@ export class UserOutput {
         } else {
             fname = template
                 .replace('$name', basename)
-                .replace('$hash', "")
+                .replace(/([-_]*\$hash[-_]*)/, "")
         }
         this.lastGeneratedFileName = fname;
         let result = path.join(this.dir, dirname, fname);
@@ -130,6 +130,21 @@ export class UserOutput {
         }
     }
 
+    public writeToOutputFolder(userPath: string, content: string | Buffer): Promise<UserOutputResult> {
+        const targetPath = path.join(this.dir, userPath);
+        return new Promise((resolve, reject) => {
+            fs.writeFile(targetPath, content, (e) => {
+                if (e) {
+                    return reject(e);
+                }
+                let result = new UserOutputResult();
+                result.content = content;
+                result.path = targetPath;
+                result.filename = path.basename(targetPath);
+                return resolve(result);
+            });
+        });
+    }
     /**
      *
      *

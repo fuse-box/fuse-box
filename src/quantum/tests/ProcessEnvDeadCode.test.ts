@@ -25,6 +25,7 @@ export class RemoveStrictTest {
             },
         }).then((result) => {
             const contents = result.contents["index.js"];
+            console.log(contents);
             should(contents).notFindString('hello');
         });
     }
@@ -251,6 +252,7 @@ export class RemoveStrictTest {
             },
         }).then((result) => {
             const contents = result.contents["index.js"];
+
             should(contents).notFindString('wrong');
             should(contents).findString('correct');
         });
@@ -268,7 +270,7 @@ export class RemoveStrictTest {
                 plugins: [EnvPlugin({ foo: "eh" })],
                 files: {
                     "index.ts": `
-                        
+
                         if (process.env.NODE_ENV !== 'production') {
                             require("./dev2")
                             require("./dev")
@@ -287,7 +289,7 @@ export class RemoveStrictTest {
             },
         }).then((result) => {
             const contents = result.contents["index.js"];
-            console.log(contents);
+
 
         });
     }

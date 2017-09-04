@@ -38,6 +38,8 @@ export class ServerEnvironmentConditionTest {
         });
     }
 
+
+
     "Should handle  isServer in a list"() {
         // gets a module from src/tests/stubs/test_modules/fbjs
         return createOptimisedBundleEnv({
@@ -132,6 +134,29 @@ export class ServerEnvironmentConditionTest {
 
             `, (data) => {
                 should(data.response).equal("a");
+            }));;
+    }
+
+
+    "Should handlle FuseBox.target"() {
+        return FuseTestEnv.create({
+            project: {
+                files: {
+                    "index.ts": `
+                        module.exports = FuseBox.target
+                        `
+                },
+                plugins: [QuantumPlugin({
+                    target: "electron"
+                })]
+            }
+        }).simple().then(test => test.server(`
+                const index = $fsx.r(0);
+                process.send({response : index})
+
+            `, (data) => {
+                ;
+                should(data.response).equal("electron");
             }));;
     }
 }

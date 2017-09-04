@@ -9,7 +9,8 @@ export interface IQuantumExtensionParams {
     target?: string;
     uglify?: any;
     removeExportsInterop?: boolean;
-    removeUseStrict?: boolean;
+    removeUseStrict?: boolean
+    replaceTypeOf?: boolean;
     replaceProcessEnv?: boolean;
     webIndexPlugin?: WebIndexPluginClass;
     ensureES5?: boolean;
@@ -27,13 +28,14 @@ export interface IQuantumExtensionParams {
 
 export class QuantumOptions {
     private uglify: any;
-    private removeExportsInterop = true;
+    private removeExportsInterop = false;
     private removeUseStrict = true;
     private ensureES5 = true;
     private replaceProcessEnv = true;
     private containedAPI = false;
     private processPolyfill = false;
     private bakeApiIntoBundle: string;
+    private replaceTypeOf: boolean = true;
 
     private showWarnings = true;
     private treeshakeOptions: ITreeShakeOptions;
@@ -74,7 +76,9 @@ export class QuantumOptions {
         if (opts.warnings !== undefined) {
             this.showWarnings = opts.warnings;
         }
-
+        if (opts.replaceTypeOf !== undefined) {
+            this.replaceTypeOf = opts.replaceTypeOf;
+        }
         if (opts.containedAPI !== undefined) {
             this.containedAPI = opts.containedAPI;
         }
@@ -131,6 +135,10 @@ export class QuantumOptions {
 
     public enableContainedAPI() {
         return this.containedAPI = true;
+    }
+
+    public shouldReplaceTypeOf() {
+        return this.replaceTypeOf;
     }
 
     public getPromisePolyfill() {
@@ -196,7 +204,7 @@ export class QuantumOptions {
     }
 
     public shouldUglify() {
-        return this.uglify === true;
+        return this.uglify;
     }
 
     public shouldBakeApiIntoBundle() {
@@ -214,12 +222,22 @@ export class QuantumOptions {
         return this.replaceProcessEnv;
     }
 
+    public getTarget() {
+        return this.optsTarget;
+    }
+
+    public isTargetElectron() {
+        return this.optsTarget === "electron";
+    }
     public isTargetUniveral() {
         return this.optsTarget === "universal";
     }
+    public isTargetNpm() {
+        return this.optsTarget === "npm";
+    }
 
     public isTargetServer() {
-        return this.optsTarget === "server";
+        return this.optsTarget === "server" || this.optsTarget === "electron" || this.optsTarget === "npm";
     }
 
     public isTargetBrowser() {

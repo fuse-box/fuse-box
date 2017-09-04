@@ -68,7 +68,7 @@ export class CSSPluginClass implements Plugin {
     }
 
 
-    public inject(file: File, options: any, alternative?: boolean) {
+    public inject(file: File, options: any, alternative?: boolean): string {
         // Inject properties
         // { inject : path => path } -> customise automatic injection
         // { inject : false } -> do not inject anything. User will manually put the script tag
@@ -83,6 +83,7 @@ export class CSSPluginClass implements Plugin {
         } else {
             file.contents = result;
         }
+        return resolvedPath;
     }
 
     public transformGroup(group: File) {
@@ -110,7 +111,8 @@ export class CSSPluginClass implements Plugin {
 
             debug(`Writing ${outFile}`);
             return write(outFile, concat.content).then(() => {
-                this.inject(group, options);
+                const resolvedPath = this.inject(group, options);
+                this.emitHMR(group, resolvedPath);
                 // Writing sourcemaps
                 const sourceMapsFile = ensureUserPath(path.join(bundleDir, sourceMapsName));
                 return write(sourceMapsFile, concat.sourceMap);
@@ -123,19 +125,35 @@ export class CSSPluginClass implements Plugin {
 
         this.emitHMR(group);
     }
-    public emitHMR(file: File) {
-        let emitRequired = true;
+    public emitHMR(file: File, resolvedPath?: string) {
+        let emitRequired = false;
         const bundle = file.context.bundle;
         // We want to emit CSS Changes only if an actual CSS file was changed.
         if (bundle && bundle.lastChangedFile) {
-            emitRequired = isStylesheetExtension(bundle.lastChangedFile);
+            const lastFile = file.context.convertToFuseBoxPath(bundle.lastChangedFile);
+            if (isStylesheetExtension(bundle.lastChangedFile)) {
+                if (lastFile === file.info.fuseBoxPath ||
+                    file.context.getItem("HMR_FILE_REQUIRED", []).indexOf(file.info.fuseBoxPath) > -1) {
+                    emitRequired = true;
+                }
+
+            }
         }
         if (emitRequired) {
-            file.context.sourceChangedEmitter.emit({
-                type: "js",
-                content: file.alternativeContent,
-                path: file.info.fuseBoxPath,
-            });
+            if (resolvedPath) {
+
+                file.context.sourceChangedEmitter.emit({
+                    type: "hosted-css",
+                    path: resolvedPath,
+                });
+            } else {
+                file.context.sourceChangedEmitter.emit({
+                    type: "css",
+                    content: file.alternativeContent,
+                    path: file.info.fuseBoxPath,
+                });
+            }
+
         }
     }
     /**
@@ -210,14 +228,17 @@ export class CSSPluginClass implements Plugin {
             const utouchedPath = outFileFunction(file.info.fuseBoxPath);
             // reset the content so it won't get bundled
 
-            this.inject(file, this.options, true);
+            const resolvedPath = this.inject(file, this.options, true);
+
             // writing ilfe
             return write(userPath, file.contents).then(() => {
+                this.emitHMR(file, resolvedPath);
                 if (file.sourceMap && file.context.sourceMapsProject) {
                     const fileDir = path.dirname(userPath);
                     const sourceMapPath = path.join(fileDir,
                         path.basename(utouchedPath) + ".map");
                     return write(sourceMapPath, file.sourceMap).then(() => {
+
                         file.sourceMap = undefined;
                     });
                 }

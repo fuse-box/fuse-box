@@ -40,22 +40,4 @@ export class RemoveStrictTest {
         });
     }
 
-    "should remove intreop mode in a bundle by default"() {
-        return createOptimisedBundleEnv({
-            stubs: true,
-            options: {
-
-            },
-            project: {
-                files: {
-                    "index.ts": `export class Hello {}`
-                },
-                instructions: "index.ts",
-            },
-        }).then((result) => {
-            const contents = result.contents["index.js"];
-
-            should(contents).notFindString("Object.defineProperty(exports");
-        });
-    }
 }

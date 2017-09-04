@@ -6,7 +6,7 @@ import { SourceMapGenerator } from "./SourceMapGenerator";
 import { utils, each } from "realm-utils";
 import * as fs from "fs";
 import * as path from "path";
-import { ensureFuseBoxPath, readFuseBoxModule } from "../Utils";
+import { ensureFuseBoxPath, readFuseBoxModule, isStylesheetExtension } from "../Utils";
 
 /**
  *
@@ -32,6 +32,9 @@ export class File {
     public notFound: boolean;
 
     public params: Map<string, string>;
+
+
+    public wasTranspiled = false;
 
     public cached = false;
 
@@ -59,6 +62,8 @@ export class File {
      * @memberOf File
      */
     public isLoaded = false;
+
+
     /**
      *
      *
@@ -221,6 +226,7 @@ export class File {
      * @memberOf File
      */
     public tryPlugins(_ast?: any) {
+        if (this.context.runAllMatchedPlugins) { return this.tryAllPlugins(_ast) }
         if (this.context.plugins && this.relativePath) {
             let target: Plugin;
             let index = 0;
@@ -269,6 +275,38 @@ export class File {
         }
     }
 
+    /**
+     *
+     *
+     * @param {*} [_ast]
+     *
+     * @memberOf File
+     */
+    public tryAllPlugins(_ast?: any) {
+        const tasks = [];
+        if (this.context.plugins && this.relativePath) {
+            const addTask = item => {
+                if (utils.isFunction(item.transform)) {
+                    this.context.debugPlugin(item, `Captured ${this.info.fuseBoxPath}`);
+                    tasks.push(() => item.transform.apply(item, [this]));
+                }
+            };
+
+            this.context.plugins.forEach(item => {
+                let itemTest: RegExp;
+                if (Array.isArray(item)) {
+                    let el = item[0];
+                    itemTest = (el && utils.isFunction(el.test)) ? el : el.test;
+                } else {
+                    itemTest = item && item.test;
+                }
+                if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(this.relativePath)) {
+                    Array.isArray(item) ? item.forEach(addTask, this) : addTask(item);
+                }
+            }, this);
+        }
+        return this.context.queue(each(tasks, promise => promise()));
+    }
     /**
      *
      *
@@ -327,6 +365,9 @@ export class File {
         }
     }
 
+    public belongsToProject() {
+        return this.collection && this.collection.name === this.context.defaultPackageName;
+    }
     /**
      *
      *
@@ -342,10 +383,17 @@ export class File {
             return;
         }
         if (!fs.existsSync(this.info.absPath)) {
+
+            if (/\.js$/.test(this.info.fuseBoxPath) && this.context.fuse && this.context.fuse.producer) {
+                this.context.fuse.producer.addWarning('unresolved',
+                    `Statement "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
+            }
             this.notFound = true;
             return;
         }
-
+        if (this.context.polyfillNonStandardDefaultUsage) {
+            this.addStringDependency('fuse-heresy-default');
+        }
         if (/\.ts(x)?$/.test(this.absPath)) {
 
             this.context.debug("Typescript", `Captured  ${this.info.fuseBoxPath}`);
@@ -355,9 +403,22 @@ export class File {
         if (/\.js(x)?$/.test(this.absPath)) {
             this.loadContents();
             this.replaceDynamicImports();
+            if (this.context.useTypescriptCompiler && this.belongsToProject()) {
+                return this.handleTypescript();
+            }
             this.tryPlugins();
+
+            if (!this.wasTranspiled && this.context.cache && this.belongsToProject()) {
+                if (this.loadFromCache()) {
+                    return;
+                }
+
+                if (this.context.useCache) {
+                    this.context.cache.writeStaticCache(this, this.sourceMap);
+                }
+            }
             const vendorSourceMaps = this.context.sourceMapsVendor
-                && this.collection.name !== this.context.defaultPackageName;
+                && !this.belongsToProject();
             if (vendorSourceMaps) {
                 this.loadVendorSourceMap();
             } else {
@@ -370,6 +431,59 @@ export class File {
             this.contents = "";
             this.context.fuse.producer.addWarning("missing-plugin", `The contents of ${this.absPath} weren't loaded. Missing a plugin?`);
         }
+    }
+
+    public fileDependsOnLastChangedCSS() {
+
+        const bundle = this.context.bundle;
+        if (bundle && bundle.lastChangedFile) {
+            if (!isStylesheetExtension(bundle.lastChangedFile)) {
+                return false;
+            }
+            let collection = this.context.getItem("cssDependencies");
+            if (!collection) {
+                return false;
+            }
+            if (!collection[this.info.absPath]) {
+                return false;
+            }
+            let HMR_FILE_REQUIRED = this.context.getItem("HMR_FILE_REQUIRED", []);
+            for (let i = 0; i < collection[this.info.absPath].length; i++) {
+                const absPath = ensureFuseBoxPath(collection[this.info.absPath][i]);
+                if (absPath.indexOf(bundle.lastChangedFile) > -1) {
+                    this.context.log.echoInfo(`CSS Dependency: ${bundle.lastChangedFile} depends on ${this.info.fuseBoxPath}`)
+                    HMR_FILE_REQUIRED.push(this.info.fuseBoxPath);
+                    this.context.setItem("HMR_FILE_REQUIRED", HMR_FILE_REQUIRED);
+                    return true;
+                }
+            }
+        }
+
+    }
+    public bustCSSCache = false;
+    public isCSSCached(type: string = "css") {
+        if (this.bustCSSCache) {
+            return false;
+        }
+        if (!this.context || !this.context.cache) {
+            return;
+        }
+        if (!this.context.useCache) {
+            return false;
+        }
+        let cached = this.context.cache.getStaticCache(this, type);
+        if (cached) {
+            if (cached.sourceMap) {
+                this.sourceMap = cached.sourceMap;
+            }
+            this.context.setCSSDependencies(this, cached.dependencies);
+            if (!this.fileDependsOnLastChangedCSS()) {
+                this.isLoaded = true;
+                this.contents = cached.contents;
+                return true;
+            }
+        }
+        return false;
     }
 
     public loadFromCache(): boolean {
@@ -428,7 +542,7 @@ export class File {
      * @memberOf File
      */
     private handleTypescript() {
-
+        this.wasTranspiled = true;
         if (this.context.useCache) {
             if (this.loadFromCache()) {
                 this.tryPlugins();

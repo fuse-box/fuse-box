@@ -188,7 +188,14 @@ export function matchNamedExport(node: any, fn: any) {
         ".expression", "/AssignmentExpression", ".left", "/MemberExpression",
         ".object", ".name"], "exports")) {
         if (node.expression.left.property.type === "Identifier") {
-            fn(node.expression.left.property.name);
+            let referencedVariable;
+            if (node.expression.right) {
+                const right = node.expression.right;
+                if (right.object && right.object.type === "Identifier") {
+                    referencedVariable = right.object.name;
+                }
+            }
+            fn(node.expression.left.property.name, referencedVariable);
             return true;
         }
     }

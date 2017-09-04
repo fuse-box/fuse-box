@@ -26,14 +26,16 @@ export interface FuseBoxOptions {
     tsConfig?: string;
     package?: any;
     cache?: boolean;
-    target?: "browser" | "server" | "universal",
+    target?: "browser" | "server" | "universal" | "electron",
     log?: boolean;
     globals?: { [packageName: string]: /** Variable name */ string };
-    plugins?: Plugin[];
+    plugins?: Plugin[] | [Plugin[]];
     autoImport?: any;
     natives?: any;
+    warnings?: boolean,
     shim?: any;
     writeBundles?: boolean;
+    useTypescriptCompiler?: boolean;
     standalone?: boolean;
     sourceMaps?: boolean | { vendor?: boolean, inline?: boolean, project?: boolean, sourceRoot?: string };
     rollup?: any;
@@ -45,6 +47,9 @@ export interface FuseBoxOptions {
     debug?: boolean;
     files?: any;
     alias?: any;
+    useJsNext?: boolean | string[],
+    runAllMatchedPlugins?: boolean;
+    polyfillNonStandardDefaultUsage?: boolean | string[];
 }
 
 /**
@@ -86,6 +91,16 @@ export class FuseBox {
         if (opts.target !== undefined) {
             this.context.target = opts.target;
         }
+        if (opts.polyfillNonStandardDefaultUsage !== undefined) {
+            this.context.polyfillNonStandardDefaultUsage = opts.polyfillNonStandardDefaultUsage;
+        }
+
+        if (opts.useJsNext !== undefined) {
+            this.context.useJsNext = opts.useJsNext;
+        }
+        if (opts.useTypescriptCompiler !== undefined) {
+            this.context.useTypescriptCompiler = opts.useTypescriptCompiler;
+        }
 
         if (opts.experimentalFeatures !== undefined) {
             this.context.experimentalFeaturesEnabled = opts.experimentalFeatures;
@@ -95,6 +110,14 @@ export class FuseBox {
         }
         if (opts.debug !== undefined) {
             this.context.debugMode = opts.debug;
+        }
+
+        if (opts.debug !== undefined) {
+            this.context.debugMode = opts.debug;
+        }
+
+        if (opts.warnings !== undefined) {
+            this.context.showWarnings = opts.warnings;
         }
 
         if (opts.ignoreModules) {
@@ -116,7 +139,8 @@ export class FuseBox {
             this.context.setSourceMapsProperty(opts.sourceMaps);
         }
 
-        this.context.plugins = opts.plugins || [JSONPlugin()];
+        this.context.runAllMatchedPlugins = !!opts.runAllMatchedPlugins
+        this.context.plugins = opts.plugins as Plugin[] || [JSONPlugin()];
 
         if (opts.package) {
             if (utils.isPlainObject(opts.package)) {

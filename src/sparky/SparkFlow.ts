@@ -5,6 +5,7 @@ import { each } from "realm-utils";
 import { ensureDir, string2RegExp } from "../Utils";
 import { SparkyFile } from "./SparkyFile";
 import { log } from "./Sparky";
+import { Plugin } from '../core/WorkflowContext';
 import { parse, SparkyFilePatternOptions } from "./SparkyFilePattern";
 
 export class SparkFlow {

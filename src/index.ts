@@ -1,8 +1,10 @@
 import { breakCache } from "./CacheBreaker";
 
+
 // kill cache if required beforehand
 breakCache();
 
+export { Plugin, WorkFlowContext } from "./core/WorkflowContext";
 export { Bundle } from "./core/Bundle";
 export { BundleProducer } from "./core/BundleProducer";
 export { FuseBoxOptions } from "./core/FuseBox";
@@ -43,3 +45,4 @@ export { CSSModules } from "./plugins/stylesheet/CSSModules";
 export { CopyPlugin } from "./plugins/CopyPlugin";
 export { WebIndexPlugin } from "./plugins/WebIndexPlugin";
 export { PlainJSPlugin } from "./plugins/PlainJSPlugin";
+export { File } from "./core/File";

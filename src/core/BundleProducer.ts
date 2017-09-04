@@ -20,7 +20,7 @@ export class BundleProducer {
     public writeBundles = true;
     public sharedCustomPackages: Map<string, SharedCustomPackage​>;
     public runner: BundleRunner;
-    public userEnvVariables: any = { NODE_ENV: "production" };
+    public userEnvVariables: any = Object.assign(process.env, { NODE_ENV: "production" });
     public devServerOptions: ServerOptions;
 
     public entryPackageName: string;
@@ -55,7 +55,7 @@ export class BundleProducer {
         this.userEnvVariables = Object.assign(this.userEnvVariables, data);
     }
     public printWarnings() {
-        if (this.warnings.size > 0) {
+        if (this.warnings.size > 0 && this.fuse.context.showWarnings) {
             this.fuse.context.log.echoBreak();
             this.warnings.forEach(warnings => {
                 warnings.forEach(list => {
@@ -191,7 +191,8 @@ export class BundleProducer {
                 const bundle = this.bundles.get(bundleName);
 
                 const defer = bundle.fuse.context.defer;
-                bundle.lastChangedFile = path;
+
+                bundle.lastChangedFile = bundle.fuse.context.convertToFuseBoxPath(path);
                 // to ensure new process is not kicked in before the previous has completed
                 defer.queue(bundleName, () => {
                     return bundle.exec().then(result => {

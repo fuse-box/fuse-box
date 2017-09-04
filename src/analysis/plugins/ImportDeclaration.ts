@@ -1,5 +1,4 @@
 import { File } from "../../core/File";
-
 /**
  * Handles require and ImportDeclarations
  * At the moment does not transpile
@@ -22,10 +21,14 @@ export class ImportDeclaration {
                 }
             }
         }
+        if (node.type === "ExportDefaultDeclaration") {
+            file.es6module = true;
+        }
         if (node.type === "ExportAllDeclaration") {
             file.es6module = true;
             analysis.addDependency(node.source.value);
         }
+
 
         if (node.type === "ImportDeclaration" || node.type === "ExportNamedDeclaration") {
             if (!file.context.rollupOptions) {
@@ -45,8 +48,7 @@ export class ImportDeclaration {
         if (file.es6module) {
             file.context.log.magicReason(
                 'used typescript to compile because an import was used',
-                file.info.fuseBoxPath)
-
+                file.info.fuseBoxPath);
             const ts = require("typescript");
             let tsconfg: any = {
                 compilerOptions: {
@@ -64,16 +66,17 @@ export class ImportDeclaration {
      */
     private static handleAliasReplacement(file: File, requireStatement: string): string {
 
-        // checking for browser override (asap) case
+        // checking for browser override (asa) case
         // these people ...
         // https://github.com/defunctzombie/package-browser-field-spec
         if (file.collection && file.collection.info && file.collection.info.browserOverrides) {
             const overrides = file.collection.info.browserOverrides;
+            const pm = file.collection.pm;
             if (overrides) {
-                //require statement without file ext and override with ext
-                let requireStatementWithExt = requireStatement + '.js';
-                if (overrides[requireStatement] || overrides[requireStatementWithExt]) {
-                    requireStatement = overrides[requireStatement] || overrides[requireStatementWithExt];
+                const resolved = pm.resolve(requireStatement, file.info.absDir)
+                const fuseBoxPath = pm.getFuseBoxPath(resolved.absPath, file.collection.entryFile.info.absDir);
+                if (overrides[fuseBoxPath]) {
+                    requireStatement = overrides[fuseBoxPath];
                     file.analysis.requiresRegeneration = true;
                 }
             }

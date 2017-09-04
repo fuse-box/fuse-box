@@ -44,7 +44,7 @@ FuseBox.init({
 });
 ```
 
-UglifyJs is enabled by default, don't forget it install it
+UglifyJs is used optionally and activated with `{uglify : true}` option, don't forget it install it
 
 Via NPM:
 ```bash
@@ -58,6 +58,8 @@ yarn install uglify-js
 note: Make sure you have the LATEST uglify-js
 
 Make sure you are using [WebIndexPlugin](/plugins/webindexplugin#webindexplugin) as Quantum may produce more bundles than configured in the first place.
+
+note: Remove UglifyJSPlugin from the plugin list, it will conflict with Quantum
 
 ## How it works?
 
@@ -123,7 +125,7 @@ Quantum api is a lego-like. The more FuseBox features you use, the bigger it get
 r.r=function(o){var t=r.m[o];if(t)return t.m.exports;
 var f=r.f[o];if(f)return t=r.m[o]={},t.exports={},t.m={exports:t.exports},f(t.m,t.exports),t.m.exports}}}();
 ```
-Which is 225kb minified.
+Which is 225 bytes minified.
 
 Let's minify the example above, and see how it looks:
 
@@ -167,6 +169,16 @@ exports.hello = function(){
 }
 ```
 
+In order to achieve the best treeshaking experience, you need to understand [useJsNext](/page/configuration#usejsnext) option.
+
+FuseBox won't read `module` and `js:next` properties from `package.json` unless configured. This is done by design, as many libraries will simply get broken when transpiled with typescript. (FuseBox uses typescript to transpile es6 modules). For example you can't use `react-router` with [useJsNext](/page/configuration#usejsnext) option,
+because it uses non-standard javascript in the code base, e.g - `import React from "react"` where React doesn't export `default`
+
+You may find [polyfillNonStandardDefaultUsage](/page/configuration#polyfillnonstandarddefaultusage) option quite useful, but be careful, this is a non-standard way of cooking javascript!
+
+Therefore you must select the libraries with caution. FuseBox, however, will still try to treeshake `commonjs` libraries, in fact it works well in many cases, for example it does a nice job with React library, removing several files entirely from es5 build.
+
+
 github_example: quantum_tree_shaking
 
 ## Dead code elimination
@@ -194,6 +206,20 @@ console.log(2)
 ```
 
 Good thing about it, that you don't need uglify-js for this operation. However, you should not de-reference process.env.$key, as it won't be understood by quantum
+
+
+Quantum merges `process.env` with `{NODE_ENV : "production"}`. It's made on purpose to avoid mistakes, as Quantum builds are made for production. You can override `NODE_ENV` variable by using [EnvPlugin](/plugins/env-plugin#usage) 
+
+```js
+EnvPlugin({ NODE_ENV: "stage" })
+```
+
+And in your code
+```js
+if (process.env.NODE_ENV === "stage") {
+    console.log("staging env");
+}
+```
 
 For example:
 ```js
@@ -238,7 +264,7 @@ Here is a list of what you can configure:
 
 ### Target
 Default value: `browser`
-Possible values `server`, `browser`
+Possible values `server`, `browser`, `universal`,  `electron`, `npm`
 
 ```js
 QuantumPlugin({
@@ -248,6 +274,7 @@ QuantumPlugin({
 
 These options define the API, for example, if you choose `browser` the API will have no checks for browser and target it directly.
 
+note: With an `npm` target, `bakeApiIntoBundle` should be used and `containedAPI` should be `true`. Also, no vendor should be produced while the bundle is specified with the `[ ]` arithmetics to avoid bundling dependencies.
 
 ### bakeApiIntoBundle 
 Instead of creating a separate file with the api, you can chose to bake it into an existing bundle. 
@@ -369,6 +396,11 @@ Default value: `false`
 
 Removes all references to process. The most common use of process if `process.env` which is replaced nicely with Quantum. Therefore, if a user bundles it by mistake all the refences and the module will be removed even without tree shaking.
 
+### replaceTypeOf
+Default value: `true`
+
+Replaces `typeof module`, `typeof exports`, `typeof window`, `typeof define`, `typeof require` keywords to corresponding values at build time
+
 ### removeUseStrict
 Default value: `true`
 
@@ -414,7 +446,8 @@ QuantumPlugin({
 })
 ```
 
-Enables the tree shaking
+
+
 
 Accepts additional option `shouldRemove` to prevent some files from being removed (as FuseBox considers them useless user might think differently)
 

@@ -58,19 +58,22 @@ export class FlatFileGenerator {
 
     public render() {
         if (this.bundleAbstraction) {
-
             this.addHoistedVariables();
+        }
+        if (this.bundleAbstraction) {
+            if (this.bundleAbstraction.globalVariableRequired) {
+                const defineGlobalFn = "var global = window";
+                if (this.core.opts.isTargetBrowser()) {
+                    this.contents.push(defineGlobalFn);
+                }
+            }
         }
         if (this.entryId !== undefined) {
             const req = `$fsx.r(${JSON.stringify(this.entryId)})`;
 
             if (this.globalsName) {
-                if (this.core.opts.isTargetServer()) {
+                if (this.core.opts.isTargetNpm() || this.core.opts.isTargetServer()) {
                     this.contents.push(`module.exports = ${req}`);
-                }
-
-                if (this.core.opts.isTargetUniveral()) {
-                    //this.contents.push(`module.exports = ${req}`);
                 }
 
                 if (this.core.opts.isTargetBrowser()) {

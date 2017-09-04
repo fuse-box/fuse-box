@@ -241,6 +241,10 @@ FuseBox.init({
 
 There are 2 ways to get to the generated file names
 
+
+
+
+
 ### Hashes and WebIndexPlugin
 
 Use [WebIndexPlugin](/plugins/webindexplugin#webindexplugin) which will take care of everything. Generated files names will be in your script tags
@@ -268,6 +272,80 @@ lastPrimaryOutput contains the following information
 | `path`  | Full path to the file  |
 | `hash`  | Generated hash  |
 | `filename`  | Filename  |
+
+
+
+
+## useJsNext
+If this option is `true` FuseBox will take "json:next" or "module" properties from `package.json` if avaialable
+
+```js
+FuseBox.init({
+    useJsNext : true
+})
+```
+
+Alternatively you can pass a array of strings telling FuseBox which modules should try for js:next
+
+```js
+FuseBox.init({
+    useJsNext : ["antd"]
+})
+```
+
+## useTypescriptCompiler
+
+You can transpile normal javascript with typescript compiler. All you need to do is toggle this flag
+```js
+FuseBox.init({
+    useTypescriptCompiler : true
+})
+```
+
+And install typescript
+
+```
+npm install typescript --save-dev
+```
+
+
+## polyfillNonStandardDefaultUsage
+
+Fixes non-standard import `default` whereas a package doesn't export one. For example:
+```js
+FuseBox.init({
+    useJsNext : ["react", "react-dom"],
+    polyfillNonStandardDefaultUsage : true
+})
+```
+
+```js
+import React from "react"
+``` 
+
+This functionality will not work in your project (people should stop relying on it, it's limited by design), but it's targeted to dependencies where `useJsNext` is interconnected.
+
+it's strongly recommended NOT to use libraries that don't conform to javascript standards, like `react-router`, you may continue using it, but in this case don't toggle `useJsNext`
+
+This option will polyfill every single file in a package, it won't affect much the size in Quantum, as it will be transpiled into:
+
+```js
+$fsx.r(122)(module.exports)
+```
+
+You may optionally choose packages to polyfill 
+```js
+FuseBox.init({
+    useJsNext : ["react", "react-dom"],
+    polyfillNonStandardDefaultUsage : ["react", "react-dom"]
+})
+```
+And as a reminder, a proper way of importing React is as follows:
+
+```js
+import * as React from "react"
+```
+
 
 ## writeBundles
 
@@ -390,6 +468,19 @@ FuseBox tests each file running it through the plugin list. If it sees an array,
 [".scss", SassPlugin(), CSSPlugin()] // simple and clean
 [/\.scss$/, SassPlugin(), CSSPlugin()] // more verbose
 ```
+
+By default only the first plugin to match a file will be applied to the file. E.g., in the following:
+```js
+new FuseBox({
+    plugins: [
+		ReplacePlugin({ __PRODUCTION__: isProduction }),
+		ReplacePlugin({ __SERVER__: false })
+	]
+  }).plugin(ReplacePlugin({ __IOS__: true }))
+```
+... only the `ReplacePlugin({ __PRODUCTION__: isProduction })` will be run on the files.
+
+To make all of the plugins run, set `{ runAllMatchedPlugins: true }`.
 
 ## Target
 

@@ -147,6 +147,10 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         this.collectionSource.add(null, file.alternativeContent !== undefined ? file.alternativeContent : file.contents, file.sourceMap);
         this.annotate(`/* fuse:end-file "${file.info.fuseBoxPath}"*/`);
 
+        if (this.context.shouldPolyfillNonStandardDefault(file)) {
+            this.collectionSource.add(null, "require('fuse-heresy-default')(module.exports)");
+        }
+
         this.collectionSource.add(null, "});");
     }
 
@@ -179,9 +183,8 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         let mainEntry;
 
         // handle server bundle
-
-        if (this.context.target === "electron") {
-            this.concat.add(null, `FuseBox.target = "electron"`);
+        if (this.context.target) {
+            this.concat.add(null, `FuseBox.target = "${this.context.target}"`);
         }
 
         if (context.serverBundle) {

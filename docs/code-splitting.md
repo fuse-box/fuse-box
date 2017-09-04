@@ -20,6 +20,8 @@ steps:
 
 FuseBox does as much as possible to automate the process.
 
+note: Physical code splitting (when the bundles are actually created) works ONLY in Quantum. For development purposes your split bundles will be present in the master bundle BY DESIGN
+
 ## Setting it up
 
 Let's imagine a project
@@ -165,5 +167,6 @@ import("about").then(module => {
 })
 ```
 
+note: Physical code splitting (when the bundles are actually created) works ONLY in Quantum. For development purposes your split bundles will be present in the master bundle BY DESIGN
 
 github_example: react-code-splitting

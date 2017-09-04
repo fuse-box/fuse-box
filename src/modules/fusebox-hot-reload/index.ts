@@ -31,7 +31,22 @@ export const connect = (port: string, uri: string) => {
             }
         }
 
-        if (data.type === 'js') {
+        if (data.type === "hosted-css") {
+            var fileId = data.path.replace(/^\//, '').replace(/[\.\/]+/g, '-');
+            var existing = document.getElementById(fileId);
+            if (existing) {
+                existing.setAttribute("href", data.path + "?" + new Date().getTime());
+            } else {
+                var node = document.createElement('link');
+                node.id = fileId;
+                node.type = 'text/css';
+                node.rel = 'stylesheet';
+                node.href = data.path;
+                document.getElementsByTagName('head')[0].appendChild(node);
+            }
+        }
+
+        if (data.type === 'js' || data.type === "css") {
             FuseBox.flush();
             FuseBox.dynamic(data.path, data.content);
             if (FuseBox.mainFile) {
@@ -45,11 +60,7 @@ export const connect = (port: string, uri: string) => {
                     }
                     console.error(e);
                 }
-
             }
-        }
-        if (data.type === 'css' && __fsbx_css) {
-            __fsbx_css(data.path, data.content);
         }
     });
     client.on('error', (error) => {

@@ -1,10 +1,8 @@
 # Dynamic import
 
-In compliance with the upcoming [es6 proposal-dynamic-import](https://github.com/tc39/proposal-dynamic-import) and [Typescript 2.4 dynamic imports](https://github.com/Microsoft/TypeScript/wiki/Roadmap#24-june-2017) FuseBox supports `import` statement.
+In compliance with [es6 proposal-dynamic-import](https://github.com/tc39/proposal-dynamic-import) and [Typescript 2.4 dynamic imports](https://github.com/Microsoft/TypeScript/wiki/Roadmap#24-june-2017) FuseBox supports `import` statement.
 
 On of the standard functionality, FuseBox offers much more. [Quantum](/page/quantum) supports all the features listed below.
-
-You can start working with it already installing `2.2.0-beta.16`
 
 note: In order to use dynamic imports, add experimentalFeatures : true to the config. The option will be removed with the next major release
 
@@ -137,6 +135,8 @@ Tests are available [here](https://github.com/fuse-box/fuse-box/blob/master/src/
 ## Loading split bundle
 
 Split bundles can be retrieved by name or by referencing an actual module
+
+note: Physical code splitting (when the bundles are actually created) works ONLY in Quantum. For development purposes your split bundles will be present in the master bundle BY DESIGN
 
 Define the config first
 

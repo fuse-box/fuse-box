@@ -9,6 +9,7 @@ export class BundleAbstraction {
     public splitAbstraction = false;
     public packageAbstractions = new Map<string, PackageAbstraction​​>();
     public producerAbstraction: ProducerAbstraction;
+    public globalVariableRequired = false;
     /**
      * 
      * { "React" : [ 1,2,3,4 ] } 

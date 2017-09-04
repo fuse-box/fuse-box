@@ -39,6 +39,7 @@ export interface IPackageInformation {
     bundleData?: BundleData;
     entry: string;
     version: string;
+    jsNext?: boolean;
     root: string;
     entryRoot: string,
     custom: boolean;
@@ -272,8 +273,7 @@ export class PathMaster {
         return input;
     }
 
-    private ensureFolderAndExtensions(name: string, root: string, explicit = false):
-        { resolved: string, alias?: string } {
+    private ensureFolderAndExtensions(name: string, root: string, explicit = false): { resolved: string, alias?: string } {
 
         let ext = path.extname(name);
         let fileExt = this.tsMode && !explicit ? ".ts" : ".js";
@@ -303,20 +303,20 @@ export class PathMaster {
         }
 
         if (!AllowedExtenstions.has(ext)) {
-            let folder = path.isAbsolute(name) ? name : path.join(root, name);
-            const folderPath = this.testFolder(folder, name);
-            if (folderPath) {
-                return { resolved: folderPath }
+            let fileNameCheck = this.checkFileName(root, name);
+            if (fileNameCheck) {
+                return { resolved: fileNameCheck };
             } else {
-                let fileNameCheck = this.checkFileName(root, name);
-                if (fileNameCheck) {
-                    return { resolved: fileNameCheck };
+                let folder = path.isAbsolute(name) ? name : path.join(root, name);
+                const folderPath = this.testFolder(folder, name);
+                if (folderPath) {
+                    return { resolved: folderPath }
                 } else {
                     name += fileExt;
+                    return { resolved: name };
                 }
             }
         }
-
         return { resolved: name };
     }
 
@@ -341,6 +341,25 @@ export class PathMaster {
         };
     }
 
+    private fixBrowserOverrides(browserOverrides: { [key: string]: string }): { [key: string]: string } {
+        let newOverrides = {};
+        for (let key in browserOverrides) {
+            let value = browserOverrides[key];
+            if (/\.\//.test(key)) {
+                key = key.slice(2);
+            }
+            if (/\.\//.test(value)) {
+                value = "~/" + value.slice(2);
+            } else {
+                value = "~/" + value;
+            }
+            if (!/.js$/.test(value)) {
+                value = value + ".js";
+            }
+            newOverrides[key] = value;
+        }
+        return newOverrides;
+    }
     private getNodeModuleInformation(name: string): IPackageInformation {
 
         const readMainFile = (folder, isCustom: boolean) => {
@@ -352,6 +371,7 @@ export class PathMaster {
                 // Getting an entry point
                 let entryFile;
                 let entryRoot;
+                let jsNext = false;
                 let browserOverrides;
 
                 if (json.browser && !this.context.isBrowserTarget()) {
@@ -360,7 +380,7 @@ export class PathMaster {
                 }
                 if (this.context.isBrowserTarget() && json.browser) {
                     if (typeof json.browser === "object") {
-                        browserOverrides = json.browser;
+                        browserOverrides = this.fixBrowserOverrides(json.browser);
                         if (json.browser[json.main]) {
                             entryFile = json.browser[json.main];
                         }
@@ -373,16 +393,18 @@ export class PathMaster {
                 if (this.context.rollupOptions && json["jsnext:main"]) {
                     entryFile = path.join(folder, json["jsnext:main"]);
                 } else {
-                    // if (json.module) {
-                    //     entryFile = path.join(folder, entryFile || json.module || "index.js");
-                    // } else {
-                    entryFile = path.join(folder, entryFile || json.main || "index.js");
-                    //}
+                    if (this.context.shouldUseJsNext(name) && (json["jsnext:main"] || json.module)) {
+                        jsNext = true;
+                        entryFile = path.join(folder, json["jsnext:main"] || json.module);
+                    } else {
+                        entryFile = path.join(folder, entryFile || json.main || "index.js");
+                    }
                     entryRoot = path.dirname(entryFile);
                 }
                 return {
                     browserOverrides: browserOverrides,
                     name,
+                    jsNext,
                     custom: isCustom,
                     root: folder,
                     missing: false,

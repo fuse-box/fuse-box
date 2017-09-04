@@ -3,6 +3,7 @@ import * as express from "express";
 import { FuseBox } from "../";
 import { SocketServer } from "./SocketServer";
 import { ensureUserPath } from "../Utils";
+import { ServerOptions } from "./Server";
 
 export interface HTTPServerOptions {
     /** Defaults to 4444 if not specified */
@@ -31,12 +32,31 @@ export class HTTPServer {
     }
 
     // @TODO: should add .stop()
-    public launch(opts: HTTPServerOptions): void {
+    public launch(opts: HTTPServerOptions, userSettings?: ServerOptions): void {
         this.opts = opts || {};
         const port = this.opts.port || 4444;
         let server = http.createServer();
         SocketServer.createInstance(server, this.fuse);
         this.setup();
+
+
+        if (userSettings && userSettings.proxy) {
+            let proxyInstance;
+            try {
+                proxyInstance = require('http-proxy-middleware');
+            } catch (e) {
+
+            }
+            if (proxyInstance) {
+                for (let uPath in userSettings.proxy) {
+                    this.app.use(uPath, proxyInstance(userSettings.proxy[uPath]));
+                }
+            } else {
+                this.fuse.context.log.echoWarning("You are using development proxy but 'http-proxy-middleware' was not installed");
+            }
+
+        }
+
         server.on("request", this.app);
         setTimeout(() => {
             server.listen(port, () => {

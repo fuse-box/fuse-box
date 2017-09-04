@@ -48,11 +48,36 @@ Specify `open` option to open the url in your default browser
 
 ```js
 fuse.dev({
-    open : true
+    open : true,
     port : 8080
 })
 ```
 note: You need opn package to be installed.
+
+## Proxy
+
+You can proxy requests from your localhost to any other server by adding an option `proxy`
+
+You need to install [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware) in order to do that:
+
+```js
+fuse.dev({
+    proxy: {
+        '/api': {
+            target: 'https://jsonplaceholder.typicode.com', 
+            changeOrigin: true,
+            pathRewrite: {
+                '^/api': '/', 
+            },
+        }
+    }
+});
+```
+
+Whereas key is a path and options are passed directly to [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware) module
+
+note: run "npm install http-proxy-middleware"
+
 
 ## Express application access
 

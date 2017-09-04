@@ -10,6 +10,7 @@ import { DynamicImportStatement } from "./plugins/DynamicImportStatement";
 
 require("acorn-es7")(acorn);
 require("acorn-jsx/inject")(acorn);
+require('acorn-es7-plugin')(acorn);
 
 export interface TraversalPlugin {
     onNode(file: File, node: any, parent: any): void
@@ -24,7 +25,7 @@ export function acornParse(contents, options?: any) {
             sourceType: "module",
             tolerant: true,
             ecmaVersion: 8,
-            plugins: { es7: true, jsx: true },
+            plugins: { es7: true, jsx: true, asyncawait: true },
             jsx: { allowNamespacedObjects: true },
         },
     });
@@ -133,11 +134,17 @@ export class FileAnalysis {
         if (this.wasAnalysed || this.skipAnalysis) {
             return;
         }
-        
-        let traversalPlugins = plugins
+        // setting es6 module
+        // to transpile it with typescrip
+        if (this.file.collection && this.file.collection.info && this.file.collection.info.jsNext) {
+            this.file.es6module = true;
+        }
+
+        let traversalPlugins = plugins;
         if (traversalOptions && Array.isArray(traversalOptions.plugins)) {
             traversalPlugins = plugins.concat(traversalOptions.plugins)
         }
+
 
         ASTTraverse.traverse(this.ast, {
             pre: (node, parent, prop, idx) =>

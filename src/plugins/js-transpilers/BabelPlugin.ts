@@ -87,6 +87,7 @@ export class BabelPluginClass implements Plugin {
      * @param {File} file
      */
     public transform(file: File, ast: any) {
+        file.wasTranspiled = true;
         if (!babelCore) {
             babelCore = require("babel-core");
         }
