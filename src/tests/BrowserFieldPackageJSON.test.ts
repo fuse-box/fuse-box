@@ -147,4 +147,41 @@ export class BrowserFieldPackageJsonTest {
             should(index).deepEqual({ data: { target: 'world' } });
         }));
     }
+
+    "Should ignore false variable"() {
+        const name = "fuse_test_f";
+        createRealNodeModule(name, {
+            "package.json": JSON.stringify({
+                name: name,
+                browser: {
+                    "path": false
+                }
+            }),
+            "index.js": `
+                if (typeof window === 'undefined') {
+                    module.exports = require("path")
+                }  else {
+                    module.exports = {empty : true}
+                }
+            `
+        });
+        return FuseTestEnv.create(
+            {
+                project: {
+                    target: "browser",
+                    files: {
+                        "index.ts": `
+                            
+                            const data =  require("${name}")
+
+                            module.exports = data;
+                        `
+                    }
+                }
+            }
+        ).simple().then(test => test.browser(window => {
+            const index = window.FuseBox.import("./index");
+            should(index).deepEqual({ empty: true });
+        }));
+    }
 }
