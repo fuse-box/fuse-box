@@ -16,8 +16,10 @@ export class ImportDeclaration {
                 let arg1 = node.arguments[0];
                 if (analysis.nodeIsString(arg1)) {
                     let requireStatement = this.handleAliasReplacement(file, arg1.value);
-                    arg1.value = requireStatement;
-                    analysis.addDependency(requireStatement);
+                    if (requireStatement) {
+                        arg1.value = requireStatement;
+                        analysis.addDependency(requireStatement);
+                    }
                 }
             }
         }
@@ -72,27 +74,47 @@ export class ImportDeclaration {
         if (file.collection && file.collection.info && file.collection.info.browserOverrides) {
             const overrides = file.collection.info.browserOverrides;
             const pm = file.collection.pm;
+
             if (overrides) {
-                const resolved = pm.resolve(requireStatement, file.info.absDir)
-                const fuseBoxPath = pm.getFuseBoxPath(resolved.absPath, file.collection.entryFile.info.absDir);
-                if (overrides[fuseBoxPath]) {
-                    requireStatement = overrides[fuseBoxPath];
-                    file.analysis.requiresRegeneration = true;
+                if (overrides[requireStatement] !== undefined) {
+                    if (typeof overrides[requireStatement] === "string") {
+                        requireStatement = overrides[requireStatement];
+                        file.analysis.requiresRegeneration = true;
+                    } else {
+                        // which means that's is probable "false" and shouldn't be bundled
+                        return;
+                    }
+                } else {
+                    const resolved = pm.resolve(requireStatement, file.info.absDir);
+                    // it might be solved to a node_module
+                    if (resolved && resolved.absPath) {
+                        const fuseBoxPath = pm.getFuseBoxPath(resolved.absPath, file.collection.entryFile.info.absDir);
+                        if (overrides[fuseBoxPath] !== undefined) {
+                            if (typeof overrides[fuseBoxPath] === "string") {
+                                requireStatement = overrides[fuseBoxPath];
+                                file.analysis.requiresRegeneration = true;
+                            } else {
+                                // which means that's is probable "false" and shouldn't be bundled
+                                return;
+                            }
+                        }
+                    }
                 }
+
             }
         }
 
-        if (!file.context.experimentalAliasEnabled) {
-            return requireStatement;
-        }
         const aliasCollection = file.context.aliasCollection;
-        aliasCollection.forEach(props => {
-            if (props.expr.test(requireStatement)) {
-                requireStatement = requireStatement.replace(props.expr, `${props.replacement}$2`);
-                // only if we need it
-                file.analysis.requiresRegeneration = true;
-            }
-        });
+        if (aliasCollection) {
+            aliasCollection.forEach(props => {
+                if (props.expr.test(requireStatement)) {
+                    requireStatement = requireStatement.replace(props.expr, `${props.replacement}$2`);
+                    // only if we need it
+                    file.analysis.requiresRegeneration = true;
+                }
+            });
+        }
+
         return requireStatement;
     }
 }

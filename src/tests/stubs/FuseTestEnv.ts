@@ -4,6 +4,7 @@ import * as appRoot from "app-root-path";
 import { FuseBox } from "../../index";
 import { BundleProducer } from "../../core/BundleProducer";
 import { fork } from "child_process";
+import { removeFolder } from "../../Utils";
 const jsdom = require("jsdom");
 
 function createTestFolders(customFolder: string): { root, homeDir, dist } {
@@ -32,6 +33,15 @@ function createFiles(dir: string, files: any) {
         fs.ensureDirSync(path.dirname(filePath));
         fs.writeFileSync(filePath, content);
     }
+}
+export function createRealNodeModule(name: string, files: any) {
+
+    const path2Module = path.join(appRoot.path, "node_modules", name);
+    if (fs.existsSync(path2Module)) {
+        removeFolder(path2Module);
+    }
+    fs.ensureDirSync(path2Module);
+    createFiles(path2Module, files);
 }
 export class FuseTestEnv {
     public fuse: FuseBox;
