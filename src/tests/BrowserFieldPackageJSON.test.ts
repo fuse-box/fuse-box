@@ -184,4 +184,40 @@ export class BrowserFieldPackageJsonTest {
             should(index).deepEqual({ empty: true });
         }));
     }
+
+    "Should work nicely with the rest of the package"() {
+        const name = "fuse_test_g";
+        createRealNodeModule(name, {
+            "package.json": JSON.stringify({
+                name: name,
+                browser: {
+                    "hello.js": "target"
+                }
+            }),
+            "index.js": `
+            
+                module.exports = [ require("path").join("a", "b"), require("./hello") ]
+                
+            `,
+            "target.js": `module.exports = {target : true}`
+        });
+        return FuseTestEnv.create(
+            {
+                project: {
+                    target: "browser",
+                    files: {
+                        "index.ts": `
+                            
+                            const data =  require("${name}")
+
+                            module.exports = data;
+                        `
+                    }
+                }
+            }
+        ).simple().then(test => test.browser(window => {
+            const index = window.FuseBox.import("./index");
+            should(index).deepEqual(['a/b', { target: true }]);
+        }));
+    }
 }

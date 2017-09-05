@@ -81,17 +81,22 @@ export class ImportDeclaration {
                         requireStatement = overrides[requireStatement];
                         file.analysis.requiresRegeneration = true;
                     } else {
+                        // which means that's is probable "false" and shouldn't be bundled
                         return;
                     }
                 } else {
-                    const resolved = pm.resolve(requireStatement, file.info.absDir)
-                    if (resolved) {
+                    const resolved = pm.resolve(requireStatement, file.info.absDir);
+                    // it might be solved to a node_module
+                    if (resolved && resolved.absPath) {
                         const fuseBoxPath = pm.getFuseBoxPath(resolved.absPath, file.collection.entryFile.info.absDir);
-                        if (typeof overrides[fuseBoxPath] === "string") {
-                            requireStatement = overrides[fuseBoxPath];
-                            file.analysis.requiresRegeneration = true;
-                        } else {
-                            return;
+                        if (overrides[fuseBoxPath] !== undefined) {
+                            if (typeof overrides[fuseBoxPath] === "string") {
+                                requireStatement = overrides[fuseBoxPath];
+                                file.analysis.requiresRegeneration = true;
+                            } else {
+                                // which means that's is probable "false" and shouldn't be bundled
+                                return;
+                            }
                         }
                     }
                 }
@@ -99,17 +104,17 @@ export class ImportDeclaration {
             }
         }
 
-        if (!file.context.experimentalAliasEnabled) {
-            return requireStatement;
-        }
         const aliasCollection = file.context.aliasCollection;
-        aliasCollection.forEach(props => {
-            if (props.expr.test(requireStatement)) {
-                requireStatement = requireStatement.replace(props.expr, `${props.replacement}$2`);
-                // only if we need it
-                file.analysis.requiresRegeneration = true;
-            }
-        });
+        if (aliasCollection) {
+            aliasCollection.forEach(props => {
+                if (props.expr.test(requireStatement)) {
+                    requireStatement = requireStatement.replace(props.expr, `${props.replacement}$2`);
+                    // only if we need it
+                    file.analysis.requiresRegeneration = true;
+                }
+            });
+        }
+
         return requireStatement;
     }
 }
