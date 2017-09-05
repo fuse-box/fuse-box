@@ -73,12 +73,20 @@ export class ImportDeclaration {
             const overrides = file.collection.info.browserOverrides;
             const pm = file.collection.pm;
             if (overrides) {
-                const resolved = pm.resolve(requireStatement, file.info.absDir)
-                const fuseBoxPath = pm.getFuseBoxPath(resolved.absPath, file.collection.entryFile.info.absDir);
-                if (overrides[fuseBoxPath]) {
-                    requireStatement = overrides[fuseBoxPath];
+                if (overrides[requireStatement]) {
+                    requireStatement = overrides[requireStatement];
                     file.analysis.requiresRegeneration = true;
+                } else {
+                    const resolved = pm.resolve(requireStatement, file.info.absDir)
+                    if (resolved) {
+                        const fuseBoxPath = pm.getFuseBoxPath(resolved.absPath, file.collection.entryFile.info.absDir);
+                        if (overrides[fuseBoxPath]) {
+                            requireStatement = overrides[fuseBoxPath];
+                            file.analysis.requiresRegeneration = true;
+                        }
+                    }
                 }
+
             }
         }
 
