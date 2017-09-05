@@ -100,8 +100,9 @@ export class SassPluginClass implements Plugin {
         return new Promise((resolve, reject) => {
             return sass.render(options, (err, result) => {
                 if (err) {
+                    const errorFile = err.file === 'stdin' ? file.absPath : err.file
                     file.contents = "";
-                    console.log(err.stack || err)
+                    file.addError(`${err.message}\n      at ${errorFile}:${err.line}:${err.column}`)
                     return resolve();
                 }
 

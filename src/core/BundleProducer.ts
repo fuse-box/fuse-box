@@ -77,6 +77,12 @@ export class BundleProducer {
         list.push(message);
     }
 
+    public getErrors() {
+        const errors = []
+        this.bundles.forEach(bundle => errors.push(...bundle.getErrors()))
+        return errors
+    }
+
     public devCodeHasBeenInjected(key: string) {
         return this.injectedCode.has(key);
     }

@@ -79,6 +79,10 @@ export class WorkFlowContext {
     public showWarnings = true;
 
     public useJsNext: boolean | string[] = false;
+    public showErrors = true;
+
+    public showErrorsInBrowser = true;
+
 
     public sourceChangedEmitter = new EventEmitter<SourceChangedEvent>();
 
