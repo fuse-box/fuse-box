@@ -28,7 +28,7 @@ export interface ServerOptions {
     httpServer?: boolean;
     socketURI?: string;
     hmr?: boolean;
-    open?: boolean;
+    open?: boolean | string;
     proxy?: {
         [key: string]: {
             target: string,
