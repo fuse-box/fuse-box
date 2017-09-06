@@ -9,6 +9,7 @@ export interface LESSPluginOptions {
 
 export interface LESSPluginInternalOpts {
     filename?: string;
+    paths? : string[]
 }
 
 /**
@@ -38,6 +39,9 @@ export class LESSPluginClass implements Plugin {
      */
     public transform(file: File) {
         file.addStringDependency("fuse-box-css");
+        if (file.isCSSCached("less")) {
+            return;
+        }
         const context: WorkFlowContext = file.context;
         const options = { ...this.options };
 
@@ -57,6 +61,18 @@ export class LESSPluginClass implements Plugin {
         if ("sourceMapConfig" in context) {
             options.sourceMap = { ...sourceMapDef, ...options.sourceMap || {} };
         }
+        let paths = [file.info.absDir];
+        if( Array.isArray(options.paths)){
+            paths = options.paths.concat(paths)
+        } 
+        options.paths = paths;
+
+        const cssDependencies = file.context.extractCSSDependencies(file, {
+            paths: options.paths,
+            content: file.contents,
+            sassStyle: true,
+            extensions: ["less", "css"]
+        })
 
         return less.render(file.contents, options).then(output => {
             if (output.map) {
@@ -64,6 +80,15 @@ export class LESSPluginClass implements Plugin {
             }
 
             file.contents = output.css;
+
+            if (context.useCache) {
+                file.analysis.dependencies = cssDependencies;
+                context.cache.writeStaticCache(file, file.sourceMap, "less");
+                file.analysis.dependencies = [];
+            }
+        }).catch(err => {
+            file.contents = "";
+            file.addError(`${err.message}\n      at ${err.filename}:${err.line}:${err.column}`);
         });
     }
 }
