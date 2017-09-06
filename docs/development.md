@@ -48,7 +48,7 @@ Specify `open` option to open the url in your default browser
 
 ```js
 fuse.dev({
-    open : true,
+    open : true, // Boolean (false is default) | String: open specifc url like 'http://dev-server:8080'
     port : 8080
 })
 ```
