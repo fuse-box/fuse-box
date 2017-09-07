@@ -17,21 +17,21 @@ export class CSSDependencyExtractor {
     }
 
 
-    private extractDepsFromString(input: string) {
+    private extractDepsFromString(input: string, currentPath? : string) {
         const re = /@import\s+("|')([^"']+)/g;
         let match;
         while (match = re.exec(input)) {
-            let target = this.findTarget(match[2]);
+            let target = this.findTarget(match[2], currentPath);
             if (target) {
-                this.readFile(target);
+                this.readFile(target, path.dirname(target));
                 this.dependencies.push(target);
             }
         }
     }
 
-    private readFile(fileName: string) {
+    private readFile(fileName: string, currentPath? : string) {
         let contents = fs.readFileSync(fileName).toString();
-        this.extractDepsFromString(contents)
+        this.extractDepsFromString(contents, currentPath)
     }
     public getDependencies() {
         return this.dependencies;
@@ -71,13 +71,17 @@ export class CSSDependencyExtractor {
         return path.join(suggested, target);
     }
 
-    private findTarget(fileName: string): string {
+    private findTarget(fileName: string, currentPath? : string): string {
         let targetFile: any;
         let extName = path.extname(fileName);
         if (!extName) {
-            for (let p = 0; p < this.opts.paths.length; p++) {
+            let paths = this.opts.paths;
+            if( currentPath){
+                paths = [currentPath].concat(paths)
+            }
+            for (let p = 0; p < paths.length; p++) {
                 for (let e = 0; e < this.opts.extensions.length; e++) {
-                    let filePath = this.getPath(this.opts.paths[p], fileName + "." + this.opts.extensions[e]);
+                    let filePath = this.getPath(paths[p], fileName + "." + this.opts.extensions[e]);
                     filePath = this.tryFile(filePath);
                     if (filePath) {
                         return filePath;
