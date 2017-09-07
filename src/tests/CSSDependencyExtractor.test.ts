@@ -96,8 +96,9 @@ export class DependencyExtractorTest {
             `
         });
         let deps = extractor.getDependencies();
-        
-        let expected = ["tests/stubs/css/nested/a/foo.scss", "tests/stubs/css/nested/a/b/bar.scss", "tests/stubs/css/nested/main.scss" ];
+        let expected = ["tests/stubs/css/nested/a/foo.scss", 
+            "tests/stubs/css/nested/a/b/bar.scss", 
+            "tests/stubs/css/nested/main.scss" ].map(path.normalize);
         deps.forEach((dep, index) => {
             should(dep).findString(expected[index])
         });
