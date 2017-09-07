@@ -4,10 +4,6 @@
 ## Description
 Generates a HTML file once a producer's job is completed
 
-note: This plugin is under development
-
-
-
 ## Usage
 
 ### Setup
