@@ -20,7 +20,7 @@ export class DependencyExtractorTest {
             `
         });
         let deps = extractor.getDependencies();
-        let expected = ["tests/stubs/css/path1/foo.scss", "tests/stubs/css/path1/woo.scss", "tests/stubs/css/path1/hello.scss"]
+        let expected = ["tests/stubs/css/path1/foo.scss", "tests/stubs/css/path1/woo.scss", "tests/stubs/css/path1/hello.scss"].map(path.normalize)
         deps.forEach((dep, index) => {
             should(dep).findString(expected[index])
         });
@@ -40,7 +40,7 @@ export class DependencyExtractorTest {
             `
         });
         let deps = extractor.getDependencies();
-        let expected = ["tests/stubs/css/path1/_underscore.scss"]
+        let expected = ["tests/stubs/css/path1/_underscore.scss"].map(path.normalize)
         deps.forEach((dep, index) => {
             should(dep).findString(expected[index])
         });
@@ -60,7 +60,7 @@ export class DependencyExtractorTest {
             `
         });
         let deps = extractor.getDependencies();
-        let expected = ["tests/stubs/css/path1/_underscore.scss"]
+        let expected = ["tests/stubs/css/path1/_underscore.scss"].map(path.normalize)
         deps.forEach((dep, index) => {
             should(dep).findString(expected[index])
         });
@@ -79,7 +79,7 @@ export class DependencyExtractorTest {
             `
         });
         let deps = extractor.getDependencies();
-        let expected = ["tests/stubs/css/path1/_underscore_css.css"];
+        let expected = ["tests/stubs/css/path1/_underscore_css.css"].map(path.normalize)
         deps.forEach((dep, index) => {
             should(dep).findString(expected[index])
         });
