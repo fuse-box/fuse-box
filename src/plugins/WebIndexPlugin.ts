@@ -3,6 +3,7 @@ import { Plugin } from "../core/WorkflowContext";
 import { BundleProducer } from "../core/BundleProducer";
 import * as fs from "fs";
 import { ensureAbsolutePath, joinFuseBoxPath } from "../Utils";
+import { UserOutput } from "../core/UserOutput";
 
 export interface IndexPluginOptions {
     title?: string;
@@ -15,6 +16,7 @@ export interface IndexPluginOptions {
     target?: string;
     template?: string;
     async?: boolean;
+    resolve ?: {(output : UserOutput) : string};
 }
 export class WebIndexPluginClass implements Plugin {
     constructor(public opts?: IndexPluginOptions) {
@@ -35,10 +37,14 @@ export class WebIndexPluginClass implements Plugin {
             if (pass) {
                 const output = bundle.context.output;
                 if (output && output.lastPrimaryOutput) {
-                    bundlePaths.push(
-                        joinFuseBoxPath(this.opts.path ? this.opts.path : "/", output.folderFromBundleName || "/",
-                            output.lastPrimaryOutput.filename)
-                    )
+                    if( this.opts.resolve){
+                        bundlePaths.push(this.opts.resolve(output))
+                    } else {
+                        bundlePaths.push(
+                            joinFuseBoxPath(this.opts.path ? this.opts.path : "/", output.folderFromBundleName || "/",
+                                output.lastPrimaryOutput.filename)
+                        )
+                    }
                 }
 
             }

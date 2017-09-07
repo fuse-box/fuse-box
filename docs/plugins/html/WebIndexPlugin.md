@@ -34,7 +34,17 @@ fuse.plugin(
 | ` path `   | The relative url bundles are served from. Default is `/`. Empty is set with `.`  |
 | ` template `   | Provide a path to your own template  |
 | ` target `   | The main filename. Default is `index.html`  |
+| ` resolve `   | `resolve ?: {(output : UserOutput) : string}` Allows to completely override the output  |
 
+
+### Resolve example
+`resolve` option allows you to completely override the path
+
+```js
+WebIndexPlugin({
+    resolve : output => output.lastPrimaryOutput.filename 
+})
+```
 
 
 ## Custom template
