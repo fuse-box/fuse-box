@@ -74,11 +74,11 @@ export class CSSDependencyExtractor {
     private findTarget(fileName: string, currentPath? : string): string {
         let targetFile: any;
         let extName = path.extname(fileName);
+        let paths = this.opts.paths;
+        if( currentPath){
+            paths = [currentPath].concat(paths)
+        }
         if (!extName) {
-            let paths = this.opts.paths;
-            if( currentPath){
-                paths = [currentPath].concat(paths)
-            }
             for (let p = 0; p < paths.length; p++) {
                 for (let e = 0; e < this.opts.extensions.length; e++) {
                     let filePath = this.getPath(paths[p], fileName + "." + this.opts.extensions[e]);
@@ -89,8 +89,8 @@ export class CSSDependencyExtractor {
                 }
             }
         } else {
-            for (let p = 0; p < this.opts.paths.length; p++) {
-                let filePath = this.getPath(this.opts.paths[p], fileName);
+            for (let p = 0; p < paths.length; p++) {
+                let filePath = this.getPath(paths[p], fileName);
                 filePath = this.tryFile(filePath);
                 if (filePath) {
                     return filePath;
