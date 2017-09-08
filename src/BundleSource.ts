@@ -281,7 +281,8 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
        
         return {
             content: this.concat.content,
-            sourceMap: this.includeSourceMaps ? this.concat.sourceMap : null
+            sourceMap: this.includeSourceMaps ? this.concat.sourceMap : null,
+            add: this.concat.add
         }
     }
 }
