@@ -589,7 +589,11 @@ export class WorkFlowContext {
         if (this.output && (!this.bundle || this.bundle && this.bundle.producer.writeBundles)) {
             this.output.writeCurrent(res.content).then(() => {
 
-                this.writeSourceMaps(res);
+                if(this.source.includeSourceMaps) {
+                    this.writeSourceMaps(res);
+                }
+                
+                    
                 this.defer.unlock();
                 if (utils.isFunction(outFileWritten)) {
                     outFileWritten();
@@ -605,7 +609,7 @@ export class WorkFlowContext {
 
     protected writeSourceMaps(result: any) {
         // Writing sourcemaps
-        if ((this.sourceMapsProject || this.sourceMapsVendor) && result.sourceMap) {
+        if ((this.sourceMapsProject || this.sourceMapsVendor)) {
             this.output.write(`${this.output.filename}.js.map`, result.sourceMap, true);
         }
     }

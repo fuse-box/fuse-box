@@ -40,7 +40,7 @@ export class BundleSource {
      * @type boolean
      * @memberOf BundleSource
      */
-    private includeSourceMaps: boolean = false;
+    public includeSourceMaps: boolean = false;
     
     public bundleInfoObject: any;
 
@@ -278,11 +278,6 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
      * @memberOf BundleSource
      */
     public getResult() {
-       
-        return {
-            content: this.concat.content,
-            sourceMap: this.includeSourceMaps ? this.concat.sourceMap : null,
-            add: this.concat.add
-        }
+        return this.concat;
     }
 }
