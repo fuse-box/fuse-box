@@ -210,7 +210,7 @@ const fuse = FuseBox.init({
 });
 
 fuse.bundle("bundle1")
-    .shim: {},
+    .shim({}),
     .instructions(`~ index.ts`);
 
 fuse.bundle("bundle2")
