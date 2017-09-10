@@ -23,6 +23,11 @@ export class ImportDeclaration {
                 }
             }
         }
+
+        if (node.async === true) {
+            file.es6module = true;
+        }
+
         if (node.type === "ExportDefaultDeclaration") {
             file.es6module = true;
         }
