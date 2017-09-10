@@ -22,7 +22,7 @@ const plugins: TraversalPlugin[] = [AutoImport, OwnVariable, OwnBundle, ImportDe
 export function acornParse(contents, options?: any) {
     return acorn.parse(contents, {
         ...options || {}, ...{
-            sourceType: "module",
+            sourceType: "script",
             tolerant: true,
             ecmaVersion: 8,
             plugins: { es7: true, jsx: true, asyncawait: true },
