@@ -1,4 +1,4 @@
-import { Plugin } from "../core/WorkflowContext";
+import { Plugin, WorkFlowContext } from "../core/WorkflowContext";
 import { BundleSource } from "../BundleSource";
 
 // TODO get typings for UglifyJS opts
@@ -19,7 +19,7 @@ export class UglifyJSPluginClass implements Plugin {
 
     constructor(public options: UglifyJSPluginOptions = {}) {}
 
-    public postBundle(context) {
+    public postBundle(context : WorkFlowContext | any) {
         const mainOptions : any = {
         };
         const UglifyJs = require("uglify-js");
@@ -28,11 +28,13 @@ export class UglifyJSPluginClass implements Plugin {
 			mainOptions.fromString = true;
 		}
 
+        const includeSourceMaps = context.source.includeSourceMaps;
         const concat = context.source.getResult();
         const source = concat.content.toString();
         const sourceMap = concat.sourceMap;
 
         const newSource = new BundleSource(context);
+        newSource.includeSourceMaps = includeSourceMaps;
         context.source = newSource;
 
         const newConcat = context.source.getResult();
@@ -44,18 +46,24 @@ export class UglifyJSPluginClass implements Plugin {
             }
         }
 
+        if(includeSourceMaps) {
+            mainOptions.inSourceMap = JSON.parse(sourceMap);
+            mainOptions.outSourceMap = `${context.output.filename}.js.map`;
+        }
+    
         let timeStart = process.hrtime();
 
-        const result = UglifyJs.minify(source, {
+        var opt = {
             ...this.options,
-            ...mainOptions,
-        });
+            ...mainOptions
+        };
+      
+        const result = UglifyJs.minify(source, opt);
 
         let took = process.hrtime(timeStart);
         let bytes = Buffer.byteLength(result.code, "utf8");
 
         context.log.echoBundleStats("Bundle (Uglified)", bytes, took);
-
         newConcat.add(null, result.code, result.map || sourceMap);
     }
 }

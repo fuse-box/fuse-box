@@ -419,6 +419,7 @@ export class File {
             }
             const vendorSourceMaps = this.context.sourceMapsVendor
                 && !this.belongsToProject();
+
             if (vendorSourceMaps) {
                 this.loadVendorSourceMap();
             } else {
@@ -517,6 +518,7 @@ export class File {
         if (!this.context.cache) {
             return this.makeAnalysis();
         }
+
         const key = `vendor/${this.collection.name}/${this.info.fuseBoxPath}`;
         this.context.debug("File", `Vendor sourcemap ${key}`);
         let cachedMaps = this.context.cache.getPermanentCache(key);
@@ -559,15 +561,15 @@ export class File {
         this.context.debug("TypeScript", `Transpile ${this.info.fuseBoxPath}`)
 
         let result = ts.transpileModule(this.contents, this.getTranspilationConfig());
-
         if (result.sourceMapText && this.context.useSourceMaps) {
             let jsonSourceMaps = JSON.parse(result.sourceMapText);
             jsonSourceMaps.file = this.info.fuseBoxPath;
-            jsonSourceMaps.sources = [this.context.sourceMapsRoot + "/" + this.info.fuseBoxPath.replace(/\.js(x?)$/, ".ts$1")];
+            jsonSourceMaps.sources = [this.context.sourceMapsRoot +"/"+ this.relativePath.replace(/\.js(x?)$/, ".ts$1")];
 
             if (!this.context.inlineSourceMaps) {
                 delete jsonSourceMaps.sourcesContent;
             }
+            
             result.outputText = result.outputText.replace("//# sourceMappingURL=module.js.map", "");
             this.sourceMap = JSON.stringify(jsonSourceMaps);
         }
@@ -590,11 +592,7 @@ export class File {
             let jsonSourceMaps = JSON.parse(this.sourceMap);
             jsonSourceMaps.file = this.info.fuseBoxPath;
             jsonSourceMaps.sources = jsonSourceMaps.sources.map((source : string) => {
-                if(source.indexOf('stdin') !== -1) {
-                    return this.context.sourceMapsRoot + "/" + (fname || this.info.fuseBoxPath);
-                }
-                
-                return this.context.sourceMapsRoot + "/" + source;
+                return this.context.sourceMapsRoot + "/" + (fname || source);
             });
             
             if (!this.context.inlineSourceMaps) {

@@ -154,7 +154,7 @@ export class WorkFlowContext {
     public sourceMapsProject: boolean = false;
     public sourceMapsVendor: boolean = false;
     public inlineSourceMaps: boolean = true;
-    public sourceMapsRoot: string = "/src";
+    public sourceMapsRoot: string = "";
     public useSourceMaps = false;
 
     public initialLoad = true;
@@ -327,7 +327,7 @@ export class WorkFlowContext {
                 if (params.inline !== undefined) {
                     this.inlineSourceMaps = params.inline;
                 }
-                if (params.sourceRoot) {
+                if (params.sourceRoot || params.sourceRoot === '') {
                     this.sourceMapsRoot = params.sourceRoot;
                 }
             }
@@ -582,12 +582,18 @@ export class WorkFlowContext {
 
         const res = this.source.getResult();
         if (this.bundle) {
+
             this.bundle.generatedCode = res.content;
         }
 
         if (this.output && (!this.bundle || this.bundle && this.bundle.producer.writeBundles)) {
             this.output.writeCurrent(res.content).then(() => {
-                this.writeSourceMaps(res);
+
+                if(this.source.includeSourceMaps) {
+                    this.writeSourceMaps(res);
+                }
+                
+                    
                 this.defer.unlock();
                 if (utils.isFunction(outFileWritten)) {
                     outFileWritten();
@@ -603,7 +609,7 @@ export class WorkFlowContext {
 
     protected writeSourceMaps(result: any) {
         // Writing sourcemaps
-        if (this.sourceMapsProject || this.sourceMapsVendor) {
+        if ((this.sourceMapsProject || this.sourceMapsVendor)) {
             this.output.write(`${this.output.filename}.js.map`, result.sourceMap, true);
         }
     }

@@ -32,6 +32,16 @@ export class BundleSource {
 
     private collectionSource: any;
 
+    /**
+     * Provied an info if this BundleSource should
+     * include the sourceMaps
+     *
+     * @private
+     * @type boolean
+     * @memberOf BundleSource
+     */
+    public includeSourceMaps: boolean = false;
+    
     public bundleInfoObject: any;
 
     /**
@@ -137,6 +147,11 @@ export class BundleSource {
         if (file.info.isRemoteFile || file.notFound
             || file.collection && file.collection.acceptFiles === false) {
             return;
+        }
+
+        if(!this.includeSourceMaps) {
+            // set to true if this file has relevant sourceMaps
+            this.includeSourceMaps = file.belongsToProject() && this.context.sourceMapsProject || !file.belongsToProject() && this.context.sourceMapsVendor;
         }
 
         this.collectionSource.add(null,
