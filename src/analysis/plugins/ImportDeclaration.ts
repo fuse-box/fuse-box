@@ -1,4 +1,5 @@
-import { File, ScriptTarget } from "../../core/File";
+import { File } from "../../core/File";
+
 /**
  * Handles require and ImportDeclarations
  * At the moment does not transpile
@@ -24,10 +25,6 @@ export class ImportDeclaration {
             }
         }
 
-        if (node.async === true) {
-            file.setLanguageLevel(ScriptTarget.ES2017)
-        }
-
         if (node.type === "ExportDefaultDeclaration") {
             file.es6module = true;
         }
@@ -50,22 +47,8 @@ export class ImportDeclaration {
     }
 
     public static onEnd(file: File) {
-        const target = file.context.languageLevel
-        const downlevelTranspile = file.languageLevel > target
-
-        if (file.es6module || downlevelTranspile) {
-            file.context.log.magicReason(
-                'used typescript to compile because an import was used',
-                file.info.fuseBoxPath);
-            const ts = require("typescript");
-            let tsconfg: any = {
-                compilerOptions: {
-                    module: "commonjs",
-                    target
-                },
-            };;
-            let result = ts.transpileModule(file.contents, tsconfg);
-            file.contents = result.outputText;
+        if (file.es6module) {
+            file.analysis.requiresTranspilation = true
         }
     }
 
