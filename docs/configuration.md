@@ -484,22 +484,46 @@ To make all of the plugins run, set `{ runAllMatchedPlugins: true }`.
 
 ## Target
 
-At this moment target exists  to switch to [electron](https://electron.atom.io/) mode
-and [browser case](https://github.com/defunctzombie/package-browser-field-spec)
-
-for electron:
+You can define target, along with ecmascript version.
 
 ```js
-fuse.bundle("app").target("electron")
+FuseBox.init({
+    target : "browser"
+})
 ```
 
-for browser (for example lib asap)
+### Target Browser
+Target browser enables `browser` field in `package.json`. Once set, FuseBox will try to read that field and override paths accordingly.
+
+### Target server
+Will ignore FuseBox' polyfills as native modules are available without them.
+
+### Target electron
+
+Electon specific environment
+
+### Language Level
+
+FuseBox uses typescript for modules that are not transpiled. 
+For example you can require a file from `super-lib/dist/es7` and it will be recognised as a module that requires transpilation. `imports` will be converted to a format that FuseBox understands, in our case `require`. But it might transpile and polyfill unwanted features, like `async` for server target.
+
+Use `@` symbol to define language level
 
 ```js
-fuse.bundle("app").target("browser")
+FuseBox.init({
+    target : "server@esnext"
+})
 ```
 
-We keep extending this functionality to provide more platform specific features.
+Possible levels
+
+* es5
+* es2015
+* es2016
+* es2017
+* esnext
+
+
 
 ### Example
 ```bash
