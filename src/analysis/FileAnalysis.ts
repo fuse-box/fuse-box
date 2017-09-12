@@ -1,8 +1,9 @@
 import { ASTTraverse } from "./../ASTTraverse";
 import { PrettyError } from "./../PrettyError";
-import { File } from "../core/File";
+import { File, ScriptTarget } from "../core/File";
 import * as acorn from "acorn";
 import { AutoImport } from "./plugins/AutoImport";
+import { LanguageLevel } from "./plugins/LanguageLevel";
 import { OwnVariable } from "./plugins/OwnVariable";
 import { OwnBundle } from "./plugins/OwnBundle";
 import { ImportDeclaration } from "./plugins/ImportDeclaration";
@@ -17,7 +18,7 @@ export interface TraversalPlugin {
     onEnd(file: File): void
 }
 
-const plugins: TraversalPlugin[] = [AutoImport, OwnVariable, OwnBundle, ImportDeclaration, DynamicImportStatement];
+const plugins: TraversalPlugin[] = [AutoImport, OwnVariable, OwnBundle, ImportDeclaration, DynamicImportStatement, LanguageLevel];
 
 export function acornParse(contents, options?: any) {
     return acorn.parse(contents, {
@@ -54,6 +55,8 @@ export class FileAnalysis {
     public fuseBoxMainFile;
 
     public requiresRegeneration = false;
+
+    public requiresTranspilation = false;
 
     public fuseBoxVariable = "FuseBox";
 
@@ -158,5 +161,23 @@ export class FileAnalysis {
         if (this.requiresRegeneration) {
             this.file.contents = this.file.context.generateCode(this.ast);
         }
+
+        if (this.requiresTranspilation) {
+            const target = ScriptTarget[this.file.context.languageLevel]
+            this.file.context.log.magicReason(
+                'compiling with typescript to match language target: ' + target,
+                this.file.info.fuseBoxPath
+            );            
+            const ts = require("typescript");
+            let tsconfg: any = {
+                compilerOptions: {
+                    module: "commonjs",
+                    target
+                }
+            };
+            let result = ts.transpileModule(this.file.contents, tsconfg);
+            this.file.contents = result.outputText;
+        }
+
     }
 }
