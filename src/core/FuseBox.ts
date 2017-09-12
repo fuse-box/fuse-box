@@ -16,6 +16,7 @@ import { UserOutput } from "./UserOutput";
 import { BundleProducer } from "./BundleProducer";
 import { Bundle } from "./Bundle";
 import { SplitConfig } from "./BundleSplit";
+import { ScriptTarget } from "./File";
 
 const isWin = /^win/.test(process.platform);
 const appRoot = require("app-root-path");
@@ -26,7 +27,16 @@ export interface FuseBoxOptions {
     tsConfig?: string;
     package?: any;
     cache?: boolean;
-    target?: "browser" | "server" | "universal" | "electron",
+    /**
+     * "browser" | "server" | "universal" | "electron"
+     *
+     * Combine target and language version with an '@'
+     *
+     * eg. server@es2017
+     *
+     * default: "universal@es5"
+     */
+    target?: string,
     log?: boolean;
     globals?: { [packageName: string]: /** Variable name */ string };
     plugins?: Plugin[] | [Plugin[]];
@@ -91,7 +101,11 @@ export class FuseBox {
         }
 
         if (opts.target !== undefined) {
-            this.context.target = opts.target;
+            const [target, languageLevel] = opts.target.toLowerCase().split('@')
+            this.context.target = target
+            const level = languageLevel && Object.keys(ScriptTarget)
+                .find(t => t.toLowerCase() === languageLevel)
+            this.context.languageLevel = ScriptTarget[level] || ScriptTarget.ES5
         }
         if (opts.polyfillNonStandardDefaultUsage !== undefined) {
             this.context.polyfillNonStandardDefaultUsage = opts.polyfillNonStandardDefaultUsage;

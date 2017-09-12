@@ -9,6 +9,17 @@ import * as path from "path";
 import { ensureFuseBoxPath, readFuseBoxModule, isStylesheetExtension } from "../Utils";
 
 /**
+ * Same Target Enumerator used in TypeScript
+ */
+export enum ScriptTarget {
+    ES5 = 1,
+    ES2015 = 2,
+    ES2016 = 3,
+    ES2017 = 4,
+    ESNext = 5
+}
+
+/**
  *
  *
  * @export
@@ -17,6 +28,8 @@ import { ensureFuseBoxPath, readFuseBoxModule, isStylesheetExtension } from "../
 export class File {
 
     public isFuseBoxBundle = false;
+
+    public languageLevel = ScriptTarget.ES5
 
     public es6module = false;
     /**
@@ -164,6 +177,12 @@ export class File {
         let file = new File(collection.context, info);
         file.collection = collection;
         return file;
+    }
+
+    public setLanguageLevel (level: ScriptTarget) {
+        if (this.languageLevel < level) {
+            this.languageLevel = level
+        }
     }
 
     public addProperty(key: string, obj: any) {

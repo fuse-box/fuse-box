@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as escodegen from "escodegen";
 import { BundleSource } from "../BundleSource";
-import { File } from "./File";
+import { File, ScriptTarget } from "./File";
 import { Log } from "../Log";
 import { IPackageInformation, IPathInformation, AllowedExtenstions } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
@@ -96,6 +96,8 @@ export class WorkFlowContext {
     public ignoreGlobal: string[] = [];
 
     public pendingPromises: Promise<any>[] = [];
+
+    public languageLevel: ScriptTarget;
 
     public polyfillNonStandardDefaultUsage: boolean | string[] = false;
 
@@ -558,6 +560,9 @@ export class WorkFlowContext {
         }
 
         config.compilerOptions.module = "commonjs";
+        if (!('target' in config.compilerOptions)) {
+            config.compilerOptions.target = this.languageLevel
+        }
 
         if (this.useSourceMaps) {
             config.compilerOptions.sourceMap = true;
