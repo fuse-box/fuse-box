@@ -10,7 +10,7 @@ import { WorkFlowContext } from "../core/WorkflowContext";
 
 export class MagicalRollup {
     private outFile: string;
-    private entryFile: string;
+    //private entryFile: string;
     private contents: String;
     public opts: any;
     constructor(public context: WorkFlowContext) {
@@ -18,7 +18,7 @@ export class MagicalRollup {
             throw new Error("rollup.entry should be present");
         }
         this.opts = context.rollupOptions;
-        this.entryFile = context.rollupOptions.entry;
+        //this.entryFile = context.rollupOptions.entry;
         this.contents = context.source.getResult().content.toString();
 
     }

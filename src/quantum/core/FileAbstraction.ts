@@ -29,7 +29,6 @@ const SystemVars = new Set<string>(["module", "exports", "require", "window", "g
 
 export class FileAbstraction {
     private id: string;
-    private fileMapRequested = false;
     private treeShakingRestricted = false;
     public dependents = new Set<FileAbstraction>();
     private dependencies = new Map<FileAbstraction, Set<RequireStatement​​>>();
@@ -139,9 +138,7 @@ export class FileAbstraction {
         return this.id;
     }
 
-    public addFileMap() {
-        this.fileMapRequested = true;
-    }
+  
     public isTreeShakingAllowed() {
 
         return this.treeShakingRestricted === false && this.shakable;

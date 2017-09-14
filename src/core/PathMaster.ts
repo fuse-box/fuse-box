@@ -325,10 +325,10 @@ export class PathMaster {
         if (name[0] === "@") {
             let s = name.split("/");
             let target = s.splice(2, s.length).join("/");
-            let fuseBoxPath;
-            if (target) {
-                fuseBoxPath = this.ensureNodeModuleExtension(target);
-            }
+            // let fuseBoxPath;
+            // if (target) {
+            //     fuseBoxPath = this.ensureNodeModuleExtension(target);
+            // }
             return {
                 name: `${s[0]}/${s[1]}`,
                 target: target

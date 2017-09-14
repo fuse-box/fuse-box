@@ -57,12 +57,11 @@ export class RequireStatement {
             // limit it to require
             if (this.functionName === "require") {
                 let showWarning = true;
-                let matched = false;
+                
                 // notify producer
                 customComputedStatementPaths.forEach((regexp, path) => {
 
                     if (regexp.test(file.getFuseBoxFullPath())) {
-                        matched = true;
                         showWarning = false;
                     }
                 });
