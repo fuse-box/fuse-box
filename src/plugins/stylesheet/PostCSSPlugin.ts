@@ -58,8 +58,18 @@ export class PostCSSPluginClass implements Plugin {
         file.bustCSSCache = true;
         file.loadContents();
 
-        let paths: string[] = this.options && this.options.paths || [];
-        paths.push(file.info.absDir);
+        let generateSourceMaps = true;
+        let postCssOptions;
+        let pathOptions: string[] = [];
+
+        if (this.options) {
+            const {sourceMaps, plugins, paths, ...otherOptions} = this.options;
+            generateSourceMaps = sourceMaps;
+            postCssOptions = otherOptions;
+            pathOptions = paths || [];
+        }
+
+        pathOptions.push(file.info.absDir);
 
         const cssDependencies = file.context.extractCSSDependencies(file, {
             paths: this.options && this.options.paths || [file.info.absDir],
@@ -70,22 +80,9 @@ export class PostCSSPluginClass implements Plugin {
         if (!postcss) {
             postcss = require("postcss");
         }
-        let generateSourceMaps = true;
-        let postCSSPlugins = [];
-        if (Array.isArray(this.options)) {
-            postCSSPlugins = this.options;
-        } else {
-            if (this.options) {
-                if (Array.isArray(this.options.plugins)) {
-                    postCSSPlugins = this.options.plugins;
-                }
-                if (this.options.sourceMaps !== undefined) {
-                    generateSourceMaps = this.options.sourceMaps;
-                }
-            }
-        }
+
         return postcss(this.processors)
-            .process(file.contents, postCSSPlugins)
+            .process(file.contents, postCssOptions)
             .then(result => {
                 file.contents = result.css;
 
