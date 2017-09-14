@@ -93,7 +93,7 @@ export class PostCSSPluginClass implements Plugin {
 }
 
 function PostCSS (processors?: Processors, opts?: PostCSSPluginOptions);
-function PostCSS (PostCSSPluginOptions);
+function PostCSS (options: PostCSSPluginOptions);
 function PostCSS (processors?: Processors | PostCSSPluginOptions, opts?: PostCSSPluginOptions) {
     if (Array.isArray(processors)) {
         return new PostCSSPluginClass(processors, opts);
