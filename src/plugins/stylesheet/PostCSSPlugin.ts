@@ -28,7 +28,19 @@ export class PostCSSPluginClass implements Plugin {
      */
     public test: RegExp = /\.css$/;
     public dependencies = [];
-    constructor(public processors: Processors = [], public options?: PostCSSPluginOptions) { }
+    public options: PostCSSPluginOptions = {
+      sourceMaps: true,
+      plugins: [],
+      paths: []
+    };
+
+    constructor(opts: Processors | PostCSSPluginOptions) {
+        if (Array.isArray(opts)) {
+            this.options.plugins = opts
+        } else {
+            this.options = Object.assign(this.options, opts);
+        }
+    }
     /**
      *
      *
@@ -59,11 +71,11 @@ export class PostCSSPluginClass implements Plugin {
         file.loadContents();
 
         const {
-            sourceMaps = true,
-            plugins = [],
-            paths = [],
+            sourceMaps,
+            plugins,
+            paths,
             ...postCssOptions
-        } = this.options || {};
+        } = this.options;
 
         paths.push(file.info.absDir);
 
@@ -77,7 +89,7 @@ export class PostCSSPluginClass implements Plugin {
             postcss = require("postcss");
         }
 
-        return postcss(this.processors.concat(plugins))
+        return postcss(plugins)
             .process(file.contents, postCssOptions)
             .then(result => {
                 file.contents = result.css;
@@ -92,6 +104,6 @@ export class PostCSSPluginClass implements Plugin {
     }
 }
 
-export const PostCSS = (processors?: Processors, opts?: PostCSSPluginOptions) => {
-    return new PostCSSPluginClass(processors, opts);
+export const PostCSS = (opts?: Processors | PostCSSPluginOptions) => {
+    return new PostCSSPluginClass(opts);
 };
