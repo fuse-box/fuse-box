@@ -12,6 +12,8 @@ import { BundleData } from "../arithmetic/Arithmetic";
  * and only has ascii + @ in the name it is considered a node module
  */
 const NODE_MODULE = /^([a-z@](?!:).*)$/;
+const jsExtensions = ['js', 'jsx'];
+const tsExtensions = jsExtensions.concat(['ts', 'tsx']);
 
 export interface INodeModuleRequire {
     name: string;
@@ -224,33 +226,46 @@ export class PathMaster {
         return "";
     }
 
+    private tryReadPkg (directory) {
+        try {
+            return require(path.join(directory, "package.json"))
+        } catch(e) {
+            void e
+        }
+    }
+
     private testFolder(folder: string, name: string) {
-        const extensions = ["js", "jsx"];
+        let extensions = jsExtensions;
         if (this.tsMode) {
-            extensions.push("ts", "tsx");
+            extensions = tsExtensions
         }
 
         if (fs.existsSync(folder)) {
-            for (let i = 0; i < extensions.length; i++) {
-                let ext = extensions[i];
-                const index = `index.${ext}`;
-                const target = path.join(folder, index);
-                if (fs.existsSync(target)) {
-                    let result = path.join(name, index);
-                    let startsWithDot = result[0] === "."; // After transformation we need to bring the dot back
-                    if (startsWithDot) {
-                        result = `./${result}`;
-                    }
-                    return result;
+            let result
+            const pkg = this.tryReadPkg(folder)
+            if(pkg && pkg.main) {
+                result = path.join(name, pkg.main)
+            }
+
+            for (let i = 0; i < extensions.length && !result; i++) {
+                const index = 'index.' + extensions[i]
+                if (fs.existsSync(path.join(folder, index))) {
+                    result = path.join(name, index);
                 }
             }
+
+            let startsWithDot = result[0] === "."; // After transformation we need to bring the dot back
+            if (startsWithDot) {
+                result = `./${result}`;
+            }
+            return result
         }
     }
 
     private checkFileName(root: string, name: string) {
-        const extensions = ["js", "jsx"];
+        let extensions = jsExtensions;
         if (this.tsMode) {
-            extensions.push("ts", "tsx");
+            extensions = tsExtensions;
         }
         for (let i = 0; i < extensions.length; i++) {
             let ext = extensions[i];

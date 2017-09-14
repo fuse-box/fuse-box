@@ -41,7 +41,7 @@ export class BundleSource {
      * @memberOf BundleSource
      */
     public includeSourceMaps: boolean = false;
-    
+
     public bundleInfoObject: any;
 
     /**
