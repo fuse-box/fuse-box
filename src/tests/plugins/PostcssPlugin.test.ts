@@ -77,7 +77,7 @@ export class PostcssPluginTest {
   "Should execute several plugins"() {
     return setup({
       plugins: [
-        [PostCSS([changeDisplayPlugin, idToClassPlugin]), CSSPlugin({})]
+        [PostCSS([changeDisplayPlugin], {plugins: [idToClassPlugin]}), CSSPlugin({})]
       ]
     })
       .then((result) => {
