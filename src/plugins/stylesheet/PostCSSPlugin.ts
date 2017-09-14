@@ -60,22 +60,20 @@ export class PostCSSPluginClass implements Plugin {
 
         let generateSourceMaps = true;
         let postCssOptions;
-        let pathOptions: string[] = [];
+        let pathOptions: string[] = [file.info.absDir];
 
         if (this.options) {
-            const {sourceMaps, plugins, paths, ...otherOptions} = this.options;
+            const {sourceMaps = generateSourceMaps, plugins, paths = pathOptions, ...otherOptions} = this.options;
             generateSourceMaps = sourceMaps;
             postCssOptions = otherOptions;
-            pathOptions = paths || [];
+            pathOptions = paths;
         }
 
-        pathOptions.push(file.info.absDir);
-
         const cssDependencies = file.context.extractCSSDependencies(file, {
-            paths: this.options && this.options.paths || [file.info.absDir],
+            paths: pathOptions,
             content: file.contents,
             extensions: ["css"]
-        })
+        });
 
         if (!postcss) {
             postcss = require("postcss");
