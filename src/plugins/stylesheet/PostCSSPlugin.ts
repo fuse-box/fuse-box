@@ -6,7 +6,6 @@ export interface PostCSSPluginOptions {
     [key: string]: any;
     paths?: string[],
     sourceMaps?: boolean;
-    plugins?: any[]
 }
 
 export type Processors = (() => any)[];
@@ -28,7 +27,7 @@ export class PostCSSPluginClass implements Plugin {
      */
     public test: RegExp = /\.css$/;
     public dependencies = [];
-    constructor(public processors: Processors = [], public options?: PostCSSPluginOptions) { }
+    constructor(public processors: Processors = [], public options: PostCSSPluginOptions = {}) { }
     /**
      *
      *
@@ -60,10 +59,9 @@ export class PostCSSPluginClass implements Plugin {
 
         const {
             sourceMaps = true,
-            plugins = [],
             paths = [],
             ...postCssOptions
-        } = this.options || {};
+        } = this.options;
 
         paths.push(file.info.absDir);
 
@@ -77,7 +75,7 @@ export class PostCSSPluginClass implements Plugin {
             postcss = require("postcss");
         }
 
-        return postcss(this.processors.concat(plugins))
+        return postcss(this.processors)
             .process(file.contents, postCssOptions)
             .then(result => {
                 file.contents = result.css;
@@ -93,12 +91,28 @@ export class PostCSSPluginClass implements Plugin {
 }
 
 function PostCSS (processors?: Processors, opts?: PostCSSPluginOptions);
-function PostCSS (options: PostCSSPluginOptions);
+function PostCSS (options?: PostCSSPluginOptions);
+
 function PostCSS (processors?: Processors | PostCSSPluginOptions, opts?: PostCSSPluginOptions) {
     if (Array.isArray(processors)) {
-        return new PostCSSPluginClass(processors, opts);
+      const options = extractPlugins(opts);
+      return new PostCSSPluginClass(processors.concat(options.plugins), options.postCssOptions);
     }
-    return new PostCSSPluginClass([], processors);
+    const options = extractPlugins(processors);
+    return new PostCSSPluginClass(options.plugins, options.postCssOptions);
+}
+
+// We still take the "plugins" from options for legacy reasons
+// It is discouraged and does not appear in type definitions
+function extractPlugins(opts: PostCSSPluginOptions): {plugins: Processors, postCssOptions: PostCSSPluginOptions} {
+  const {plugins = [], ...otherOptions} = opts || {};
+  if (plugins.length > 0) {
+    console.warn(`The postcss "plugin" option is deprecated. Please use PostCssPlugin(plugins, options) instead.`)
+  }
+  return {
+    plugins,
+    postCssOptions: otherOptions
+  }
 }
 
 export {PostCSS}

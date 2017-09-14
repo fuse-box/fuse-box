@@ -77,7 +77,35 @@ export class PostcssPluginTest {
   "Should execute several plugins"() {
     return setup({
       plugins: [
+        [PostCSS([changeDisplayPlugin, idToClassPlugin]), CSSPlugin({})]
+      ]
+    })
+      .then((result) => {
+        const out = result.projectContents.toString();
+        should(out).findString(`display: block`);
+        should(out).notFindString(`#moon`);
+        should(out).findString(`.moon`);
+      });
+  }
+
+  "Should execute several plugins (legacy option)"() {
+    return setup({
+      plugins: [
         [PostCSS([changeDisplayPlugin], {plugins: [idToClassPlugin]}), CSSPlugin({})]
+      ]
+    })
+      .then((result) => {
+        const out = result.projectContents.toString();
+        should(out).findString(`display: block`);
+        should(out).notFindString(`#moon`);
+        should(out).findString(`.moon`);
+      });
+  }
+
+  "Should execute several plugins (legacy option 2)"() {
+    return setup({
+      plugins: [
+        [PostCSS({plugins: [changeDisplayPlugin, idToClassPlugin]}), CSSPlugin({})]
       ]
     })
       .then((result) => {
