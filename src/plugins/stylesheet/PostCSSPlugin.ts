@@ -96,5 +96,5 @@ export const PostCSS = (processors?: Processors | PostCSSPluginOptions, opts?: P
     if (Array.isArray(processors)) {
         return new PostCSSPluginClass(processors, opts);
     }
-    return new PostCSSPluginClass([], opts);
+    return new PostCSSPluginClass([], processors);
 };
