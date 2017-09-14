@@ -65,7 +65,7 @@ export class PostcssPluginTest {
   "Should execute single plugin"() {
     return setup({
       plugins: [
-        [PostCSS(changeDisplayPlugin), CSSPlugin({})]
+        [PostCSS([changeDisplayPlugin]), CSSPlugin({})]
       ]
     })
       .then((result) => {
