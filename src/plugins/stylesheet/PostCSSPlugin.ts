@@ -6,7 +6,6 @@ export interface PostCSSPluginOptions {
     [key: string]: any;
     paths?: string[],
     sourceMaps?: boolean;
-    plugins?: any[]
 }
 
 export type Processors = (() => any)[];
@@ -28,7 +27,7 @@ export class PostCSSPluginClass implements Plugin {
      */
     public test: RegExp = /\.css$/;
     public dependencies = [];
-    constructor(public processors: Processors = [], public options?: PostCSSPluginOptions) { }
+    constructor(public processors: Processors = [], public options: PostCSSPluginOptions = {}) { }
     /**
      *
      *
@@ -58,40 +57,32 @@ export class PostCSSPluginClass implements Plugin {
         file.bustCSSCache = true;
         file.loadContents();
 
-        let paths: string[] = this.options && this.options.paths || [];
+        const {
+            sourceMaps = true,
+            paths = [],
+            ...postCssOptions
+        } = this.options;
+
         paths.push(file.info.absDir);
 
         const cssDependencies = file.context.extractCSSDependencies(file, {
-            paths: this.options && this.options.paths || [file.info.absDir],
+            paths: paths,
             content: file.contents,
             extensions: ["css"]
-        })
+        });
 
         if (!postcss) {
             postcss = require("postcss");
         }
-        let generateSourceMaps = true;
-        let postCSSPlugins = [];
-        if (Array.isArray(this.options)) {
-            postCSSPlugins = this.options;
-        } else {
-            if (this.options) {
-                if (Array.isArray(this.options.plugins)) {
-                    postCSSPlugins = this.options.plugins;
-                }
-                if (this.options.sourceMaps !== undefined) {
-                    generateSourceMaps = this.options.sourceMaps;
-                }
-            }
-        }
+
         return postcss(this.processors)
-            .process(file.contents, postCSSPlugins)
+            .process(file.contents, postCssOptions)
             .then(result => {
                 file.contents = result.css;
 
                 if (file.context.useCache) {
                     file.analysis.dependencies = cssDependencies;
-                    file.context.cache.writeStaticCache(file, generateSourceMaps && file.sourceMap, "postcss");
+                    file.context.cache.writeStaticCache(file, sourceMaps && file.sourceMap, "postcss");
                     file.analysis.dependencies = [];
                 }
                 return result.css;
@@ -99,6 +90,29 @@ export class PostCSSPluginClass implements Plugin {
     }
 }
 
-export const PostCSS = (processors?: Processors, opts?: PostCSSPluginOptions) => {
-    return new PostCSSPluginClass(processors, opts);
-};
+function PostCSS (processors?: Processors, opts?: PostCSSPluginOptions);
+function PostCSS (options?: PostCSSPluginOptions);
+
+function PostCSS (processors?: Processors | PostCSSPluginOptions, opts?: PostCSSPluginOptions) {
+    if (Array.isArray(processors)) {
+      const options = extractPlugins(opts);
+      return new PostCSSPluginClass(processors.concat(options.plugins), options.postCssOptions);
+    }
+    const options = extractPlugins(processors);
+    return new PostCSSPluginClass(options.plugins, options.postCssOptions);
+}
+
+// We still take the "plugins" from options for legacy reasons
+// It is discouraged and does not appear in type definitions
+function extractPlugins(opts: PostCSSPluginOptions): {plugins: Processors, postCssOptions: PostCSSPluginOptions} {
+  const {plugins = [], ...otherOptions} = opts || {};
+  if (plugins.length > 0) {
+    console.warn(`The postcss "plugin" option is deprecated. Please use PostCssPlugin(plugins, options) instead.`)
+  }
+  return {
+    plugins,
+    postCssOptions: otherOptions
+  }
+}
+
+export {PostCSS}
