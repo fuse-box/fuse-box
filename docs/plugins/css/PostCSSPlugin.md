@@ -96,7 +96,7 @@ Or like this:
 ```js
 FuseBox.init({
     plugins : [
-         [PostCSSPlugin([], {
+         [PostCSSPlugin({
              // postcss plugins
              plugins: [require('postcss-url')({url: "rebase"})],
              // should fusebox generate sourcemaps (see below), default: true
