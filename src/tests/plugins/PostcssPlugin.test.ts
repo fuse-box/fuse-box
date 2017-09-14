@@ -77,7 +77,7 @@ export class PostcssPluginTest {
   "Should execute several plugins"() {
     return setup({
       plugins: [
-        [PostCSS({plugins: [idToClassPlugin, changeDisplayPlugin]}), CSSPlugin({})]
+        [PostCSS([changeDisplayPlugin], {plugins: [idToClassPlugin]}), CSSPlugin({})]
       ]
     })
       .then((result) => {
@@ -91,7 +91,7 @@ export class PostcssPluginTest {
   "Should be able to pass options to postcss"() {
     return setup({
       plugins: [
-        [PostCSS({plugins: [urlPlugin], from: "./somedir"}), CSSPlugin({})]
+        [PostCSS([urlPlugin], {from: "./somedir"}), CSSPlugin({})]
       ],
       styleContent: `
         body {

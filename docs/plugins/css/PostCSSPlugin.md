@@ -75,6 +75,27 @@ If you require more options, you can pass them to the plugin:
 ```js
 FuseBox.init({
     plugins : [
+         [PostCSSPlugin(
+             // postcss plugins
+             [require('postcss-url')({url: "rebase"})], 
+             {
+                 // should fusebox generate sourcemaps (see below), default: true
+                 sourceMaps: false,
+                 // additional paths for css resolution (see below)
+                 paths: [],
+                 // all other options will go to the postcss process function (see below) 
+                 parser: parser,
+            }
+         ), CSSPlugin()]
+    ]
+});
+```
+
+Or like this
+
+```js
+FuseBox.init({
+    plugins : [
          [PostCSSPlugin({
              // postcss plugins
              plugins: [require('postcss-url')({url: "rebase"})],
