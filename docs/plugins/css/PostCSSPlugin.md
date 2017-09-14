@@ -54,7 +54,7 @@ import "./styles/main.css"
 
 ### Plugins
 
-You can pass PostCss plugins directly to the PostCSSPlugin:
+The `PostCSSPlugin` take PostCss plugins as a first argument:
 
 ```js
 FuseBox.init({
@@ -70,7 +70,7 @@ FuseBox.init({
 });
 ```
 
-If you require more options, you can pass them to the plugin:
+If you require more options, you can pass them as a second argument to the plugin:
 
 ```js
 FuseBox.init({
@@ -91,12 +91,12 @@ FuseBox.init({
 });
 ```
 
-Or like this
+Or like this:
 
 ```js
 FuseBox.init({
     plugins : [
-         [PostCSSPlugin({
+         [PostCSSPlugin([], {
              // postcss plugins
              plugins: [require('postcss-url')({url: "rebase"})],
              // should fusebox generate sourcemaps (see below), default: true
@@ -122,8 +122,8 @@ var sugarss = require('sugarss');
 
 fuse.plugin(
     [
-        PostCSSPlugin({
-            plugins: [nested],
+        PostCSSPlugin(
+            [nested], {
             // passed to PostCss process function 
             parser: sugarss
         }), 
@@ -142,10 +142,12 @@ You don't need to add the paths option if all you are using paths relative to th
 ```js
 fuse.plugin(
     [
-        PostCSSPlugin({
-            plugins : [ require("postcss-import")({ path: ["src"]}) ],
-            paths : [ path.resolve(__dirname, "src/shared" )]
-        }),
+        PostCSSPlugin(
+            [ require("postcss-import")({ path: ["src"]}) ],
+            {
+                paths : [ path.resolve(__dirname, "src/shared" )]
+            }
+        ),
         CSSPlugin()
     ]
 )
@@ -160,10 +162,12 @@ You can internally disable sourceMaps if you wish to preserve source maps genera
 fuse.plugin(
     [
         SassPlugin(),
-        PostCSSPlugin({
-            plugins : [require("postcss-import")({ path: ["src"]})],
-            sourceMaps : false
-        }),
+        PostCSSPlugin(
+            [require("postcss-import")({ path: ["src"]})], 
+            {
+                sourceMaps : false
+            }
+        ),
         CSSPlugin()
     ]
 )
