@@ -37,52 +37,47 @@ const style = `
 
 export class PostcssPluginTest {
     "Should be unmodified with no plugins"() {
-        return createEnv({
-            project: {
-                files: {
-                    "index.ts": `exports.hello = { bar : require("./style.css") }`,
-                    "style.css": style
-                },
-                plugins: [[PostCSS(), CSSPlugin({})]],
-                instructions: "index.ts",
-            },
-        }).then((result) => {
+        return setup([
+          [PostCSS(), CSSPlugin({})]
+        ])
+          .then((result) => {
             const out = result.projectContents.toString();
             should(out).findString(`display: grid;`);
         });
     }
 
     "Single plugin"() {
-        return createEnv({
-            project: {
-                files: {
-                    "index.ts": `exports.hello = { bar : require("./style.css") }`,
-                    "style.css": style
-                },
-                plugins: [[PostCSS([pluginA]), CSSPlugin({})]],
-                instructions: "index.ts",
-            },
-        }).then((result) => {
+        return setup([
+          [PostCSS(pluginA), CSSPlugin({})]
+        ])
+          .then((result) => {
             const out = result.projectContents.toString();
             should(out).findString(`display: block`);
         });
     }
 
     "Several plugins"() {
-        return createEnv({
-            project: {
-                files: {
-                    "index.ts": `exports.hello = { bar : require("./style.css") }`,
-                    "style.css": style
-                },
-                plugins: [[PostCSS([pluginA, pluginB]), CSSPlugin({})]],
-                instructions: "index.ts",
-            },
-        }).then((result) => {
+        return setup([
+          [PostCSS([pluginA, pluginB]), CSSPlugin({})]
+        ])
+          .then((result) => {
             const out = result.projectContents.toString();
             should(out).findString(`display: block`);
             should(out).notFindString(`#moon`);
             should(out).findString(`.moon`);
         });
     }
+}
+
+function setup(plugins) {
+  return createEnv({
+    project: {
+      files: {
+        "index.ts": `exports.style = require("./style.css")`,
+        "style.css": style
+      },
+      plugins: plugins,
+      instructions: "index.ts",
+    },
+  })
 }
