@@ -1,7 +1,12 @@
 # PostCSS Plugin
 
 ## Description
-Allows using PostCSS, A tool for transforming CSS with JavaScript.
+
+Allows using PostCSS, a tool for transforming styles with JS plugins. 
+These plugins can lint your CSS, support variables and mixins, 
+transpile future CSS syntax, inline images, and more.
+
+Check [PostCSS website](http://postcss.org/) for more information.
 
 ## Install
 
@@ -12,12 +17,12 @@ npm install postcss --save-dev
 ```
 
 ## Usage
-check [PostCSS website](http://postcss.org/) for more information.
-note: The PostCSS plugin generates CSS, Therefor it must be chained prior to the CSSPlugin to be used.
+
+The PostCSS plugin generates CSS. It must therefore be chained prior to the CSSPlugin to be used.
 
 ### Setup
 
-Import from FuseBox
+Import the plugin from FuseBox
 
 ```js
 const {PostCSSPlugin} = require("fuse-box");
@@ -42,58 +47,104 @@ FuseBox.init({
 ```
 
 ### Require file in your code
+
 ```js
 import "./styles/main.css"
 ```
 
+### Plugins
+
+You can pass PostCss plugins directly to the PostCSSPlugin:
+
+```js
+FuseBox.init({
+    plugins : [
+         [PostCSSPlugin([
+             require('postcss-import'),
+             // You can optionally pass options to the plugins
+             require('postcss-url')({url: "rebase"}),
+             require('postcss-nested')
+         ]), 
+         CSSPlugin()]
+    ]
+});
+```
+
+If you require more options, you can pass them to the plugin:
+
+```js
+FuseBox.init({
+    plugins : [
+         [PostCSSPlugin({
+             // postcss plugins
+             plugins: [require('postcss-url')({url: "rebase"})],
+             // should fusebox generate sourcemaps (see below), default: true
+             sourceMaps: false,
+             // additional paths for css resolution (see below)
+             paths: [],
+             // all other options will go to the postcss process function (see below) 
+             parser: parser,
+         }), CSSPlugin()]
+    ]
+});
+```
+
 ## Options
 
-`PostCSSPlugin` accepts a `key/value` `PostCSS` object options as a parameter. For example:
+`PostCSSPlugin` passes any additional option as [process options](http://api.postcss.org/global.html#processOptions)
+to PostCss.
+For example:
 
 ```js
 var nested = require('postcss-nested');
 var sugarss = require('sugarss');
 
 fuse.plugin(
-    [PostCSSPlugin({
-       plugins, { parser: sugarss }
-    }), CSSPlugin()]
+    [
+        PostCSSPlugin({
+            plugins: [nested],
+            // passed to PostCss process function 
+            parser: sugarss
+        }), 
+        CSSPlugin()
+    ]
 )
 ```
 
 ## Paths for HMR
-If you are using `postcss-import` plugin, you would need to provide paths to FuseBox config too, if you want
-HMR to work and detect css dependendies automatically.
 
-You don't need to add paths if all you are resolving is relative paths (to the processed file)
+If you are using `postcss-import` plugin, you might need to provide additional paths to FuseBox config.
+It will allow fusebox's HMR to work and detect css dependencies automatically.
+
+You don't need to add the paths option if all you are using paths relative to the processed file.
 
 ```js
-plugins: [
-        [
-            PostCSSPlugin({
-                plugins : [require("postcss-import")({ path: ["src"]})],
-                paths : [ path.resolve(__dirname, "src/shared" )]
-            }),
-            CSSPlugin()
-        ]
+fuse.plugin(
+    [
+        PostCSSPlugin({
+            plugins : [ require("postcss-import")({ path: ["src"]}) ],
+            paths : [ path.resolve(__dirname, "src/shared" )]
+        }),
+        CSSPlugin()
     ]
+)
 ```
 
 ## Disable sourceMaps
 
-You can internally disable sourceMaps if you wish to preserve earlier generated source maps, (by Sass for example)
+You can internally disable sourceMaps if you wish to preserve source maps generated earlier (by Sass for example)
 
 
 ```js
-plugins: [
-        [
-            SassPlugin(),
-            PostCSSPlugin({
-                plugins : [require("postcss-import")({ path: ["src"]})],
-                sourceMaps : false
-            }),
-            CSSPlugin()
-        ]
+fuse.plugin(
+    [
+        SassPlugin(),
+        PostCSSPlugin({
+            plugins : [require("postcss-import")({ path: ["src"]})],
+            sourceMaps : false
+        }),
+        CSSPlugin()
     ]
+)
 ```
 
