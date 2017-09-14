@@ -62,7 +62,7 @@ export class PostcssPluginTest {
       });
   }
 
-  "Single plugin"() {
+  "Should execute single plugin"() {
     return setup({
       plugins: [
         [PostCSS(changeDisplayPlugin), CSSPlugin({})]
@@ -74,7 +74,7 @@ export class PostcssPluginTest {
       });
   }
 
-  "Several plugins"() {
+  "Should execute several plugins"() {
     return setup({
       plugins: [
         [PostCSS([changeDisplayPlugin, idToClassPlugin]), CSSPlugin({})]
