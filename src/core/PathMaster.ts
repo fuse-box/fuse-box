@@ -243,7 +243,7 @@ export class PathMaster {
         if (fs.existsSync(folder)) {
             let result
             const pkg = this.tryReadPkg(folder)
-            if(pkg && pkg.main) {
+            if (pkg && pkg.main) {
                 result = path.join(name, pkg.main)
             }
 
@@ -254,9 +254,12 @@ export class PathMaster {
                 }
             }
 
-            let startsWithDot = result[0] === "."; // After transformation we need to bring the dot back
-            if (startsWithDot) {
-                result = `./${result}`;
+            if (result) {
+                //add relative './' from name back onto joined path
+                const [a, b] = name
+                if (a === '.' && b !== '.') {
+                    result = `./${result}`;
+                }
             }
             return result
         }
