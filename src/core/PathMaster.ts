@@ -12,6 +12,7 @@ import { BundleData } from "../arithmetic/Arithmetic";
  * and only has ascii + @ in the name it is considered a node module
  */
 const NODE_MODULE = /^([a-z@](?!:).*)$/;
+const isRelative = /^[\.\/\\]+$/
 const jsExtensions = ['js', 'jsx'];
 const tsExtensions = jsExtensions.concat(['ts', 'tsx']);
 
@@ -226,14 +227,6 @@ export class PathMaster {
         return "";
     }
 
-    private tryReadPkg (directory) {
-        try {
-            return require(path.join(directory, "package.json"))
-        } catch(e) {
-            void e
-        }
-    }
-
     private testFolder(folder: string, name: string) {
         let extensions = jsExtensions;
         if (this.tsMode) {
@@ -241,27 +234,18 @@ export class PathMaster {
         }
 
         if (fs.existsSync(folder)) {
-            let result
-            const pkg = this.tryReadPkg(folder)
-            if (pkg && pkg.main) {
-                result = path.join(name, pkg.main)
-            }
-
-            for (let i = 0; i < extensions.length && !result; i++) {
-                const index = 'index.' + extensions[i]
+            for (let i = 0; i < extensions.length; i++) {
+                const index = "index." + extensions[i]
                 if (fs.existsSync(path.join(folder, index))) {
-                    result = path.join(name, index);
+                    const result = path.join(name, index);
+                    const [a, b] = name
+                    if (a === "." && b !== ".") {
+                        //add relative './' from `name`, back onto joined path
+                        return "./" + result;
+                    }
+                    return result;
                 }
             }
-
-            if (result) {
-                //add relative './' from name back onto joined path
-                const [a, b] = name
-                if (a === '.' && b !== '.') {
-                    result = `./${result}`;
-                }
-            }
-            return result
         }
     }
 
@@ -285,7 +269,7 @@ export class PathMaster {
 
     private ensureNodeModuleExtension(input: string) {
         let ext = path.extname(input);
-        if (!ext) {
+        if (!ext && !isRelative.test(input)) {
             return input + ".js";
         }
         return input;
