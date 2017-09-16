@@ -136,7 +136,7 @@ export function ensureAbsolutePath(userPath: string) {
     return userPath;
 }
 export function joinFuseBoxPath(...any): string {
-    return ensureFuseBoxPath(path.join.apply(path, arguments));
+    return ensureFuseBoxPath(path.join(...any));
 }
 export function ensureDir(userPath: string) {
     if (!path.isAbsolute(userPath)) {
@@ -220,7 +220,7 @@ export function extractExtension(str: string) {
     return result[1];
 }
 export function ensureFuseBoxPath(input: string) {
-    return input.replace(/\\/g, "/");
+    return input.replace(/\\/g, "/").replace(/\/$/, "");
 }
 
 export function transpileToEs5(contents: string) {
