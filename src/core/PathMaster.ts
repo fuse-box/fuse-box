@@ -282,25 +282,25 @@ export class PathMaster {
             name = "." + name.slice(1, name.length);
             name = path.join(this.rootPackagePath, name);
         }
-        if (explicit) {
+        //if (explicit) {
 
-            if (!ext) {
-                // handle cases with
-                // require("@angular/platform-browser/animations");
-                // where animation contains package.json pointing to a different file
-                const folderJsonPath = path.join(root, name, "package.json");
+        if (!ext) {
+            // handle cases with
+            // require("@angular/platform-browser/animations");
+            // where animation contains package.json pointing to a different file
+            const folderJsonPath = path.join(root, name, "package.json");
 
-                if (fs.existsSync(folderJsonPath)) {
-                    const folderJSON = require(folderJsonPath);
-                    if (folderJSON.main) {
-                        return {
-                            resolved: path.resolve(root, name, folderJSON.main),
-                            alias: this.ensureNodeModuleExtension(name)
-                        }
+            if (fs.existsSync(folderJsonPath)) {
+                const folderJSON = require(folderJsonPath);
+                if (folderJSON.main) {
+                    return {
+                        resolved: path.resolve(root, name, folderJSON.main),
+                        alias: this.ensureNodeModuleExtension(name)
                     }
                 }
             }
         }
+        //}
 
         if (!AllowedExtenstions.has(ext)) {
             let fileNameCheck = this.checkFileName(root, name);
