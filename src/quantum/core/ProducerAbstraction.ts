@@ -2,6 +2,7 @@ import { BundleAbstraction } from "./BundleAbstraction";
 import { generateFileCombinations } from "./utils";
 import { ProducerWarning } from "./ProducerWarning";
 import { QuantumCore } from "../plugin/QuantumCore";
+import { FileAbstraction } from "./FileAbstraction";
 
 export interface ProducerAbtractionOptions {
     customComputedStatementPaths?: Set<RegExp>;
@@ -32,38 +33,30 @@ export class ProducerAbstraction {
     }
 
 
-    public findFileAbstraction(packageName: string, resolvedPathRaw: string) {
+    public findFileAbstraction(packageName: string, resolvedPathRaw: string): FileAbstraction | undefined {
         let combinations: string[] = generateFileCombinations(resolvedPathRaw);
 
-        let requiredFileAbstraction;
-        this.bundleAbstractions.forEach(bundle => {
-            if (requiredFileAbstraction) { return; };
-
-            const pkg = bundle.packageAbstractions.get(packageName);
-            if (pkg) {
-                const entryFile = pkg.entryFile;
-                // if no combinations
-                // which means we are dealing with external package require
-                // like require("foo")
-                if (!combinations) {
-                    combinations = generateFileCombinations(entryFile);
-                }
-
-                combinations.some(combination => {
-                    let found;
-                    pkg.fileAbstractions.forEach(file => {
-                        if (requiredFileAbstraction) { return; };
-                        found = file.fuseBoxPath === combination;
-                        //console.log(found, combination);
-                        if (found) {
-                            requiredFileAbstraction = file;
-                        }
-                    });
-                    return found;
-                });
-
+        for (const [, bundle] of this.bundleAbstractions) {
+            if (!bundle.packageAbstractions.has(packageName)) { continue; }
+            const pkg = bundle.packageAbstractions.get(packageName)
+            const entryFile = pkg.entryFile;
+            // if no combinations
+            // means we are dealing with external package require
+            // or requiring a package.json dir relatively
+            // like require("foo") or require('../../') from "foo/a/b"
+            if (!combinations) {
+                combinations = generateFileCombinations(entryFile);
             }
-        });
-        return requiredFileAbstraction;
+
+            for(const combination of combinations) {
+                for (const [, file] of pkg.fileAbstractions) {
+                    const found = file.fuseBoxPath === combination
+                    //console.log(found, combination);
+                    if (found) {
+                        return file
+                    }
+                }
+            }
+        }
     }
 }
