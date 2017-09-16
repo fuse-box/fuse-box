@@ -103,6 +103,7 @@ export class ResponsiveAPI {
         const options: any = {
             browser: this.core.opts.isTargetBrowser(),
             universal: this.core.opts.isTargetUniveral(),
+            npm: this.core.opts.isTargetNpm(),
             server: this.core.opts.isTargetServer(),
             isServerFunction: this.isServerFunction,
             isBrowserFunction: this.isBrowserFunction,
