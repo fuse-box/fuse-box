@@ -326,12 +326,8 @@ gulp.task("installDevDeps", function(done) {
         "buble",
     ];
 
-    if (os.platform().match(/^win/)) {
-        let windowsCommands = ["start", "cmd.exe", "/K", "npm", "install", "--no-save", ...deps];
-        exec(windowsCommands.join(" "), () => {})
-    } else {
-        var installDeps = spawn("npm", ["install", "--no-save"].concat(deps), {
-            stdio: "inherit",
-        });
-    }
+    const ext = /^win/.test(os.platform()) ? ".cmd" : ""
+    spawn("npm" + ext, ["install", "--no-save"].concat(deps), {
+        stdio: "inherit",
+    });
 });

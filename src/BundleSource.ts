@@ -41,7 +41,7 @@ export class BundleSource {
      * @memberOf BundleSource
      */
     public includeSourceMaps: boolean = false;
-    
+
     public bundleInfoObject: any;
 
     /**
@@ -110,7 +110,7 @@ export class BundleSource {
      */
     public endCollection(collection: ModuleCollection) {
         let entry = collection.entryFile ? collection.entryFile.info.fuseBoxPath : "";
-
+        entry = entry || collection.bundle && collection.bundle.entry
         if (entry) {
             this.collectionSource.add(null, `return ___scope___.entry = "${entry}";`);
         }
