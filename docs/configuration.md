@@ -500,7 +500,7 @@ Will ignore FuseBox' polyfills as native modules are available without them.
 
 ### Target electron
 
-Electon specific environment
+Electron specific environment
 
 ### Language Level
 
