@@ -18,6 +18,7 @@ export interface IQuantumExtensionParams {
     api?: { (core: QuantumCore): void }
     warnings?: boolean;
     bakeApiIntoBundle?: string;
+    globalRequire?:boolean;
     extendServerImport?: boolean;
     polyfills?: string[];
     processPolyfill?: boolean;
@@ -41,6 +42,7 @@ export class QuantumOptions {
     private treeshakeOptions: ITreeShakeOptions;
     private hoisting = false;
     private polyfills: string[];
+    public globalRequire = true;
     private hoistedNames: string[];
     private extendServerImport = false;
     private manifestFile: string;
@@ -75,6 +77,10 @@ export class QuantumOptions {
         }
         if (opts.warnings !== undefined) {
             this.showWarnings = opts.warnings;
+        }
+
+        if (opts.globalRequire !== undefined) {
+            this.globalRequire = opts.globalRequire;
         }
         if (opts.replaceTypeOf !== undefined) {
             this.replaceTypeOf = opts.replaceTypeOf;
