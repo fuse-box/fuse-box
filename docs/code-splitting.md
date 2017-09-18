@@ -79,7 +79,7 @@ split("routes/about/**", "about > routes/about/AboutComponent.tsx")
 ```
 ### First Argument: Path matching
 
-First argument `"routes/about/**"` is a simplified [RegExp](regex101.com). Each time FuseBox processes files it tests the path against the defined [RegExp](regex101.com). These paths have no relation to physical paths, and they all belong to `homeDir` without an opening slash.
+First argument `"routes/about/**"` is a simplified [RegExp](https://regex101.com). Each time FuseBox processes files it tests the path against the defined [RegExp](https://regex101.com). These paths have no relation to physical paths, and they all belong to `homeDir` without an opening slash.
 
 Let's break down the logic:
 
