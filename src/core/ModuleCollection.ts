@@ -350,6 +350,11 @@ export class ModuleCollection {
             }
         }
 
+        if( this.context.filterFile){
+            if( !this.context.filterFile(file)){
+                return;
+            }
+        }
         if (file.info.isNodeModule) {
             if (this.context.isGlobalyIgnored(file.info.nodeModuleName)) {
                 return;

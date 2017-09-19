@@ -646,6 +646,15 @@ import faraway from "faraway";
 console.log(utils, faraway);
 ```
 
+## Filter File
+You can filter files and tell FuseBox what you want to be excluded:
+
+```
+filterFile : file => {
+    return file.getUniquePath().indexOf("default/js/dontwantthisfile") === -1
+}
+```
+
 ## Shimming
 
 For those libraries that are bundled to work in `window` (jquery) for example, you need to provide a shimming configuration.

@@ -16,7 +16,7 @@ import { UserOutput } from "./UserOutput";
 import { BundleProducer } from "./BundleProducer";
 import { Bundle } from "./Bundle";
 import { SplitConfig } from "./BundleSplit";
-import { ScriptTarget } from "./File";
+import { File, ScriptTarget } from "./File";
 
 const isWin = /^win/.test(process.platform);
 const appRoot = require("app-root-path");
@@ -54,6 +54,7 @@ export interface FuseBoxOptions {
     customAPIFile?: string;
     experimentalFeatures?: boolean;
     output?: string;
+    filterFile? : {(file : File) : boolean} 
     debug?: boolean;
     files?: any;
     alias?: any;
@@ -183,6 +184,11 @@ export class FuseBox {
 
         if (opts.cache !== undefined) {
             this.context.useCache = opts.cache ? true : false;
+        }
+
+        if ( opts.filterFile){
+            
+            this.context.filterFile = opts.filterFile;
         }
 
         if (opts.log !== undefined) {

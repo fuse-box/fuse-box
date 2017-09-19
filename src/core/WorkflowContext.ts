@@ -99,6 +99,8 @@ export class WorkFlowContext {
 
     public languageLevel: ScriptTarget;
 
+    public filterFile :{(file : File) : boolean} 
+
     public polyfillNonStandardDefaultUsage: boolean | string[] = false;
 
     public customAPIFile: string;
