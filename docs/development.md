@@ -158,6 +158,12 @@ const vendor = fuse.bundle("vendor")
     if (!production) { vendor.hmr(); }
 ```
 
+### Auto reload page
+You can change the hehavor of HMR and reload the entire page (liek browser sync) 
+```js
+.hmr({reload : true});
+```
+
 ## Custom HMR
 
 You can tell which files FuseBox needs to reload. In fact you implement the entire logic yourself. In order to do that, place `hmr.ts` somewhere in your project, and put these contents:

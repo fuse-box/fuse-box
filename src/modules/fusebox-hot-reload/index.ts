@@ -121,7 +121,7 @@ function displayBundleErrors() {
     }
 }
 
-export const connect = (port: string, uri: string) => {
+export const connect = (port: string, uri: string, reloadFullPage : boolean) => {
 
     if (FuseBox.isServer) {
         return;
@@ -132,10 +132,11 @@ export const connect = (port: string, uri: string) => {
         uri,
     });
     client.connect();
-
-
     client.on('source-changed', (data) => {
         console.info(`%cupdate "${data.path}"`, 'color: #237abe');
+        if(reloadFullPage){
+            return window.location.reload();
+        }
 
         /**
          * If a plugin handles this request then we don't have to do anything

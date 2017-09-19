@@ -5,6 +5,7 @@ export interface HotReloadPluginOptions {
     /** The port that the client JS connects to */
     port?: number | string,
     uri?: string;
+    reload?:boolean
 }
 
 /**
@@ -14,6 +15,7 @@ export class HotReloadPluginClass implements Plugin {
     public dependencies = ["fusebox-hot-reload"];
     public port: any = "";
     public uri: any = "";
+    public reload = false;
     constructor(opts: HotReloadPluginOptions = {}) {
         if (opts.port) {
             this.port = opts.port;
@@ -21,11 +23,15 @@ export class HotReloadPluginClass implements Plugin {
         if (opts.uri) {
             this.uri = opts.uri;
         }
+        if( opts.reload === true){
+            this.reload = true;
+        }
+
     }
     public init() { }
 
     public bundleEnd(context: WorkFlowContext) {
-        context.source.addContent(`FuseBox.import("fusebox-hot-reload").connect(${this.port}, ${JSON.stringify(this.uri)})`);
+        context.source.addContent(`FuseBox.import("fusebox-hot-reload").connect(${this.port}, ${JSON.stringify(this.uri)}, ${this.reload ? "true" : "false"})`);
     }
 };
 
