@@ -159,7 +159,7 @@ const vendor = fuse.bundle("vendor")
 ```
 
 ### Auto reload page
-You can change the hehavor of HMR and reload the entire page (liek browser sync) 
+You can change the hehavor of HMR and reload the entire page (like browser sync) 
 ```js
 .hmr({reload : true});
 ```
