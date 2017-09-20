@@ -33,16 +33,16 @@ function getFakeExtension(block) {
 }
 
 function getExternalFilePath(file: File, block: any) {
-  const fileNameNoExtension = block.src ? block.src.substr(block.src.lastIndexOf('.') + 1) : block.type;
-  const realExtension = !block.src ? getDefaultExtension(block) : path.extname(block.src) || block.lang || getDefaultExtension(block);
+  const extension = !block.src ? getDefaultExtension(block) : path.extname(block.src) || block.lang || getDefaultExtension(block);
   const fakeExtension = getFakeExtension(block);
-  const realFileName = `${fileNameNoExtension}.${realExtension}`;
-  const fakeFileName = `${fileNameNoExtension}.${fakeExtension}`;
+  const fileName = block.src ? block.src.substr(block.src.lastIndexOf('.') + 1) : block.type;
+  const blockFileName = `${fileName}.${extension}`;
+  const fakeBlockFileName = `${fileName}.${fakeExtension}`;
   const fuseBoxDirPath = file.info.fuseBoxPath.substr(0, file.info.fuseBoxPath.lastIndexOf('/') + 1);
 
   return {
-    fuseBoxPath: `~/${file.collection.pm.getFuseBoxPath(path.join(fuseBoxDirPath, fakeFileName), file.context.appRoot)}`,
-    absPath: file.collection.pm.getAbsolutePath(path.join(file.info.absDir, realFileName), file.info.absDir).resolved
+    fuseBoxPath: `~/${file.collection.pm.getFuseBoxPath(path.join(fuseBoxDirPath, fakeBlockFileName), file.context.appRoot)}`,
+    absPath: file.collection.pm.getAbsolutePath(path.join(file.info.absDir, blockFileName), file.info.absDir).resolved
   };
 }
 
@@ -90,7 +90,7 @@ export class VueScriptPlugin implements Plugin {
   }
 }
 
-export class VuePluginClass implements Plugin {
+export class VueComponentClass implements Plugin {
   public test: RegExp = /\.vue$/;
 
   public init(context: WorkFlowContext) {
@@ -121,6 +121,6 @@ export class VuePluginClass implements Plugin {
   }
 }
 
-export const VuePlugin = () => {
-    return new VuePluginClass();
+export const VueComponentPlugin = () => {
+    return [[new VueComponentClass()], new VueScriptPlugin(), new VueTemplatePlugin()];
 };
