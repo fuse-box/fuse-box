@@ -54,6 +54,7 @@ export interface FuseBoxOptions {
     customAPIFile?: string;
     experimentalFeatures?: boolean;
     output?: string;
+    emitHMRDependencies?: boolean;
     filterFile? : {(file : File) : boolean} 
     debug?: boolean;
     files?: any;
@@ -121,6 +122,10 @@ export class FuseBox {
 
         if (opts.experimentalFeatures !== undefined) {
             this.context.experimentalFeaturesEnabled = opts.experimentalFeatures;
+        }
+
+        if( opts.emitHMRDependencies === true){
+            this.context.emitHMRDependencies = true;
         }
         if (opts.homeDir) {
             homeDir = ensureUserPath(opts.homeDir)
@@ -374,6 +379,9 @@ export class FuseBox {
 
         let self = this;
         return bundleCollection.collectBundle(bundleData).then(module => {
+            if( this.context.emitHMRDependencies){
+                this.context.emitter.emit("bundle-collected");
+            }
             this.context.log.bundleStart(this.context.bundle.name);
             return chain(class extends Chainable {
                 public defaultCollection: ModuleCollection;
