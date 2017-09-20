@@ -152,6 +152,9 @@ function $getRef(name, o) {
     if (!file && !wildcard) {
         validPath = $pathJoin(filePath, "/", "index.js");
         file = pkg.f[validPath];
+        if (!file && filePath === ".") {
+            file = pkg.f[pkg.s && pkg.s.entry];
+        }
         if (!file) {
             validPath = filePath + ".js";
             file = pkg.f[validPath];

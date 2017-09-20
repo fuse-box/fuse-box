@@ -3,6 +3,7 @@ import * as escodegen from "escodegen";
 import { BundleSource } from "../BundleSource";
 import { File, ScriptTarget } from "./File";
 import { Log } from "../Log";
+import * as NativeEmitter from "events";
 import { IPackageInformation, IPathInformation, AllowedExtenstions } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "../ModuleCache";
@@ -86,6 +87,8 @@ export class WorkFlowContext {
 
     public sourceChangedEmitter = new EventEmitter<SourceChangedEvent>();
 
+    public emitter = new NativeEmitter();
+
     /**
      * The default package name or the package name configured in options
      */
@@ -97,7 +100,10 @@ export class WorkFlowContext {
 
     public pendingPromises: Promise<any>[] = [];
 
+    public emitHMRDependencies = false;
     public languageLevel: ScriptTarget;
+
+    public filterFile: { (file: File): boolean }
 
     public polyfillNonStandardDefaultUsage: boolean | string[] = false;
 
@@ -146,6 +152,8 @@ export class WorkFlowContext {
     public tsMode = false;
 
     public loadedTsConfig: string;
+
+    public dependents = new Map<string, Set<string>>();
 
     public globals: { [packageName: string]: /** Variable name */ string };
 
@@ -245,6 +253,11 @@ export class WorkFlowContext {
         }
     }
 
+    public getDelayedResolutionCollection() : Map<string, File> {
+        return this.getItem("resolve-later");
+            
+    }
+
     public quantumSplit(rule: string, bundleName: string, entryFile: string) {
         if (!this.quantumSplitConfig) {
             this.quantumSplitConfig = new QuantumSplitConfig(this);
@@ -294,15 +307,32 @@ export class WorkFlowContext {
 
     public emitJavascriptHotReload(file: File) {
         let content = file.contents;
-        if (file.headerContent) {
-            content = file.headerContent.join("\n") + "\n" + content;
+        if (file.context.emitHMRDependencies) {
+            this.emitter.addListener("bundle-collected", () => {
+                if (file.headerContent) {
+                    content = file.headerContent.join("\n") + "\n" + content;
+                }
+                let dependants = {};
+                this.dependents.forEach((set, key) => {
+                    dependants[key] = [...set];
+                });
+                this.sourceChangedEmitter.emit({
+                    type: "js",
+                    content,
+                    dependants: dependants,
+                    path: file.info.fuseBoxPath,
+                });
+            });
+        } else {
+            if (file.headerContent) {
+                content = file.headerContent.join("\n") + "\n" + content;
+            }
+            this.sourceChangedEmitter.emit({
+                type: "js",
+                content,
+                path: file.info.fuseBoxPath,
+            });
         }
-
-        this.sourceChangedEmitter.emit({
-            type: "js",
-            content,
-            path: file.info.fuseBoxPath,
-        });
     }
 
     public debug(group: string, text: string) {
@@ -378,12 +408,28 @@ export class WorkFlowContext {
      */
     public reset() {
         this.log.reset();
+        this.dependents = new Map<string, Set<string>>();
+        this.emitter = new NativeEmitter();
         this.storage = new Map();
         this.source = new BundleSource(this);
         this.nodeModules = new Map();
         this.pluginTriggers = new Map();
         this.fileGroups = new Map();
         this.libPaths = new Map();
+    }
+
+    public registerDependant(target: File, dependant: File) {
+
+        let fileSet: Set<string>;
+        if (!this.dependents.has(target.info.fuseBoxPath)) {
+            fileSet = new Set<string>();
+            this.dependents.set(target.info.fuseBoxPath, fileSet);
+        } else {
+            fileSet = this.dependents.get(target.info.fuseBoxPath);
+        }
+        if (!fileSet.has(dependant.info.fuseBoxPath)) {
+            fileSet.add(dependant.info.fuseBoxPath);
+        }
     }
 
     public initAutoImportConfig(userNatives, userImports) {
@@ -594,11 +640,11 @@ export class WorkFlowContext {
         if (this.output && (!this.bundle || this.bundle && this.bundle.producer.writeBundles)) {
             this.output.writeCurrent(res.content).then(() => {
 
-                if(this.source.includeSourceMaps) {
+                if (this.source.includeSourceMaps) {
                     this.writeSourceMaps(res);
                 }
-                
-                    
+
+
                 this.defer.unlock();
                 if (utils.isFunction(outFileWritten)) {
                     outFileWritten();

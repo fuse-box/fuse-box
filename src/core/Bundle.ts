@@ -13,7 +13,11 @@ import { QuantumItem, QuantumSplitResolveConfiguration } from "../quantum/plugin
 import { BundleAbstraction } from "../quantum/core/BundleAbstraction";
 import { PackageAbstraction } from "../quantum/core/PackageAbstraction";
 import { EventEmitter } from '../EventEmitter'
-
+export interface HMROptions {
+    port?: number;
+    socketURI? : string;
+    reload?: boolean;
+}
 export class Bundle {
     public context: WorkFlowContext;
     public watchRule: string;
@@ -63,7 +67,7 @@ export class Bundle {
         return this;
     }
     /** Enable HMR in this bundle and inject HMR plugin */
-    public hmr(opts?: any): Bundle {
+    public hmr(opts?: HMROptions): Bundle {
         if (!this.producer.hmrAllowed) {
             return this;
         }
@@ -71,7 +75,7 @@ export class Bundle {
         if (!this.producer.hmrInjected) {
             opts = opts || {};
             opts.port = this.producer.devServerOptions && this.producer.devServerOptions.port || 4444;
-            let plugin = HotReloadPlugin({ port: opts.port, uri: opts.socketURI });
+            let plugin = HotReloadPlugin({ port: opts.port, uri: opts.socketURI, reload : opts.reload });
             this.context.plugins = this.context.plugins || [];
             this.context.plugins.push(plugin);
 

@@ -8,10 +8,13 @@
     /* @end */
 
     /* @if universal */
+
     var isBrowser = typeof window !== "undefined";
+    /* @if globalRequire */
     if (!isBrowser) {
         global.require = require;
     }
+    /* @end */
 
     /* @if !isContained */
     var storage = isBrowser ? window : global;

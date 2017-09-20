@@ -2,7 +2,7 @@ import * as path from "path";
 import { joinFuseBoxPath } from "../../Utils";
 
 export function generateFileCombinations(input: string): string[] {
-    if (!input) {
+    if (!input || input === ".") {
         return undefined;
     }
     let ext = path.extname(input);

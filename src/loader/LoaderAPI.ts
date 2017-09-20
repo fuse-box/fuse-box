@@ -293,9 +293,13 @@ function $getRef(name: string, o: RefOpts): IReference {
         wildcard = validPath;
     }
     if (!file && !wildcard) {
-        // try folder index.js
+        // try index.js
         validPath = $pathJoin(filePath, "/", "index.js");
         file = pkg.f[validPath];
+
+        if (!file && filePath === ".") {
+            file = pkg.f[pkg.s && pkg.s.entry];
+        }
         // last resort try adding .js extension
         // Some libraries have a weired convention of naming file lile "foo.bar""
         if (!file) {

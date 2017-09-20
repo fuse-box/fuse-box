@@ -104,6 +104,7 @@ export class ResponsiveAPI {
             browser: this.core.opts.isTargetBrowser(),
             universal: this.core.opts.isTargetUniveral(),
             server: this.core.opts.isTargetServer(),
+            globalRequire : this.core.opts.globalRequire,
             isServerFunction: this.isServerFunction,
             isBrowserFunction: this.isBrowserFunction,
             computedStatements: this.computedStatements,

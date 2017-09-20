@@ -32,6 +32,9 @@ export class File {
     public languageLevel = ScriptTarget.ES5
 
     public es6module = false;
+
+    public dependants = new Set<string>();
+    public dependencies = new Set<string>();
     /**
      * In order to keep bundle in a bundle
      * We can't destory the original contents
@@ -157,6 +160,33 @@ export class File {
         }
     }
 
+    public registerDependant(file: File) {
+        if (!this.dependants.has(file.info.fuseBoxPath)) {
+            this.dependants.add(file.info.fuseBoxPath);
+        }
+    }
+
+
+    public registerDependency(file: File) {
+        if (!this.dependencies.has(file.info.fuseBoxPath)) {
+            this.dependencies.add(file.info.fuseBoxPath);
+        }
+    }
+
+    public resolveLater(str: string) {
+        let collection : Map<string, File>;
+        if (!this.context.getItem("resolve-later") ){
+            collection = new Map<string, File>();
+            this.context.setItem("resolve-later", collection);
+             
+        } else {
+            collection = this.context.getItem("resolve-later");
+        }
+        const pm = this.collection.pm.resolve(str, this.info.absDir);
+        const file = new File(this.context, pm);
+        collection.set(file.info.absPath, file);
+    }
+
     public static createByName(collection: ModuleCollection, name: string): File {
         let info = <IPathInformation>{
             fuseBoxPath: name,
@@ -179,7 +209,7 @@ export class File {
         return file;
     }
 
-    public setLanguageLevel (level: ScriptTarget) {
+    public setLanguageLevel(level: ScriptTarget) {
         if (this.languageLevel < level) {
             this.languageLevel = level
         }
@@ -207,6 +237,10 @@ export class File {
         this.subFiles.push(file);
     }
 
+    public getUniquePath() {
+        let collection = this.collection ? this.collection.name : "default";
+        return `${collection}/${this.info.fuseBoxPath}`;
+    }
     /**
      *
      *
@@ -583,12 +617,12 @@ export class File {
         if (result.sourceMapText && this.context.useSourceMaps) {
             let jsonSourceMaps = JSON.parse(result.sourceMapText);
             jsonSourceMaps.file = this.info.fuseBoxPath;
-            jsonSourceMaps.sources = [this.context.sourceMapsRoot +"/"+ this.relativePath.replace(/\.js(x?)$/, ".ts$1")];
+            jsonSourceMaps.sources = [this.context.sourceMapsRoot + "/" + this.relativePath.replace(/\.js(x?)$/, ".ts$1")];
 
             if (!this.context.inlineSourceMaps) {
                 delete jsonSourceMaps.sourcesContent;
             }
-            
+
             result.outputText = result.outputText.replace("//# sourceMappingURL=module.js.map", "");
             this.sourceMap = JSON.stringify(jsonSourceMaps);
         }
@@ -610,10 +644,10 @@ export class File {
         if (this.sourceMap) {
             let jsonSourceMaps = JSON.parse(this.sourceMap);
             jsonSourceMaps.file = this.info.fuseBoxPath;
-            jsonSourceMaps.sources = jsonSourceMaps.sources.map((source : string) => {
+            jsonSourceMaps.sources = jsonSourceMaps.sources.map((source: string) => {
                 return this.context.sourceMapsRoot + "/" + (fname || source);
             });
-            
+
             if (!this.context.inlineSourceMaps) {
                 delete jsonSourceMaps.sourcesContent;
             }
@@ -641,7 +675,7 @@ export class File {
         );
     }
 
-    public addError (message: string) {
+    public addError(message: string) {
         this.context.bundle.addError(message)
     }
 }

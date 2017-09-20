@@ -12,6 +12,9 @@ import { BundleData } from "../arithmetic/Arithmetic";
  * and only has ascii + @ in the name it is considered a node module
  */
 const NODE_MODULE = /^([a-z@](?!:).*)$/;
+const isRelative = /^[\.\/\\]+$/
+const jsExtensions = ['js', 'jsx'];
+const tsExtensions = jsExtensions.concat(['ts', 'tsx']);
 
 export interface INodeModuleRequire {
     name: string;
@@ -225,21 +228,20 @@ export class PathMaster {
     }
 
     private testFolder(folder: string, name: string) {
-        const extensions = ["js", "jsx"];
+        let extensions = jsExtensions;
         if (this.tsMode) {
-            extensions.push("ts", "tsx");
+            extensions = tsExtensions
         }
 
         if (fs.existsSync(folder)) {
             for (let i = 0; i < extensions.length; i++) {
-                let ext = extensions[i];
-                const index = `index.${ext}`;
-                const target = path.join(folder, index);
-                if (fs.existsSync(target)) {
-                    let result = path.join(name, index);
-                    let startsWithDot = result[0] === "."; // After transformation we need to bring the dot back
-                    if (startsWithDot) {
-                        result = `./${result}`;
+                const index = "index." + extensions[i]
+                if (fs.existsSync(path.join(folder, index))) {
+                    const result = path.join(name, index);
+                    const [a, b] = name
+                    if (a === "." && b !== ".") {
+                        //add relative './' from `name`, back onto joined path
+                        return "./" + result;
                     }
                     return result;
                 }
@@ -248,9 +250,9 @@ export class PathMaster {
     }
 
     private checkFileName(root: string, name: string) {
-        const extensions = ["js", "jsx"];
+        let extensions = jsExtensions;
         if (this.tsMode) {
-            extensions.push("ts", "tsx");
+            extensions = tsExtensions;
         }
         for (let i = 0; i < extensions.length; i++) {
             let ext = extensions[i];
@@ -267,7 +269,7 @@ export class PathMaster {
 
     private ensureNodeModuleExtension(input: string) {
         let ext = path.extname(input);
-        if (!ext) {
+        if (!ext && !isRelative.test(input)) {
             return input + ".js";
         }
         return input;
@@ -282,25 +284,25 @@ export class PathMaster {
             name = "." + name.slice(1, name.length);
             name = path.join(this.rootPackagePath, name);
         }
-        if (explicit) {
+        //if (explicit) {
 
-            if (!ext) {
-                // handle cases with
-                // require("@angular/platform-browser/animations");
-                // where animation contains package.json pointing to a different file
-                const folderJsonPath = path.join(root, name, "package.json");
+        if (!ext) {
+            // handle cases with
+            // require("@angular/platform-browser/animations");
+            // where animation contains package.json pointing to a different file
+            const folderJsonPath = path.join(root, name, "package.json");
 
-                if (fs.existsSync(folderJsonPath)) {
-                    const folderJSON = require(folderJsonPath);
-                    if (folderJSON.main) {
-                        return {
-                            resolved: path.resolve(root, name, folderJSON.main),
-                            alias: this.ensureNodeModuleExtension(name)
-                        }
+            if (fs.existsSync(folderJsonPath)) {
+                const folderJSON = require(folderJsonPath);
+                if (folderJSON.main) {
+                    return {
+                        resolved: path.resolve(root, name, folderJSON.main),
+                        alias: this.ensureNodeModuleExtension(name)
                     }
                 }
             }
         }
+        //}
 
         if (!AllowedExtenstions.has(ext)) {
             let fileNameCheck = this.checkFileName(root, name);

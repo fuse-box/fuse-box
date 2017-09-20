@@ -500,7 +500,7 @@ Will ignore FuseBox' polyfills as native modules are available without them.
 
 ### Target electron
 
-Electon specific environment
+Electron specific environment
 
 ### Language Level
 
@@ -644,6 +644,15 @@ import utils from "babel-utils";
 import faraway from "faraway";
 
 console.log(utils, faraway);
+```
+
+## Filter File
+You can filter files and tell FuseBox what you want to be excluded:
+
+```
+filterFile : file => {
+    return file.getUniquePath().indexOf("default/js/dontwantthisfile") === -1
+}
 ```
 
 ## Shimming
