@@ -1,6 +1,5 @@
 import { breakCache } from "./CacheBreaker";
 
-
 // kill cache if required beforehand
 breakCache();
 
@@ -12,7 +11,7 @@ export { IQuantumExtensionParams } from "./quantum/plugin/QuantumOptions";
 export { ComputedStatementRule } from "./quantum/plugin/ComputerStatementRule";
 export { QuantumPlugin } from "./quantum/plugin/QuantumPlugin";
 export { ReplacePlugin } from "./plugins/ReplacePlugin";
-export { VuePlugin } from "./plugins/VuePlugin";
+export { VuePlugin, VueTemplatePlugin, VueScriptPlugin } from "./plugins/VuePlugin";
 export { ImageBase64Plugin } from "./plugins/images/ImageBase64Plugin";
 export { CSSResourcePlugin } from "./plugins/stylesheet/CSSResourcePlugin";
 export { HotReloadPlugin } from "./plugins/HotReloadPlugin";
