@@ -103,7 +103,7 @@ export class WorkFlowContext {
     public emitHMRDependencies = false;
     public languageLevel: ScriptTarget;
 
-    public filterFile :{(file : File) : boolean} 
+    public filterFile: { (file: File): boolean }
 
     public polyfillNonStandardDefaultUsage: boolean | string[] = false;
 
@@ -253,6 +253,11 @@ export class WorkFlowContext {
         }
     }
 
+    public getDelayedResolutionCollection() : Map<string, File> {
+        return this.getItem("resolve-later");
+            
+    }
+
     public quantumSplit(rule: string, bundleName: string, entryFile: string) {
         if (!this.quantumSplitConfig) {
             this.quantumSplitConfig = new QuantumSplitConfig(this);
@@ -302,7 +307,7 @@ export class WorkFlowContext {
 
     public emitJavascriptHotReload(file: File) {
         let content = file.contents;
-        if( file.context.emitHMRDependencies){
+        if (file.context.emitHMRDependencies) {
             this.emitter.addListener("bundle-collected", () => {
                 if (file.headerContent) {
                     content = file.headerContent.join("\n") + "\n" + content;
@@ -319,13 +324,13 @@ export class WorkFlowContext {
                 });
             });
         } else {
-            if (file.headerContent) { 
-                content = file.headerContent.join("\n") + "\n" + content; 
-            } 
-            this.sourceChangedEmitter.emit({ 
-                type: "js", 
-                content, 
-                path: file.info.fuseBoxPath, 
+            if (file.headerContent) {
+                content = file.headerContent.join("\n") + "\n" + content;
+            }
+            this.sourceChangedEmitter.emit({
+                type: "js",
+                content,
+                path: file.info.fuseBoxPath,
             });
         }
     }
@@ -635,11 +640,11 @@ export class WorkFlowContext {
         if (this.output && (!this.bundle || this.bundle && this.bundle.producer.writeBundles)) {
             this.output.writeCurrent(res.content).then(() => {
 
-                if(this.source.includeSourceMaps) {
+                if (this.source.includeSourceMaps) {
                     this.writeSourceMaps(res);
                 }
-                
-                    
+
+
                 this.defer.unlock();
                 if (utils.isFunction(outFileWritten)) {
                     outFileWritten();

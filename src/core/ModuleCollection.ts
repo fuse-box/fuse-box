@@ -217,6 +217,7 @@ export class ModuleCollection {
             })
                 .then(() => this.context.resolve())
                 .then(() => this.transformGroups())
+                .then(() => this.resolveLater())
                 .then(() => {
                     return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
                 }).then(toResolve => {
@@ -235,6 +236,22 @@ export class ModuleCollection {
 
     }
 
+    private resolveLater() {
+        let collection = this.context.getDelayedResolutionCollection();
+        if( !collection){
+            return;
+        }
+        return each(collection, (file: File, key : string) => { 
+            const resolved = this.resolve(file) ;
+            collection.delete(file.info.absPath);
+            return resolved;
+        }).then(() => {
+            if ( collection.size > 0){
+                // recursive
+                return this.resolveLater();
+            }
+        });
+    }
     /**
      *
      *
@@ -350,8 +367,8 @@ export class ModuleCollection {
             }
         }
 
-        if( this.context.filterFile){
-            if( !this.context.filterFile(file)){
+        if (this.context.filterFile) {
+            if (!this.context.filterFile(file)) {
                 return;
             }
         }
