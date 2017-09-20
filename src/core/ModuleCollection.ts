@@ -192,6 +192,7 @@ export class ModuleCollection {
 
         return each(depsOnly, (withDeps, modulePath) => {
             let file = new File(this.context, this.pm.init(modulePath));
+            file.resolveDepsOnly = true;
             return this.resolve(file);
         }).then(() => {
 
@@ -210,7 +211,6 @@ export class ModuleCollection {
         }
 
         return this.resolveDepsOnly(data.depsOnly).then(() => {
-
             return each(data.including, (withDeps, modulePath) => {
                 let file = new File(this.context, this.pm.init(modulePath));
                 return this.resolve(file);
@@ -238,17 +238,26 @@ export class ModuleCollection {
 
     private resolveLater() {
         let collection = this.context.getDelayedResolutionCollection();
-        if( !collection){
+        if (!collection) {
             return;
         }
-        return each(collection, (file: File, key : string) => { 
-            const resolved = this.resolve(file) ;
+        let depsOnly = false;
+        return each(collection, (file: File, key: string) => {
+            const resolved = this.resolve(file, file.shouldIgnoreDeps);
+            if (file.resolveDepsOnly) {
+                depsOnly = true;
+            }
             collection.delete(file.info.absPath);
             return resolved;
         }).then(() => {
-            if ( collection.size > 0){
+            if (collection.size > 0) {
                 // recursive
                 return this.resolveLater();
+            }
+        }).then(() => {
+            if (depsOnly) {
+                // reset
+                this.dependencies = new Map<string, File>();
             }
         });
     }
@@ -356,7 +365,7 @@ export class ModuleCollection {
      * @memberOf ModuleCollection
      */
     public resolve(file: File, shouldIgnoreDeps?: boolean) {
-
+        file.shouldIgnoreDeps = shouldIgnoreDeps;
         file.collection = this;
         if (this.bundle) {
             if (this.bundle.fileBlackListed(file)) {
@@ -415,6 +424,7 @@ export class ModuleCollection {
             return each(file.analysis.dependencies, name => {
                 const newFile = new File(this.context,
                     this.pm.resolve(name, file.info.absDir, fileLimitPath));
+                newFile.resolveDepsOnly = file.resolveDepsOnly;
                 if (this.context.emitHMRDependencies && file.belongsToProject()) {
                     this.context.registerDependant(newFile, file);
                 }

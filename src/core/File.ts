@@ -45,6 +45,9 @@ export class File {
      */
     public alternativeContent: string;
 
+    public shouldIgnoreDeps = false;
+    public resolveDepsOnly = false;
+
     public notFound: boolean;
 
     public params: Map<string, string>;
@@ -174,16 +177,18 @@ export class File {
     }
 
     public resolveLater(str: string) {
-        let collection : Map<string, File>;
-        if (!this.context.getItem("resolve-later") ){
+        let collection: Map<string, File>;
+        if (!this.context.getItem("resolve-later")) {
             collection = new Map<string, File>();
             this.context.setItem("resolve-later", collection);
-             
+
         } else {
             collection = this.context.getItem("resolve-later");
         }
         const pm = this.collection.pm.resolve(str, this.info.absDir);
         const file = new File(this.context, pm);
+        file.shouldIgnoreDeps = this.shouldIgnoreDeps;
+        file.resolveDepsOnly = this.resolveDepsOnly;
         collection.set(file.info.absPath, file);
     }
 
