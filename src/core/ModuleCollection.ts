@@ -398,7 +398,7 @@ export class ModuleCollection {
             return each(file.analysis.dependencies, name => {
                 const newFile = new File(this.context,
                     this.pm.resolve(name, file.info.absDir, fileLimitPath));
-                if (file.belongsToProject()) {
+                if (this.context.emitHMRDependencies && file.belongsToProject()) {
                     this.context.registerDependant(newFile, file);
                 }
                 return this.resolve(newFile, shouldIgnoreDeps);

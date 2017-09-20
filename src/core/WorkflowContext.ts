@@ -100,6 +100,7 @@ export class WorkFlowContext {
 
     public pendingPromises: Promise<any>[] = [];
 
+    public emitHMRDependencies = false;
     public languageLevel: ScriptTarget;
 
     public filterFile :{(file : File) : boolean} 
@@ -301,21 +302,32 @@ export class WorkFlowContext {
 
     public emitJavascriptHotReload(file: File) {
         let content = file.contents;
-        this.emitter.addListener("bundle-collected", () => {
-            if (file.headerContent) {
-                content = file.headerContent.join("\n") + "\n" + content;
-            }
-            let dependants = {};
-            this.dependents.forEach((set, key) => {
-                dependants[key] = [...set];
+        if( file.context.emitHMRDependencies){
+            this.emitter.addListener("bundle-collected", () => {
+                if (file.headerContent) {
+                    content = file.headerContent.join("\n") + "\n" + content;
+                }
+                let dependants = {};
+                this.dependents.forEach((set, key) => {
+                    dependants[key] = [...set];
+                });
+                this.sourceChangedEmitter.emit({
+                    type: "js",
+                    content,
+                    dependants: dependants,
+                    path: file.info.fuseBoxPath,
+                });
             });
-            this.sourceChangedEmitter.emit({
-                type: "js",
-                content,
-                dependants: dependants,
-                path: file.info.fuseBoxPath,
+        } else {
+            if (file.headerContent) { 
+                content = file.headerContent.join("\n") + "\n" + content; 
+            } 
+            this.sourceChangedEmitter.emit({ 
+                type: "js", 
+                content, 
+                path: file.info.fuseBoxPath, 
             });
-        });
+        }
     }
 
     public debug(group: string, text: string) {
