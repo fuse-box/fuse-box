@@ -95,6 +95,7 @@ export class CSSPluginClass implements Plugin {
         group.subFiles.forEach(file => {
             debug(`  -> Concat ${file.info.fuseBoxPath}`);
             concat.add(file.info.fuseBoxPath, file.contents, file.generateCorrectSourceMap());
+            file.sourceMap = undefined;
         });
 
         let options = group.groupHandler.options || {};
@@ -112,6 +113,7 @@ export class CSSPluginClass implements Plugin {
             debug(`Writing ${outFile}`);
             return write(outFile, concat.content).then(() => {
                 const resolvedPath = this.inject(group, options);
+            
                 this.emitHMR(group, resolvedPath);
                 // Writing sourcemaps
                 const sourceMapsFile = ensureUserPath(path.join(bundleDir, sourceMapsName));
@@ -193,7 +195,7 @@ export class CSSPluginClass implements Plugin {
          * 2 files combined will be written or inlined to "bundle.css"
          */
         if (this.options.group) {
-            file.sourceMap = undefined;
+            
             const bundleName = this.options.group;
             let fileGroup = context.getFileGroup(bundleName);
             if (!fileGroup) {
