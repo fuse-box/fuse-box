@@ -216,8 +216,7 @@ export class ModuleCollection {
                 return this.resolve(file);
             })
                 .then(() => this.context.resolve())
-                .then(() => this.transformGroups())
-                .then(() => this.resolveLater())
+                
                 .then(() => {
                     return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
                 }).then(toResolve => {
@@ -226,6 +225,8 @@ export class ModuleCollection {
                 // node modules might need to resolved asynchronously
                 // like css plugins
                 .then(() => this.context.resolve())
+                .then(() => this.transformGroups())
+                .then(() => this.resolveLater())
                 .then(() => this.context.cache && this.context.cache.buildMap(this))
                 .catch(e => {
                     this.context.defer.unlock();
