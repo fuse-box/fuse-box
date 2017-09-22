@@ -64,7 +64,7 @@ export class ModuleCache {
 
     public initialize() {
         this.cacheFolder = path.join(Config.TEMP_FOLDER, "cache",
-            Config.FUSEBOX_VERSION, this.context.output.getUniqueHash());
+        encodeURIComponent(Config.FUSEBOX_VERSION), this.context.output.getUniqueHash());
 
         this.permanentCacheFolder = path.join(this.cacheFolder, "permanent");
         fsExtra.ensureDirSync(this.permanentCacheFolder);
