@@ -52,7 +52,6 @@ export class File {
 
     public params: Map<string, string>;
 
-
     public wasTranspiled = false;
 
     public cached = false;
@@ -81,7 +80,6 @@ export class File {
      * @memberOf File
      */
     public isLoaded = false;
-
 
     /**
      *
@@ -169,7 +167,6 @@ export class File {
         }
     }
 
-
     public registerDependency(file: File) {
         if (!this.dependencies.has(file.info.fuseBoxPath)) {
             this.dependencies.add(file.info.fuseBoxPath);
@@ -190,7 +187,10 @@ export class File {
         file.shouldIgnoreDeps = this.shouldIgnoreDeps;
         file.resolveDepsOnly = this.resolveDepsOnly;
         collection.set(file.info.absPath, file);
-        this.analysis.dependencies.push(str);
+
+        if (this.analysis.dependencies.indexOf(str) === -1) {
+          this.analysis.dependencies.push(str);
+        }
     }
 
     public static createByName(collection: ModuleCollection, name: string): File {
@@ -292,7 +292,6 @@ export class File {
             while (!target && index < this.context.plugins.length) {
                 let item = this.context.plugins[index];
                 let itemTest: RegExp;
-
 
                 if (Array.isArray(item)) {
                     let el = item[0];
