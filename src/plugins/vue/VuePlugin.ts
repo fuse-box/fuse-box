@@ -101,7 +101,7 @@ export class VueComponentClass implements Plugin {
 
       await each(styleFiles, (styleFile) => {
         if (styleFile.alternativeContent) {
-           concat.add(null, styleFile.alternativeContent, styleFile.sourceMap);
+           concat.add(null, styleFile.alternativeContent);
          } else {
            // TODO: Do we need this anymore? Everything seems to work without?
            concat.add(null, `require('fuse-box-css')('${styleFile.info.fuseBoxPath}', ${JSON.stringify(styleFile.contents)})`, styleFile.sourceMap);

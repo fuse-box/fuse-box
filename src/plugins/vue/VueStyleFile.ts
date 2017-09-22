@@ -5,7 +5,7 @@ const postcss = require('postcss');
 
 export class VueStyleFile extends VueBlockFile {
   private fixSourceMapName () {
-    if (this.context.useSourceMaps) {
+    if (this.context.useSourceMaps && this.sourceMap) {
       const jsonSourceMaps = JSON.parse(this.sourceMap);
 
       jsonSourceMaps.sources = jsonSourceMaps.sources.map((source) => {
