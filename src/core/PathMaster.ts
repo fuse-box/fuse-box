@@ -378,10 +378,11 @@ export class PathMaster {
                 let entryRoot;
                 let jsNext = false;
                 let browserOverrides;
-
-                if (json.browser && !this.context.isBrowserTarget()) {
-                    this.context.fuse.producer.addWarning("json.browser",
-                        `Library "${name}" contains "browser" field. Set .target("browser") to avoid problems with your browser build!`);
+                if( this.context.target !== "server" ){
+                    if (json.browser && !this.context.isBrowserTarget()) {
+                        this.context.fuse.producer.addWarning("json.browser",
+                            `Library "${name}" contains "browser" field. Set .target("browser") to avoid problems with your browser build!`);
+                    }
                 }
                 if (this.context.isBrowserTarget() && json.browser) {
                     if (typeof json.browser === "object") {
