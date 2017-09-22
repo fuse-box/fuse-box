@@ -11,7 +11,7 @@ export { IQuantumExtensionParams } from "./quantum/plugin/QuantumOptions";
 export { ComputedStatementRule } from "./quantum/plugin/ComputerStatementRule";
 export { QuantumPlugin } from "./quantum/plugin/QuantumPlugin";
 export { ReplacePlugin } from "./plugins/ReplacePlugin";
-export { VueComponentPlugin } from "./plugins/VuePlugin";
+export { VueComponentPlugin } from "./plugins/vue/VuePlugin";
 export { ImageBase64Plugin } from "./plugins/images/ImageBase64Plugin";
 export { CSSResourcePlugin } from "./plugins/stylesheet/CSSResourcePlugin";
 export { HotReloadPlugin } from "./plugins/HotReloadPlugin";

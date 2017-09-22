@@ -311,6 +311,7 @@ gulp.task("installDevDeps", function(done) {
         "stylus",
         "less",
         "postcss",
+        "postcss-selector-parser",
         "marked",
         "node-sass",
         "uglify-js",
