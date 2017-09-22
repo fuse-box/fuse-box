@@ -190,6 +190,7 @@ export class File {
         file.shouldIgnoreDeps = this.shouldIgnoreDeps;
         file.resolveDepsOnly = this.resolveDepsOnly;
         collection.set(file.info.absPath, file);
+        this.analysis.dependencies.push(str);
     }
 
     public static createByName(collection: ModuleCollection, name: string): File {
