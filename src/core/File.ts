@@ -85,7 +85,6 @@ export class File {
     public isLoaded = false;
 
     public ignoreCache = false;
-
     /**
      *
      *
