@@ -364,7 +364,7 @@ export class ModuleCollection {
      *
      * @memberOf ModuleCollection
      */
-    public resolve(file: File, shouldIgnoreDeps?: boolean) {
+    public async resolve(file: File, shouldIgnoreDeps?: boolean) {
         file.shouldIgnoreDeps = shouldIgnoreDeps;
         file.collection = this;
         if (this.bundle) {
@@ -404,7 +404,7 @@ export class ModuleCollection {
 
             // Consuming file
             // Here we read it and return a list of require statements
-            file.consume();
+            await file.consume();
 
             // if a file belong to a split bundle, pipe it there
             if (this.isDefault && this.context.shouldSplit(file)) {
