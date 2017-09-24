@@ -52,7 +52,6 @@ export class File {
 
     public params: Map<string, string>;
 
-
     public wasTranspiled = false;
 
     public cached = false;
@@ -81,7 +80,6 @@ export class File {
      * @memberOf File
      */
     public isLoaded = false;
-
 
     /**
      *
@@ -168,7 +166,6 @@ export class File {
             this.dependants.add(file.info.fuseBoxPath);
         }
     }
-
 
     public registerDependency(file: File) {
         if (!this.dependencies.has(file.info.fuseBoxPath)) {
@@ -284,7 +281,7 @@ export class File {
      *
      * @memberOf File
      */
-    public tryPlugins(_ast?: any) {
+    public tryPlugins(_ast?: any): Promise<any> {
         if (this.context.runAllMatchedPlugins) { return this.tryAllPlugins(_ast) }
         if (this.context.plugins && this.relativePath) {
             let target: Plugin;
@@ -292,7 +289,6 @@ export class File {
             while (!target && index < this.context.plugins.length) {
                 let item = this.context.plugins[index];
                 let itemTest: RegExp;
-
 
                 if (Array.isArray(item)) {
                     let el = item[0];
@@ -313,9 +309,10 @@ export class File {
                 }
                 index++;
             }
-            const tasks = [];
-            if (target) {
 
+            const tasks = [];
+
+            if (target) {
                 if (Array.isArray(target)) {
                     target.forEach(plugin => {
                         if (utils.isFunction(plugin.transform)) {
@@ -330,7 +327,10 @@ export class File {
                     }
                 }
             }
-            return this.context.queue(each(tasks, promise => promise()));
+
+            const promise = each(tasks, promise => promise());
+            this.context.queue(promise);
+            return promise;
         }
     }
 
@@ -341,7 +341,7 @@ export class File {
      *
      * @memberOf File
      */
-    public tryAllPlugins(_ast?: any) {
+    public async tryAllPlugins(_ast?: any) {
         const tasks = [];
         if (this.context.plugins && this.relativePath) {
             const addTask = item => {
@@ -364,7 +364,9 @@ export class File {
                 }
             }, this);
         }
-        return this.context.queue(each(tasks, promise => promise()));
+        const promise = each(tasks, promise => promise());
+        this.context.queue(promise);
+        return promise;
     }
     /**
      *
@@ -486,11 +488,15 @@ export class File {
             }
             return;
         }
-        this.tryPlugins();
-        if (!this.isLoaded) {
-            this.contents = "";
-            this.context.fuse.producer.addWarning("missing-plugin", `The contents of ${this.absPath} weren't loaded. Missing a plugin?`);
-        }
+
+        return this.tryPlugins().then((result) => {
+          if (!this.isLoaded) {
+             this.contents = "";
+             this.context.fuse.producer.addWarning("missing-plugin", `The contents of ${this.absPath} weren't loaded. Missing a plugin?`);
+          }
+
+          return result;
+        });
     }
 
     public fileDependsOnLastChangedCSS() {
