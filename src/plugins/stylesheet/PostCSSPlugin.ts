@@ -70,6 +70,7 @@ export class PostCSSPluginClass implements Plugin {
             content: file.contents,
             extensions: ["css"]
         });
+        file.cssDependencies = cssDependencies;
 
         if (!postcss) {
             postcss = require("postcss");

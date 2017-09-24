@@ -46,7 +46,7 @@ export class FileAnalysis {
 
     private wasAnalysed = false;
 
-    private skipAnalysis = false;
+    public skipAnalysis = false;
 
     public bannedImports = {};
 

@@ -72,7 +72,9 @@ export class LESSPluginClass implements Plugin {
             content: file.contents,
             sassStyle: true,
             extensions: ["less", "css"]
-        })
+        });
+        
+        file.cssDependencies = cssDependencies;
 
         return less.render(file.contents, options).then(output => {
             if (output.map) {
