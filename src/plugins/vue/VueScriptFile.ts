@@ -12,9 +12,10 @@ export class VueScriptFile extends VueBlockFile {
     if (this.pluginChain.length === 0) {
       const transpiled = typescriptTranspiler.transpileModule(this.contents.trim(), this.context.getTypeScriptConfig());
 
-      if (this.context.useSourceMaps && this.sourceMap) {
+      if (this.context.useSourceMaps && transpiled.sourceMapText) {
         const jsonSourceMaps = JSON.parse(transpiled.sourceMapText);
         jsonSourceMaps.sources = [this.context.sourceMapsRoot + "/" + this.relativePath.replace(/\.js(x?)$/, ".ts$1")];
+        console.log(this.context.sourceMapsRoot + "/" + this.relativePath.replace(/\.js(x?)$/, ".ts$1"))
         this.sourceMap = JSON.stringify(jsonSourceMaps);
       }
 

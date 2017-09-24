@@ -1,7 +1,7 @@
 import { File } from "../../core/File";
 import { WorkFlowContext, Plugin } from "../../core/WorkflowContext";
 import { CSSPluginClass } from "../stylesheet/CSSplugin";
-import { FuseBoxHTMLPlugin } from "../HTMLPlugin";
+import { FuseBoxHTMLPlugin } from "../HTMLplugin";
 import { Concat, hashString } from "../../Utils";
 import { VueTemplateFile } from './VueTemplateFile';
 import { VueStyleFile } from './VueStyleFile';
