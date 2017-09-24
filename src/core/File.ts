@@ -35,6 +35,9 @@ export class File {
 
     public dependants = new Set<string>();
     public dependencies = new Set<string>();
+
+    public cssDependencies : string[];
+    
     /**
      * In order to keep bundle in a bundle
      * We can't destory the original contents
@@ -80,6 +83,8 @@ export class File {
      * @memberOf File
      */
     public isLoaded = false;
+
+    public ignoreCache = false;
 
     /**
      *
@@ -528,7 +533,7 @@ export class File {
     }
     public bustCSSCache = false;
     public isCSSCached(type: string = "css") {
-        if (this.bustCSSCache) {
+        if (this.ignoreCache === true || this.bustCSSCache) {
             return false;
         }
         if (!this.context || !this.context.cache) {

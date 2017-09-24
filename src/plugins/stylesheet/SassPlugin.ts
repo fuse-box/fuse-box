@@ -97,7 +97,8 @@ export class SassPluginClass implements Plugin {
             sassStyle: true,
             importer: options.importer as any,
             extensions: ["css", options.indentedSyntax ? "sass" : "scss"]
-        })
+        });
+        file.cssDependencies = cssDependencies;
         return new Promise((resolve, reject) => {
             return sass.render(options, (err, result) => {
                 if (err) {
