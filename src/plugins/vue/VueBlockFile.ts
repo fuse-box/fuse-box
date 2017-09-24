@@ -12,6 +12,7 @@ export abstract class VueBlockFile extends File {
     public pluginChain: Plugin[]
   ) {
     super(context, info);
+    this.ignoreCache = true;
   }
 
   public loadContents() {

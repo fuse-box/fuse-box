@@ -37,7 +37,7 @@ export class File {
     public dependencies = new Set<string>();
 
     public cssDependencies : string[];
-    
+
     /**
      * In order to keep bundle in a bundle
      * We can't destory the original contents

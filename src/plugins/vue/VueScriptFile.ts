@@ -15,7 +15,6 @@ export class VueScriptFile extends VueBlockFile {
       if (this.context.useSourceMaps && transpiled.sourceMapText) {
         const jsonSourceMaps = JSON.parse(transpiled.sourceMapText);
         jsonSourceMaps.sources = [this.context.sourceMapsRoot + "/" + this.relativePath.replace(/\.js(x?)$/, ".ts$1")];
-        console.log(this.context.sourceMapsRoot + "/" + this.relativePath.replace(/\.js(x?)$/, ".ts$1"))
         this.sourceMap = JSON.stringify(jsonSourceMaps);
       }
 

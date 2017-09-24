@@ -3,6 +3,7 @@ import { WorkFlowContext, Plugin } from "../../core/WorkflowContext";
 import { CSSPluginClass } from "../stylesheet/CSSplugin";
 import { FuseBoxHTMLPlugin } from "../HTMLplugin";
 import { Concat, hashString } from "../../Utils";
+import { VueBlockFile } from './VueBlockFile';
 import { VueTemplateFile } from './VueTemplateFile';
 import { VueStyleFile } from './VueStyleFile';
 import { VueScriptFile } from './VueScriptFile';
@@ -47,7 +48,7 @@ export class VueComponentClass implements Plugin {
     }
   }
 
-  private createVirtualFile(file: File, block: any, scopeId: string, pluginChain: Plugin[]) {
+  private createVirtualFile(file: File, block: any, scopeId: string, pluginChain: Plugin[]): VueBlockFile {
     let extension = block.lang || this.getDefaultExtension(block);
     let src = `./${block.type}.${extension}`;
 
@@ -69,11 +70,37 @@ export class VueComponentClass implements Plugin {
   }
 
   public async transform(file: File) {
+    const bundle = file.context.bundle
+    let cacheValid = false;
+
+    if (file.loadFromCache()) {
+      const data = file.cacheData;
+      cacheValid = true;
+
+      if (bundle && bundle.lastChangedFile) {
+        if (data.files[bundle.lastChangedFile]) {
+          cacheValid = false;
+        }
+      }
+    }
+
+    if (cacheValid) {
+      return;
+    } else {
+      file.isLoaded = false;
+      file.cached  = false;
+      file.analysis.skipAnalysis = false;
+    }
+
     const concat = new Concat(true, "", "\n");
 
     concat.add(null, "var _options = {}");
     file.loadContents();
 
+    const cache = {
+      files : {},
+      tags : {}
+    };
     const component = vueCompiler.parseComponent(file.contents);
     const hasScopedStyles = component.styles && component.styles.find((style) => style.scoped);
     const scopeId = hasScopedStyles ? `data-v-${hashString(file.info.absPath)}` : null;
@@ -81,12 +108,22 @@ export class VueComponentClass implements Plugin {
     if (component.template) {
       const templateFile = this.createVirtualFile(file, component.template, scopeId, this.options.template);
       await templateFile.process();
+
+      if (component.template.src) {
+        cache.files[templateFile.info.fuseBoxPath] = 1;
+      }
+
       concat.add(null, templateFile.contents);
     }
 
     if (component.script) {
       const scriptFile = this.createVirtualFile(file, component.script, scopeId, this.options.script);
       await scriptFile.process();
+
+      if (component.script.src) {
+        cache.files[scriptFile.info.fuseBoxPath] = 1;
+      }
+
       concat.add(null, scriptFile.contents, scriptFile.sourceMap);
       concat.add(null, "Object.assign(exports.default, _options)");
     }
@@ -96,7 +133,20 @@ export class VueComponentClass implements Plugin {
 
       const styleFiles = await each(component.styles, (styleBlock) => {
         const styleFile = this.createVirtualFile(file, styleBlock, scopeId, this.options.style);
-        return styleFile.process().then(() => styleFile);
+
+        return styleFile.process().then(() => styleFile).then(() => {
+          if (styleBlock.src) {
+            cache.files[styleFile.info.fuseBoxPath] = 1;
+          }
+
+          if (styleFile.cssDependencies) {
+            styleFile.cssDependencies.forEach(str => {
+              cache.files[str] = 1;
+            })
+          }
+
+          return styleFile;
+        });
       });
 
       await each(styleFiles, (styleFile) => {
@@ -114,6 +164,11 @@ export class VueComponentClass implements Plugin {
     file.analysis.parseUsingAcorn();
     file.analysis.analyze();
     file.analysis.dependencies.forEach(dep => file.resolveLater(dep));
+
+    if (file.context.useCache) {
+      file.setCacheData(cache)
+      file.context.cache.writeStaticCache(file, void 0);
+    }
   }
 }
 
