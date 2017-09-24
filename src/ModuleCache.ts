@@ -160,7 +160,9 @@ export class ModuleCache {
     }
 
     public getCSSCache(file: File) {
-
+        if (file.ignoreCache){
+            return;
+        }
         let stats = fs.statSync(file.absPath);
         let fileName = this.encodeCacheFileName(file.info.fuseBoxPath);
         let memCacheKey = this.getStaticCacheKey(file);
@@ -201,6 +203,9 @@ export class ModuleCache {
      * @memberOf ModuleCache
      */
     public writeStaticCache(file: File, sourcemaps: string, type: string = "") {
+        if(file.ignoreCache){
+            return;
+        }
         let fileName = this.encodeCacheFileName(type + file.info.fuseBoxPath);
         let memCacheKey = this.getStaticCacheKey(file, type);
         let dest = path.join(this.staticCacheFolder, fileName);
