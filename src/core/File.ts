@@ -563,6 +563,9 @@ export class File {
             }
             this.isLoaded = true;
             this.cached = true;
+            if( cached._){
+                this.cacheData = cached._;
+            }
             if (cached.devLibsRequired) {
                 cached.devLibsRequired.forEach(item => {
                     if (!this.context.fuse.producer.devCodeHasBeenInjected(item)) {
@@ -653,6 +656,10 @@ export class File {
 
             this.context.cache.writeStaticCache(this, this.sourceMap);
         }
+    }
+    public cacheData : { [key: string]: any };
+    public setCacheData(data: { [key: string]: any }) {
+        this.cacheData = data;
     }
 
     public generateCorrectSourceMap(fname?: string) {

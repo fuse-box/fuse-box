@@ -212,7 +212,8 @@ export class ModuleCache {
             dependencies: file.analysis.dependencies,
             sourceMap: sourcemaps || {},
             headerContent: file.headerContent,
-            mtime: stats.mtime.getTime()
+            mtime: stats.mtime.getTime(),
+            _ : file.cacheData || {}
         };
         if (file.devLibsRequired) {
             cacheData.devLibsRequired = file.devLibsRequired;
@@ -222,10 +223,11 @@ dependencies: ${JSON.stringify(cacheData.dependencies)},
 sourceMap: ${JSON.stringify(cacheData.sourceMap)},
 headerContent: ${JSON.stringify(cacheData.headerContent)},
 mtime: ${cacheData.mtime},
-devLibsRequired : ${JSON.stringify(cacheData.devLibsRequired)}
-};`;
+devLibsRequired : ${JSON.stringify(cacheData.devLibsRequired)},
+_ : ${JSON.stringify(cacheData._ || {})}
+}
+`;
         MEMORY_CACHE[memCacheKey] = cacheData;
-
         fs.writeFileSync(dest, data);
     }
 
