@@ -153,12 +153,17 @@ export class PathMaster {
         } else {
             if (root) {
                 const absPath = this.getAbsolutePath(name, root, rootEntryLimit);
+                let resultPath;
                 if (absPath.alias) {
                     data.fuseBoxAlias = absPath.alias;
                 }
                 data.absPath = absPath.resolved;
                 data.absDir = path.dirname(data.absPath);
-                data.fuseBoxPath = this.getFuseBoxPath(data.absPath, this.rootPackagePath);
+                resultPath = data.absPath;
+                if(name.match(/^\.\.\//)) {
+                    resultPath = name;
+                }
+                data.fuseBoxPath = this.getFuseBoxPath(resultPath, this.rootPackagePath);
             }
         }
 
@@ -172,6 +177,7 @@ export class PathMaster {
         name = name.replace(/\\/g, "/");
         root = root.replace(/\\/g, "/");
         name = name.replace(root, "").replace(/^\/|\\/, "");
+        name = name.replace(/^\.\.\//, "")
 
         if (this.tsMode) {
             name = ensurePublicExtension(name);
