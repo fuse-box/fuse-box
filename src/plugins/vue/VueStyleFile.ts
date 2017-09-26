@@ -4,7 +4,7 @@ import { TrimPlugin, AddScopeIdPlugin } from './PostCSSPlugins';
 const postcss = require('postcss');
 
 export class VueStyleFile extends VueBlockFile {
-  private fixSourceMapName () {
+  public fixSourceMapName () {
     if (this.context.useSourceMaps && this.sourceMap) {
       const jsonSourceMaps = JSON.parse(this.sourceMap);
 
