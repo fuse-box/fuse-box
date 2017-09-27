@@ -91,7 +91,7 @@ export class UserOutput {
         
         // user has a priority on extensions
         if (userExt && templateExt) {
-            if( userExt === ".js"){
+            if( userExt === ".js" || userExt === ".html"){
                 template = template.replace(templateExt, '');
             }
         }
