@@ -21,7 +21,6 @@ import { QuantumSplitConfig, QuantumItem, QuantumSplitResolveConfiguration } fro
 import { isPolyfilledByFuseBox } from "./ServerPolyfillList";
 import { CSSDependencyExtractor, ICSSDependencyExtractorOptions } from "../lib/CSSDependencyExtractor";
 
-
 const appRoot = require("app-root-path");
 
 /**
@@ -83,7 +82,6 @@ export class WorkFlowContext {
     public showErrors = true;
 
     public showErrorsInBrowser = true;
-
 
     public sourceChangedEmitter = new EventEmitter<SourceChangedEvent>();
 
@@ -177,8 +175,6 @@ export class WorkFlowContext {
 
     public pluginTriggers: Map<string, Set<String>>;
 
-
-
     public natives = {
         process: true,
         stream: true,
@@ -199,7 +195,6 @@ export class WorkFlowContext {
 
     public defer = new Defer;
 
-
     public initCache() {
         this.cache = new ModuleCache(this);
     }
@@ -213,8 +208,6 @@ export class WorkFlowContext {
     public queue(obj: any) {
         this.pendingPromises.push(obj);
     }
-
-
 
     public convertToFuseBoxPath(name: string) {
         let root = this.homeDir;
@@ -255,7 +248,7 @@ export class WorkFlowContext {
 
     public getDelayedResolutionCollection() : Map<string, File> {
         return this.getItem("resolve-later");
-            
+
     }
 
     public quantumSplit(rule: string, bundleName: string, entryFile: string) {
@@ -294,8 +287,6 @@ export class WorkFlowContext {
         this.customCodeGenerator = fn;
     }
 
-
-
     public generateCode(ast: any, opts?: any) {
         if (this.customCodeGenerator) {
             try {
@@ -306,6 +297,10 @@ export class WorkFlowContext {
     }
 
     public emitJavascriptHotReload(file: File) {
+        if (file.ignoreCache) {
+          return
+        }
+      
         let content = file.contents;
         if (file.context.emitHMRDependencies) {
             this.emitter.addListener("bundle-collected", () => {
@@ -451,7 +446,6 @@ export class WorkFlowContext {
         return this.storage.get(key) !== undefined ? this.storage.get(key) : defaultValue;
     }
 
-
     public setCSSDependencies(file: File, userDeps: string[]) {
         let collection = this.getItem("cssDependencies") || {};
         collection[file.info.absPath] = userDeps;
@@ -463,8 +457,6 @@ export class WorkFlowContext {
         this.setCSSDependencies(file, extractor.getDependencies())
         return extractor.getDependencies();
     }
-
-
 
     public getCSSDependencies(file: File): string[] {
         let collection = this.getItem("cssDependencies") || {};
@@ -517,7 +509,6 @@ export class WorkFlowContext {
         } else {
             aliases.push({ expr: new RegExp(`^(${obj})(/|$)`), replacement: value });
         }
-
 
         this.aliasCollection = this.aliasCollection || [];
         this.aliasCollection = this.aliasCollection.concat(aliases)
@@ -644,7 +635,6 @@ export class WorkFlowContext {
                     this.writeSourceMaps(res);
                 }
 
-
                 this.defer.unlock();
                 if (utils.isFunction(outFileWritten)) {
                     outFileWritten();
@@ -656,7 +646,6 @@ export class WorkFlowContext {
             outFileWritten();
         }
     }
-
 
     protected writeSourceMaps(result: any) {
         // Writing sourcemaps

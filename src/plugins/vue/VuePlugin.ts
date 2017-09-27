@@ -77,6 +77,36 @@ export class VueComponentClass implements Plugin {
     };
   }
 
+  public bundleEnd(context: WorkFlowContext) {
+    // TODO: ONLY ADD IF HMR IS ENABLED!
+    context.source.addContent(`
+      const process = FuseBox.import('process');
+      const api = FuseBox.import('vue-hot-reload-api');
+      const Vue = FuseBox.import('vue');
+
+      api.install(Vue);
+
+      FuseBox.addPlugin({
+        hmrUpdate: ({ type, path, content }) => {
+          if (type === "js" && /.vue$/.test(path)) {
+            var fusePath = '~/' + path;
+
+            FuseBox.flush();
+
+            FuseBox.flush(function (file) {
+              return file === path;
+            });
+
+            FuseBox.dynamic(path, content);
+
+            var component = FuseBox.import(fusePath).default;
+            api.reload(component._scopeId, component);
+            return true;
+          }
+        }
+      });`);
+  }
+
   public async transform(file: File) {
     const bundle = file.context.bundle
     let cacheValid = false;
@@ -140,6 +170,11 @@ export class VueComponentClass implements Plugin {
         concat.add(null, scriptFile.contents, scriptFile.sourceMap);
         concat.add(null, "Object.assign(exports.default, _options)");
       }
+    } else {
+      if (!cacheValid) {
+        concat.add(null, "exports.default = {}");
+        concat.add(null, "Object.assign(exports.default, _options)");
+      }
     }
 
     if (component.styles && component.styles.length > 0) {
@@ -184,6 +219,22 @@ export class VueComponentClass implements Plugin {
        });
     }
 
+    // TODO: ONLY ADD IF HMR IS ENABLED
+    // TODO: FIGURE OUT WHY CSS IS NOT HMR'D
+    // TODO: ADD PLUGIN "INFERENCE" BY DEFAULT
+    concat.add(null, `var api = require('vue-hot-reload-api');
+                      var process = require('process');
+
+                      process.env.vueHMR = process.env.vueHMR || {};
+
+                      if (!process.env.vueHMR['${scopeId}']) {
+                        process.env.vueHMR['${scopeId}'] = true;
+                        api.createRecord('${scopeId}', module.exports.default);
+                      }`)
+
+    file.addStringDependency('vue-hot-reload-api');
+    file.addStringDependency('vue');
+
     if (!cacheValid) {
       file.contents = concat.content.toString();
       file.sourceMap = concat.sourceMap.toString();
@@ -192,9 +243,10 @@ export class VueComponentClass implements Plugin {
       file.analysis.dependencies.forEach(dep => file.resolveLater(dep));
     }
 
-    if (file.context.useCache) {
+    if (file.context.useCache && !cacheValid) {
       file.setCacheData(cache);
       file.context.cache.writeStaticCache(file, file.sourceMap);
+      file.context.emitJavascriptHotReload(file);
     }
   }
 }

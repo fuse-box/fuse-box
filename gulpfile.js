@@ -323,6 +323,7 @@ gulp.task("installDevDeps", function(done) {
         "vue-template-es2015-compiler",
         "vue",
         "vue-server-renderer",
+        "vue-hot-reload-api",
         "rollup",
         "buble",
     ];
