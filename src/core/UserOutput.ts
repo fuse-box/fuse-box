@@ -88,10 +88,12 @@ export class UserOutput {
 
         const userExt = path.extname(str);
         const templateExt = path.extname(template);
-
-        // making use user has a priority on extensions
+        
+        // user has a priority on extensions
         if (userExt && templateExt) {
-            template = template.replace(templateExt, '')
+            if( userExt === ".js" || userExt === ".html"){
+                template = template.replace(templateExt, '');
+            }
         }
 
         let basename = path.basename(str);
