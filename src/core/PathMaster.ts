@@ -159,6 +159,10 @@ export class PathMaster {
                 data.absPath = absPath.resolved;
                 data.absDir = path.dirname(data.absPath);
                 data.fuseBoxPath = this.getFuseBoxPath(data.absPath, this.rootPackagePath);
+                if (path.relative(name, root).match(/^\.\.(\\|\/)/)) {
+                    this.context.fuse.producer.addWarning('unresolved',
+                        `File "${data.absPath}" cannot be imported from out of project directory, only node modules`);
+                }
             }
         }
 
