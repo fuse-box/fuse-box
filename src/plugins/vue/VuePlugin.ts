@@ -96,8 +96,6 @@ export class VueComponentClass implements Plugin {
       file.isLoaded = false;
       file.cached  = false;
       file.analysis.skipAnalysis = false;
-    } else {
-      console.log(file.sourceMap)
     }
 
     const concat = new Concat(true, "", "\n");
