@@ -159,6 +159,10 @@ export class PathMaster {
                 data.absPath = absPath.resolved;
                 data.absDir = path.dirname(data.absPath);
                 data.fuseBoxPath = this.getFuseBoxPath(data.absPath, this.rootPackagePath);
+                if (path.relative(this.rootPackagePath, data.absPath).match(/^\.\.(\\|\/)/)) {
+                    this.context.fuse.producer.addWarning('unresolved',
+                        `File "${data.absPath}" cannot be bundled because it's out of your project directory (homeDir)`);
+                }
             }
         }
 
