@@ -428,7 +428,7 @@ export class FuseBox {
 
                 const rollup = this.handleRollup();
                 if (rollup) {
-                    this.producer.addWarning("depreaction", "Rollup support will be dropped in 2.3.2. Use Quantum instead");
+                    this.producer.addWarning("deprecation", "Rollup support will be dropped in 2.3.2. Use Quantum instead");
                     self.context.source.finalize(bundleData);
                     rollup().then(() => {
                         self.context.log.end();

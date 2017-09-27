@@ -140,7 +140,7 @@ export class Bundle {
         if (this.context.experimentalFeaturesEnabled) {
             this.producer.fuse.context.quantumSplit(rule, bundleName, mainFile);
         } else {
-            this.producer.addWarning("depreaction", "The old code splitting will be deprecated very soon! Make sure you have migrated to Quantum splitting with experimentalFeaturesEnabled: true! They will be enabled by default in 2.3.2");
+            this.producer.addWarning("deprecation", "The old code splitting will be deprecated very soon! Make sure you have migrated to Quantum splitting with experimentalFeaturesEnabled: true! They will be enabled by default in 2.3.2");
             if (!this.bundleSplit) {
                 this.bundleSplit = new BundleSplit(this);
             }
