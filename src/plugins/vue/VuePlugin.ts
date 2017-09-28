@@ -16,10 +16,6 @@ const DEFAULT_OPTIONS: IVueComponentPluginOptions = {
   style: []
 };
 
-// TODO: PLUGIN INFERENCE
-// TODO: DOUBLE CHECK DEPENDENCIES ARE ADDED CORRECTLY
-// TODO: ADD VUE VERSION MISMATCH CHECKS
-
 export interface IVueComponentPluginOptions {
   script: Plugin[],
   template: Plugin[],
@@ -109,7 +105,7 @@ export class VueComponentClass implements Plugin {
                 var component = FuseBox.import(fusePath).default;
                 api.reload(component._scopeId, component);
               }
-              
+
               return true;
             }
           }
@@ -121,7 +117,7 @@ export class VueComponentClass implements Plugin {
     const bundle = file.context.bundle
     let cacheValid = false;
 
-    if (file.loadFromCache()) {
+    if (file.context.useCache && file.loadFromCache()) {
       const data = file.cacheData;
       cacheValid = true;
 
