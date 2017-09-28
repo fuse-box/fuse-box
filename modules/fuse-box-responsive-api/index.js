@@ -50,9 +50,11 @@
 
 
     /* @if server */
+    /* @if globalRequire */
     if (typeof global === "object") {
         global.require = require;
     }
+    /* @end */
     /* @if !isContained */
     var $fsx = global.$fsx = {}
     if ($fsx.r) {
