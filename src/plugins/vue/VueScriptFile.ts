@@ -6,10 +6,12 @@ export class VueScriptFile extends VueBlockFile {
     this.loadContents();
 
     if (this.pluginChain.length > 1) {
-      return Promise.reject('VueComponentPlugin - only one script transpiler can be used in the plugin chain');
+      const message = 'VueComponentClass - only one script transpiler can be used in the plugin chain';
+      this.context.log.echoError(message);
+      return Promise.reject(new Error(message));
     }
 
-    if (this.pluginChain.length === 0) {
+    if (this.pluginChain[0] === null) {
       const transpiled = typescriptTranspiler.transpileModule(this.contents.trim(), this.context.getTypeScriptConfig());
 
       if (this.context.useSourceMaps && transpiled.sourceMapText) {
@@ -19,7 +21,7 @@ export class VueScriptFile extends VueBlockFile {
       }
 
       this.contents = transpiled.outputText;
-
+      this.context.debug('VueComponentClass', `using TypeScript for ${this.info.fuseBoxPath}`);
       return Promise.resolve();
     }
 

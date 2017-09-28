@@ -1,7 +1,6 @@
 import { File } from "../../core/File";
 import { WorkFlowContext, Plugin } from "../../core/WorkflowContext";
 import { CSSPluginClass } from "../stylesheet/CSSplugin";
-import { FuseBoxHTMLPlugin } from "../HTMLplugin";
 import { Concat, hashString } from "../../Utils";
 import { VueBlockFile } from './VueBlockFile';
 import { VueTemplateFile } from './VueTemplateFile';
@@ -9,13 +8,17 @@ import { VueStyleFile } from './VueStyleFile';
 import { VueScriptFile } from './VueScriptFile';
 import * as path from "path";
 import * as fs from "fs";
-import {each} from "realm-utils";
+import { each } from "realm-utils";
 const vueCompiler = require("vue-template-compiler");
 const DEFAULT_OPTIONS: IVueComponentPluginOptions = {
   script: [],
-  template: [new FuseBoxHTMLPlugin()],
-  style: [new CSSPluginClass()]
+  template: [],
+  style: []
 };
+
+// TODO: PLUGIN INFERENCE
+// TODO: DOUBLE CHECK DEPENDENCIES ARE ADDED CORRECTLY
+// TODO: ADD VUE VERSION MISMATCH CHECKS
 
 export interface IVueComponentPluginOptions {
   script: Plugin[],
@@ -78,33 +81,40 @@ export class VueComponentClass implements Plugin {
   }
 
   public bundleEnd(context: WorkFlowContext) {
-    // TODO: ONLY ADD IF HMR IS ENABLED!
-    context.source.addContent(`
-      const process = FuseBox.import('process');
-      const api = FuseBox.import('vue-hot-reload-api');
-      const Vue = FuseBox.import('vue');
+    if (context.useCache) {
+      context.source.addContent(`
+        const process = FuseBox.import('process');
+        const api = FuseBox.import('vue-hot-reload-api');
+        const Vue = FuseBox.import('vue');
 
-      api.install(Vue);
+        api.install(Vue);
 
-      FuseBox.addPlugin({
-        hmrUpdate: ({ type, path, content }) => {
-          if (type === "js" && /.vue$/.test(path)) {
-            var fusePath = '~/' + path;
+        FuseBox.addPlugin({
+          hmrUpdate: ({ type, path, content }) => {
+            var componentWildcardPath = '~/' + path.substr(0, path.lastIndexOf('/') + 1) + '*.vue';
+            var isComponentStyling = (type === "css" && !!FuseBox.import(componentWildcardPath));
 
-            FuseBox.flush();
+            if (type === "js" && /.vue$/.test(path) || isComponentStyling) {
+              var fusePath = '~/' + path;
 
-            FuseBox.flush(function (file) {
-              return file === path;
-            });
+              FuseBox.flush();
 
-            FuseBox.dynamic(path, content);
+              FuseBox.flush(function (file) {
+                return file === path;
+              });
 
-            var component = FuseBox.import(fusePath).default;
-            api.reload(component._scopeId, component);
-            return true;
+              FuseBox.dynamic(path, content);
+
+              if (!isComponentStyling) {
+                var component = FuseBox.import(fusePath).default;
+                api.reload(component._scopeId, component);
+              }
+              
+              return true;
+            }
           }
-        }
-      });`);
+        });`);
+      }
   }
 
   public async transform(file: File) {
@@ -144,6 +154,7 @@ export class VueComponentClass implements Plugin {
 
     if (component.template) {
       const templateFile = this.createVirtualFile(file, component.template, scopeId, this.options.template);
+      templateFile.setPluginChain(component.template, this.options.template);
 
       if (cacheValid) {
         const templateCacheData = file.cacheData.template[templateFile.info.fuseBoxPath];
@@ -157,6 +168,7 @@ export class VueComponentClass implements Plugin {
 
     if (component.script) {
       const scriptFile = this.createVirtualFile(file, component.script, scopeId, this.options.script);
+      scriptFile.setPluginChain(component.script, this.options.script);
 
       if (cacheValid) {
         const scriptCacheData = file.cacheData.script[scriptFile.info.fuseBoxPath];
@@ -182,6 +194,7 @@ export class VueComponentClass implements Plugin {
 
       const styleFiles = await each(component.styles, (styleBlock) => {
         const styleFile = this.createVirtualFile(file, styleBlock, scopeId, this.options.style) as VueStyleFile;
+        styleFile.setPluginChain(styleBlock, this.options.style);
 
         if (cacheValid) {
           const CSSPlugin = this.options.style.find((plugin) => plugin instanceof CSSPluginClass);
@@ -219,18 +232,19 @@ export class VueComponentClass implements Plugin {
        });
     }
 
-    // TODO: ONLY ADD IF HMR IS ENABLED
-    // TODO: FIGURE OUT WHY CSS IS NOT HMR'D
-    // TODO: ADD PLUGIN "INFERENCE" BY DEFAULT
-    concat.add(null, `var api = require('vue-hot-reload-api');
-                      var process = require('process');
+    if (file.context.useCache) {
+      concat.add(null, `
+        var api = require('vue-hot-reload-api');
+        var process = require('process');
 
-                      process.env.vueHMR = process.env.vueHMR || {};
+        process.env.vueHMR = process.env.vueHMR || {};
 
-                      if (!process.env.vueHMR['${scopeId}']) {
-                        process.env.vueHMR['${scopeId}'] = true;
-                        api.createRecord('${scopeId}', module.exports.default);
-                      }`)
+        if (!process.env.vueHMR['${scopeId}']) {
+          process.env.vueHMR['${scopeId}'] = true;
+          api.createRecord('${scopeId}', module.exports.default);
+        }
+      `);
+    }
 
     file.addStringDependency('vue-hot-reload-api');
     file.addStringDependency('vue');

@@ -38,6 +38,9 @@ export class VueStyleFile extends VueBlockFile {
       return Promise.resolve();
     }
 
+    const pluginChainString = this.pluginChain.map((plugin) => plugin.constructor.name).join(' → ');
+    this.context.debug('VueComponentClass', `using ${pluginChainString} for ${this.info.fuseBoxPath}`);
+
     return this.pluginChain.reduce((chain, plugin) => {
       return chain.then(() => {
         if (plugin instanceof CSSPluginClass && this.block.scoped) {
