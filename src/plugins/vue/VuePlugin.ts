@@ -23,6 +23,7 @@ export interface IVueComponentPluginOptions {
 }
 
 export class VueComponentClass implements Plugin {
+  public dependencies: ["fusebox-hot-reload"];
   public test: RegExp = /\.vue$/
   public options: IVueComponentPluginOptions;
 
@@ -79,27 +80,27 @@ export class VueComponentClass implements Plugin {
   public bundleEnd(context: WorkFlowContext) {
     if (context.useCache) {
       context.source.addContent(`
-        const process = FuseBox.import('process');
-        const api = FuseBox.import('vue-hot-reload-api');
-        const Vue = FuseBox.import('vue');
+        var process = FuseBox.import('process');
+        var api = FuseBox.import('vue-hot-reload-api');
+        var Vue = FuseBox.import('vue');
 
         api.install(Vue);
 
         FuseBox.addPlugin({
-          hmrUpdate: ({ type, path, content }) => {
-            var componentWildcardPath = '~/' + path.substr(0, path.lastIndexOf('/') + 1) + '*.vue';
-            var isComponentStyling = (type === "css" && !!FuseBox.import(componentWildcardPath));
+          hmrUpdate: function (data) {
+            var componentWildcardPath = '~/' + data.path.substr(0, data.path.lastIndexOf('/') + 1) + '*.vue';
+            var isComponentStyling = (data.type === "css" && !!FuseBox.import(componentWildcardPath));
 
-            if (type === "js" && /.vue$/.test(path) || isComponentStyling) {
-              var fusePath = '~/' + path;
+            if (data.type === "js" && /.vue$/.test(data.path) || isComponentStyling) {
+              var fusePath = '~/' + data.path;
 
               FuseBox.flush();
 
               FuseBox.flush(function (file) {
-                return file === path;
+                return file === data.path;
               });
 
-              FuseBox.dynamic(path, content);
+              FuseBox.dynamic(data.path, data.content);
 
               if (!isComponentStyling) {
                 var component = FuseBox.import(fusePath).default;
