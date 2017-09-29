@@ -5,7 +5,6 @@ import { Plugin } from "../../core/WorkflowContext";
 import { utils } from "realm-utils";
 import { Concat, ensureUserPath, write, isStylesheetExtension } from "../../Utils";
 
-
 export interface CSSPluginOptions {
     outFile?: { (file: string): string } | string;
     inject?: boolean | { (file: string): string }
@@ -67,7 +66,6 @@ export class CSSPluginClass implements Plugin {
         return `require("fuse-box-css")`;
     }
 
-
     public inject(file: File, options: any, alternative?: boolean): string {
         // Inject properties
         // { inject : path => path } -> customise automatic injection
@@ -113,7 +111,7 @@ export class CSSPluginClass implements Plugin {
             debug(`Writing ${outFile}`);
             return write(outFile, concat.content).then(() => {
                 const resolvedPath = this.inject(group, options);
-            
+
                 this.emitHMR(group, resolvedPath);
                 // Writing sourcemaps
                 const sourceMapsFile = ensureUserPath(path.join(bundleDir, sourceMapsName));
@@ -134,13 +132,17 @@ export class CSSPluginClass implements Plugin {
         if (bundle && bundle.lastChangedFile) {
             const lastFile = file.context.convertToFuseBoxPath(bundle.lastChangedFile);
             if (isStylesheetExtension(bundle.lastChangedFile)) {
-                if (lastFile === file.info.fuseBoxPath ||
-                    file.context.getItem("HMR_FILE_REQUIRED", []).indexOf(file.info.fuseBoxPath) > -1) {
-                    emitRequired = true;
-                }
+              if (lastFile === file.info.fuseBoxPath ||
+                  file.context.getItem("HMR_FILE_REQUIRED", []).indexOf(file.info.fuseBoxPath) > -1) {
+                  emitRequired = true;
+              }
 
+              if (file.subFiles.find((subFile) => subFile.info.fuseBoxPath === bundle.lastChangedFile)) {
+                emitRequired = true;
+              }
             }
         }
+
         if (emitRequired) {
             if (resolvedPath) {
 
@@ -179,7 +181,6 @@ export class CSSPluginClass implements Plugin {
 
         file.loadContents();
 
-
         let filePath = file.info.fuseBoxPath;
 
         let context = file.context;
@@ -195,7 +196,7 @@ export class CSSPluginClass implements Plugin {
          * 2 files combined will be written or inlined to "bundle.css"
          */
         if (this.options.group) {
-            
+
             const bundleName = this.options.group;
             let fileGroup = context.getFileGroup(bundleName);
             if (!fileGroup) {

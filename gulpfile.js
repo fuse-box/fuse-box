@@ -311,6 +311,7 @@ gulp.task("installDevDeps", function(done) {
         "stylus",
         "less",
         "postcss",
+        "postcss-selector-parser",
         "marked",
         "node-sass",
         "uglify-js",
@@ -322,6 +323,7 @@ gulp.task("installDevDeps", function(done) {
         "vue-template-es2015-compiler",
         "vue",
         "vue-server-renderer",
+        "vue-hot-reload-api",
         "rollup",
         "buble",
     ];

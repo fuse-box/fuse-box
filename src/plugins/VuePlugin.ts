@@ -26,6 +26,7 @@ export class VuePluginClass implements Plugin {
 
     public transform(file: File) {
         const context = file.context;
+        context.log.echoWarning(`VuePlugin is deprecated and will be removed in a future release. Please migrate to the new VueComponentPlugin: http://fuse-box.org/plugins/vue-component-plugin`)
 
         // caching ...
         if (context.useCache) {

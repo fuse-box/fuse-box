@@ -28,9 +28,7 @@ export class BabelPluginClass implements Plugin {
     private configPrinted = false;
     private configLoaded = false;
 
-    constructor(opts: any) {
-        opts = opts || {};
-
+    constructor(opts: any = {}) {
         // if it is an object containing only a babel config
         if (opts.config === undefined && opts.test === undefined && opts.limit2project === undefined && opts.extensions === undefined && Object.keys(opts).length) {
             this.config = opts;
@@ -157,6 +155,6 @@ export class BabelPluginClass implements Plugin {
     }
 }
 
-export const BabelPlugin = (opts: any) => {
+export const BabelPlugin = (opts: any = {}) => {
     return new BabelPluginClass(opts);
 };

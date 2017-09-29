@@ -19,7 +19,7 @@ export class UglifyJSPluginClass implements Plugin {
 
     constructor(public options: UglifyJSPluginOptions = {}) {}
 
-    public postBundle(context : WorkFlowContext | any) {
+    public postBundle(context : WorkFlowContext) {
         const mainOptions : any = {
         };
         const UglifyJs = require("uglify-js");
@@ -40,9 +40,9 @@ export class UglifyJSPluginClass implements Plugin {
         const newConcat = context.source.getResult();
 
         if ("sourceMapConfig" in context) {
-            if (context.sourceMapConfig.bundleReference) {
+            if ((context as any).sourceMapConfig.bundleReference) {
                 mainOptions.inSourceMap = JSON.parse(sourceMap);
-                mainOptions.outSourceMap = context.sourceMapConfig.bundleReference;
+                mainOptions.outSourceMap = (context as any).sourceMapConfig.bundleReference;
             }
         }
 
@@ -50,15 +50,21 @@ export class UglifyJSPluginClass implements Plugin {
             mainOptions.inSourceMap = JSON.parse(sourceMap);
             mainOptions.outSourceMap = `${context.output.filename}.js.map`;
         }
-    
+
         let timeStart = process.hrtime();
 
         var opt = {
             ...this.options,
             ...mainOptions
         };
-      
+
         const result = UglifyJs.minify(source, opt);
+
+        if (result.error) {
+          const message = `UglifyJSPlugin - ${result.error.message}`;
+          context.log.echoError(message);
+          return Promise.reject(result.error);
+        }
 
         let took = process.hrtime(timeStart);
         let bytes = Buffer.byteLength(result.code, "utf8");

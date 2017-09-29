@@ -48,7 +48,8 @@
         "files": [
             "plugins/transpilers/BabelPlugin.md",
             "plugins/transpilers/CoffeePlugin.md",
-            "plugins/transpilers/VuePlugin.md"
+            "plugins/transpilers/VuePlugin.md",
+            "plugins/transpilers/VueComponentPlugin.md"
         ]
     }, {
         "group": "Miscellaneous",

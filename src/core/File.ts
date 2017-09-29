@@ -37,7 +37,7 @@ export class File {
     public dependencies = new Set<string>();
 
     public cssDependencies : string[];
-    
+
     /**
      * In order to keep bundle in a bundle
      * We can't destory the original contents
@@ -85,7 +85,6 @@ export class File {
     public isLoaded = false;
 
     public ignoreCache = false;
-
 
     /**
      *
@@ -193,7 +192,10 @@ export class File {
         file.shouldIgnoreDeps = this.shouldIgnoreDeps;
         file.resolveDepsOnly = this.resolveDepsOnly;
         collection.set(file.info.absPath, file);
-        this.analysis.dependencies.push(str);
+
+        if (this.analysis.dependencies.indexOf(str) === -1) {
+          this.analysis.dependencies.push(str);
+        }
     }
 
     public static createByName(collection: ModuleCollection, name: string): File {

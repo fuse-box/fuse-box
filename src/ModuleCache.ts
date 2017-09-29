@@ -117,7 +117,6 @@ export class ModuleCache {
         return encodeURIComponent(str);
     }
 
-
     /**
      *
      *
@@ -127,6 +126,9 @@ export class ModuleCache {
      * @memberOf ModuleCache
      */
     public getStaticCache(file: File, type: string = "") {
+        if (file.ignoreCache) {
+          return;
+        }
 
         let stats = fs.statSync(file.absPath);
         let fileName = this.encodeCacheFileName(type + file.info.fuseBoxPath);
@@ -211,7 +213,6 @@ export class ModuleCache {
         let dest = path.join(this.staticCacheFolder, fileName);
         let stats: any = fs.statSync(file.absPath);
 
-
         let cacheData: any = {
             contents: file.contents,
             dependencies: file.analysis.dependencies,
@@ -235,8 +236,6 @@ _ : ${JSON.stringify(cacheData._ || {})}
         MEMORY_CACHE[memCacheKey] = cacheData;
         fs.writeFileSync(dest, data);
     }
-
-
 
     /**
      *
