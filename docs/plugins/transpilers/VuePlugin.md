@@ -83,6 +83,9 @@ const fsbx = FuseBox.init({
 
 note: Overriding a plugin chain for a `.vue` block will make the `VueComponentPlugin` ignore any `lang` attribute.
 
+### External Files
+The `VueComponentPlugin` fully understands the `src` attribute and will handle external files just the same as inline content.
+
 ### Scoped Styling
 Scoped styling is fully supported by using the `scoped` attribute. Support for the `module` attribute will be coming soon.
 
