@@ -13,10 +13,10 @@ This plugin depends on the following node modules:
 
 ```bash
 # Using yarn:
-yarn add vue-template-compiler vue-template-es2015-compiler vue-hot-reload-api vue --dev
+yarn add vue-template-compiler vue-template-es2015-compiler vue-hot-reload-api vue postcss-selector-parser --dev
 
 # Using npm:
-npm install vue-template-compiler vue-template-es2015-compiler vue-hot-reload-api vue --save-dev
+npm install vue-template-compiler vue-template-es2015-compiler vue-hot-reload-api vue postcss-selector-parser --save-dev
 ```
 
 For more information about the `*.vue` file specifications please see the official [documentation](https://vue-loader.vuejs.org/en/start/spec.html)
@@ -59,7 +59,7 @@ When `VueComponentPlugin` detects a `lang` attribute on a block it will attempt 
 - `<style lang="less">` - [LESSPlugin](/plugins/less-plugin)
 - `<style lang="scss">` - [SASSPlugin](/plugins/sass-plugin)
 
-note: If using `lang="js"` and configuration item `useTypescriptCompiler: true` then FuseBox will use the internal Typescript compiler and ***not*** BabelPlugin
+note: If using lang="js" and configuration item useTypescriptCompiler: true then FuseBox will use the internal Typescript compiler and NOT BabelPlugin
 
 
 ### Using Custom Plugin Chains
@@ -86,7 +86,7 @@ const fsbx = FuseBox.init({
 })
 ```
 
-note: Overriding a plugin chain for a `.vue` block will make the `VueComponentPlugin` ignore any `lang` attribute.
+note: Overriding a plugin chain for a .vue block will make the VueComponentPlugin ignore any lang attributes.
 
 ### External Files
 The `VueComponentPlugin` fully understands the `src` attribute and will handle external files just the same as inline content.
