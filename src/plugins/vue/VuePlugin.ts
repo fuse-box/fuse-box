@@ -9,7 +9,6 @@ import { VueScriptFile } from './VueScriptFile';
 import * as path from "path";
 import * as fs from "fs";
 import { each } from "realm-utils";
-const vueCompiler = require("vue-template-compiler");
 const DEFAULT_OPTIONS: IVueComponentPluginOptions = {
   script: [],
   template: [],
@@ -23,7 +22,7 @@ export interface IVueComponentPluginOptions {
 }
 
 export class VueComponentClass implements Plugin {
-  public dependencies: ["fusebox-hot-reload"];
+  public dependencies: ["process", "fusebox-hot-reload"];
   public test: RegExp = /\.vue$/
   public options: IVueComponentPluginOptions;
 
@@ -81,40 +80,45 @@ export class VueComponentClass implements Plugin {
     if (context.useCache) {
       context.source.addContent(`
         var process = FuseBox.import('process');
-        var api = FuseBox.import('vue-hot-reload-api');
-        var Vue = FuseBox.import('vue');
 
-        api.install(Vue);
+        if (process.env.NODE_ENV !== "production") {
+          var api = FuseBox.import('vue-hot-reload-api');
+          var Vue = FuseBox.import('vue');
 
-        FuseBox.addPlugin({
-          hmrUpdate: function (data) {
-            var componentWildcardPath = '~/' + data.path.substr(0, data.path.lastIndexOf('/') + 1) + '*.vue';
-            var isComponentStyling = (data.type === "css" && !!FuseBox.import(componentWildcardPath));
+          api.install(Vue);
 
-            if (data.type === "js" && /.vue$/.test(data.path) || isComponentStyling) {
-              var fusePath = '~/' + data.path;
+          FuseBox.addPlugin({
+            hmrUpdate: function (data) {
+              var componentWildcardPath = '~/' + data.path.substr(0, data.path.lastIndexOf('/') + 1) + '*.vue';
+              var isComponentStyling = (data.type === "css" && !!FuseBox.import(componentWildcardPath));
 
-              FuseBox.flush();
+              if (data.type === "js" && /.vue$/.test(data.path) || isComponentStyling) {
+                var fusePath = '~/' + data.path;
 
-              FuseBox.flush(function (file) {
-                return file === data.path;
-              });
+                FuseBox.flush();
 
-              FuseBox.dynamic(data.path, data.content);
+                FuseBox.flush(function (file) {
+                  return file === data.path;
+                });
 
-              if (!isComponentStyling) {
-                var component = FuseBox.import(fusePath).default;
-                api.reload(component._scopeId, component);
+                FuseBox.dynamic(data.path, data.content);
+
+                if (!isComponentStyling) {
+                  var component = FuseBox.import(fusePath).default;
+                  api.reload(component._scopeId, component);
+                }
+
+                return true;
               }
-
-              return true;
             }
-          }
-        });`);
+          });
+        }
+        `);
       }
   }
 
   public async transform(file: File) {
+    const vueCompiler = require("vue-template-compiler");
     const bundle = file.context.bundle
     let cacheValid = false;
 
@@ -231,14 +235,17 @@ export class VueComponentClass implements Plugin {
 
     if (file.context.useCache) {
       concat.add(null, `
-        var api = require('vue-hot-reload-api');
-        var process = require('process');
+        var process = FuseBox.import('process');
+        
+        if (process.env.NODE_ENV !== "production") {
+          var api = require('vue-hot-reload-api');
 
-        process.env.vueHMR = process.env.vueHMR || {};
+          process.env.vueHMR = process.env.vueHMR || {};
 
-        if (!process.env.vueHMR['${scopeId}']) {
-          process.env.vueHMR['${scopeId}'] = true;
-          api.createRecord('${scopeId}', module.exports.default);
+          if (!process.env.vueHMR['${scopeId}']) {
+            process.env.vueHMR['${scopeId}'] = true;
+            api.createRecord('${scopeId}', module.exports.default);
+          }
         }
       `);
     }

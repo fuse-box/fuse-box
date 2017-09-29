@@ -1,13 +1,13 @@
 import { VueBlockFile } from './VueBlockFile'
-const vueTranspiler = require("vue-template-es2015-compiler");
-const vueCompiler = require("vue-template-compiler");
 
 export class VueTemplateFile extends VueBlockFile {
   private toFunction (code) {
+    const vueTranspiler = require("vue-template-es2015-compiler");
     return vueTranspiler(`function render () {${code}}`);
   }
 
   public async process() {
+    const vueCompiler = require("vue-template-compiler");
     this.loadContents();
 
     return this.pluginChain.reduce((chain, plugin) => {

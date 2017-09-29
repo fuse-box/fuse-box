@@ -1,8 +1,8 @@
 // Direct rip from: https://github.com/vuejs/vue-loader
 const postcss = require('postcss')
-const selectorParser = require('postcss-selector-parser')
 
 export const AddScopeIdPlugin = postcss.plugin('add-scope-id', function (opts) {
+  const selectorParser = require('postcss-selector-parser')
   return function (root) {
     const keyframes = Object.create(null)
 
