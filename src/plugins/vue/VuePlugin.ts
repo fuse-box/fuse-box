@@ -17,9 +17,9 @@ const DEFAULT_OPTIONS: IVueComponentPluginOptions = {
 };
 
 export interface IVueComponentPluginOptions {
-  script: Plugin[],
-  template: Plugin[],
-  style: Plugin[]
+  script?: Plugin[],
+  template?: Plugin[],
+  style?: Plugin[]
 }
 
 export class VueComponentClass implements Plugin {
@@ -243,7 +243,6 @@ export class VueComponentClass implements Plugin {
       `);
     }
 
-    file.addStringDependency('vue-hot-reload-api');
     file.addStringDependency('vue');
 
     if (!cacheValid) {
@@ -262,6 +261,6 @@ export class VueComponentClass implements Plugin {
   }
 }
 
-export const VueComponentPlugin = (options: any) => {
+export const VueComponentPlugin = (options: any = {}) => {
     return new VueComponentClass(options);
 };

@@ -1,15 +1,17 @@
-import { VuePlugin, RawPlugin } from "../../index";
+import { VueComponentPlugin, BabelPlugin, HTMLPlugin, SassPlugin } from "../../index";
 import { createEnv } from "../stubs/TestEnvironment";
 import { should } from "fuse-test-runner";
 
-const vueFileSource = `<template>
+const getTemplateBlock = (langAttribute: string = '', testIdentifer: string = '') => `
+<template ${langAttribute}>
     <div>
-        <p>{{ msg }}</p>
+        <p class="msg">{{ msg }} - ${testIdentifer}</p>
         <input type="text" v-model="msg" />
     </div>
-</template>
+</template>`;
 
-<script>
+const getScriptBlock = (langAttribute: string = '') => `
+<script ${langAttribute}>
     export default {
         name: 'app',
         data () {
@@ -18,92 +20,121 @@ const vueFileSource = `<template>
             }
         }
     }
-</script>
-`;
+</script>`;
 
-const vueBabelFileSource = `<template>
-    <div>
-        <p>{{ msg }}</p>
-        <input type="text" v-model="msg" />
-    </div>
-</template>
-
-<script lang="babel">
-    let language = 'Babel';
-    export default {
-        name: 'app',
-        data () {
-            return {
-                msg: 'Welcome to Your Vue.js App, ' + language
-            }
-        }
-    }
-</script>
-`;
+const getStyleBlock = (langAttribute: string = '', isScoped: boolean = false) => `
+<style ${langAttribute} ${isScoped ? 'scoped' : ''}>
+  .msg {
+    color: green;
+  }
+</style>`;
 
 export class VuePluginTest {
-    "Should return compiled TS vue code with render functions"() {
+    "Should compile with no lang attributes or plugins"() {
         return createEnv({
             project: {
                 files: {
-                    "app.vue": vueFileSource
+                    "app.vue": `${getTemplateBlock('', 'DefaultValues')}${getScriptBlock()}${getStyleBlock()}`
                 },
-                plugins: [
-                    [ VuePlugin() ]
-                ],
-                instructions: "app.vue",
+                plugins: [VueComponentPlugin()],
+                instructions: "app.vue"
             },
         }).then((result) => {
-            const component = result.project.FuseBox.import('./app.vue').default;
+          const Vue = require('vue')
+          const renderer = require('vue-server-renderer').createRenderer()
+          const component = result.project.FuseBox.import('./app.vue').default;
+          const app = new Vue(component)
 
-            // //test for render functions
-            should( component.render ).notEqual( undefined );
-            should( component.staticRenderFns ).notEqual( undefined );
+          should(component.render).notEqual(undefined);
+          should(component.staticRenderFns).notEqual(undefined);
 
-            // //test for not having a template string (would not work with runtime-only-vue)
-            should( component.template ).equal( undefined );
-
-            //test html output
-            const Vue = require('vue')
-            const renderer = require('vue-server-renderer').createRenderer()
-
-            const app = new Vue(component)
-            renderer.renderToString(app, (err, html) => {
-                should(html).findString('<p>Welcome to Your Vue.js App</p>');
-                should(html).findString('<input type="text" value="Welcome to Your Vue.js App">');
-            })
+          renderer.renderToString(app, (err, html) => {
+            should(html).findString('<p class="msg">Welcome to Your Vue.js App - DefaultValues</p>');
+            should(html).findString('<input type="text" value="Welcome to Your Vue.js App">');
+          })
         });
     }
 
-    "Should return compiled Babel vue code with render functions"() {
+    "Should compile with custom lang attributes"() {
         return createEnv({
             project: {
                 files: {
-                    "app.vue": vueBabelFileSource
+                    "app.vue": `${getTemplateBlock('lang="html"', 'LangAttributes')}${getScriptBlock('lang="coffee"')}${getStyleBlock('lang="scss"')}`
                 },
-                plugins: [VuePlugin()],
+                plugins: [VueComponentPlugin()],
                 instructions: "app.vue",
             },
         }).then((result) => {
-            const component = result.project.FuseBox.import('./app.vue').default;
+          const Vue = require('vue')
+          const renderer = require('vue-server-renderer').createRenderer()
+          const component = result.project.FuseBox.import('./app.vue').default;
+          const app = new Vue(component)
 
-            // //test for render functions
-            should( component.render ).notEqual( undefined );
-            should( component.staticRenderFns ).notEqual( undefined );
+          should(component.render).notEqual(undefined);
+          should(component.staticRenderFns).notEqual(undefined);
 
-            // //test for not having a template string (would not work with runtime-only-vue)
-            should( component.template ).equal( undefined );
-
-            //test html output
-            const Vue = require('vue')
-            const renderer = require('vue-server-renderer').createRenderer()
-
-            const app = new Vue(component)
-            renderer.renderToString(app, (err, html) => {
-                should(html).findString('<p>Welcome to Your Vue.js App, Babel</p>');
-                should(html).findString('<input type="text" value="Welcome to Your Vue.js App, Babel">');
-            })
+          renderer.renderToString(app, (err, html) => {
+            should(html).findString('<p class="msg">Welcome to Your Vue.js App - LangAttributes</p>');
+            should(html).findString('<input type="text" value="Welcome to Your Vue.js App">');
+          })
         });
     }
 
+    "Should use plugin chain from user options"() {
+        return createEnv({
+            project: {
+                files: {
+                    "app.vue": `${getTemplateBlock('', 'PluginChain')}${getScriptBlock()}${getStyleBlock()}`
+                },
+                plugins: [VueComponentPlugin({
+                  script: BabelPlugin(),
+                  style: SassPlugin(),
+                  template: HTMLPlugin()
+                })],
+                instructions: "app.vue",
+            },
+        }).then((result) => {
+          const Vue = require('vue')
+          const renderer = require('vue-server-renderer').createRenderer()
+          const component = result.project.FuseBox.import('./app.vue').default;
+          const app = new Vue(component)
+
+          should(component.render).notEqual(undefined);
+          should(component.staticRenderFns).notEqual(undefined);
+
+          renderer.renderToString(app, (err, html) => {
+            should(html).findString('<p class="msg">Welcome to Your Vue.js App - PluginChain</p>');
+            should(html).findString('<input type="text" value="Welcome to Your Vue.js App">');
+          })
+        });
+    }
+
+    "Should scope styles when using the 'scoped' attribute"() {
+        return createEnv({
+            project: {
+                files: {
+                    "app.vue": `${getTemplateBlock('', 'ScopedStyles')}${getScriptBlock()}${getStyleBlock('', true)}`
+                },
+                plugins: [VueComponentPlugin({
+                  script: BabelPlugin(),
+                  style: SassPlugin(),
+                  template: HTMLPlugin()
+                })],
+                instructions: "app.vue",
+            },
+        }).then((result) => {
+          const Vue = require('vue')
+          const renderer = require('vue-server-renderer').createRenderer()
+          const component = result.project.FuseBox.import('./app.vue').default;
+          const app = new Vue(component)
+
+          should(component.render).notEqual(undefined);
+          should(component.staticRenderFns).notEqual(undefined);
+
+          renderer.renderToString(app, (err, html) => {
+            should(html).findString(component._scopeId);
+            should(html).findString('ScopedStyles');
+          })
+        });
+    }
 }

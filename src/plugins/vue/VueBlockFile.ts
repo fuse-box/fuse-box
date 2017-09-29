@@ -17,7 +17,7 @@ const PLUGIN_LANG_MAP = new Map<string, any>()
         .set('styl', new StylusPluginClass())
         .set('html', new FuseBoxHTMLPlugin())
         .set('js', new BabelPluginClass())
-        .set('ts', null) // Null  asx use just use the bog standard TS compiler, no need for plugins
+        .set('ts', null) // Null - just use the bog standard TS compiler, no need for plugins
         .set('coffee', new CoffeePluginClass());
 
 export abstract class VueBlockFile extends File {
