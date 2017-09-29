@@ -45,4 +45,5 @@ export { CSSModules } from "./plugins/stylesheet/CSSModules";
 export { CopyPlugin } from "./plugins/CopyPlugin";
 export { WebIndexPlugin } from "./plugins/WebIndexPlugin";
 export { PlainJSPlugin } from "./plugins/PlainJSPlugin";
+export { ConsolidatePlugin } from "./plugins/ConsolidatePlugin";
 export { File } from "./core/File";

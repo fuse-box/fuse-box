@@ -326,6 +326,8 @@ gulp.task("installDevDeps", function(done) {
         "vue-hot-reload-api",
         "rollup",
         "buble",
+        "consolidate",
+        "pug"
     ];
 
     const ext = /^win/.test(os.platform()) ? ".cmd" : ""
