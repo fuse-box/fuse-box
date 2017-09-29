@@ -1,139 +1,90 @@
-# VuePlugin
+# VueComponentPlugin
 
 ## Description
-The Vue plugin is used to transpile .vue files into Javascript.
+The VueComponentPlugin is used to transpile `.vue` files into Javascript.
 
 ## Install
-This package depends on the `vue-template-compiler`, `vue-template-es2015-compiler` and one of `typescript` and `babel-core` modules.
-
-Also, if you want to include Vue library into the bundle, remember to install `vue` module too.
+This package depends on the `vue-template-compiler`, `vue-template-es2015-compiler` and `vue` node modules.
 
 ```bash
 # Using yarn:
-yarn add vue-template-compiler vue-template-es2015-compiler typescript babel-core vue --dev
+yarn add vue-template-compiler vue-template-es2015-compiler vue --dev
 
 # Using npm:
-npm install vue-template-compiler vue-template-es2015-compiler typescript babel-core vue --save-dev
+npm install vue-template-compiler vue-template-es2015-compiler vue --save-dev
 ```
 
-## Example
+For more information about the `*.vue` file specifications please see the official [documentation](https://vue-loader.vuejs.org/en/start/spec.html)
+
+## Usage
+Just import from FuseBox:
+```js
+const { VueComponentPlugin } = require('fuse-box')
+```
+
+Inject into a chain:
+```js
+fuse.plugin(
+  VueComponentPlugin()
+)
+```
+
+Or add it to the main config to make it available across bundles:
+```js
+FuseBox.init({
+  plugins: [
+    VueComponentPlugin()
+  ]
+});
+```
+
+## Configuration
+### Defaults
+If no `lang` attributes are specified (see below) the `VueComponentPlugin` will use the following configuration out of the box:
+
+- `<template>` Defaults to `html` and uses [HTMLPlugin](/plugins/html-plugin)
+- `<script>` Defaults to `ts` and uses FuseBox's integrated Typescript compiler
+- `<style>` Defaults to `css` and uses [CSSPlugin](/plugins/css-plugin)
+
+### Language Attributes
+When `VueComponentPlugin` detects a `lang` attribute on a block it will attempt to match with the corresponding FuseBox plugin. For example:
+
+- `<script lang="coffee">` - [CoffeeScriptPlugin](/plugins/coffeescript-plugin)
+- `<script lang="js">` - [BabelPlugin](/plugins/babelplugin) (will read configuration from `.babelrc` file)
+- `<style lang="less">` - [LESSPlugin](/plugins/less-plugin)
+- `<style lang="scss">` - [SASSPlugin](/plugins/sass-plugin)
+
+note: If using `lang="js"` and configuration item `useTypescriptCompiler: true` then FuseBox will use the internal Typescript compiler and ***not*** BabelPlugin
+
+
+### Using Custom Plugin Chains
+If the above functionality doesn't fit your needs, you can override the pre-processing by optionally setting the `script`, `style` or `template` options. This follows the standard FuseBox way of defining plugin chains:
 
 ```js
-// fuse.js
-
-const { FuseBox, VuePlugin } = require('fuse-box')
+const { FuseBox, VueComponentPlugin, BabelPlugin, SassPlugin, CSSResourcePlugin, PostCSSPlugin, CSSPlugin } = require('fuse-box')
 
 const fsbx = FuseBox.init({
     homeDir: './src',
     output: 'dist/app.js',
     plugins: [
-        VuePlugin()
+      VueComponentPlugin({
+          script: BabelPlugin({ ... }),
+          template: HTMLPlugin({ ... })
+          style: [
+              SassPlugin({ ... }),
+              CSSResourcePlugin({ ... }),
+              PostCSSPlugin( ... ),
+              CSSPlugin({ ... })
+          ]
+      })
     ]
 })
-
-fsbx.dev()
-
-fsbx.bundle('app.js')
-    .instructions('>index.ts')
-    .watch()
-
-fsbx.run()
-
 ```
 
-```typescript
-// src/index.ts
+note: Overriding a plugin chain for a `.vue` block will make the `VueComponentPlugin` ignore any `lang` attribute.
 
-import * as Vue from 'vue/dist/vue.js'
-import * as App from './components/App.vue'
+### Scoped Styling
+Scoped styling is fully supported by using the `scoped` attribute. Support for the `module` attribute will be coming soon.
 
-new Vue({
-    el: '#app',
-    render: h => h(App)
-})
-
-```
-
-```html
-<!-- src/components/App.vue -->
-
-<template>
-    <div>
-        <p>{{ msg }}</p>
-        <input type="text" v-model="msg" />
-    </div>
-</template>
-
-<script>
-    export default {
-        name: 'app',
-        data () {
-            return {
-                msg: 'Welcome to Your Vue.js App'
-            }
-        }
-    }
-</script>
-```
-
-## Script transpiler
-
-By default `VuePlugin` uses `typescript` to compile contents of `<script></script>`. By defining the `lang` attribute of the `<script>` tag, content can be compiled using desired transpiler. Currently only `ts` and `babel` are supported.
-
-### Babel
-
-If `babel` attribute is given, VuePlugin will load babel config from there, otherwise VuePlugin will load `.babelrc` from the root of the project. If no config given and no rc found, it uses default config. Packages `babel-core` and `babel-plugin-transform-es2015-modules-commonjs` must be installed to use babel.
-
-```js
-// Configuring babel in fuse.js (Default)
-VuePlugin({
-    babel: {
-        config: {
-            "plugins": ["transform-es2015-modules-commonjs"]
-        }
-    }
-})
-
-// .babelrc
-{
- "plugins": ["transform-es2015-modules-commonjs"]
-}
-```
-
-## Template engine preprocessor
-
-By defining the `lang` attribute of the `<template>` tag, content can be compiled to HTML using your favorite template engine.
-
-The `consolidate` module must be installed in addition to the template engine module you want to use.
-
-View a list of all [supported template engines](https://github.com/tj/consolidate.js#supported-template-engines).
-
-### Example using Pug:
-
-```bash
-# Using yarn:
-yarn add consolidate pug --dev
-
-# Using npm:
-npm install consolidate pug --save-dev
-```
-
-```html
-<!-- src/components/App.vue -->
-
-<template lang="pug">
-    .content
-        p {{ msg }}
-        input(type="text", v-model="msg")
-</template>
-
-<script>
-    export default {
-        data () {
-            return {
-                msg: 'Welcome to Your Vue.js App'
-            }
-        }
-    }
-</script>
-```
+### HMR
+Hot Module Reloading is also fully supported, just enable it on your bundles by calling `.hmr()`. See [here](/page/development#hot-module-reload) for more info.
