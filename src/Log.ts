@@ -63,6 +63,10 @@ export class Log {
     public spinner: any;
     public indent: Indenter = new Indenter();
     private totalSize = 0;
+    private static deferred: Function[] = [];
+    public static defer (fn: Function) {
+        Log.deferred.push(fn)
+    }
 
     constructor(public context: WorkFlowContext) {
         this.printLog = context.doLog;
@@ -97,9 +101,15 @@ export class Log {
 
             // if not false and conditions pass, log it
             return null;
-        });;
-    }
+        });
 
+        setTimeout(() => {
+            if (this.printLog) {
+                Log.deferred.forEach(x => x(this))
+            }
+            Log.deferred = []
+        })
+    }
     // --- config ---
 
     public reset(): Log {
