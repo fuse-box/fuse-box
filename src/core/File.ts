@@ -36,7 +36,7 @@ export class File {
     public dependants = new Set<string>();
     public dependencies = new Set<string>();
 
-    public cssDependencies: string[];
+    public cssDependencies : string[];
 
     /**
      * In order to keep bundle in a bundle
@@ -193,7 +193,7 @@ export class File {
         collection.set(file.info.absPath, file);
 
         if (this.analysis.dependencies.indexOf(str) === -1) {
-            this.analysis.dependencies.push(str);
+          this.analysis.dependencies.push(str);
         }
     }
 
@@ -474,19 +474,18 @@ export class File {
             if (this.context.useTypescriptCompiler && this.belongsToProject()) {
                 return this.handleTypescript();
             }
-            
+            this.tryPlugins();
 
             if (!this.wasTranspiled && this.context.cache && this.belongsToProject()) {
                 if (this.loadFromCache()) {
-                    this.tryPlugins();
                     return;
                 }
-
+                this.makeAnalysis();
                 if (this.context.useCache) {
                     this.context.cache.writeStaticCache(this, this.sourceMap);
                 }
+                return;
             }
-            this.tryPlugins();
             const vendorSourceMaps = this.context.sourceMapsVendor
                 && !this.belongsToProject();
 
@@ -499,17 +498,13 @@ export class File {
         }
 
         return this.tryPlugins().then((result) => {
-            if (!this.isLoaded) {
-                this.contents = "";
-                this.context.fuse.producer.addWarning("missing-plugin", `The contents of ${this.absPath} weren't loaded. Missing a plugin?`);
-            }
+          if (!this.isLoaded) {
+             this.contents = "";
+             this.context.fuse.producer.addWarning("missing-plugin", `The contents of ${this.absPath} weren't loaded. Missing a plugin?`);
+          }
 
-            return result;
+          return result;
         });
-    }
-
-    public isStylesheet() {
-        return isStylesheetExtension(this.info.fuseBoxPath)
     }
 
     public fileDependsOnLastChangedCSS() {
@@ -573,7 +568,7 @@ export class File {
             }
             this.isLoaded = true;
             this.cached = true;
-            if (cached._) {
+            if( cached._){
                 this.cacheData = cached._;
             }
             if (cached.devLibsRequired) {
@@ -667,7 +662,7 @@ export class File {
             this.context.cache.writeStaticCache(this, this.sourceMap);
         }
     }
-    public cacheData: { [key: string]: any };
+    public cacheData : { [key: string]: any };
     public setCacheData(data: { [key: string]: any }) {
         this.cacheData = data;
     }
