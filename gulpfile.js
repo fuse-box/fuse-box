@@ -316,7 +316,7 @@ gulp.task("installDevDeps", function(done) {
         "node-sass",
         "uglify-js",
         "uglify-es",
-        "source-map",
+        "source-map@0.5.7",
         "coffee-script",
         "@types/node",
         "vue-template-compiler",
