@@ -480,10 +480,16 @@ export class PathMaster {
             } else {
                 // climb up (sometimes it can be in a parent)
                 let upperNodeModule = path.join(this.rootPackagePath, "../", name);
-                if (fs.existsSync(upperNodeModule)) {
-                    let isCustom = path.dirname(this.rootPackagePath) !== Config.NODE_MODULES_DIR;
-                    return readMainFile(upperNodeModule, isCustom);
+                if( path.dirname(upperNodeModule) !== Config.NODE_MODULES_DIR){
+                    if (fs.existsSync(upperNodeModule)) {
+                        let isCustom = false;
+                        if( path.dirname(upperNodeModule).match(/node_modules$/) ){
+                            isCustom = path.dirname(this.rootPackagePath) !== Config.NODE_MODULES_DIR;
+                        }
+                        return readMainFile(upperNodeModule, isCustom);
+                    }
                 }
+                
             }
         }
 
