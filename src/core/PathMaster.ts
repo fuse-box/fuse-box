@@ -485,8 +485,8 @@ export class PathMaster {
                         let isCustom = false;
                         if( path.dirname(upperNodeModule).match(/node_modules$/) ){
                             isCustom = path.dirname(this.rootPackagePath) !== Config.NODE_MODULES_DIR;
+                            return readMainFile(upperNodeModule, isCustom);
                         }
-                        return readMainFile(upperNodeModule, isCustom);
                     }
                 }
                 
