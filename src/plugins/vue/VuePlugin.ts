@@ -53,10 +53,19 @@ export class VueComponentClass implements Plugin {
     let src = `./${block.type}.${extension}`;
 
     if (block.src) {
-      extension = path.extname(block.src);
-      src = extension ? block.src : `${block.src}.${block.lang || this.getDefaultExtension(block)}`;
+        let srcExtension = path.extname(block.src) || '';
+
+        if (srcExtension.indexOf('.') > -1) {
+          srcExtension = srcExtension.substr(1);
+          extension = srcExtension;
+          src = block.src;
+        } else {
+          extension = (block.lang) ? `${block.lang}` : '' || this.getDefaultExtension(block);
+          src = `${block.src}.${extension}`;
+        }
     }
 
+    file.context.allowExtension(`.${extension}`);
     const fileInfo = file.collection.pm.resolve(src, file.info.absDir);
 
     switch (block.type) {
@@ -236,7 +245,7 @@ export class VueComponentClass implements Plugin {
     if (file.context.useCache) {
       concat.add(null, `
         var process = FuseBox.import('process');
-        
+
         if (process.env.NODE_ENV !== "production") {
           var api = require('vue-hot-reload-api');
 

@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { isStylesheetExtension, extractExtension } from '../../Utils'
+import { extractExtension } from '../../Utils'
 import { File } from "../../core/File";
 import { WorkFlowContext, Plugin } from "../../core/WorkflowContext";
 import { IPathInformation } from '../../core/PathMaster';
@@ -10,6 +10,7 @@ import { StylusPluginClass } from "../stylesheet/StylusPlugin";
 import { FuseBoxHTMLPlugin } from "../HTMLplugin";
 import { BabelPluginClass } from '../js-transpilers/BabelPlugin';
 import { CoffeePluginClass } from '../js-transpilers/CoffeePlugin';
+import { ConsolidatePluginClass } from '../ConsolidatePlugin';
 const PLUGIN_LANG_MAP = new Map<string, any>()
         .set('css', new CSSPluginClass())
         .set('less', new LESSPluginClass())
@@ -38,6 +39,10 @@ export abstract class VueBlockFile extends File {
     if (pluginChain.length === 0 && !block.lang) {
       if (defaultExtension === 'js' && this.context.useTypescriptCompiler) {
         pluginChain.push(PLUGIN_LANG_MAP.get('ts'));
+      } else if (block.type === 'template' && extractExtension(this.info.absPath) !== 'html') {
+        pluginChain.push(new ConsolidatePluginClass({
+          engine: extractExtension(this.info.absPath)
+        }));
       } else {
         pluginChain.push(PLUGIN_LANG_MAP.get(defaultExtension));
       }
@@ -50,14 +55,20 @@ export abstract class VueBlockFile extends File {
         const PluginToUse = PLUGIN_LANG_MAP.get(block.lang.toLowerCase());
 
         if (!PluginToUse) {
-          const message = `VueComponentClass - cannot find a plugin to transpile lang="${block.lang}"`;
-          this.context.log.echoError(message);
-          return Promise.reject(new Error(message));
+          if (block.type === 'template') {
+            pluginChain.push(new ConsolidatePluginClass({
+              engine: block.lang.toLowerCase()
+            }));
+          } else {
+            const message = `VueComponentClass - cannot find a plugin to transpile lang="${block.lang}"`;
+            this.context.log.echoError(message);
+            return Promise.reject(new Error(message));
+          }
+        } else {
+          pluginChain.push(PluginToUse);
         }
 
-        pluginChain.push(PluginToUse);
-
-        if (isStylesheetExtension(this.info.fuseBoxPath) && !(PluginToUse instanceof CSSPluginClass)) {
+        if (block.type === 'style' && !(PluginToUse instanceof CSSPluginClass)) {
           pluginChain.push(PLUGIN_LANG_MAP.get('css'));
         }
       }

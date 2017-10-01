@@ -58,15 +58,22 @@ When `VueComponentPlugin` detects a `lang` attribute on a block it will attempt 
 - `<script lang="js">` - [BabelPlugin](/plugins/babelplugin) (will read configuration from `.babelrc` file)
 - `<style lang="less">` - [LESSPlugin](/plugins/less-plugin)
 - `<style lang="scss">` - [SASSPlugin](/plugins/sass-plugin)
+- `<template lang="pug">` - [ConsolidatePlugin](/plugins/consolidate-plugin)
+- `<template lang="hogan">` - [ConsolidatePlugin](/plugins/consolidate-plugin)
+
+In addition, the `VueComponentPlugin` will try to infer the `lang` type if it is not explicitly set but the `src` contains an extension:
+
+```html
+<template src="my-template.pug"> <!-- VueComponentPlugin will infer lang as "pug" -->
+```
 
 note: If using lang="js" and configuration item useTypescriptCompiler: true then FuseBox will use the internal Typescript compiler and NOT BabelPlugin
-
 
 ### Using Custom Plugin Chains
 If the above functionality doesn't fit your needs, you can override the pre-processing by optionally setting the `script`, `style` or `template` options. This follows the standard FuseBox way of defining plugin chains:
 
 ```js
-const { FuseBox, VueComponentPlugin, BabelPlugin, SassPlugin, CSSResourcePlugin, PostCSSPlugin, CSSPlugin } = require('fuse-box')
+const { FuseBox, VueComponentPlugin, BabelPlugin, ConsolidatePlugin, SassPlugin, CSSResourcePlugin, PostCSSPlugin, CSSPlugin } = require('fuse-box')
 
 const fsbx = FuseBox.init({
     homeDir: './src',
@@ -74,7 +81,7 @@ const fsbx = FuseBox.init({
     plugins: [
       VueComponentPlugin({
           script: BabelPlugin({ ... }),
-          template: HTMLPlugin({ ... })
+          template: ConsolidatePlugin({ ... })
           style: [
               SassPlugin({ ... }),
               CSSResourcePlugin({ ... }),

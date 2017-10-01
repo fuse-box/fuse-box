@@ -35,6 +35,7 @@
         "files": [
             "plugins/html/HTMLPlugin.md",
             "plugins/html/MarkdownPlugin.md",
+            "plugins/html/ConsolidatePlugin.md",
             "plugins/html/WebIndexPlugin.md"
         ]
     }, {
