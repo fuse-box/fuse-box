@@ -34,9 +34,13 @@ fuse.plugin(
 )
 ```
 
+note:
+It's recommended to use typescript to compile your javascript. Even if you are not familiar with Typescript you can still use it to transpile modern code without dancing around the fire with a drum configuring Babel. {useTypescriptCompiler : true}
+
 Or add it to the main config to make it available across bundles:
 ```js
 FuseBox.init({
+  useTypescriptCompiler : true,
   plugins: [
     VueComponentPlugin()
   ]
@@ -80,7 +84,7 @@ const fsbx = FuseBox.init({
     output: 'dist/app.js',
     plugins: [
       VueComponentPlugin({
-          script: BabelPlugin({ ... }),
+          script: BabelPlugin({ ... }), // consider setting useTypescriptCompiler option in FuseBox
           template: ConsolidatePlugin({ ... })
           style: [
               SassPlugin({ ... }),
