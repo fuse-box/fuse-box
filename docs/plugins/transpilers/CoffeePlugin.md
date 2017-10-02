@@ -1,7 +1,7 @@
-# CoffeeScript Plugin
+# Coffee Script Plugin
 
 ## Description
-Allows [CoffeeScript](http://coffeescript.org/) compilation of `.coffee` files
+Transpile `.coffee` files into JavaScript.
 
 ## Usage
 

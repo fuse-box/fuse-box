@@ -1,13 +1,15 @@
 # Consolidate Plugin
 
 ## Description
-Allows importing of templates as a string in your code. Please check the [consolidate documentation](https://github.com/tj/consolidate.js) for available template engines.
+Allows importing of templates as a string in your code using the consolidate package.
 
 ## Install
 This plugin depends on the following node modules:
 
 - `consolidate`
 - Template engine(s) of your choice, e.g. `pug`, `handlebars` etc.
+
+Please check the [consolidate documentation](https://github.com/tj/consolidate.js) for available template engines.
 
 ```bash
 # Using yarn:

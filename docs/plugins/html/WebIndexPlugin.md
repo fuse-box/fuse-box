@@ -1,4 +1,4 @@
-# WebIndexPlugin
+# Web Index Plugin
 
 
 ## Description
@@ -38,7 +38,7 @@ fuse.plugin(
 
 ```js
 WebIndexPlugin({
-    resolve : output => output.lastPrimaryOutput.filename 
+    resolve : output => output.lastPrimaryOutput.filename
 })
 ```
 
