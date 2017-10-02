@@ -16,7 +16,7 @@ export class FlatFileGenerator {
             if (this.core.opts.isContained()) {
                 this.contents.push("(function(){\n/*$$CONTAINED_API_PLACEHOLDER$$*/");
             } else {
-                this.contents.push("(function($fsx){");
+                this.contents.push(`(function(${this.core.opts.quantumVariableName}){`);
             }
         } else {
             if (this.core.opts.isContained()) {
@@ -46,13 +46,13 @@ export class FlatFileGenerator {
             this.globalsName = file.globalsName;
         }
         this.contents.push(`// ${file.packageAbstraction.name}/${file.fuseBoxPath}`);
-        this.contents.push(`$fsx.f[${JSON.stringify(fileId)}] = ${file.generate(ensureES5)}`);
+        this.contents.push(`${this.core.opts.quantumVariableName}.f[${JSON.stringify(fileId)}] = ${file.generate(ensureES5)}`);
     }
 
     public addHoistedVariables() {
 
         this.bundleAbstraction.hoisted.forEach((item, key) => {
-            this.contents.push(`var ${key} = $fsx.r(${item.getID()});`);
+            this.contents.push(`var ${key} = ${this.core.opts.quantumVariableName}.r(${item.getID()});`);
         });
     }
 
@@ -69,7 +69,7 @@ export class FlatFileGenerator {
             }
         }
         if (this.entryId !== undefined) {
-            const req = `$fsx.r(${JSON.stringify(this.entryId)})`;
+            const req = `${this.core.opts.quantumVariableName}.r(${JSON.stringify(this.entryId)})`;
 
             if (this.globalsName) {
                 if (this.core.opts.isTargetNpm() || this.core.opts.isTargetServer()) {
@@ -93,7 +93,7 @@ export class FlatFileGenerator {
             if (this.core.opts.isContained()) {
                 this.contents.push("})();");
             } else {
-                this.contents.push("})($fsx);");
+                this.contents.push(`})(${this.core.opts.quantumVariableName});`);
             }
         }
         return this.contents.join("\n");

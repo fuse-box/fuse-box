@@ -60,12 +60,17 @@ export function replaceAliasRequireStatement(requireStatement: string, aliasName
 //     return result.join("\n");
 // }
 
-export function jsCommentTemplate(fname: string, conditions: any, variables: any, raw: any) {
+export function jsCommentTemplate(fname: string, conditions: any, variables: any, raw: any, replaceRaw? : any) {
     const contents = fs.readFileSync(fname).toString();
 
     let data = LegoAPI.parse(contents).render(conditions);
     for (let varName in variables) {
         data = data.replace(`$${varName}$`, JSON.stringify(variables[varName]));
+    }
+    if ( replaceRaw ){
+        for (let varName in replaceRaw) {
+            data = data.split(varName).join(replaceRaw[varName]);
+        }   
     }
 
     for (let varName in raw) {

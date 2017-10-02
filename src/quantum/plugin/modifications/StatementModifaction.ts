@@ -14,13 +14,13 @@ export class StatementModification {
                     if (customSolution.rules) {
                         customSolution.rules.fn(statement, core);
                     }
-                    statement.setFunctionName("$fsx.p");
+                    statement.setFunctionName(`${core.opts.quantumVariableName}.p`);
                 } else {
                     if (core.opts.isTargetServer() || core.opts.isTargetUniveral()) {
                         core.api.useServerRequire();
-                        statement.setFunctionName('$fsx.s');
+                        statement.setFunctionName(`${core.opts.quantumVariableName}.s`);
                     } else {
-                        statement.setFunctionName('$fsx.r');
+                        statement.setFunctionName(`${core.opts.quantumVariableName}.r`);
                     }
                 }
             } else {
@@ -38,7 +38,7 @@ export class StatementModification {
                         file.registerHoistedIdentifiers(statement.identifier, statement, resolvedFile);
                     }
 
-                    statement.setFunctionName('$fsx.r');
+                    statement.setFunctionName(`${core.opts.quantumVariableName}.r`);
                     statement.setValue(resolvedFile.getID());
                 } else {
 
@@ -50,10 +50,10 @@ export class StatementModification {
                     } else if (core.opts.isTargetServer() || core.opts.isTargetUniveral()) {
                         // server or universal targets will detect the environment
                         core.api.useServerRequire();
-                        statement.setFunctionName('$fsx.s');
+                        statement.setFunctionName(`${core.opts.quantumVariableName}.s`);
                     } else {
                         // if it's a browser, we use async
-                        statement.setFunctionName('$fsx.r');
+                        statement.setFunctionName(`${core.opts.quantumVariableName}.r`);
                     }
 
                 }

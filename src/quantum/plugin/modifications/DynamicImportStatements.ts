@@ -21,16 +21,12 @@ export class DynamicImportStatementsModifications {
                         statement.setValue(config.name);
                         core.api.considerStatement(statement);
                     }
-                } else {
-                    // otherwise resolve it regularly
-
-                    //statement.setFunctionName('$fsx.r');        
-                    //statement.setValue(target.getID());
                 }
             } else {
                 core.api.considerStatement(statement);
             }
-            statement.setFunctionName('$fsx.l');
+            
+            statement.setFunctionName(`${core.opts.quantumVariableName}.l`);
         });
     }
 }

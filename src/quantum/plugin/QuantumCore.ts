@@ -47,6 +47,8 @@ export class QuantumCore {
 
     constructor(public producer: BundleProducer, opts: QuantumOptions) {
         this.opts = opts;
+
+       
         this.api = new ResponsiveAPI(this);
         this.log = producer.fuse.context.log;
         this.log.echoBreak();

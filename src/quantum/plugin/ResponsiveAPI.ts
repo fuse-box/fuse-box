@@ -124,6 +124,7 @@ export class ResponsiveAPI {
 
         const variables: any = {};
         const raw: any = {};
+        let replaceRaw : any = {};
         if (Object.keys(this.customMappings).length > 0) {
             variables.customMappings = this.customMappings;
         }
@@ -135,6 +136,10 @@ export class ResponsiveAPI {
         if (this.bundleMapping) {
             variables.bundleMapping = this.bundleMapping;
         }
-        return jsCommentTemplate(path.join(Config.FUSEBOX_MODULES, "fuse-box-responsive-api/index.js"), options, variables, raw);
+        if( this.core.opts.quantumVariableName !== "$fsx"){
+            replaceRaw = {"$fsx" : this.core.opts.quantumVariableName }
+        }
+
+        return jsCommentTemplate(path.join(Config.FUSEBOX_MODULES, "fuse-box-responsive-api/index.js"), options, variables, raw, replaceRaw);
     }
 }

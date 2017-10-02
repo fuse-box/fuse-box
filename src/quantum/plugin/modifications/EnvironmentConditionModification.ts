@@ -11,10 +11,10 @@ export class EnvironmentConditionModification {
 
             if (core.opts.isTargetUniveral()) {
                 if (replacable.identifier === "isServer") {
-                    replacable.setFunctionName("$fsx.cs");
+                    replacable.setFunctionName(`${core.opts.quantumVariableName}.cs`);
                 }
                 if (replacable.identifier === "isBrowser") {
-                    replacable.setFunctionName("$fsx.cb");
+                    replacable.setFunctionName(`${core.opts.quantumVariableName}.cb`);
                 }
             } else {
                 if (replacable.isConditional) {
@@ -24,34 +24,5 @@ export class EnvironmentConditionModification {
                 }
             }
         });
-        // return each(file.fuseboxIsServerConditions, (isServerCondition: FuseBoxIsServerCondition) => {
-        //     if (core.opts.isTargetUniveral()) {
-        //         core.api.addIsServerFunction();
-        //         isServerCondition.setFunctionName("$fsx.cs");
-        //     } else {
-        //         if (core.opts.isTargetBrowser()) {
-        //             isServerCondition.setFunctionName("false");
-        //         }
-        //         if (core.opts.isTargetServer()) {
-        //             isServerCondition.setFunctionName("true");
-        //         }
-        //     }
-        // }).then(() => {
-
-        //     return each(file.fuseboxIsBrowserConditions, (isBrowserCondition: FuseBoxIsBrowserCondition) => {
-
-        //         if (core.opts.isTargetUniveral()) {
-        //             core.api.addIsBrowserFunction();
-        //             isBrowserCondition.setFunctionName("$fsx.cb")
-        //         } else {
-        //             if (core.opts.isTargetBrowser()) {
-        //                 isBrowserCondition.setFunctionName("true")
-        //             }
-        //             if (core.opts.isTargetServer()) {
-        //                 isBrowserCondition.setFunctionName("false")
-        //             }
-        //         }
-        //     });
-        // });
     }
 }

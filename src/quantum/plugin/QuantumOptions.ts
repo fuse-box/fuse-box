@@ -1,6 +1,6 @@
 import { WebIndexPluginClass } from "../../plugins/WebIndexPlugin";
 import { QuantumCore } from "./QuantumCore";
-import { readFuseBoxModule } from "../../Utils";
+import { readFuseBoxModule, hashString } from "../../Utils";
 import { FileAbstraction } from "../core/FileAbstraction";
 export interface ITreeShakeOptions {
     shouldRemove: { (file: FileAbstraction): void }
@@ -36,6 +36,7 @@ export class QuantumOptions {
     private containedAPI = false;
     private processPolyfill = false;
     private bakeApiIntoBundle: string;
+    
     private replaceTypeOf: boolean = true;
 
     private showWarnings = true;
@@ -49,6 +50,7 @@ export class QuantumOptions {
     public apiCallback: { (core: QuantumCore): void }
     public optsTarget: string = "browser";
     public treeshake = false;
+    public quantumVariableName = "$fsx";
     public webIndexPlugin: WebIndexPluginClass;
 
     constructor(opts: IQuantumExtensionParams) {
@@ -133,6 +135,14 @@ export class QuantumOptions {
                 this.treeshake = true;
                 this.treeshakeOptions = opts.treeshake as ITreeShakeOptions;
             }
+        }
+        if ( this.isContained() ){
+            let randomHash = hashString(new Date().getTime().toString() + Math.random());
+            if ( randomHash.indexOf("-") === 0){
+                randomHash = randomHash.slice(1);
+            }
+            this.quantumVariableName = "_" + randomHash;
+            console.log(this.quantumVariableName);
         }
     }
     public shouldBundleProcessPolyfill() {
