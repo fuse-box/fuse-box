@@ -26,7 +26,7 @@ export function acornParse(contents, options?: any) {
             sourceType: "module",
             tolerant: true,
             ecmaVersion: 8,
-            plugins: { es7: true, jsx: true, asyncawait: true },
+            plugins: { es7: true, jsx: true, asyncawait: true, objectRestSpread: true },
             jsx: { allowNamespacedObjects: true },
         },
     });
