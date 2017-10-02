@@ -20,7 +20,7 @@
   ],
   "scripts": {
     "help": "node bin/fsbx --help",
-    "test": "node ./test.js",
+    "test": "FUSE_TEST_TIMEOUT=5000 node ./test.js",
     "test:once": "gulp dist && TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js",
     "start": "gulp watch",
     "devDeps": "gulp installDevDeps",
