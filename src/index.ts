@@ -1,7 +1,10 @@
 import { breakCache } from "./CacheBreaker";
+import { printCurrentVersion } from "./Utils";
 
 // kill cache if required beforehand
 breakCache();
+
+printCurrentVersion()
 
 export { Plugin, WorkFlowContext } from "./core/WorkflowContext";
 export { Bundle } from "./core/Bundle";

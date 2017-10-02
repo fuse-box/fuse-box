@@ -142,7 +142,6 @@ export class QuantumOptions {
                 randomHash = randomHash.slice(1);
             }
             this.quantumVariableName = "_" + randomHash;
-            console.log(this.quantumVariableName);
         }
     }
     public shouldBundleProcessPolyfill() {

@@ -2,7 +2,7 @@ import * as http from "http";
 import * as express from "express";
 import { FuseBox } from "../";
 import { SocketServer } from "./SocketServer";
-import { ensureUserPath } from "../Utils";
+import { ensureUserPath, getFuseBoxInfo } from "../Utils";
 import { ServerOptions } from "./Server";
 
 export interface HTTPServerOptions {
@@ -59,11 +59,12 @@ export class HTTPServer {
 
         server.on("request", this.app);
         setTimeout(() => {
+            const packageInfo = getFuseBoxInfo()
             server.listen(port, () => {
                 const msg = `
----------------------------------------------------
-Development server running http://localhost:${port}
----------------------------------------------------
+-----------------------------------------------------------------
+Development server running http://localhost:${port} @ ${packageInfo.version}
+-----------------------------------------------------------------
 `
                 console.log(msg);
                 //this.spinner = new Spinner(msg);
