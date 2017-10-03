@@ -45,6 +45,10 @@ const ES6_TYPES = new Set([
 
 export function matchesIfStatementProcessEnv(node): string {
     if (node.type && node.type === "IfStatement") {
+        // prevent detecting if else statement
+        if (node.$parent && node.$parent.type === "IfStatement") {
+            return;
+        }
         if (node.test && node.test.type === "BinaryExpression") {
             if (node.test.left) {
                 const variableName = matchesNodeEnv(node.test.left);

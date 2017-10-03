@@ -123,4 +123,29 @@ export class ProcessEnvReplacement {
         });
     }
 
+    "Should replace in if else statement"() {
+        return createOptimisedBundleEnv({
+            stubs: true,
+            options: {
+                treeshake: false,
+            },
+            project: {
+                plugins: [EnvPlugin({ foo: "foo" })],
+                files: {
+                    "index.ts": `
+                        if (a) {
+                        }  else if (process.env.NODE_ENV !== 'production') {
+                        }
+                        
+                    }
+                    `
+                },
+                instructions: "index.ts",
+            },
+        }).then((result) => {
+            const contents = result.contents["index.js"];
+            should(contents).findString("else if ('production' !== 'production')");
+        });
+    }
+
 }
