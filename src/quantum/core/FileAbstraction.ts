@@ -460,7 +460,7 @@ export class FileAbstraction {
                     name: "require"
                 }
                 // treat it like any any other require statements
-                this.requireStatements.add(new RequireStatement(this, parent));
+                this.requireStatements.add(new RequireStatement(this, parent, parent.$parent));
             }
 
             return false;
