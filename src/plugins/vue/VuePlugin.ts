@@ -266,7 +266,6 @@ export class VueComponentClass implements Plugin {
       file.sourceMap = concat.sourceMap.toString();
       file.analysis.parseUsingAcorn();
       file.analysis.analyze();
-      file.analysis.dependencies.forEach(dep => file.resolveLater(dep));
     }
 
     if (file.context.useCache && !cacheValid) {

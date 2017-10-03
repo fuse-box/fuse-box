@@ -177,25 +177,6 @@ export class File {
         }
     }
 
-    public resolveLater(str: string) {
-        let collection: Map<string, File>;
-        if (!this.context.getItem("resolve-later")) {
-            collection = new Map<string, File>();
-            this.context.setItem("resolve-later", collection);
-
-        } else {
-            collection = this.context.getItem("resolve-later");
-        }
-        const pm = this.collection.pm.resolve(str, this.info.absDir);
-        const file = new File(this.context, pm);
-        file.shouldIgnoreDeps = this.shouldIgnoreDeps;
-        file.resolveDepsOnly = this.resolveDepsOnly;
-        collection.set(file.info.absPath, file);
-
-        if (this.analysis.dependencies.indexOf(str) === -1) {
-          this.analysis.dependencies.push(str);
-        }
-    }
 
     public static createByName(collection: ModuleCollection, name: string): File {
         let info = <IPathInformation>{

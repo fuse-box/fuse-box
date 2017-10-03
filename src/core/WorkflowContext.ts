@@ -246,10 +246,6 @@ export class WorkFlowContext {
         }
     }
 
-    public getDelayedResolutionCollection() : Map<string, File> {
-        return this.getItem("resolve-later");
-
-    }
 
     public quantumSplit(rule: string, bundleName: string, entryFile: string) {
         if (!this.quantumSplitConfig) {

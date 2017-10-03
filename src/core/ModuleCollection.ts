@@ -216,7 +216,6 @@ export class ModuleCollection {
                 return this.resolve(file);
             })
                 .then(() => this.context.resolve())
-                .then(() => this.resolveLater())
                 .then(() => {
                     return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
                 }).then(toResolve => {
@@ -235,32 +234,7 @@ export class ModuleCollection {
         });
 
     }
-
-    private resolveLater() {
-        let collection = this.context.getDelayedResolutionCollection();
-        if (!collection) {
-            return;
-        }
-        let depsOnly = false;
-        return each(collection, (file: File, key: string) => {
-            const resolved = this.resolve(file, file.shouldIgnoreDeps);
-            if (file.resolveDepsOnly) {
-                depsOnly = true;
-            }
-            collection.delete(file.info.absPath);
-            return resolved;
-        }).then(() => {
-            if (collection.size > 0) {
-                // recursive
-                return this.resolveLater();
-            }
-        }).then(() => {
-            if (depsOnly) {
-                // reset
-                this.dependencies = new Map<string, File>();
-            }
-        });
-    }
+ 
     /**
      *
      *

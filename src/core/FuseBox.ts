@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import * as path from "path";
 import * as process from "process";
 import { each, utils, chain, Chainable } from "realm-utils";
 import { ensureUserPath, contains } from "./../Utils";
@@ -18,7 +17,6 @@ import { Bundle } from "./Bundle";
 import { SplitConfig } from "./BundleSplit";
 import { File, ScriptTarget } from "./File";
 
-const isWin = /^win/.test(process.platform);
 const appRoot = require("app-root-path");
 
 export interface FuseBoxOptions {
@@ -241,7 +239,6 @@ export class FuseBox {
         if (opts.output) {
             this.context.output = new UserOutput(this.context, opts.output);
         }
-        this.compareConfig(this.opts);
     }
 
     public triggerPre() {
@@ -311,31 +308,6 @@ export class FuseBox {
         return this.producer.run(opts);
     }
 
-    /**
-     * @description if configs diff, clear cache
-     * @see constructor
-     * @see WorkflowContext
-     *
-     * if caching is disabled, ignore
-     * if already stored, compare
-     * else, write the config for use later
-     */
-    public compareConfig(config: FuseBoxOptions): void {
-        if (!this.context.useCache) return;
-        const mainStr = fs.readFileSync(require.main.filename, "utf8");
-
-        if (this.context.cache) {
-            const configPath = path.resolve(this.context.cache.cacheFolder, "config.json");
-
-            if (fs.existsSync(configPath)) {
-                const storedConfigStr = fs.readFileSync(configPath, "utf8");
-                if (storedConfigStr !== mainStr) this.context.nukeCache();
-            }
-
-            if (isWin) fs.writeFileSync(configPath, mainStr);
-            else fs.writeFile(configPath, mainStr, () => { });
-        }
-    }
     /**
      * Bundle files only
      * @param files File[]
@@ -486,25 +458,7 @@ export class FuseBox {
         }
     }
 
-    // public test(str: string = "**/*.test.ts", opts: any) {
-    //     opts = opts || {};
-    //     opts.reporter = opts.reporter || "fuse-test-reporter";
-    //     opts.exit = true;
-
-    //     // include test files to the bundle
-    //     const clonedOpts = Object.assign({}, this.opts);
-    //     const testBundleFile = path.join(Config.TEMP_FOLDER, "tests", new Date().getTime().toString(), "/$name.js");
-    //     clonedOpts.output = testBundleFile;
-
-    //     // adding fuse-test dependency to be bundled
-    //     str += ` +fuse-test-runner ${opts.reporter} -ansi`;
-    //     return FuseBox.init(clonedOpts).bundle(str, () => {
-    //         const bundle = require(testBundleFile);
-    //         let runner = new BundleTestRunner(bundle, opts);
-    //         return runner.start();
-    //     });
-    // }
-
+  
     public initiateBundle(str: string, bundleReady?: any) {
         this.context.reset();
         // Locking deferred calls until everything is written
