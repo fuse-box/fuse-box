@@ -143,6 +143,22 @@ fuse
     .tsConfig("src/myconfig.json")
 ```
 
+## TypeScript Custom Transformers
+
+TypeScript custom transformers can be specified like so:
+
+```js
+const infernoTransformer = require("ts-transform-inferno").default;
+
+FuseBox.init({
+    transformers: {
+        before: [infernoTransformer()]
+    }
+});
+```
+
+note: TypeScript 2.4+ is required for custom transformers.
+
 ## Package Name
 Your default package name is `default`. You don't need to change it if you are not planning on having isolated bundles.
 Any bundle added as a script tag will share the `default` package, keep that in mind. If you want to release a package (say to NPM), you probably would want set a different name (to avoid scope collision)
