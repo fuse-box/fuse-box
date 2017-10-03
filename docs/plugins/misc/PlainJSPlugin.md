@@ -1,4 +1,4 @@
-# PlainJsPlugin
+# Plain Js Plugin
 Handles cache and HMR for plain javascript
 
 ## Description

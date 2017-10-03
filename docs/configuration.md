@@ -4,7 +4,7 @@ The concept of FuseBox is simple. Bundle anything for frontend and server withou
 
 ## Initialisation
 
-Initialise a fuse-box instance like so. 
+Initialise a fuse-box instance like so.
 ```js
 FuseBox.init({ /* you config is here */ })
 ```
@@ -143,6 +143,22 @@ fuse
     .tsConfig("src/myconfig.json")
 ```
 
+## TypeScript Custom Transformers
+
+TypeScript custom transformers can be specified like so:
+
+```js
+const infernoTransformer = require("ts-transform-inferno").default;
+
+FuseBox.init({
+    transformers: {
+        before: [infernoTransformer()]
+    }
+});
+```
+
+note: TypeScript 2.4+ is required for custom transformers.
+
 ## Package Name
 Your default package name is `default`. You don't need to change it if you are not planning on having isolated bundles.
 Any bundle added as a script tag will share the `default` package, keep that in mind. If you want to release a package (say to NPM), you probably would want set a different name (to avoid scope collision)
@@ -247,7 +263,7 @@ There are 2 ways to get to the generated file names
 
 ### Hashes and WebIndexPlugin
 
-Use [WebIndexPlugin](/plugins/webindexplugin#webindexplugin) which will take care of everything. Generated files names will be in your script tags
+Use [Web Index Plugin](/plugins/web-index-plugin#webindexplugin) which will take care of everything. Generated files names will be in your script tags
 ```js
 WebIndexPlugin({
     title: "My awesome website",
@@ -321,7 +337,7 @@ FuseBox.init({
 
 ```js
 import React from "react"
-``` 
+```
 
 This functionality will not work in your project (people should stop relying on it, it's limited by design), but it's targeted to dependencies where `useJsNext` is interconnected.
 
@@ -333,7 +349,7 @@ This option will polyfill every single file in a package, it won't affect much t
 $fsx.r(122)(module.exports)
 ```
 
-You may optionally choose packages to polyfill 
+You may optionally choose packages to polyfill
 ```js
 FuseBox.init({
     useJsNext : ["react", "react-dom"],
@@ -349,7 +365,7 @@ import * as React from "react"
 
 ## writeBundles
 
-If you wish to write bundles yourself, set 
+If you wish to write bundles yourself, set
 ```js
 FuseBox.init({
     writeBundles : false
@@ -462,7 +478,7 @@ You can provided a RegEx or a simplified RegEx as a first element to override th
 ```
 
 
-FuseBox tests each file running it through the plugin list. If it sees an array, it test for the first Plugin on the list test (which is `.scss` in our case. 
+FuseBox tests each file running it through the plugin list. If it sees an array, it test for the first Plugin on the list test (which is `.scss` in our case.
 
 ```js
 [".scss", SassPlugin(), CSSPlugin()] // simple and clean
@@ -504,7 +520,7 @@ Electron specific environment
 
 ### Language Level
 
-FuseBox uses typescript for modules that are not transpiled. 
+FuseBox uses typescript for modules that are not transpiled.
 For example you can require a file from `super-lib/dist/es7` and it will be recognised as a module that requires transpilation. `imports` will be converted to a format that FuseBox understands, in our case `require`. But it might transpile and polyfill unwanted features, like `async` for server target.
 
 Use `@` symbol to define language level
@@ -592,7 +608,7 @@ FuseBox automatically imports the following packages:
 - `Buffer`
 - `http`
 
-In some cases, however, you may want to omit them. You can do so by setting `false` on 
+In some cases, however, you may want to omit them. You can do so by setting `false` on
 each package's corresponding key within a `natives` hash:
 
 ```js

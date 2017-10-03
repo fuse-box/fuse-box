@@ -679,6 +679,7 @@ export class File {
             this.context.getTypeScriptConfig(),
             {
                 fileName: this.info.absPath,
+                transformers: this.context.fuse.opts.transformers || {},
             }
         );
     }

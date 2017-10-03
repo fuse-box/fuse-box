@@ -1,4 +1,4 @@
-# CSSModules Plugin
+# CSS Modules Plugin
 
 ## Description
 CSSModules allow you to include stylesheets as key value map of the

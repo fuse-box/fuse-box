@@ -1,4 +1,4 @@
-# MarkdownPlugin
+# Markdown Plugin
 
 ## Description
 Markdown Plugin generates HTML from Markdown files.
