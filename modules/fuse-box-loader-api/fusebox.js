@@ -144,9 +144,6 @@ function $getRef(name, o) {
     name = name ? name : "./" + pkg.s.entry;
     var filePath = $pathJoin(basePath, name);
     var validPath = $ensureExtension(filePath);
-    if (filePath === ".") {
-        validPath = pkg.s.entry || "index.js";
-    }
     var file = pkg.f[validPath];
     var wildcard;
     if (!file && validPath.indexOf("*") > -1) {
