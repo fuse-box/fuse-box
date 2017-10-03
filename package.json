@@ -1,6 +1,6 @@
 {
   "name": "fuse-box",
-  "version": "2.3.1-beta.24",
+  "version": "2.3.1-beta.25",
   "description": "Fuse-Box a bundler that does it right",
   "typings": "./dist/typings/index.d.ts",
   "main": "dist/commonjs/index.js",
