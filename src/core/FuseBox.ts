@@ -39,7 +39,7 @@ export interface FuseBoxOptions {
     target?: string,
     log?: boolean;
     globals?: { [packageName: string]: /** Variable name */ string };
-    plugins?: Plugin[] | [Plugin[]];
+    plugins?: Array<Plugin | Plugin[]>;
     autoImport?: any;
     natives?: any;
     warnings?: boolean,
