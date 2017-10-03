@@ -298,7 +298,8 @@ function $getRef(name: string, o: RefOpts): IReference {
         file = pkg.f[validPath];
 
         if (!file && filePath === ".") {
-            file = pkg.f[pkg.s && pkg.s.entry];
+            validPath = pkg.s && pkg.s.entry || "index.js";
+            file = pkg.f[validPath];
         }
         // last resort try adding .js extension
         // Some libraries have a weired convention of naming file lile "foo.bar""
