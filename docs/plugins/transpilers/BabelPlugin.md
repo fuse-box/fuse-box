@@ -1,7 +1,7 @@
-# BabelPlugin
+# Babel Plugin
 
 ## Description
-The babel plugin is used to transpile code to different dialects of javascript.
+Transpile code to different dialects of javascript.
 
 ## Install
 This package depends on the `babel-core` module.

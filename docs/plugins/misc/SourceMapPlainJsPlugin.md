@@ -1,4 +1,4 @@
-# SourceMapPlainJsPlugin
+# Source Map Plain Js Plugin
 
 ## Description
 Makes sourcemaps from plain js files

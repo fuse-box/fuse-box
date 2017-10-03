@@ -1,5 +1,4 @@
-# CSSResource Plugin
-
+# CSS Resource Plugin
 
 ## Description
 This program is designed to make it easy to import a css library from an npm package.

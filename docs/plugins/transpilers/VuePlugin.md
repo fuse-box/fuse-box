@@ -1,6 +1,6 @@
-# VuePlugin (Deprecated)
+# Vue Plugin (Deprecated)
 
 ## Description
-The VuePlugin is now deprecated. Please migrate to the new [VueComponentPlugin](/plugins/vue-component-plugin)
+Deprecated. Please migrate to the new [Vue Component Plugin](/plugins/vue-component-plugin)
 
 note: This plugin is now deprecated and will be removed in a future version.

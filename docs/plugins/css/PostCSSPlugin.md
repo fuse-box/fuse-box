@@ -1,9 +1,9 @@
-# PostCSS Plugin
+# Post CSS Plugin
 
 ## Description
 
-Allows using PostCSS, a tool for transforming styles with JS plugins. 
-These plugins can lint your CSS, support variables and mixins, 
+Allows using PostCSS, a tool for transforming styles with JS plugins.
+These plugins can lint your CSS, support variables and mixins,
 transpile future CSS syntax, inline images, and more.
 
 Check [PostCSS website](http://postcss.org/) for more information.
@@ -64,7 +64,7 @@ FuseBox.init({
              // You can optionally pass options to the plugins
              require('postcss-url')({url: "rebase"}),
              require('postcss-nested')
-         ]), 
+         ]),
          CSSPlugin()]
     ]
 });
@@ -77,13 +77,13 @@ FuseBox.init({
     plugins : [
          [PostCSSPlugin(
              // postcss plugins
-             [require('postcss-url')({url: "rebase"})], 
+             [require('postcss-url')({url: "rebase"})],
              {
                  // should fusebox generate sourcemaps (see below), default: true
                  sourceMaps: false,
                  // additional paths for css resolution (see below)
                  paths: [],
-                 // all other options will go to the postcss process function (see below) 
+                 // all other options will go to the postcss process function (see below)
                  parser: parser,
             }
          ), CSSPlugin()]
@@ -103,7 +103,7 @@ FuseBox.init({
              sourceMaps: false,
              // additional paths for css resolution (see below)
              paths: [],
-             // all other options will go to the postcss process function (see below) 
+             // all other options will go to the postcss process function (see below)
              parser: parser,
          }), CSSPlugin()]
     ]
@@ -124,9 +124,9 @@ fuse.plugin(
     [
         PostCSSPlugin(
             [nested], {
-            // passed to PostCss process function 
+            // passed to PostCss process function
             parser: sugarss
-        }), 
+        }),
         CSSPlugin()
     ]
 )
@@ -163,7 +163,7 @@ fuse.plugin(
     [
         SassPlugin(),
         PostCSSPlugin(
-            [require("postcss-import")({ path: ["src"]})], 
+            [require("postcss-import")({ path: ["src"]})],
             {
                 sourceMaps : false
             }
@@ -172,4 +172,3 @@ fuse.plugin(
     ]
 )
 ```
-

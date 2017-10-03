@@ -7,7 +7,7 @@ Frequently asked questions
 Questions related to CSS
 
 ### Why doesn't my CSSPlugin work?
-Your chain is most likely not set up correctly. 
+Your chain is most likely not set up correctly.
 
 In case of the global config, make sure it looks like this:
 
@@ -40,7 +40,7 @@ Why my default exports doesn't work? It works with webpack?!
 import _ from "lodash"
 ```
 
-That's because typescript is not Babel. If you can configure it by adding a [BabelPlugin](/plugins/babelplugin).  To solve this issue with typescript import your libraries as follows:
+That's because typescript is not Babel. If you can configure it by adding a [Babel Plugin](/plugins/babel-plugin).  To solve this issue with typescript import your libraries as follows:
 
 
 ```js
@@ -51,7 +51,7 @@ import * as _ from "lodash"
 
 ### It says that "default" is undefined, why is that?
 
-When babel introduced ES2015 Modules => CommonJS, the spec wasn't completed. However, everyone was using it. The spec came along and stipulated that you cannot request a default `import (ie. import Foo from 'x')` from a module that doesn't have one. 
+When babel introduced ES2015 Modules => CommonJS, the spec wasn't completed. However, everyone was using it. The spec came along and stipulated that you cannot request a default `import (ie. import Foo from 'x')` from a module that doesn't have one.
 
 Instead, you must do `import * as Foo from 'x'`
 
@@ -77,7 +77,7 @@ plugins : [
 ```
 
 
-FuseBox deliberately limits `Babel` to increase the overal performance. That's why `limit2project` is required 
+FuseBox deliberately limits `Babel` to increase the overal performance. That's why `limit2project` is required
 
 
 ### Why doesn't HMR work?

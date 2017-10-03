@@ -1,7 +1,7 @@
-# VueComponentPlugin
+# Vue Component Plugin
 
 ## Description
-The VueComponentPlugin is used to transpile `.vue` files into Javascript.
+Transpile .vue files into JavaScript.
 
 ## Install
 This plugin depends on the following node modules:
@@ -58,8 +58,8 @@ If no `lang` attributes are specified (see below) the `VueComponentPlugin` will 
 ### Language Attributes
 When `VueComponentPlugin` detects a `lang` attribute on a block it will attempt to match with the corresponding FuseBox plugin. For example:
 
-- `<script lang="coffee">` - [CoffeeScriptPlugin](/plugins/coffeescript-plugin)
-- `<script lang="js">` - [BabelPlugin](/plugins/babelplugin) (will read configuration from `.babelrc` file)
+- `<script lang="coffee">` - [CoffeeScriptPlugin](/plugins/coffee-script-plugin)
+- `<script lang="js">` - [BabelPlugin](/plugins/babel-plugin) (will read configuration from `.babelrc` file)
 - `<style lang="less">` - [LESSPlugin](/plugins/less-plugin)
 - `<style lang="scss">` - [SASSPlugin](/plugins/sass-plugin)
 - `<template lang="pug">` - [ConsolidatePlugin](/plugins/consolidate-plugin)

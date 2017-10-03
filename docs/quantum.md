@@ -14,7 +14,7 @@ steps:
    Quantum features a static tree shaking algorithm. Unlike rollup, quantum tree shaking works with commonjs, however, the code should resemble es6 imports
  * Production environments
    All development related functionlity will be removed
- * Hoisting (experimental) 
+ * Hoisting (experimental)
    Repetetive require statements will be hoisted
 
 
@@ -57,7 +57,7 @@ yarn install uglify-js
 ```
 note: Make sure you have the LATEST uglify-js
 
-Make sure you are using [WebIndexPlugin](/plugins/webindexplugin#webindexplugin) as Quantum may produce more bundles than configured in the first place.
+Make sure you are using [Web Index Plugin](/plugins/web-index-plugin#webindexplugin) as Quantum may produce more bundles than configured in the first place.
 
 note: Remove UglifyJSPlugin from the plugin list, it will conflict with Quantum
 
@@ -208,7 +208,7 @@ console.log(2)
 Good thing about it, that you don't need uglify-js for this operation. However, you should not de-reference process.env.$key, as it won't be understood by quantum
 
 
-Quantum merges `process.env` with `{NODE_ENV : "production"}`. It's made on purpose to avoid mistakes, as Quantum builds are made for production. You can override `NODE_ENV` variable by using [EnvPlugin](/plugins/env-plugin#usage) 
+Quantum merges `process.env` with `{NODE_ENV : "production"}`. It's made on purpose to avoid mistakes, as Quantum builds are made for production. You can override `NODE_ENV` variable by using [Env Plugin](/plugins/env-plugin#usage)
 
 ```js
 EnvPlugin({ NODE_ENV: "stage" })
@@ -231,7 +231,7 @@ if ( key === "production" ){
 }
 ```
 
-Will result in 
+Will result in
 ```js
 var key = "production";
 if ( key === "production" ){
@@ -243,7 +243,7 @@ if ( key === "production" ){
 
 Which is less efficient than just declaring it in the if statement.
 
-Quantum works with [EnvPlugin](/plugins/env-plugin#usage) therefore all the environmental variables will be replaced accordingly.
+Quantum works with [Env Plugin](/plugins/env-plugin#usage) therefore all the environmental variables will be replaced accordingly.
 
 
 ## Configuration
@@ -276,8 +276,8 @@ These options define the API, for example, if you choose `browser` the API will 
 
 note: With an `npm` target, `bakeApiIntoBundle` should be used and `containedAPI` should be `true`. Also, no vendor should be produced while the bundle is specified with the `[ ]` arithmetics to avoid bundling dependencies.
 
-### bakeApiIntoBundle 
-Instead of creating a separate file with the api, you can chose to bake it into an existing bundle. 
+### bakeApiIntoBundle
+Instead of creating a separate file with the api, you can chose to bake it into an existing bundle.
 
 note: A bundle name should match your registered bundle name in the producer.
 
@@ -300,7 +300,7 @@ QuantumPlugin({
 
 
 | Polyfill name  | Description
-| ------------- | ------------- 
+| ------------- | -------------
 | Promise  | [Promise](https://github.com/fuse-box/fuse-box/blob/master/modules/fuse-box-responsive-api/promise-polyfill.js) polyfill (for IE)
 
 
@@ -384,11 +384,11 @@ QuantumPlugin({
 Removes `Object.defineProperty(exports, '__esModule', { value: true });` or `exports.__esModule = true` from the bundle.
 It is required however for babel transpiled projects, You have to set it to `false` when dealing with certain builds of react.
 
-When babel introduced ES2015 Modules => CommonJS, the spec wasn't completed. However, everyone was using it. The spec came along and stipulated that you cannot request a default import (ie. import Foo from 'x') from a module that doesn't have one. 
+When babel introduced ES2015 Modules => CommonJS, the spec wasn't completed. However, everyone was using it. The spec came along and stipulated that you cannot request a default import (ie. import Foo from 'x') from a module that doesn't have one.
 
 Instead, you must import * as Foo from 'x'.
 
-FuseBox alings with the specifications and doesn't allow this kind of heresy in the code and removes it without any mercy. 
+FuseBox alings with the specifications and doesn't allow this kind of heresy in the code and removes it without any mercy.
 However many react users are still using it.
 
 ### processPolyfill
@@ -559,7 +559,7 @@ QuantumPlugin({
 ```
 
 `mapping: "views/*.html"`  tells Quantum to memorize all files id's that match the pattern above. That's how we can that nice JSON injected into the `api.js`.
-But unfortunately, that's not enough. We need to solve the path relativity problem. 
+But unfortunately, that's not enough. We need to solve the path relativity problem.
 
 
 
@@ -599,7 +599,7 @@ You will get something like that:
 
 note: You don't need to learn AST the solve the problem. The example above is for advanced users
 
-From the ast above, we see that a variable `name` is included into the `BinaryExpression`. Needless to say, you don't need to check an AST in order to  figure out the compounds, you can just take a peek at the bundle's code. Or simply at your source code. 
+From the ast above, we see that a variable `name` is included into the `BinaryExpression`. Needless to say, you don't need to check an AST in order to  figure out the compounds, you can just take a peek at the bundle's code. Or simply at your source code.
 
 Knowing which variable (and it's important to keep the same name) is including in the computed statement, we can now re-write it to our mappings.
 
@@ -622,4 +622,3 @@ github_example: quantum_computed_resolve
 ### Improvements
 
 It should be possible to create a simple FuseBox plugin, for example `QuantumMomentJsSolution` to be shared with other people.
-  
