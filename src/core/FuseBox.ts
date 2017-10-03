@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as process from "process";
 import { each, utils, chain, Chainable } from "realm-utils";
+import { CustomTransformers } from "typescript";
 import { ensureUserPath, contains } from "./../Utils";
 import { ShimCollection } from "./../ShimCollection";
 import { Server, ServerOptions } from "./../devServer/Server";
@@ -64,6 +65,7 @@ export interface FuseBoxOptions {
     showErrors?: boolean
     showErrorsInBrowser?: boolean
     polyfillNonStandardDefaultUsage?: boolean | string[];
+    transformers?: CustomTransformers;
 }
 
 /**
