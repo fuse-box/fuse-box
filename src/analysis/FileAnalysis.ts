@@ -12,7 +12,7 @@ import { DynamicImportStatement } from "./plugins/DynamicImportStatement";
 require("acorn-es7")(acorn);
 require("acorn-jsx/inject")(acorn);
 require('acorn-es7-plugin')(acorn);
-require('acorn-object-rest-spread/inject')(acorn);
+//require('acorn-object-rest-spread/inject')(acorn);
 
 export interface TraversalPlugin {
     onNode(file: File, node: any, parent: any): void
@@ -27,7 +27,10 @@ export function acornParse(contents, options?: any) {
             sourceType: "module",
             tolerant: true,
             ecmaVersion: 8,
-            plugins: { es7: true, jsx: true, asyncawait: true, objectRestSpread: true },
+            plugins: {
+                es7: true, jsx: true, asyncawait: true,
+                //objectRestSpread: true
+            },
             jsx: { allowNamespacedObjects: true },
         },
     });
@@ -168,7 +171,7 @@ export class FileAnalysis {
             this.file.context.log.magicReason(
                 'compiling with typescript to match language target: ' + target,
                 this.file.info.fuseBoxPath
-            );            
+            );
             const ts = require("typescript");
             let tsconfg: any = {
                 compilerOptions: {
