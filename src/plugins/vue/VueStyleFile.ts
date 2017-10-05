@@ -1,7 +1,6 @@
 import { VueBlockFile } from './VueBlockFile'
 import { CSSPluginClass } from "../stylesheet/CSSplugin";
 import { TrimPlugin, AddScopeIdPlugin } from './PostCSSPlugins';
-const postcss = require('postcss');
 
 export class VueStyleFile extends VueBlockFile {
   public fixSourceMapName () {
@@ -19,6 +18,8 @@ export class VueStyleFile extends VueBlockFile {
   }
 
   private async applyScopeIdToStyles(scopeId: string) {
+    const postcss = require('postcss');
+
     const plugins = [
       TrimPlugin(),
       AddScopeIdPlugin({ id: scopeId })

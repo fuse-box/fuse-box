@@ -1,8 +1,8 @@
 import { VueBlockFile } from './VueBlockFile';
-const typescriptTranspiler = require("typescript");
 
 export class VueScriptFile extends VueBlockFile {
   public async process() {
+    const typescriptTranspiler = require("typescript");
     this.loadContents();
 
     if (this.pluginChain.length > 1) {
