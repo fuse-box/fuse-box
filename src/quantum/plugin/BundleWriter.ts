@@ -157,8 +157,8 @@ export class BundleWriter {
         }).then(() => {
             const manifestPath = this.core.opts.getManifestFilePath();
             if (manifestPath) {
-                this.core.producer.fuse.context.output.write(manifestPath,
-                    JSON.stringify(bundleManifest, null, 2), true);
+                this.core.producer.fuse.context.output.writeToOutputFolder(manifestPath,
+                    JSON.stringify(bundleManifest, null, 2));
             }
             if (this.core.opts.webIndexPlugin) {
                 return this.core.opts.webIndexPlugin.producerEnd(producer)
