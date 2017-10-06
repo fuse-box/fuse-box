@@ -1,5 +1,6 @@
 module.exports = function(input) {
+    console.log(input);
     return ['function', 'object', 'array']
         .indexOf(typeof input) > -1 && input.default === undefined ? 
-             Object.defineProperty(input, "default", {value : input, enumerable : false}) : void 0;
+             Object.isFrozen(input) ? input.default = input : Object.defineProperty(input, "default", {value : input, enumerable : false}) : void 0;
 }
