@@ -190,7 +190,7 @@ export class VueComponentClass implements Plugin {
         await scriptFile.process();
         this.addToCacheObject(cache.script, scriptFile.info.fuseBoxPath, scriptFile.contents, scriptFile.sourceMap);
         concat.add(null, scriptFile.contents, scriptFile.sourceMap);
-        concat.add(null, "Object.assign(exports.default, _options)");
+        concat.add(null, "Object.assign(exports.default.options||exports.default, _options)");
       }
     } else {
       if (!cacheValid) {
