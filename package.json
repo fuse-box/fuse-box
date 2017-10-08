@@ -121,9 +121,9 @@
   "config": {
     "validate-commit-msg": {
       "scope": {
-        "required": true,
+        "required": false,
         "allowed": ["*"],
-        "validate": true,
+        "validate": false,
         "multiple": false
       },
       "helpMessage": "We use husky and commitizen to standardise commit messages. If you're having difficulties, please refer to the contributing guide at https://github.com/fuse-box/fuse-box"
