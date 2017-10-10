@@ -25,6 +25,7 @@ export class VueComponentClass implements Plugin {
   public dependencies: ["process", "fusebox-hot-reload"];
   public test: RegExp = /\.vue$/
   public options: IVueComponentPluginOptions;
+  public hasProcessedVueFile = false;
 
   constructor(options: IVueComponentPluginOptions) {
     this.options = Object.assign({}, DEFAULT_OPTIONS, options);
@@ -86,7 +87,7 @@ export class VueComponentClass implements Plugin {
   }
 
   public bundleEnd(context: WorkFlowContext) {
-    if (context.useCache) {
+    if (context.useCache && this.hasProcessedVueFile) {
       context.source.addContent(`
         var process = FuseBox.import('process');
 
@@ -127,6 +128,7 @@ export class VueComponentClass implements Plugin {
   }
 
   public async transform(file: File) {
+    this.hasProcessedVueFile = true;
     const vueCompiler = require("vue-template-compiler");
     const bundle = file.context.bundle
     let cacheValid = false;
@@ -257,6 +259,8 @@ export class VueComponentClass implements Plugin {
           }
         }
       `);
+
+      file.addStringDependency("vue-hot-reload-api");
     }
 
     file.addStringDependency('vue');
