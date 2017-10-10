@@ -143,6 +143,8 @@ export class File {
 
     public groupHandler: Plugin;
 
+    public hasExtensionOverride = false;
+
     public addAlternativeContent(str: string) {
         this.alternativeContent = this.alternativeContent || "";
         this.alternativeContent += "\n" + str;
@@ -159,10 +161,14 @@ export class File {
         if (info.params) {
             this.params = info.params;
         }
+
         this.absPath = info.absPath;
+
         if (this.absPath) {
             this.relativePath = ensureFuseBoxPath(path.relative(this.context.appRoot, this.absPath));
         }
+
+        this.context.extensionOverrides.setOverrideFileInfo(this);
     }
 
     public registerDependant(file: File) {
