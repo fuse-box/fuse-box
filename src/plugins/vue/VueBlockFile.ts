@@ -86,7 +86,7 @@ export abstract class VueBlockFile extends File {
         return;
     }
 
-    if (this.block.src) {
+    if (this.block.src || this.hasExtensionOverride) {
       try {
         this.contents = fs.readFileSync(this.info.absPath).toString();
       } catch (e) {

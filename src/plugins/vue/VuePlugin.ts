@@ -79,11 +79,13 @@ export class VueComponentClass implements Plugin {
     }
   }
 
-  private addToCacheObject(cacheItem: any, path: string, contents: string, sourceMap: any) {
+  private addToCacheObject(cacheItem: any, path: string, contents: string, sourceMap: any, file: VueBlockFile) {
     cacheItem[path] = {
       contents,
       sourceMap
     };
+
+    cacheItem.override = (file.hasExtensionOverride) ? file.info.absPath : '';
   }
 
   public bundleEnd(context: WorkFlowContext) {
@@ -127,6 +129,10 @@ export class VueComponentClass implements Plugin {
       }
   }
 
+  private isFileInCacheData (block: any, override: any, path: string) {
+    return (block[path] || (override && override.indexOf(path) > -1));
+  }
+
   public async transform(file: File) {
     this.hasProcessedVueFile = true;
     const vueCompiler = require("vue-template-compiler");
@@ -138,7 +144,9 @@ export class VueComponentClass implements Plugin {
       cacheValid = true;
 
       if (bundle && bundle.lastChangedFile) {
-        if (data.template[bundle.lastChangedFile] || data.script[bundle.lastChangedFile] || data.styles[bundle.lastChangedFile]) {
+        if (this.isFileInCacheData(data.template, data.template.override, bundle.lastChangedFile) ||
+            this.isFileInCacheData(data.script, data.script.override, bundle.lastChangedFile) ||
+            this.isFileInCacheData(data.styles, data.styles.override, bundle.lastChangedFile)) {
           cacheValid = false;
         }
       }
@@ -170,10 +178,10 @@ export class VueComponentClass implements Plugin {
 
       if (cacheValid) {
         const templateCacheData = file.cacheData.template[templateFile.info.fuseBoxPath];
-        this.addToCacheObject(cache.template, templateFile.info.fuseBoxPath, templateCacheData.contents, templateCacheData.sourceMap);
+        this.addToCacheObject(cache.template, templateFile.info.fuseBoxPath, templateCacheData.contents, templateCacheData.sourceMap, templateFile);
       } else {
         await templateFile.process();
-        this.addToCacheObject(cache.template, templateFile.info.fuseBoxPath, templateFile.contents, templateFile.sourceMap);
+        this.addToCacheObject(cache.template, templateFile.info.fuseBoxPath, templateFile.contents, templateFile.sourceMap, templateFile);
         concat.add(null, templateFile.contents);
       }
     }
@@ -187,10 +195,10 @@ export class VueComponentClass implements Plugin {
         scriptFile.isLoaded = true;
         scriptFile.contents = scriptCacheData.contents;
         scriptFile.sourceMap = scriptCacheData.sourceMap;
-        this.addToCacheObject(cache.script, scriptFile.info.fuseBoxPath, scriptCacheData.contents, scriptCacheData.sourceMap);
+        this.addToCacheObject(cache.script, scriptFile.info.fuseBoxPath, scriptCacheData.contents, scriptCacheData.sourceMap, scriptFile);
       } else {
         await scriptFile.process();
-        this.addToCacheObject(cache.script, scriptFile.info.fuseBoxPath, scriptFile.contents, scriptFile.sourceMap);
+        this.addToCacheObject(cache.script, scriptFile.info.fuseBoxPath, scriptFile.contents, scriptFile.sourceMap, scriptFile);
         concat.add(null, scriptFile.contents, scriptFile.sourceMap);
         concat.add(null, "Object.assign(exports.default.options||exports.default, _options)");
       }
@@ -221,7 +229,7 @@ export class VueComponentClass implements Plugin {
           return (CSSPlugin.transform(styleFile) || Promise.resolve()).then(() => styleFile);
         } else {
           return styleFile.process().then(() => styleFile).then(() => {
-            this.addToCacheObject(cache.styles, styleFile.info.fuseBoxPath, styleFile.contents, styleFile.sourceMap);
+            this.addToCacheObject(cache.styles, styleFile.info.fuseBoxPath, styleFile.contents, styleFile.sourceMap, styleFile);
 
             if (styleFile.cssDependencies) {
               styleFile.cssDependencies.forEach((path) => {
