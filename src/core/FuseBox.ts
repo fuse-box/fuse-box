@@ -17,6 +17,7 @@ import { BundleProducer } from "./BundleProducer";
 import { Bundle } from "./Bundle";
 import { SplitConfig } from "./BundleSplit";
 import { File, ScriptTarget } from "./File";
+import { ExtensionOverrides } from "./ExtensionOverrides";
 
 const appRoot = require("app-root-path");
 
@@ -54,7 +55,7 @@ export interface FuseBoxOptions {
     experimentalFeatures?: boolean;
     output?: string;
     emitHMRDependencies?: boolean;
-    filterFile? : {(file : File) : boolean} 
+    filterFile? : {(file : File) : boolean}
     debug?: boolean;
     files?: any;
     alias?: any;
@@ -64,6 +65,7 @@ export interface FuseBoxOptions {
     showErrorsInBrowser?: boolean
     polyfillNonStandardDefaultUsage?: boolean | string[];
     transformers?: CustomTransformers;
+    extensionOverrides?: string[];
 }
 
 /**
@@ -192,7 +194,7 @@ export class FuseBox {
         }
 
         if ( opts.filterFile){
-            
+
             this.context.filterFile = opts.filterFile;
         }
 
@@ -241,6 +243,8 @@ export class FuseBox {
         if (opts.output) {
             this.context.output = new UserOutput(this.context, opts.output);
         }
+
+        this.context.extensionOverrides = new ExtensionOverrides(opts.extensionOverrides || []);
     }
 
     public triggerPre() {
@@ -460,7 +464,7 @@ export class FuseBox {
         }
     }
 
-  
+
     public initiateBundle(str: string, bundleReady?: any) {
         this.context.reset();
         // Locking deferred calls until everything is written
