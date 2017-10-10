@@ -24,7 +24,9 @@
     "test:once": "gulp dist && TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js",
     "start": "gulp watch",
     "devDeps": "gulp installDevDeps",
-    "dist": "gulp dist"
+    "dist": "gulp dist",
+    "commit": "git-cz",
+    "commitmsg": "validate-commit-msg"
   },
   "engines": {
     "node": ">= 6.9.5",
@@ -46,6 +48,8 @@
     "acorn-es7": "^0.1.0",
     "acorn-jsx": "^4.0.1",
     "cheerio": "^0.22.0",
+    "commitizen": "^2.9.6",
+    "cz-conventional-changelog": "^2.0.0",
     "fuse-box-test-using-old-version": "^1.0.0",
     "fuse-box-testcase1": "^1.0.0",
     "fuse-box-testcase3": "^1.0.3",
@@ -64,6 +68,7 @@
     "gulp-uglify": "2.0.0",
     "gulp-wrap": "0.13.0",
     "homedir": "^0.6.0",
+    "husky": "^0.14.3",
     "jsdom": "^9.12.0",
     "mkdirp": "^0.5.1",
     "mocha": "^3.1.0",
@@ -73,6 +78,7 @@
     "should": "^11.1.0",
     "sinon": "^1.17.6",
     "typescript": "^2.6.0-dev.20170824",
+    "validate-commit-msg": "^2.14.0",
     "wires-reactive": "^1.1.1"
   },
   "dependencies": {
@@ -111,5 +117,19 @@
     "type": "opencollective",
     "url": "https://opencollective.com/fuse-box",
     "logo": "https://opencollective.com/opencollective/logo.txt"
+  },
+  "config": {
+    "validate-commit-msg": {
+      "scope": {
+        "required": false,
+        "allowed": ["*"],
+        "validate": false,
+        "multiple": false
+      },
+      "helpMessage": "Valid commit message formats are: \n - <type>(<scope>): <subject> \n - <type>: <subject>"
+    },
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
   }
 }
