@@ -18,7 +18,8 @@ export interface IQuantumExtensionParams {
     api?: { (core: QuantumCore): void }
     warnings?: boolean;
     bakeApiIntoBundle?: string;
-    globalRequire?:boolean;
+    shimsPath: string;
+    globalRequire?: boolean;
     extendServerImport?: boolean;
     polyfills?: string[];
     processPolyfill?: boolean;
@@ -36,7 +37,7 @@ export class QuantumOptions {
     private containedAPI = false;
     private processPolyfill = false;
     private bakeApiIntoBundle: string;
-    
+
     private replaceTypeOf: boolean = true;
 
     private showWarnings = true;
@@ -47,6 +48,7 @@ export class QuantumOptions {
     private hoistedNames: string[];
     private extendServerImport = false;
     private manifestFile: string;
+    public shimsPath = "shims.js";
     public apiCallback: { (core: QuantumCore): void }
     public optsTarget: string = "browser";
     public treeshake = false;
@@ -77,6 +79,11 @@ export class QuantumOptions {
         if (opts.processPolyfill !== undefined) {
             this.processPolyfill = opts.processPolyfill;
         }
+        
+        if (opts.shimsPath) {
+            this.shimsPath = opts.shimsPath;
+        }
+
         if (opts.warnings !== undefined) {
             this.showWarnings = opts.warnings;
         }
@@ -136,9 +143,9 @@ export class QuantumOptions {
                 this.treeshakeOptions = opts.treeshake as ITreeShakeOptions;
             }
         }
-        if ( this.isContained() ){
+        if (this.isContained()) {
             let randomHash = hashString(new Date().getTime().toString() + Math.random());
-            if ( randomHash.indexOf("-") === 0){
+            if (randomHash.indexOf("-") === 0) {
                 randomHash = randomHash.slice(1);
             }
             this.quantumVariableName = "_" + randomHash;

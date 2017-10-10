@@ -45,7 +45,7 @@ export class BundleWriter {
                 }
             }
             if (shims.length) {
-                this.createBundle("shims.js", shims.join("\n"));
+                this.createBundle(this.core.opts.shimsPath, shims.join("\n"));
             }
         }
     }
