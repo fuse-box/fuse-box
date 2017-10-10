@@ -126,7 +126,7 @@
         "validate": false,
         "multiple": false
       },
-      "helpMessage": "We use husky and commitizen to standardise commit messages. If you're having difficulties, please refer to the contributing guide at https://github.com/fuse-box/fuse-box"
+      "helpMessage": "Valid commit message formats are: \n - <type>(<scope>): <subject> \n - <type>: <subject>"
     },
     "commitizen": {
       "path": "cz-conventional-changelog"
