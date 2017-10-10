@@ -18,7 +18,7 @@ export interface IQuantumExtensionParams {
     api?: { (core: QuantumCore): void }
     warnings?: boolean;
     bakeApiIntoBundle?: string;
-    shimsPath: string;
+    shimsPath?: string;
     globalRequire?: boolean;
     extendServerImport?: boolean;
     polyfills?: string[];
