@@ -1,6 +1,6 @@
 {
   "name": "fuse-box",
-  "version": "2.3.4-beta.5",
+  "version": "2.3.4-beta.6",
   "description": "Fuse-Box a bundler that does it right",
   "typings": "./dist/typings/index.d.ts",
   "main": "dist/commonjs/index.js",
@@ -122,7 +122,9 @@
     "validate-commit-msg": {
       "scope": {
         "required": false,
-        "allowed": ["*"],
+        "allowed": [
+          "*"
+        ],
         "validate": false,
         "multiple": false
       },
