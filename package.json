@@ -44,9 +44,6 @@
   "homepage": "https://github.com/fuse-box/fuse-box#readme",
   "devDependencies": {
     "@types/node": "^6.0.74",
-    "acorn": "^5.0.3",
-    "acorn-es7": "^0.1.0",
-    "acorn-jsx": "^4.0.1",
     "cheerio": "^0.22.0",
     "commitizen": "^2.9.6",
     "cz-conventional-changelog": "^2.0.0",
@@ -86,7 +83,6 @@
     "acorn-es7": "^0.1.0",
     "acorn-es7-plugin": "^1.1.7",
     "acorn-jsx": "^4.0.1",
-    "acorn-object-rest-spread": "^1.1.0",
     "ansi": "^0.3.1",
     "app-root-path": "^2.0.1",
     "base64-img": "^1.0.3",

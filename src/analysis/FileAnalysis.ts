@@ -12,7 +12,6 @@ import { DynamicImportStatement } from "./plugins/DynamicImportStatement";
 require("acorn-es7")(acorn);
 require("acorn-jsx/inject")(acorn);
 require('acorn-es7-plugin')(acorn);
-//require('acorn-object-rest-spread/inject')(acorn);
 
 export interface TraversalPlugin {
     onNode(file: File, node: any, parent: any): void
@@ -28,8 +27,7 @@ export function acornParse(contents, options?: any) {
             tolerant: true,
             ecmaVersion: 8,
             plugins: {
-                es7: true, jsx: true, asyncawait: true,
-                //objectRestSpread: true
+                es7: true, jsx: true, asyncawait: true
             },
             jsx: { allowNamespacedObjects: true },
         },
