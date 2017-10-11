@@ -80,6 +80,31 @@ export class VuePluginTest {
         });
     }
 
+    "Should compile using Typescript if lang='ts'"() {
+        return createEnv({
+            project: {
+                files: {
+                    "app.vue": `${getTemplateBlock('lang="html"', 'LangAttributes')}${getScriptBlock('lang="ts"')}${getStyleBlock('lang="scss"')}`
+                },
+                plugins: [VueComponentPlugin()],
+                instructions: "app.vue",
+            },
+        }).then((result) => {
+          const Vue = require('vue')
+          const renderer = require('vue-server-renderer').createRenderer()
+          const component = result.project.FuseBox.import('./app.vue').default;
+          const app = new Vue(component)
+
+          should(component.render).notEqual(undefined);
+          should(component.staticRenderFns).notEqual(undefined);
+
+          renderer.renderToString(app, (err, html) => {
+            should(html).findString('<p class="msg">Welcome to Your Vue.js App - LangAttributes</p>');
+            should(html).findString('<input type="text" value="Welcome to Your Vue.js App">');
+          })
+        });
+    }
+
     "Should use plugin chain from user options"() {
         return createEnv({
             project: {

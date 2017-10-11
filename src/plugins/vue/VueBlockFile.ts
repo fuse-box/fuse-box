@@ -49,7 +49,7 @@ export abstract class VueBlockFile extends File {
     }
 
     if (pluginChain.length === 0 && block.lang) {
-      if (defaultExtension === 'js' && this.context.useTypescriptCompiler) {
+      if ((defaultExtension === 'js' && this.context.useTypescriptCompiler) || block.lang === 'ts') {
         pluginChain.push(PLUGIN_LANG_MAP.get('ts'));
       } else {
         const PluginToUse = PLUGIN_LANG_MAP.get(block.lang.toLowerCase());
