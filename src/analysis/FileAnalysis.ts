@@ -9,9 +9,7 @@ import { OwnBundle } from "./plugins/OwnBundle";
 import { ImportDeclaration } from "./plugins/ImportDeclaration";
 import { DynamicImportStatement } from "./plugins/DynamicImportStatement";
 
-require("acorn-es7")(acorn);
 require("acorn-jsx/inject")(acorn);
-require('acorn-es7-plugin')(acorn);
 
 export interface TraversalPlugin {
     onNode(file: File, node: any, parent: any): void
@@ -25,9 +23,9 @@ export function acornParse(contents, options?: any) {
         ...options || {}, ...{
             sourceType: "module",
             tolerant: true,
-            ecmaVersion: 8,
+            ecmaVersion: '2018',
             plugins: {
-                es7: true, jsx: true, asyncawait: true
+                jsx: true
             },
             jsx: { allowNamespacedObjects: true },
         },
