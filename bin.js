@@ -2072,7 +2072,6 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             const HeaderImport_1 = require("./HeaderImport");
             const acorn = require("acorn");
             const escodegen = require("escodegen");
-            require("acorn-es7")(acorn);
             require("acorn-jsx/inject")(acorn);
             class FileAnalysis {
                 constructor(file) {
@@ -2097,8 +2096,8 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
                         this.ast = acorn.parse(this.file.contents, Object.assign({}, options || {}, {
                             sourceType: "module",
                             tolerant: true,
-                            ecmaVersion: 8,
-                            plugins: { es7: true, jsx: true },
+                            ecmaVersion: '2018',
+                            plugins: { jsx: true },
                             jsx: { allowNamespacedObjects: true }
                         }));
                     } catch (err) {
