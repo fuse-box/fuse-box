@@ -10,6 +10,7 @@ import { ImportDeclaration } from "./plugins/ImportDeclaration";
 import { DynamicImportStatement } from "./plugins/DynamicImportStatement";
 
 require("acorn-jsx/inject")(acorn);
+require("./acorn-ext/obj-rest-spread")(acorn);
 
 export interface TraversalPlugin {
     onNode(file: File, node: any, parent: any): void
@@ -25,7 +26,7 @@ export function acornParse(contents, options?: any) {
             tolerant: true,
             ecmaVersion: '2018',
             plugins: {
-                jsx: true
+                jsx: true, objRestSpread: true
             },
             jsx: { allowNamespacedObjects: true },
         },
