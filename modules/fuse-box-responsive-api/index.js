@@ -7,8 +7,6 @@
     $promisePolyfill$
     /* @end */
 
-    /* @if universal */
-
     var isBrowser = typeof window !== "undefined";
     /* @if globalRequire */
     if (!isBrowser) {
@@ -235,7 +233,8 @@
             /* @if codeSplitting */
             if (bMapping.i && bMapping.i[id]) {
                 var data = bMapping.i[id];
-                req(bMapping.c.b + data[0], function(err, result) {
+                const contextualPath = isBrowser ? bMapping.c.b : bMapping.c.s;                
+                req(contextualPath + data[0], function(err, result) {
 
                     /* @if browser */
                     if (!err) { new Function(result)(); }
