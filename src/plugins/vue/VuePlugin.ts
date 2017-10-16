@@ -9,11 +9,6 @@ import { VueScriptFile } from './VueScriptFile';
 import * as path from "path";
 import * as fs from "fs";
 import { each } from "realm-utils";
-const DEFAULT_OPTIONS: IVueComponentPluginOptions = {
-  script: [],
-  template: [],
-  style: []
-};
 
 export interface IVueComponentPluginOptions {
   script?: Plugin[],
@@ -28,7 +23,12 @@ export class VueComponentClass implements Plugin {
   public hasProcessedVueFile = false;
 
   constructor(options: IVueComponentPluginOptions) {
-    this.options = Object.assign({}, DEFAULT_OPTIONS, options);
+    this.options = Object.assign({}, {
+      script: [],
+      template: [],
+      style: []
+    }, options);
+
     this.options.script = Array.isArray(this.options.script) ? this.options.script : [this.options.script];
     this.options.template = Array.isArray(this.options.template) ? this.options.template : [this.options.template];
     this.options.style = Array.isArray(this.options.style) ? this.options.style : [this.options.style];
@@ -115,7 +115,7 @@ export class VueComponentClass implements Plugin {
 
                 if (!isComponentStyling) {
                   var component = FuseBox.import(fusePath).default;
-                  api.reload(component._scopeId, component);
+                  api.reload(component._vueModuleId||component.options._vueModuleId, component);
                 }
 
                 return true;
@@ -152,7 +152,6 @@ export class VueComponentClass implements Plugin {
 
     const concat = new Concat(true, "", "\n");
 
-    concat.add(null, "var _options = {}");
     file.loadContents();
 
     const cache = {
@@ -161,8 +160,15 @@ export class VueComponentClass implements Plugin {
       styles: {}
     };
     const component = vueCompiler.parseComponent(fs.readFileSync(file.info.absPath).toString());
-    const hasScopedStyles = component.styles && component.styles.find((style) => style.scoped);
-    const scopeId = hasScopedStyles ? `data-v-${hashString(file.info.absPath)}` : null;
+    const hasScopedStyles = component.styles && !!component.styles.find((style) => style.scoped);
+    const moduleId = `data-v-${hashString(file.info.absPath)}`;
+    const scopeId = hasScopedStyles ? moduleId : null;
+
+    concat.add(null, `var _options = { _vueModuleId: '${moduleId}'}`);
+
+    if (hasScopedStyles) {
+      concat.add(null, `Object.assign(_options, {_scopeId: '${scopeId}'})`);
+    }
 
     if (component.template) {
       const templateFile = this.createVirtualFile(file, component.template, scopeId, this.options.template);
@@ -192,12 +198,12 @@ export class VueComponentClass implements Plugin {
         await scriptFile.process();
         this.addToCacheObject(cache.script, scriptFile.info.fuseBoxPath, scriptFile.contents, scriptFile.sourceMap);
         concat.add(null, scriptFile.contents, scriptFile.sourceMap);
-        concat.add(null, "Object.assign(exports.default.options||exports.default, _options)");
+        concat.add(null, `Object.assign(exports.default.options||exports.default, _options)`);
       }
     } else {
       if (!cacheValid) {
         concat.add(null, "exports.default = {}");
-        concat.add(null, "Object.assign(exports.default, _options)");
+        concat.add(null, `Object.assign(exports.default.options||exports.default, _options)`);
       }
     }
 
@@ -253,9 +259,9 @@ export class VueComponentClass implements Plugin {
 
           process.env.vueHMR = process.env.vueHMR || {};
 
-          if (!process.env.vueHMR['${scopeId}']) {
-            process.env.vueHMR['${scopeId}'] = true;
-            api.createRecord('${scopeId}', module.exports.default);
+          if (!process.env.vueHMR['${moduleId}']) {
+            process.env.vueHMR['${moduleId}'] = true;
+            api.createRecord('${moduleId}', module.exports.default);
           }
         }
       `);

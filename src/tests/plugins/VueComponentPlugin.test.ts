@@ -1,4 +1,4 @@
-import { VueComponentPlugin, BabelPlugin, HTMLPlugin, SassPlugin } from "../../index";
+import { VueComponentPlugin, BabelPlugin, HTMLPlugin, SassPlugin, TypeScriptHelpers } from "../../index";
 import { createEnv } from "../stubs/TestEnvironment";
 import { should } from "fuse-test-runner";
 
@@ -20,6 +20,16 @@ const getScriptBlock = (langAttribute: string = '') => `
             }
         }
     }
+</script>`;
+
+const getDecoratorScriptBlock = () => `
+<script lang="ts">
+  import Vue from 'vue';
+  import Component from 'vue-class-component';
+
+  @Component({})
+  export default class VueClassComponent extends Vue {
+  }
 </script>`;
 
 const getStyleBlock = (langAttribute: string = '', isScoped: boolean = false) => `
@@ -59,7 +69,7 @@ export class VuePluginTest {
         return createEnv({
             project: {
                 files: {
-                    "app.vue": `${getTemplateBlock('lang="html"', 'LangAttributes')}${getScriptBlock('lang="coffee"')}${getStyleBlock('lang="scss"')}`
+                    "app.vue": `${getTemplateBlock('lang="html"', 'LangAttributes')}${getScriptBlock('lang="ts"')}${getStyleBlock('lang="scss"')}`
                 },
                 plugins: [VueComponentPlugin()],
                 instructions: "app.vue",
@@ -159,6 +169,34 @@ export class VuePluginTest {
           renderer.renderToString(app, (err, html) => {
             should(html).findString(component._scopeId);
             should(html).findString('ScopedStyles');
+          })
+        });
+    }
+
+    "Should be compatible with vue-class-component decorators when used with TypeScriptHelpers"() {
+        return createEnv({
+            project: {
+                polyfillNonStandardDefaultUsage: true,
+                files: {
+                    "app.vue": `${getTemplateBlock('', 'Decorators')}${getDecoratorScriptBlock()}${getStyleBlock('')}`
+                },
+                plugins: [
+                  TypeScriptHelpers(),
+                  VueComponentPlugin()
+                ],
+                instructions: "app.vue",
+            },
+        }).then((result) => {
+          const Vue = require('vue')
+          const renderer = require('vue-server-renderer').createRenderer()
+          const component = result.project.FuseBox.import('./app.vue').default.options;
+          const app = new Vue(component);
+
+          should(component.render).notEqual(undefined);
+          should(component.staticRenderFns).notEqual(undefined);
+
+          renderer.renderToString(app, (err, html) => {
+            should(html).findString('Decorators');
           })
         });
     }

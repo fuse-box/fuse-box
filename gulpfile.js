@@ -246,7 +246,7 @@ gulp.task("make-test-runner", (done) => {
 
 
 gulp.task("copy-to-dev", () => {
-    const devFolder = "random/fuse-box-quantum-test";
+    const devFolder = "vue-seed";
 
     gulp.src("modules/fuse-box-css/**/**.**")
         .pipe(gulp.dest(`../${devFolder}/node_modules/fuse-box/modules/fuse-box-css`));
@@ -324,6 +324,7 @@ gulp.task("installDevDeps", function(done) {
         "vue",
         "vue-server-renderer",
         "vue-hot-reload-api",
+        "vue-class-component",
         "rollup",
         "buble",
         "consolidate",
