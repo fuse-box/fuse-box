@@ -235,7 +235,17 @@
             /* @if codeSplitting */
             if (bMapping.i && bMapping.i[id]) {
                 var data = bMapping.i[id];
-                req(bMapping.c.b + data[0], function(err, result) {
+                /* @if universal */
+                var path = isBrowser ? bMapping.c.b : bMapping.c.s;
+                /* @end */
+                /* @if server */
+                var path = bMapping.c.s;
+                /* @end */
+                
+                /* @if browser */
+                var path = bMapping.c.b;
+                /* @end */
+                req(path + data[0], function(err, result) {
 
                     /* @if browser */
                     if (!err) { new Function(result)(); }
