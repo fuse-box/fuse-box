@@ -236,16 +236,16 @@
             if (bMapping.i && bMapping.i[id]) {
                 var data = bMapping.i[id];
                 /* @if universal */
-                const contextualPath = isBrowser ? bMapping.c.b : bMapping.c.s;
+                var path = isBrowser ? bMapping.c.b : bMapping.c.s;
                 /* @end */
                 /* @if server */
-                const contextualPath = bMapping.c.s;
+                var path = bMapping.c.s;
                 /* @end */
                 
                 /* @if browser */
-                const contextualPath = bMapping.c.b;
+                var path = bMapping.c.b;
                 /* @end */
-                req(contextualPath + data[0], function(err, result) {
+                req(path + data[0], function(err, result) {
 
                     /* @if browser */
                     if (!err) { new Function(result)(); }
