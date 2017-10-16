@@ -96,8 +96,18 @@ const fsbx = FuseBox.init({
     ]
 })
 ```
-
 note: Overriding a plugin chain for a .vue block will make the VueComponentPlugin ignore any lang attributes.
+
+### Using Typescript Decorators
+If you are writing Vue components with Typescript and are making use of [vue-class-component](https://github.com/vuejs/vue-class-component) then you will need to install [tslib](https://github.com/Microsoft/tslib) and update your `tsconfig.json`:
+
+```js
+{
+  "compilerOptions": {
+    "importHelpers": true
+  }
+}
+```
 
 ### External Files
 The `VueComponentPlugin` fully understands the `src` attribute and will handle external files just the same as inline content.

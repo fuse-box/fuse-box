@@ -1,4 +1,4 @@
-import { VueComponentPlugin, BabelPlugin, HTMLPlugin, SassPlugin, TypeScriptHelpers } from "../../index";
+import { VueComponentPlugin, BabelPlugin, HTMLPlugin, SassPlugin } from "../../index";
 import { createEnv } from "../stubs/TestEnvironment";
 import { should } from "fuse-test-runner";
 
