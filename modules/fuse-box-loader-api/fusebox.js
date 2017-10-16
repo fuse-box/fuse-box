@@ -1,12 +1,13 @@
 (function(__root__){
 if (__root__["FuseBox"]) return __root__["FuseBox"];
-var $isBrowser = typeof window !== "undefined" && window.navigator;
-var g = $isBrowser ? window : global;
+var $isWebWorker = typeof WorkerGlobalScope !== "undefined";
+var $isBrowser = typeof window !== "undefined" && window.navigator || $isWebWorker;
+var g = $isBrowser ? ($isWebWorker ? {} : window) : global;
 if ($isBrowser) {
-    g["global"] = window;
+    g["global"] = $isWebWorker ? {} : window;
 }
 __root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports : __root__;
-var $fsbx = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
+var $fsbx = $isBrowser ? $isWebWorker ? {} : (window["__fsbx__"] = window["__fsbx__"] || {})
     : g["$fsbx"] = g["$fsbx"] || {};
 if (!$isBrowser) {
     g["require"] = require;
