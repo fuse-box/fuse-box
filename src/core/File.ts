@@ -649,7 +649,7 @@ export class File {
     }
 
     public generateCorrectSourceMap(fname?: string) {
-        if (this.sourceMap) {
+        if (typeof this.sourceMap === "string") {
             let jsonSourceMaps = JSON.parse(this.sourceMap);
             jsonSourceMaps.file = this.info.fuseBoxPath;
             jsonSourceMaps.sources = jsonSourceMaps.sources.map((source: string) => {
