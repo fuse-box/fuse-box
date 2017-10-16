@@ -173,7 +173,7 @@ export class VuePluginTest {
         });
     }
 
-    "Should be compatible with vue-class-component decorators when used with TypeScriptHelpers"() {
+    "Should be compatible with vue-class-component decorators"() {
         return createEnv({
             project: {
                 polyfillNonStandardDefaultUsage: true,
@@ -181,7 +181,6 @@ export class VuePluginTest {
                     "app.vue": `${getTemplateBlock('', 'Decorators')}${getDecoratorScriptBlock()}${getStyleBlock('')}`
                 },
                 plugins: [
-                  TypeScriptHelpers(),
                   VueComponentPlugin()
                 ],
                 instructions: "app.vue",
