@@ -1,7 +1,7 @@
 import { File } from "../../core/File";
 import { WorkFlowContext, Plugin } from "../../core/WorkflowContext";
 import { CSSPluginClass } from "../stylesheet/CSSplugin";
-import { Concat, hashString } from "../../Utils";
+import { Concat, hashString, ensurePublicExtension } from "../../Utils";
 import { VueBlockFile } from './VueBlockFile';
 import { VueTemplateFile } from './VueTemplateFile';
 import { VueStyleFile } from './VueStyleFile';
@@ -138,7 +138,10 @@ export class VueComponentClass implements Plugin {
       cacheValid = true;
 
       if (bundle && bundle.lastChangedFile) {
-        if (data.template[bundle.lastChangedFile] || data.script[bundle.lastChangedFile] || data.styles[bundle.lastChangedFile]) {
+        const lasChangedFusePath = ensurePublicExtension(bundle.lastChangedFile);
+        console.log(lasChangedFusePath)
+
+        if (data.template[lasChangedFusePath] || data.script[lasChangedFusePath] || data.styles[lasChangedFusePath]) {
           cacheValid = false;
         }
       }
