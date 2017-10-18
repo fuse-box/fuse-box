@@ -138,9 +138,9 @@ export class VueComponentClass implements Plugin {
       cacheValid = true;
 
       if (bundle && bundle.lastChangedFile) {
-        const lasChangedFusePath = ensurePublicExtension(bundle.lastChangedFile);
+        const lastChangedFusePath = ensurePublicExtension(bundle.lastChangedFile);
 
-        if (data.template[lasChangedFusePath] || data.script[lasChangedFusePath] || data.styles[lasChangedFusePath]) {
+        if (data.template[lastChangedFusePath] || data.script[lastChangedFusePath] || data.styles[lastChangedFusePath]) {
           cacheValid = false;
         }
       }
