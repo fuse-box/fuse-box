@@ -139,7 +139,6 @@ export class VueComponentClass implements Plugin {
 
       if (bundle && bundle.lastChangedFile) {
         const lasChangedFusePath = ensurePublicExtension(bundle.lastChangedFile);
-        console.log(lasChangedFusePath)
 
         if (data.template[lasChangedFusePath] || data.script[lasChangedFusePath] || data.styles[lasChangedFusePath]) {
           cacheValid = false;
