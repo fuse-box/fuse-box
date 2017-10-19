@@ -25,6 +25,12 @@ var $fsmp$ = (function() {
     function request(url, cb) {
         if (FuseBox.isServer) {
             try {
+                if ( /^http(s)?\:/.test(url)){
+                    return require("request")(url, function (error, response, body) {
+                        if(error){ return cb(error); }
+                        return cb(null, body, response.headers['content-type']);
+                      });
+                }
                 if (/\.(js|json)$/.test(url)) {
                     cb(null, require(url))
                 } else {
@@ -42,8 +48,6 @@ var $fsmp$ = (function() {
                     if (this.status !== 200) {
                         err = { code: this.status, msg: this.statusText }
                     }
-                    this.status
-
                     cb(err, this.responseText, request.getResponseHeader("Content-Type"));
                 }
             };
@@ -94,7 +98,7 @@ var $fsmp$ = (function() {
                 }
                 var data;
 
-                if (type && FuseBox.isBrowser) {
+                if (type) {
                     if (/javascript/.test(type)) {
                         data = evaluateModule(id, contents);
                     } else if (/json/.test(type)) {

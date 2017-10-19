@@ -176,6 +176,25 @@
         return input;
     }
 
+    /* @if extendServerImport */
+    function extendServerImport(url, cb) {
+        if (/^http(s)?\:/.test(url)) {
+            return require("request")(url, function(error, response, body) {
+                if (error) { return cb(error); }
+                return cb(null, evaluateModule(url, body, response.headers['content-type']));
+            });
+        }
+        if (/\.(js|json)$/.test(url)) {
+            return cb(null, require(url))
+        } else {
+            return require("fs").readFile(require("path").join(__dirname, url), function(err, result) {
+                if (err) { cb(err) } else {
+                    cb(null, result.toString())
+                }
+            })
+        }
+    }
+    /* @end */
 
     function req(url, cb) {
         /* @if browser */
@@ -186,17 +205,9 @@
         if (isBrowser) aj(url, cb)
         else try {
             /* @if extendServerImport */
-            if (/\.(js|json)$/.test(url)) {
-                cb(null, require(url))
-            } else {
-                cb(null, require("fs")
-                    .readFile(require("path")
-                        .join(__dirname, url)),
-                    function(err, result) {
-                        if (err) { reject(err) } else { resolve(result.toString()) }
-                    });
+            if (extendServerImport(url, cb)) {
+                return;
             }
-
             /* @end */
 
             /* @if !extendServerImport */
@@ -210,13 +221,9 @@
 
         /* @if server */
         try {
-            /* @if extendServerImport  */
-            if (/\.(js|json)$/.test(url)) {
-                cb(null, require(url))
-            } else {
-                cb(null, require("fs")
-                    .readFileSync(require("path")
-                        .join(__dirname, url)).toString());
+            /* @if extendServerImport */
+            if (extendServerImport(url, cb)) {
+                return;
             }
             /* @end */
 
@@ -267,8 +274,8 @@
                 /* @if cssLoader */
                 isCSS = /\.css$/.test(id);
                 /* @end */
-
-                if ((id.charCodeAt(4) === 58 || id.charCodeAt(5) === 58) || isCSS) {
+                // id.charCodeAt(4) === 58 || id.charCodeAt(5) === 58)
+                if (isCSS) {
                     return loadRemoteScript(id, isCSS);
                 }
                 /* @end */

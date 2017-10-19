@@ -5,6 +5,8 @@ import { FuseBox } from "../../index";
 import { BundleProducer } from "../../core/BundleProducer";
 import { fork } from "child_process";
 import { removeFolder } from "../../Utils";
+import * as request from "request";
+
 const jsdom = require("jsdom");
 
 function createTestFolders(customFolder: string): { root, homeDir, dist } {
@@ -125,6 +127,14 @@ export class FuseTestEnv {
                 //virtualConsole: jsdom.createVirtualConsole().sendTo(console),
                 done: (err, window) => {
                     window.__ajax = (url, fn) => {
+                        if ( /^http(s)\:/.test(url)){
+                            return request(url, function (error, response, body) {
+                                if(error){
+                                    return fn(400, body);
+                                }
+                                fn(200,body);
+                              });
+                        }
                         const target = path.join(this.dirs.dist, url);
                         if (fs.existsSync(target)) {
                             return fn(200, fs.readFileSync(target).toString());
