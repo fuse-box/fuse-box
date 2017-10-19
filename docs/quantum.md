@@ -391,6 +391,19 @@ Instead, you must import * as Foo from 'x'.
 FuseBox alings with the specifications and doesn't allow this kind of heresy in the code and removes it without any mercy.
 However many react users are still using it.
 
+### extendServerImport
+If you are using dynamic import statements to load remote javascript files on server you would need to enable this option.
+
+This will allow you to do the following
+
+```js
+import("https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.js").then(moment => {
+
+})
+```
+
+note: Install `request` library beforehand
+
 ### processPolyfill
 Default value: `false`
 
