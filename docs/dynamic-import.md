@@ -125,10 +125,10 @@ import("https://unpkg.com/moment@2.19.1/moment.js").then(moment => {
 | API Type  | Target | Support |
 | ------------- | ------------- | -------- |
 | FuseBox Original  | browser  | yes
-| FuseBox Original  | server | yes (with {extendServerImport : true})
+| FuseBox Original  | server | yes
 | Quantum  | browser  | yes
 | Quantum  | universal  | yes
-| Quantum  | server  | yes (resolves a string with {extendServerImport : true})
+| Quantum  | server  | yes (with {extendServerImport : true})
 
 
 ### Working example
