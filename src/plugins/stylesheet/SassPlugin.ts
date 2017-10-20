@@ -89,8 +89,8 @@ export class SassPluginClass implements Plugin {
 
                 let file = path.normalize(url);
 
-                if (this.context.extensionOverrides) {
-                  file = this.context.extensionOverrides.getPathOverride(file);
+                if (context.extensionOverrides) {
+                  file = context.extensionOverrides.getPathOverride(file) || file;
                 }
 
                 done({ file });

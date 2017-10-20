@@ -137,7 +137,7 @@ export class CSSResourcePluginClass implements Plugin {
                 urlFile = urlFile.replace(/[?\#].*$/, "");
 
                 if (file.context.extensionOverrides && file.belongsToProject()) {
-                  urlFile = file.context.extensionOverrides.getPathOverride(urlFile);
+                  urlFile = file.context.extensionOverrides.getPathOverride(urlFile) || urlFile;
                 }
 
                 if (this.inlineImages) {
