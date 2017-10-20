@@ -33,6 +33,7 @@ fuse.plugin(
 | ` target `   | The main filename. Default is `index.html`  |
 | ` resolve `   | `resolve ?: {(output : UserOutput) : string}` Allows to completely override the output  |
 
+note: If you specify template and templateString then template will take precedent 
 
 ### Resolve example
 `resolve` option allows you to completely override the path
