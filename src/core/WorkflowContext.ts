@@ -116,7 +116,7 @@ export class WorkFlowContext {
 
     public output: UserOutput;
 
-    public extensionOverrides: ExtensionOverrides;
+    public extensionOverrides?: ExtensionOverrides;
 
     public hash: string | Boolean;
 
