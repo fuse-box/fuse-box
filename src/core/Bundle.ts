@@ -215,6 +215,11 @@ export class Bundle {
       return this;
     }
 
+    public extensionOverrides(...overrides: string[]) {
+      overrides.forEach((override) => this.context.extensionOverrides.add(override));
+      return this;
+    }
+
     /**
      * natives({ process : false })
      * @param opts

@@ -167,6 +167,8 @@ export class File {
         if (this.absPath) {
             this.relativePath = ensureFuseBoxPath(path.relative(this.context.appRoot, this.absPath));
         }
+
+        this.context.extensionOverrides.setOverrideFileInfo(this);
     }
 
     public registerDependant(file: File) {
