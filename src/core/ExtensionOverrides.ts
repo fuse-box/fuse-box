@@ -21,8 +21,12 @@ export class ExtensionOverrides {
   }
 
   public setOverrideFileInfo(file: File): string {
-    if (this.overrides.length === 0) {
-      return null;
+        console.log(file.info.fuseBoxPath)
+        console.log(file.collection, file.context.defaultPackageName)
+        console.log(file.belongsToProject());
+
+    if (this.overrides.length === 0 || !file.belongsToProject()) {
+      return;
     }
 
     const fileInfo = path.parse(file.info.absPath);

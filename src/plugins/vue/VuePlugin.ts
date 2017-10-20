@@ -71,11 +71,11 @@ export class VueComponentClass implements Plugin {
 
     switch (block.type) {
       case 'script':
-        return new VueScriptFile(file.context, fileInfo, block, scopeId, pluginChain);
+        return new VueScriptFile(file, fileInfo, block, scopeId, pluginChain);
       case 'template':
-        return new VueTemplateFile(file.context, fileInfo, block, scopeId, pluginChain);
+        return new VueTemplateFile(file, fileInfo, block, scopeId, pluginChain);
       case 'style':
-        return new VueStyleFile(file.context, fileInfo, block, scopeId, pluginChain);
+        return new VueStyleFile(file, fileInfo, block, scopeId, pluginChain);
     }
   }
 
