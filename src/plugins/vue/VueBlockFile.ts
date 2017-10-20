@@ -31,7 +31,7 @@ export abstract class VueBlockFile extends File {
   ) {
     super(file.context, info);
     this.collection = file.collection;
-    this.context.extensionOverrides.setOverrideFileInfo(this);
+    this.context.extensionOverrides && this.context.extensionOverrides.setOverrideFileInfo(this);
     this.ignoreCache = true;
   }
 

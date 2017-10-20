@@ -21,10 +21,6 @@ export class ExtensionOverrides {
   }
 
   public setOverrideFileInfo(file: File): string {
-        console.log(file.info.fuseBoxPath)
-        console.log(file.collection, file.context.defaultPackageName)
-        console.log(file.belongsToProject());
-
     if (this.overrides.length === 0 || !file.belongsToProject()) {
       return;
     }
@@ -38,6 +34,22 @@ export class ExtensionOverrides {
         file.absPath = file.info.absPath = overridePath;
         file.hasExtensionOverride = true;
         file.context.log.echoInfo(`Extension override found. Mapping ${file.info.fuseBoxPath} to ${path.basename(file.info.absPath)}`)
+      }
+    }
+  }
+
+  public getPathOverride(pathStr: string) {
+    if (this.overrides.length === 0) {
+      return;
+    }
+
+    const fileInfo = path.parse(pathStr);
+
+    for (let overrideExtension of this.overrides) {
+      const overridePath = path.resolve(fileInfo.dir, `${fileInfo.name}${overrideExtension}`);
+
+      if (overrideExtension.indexOf(fileInfo.ext) > -1 && fs.existsSync(overridePath)) {
+        return overridePath;
       }
     }
   }

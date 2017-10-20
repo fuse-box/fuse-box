@@ -244,7 +244,9 @@ export class FuseBox {
             this.context.output = new UserOutput(this.context, opts.output);
         }
 
-        this.context.extensionOverrides = new ExtensionOverrides(opts.extensionOverrides || []);
+        if (opts.extensionOverrides) {
+          this.context.extensionOverrides = new ExtensionOverrides(opts.extensionOverrides);
+        }
     }
 
     public triggerPre() {
