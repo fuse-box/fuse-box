@@ -46,6 +46,7 @@ const exporting = {
   Fluent: "./arithmetic/Fluent",
   FuseBox: "./core/FuseBox",
   Sparky: "./sparky/Sparky",
+  Cli: "./cli/Cli",
   CSSModules: "./plugins/stylesheet/CSSModules",
   CopyPlugin: "./plugins/CopyPlugin",
   WebIndexPlugin: "./plugins/WebIndexPlugin",
