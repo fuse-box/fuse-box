@@ -4,6 +4,7 @@
         { "file": "getting-started.md" },
         { "file": "configuration.md" },
         { "file": "bundle.md" },
+        { "file": "cli.md" },
         { "file": "development.md", "title": "Development" },
         { "file": "quantum.md" },
         { "file": "Plugins", "title": "Plugins", "link": "/plugins" },
