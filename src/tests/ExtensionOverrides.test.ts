@@ -1,9 +1,6 @@
 import { should } from "fuse-test-runner";
-import { FuseTestEnv } from "./stubs/FuseTestEnv";
+import { FuseTestEnv, createRealNodeModule } from "./stubs/FuseTestEnv";
 import { ExtensionOverrides } from "../core/ExtensionOverrides";
-import { File } from "../core/File";
-import { ModuleCollection } from "../core/ModuleCollection";
-import { WorkFlowContext } from "../core/WorkFlowContext";
 
 export class ExtensionOverridesTest {
   "Should create an instance and set overrides if they are valid"() {
@@ -29,15 +26,28 @@ export class ExtensionOverridesTest {
   }
 
   "Should not update a File's path info if the file does not belong to the project"() {
-    const extensionOverrides = new ExtensionOverrides(['.foo.ts']);
-    const file = new File(new WorkFlowContext(), {
-      absPath: 'some/fake/abs/path/index.ts'
+    const name = "fuse_test_a";
+
+    createRealNodeModule(name, {
+        "package.json": JSON.stringify({
+            name: name,
+            main: "./index.js"
+        }),
+        "index.js": `module.exports = require("./target.js")`,
+        "target.js": `module.exports = {message : "I should be included"}`
+        "target.foo.js": `module.exports = {message : "I should not be included"}`
     });
 
-    extensionOverrides.setOverrideFileInfo(file);
-
-    should(file.info.absPath).equal('some/fake/abs/path/index.ts');
-    should(file.hasExtensionOverride).equal(false);
+    return FuseTestEnv.create({
+        project: {
+          extensionOverrides: ['.foo.ts'],
+          files: {
+              "index.ts": `module.exports = require("${name}")`
+          }
+        }
+      }).simple().then((env) => env.browser((window) => {
+        should(window.FuseBox.import("./index")).deepEqual({ message: 'I should be included' });
+      }));
   }
 
   "Should update a File's path info if an override matches"() {
