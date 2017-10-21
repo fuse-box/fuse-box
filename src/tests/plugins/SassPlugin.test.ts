@@ -1,4 +1,5 @@
 import { createEnv } from "./../stubs/TestEnvironment";
+import { FuseTestEnv } from "../stubs/FuseTestEnv";
 import { CSSPlugin } from "../../plugins/stylesheet/CSSplugin";
 import { should } from "fuse-test-runner";
 import { SassPlugin } from "../../plugins/stylesheet/SassPlugin";
@@ -31,6 +32,26 @@ export class CssPluginTest {
         });
     }
 
+    "Should allow extension overrides"() {
+      return FuseTestEnv.create({
+          project: {
+            plugins: [
+              [SassPlugin(), CSSPlugin()]
+            ],
+            extensionOverrides: ['.foo.scss'],
+            files: {
+                "index.ts": `import './main.scss'`,
+                "main.scss": `html { background: red; }`
+                "main.foo.scss": `html { background: blue; }`
+            }
+          }
+        }).simple().then((env) => env.browser((window) => {
+          should(window.document.querySelectorAll('style')).haveLength(1);
+          should(window.document.querySelector('style').attributes.id.value).equal("main-scss");
+          should(window.document.querySelector('style').innerHTML).findString('background: blue;');
+        }));
+    }
+
     "Should compile with $homeDir macro"() {
         return createEnv({
             project: {
@@ -53,6 +74,27 @@ export class CssPluginTest {
             const js = result.projectContents.toString();
             should(js).findString(`color: red`).findString("font-size: 12px");
         });
+    }
+
+    "Should allow extension overrides with $homeDir macro"() {
+      return FuseTestEnv.create({
+          project: {
+            plugins: [
+              [SassPlugin({ importer: true }), CSSPlugin()]
+            ],
+            extensionOverrides: ['.foo.scss'],
+            files: {
+                "index.ts": `import './main.scss'`,
+                "main.scss": `@import '$homeDir/b.scss';`
+                "b.scss": `html { color: blue; }`,
+                "b.foo.scss": `html { color: red; }`
+            }
+          }
+        }).simple().then((env) => env.browser((window) => {
+          should(window.document.querySelectorAll('style')).haveLength(1);
+          should(window.document.querySelector('style').attributes.id.value).equal("main-scss");
+          should(window.document.querySelector('style').innerHTML).findString('color: red;');
+        }));
     }
 
     "Should compile with $appRoot macro"() {
@@ -150,7 +192,7 @@ export class CssPluginTest {
                 files: {
                     "index.ts": `exports.hello = { bar : require("./a.scss") }`,
                     "a.scss": `
-                        .foo { font-size: foo(1); } 
+                        .foo { font-size: foo(1); }
                         .bar { font-size: bar(2, 2); }
                     `,
                 },

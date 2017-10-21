@@ -248,6 +248,7 @@ Available methods:
 | ` tsConfig() `   | Sets `tsconfig.json` location for typescript  |
 | ` hmr() `   | Enables HMR. Read up [development](/page/development)  |
 | ` alias() `   | Sets up [aliases](/page/configuration#alias) |
+| ` extensionOverrides() `   | Sets up [extensionOverrides](/page/configuration#extension-overrides) |
 | ` split() `   | Defines [code splitting](/page/code-splitting) rules.  |
 | ` splitConfig() `   | Defines [code splitting](/page/code-splitting) configuration.  |
 | ` cache() `   | Toggles cache  |

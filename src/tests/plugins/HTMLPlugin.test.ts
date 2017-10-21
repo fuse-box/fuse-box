@@ -1,4 +1,5 @@
 import { createEnv } from "./../stubs/TestEnvironment";
+import { FuseTestEnv } from "../stubs/FuseTestEnv";
 import { should } from "fuse-test-runner";
 import { HTMLPlugin } from "../../plugins/HTMLplugin";
 
@@ -68,5 +69,21 @@ export class HtmlPluginTest {
             const out = result.project.FuseBox.import("./index.html");
             should(out).equal("<h1>hello</h1>");
         });
+    }
+
+    "Should allow extension overrides"() {
+      return FuseTestEnv.create({
+          project: {
+            extensionOverrides: ['.foo.html'],
+            plugins: [HTMLPlugin({ useDefault: false })]
+            files: {
+              "index.ts": `const template = require('./index.html');`,
+              "index.html": `<h1>I should not be included</h1>`,
+              "index.foo.html": `<h1>I should be included</h1>`,
+            }
+          }
+        }).simple().then((env) => env.browser((window) => {
+          should(window.FuseBox.import("./index.html")).deepEqual('<h1>I should be included</h1>');
+        }));
     }
 }

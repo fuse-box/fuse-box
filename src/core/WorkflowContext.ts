@@ -20,6 +20,7 @@ import { BundleProducer } from "./BundleProducer";
 import { QuantumSplitConfig, QuantumItem, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
 import { isPolyfilledByFuseBox } from "./ServerPolyfillList";
 import { CSSDependencyExtractor, ICSSDependencyExtractorOptions } from "../lib/CSSDependencyExtractor";
+import { ExtensionOverrides } from "./ExtensionOverrides";
 
 const appRoot = require("app-root-path");
 
@@ -114,6 +115,8 @@ export class WorkFlowContext {
     public rollupOptions: any;
 
     public output: UserOutput;
+
+    public extensionOverrides?: ExtensionOverrides;
 
     public hash: string | Boolean;
 
@@ -296,7 +299,7 @@ export class WorkFlowContext {
         if (file.ignoreCache) {
           return
         }
-      
+
         let content = file.contents;
         if (file.context.emitHMRDependencies) {
             this.emitter.addListener("bundle-collected", () => {

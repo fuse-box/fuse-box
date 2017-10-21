@@ -12,7 +12,9 @@ import { Config } from "../Config";
 import { QuantumItem, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
 import { BundleAbstraction } from "../quantum/core/BundleAbstraction";
 import { PackageAbstraction } from "../quantum/core/PackageAbstraction";
-import { EventEmitter } from '../EventEmitter'
+import { EventEmitter } from '../EventEmitter';
+import { ExtensionOverrides } from "./ExtensionOverrides";
+
 export interface HMROptions {
     port?: number;
     socketURI? : string;
@@ -185,6 +187,16 @@ export class Bundle {
         this.context.doLog = log;
         this.context.log.printLog = log;
         return this;
+    }
+
+    public extensionOverrides(...overrides: string[]) {
+      if (!this.context.extensionOverrides) {
+        this.context.extensionOverrides = new ExtensionOverrides(overrides);
+      } else {
+        overrides.forEach((override) => this.context.extensionOverrides.add(override));
+      }
+
+      return this;
     }
 
     /**

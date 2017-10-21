@@ -662,6 +662,26 @@ import faraway from "faraway";
 console.log(utils, faraway);
 ```
 
+## Extension Overrides
+
+You can optionally override how file extensions are resolved. This is useful if you want to create platform specific bundles:
+
+```js
+FuseBox.init({
+    overrideExtensions: ['.desktop.js', '.desktop.json'],
+})
+```
+
+Alternatively you can use the chainable API
+
+```js
+fuse.bundle("app")
+    .overrideExtensions('.desktop.js', '.desktop.json');
+```
+
+The above configuration would first look for JavaScript and JSON files with a `.desktop.js` or `.desktop.json` extension.
+If they cannot be found then the default `.js` and `.json` files will be loaded.
+
 ## Filter File
 You can filter files and tell FuseBox what you want to be excluded:
 
