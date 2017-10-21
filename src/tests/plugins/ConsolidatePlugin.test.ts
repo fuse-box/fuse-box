@@ -1,5 +1,6 @@
 import { ConsolidatePlugin } from "../../index";
 import { createEnv } from "../stubs/TestEnvironment";
+import { FuseTestEnv } from "../stubs/FuseTestEnv";
 import { should } from "fuse-test-runner";
 
 export class ConsolidatePluginTest {
@@ -54,5 +55,22 @@ export class ConsolidatePluginTest {
           const template = result.project.FuseBox.import('./template.pug');
           should(template).equal("<p>Compiled with Pug</p>");
         });
+    }
+
+    "Should allow extension overrides"() {
+      return FuseTestEnv.create({
+          project: {
+            extensionOverrides: ['.foo.pug'],
+            plugins: [ConsolidatePlugin({
+              engine: 'pug'
+            })]
+            files: {
+                "template.pug": "p I should not be included",
+                "template.foo.pug": "p I should be included"
+            }
+          }
+        }).simple('>template.pug').then((env) => env.browser((window) => {
+          should(window.FuseBox.import("./template.pug")).deepEqual({ default: '<p>I should be included</p>' });
+        }));
     }
 }

@@ -1,4 +1,5 @@
 import { createEnv } from "./../stubs/TestEnvironment";
+import { FuseTestEnv } from "../stubs/FuseTestEnv";
 import { should } from "fuse-test-runner";
 import { MarkdownPlugin } from "../../plugins/Markdownplugin";
 
@@ -68,5 +69,20 @@ export class MarkdownPluginTest {
             const out = result.project.FuseBox.import("./index.md");
             should(out).equal("<h1 id=\"hello\">hello</h1>\n");
         });
+    }
+
+    "Should allow extension overrides"() {
+      return FuseTestEnv.create({
+          project: {
+            extensionOverrides: ['.foo.md'],
+            plugins: [MarkdownPlugin({useDefault: false})]
+            files: {
+                "file.md": `# I should not be included`,
+                "file.foo.md": `# I should be included`
+            }
+          }
+        }).simple('>file.md').then((env) => env.browser((window) => {
+          should(window.FuseBox.import("./file.md")).deepEqual('<h1 id=\"i-should-be-included\">I should be included</h1>\n');
+        }));
     }
 }

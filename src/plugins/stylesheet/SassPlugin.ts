@@ -80,12 +80,20 @@ export class SassPluginClass implements Plugin {
                 if (/https?:/.test(url)) {
                     return done({ url });
                 }
+
                 for (let key in options.macros) {
                     if (options.macros.hasOwnProperty(key)) {
                         url = url.replace(key, options.macros[key]);
                     }
                 }
-                done({ file: path.normalize(url) });
+
+                let file = path.normalize(url);
+
+                if (context.extensionOverrides) {
+                  file = context.extensionOverrides.getPathOverride(file) || file;
+                }
+
+                done({ file });
             };
         }
 

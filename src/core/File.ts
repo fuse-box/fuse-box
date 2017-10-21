@@ -143,6 +143,8 @@ export class File {
 
     public groupHandler: Plugin;
 
+    public hasExtensionOverride = false;
+
     public addAlternativeContent(str: string) {
         this.alternativeContent = this.alternativeContent || "";
         this.alternativeContent += "\n" + str;
@@ -428,9 +430,13 @@ export class File {
         if (this.info.isRemoteFile) {
             return;
         }
+
         if (!this.absPath) {
             return;
         }
+        
+        this.context.extensionOverrides && this.context.extensionOverrides.setOverrideFileInfo(this);
+
         if (!fs.existsSync(this.info.absPath)) {
 
             if (/\.js$/.test(this.info.fuseBoxPath) && this.context.fuse && this.context.fuse.producer) {
