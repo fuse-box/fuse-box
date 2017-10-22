@@ -15,6 +15,7 @@ export interface IndexPluginOptions {
     path?: string;
     target?: string;
     template?: string;
+    templateString?: string;
     async?: boolean;
     resolve ?: {(output : UserOutput) : string};
 }
@@ -50,7 +51,7 @@ export class WebIndexPluginClass implements Plugin {
             }
         });
 
-        let html = `<!DOCTYPE html>
+        let html = this.opts.templateString || `<!DOCTYPE html>
 <html>
 <head>
     <title>$title</title>

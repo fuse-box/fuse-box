@@ -1,9 +1,10 @@
 import { CoffeePlugin, RawPlugin } from "../../index";
 import { createEnv } from "../stubs/TestEnvironment";
+import { FuseTestEnv } from "../stubs/FuseTestEnv";
 import { should } from "fuse-test-runner";
 
 const coffeeFileSource = `class Demo
-                                           demo: -> 
+                                           demo: ->
                                             "hello"
 `;
 
@@ -71,5 +72,20 @@ Demo = (function() {
 `
             );
         });
+    }
+
+    "Should allow extension overrides"() {
+      return FuseTestEnv.create({
+          project: {
+            extensionOverrides: ['.foo.coffee'],
+            plugins: [CoffeePlugin({})]
+            files: {
+                "hello.coffee": `module.exports = getMessage: -> 'I should not be included'`,
+                "hello.foo.coffee": `module.exports = getMessage: -> 'I should be included'`
+            }
+          }
+        }).simple('>hello.coffee').then((env) => env.browser((window) => {
+          should(window.FuseBox.import("./hello.coffee").getMessage()).equal('I should be included');
+        }));
     }
 }

@@ -109,6 +109,28 @@ import("./target.txt").then(() => {})
 | Quantum  | server  | yes (resolves a string with {extendServerImport : true})
 
 
+## Loading remote javascript file (from CDN) 
+
+You can load a remote javascript file from CDN (it must support CORS if you want to load it in the browser), for example 
+
+```js
+import("https://unpkg.com/moment@2.19.1/moment.js").then(moment => {
+    console.log(moment().format('LLLL'));
+});
+
+```
+
+### Loading support
+
+| API Type  | Target | Support |
+| ------------- | ------------- | -------- |
+| FuseBox Original  | browser  | yes
+| FuseBox Original  | server | yes
+| Quantum  | browser  | yes
+| Quantum  | universal  | yes
+| Quantum  | server  | yes (with {extendServerImport : true})
+
+
 ### Working example
 
 Clone the repository

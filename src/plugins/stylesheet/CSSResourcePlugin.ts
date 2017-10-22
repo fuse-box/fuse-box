@@ -134,6 +134,11 @@ export class CSSResourcePluginClass implements Plugin {
                 }
                 let urlFile = path.isAbsolute(url) ? url : path.resolve(currentFolder, url);
                 urlFile = urlFile.replace(/[?\#].*$/, "");
+
+                if (file.context.extensionOverrides && file.belongsToProject()) {
+                  urlFile = file.context.extensionOverrides.getPathOverride(urlFile) || urlFile;
+                }
+
                 if (this.inlineImages) {
                     if (IMG_CACHE[urlFile]) {
                         return IMG_CACHE[urlFile];

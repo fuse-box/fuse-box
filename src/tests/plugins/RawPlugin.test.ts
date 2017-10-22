@@ -1,4 +1,5 @@
 import { createEnv } from "./../stubs/TestEnvironment";
+import { FuseTestEnv } from "../stubs/FuseTestEnv";
 import { should } from "fuse-test-runner";
 import { RawPlugin } from "../../plugins/RawPlugin";
 
@@ -33,5 +34,20 @@ export class RawPluginTest {
             should(fileRaw1).equal("\nthis is\n\traw\n\t\tcontent\n");
             should(fileRaw2).equal("\nthis is\n\traw\n\t\tcontent\n");
         });
+    }
+
+		"Should allow extension overrides"() {
+      return FuseTestEnv.create({
+          project: {
+            extensionOverrides: ['.foo.raw'],
+            plugins: [/raw$/, RawPlugin({ extensions: [".raw"] })],
+            files: {
+                "file.raw": "I should not be included",
+                "file.foo.raw": "I should be included"
+            }
+          }
+        }).simple('>file.raw').then((env) => env.browser((window) => {
+          should(window.FuseBox.import("./file.raw")).deepEqual('I should be included');
+        }));
     }
 }

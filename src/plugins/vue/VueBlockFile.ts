@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { extractExtension } from '../../Utils'
 import { File } from "../../core/File";
-import { WorkFlowContext, Plugin } from "../../core/WorkflowContext";
+import { Plugin } from "../../core/WorkflowContext";
 import { IPathInformation } from '../../core/PathMaster';
 import { CSSPluginClass } from "../stylesheet/CSSplugin";
 import { LESSPluginClass } from "../stylesheet/LESSPlugin";
@@ -23,13 +23,15 @@ const PLUGIN_LANG_MAP = new Map<string, any>()
 
 export abstract class VueBlockFile extends File {
   constructor(
-    public context: WorkFlowContext,
+    public file: File,
     public info: IPathInformation,
     public block: any,
     public scopeId: string,
     public pluginChain: Plugin[]
   ) {
-    super(context, info);
+    super(file.context, info);
+    this.collection = file.collection;
+    this.context.extensionOverrides && this.context.extensionOverrides.setOverrideFileInfo(this);
     this.ignoreCache = true;
   }
 
@@ -86,7 +88,7 @@ export abstract class VueBlockFile extends File {
         return;
     }
 
-    if (this.block.src) {
+    if (this.block.src || this.hasExtensionOverride) {
       try {
         this.contents = fs.readFileSync(this.info.absPath).toString();
       } catch (e) {
