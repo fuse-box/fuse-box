@@ -44,7 +44,7 @@ FuseBox.init({
 });
 ```
 
-UglifyJs is used optionally and activated with `{uglify : true}` option, don't forget it install it
+If you're planning to minify produced bundles make sure that you have the LATEST `uglify-js` (or `uglify-es` if your target is ES6) installed. 
 
 Via NPM:
 ```bash
@@ -55,11 +55,9 @@ Via yarn:
 ```bash
 yarn install uglify-js
 ```
-note: Make sure you have the LATEST uglify-js
 
 Make sure you are using [Web Index Plugin](/plugins/web-index-plugin#webindexplugin) as Quantum may produce more bundles than configured in the first place.
 
-note: Remove UglifyJSPlugin from the plugin list, it will conflict with Quantum
 
 ## How it works?
 
@@ -489,6 +487,40 @@ QuantumPlugin({
     warnings : false
 })
 ```
+
+### uglify
+Default value: `false`
+
+A boolean flag or an object literal with uglify's options.
+
+Quantum supports both [uglify-js](https://github.com/mishoo/UglifyJS2) 
+and [uglify-es](https://github.com/mishoo/UglifyJS2/tree/harmony). 
+Which one to use is determined by `es6` option. 
+
+Enable `uglify-js`:
+```js
+QuantumPlugin({
+    uglify : true
+})
+```
+
+Enable `uglify-js` and pass some options to it:
+```js
+QuantumPlugin({
+    uglify : { toplevel: false }
+})
+```
+
+Enable `uglify-es`:
+```js
+QuantumPlugin({
+    uglify : { es6: true }
+})
+```
+
+Alternatively, Quantum could pick up uglify's options from [UglifyJSPlugin](/plugins/misc/UglifyJSPlugin) or 
+[UglifyESPlugin](/plugins/misc/UglifyESPlugin), so if you already have one of them set up then minification 
+in Quantum should work right away. 
 
 ## Computed statement resolution
 
