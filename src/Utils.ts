@@ -62,8 +62,8 @@ export function printCurrentVersion() {
 
 
 
-export function uglify(contents: string | Buffer, opts: any = {}) {
-    const UglifyJs = require("uglify-js");
+export function uglify(contents: string | Buffer, { es6 = false, ...opts }: any = {}) {
+    const UglifyJs = es6 ? require("uglify-es") : require("uglify-js");
     return UglifyJs.minify(contents.toString(), opts);
 }
 
