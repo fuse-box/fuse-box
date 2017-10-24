@@ -211,7 +211,7 @@ export class CSSPluginClass implements Plugin {
             return;
         }
 
-        if (file.sourceMap) {
+        if (typeof file.sourceMap === "string") {
             file.sourceMap = file.generateCorrectSourceMap();
         }
         /**
