@@ -146,20 +146,6 @@ gulp.task("beta", [], function(done) {
     runSequence("dist", "increment-beta", "commit-beta", "npm-publish-beta", done);
 });
 
-gulp.task("changelog", function(done) {
-    fs.writeFileSync(path.join(__dirname, "docs/changelog.md"), "");
-    const storedToken = getGitHubToken();
-    var config = {
-        token: storedToken,
-        repoOwner: "fuse-box",
-        repoName: "fuse-box",
-    };
-    gulp.src("./docs/changelog.md", { buffer: false, base: "./" })
-        .pipe(changelog.gulpChangeLogGeneratorPlugin(config))
-        .pipe(header("# Changelog"))
-        .pipe(gulp.dest("./"))
-        .pipe(done);
-});
 gulp.task("increment-version", function() {
     return gulp.src("./package.json")
         .pipe(bump())
@@ -191,6 +177,12 @@ gulp.task("commit-release", function(done) {
     });
 });
 
+gulp.task("changelog", (done) => {
+    exec("conventional-changelog -p angular", (e, m) => {
+        console.log(m);
+        done();
+    })
+})
 gulp.task("commit-beta", function(done) {
     let json = JSON.parse(fs.readFileSync(__dirname + "/package.json").toString());
     exec(`git add .; git commit -m "chore(beta): Release ${json.version}" -a; git push origin master`, (error, stdout, stderr) => {
