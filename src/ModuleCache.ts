@@ -216,7 +216,7 @@ export class ModuleCache {
         let cacheData: any = {
             contents: file.contents,
             dependencies: file.analysis.dependencies,
-            sourceMap: sourcemaps || {},
+            sourceMap: sourcemaps || "{}",
             headerContent: file.headerContent,
             mtime: stats.mtime.getTime(),
             _ : file.cacheData || {}

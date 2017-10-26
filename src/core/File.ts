@@ -658,7 +658,7 @@ export class File {
         if (typeof this.sourceMap === "string") {
             let jsonSourceMaps = JSON.parse(this.sourceMap);
             jsonSourceMaps.file = this.info.fuseBoxPath;
-            jsonSourceMaps.sources = jsonSourceMaps.sources.map((source: string) => {
+            jsonSourceMaps.sources = jsonSourceMaps.sources && jsonSourceMaps.sources.map((source: string) => {
                 return this.context.sourceMapsRoot + "/" + (fname || source);
             });
 
