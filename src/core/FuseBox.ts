@@ -14,7 +14,6 @@ import { ModuleCollection } from "./ModuleCollection";
 import { UserOutput } from "./UserOutput";
 import { BundleProducer } from "./BundleProducer";
 import { Bundle } from "./Bundle";
-import { SplitConfig } from "./BundleSplit";
 import { File, ScriptTarget } from "./File";
 import { ExtensionOverrides } from "./ExtensionOverrides";
 
@@ -50,7 +49,6 @@ export interface FuseBoxOptions {
     hash?: string | Boolean;
     ignoreModules?: string[],
     customAPIFile?: string;
-    experimentalFeatures?: boolean;
     output?: string;
     emitHMRDependencies?: boolean;
     filterFile? : {(file : File) : boolean}
@@ -118,10 +116,6 @@ export class FuseBox {
         }
         if (opts.useTypescriptCompiler !== undefined) {
             this.context.useTypescriptCompiler = opts.useTypescriptCompiler;
-        }
-
-        if (opts.experimentalFeatures !== undefined) {
-            this.context.experimentalFeaturesEnabled = opts.experimentalFeatures;
         }
 
         if( opts.emitHMRDependencies === true){
@@ -310,38 +304,6 @@ export class FuseBox {
         return this.producer.run(opts);
     }
 
-    /**
-     * Bundle files only
-     * @param files File[]
-     */
-    public createSplitBundle(conf: SplitConfig): Promise<SplitConfig> {
-        let files = conf.files;
-
-        let defaultCollection = new ModuleCollection(this.context, this.context.defaultPackageName);
-        defaultCollection.pm = new PathMaster(this.context, this.context.homeDir);
-        this.context.reset();
-        const bundleData = new BundleData();
-        this.context.source.init();
-        bundleData.entry = "";
-
-        this.context.log.subBundleStart(this.context.output.filename, conf.parent.name);
-        //this.context.output.setName()
-        return defaultCollection.resolveSplitFiles(files).then(() => {
-            return this.collectionSource.get(defaultCollection).then((cnt: string) => {
-                this.context.log.echoDefaultCollection(defaultCollection, cnt);
-            });
-        }).then(() => {
-            return new Promise<SplitConfig>((resolve, reject) => {
-                this.context.source.finalize(bundleData);
-                this.triggerEnd();
-                this.triggerPost();
-                this.context.writeOutput(() => {
-                    return resolve(conf);
-                });
-            });
-        });
-    }
-
     public process(bundleData: BundleData, bundleReady?: () => any) {
         let bundleCollection = new ModuleCollection(this.context, this.context.defaultPackageName);
         bundleCollection.pm = new PathMaster(this.context, bundleData.homeDir);
@@ -393,10 +355,6 @@ export class FuseBox {
                     };
                 }
 
-            }).then(() => {
-                if (self.context.bundle && self.context.bundle.bundleSplit) {
-                    return self.context.bundle.bundleSplit.beforeMasterWrite(self.context);
-                }
             }).then(result => {
                 let self = this;
                 // @NOTE: content is here, but this is not the uglified content

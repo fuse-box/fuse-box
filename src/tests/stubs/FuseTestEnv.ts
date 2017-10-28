@@ -56,7 +56,6 @@ export class FuseTestEnv {
         const basicConfig = {
             homeDir: this.dirs.homeDir,
             log: false,
-            experimentalFeatures: true,
             output: `${this.dirs.dist}/$name.js`
         }
         config.project = config.project || {};

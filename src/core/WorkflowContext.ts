@@ -108,8 +108,6 @@ export class WorkFlowContext {
 
     public customAPIFile: string;
 
-    public experimentalFeaturesEnabled = false;
-
     public defaultEntryPoint: string;
 
     public output: UserOutput;
@@ -644,15 +642,7 @@ export class WorkFlowContext {
             this.output.writeToOutputFolder(`${this.output.filename}.js.map`, result.sourceMap);
         }
     }
-    public shouldSplit(file: File): boolean {
-        if (!this.experimentalFeaturesEnabled) {
-            if (this.bundle && this.bundle.bundleSplit) {
-                return this.bundle.bundleSplit.verify(file);
-            }
-        }
-        return false;
-    }
-
+    
     public getNodeModule(name: string): ModuleCollection {
         return this.nodeModules.get(name);
     }
