@@ -11,7 +11,6 @@ import { WorkFlowContext, Plugin } from "./WorkflowContext";
 import { CollectionSource } from "./../CollectionSource";
 import { Arithmetic, BundleData } from "./../arithmetic/Arithmetic";
 import { ModuleCollection } from "./ModuleCollection";
-import { MagicalRollup } from "../rollup/MagicalRollup";
 import { UserOutput } from "./UserOutput";
 import { BundleProducer } from "./BundleProducer";
 import { Bundle } from "./Bundle";
@@ -48,7 +47,6 @@ export interface FuseBoxOptions {
     useTypescriptCompiler?: boolean;
     standalone?: boolean;
     sourceMaps?: boolean | { vendor?: boolean, inline?: boolean, project?: boolean, sourceRoot?: string };
-    rollup?: any;
     hash?: string | Boolean;
     ignoreModules?: string[],
     customAPIFile?: string;
@@ -226,10 +224,6 @@ export class FuseBox {
             this.context.standaloneBundle = opts.standalone;
         }
 
-        if (opts.rollup) {
-            this.context.rollupOptions = opts.rollup;
-        }
-
         if (opts.customAPIFile) {
             this.context.customAPIFile = opts.customAPIFile;
         }
@@ -405,42 +399,18 @@ export class FuseBox {
                 }
             }).then(result => {
                 let self = this;
-
-                const rollup = this.handleRollup();
-                if (rollup) {
-                    this.producer.addWarning("deprecation", "Rollup support will be dropped in 2.3.2. Use Quantum instead");
-                    self.context.source.finalize(bundleData);
-                    rollup().then(() => {
-                        self.context.log.end();
-                        this.triggerEnd();
-                        this.triggerPost();
-                        this.context.writeOutput(bundleReady);
-                        return self.context.source.getResult();
-                    });
-                } else {
-                    // @NOTE: content is here, but this is not the uglified content
-                    // self.context.source.getResult().content.toString()
-                    self.context.log.end();
-                    this.triggerEnd();
-                    self.context.source.finalize(bundleData);
-                    this.triggerPost();
-                    this.context.writeOutput(bundleReady);
-                    return self.context.source.getResult();
-                }
+                // @NOTE: content is here, but this is not the uglified content
+                // self.context.source.getResult().content.toString()
+                self.context.log.end();
+                this.triggerEnd();
+                self.context.source.finalize(bundleData);
+                this.triggerPost();
+                this.context.writeOutput(bundleReady);
+                return self.context.source.getResult();
             });
         });
     }
 
-    public handleRollup() {
-        if (this.context.rollupOptions) {
-            return () => {
-                let rollup = new MagicalRollup(this.context);
-                return rollup.parse();
-            };
-        } else {
-            return false;
-        }
-    }
 
     public addShims() {
         // add all shims

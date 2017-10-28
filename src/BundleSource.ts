@@ -65,9 +65,7 @@ export class BundleSource {
     }
 
     public annotate(comment: string) {
-        if (this.context.rollupOptions) {
-            this.collectionSource.add(null, comment);
-        }
+        //this.collectionSource.add(null, comment);
     }
 
     /**

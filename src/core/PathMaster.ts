@@ -382,7 +382,7 @@ export class PathMaster {
                 let entryRoot;
                 let jsNext = false;
                 let browserOverrides;
-                if( this.context.target !== "server" ){
+                if (this.context.target !== "server") {
                     if (json.browser && !this.context.isBrowserTarget()) {
                         this.context.fuse.producer.addWarning("json.browser",
                             `Library "${name}" contains "browser" field. Set .target("browser") to avoid problems with your browser build!`);
@@ -400,17 +400,14 @@ export class PathMaster {
                     }
                 }
 
-                if (this.context.rollupOptions && json["jsnext:main"]) {
-                    entryFile = path.join(folder, json["jsnext:main"]);
+                if (this.context.shouldUseJsNext(name) && (json["jsnext:main"] || json.module)) {
+                    jsNext = true;
+                    entryFile = path.join(folder, json["jsnext:main"] || json.module);
                 } else {
-                    if (this.context.shouldUseJsNext(name) && (json["jsnext:main"] || json.module)) {
-                        jsNext = true;
-                        entryFile = path.join(folder, json["jsnext:main"] || json.module);
-                    } else {
-                        entryFile = path.join(folder, entryFile || json.main || "index.js");
-                    }
-                    entryRoot = path.dirname(entryFile);
+                    entryFile = path.join(folder, entryFile || json.main || "index.js");
                 }
+                entryRoot = path.dirname(entryFile);
+
                 return {
                     browserOverrides: browserOverrides,
                     name,
@@ -480,16 +477,16 @@ export class PathMaster {
             } else {
                 // climb up (sometimes it can be in a parent)
                 let upperNodeModule = path.join(this.rootPackagePath, "../", name);
-                if( path.dirname(upperNodeModule) !== Config.NODE_MODULES_DIR){
+                if (path.dirname(upperNodeModule) !== Config.NODE_MODULES_DIR) {
                     if (fs.existsSync(upperNodeModule)) {
                         let isCustom = false;
-                        if( path.dirname(upperNodeModule).match(/node_modules$/) ){
+                        if (path.dirname(upperNodeModule).match(/node_modules$/)) {
                             isCustom = path.dirname(this.rootPackagePath) !== Config.NODE_MODULES_DIR;
                             return readMainFile(upperNodeModule, isCustom);
                         }
                     }
                 }
-                
+
             }
         }
 
