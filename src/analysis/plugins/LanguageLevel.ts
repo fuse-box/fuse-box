@@ -4,6 +4,10 @@ export class LanguageLevel {
     public static onNode(file: File, node: any, parent: any) {
         if (node.async === true) {
             file.setLanguageLevel(ScriptTarget.ES2017)
+        } else if (node.kind === "const") {
+            file.setLanguageLevel(ScriptTarget.ES2015);
+        } else if (node.type === "ArrowFunctionExpression") {
+            file.setLanguageLevel(ScriptTarget.ES2015);
         }
     }
     public static onEnd(file: File) {
