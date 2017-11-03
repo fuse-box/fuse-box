@@ -681,7 +681,7 @@ export class File {
      */
     private getTranspilationConfig() {
         return Object.assign({},
-            this.context.getTypeScriptConfig(),
+            this.context.tsConfig.getConfig(),
             {
                 fileName: this.info.absPath,
                 transformers: this.context.fuse.opts.transformers || {},

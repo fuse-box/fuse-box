@@ -16,6 +16,7 @@ import { BundleProducer } from "./BundleProducer";
 import { Bundle } from "./Bundle";
 import { File, ScriptTarget } from "./File";
 import { ExtensionOverrides } from "./ExtensionOverrides";
+import { TypescriptConfig } from "./TypescriptConfig";
 
 const appRoot = require("app-root-path");
 
@@ -159,10 +160,6 @@ export class FuseBox {
                 ensureUserPath(opts.modulesFolder);
         }
 
-        if (opts.tsConfig) {
-            this.context.tsConfig = opts.tsConfig;
-        }
-
         if (opts.sourceMaps) {
             this.context.setSourceMapsProperty(opts.sourceMaps);
         }
@@ -235,6 +232,10 @@ export class FuseBox {
         if (opts.extensionOverrides) {
           this.context.extensionOverrides = new ExtensionOverrides(opts.extensionOverrides);
         }
+
+        const tsConfig = new TypescriptConfig(this.context);;
+        tsConfig.setConfigFile(opts.tsConfig);
+        this.context.tsConfig = tsConfig;
     }
 
     public triggerPre() {

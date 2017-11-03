@@ -57,7 +57,7 @@ export class Bundle {
     }
 
     public tsConfig(fpath: string): Bundle {
-        this.context.tsConfig = fpath;
+        this.context.tsConfig.setConfigFile(fpath);
         return this;
     }
 
@@ -233,8 +233,10 @@ export class Bundle {
     }
 
     public exec(): Promise<Bundle> {
+        console.log("exec mofo");
+        this.context.tsConfig.read();
         return new Promise((resolve, reject) => {
-            this.clearErrors()
+            this.clearErrors();
             this.fuse
                 .initiateBundle(this.arithmetics || "", () => {
                     const output = this.fuse.context.output;

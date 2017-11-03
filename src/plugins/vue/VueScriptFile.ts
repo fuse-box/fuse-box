@@ -12,7 +12,7 @@ export class VueScriptFile extends VueBlockFile {
     }
 
     if (this.pluginChain[0] === null) {
-      const transpiled = typescriptTranspiler.transpileModule(this.contents.trim(), this.context.getTypeScriptConfig());
+      const transpiled = typescriptTranspiler.transpileModule(this.contents.trim(), this.context.tsConfig.getConfig());
 
       if (this.context.useSourceMaps && transpiled.sourceMapText) {
         const jsonSourceMaps = JSON.parse(transpiled.sourceMapText);

@@ -9,7 +9,7 @@ import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "../ModuleCache";
 import { EventEmitter } from "../EventEmitter";
 import { utils } from "realm-utils";
-import { ensureUserPath, findFileBackwards, ensureDir, removeFolder } from "../Utils";
+import { ensureDir, removeFolder } from "../Utils";
 import { SourceChangedEvent } from "../devServer/Server";
 import { registerDefaultAutoImportModules, AutoImportedModule } from "./AutoImportedModule";
 import { Defer } from "../Defer";
@@ -21,6 +21,7 @@ import { QuantumSplitConfig, QuantumItem, QuantumSplitResolveConfiguration } fro
 import { isPolyfilledByFuseBox } from "./ServerPolyfillList";
 import { CSSDependencyExtractor, ICSSDependencyExtractorOptions } from "../lib/CSSDependencyExtractor";
 import { ExtensionOverrides } from "./ExtensionOverrides";
+import { TypescriptConfig } from "./TypescriptConfig";
 
 const appRoot = require("app-root-path");
 
@@ -142,7 +143,7 @@ export class WorkFlowContext {
 
     public cache: ModuleCache;
 
-    public tsConfig: any;
+    public tsConfig: TypescriptConfig;
 
     public customModulesFolder: string;
 
@@ -162,7 +163,7 @@ export class WorkFlowContext {
     public sourceMapsVendor: boolean = false;
     public inlineSourceMaps: boolean = true;
     public sourceMapsRoot: string = "";
-    public useSourceMaps = false;
+    public useSourceMaps : boolean;
 
     public initialLoad = true;
 
@@ -560,48 +561,6 @@ export class WorkFlowContext {
 
     public addNodeModule(name: string, collection: ModuleCollection) {
         this.nodeModules.set(name, collection);
-    }
-
-    /**
-     * Retuns the parsed `tsconfig.json` contents
-     */
-    public getTypeScriptConfig() {
-        if (this.loadedTsConfig) {
-            return this.loadedTsConfig;
-        }
-
-        let url, configFile;
-        let config: any = {
-            compilerOptions: {},
-        };;
-        if (this.tsConfig) {
-            configFile = ensureUserPath(this.tsConfig);
-        } else {
-            url = path.join(this.homeDir, "tsconfig.json");
-            let tsconfig = findFileBackwards(url, this.appRoot);
-            if (tsconfig) {
-                configFile = tsconfig;
-            }
-        }
-
-        if (configFile) {
-            this.log.echoStatus(`Typescript config:  ${configFile.replace(this.appRoot, "")}`);
-            config = require(configFile);
-        } else {
-            this.log.echoStatus(`Typescript config file was not found. Improvising`);
-        }
-
-        config.compilerOptions.module = "commonjs";
-        if (!('target' in config.compilerOptions)) {
-            config.compilerOptions.target = this.languageLevel
-        }
-
-        if (this.useSourceMaps) {
-            config.compilerOptions.sourceMap = true;
-            config.compilerOptions.inlineSources = true;
-        }
-        this.loadedTsConfig = config;
-        return config;
     }
 
     public isFirstTime() {
