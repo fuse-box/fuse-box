@@ -238,7 +238,7 @@ gulp.task("make-test-runner", (done) => {
 
 
 gulp.task("copy-to-dev", () => {
-    const devFolder = "vue-seed";
+    const devFolder = "fuse-box-vue-sourcemaps";
 
     gulp.src("modules/fuse-box-css/**/**.**")
         .pipe(gulp.dest(`../${devFolder}/node_modules/fuse-box/modules/fuse-box-css`));
