@@ -60,13 +60,19 @@ export class BabelPluginClass implements Plugin {
 
         let babelRcConfig;
         let babelRcPath = path.join(this.context.appRoot, `.babelrc`);
+
         if (fs.existsSync(babelRcPath)) {
             babelRcConfig = fs.readFileSync(babelRcPath).toString();
-            if (babelRcConfig) babelRcConfig = JSON.parse(babelRcConfig);
+
+            if (babelRcConfig) {
+              babelRcConfig = Object.assign({}, JSON.parse(babelRcConfig), this.config);
+            }
         }
+
         if (babelRcConfig) {
             this.config = babelRcConfig;
         }
+
         this.configLoaded = true;
     }
 
