@@ -1,6 +1,6 @@
 # Version 3 Detailed change log
 
-## Target node > 8
+## Target node >= 8
 
 FuseBox will work on node.js 8+ because of `async` `await` usage. It's better to take advantage of the latest features - its much faster than then polyfill. If you are unable to upgrade your servers for some reason - no worries, we now have `es5` dist for you.
 
@@ -32,7 +32,7 @@ This change will barely break anything, as all necessary modules are exported vi
 Dynamic imports are enabled by default, so if you had 
 ```js
 FuseBox.init({
-    experimentalFeatues : true
+    experimentalFeatures : true
 })
 ```
 
@@ -46,3 +46,18 @@ We have quantum now.
 
 You needed to run `gulp watch` and wait forever for you changes. Now, you can use a stable version of `FuseBox` to bundle `FuseBox`
 Make a change - get an instant result.
+
+## Configuration
+
+### TsConfig
+
+TsConfig can be overridden now. For example you have a `tsconfig.json` which FuseBox picks up automatically, but you want to make a slighly different configuration (for example change the target).
+
+You can achieve that by providing an array with an object.
+```js
+FuseBox.init({
+    tsConfig : [{
+        target : "es5" // will override existing `tsconfig.json` target
+    }]
+})
+```
