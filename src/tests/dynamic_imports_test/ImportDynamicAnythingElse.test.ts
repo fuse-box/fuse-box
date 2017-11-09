@@ -7,8 +7,6 @@ export class ImportDynamicAnythingElse {
     "Should import a remote txt file file with Vanilla API (browser)"() {
         return FuseTestEnv.create(
             {
-                testFolder : "wut",
-
                 project: {
                     distFiles: {
                         "hello.txt": `some text is here`

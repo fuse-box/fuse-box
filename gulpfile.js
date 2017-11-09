@@ -127,6 +127,17 @@ gulp.task("next", [], function(done) {
 });
 
 
+gulp.task("publish-next", function(done) {
+    var publish = spawn("npm", ["publish", "--tag", "beta"], {
+        stdio: "inherit",
+    });
+    publish.on("close", function(code) {
+        if (code === 8) {
+            gulp.log("Error detected, waiting for changes...");
+        }
+        done();
+    });
+});
 
 
 
@@ -165,17 +176,6 @@ gulp.task("changelog", (done) => {
 })
 
 
-gulp.task("publish-next", function(done) {
-    var publish = spawn("npm", ["publish", "--tag", "beta"], {
-        stdio: "inherit",
-    });
-    publish.on("close", function(code) {
-        if (code === 8) {
-            gulp.log("Error detected, waiting for changes...");
-        }
-        done();
-    });
-});
 
 
 gulp.task("make-test-runner", (done) => {
@@ -191,11 +191,13 @@ gulp.task("make-test-runner", (done) => {
         target: "server@esnext",
         cache : false,
         globals : {"default" : "*"},
-        plugins: [JSONPlugin(),
+        plugins: [
+             JSONPlugin(),
              QuantumPlugin({ 
                 bakeApiIntoBundle : "bin",
                 uglify : false,
                 ensureES5 : false,
+                replaceProcessEnv : false,
                 treeshake: true, 
                 target: "server", 
                 containedAPI : true, 

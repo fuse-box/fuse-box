@@ -106,7 +106,7 @@ export class QuantumOptions {
             this.removeExportsInterop = opts.removeExportsInterop;
         }
         if (opts.replaceProcessEnv !== undefined) {
-            this.replaceProcessEnv = this.replaceProcessEnv;
+            this.replaceProcessEnv = opts.replaceProcessEnv;
         }
         if (opts.removeUseStrict !== undefined) {
             this.removeUseStrict = opts.removeUseStrict;
