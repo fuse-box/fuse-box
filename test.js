@@ -5,7 +5,7 @@ process.env.PROJECT_NODE_MODULES = path.join(__dirname, 'node_modules');
 process.env.SPARKY_LOG = false;
 process.env.LOGGING = false;
 process.env.DYNAMIC_IMPORTS_DISABLED = true;
-const {FuseBox} = require('./bin');
+const {FuseBox} = require('./bin/fusebox');
 
 let file = process.argv[2];
 let special = file && file.match(/^--file=(.*)/);

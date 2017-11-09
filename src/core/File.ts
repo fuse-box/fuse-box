@@ -628,7 +628,7 @@ export class File {
         // Calling it before transpileModule on purpose
         this.tryTypescriptPlugins();
         this.context.debug("TypeScript", `Transpile ${this.info.fuseBoxPath}`)
-
+        
         let result = ts.transpileModule(this.contents, this.getTranspilationConfig());
         if (result.sourceMapText && this.context.useSourceMaps) {
             let jsonSourceMaps = JSON.parse(result.sourceMapText);

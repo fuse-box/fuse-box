@@ -16,7 +16,38 @@ const path = require("path");
 const os = require('os');
 
 
-const RELEASE_FOLDER = "./.release";
+const RELEASE_FOLDER = "./dist";
+
+const getDistFuseBoxConfig = (conf, quantum) => {
+    process.env.PROJECT_ROOT = __dirname;
+    process.env.FUSEBOX_MODULES = path.resolve(RELEASE_FOLDER, "modules");
+    const { FuseBox, JSONPlugin, QuantumPlugin } = require("./dist/index");
+    let quantumConf = Object.assign({
+        bakeApiIntoBundle: "fusebox",
+        uglify: false,
+        ensureES5: false,
+        replaceProcessEnv: false,
+        treeshake: true,
+        target: "server",
+        containedAPI: true,
+        warnings: false
+    }, quantum || {});
+
+    let selfConfig = {
+        homeDir: RELEASE_FOLDER,
+        output: "$name.js",
+        target: "server@esnext",
+        cache: false,
+        globals: { "default": "*" },
+        plugins: [
+            JSONPlugin(),
+            QuantumPlugin(quantumConf)
+        ],
+    }
+    selfConfig = Object.assign(selfConfig, conf)
+    
+    return FuseBox.init(selfConfig)
+}
 
 
 let watching = false;
@@ -32,7 +63,7 @@ let projectTypings = ts.createProject("src/tsconfig.json", {
     declaration: true
 });
 let projectCommonjs = ts.createProject("src/tsconfig.json", {
-    target : "esnext"
+    target: "esnext"
 });
 
 let projectLoader = ts.createProject("src/loader/tsconfig.json");
@@ -104,12 +135,31 @@ gulp.task("dist", ["prepare:clean"], function(done) {
         "prepare:copy-modules",
         "prepare:loader",
         "prepare:typings",
-        "prepare:modules", done)
+        "prepare:modules",
+        "prepare:es5-bundle",
+        done)
+});
+
+gulp.task("prepare:es5-bundle", (done) => {
+    const fuse = getDistFuseBoxConfig({
+        homeDir : "src",
+        output : "dist/$name.js",
+        target : "server@es5",
+        tsConfig : [{
+            target : "es5"
+        }]
+    }, {
+        bakeApiIntoBundle : "es5",
+        uglify : true
+    });
+    fuse.bundle("es5")
+        .instructions(">[index.ts]");
+    return fuse.run();
 });
 
 
 gulp.task("increment-next-version", function() {
-    const pkgPath = path.resolve(RELEASE_FOLDER, "package.json");
+    const pkgPath = path.resolve("package.json");
     let json = require(pkgPath);
     let main = json.version;
     let matched = main.match(/(.*)(next\.)(\d{1,})/i);
@@ -123,13 +173,14 @@ gulp.task("increment-next-version", function() {
 
 
 gulp.task("next", [], function(done) {
-    runSequence("dist", "increment-next-version", done);
+    runSequence("increment-next-version", "dist", "publish-next", done);
 });
 
 
 gulp.task("publish-next", function(done) {
-    var publish = spawn("npm", ["publish", "--tag", "beta"], {
+    var publish = spawn("npm", ["publish", "--tag", "next"], {
         stdio: "inherit",
+        cwd: path.resolve(RELEASE_FOLDER)
     });
     publish.on("close", function(code) {
         if (code === 8) {
@@ -138,9 +189,6 @@ gulp.task("publish-next", function(done) {
         done();
     });
 });
-
-
-
 
 
 gulp.task("dist-loader", ["dist-loader-js", "dist-loader-typings"]);
@@ -175,38 +223,13 @@ gulp.task("changelog", (done) => {
     })
 })
 
-
-
-
 gulp.task("make-test-runner", (done) => {
-    process.env.PROJECT_ROOT = __dirname;
-    process.env.FUSEBOX_MODULES = path.resolve(RELEASE_FOLDER, "modules");
-
-    const { FuseBox, JSONPlugin, QuantumPlugin } = require("./.release/index");
-    const version = require("./package.json").version;
-
-    const fuse = FuseBox.init({
-        homeDir: ".release",
-        output: "$name.js",
-        target: "server@esnext",
-        cache : false,
-        globals : {"default" : "*"},
-        plugins: [
-             JSONPlugin(),
-             QuantumPlugin({ 
-                bakeApiIntoBundle : "bin",
-                uglify : false,
-                ensureES5 : false,
-                replaceProcessEnv : false,
-                treeshake: true, 
-                target: "server", 
-                containedAPI : true, 
-                warnings: false 
-            })
-        ],
+    const fuse = getDistFuseBoxConfig({
+        homeDir : 'src',
+        output : `bin/$name.js`
     });
-    fuse.bundle("bin")
-        .instructions(">[index.js]");
+    fuse.bundle("fusebox")
+        .instructions(">[index.ts]");
     return fuse.run();
 });
 

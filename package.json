@@ -1,22 +1,9 @@
 {
   "name": "fuse-box",
-  "version": "3.0.0-next.1",
+  "version": "3.0.0-next.6",
   "description": "Fuse-Box a bundler that does it right",
   "typings": "index.d.ts",
   "main": "index.js",
-  "directories": {
-    "test": "test",
-    "modules": "modules",
-    "lib": "dist/commonjs",
-    "typings": "dist/typings"
-  },
-  "files": [
-    "src",
-    "dist",
-    "modules",
-    "test",
-    "docs"
-  ],
   "scripts": {
     "help": "node bin/fsbx --help",
     "test": "FUSE_TEST_TIMEOUT=5000 node ./test.js",
@@ -28,7 +15,7 @@
     "commitmsg": "validate-commit-msg"
   },
   "engines": {
-    "node": ">= 6.9.5",
+    "node": ">= 8",
     "npm": ">= 3.10.10"
   },
   "repository": {
@@ -101,6 +88,7 @@
     "realm-utils": "^1.0.9",
     "request": "^2.79.0",
     "shorthash": "0.0.2",
+    "tslib": "^1.8.0",
     "watch": "^1.0.1",
     "ws": "^1.1.1",
     "yargs": "^9.0.1"
