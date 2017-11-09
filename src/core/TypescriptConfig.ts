@@ -31,7 +31,6 @@ export class TypescriptConfig {
     public read() {
         
         const cacheKey = this.customTsConfig || this.context.homeDir;
-        console.log("reading the config....", cacheKey);
         if (CACHED[cacheKey]) {
             this.config = CACHED[cacheKey];
         } else {

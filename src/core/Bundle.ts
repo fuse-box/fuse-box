@@ -233,7 +233,6 @@ export class Bundle {
     }
 
     public exec(): Promise<Bundle> {
-        console.log("exec mofo");
         this.context.tsConfig.read();
         return new Promise((resolve, reject) => {
             this.clearErrors();

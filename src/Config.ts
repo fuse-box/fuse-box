@@ -1,6 +1,6 @@
 const appRoot = require("app-root-path");
 import * as path from "path";
-const PROJECT_ROOT = process.env.FUSEBOX_DIST_ROOT || path.join(__dirname, "../../");
+const PROJECT_ROOT = process.env.FUSEBOX_DIST_ROOT || path.resolve(__dirname);
 
 const MAIN_FILE = require.main.filename;
 if (MAIN_FILE.indexOf("gulp.js") > -1 && !process.env.PROJECT_ROOT) {
@@ -10,7 +10,7 @@ if (MAIN_FILE.indexOf("gulp.js") > -1 && !process.env.PROJECT_ROOT) {
 export class Configuration {
     public NODE_MODULES_DIR = process.env.PROJECT_NODE_MODULES || path.join(appRoot.path, "node_modules");
     public FUSEBOX_ROOT = PROJECT_ROOT;
-    public FUSEBOX_MODULES = path.join(PROJECT_ROOT, "modules");
+    public FUSEBOX_MODULES = process.env.FUSEBOX_MODULES || path.join(PROJECT_ROOT, "modules");
     public TEMP_FOLDER = process.env.FUSEBOX_TEMP_FOLDER || path.join(appRoot.path, ".fusebox");
     public PROJECT_FOLDER = appRoot.path;
     public PROJECT_ROOT = process.env.PROJECT_ROOT || path.dirname(MAIN_FILE);

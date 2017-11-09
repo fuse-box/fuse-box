@@ -25,6 +25,7 @@ export interface FuseBoxOptions {
     modulesFolder?: string;
     tsConfig?: string;
     package?: any;
+    dynamicImportsEnabled ?: boolean;
     cache?: boolean;
     /**
      * "browser" | "server" | "universal" | "electron"
@@ -115,6 +116,10 @@ export class FuseBox {
         if (opts.useJsNext !== undefined) {
             this.context.useJsNext = opts.useJsNext;
         }
+        if( opts.dynamicImportsEnabled !== undefined){
+            this.context.dynamicImportsEnabled = opts.dynamicImportsEnabled;
+        }
+
         if (opts.useTypescriptCompiler !== undefined) {
             this.context.useTypescriptCompiler = opts.useTypescriptCompiler;
         }

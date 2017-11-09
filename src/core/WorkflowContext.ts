@@ -68,6 +68,8 @@ export class WorkFlowContext {
      */
     public appRoot: any = appRoot.path;
 
+    public dynamicImportsEnabled = true;
+
     public shim: any;
 
     public writeBundles = true;
