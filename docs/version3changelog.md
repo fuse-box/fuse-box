@@ -1,21 +1,31 @@
 # Version 3 Detailed change log
 
+## Target node > 8
+
+FuseBox will work on node.js 8+ because of `async` `await` usage. It's better to take advantage of the latest features - its much faster than then polyfill. If you are unable to upgrade your servers for some reason - no worries, we now have `es5` dist for you.
+
+```js
+import {FuseBox} from "fuse-box/es5"
+```
+
 ## Better distribution
 
-Previsouly npm package had all kind of garbage (not related to the runtime), now everything is under the root.
+Previsouly npm package had all kind of files (not related to runtime)
+ 
+Now everything is under the `root`, no more unnecessary and distracting folders
 So if you were importing
 
 ```js
 import("fuse-box/dist/commonjs/File")
 ```
 
-You need to change it to
+You will need to change it to
 
 ```js
 import("fuse-box/core/File")
 ```
 
-This change will barely make break anything, as all necessary modules are exported via index.
+This change will barely break anything, as all necessary modules are exported via index.
 
 ## Dynamic imports
 
@@ -26,7 +36,7 @@ FuseBox.init({
 })
 ```
 
-You can remove it.
+You can now remove it.
 
 ## Rollup support removed
 
