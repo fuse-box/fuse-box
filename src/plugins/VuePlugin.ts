@@ -115,17 +115,17 @@ function compileScript(file, options, context, html, script, styles) : string {
         return compileTypeScript(file, options, context, html, script, styles);
     }
 }
-function compileTypeScript(file, options, context, html, script, styles) : string {
+function compileTypeScript(file, options, context : WorkFlowContext, html, script, styles) : string {
     if (!typescriptTranspiler) {
         typescriptTranspiler = require("typescript");
     }
     try {
-        const jsTranspiled = typescriptTranspiler.transpileModule(script.content, context.getTypeScriptConfig());
+        const jsTranspiled = typescriptTranspiler.transpileModule(script.content, context.tsConfig.getConfig());
         return reduceVueToScript(file, jsTranspiled.outputText, html, styles)
     } catch (err) {
-        console.log(err)
+        console.log(err);
     }
-    return ''
+    return '';
 }
 function compileBabel(file, options, context, html, script, styles) : string {
     if (!babelCore) {

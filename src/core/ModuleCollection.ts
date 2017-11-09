@@ -379,12 +379,7 @@ export class ModuleCollection {
             // Consuming file
             // Here we read it and return a list of require statements
             await file.consume();
-
-            // if a file belong to a split bundle, pipe it there
-            if (this.isDefault && this.context.shouldSplit(file)) {
-                return;
-            }
-
+            
             this.dependencies.set(file.absPath, file);
             let fileLimitPath;
             // Checking for the limits

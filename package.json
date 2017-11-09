@@ -70,7 +70,6 @@
     "mkdirp": "^0.5.1",
     "mocha": "^3.1.0",
     "reflect-metadata": "^0.1.8",
-    "rollup": "^0.36.4",
     "run-sequence": "^1.2.2",
     "should": "^11.1.0",
     "sinon": "^1.17.6",

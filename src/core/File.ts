@@ -400,8 +400,7 @@ export class File {
      * Injecting a development functionality
      */
     public replaceDynamicImports() {
-        if (this.context.experimentalFeaturesEnabled
-            && this.contents && this.collection.name === this.context.defaultPackageName) {
+        if (this.contents && this.collection.name === this.context.defaultPackageName) {
             const expression = /(\s+|^)(import\()/g;
             if (expression.test(this.contents)) {
                 this.contents = this.contents.replace(expression, "$1$fsmp$(");
@@ -682,7 +681,7 @@ export class File {
      */
     private getTranspilationConfig() {
         return Object.assign({},
-            this.context.getTypeScriptConfig(),
+            this.context.tsConfig.getConfig(),
             {
                 fileName: this.info.absPath,
                 transformers: this.context.fuse.opts.transformers || {},
