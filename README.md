@@ -13,8 +13,8 @@
 http://fuse-box.org/
 
 ---
-## FuseBox 3.0 is being cooked at the moment!
-Feel free to join the development. Contributing guidelines are located [here](https://github.com/fuse-box/fuse-box/blob/master/.github/CONTRIBUTING.md)
+FuseBox 3.0 is being cooked at the moment.
+Contributing guidelines are located [here](https://github.com/fuse-box/fuse-box/blob/master/.github/CONTRIBUTING.md)
 ---
 
 FuseBox is a bundler/module loader that combines the power of webpack, JSPM and SystemJS. 
