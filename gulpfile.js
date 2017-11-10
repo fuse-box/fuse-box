@@ -14,14 +14,16 @@ const fs = require("fs");
 const header = require("gulp-header");
 const path = require("path");
 const os = require('os');
+const fsExtra = require("fs-extra");
 
 
-const RELEASE_FOLDER = "./dist";
+let RELEASE_FOLDER = "./dist";
+let FUSEBOX_BIN = "./dist/index"
 
 const getDistFuseBoxConfig = (conf, quantum) => {
     process.env.PROJECT_ROOT = __dirname;
     process.env.FUSEBOX_MODULES = path.resolve(RELEASE_FOLDER, "modules");
-    const { FuseBox, JSONPlugin, QuantumPlugin } = require("./dist/index");
+    const { FuseBox, JSONPlugin, QuantumPlugin } = require(FUSEBOX_BIN);
     let quantumConf = Object.assign({
         bakeApiIntoBundle: "fusebox",
         uglify: false,
@@ -41,11 +43,11 @@ const getDistFuseBoxConfig = (conf, quantum) => {
         globals: { "default": "*" },
         plugins: [
             JSONPlugin(),
-            QuantumPlugin(quantumConf)
+            quantum !== false && QuantumPlugin(quantumConf)
         ],
     }
     selfConfig = Object.assign(selfConfig, conf)
-    
+
     return FuseBox.init(selfConfig)
 }
 
@@ -142,15 +144,15 @@ gulp.task("dist", ["prepare:clean"], function(done) {
 
 gulp.task("prepare:es5-bundle", (done) => {
     const fuse = getDistFuseBoxConfig({
-        homeDir : "src",
-        output : "dist/$name.js",
-        target : "server@es5",
-        tsConfig : [{
-            target : "es5"
+        homeDir: "src",
+        output: "dist/$name.js",
+        target: "server@es5",
+        tsConfig: [{
+            target: "es5"
         }]
     }, {
-        bakeApiIntoBundle : "es5",
-        uglify : true
+        bakeApiIntoBundle: "es5",
+        uglify: true
     });
     fuse.bundle("es5")
         .instructions(">[index.ts]");
@@ -225,37 +227,83 @@ gulp.task("changelog", (done) => {
 
 gulp.task("make-test-runner", (done) => {
     const fuse = getDistFuseBoxConfig({
-        homeDir : 'src',
-        output : `bin/$name.js`
+        homeDir: 'src',
+        output: `bin/$name.js`
     });
     fuse.bundle("fusebox")
         .instructions(">[index.ts]");
     return fuse.run();
 });
 
-gulp.task("watch-and-copy", ["dist", "copy-to-random", "copy-api-to-random"], function() {
 
-    watching = true;
-
-    gulp.watch(["src/loader/**/*.ts"], () => {
-        runSequence("dist-loader", "copy-api-to-random");
-    });
-
-    gulp.watch(["src/modules/**/*.ts"], () => {
-        runSequence("dist-modules");
-    });
-
-    gulp.watch(filesMain, () => {
-        runSequence("dist-main", "copy-to-random");
-    });
+gulp.task("dev-index", () => {
+    const contents = `
+        const path = require("path");
+        process.env.FUSEBOX_DIST_ROOT = __dirname;
+        process.env.FUSEBOX_MODULES = path.join(__dirname, "./modules");
+        process.env.FUSEBOX_VERSION = path.join(__dirname, "../package.json")
+        module.exports = require('./fusebox.js');
+    `
+    fs.writeFileSync(path.resolve("./.dev/index.js"), contents);
 });
-gulp.task("watch", ["dist", "copy-to-dev"], function() {
-    watching = true;
-    gulp.watch(filesMain, () => {
-        runSequence("dist-main", "copy-to-dev");
-    });
+
+gulp.task("dev-fuse", () => {
+    const fuse = getDistFuseBoxConfig({
+        homeDir: "src",
+        output: ".dev/$name.js",
+        target: "server@esnext",
+        cache: true,
+    }, false);
+    fuse.bundle("fusebox")
+        .instructions(">[index.ts]")
+        .watch()
+    return fuse.run();
 });
-// npm install babel-core babel-generator babel-preset-latest babylon cheerio @angular/core stylus less postcss node-sass uglify-js source-map coffee-script @types/node rollup
+
+gulp.task("dev:ensure-playground", () => {
+    const playgroundFolder = path.resolve("./_playground/generic");
+    if (!fs.existsSync(playgroundFolder)) {
+        fsExtra.ensureDirSync(playgroundFolder);
+        fsExtra.ensureDirSync(path.join(playgroundFolder, "src"));
+        const fuseFile = `const { FuseBox, WebIndexPlugin } = require("../../.dev");
+const fuse = FuseBox.init({
+    homeDir : "src",
+    output : "dist/$name.js",
+    target : "browser",
+    sourceMaps : true,
+    plugins : [
+        WebIndexPlugin()
+    ]
+});
+fuse.dev();
+
+fuse.bundle("app")
+    .watch()
+    .hmr()
+    .instructions(" > index.ts");
+fuse.run();`
+        fs.writeFileSync(path.join(playgroundFolder, "fuse.js"), fuseFile)
+        fs.writeFileSync(path.join(playgroundFolder, "src/index.ts"), `console.log("Hello World")`)
+    }
+
+
+})
+gulp.task("dev", () => {
+    RELEASE_FOLDER = path.resolve(".dev");
+    FUSEBOX_BIN = path.resolve("./bin/fusebox.js");
+    return runSequence(
+        "prepare:copy-package",
+        "prepare:copy-modules",
+        "prepare:loader",
+        "prepare:modules",
+        "dev-fuse",
+        "dev:ensure-playground",
+        "dev-index", () => {
+            console.log(">> FuseBox bundle is ready ");
+            console.log(">> You can go playground folder 'cd _playground/generic'");
+            console.log(">> Start developing `node fuse.js`");
+        });
+});
 gulp.task("installDevDeps", function(done) {
     var deps = [
         "babel-core",

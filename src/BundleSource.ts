@@ -67,7 +67,6 @@ export class BundleSource {
     public annotate(comment: string) {
         //this.collectionSource.add(null, comment);
     }
-
     /**
      *
      *
