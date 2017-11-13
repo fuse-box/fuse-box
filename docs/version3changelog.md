@@ -24,7 +24,11 @@ new about.AboutComponent();
 
 Development version will be left untouched, however, when you run it againts Quantum, it will create a file `167ae727.js` which will contain all dependencies that do not cross with the project and/or other bundles. e.g if you are using `moment` library only in `that` bundle the entire module will be moved to `167ae727.js`
 
+You can find an example project [here](https://github.com/fuse-box/fuse-box-3-preview/tree/master/smart-splitting)
+
+Let's start testing!
 Enjoy!
+
 
 ## Better distribution
 
