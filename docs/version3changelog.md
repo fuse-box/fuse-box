@@ -13,8 +13,7 @@ import {FuseBox} from "fuse-box/es5"
 
 Terrific news!
 
-It's finally here! No need to configure anything. And of course, now you package will automatically shifted to split bundles if they are used only within a split bundle. 
-
+It's finally here! No need to configure anything. And of course, now packages will be automatically shifted to split bundles if they are used only within a single split bundle. 
 
 No configuration required, just use the `import` statement.
 ```ts
@@ -22,7 +21,7 @@ const about = await import("./components/AboutComponent");
 new about.AboutComponent();
 ```
 
-Development version will be left untouched, however, when you run it againts Quantum, it will create a file `167ae727.js` which will contain all dependencies that do not cross with the project and/or other bundles. e.g if you are using `moment` library only in `that` bundle the entire module will be moved to `167ae727.js`
+Development version will be left untouched, however, when you will run it againts Quantum, it will create a file `167ae727.js` which will contain all dependencies that do not cross with the project and/or other bundles. e.g if you are using `moment` library only in `that` bundle the entire module will be moved to `167ae727.js`
 
 You can find an example project [here](https://github.com/fuse-box/fuse-box-3-preview/tree/master/smart-splitting)
 
