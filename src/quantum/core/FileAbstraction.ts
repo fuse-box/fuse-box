@@ -19,9 +19,9 @@ import { TypeOfModuleKeyword } from "./nodes/TypeOfModuleKeyword";
 import { TypeOfWindowKeyword } from "./nodes/TypeOfWindowKeyword";
 import { NamedExport } from "./nodes/NamedExport";
 import { GenericAst } from "./nodes/GenericAst";
-import { QuantumItem } from "../plugin/QuantumSplit";
 import { QuantumCore } from "../plugin/QuantumCore";
 import { ReplaceableBlock } from "./nodes/ReplaceableBlock";
+import { QuantumBit } from "../plugin/QuantumBit";
 
 const globalNames = new Set<string>(["__filename", "__dirname", "exports", "module"]);
 
@@ -40,8 +40,10 @@ export class FileAbstraction {
     public globalsName: string;
     public amountOfReferences = 0;
     public canBeRemoved = false;
-    public quantumItem: QuantumItem;
 
+    public quantumBitBanned = false;
+    
+    public quantumBit : QuantumBit;
     public namedRequireStatements = new Map<string, RequireStatement​​>();
 
     /** FILE CONTENTS */
@@ -103,9 +105,16 @@ export class FileAbstraction {
     }
 
 
-    public isNotUsedAnywhere() {
+    public isNotUsedAnywhere() {    
+
+        let entryPointForQuantumBit = false;
+        if ( this.quantumBit){
+            if ( this.quantumBit.entry.getFuseBoxFullPath() === this.getFuseBoxFullPath() ){
+                entryPointForQuantumBit = true;
+            }
+        }
         return this.getID().toString() !== "0"
-            && this.dependents.size === 0 && !this.quantumItem && !this.isEntryPoint;
+            && this.dependents.size === 0 && !entryPointForQuantumBit && !this.isEntryPoint;
     }
 
     public releaseDependent(file: FileAbstraction) {
@@ -125,13 +134,8 @@ export class FileAbstraction {
         this.id = id;
     }
 
-    public referenceQuantumSplit(item: QuantumItem) {
-        item.addFile(this);
-        this.quantumItem = item;
-    }
-
-    public getSplitReference(): QuantumItem {
-        return this.quantumItem;
+    public belongsToProject(){
+        return this.core.context.defaultPackageName === this.packageAbstraction.name;
     }
 
     public getID() {
@@ -384,8 +388,10 @@ export class FileAbstraction {
         }
         // Fusebox converts new imports to $fsmp$
         if (matchesSingleFunction(node, "$fsmp$")) {
+            const reqStatement = new RequireStatement(this, node);
+            reqStatement.isDynamicImport = true;
             // adding a require statement
-            this.dynamicImportStatements.add(new RequireStatement(this, node));
+            this.dynamicImportStatements.add(reqStatement);
         }
 
         // typeof module

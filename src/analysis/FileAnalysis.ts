@@ -8,7 +8,6 @@ import { OwnVariable } from "./plugins/OwnVariable";
 import { OwnBundle } from "./plugins/OwnBundle";
 import { ImportDeclaration } from "./plugins/ImportDeclaration";
 import { DynamicImportStatement } from "./plugins/DynamicImportStatement";
-
 require("acorn-jsx/inject")(acorn);
 require("./acorn-ext/obj-rest-spread")(acorn);
 
@@ -24,6 +23,8 @@ export function acornParse(contents, options?: any) {
         ...options || {}, ...{
             sourceType: "module",
             tolerant: true,
+            locations: true,
+            ranges: true,
             ecmaVersion: '2018',
             plugins: {
                 jsx: true, objRestSpread: true
@@ -57,6 +58,8 @@ export class FileAnalysis {
 
     public requiresRegeneration = false;
 
+    public stringReplacement = new Set<{from: string, to : string}>();
+
     public requiresTranspilation = false;
 
     public fuseBoxVariable = "FuseBox";
@@ -65,6 +68,10 @@ export class FileAnalysis {
 
     constructor(public file: File) { }
 
+
+    public add2Replacement(from : string, to : string){
+        this.stringReplacement.add({from : from, to : to})
+    }
     public astIsLoaded(): boolean {
         return this.ast !== undefined;
     }
@@ -159,8 +166,14 @@ export class FileAnalysis {
 
         this.wasAnalysed = true;
         // regenerate content
+        this.stringReplacement.forEach(item => {
+            this.file.contents = this.file.contents.replace(item.from, item.to)
+        })
+
         if (this.requiresRegeneration) {
-            this.file.contents = this.file.context.generateCode(this.ast);
+            
+            this.file.contents = this.file.context.generateCode(this.ast, {
+            });
         }
 
         if (this.requiresTranspilation) {

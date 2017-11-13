@@ -4,64 +4,27 @@ import { QuantumPlugin } from "../../index";
 
 
 export class ImportDynamicSplitBundles {
-    "Should load a split bundle by [NAME] (VANILLA) browser"() {
+    "Should load a split bundle browser"() {
         return FuseTestEnv.create(
             {
                 project: {
                     files: {
                         "index.ts": `
                             export function load() { 
-                                return import("oi") 
+                                return import("./oi/a.ts") 
                             }
                         `,
                         "oi/a.ts": `export function oi(){ return "oi mate";}`
                     }
                 }
             }
-        )
-            .config(fuse => {
-                fuse
-                    .bundle("app")
-                    .split("oi/**", "oi > oi/a.ts")
-                    .instructions("> index.ts **/**.ts")
-
-            }).then(test => test.browser(window => {
-                const index = window.FuseBox.import("./index");
-                return index.load().then(result => {
-                    should(result.oi()).equal("oi mate");
-                });
-            }));
+        ).simple().then(test => test.browser(window => {
+            const index = window.FuseBox.import("./index");
+            return index.load().then(result => {
+                should(result.oi()).equal("oi mate");
+            });
+        }));
     }
-
-    "Should load a split bundle by [PATH] (VANILLA) browser"() {
-        return FuseTestEnv.create(
-            {
-                project: {
-                    files: {
-                        "index.ts": `
-                            export function load() { 
-                                return import("./oi/a") 
-                            }
-                        `,
-                        "oi/a.ts": `export function oi(){ return "oi mate";}`
-                    }
-                }
-            }
-        )
-            .config(fuse => {
-                fuse
-                    .bundle("app")
-                    .split("oi/**", "oi > oi/a.ts")
-                    .instructions("> index.ts **/**.ts")
-
-            }).then(test => test.browser(window => {
-                const index = window.FuseBox.import("./index");
-                return index.load().then(result => {
-                    should(result.oi()).equal("oi mate");
-                });
-            }));
-    }
-
 
     "Should load a split bundle by [PATH] (VANILLA) server"() {
         return FuseTestEnv.create(
@@ -78,13 +41,7 @@ export class ImportDynamicSplitBundles {
                 }
             }
         )
-            .config(fuse => {
-                fuse
-                    .bundle("app")
-                    .split("oi/**", "oi > oi/a.ts")
-                    .instructions("> index.ts **/**.ts")
-
-            }).then(test => test.server(`
+            .simple().then(test => test.server(`
                 const index = FuseBox.import("./index");
                 index.load().then(result => {
                     process.send({response : result.oi()})
@@ -118,8 +75,8 @@ export class ImportDynamicSplitBundles {
             .config(fuse => {
                 fuse
                     .bundle("app")
-                    .split("oi/**", "oi > oi/a.ts")
-                    .instructions("> index.ts **/**.ts")
+                    .split("oi", "oi/a.ts")
+                    .instructions("> index.ts")
 
             }).then(test => test.browser(window => {
                 const index = window.$fsx.r(0)
@@ -152,7 +109,7 @@ export class ImportDynamicSplitBundles {
             .config(fuse => {
                 fuse
                     .bundle("app")
-                    .split("oi/**", "oi > oi/a.ts")
+                    .split("oi", "oi/a.ts")
                     .instructions("> index.ts **/**.ts")
 
             }).then(test => test.browser(window => {
@@ -186,7 +143,7 @@ export class ImportDynamicSplitBundles {
             .config(fuse => {
                 fuse
                     .bundle("app")
-                    .split("oi/**", "oi > oi/a.ts")
+                    .split("oi", "oi/a.ts")
                     .instructions("> index.ts **/**.ts")
 
             }).then(test => test.server(`
@@ -223,8 +180,7 @@ export class ImportDynamicSplitBundles {
             .config(fuse => {
                 fuse
                     .bundle("app")
-                    .split("oi/**", "oi > oi/a.ts")
-                    .instructions("> index.ts **/**.ts")
+                    .instructions("> index.ts")
 
             }).then(test => test.browser(window => {
                 const index = window.$fsx.r(0)
@@ -257,8 +213,7 @@ export class ImportDynamicSplitBundles {
             .config(fuse => {
                 fuse
                     .bundle("app")
-                    .split("oi/**", "oi > oi/a.ts")
-                    .instructions("> index.ts **/**.ts")
+                    .instructions("> index.ts")
 
             }).then(test => test.browser(window => {
                 const index = window.$fsx.r(0)
@@ -291,7 +246,6 @@ export class ImportDynamicSplitBundles {
             .config(fuse => {
                 fuse
                     .bundle("app")
-                    .split("oi/**", "oi > oi/a.ts")
                     .instructions("> index.ts **/**.ts")
 
             }).then(test => test.server(`
