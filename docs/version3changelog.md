@@ -8,6 +8,14 @@ FuseBox will work on node.js 8+ because of `async` `await` usage. It's better to
 import {FuseBox} from "fuse-box/es5"
 ```
 
+
+## Smart Code Splitting
+
+Terrific news!
+
+It's finally here! No need to configure anything. And of course, now you package will automatically shifted to split bundles if they are used only within a split bundle. 
+
+
 ## Better distribution
 
 Previsouly npm package had all kind of files (not related to runtime)

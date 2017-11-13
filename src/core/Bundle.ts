@@ -8,11 +8,12 @@ import { File } from "./File";
 import * as path from "path";
 import { BundleTestRunner } from "../BundleTestRunner";
 import { Config } from "../Config";
-import { QuantumItem, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
+import { QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
 import { BundleAbstraction } from "../quantum/core/BundleAbstraction";
 import { PackageAbstraction } from "../quantum/core/PackageAbstraction";
 import { EventEmitter } from '../EventEmitter';
 import { ExtensionOverrides } from "./ExtensionOverrides";
+import { QuantumBit } from "../quantum/plugin/QuantumBit";
 
 export interface HMROptions {
     port?: number;
@@ -32,11 +33,11 @@ export class Bundle {
     public lastChangedFile: string;
     public webIndexed = true;
     public splitFiles: Map<string, File>;
+    public quantumBit : QuantumBit;
     private errors: string[] = [];
     private errorEmitter = new EventEmitter<string>()
     private clearErrorEmitter = new EventEmitter<null>()
 
-    public quantumItem: QuantumItem;
 
     constructor(public name: string, public fuse: FuseBox, public producer: BundleProducer) {
         this.context = fuse.context;
@@ -128,15 +129,8 @@ export class Bundle {
         return this;
     }
 
-    public split(rule: string, str: string): Bundle {
-
-        const arithmetics = str.match(/(\S+)\s*>\s(\S+)/i)
-        if (!arithmetics) {
-            throw new Error("Can't parse split arithmetics. Should look like:")
-        }
-        const bundleName = arithmetics[1];
-        const mainFile = arithmetics[2];
-        this.producer.fuse.context.quantumSplit(rule, bundleName, mainFile);
+    public split(name: string, filePath: string): Bundle {
+        this.producer.fuse.context.nameSplit(name, filePath);
         return this;
     }
 
@@ -148,7 +142,7 @@ export class Bundle {
     }
 
     public splitConfig(opts: QuantumSplitResolveConfiguration): Bundle {
-        this.producer.fuse.context.configureQuantumSplitResolving(opts);
+        //this.producer.fuse.context.configureQuantumSplitResolving(opts);
         return this;
     }
 

@@ -17,11 +17,12 @@ import { UserOutput } from "./UserOutput";
 import { FuseBox } from "./FuseBox";
 import { Bundle } from "./Bundle";
 import { BundleProducer } from "./BundleProducer";
-import { QuantumSplitConfig, QuantumItem, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
+import { QuantumSplitConfig } from "../quantum/plugin/QuantumSplit";
 import { isPolyfilledByFuseBox } from "./ServerPolyfillList";
 import { CSSDependencyExtractor, ICSSDependencyExtractorOptions } from "../lib/CSSDependencyExtractor";
 import { ExtensionOverrides } from "./ExtensionOverrides";
 import { TypescriptConfig } from "./TypescriptConfig";
+import { QuantumBit } from "../quantum/plugin/QuantumBit";
 
 const appRoot = require("app-root-path");
 
@@ -90,6 +91,8 @@ export class WorkFlowContext {
     public sourceChangedEmitter = new EventEmitter<SourceChangedEvent>();
 
     public emitter = new NativeEmitter();
+
+    public quantumBits = new Map<string, QuantumBit>();
 
     /**
      * The default package name or the package name configured in options
@@ -249,38 +252,31 @@ export class WorkFlowContext {
     }
 
 
-    public quantumSplit(rule: string, bundleName: string, entryFile: string) {
+    public nameSplit(name: string, filePath: string) {
         if (!this.quantumSplitConfig) {
             this.quantumSplitConfig = new QuantumSplitConfig(this);
         }
-        this.quantumSplitConfig.register(rule, bundleName, entryFile);
+        this.quantumSplitConfig.register(name, filePath);
     }
 
-    public configureQuantumSplitResolving(opts: QuantumSplitResolveConfiguration) {
-        if (!this.quantumSplitConfig) {
-            this.quantumSplitConfig = new QuantumSplitConfig(this);
-        }
-        this.quantumSplitConfig.resolveOptions = opts;
-    }
+    // public configureQuantumSplitResolving(opts: QuantumSplitResolveConfiguration) {
+    //     if (!this.quantumSplitConfig) {
+    //         this.quantumSplitConfig = new QuantumSplitConfig(this);
+    //     }
+    //     this.quantumSplitConfig.resolveOptions = opts;
+    // }
 
     public getQuantumDevelepmentConfig() {
         if (this.quantumSplitConfig) {
-            let opts: any = this.quantumSplitConfig.resolveOptions;
-            opts.bundles = {};
-            this.quantumSplitConfig.getItems().forEach(item => {
-                opts.bundles[item.name] = { main: item.entry };
-            });
-            return opts;
+            // let opts: any = this.quantumSplitConfig.resolveOptions;
+            // opts.bundles = {};
+            // this.quantumSplitConfig.getItems().forEach(item => {
+            //     opts.bundles[item.name] = { main: item.entry };
+            // });
+            //return opts;
         }
     }
-
-    public requiresQuantumSplitting(path: string): QuantumItem {
-        if (!this.quantumSplitConfig) {
-            return;
-        }
-        return this.quantumSplitConfig.matches(path);
-    }
-
+    
     public setCodeGenerator(fn: any) {
         this.customCodeGenerator = fn;
     }
