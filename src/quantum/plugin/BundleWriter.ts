@@ -3,6 +3,7 @@ import { Bundle } from "../../core/Bundle";
 import { ensureUserPath, uglify } from "../../Utils";
 import { QuantumCore } from "./QuantumCore";
 import * as fs from "fs";
+import { QuantumSplitConfig } from "./QuantumSplit";
 
 export class BundleWriter {
     private bundles = new Map<string, Bundle>();
@@ -88,13 +89,11 @@ export class BundleWriter {
         
         let splitFileOptions: any;
         if (this.core.context.quantumBits.size > 0) {
-            // splitFileOptions = {
-            //     c: { b: splitConfig.resolveOptions.browser || "./", "s": splitConfig.resolveOptions.server || "./" },
-            //     i: {}
-            // };
-
+            const splitConf : QuantumSplitConfig = this.core.context.quantumSplitConfig;
             splitFileOptions = {
-                c: { b: "./", s: "./" },
+                c: { 
+                    b: splitConf.getBrowserPath(), 
+                    s:  splitConf.getServerPath()},
                 i: {}
             };
             this.core.api.setBundleMapping(splitFileOptions);

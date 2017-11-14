@@ -17,7 +17,7 @@ import { UserOutput } from "./UserOutput";
 import { FuseBox } from "./FuseBox";
 import { Bundle } from "./Bundle";
 import { BundleProducer } from "./BundleProducer";
-import { QuantumSplitConfig } from "../quantum/plugin/QuantumSplit";
+import { QuantumSplitConfig, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
 import { isPolyfilledByFuseBox } from "./ServerPolyfillList";
 import { CSSDependencyExtractor, ICSSDependencyExtractorOptions } from "../lib/CSSDependencyExtractor";
 import { ExtensionOverrides } from "./ExtensionOverrides";
@@ -168,13 +168,13 @@ export class WorkFlowContext {
     public sourceMapsVendor: boolean = false;
     public inlineSourceMaps: boolean = true;
     public sourceMapsRoot: string = "";
-    public useSourceMaps : boolean;
+    public useSourceMaps: boolean;
 
     public initialLoad = true;
 
     public debugMode = false;
 
-    public quantumSplitConfig: QuantumSplitConfig;
+    public quantumSplitConfig: QuantumSplitConfig = new QuantumSplitConfig(this)
 
     public log: Log = new Log(this);
 
@@ -251,32 +251,14 @@ export class WorkFlowContext {
         }
     }
 
-
     public nameSplit(name: string, filePath: string) {
-        if (!this.quantumSplitConfig) {
-            this.quantumSplitConfig = new QuantumSplitConfig(this);
-        }
         this.quantumSplitConfig.register(name, filePath);
     }
 
-    // public configureQuantumSplitResolving(opts: QuantumSplitResolveConfiguration) {
-    //     if (!this.quantumSplitConfig) {
-    //         this.quantumSplitConfig = new QuantumSplitConfig(this);
-    //     }
-    //     this.quantumSplitConfig.resolveOptions = opts;
-    // }
-
-    public getQuantumDevelepmentConfig() {
-        if (this.quantumSplitConfig) {
-            // let opts: any = this.quantumSplitConfig.resolveOptions;
-            // opts.bundles = {};
-            // this.quantumSplitConfig.getItems().forEach(item => {
-            //     opts.bundles[item.name] = { main: item.entry };
-            // });
-            //return opts;
-        }
+    public configureQuantumSplitResolving(opts: QuantumSplitResolveConfiguration) {
+        this.quantumSplitConfig.resolveOptions = opts;
     }
-    
+
     public setCodeGenerator(fn: any) {
         this.customCodeGenerator = fn;
     }
@@ -292,7 +274,7 @@ export class WorkFlowContext {
 
     public emitJavascriptHotReload(file: File) {
         if (file.ignoreCache) {
-          return
+            return
         }
 
         let content = file.contents;
@@ -599,7 +581,7 @@ export class WorkFlowContext {
             this.output.writeToOutputFolder(`${this.output.filename}.js.map`, result.sourceMap);
         }
     }
-    
+
     public getNodeModule(name: string): ModuleCollection {
         return this.nodeModules.get(name);
     }

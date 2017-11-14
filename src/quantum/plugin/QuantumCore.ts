@@ -120,7 +120,7 @@ export class QuantumCore {
                 if (!this.producer.bundles.get(bit.name)) {
                     this.log.echoInfo(`Create split bundle ${bit.name} with entry point ${bit.entry.getFuseBoxFullPath()}`);
                     const fusebox = this.context.fuse.copy();
-                    bundle = new Bundle(bit.name, fusebox, this.producer);
+                    bundle = new Bundle(bit.getBundleName(), fusebox, this.producer);
                     bundle.quantumBit = bit;
 
                     //bundle.context = this.producer.fuse.context;

@@ -142,7 +142,7 @@ export class Bundle {
     }
 
     public splitConfig(opts: QuantumSplitResolveConfiguration): Bundle {
-        //this.producer.fuse.context.configureQuantumSplitResolving(opts);
+        this.producer.fuse.context.configureQuantumSplitResolving(opts);
         return this;
     }
 
