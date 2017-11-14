@@ -11,29 +11,10 @@ FuseBox does as much as possible to automate the process.
 
 note: Physical code splitting (when the bundles are actually created) works ONLY in Quantum. For development purposes your split bundles will be present in the master bundle BY DESIGN
 
-## Setting it up
-
-Let's imagine a project
-
-files:
-node_modules
- placeholder.js
-src
- app.tsx
- helper.ts
- routes
-  about
-   AboutHelper.tsx
-   AboutComponent.tsx
-  contact
-   Foo.ts
-   Bar.ts
-   ContactComponent.tsx
-
 
 ### How?
 
-Just use dynamic `import` statement
+Just use dynamic `import` statement! It's that simple, FuseBox will do the heavy lifting for you
 
 ```js
 import("./routes/about/AboutComponent")
