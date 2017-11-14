@@ -16,8 +16,6 @@ export class DynamicImportStatementsModifications {
             if (target) {
                 //console.log(target);
                 target.canBeRemoved = false;
-                
-
                 const bit = new QuantumBit(target, statement);
                 target.quantumBit = bit;
                 core.quantumBits.set(bit.name, bit);

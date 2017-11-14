@@ -1,11 +1,13 @@
 import { RequireStatement } from "../core/nodes/RequireStatement";
 import { FileAbstraction } from "../core/FileAbstraction";
-import { hashString } from "../../Utils";
+import { hashString, joinFuseBoxPath } from "../../Utils";
 import { each } from "realm-utils";
 import { PackageAbstraction } from "../core/PackageAbstraction";
+import { QuantumCore } from "./QuantumCore";
 
 export class QuantumBit {
     public name: string;
+    public core : QuantumCore;
     private candidates: Map<string, FileAbstraction> = new Map();
     private modulesCanidates = new Map<string, PackageAbstraction>();
     public files: Map<string, FileAbstraction> = new Map();
@@ -13,16 +15,22 @@ export class QuantumBit {
 
     constructor(public entry: FileAbstraction, public requireStatement: RequireStatement) {
         this.generateName();
+        this.core = this.entry.core;
         this.requireStatement.setValue(this.name);
     }
 
     public isNodeModules() {
         return this.requireStatement.isNodeModule;
     }
+    
     private generateName() {
         this.name = hashString(this.entry.getFuseBoxFullPath())
     }
 
+    public getBundleName(){
+        const dest = this.core.context.quantumSplitConfig.getDest();
+        return joinFuseBoxPath(dest, this.name);
+    }
     private async populateDependencies(file?: FileAbstraction) {
         const dependencies = file.getDependencies();
         await each(dependencies, async (statements: Set<RequireStatement​​>, dependency: FileAbstraction) => {
