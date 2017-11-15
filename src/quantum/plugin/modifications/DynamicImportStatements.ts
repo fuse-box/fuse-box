@@ -16,12 +16,16 @@ export class DynamicImportStatementsModifications {
             if (target) {
                 //console.log(target);
                 target.canBeRemoved = false;
-                const bit = new QuantumBit(target, statement);
-                target.quantumBit = bit;
-                core.quantumBits.set(bit.name, bit);
+                
                 if (!target.dependents.has(file)) {
                     target.dependents.add(file);
                 }
+                const bit = new QuantumBit(target, statement);
+                
+                target.quantumBitEntry = true;
+                target.quantumBit = bit;
+                core.quantumBits.set(bit.name, bit);
+                
                 core.api.addLazyLoading();
                 core.api.useCodeSplitting();
             } else {

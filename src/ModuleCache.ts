@@ -62,25 +62,27 @@ export class ModuleCache {
      */
     constructor(public context: WorkFlowContext) { }
 
+    private isFileCache() {
+        return this.context.cacheType === "file";
+    }
     public initialize() {
         this.cacheFolder = path.join(Config.TEMP_FOLDER, "cache",
-        encodeURIComponent(Config.FUSEBOX_VERSION), this.context.output.getUniqueHash());
-
+            encodeURIComponent(Config.FUSEBOX_VERSION), this.context.output.getUniqueHash());
         this.permanentCacheFolder = path.join(this.cacheFolder, "permanent");
-        fsExtra.ensureDirSync(this.permanentCacheFolder);
-
         this.staticCacheFolder = path.join(this.cacheFolder, "static");
-        fsExtra.ensureDirSync(this.staticCacheFolder);
-
         this.cacheFile = path.join(this.cacheFolder, "deps.json");
-        if (fs.existsSync(this.cacheFile)) {
-            try {
-                this.cachedDeps = require(this.cacheFile);
-            } catch (e) {
-                this.cachedDeps = {
-                    tree: {},
-                    flat: {},
-                };
+        if (this.isFileCache()) {
+            fsExtra.ensureDirSync(this.permanentCacheFolder);
+            fsExtra.ensureDirSync(this.staticCacheFolder);
+            if (fs.existsSync(this.cacheFile)) {
+                try {
+                    this.cachedDeps = require(this.cacheFile);
+                } catch (e) {
+                    this.cachedDeps = {
+                        tree: {},
+                        flat: {},
+                    };
+                }
             }
         }
     }
@@ -88,7 +90,9 @@ export class ModuleCache {
     public setPermanentCache(key: string, contents: string) {
         key = encodeURIComponent(key);
         let filePath = path.join(this.permanentCacheFolder, key);
-        fs.writeFile(filePath, contents, () => { });
+        if (this.isFileCache()) {
+            fs.writeFile(filePath, contents, () => { });
+        }
         MEMORY_CACHE[filePath] = contents;
     }
 
@@ -98,10 +102,12 @@ export class ModuleCache {
         if (MEMORY_CACHE[filePath]) {
             return MEMORY_CACHE[filePath];
         }
-        if (fs.existsSync(filePath)) {
-            const contents = fs.readFileSync(filePath).toString();
-            MEMORY_CACHE[filePath] = contents;
-            return contents;
+        if (this.isFileCache()) {
+            if (fs.existsSync(filePath)) {
+                const contents = fs.readFileSync(filePath).toString();
+                MEMORY_CACHE[filePath] = contents;
+                return contents;
+            }
         }
     }
 
@@ -127,7 +133,7 @@ export class ModuleCache {
      */
     public getStaticCache(file: File, type: string = "") {
         if (file.ignoreCache) {
-          return;
+            return;
         }
 
         let stats = fs.statSync(file.absPath);
@@ -162,7 +168,7 @@ export class ModuleCache {
     }
 
     public getCSSCache(file: File) {
-        if (file.ignoreCache){
+        if (file.ignoreCache) {
             return;
         }
         let stats = fs.statSync(file.absPath);
@@ -205,7 +211,7 @@ export class ModuleCache {
      * @memberOf ModuleCache
      */
     public writeStaticCache(file: File, sourcemaps: string, type: string = "") {
-        if(file.ignoreCache){
+        if (file.ignoreCache) {
             return;
         }
         let fileName = this.encodeCacheFileName(type + file.info.fuseBoxPath);
@@ -219,7 +225,7 @@ export class ModuleCache {
             sourceMap: sourcemaps || {},
             headerContent: file.headerContent,
             mtime: stats.mtime.getTime(),
-            _ : file.cacheData || {}
+            _: file.cacheData || {}
         };
         if (file.devLibsRequired) {
             cacheData.devLibsRequired = file.devLibsRequired;

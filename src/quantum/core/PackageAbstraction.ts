@@ -10,6 +10,7 @@ export class PackageAbstraction {
         
     public quantumBit : QuantumBit;
     public quantumBitBanned = false;
+    public quantumDynamic = false;
     constructor(public name: string, public bundleAbstraction: BundleAbstraction) {
         bundleAbstraction.registerPackageAbstraction(this);
     }

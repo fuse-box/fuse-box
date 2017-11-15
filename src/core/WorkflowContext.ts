@@ -200,6 +200,8 @@ export class WorkFlowContext {
 
     public defer = new Defer;
 
+    public cacheType = 'file';
+
     public initCache() {
         this.cache = new ModuleCache(this);
     }
@@ -214,6 +216,7 @@ export class WorkFlowContext {
         this.pendingPromises.push(obj);
     }
 
+    
     public convertToFuseBoxPath(name: string) {
         let root = this.homeDir;
         name = name.replace(/\\/g, "/");

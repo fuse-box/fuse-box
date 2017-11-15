@@ -107,41 +107,48 @@ export class QuantumCore {
 
     }
 
+    private ensureBitBundle(bit: QuantumBit){
+        let bundle : Bundle;
+        if (!this.producer.bundles.get(bit.name)) {
+            this.log.echoInfo(`Create split bundle ${bit.name} with entry point ${bit.entry.getFuseBoxFullPath()}`);
+            const fusebox = this.context.fuse.copy();
+            bundle = new Bundle(bit.getBundleName(), fusebox, this.producer);
+            bundle.quantumBit = bit;
+
+            //bundle.context = this.producer.fuse.context;
+            this.producer.bundles.set(bit.name, bundle);
+            // don't allow WebIndexPlugin to include it to script tags
+            bundle.webIndexed = false;
+            // set the reference
+            //bundle.quantumItem = quantumItem;
+            // bundle abtraction needs to be created to have an isolated scope for hoisting
+            const bnd = new BundleAbstraction(bit.name);
+            bnd.splitAbstraction = true;
+
+            let pkg = new PackageAbstraction(bit.entry.packageAbstraction.name, bnd);
+            this.producerAbstraction.registerBundleAbstraction(bnd);
+            bundle.bundleAbstraction = bnd;
+            bundle.packageAbstraction = pkg;
+        } else {
+            bundle = this.producer.bundles.get(bit.name);
+        }
+        return bundle;
+    }
+
     private async prepareQuantumBits() {
         
         this.context.quantumBits = this.quantumBits;
 
         await each(this.quantumBits, (bit: QuantumBit) => bit.resolve());
+       
         await each(this.quantumBits, async (bit: QuantumBit, key: string) => {
+            
             bit.populate();
-            let bundle: Bundle;
+            
+            let bundle = this.ensureBitBundle(bit);
             
             bit.files.forEach(file => {
-                if (!this.producer.bundles.get(bit.name)) {
-                    this.log.echoInfo(`Create split bundle ${bit.name} with entry point ${bit.entry.getFuseBoxFullPath()}`);
-                    const fusebox = this.context.fuse.copy();
-                    bundle = new Bundle(bit.getBundleName(), fusebox, this.producer);
-                    bundle.quantumBit = bit;
-
-                    //bundle.context = this.producer.fuse.context;
-                    this.producer.bundles.set(bit.name, bundle);
-                    // don't allow WebIndexPlugin to include it to script tags
-                    bundle.webIndexed = false;
-                    // set the reference
-                    //bundle.quantumItem = quantumItem;
-                    // bundle abtraction needs to be created to have an isolated scope for hoisting
-                    const bnd = new BundleAbstraction(bit.name);
-                    bnd.splitAbstraction = true;
-
-                    let pkg = new PackageAbstraction(bit.entry.packageAbstraction.name, bnd);
-                    this.producerAbstraction.registerBundleAbstraction(bnd);
-                    bundle.bundleAbstraction = bnd;
-                    bundle.packageAbstraction = pkg;
-                } else {
-                    bundle = this.producer.bundles.get(bit.name);
-                }
                 this.log.echoInfo(`QuantumBit: Adding ${file.getFuseBoxFullPath()} to ${bit.name}`);
-
                 // removing the file from the current package
                 file.packageAbstraction.fileAbstractions.delete(file.fuseBoxPath);
 
