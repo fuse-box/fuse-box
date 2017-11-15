@@ -37,45 +37,49 @@ export class QuantumBit {
         return joinFuseBoxPath(dest, this.name);
     }
 
-    public isEligible(){
+    public isEligible() {
         return this.files.size > 0 || this.modules.size > 0;
     }
 
     private dealWithModule(file: FileAbstraction, origin = false) {
-       
+
         // that's a node_module we need to move packages too (if possible)
         // For this purpose we need to register all entry entry points
         // and assign QuantumBit instance
         let pkg = file.packageAbstraction;
-        if(!origin && file.quantumBitEntry){
+        if (!origin && file.quantumBitEntry) {
             return;
         }
+
         if (!this.modulesCanidates.has(pkg.name)) {
-            
+
             this.modulesCanidates.set(pkg.name, pkg);
             pkg.fileAbstractions.forEach(dep => {
-                if ( dep.quantumBit){
-                    if ( dep.quantumBit !== this ){
+                if (dep.quantumBit) {
+                    if (dep.quantumBit !== this) {
                         pkg.quantumBitBanned = true;
                     }
                 } else {
                     dep.quantumBit = this;
                 }
+
                 dep.getDependencies().forEach((key, libDep) => {
-                    if( libDep.belongsToExternalModule()){
-                        if(!libDep.quantumBitEntry){
+                    if (libDep.belongsToExternalModule()) {
+                        if (!libDep.quantumBitEntry) {
                             this.dealWithModule(libDep);
                         }
                     }
                 })
+
                 dep.dependents.forEach(dependent => {
-                    if (origin === false && !dependent.quantumBit){
+                    if (origin === false && !dependent.quantumBit) {
                         pkg.quantumBitBanned = true;
                     }
                 })
-                
+
+
             })
-        } 
+        }
         return true;
     }
     private async populateDependencies(file?: FileAbstraction) {
@@ -101,35 +105,51 @@ export class QuantumBit {
     }
 
     public async resolve(file?: FileAbstraction) {
-        
-        if ( this.isEntryModule ){
+
+        if (this.isEntryModule) {
+
             this.dealWithModule(this.entry, true);
         } else {
             this.files.set(this.entry.getFuseBoxFullPath(), this.entry)
         }
-     
+
         await this.populateDependencies(this.entry);
         await each(this.candidates, async (file: FileAbstraction) => {
             await each(file.dependents, (dependent: FileAbstraction) => {
                 if (!dependent.quantumBit) { file.quantumBitBanned = true; };
             });
         });
-        // Single entry point
-        // e.g import('path')
-        //if (!this.isEntryModule) {
+
         this.modulesCanidates.forEach(moduleCandidate => {
-            moduleCandidate.entries.forEach(entry => {
-                entry.dependents.forEach(dep => {
-                    if (!dep.quantumBit || dep.quantumBit !== this) {
-                        moduleCandidate.quantumBitBanned = true;
+            // a case where the same library is imported dynamically and through require statements
+            // we need to ban it and all of it dependencies
+            moduleCandidate.fileAbstractions.forEach(file => {
+                let dynamicStatementUsed = false;
+                let regularStatementUsed = false;
+                file.referencedRequireStatements.forEach(ref => {
+                    if (ref.isDynamicImport) {
+                        dynamicStatementUsed = true;
+                    } else {
+                        regularStatementUsed = true;
                     }
                 });
+                if (dynamicStatementUsed && regularStatementUsed) {
+                    moduleCandidate.quantumBitBanned = true;
+                }
             });
+            if (moduleCandidate.quantumBitBanned) {
+                moduleCandidate.fileAbstractions.forEach(f => {
+                    f.getDependencies().forEach((key, dep) => {
+                        if (dep.belongsToExternalModule()) {
+                            const existingCandidate = this.modulesCanidates.get(dep.packageAbstraction.name);
+                            if (existingCandidate) { // demote MOFO
+                                existingCandidate.quantumBitBanned = true;
+                            }
+                        }
+                    });
+                })
+            }
         });
-        //        }
-
-
-
     }
 
     public populate() {
@@ -139,7 +159,6 @@ export class QuantumBit {
                 this.files.set(candidate.getFuseBoxFullPath(), candidate)
             }
         });
-
         this.modulesCanidates.forEach(moduleCandidate => {
             if (!moduleCandidate.quantumBitBanned) {
                 this.modules.set(moduleCandidate.name, moduleCandidate)

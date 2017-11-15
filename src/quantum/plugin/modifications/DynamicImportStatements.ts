@@ -21,7 +21,7 @@ export class DynamicImportStatementsModifications {
                     target.dependents.add(file);
                 }
                 const bit = new QuantumBit(target, statement);
-                
+                statement.isDynamicImport = true;
                 target.quantumBitEntry = true;
                 target.quantumBit = bit;
                 core.quantumBits.set(bit.name, bit);
