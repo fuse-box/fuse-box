@@ -656,7 +656,7 @@ export class CodeSplittingFileIntergirtyTest {
     "Should not load node_module 'lib_b' because it was imported"() {
         return FuseTestEnv.create(
             {
-                testFolder : "_current_test",
+                //testFolder : "_current_test",
                 project: {
                     files: {
                         "index.ts": `
