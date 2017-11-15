@@ -184,6 +184,9 @@ export class FuseBox {
         }
 
         if (opts.cache !== undefined) {
+            if( typeof opts.cache === "string" ){
+                this.context.cache = opts.cache;
+            }
             this.context.useCache = opts.cache ? true : false;
         }
 

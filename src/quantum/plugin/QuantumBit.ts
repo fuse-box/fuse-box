@@ -7,31 +7,79 @@ import { QuantumCore } from "./QuantumCore";
 
 export class QuantumBit {
     public name: string;
-    public core : QuantumCore;
+    public core: QuantumCore;
     private candidates: Map<string, FileAbstraction> = new Map();
     private modulesCanidates = new Map<string, PackageAbstraction>();
+    private isEntryModule = false;
     public files: Map<string, FileAbstraction> = new Map();
+
     public modules = new Map<string, PackageAbstraction>();
 
     constructor(public entry: FileAbstraction, public requireStatement: RequireStatement) {
         this.generateName();
         this.core = this.entry.core;
+        this.entry.quantumBitEntry = true;
+        this.isEntryModule = !this.entry.belongsToProject();
         this.requireStatement.setValue(this.name);
+
     }
 
     public isNodeModules() {
         return this.requireStatement.isNodeModule;
     }
-    
+
     private generateName() {
         this.name = hashString(this.entry.getFuseBoxFullPath())
     }
 
-    public getBundleName(){
+    public getBundleName() {
         const dest = this.core.context.quantumSplitConfig.getDest();
         return joinFuseBoxPath(dest, this.name);
     }
+
+    public isEligible(){
+        return this.files.size > 0 || this.modules.size > 0;
+    }
+
+    private dealWithModule(file: FileAbstraction, origin = false) {
+       
+        // that's a node_module we need to move packages too (if possible)
+        // For this purpose we need to register all entry entry points
+        // and assign QuantumBit instance
+        let pkg = file.packageAbstraction;
+        if(!origin && file.quantumBitEntry){
+            return;
+        }
+        if (!this.modulesCanidates.has(pkg.name)) {
+            
+            this.modulesCanidates.set(pkg.name, pkg);
+            pkg.fileAbstractions.forEach(dep => {
+                if ( dep.quantumBit){
+                    if ( dep.quantumBit !== this ){
+                        pkg.quantumBitBanned = true;
+                    }
+                } else {
+                    dep.quantumBit = this;
+                }
+                dep.getDependencies().forEach((key, libDep) => {
+                    if( libDep.belongsToExternalModule()){
+                        if(!libDep.quantumBitEntry){
+                            this.dealWithModule(libDep);
+                        }
+                    }
+                })
+                dep.dependents.forEach(dependent => {
+                    if (origin === false && !dependent.quantumBit){
+                        pkg.quantumBitBanned = true;
+                    }
+                })
+                
+            })
+        } 
+        return true;
+    }
     private async populateDependencies(file?: FileAbstraction) {
+
         const dependencies = file.getDependencies();
         await each(dependencies, async (statements: Set<RequireStatement​​>, dependency: FileAbstraction) => {
             if (dependency.belongsToProject()) {
@@ -45,49 +93,47 @@ export class QuantumBit {
                     }
                 }
             } else {
-                // that's a node_module we need to move packages too (if possible)
-                // For this purpose we need to register all entry entry points
-                // and assign QuantumBit instance
-                let pkg = dependency.packageAbstraction;
-                if (pkg.quantumBit && pkg.quantumBit !== this) {
-                    pkg.quantumBitBanned = true;
-                } else {
-                    pkg.quantumBit = this;
-                    if (!this.modulesCanidates.has(pkg.name)) {
-                        this.modulesCanidates.set(pkg.name, pkg);
-                    }
-                    if(!pkg.entries.has(dependency.getFuseBoxFullPath())){
-                        dependency.quantumBit = this;
-                        pkg.entries.set(dependency.getFuseBoxFullPath(), dependency);
-                    }
-                }
+
+                this.dealWithModule(dependency);
             }
 
         });
     }
 
     public async resolve(file?: FileAbstraction) {
+        
+        if ( this.isEntryModule ){
+            this.dealWithModule(this.entry, true);
+        } else {
+            this.files.set(this.entry.getFuseBoxFullPath(), this.entry)
+        }
+     
         await this.populateDependencies(this.entry);
         await each(this.candidates, async (file: FileAbstraction) => {
             await each(file.dependents, (dependent: FileAbstraction) => {
                 if (!dependent.quantumBit) { file.quantumBitBanned = true; };
             });
         });
-
+        // Single entry point
+        // e.g import('path')
+        //if (!this.isEntryModule) {
         this.modulesCanidates.forEach(moduleCandidate => {
-            
             moduleCandidate.entries.forEach(entry => {
-                entry.dependents.forEach(dependent => {
-                    if (!dependent.quantumBit) { 
-                        moduleCandidate.quantumBitBanned = true; 
-                    };
-                })
+                entry.dependents.forEach(dep => {
+                    if (!dep.quantumBit || dep.quantumBit !== this) {
+                        moduleCandidate.quantumBitBanned = true;
+                    }
+                });
             });
         });
+        //        }
+
+
+
     }
 
     public populate() {
-        this.files.set(this.entry.getFuseBoxFullPath(), this.entry);
+
         this.candidates.forEach(candidate => {
             if (!candidate.quantumBitBanned) {
                 this.files.set(candidate.getFuseBoxFullPath(), candidate)

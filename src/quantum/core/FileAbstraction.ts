@@ -41,9 +41,11 @@ export class FileAbstraction {
     public amountOfReferences = 0;
     public canBeRemoved = false;
 
+    public quantumBitEntry = false;
     public quantumBitBanned = false;
-    
-    public quantumBit : QuantumBit;
+    public quantumDynamic = false;
+
+    public quantumBit: QuantumBit;
     public namedRequireStatements = new Map<string, RequireStatement​​>();
 
     /** FILE CONTENTS */
@@ -105,11 +107,11 @@ export class FileAbstraction {
     }
 
 
-    public isNotUsedAnywhere() {    
+    public isNotUsedAnywhere() {
 
         let entryPointForQuantumBit = false;
-        if ( this.quantumBit){
-            if ( this.quantumBit.entry.getFuseBoxFullPath() === this.getFuseBoxFullPath() ){
+        if (this.quantumBit) {
+            if (this.quantumBit.entry.getFuseBoxFullPath() === this.getFuseBoxFullPath()) {
                 entryPointForQuantumBit = true;
             }
         }
@@ -134,15 +136,18 @@ export class FileAbstraction {
         this.id = id;
     }
 
-    public belongsToProject(){
+    public belongsToProject() {
         return this.core.context.defaultPackageName === this.packageAbstraction.name;
     }
 
+    public belongsToExternalModule() {
+        return !this.belongsToProject();
+    }
     public getID() {
         return this.id;
     }
 
-  
+
     public isTreeShakingAllowed() {
 
         return this.treeShakingRestricted === false && this.shakable;
@@ -199,6 +204,16 @@ export class FileAbstraction {
      */
     public isRequireStatementUsed() {
         return this.requireStatements.size > 0;
+    }
+
+    public isDynamicStatementUsed() {
+        let used = false;
+        this.requireStatements.forEach(statement => {
+            if (statement.isDynamicImport) {
+                used = true;
+            }
+        });
+        return used;
     }
 
     public isDirnameUsed() {
