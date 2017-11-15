@@ -34,6 +34,7 @@ export class FileAbstraction {
     private dependencies = new Map<FileAbstraction, Set<RequireStatement​​>>();
     public ast: any;
     public fuseBoxDir;
+    public referencedRequireStatements = new Set<RequireStatement​​>();
 
     public isEcmaScript6 = false;
     public shakable = false;
@@ -398,6 +399,7 @@ export class FileAbstraction {
         });
         // require statements
         if (matchesSingleFunction(node, "require")) {
+            
             // adding a require statement
             this.requireStatements.add(new RequireStatement(this, node));
         }

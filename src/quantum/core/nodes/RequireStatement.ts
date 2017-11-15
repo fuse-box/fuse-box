@@ -160,11 +160,13 @@ export class RequireStatement {
                 resolved = producerAbstraction.findFileAbstraction(pkgName, this.nodeModulePartialRequire);
             }
             if (resolved) {
+             
                 // register dependency
                 this.file.addDependency(resolved, this);
             }
             this.resolvedAbstraction = resolved;
         }
+        this.resolvedAbstraction.referencedRequireStatements.add(this);
         return this.resolvedAbstraction;
     }
 }
