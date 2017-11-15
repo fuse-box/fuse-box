@@ -166,7 +166,10 @@ export class RequireStatement {
             }
             this.resolvedAbstraction = resolved;
         }
-        this.resolvedAbstraction.referencedRequireStatements.add(this);
+        if( this.resolvedAbstraction){
+            this.resolvedAbstraction.referencedRequireStatements.add(this);    
+        }
+        
         return this.resolvedAbstraction;
     }
 }

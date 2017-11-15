@@ -26,7 +26,7 @@ createRealNodeModule("lib_b", {
 });
 
 
-export class CodeSplittingFileIntergirtyTest {
+export class CodeSplittingFileIntegrityTest {
     "Should create 1 split bundle with 1 file"() {
         return FuseTestEnv.create(
             {
