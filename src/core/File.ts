@@ -407,7 +407,7 @@ export class File {
         if ( !this.context.dynamicImportsEnabled){
             return;
         }
-        if (this.contents && this.collection.name === this.context.defaultPackageName) {
+        if (this.contents) {
             const expression = /(\s+|^)(import\()/g;
             if (expression.test(this.contents)) {
                 this.contents = this.contents.replace(expression, "$1$fsmp$(");

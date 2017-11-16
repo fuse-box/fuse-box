@@ -32,9 +32,12 @@ export class DynamicImportStatement {
                             analysis.addDependency(resolved.nodeModuleName);
 
                         } else {
+                            
                             if (resolved.fuseBoxPath && fs.existsSync(resolved.absPath)) {
-
                                 arg1.value = `~/${resolved.fuseBoxPath}`;
+                                if( !file.belongsToProject()){
+                                    arg1.value = `${file.collection.name}/${resolved.fuseBoxPath}`;
+                                }
                                 //analysis.add2Replacement(arg1.raw, JSON.stringify(arg1.value));
                                 analysis.addDependency(resolved.absPath);
                                 file.analysis.requiresRegeneration = true;

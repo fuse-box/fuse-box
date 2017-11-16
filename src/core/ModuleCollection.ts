@@ -155,6 +155,12 @@ export class ModuleCollection {
     public resolveEntry(shouldIgnoreDeps?: boolean) {
         if (this.entryFile && !this.entryResolved) {
             this.entryResolved = true;
+            
+            //console.log("resolve entry", this.entryFile.info);
+            if( this.entryFile.info.tsMode){
+                this.pm.setTypeScriptMode();
+            }
+          
             return this.resolve(this.entryFile, shouldIgnoreDeps);
         }
     }
