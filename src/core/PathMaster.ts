@@ -26,6 +26,7 @@ export interface IPathInformation {
     fuseBoxAlias?: string;
     isRemoteFile?: boolean;
     remoteURL?: string;
+    tsMode?:boolean;
     isNodeModule: boolean;
     nodeModuleName?: string;
     nodeModuleInfo?: IPackageInformation;
@@ -82,6 +83,7 @@ export class PathMaster {
 
     public init(name: string, fuseBoxPath?: string) {
         const resolved = this.resolve(name, this.rootPackagePath);
+        
         if (fuseBoxPath) {
             resolved.fuseBoxPath = fuseBoxPath;
         }
@@ -176,10 +178,8 @@ export class PathMaster {
         name = name.replace(/\\/g, "/");
         root = root.replace(/\\/g, "/");
         name = name.replace(root, "").replace(/^\/|\\/, "");
-
-        if (this.tsMode) {
-            name = ensurePublicExtension(name);
-        }
+        name = ensurePublicExtension(name);
+        
         // Some smart asses like "react-router"
         // Skip .js for their main entry points.
         let ext = path.extname(name);
@@ -282,6 +282,9 @@ export class PathMaster {
     private ensureFolderAndExtensions(name: string, root: string, explicit = false): { resolved: string, alias?: string } {
 
         let ext = path.extname(name);
+        if( ext === ".ts"){
+            this.tsMode = true;
+        }
         let fileExt = this.tsMode && !explicit ? ".ts" : ".js";
 
         if (name[0] === "~" && name[1] === "/" && this.rootPackagePath) {
@@ -340,6 +343,7 @@ export class PathMaster {
                 target: target
             };
         }
+       
         let data = name.split(/\/(.+)?/);
         return {
             name: data[0],
@@ -406,18 +410,26 @@ export class PathMaster {
                 } else {
                     entryFile = path.join(folder, entryFile || json.main || "index.js");
                 }
+                if ( json["ts:main"]){
+                    entryFile = json["ts:main"];
+                    if(entryFile[0] !== "."){ // safety check to avoid consfusion with node_module
+                        entryFile = `./${entryFile}`
+                    }
+                }
                 entryRoot = path.dirname(entryFile);
+                const ext = path.extname(entryFile);
 
                 return {
                     browserOverrides: browserOverrides,
                     name,
+                    tsMode: ext === ".ts",
                     jsNext,
                     custom: isCustom,
                     root: folder,
                     missing: false,
                     entryRoot,
                     entry: entryFile,
-                    version: json.version,
+                    version: json.version || "1.0.0",
                 };
             }
 
