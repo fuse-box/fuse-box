@@ -32,6 +32,7 @@ fuse.plugin(
 | ` templateString `   | Provide your own template as a string  |
 | ` target `   | The main filename. Default is `index.html`  |
 | ` resolve `   | `resolve ?: {(output : UserOutput) : string}` Allows to completely override the output  |
+| ` appendBundles ` | Append $bundles to provided template |
 
 note: If you specify template and templateString then template will take precedent 
 

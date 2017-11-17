@@ -16,6 +16,7 @@ export interface IndexPluginOptions {
     target?: string;
     template?: string;
     templateString?: string;
+    appendBundles?: boolean;
     async?: boolean;
     resolve ?: {(output : UserOutput) : string};
 }
@@ -67,6 +68,16 @@ export class WebIndexPluginClass implements Plugin {
         if (this.opts.template) {
             let filePath = ensureAbsolutePath(this.opts.template);
             html = fs.readFileSync(filePath).toString();
+
+            if (this.opts.appendBundles && html.indexOf('$bundles') === -1) {
+                if (html.indexOf('</body>') !== -1) {
+                    html = html.replace('</body>', '$bundles</body>');
+                } else if (html.indexOf('</head>') !== -1) {
+                    html = html.replace('</head>', '$bundles</head>');
+                } else {
+                    html = `${html}$bundles`; 
+                }
+            }
         }
 
         let jsTags = bundlePaths.map(bundle =>
