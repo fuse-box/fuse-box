@@ -15,7 +15,7 @@
         { "file": "cli_api.md" },
         { "file": "test-runner.md" },
         { "file": "typescript.md" },
-        { "file": "rollup.md" },
+        { "file": "publishing.md" },
         { "file": "examples-seeds.md", "title": "Examples and seeds" },
         { "file": "third-party-plugins.md" },
         { "file": "faq.md" }
