@@ -25,6 +25,7 @@ export interface IQuantumExtensionParams {
     processPolyfill?: boolean;
     hoisting?: boolean | { names: string[] };
     containedAPI?: boolean,
+    noConflictApi: boolean;
     manifest?: boolean | string,
 }
 
@@ -37,6 +38,7 @@ export class QuantumOptions {
     private containedAPI = false;
     private processPolyfill = false;
     private bakeApiIntoBundle: string;
+    private noConflictApi = false;
 
     private replaceTypeOf: boolean = true;
 
@@ -76,10 +78,14 @@ export class QuantumOptions {
             this.uglify = opts.uglify;
         }
 
+        if (opts.noConflictApi !== undefined) {
+            this.noConflictApi = opts.noConflictApi;
+        }
+
         if (opts.processPolyfill !== undefined) {
             this.processPolyfill = opts.processPolyfill;
         }
-        
+
         if (opts.shimsPath) {
             this.shimsPath = opts.shimsPath;
         }
@@ -143,14 +149,22 @@ export class QuantumOptions {
                 this.treeshakeOptions = opts.treeshake as ITreeShakeOptions;
             }
         }
-        if (this.isContained()) {
-            let randomHash = hashString(new Date().getTime().toString() + Math.random());
-            if (randomHash.indexOf("-") === 0) {
-                randomHash = randomHash.slice(1);
-            }
-            this.quantumVariableName = "_" + randomHash;
+        if (this.isContained() || this.noConflictApi === true) {
+            this.genenerateQuantumVariableName();
         }
     }
+
+    public genenerateQuantumVariableName() {
+        let randomHash = hashString(new Date().getTime().toString() + Math.random());
+        if (randomHash.indexOf("-") === 0) {
+            randomHash = randomHash.slice(1);
+        }
+        if (randomHash.length >= 7) {
+            randomHash = randomHash.slice(2, 6);
+        }
+        this.quantumVariableName = "_" + randomHash;
+    }
+
     public shouldBundleProcessPolyfill() {
         return this.processPolyfill === true;
     }
