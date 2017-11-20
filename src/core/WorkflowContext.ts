@@ -216,7 +216,7 @@ export class WorkFlowContext {
         this.pendingPromises.push(obj);
     }
 
-    
+
     public convertToFuseBoxPath(name: string) {
         let root = this.homeDir;
         name = name.replace(/\\/g, "/");
@@ -273,6 +273,21 @@ export class WorkFlowContext {
             } catch (e) { }
         }
         return escodegen.generate(ast, opts);
+    }
+
+    public replaceAliases(requireStatement: string)
+        : { requireStatement: string, replaced: boolean } {
+        const aliasCollection = this.aliasCollection;
+        let replaced = false;
+        if (aliasCollection) {
+            aliasCollection.forEach(props => {
+                if (props.expr.test(requireStatement)) {
+                    replaced = true;
+                    requireStatement = requireStatement.replace(props.expr, `${props.replacement}$2`);
+                }
+            });
+        }
+        return { requireStatement, replaced };
     }
 
     public emitJavascriptHotReload(file: File) {

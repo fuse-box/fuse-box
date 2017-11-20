@@ -26,13 +26,14 @@ export class DynamicImportStatement {
                             }
                         }
                     }
+                    let result = file.context.replaceAliases(requireStatement);
+                    requireStatement = result.requireStatement;
                     let resolved = file.collection.pm.resolve(requireStatement, file.info.absDir);
                     if (resolved) {
+                        
                         if (resolved.isNodeModule) {    
                             analysis.addDependency(resolved.nodeModuleName);
-
                         } else {
-                            
                             if (resolved.fuseBoxPath && fs.existsSync(resolved.absPath)) {
                                 arg1.value = `~/${resolved.fuseBoxPath}`;
                                 if( !file.belongsToProject()){
