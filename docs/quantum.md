@@ -339,6 +339,24 @@ Produced bundles will look similar to this example below:
 Whereas $fsx is a local variable
 
 
+
+# noConflictApi
+
+If you are using an isolated build along with other projected build with Quantum, you would want to set that option. Instead of the regular `$fsx` variable your build (and all split bundles) will look like 
+this:
+
+
+
+```
+// default/index.js
+_0336.f[0] = function(){
+var tslib_1 = _be203346.r(4);
+```
+
+Unliked containedAPI the variable `_0336` will be exposed to window and have shared resources stored in that particular scope.
+
+
+
 ### manifest
 Default value: `false`
 ```js
