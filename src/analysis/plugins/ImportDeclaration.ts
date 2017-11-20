@@ -91,17 +91,10 @@ export class ImportDeclaration {
             }
         }
 
-        const aliasCollection = file.context.aliasCollection;
-        if (aliasCollection) {
-            aliasCollection.forEach(props => {
-                if (props.expr.test(requireStatement)) {
-                    requireStatement = requireStatement.replace(props.expr, `${props.replacement}$2`);
-                    // only if we need it
-                    file.analysis.requiresRegeneration = true;
-                }
-            });
+        let result = file.context.replaceAliases(requireStatement)
+        if ( result.replaced){
+            file.analysis.requiresRegeneration = true;
         }
-
-        return requireStatement;
+        return result.requireStatement;
     }
 }
