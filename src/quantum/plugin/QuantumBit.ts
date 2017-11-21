@@ -82,8 +82,8 @@ export class QuantumBit {
         }
         return true;
     }
-    private async populateDependencies(file?: FileAbstraction) {
 
+    private async populateDependencies(file?: FileAbstraction) {
         const dependencies = file.getDependencies();
         await each(dependencies, async (statements: Set<RequireStatement​​>, dependency: FileAbstraction) => {
             if (dependency.belongsToProject()) {
@@ -114,11 +114,29 @@ export class QuantumBit {
         }
 
         await this.populateDependencies(this.entry);
-        await each(this.candidates, async (file: FileAbstraction) => {
-            await each(file.dependents, (dependent: FileAbstraction) => {
-                if (!dependent.quantumBit) { file.quantumBitBanned = true; };
-            });
-        });
+
+        const findRootDependents = (f: FileAbstraction, list: FileAbstraction[]) => {
+            if (list.indexOf(f) === -1) { list.push(f); }
+            if( f !== this.entry){
+                f.dependents.forEach(dep => {
+                    findRootDependents(dep, list);
+                });
+            }
+            return list;
+        }
+        for(const p of this.candidates){
+            const file = p[1];
+            const rootDependents = findRootDependents(file, []);
+            rootDependents.forEach(root => {
+                if (!root.quantumBit) { file.quantumBitBanned = true; }
+                else {
+                    if (root.quantumBit && root.quantumBit !== this && root !== this.entry) {
+                        file.quantumBitBanned = true;
+                    }
+                }
+            })
+            if (!file.quantumBit) { file.quantumBitBanned = true; };
+        }
 
         this.modulesCanidates.forEach(moduleCandidate => {
             // a case where the same library is imported dynamically and through require statements

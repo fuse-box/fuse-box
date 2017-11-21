@@ -88,7 +88,13 @@ export class FuseTestEnv {
             output: `${this.dirs.dist}/$name.js`
         }
         config.project = config.project || {};
-        createFiles(this.dirs.homeDir, config.project.files);
+
+        if( config.project.fromStubs ){
+            basicConfig.homeDir = path.join(appRoot.path, "src/tests/stubs/cases/",  config.project.fromStubs );
+            this.dirs.homeDir = basicConfig.homeDir;
+        } else {
+            createFiles(this.dirs.homeDir, config.project.files);
+        }
 
         if (config.project.distFiles) {
             createFiles(this.dirs.dist, config.project.distFiles);
@@ -155,7 +161,7 @@ export class FuseTestEnv {
         }
     }
 
-    
+
     public browser(fn: { (window: any, test: FuseTestEnv): any }): Promise<FuseTestEnv> {
         const scripts = [path.join(appRoot.path, "src/tests/stubs/DummyXMLHttpRequest.js")];
         const bundles = this.producer.sortBundles();
