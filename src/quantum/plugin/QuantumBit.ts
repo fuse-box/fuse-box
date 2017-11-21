@@ -1,7 +1,6 @@
 import { RequireStatement } from "../core/nodes/RequireStatement";
 import { FileAbstraction } from "../core/FileAbstraction";
 import { hashString, joinFuseBoxPath } from "../../Utils";
-import { each } from "realm-utils";
 import { PackageAbstraction } from "../core/PackageAbstraction";
 import { QuantumCore } from "./QuantumCore";
 
