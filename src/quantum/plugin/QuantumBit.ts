@@ -83,9 +83,10 @@ export class QuantumBit {
         return true;
     }
 
-    private async populateDependencies(file?: FileAbstraction) {
+    private populateDependencies(file?: FileAbstraction) {
         const dependencies = file.getDependencies();
-        await each(dependencies, async (statements: Set<RequireStatement​​>, dependency: FileAbstraction) => {
+        for( const item of dependencies){
+            const dependency = item[0];
             if (dependency.belongsToProject()) {
                 if (dependency.quantumBit && dependency.quantumBit !== this) {
                     dependency.quantumBitBanned = true;
@@ -93,28 +94,23 @@ export class QuantumBit {
                     dependency.quantumBit = this;
                     if (!this.candidates.has(dependency.getFuseBoxFullPath())) {
                         this.candidates.set(dependency.getFuseBoxFullPath(), dependency);
-                        await this.populateDependencies(dependency);
+                        this.populateDependencies(dependency);
                     }
                 }
             } else {
-
                 this.dealWithModule(dependency);
             }
-
-        });
+        }
     }
 
-    public async resolve(file?: FileAbstraction) {
-
+    public resolve(file?: FileAbstraction) {
         if (this.isEntryModule) {
-
             this.dealWithModule(this.entry, true);
         } else {
             this.files.set(this.entry.getFuseBoxFullPath(), this.entry)
         }
 
-        await this.populateDependencies(this.entry);
-
+        this.populateDependencies(this.entry);
         const findRootDependents = (f: FileAbstraction, list: FileAbstraction[]) => {
             if (list.indexOf(f) === -1) { list.push(f); }
             if( f !== this.entry){
@@ -127,18 +123,18 @@ export class QuantumBit {
         for(const p of this.candidates){
             const file = p[1];
             const rootDependents = findRootDependents(file, []);
-            rootDependents.forEach(root => {
-                if (!root.quantumBit) { file.quantumBitBanned = true; }
+            for( const root of rootDependents){
+                if (!root.quantumBit && root !== this.entry) { file.quantumBitBanned = true; }
                 else {
                     if (root.quantumBit && root.quantumBit !== this && root !== this.entry) {
                         file.quantumBitBanned = true;
                     }
                 }
-            })
+            }
             if (!file.quantumBit) { file.quantumBitBanned = true; };
         }
-
-        this.modulesCanidates.forEach(moduleCandidate => {
+        for(const item of this.modulesCanidates){
+            const moduleCandidate = item[1];
             // a case where the same library is imported dynamically and through require statements
             // we need to ban it and all of it dependencies
             moduleCandidate.fileAbstractions.forEach(file => {
@@ -167,7 +163,7 @@ export class QuantumBit {
                     });
                 })
             }
-        });
+        }
     }
 
     public populate() {

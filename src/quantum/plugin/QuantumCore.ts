@@ -107,8 +107,8 @@ export class QuantumCore {
 
     }
 
-    private ensureBitBundle(bit: QuantumBit){
-        let bundle : Bundle;
+    private ensureBitBundle(bit: QuantumBit) {
+        let bundle: Bundle;
         if (!this.producer.bundles.get(bit.name)) {
             this.log.echoInfo(`Create split bundle ${bit.name} with entry point ${bit.entry.getFuseBoxFullPath()}`);
             const fusebox = this.context.fuse.copy();
@@ -136,17 +136,13 @@ export class QuantumCore {
     }
 
     private async prepareQuantumBits() {
-        
-        this.context.quantumBits = this.quantumBits;
 
-        await each(this.quantumBits, (bit: QuantumBit) => bit.resolve());
-       
+        this.context.quantumBits = this.quantumBits;
+        this.quantumBits.forEach(bit => { bit.resolve() })
+
         await each(this.quantumBits, async (bit: QuantumBit, key: string) => {
-            
             bit.populate();
-            
             let bundle = this.ensureBitBundle(bit);
-            
             bit.files.forEach(file => {
                 this.log.echoInfo(`QuantumBit: Adding ${file.getFuseBoxFullPath()} to ${bit.name}`);
                 // removing the file from the current package
