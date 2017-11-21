@@ -24,7 +24,7 @@ export interface FuseBoxOptions {
     homeDir?: string;
     modulesFolder?: string;
     tsConfig?: string;
-    package?: any;
+    package?: string | { name: string, main: string };
     dynamicImportsEnabled ?: boolean;
     cache?: boolean;
     /**
@@ -177,8 +177,10 @@ export class FuseBox {
                 const packageOptions: any = opts.package;
                 this.context.defaultPackageName = packageOptions.name || "default";
                 this.context.defaultEntryPoint = packageOptions.main;
-            } else {
+            } else if (typeof opts.package === 'string') {
                 this.context.defaultPackageName = opts.package;
+            } else {
+                throw new Error('`package` must be a string or an object of the form {name: string, main: string}');
             }
 
         }
