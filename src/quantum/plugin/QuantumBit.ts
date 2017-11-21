@@ -84,7 +84,7 @@ export class QuantumBit {
 
     private populateDependencies(file?: FileAbstraction) {
         const dependencies = file.getDependencies();
-        for( const item of dependencies){
+        for (const item of dependencies) {
             const dependency = item[0];
             if (dependency.belongsToProject()) {
                 if (dependency.quantumBit && dependency.quantumBit !== this) {
@@ -110,19 +110,21 @@ export class QuantumBit {
         }
 
         this.populateDependencies(this.entry);
-        const findRootDependents = (f: FileAbstraction, list: FileAbstraction[]) => {
-            if (list.indexOf(f) === -1) { list.push(f); }
-            if( f !== this.entry){
-                f.dependents.forEach(dep => {
-                    findRootDependents(dep, list);
-                });
+        const findRootDependents = (f: FileAbstraction, list: FileAbstraction[]): FileAbstraction[] => {
+            if (list.indexOf(f) === -1) {
+                list.push(f);
+                if (f !== this.entry) {
+                    f.dependents.forEach(dep => {
+                        findRootDependents(dep, list);
+                    });
+                }
             }
             return list;
         }
-        for(const p of this.candidates){
+        for (const p of this.candidates) {
             const file = p[1];
             const rootDependents = findRootDependents(file, []);
-            for( const root of rootDependents){
+            for (const root of rootDependents) {
                 if (!root.quantumBit && root !== this.entry) { file.quantumBitBanned = true; }
                 else {
                     if (root.quantumBit && root.quantumBit !== this && root !== this.entry) {
@@ -132,7 +134,7 @@ export class QuantumBit {
             }
             if (!file.quantumBit) { file.quantumBitBanned = true; };
         }
-        for(const item of this.modulesCanidates){
+        for (const item of this.modulesCanidates) {
             const moduleCandidate = item[1];
             // a case where the same library is imported dynamically and through require statements
             // we need to ban it and all of it dependencies
