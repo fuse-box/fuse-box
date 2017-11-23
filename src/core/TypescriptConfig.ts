@@ -1,6 +1,7 @@
 import { WorkFlowContext } from "./WorkflowContext";
 import * as path from "path";
 import { ensureUserPath, findFileBackwards } from "../Utils";
+import { ScriptTarget } from "./File";
 
 const CACHED: { [path: string]: any } = {};
 
@@ -13,6 +14,7 @@ export class TypescriptConfig {
     constructor(public context: WorkFlowContext) { }
 
     public getConfig() {
+        this.read();
         return this.config;
     }
 
@@ -22,6 +24,15 @@ export class TypescriptConfig {
             compilerOptions.sourceMap = true;
             compilerOptions.inlineSources = true;
         }
+        if ( this.context.forcedLanguageLevel ){
+            this.forceCompilerTarget(this.context.forcedLanguageLevel);
+        }
+    }
+
+    public forceCompilerTarget(level : ScriptTarget){
+        this.context.log.echoInfo(`Typescript forced script target: ${ScriptTarget[level]}`)
+        const compilerOptions = this.config.compilerOptions = this.config.compilerOptions || {};
+        compilerOptions.target = ScriptTarget[level];
     }
 
     public setConfigFile(customTsConfig: string) {
@@ -30,7 +41,7 @@ export class TypescriptConfig {
     }
     public read() {
 
-        const cacheKey = this.customTsConfig || this.context.homeDir;
+        const cacheKey = (this.customTsConfig || this.context.homeDir) + this.context.languageLevel;
         if (CACHED[cacheKey]) {
             this.config = CACHED[cacheKey];
         } else {
@@ -50,7 +61,7 @@ export class TypescriptConfig {
             }
 
             if (configFile) {
-                this.context.log.echoStatus(`Typescript config:  ${configFile.replace(this.context.appRoot, "")}`);
+                this.context.log.echoInfo(`Typescript config file:  ${configFile.replace(this.context.appRoot, "")}`);
                 config = require(configFile);
             }
 
@@ -60,7 +71,7 @@ export class TypescriptConfig {
 
             config.compilerOptions.module = "commonjs";
             if (!('target' in config.compilerOptions)) {
-                config.compilerOptions.target = this.context.languageLevel
+                config.compilerOptions.target = ScriptTarget[this.context.languageLevel];
             }
             if (tsConfigOverride) {
                 config.compilerOptions = Object.assign(config.compilerOptions, tsConfigOverride);
@@ -70,6 +81,7 @@ export class TypescriptConfig {
 
 
             this.defaultSetup();
+            this.context.log.echoInfo(`Typescript script target: ${config.compilerOptions.target}`)
             CACHED[cacheKey] = this.config;
         }
     }

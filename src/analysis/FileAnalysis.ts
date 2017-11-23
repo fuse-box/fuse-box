@@ -58,7 +58,7 @@ export class FileAnalysis {
 
     public requiresRegeneration = false;
 
-    public stringReplacement = new Set<{from: string, to : string}>();
+    public stringReplacement = new Set<{ from: string, to: string }>();
 
     public requiresTranspilation = false;
 
@@ -69,8 +69,8 @@ export class FileAnalysis {
     constructor(public file: File) { }
 
 
-    public add2Replacement(from : string, to : string){
-        this.stringReplacement.add({from : from, to : to})
+    public add2Replacement(from: string, to: string) {
+        this.stringReplacement.add({ from: from, to: to })
     }
     public astIsLoaded(): boolean {
         return this.ast !== undefined;
@@ -171,27 +171,14 @@ export class FileAnalysis {
         })
 
         if (this.requiresRegeneration) {
-            
             this.file.contents = this.file.context.generateCode(this.ast, {
             });
         }
 
         if (this.requiresTranspilation) {
-            const target = ScriptTarget[this.file.context.languageLevel]
-            this.file.context.log.magicReason(
-                'compiling with typescript to match language target: ' + target,
-                this.file.info.fuseBoxPath
-            );
             const ts = require("typescript");
-            let tsconfg: any = {
-                compilerOptions: {
-                    module: "commonjs",
-                    target
-                }
-            };
-            let result = ts.transpileModule(this.file.contents, tsconfg);
+            let result = ts.transpileModule(this.file.contents, this.file.context.tsConfig.getConfig());
             this.file.contents = result.outputText;
         }
-
     }
 }

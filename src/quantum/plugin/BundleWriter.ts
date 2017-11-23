@@ -4,14 +4,21 @@ import { ensureUserPath, uglify } from "../../Utils";
 import { QuantumCore } from "./QuantumCore";
 import * as fs from "fs";
 import { QuantumSplitConfig } from "./QuantumSplit";
+import { ScriptTarget } from "../../core/File";
 
 export class BundleWriter {
     private bundles = new Map<string, Bundle>();
     constructor(public core: QuantumCore) { }
 
     private getUglifyJSOptions(): any {
+        const useUglifyEs = this.core.context.languageLevel > ScriptTarget.ES5;
+        if ( useUglifyEs ){
+            this.core.context.log.echoInfo("Using uglify-es because the target is greater than ES5")
+        } else {
+            this.core.context.log.echoInfo("Using uglify-js because the target is set to ES5")
+        }
         const mainOptions: any = {
-
+            es6 : useUglifyEs
         };
         return {
             ...this.core.opts.shouldUglify() || {},
@@ -86,13 +93,13 @@ export class BundleWriter {
         }
 
         producer.bundles = this.bundles;
-        
+
         let splitFileOptions: any;
         if (this.core.context.quantumBits.size > 0) {
             const splitConf : QuantumSplitConfig = this.core.context.quantumSplitConfig;
             splitFileOptions = {
-                c: { 
-                    b: splitConf.getBrowserPath(), 
+                c: {
+                    b: splitConf.getBrowserPath(),
                     s:  splitConf.getServerPath()},
                 i: {}
             };
@@ -110,7 +117,7 @@ export class BundleWriter {
                     relativePath: output.relativePath
                 };
                 // if this bundle belongs to splitting
-                // we need to remember the generated file name and store 
+                // we need to remember the generated file name and store
                 // and then pass to the API
                 if (bundle.quantumBit) {
                     splitFileOptions.i[bundle.quantumBit.name] = [output.relativePath, bundle.quantumBit.entry.getID()];

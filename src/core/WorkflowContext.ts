@@ -107,6 +107,8 @@ export class WorkFlowContext {
 
     public emitHMRDependencies = false;
     public languageLevel: ScriptTarget;
+    public forcedLanguageLevel: ScriptTarget;
+
 
     public filterFile: { (file: File): boolean }
 

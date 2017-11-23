@@ -227,7 +227,6 @@ export class Bundle {
     }
 
     public exec(): Promise<Bundle> {
-        this.context.tsConfig.read();
         return new Promise((resolve, reject) => {
             this.clearErrors();
             this.fuse

@@ -33,7 +33,7 @@ export class QuantumOptions {
     private uglify: any;
     private removeExportsInterop = false;
     private removeUseStrict = true;
-    private ensureES5 = true;
+    private ensureES5 = false;
     private replaceProcessEnv = true;
     private containedAPI = false;
     private processPolyfill = false;
@@ -75,6 +75,7 @@ export class QuantumOptions {
             }
         }
         if (opts.uglify) {
+
             this.uglify = opts.uglify;
         }
 
