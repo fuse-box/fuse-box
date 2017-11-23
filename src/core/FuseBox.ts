@@ -58,7 +58,7 @@ export interface FuseBoxOptions {
     files?: any;
     alias?: any;
     useJsNext?: boolean | string[],
-    ensureTsConfig : boolean;
+    ensureTsConfig? : boolean;
     runAllMatchedPlugins?: boolean;
     showErrors?: boolean
     showErrorsInBrowser?: boolean
