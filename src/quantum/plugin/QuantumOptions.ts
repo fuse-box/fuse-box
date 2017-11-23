@@ -2,6 +2,7 @@ import { WebIndexPluginClass } from "../../plugins/WebIndexPlugin";
 import { QuantumCore } from "./QuantumCore";
 import { readFuseBoxModule, hashString } from "../../Utils";
 import { FileAbstraction } from "../core/FileAbstraction";
+import { BundleProducer } from '../../index';
 export interface ITreeShakeOptions {
     shouldRemove: { (file: FileAbstraction): void }
 }
@@ -57,11 +58,14 @@ export class QuantumOptions {
     public quantumVariableName = "$fsx";
     public webIndexPlugin: WebIndexPluginClass;
 
-    constructor(opts: IQuantumExtensionParams) {
+    constructor(public producer: BundleProducer, opts: IQuantumExtensionParams) {
         opts = opts || {};
         if (opts.target) {
             this.optsTarget = opts.target;
+        } else {
+            this.optsTarget = this.producer.fuse.context.target;
         }
+
         if (opts.api) {
             this.apiCallback = opts.api;
         }
@@ -205,7 +209,7 @@ export class QuantumOptions {
         throw new Error(`
            - Can't use contained api with more than 1 bundle
            - Use only 1 bundle and bake the API e.g {bakeApiIntoBundle : "app"}
-           - Make sure code splitting is not in use 
+           - Make sure code splitting is not in use
         `);
     }
 

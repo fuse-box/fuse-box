@@ -45,7 +45,7 @@ export class QuantumPluginClass implements Plugin {
     }
 
     producerEnd(producer: BundleProducer) {
-        let core = new QuantumCore(producer, new QuantumOptions(this.coreOpts));
+        let core = new QuantumCore(producer, new QuantumOptions(producer, this.coreOpts));
         return core.consume();
     }
 };
