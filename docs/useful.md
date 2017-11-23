@@ -51,6 +51,17 @@ So you use `Babel` instead of `TypeScript` but you still should install it. Don'
 
 For example if you are importing a library and the script target is not `es5` FuseBox will transpile it down. If you target is `es6`, FuseBox won't touch it (unless `import` statements are used - it will transpile it using `es6` target - respecting your script level choice)
 
+## Server bundles
+
+When working with server bundle, it's highly recommended to use the latest NodeJS and `server@esnext` option. If you want to take advantage of the new syntax, and it make it blazing fast it's imperative to use the latest tech.
+
+
+```js
+FuseBox.init({
+    target : `server@esnext`
+})
+```
+
 ### Why can't we use Babel to transpile npm modules?
 
 Because `TypeScript` is much much faster and it's easy to change the script target. By the way, if you are interested, FuseBox can transpile javascript using TypeScript. Read up on [useTypescriptCompiler](/page/configuration#usetypescriptcompiler) option
