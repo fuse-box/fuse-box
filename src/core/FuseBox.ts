@@ -58,6 +58,7 @@ export interface FuseBoxOptions {
     files?: any;
     alias?: any;
     useJsNext?: boolean | string[],
+    ensureTsConfig : boolean;
     runAllMatchedPlugins?: boolean;
     showErrors?: boolean
     showErrorsInBrowser?: boolean
@@ -125,6 +126,10 @@ export class FuseBox {
 
         if (opts.useTypescriptCompiler !== undefined) {
             this.context.useTypescriptCompiler = opts.useTypescriptCompiler;
+        }
+
+        if (opts.ensureTsConfig !== undefined) {
+            this.context.ensureTsConfig = opts.ensureTsConfig;
         }
 
         if (opts.emitHMRDependencies === true) {

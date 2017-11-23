@@ -171,6 +171,7 @@ export function createEnv(opts: any) {
         return new Promise((resolve, reject) => {
             moduleParams.output = path.join(modulesFolder, name, "index.js");
             moduleParams.package = name;
+            moduleParams.ensureTsConfig = false;
             moduleParams.cache = false;
             moduleParams.log = false;
 
@@ -200,6 +201,7 @@ export function createEnv(opts: any) {
         projectOptions.output = path.join(localPath, "project", "index.js");
         projectOptions.cache = false;
         projectOptions.log = false;
+        projectOptions.ensureTsConfig = false;
         projectOptions.tsConfig = path.join(appRoot.path, "src/tests/fixtures", "tsconfig.json");
         projectOptions.modulesFolder = modulesFolder;
 

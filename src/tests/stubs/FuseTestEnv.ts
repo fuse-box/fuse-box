@@ -88,6 +88,7 @@ export class FuseTestEnv {
             output: `${this.dirs.dist}/$name.js`
         }
         config.project = config.project || {};
+        config.ensureTsConfig = false;
 
         if( config.project.fromStubs ){
             basicConfig.homeDir = path.join(appRoot.path, "src/tests/stubs/cases/",  config.project.fromStubs );

@@ -83,7 +83,10 @@ export class WorkFlowContext {
 
     public showWarnings = true;
 
+    public ensureTsConfig = true;
+
     public useJsNext: boolean | string[] = false;
+
     public showErrors = true;
 
     public showErrorsInBrowser = true;

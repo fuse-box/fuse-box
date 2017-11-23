@@ -2,6 +2,8 @@ import { WorkFlowContext } from "./WorkflowContext";
 import * as path from "path";
 import { ensureUserPath, findFileBackwards } from "../Utils";
 import { ScriptTarget } from "./File";
+import * as fs from "fs";
+import { Config } from "../Config";
 
 const CACHED: { [path: string]: any } = {};
 
@@ -37,11 +39,30 @@ export class TypescriptConfig {
 
     public setConfigFile(customTsConfig: string) {
         this.customTsConfig = customTsConfig;
+    }
 
+    private initializeConfig(){
+        const compilerOptions = this.config.compilerOptions;
+        compilerOptions.jsx = "react";
+        compilerOptions.importHelpers = true;
+        compilerOptions.emitDecoratorMetadata = true;
+        compilerOptions.experimentalDecorators = true;
+        const targetFile = path.join(this.context.homeDir, "tsconfig.json");
+        this.context.log.echoInfo(`Generating recommended tsconfig.json:  ${targetFile}`);
+        fs.writeFileSync(targetFile, JSON.stringify(this.config, null, 2));
+    }
+
+
+    private verifyTsLib(){
+        if ( this.config.compilerOptions.importHelpers === true ){
+            const tslibPath = path.join(Config.NODE_MODULES_DIR, "tslib");
+            if(!fs.existsSync(tslibPath)) {
+                this.context.log.echoWarning(`You have enabled importHelpers. Please install tslib - https://github.com/Microsoft/tslib`)
+            }
+        }
     }
     public read() {
-
-        const cacheKey = (this.customTsConfig || this.context.homeDir) + this.context.languageLevel;
+        const cacheKey = (this.customTsConfig || this.context.homeDir) + this.context.target;
         if (CACHED[cacheKey]) {
             this.config = CACHED[cacheKey];
         } else {
@@ -49,6 +70,7 @@ export class TypescriptConfig {
             let config: any = {
                 compilerOptions: {},
             };;
+            let configFileFound = false;
             let tsConfigOverride: any;
             if (typeof this.customTsConfig === "string") {
                 configFile = ensureUserPath(this.customTsConfig);
@@ -56,14 +78,16 @@ export class TypescriptConfig {
                 url = path.join(this.context.homeDir, "tsconfig.json");
                 let tsconfig = findFileBackwards(url, this.context.appRoot);
                 if (tsconfig) {
+                    configFileFound= true;
                     configFile = tsconfig;
                 }
             }
-
             if (configFile) {
                 this.context.log.echoInfo(`Typescript config file:  ${configFile.replace(this.context.appRoot, "")}`);
+                configFileFound = true;
                 config = require(configFile);
             }
+
 
             if (Array.isArray(this.customTsConfig)) {
                 tsConfigOverride = this.customTsConfig[0];
@@ -78,9 +102,13 @@ export class TypescriptConfig {
             }
 
             this.config = config;
-
-
             this.defaultSetup();
+            if(!configFileFound && this.context.ensureTsConfig === true){
+              this.initializeConfig();
+            }
+            if( this.context.ensureTsConfig === true ){
+                this.verifyTsLib();
+            }
             this.context.log.echoInfo(`Typescript script target: ${config.compilerOptions.target}`)
             CACHED[cacheKey] = this.config;
         }
