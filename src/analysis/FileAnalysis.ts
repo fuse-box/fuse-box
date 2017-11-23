@@ -1,6 +1,6 @@
 import { ASTTraverse } from "./../ASTTraverse";
 import { PrettyError } from "./../PrettyError";
-import { File, ScriptTarget } from "../core/File";
+import { File } from "../core/File";
 import * as acorn from "acorn";
 import { AutoImport } from "./plugins/AutoImport";
 import { LanguageLevel } from "./plugins/LanguageLevel";
