@@ -15,7 +15,9 @@ export enum ScriptTarget {
     ES5 = 1,
     ES2015 = 2,
     ES2016 = 3,
+    ES6 = 3,
     ES2017 = 4,
+    ES7 = 4,
     ESNext = 5
 }
 

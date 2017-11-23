@@ -25,7 +25,7 @@ export interface FuseBoxOptions {
     modulesFolder?: string;
     tsConfig?: string;
     package?: string | { name: string, main: string };
-    dynamicImportsEnabled ?: boolean;
+    dynamicImportsEnabled?: boolean;
     cache?: boolean;
     /**
      * "browser" | "server" | "universal" | "electron"
@@ -53,7 +53,7 @@ export interface FuseBoxOptions {
     customAPIFile?: string;
     output?: string;
     emitHMRDependencies?: boolean;
-    filterFile? : {(file : File) : boolean}
+    filterFile?: { (file: File): boolean }
     debug?: boolean;
     files?: any;
     alias?: any;
@@ -101,14 +101,17 @@ export class FuseBox {
         if (opts.writeBundles !== undefined) {
             this.context.userWriteBundles = opts.writeBundles;
         }
-
-        if (opts.target !== undefined) {
-            const [target, languageLevel] = opts.target.toLowerCase().split('@')
-            this.context.target = target
-            const level = languageLevel && Object.keys(ScriptTarget)
-                .find(t => t.toLowerCase() === languageLevel)
-            this.context.languageLevel = ScriptTarget[level] || ScriptTarget.ES5
+        // setting targets
+        opts.target = opts.target || "browser";
+        const [target, languageLevel] = opts.target.toLowerCase().split('@')
+        this.context.target = target
+        const level = languageLevel && Object.keys(ScriptTarget)
+            .find(t => t.toLowerCase() === languageLevel)
+        if (level) {
+            this.context.forcedLanguageLevel = ScriptTarget[level];
         }
+        this.context.languageLevel = ScriptTarget[level] || ScriptTarget.ES6;
+
         if (opts.polyfillNonStandardDefaultUsage !== undefined) {
             this.context.polyfillNonStandardDefaultUsage = opts.polyfillNonStandardDefaultUsage;
         }
@@ -116,7 +119,7 @@ export class FuseBox {
         if (opts.useJsNext !== undefined) {
             this.context.useJsNext = opts.useJsNext;
         }
-        if( opts.dynamicImportsEnabled !== undefined){
+        if (opts.dynamicImportsEnabled !== undefined) {
             this.context.dynamicImportsEnabled = opts.dynamicImportsEnabled;
         }
 
@@ -124,7 +127,7 @@ export class FuseBox {
             this.context.useTypescriptCompiler = opts.useTypescriptCompiler;
         }
 
-        if( opts.emitHMRDependencies === true){
+        if (opts.emitHMRDependencies === true) {
             this.context.emitHMRDependencies = true;
         }
         if (opts.homeDir) {
@@ -186,13 +189,13 @@ export class FuseBox {
         }
 
         if (opts.cache !== undefined) {
-            if( typeof opts.cache === "string" ){
+            if (typeof opts.cache === "string") {
                 this.context.cache = opts.cache;
             }
             this.context.useCache = opts.cache ? true : false;
         }
 
-        if ( opts.filterFile){
+        if (opts.filterFile) {
 
             this.context.filterFile = opts.filterFile;
         }
@@ -240,7 +243,7 @@ export class FuseBox {
         }
 
         if (opts.extensionOverrides) {
-          this.context.extensionOverrides = new ExtensionOverrides(opts.extensionOverrides);
+            this.context.extensionOverrides = new ExtensionOverrides(opts.extensionOverrides);
         }
 
         const tsConfig = new TypescriptConfig(this.context);;
@@ -326,7 +329,7 @@ export class FuseBox {
 
         let self = this;
         return bundleCollection.collectBundle(bundleData).then(module => {
-            if( this.context.emitHMRDependencies){
+            if (this.context.emitHMRDependencies) {
                 this.context.emitter.emit("bundle-collected");
             }
             this.context.log.bundleStart(this.context.bundle.name);
