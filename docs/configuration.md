@@ -135,6 +135,7 @@ FuseBox.init({
 })
 ```
 
+
 Or using the chain API
 
 ```js
@@ -142,6 +143,16 @@ fuse
     .bundle("app")
     .tsConfig("src/myconfig.json")
 ```
+
+You can also override any values by providing an array with a single object
+
+
+```js
+FuseBox.init({
+    tsConfig : [{ target : `es5` }]
+})
+```
+
 
 ## TypeScript Custom Transformers
 
