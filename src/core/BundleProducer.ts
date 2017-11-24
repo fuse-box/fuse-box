@@ -20,7 +20,7 @@ export class BundleProducer {
     public writeBundles = true;
     public sharedCustomPackages: Map<string, SharedCustomPackage​>;
     public runner: BundleRunner;
-    public userEnvVariables: any = Object.assign(process.env, { NODE_ENV: "production" });
+    public userEnvVariables: any = Object.assign({ NODE_ENV: "production" }, process.env);
     public devServerOptions: ServerOptions;
 
     public entryPackageName: string;
