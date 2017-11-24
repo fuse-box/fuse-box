@@ -139,13 +139,25 @@ gulp.task("dist", ["prepare:clean"], function(done) {
         "prepare:typings",
         "prepare:modules",
         "prepare:es5-bundle",
+        "prepare:es5-index",
         done)
+});
+
+gulp.task("prepare:es5-index", () => {
+    const contents = `
+        const path = require("path");
+        process.env.FUSEBOX_DIST_ROOT = path.resolve(__dirname, "../");
+        process.env.FUSEBOX_MODULES = path.resolve(__dirname, "../modules");
+        process.env.FUSEBOX_VERSION = path.resolve(__dirname, "../package.json")
+        module.exports = require('./fusebox.js');
+    `
+    fs.writeFileSync(path.resolve("./dist/es5/index.js"), contents);
 });
 
 gulp.task("prepare:es5-bundle", (done) => {
     const fuse = getDistFuseBoxConfig({
         homeDir: "src",
-        output: "dist/$name.js",
+        output: "dist/es5/$name.js",
         target: "server@es5",
         tsConfig: [{
             target: "es5"
