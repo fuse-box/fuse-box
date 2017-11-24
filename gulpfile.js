@@ -138,35 +138,36 @@ gulp.task("dist", ["prepare:clean"], function(done) {
         "prepare:loader",
         "prepare:typings",
         "prepare:modules",
-        "prepare:es5-bundle",
-        "prepare:es5-index",
+        "prepare:es6-bundle",
+        "prepare:es6-index",
         done)
 });
 
-gulp.task("prepare:es5-index", () => {
+gulp.task("prepare:es6-index", () => {
     const contents = `
         const path = require("path");
         process.env.FUSEBOX_DIST_ROOT = path.resolve(__dirname, "../");
         process.env.FUSEBOX_MODULES = path.resolve(__dirname, "../modules");
         process.env.FUSEBOX_VERSION = path.resolve(__dirname, "../package.json")
-        module.exports = require('./fusebox.js');
+        module.exports = require('./es6.js');
     `
-    fs.writeFileSync(path.resolve("./dist/es5/index.js"), contents);
+    fs.writeFileSync(path.resolve("./dist/es6/index.js"), contents);
 });
 
-gulp.task("prepare:es5-bundle", (done) => {
+gulp.task("prepare:es6-bundle", (done) => {
     const fuse = getDistFuseBoxConfig({
         homeDir: "src",
-        output: "dist/es5/$name.js",
-        target: "server@es5",
+        output: "dist/es6/$name.js",
+        target: "server@es2015",
+        cache : false,
         tsConfig: [{
-            target: "es5"
+            target: "es2015"
         }]
     }, {
-        bakeApiIntoBundle: "es5",
-        uglify: true
+        bakeApiIntoBundle: "es6",
+        uglify: false
     });
-    fuse.bundle("es5")
+    fuse.bundle("es6")
         .instructions(">[index.ts]");
     return fuse.run();
 });
