@@ -2,10 +2,10 @@
 
 ## Target node >= 8
 
-FuseBox will work on node.js 8+ because of `async` `await` usage. It's better to take advantage of the latest features - its much faster than then polyfill. If you are unable to upgrade your servers for some reason - no worries, we now have `es5` dist for you.
+FuseBox will work on node.js 8+ because of `async` `await` usage. It's better to take advantage of the latest features - its much faster than then polyfill. If you are unable to upgrade your servers for some reason - no worries, we now have `es6` dist for you.
 
 ```js
-import {FuseBox} from "fuse-box/es5"
+import {FuseBox} from "fuse-box/es6"
 ```
 
 
