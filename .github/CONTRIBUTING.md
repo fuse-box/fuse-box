@@ -1,6 +1,6 @@
 # Contributing
 
-First of all, thanks for chosing FuseBox. Our mission is to deliver the best developer experience for javascript developers. But we need your help. Any contrubution is absolutely valuable, starting from just giving ideas and drafting a PR.
+First of all, thanks for chosing FuseBox. Our mission is to deliver the best developer experience for javascript developers. But we need your help. Any contribution is absolutely valuable, starting from just giving ideas and drafting a PR.
 
 But before you fork and actually starting coding something let's define some rules.
 
