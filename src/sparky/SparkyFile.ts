@@ -83,6 +83,11 @@ export class SparkyFile {
         return this;
     }
 
+    public rename(name: string): SparkyFile {
+        this.name = name;
+        return this;
+    }
+
     public copy(dest: string) {
         return new Promise((resolve, reject) => {
             const isTemplate = dest.indexOf("$") > -1;
