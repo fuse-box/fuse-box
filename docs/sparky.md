@@ -174,6 +174,17 @@ Override
 file.setContent(file.contents + "some content")
 ```
 
+### Rename
+
+You can use the rename function to change the name of an file.  Note that its necessary to use the `$name` substitution in order to use this.
+
+```
+Sparky
+    .src("originalFilename.json")
+    .file("*", file => file.rename("newFilename.json"))
+    .dest("dist/$name");
+```
+
 ### Saving
 
 `file.save()` happens automatically on `dest` if not called, but you can override your original files
