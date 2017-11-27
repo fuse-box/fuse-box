@@ -607,7 +607,6 @@ export class CodeSplittingFileIntegrityTest {
                 project: {
                     files: {
                         "index.ts": `
-                            
                             export async function test() {
                                 await import("./components/HomeComponent")
                                 const lib_b_2 = await import('lib_b');
@@ -711,7 +710,7 @@ export class CodeSplittingFileIntegrityTest {
     "Should ignore a file with nested references"() {
         return FuseTestEnv.create(
             {
-                testFolder: "_current_test",
+                //     testFolder: "_current_test",
                 project: {
                     fromStubs: "quantum_split_complicated",
                     plugins: [
@@ -739,7 +738,7 @@ export class CodeSplittingFileIntegrityTest {
                     '// default/common/ui/layout/header/header.js',
                     '// default/common/ui/layout/content/index.js',
                     '// default/common/ui/layout/content/content.js',
-                    '// default/modules/test/routes/another-test-route.js'
+                    //'// default/modules/test/routes/another-test-route.js'
                 ]
                 sharedFiles.forEach(file => {
                     master.shouldFindString(file);
@@ -758,6 +757,64 @@ export class CodeSplittingFileIntegrityTest {
                 split2.shouldFindString('// default/modules/test/views/another-test-component/foo.js')
                 split2.shouldFindString('// default/modules/test/views/another-test-component/bar.js')
 
+
+                split3.shouldFindString('// default/modules/test/views/test-component-header/index.js')
+                split3.shouldFindString('// default/modules/test/views/test-component-header/test-component-header.jsx')
+            }));
+    }
+
+    "Should not split a library"() {
+        return FuseTestEnv.create(
+            {
+                //       testFolder: "_current_test",
+                project: {
+                    fromStubs: "quantum_split_2",
+                    plugins: [
+                        QuantumPlugin({
+                            target: "browser"
+                        })
+                    ]
+                }
+            }
+        )
+            .simple().then(test => test.browser((window, env) => {
+                window.$fsx.r(0);
+                const master = env.getScript("app.js");
+                const split1 = env.getScript("5b053b5d.js");
+                const split2 = env.getScript("621a109b.js");
+                const split3 = env.getScript("fa62310f.js");
+
+                const sharedFiles = [
+                    '// default/index.js',
+                    '// default/route-loader.js',
+                    '// default/modules/test/routes/index.js',
+                    '// default/modules/test/routes/test-route.js',
+                    `// default/common/routes/index.js`,
+                    `// default/common/routes/links.js`,
+                    `// default/common/routes/route.js`,
+                    `// default/common/store/index.js`,
+                    `// default/common/store/store.js`,
+                    `// default/common/auth/index.js`,
+                    `// default/common/auth/token.js`,
+                    `// default/modules/test/routes/another-test-route.js`,
+                    `// jwt-decode/lib/index.js`,
+                    `// jwt-decode/lib/base64_url_decode.js`,
+                    `// jwt-decode/lib/atob.js`
+                ]
+                sharedFiles.forEach(file => {
+                    master.shouldFindString(file);
+                    split1.shouldNotFindString(file)
+                    split2.shouldNotFindString(file)
+                    split3.shouldNotFindString(file)
+                });
+
+
+                split1.shouldFindString('// default/modules/test/views/test-component/index.js')
+                split1.shouldFindString('// default/modules/test/views/test-component/test-component.jsx')
+
+
+                split2.shouldFindString('// default/modules/test/views/another-test-component/index.js')
+                split2.shouldFindString('// default/modules/test/views/another-test-component/another-test-component.jsx')
 
                 split3.shouldFindString('// default/modules/test/views/test-component-header/index.js')
                 split3.shouldFindString('// default/modules/test/views/test-component-header/test-component-header.jsx')

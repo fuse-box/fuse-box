@@ -74,9 +74,7 @@ export class QuantumBit {
                     if (origin === false && !dependent.quantumBit) {
                         pkg.quantumBitBanned = true;
                     }
-                })
-
-
+                });
             })
         }
         return true;
@@ -102,6 +100,18 @@ export class QuantumBit {
         }
     }
 
+    private findRootDependents(f: FileAbstraction, list: FileAbstraction[]): FileAbstraction[] {
+        if (list.indexOf(f) === -1) {
+            list.push(f);
+            if (f !== this.entry) {
+                f.dependents.forEach(dep => {
+                    this.findRootDependents(dep, list);
+                });
+            }
+        }
+        return list;
+    }
+
     public resolve(file?: FileAbstraction) {
         if (this.isEntryModule) {
             this.dealWithModule(this.entry, true);
@@ -110,30 +120,26 @@ export class QuantumBit {
         }
 
         this.populateDependencies(this.entry);
-        const findRootDependents = (f: FileAbstraction, list: FileAbstraction[]): FileAbstraction[] => {
-            if (list.indexOf(f) === -1) {
-                list.push(f);
-                if (f !== this.entry) {
-                    f.dependents.forEach(dep => {
-                        findRootDependents(dep, list);
-                    });
-                }
-            }
-            return list;
-        }
+
+
         for (const p of this.candidates) {
             const file = p[1];
-            const rootDependents = findRootDependents(file, []);
+            const rootDependents = this.findRootDependents(file, []);
             for (const root of rootDependents) {
-                if (!root.quantumBit && root !== this.entry) { file.quantumBitBanned = true; }
+                if (!root.quantumBit && root !== this.entry) {
+                    file.quantumBitBanned = true;
+                }
                 else {
                     if (root.quantumBit && root.quantumBit !== this && root !== this.entry) {
                         file.quantumBitBanned = true;
                     }
                 }
             }
-            if (!file.quantumBit) { file.quantumBitBanned = true; };
+            if (!file.quantumBit) {
+                file.quantumBitBanned = true;
+            };
         }
+
         for (const item of this.modulesCanidates) {
             const moduleCandidate = item[1];
             // a case where the same library is imported dynamically and through require statements
@@ -165,6 +171,22 @@ export class QuantumBit {
                 })
             }
         }
+
+        this.modulesCanidates.forEach(pkg => {
+            if (!pkg.quantumBitBanned) {
+                pkg.fileAbstractions.forEach(f => {
+                    const dependents = this.findRootDependents(f, []);
+                    dependents.forEach(dep => {
+                        if (!dep.quantumBit && dep !== this.entry) { pkg.quantumBitBanned = true; }
+                        else {
+                            if (dep.quantumBit && dep.quantumBit !== this && dep !== this.entry) {
+                                pkg.quantumBitBanned = true;
+                            }
+                        }
+                    });
+                });
+            }
+        })
     }
 
     public populate() {

@@ -340,6 +340,7 @@ gulp.task("installDevDeps", function(done) {
         "vue-template-compiler",
         "vue-template-es2015-compiler",
         "vue",
+        "jwt-decode",
         "vue-server-renderer",
         "vue-hot-reload-api",
         "vue-class-component",
