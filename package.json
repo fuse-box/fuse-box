@@ -1,6 +1,6 @@
 {
   "name": "fuse-box",
-  "version": "3.0.0-next.28",
+  "version": "3.0.0-next.29",
   "description": "Fuse-Box a bundler that does it right",
   "typings": "index.d.ts",
   "main": "index.js",
