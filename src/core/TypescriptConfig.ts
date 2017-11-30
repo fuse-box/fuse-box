@@ -26,12 +26,12 @@ export class TypescriptConfig {
             compilerOptions.sourceMap = true;
             compilerOptions.inlineSources = true;
         }
-        if ( this.context.forcedLanguageLevel ){
+        if (this.context.forcedLanguageLevel) {
             this.forceCompilerTarget(this.context.forcedLanguageLevel);
         }
     }
 
-    public forceCompilerTarget(level : ScriptTarget){
+    public forceCompilerTarget(level: ScriptTarget) {
         this.context.log.echoInfo(`Typescript forced script target: ${ScriptTarget[level]}`)
         const compilerOptions = this.config.compilerOptions = this.config.compilerOptions || {};
         compilerOptions.target = ScriptTarget[level];
@@ -41,7 +41,7 @@ export class TypescriptConfig {
         this.customTsConfig = customTsConfig;
     }
 
-    private initializeConfig(){
+    private initializeConfig() {
         const compilerOptions = this.config.compilerOptions;
         compilerOptions.jsx = "react";
         compilerOptions.importHelpers = true;
@@ -53,16 +53,17 @@ export class TypescriptConfig {
     }
 
 
-    private verifyTsLib(){
-        if ( this.config.compilerOptions.importHelpers === true ){
+    private verifyTsLib() {
+        if (this.config.compilerOptions.importHelpers === true) {
             const tslibPath = path.join(Config.NODE_MODULES_DIR, "tslib");
-            if(!fs.existsSync(tslibPath)) {
+            if (!fs.existsSync(tslibPath)) {
                 this.context.log.echoWarning(`You have enabled importHelpers. Please install tslib - https://github.com/Microsoft/tslib`)
             }
         }
     }
     public read() {
-        const cacheKey = (this.customTsConfig || this.context.homeDir) + this.context.target;
+        const cacheKey = (typeof this.customTsConfig === "string" ? this.customTsConfig : this.context.homeDir)
+            + this.context.target + this.context.languageLevel;
         if (CACHED[cacheKey]) {
             this.config = CACHED[cacheKey];
         } else {
@@ -78,7 +79,7 @@ export class TypescriptConfig {
                 url = path.join(this.context.homeDir, "tsconfig.json");
                 let tsconfig = findFileBackwards(url, this.context.appRoot);
                 if (tsconfig) {
-                    configFileFound= true;
+                    configFileFound = true;
                     configFile = tsconfig;
                 }
             }
@@ -103,10 +104,10 @@ export class TypescriptConfig {
 
             this.config = config;
             this.defaultSetup();
-            if(!configFileFound && this.context.ensureTsConfig === true){
-              this.initializeConfig();
+            if (!configFileFound && this.context.ensureTsConfig === true) {
+                this.initializeConfig();
             }
-            if( this.context.ensureTsConfig === true ){
+            if (this.context.ensureTsConfig === true) {
                 this.verifyTsLib();
             }
             this.context.log.echoInfo(`Typescript script target: ${config.compilerOptions.target}`)
