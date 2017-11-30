@@ -4,6 +4,7 @@ import { SparkyFilePatternOptions } from "./SparkyFilePattern";
 import { each } from "realm-utils";
 import { WorkFlowContext } from "../core/WorkflowContext";
 import { Log } from "../Log";
+import { SparkyContext, SparkyContextClass, SparkyCurrentContext } from './SparkyContext';
 
 const context = new WorkFlowContext();
 context.doLog = process.env.SPARKY_LOG !== 'false';
@@ -39,6 +40,13 @@ export class Sparky {
         return this;
     }
 
+    public static context(target:
+        () => { [key: string]: any } |
+            (new () => any) |
+            { [key: string]: any }): SparkyContextClass {
+        return SparkyContext(target);
+    }
+
     public static src(glob: string | string[], opts?: SparkyFilePatternOptions): SparkFlow {
         const flow = new SparkFlow();
         let globs = Array.isArray(glob) ? glob : [glob]
@@ -66,7 +74,7 @@ export class Sparky {
             // resolve waterfal dependencies
             each(task.waterfallDependencies, name => this.resolve(name))
         ]).then(() => {
-            return this.execute(task.fn());
+            return this.execute(task.fn(SparkyCurrentContext));
         });
     }
 

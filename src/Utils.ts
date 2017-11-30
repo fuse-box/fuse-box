@@ -189,6 +189,17 @@ export function hashString(text: string) {
     let data = hash >>> 0;
     return data.toString(16);
 }
+export function isClass(obj) {
+    const isCtorClass = obj.constructor
+        && obj.constructor.toString().substring(0, 5) === 'class'
+    if (obj.prototype === undefined) {
+        return isCtorClass
+    }
+    const isPrototypeCtorClass = obj.prototype.constructor
+        && obj.prototype.constructor.toString
+        && obj.prototype.constructor.toString().substring(0, 5) === 'class'
+    return isCtorClass || isPrototypeCtorClass
+}
 
 export function fastHash(text: string) {
     let hash = 0;
