@@ -90,6 +90,10 @@ export class SparkyFile {
 
     public copy(dest: string) {
         return new Promise((resolve, reject) => {
+            const isDirectory = fs.statSync(this.filepath).isDirectory();
+            if (isDirectory) {
+                return resolve();
+            }
             const isTemplate = dest.indexOf("$") > -1;
             if (isTemplate) {
                 if (!path.isAbsolute(dest)) {
