@@ -3,8 +3,6 @@
 ## Description
 CSSPlugin is used to handle .css syntax.  As such, it should always be at the end of any CSS processing chain (see [#list-of-plugins](Plugin configuration) for examples of plugin chains), as it handles everything that is relating to bundling, reloading and grouping css styles.
 
-[see the mastering css with fusebox example](https://github.com/fuse-box/mastering-css)
-
 ## Usage
 
 ### Setup
@@ -115,4 +113,8 @@ plugins : [
 
 > NOTE! outFile must be a string (not a callback) when used with the `group` option.
 
-Check out the tests [here](https://github.com/fuse-box/fuse-box/blob/master/src/tests/CSSPlugin.test.ts)
+Check out the tests [here](https://github.com/fuse-box/fuse-box/blob/master/src/tests/plugins/CSSPlugin.test.ts) and some examples:
+
+- [shimming and css example](https://github.com/fuse-box/shimming-and-css-example)
+- [dynamic import css](https://github.com/fuse-box/fuse-box-examples/tree/master/examples/dynamic_import_css)
+- [hmr hosted css files](https://github.com/fuse-box/fuse-box-examples/tree/master/examples/hmr-hosted-css-files)
