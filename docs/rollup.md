@@ -1,6 +1,6 @@
 # Rollup
 
-For those how are into minimalist bundles, FuseBox offers built-in `Rollup` support.
+For those who are into minimalist bundles, FuseBox offers built-in `Rollup` support.
 
 At the moment it works only on typescript projects, this is because typescript is used to transpile your code from es6 to es5 in the virtual file system.
 
