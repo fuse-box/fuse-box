@@ -132,6 +132,11 @@ export class CSSResourcePluginClass implements Plugin {
                         url = url.replace('$' + key, this.macros[key])
                     }
                 }
+
+                if (url.startsWith('https:') || url.startsWith('http:') || url.startsWith('//')) {
+                    return url
+                }
+
                 let urlFile = path.isAbsolute(url) ? url : path.resolve(currentFolder, url);
                 urlFile = urlFile.replace(/[?\#].*$/, "");
 
