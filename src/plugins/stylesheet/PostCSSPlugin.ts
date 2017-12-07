@@ -25,7 +25,7 @@ export class PostCSSPluginClass implements Plugin {
      * @type {RegExp}
      * @memberOf FuseBoxCSSPlugin
      */
-    public test: RegExp = /\.css$/;
+    public test: RegExp = /\.p?css$/;
     public dependencies = [];
     constructor(public processors: Processors = [], public options: PostCSSPluginOptions = {}) { }
     /**
@@ -37,6 +37,7 @@ export class PostCSSPluginClass implements Plugin {
      */
     public init(context: WorkFlowContext) {
         context.allowExtension(".css");
+        context.allowExtension(".pcss");
     }
 
     /**
@@ -68,7 +69,7 @@ export class PostCSSPluginClass implements Plugin {
         const cssDependencies = file.context.extractCSSDependencies(file, {
             paths: paths,
             content: file.contents,
-            extensions: ["css"]
+            extensions: ["css", "pcss"]
         });
         file.cssDependencies = cssDependencies;
 
