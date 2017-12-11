@@ -31,8 +31,9 @@ export class FuseProcess {
 				mdl;
 		}
 		return new Promise((resolve, reject) => {
-			let cache = (<any>require).cache, cached = cache[this.filePath], closePromise, exps;
-			if (cached) {
+			let cache = (<any>require).cache, closePromise, exps
+			const cached = cache && cache[this.filePath];
+			if (cached != null) {
 				try {
 					if (opts.close)	//if a close function is given in parameter
 						closePromise = opts.close(cached.exports);
