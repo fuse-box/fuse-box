@@ -8,6 +8,7 @@ import { OwnVariable } from "./plugins/OwnVariable";
 import { OwnBundle } from "./plugins/OwnBundle";
 import { ImportDeclaration } from "./plugins/ImportDeclaration";
 import { DynamicImportStatement } from "./plugins/DynamicImportStatement";
+import { escapeRegExp } from '../Utils';
 require("acorn-jsx/inject")(acorn);
 require("./acorn-ext/obj-rest-spread")(acorn);
 
@@ -58,7 +59,7 @@ export class FileAnalysis {
 
     public requiresRegeneration = false;
 
-    public stringReplacement = new Set<{ from: string, to: string }>();
+    public statementReplacement = new Set<{ from: string, to: string }>();
 
     public requiresTranspilation = false;
 
@@ -68,10 +69,6 @@ export class FileAnalysis {
 
     constructor(public file: File) { }
 
-
-    public add2Replacement(from: string, to: string) {
-        this.stringReplacement.add({ from: from, to: to })
-    }
     public astIsLoaded(): boolean {
         return this.ast !== undefined;
     }
@@ -103,6 +100,12 @@ export class FileAnalysis {
             this.ast = acornParse(this.file.contents, options);
         } catch (err) {
             return PrettyError.errorWithContents(err, this.file);
+        }
+    }
+
+    public registerReplacement(rawRequireStatement: string, targetReplacement: string) {
+        if( rawRequireStatement !== targetReplacement ){
+            this.statementReplacement.add({ from: rawRequireStatement, to: targetReplacement })
         }
     }
 
@@ -166,9 +169,11 @@ export class FileAnalysis {
 
         this.wasAnalysed = true;
         // regenerate content
-        this.stringReplacement.forEach(item => {
-            this.file.contents = this.file.contents.replace(item.from, item.to)
-        })
+        this.statementReplacement.forEach(item => {
+            const regExp =
+                new RegExp(`(require|\\$fsmp\\$)\\(('|")${escapeRegExp(item.from)}('|")\\)`)
+            this.file.contents = this.file.contents.replace(regExp, `$1("${item.to}")`)
+        });
 
         if (this.requiresRegeneration) {
             this.file.contents = this.file.context.generateCode(this.ast, {
