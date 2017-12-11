@@ -14,6 +14,7 @@ export class DynamicImportStatement {
         if (node.type === "CallExpression" && node.callee) {
             if (node.callee.type === "Identifier" && node.callee.name === "$fsmp$") {
                 let arg1 = node.arguments[0];
+                const currentValue = arg1.value;
                 if (analysis.nodeIsString(arg1)) {
                     let requireStatement = arg1.value;
                     if (file.context.bundle.producer) {
@@ -30,18 +31,18 @@ export class DynamicImportStatement {
                     requireStatement = result.requireStatement;
                     let resolved = file.collection.pm.resolve(requireStatement, file.info.absDir);
                     if (resolved) {
-                        
-                        if (resolved.isNodeModule) {    
+                        if (resolved.isNodeModule) {
                             analysis.addDependency(resolved.nodeModuleName);
                         } else {
                             if (resolved.fuseBoxPath && fs.existsSync(resolved.absPath)) {
                                 arg1.value = `~/${resolved.fuseBoxPath}`;
-                                if( !file.belongsToProject()){
+                                if (!file.belongsToProject()) {
                                     arg1.value = `${file.collection.name}/${resolved.fuseBoxPath}`;
                                 }
                                 //analysis.add2Replacement(arg1.raw, JSON.stringify(arg1.value));
                                 analysis.addDependency(resolved.absPath);
-                                file.analysis.requiresRegeneration = true;
+                                analysis.registerReplacement(currentValue, arg1.value);
+                                //file.analysis.requiresRegeneration = true;
                             }
                         }
                     }

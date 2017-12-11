@@ -139,6 +139,11 @@ export function isStylesheetExtension(str: string) {
     let ext = path.extname(str);
     return stylesheetExtensions.has(ext);
 }
+
+export function escapeRegExp(str: string) {
+    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
 export function string2RegExp(obj: any) {
     let escapedRegEx = obj
         .replace(/\*/g, "@")

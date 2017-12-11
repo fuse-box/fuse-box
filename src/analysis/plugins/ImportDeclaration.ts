@@ -18,6 +18,7 @@ export class ImportDeclaration {
                 if (analysis.nodeIsString(arg1)) {
                     let requireStatement = this.handleAliasReplacement(file, arg1.value);
                     if (requireStatement) {
+                        analysis.registerReplacement(arg1.value, requireStatement);
                         arg1.value = requireStatement;
                         analysis.addDependency(requireStatement);
                     }
@@ -66,7 +67,7 @@ export class ImportDeclaration {
                 if (overrides[requireStatement] !== undefined) {
                     if (typeof overrides[requireStatement] === "string") {
                         requireStatement = overrides[requireStatement];
-                        file.analysis.requiresRegeneration = true;
+                        //file.analysis.requiresRegeneration = true;
                     } else {
                         // which means that's is probable "false" and shouldn't be bundled
                         return;
@@ -79,7 +80,7 @@ export class ImportDeclaration {
                         if (overrides[fuseBoxPath] !== undefined) {
                             if (typeof overrides[fuseBoxPath] === "string") {
                                 requireStatement = overrides[fuseBoxPath];
-                                file.analysis.requiresRegeneration = true;
+                                //file.analysis.requiresRegeneration = true;
                             } else {
                                 // which means that's is probable "false" and shouldn't be bundled
                                 return;
@@ -93,7 +94,7 @@ export class ImportDeclaration {
 
         let result = file.context.replaceAliases(requireStatement)
         if ( result.replaced){
-            file.analysis.requiresRegeneration = true;
+            //file.analysis.requiresRegeneration = true;
         }
         return result.requireStatement;
     }
