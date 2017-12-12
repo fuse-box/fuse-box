@@ -20,7 +20,10 @@ export const PostCSSResourcePlugin = postcss.plugin("css-resource", function (op
         css.walkDecls(declaration => {
             if (declaration.prop) {
 
-                if (declaration.prop.indexOf("background") === 0 || declaration.prop.indexOf("src") === 0 || declaration.prop.indexOf("mask-image") > -1) {
+                if (declaration.prop.indexOf("background") === 0 ||
+                    declaration.prop.indexOf("src") === 0 ||
+                    declaration.prop.indexOf("mask-image") > -1 ||
+                    declaration.prop.indexOf("border-image") > -1) {
                     let re = /url\(([^\)]+)\)/gm;
                     let match;
                     const v = declaration.value;
