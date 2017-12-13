@@ -58,6 +58,17 @@ export class Sparky {
         let globs = Array.isArray(glob) ? glob : [glob]
         return flow.watch(globs, opts);
     }
+
+    public static async exec(...args : Array<string | (() => any)>) {
+        for (const task of args) {
+            if (typeof task === "string") {
+                await this.resolve(task)
+            } else {
+                await task();
+            }
+        }
+    }
+
     public static start(tname?: string): Promise<any> {
         const taskName = tname || process.argv[2] || "default";
         if (!this.tasks.get(taskName)) {
