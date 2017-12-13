@@ -4,11 +4,11 @@ Sparky is a Task-Runner like `Gulp` or `Grunt`, but what sets it apart is that i
 
 ## Benefits
 
-steps:
-    * Unlike `gulp` Sparky utilizes `FuseBox` power, for example, you don't need to create tasks to transpile `TypeScript`, `FuseBox` will do that for you. instead use `Sparky` to do common tasks like copying, moving, deleting files, etc. Of course, that does not prevent you from doing that if you don't want to utilize `FuseBox` awesomeness.
-    * Simple intuitive API.
-    * Based on Promises, this means it is super fast and allows you to use `ES2017` `async/await` syntax.
-    * Ability to run tasks in parallel and sequentially (waterfall).
+
+* Unlike `gulp` Sparky utilizes `FuseBox` power, for example, you don't need to create tasks to transpile `TypeScript`, `FuseBox` will do that for you. instead use `Sparky` to do common tasks like copying, moving, deleting files, etc. Of course, that does not prevent you from doing that if you don't want to utilize `FuseBox` awesomeness.
+* Simple intuitive API.
+* Based on Promises, this means it is super fast and allows you to use `ES2017` `async/await` syntax.
+* Ability to run tasks in parallel and sequentially (waterfall).
 
 ## Installation
 This is one of the best parts about `Sparky`, it comes built in `FuseBox` so if you install `FuseBox` this means you already have it.
