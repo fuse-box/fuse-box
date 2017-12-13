@@ -33,7 +33,7 @@ To run the above do `node fuse clean`
 One of the great benifits in Sparky is `Context`. Context is a shared object between tasks that will be constructud/executed upon execution
 
 
-A class will instantiated
+A class will be instantiated
 ```js
 const { src, context, task } = require("fuse-box/sparky");
 context(class {
