@@ -5,6 +5,7 @@ import * as postcss from "postcss";
 
 export interface CSSModulesOptions {
     useDefault?: boolean;
+    scopedName?: string;
 }
 
 export class CSSModulesClass implements Plugin {
@@ -12,11 +13,15 @@ export class CSSModulesClass implements Plugin {
     public test: RegExp = /\.css$/;
     public options: CSSModulesOptions;
     public useDefault = true;
+    public scopedName;
 
     constructor(options: CSSModulesOptions = {}) {
         this.options = options;
         if (this.options.useDefault !== undefined) {
             this.useDefault = this.options.useDefault;
+        }
+        if (this.options.scopedName !== undefined) {
+            this.scopedName = this.options.scopedName;
         }
     }
 
@@ -39,7 +44,8 @@ export class CSSModulesClass implements Plugin {
                         }
                         cnt.push(`${exportsKey} = ${JSON.stringify(json)};`);
                         file.addAlternativeContent(cnt.join('\n'));
-                    }
+                    },
+                    generateScopedName: this.scopedName ? this.scopedName : '_[local]___[hash:base64:5]'
                 })
             ]).process(file.contents, {})
                 .then(result => {
