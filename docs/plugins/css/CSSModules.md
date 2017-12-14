@@ -105,6 +105,23 @@ CSSModules({
 })
 ```
 
+### generateScopedName
+
+By default, `CSSModules` uses the following class naming strategy:
+
+```
+_[local]___[hash:base64:5]
+```
+
+To overrise that, use the `scopedName` property when initializing the
+plugin.
+
+```js
+CSSModules({
+  scopedName: '[name]__[local]___[hash:base64:3]',
+})
+```
+
 ## Development mode
 In development, the imported stylesheets are appended to the `<head>` of
 the document by the outputted JavaScript bundle. This allows for the files
