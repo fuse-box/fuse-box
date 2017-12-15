@@ -84,6 +84,7 @@ export class LESSPluginClass implements Plugin {
             file.contents = output.css;
 
             if (context.useCache) {
+                file.bustCSSCache = true;
                 file.analysis.dependencies = cssDependencies;
                 context.cache.writeStaticCache(file, file.sourceMap, "less");
                 file.analysis.dependencies = [];
