@@ -59,6 +59,12 @@ export class Sparky {
         return flow.watch(globs, opts);
     }
 
+    public static init(paths : string[]){
+        const flow = new SparkFlow();
+        flow.createFiles(paths);
+        return flow;
+    }
+
     public static async exec(...args : Array<string | (() => any)>) {
         for (const task of args) {
             if (typeof task === "string") {
