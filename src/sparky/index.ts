@@ -7,3 +7,4 @@ export const watch = Sparky.watch.bind(Sparky);
 export const task = Sparky.task.bind(Sparky);
 export const context = SparkyContext.bind(Sparky);
 export const exec = Sparky.exec.bind(Sparky);
+export const init = Sparky.init.bind(Sparky);

@@ -1,6 +1,7 @@
 import * as glob from "glob";
 import * as fs from "fs-extra";
 import * as chokidar from "chokidar";
+import * as path from "path";
 import { each } from "realm-utils";
 import { ensureDir, string2RegExp } from "../Utils";
 import { SparkyFile } from "./SparkyFile";
@@ -20,6 +21,15 @@ export class SparkFlow {
     public glob(globs: string[], opts?: SparkyFilePatternOptions): SparkFlow {
         this.activities.push(() => this.getFiles(globs, opts));
         return this;
+    }
+
+    public createFiles(paths : string[]){
+        this.files = [];
+        paths.forEach(p => {
+            const isAbsolute = path.isAbsolute(p)
+            const fpath = isAbsolute ? p : path.join(process.cwd(), p);
+            this.files.push(new SparkyFile(fpath, isAbsolute ? path.dirname(p) : process.cwd()))
+        })
     }
 
     public stopWatching() {
@@ -123,6 +133,15 @@ export class SparkFlow {
         return this;
     }
 
+    public each(fn : (file: SparkyFile) => void){
+        this.activities.push(() => {
+            return each(this.files, (file: SparkyFile) => {
+                return fn(file);
+            })
+        });
+        return this;
+    }
+
     public file(mask: string, fn: any) {
         this.activities.push(() => {
             let regexp = string2RegExp(mask);
@@ -136,7 +155,14 @@ export class SparkFlow {
         return this;
     }
 
-
+    public next(fn : (file : SparkyFile) => void){
+        this.activities.push(() => {
+            return each(this.files, (file: SparkyFile) => {
+                return fn(file);
+            });
+        });
+        return this;
+    }
 
 
     public dest(dest: string): SparkFlow {
