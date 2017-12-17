@@ -56,7 +56,7 @@ plugins: [
 ]
 ```
 
-The above ill write your assets (images, fonts) to folder `myProject/build/resources`.
+The above will write your assets (images, fonts) to folder `myProject/build/resources`.
 
 ### resolve
 
