@@ -11,7 +11,7 @@ steps:
     * Run
      After you bundles are defined you can execute fuse.run() which will execute them all. A producer knows about the order, in a way it's an orchestrator
 
-The following diagramm illustrates the process:
+The following diagram illustrates the process:
 
 ```
 graph TB
@@ -149,7 +149,7 @@ const vendor = fuse.bundle("vendor")
         .instructions(`~ **/**.{ts,tsx}`);
     if (!production) { vendor.hmr(); }
 ```
-In this case every single `ts` and `tsx` modules will be processed, resulting in `vendor.js` that will contain all required dependencies. Actuall project files will be omited.
+In this case every single `ts` and `tsx` modules will be processed, resulting in `vendor.js` that will contain all required dependencies. Actual project files will be omitted.
 
 ```js
 if (!production) { vendor.hmr(); }
@@ -197,7 +197,7 @@ You can now visit `http://localhost:4445` to see how it works
 
 ## Option override
 
-You can use the chainable API which will allow you to override options (shim, e.t.c). For example:
+You can use the chainable API which will allow you to override options (shim, etc). For example:
 
 
 ```js
@@ -331,7 +331,7 @@ After, if the bundle has a main file,
 * An `export function close(): Promise` in the bundle
 * A default export who has a `close()=> Promise` function.
 
-If the close function returns a promise, this one will be awaited before requireing the new version of the bundle. If it returns anything else than a promise, the value is ignored.
+If the close function returns a promise, this one will be awaited before requiring the new version of the bundle. If it returns anything else than a promise, the value is ignored.
 The `require` function by itself returns a promise that resolves to the loaded bundle main-file `FuseBox` Object.
 
 ## Bundle in a bundle
