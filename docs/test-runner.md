@@ -18,7 +18,7 @@ github_example: test-runner
 
 ## Default pattern
 
-FuseBox will take this pattern `[**/**.test.ts]` which can be overriden.
+FuseBox will take this pattern `[**/**.test.ts]` which can be overridden.
 
 ## Exposing tests
 
@@ -93,9 +93,9 @@ should(file.localImports)
 
 | name | Meaning |
 | ------------- | ------------- |
-| ` equal() `   | Equals stricty  |
+| ` equal() `   | Equals strictly  |
 | ` deepEqual() `   | Equals deeply  |
-| ` notEqual() `   | Not equals stricty  |
+| ` notEqual() `   | Not equals strictly  |
 | ` match(/foo/) `   | Matches  using regexp |
 | ` notMatch(/foo/) `   | Should not match |
 | ` notMatch(/foo/) `   | Should not match |
@@ -113,7 +113,7 @@ should(file.localImports)
 | ` beFalse() `   | Should be false |
 | ` beArray() `   | Should be an array |
 | ` beObject() `   | Should be an object |
-| ` bePlainObject() `   | Should be a plain objec |
+| ` bePlainObject() `   | Should be a plain object |
 | ` bePromise() `   | Should be a promise |
 | ` beFunction() `   | Should be a function |
 | ` beNumber() `   | Should be a number |

@@ -113,7 +113,7 @@ By default, `CSSModules` uses the following class naming strategy:
 _[local]___[hash:base64:5]
 ```
 
-To overrise that, use the `scopedName` property when initializing the
+To override that, use the `scopedName` property when initializing the
 plugin.
 
 ```js

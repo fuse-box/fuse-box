@@ -120,7 +120,7 @@ if (!file.analysis.ast) {
 
 ## Transforming typescript
 
-You can tranform typescript code before it actually gets to transpiling
+You can transform typescript code before it actually gets to transpiling
 
 ```js
 const MySuperTranformation = {

@@ -1,6 +1,6 @@
 # Contributing
 
-First of all, thanks for chosing FuseBox. Our mission is to deliver the best developer experience for javascript developers. But we need your help. Any contribution is absolutely valuable, starting from just giving ideas and drafting a PR.
+First of all, thanks for choosing FuseBox. Our mission is to deliver the best developer experience for javascript developers. But we need your help. Any contribution is absolutely valuable, starting from just giving ideas and drafting a PR.
 
 But before you fork and actually starting coding something let's define some rules.
 
@@ -23,7 +23,7 @@ Do not attempt to make breaking changes unless it has been discussed. There is a
 
 ### Developing
 
-Seetting up development is very easy - `gulp dev` will prepare everything including `_playground/generic` folder. So you can start helping out and testing bugfixes and features right away.
+Setting up development is very easy - `gulp dev` will prepare everything including `_playground/generic` folder. So you can start helping out and testing bugfixes and features right away.
 
 ```bash
 gulp dev
