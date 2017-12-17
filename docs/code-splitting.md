@@ -10,7 +10,7 @@ Code splitting in FuseBox is very simple, before we dive into examples, these ar
 
 steps:
     * Master Bundle
-    Code splitting happens on a master bundle, so techincally you have only 1 bundle that is going to be split. All split bundles will be generated automatically
+    Code splitting happens on a master bundle, so technically you have only 1 bundle that is going to be split. All split bundles will be generated automatically
     * Configuration is shared
     Split bundles fully depend on a master bundle. They cannot be customised or decorated with additional configuration as they are "branched out"
     * Piping files

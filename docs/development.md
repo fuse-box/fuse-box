@@ -4,7 +4,7 @@ FuseBox offers a very convenient fully customisable development server and a Hot
 
 ## Development Server
 
-FuseBox utilises `express.js` to launch a web server. To create it, define `fuse.dev` function right after your initilisation
+FuseBox utilises `express.js` to launch a web server. To create it, define `fuse.dev` function right after your initialisation
 
 ```js
 const fuse = FuseBox.init({
@@ -99,7 +99,7 @@ The example above will server static files under the current build folder. To ma
 
 ## Watching for changes
 
-FuseBox can automatically re-bundle your bundles on file change. FuseBox Producer makes sure that only 1 wather is bound (chokidar).
+FuseBox can automatically re-bundle your bundles on file change. FuseBox Producer makes sure that only 1 watcher is bound (chokidar).
 
 ```js
 const app = fuse.bundle("app")
@@ -148,7 +148,7 @@ const app = fuse.bundle("app")
     .hmr()
 ```
 
-You can add `hmr()` options to all of your bundles, however only the first defined will actually recevie an `HMRPlugin` (FuseBox injects it automatically). It's important when dealing with [vendor bundles](/page/bundle#creating-vendors)
+You can add `hmr()` options to all of your bundles, however only the first defined will actually receive an `HMRPlugin` (FuseBox injects it automatically). It's important when dealing with [vendor bundles](/page/bundle#creating-vendors)
 
 `HMRPlugin()` is an internal plugin which is being injected by FuseBox [Producer](/page/bundle#producer). You will have  corresponding modules bundled along with your project. Make sure to disable it when doing production builds, for example with vendor:
 
@@ -159,7 +159,7 @@ const vendor = fuse.bundle("vendor")
 ```
 
 ### Auto reload page
-You can change the hehavor of HMR and reload the entire page (like browser sync) 
+You can change the behaviour of HMR and reload the entire page (like browser sync) 
 ```js
 .hmr({reload : true});
 ```

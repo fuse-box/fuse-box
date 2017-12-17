@@ -13,9 +13,9 @@ steps:
  * Static Tree Shaking
    Quantum features a static tree shaking algorithm. Unlike rollup, quantum tree shaking works with commonjs, however, the code should resemble es6 imports
  * Production environments
-   All development related functionlity will be removed
+   All development related functionality will be removed
  * Hoisting (experimental)
-   Repetetive require statements will be hoisted
+   Repetitive require statements will be hoisted
 
 
 Quantum bundles are in fact a bit smaller than the ones produced with Rollup.
@@ -146,7 +146,7 @@ var hello = function(){}
 exports.hello = hello;
 ```
 
-But it will not work if you start playing around with module and exports and start re-assigning values. Quantum performs the tree-shaking algorithm on modules that conform to certain standards. For example, transplied from es6 to es5.
+But it will not work if you start playing around with module and exports and start re-assigning values. Quantum performs the tree-shaking algorithm on modules that conform to certain standards. For example, transpiled from es6 to es5.
 
 Quantum doesn't really remove `var hello = function(){}`, it actually leaves it up for UglifyJS to decide, that's why it's important to enable it.
 
@@ -386,7 +386,7 @@ When babel introduced ES2015 Modules => CommonJS, the spec wasn't completed. How
 
 Instead, you must import * as Foo from 'x'.
 
-FuseBox alings with the specifications and doesn't allow this kind of heresy in the code and removes it without any mercy.
+FuseBox aligns with the specifications and doesn't allow this kind of heresy in the code and removes it without any mercy.
 However many react users are still using it.
 
 ### extendServerImport
@@ -405,7 +405,7 @@ note: Install `request` library beforehand
 ### processPolyfill
 Default value: `false`
 
-Removes all references to process. The most common use of process if `process.env` which is replaced nicely with Quantum. Therefore, if a user bundles it by mistake all the refences and the module will be removed even without tree shaking.
+Removes all references to process. The most common use of process if `process.env` which is replaced nicely with Quantum. Therefore, if a user bundles it by mistake all the references and the module will be removed even without tree shaking.
 
 ### replaceTypeOf
 Default value: `true`
@@ -478,7 +478,7 @@ QuantumPlugin({
 In the example above, the file`foo.js` will not be removed, as it was restricted by user.
 
 
-note: Make sure you application has en entry point, otherwise some files can be removed due to uknown to Quantum use case.
+note: Make sure you application has an entry point, otherwise some files can be removed due to unknown to Quantum use case.
 
 ### warnings
 Default value: `true`
@@ -529,7 +529,7 @@ in Quantum should work right away.
 Computed require statement is an issue that cannot be solved automatically. As mentioned earlier, most of the libraries
 work out of the box, however a lib that is poorly designed or has an implementation that requires dynamic modules resolution may give a headache.
 
-FuseBox spits out warnigs:
+FuseBox spits out warnings:
 
 ```bash
 Warnings:
@@ -562,7 +562,7 @@ Your quantum bundle might not work
   - Computed statement warning in default/foo.js
 ```
 
-Now we know the the problem in your `default` package (basically your project) in a file `foo.js`.
+Now we know the problem in your `default` package (basically your project) in a file `foo.js`.
 
 ### Easy solution
 If you don't really want to dive into someone's code, you could try resolving it using a simple api tweak
@@ -581,7 +581,7 @@ If you really need to fix it and make it work with Quantum, keep on reading
 
 ### Solution
 
-Now as we indentified the problem, we can now solve it by mapping files to numbers.
+Now as we identified the problem, we can now solve it by mapping files to numbers.
 
 Let's imagine the following:
 ```

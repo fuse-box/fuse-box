@@ -23,7 +23,7 @@ FuseBox.import("fs");
 ```
 
 Please note that some libraries like "fs" are faked in the browser. Meaning that it won't spit out an error, but won't work as expected on the server for known reasons.
-Nodejs environment, however, will get authentic "fs" module. (Concerns http, net, tty e.t.c )
+Nodejs environment, however, will get authentic "fs" module. (Concerns http, net, tty etc )
 
 
 ### Point to the root

@@ -52,7 +52,7 @@ There are few macros available.
 | $name  | The name of your bundle  |
 | $hash  | Applying hash when available  |
 
-`$hash` is used when the hash option is set, otherwise it will be removed. FuseBox will create folders automatically, so you don't need to worry if a folder is present. FuseBox will also tolerate an absense of `$name` macro, converting it internally into a template
+`$hash` is used when the hash option is set, otherwise it will be removed. FuseBox will create folders automatically, so you don't need to worry if a folder is present. FuseBox will also tolerate an absence of `$name` macro, converting it internally into a template
 
 For example this:
 
@@ -272,7 +272,7 @@ WebIndexPlugin({
 
 ### Hashes and bundles
 
-You can retreive bundle names from a [producer](/page/bundle#producer) like so:
+You can retrieve bundle names from a [producer](/page/bundle#producer) like so:
 
 ```js
 fuse.run().then(producer => {
@@ -293,7 +293,7 @@ lastPrimaryOutput contains the following information
 
 
 ## useJsNext
-If this option is `true` FuseBox will take "json:next" or "module" properties from `package.json` if avaialable
+If this option is `true` FuseBox will take "json:next" or "module" properties from `package.json` if available
 
 ```js
 FuseBox.init({

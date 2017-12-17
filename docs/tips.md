@@ -21,7 +21,7 @@ for example to import a file just use `FuseBox.import('./myfile')`
 
 Electron gives the renderer process the ability to call native commands by proxying through the `electron` module.
 
-To make this setup work with **FuseBox**, you'll need to **add** these two options to the bundle targetting your renderer.
+To make this setup work with **FuseBox**, you'll need to **add** these two options to the bundle targeting your renderer.
 
 ```js
 {

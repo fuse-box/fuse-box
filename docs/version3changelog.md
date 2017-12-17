@@ -21,7 +21,7 @@ const about = await import("./components/AboutComponent");
 new about.AboutComponent();
 ```
 
-Development version will be left untouched, however, when you will run it againts Quantum, it will create a file `167ae727.js` which will contain all dependencies that do not cross with the project and/or other bundles. e.g if you are using `moment` library only in `that` bundle the entire module will be moved to `167ae727.js`
+Development version will be left untouched, however, when you will run it against Quantum, it will create a file `167ae727.js` which will contain all dependencies that do not cross with the project and/or other bundles. e.g if you are using `moment` library only in `that` bundle the entire module will be moved to `167ae727.js`
 
 You can find an example project [here](https://github.com/fuse-box/fuse-box-3-preview/tree/master/smart-splitting)
 
@@ -31,7 +31,7 @@ Enjoy!
 
 ## Better distribution
 
-Previsouly npm package had all kind of files (not related to runtime)
+Previously npm package had all kind of files (not related to runtime)
  
 Now everything is under the `root`, no more unnecessary and distracting folders
 So if you were importing
@@ -72,7 +72,7 @@ Make a change - get an instant result.
 
 ### TsConfig
 
-TsConfig can be overridden now. For example you have a `tsconfig.json` which FuseBox picks up automatically, but you want to make a slighly different configuration (for example change the target).
+TsConfig can be overridden now. For example you have a `tsconfig.json` which FuseBox picks up automatically, but you want to make a slightly different configuration (for example change the target).
 
 You can achieve that by providing an array with an object.
 ```js

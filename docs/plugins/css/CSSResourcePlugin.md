@@ -45,7 +45,7 @@ It re-writes the URL and copies files to a destination specified by user.
 ## Options
 
 ### dist
-Sets the location of the folder where the assets will be written to. For Eample:
+Sets the location of the folder where the assets will be written to. For example:
 
 ```js
 plugins: [
@@ -56,7 +56,7 @@ plugins: [
 ]
 ```
 
-The above ill write your assets (images,fonts) to folder `myProject/build/resources`.
+The above will write your assets (images, fonts) to folder `myProject/build/resources`.
 
 ### resolve
 
