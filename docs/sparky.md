@@ -10,10 +10,10 @@ Sparky is a Task-Runner like `Gulp` or `Grunt`, but what sets it apart is that i
 * Based on Promises, this means it is super fast and allows you to use `ES2017` `async/await` syntax.
 * Ability to run tasks in parallel and sequentially (waterfall).
 
-## Installation
+
 This is one of the best parts about `Sparky`, it comes built in `FuseBox` so if you install `FuseBox` this means you already have it.
 
-# Usage
+## Usage
 `Sparky` does not require `CLI` or global installation. just create a file called `fuse.js` in your app root (it does not have to be called `fuse.js`, you can name it anything and put it anywhere, it is just a `JavaScript` file), then from your command line just type `node fuse [task name]`. for example, say you have a task called build, you can simply run it using `node fuse build`.
 
 `c:/myProject/fuse.js`
@@ -26,7 +26,6 @@ task("clean", async context => {
 ```
 To run the above do `node fuse clean`
 
-# API
 
 ## Context
 
