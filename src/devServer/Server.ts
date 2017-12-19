@@ -78,9 +78,9 @@ export class Server {
 
         process.nextTick(() => {
             if (opts.httpServer === false) {
-                SocketServer.startSocketServer(port, this.fuse);
+                this.socketServer = SocketServer.startSocketServer(port, this.fuse);
             } else {
-                this.httpServer.launch({ root, port }, opts);
+                this.socketServer = this.httpServer.launch({ root, port }, opts);
             }
         });
         return this;

@@ -5,7 +5,7 @@ import { EventEmitter } from "events";
 import { Arithmetic, BundleData } from "../arithmetic/Arithmetic";
 import { SharedCustomPackage } from "./SharedCustomPackage";
 import { BundleRunner } from "./BundleRunner";
-import { ServerOptions } from "../devServer/Server";
+import { ServerOptions, Server } from "../devServer/Server";
 import * as chokidar from "chokidar";
 import { utils, each } from "realm-utils";
 import { ProducerAbstraction, ProducerAbtractionOptions } from "../quantum/core/ProducerAbstraction";
@@ -15,7 +15,7 @@ export class BundleProducer {
     public bundles = new Map<string, Bundle>();
     public hmrInjected = false;
     public hmrAllowed = true;
-
+    public devServer : Server;
     public sharedEvents = new EventEmitter();
     public writeBundles = true;
     public sharedCustomPackages: Map<string, SharedCustomPackage​>;

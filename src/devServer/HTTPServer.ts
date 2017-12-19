@@ -32,11 +32,11 @@ export class HTTPServer {
     }
 
     // @TODO: should add .stop()
-    public launch(opts: HTTPServerOptions, userSettings?: ServerOptions): void {
+    public launch(opts: HTTPServerOptions, userSettings?: ServerOptions): SocketServer {
         this.opts = opts || {};
         const port = this.opts.port || 4444;
         let server = http.createServer();
-        SocketServer.createInstance(server, this.fuse);
+        const socketServer = SocketServer.createInstance(server, this.fuse);
         this.setup();
 
 
@@ -71,6 +71,7 @@ Development server running http://localhost:${port} @ ${packageInfo.version}
                 //this.spinner.start()
             });
         }, 10);
+        return socketServer;
     }
 
     public serveStatic(userPath, userFolder) {

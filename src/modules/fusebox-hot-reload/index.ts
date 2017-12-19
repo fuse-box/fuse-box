@@ -132,6 +132,25 @@ export const connect = (port: string, uri: string, reloadFullPage : boolean) => 
         uri,
     });
     client.connect();
+    client.on('page-reload', (data) => {
+        return window.location.reload();
+    });
+    client.on('page-hmr', (data) => {
+        FuseBox.flush();
+        FuseBox.dynamic(data.path, data.content);
+        if (FuseBox.mainFile) {
+            try {
+                FuseBox.import(FuseBox.mainFile);
+            } catch (e) {
+                if (typeof e === 'string') {
+                    if (/not found/.test(e)) {
+                        return window.location.reload();
+                    }
+                }
+                console.error(e);
+            }
+        }
+    });
     client.on('source-changed', (data) => {
         console.info(`%cupdate "${data.path}"`, 'color: #237abe');
         if(reloadFullPage){
