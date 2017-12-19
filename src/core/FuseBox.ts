@@ -289,6 +289,20 @@ export class FuseBox {
 
 
 
+    public sendPageReload(){
+        if ( this.producer.devServer && this.producer.devServer.socketServer){
+            const socket = this.producer.devServer.socketServer;
+            socket.send("page-reload", []);
+        }
+    }
+
+    public sendPageHMR(){
+        if ( this.producer.devServer && this.producer.devServer.socketServer){
+            const socket = this.producer.devServer.socketServer;
+            socket.send("page-hmr", []);
+        }
+    }
+
     /** Starts the dev server and returns it */
     public dev(opts?: ServerOptions, fn?: { (server: Server): void }) {
         opts = opts || {};
@@ -296,6 +310,7 @@ export class FuseBox {
         this.producer.devServerOptions = opts;
         this.producer.runner.bottom(() => {
             let server = new Server(this);
+            this.producer.devServer = server;
             server.start(opts);
             if (opts.open) {
                 try {
