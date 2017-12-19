@@ -97,6 +97,18 @@ fuse.dev({ root: false }, server => {
 The example above will server static files under the current build folder. To make sure FuseBox does not automatically add routes for you, set `{root : false}`
 
 
+## Send events
+
+You can send events from your `fuse.js` to the application by calling:
+
+```
+// for the whole page reload
+fuse.sendPageReload()
+
+// for the HMR event
+fuse.sendPageHMR();
+```
+
 ## Watching for changes
 
 FuseBox can automatically re-bundle your bundles on file change. FuseBox Producer makes sure that only 1 watcher is bound (chokidar).
