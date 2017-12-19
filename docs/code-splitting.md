@@ -1,5 +1,4 @@
 # Code splitting
-## > 3.0
 
 
 Code Splitting is required if you want to make your "home" bundle as lightweight as possible. A framework must set up accordingly. FuseBox offers great functionality to loading split bundles without any configuration or/nor magical commments
@@ -10,23 +9,10 @@ You can find an example project [here](https://github.com/fuse-box/fuse-box-3-pr
 
 ## Basics
 
-
-steps:
-    * Master Bundle
-    Code splitting happens on a master bundle, so technically you have only 1 bundle that is going to be split. All split bundles will be generated automatically
-    * Configuration is shared
-    Split bundles fully depend on a master bundle. They cannot be customised or decorated with additional configuration as they are "branched out"
-    * Piping files
-    Files are piped out from a master bundle. All external dependencies will be skipped.
-    * Information on your bundles
-    The information on your bundles is stored in a master bundle. FuseBox builds a manifest file, while this file can be accessed directly in the [output](#basic), however your master bundle WILL know how to resolve them by name without having an extra hustle.
-
 FuseBox does as much as possible to automate the process.
 
-note: Physical code splitting (when the bundles are actually created) works ONLY in Quantum. For development purposes your split bundles will be present in the master bundle BY DESIGN
+Physical code splitting (when the bundles are actually created) works ONLY in Quantum. For development purposes your split bundles will be present in the master bundle BY DESIGN
 
-
-### How?
 
 Just use dynamic `import` statement! It's that simple, FuseBox will do the heavy lifting for you
 
@@ -38,6 +24,16 @@ Development version will be left untouched, however, when you will run it agains
 
 
 FuseBox will detect which modules and files are shared and which belong only to this specific bundle. Long story short - let FuseBox take care of that.
+
+## Splitting packages
+
+You can also split packages
+
+```js
+const moment = await import("moment")
+```
+
+If moment wasn't used anywhere directly (synchronously) it will be split into a different bundle and lazy loaded for you. Just like that. No configuration required
 
 ## Named bundles
 
@@ -72,5 +68,3 @@ fuse.bundle("app")
 
 fuse.run()
 ```
-
-github_example: react-code-splitting

@@ -1,0 +1,28 @@
+{
+    "contents" : {
+        "Introduction" : [
+            "landing.md",
+            "introduction/install.md",
+            "introduction/getting-started.md",
+            "introduction/about-plugins.md",
+            "introduction/production-vs-dev.md"
+        ],
+        "Development" : [
+            "configuration.md",
+            "code-splitting.md",
+            "dynamic-import.md",
+            "development.md"
+        ],
+        "Production Builds" : [
+            "quantum/quantum.md",
+            "quantum/options.md"
+        ],
+        "Task Runner" : [
+            "sparky.md"
+        ],
+        "Guides" : [
+            "guides/working-with-targets.md",
+            "guides/publishing-to-npm.md"
+        ]
+    }
+}
