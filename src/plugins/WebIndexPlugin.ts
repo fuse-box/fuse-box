@@ -17,6 +17,7 @@ export interface IndexPluginOptions {
     template?: string;
     templateString?: string;
     async?: boolean;
+    pre?: { relType: 'fetch' | 'load' };
     resolve ?: {(output : UserOutput) : string};
 }
 export class WebIndexPluginClass implements Plugin {
@@ -58,6 +59,7 @@ export class WebIndexPluginClass implements Plugin {
     $charset
     $description
     $keywords
+    $preload
     $author
 </head>
 <body>
@@ -73,13 +75,22 @@ export class WebIndexPluginClass implements Plugin {
             `<script ${this.opts.async ? 'async' : ''} type="text/javascript" src="${bundle}"></script>`
         ).join("\n");
 
+        let preloadTags;
+        if (this.opts.pre) {
+            preloadTags = bundlePaths.map(bundle => 
+                `<link rel="pre${this.opts.pre.relType}" as="script" href="${bundle}">`
+            ).join("\n");
+        }
+
+
         let macro = {
             title: this.opts.title ? this.opts.title : "",
             charset: this.opts.charset ? `<meta charset="${this.opts.charset}">` : "",
             description: this.opts.description ? `<meta name="description" content="${this.opts.description}">` : "",
             keywords: this.opts.keywords ? `<meta name="keywords" content="${this.opts.keywords}">` : "",
             author: this.opts.author ? `<meta name="author" content="${this.opts.author}">` : "",
-            bundles: jsTags
+            bundles: jsTags,
+            preload: this.opts.pre ? preloadTags : "",
         }
         for (let key in macro) {
             html = html.replace('$' + key, macro[key])
