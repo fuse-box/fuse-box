@@ -2,6 +2,13 @@
 
 FuseBox provides a very convenient and a blazy fast test runner based on TypeScript.
 
+## Installation
+Install it first
+
+```bash
+npm install fuse-test-runner
+```
+
 The concept is simple:
 
 ```js
