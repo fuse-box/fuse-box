@@ -5,7 +5,14 @@ import { isClass } from '../Utils';
 export class SparkyContextClass {
     constructor(public target: any) { }
 }
-export let SparkyCurrentContext: any = {}
+export let SparkyCurrentContext: any;
+
+export function getSparkyContext(){
+    if(!SparkyCurrentContext){
+        SparkyCurrentContext = {};
+    }
+    return SparkyCurrentContext;
+}
 
 export function SparkyContext(
     target:

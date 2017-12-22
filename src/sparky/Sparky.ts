@@ -4,7 +4,7 @@ import { SparkyFilePatternOptions } from "./SparkyFilePattern";
 import { each } from "realm-utils";
 import { WorkFlowContext } from "../core/WorkflowContext";
 import { Log } from "../Log";
-import { SparkyContext, SparkyContextClass, SparkyCurrentContext } from './SparkyContext';
+import { SparkyContext, SparkyContextClass, getSparkyContext } from './SparkyContext';
 import { FuseBoxOptions } from '../index';
 import { FuseBox } from '../core/FuseBox';
 
@@ -61,9 +61,16 @@ export class Sparky {
         return flow.watch(globs, opts);
     }
 
-    public static fuse(opts : FuseBoxOptions){
-        SparkyCurrentContext.fuse = FuseBox.init(opts)
-        return SparkyCurrentContext.fuse;
+    public static fuse(fn : (context : any) => FuseBoxOptions){
+        const sparkyContext = getSparkyContext();
+        sparkyContext._getFuseBoxOptions = () => FuseBox.init(fn(sparkyContext))
+        Object.defineProperty(sparkyContext, 'fuse', { get: () => {
+            if( !sparkyContext._fuseInstance ){
+                sparkyContext._fuseInstance = sparkyContext._getFuseBoxOptions();
+            }
+            return sparkyContext._fuseInstance;
+        }});
+        return sparkyContext._fuseInstance;
     }
 
     public static init(paths : string[]){
@@ -98,7 +105,7 @@ export class Sparky {
             // resolve waterfal dependencies
             each(task.waterfallDependencies, name => this.resolve(name))
         ]).then(() => {
-            return this.execute(task.fn(SparkyCurrentContext));
+            return this.execute(task.fn(getSparkyContext()));
         });
     }
 
