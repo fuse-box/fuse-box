@@ -6,6 +6,7 @@ import * as postcss from "postcss";
 export interface CSSModulesOptions {
     useDefault?: boolean;
     scopedName?: string;
+    root?: string;
 }
 
 export class CSSModulesClass implements Plugin {
@@ -35,7 +36,7 @@ export class CSSModulesClass implements Plugin {
             file.loadContents();
             return postcss([
                 require('postcss-modules')({
-                    root: file.info.absDir,
+                    root: this.options.root || file.info.absDir,
                     getJSON: (cssFileName, json) => {
                         let exportsKey = this.useDefault ? "module.exports.default" : "module.exports";
                         const cnt = [];
