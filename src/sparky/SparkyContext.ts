@@ -1,10 +1,12 @@
 import { utils } from "realm-utils";
 import { isClass } from '../Utils';
-export let SparkyCurrentContext;
+
 
 export class SparkyContextClass {
-    constructor(public target: any) {}
+    constructor(public target: any) { }
 }
+export let SparkyCurrentContext: any = {}
+
 export function SparkyContext(
     target:
         () => { [key: string]: any } |
