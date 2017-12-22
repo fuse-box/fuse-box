@@ -5,6 +5,8 @@ import { each } from "realm-utils";
 import { WorkFlowContext } from "../core/WorkflowContext";
 import { Log } from "../Log";
 import { SparkyContext, SparkyContextClass, SparkyCurrentContext } from './SparkyContext';
+import { FuseBoxOptions } from '../index';
+import { FuseBox } from '../core/FuseBox';
 
 const context = new WorkFlowContext();
 context.doLog = process.env.SPARKY_LOG !== 'false';
@@ -57,6 +59,11 @@ export class Sparky {
         const flow = new SparkFlow();
         let globs = Array.isArray(glob) ? glob : [glob]
         return flow.watch(globs, opts);
+    }
+
+    public static fuse(opts : FuseBoxOptions){
+        SparkyCurrentContext.fuse = FuseBox.init(opts)
+        return SparkyCurrentContext.fuse;
     }
 
     public static init(paths : string[]){
