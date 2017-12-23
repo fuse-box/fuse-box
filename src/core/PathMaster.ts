@@ -164,6 +164,10 @@ export class PathMaster {
                 const absPath = this.getAbsolutePath(name, root, rootEntryLimit);
                 if (absPath.alias) {
                     data.fuseBoxAlias = absPath.alias;
+                    if (parent) {
+                        parent.analysis.
+                            replaceAliases(new Set([{from : name,  to : `~/` + absPath.alias  }]))
+                    }
                 }
                 data.absPath = absPath.resolved;
                 data.absDir = path.dirname(data.absPath);
