@@ -1,11 +1,11 @@
 import { IPackageInformation, IPathInformation } from "./PathMaster";
 import { WorkFlowContext } from "./WorkflowContext";
-import { ensurePublicExtension } from "../Utils";
+import { ensurePublicExtension, ensureFuseBoxPath } from "../Utils";
 import { Config } from "../Config";
 import * as path from "path";
 import * as fs from "fs";
 import { BundleData } from "../arithmetic/Arithmetic";
-
+import { File } from "./File";
 
 /**
  * If a import url isn't relative
@@ -24,9 +24,10 @@ export interface INodeModuleRequire {
 
 export interface IPathInformation {
     fuseBoxAlias?: string;
+    overrideStatement?: { key: string, value: string }
     isRemoteFile?: boolean;
     remoteURL?: string;
-    tsMode?:boolean;
+    tsMode?: boolean;
     isNodeModule: boolean;
     nodeModuleName?: string;
     nodeModuleInfo?: IPackageInformation;
@@ -83,7 +84,6 @@ export class PathMaster {
 
     public init(name: string, fuseBoxPath?: string) {
         const resolved = this.resolve(name, this.rootPackagePath);
-        
         if (fuseBoxPath) {
             resolved.fuseBoxPath = fuseBoxPath;
         }
@@ -94,7 +94,7 @@ export class PathMaster {
         this.tsMode = true;
     }
 
-    public resolve(name: string, root?: string, rootEntryLimit?: string): IPathInformation {
+    public resolve(name: string, root?: string, rootEntryLimit?: string, parent?: File): IPathInformation {
         let data = <IPathInformation>{};
 
         if (/^(http(s)?:|\/\/)/.test(name)) {
@@ -135,6 +135,13 @@ export class PathMaster {
                 // Explicit require from a libary e.g "lodash/dist/each" -> "dist/each"
                 const absPath = this.getAbsolutePath(info.target, data.nodeModuleInfo.root, undefined, true);
                 if (absPath.alias) {
+                    // console.log(name, nodeModuleInfo);
+                    // nodeModuleInfo.browserOverrides = {}
+                    // nodeModuleInfo.browserOverrides[name] = info.name + "/" + absPath.alias;
+                    if (parent) {
+                        parent.analysis.
+                            replaceAliases(new Set([{from : name,  to : info.name + "/" + absPath.alias  }]))
+                    }
                     data.fuseBoxAlias = absPath.alias;
                 }
                 data.absPath = absPath.resolved;
@@ -167,7 +174,10 @@ export class PathMaster {
                 }
             }
         }
+        if (data.fuseBoxAlias) {
 
+            data.overrideStatement = { key: name, value: data.fuseBoxAlias }
+        }
         return data;
     }
 
@@ -179,7 +189,7 @@ export class PathMaster {
         root = root.replace(/\\/g, "/");
         name = name.replace(root, "").replace(/^\/|\\/, "");
         name = ensurePublicExtension(name);
-        
+
         // Some smart asses like "react-router"
         // Skip .js for their main entry points.
         let ext = path.extname(name);
@@ -279,10 +289,23 @@ export class PathMaster {
         return input;
     }
 
+    private extractRelativeFuseBoxPath(root: string, target: string): string {
+        root = ensureFuseBoxPath(root)
+        target = ensureFuseBoxPath(target);
+        const sResult = target.split(root)
+        if (sResult[1]) {
+            let fusePath = sResult[1];
+            if (fusePath[0] === "/") {
+                fusePath = fusePath.slice(1)
+            }
+            return this.ensureNodeModuleExtension(fusePath);
+        }
+    }
+
     private ensureFolderAndExtensions(name: string, root: string, explicit = false): { resolved: string, alias?: string } {
 
         let ext = path.extname(name);
-        if( ext === ".ts"){
+        if (ext === ".ts") {
             this.tsMode = true;
         }
         let fileExt = this.tsMode && !explicit ? ".ts" : ".js";
@@ -291,25 +314,24 @@ export class PathMaster {
             name = "." + name.slice(1, name.length);
             name = path.join(this.rootPackagePath, name);
         }
-        //if (explicit) {
-
         if (!ext) {
             // handle cases with
             // require("@angular/platform-browser/animations");
             // where animation contains package.json pointing to a different file
             const folderJsonPath = path.join(root, name, "package.json");
-
+            //1
             if (fs.existsSync(folderJsonPath)) {
                 const folderJSON = require(folderJsonPath);
                 if (folderJSON.main) {
-                    return {
-                        resolved: path.resolve(root, name, folderJSON.main),
-                        alias: this.ensureNodeModuleExtension(name)
+                    const resolved = path.resolve(root, name, folderJSON.main);
+                    const opts = {
+                        resolved: resolved,
+                        alias: this.extractRelativeFuseBoxPath(root, resolved)
                     }
+                    return opts;
                 }
             }
         }
-        //}
 
         if (!AllowedExtenstions.has(ext)) {
             let fileNameCheck = this.checkFileName(root, name);
@@ -343,7 +365,7 @@ export class PathMaster {
                 target: target
             };
         }
-       
+
         let data = name.split(/\/(.+)?/);
         return {
             name: data[0],
@@ -410,9 +432,9 @@ export class PathMaster {
                 } else {
                     entryFile = path.join(folder, entryFile || json.main || "index.js");
                 }
-                if ( json["ts:main"]){
+                if (json["ts:main"]) {
                     entryFile = json["ts:main"];
-                    if(entryFile[0] !== "."){ // safety check to avoid consfusion with node_module
+                    if (entryFile[0] !== ".") { // safety check to avoid consfusion with node_module
                         entryFile = `./${entryFile}`
                     }
                 }

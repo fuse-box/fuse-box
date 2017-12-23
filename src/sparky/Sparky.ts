@@ -62,15 +62,17 @@ export class Sparky {
     }
 
     public static fuse(fn : (context : any) => FuseBoxOptions){
-        const sparkyContext = getSparkyContext();
-        sparkyContext._getFuseBoxOptions = () => FuseBox.init(fn(sparkyContext))
-        Object.defineProperty(sparkyContext, 'fuse', { get: () => {
-            if( !sparkyContext._fuseInstance ){
-                sparkyContext._fuseInstance = sparkyContext._getFuseBoxOptions();
-            }
+        process.nextTick(() => {
+            const sparkyContext = getSparkyContext();
+            sparkyContext._getFuseBoxOptions = () => FuseBox.init(fn(sparkyContext))
+            Object.defineProperty(sparkyContext, 'fuse', { get: () => {
+                if( !sparkyContext._fuseInstance ){
+                    sparkyContext._fuseInstance = sparkyContext._getFuseBoxOptions();
+                }
+                return sparkyContext._fuseInstance;
+            }});
             return sparkyContext._fuseInstance;
-        }});
-        return sparkyContext._fuseInstance;
+        });
     }
 
     public static init(paths : string[]){
