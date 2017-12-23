@@ -16,8 +16,6 @@ createRealNodeModule("pkg_folder_alias_with_ext", {
 });
 
 
-
-
 export class PackageFolderAliasTest {
     "Should alias from a package without ext"() {
         return FuseTestEnv.create(
@@ -75,8 +73,7 @@ export class PackageFolderAliasTest {
         )
         .simple().then(test => test.browser((window, env) => {
             const index = window.FuseBox.import("./index")
-            console.log(index);
-            //should(index).equal("world");
+            should(index).equal("Should work");
         }));
     }
 
