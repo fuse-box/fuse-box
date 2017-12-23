@@ -55,15 +55,15 @@ export class ImportDeclaration {
      * Replace aliases using the context collection
      */
     private static handleAliasReplacement(file: File, requireStatement: string): string {
-
         // checking for browser override (asa) case
         // these people ...
         // https://github.com/defunctzombie/package-browser-field-spec
         if (file.collection && file.collection.info && file.collection.info.browserOverrides) {
             const overrides = file.collection.info.browserOverrides;
             const pm = file.collection.pm;
-
+            
             if (overrides) {
+
                 if (overrides[requireStatement] !== undefined) {
                     if (typeof overrides[requireStatement] === "string") {
                         requireStatement = overrides[requireStatement];

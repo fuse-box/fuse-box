@@ -265,7 +265,7 @@ gulp.task("dev-fuse", () => {
         homeDir: "src",
         output: ".dev/$name.js",
         target: "server@esnext",
-        cache: true,
+        cache: false,
     }, false);
     fuse.bundle("fusebox")
         .instructions(">[index.ts]")
