@@ -3,7 +3,7 @@ import * as fs from "fs-extra";
 import * as chokidar from "chokidar";
 import * as path from "path";
 import { each } from "realm-utils";
-import { ensureDir, string2RegExp } from "../Utils";
+import { ensureDir, string2RegExp, ensureUserPath } from "../Utils";
 import { SparkyFile } from "./SparkyFile";
 import { log } from "./Sparky";
 import { Plugin } from '../core/WorkflowContext';
@@ -44,7 +44,7 @@ export class SparkFlow {
         this.activities.push(() => new Promise((resolve, reject) => {
 
             var chokidarOptions = {
-                cwd: opts ? opts.base : null
+                cwd: opts ? ensureUserPath(opts.base) : null
             };
 
             this.watcher = chokidar.watch(globs, chokidarOptions)
