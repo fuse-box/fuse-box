@@ -71,7 +71,8 @@ export class QuantumBit {
                 })
 
                 dep.dependents.forEach(dependent => {
-                    if (origin === false && !dependent.quantumBit) {
+                    if (origin === false && !dependent.quantumBit
+                        && dependent.packageAbstraction !== dep.packageAbstraction ) {
                         pkg.quantumBitBanned = true;
                     }
                 });
