@@ -10,6 +10,7 @@ export class QuantumBit {
     private candidates: Map<string, FileAbstraction> = new Map();
     private modulesCanidates = new Map<string, PackageAbstraction>();
     private isEntryModule = false;
+    private modules2proccess : FileAbstraction[] = [];
     public files: Map<string, FileAbstraction> = new Map();
 
     public modules = new Map<string, PackageAbstraction>();
@@ -69,13 +70,14 @@ export class QuantumBit {
                         }
                     }
                 })
-
-                dep.dependents.forEach(dependent => {
-                    if (origin === false && !dependent.quantumBit
-                        && dependent.packageAbstraction !== dep.packageAbstraction ) {
-                        pkg.quantumBitBanned = true;
-                    }
-                });
+                if( origin === false ){
+                    dep.dependents.forEach(dependent => {
+                        if ( !dependent.quantumBit
+                            && dependent.packageAbstraction !== dep.packageAbstraction ) {
+                            pkg.quantumBitBanned = true;
+                        }
+                    });
+                }
             })
         }
         return true;
@@ -96,7 +98,7 @@ export class QuantumBit {
                     }
                 }
             } else {
-                this.dealWithModule(dependency);
+                this.modules2proccess.push(dependency);
             }
         }
     }
@@ -121,7 +123,7 @@ export class QuantumBit {
         }
 
         this.populateDependencies(this.entry);
-
+        this.modules2proccess.forEach(dep => this.dealWithModule(dep))
 
         for (const p of this.candidates) {
             const file = p[1];
