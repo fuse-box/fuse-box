@@ -32,7 +32,7 @@ export class DynamicImportStatement {
                     let resolved = file.collection.pm.resolve(requireStatement, file.info.absDir);
                     if (resolved) {
                         if (resolved.isNodeModule) {
-                            analysis.addDependency(resolved.nodeModuleName);
+                            analysis.addDependency(requireStatement);
                         } else {
                             if (resolved.fuseBoxPath && fs.existsSync(resolved.absPath)) {
                                 arg1.value = `~/${resolved.fuseBoxPath}`;
