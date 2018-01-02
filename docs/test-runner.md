@@ -132,5 +132,7 @@ should(file.localImports)
 | ` beFalse() `   | Should be false |
 | ` mutate(x => x.hello) `   | Changes the chains' pointer |
 
+## Resources
 
+https://github.com/DaveO-Home/embedded-acceptance-tests
 
