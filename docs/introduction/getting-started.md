@@ -10,83 +10,152 @@ You are familiar with the term bundling, and you know why it's required
 You know what is NPM and how it works
 
 
-## Tasks
+## Hop on board
 
-Let's start off by creating `fuse.js` in your repository. We will put all configuration here.
+* Create `fuse.js`
+* Define your producer
+* Dev options
+* bundle instructions
 
-To make your life easier in the future, let's use [sparky](/page/sparky). Sparky is a very smart task runner, you will be able to copy files, share configurations and much more!
-
-
-Let's require essential modules from FuseBox:
+The initial configuration is quite simple.
 
 ```js
-const { src, task, exec, context } = require("fuse-box/sparky");
 const { FuseBox, WebIndexPlugin } = require("fuse-box");
-```
-
-## Task context
-
-You  should always start with a context. A context is a shared object between tasks. It will help to keep your configuration clean and readable.
-
-```js
-context(class {
-    getConfig() {
-        return FuseBox.init({
-            homeDir: "src",
-            output: "dist/$name.js",
-            plugins: [
-                !this.isProduction && WebIndexPlugin(),
-                this.isProduction && QuantumPlugin({
-                    uglify: true,
-                    treeshake : true,
-                    bakeApiIntoBundle: "app"
-                })
-            ]
-        });
-    }
+const fuse = FuseBox.init({
+    homeDir : "src",
+    target : 'browser@es6',
+    output : "dist/$name.js",
+    plugins : [
+        WebIndexPlugin()
+    ]
 })
+fuse.dev(); // launch http server
+fuse.bundle("app").instructions(" > index.ts").hmr().watch()
+fuse.run();
 ```
 
-It doesn't need to a class, it can be a function or a plain object.
+This will get you started pretty much instantly. `index.html` will be created automatically.
 
-`WebIndexPlugin` will automatically create `index.html` in the dist folder. QuantumPlugin we will use for making production builds
+In this example we are using typescript, if you don't have `tsconfig.json` FuseBox creates one automatically for you.
 
-## Default task
-Create `default` task (the one that will be execute once `node fuse.js` is called)
+## Choosing correct target
+
+It's important to setup correct script and platform target for your bundle.
 
 ```js
-task("default", async context => {
-    const fuse = context.getConfig();
-    fuse.bundle("app")
-        .hmr()
-        .watch()
-        .instructions(">index.ts");
-
-    await fuse.run()
+const fuse = FuseBox.init({
+    target : 'browser@es6',
+    homeDir : "src",
+    output : "dist/$name.js"
 });
 ```
 
-In the example above, we will create a bundle named `app` with HMR features, watched (re-triggered on each file change)
-`.instructions(">index.ts")` - sets up an entry point. In our case it's `index.js`.
+Let's take a look at the first option here - `target`. It can be `browser` or `server` you can also set `universal`, however if you want to have platform optimised bundles you should choose either `server` or `browser`. You can control the script target by adding `@` symbol. For example: `browser@es5` or `server@esnext`
 
-`>` means that we want to execute the entry point once loaded.
+FuseBox detects the actual target of files, so when you choose `es5` and a script is using `es6` feature, TypeScript transpiler will transpile it down.
 
 
-Now run `node fuse` and enjoy!
 
-## Production build
+## Start with TypeScript
 
-For production builds, we use [Quantum](/page/quantum). It's super plugin that makes a highly optimised API
+You won't need any additional configuration to start working with typescript.
+
+* Make sure to choose the correct [target](#choosing-correct-target)
+* `tsconfig.json` will be created automatically if none was found
+
+## Start with JavaScript
+
+You can not forced to used typescript. However you should still have it installed, as typescript is not just a powerful tool for typechecking - it's also a very [powerful transpiler](/page/configuration#usetypescriptcompiler) too
 
 ```js
-task("dist", async context => {
-    context.isProduction = true;
-    const fuse = context.getConfig();
-    fuse.bundle("app")
-        .instructions(">index.ts");
+const fuse = FuseBox.init({
+    homeDir : "src",
+    target : 'browser@es6',
+    output : "dist/$name.js",
+    useTypescriptCompiler : true,
+});
+fuse.bundle("app")
+    .instructions(" > index.js").hmr().watch()
+fuse.run();
+```
 
-    await fuse.run()
+Use `useTypescriptCompiler` option and you won't need babel at all. But keep in my synthetic default imports.
+
+Correct:
+```js
+import * as React from "react"
+```
+NOT correct:
+
+```js
+import React from "react" // <-- not correct ()
+```
+
+It will work with [polyfillNonStandardDefaultUsage](/page/configuration#polyfillnonstandarddefaultusage). However it's not recommended to add this option as it adds additional overhead to your runtime.
+
+
+
+## Start with CSS
+
+Adding CSS support it very easy.
+
+```js
+const { FuseBox, SassPlugin, CSSPlugin } = require("fuse-box");
+const fuse = FuseBox.init({
+    target : 'browser@es6',
+    homeDir : "src",
+    output : "dist/$name.js",
+    plugins : [
+        [ SassPlugin(), CSSPlugin() ]
+    ]
 });
 ```
 
-Now run `node fuse dist` and get your production bundle ready!
+But before you start experimenting, you should read [this](/page/about-plugins) section in order to understand how plugins work. The common mistake made by rookies is not grouping (chaining) the plugins.
+
+```js
+plugins : [
+    [ SassPlugin(), CSSPlugin() ]
+]
+```
+
+
+## Start with server
+
+In order to achieve the best performance you should choose `server@esnext` target
+```js
+const fuse = FuseBox.init({
+    homeDir : "src",
+    target : 'server@esnext',
+    output : "dist/$name.js"
+});
+fuse.bundle("app")
+    .completed(proc => proc.start)
+    .instructions(" > index.ts").hmr().watch()
+fuse.run();
+```
+
+FuseBox can take care of launching your server bundle. `.completed(proc => proc.start)` block will start/restart the process automatically.
+
+
+## Making production builds
+
+Production builds are made using the [Quantum](/page/quantum) plugin.
+
+```js
+plugins: [
+    this.isProduction && QuantumPlugin({
+        uglify: true,
+        treeshake : true,
+        bakeApiIntoBundle: "app"
+    })
+]
+```
+
+Before going there, read up [how to deal with the task runner](/page/getting-started-with-sparky) as it will greatly simplify the workflow.
+
+## Diving deeper
+
+Once you are familiar with the concepts, you can start with [Sparky](/page/sparky) - A task runner that makes you life easier.
+
+You can find plenty of example [here](https://github.com/fuse-box/fuse-box-examples/tree/master/examples]

@@ -22,7 +22,8 @@
             "quantum/options.md"
         ],
         "Task Runner" : [
-            "sparky.md"
+            "sparky/getting-started.md",
+            "sparky/sparky.md"
         ],
         "Test Runner" : [
             "test-runner.md"
