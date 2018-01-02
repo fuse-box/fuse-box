@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as process from "process";
 import { each, utils, chain, Chainable } from "realm-utils";
 import { CustomTransformers } from "typescript";
-import { ensureUserPath, contains } from "./../Utils";
+import { ensureUserPath, contains, printCurrentVersion } from "./../Utils";
 import { ShimCollection } from "./../ShimCollection";
 import { Server, ServerOptions } from "./../devServer/Server";
 import { JSONPlugin } from "./../plugins/JSONplugin";
@@ -94,6 +94,7 @@ export class FuseBox {
      * @memberOf FuseBox
      */
     constructor(public opts?: FuseBoxOptions) {
+        printCurrentVersion()
         this.context = new WorkFlowContext();
         this.context.fuse = this;
         this.collectionSource = new CollectionSource(this.context);
