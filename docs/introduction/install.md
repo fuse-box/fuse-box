@@ -4,10 +4,18 @@
 You can install FuseBox from `npm`.
 
 ```
-npm install fuse-box typescript --save-dev
+npm install fuse-box typescript uglify-es uglify-js --save-dev
 ```
 
 You should install `uglify-es` and `uglify-js` too. FuseBox will decide which one to use, dependending on a selected target.
+
+
+## Why TypeScript
+
+Why do you need to install typescript even if you don't use it? 
+
+Because FuseBox uses typescript to transpile node_modules to a required user target. Read up [here](/page/getting-started#choosing-correct-target)
+
 
 ## Requirements
 
