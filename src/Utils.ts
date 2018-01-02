@@ -55,9 +55,13 @@ export function getFuseBoxInfo() {
     return require(path.join(Config.FUSEBOX_ROOT, "package.json"));
 }
 
+let VERSION_PRINTED = false;
 export function printCurrentVersion() {
-    const info = getFuseBoxInfo();
-    Log.defer((log) => log.echoYellow(`--- FuseBox ${info.version} ---`));
+    if(!VERSION_PRINTED){
+        VERSION_PRINTED = true;
+        const info = getFuseBoxInfo();
+        Log.defer((log) => log.echoYellow(`--- FuseBox ${info.version} ---`));
+    }
 }
 
 
