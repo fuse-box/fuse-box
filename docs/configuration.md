@@ -534,11 +534,14 @@ FuseBox.init({
 Possible levels
 
 * es5
-* es2015
-* es2016
+* es2015 (alias: es6)
+* es2016 (alias: es7)
 * es2017
 * esnext
 
+Aliases `es6` & `es7` are provided to align with the configuration options of TypeScript, but we recommend using the es-year form instead.
+
+The default language level is `es2017`
 
 
 ### Example
