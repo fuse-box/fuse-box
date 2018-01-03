@@ -65,7 +65,7 @@ You won't need any additional configuration to start working with typescript.
 
 ## Start with JavaScript
 
-You are not forced to used typescript. However you should still have it installed, as typescript is not just a powerful tool for typechecking - it's also a very [powerful transpiler](/page/configuration#usetypescriptcompiler) 
+You are not forced to use typescript. However you should still have it installed, as typescript is not just a powerful tool for typechecking - it's also a very [powerful transpiler](/page/configuration#usetypescriptcompiler) 
 
 ```js
 const fuse = FuseBox.init({
