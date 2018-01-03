@@ -541,7 +541,7 @@ Possible levels
 
 Aliases `es6` & `es7` are provided to align with the configuration options of TypeScript, but we recommend using the es-year form instead.
 
-The default language level is `es2017`
+The default language level is `es2016`
 
 
 ### Example

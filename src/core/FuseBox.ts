@@ -112,7 +112,7 @@ export class FuseBox {
         if (level) {
             this.context.forcedLanguageLevel = ScriptTarget[level];
         }
-        this.context.languageLevel = ScriptTarget[level] || ScriptTarget.ES2017;
+        this.context.languageLevel = ScriptTarget[level] || ScriptTarget.ES2016;
 
         if (opts.polyfillNonStandardDefaultUsage !== undefined) {
             this.context.polyfillNonStandardDefaultUsage = opts.polyfillNonStandardDefaultUsage;
