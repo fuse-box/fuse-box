@@ -65,6 +65,17 @@ export function printCurrentVersion() {
 }
 
 
+export function getDateTime(){
+    const data = new Date();
+    let hours : string  | number = data.getHours()
+    let minutes : string  | number = data.getMinutes();
+    let seconds : string  | number = data.getSeconds();
+    hours = hours < 10 ? `0${hours}` : hours;
+    minutes = minutes < 10 ? `0${minutes}` : minutes;
+    seconds = seconds < 10 ? `0${seconds}` : seconds;
+    return `${hours}:${minutes}:${seconds}`;
+}
+
 
 export function uglify(contents: string | Buffer, { es6 = false, ...opts }: any = {}) {
     const UglifyJs = es6 ? require("uglify-es") : require("uglify-js");

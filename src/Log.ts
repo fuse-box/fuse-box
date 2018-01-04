@@ -4,6 +4,7 @@ import * as log from "fliplog";
 import * as prettysize from "prettysize";
 import * as  prettyTime from "pretty-time";
 import * as zlib from "zlib";
+import { getDateTime } from './Utils';
 
 // @TODO: I've moved this into fliplog in v1, migrate to that
 export class Indenter {
@@ -320,6 +321,25 @@ export class Log {
     public echoHeader(str: string) {
         this.indent.level(1);
         log.yellow(`${this.indent}${str}`).echo();
+        return this;
+    }
+
+    public echoSparkyTaskStart(taskName: string) {
+        const gray = log.chalk().gray;
+        const magenta = log.chalk().magenta;
+        let str = ['[', gray(getDateTime()), ']', ' Starting']
+        str.push(` '${magenta(taskName)}' `)
+        console.log(str.join(''));
+        return this;
+    }
+
+    public echoSparkyTaskEnd(taskName, took: [number, number]){
+        const gray = log.chalk().gray;
+        const magenta = log.chalk().magenta;
+        let str = ['[', gray(getDateTime()), ']', ' Resolved']
+        str.push(` '${magenta(taskName)}' `, 'after ')
+        str.push(`${gray(prettyTime(took, "ms"))}`);
+        console.log(str.join(''));
         return this;
     }
     public echoStatus(str: string) {
