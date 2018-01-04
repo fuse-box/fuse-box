@@ -6,6 +6,7 @@ import * as postcss from "postcss";
 export interface CSSModulesOptions {
     useDefault?: boolean;
     scopedName?: string;
+    paths?: string[],
     root?: string;
 }
 
@@ -32,8 +33,25 @@ export class CSSModulesClass implements Plugin {
 
     public transform(file: File): Promise<any> {
         file.addStringDependency("fuse-box-css");
+
+        if (file.isCSSCached("cssmodules")) {
+            return;
+        }
+        file.bustCSSCache = true;
+
         return new Promise((resolve, reject) => {
             file.loadContents();
+            const context = file.context;
+
+            const paths = [file.info.absDir, ...this.options.paths || []]
+
+            const cssDependencies = context.extractCSSDependencies(file, {
+                paths: paths,
+                content: file.contents,
+                extensions: ["css"]
+            });
+            file.cssDependencies = cssDependencies;
+
             return postcss([
                 require('postcss-modules')({
                     root: this.options.root || file.info.absDir,
@@ -51,6 +69,11 @@ export class CSSModulesClass implements Plugin {
             ]).process(file.contents, {})
                 .then(result => {
                     file.contents = result.css;
+                    if (context.useCache) {
+                        file.analysis.dependencies = cssDependencies;
+                        context.cache.writeStaticCache(file, file.sourceMap, "cssmodules");
+                        file.analysis.dependencies = [];
+                    }
                     return resolve()
                 });
         });
