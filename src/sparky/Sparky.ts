@@ -25,13 +25,13 @@ export class Sparky {
     public static task(name: string, ...args): Sparky {
         let callback: any;
         let dependencies: string[] = [];
+        let secondArgument = arguments[1];
 
-        if (arguments.length === 2) {
-            callback = arguments[1];
-        }
-        if (arguments.length === 3) {
-            dependencies = [].concat(arguments[1]);
+        if( Array.isArray(secondArgument) || typeof secondArgument === "string"){
+            dependencies = [].concat(secondArgument);
             callback = arguments[2];
+        } else {
+            callback = arguments[1];
         }
         this.tasks.set(name, new SparkTask(name, dependencies, callback));
         // launching the task on next tick
@@ -99,15 +99,14 @@ export class Sparky {
         }
 
         const task = this.tasks.get(taskName);
-        log.echoHeader(`Launch "${taskName}"`);
-
         return Promise.all([
             // resolve parallel dependencies
             Promise.all(task.parallelDependencies.map(name => this.resolve(name))),
             // resolve waterfal dependencies
             each(task.waterfallDependencies, name => this.resolve(name))
         ]).then(() => {
-            return this.execute(task.fn(getSparkyContext()));
+            return typeof task.fn === 'function'
+                && this.execute(task.fn(getSparkyContext()));
         });
     }
 
@@ -118,12 +117,14 @@ export class Sparky {
         return result;
     }
 
-    private static resolve(name: string) {
+    private static async resolve(name: string) {
         if (!this.tasks.get(name)) {
             return log.echoWarning(`Task with such name ${name} was not found!`);
         }
-        log.echoHeader(` Resolve "${name}"`);
-        return this.start(name);//.then(() => this.execute(this.tasks.get(name).fn()));
+        let start = process.hrtime();
+        log.echoSparkyTaskStart(name)
+        await this.start(name);
+        log.echoSparkyTaskEnd(name, process.hrtime(start));
     }
 
 }
