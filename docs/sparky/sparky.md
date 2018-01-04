@@ -80,6 +80,61 @@ task("foo", async () => {
 ```
 to execute the task, run `node fuse foo` and enjoy :)
 
+## Waterfall vs Parallel
+
+`Sparky` has two modes for executing tasks, `waterfall` and `parallel`. in `waterfall` mode, tasks are executed sequentially based on the order they are defined. This is good if you require a task to wait until another task is completed. In `parallel` mode tasks are executed asynchronously, meaning they will not depend on each other's completion.
+
+```js
+task("foo", () => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            return resolve();
+        }, 1000)
+    });
+});
+
+task("bar", () => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            return resolve();
+        }, 1000)
+    });
+});
+
+// bar task wont run until foo task is done
+task("waterfall", ["foo", "bar"], () => {
+
+});
+
+// foo and bar will run immediatly
+task("parallel", ["&foo", "&bar"], () => {
+
+});
+```
+
+## Aggregator task
+You can also create a task that combines other tasks but doesn't have any function itself.
+For example:
+
+```js
+task("copy-assets", [
+    "&copy:pdf",       // parallel task mode
+    "&copy:text-files" // parallel task mode
+])
+task("copy:pdf", async context => {
+   // copy pdf files here
+})
+
+task("copy:text-files", async context => {
+    // copy text files here
+})
+task("default", ['copy-assets'], async context => {
+    // or exec(['copy-assets'])
+})
+```
+
+
+
 ## src
 This method tells `Sparky` what files it needs to operate on.
  ```js
@@ -181,36 +236,7 @@ task("tsc", async () => {
 ```
 
 
-## Execution-flow
-`Sparky` has two modes for executing tasks, `waterfall` and `parallel`. in `waterfall` mode, tasks are executed sequentially based on the order they are defined. This is good if you require a task to wait until another task is completed. In `parallel` mode tasks are executed asynchronously, meaning they will not depend on each other's completion.
 
-```js
-task("foo", () => {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            return resolve();
-        }, 1000)
-    });
-});
-
-task("bar", () => {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            return resolve();
-        }, 1000)
-    });
-});
-
-// bar task wont run until foo task is done
-task("waterfall", ["foo", "bar"], () => {
-
-});
-
-// foo and bar will run immediatly
-task("parallel", ["&foo", "&bar"], () => {
-
-});
-```
 
 
 
