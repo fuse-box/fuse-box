@@ -18,10 +18,10 @@ export class CSSDependencyExtractor {
 
 
     private extractDepsFromString(input: string, currentPath? : string) {
-        const re = /@import\s+("|')([^"']+)/g;
+        const re = /@(?:import|value)[^"']+["']([^"']+)/g;
         let match;
         while (match = re.exec(input)) {
-            let target = this.findTarget(match[2], currentPath);
+            let target = this.findTarget(match[1], currentPath);
             if (target) {
                 this.readFile(target, path.dirname(target));
                 this.dependencies.push(target);
