@@ -50,9 +50,9 @@ const fuse = FuseBox.init({
 });
 ```
 
-Let's take a look at the first option here - `target`. It can be `browser` or `server` you can also set `universal`, however if you want to have platform optimised bundles you should choose either `server` or `browser`. You can control the script target by adding `@` symbol. For example: `browser@es5` or `server@esnext`
+Let's take a look at the first option here - `target`. It can be `browser`, `server` or `universal`. However if you want to have platform optimised bundles you should choose either `server` or `browser`. You can control the script target by adding `@` symbol. For example: `browser@es5` or `server@esnext`
 
-FuseBox detects the actual target of files, so when you choose `es5` and a script is using `es6` feature, TypeScript transpiler will transpile it down.
+FuseBox detects the actual target of files, so when you choose `es5` and if a script uses `es6` features, TypeScript transpiler will transpile it down.
 
 
 
@@ -65,7 +65,7 @@ You won't need any additional configuration to start working with typescript.
 
 ## Start with JavaScript
 
-You can not forced to used typescript. However you should still have it installed, as typescript is not just a powerful tool for typechecking - it's also a very [powerful transpiler](/page/configuration#usetypescriptcompiler) too
+You are not forced to use typescript. However you should still have it installed, as typescript is not just a powerful tool for typechecking - it's also a very [powerful transpiler](/page/configuration#usetypescriptcompiler) 
 
 ```js
 const fuse = FuseBox.init({
@@ -79,7 +79,7 @@ fuse.bundle("app")
 fuse.run();
 ```
 
-Use `useTypescriptCompiler` option and you won't need babel at all. But keep in my synthetic default imports.
+Use `useTypescriptCompiler` option and you won't need babel at all. But keep synthetic default imports.
 
 Correct:
 ```js
@@ -97,7 +97,7 @@ It will work with [polyfillNonStandardDefaultUsage](/page/configuration#polyfill
 
 ## Start with CSS
 
-Adding CSS support it very easy.
+Adding CSS support is very easy.
 
 ```js
 const { FuseBox, SassPlugin, CSSPlugin } = require("fuse-box");
@@ -156,6 +156,6 @@ Before going there, read up [how to deal with the task runner](/page/getting-sta
 
 ## Diving deeper
 
-Once you are familiar with the concepts, you can start with [Sparky](/page/sparky) - A task runner that makes you life easier.
+Once you are familiar with the concepts, you can start with [Sparky](/page/sparky) - A task runner that makes your life easier.
 
-You can find plenty of example [here](https://github.com/fuse-box/fuse-box-examples/tree/master/examples]
+You can find plenty of examples [here](https://github.com/fuse-box/fuse-box-examples/tree/master/examples]
