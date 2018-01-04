@@ -1,6 +1,6 @@
 # About Plugins
 
-Plugins in FuseBox are very easy to use. In fact, we have bunch of them prepared and maintained by FuseBox comminity.
+Plugins in FuseBox are very easy to use. In fact, we have bunch of them prepared and maintained by FuseBox community.
 You won't be needing to google, the most important ones are in the Plugin section.
 
 ## Simple use case
@@ -15,22 +15,22 @@ FuseBox.init({
 });
 ```
 
-The example above enables bundling `.css` files. (How simple was that?!). However, if you with to specify the exact path (for example you would want to get some CSS files as string), you can chain them
+The example above enables bundling `.css` files. (How simple was that?!). However, if you want to specify the exact path (for example you would want to get some CSS files as string), you can chain them
 
 ```js
 plugins: [
-    [ "mypath/**.css" CSSPlugin() ]
+    [ "mypath/**.css", CSSPlugin() ]
 ]
 ```
 Note, that it's been wrapped in `[]` that is an indicator for plugin chain. You can chain as many plugins as you like, as long as they support chaining of course.
 
-First item on the list is actually a RegExp. We cook RegExp from a string to make it look nicer visually.
+First item on the list is actually a `RegExp`. We cook RegExp from a string to make it look nicer visually.
 
-For example, the code snippet above equals to:
+For example, the code snippet above is equivalent to:
 
 ```js
 plugins: [
-    [ /mypath\/**.css/ CSSPlugin() ]
+    [ /mypath\/**.css/, CSSPlugin() ]
 ]
 ```
 
