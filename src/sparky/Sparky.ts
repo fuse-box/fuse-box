@@ -27,7 +27,7 @@ export class Sparky {
         let dependencies: string[] = [];
         let secondArgument = arguments[1];
 
-        if( Array.isArray(secondArgument) || typeof secondArgument === "string"){
+        if (Array.isArray(secondArgument) || typeof secondArgument === "string") {
             dependencies = [].concat(secondArgument);
             callback = arguments[2];
         } else {
@@ -37,7 +37,9 @@ export class Sparky {
         // launching the task on next tick
         if (this.launch === false && this.testMode === false) {
             this.launch = true;
-            process.nextTick(() => this.start());
+            process.nextTick(async () => {
+                await this.start()
+            });
         }
         return this;
     }
@@ -61,27 +63,29 @@ export class Sparky {
         return flow.watch(globs, opts);
     }
 
-    public static fuse(fn : (context : any) => FuseBoxOptions){
+    public static fuse(fn: (context: any) => FuseBoxOptions) {
         process.nextTick(() => {
             const sparkyContext = getSparkyContext();
             sparkyContext._getFuseBoxOptions = () => FuseBox.init(fn(sparkyContext))
-            Object.defineProperty(sparkyContext, 'fuse', { get: () => {
-                if( !sparkyContext._fuseInstance ){
-                    sparkyContext._fuseInstance = sparkyContext._getFuseBoxOptions();
+            Object.defineProperty(sparkyContext, 'fuse', {
+                get: () => {
+                    if (!sparkyContext._fuseInstance) {
+                        sparkyContext._fuseInstance = sparkyContext._getFuseBoxOptions();
+                    }
+                    return sparkyContext._fuseInstance;
                 }
-                return sparkyContext._fuseInstance;
-            }});
+            });
             return sparkyContext._fuseInstance;
         });
     }
 
-    public static init(paths : string[]){
+    public static init(paths: string[]) {
         const flow = new SparkFlow();
         flow.createFiles(paths);
         return flow;
     }
 
-    public static async exec(...args : Array<string | (() => any)>) {
+    public static async exec(...args: Array<string | (() => any)>) {
         for (const task of args) {
             if (typeof task === "string") {
                 await this.resolve(task)
@@ -91,23 +95,28 @@ export class Sparky {
         }
     }
 
-    public static start(tname?: string): Promise<any> {
+    public static async start(tname?: string): Promise<any> {
+        let start = process.hrtime();
         const taskName = tname || process.argv[2] || "default";
         if (!this.tasks.get(taskName)) {
             log.echoWarning(`Task with such name ${taskName} was not found!`);
             return Promise.reject("Task not found");
         }
+        log.echoSparkyTaskStart(taskName)
 
         const task = this.tasks.get(taskName);
-        return Promise.all([
+        await Promise.all([
             // resolve parallel dependencies
             Promise.all(task.parallelDependencies.map(name => this.resolve(name))),
             // resolve waterfal dependencies
             each(task.waterfallDependencies, name => this.resolve(name))
-        ]).then(() => {
-            return typeof task.fn === 'function'
-                && this.execute(task.fn(getSparkyContext()));
-        });
+        ])
+        let res;
+        if( typeof task.fn === 'function'){
+            res = await this.execute(task.fn(getSparkyContext()))
+        }
+        log.echoSparkyTaskEnd(taskName, process.hrtime(start));
+        return res;
     }
 
     private static execute(result: any) {
@@ -121,10 +130,7 @@ export class Sparky {
         if (!this.tasks.get(name)) {
             return log.echoWarning(`Task with such name ${name} was not found!`);
         }
-        let start = process.hrtime();
-        log.echoSparkyTaskStart(name)
-        await this.start(name);
-        log.echoSparkyTaskEnd(name, process.hrtime(start));
+        return await this.start(name);
     }
 
 }
