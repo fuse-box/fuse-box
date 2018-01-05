@@ -6,13 +6,19 @@ Let’s break it down and see what are the new features.
 ## Code splitting without configuration
 It’s finally here. No magical comments, no configs. FuseBox builds a dependency tree automatically and generates according bundles. You can split a package for example just by defining a dynamic import.
 
+```js
 await import("moment")
+```
+
 Isn’t that great? Moreover, FuseBox does what none of the bundlers can — you can publish a typescript source and once the latter one installed, FuseBox will make a split it automatically (if defined). Say, you are relying on a library but you know that it’s heavy, so you could publish a source that contains dynamic imports. It will be split without user even knowing it. Check the example here
 
 
 And most certainly, you are able to create split bundles that contain project files
 
+```js
 import("./components/AboutComponent")
+```
+
 FuseBox will traverse the tree and detect which files and packages belong only to that split package. Shared packages will not be bundled and stay within the master bundle.
 
 ## Updated task runner
@@ -26,10 +32,12 @@ Context function accepts classes, functions and objects and passed into each tas
 # Typescript packages
 Now you can publish a typescript package to npm!
 
+```js
 {
    "ts:main" : "index.ts",
    "main" : "index.js"
 }
+```
 Just modify package.json and off you go. If you are planning to use with FuseBox you can set main option to point to a typescript file. And again — no configuration required.
 
 The actual benefits are:
