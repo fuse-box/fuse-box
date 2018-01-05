@@ -12,11 +12,6 @@
 # FuseBox
 http://fuse-box.org/
 
----
-FuseBox 3.0 is being cooked at the moment.
-Contributing guidelines are located [here](https://github.com/fuse-box/fuse-box/blob/master/.github/CONTRIBUTING.md)
----
-
 FuseBox is a bundler/module loader that combines the power of webpack, JSPM and SystemJS. 
 
 It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convenient for developers. It requires zero configuration to bundle such monsters like `babel-core`.
