@@ -6,7 +6,7 @@ Here you will learn the best ways to make an npm package. There are 2 ways of pu
 
 ## Publish raw typescript package (recommended)
 
-It's highly encouraged not to make a bundle of your library for multiple reasons
+It's highly encouraged not to make a bundle of your library for multiple reasons.
 
 * You will kill all the chances to tree shake it (whether it's FuseBox or WebPack)
 * Typings may go wrong
