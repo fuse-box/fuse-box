@@ -135,6 +135,7 @@ FuseBox.init({
 })
 ```
 
+
 Or using the chain API
 
 ```js
@@ -142,6 +143,16 @@ fuse
     .bundle("app")
     .tsConfig("src/myconfig.json")
 ```
+
+You can also override any values by providing an array with a single object
+
+
+```js
+FuseBox.init({
+    tsConfig : [{ target : `es5` }]
+})
+```
+
 
 ## TypeScript Custom Transformers
 
@@ -427,76 +438,6 @@ FuseBox.init({
 ```
 
 note: Don't put a slash at the end with sourceRoot
-
-
-
-## Standalone
-
-By default FuseBox injects API in every bundle. That can be overridden by setting:
-
-```
-{ standalone : false }
-```
-
-Alternatively, you add the `!` symbol to the arithmetics, for example
-
-```js
-fuse.bundle("app").instructions("!>index.ts")
-```
-
-
-Load the API from the CDN:
-
-```html
-<script type="text/javascript" src="https://unpkg.com/fuse-box/dist/fusebox.min.js"></script>
-```
-
-## Plugins
-
-`plugins` option expects an array of plugins
-
-```js
-FuseBox.init({
-    plugins:[
-        TypeScriptHelpers(),
-        JSONPlugin(),
-        [LESSPlugin(), CSSPlugin()],
-    ],
-})
-```
-
-Chaining is achieved by wrapping a list using array
-
-```js
-[LESSPlugin(), CSSPlugin()]
-```
-
-You can provided a RegEx or a simplified RegEx as a first element to override the initial match of a group:
-
-```js
-["less/*.less",LESSPlugin(), CSSPlugin()]
-```
-
-
-FuseBox tests each file running it through the plugin list. If it sees an array, it test for the first Plugin on the list test (which is `.scss` in our case.
-
-```js
-[".scss", SassPlugin(), CSSPlugin()] // simple and clean
-[/\.scss$/, SassPlugin(), CSSPlugin()] // more verbose
-```
-
-By default only the first plugin to match a file will be applied to the file. E.g., in the following:
-```js
-new FuseBox({
-    plugins: [
-		ReplacePlugin({ __PRODUCTION__: isProduction }),
-		ReplacePlugin({ __SERVER__: false })
-	]
-  }).plugin(ReplacePlugin({ __IOS__: true }))
-```
-... only the `ReplacePlugin({ __PRODUCTION__: isProduction })` will be run on the files.
-
-To make all of the plugins run, set `{ runAllMatchedPlugins: true }`.
 
 ## Target
 

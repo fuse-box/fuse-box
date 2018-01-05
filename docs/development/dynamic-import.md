@@ -4,8 +4,6 @@ In compliance with [es6 proposal-dynamic-import](https://github.com/tc39/proposa
 
 On of the standard functionality, FuseBox offers much more. [Quantum](/page/quantum) supports all the features listed below.
 
-note: In order to use dynamic imports, add experimentalFeatures : true to the config. The option will be removed with the next major release
-
 ## Loading JSON
 
 JSON files can be loaded asynchronously
@@ -160,24 +158,9 @@ Split bundles can be retrieved by name or by referencing an actual module
 
 note: Physical code splitting (when the bundles are actually created) works ONLY in Quantum. For development purposes your split bundles will be present in the master bundle BY DESIGN
 
-Define the config first
-
-```js
-.split("routes/home/**", "home > routes/home/HomeComponent.ts")
-.split("routes/about/**", "about > routes/about/AboutComponent.ts")
-```
-Load by a reference and keep you typings in place. FuseBox will automatically map it to the bundle "home".
-No "magical" comments no extra headache. FuseBox understands when you are referring to an entry point that should be split
 
 ```js
 const aboutModule = await import("./routes/about/AboutComponent");
-console.log(new aboutModule.AboutComponent());
-```
-
-Load by name - that's if you are not a fan of typescript and prefer plain javascript
-
-```js
-const aboutModule = await import("about");
 console.log(new aboutModule.AboutComponent());
 ```
 
