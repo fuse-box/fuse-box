@@ -2,6 +2,13 @@
 
 FuseBox provides a very convenient and a blazy fast test runner based on TypeScript.
 
+## Installation
+Install it first
+
+```bash
+npm install fuse-test-runner
+```
+
 The concept is simple:
 
 ```js
@@ -125,5 +132,7 @@ should(file.localImports)
 | ` beFalse() `   | Should be false |
 | ` mutate(x => x.hello) `   | Changes the chains' pointer |
 
+## Resources
 
+https://github.com/DaveO-Home/embedded-acceptance-tests
 
