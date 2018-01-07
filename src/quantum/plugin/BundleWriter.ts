@@ -11,18 +11,16 @@ export class BundleWriter {
     constructor(public core: QuantumCore) { }
 
     private getUglifyJSOptions(): any {
-        const useUglifyEs = this.core.context.languageLevel > ScriptTarget.ES5;
+        const opts = this.core.opts.shouldUglify() || {};
+        const useUglifyEs = this.core.context.languageLevel > ScriptTarget.ES5 || !!opts.es6;
         if ( useUglifyEs ){
-            this.core.context.log.echoInfo("Using uglify-es because the target is greater than ES5")
+            this.core.context.log.echoInfo("Using uglify-es because the target is greater than ES5 or es6 option is set")
         } else {
-            this.core.context.log.echoInfo("Using uglify-js because the target is set to ES5")
+            this.core.context.log.echoInfo("Using uglify-js because the target is set to ES5 and no es6 option is set")
         }
-        const mainOptions: any = {
-            es6 : useUglifyEs
-        };
         return {
-            ...this.core.opts.shouldUglify() || {},
-            ...mainOptions
+            ...opts,
+            es6 : useUglifyEs
         }
     }
 
