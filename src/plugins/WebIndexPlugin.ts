@@ -25,10 +25,10 @@ export class WebIndexPluginClass implements Plugin {
     constructor(public opts?: IndexPluginOptions) {
 
     }
-    producerEnd(producer: BundleProducer) {
+
+    private generate(producer : BundleProducer){
         let bundlePaths = [];
         let bundles = producer.sortBundles();
-
         bundles.forEach((bundle) => {
             let pass = true;
             if (this.opts.bundles) {
@@ -108,6 +108,12 @@ export class WebIndexPluginClass implements Plugin {
         }
         producer.fuse.context
             .output.writeToOutputFolder(this.opts.target || "index.html", html);
+    }
+    producerEnd(producer: BundleProducer) {
+        this.generate(producer);
+        producer.sharedEvents.on('file-changed', () => {
+            this.generate(producer);
+        });
     }
 };
 
