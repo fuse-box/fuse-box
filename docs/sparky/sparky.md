@@ -5,7 +5,7 @@ Sparky is a Task-Runner like `Gulp` or `Grunt`, but what sets it apart is that i
 ## Benefits
 
 
-* Unlike `gulp` Sparky utilizes `FuseBox` power, for example, you don't need to create tasks to transpile `TypeScript`, `FuseBox` will do that for you. instead use `Sparky` to do common tasks like copying, moving, deleting files, etc. Of course, that does not prevent you from doing that if you don't want to utilize `FuseBox` awesomeness.
+* Unlike `gulp` Sparky utilizes `FuseBox` power, for example, you don't need to create tasks to transpile `TypeScript`, `FuseBox` will do that for you. Use instead `Sparky` to do common tasks like copying, moving, deleting files, etc. Of course, that does not prevent you from doing that if you don't want to utilize `FuseBox` awesomeness.
 * Simple intuitive API.
 * Based on Promises, this means it is super fast and allows you to use `ES2017` `async/await` syntax.
 * Ability to run tasks in parallel and sequentially (waterfall).
@@ -14,7 +14,7 @@ Sparky is a Task-Runner like `Gulp` or `Grunt`, but what sets it apart is that i
 This is one of the best parts about `Sparky`, it comes built in `FuseBox` so if you install `FuseBox` this means you already have it.
 
 ## Usage
-`Sparky` does not require `CLI` or global installation. just create a file called `fuse.js` in your app root (it does not have to be called `fuse.js`, you can name it anything and put it anywhere, it is just a `JavaScript` file), then from your command line just type `node fuse [task name]`. for example, say you have a task called build, you can simply run it using `node fuse build`.
+`Sparky` does not require `CLI` or global installation. Just create a file called `fuse.js` in your app root (it does not have to be called `fuse.js`, you can name it anything and put it anywhere, it is just a `JavaScript` file), then from your command line just type `node fuse [task name]`. For example, say you have a task called build, you can simply run it using `node fuse build`.
 
 `c:/myProject/fuse.js`
 ```js
@@ -288,7 +288,7 @@ file.setContent(file.contents + "some content")
 
 ### Rename
 
-You can use the rename function to change the name of an file.  Note that its necessary to use the `$name` substitution in order to use this.
+You can use `rename` function to change the name of a file.  Note that its necessary to use the `$name` substitution in order to use this.
 
 ```
 Sparky

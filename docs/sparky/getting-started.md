@@ -16,7 +16,7 @@ const { FuseBox, WebIndexPlugin } = require("fuse-box");
 
 ## Task context
 
-You  should always start with a context. A context is a shared object between tasks. It will help to keep your configuration clean and readable.
+You should always start with a context. A context is a shared object between tasks. It will help to keep your configuration clean and readable.
 
 ```js
 context(class {
@@ -42,7 +42,7 @@ It doesn't need to a class, it can be a function or a plain object.
 `WebIndexPlugin` will automatically create `index.html` in the dist folder. QuantumPlugin we will use for making production builds
 
 ## Default task
-Create `default` task (the one that will be execute once `node fuse.js` is called)
+Create `default` task (the one that will be executed once `node fuse.js` is called)
 
 ```js
 task("default", async context => {
