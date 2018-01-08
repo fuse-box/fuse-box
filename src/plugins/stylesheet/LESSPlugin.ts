@@ -6,6 +6,7 @@ let less;
 
 export interface LESSPluginOptions {
     sourceMap?: any;
+    relativeUrls?: boolean;
 }
 
 export interface LESSPluginInternalOpts {
