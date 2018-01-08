@@ -65,7 +65,7 @@ You won't need any additional configuration to start working with typescript.
 
 ## Start with JavaScript
 
-You can not forced to used typescript. However you should still have it installed, as typescript is not just a powerful tool for typechecking - it's also a very [powerful transpiler](/page/configuration#usetypescriptcompiler) too
+You are not forced to used typescript. However you should still have it installed, as typescript is not just a powerful tool for typechecking - it's also a very [powerful transpiler](/page/configuration#usetypescriptcompiler) too
 
 ```js
 const fuse = FuseBox.init({
@@ -79,7 +79,7 @@ fuse.bundle("app")
 fuse.run();
 ```
 
-Use `useTypescriptCompiler` option and you won't need babel at all. But keep in my synthetic default imports.
+Use `useTypescriptCompiler` option and you won't need babel at all. But keep in mind synthetic default imports.
 
 Correct:
 ```js
