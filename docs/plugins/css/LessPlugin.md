@@ -59,7 +59,17 @@ import "./styles/main.less"
 
 ## Options
 
-`LessPlugin` accepts a `key/value` `Less` object options as a parameter. For example:
+### relativeUrls
+
+By default URLs are kept as-is, so if you import a file in a sub-directory that references an image, exactly the same URL will be output in the css. This option allows you to re-write URL's in imported files so that the URL is always relative to the base imported file.
+
+```js
+fuse.plugin(
+    [LESSPlugin({ relativeUrls: true }), CSSPlugin()]
+)
+```
+
+### paths
 
 ```js
 fuse.plugin(
