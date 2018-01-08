@@ -1,7 +1,7 @@
 # About Plugins
 
-Plugins in FuseBox are very easy to use. In fact, we have bunch of them prepared and maintained by FuseBox community.
-You won't be needing to google, the most important ones are in the Plugin section.
+Plugins in FuseBox are very easy to use. In fact, we have a bunch of them prepared and maintained by FuseBox community.
+You won't need to google, the most important ones are in the Plugin section.
 
 ## Simple use case
 
@@ -44,7 +44,7 @@ plugins: [
 ]
 ```
 
-Here we start off by taking any `.sass` file, piping the contents into `CSSResoucePlugin` which extracts the resources and copies them into your dist folder, and finally `CSSPlugin` takes care of loading them, re-loading on HMR and much more. If you working with CSS, make sure that `CSSPlugin()` is the last one on the list.
+Here we start off by taking any `.sass` file, piping the contents into `CSSResoucePlugin` which extracts the resources and copies them into your dist folder, and finally `CSSPlugin` takes care of loading them, re-loading on HMR and much more. If you work with CSS, make sure that `CSSPlugin()` is the last one on the list.
 
 Certainly, you can specify a mask to capture required files.
 
