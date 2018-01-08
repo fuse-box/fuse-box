@@ -35,6 +35,8 @@ export class RequireStatement {
         if (ast.arguments.length === 1 && isString(arg1)) {
 
             this.value = ast.arguments[0].value;
+            // replace duplicate slashes
+            this.value = this.value.replace(/([/]{2,})/g, '/')
             let moduleValues = this.value.match(/^([a-z@](?!:).*)$/);
 
             this.isNodeModule = moduleValues !== null && moduleValues !== undefined;
