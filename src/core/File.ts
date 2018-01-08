@@ -545,6 +545,9 @@ export class File {
             if (cached.sourceMap) {
                 this.sourceMap = cached.sourceMap;
             }
+            if ( cached.ac){
+                this.alternativeContent = cached.ac;
+            }
             this.context.setCSSDependencies(this, cached.dependencies);
             if (!this.fileDependsOnLastChangedCSS()) {
                 this.isLoaded = true;
@@ -565,6 +568,9 @@ export class File {
             this.cached = true;
             if (cached._) {
                 this.cacheData = cached._;
+            }
+            if ( cached.ac){
+                this.alternativeContent = cached.ac;
             }
             if (cached.devLibsRequired) {
                 cached.devLibsRequired.forEach(item => {
