@@ -224,6 +224,7 @@ export class ModuleCache {
             dependencies: file.analysis.dependencies,
             sourceMap: sourcemaps || {},
             headerContent: file.headerContent,
+            ac : file.alternativeContent,
             mtime: stats.mtime.getTime(),
             _: file.cacheData || {}
         };
@@ -236,6 +237,7 @@ sourceMap: ${JSON.stringify(cacheData.sourceMap)},
 headerContent: ${JSON.stringify(cacheData.headerContent)},
 mtime: ${cacheData.mtime},
 devLibsRequired : ${JSON.stringify(cacheData.devLibsRequired)},
+ac : ${JSON.stringify(file.alternativeContent)},
 _ : ${JSON.stringify(cacheData._ || {})}
 }
 `;
