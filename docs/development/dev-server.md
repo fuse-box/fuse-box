@@ -110,3 +110,18 @@ fuse.sendPageHMR();
 ```
 
 
+You can check the functionality in [this](https://github.com/fuse-box/fuse-box-examples/tree/master/examples/manual-page-reload) example
+
+```js
+task("default", ["clean"], async context => {
+    const fuse = context.getConfig();
+    fuse.dev();
+
+    setInterval(() => {
+        fuse.sendPageReload(); // will reload every second
+    }, 1000);
+
+    context.createBundle(fuse);
+    await fuse.run();
+});
+```
