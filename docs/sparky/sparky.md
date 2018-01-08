@@ -29,7 +29,7 @@ To run the above do `node fuse clean`
 
 ## Context
 
-One of the great benifits in Sparky is `Context`. Context is a shared object between tasks that will be constructud/executed upon execution
+One of the great benifits in Sparky is `Context`. Context is a shared object between tasks that will be constructed/executed upon execution
 
 
 A class will be instantiated
