@@ -121,10 +121,18 @@ plugins : [
 
 If you are planning on using CSSModules, here is a little trick for TypeScript that will make it stop complaning about typings:
 
-```ts
-declare module "*.png" {
+```js
+// for default imports
+// e.g import style from "./main.css"
+declare module "*.css" {
     const content: string;
     export default content;
+}
+// for regular imports
+// e.g import * as styles from "./main.css"
+declare module "*.css" {
+    const content: string;
+    export = content;
 }
 ```
 
