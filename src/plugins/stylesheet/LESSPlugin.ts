@@ -1,6 +1,7 @@
 import { File } from "../../core/File";
 import { WorkFlowContext } from "./../../core/WorkflowContext";
 import { Plugin } from "../../core/WorkflowContext";
+import * as path from "path";
 let less;
 
 export interface LESSPluginOptions {
@@ -56,7 +57,7 @@ export class LESSPluginClass implements Plugin {
             less = require("less");
         }
 
-        options.filename = file.context.homeDir + (options.filename || file.info.fuseBoxPath);
+        options.filename = options.filename ? path.join(file.context.homeDir, options.filename) : file.info.absPath;
 
         if ("sourceMapConfig" in context) {
             options.sourceMap = { ...sourceMapDef, ...options.sourceMap || {} };
