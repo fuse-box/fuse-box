@@ -119,6 +119,14 @@ plugins : [
 ]
 ```
 
+If you are planning on using CSSModules, here is a little trick for TypeScript that will make it stop complaning about typings:
+
+```ts
+declare module "*.png" {
+    const content: string;
+    export default content;
+}
+```
 
 ## Start with server
 
