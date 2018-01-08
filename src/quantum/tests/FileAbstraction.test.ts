@@ -209,4 +209,17 @@ export class BundleAsbtractionTest {
         should(file.namedExports.get("Bar")).beOkay();
 
     }
+
+
+    "Should resolve with trailing slashes"() {
+        const files = new Map<string, string>();
+        files.set("foo/bar/index.js", "require('~//foo///////bar/////world')");
+        files.set("foo/bar/world.js", "");
+
+        const pkg = createDefaultPackageAbstraction(files);
+        const indexFile = pkg.fileAbstractions.get("foo/bar/index.js");
+        const worldReference = indexFile.findRequireStatements(/.*/)[0]
+        const resolved = worldReference.resolve();
+        should(resolved).beOkay();
+    }
 }
