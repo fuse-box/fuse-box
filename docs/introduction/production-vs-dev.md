@@ -1,8 +1,8 @@
 # Production vs Dev
 
-It's imperative to understand the difference between production environment and development. The API is complately different, however mostly comptaible and covered with tests.
+It's imperative to understand the difference between production environment and development. The API is completely different, however mostly compatible and covered with tests.
 
-When you first launch your production build, you will notice that there is `api.js` file next to your bundles. 
+When you first launch your production build, you will notice that there is an `api.js` file next to your bundles. 
 
 Production API is lego-like. A mimimal setup is ~200bytes API. The more features you use, the larger it gets, but it doesn't exceed reasonable limits.
 
