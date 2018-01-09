@@ -174,4 +174,4 @@ Before going there, read up [how to deal with the task runner](/page/getting-sta
 
 Once you are familiar with the concepts, you can start with [Sparky](/page/sparky) - A task runner that makes you life easier.
 
-You can find plenty of example [here](https://github.com/fuse-box/fuse-box-examples/tree/master/examples]
+You can find plenty of example [here](https://github.com/fuse-box/fuse-box-examples/tree/master/examples)
