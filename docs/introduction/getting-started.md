@@ -119,7 +119,7 @@ plugins : [
 ]
 ```
 
-If you are planning on using CSSModules, here is a little trick for TypeScript that will make it stop complaning about typings:
+If you are planning on using CSSModules, here is a little trick for TypeScript that will make it stop complaining about typings:
 
 ```js
 // for default imports
