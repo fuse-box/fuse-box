@@ -207,7 +207,7 @@ export class CSSPluginClass implements Plugin {
             debug(`  grouping -> ${bundleName}`)
 
             // Respect other plugins to override the output
-            file.addAlternativeContent(`require("~/${bundleName}")`);
+            file.addAlternativeContent(`require("${context.defaultPackageName}/${bundleName}")`);
             return;
         }
 
