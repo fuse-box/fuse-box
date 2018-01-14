@@ -17,7 +17,11 @@ export class EnvPluginClass implements Plugin {
         if (producer) {
             producer.addUserProcessEnvVariables(this.env);
         }
-        context.source.addContent(`var __process_env__ = ${JSON.stringify(this.env)};`);
+        if (context.target === "server"){
+            context.source.addContent(`Object.assign(process.env, ${JSON.stringify(this.env)})`);
+        } else {
+            context.source.addContent(`var __process_env__ = ${JSON.stringify(this.env)};`);
+        }
     }
 }
 
