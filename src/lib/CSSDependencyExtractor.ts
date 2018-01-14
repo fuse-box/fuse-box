@@ -10,9 +10,9 @@ export interface ICSSDependencyExtractorOptions {
 }
 
 export class CSSDependencyExtractor {
+    private filesProcessed = new Set<string>();
     private dependencies: string[] = [];
     constructor(public opts: ICSSDependencyExtractorOptions) {
-
         this.extractDepsFromString(opts.content);
     }
 
@@ -30,8 +30,11 @@ export class CSSDependencyExtractor {
     }
 
     private readFile(fileName: string, currentPath? : string) {
-        let contents = fs.readFileSync(fileName).toString();
-        this.extractDepsFromString(contents, currentPath)
+        if ( !this.filesProcessed.has(fileName)){
+            this.filesProcessed.add(fileName);
+            const contents = fs.readFileSync(fileName).toString();
+            this.extractDepsFromString(contents, currentPath)
+        }
     }
     public getDependencies() {
         return this.dependencies;
