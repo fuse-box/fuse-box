@@ -289,7 +289,7 @@ function $import(name, o) {
     }
     var args = [locals.module.exports, locals.require, locals.module, ref.validPath, path, pkg];
     $trigger("before-import", args);
-    file.fn.apply(0, args);
+    file.fn.apply(args[0], args);
     $trigger("after-import", args);
     return locals.module.exports;
 }

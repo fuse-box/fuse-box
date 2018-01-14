@@ -479,7 +479,7 @@ function $import(name: string, o: any = {}) {
     let args = [locals.module.exports, locals.require, locals.module, ref.validPath, path, pkg];
     $trigger("before-import", args);
 
-    file.fn.apply(0, args);
+    file.fn.apply(args[0], args);
     // fn(locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName)
     $trigger("after-import", args);
     return locals.module.exports;
