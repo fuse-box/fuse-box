@@ -107,9 +107,14 @@ export class BundleWriter {
         let index = 1;
         const writeBundle = (bundle: Bundle) => {
             return bundle.context.output.writeCurrent(bundle.generatedCode).then(output => {
+                let entryString;
+                if( bundle.quantumBit && bundle.quantumBit.entry){
+                    entryString = bundle.quantumBit.entry.getFuseBoxFullPath();
+                }
                 bundleManifest[bundle.name] = {
                     fileName: output.filename,
                     hash: output.hash,
+                    entry : entryString,
                     absPath: output.path,
                     webIndexed: !bundle.quantumBit,
                     relativePath: output.relativePath
