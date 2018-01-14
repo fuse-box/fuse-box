@@ -50,23 +50,28 @@ export class ImageBase64PluginClass implements Plugin {
     public transform(file: File) {
 
         const context = file.context;
-        const cached = context.cache.getStaticCache(file);
-        if (cached) {
-            file.isLoaded = true;
-            file.contents = cached.contents;
-        } else {
-            let exportsKey = this.opts.useDefault ? "module.exports.default" : "module.exports";
-            const ext = path.extname(file.absPath);
-            if (ext === ".svg") {
-                file.loadContents();
-                let content = SVG2Base64.get(file.contents);
-                file.contents = `${exportsKey} = ${JSON.stringify(content)}`;
-                return;
+        if (context.useCache) {
+            const cached = context.cache.getStaticCache(file);
+            if (cached) {
+                file.isLoaded = true;
+                file.contents = cached.contents;
             }
-            file.isLoaded = true;
-            const data = base64Img.base64Sync(file.absPath);
+            return;
+        }
 
-            file.contents = `${exportsKey} = ${JSON.stringify(data)}`;
+        let exportsKey = this.opts.useDefault ? "module.exports.default" : "module.exports";
+        const ext = path.extname(file.absPath);
+        if (ext === ".svg") {
+            file.loadContents();
+            let content = SVG2Base64.get(file.contents);
+            file.contents = `${exportsKey} = ${JSON.stringify(content)}`;
+            return;
+        }
+        file.isLoaded = true;
+        const data = base64Img.base64Sync(file.absPath);
+
+        file.contents = `${exportsKey} = ${JSON.stringify(data)}`;
+        if (context.useCache) {
             context.cache.writeStaticCache(file, undefined);
         }
     }
