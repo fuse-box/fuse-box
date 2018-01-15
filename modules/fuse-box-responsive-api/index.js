@@ -339,7 +339,7 @@
         cached = $fsx.m[id] = {};
         cached.exports = {};
         cached.m = { exports: cached.exports };
-        file(cached.m, cached.exports);
+        file.call(cached.exports, cached.m, cached.exports);
         return cached.m.exports;
     };
 
