@@ -1,6 +1,6 @@
 # Debugging with vscode
 
-[Visual Studo Code](https://code.visualstudio.com/) is a light weight editor, with excellent debugging support. In this guide you'll be shown on how to get debugging working with `fuse-box` on both web apps and node applications. The source code for this example application can be found [here](/andrew-ross/fuse-debug).
+[Visual Studo Code](https://code.visualstudio.com/) is a light weight editor, with excellent debugging support. In this guide you'll be shown on how to get debugging working with `fuse-box` on both web apps and node applications. The source code for this example application can be found [here](https://github.com/andrew-w-ross/fuse-debug).
 
 The source code structure should look as follows:
 ```
@@ -22,7 +22,7 @@ Then Start up fuse box by running `npm start` in the terminal and wait for the `
 
 Add a break point to either the `render` or `add` function in the `Adder.tsx` and hit the Click Me button. It should break as demoed below:
 
-![debugging gif](../images/debugging.gif)
+![debugging gif](https://raw.githubusercontent.com/fuse-box/fuse-box/master/docs/images/debugging.gif)
 
 ### How mapping works
 
@@ -69,7 +69,7 @@ There should be a dropdown in the debug menu at the top letting you switch betwe
 Add a breakpoint to line 21 of `ServerCaps.tsx` in client, also add a breakpoint to line 19 of `index.ts` in server.
 Hit the `Send to Server` button and you should see the context switch as the code goes from `client` -> `Server` -> `Client`. 
 
-![fullstack debugging gif](../images/fullstack-debugging.gif)
+![fullstack debugging gif](https://raw.githubusercontent.com/fuse-box/fuse-box/master/docs/images/fullstack-debugging.gif)
 
 To debug the server instance it must be launched in the same process that `fuse-box` is using. To do this use the `require` function on `completed`. When doing this `fuse-box` needs to know how to close down the process by providing it a close function.
 
