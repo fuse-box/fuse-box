@@ -552,10 +552,9 @@ export class WorkFlowContext {
         if (this.ignoreGlobal.indexOf(name) > -1) {
             return true;
         }
-        if (this.target === "server") {
+        if (this.target === "server" || this.target === "electron") {
             return isPolyfilledByFuseBox(name)
         }
-
     }
 
     public resetNodeModules() {
