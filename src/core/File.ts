@@ -647,7 +647,10 @@ export class File {
                 delete jsonSourceMaps.sourcesContent;
 			}
 			
-			result.outputText = result.outputText.replace(`//# sourceMappingURL=${this.info.fuseBoxPath}.map`, `//# sourceMappingURL=${this.context.bundle.name}.js.map`);			
+            result.outputText = result
+                .outputText
+                .replace(`//# sourceMappingURL=${this.info.fuseBoxPath}.map`, `//# sourceMappingURL=${this.context.bundle.name}.js.map`)
+                .replace("//# sourceMappingURL=module.js.map", "");
             this.sourceMap = JSON.stringify(jsonSourceMaps);
         }
         this.contents = result.outputText;
