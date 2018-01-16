@@ -262,7 +262,8 @@ gulp.task("dev-index", () => {
 
 gulp.task("dev-fuse", () => {
     const fuse = getDistFuseBoxConfig({
-        homeDir: "src",
+		homeDir: "src",
+		sourceMaps: true,
         output: ".dev/$name.js",
         target: "server@esnext",
         cache: false,

@@ -645,9 +645,12 @@ export class File {
 
             if (!this.context.inlineSourceMaps) {
                 delete jsonSourceMaps.sourcesContent;
-            }
-
-            result.outputText = result.outputText.replace("//# sourceMappingURL=module.js.map", "");
+			}
+			
+            result.outputText = result
+                .outputText
+                .replace(`//# sourceMappingURL=${this.info.fuseBoxPath}.map`, `//# sourceMappingURL=${this.context.bundle.name}.js.map`)
+                .replace("//# sourceMappingURL=module.js.map", "");
             this.sourceMap = JSON.stringify(jsonSourceMaps);
         }
         this.contents = result.outputText;
@@ -659,8 +662,8 @@ export class File {
         if (this.context.useCache) {
             // emit new file
             this.context.emitJavascriptHotReload(this);
-
-            this.context.cache.writeStaticCache(this, this.sourceMap);
+			
+			this.context.cache.writeStaticCache(this, this.sourceMap);	
         }
     }
     public cacheData: { [key: string]: any };
