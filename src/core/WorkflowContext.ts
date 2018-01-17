@@ -18,7 +18,7 @@ import { FuseBox } from "./FuseBox";
 import { Bundle } from "./Bundle";
 import { BundleProducer } from "./BundleProducer";
 import { QuantumSplitConfig, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
-import { isPolyfilledByFuseBox } from "./ServerPolyfillList";
+import { isServerPolyfill, isElectronPolyfill } from "./ServerPolyfillList";
 import { CSSDependencyExtractor, ICSSDependencyExtractorOptions } from "../lib/CSSDependencyExtractor";
 import { ExtensionOverrides } from "./ExtensionOverrides";
 import { TypescriptConfig } from "./TypescriptConfig";
@@ -552,8 +552,12 @@ export class WorkFlowContext {
         if (this.ignoreGlobal.indexOf(name) > -1) {
             return true;
         }
-        if (this.target === "server" || this.target === "electron") {
-            return isPolyfilledByFuseBox(name)
+        if (this.target === "server") {
+            return isServerPolyfill(name)
+        }
+
+        if (this.target === "electron") {
+            return isElectronPolyfill(name)
         }
     }
 
