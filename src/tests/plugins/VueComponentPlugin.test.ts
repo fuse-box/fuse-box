@@ -179,13 +179,13 @@ export class VuePluginTest {
           project: {
             useTypescriptCompiler: true,
             extensionOverrides: ['.foo.ts', '.foo.html', '.foo.css'],
-            plugins: [VueComponentPlugin()]
+            plugins: [VueComponentPlugin()],
             files: {
                 "app.vue": `
                   <template src="./template.html"></template>
                   <script src="./script.ts"></script>
                   <style src="./style.scss"></style>
-                `
+                `,
                 "template.html": "<h1>I should not be included</h1>",
                 "template.foo.html": "<h1>I should be included</h1>",
                 "script.ts": "export default { message: 'I should not be included' }",
@@ -211,7 +211,7 @@ export class VuePluginTest {
     "Should be compatible with vue-class-component decorators"() {
         return createEnv({
             project: {
-                polyfillNonStandardDefaultUsage: true,
+                allowSyntheticDefaultImports: true,
                 files: {
                     "app.vue": `${getTemplateBlock('', 'Decorators')}${getDecoratorScriptBlock()}${getStyleBlock('')}`
                 },

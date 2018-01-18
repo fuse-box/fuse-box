@@ -393,6 +393,12 @@ function $trigger(name: string, args: any) {
     }
 };
 
+function syntheticDefaultExportPolyfill(input){
+    return ['function', 'object', 'array']
+        .indexOf(typeof input) > -1 && input.default === undefined ?
+             Object.isFrozen(input) ? input.default = input : Object.defineProperty(input, "default", {value : input, enumerable : false}) : void 0;
+}
+
 /**
  * Imports File
  * With opt provided it's possible to set:
@@ -463,11 +469,13 @@ function $import(name: string, o: any = {}) {
     locals.exports = {};
     locals.module = { exports: locals.exports };
     locals.require = (name: string, optionalCallback: any) => {
-        return $import(name, {
+        const result =  $import(name, {
             pkg,
             path,
             v: ref.versions,
         });
+        if( FuseBox["sdep"] ){ syntheticDefaultExportPolyfill(result); }
+        return result;
     };
 
     if ($isBrowser || !g["require"].main) {

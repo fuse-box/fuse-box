@@ -334,44 +334,47 @@ And install typescript
 ```
 npm install typescript --save-dev
 ```
+## allowSyntheticDefaultImports
 
+Based on TypeScript standard `allowSyntheticDefaultImports`.
+
+Can be set via `FuseBox.init` or in `tsconfig.json` directly.
+
+Using tsconfig:
+
+```json
+{
+  "compilerOptions" : {
+    "allowSyntheticDefaultImports" : true
+  }
+}
+```
+
+Using FuseBox.init
+
+```js
+FuseBox.init({
+    allowSyntheticDefaultImports : true
+})
+```
+
+
+
+That will allow doing the following
+
+```js
+import React from "react";
+```
 
 ## polyfillNonStandardDefaultUsage
+ 
+Deprecated in favour of [allowSyntheticDefaultImports](#allowSyntheticDefaultImports)
 
-Fixes non-standard import `default` whereas a package doesn't export one. For example:
-```js
-FuseBox.init({
-    useJsNext : ["react", "react-dom"],
-    polyfillNonStandardDefaultUsage : true
-})
-```
+The problem with `polyfillNonStandardDefaultUsage` is that it adds an additional line of code in each file, polluting the build. `allowSyntheticDefaultImports` will be baked into the API and will work out of the box.
 
-```js
-import React from "react"
-```
+Development API (without Quantum) will always have it enabled, Quantum, however, will require the option toggled.
 
-This functionality will not work in your project (people should stop relying on it, it's limited by design), but it's targeted to dependencies where `useJsNext` is interconnected.
-
-it's strongly recommended NOT to use libraries that don't conform to javascript standards, like `react-router`, you may continue using it, but in this case don't toggle `useJsNext`
-
-This option will polyfill every single file in a package, it won't affect much the size in Quantum, as it will be transpiled into:
-
-```js
-$fsx.r(122)(module.exports)
-```
-
-You may optionally choose packages to polyfill
-```js
-FuseBox.init({
-    useJsNext : ["react", "react-dom"],
-    polyfillNonStandardDefaultUsage : ["react", "react-dom"]
-})
-```
-And as a reminder, a proper way of importing React is as follows:
-
-```js
-import * as React from "react"
-```
+`polyfillNonStandardDefaultUsage` will display a warning, setting `allowSyntheticDefaultImports`. No breaking changes will occur.
 
 
 ## writeBundles

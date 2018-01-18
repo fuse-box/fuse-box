@@ -91,8 +91,7 @@ NOT correct:
 import React from "react" // <-- not correct ()
 ```
 
-It will work with [polyfillNonStandardDefaultUsage](/page/configuration#polyfillnonstandarddefaultusage). However, it's not recommended adding this option as it adds additional overhead to your runtime.
-
+It will work with [allowSyntheticDefaultImports](/page/configuration#allowSyntheticDefaultImports). However, it's not recommended adding this option as it adds additional overhead to your runtime.
 
 
 ## Start with CSS

@@ -115,7 +115,6 @@ export class WorkFlowContext {
 
     public filterFile: { (file: File): boolean }
 
-    public polyfillNonStandardDefaultUsage: boolean | string[] = false;
 
     public customAPIFile: string;
 
@@ -231,22 +230,6 @@ export class WorkFlowContext {
     }
     public isBrowserTarget() {
         return this.target === "browser";
-    }
-
-    public shouldPolyfillNonStandardDefault(file: File) {
-        if (file.belongsToProject()) {
-            return false;
-        }
-        let collectionName = file.collection && file.collection.name;
-        if (collectionName === "fuse-heresy-default") {
-            return false;
-        }
-        if (this.polyfillNonStandardDefaultUsage === true) {
-            return true;
-        }
-        if (Array.isArray(this.polyfillNonStandardDefaultUsage)) {
-            return this.polyfillNonStandardDefaultUsage.indexOf(collectionName) > -1
-        }
     }
 
     public shouldUseJsNext(libName: string) {
@@ -365,6 +348,12 @@ export class WorkFlowContext {
 
     public warning(str: string) {
         return this.log.echoWarning(str);
+    }
+
+    public deprecation(str: string) {
+        setTimeout(() => {
+            this.log.echoWarning(str);
+        }, 1000);
     }
 
     public fatal(str: string) {

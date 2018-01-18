@@ -102,6 +102,7 @@ gulp.task("prepare:dist-loader-typings", () => {
         .pipe(rename("LoaderAPI.ts"))
         .pipe(gulp.dest("src/modules/fuse-loader"));
 });
+
 gulp.task("prepare:modules", ["prepare:dist-loader-typings"], () => {
     return gulp.src(`src/modules/**/*.ts`)
         .pipe(projectModule()).on("error", onError)
@@ -113,7 +114,7 @@ gulp.task("prepare:copy-modules", function() {
         .pipe(gulp.dest(path.join(RELEASE_FOLDER, "modules")))
 });
 
-gulp.task("prepare:loader", () => {
+const prepareLoader = (folder) => {
     return gulp.src("src/loader/LoaderAPI.ts")
         .pipe(projectLoader()).on("error", onError).js
         .pipe(wrap(`(function(__root__){
@@ -121,17 +122,24 @@ if (__root__["FuseBox"]) return __root__["FuseBox"];
 <%= contents %>
 return __root__["FuseBox"] = FuseBox; } )(this)`))
         .pipe(rename("fusebox.js"))
-        .pipe(gulp.dest(path.join(RELEASE_FOLDER, "modules/fuse-box-loader-api")))
+        .pipe(gulp.dest(path.join(folder, "modules/fuse-box-loader-api")))
         .pipe(rename("fusebox.min.js"))
         .pipe(uglify())
         .pipe(replace(/;$/, ""))
         .pipe(replace(/^\!/, ""))
-        .pipe(gulp.dest(path.join(RELEASE_FOLDER, "modules/fuse-box-loader-api")));
-
+        .pipe(gulp.dest(path.join(folder, "modules/fuse-box-loader-api")));
+}
+gulp.task("prepare:loader", () => {
+    return prepareLoader(RELEASE_FOLDER);
+});
+gulp.task("dist:loader", () => {
+    return prepareLoader("./");
 });
 
 gulp.task("dist", ["prepare:clean"], function(done) {
     return runSequence(
+        "dist-modules",
+        "dist:loader",
         "prepare:copy-package",
         "prepare:js",
         "prepare:copy-modules",
@@ -212,7 +220,7 @@ gulp.task("dist-loader", ["dist-loader-js", "dist-loader-typings"]);
  * Used to build the fusebox modules
  * When adding a new module here be sure to .gitignore `modules/${name}/`
  */
-gulp.task("dist-modules", ["dist-loader-typings"], () => {
+gulp.task("dist-modules",() => {
     return gulp.src(`src/modules/**/*.ts`)
         .pipe(projectModule()).on("error", onError)
         .pipe(gulp.dest(`modules`));
@@ -306,10 +314,12 @@ gulp.task("dev", () => {
     RELEASE_FOLDER = path.resolve(".dev");
     FUSEBOX_BIN = path.resolve("./bin/fusebox.js");
     return runSequence(
+        "dist:loader",
         "prepare:copy-package",
         "prepare:copy-modules",
         "prepare:loader",
         "prepare:modules",
+        "dist-modules",
         "dev-fuse",
         "dev:ensure-playground",
         "dev-index", () => {

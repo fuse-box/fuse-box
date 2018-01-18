@@ -184,8 +184,7 @@ export class FileAnalysis {
         }
 
         if (this.requiresTranspilation) {
-            const ts = require("typescript");
-            let result = ts.transpileModule(this.file.contents, this.file.context.tsConfig.getConfig());
+            let result = this.file.transpileUsingTypescript();
             this.file.contents = result.outputText;
         }
     }

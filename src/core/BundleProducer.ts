@@ -15,6 +15,7 @@ export class BundleProducer {
     public bundles = new Map<string, Bundle>();
     public hmrInjected = false;
     public hmrAllowed = true;
+    public allowSyntheticDefaultImports = false;
     public devServer : Server;
     public sharedEvents = new EventEmitter();
     public writeBundles = true;
