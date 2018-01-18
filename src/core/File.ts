@@ -454,9 +454,6 @@ export class File {
             this.notFound = true;
             return;
         }
-        if (this.context.polyfillNonStandardDefaultUsage) {
-            this.addStringDependency('fuse-heresy-default');
-        }
         if (/\.ts(x)?$/.test(this.absPath)) {
 
             this.context.debug("Typescript", `Captured  ${this.info.fuseBoxPath}`);
