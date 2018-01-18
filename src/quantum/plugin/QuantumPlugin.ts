@@ -43,10 +43,16 @@ export class QuantumPluginClass implements Plugin {
             })
         });
     }
-
-    producerEnd(producer: BundleProducer) {
+    private consume(producer: BundleProducer){
         let core = new QuantumCore(producer, new QuantumOptions(producer, this.coreOpts));
         return core.consume();
+    }
+
+    producerEnd(producer: BundleProducer) {
+        producer.sharedEvents.on('file-changed', () => {
+            this.consume(producer);
+        });
+        return this.consume(producer);
     }
 };
 
