@@ -59,7 +59,6 @@
             "plugins/misc/JSONPlugin.md",
             "plugins/misc/ReplacePlugin.md",
             "plugins/misc/SourceMapPlainJsPlugin.md",
-            "plugins/misc/TypeScriptHelpers.md",
             "plugins/misc/UglifyESPlugin.md",
             "plugins/misc/UglifyJSPlugin.md"
         ]
