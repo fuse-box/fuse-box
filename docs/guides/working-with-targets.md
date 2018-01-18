@@ -1,4 +1,4 @@
-# Working targets
+# Working with targets
 
 Regardless of the output (esnext or es5) module resolution must be set to commonjs. It's not because FuseBox cannot handle `imports` it's because FuseBox mimics `require` statements in development (that's why FuseBox is so fast - it's not altering the code).
 
