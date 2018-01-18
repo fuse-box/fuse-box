@@ -56,7 +56,7 @@ let watching = false;
 
 function onError(error) {
     if (!watching) {
-        process.exit(1);
+        //process.exit(1);
     }
 }
 
