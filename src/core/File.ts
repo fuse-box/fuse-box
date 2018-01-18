@@ -612,6 +612,15 @@ export class File {
 
     }
 
+    public transpileUsingTypescript(){
+        try {
+            const ts = require("typescript");
+            return ts.transpileModule(this.contents, this.getTranspilationConfig());
+        } catch(e){
+            this.context.fatal('You need TypeScript installed to transpile modules automatically');
+            return;
+        }
+    }
     /**
      *
      *
@@ -628,16 +637,13 @@ export class File {
                 return;
             }
         }
-        const ts = require("typescript");
-
         this.loadContents();
         // handle import()
         this.replaceDynamicImports();
         // Calling it before transpileModule on purpose
         this.tryTypescriptPlugins();
         this.context.debug("TypeScript", `Transpile ${this.info.fuseBoxPath}`)
-        
-        let result = ts.transpileModule(this.contents, this.getTranspilationConfig());
+        let result = this.transpileUsingTypescript();
         if (result.sourceMapText && this.context.useSourceMaps) {
             let jsonSourceMaps = JSON.parse(result.sourceMapText);
             jsonSourceMaps.file = this.info.fuseBoxPath;

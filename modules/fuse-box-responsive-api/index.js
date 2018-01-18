@@ -7,6 +7,14 @@
     $promisePolyfill$
     /* @end */
 
+    /* @if allowSyntheticDefaultImports */
+    function syntheticDefaultExportPolyfill(input){
+        return ['function', 'object', 'array']
+            .indexOf(typeof input) > -1 && input.default === undefined ?
+                 Object.isFrozen(input) ? input.default = input : Object.defineProperty(input, "default", {value : input, enumerable : false}) : void 0;
+    }
+    /* @end */
+
     /* @if universal */
 
     var isBrowser = typeof window !== "undefined";
@@ -263,6 +271,9 @@
                     /* @end */
 
                     $cache[id] = $fsx.r(data[1]);
+                    /* @if allowSyntheticDefaultImports */
+                    syntheticDefaultExportPolyfill($cache[id]);
+                    /* @end */
                     !err ? resolve($cache[id]) : reject(err);
                 });
             } else {
@@ -282,15 +293,33 @@
                 req(id, function(err, result, ctype) {
                     if (!err) {
                         /* @if browser */
-                        resolve($cache[id] = evaluateModule(id, result, ctype));
+                        var res = $cache[id] = evaluateModule(id, result, ctype)
+                        /* @if allowSyntheticDefaultImports */
+                        syntheticDefaultExportPolyfill(res);
+                        /* @end */
+                        resolve(res);
                         /* @end */
 
                         /* @if server */
+                            /* @if allowSyntheticDefaultImports */
+                            syntheticDefaultExportPolyfill(result);
+                            /* @end */
                         resolve(result);
                         /* @end */
 
                         /* @if universal */
-                        isBrowser ? resolve($cache[id] = evaluateModule(id, result, ctype)) : resolve(result);
+                        if( isBrowser){
+                            var res = $cache[id] = evaluateModule(id, result, ctype);
+                            /* @if allowSyntheticDefaultImports */
+                            syntheticDefaultExportPolyfill(res);
+                            /* @end */
+                            resolve(res);
+                        } else {
+                             /* @if allowSyntheticDefaultImports */
+                             syntheticDefaultExportPolyfill(result);
+                             /* @end */
+                             resolve(result);
+                        }
                         /* @end */
                     } else {
                         reject(err);
@@ -312,12 +341,20 @@
         var result = $fsx.r(id);
         if (result === undefined) {
             /* @if server */
-            return require(id);
+            var result = require(id);
+             /* @if allowSyntheticDefaultImports */
+                syntheticDefaultExportPolyfill(result);
+              /* @end */
+            return result;
             /* @end */
 
             /* @if universal */
             if (!isBrowser) {
-                return require(id);
+                var result = require(id);
+                /* @if allowSyntheticDefaultImports */
+                    syntheticDefaultExportPolyfill(result);
+                /* @end */
+                return result;
             }
             /* @end */
         }
@@ -340,6 +377,9 @@
         cached.exports = {};
         cached.m = { exports: cached.exports };
         file.call(cached.exports, cached.m, cached.exports);
+        /* @if allowSyntheticDefaultImports */
+        syntheticDefaultExportPolyfill(cached.m.exports);
+        /* @end */
         return cached.m.exports;
     };
 

@@ -101,8 +101,14 @@ export class TypescriptConfig {
             if (tsConfigOverride) {
                 config.compilerOptions = Object.assign(config.compilerOptions, tsConfigOverride);
             }
-
+            // allowSyntheticDefaultImports
+            if( config.compilerOptions.allowSyntheticDefaultImports !== undefined ){
+                if( this.context.fuse && this.context.fuse.producer ) {
+                    this.context.fuse.producer.allowSyntheticDefaultImports = config.compilerOptions.allowSyntheticDefaultImports;;
+                }
+            }
             this.config = config;
+
             this.defaultSetup();
             if (!configFileFound && this.context.ensureTsConfig === true) {
                 this.initializeConfig();

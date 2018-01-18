@@ -232,6 +232,11 @@ function $trigger(name, args) {
     }
 }
 ;
+function syntheticDefaultExportPolyfill(input) {
+    return ['function', 'object', 'array']
+        .indexOf(typeof input) > -1 && input.default === undefined ?
+        Object.isFrozen(input) ? input.default = input : Object.defineProperty(input, "default", { value: input, enumerable: false }) : void 0;
+}
 function $import(name, o) {
     if (o === void 0) { o = {}; }
     if (name.charCodeAt(4) === 58 || name.charCodeAt(5) === 58) {
@@ -275,11 +280,15 @@ function $import(name, o) {
     locals.exports = {};
     locals.module = { exports: locals.exports };
     locals.require = function (name, optionalCallback) {
-        return $import(name, {
+        var result = $import(name, {
             pkg: pkg,
             path: path,
             v: ref.versions,
         });
+        if (FuseBox["sdep"]) {
+            syntheticDefaultExportPolyfill(result);
+        }
+        return result;
     };
     if ($isBrowser || !g["require"].main) {
         locals.require.main = { filename: "./", paths: [] };

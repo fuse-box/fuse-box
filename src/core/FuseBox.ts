@@ -54,6 +54,7 @@ export interface FuseBoxOptions {
     output?: string;
     emitHMRDependencies?: boolean;
     filterFile?: { (file: File): boolean }
+    allowSyntheticDefaultImports?: boolean;
     debug?: boolean;
     files?: any;
     alias?: any;
@@ -115,7 +116,12 @@ export class FuseBox {
         this.context.languageLevel = ScriptTarget[level] || ScriptTarget.ES2016;
 
         if (opts.polyfillNonStandardDefaultUsage !== undefined) {
-            this.context.polyfillNonStandardDefaultUsage = opts.polyfillNonStandardDefaultUsage;
+            this.context.deprecation('polyfillNonStandardDefaultUsage has been depreacted in favour of allowSyntheticDefaultImports')
+            this.producer.allowSyntheticDefaultImports = opts.allowSyntheticDefaultImports;
+        }
+
+        if( opts.allowSyntheticDefaultImports !== undefined) {
+            this.producer.allowSyntheticDefaultImports = opts.allowSyntheticDefaultImports;
         }
 
         if (opts.useJsNext !== undefined) {

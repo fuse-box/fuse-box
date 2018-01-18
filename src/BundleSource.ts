@@ -159,10 +159,6 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         this.collectionSource.add(null, file.alternativeContent !== undefined ? file.alternativeContent : file.contents, file.sourceMap);
         this.annotate(`/* fuse:end-file "${file.info.fuseBoxPath}"*/`);
 
-        if (this.context.shouldPolyfillNonStandardDefault(file)) {
-            this.collectionSource.add(null, "require('fuse-heresy-default')(module.exports)");
-        }
-
         this.collectionSource.add(null, "});");
     }
 
@@ -203,6 +199,10 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
             this.concat.add(null, `FuseBox.isServer = true;`);
         }
 
+        if ( context.fuse.producer && context.fuse.producer.allowSyntheticDefaultImports ){
+            this.concat.add(null, `// allowSyntheticDefaultImports`);
+            this.concat.add(null, `FuseBox.sdep = true`);
+        }
         // writing other bundles info
         if (this.bundleInfoObject) {
             this.concat.add(null, `FuseBox.global("__fsbx__bundles__",${JSON.stringify(this.bundleInfoObject)})`);

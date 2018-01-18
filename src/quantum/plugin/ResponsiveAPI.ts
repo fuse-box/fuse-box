@@ -108,6 +108,7 @@ export class ResponsiveAPI {
             isServerFunction: this.isServerFunction,
             isBrowserFunction: this.isBrowserFunction,
             computedStatements: this.computedStatements,
+            allowSyntheticDefaultImports : this.core.context.fuse.producer.allowSyntheticDefaultImports === true,
             hashes: this.hashes,
             serverRequire: this.serverRequire,
             customStatementResolve: this.customStatementResolve,
