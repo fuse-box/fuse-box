@@ -1,6 +1,6 @@
 # Sparky
 
-`Sparky` is a task runner much like `Gulp` or `Grunt`, but what sets it apart is that it is built on top of `FuseBox` technology. This means `Sparky` has the ability to use `FuseBox` plugins as well as the rest of the API to accomplish any build task you can throw at it. Out of the box, `Sparky` comes with a couple of helper functions for bumping the version number ([bumpVersion](#bumpVersion)), running the TypeScript compiler ([tsc](#tsc)), publishing to npm ([npmPublish](#npmPublish)), and much more listed below.
+`Sparky` is a task runner much like `Gulp` or `Grunt`, but what sets it apart is that it is built on top of `FuseBox` technology. This means `Sparky` has the ability to use `FuseBox` plugins as well as the rest of the API to accomplish any build task you can throw at it. Out of the box, `Sparky` comes with a couple of helper functions for bumping the version number ([bumpVersion](#bumpversion)), running the TypeScript compiler ([tsc](#tsc)), publishing to npm ([npmPublish](#npmpublish)), and much more listed below.
 
 ## Benefits
 
