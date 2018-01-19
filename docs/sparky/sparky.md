@@ -1,17 +1,17 @@
 # Sparky
 
-Sparky is a task runner much like `Gulp` or `Grunt`, but what sets it apart is that it is built on top of `FuseBox` technology. This means Sparky has the ability to use `FuseBox` plugins as well as the rest of the API to accomplish any build task you can throw at it. Out of the box, Sparky comes with a couple of helper functions for bumping the version number ([bumpVersion](#bumpVersion)), running the TypeScript compiler ([tsc](#tsc)), publishing to npm ([npmPublish](#npmPublish)), and much more listed below.
+`Sparky` is a task runner much like `Gulp` or `Grunt`, but what sets it apart is that it is built on top of `FuseBox` technology. This means `Sparky` has the ability to use `FuseBox` plugins as well as the rest of the API to accomplish any build task you can throw at it. Out of the box, `Sparky` comes with a couple of helper functions for bumping the version number ([bumpVersion](#bumpVersion)), running the TypeScript compiler ([tsc](#tsc)), publishing to npm ([npmPublish](#npmPublish)), and much more listed below.
 
 ## Benefits
 
 * Simple, intuitive, and familiar API.
 * Based on Promises. `ES2017 async/await` syntax fully supported.
 * Ability to run tasks in parallel and sequentially (waterfall).
-* Nothing to install, Sparky comes with every installation of `FuseBox`
+* Nothing to install, `Sparky` comes with every installation of `FuseBox`
 
 ## Usage
 
-Sparky does not depend on a CLI or global installation, instead just create a javascript file to define your tasks. It is a common convention to name this file `fuse.js`, but the name doesn't matter. Run sparky from your command line by passing the filename and task name in as arguments like so
+`Sparky` does not depend on a CLI or global installation, instead just create a javascript file to define your tasks. It is a common convention to name this file `fuse.js`, but the name doesn't matter. Run sparky from your command line by passing the filename and task name in as arguments like so
 
 ```bash
 $ node fuse.js task
@@ -39,30 +39,32 @@ $ node build.js clean
 
 ## Context
 
-One of the great benifits in Sparky is `Context`. Context is a shared object between tasks that will be constructed/executed upon execution
+One of the great benefits in `Sparky` is `Context`. Context is an object that is shared between tasks that will be instantiated upon file execution.
 
-A class will be instantiated
+Instantiating a class
 
 ```js
 const { src, context, task } = require('fuse-box/sparky');
+
 context(
   class {
     getConfig() {
       return FuseBox.init({
         homeDir: 'src',
         output: 'dist/$name.js',
-        hash: this.production
+        hash: this.isProduction
       });
     }
   }
 );
+
 task('default', context => {
-  context.production = true;
+  context.isProduction = true;
   const fuse = context.getConfig();
 });
 ```
 
-Function evaluated
+Passing in a function
 
 ```js
 context(() => ({ isProduction: true }));
@@ -71,7 +73,7 @@ task('default', context => {
 });
 ```
 
-Plain Object passed
+Passing in a plain object
 
 ```js
 context({ isProduction: true });
@@ -79,10 +81,12 @@ context({ isProduction: true });
 
 ## Task
 
-First thing you have to do with `Sparky` is to define a Task, A Task takes two parameters, Task's name and a Function.
+The first thing you have to do with `Sparky` is to define a Task. A Task takes two parameters, the task's name as a string and a function to be executed when that task runs.
 
 ```js
-task('foo', () => {});
+task('foo', () => {
+  someSynchronousFunciton();
+});
 ```
 
 You can also use `ES2017` `async/await` syntax.
@@ -93,11 +97,11 @@ task('foo', async () => {
 });
 ```
 
-to execute the task, run `node fuse foo` and enjoy :)
+To execute the task, run `node fuse.js foo`.
 
 ## Waterfall vs Parallel
 
-`Sparky` has two modes for executing tasks, `waterfall` and `parallel`. in `waterfall` mode, tasks are executed sequentially based on the order they are defined. This is good if you require a task to wait until another task is completed. In `parallel` mode tasks are executed asynchronously, meaning they will not depend on each other's completion.
+`Sparky` has two modes for executing tasks, `waterfall` and `parallel`. In `waterfall` mode, tasks are executed sequentially based on the order they are defined within the task array. This is good if you require a task to wait until another task is completed. In `parallel` mode tasks are executed asynchronously, meaning that they will not depend on each other's completion. To run tasks in `waterfall` mode, just prefix the task name with an `&`.
 
 ```js
 task('foo', () => {
@@ -116,7 +120,7 @@ task('bar', () => {
   });
 });
 
-// bar task wont run until foo task is done
+// bar task will not run until foo task is done
 task('waterfall', ['foo', 'bar'], () => {});
 
 // foo and bar will run immediatly
@@ -125,7 +129,8 @@ task('parallel', ['&foo', '&bar'], () => {});
 
 ## Aggregator task
 
-You can also create a task that combines other tasks but doesn't have any function itself.
+You can also define a task that combines other tasks but doesn't have any function itself.
+
 For example:
 
 ```js
@@ -133,6 +138,7 @@ task('copy-assets', [
   '&copy:pdf', // parallel task mode
   '&copy:text-files' // parallel task mode
 ]);
+
 task('copy:pdf', async context => {
   // copy pdf files here
 });
@@ -140,6 +146,7 @@ task('copy:pdf', async context => {
 task('copy:text-files', async context => {
   // copy text files here
 });
+
 task('default', ['copy-assets'], async context => {
   // or exec(['copy-assets'])
 });
@@ -147,7 +154,7 @@ task('default', ['copy-assets'], async context => {
 
 ## src
 
-This method tells `Sparky` what files it needs to operate on.
+This method lets `Sparky` know what files it needs to operate on. This funtionality is built on top of [glob](https://github.com/isaacs/node-glob).
 
 ```js
 src('src/**/**.*');
@@ -155,25 +162,25 @@ src('src/**/**.*');
 
 The above will basically capture all files in your `src` folder.
 
-Say you want to capture all `HTML` files in your `src` folder, do the following:
+If you want to capture all `.html` files in your `src` folder:
 
 ```js
 src('src/**/*.html');
 ```
 
-or you want to capture all images file formats
+If you want to capture all images file formats:
 
 ```js
 src('src/**/*.(jpg|png|gif)');
 ```
 
-Source method also accepts a second parameter to inject some options:
+The `src` method also accepts a second parameter to inject some options.
 
 ### options.base
 
 Sets the base path from which the path names will be resolved.
 
-For example: If we have an `asset` folder, and inside that, a file called `logo.png`...
+If we have an `asset` folder, and inside that, a file called `logo.png` we could copy that file to our `dist` folder like so:
 
 ```js
 src('./src/assets/*.png')
@@ -187,7 +194,7 @@ src('./assets/*.png', { base: './src' })
 // Result: dist/assets/logo.png
 ```
 
-For example if you want to copy all files from `src` you should do the following
+If you want to copy all files from `src` you should do the following:
 
 ```js
 task('default', async () => {
@@ -203,26 +210,27 @@ Same as `src` above, the only difference is that it is a daemon so it will alway
 
 ## exec
 
-You can manually launch execution of tasks
+You can manually launch execution of tasks:
 
 ```js
 task("default", () => {
-    await exec("a", "b")
+  await exec("a", "b")
 })
 ```
 
 ## bumpVersion
 
-A handy function to bump package.json version
+A handy function to bump package.json version:
 
 ```js
 const { bumpVersion, task } = require('fuse-box/sparky');
+
 task('default', () => {
   bumpVersion('package.json', { type: 'patch' });
 });
 ```
 
-Read up on semver [here](https://semver.org/)
+Read up on semver [here](https://semver.org/).
 
 For example:
 
@@ -234,10 +242,11 @@ For example:
 
 ## npmPublish
 
-Publish to npm by calling `npmPublish`
+Publish to npm by calling `npmPublish` and passing in the path to the directory you wish to publish:
 
 ```js
 const { task, npmPublish } = require('fuse-box/sparky');
+
 task('publish', async () => {
   await npmPublish({ path: 'dist' });
 });
@@ -245,12 +254,13 @@ task('publish', async () => {
 
 ## tsc
 
-A handy function if you want to transpile just files using TypeScript and/or generate `typings`.
-
 > Note: TypeScript must be installed globally for this to work.
+
+A handy function if you want to transpile just files using TypeScript and/or generate `typings`:
 
 ```js
 const { task, tsc } = require('fuse-box/sparky');
+
 task('tsc', async () => {
   await tsc('src', {
     target: 'esnext',
@@ -260,26 +270,31 @@ task('tsc', async () => {
 });
 ```
 
-## Dest
+## dest
 
-Copies files
-`.dest("dist/")`
+Set the output directory of a task operating on your project files:
+
+```js
+task('default', () => {
+  src('**/**.**').dest('dist/');
+});
+```
 
 ## File API
 
-Capture 1 file
+Capture 1 file:
 
 ```js
 src('files/**/**.*').file('bar.html', file => {});
 ```
 
-Capture all html files (using simplified regexp)
+Capture all html files:
 
 ```js
 src('files/**/**.*').file('*.html', file => {});
 ```
 
-### JSON
+### json
 
 Modify
 
@@ -297,23 +312,22 @@ file.json(json => {
 });
 ```
 
-### Content
+### setContent
 
-```
-file.setContent(file.contents + "some content")
+```js
+file.setContent(file.contents + 'some content');
 ```
 
-### Rename
+### rename
 
 You can use `rename` function to change the name of a file. Note that its necessary to use the `$name` substitution in order to use this.
 
-```
-Sparky
-    .src("originalFilename.json")
-    .file("*", file => file.rename("newFilename.json"))
-    .dest("dist/$name");
+```js
+Sparky.src('originalFilename.json')
+  .file('*', file => file.rename('newFilename.json'))
+  .dest('dist/$name');
 ```
 
-### Saving
+### save
 
 `file.save()` happens automatically on `dest` if not called, but you can override your original files
