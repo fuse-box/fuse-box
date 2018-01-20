@@ -137,7 +137,16 @@ export class CSSPluginClass implements Plugin {
                   emitRequired = true;
               }
 
-              if (file.subFiles.find((subFile) => subFile.info.fuseBoxPath === bundle.lastChangedFile)) {
+              const { lastChangedFile } = bundle;
+              if (
+                file.subFiles.find(
+                  subFile =>
+                    subFile.info.fuseBoxPath === lastChangedFile ||
+                    !!subFile.cssDependencies.find(
+                      dep => dep.indexOf(lastChangedFile) !== -1
+                    )
+                )
+              ) {
                 emitRequired = true;
               }
             }
