@@ -24,6 +24,9 @@ export interface IQuantumExtensionParams {
     extendServerImport?: boolean;
     polyfills?: string[];
     processPolyfill?: boolean;
+    css?: {
+        path?: string;
+    } | boolean,
     hoisting?: boolean | { names: string[] };
     containedAPI?: boolean,
     noConflictApi?: boolean;
@@ -55,6 +58,8 @@ export class QuantumOptions {
     public apiCallback: { (core: QuantumCore): void }
     public optsTarget: string = "browser";
     public treeshake = false;
+    private css = false;
+    private cssPath = "styles.css";
     public quantumVariableName = "$fsx";
     public webIndexPlugin: WebIndexPluginClass;
 
@@ -65,7 +70,12 @@ export class QuantumOptions {
         } else {
             this.optsTarget = this.producer.fuse.context.target;
         }
-
+        if (opts.css) {
+            this.css = true;
+            if (typeof opts.css === "object") {
+                this.cssPath = opts.css.path || "styles.css";
+            }
+        }
         if (opts.api) {
             this.apiCallback = opts.api;
         }
@@ -158,7 +168,17 @@ export class QuantumOptions {
             this.genenerateQuantumVariableName();
         }
     }
+    public shouldGenerateCSS() {
+        return this.css === true;
+    }
 
+    public getCSSPath() {
+        return this.cssPath;
+    }
+
+    public getCSSSourceMapsPath() {
+        return `${this.cssPath}.map`;
+    }
     public genenerateQuantumVariableName() {
         let randomHash = hashString(new Date().getTime().toString() + Math.random());
         if (randomHash.indexOf("-") === 0) {

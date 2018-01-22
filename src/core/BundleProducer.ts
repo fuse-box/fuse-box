@@ -10,13 +10,16 @@ import * as chokidar from "chokidar";
 import { utils, each } from "realm-utils";
 import { ProducerAbstraction, ProducerAbtractionOptions } from "../quantum/core/ProducerAbstraction";
 import { BundleAbstraction } from "../quantum/core/BundleAbstraction";
+import { File } from "../core/File";
 
 export class BundleProducer {
     public bundles = new Map<string, Bundle>();
     public hmrInjected = false;
     public hmrAllowed = true;
     public allowSyntheticDefaultImports = false;
-    public devServer : Server;
+    public sharedSourceMaps = new Map<string, string>();
+    public injectedCSSFiles = new Set<string>();
+    public devServer: Server;
     public sharedEvents = new EventEmitter();
     public writeBundles = true;
     public sharedCustomPackages: Map<string, SharedCustomPackage​>;

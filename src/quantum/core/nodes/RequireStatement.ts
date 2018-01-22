@@ -83,6 +83,38 @@ export class RequireStatement {
         }
     }
 
+
+    public removeCallExpression() {
+        const expressionStatement = this.ast.$parent.$parent;
+        let parent = expressionStatement.$parent;
+        let prop = expressionStatement.$prop;
+        if (prop === undefined || !parent || !Array.isArray(parent[prop])) {
+            return;
+        }
+        const index = parent[prop].indexOf(expressionStatement);
+        if (index > -1) {
+            parent[prop].splice(index, 1);
+            return true;
+        }
+    }
+
+    public remove() {
+        const expressionStatement = this.ast.$parent;
+        if(!expressionStatement){
+            return;
+        }
+        let parent = expressionStatement.$parent;
+        let prop = expressionStatement.$prop;
+        if (prop === undefined || !parent || !Array.isArray(parent[prop])) {
+            return;
+        }
+        const index = parent[prop].indexOf(expressionStatement);
+        if (index > -1) {
+            parent[prop].splice(index, 1);
+            return true;
+        }
+    }
+
     public removeWithIdentifier() {
         const declarator = this.parentAst;
         const declaration = declarator.$parent;

@@ -4,6 +4,7 @@ import { BundleProducer } from "../core/BundleProducer";
 import * as fs from "fs";
 import { ensureAbsolutePath, joinFuseBoxPath } from "../Utils";
 import { UserOutput } from "../core/UserOutput";
+import * as path from "path";
 
 export interface IndexPluginOptions {
     title?: string;
@@ -19,14 +20,14 @@ export interface IndexPluginOptions {
     appendBundles?: boolean;
     async?: boolean;
     pre?: { relType: 'fetch' | 'load' };
-    resolve ?: {(output : UserOutput) : string};
+    resolve?: { (output: UserOutput): string };
 }
 export class WebIndexPluginClass implements Plugin {
     constructor(public opts?: IndexPluginOptions) {
 
     }
 
-    private generate(producer : BundleProducer){
+    private generate(producer: BundleProducer) {
         let bundlePaths = [];
         let bundles = producer.sortBundles();
         bundles.forEach((bundle) => {
@@ -53,18 +54,18 @@ export class WebIndexPluginClass implements Plugin {
             }
         });
 
-        let html = this.opts.templateString || `<!DOCTYPE html>
-<html>
+        let html = this.opts.templateString || `<!DOCTYPE html><html>
 <head>
-    <title>$title</title>
-    $charset
-    $description
-    $keywords
-    $preload
-    $author
+<title>$title</title>
+$charset
+$description
+$keywords
+$preload
+$author
+$css
 </head>
 <body>
-    $bundles
+$bundles
 </body>
 </html>`;
         if (this.opts.template) {
@@ -77,7 +78,7 @@ export class WebIndexPluginClass implements Plugin {
                 } else if (html.indexOf('</head>') !== -1) {
                     html = html.replace('</head>', '$bundles</head>');
                 } else {
-                    html = `${html}$bundles`; 
+                    html = `${html}$bundles`;
                 }
             }
         }
@@ -88,13 +89,20 @@ export class WebIndexPluginClass implements Plugin {
 
         let preloadTags;
         if (this.opts.pre) {
-            preloadTags = bundlePaths.map(bundle => 
+            preloadTags = bundlePaths.map(bundle =>
                 `<link rel="pre${this.opts.pre.relType}" as="script" href="${bundle}">`
             ).join("\n");
         }
-
+        let cssInjection = [];
+        if ( producer.injectedCSSFiles.size > 0 ){
+            producer.injectedCSSFiles.forEach(f => {
+                const resolvedFile = this.opts.path ? path.join(this.opts.path, f) : path.join("/", f);
+                cssInjection.push(`<link rel="stylesheet" href="${resolvedFile}"/>`)
+            })
+        }
 
         let macro = {
+            css : cssInjection.join('\n'),
             title: this.opts.title ? this.opts.title : "",
             charset: this.opts.charset ? `<meta charset="${this.opts.charset}">` : "",
             description: this.opts.description ? `<meta name="description" content="${this.opts.description}">` : "",
