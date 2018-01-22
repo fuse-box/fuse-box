@@ -132,14 +132,14 @@ export class CSSPluginClass implements Plugin {
         if (bundle && bundle.lastChangedFile) {
             const lastFile = file.context.convertToFuseBoxPath(bundle.lastChangedFile);
             if (isStylesheetExtension(bundle.lastChangedFile)) {
-              if (lastFile === file.info.fuseBoxPath ||
-                  file.context.getItem("HMR_FILE_REQUIRED", []).indexOf(file.info.fuseBoxPath) > -1) {
-                  emitRequired = true;
-              }
+                if (lastFile === file.info.fuseBoxPath ||
+                    file.context.getItem("HMR_FILE_REQUIRED", []).indexOf(file.info.fuseBoxPath) > -1) {
+                    emitRequired = true;
+                }
 
-              if (file.subFiles.find((subFile) => subFile.info.fuseBoxPath === bundle.lastChangedFile)) {
-                emitRequired = true;
-              }
+                if (file.subFiles.find((subFile) => subFile.info.fuseBoxPath === bundle.lastChangedFile)) {
+                    emitRequired = true;
+                }
             }
         }
 
@@ -167,7 +167,7 @@ export class CSSPluginClass implements Plugin {
      *
      * @memberOf FuseBoxCSSPlugin
      */
-    public transform(file: File) {
+    public async transform(file: File) {
         if (!file.context.sourceMapsProject) {
             file.sourceMap = undefined;
         }
@@ -241,12 +241,14 @@ export class CSSPluginClass implements Plugin {
                     const sourceMapPath = path.join(fileDir,
                         path.basename(utouchedPath) + ".map");
                     return write(sourceMapPath, file.sourceMap).then(() => {
-
                         file.sourceMap = undefined;
                     });
                 }
             });
         } else {
+            if (file.sourceMap && file.context.useSourceMaps) {
+                file.generateInlinedCSS();
+            }
             let safeContents = JSON.stringify(file.contents);
             file.sourceMap = undefined;
 

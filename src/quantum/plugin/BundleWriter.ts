@@ -71,7 +71,7 @@ export class BundleWriter {
         this.core.log.echoGzip(result.code);
     }
 
-    public process() {
+    public async process() {
         const producer = this.core.producer;
         const bundleManifest: any = {};
         this.addShims();
@@ -114,6 +114,7 @@ export class BundleWriter {
                 bundleManifest[bundle.name] = {
                     fileName: output.filename,
                     hash: output.hash,
+                    type : "js",
                     entry : entryString,
                     absPath: output.path,
                     webIndexed: !bundle.quantumBit,
@@ -126,6 +127,21 @@ export class BundleWriter {
                     splitFileOptions.i[bundle.quantumBit.name] = [output.relativePath, bundle.quantumBit.entry.getID()];
                 }
             });
+        }
+        const cssCollection = this.core.cssCollection;
+        const cssData = cssCollection.collection;
+
+        if( this.core.opts.shouldGenerateCSS() && cssData.size > 0 ) {
+            const output = this.core.producer.fuse.context.output;
+            const name = this.core.opts.getCSSPath();
+            const cssString = cssCollection.getASString(name);
+            //output.write(this.core.opts.getCSSPath(), cssString)
+            const cssResultData = await output.writeToOutputFolder(name, cssString, true);
+
+            this.core.producer.injectedCSSFiles.add(cssResultData.filename);
+            if ( cssCollection.useSourceMaps ) {
+                output.writeToOutputFolder(this.core.opts.getCSSSourceMapsPath(), cssCollection.sourceMap);
+            }
         }
 
         return each(producer.bundles, (bundle: Bundle) => {

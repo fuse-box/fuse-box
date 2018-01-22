@@ -127,6 +127,8 @@ export class WorkFlowContext {
     public hash: string | Boolean;
 
     public target: string = "universal";
+
+    public inlineCSSPath : string = "css-sourcemaps";
     /**
      * Explicitly target bundle to server
      */
@@ -331,6 +333,9 @@ export class WorkFlowContext {
             this.sourceMapsProject = params;
         } else {
             if (utils.isPlainObject(params)) {
+                if( params.inlineCSSPath){
+                    this.inlineCSSPath = params.inlineCSSPath;
+                }
                 this.sourceMapsProject = params.project !== undefined ? params.project : true;
                 this.sourceMapsVendor = params.vendor === true;
                 if (params.inline !== undefined) {

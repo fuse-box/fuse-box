@@ -229,7 +229,11 @@ export function fastHash(text: string) {
         hash = ((hash << 5) - hash) + char;
         hash = hash & hash; // Convert to 32bit integer
     }
-    return hash.toString(16);
+    let result = hash.toString(16).toString();
+    if( result.charAt(0) === '-'){
+        result = result.replace(/-/, '0');
+    }
+    return result;
 }
 export function extractExtension(str: string) {
     const result = str.match(/\.([a-z0-9]+)\$?$/);

@@ -47,7 +47,7 @@ export interface FuseBoxOptions {
     writeBundles?: boolean;
     useTypescriptCompiler?: boolean;
     standalone?: boolean;
-    sourceMaps?: boolean | { vendor?: boolean, inline?: boolean, project?: boolean, sourceRoot?: string };
+    sourceMaps?: boolean | { vendor?: boolean, inlineCSSPath?: string; inline?: boolean, project?: boolean, sourceRoot?: string };
     hash?: string | Boolean;
     ignoreModules?: string[],
     customAPIFile?: string;
