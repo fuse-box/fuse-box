@@ -77,7 +77,9 @@ export class QuantumOptions {
             this.css = true;
             if (typeof opts.css === "object") {
                 this.cssPath = opts.css.path || "styles.css";
-                this.cleanCSS = opts.css.clean;
+                this.cleanCSS = opts.css.clean !== undefined ? opts.css.clean : true;
+            } else {
+                this.cleanCSS = true;
             }
         }
         if (opts.api) {
