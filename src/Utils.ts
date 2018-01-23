@@ -20,7 +20,7 @@ export type Concat = {
 export type ConcatModule = {
     new(generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
 };
-export const Concat: ConcatModule = require("concat-with-sourcemaps");
+export const Concat: ConcatModule = require("fuse-concat-with-sourcemaps");
 
 export function contains(array: any[], obj: any) {
     return array && array.indexOf(obj) > -1;
