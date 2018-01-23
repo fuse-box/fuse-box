@@ -105,17 +105,28 @@ const fuse = FuseBox.init({
     homeDir : "src",
     output : "dist/$name.js",
     plugins : [
-        [ SassPlugin(), CSSPlugin() ]
+        [SassPlugin(), CSSResourcePlugin({ dist: "dist/css-resources" }), CSSPlugin()]
     ]
 });
 ```
+
+| Type        | Example | 
+| ------------- |-------------| 
+| Sass example      | [examples/css-resource-plugin-example](https://github.com/fuse-box/fuse-box-examples/tree/master/examples/css-resource-plugin-example) | 
+| PostCSS example      | [examples/post-css-plugin-example](https://github.com/fuse-box/fuse-box-examples/tree/master/examples/post-css-plugin-example)      | 
 
 But before you start experimenting, you should read [this](/page/about-plugins) section in order to understand how plugins work. The common mistake made by rookies is not grouping (chaining) the plugins.
 
 ```js
 plugins : [
-    [ SassPlugin(), CSSPlugin() ]
+   [ SassPlugin(), CSSResourcePlugin({ dist: "dist/css-resources" }), CSSPlugin() ]
 ]
+```
+
+For development purposes CSS will be inlined with working sourcemaps, when making a production build, don't forget tell Quantum to optimise it and store to the file system (by running `node fuse dist`)
+
+```js
+QuantumPlugin({css: true})
 ```
 
 If you are planning on using CSSModules, here is a little trick for TypeScript that will make it stop complaining about typings:

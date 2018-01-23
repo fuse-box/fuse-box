@@ -54,6 +54,33 @@ QuantumPlugin({
 | ------------- | -------------
 | Promise  | [Promise](https://github.com/fuse-box/fuse-box/blob/master/modules/fuse-box-responsive-api/promise-polyfill.js) polyfill (for IE)
 
+## css
+
+Quantum can extract your inlined css, group, optimize, minify and store everything to the file system
+
+```js
+QuantumPlugin({css: true})
+```
+
+Quantum uses [clean-sss](https://github.com/jakubpawlowicz/clean-css) module to optimize CSS. You can provide options by passing an object
+
+```js
+QuantumPlugin({css: { clean : true }})
+// or
+QuantumPlugin({css: { clean : { compatibility : {}} }})
+```
+
+If you want to customise the file location, provide the following options
+
+```js
+QuantumPlugin({
+    css: {
+        path : "client/css-resources/styles.min.css"
+    }
+})
+// or
+QuantumPlugin({css: { clean : { compatibility : {}} }})
+```
 
 
 ## containedAPI

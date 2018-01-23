@@ -406,6 +406,15 @@ FuseBox.init({
 })
 ```
 
+If you want to customize the location of inlined source maps provide the following option
+
+```js
+FuseBox.init({
+    inlineCSSPath : "client/css-resources/maps"
+})
+```
+
+
 You can also provide an object to the `sourceMaps` property and then choose between project _and_ vendor sourcemaps:
 
 ```js
