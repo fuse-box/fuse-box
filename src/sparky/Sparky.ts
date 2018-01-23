@@ -57,10 +57,10 @@ export class Sparky {
         return flow.glob(globs, opts);
     }
 
-    public static watch(glob: string | string[], opts?: SparkyFilePatternOptions) {
+    public static watch(glob: string | string[], opts?: SparkyFilePatternOptions, fn?: any) {
         const flow = new SparkFlow();
         let globs = Array.isArray(glob) ? glob : [glob]
-        return flow.watch(globs, opts);
+        return flow.watch(globs, opts, fn);
     }
 
     public static fuse(fn: (context: any) => FuseBoxOptions) {
