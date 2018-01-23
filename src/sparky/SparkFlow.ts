@@ -38,7 +38,7 @@ export class SparkFlow {
         }
     }
 
-    public watch(globs: string[], opts?: SparkyFilePatternOptions): SparkFlow {
+    public watch(globs: string[], opts?: SparkyFilePatternOptions, fn?: any): SparkFlow {
         this.files = [];
         log.echoStatus(`Watch ${globs}`)
         this.activities.push(() => new Promise((resolve, reject) => {
@@ -53,6 +53,9 @@ export class SparkFlow {
                     if (this.initialWatch) {
                         this.files = [];
                         log.echoStatus(`Changed ${fp}`)
+                        if (fn) {
+                            fn(event, fp)
+                        }
                     }
                     let info = parse(fp, opts);
                     this.files.push(new SparkyFile(info.filepath, info.root))
