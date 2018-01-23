@@ -35,12 +35,14 @@ export class CSSModifications {
     }
 
     private static removeStatement(statement: RequireStatement) {
-        const isRemoved = statement.removeCallExpression();
-        if (!isRemoved) {
-            return false;
-        }
+        const info = statement.removeCallExpression();
         const target = statement.file;
-        target.markForRemoval();
+        if (info.success) {
+            if ( info.empty){
+                target.markForRemoval();
+            }
+            return;
+        }
         target.dependents.forEach(dependent => {
             dependent.requireStatements.forEach(depStatement => {
                 const targetStatement = depStatement.resolve();
