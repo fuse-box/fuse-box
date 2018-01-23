@@ -67,7 +67,7 @@ export class QuantumOptions {
     public webIndexPlugin: WebIndexPluginClass;
 
     constructor(public producer: BundleProducer, opts: IQuantumExtensionParams) {
-        opts = opts || {};
+        opts = opts || {} as IQuantumExtensionParams;
         if (opts.target) {
             this.optsTarget = opts.target;
         } else {

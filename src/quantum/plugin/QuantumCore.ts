@@ -284,9 +284,6 @@ export class QuantumCore {
         }
     }
 
-    public async postTasks(){
-
-    }
     public modify(file: FileAbstraction) {
         const modifications = [
             // CSS
