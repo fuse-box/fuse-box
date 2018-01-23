@@ -5,6 +5,7 @@ import { QuantumCore } from "./QuantumCore";
 import * as fs from "fs";
 import { QuantumSplitConfig } from "./QuantumSplit";
 import { ScriptTarget } from "../../core/File";
+import { CSSOptimizer } from './CSSOptimizer';
 
 export class BundleWriter {
     private bundles = new Map<string, Bundle>();
@@ -134,12 +135,26 @@ export class BundleWriter {
         if( this.core.opts.shouldGenerateCSS() && cssData.size > 0 ) {
             const output = this.core.producer.fuse.context.output;
             const name = this.core.opts.getCSSPath();
-            const cssString = cssCollection.getASString(name);
-            //output.write(this.core.opts.getCSSPath(), cssString)
-            const cssResultData = await output.writeToOutputFolder(name, cssString, true);
+            cssCollection.render(name);
+            let useSourceMaps = cssCollection.useSourceMaps;
 
+            const cleanCSSOptions = this.core.opts.getCleanCSSOptions();
+            if( cleanCSSOptions){
+                const optimer = new CSSOptimizer(this.core);
+                optimer.optimize(cssCollection, cleanCSSOptions);
+            }
+            //output.write(this.core.opts.getCSSPath(), cssString)
+            const cssResultData = await output.writeToOutputFolder(name, cssCollection.getString(), true);
+            bundleManifest["css"] = {
+                filename : cssResultData.filename,
+                type : "css",
+                hash : cssResultData.hash,
+                absPath : cssResultData.path,
+                relativePath : cssResultData.relativePath,
+                webIndexed : true
+            }
             this.core.producer.injectedCSSFiles.add(cssResultData.filename);
-            if ( cssCollection.useSourceMaps ) {
+            if ( useSourceMaps ) {
                 output.writeToOutputFolder(this.core.opts.getCSSSourceMapsPath(), cssCollection.sourceMap);
             }
         }
