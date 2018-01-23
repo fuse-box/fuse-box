@@ -20,12 +20,14 @@ export interface IQuantumExtensionParams {
     warnings?: boolean;
     bakeApiIntoBundle?: string;
     shimsPath?: string;
+    cleanCSS : any;
     globalRequire?: boolean;
     extendServerImport?: boolean;
     polyfills?: string[];
     processPolyfill?: boolean;
     css?: {
-        path?: string;
+        path?: string,
+        clean : boolean
     } | boolean,
     hoisting?: boolean | { names: string[] };
     containedAPI?: boolean,
@@ -58,6 +60,7 @@ export class QuantumOptions {
     public apiCallback: { (core: QuantumCore): void }
     public optsTarget: string = "browser";
     public treeshake = false;
+    private cleanCSS : any;
     private css = false;
     private cssPath = "styles.css";
     public quantumVariableName = "$fsx";
@@ -74,6 +77,7 @@ export class QuantumOptions {
             this.css = true;
             if (typeof opts.css === "object") {
                 this.cssPath = opts.css.path || "styles.css";
+                this.cleanCSS = opts.css.clean;
             }
         }
         if (opts.api) {
@@ -170,6 +174,10 @@ export class QuantumOptions {
     }
     public shouldGenerateCSS() {
         return this.css === true;
+    }
+
+    public getCleanCSSOptions(){
+        return this.cleanCSS;
     }
 
     public getCSSPath() {

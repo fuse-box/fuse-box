@@ -6,13 +6,16 @@ export class CSSCollection {
     public collection = new Set<CSSFile>();
     public sourceMap: any;
     public useSourceMaps = false;
+    private renderedString: string;
+    private renderedFileName: string;
     constructor(public core: QuantumCore) { }
 
     public add(css: CSSFile) {
         this.collection.add(css);
     }
 
-    public getASString(fileName : string) {
+    public render(fileName: string) {
+        this.renderedFileName = fileName;
         const producer = this.core.producer;
         const concat = new Concat(true, fileName, '\n')
         this.collection.forEach(file => {
@@ -27,11 +30,24 @@ export class CSSCollection {
                 concat.add(null, contents);
             }
         });
-        if ( this.useSourceMaps){
-            concat.add(null, `/*# sourceMappingURL=/${fileName}.map */`);
+        if (this.useSourceMaps) {
+            concat.add(null, `/*# sourceMappingURL=/${this.renderedFileName}.map */`);
         }
         this.sourceMap = concat.sourceMap;
-        return concat.content.toString();
+        this.renderedString = concat.content.toString();
+        return this.renderedString;
+    }
+
+    public getString() {
+        return this.renderedString;
+    }
+
+    public setString(str: string) {
+        if (this.useSourceMaps) {
+            str += "\n/*# sourceMappingURL=/" + this.renderedFileName + ".map */";
+        }
+        this.renderedString = str;
+        return str;
     }
 
 }
