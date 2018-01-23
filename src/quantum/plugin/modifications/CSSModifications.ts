@@ -2,7 +2,6 @@ import { each } from "realm-utils";
 import { FileAbstraction } from "../../core/FileAbstraction";
 import { QuantumCore } from "../QuantumCore";
 import { RequireStatement } from "../../core/nodes/RequireStatement";
-import { QuantumBit } from "../QuantumBit";
 import { CSSFile } from '../../core/CSSFile';
 
 export class CSSModifications {

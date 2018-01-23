@@ -10,7 +10,6 @@ import * as chokidar from "chokidar";
 import { utils, each } from "realm-utils";
 import { ProducerAbstraction, ProducerAbtractionOptions } from "../quantum/core/ProducerAbstraction";
 import { BundleAbstraction } from "../quantum/core/BundleAbstraction";
-import { File } from "../core/File";
 
 export class BundleProducer {
     public bundles = new Map<string, Bundle>();

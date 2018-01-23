@@ -8,7 +8,11 @@ export class QuantumPluginClass implements Plugin {
     public coreOpts: IQuantumExtensionParams;
 
     constructor(coreOpts?: IQuantumExtensionParams) {
-        this.coreOpts = coreOpts || {};
+        if( coreOpts ){
+            this.coreOpts = coreOpts;
+        }  else {
+            this.coreOpts = {} as IQuantumExtensionParams;
+        }
     }
 
     init(context: WorkFlowContext) {
