@@ -630,6 +630,9 @@ export class File {
         }
     }
 
+    public getCorrectSourceMapPath(){
+        return this.context.sourceMapsRoot + "/" + this.relativePath;
+    }
     /**
      *
      *
@@ -656,12 +659,10 @@ export class File {
         if (result.sourceMapText && this.context.useSourceMaps) {
             let jsonSourceMaps = JSON.parse(result.sourceMapText);
             jsonSourceMaps.file = this.info.fuseBoxPath;
-            jsonSourceMaps.sources = [this.context.sourceMapsRoot + "/" + this.relativePath.replace(/\.js(x?)$/, ".ts$1")];
-
+            jsonSourceMaps.sources = [this.getCorrectSourceMapPath().replace(/\.js(x?)$/, ".ts$1")];
             if (!this.context.inlineSourceMaps) {
                 delete jsonSourceMaps.sourcesContent;
 			}
-			
             result.outputText = result
                 .outputText
                 .replace(`//# sourceMappingURL=${this.info.fuseBoxPath}.map`, `//# sourceMappingURL=${this.context.bundle.name}.js.map`)
