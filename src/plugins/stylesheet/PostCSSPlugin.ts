@@ -80,7 +80,7 @@ export class PostCSSPluginClass implements Plugin {
         if( fromFile.charAt(0) === "/"){
             fromFile = fromFile.slice(1)
         }
-        postCssOptions.from = file.info.absPath;
+        postCssOptions.from = postCssOptions.from || file.info.absPath;
         postCssOptions.to = fromFile
         return postcss(this.processors)
             .process(file.contents, postCssOptions)
