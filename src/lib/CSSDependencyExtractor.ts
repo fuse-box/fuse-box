@@ -41,6 +41,9 @@ export class CSSDependencyExtractor {
     }
 
     private tryFile(filePath: string): string {
+        if(!filePath){
+            return;
+        }
         // restrict node_module
         // we don't want to detect stuff from there
         if (filePath.indexOf("node_modules") > -1) {
@@ -67,6 +70,9 @@ export class CSSDependencyExtractor {
             fileName = this.opts.importer(fileName, null, info => {
                 target = info.file;
             });
+        }
+        if(!target){
+            return;
         }
         if (path.isAbsolute(target)) {
             return target;
