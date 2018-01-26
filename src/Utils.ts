@@ -245,6 +245,11 @@ export function extractExtension(str: string) {
 export function ensureFuseBoxPath(input: string) {
     return input.replace(/\\/g, "/").replace(/\/$/, "");
 }
+export function ensureCorrectBundlePath(input : string){
+    input = ensureFuseBoxPath(input);
+    input = ensurePublicExtension(input);
+    return input;
+}
 
 export function transpileToEs5(contents: string) {
     const ts = require("typescript");
