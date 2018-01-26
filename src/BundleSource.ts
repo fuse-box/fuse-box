@@ -1,4 +1,4 @@
-import { ensurePublicExtension, Concat, ensureUserPath } from "./Utils";
+import { ensurePublicExtension, Concat, ensureUserPath, ensureCorrectBundlePath } from "./Utils";
 import { ModuleCollection } from "./core/ModuleCollection";
 import { WorkFlowContext } from "./core/WorkflowContext";
 import { BundleData } from "./arithmetic/Arithmetic";
@@ -109,7 +109,7 @@ export class BundleSource {
         let entry = collection.entryFile ? collection.entryFile.info.fuseBoxPath : "";
         entry = entry || collection.bundle && collection.bundle.entry
         if (entry) {
-            this.collectionSource.add(null, `return ___scope___.entry = "${entry}";`);
+            this.collectionSource.add(null, `return ___scope___.entry = "${ensureCorrectBundlePath(entry)}";`);
         }
         this.collectionSource.add(null, "});");
 
@@ -230,10 +230,10 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
 
         if (entry) {
             mainEntry = `${context.defaultPackageName}/${entry}`;
-            this.concat.add(null, `\nFuseBox.import("${mainEntry}");`);
+            this.concat.add(null, `\nFuseBox.import("${ensureCorrectBundlePath(mainEntry)}");`);
         }
         if (mainEntry) {
-            this.concat.add(null, `FuseBox.main("${mainEntry}");`);
+            this.concat.add(null, `FuseBox.main("${ensureCorrectBundlePath(mainEntry)}");`);
         }
 
 
