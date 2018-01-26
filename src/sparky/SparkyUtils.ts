@@ -83,7 +83,7 @@ export async function tsc(root: string, opts?: TscOptions) {
     }
 
     return new Promise((resolve, reject) => {
-        const proc = spawn("tsc", tscOptions, {
+        const proc = spawn("tsc"  + (/^win/.test(process.platform) ? ".cmd" : ""), tscOptions, {
             stdio: "inherit"
         });
         proc.on("close", function (code) {
