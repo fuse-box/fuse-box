@@ -396,7 +396,7 @@ function $trigger(name: string, args: any) {
 function syntheticDefaultExportPolyfill(input){
     return ['function', 'object', 'array']
         .indexOf(typeof input) > -1 && input.default === undefined ?
-             Object.isFrozen(input) ? input.default = input : Object.defineProperty(input, "default", {value : input, enumerable : false}) : void 0;
+             Object.isFrozen(input) ? input.default = input : Object.defineProperty(input, "default", {value : input, writable : true, enumerable : false}) : void 0;
 }
 
 /**
