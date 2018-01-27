@@ -27,7 +27,7 @@ export interface IQuantumExtensionParams {
     processPolyfill?: boolean;
     css?: {
         path?: string,
-        clean : boolean
+        clean? : boolean
     } | boolean,
     hoisting?: boolean | { names: string[] };
     containedAPI?: boolean,
