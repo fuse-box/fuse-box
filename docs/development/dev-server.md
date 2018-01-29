@@ -52,7 +52,7 @@ fuse.dev({
     port : 8080
 })
 ```
-note: You need opn package to be installed.
+note: You need to open package to be installed.
 
 ## Proxy
 
