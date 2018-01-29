@@ -1,7 +1,7 @@
 # HMR
 
 
-`HMR` or Hot Module Reload, allows users to receive event on file change and update modules in memory (in browser)
+`HMR` or Hot Module Replacement allows users to receive event on file change and update modules in memory (in browser)
 
 note: HMR works ONLY with enabled cache
 
@@ -55,7 +55,7 @@ if (!window.hmrRegistered) {
 }
 ```
 
-note: This a RUNTIME plugin, don't attempt on adding addPlugin to your configuration
+note: This is a RUNTIME plugin, don't attempt to add addPlugin to your configuration
 
 Import that file in your entry point:
 
@@ -103,4 +103,4 @@ fuse.dev({
    httpServer: false,
 })
 ```
-In this configuration `port: 8080` corresponds to a socket server port, having `httpServer: false` makes it work only in `socket` mode.  Once you page it loaded, `FuseBox API` will try to connect to `:8080` port an start listening to events.
+In this configuration `port: 8080` corresponds to a socket server port, having `httpServer: false` makes it work only in `socket` mode.  Once page is loaded, `FuseBox API` will try to connect to `:8080` port an start listening to events.
