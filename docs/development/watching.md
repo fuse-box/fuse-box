@@ -31,7 +31,7 @@ if (!production) { app.hmr().watch() }
 
 ### Chokidar options
 
-Additionally, you can provide [chokidar](https://github.com/paulmillr/chokidar) options to producers' `run()` 
+Additionally, you can provide [chokidar](https://github.com/paulmillr/chokidar) options to `run()` 
 
 ```js
 fuse.run({chokidar : {ignored: /(^|[\/\\])\../} })
