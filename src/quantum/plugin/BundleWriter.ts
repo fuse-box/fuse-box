@@ -86,8 +86,7 @@ export class BundleWriter {
         }
 
         // create api bundle (should be the last)
-        let apiName2bake = this.core.opts.shouldBakeApiIntoBundle()
-        if (!apiName2bake) {
+        if (this.core.opts.shouldCreateApiBundle()) {
             this.createBundle("api.js");
         }
 
@@ -173,31 +172,37 @@ export class BundleWriter {
             }
 
             // if the api wants to be  baked it, we have to skip generation now
-
-            if (apiName2bake !== bundle.name) {
+            
+            if (!this.core.opts.shouldBakeApiIntoBundle(bundle.name)) {
                 if (this.core.opts.shouldUglify()) {
                     this.uglifyBundle(bundle);
                 }
                 index++;
                 return writeBundle(bundle);
             }
-        }).then(() => {
-            if (apiName2bake) {
-                let targetBundle = producer.bundles.get(apiName2bake);
-                if (!targetBundle) {
-                    this.core.log.echoBoldRed(`  → Error. Can't find bundle name ${targetBundle}`);
-                } else {
-                    const generatedAPIBundle = this.core.api.render();
-                    if (this.core.opts.isContained()) {
-                        targetBundle.generatedCode = new Buffer(targetBundle.generatedCode.toString().replace("/*$$CONTAINED_API_PLACEHOLDER$$*/", generatedAPIBundle.toString()));
-                    } else {
-                        targetBundle.generatedCode = new Buffer(generatedAPIBundle + "\n" + targetBundle.generatedCode);
-                    }
-                    if (this.core.opts.shouldUglify()) {
-                        this.uglifyBundle(targetBundle);
+        }).then(async () => {
+            if (!this.core.opts.shouldCreateApiBundle()) {
+                this.core.opts
+                    .getMissingBundles(producer.bundles)
+                    .forEach(bundle => {
+                        this.core.log.echoBoldRed(`  → Error. Can't find bundle name ${bundle}`);
+                    });
+
+                for(const [name, bundle] of producer.bundles){
+                    if (this.core.opts.shouldBakeApiIntoBundle(name)){
+                        const generatedAPIBundle = this.core.api.render();
+                        if (this.core.opts.isContained()) {
+                            bundle.generatedCode = new Buffer(bundle.generatedCode.toString().replace("/*$$CONTAINED_API_PLACEHOLDER$$*/", generatedAPIBundle.toString()));
+                        } else {
+                            bundle.generatedCode = new Buffer(generatedAPIBundle + "\n" + bundle.generatedCode);
+                        }
+                        if (this.core.opts.shouldUglify()) {
+                            this.uglifyBundle(bundle);
+                        }
+
+                        await writeBundle(bundle);
                     }
                 }
-                return writeBundle(targetBundle);
             }
         }).then(() => {
             const manifestPath = this.core.opts.getManifestFilePath();
