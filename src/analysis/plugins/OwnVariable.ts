@@ -5,8 +5,7 @@ import { File } from "../../core/File";
  * that will help us wrapping
  */
 export class OwnVariable {
-
-    public static onNode(file: File, node: any, parent: any) {
+    static onNode(file: File, node: any, parent: any) {
         const analysis = file.analysis;
         if (node.type === "Identifier") {
             if (node.name === "$fuse$") {
@@ -15,5 +14,5 @@ export class OwnVariable {
         }
     }
 
-    public static onEnd() { }
+    static onEnd() {}
 }

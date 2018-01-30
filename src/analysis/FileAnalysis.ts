@@ -1,36 +1,47 @@
+import * as acorn from "acorn";
+import { File } from "../core/File";
+import { escapeRegExp } from "../Utils";
 import { ASTTraverse } from "./../ASTTraverse";
 import { PrettyError } from "./../PrettyError";
-import { File } from "../core/File";
-import * as acorn from "acorn";
 import { AutoImport } from "./plugins/AutoImport";
-import { LanguageLevel } from "./plugins/LanguageLevel";
-import { OwnVariable } from "./plugins/OwnVariable";
-import { OwnBundle } from "./plugins/OwnBundle";
-import { ImportDeclaration } from "./plugins/ImportDeclaration";
 import { DynamicImportStatement } from "./plugins/DynamicImportStatement";
-import { escapeRegExp } from '../Utils';
+import { ImportDeclaration } from "./plugins/ImportDeclaration";
+import { LanguageLevel } from "./plugins/LanguageLevel";
+import { OwnBundle } from "./plugins/OwnBundle";
+import { OwnVariable } from "./plugins/OwnVariable";
+// tslint:disable-next-line:no-var-requires no-submodule-imports
 require("acorn-jsx/inject")(acorn);
+// tslint:disable-next-line:no-var-requires
 require("./acorn-ext/obj-rest-spread")(acorn);
 
 export interface TraversalPlugin {
-    onNode(file: File, node: any, parent: any): void
-    onEnd(file: File): void
+    onNode(file: File, node: any, parent: any): void;
+    onEnd(file: File): void;
 }
 
-const plugins: TraversalPlugin[] = [AutoImport, OwnVariable, OwnBundle, ImportDeclaration, DynamicImportStatement, LanguageLevel];
+const plugins: TraversalPlugin[] = [
+    AutoImport,
+    OwnVariable,
+    OwnBundle,
+    ImportDeclaration,
+    DynamicImportStatement,
+    LanguageLevel,
+];
 
 export function acornParse(contents, options?: any) {
     return acorn.parse(contents, {
-        ...options || {}, ...{
+        ...(options || {}),
+        ...{
+            ecmaVersion: "2018",
+            jsx: { allowNamespacedObjects: true },
+            locations: true,
+            plugins: {
+                jsx: true,
+                objRestSpread: true,
+            },
+            ranges: true,
             sourceType: "module",
             tolerant: true,
-            locations: true,
-            ranges: true,
-            ecmaVersion: '2018',
-            plugins: {
-                jsx: true, objRestSpread: true
-            },
-            jsx: { allowNamespacedObjects: true },
         },
     });
 }
@@ -44,32 +55,31 @@ export function acornParse(contents, options?: any) {
  * @class FileAST
  */
 export class FileAnalysis {
+    ast: any;
 
-    public ast: any;
+    skipAnalysis = false;
+
+    bannedImports = {};
+
+    nativeImports = {};
+
+    fuseBoxMainFile;
+
+    requiresRegeneration = false;
+
+    statementReplacement = new Set<{ from: string; to: string }>();
+
+    requiresTranspilation = false;
+
+    fuseBoxVariable = "FuseBox";
+
+    dependencies: string[] = [];
 
     private wasAnalysed = false;
 
-    public skipAnalysis = false;
+    constructor(public file: File) {}
 
-    public bannedImports = {};
-
-    public nativeImports = {};
-
-    public fuseBoxMainFile;
-
-    public requiresRegeneration = false;
-
-    public statementReplacement = new Set<{ from: string, to: string }>();
-
-    public requiresTranspilation = false;
-
-    public fuseBoxVariable = "FuseBox";
-
-    public dependencies: string[] = [];
-
-    constructor(public file: File) { }
-
-    public astIsLoaded(): boolean {
+    astIsLoaded(): boolean {
         return this.ast !== undefined;
     }
 
@@ -80,11 +90,11 @@ export class FileAnalysis {
      *
      * @memberOf FileAnalysis
      */
-    public loadAst(ast: any) {
+    loadAst(ast: any) {
         this.ast = ast;
     }
 
-    public skip() {
+    skip() {
         this.skipAnalysis = true;
     }
 
@@ -95,7 +105,7 @@ export class FileAnalysis {
      *
      * @memberOf FileAST
      */
-    public parseUsingAcorn(options?: any) {
+    parseUsingAcorn(options?: any) {
         try {
             this.ast = acornParse(this.file.contents, options);
         } catch (err) {
@@ -103,14 +113,13 @@ export class FileAnalysis {
         }
     }
 
-    public registerReplacement(rawRequireStatement: string, targetReplacement: string) {
-        if( rawRequireStatement !== targetReplacement ){
-            this.statementReplacement.add({ from: rawRequireStatement, to: targetReplacement })
+    registerReplacement(rawRequireStatement: string, targetReplacement: string) {
+        if (rawRequireStatement !== targetReplacement) {
+            this.statementReplacement.add({ from: rawRequireStatement, to: targetReplacement });
         }
     }
 
-    public handleAliasReplacement(requireStatement: string): string {
-
+    handleAliasReplacement(requireStatement: string): string {
         if (!this.file.context.experimentalAliasEnabled) {
             return requireStatement;
         }
@@ -131,27 +140,26 @@ export class FileAnalysis {
         return requireStatement;
     }
 
-    public addDependency(name: string) {
+    addDependency(name: string) {
         this.dependencies.push(name);
     }
 
-    public resetDependencies() {
+    resetDependencies() {
         this.dependencies = [];
     }
 
-    public nodeIsString(node) {
+    nodeIsString(node) {
         return node.type === "Literal" || node.type === "StringLiteral";
     }
 
-    public replaceAliases(collection : Set<{ from: string, to: string }>){
+    replaceAliases(collection: Set<{ from: string; to: string }>) {
         collection.forEach(item => {
-            const regExp =
-                new RegExp(`(require|\\$fsmp\\$)\\(('|")${escapeRegExp(item.from)}('|")\\)`)
-            this.file.contents = this.file.contents.replace(regExp, `$1("${item.to}")`)
+            const regExp = new RegExp(`(require|\\$fsmp\\$)\\(('|")${escapeRegExp(item.from)}('|")\\)`);
+            this.file.contents = this.file.contents.replace(regExp, `$1("${item.to}")`);
         });
     }
 
-    public analyze(traversalOptions?: { plugins: TraversalPlugin[] }) {
+    analyze(traversalOptions?: { plugins: TraversalPlugin[] }) {
         // We don't want to make analysis 2 times
         if (this.wasAnalysed || this.skipAnalysis) {
             return;
@@ -164,9 +172,8 @@ export class FileAnalysis {
 
         let traversalPlugins = plugins;
         if (traversalOptions && Array.isArray(traversalOptions.plugins)) {
-            traversalPlugins = plugins.concat(traversalOptions.plugins)
+            traversalPlugins = plugins.concat(traversalOptions.plugins);
         }
-
 
         ASTTraverse.traverse(this.ast, {
             pre: (node, parent, prop, idx) =>
@@ -179,12 +186,11 @@ export class FileAnalysis {
         // regenerate content
         this.replaceAliases(this.statementReplacement);
         if (this.requiresRegeneration) {
-            this.file.contents = this.file.context.generateCode(this.ast, {
-            });
+            this.file.contents = this.file.context.generateCode(this.ast, {});
         }
 
         if (this.requiresTranspilation) {
-            let result = this.file.transpileUsingTypescript();
+            const result = this.file.transpileUsingTypescript();
             this.file.contents = result.outputText;
         }
     }

@@ -1,19 +1,18 @@
-import { File } from "../../core/File";
 import * as fs from "fs";
+import { File } from "../../core/File";
 /**
- * 
+ *
  * Fixing import() and bundle split for development purposes
- * 
+ *
  * @export
  * @class DynamicImportStatement
  */
 export class DynamicImportStatement {
-
-    public static onNode(file: File, node: any, parent: any) {
+    static onNode(file: File, node: any, parent: any) {
         const analysis = file.analysis;
         if (node.type === "CallExpression" && node.callee) {
             if (node.callee.type === "Identifier" && node.callee.name === "$fsmp$") {
-                let arg1 = node.arguments[0];
+                const arg1 = node.arguments[0];
                 const currentValue = arg1.value;
                 if (analysis.nodeIsString(arg1)) {
                     let requireStatement = arg1.value;
@@ -27,9 +26,9 @@ export class DynamicImportStatement {
                             }
                         }
                     }
-                    let result = file.context.replaceAliases(requireStatement);
+                    const result = file.context.replaceAliases(requireStatement);
                     requireStatement = result.requireStatement;
-                    let resolved = file.collection.pm.resolve(requireStatement, file.info.absDir);
+                    const resolved = file.collection.pm.resolve(requireStatement, file.info.absDir);
                     if (resolved) {
                         if (resolved.isNodeModule) {
                             analysis.addDependency(requireStatement);
@@ -39,10 +38,10 @@ export class DynamicImportStatement {
                                 if (!file.belongsToProject()) {
                                     arg1.value = `${file.collection.name}/${resolved.fuseBoxPath}`;
                                 }
-                                //analysis.add2Replacement(arg1.raw, JSON.stringify(arg1.value));
+                                // analysis.add2Replacement(arg1.raw, JSON.stringify(arg1.value));
                                 analysis.addDependency(resolved.absPath);
                                 analysis.registerReplacement(currentValue, arg1.value);
-                                //file.analysis.requiresRegeneration = true;
+                                // file.analysis.requiresRegeneration = true;
                             }
                         }
                     }
@@ -51,5 +50,5 @@ export class DynamicImportStatement {
         }
     }
 
-    public static onEnd() { }
+    static onEnd() {}
 }

@@ -1,9 +1,8 @@
-import { File } from "../../core/File";
 import * as escodegen from "escodegen";
-
+import { File } from "../../core/File";
 
 function extractMainFileFromPackageEntry(input: string) {
-    let res = input.split("/");
+    const res = input.split("/");
     if (res.length > 1) {
         return res.splice(1).join("/");
     }
@@ -17,19 +16,16 @@ function extractMainFileFromPackageEntry(input: string) {
  * That's why we need OwnVariable plugin
  */
 export class OwnBundle {
-
-    public static onNode(file: File, node: any, parent: any) {
+    static onNode(file: File, node: any, parent: any) {
         const analysis = file.analysis;
         if (file.collection && file.collection.entryFile && node.type === "MemberExpression") {
             if (parent.type === "CallExpression") {
-                if (node.object && node.object.type === "Identifier" &&
-                    node.object.name === analysis.fuseBoxVariable) {
+                if (node.object && node.object.type === "Identifier" && node.object.name === analysis.fuseBoxVariable) {
                     if (node.property && node.property.type === "Identifier") {
-
                         // Extraing main file name from a bundle
                         if (node.property.name === "main") {
                             if (parent.arguments) {
-                                let f = parent.arguments[0];
+                                const f = parent.arguments[0];
                                 if (f && analysis.nodeIsString(f)) {
                                     const extractedEntry = extractMainFileFromPackageEntry(f.value);
                                     if (extractedEntry && file.collection) {
@@ -45,7 +41,7 @@ export class OwnBundle {
         }
     }
 
-    public static onEnd(file: File) {
+    static onEnd(file: File) {
         const analysis = file.analysis;
 
         if (analysis.fuseBoxMainFile) {
@@ -72,11 +68,11 @@ export class OwnBundle {
      * Getting rid of redundancies
      */
     private static removeFuseBoxApiFromBundle(file: File) {
-        let ast = file.analysis.ast;
+        const ast = file.analysis.ast;
         const fuseVariable = file.analysis.fuseBoxVariable;
         let modifiedAst;
         if (ast.type === "Program") {
-            let first = ast.body[0];
+            const first = ast.body[0];
 
             if (first && first.type === "ExpressionStatement") {
                 let expression = first.expression;
@@ -86,10 +82,10 @@ export class OwnBundle {
                 }
 
                 if (expression.type === "CallExpression") {
-                    let callee = expression.callee;
+                    const callee = expression.callee;
                     if (callee.type === "FunctionExpression") {
                         if (callee.params && callee.params[0]) {
-                            let param1 = callee.params[0];
+                            const param1 = callee.params[0];
 
                             if (param1.type === "Identifier" && param1.name === fuseVariable) {
                                 modifiedAst = callee.body;
