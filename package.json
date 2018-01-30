@@ -12,7 +12,8 @@
     "devDeps": "gulp installDevDeps",
     "dist": "gulp dist",
     "commit": "git-cz",
-    "commitmsg": "validate-commit-msg"
+    "commitmsg": "validate-commit-msg",
+    "lint": "tslint --project ./src"
   },
   "engines": {
     "node": ">= 8",
