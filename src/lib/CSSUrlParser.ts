@@ -20,6 +20,10 @@ export class CSSUrlParser {
         const re = /url\(([^\)]+)\)/gm;
         return contents.replace(re, (match, data, offset, input_string) => {
             const value = this.extractValue(data);
+            if (typeof value === 'undefined') {
+                return match;
+            }
+            
             const replaced = fn(value);
             if (typeof replaced === "string") {
                 return `url("${replaced}")`
