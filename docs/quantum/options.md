@@ -28,13 +28,18 @@ These options define the API, for example, if you choose `browser` the API will 
 note: With an `npm` target, `bakeApiIntoBundle` should be used and `containedAPI` should be `true`. Also, no vendor should be produced while the bundle is specified with the `[ ]` arithmetics to avoid bundling dependencies.
 
 ## bakeApiIntoBundle
-Instead of creating a separate file with the api, you can chose to bake it into an existing bundle.
+Instead of creating a separate file with the api, you can chose to bake it into an existing bundle(s).
 
 note: A bundle name should match your registered bundle name in the producer.
 
+possible values:
+- string: name of single bundle to bake api into
+- string[]: names of multiple bundles to bake api into
+- true: bake api into every bundle
+
 ```js
 QuantumPlugin({
-    bakeApiIntoBundle : 'app'
+    bakeApiIntoBundle : 'app' // | ['app', 'second'] | true
 })
 ```
 
