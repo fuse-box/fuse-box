@@ -30,6 +30,7 @@ const SystemVars = new Set<string>(["module", "exports", "require", "window", "g
 export class FileAbstraction {
     private id: string;
     private treeShakingRestricted = false;
+    private removalRestricted = false;
     public dependents = new Set<FileAbstraction>();
     private dependencies = new Map<FileAbstraction, Set<RequireStatement​​>>();
     public ast: any;
@@ -150,8 +151,15 @@ export class FileAbstraction {
 
 
     public isTreeShakingAllowed() {
-
         return this.treeShakingRestricted === false && this.shakable;
+    }
+
+    public restrictRemoval() {
+        this.removalRestricted = true;
+    }
+
+    public isRemovalAllowed() {
+        return this.removalRestricted === false;
     }
 
     public restrictTreeShaking() {
