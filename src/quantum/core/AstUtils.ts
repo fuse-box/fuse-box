@@ -134,6 +134,22 @@ export function matchesEcmaScript6(node) {
     }
     return false;
 }
+
+export function matchesRequireFunction(node: any) {
+    if( node.type === "Identifier" && node.name === "require"){
+        if ( node.$parent){
+            const parent = node.$parent;
+            if( parent.property && parent.property.name === "require"){
+                return false;
+            }
+            if ( parent.callee && parent.callee.name === "require"){
+                return false;
+            }
+            return true;
+        }
+    }
+}
+
 export function matchesSingleFunction(node: any, name: string) {
     return node.callee && node.callee.type === "Identifier" && node.callee.name === name
 }

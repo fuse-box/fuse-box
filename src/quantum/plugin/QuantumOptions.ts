@@ -20,7 +20,6 @@ export interface IQuantumExtensionParams {
     warnings?: boolean;
     bakeApiIntoBundle?: string;
     shimsPath?: string;
-    cleanCSS : any;
     globalRequire?: boolean;
     extendServerImport?: boolean;
     polyfills?: string[];
