@@ -2,7 +2,7 @@ import { WebIndexPluginClass } from "../../plugins/WebIndexPlugin";
 import { QuantumCore } from "./QuantumCore";
 import { readFuseBoxModule, hashString } from "../../Utils";
 import { FileAbstraction } from "../core/FileAbstraction";
-import { BundleProducer } from '../../index';
+import { BundleProducer, Bundle } from '../../index';
 export interface ITreeShakeOptions {
     shouldRemove: { (file: FileAbstraction): void }
 }
@@ -18,7 +18,7 @@ export interface IQuantumExtensionParams {
     treeshake?: boolean | ITreeShakeOptions;
     api?: { (core: QuantumCore): void }
     warnings?: boolean;
-    bakeApiIntoBundle?: string;
+    bakeApiIntoBundle?: string | string[] | true;
     shimsPath?: string;
     globalRequire?: boolean;
     extendServerImport?: boolean;
@@ -42,7 +42,7 @@ export class QuantumOptions {
     private replaceProcessEnv = true;
     private containedAPI = false;
     private processPolyfill = false;
-    private bakeApiIntoBundle: string;
+    private bakeApiIntoBundle: string[] | true | undefined;
     private noConflictApi = false;
 
     private replaceTypeOf: boolean = true;
@@ -152,7 +152,11 @@ export class QuantumOptions {
         }
 
         if (opts.bakeApiIntoBundle) {
-            this.bakeApiIntoBundle = opts.bakeApiIntoBundle;
+            if (typeof opts.bakeApiIntoBundle === "string") {
+                this.bakeApiIntoBundle = [opts.bakeApiIntoBundle];
+            } else {
+                this.bakeApiIntoBundle = opts.bakeApiIntoBundle;
+            }
         }
 
         if (opts.extendServerImport !== undefined) {
@@ -277,8 +281,20 @@ export class QuantumOptions {
         return this.uglify;
     }
 
-    public shouldBakeApiIntoBundle() {
-        return this.bakeApiIntoBundle;
+    public shouldCreateApiBundle() {
+        return !this.bakeApiIntoBundle;
+    }
+
+    public shouldBakeApiIntoBundle(bundleName: string) {
+        return this.bakeApiIntoBundle && (this.bakeApiIntoBundle === true || this.bakeApiIntoBundle.indexOf(bundleName) !== -1);
+    }
+
+    public getMissingBundles(bundles: Map<string, Bundle>){
+        if (!this.bakeApiIntoBundle || this.bakeApiIntoBundle === true) {
+            return [];
+        }
+
+        return this.bakeApiIntoBundle.filter(bundle => !bundles.has(bundle));
     }
 
     public shouldTreeShake() {
