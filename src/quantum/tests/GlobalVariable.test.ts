@@ -50,4 +50,27 @@ export class GlobalVariableTEst {
         }));
     }
 
+    "Should replace require statement"() {
+        return FuseTestEnv.create(
+
+            {
+                testFolder: "_current_test",
+                project: {
+                    files: {
+                        "index.ts": `
+                            const req = require
+                            module.exports = req('s');
+                    `
+                    },
+                    plugins: [QuantumPlugin({
+                        target: "browser"
+                    })]
+                }
+            }
+        ).simple().then(test => test.browser((window, env)=> {
+            const app = env.getScript("app.js");
+            app.shouldNotFindString('require');
+        }));
+    }
+
 }

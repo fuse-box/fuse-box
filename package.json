@@ -1,6 +1,6 @@
 {
   "name": "fuse-box",
-  "version": "3.1.0-next.20",
+  "version": "3.1.0-next.23",
   "description": "Fuse-Box a bundler that does it right",
   "typings": "index.d.ts",
   "main": "index.js",
@@ -12,7 +12,8 @@
     "devDeps": "gulp installDevDeps",
     "dist": "gulp dist",
     "commit": "git-cz",
-    "commitmsg": "validate-commit-msg"
+    "commitmsg": "validate-commit-msg",
+    "lint": "tslint --project ./src"
   },
   "engines": {
     "node": ">= 8",
@@ -86,6 +87,8 @@
     "postcss": "^6.0.1",
     "pretty-time": "^0.2.0",
     "prettysize": "0.0.3",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
     "realm-utils": "^1.0.9",
     "regexpu-core": "^4.1.3",
     "request": "^2.79.0",

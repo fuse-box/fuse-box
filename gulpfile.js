@@ -358,7 +358,12 @@ gulp.task("installDevDeps", function(done) {
         "rollup",
         "buble",
         "consolidate",
-        "pug"
+        "pug",
+        "tslint", 
+        "tslint-react", 
+        "tslint-eslint-rules", 
+        "tslint-immutable", 
+        "tslint-clean-code"
     ];
 
     const ext = /^win/.test(os.platform()) ? ".cmd" : ""

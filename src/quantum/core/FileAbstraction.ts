@@ -10,7 +10,7 @@ import {
     matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier,
     trackRequireMember, matchNamedExport,
     isExportMisused, matchesNodeEnv, matchesExportReference,
-    matchesIfStatementProcessEnv, compareStatement, matchesIfStatementFuseBoxIsEnvironment, isExportComputed
+    matchesIfStatementProcessEnv, compareStatement, matchesIfStatementFuseBoxIsEnvironment, isExportComputed, matchesRequireFunction
 } from "./AstUtils";
 import { ExportsInterop } from "./nodes/ExportsInterop";
 import { UseStrict } from "./nodes/UseStrict";
@@ -30,6 +30,7 @@ const SystemVars = new Set<string>(["module", "exports", "require", "window", "g
 export class FileAbstraction {
     private id: string;
     private treeShakingRestricted = false;
+    private removalRestricted = false;
     public dependents = new Set<FileAbstraction>();
     private dependencies = new Map<FileAbstraction, Set<RequireStatement​​>>();
     public ast: any;
@@ -150,8 +151,15 @@ export class FileAbstraction {
 
 
     public isTreeShakingAllowed() {
-
         return this.treeShakingRestricted === false && this.shakable;
+    }
+
+    public restrictRemoval() {
+        this.removalRestricted = true;
+    }
+
+    public isRemovalAllowed() {
+        return this.removalRestricted === false;
     }
 
     public restrictTreeShaking() {
@@ -397,9 +405,16 @@ export class FileAbstraction {
 
             namedExport.addNode(parent, prop, node, referencedVariableName);
         });
+        // handles a case where require is being used without arguments
+        // e.g const req = require
+        // should replace it to:
+        // const req = $fsx
+        if( matchesRequireFunction(node)){
+            node.name = this.core.opts.quantumVariableName;
+        }
+        //console.log(node);
         // require statements
         if (matchesSingleFunction(node, "require")) {
-            
             // adding a require statement
             this.requireStatements.add(new RequireStatement(this, node));
         }

@@ -32,6 +32,9 @@ export class TreeShake {
         return this.eachFile(file => {
             let uknownStatements = new Set<RequireStatement>()
             file.namedExports.forEach(fileExport => {
+                if( fileExport.name === "default" ) {
+                    file.restrictRemoval();
+                }
                 if (!fileExport.isUsed && file.isTreeShakingAllowed()
                     && fileExport.eligibleForTreeShaking) {
                     const isDangerous = fileExport.name === "__esModule" || fileExport.name === "default";
@@ -71,7 +74,7 @@ export class TreeShake {
                     statement.removeWithIdentifier();
                 }
             });
-            if (file.isNotUsedAnywhere() && this.core.opts.canBeRemovedByTreeShaking(file)) {
+            if (file.isRemovalAllowed() && file.isNotUsedAnywhere() && this.core.opts.canBeRemovedByTreeShaking(file)) {
                 this.core.log.echoInfo(`tree shaking: Mark for removal ${file.getFuseBoxFullPath()}`)
                 file.markForRemoval();
             }
