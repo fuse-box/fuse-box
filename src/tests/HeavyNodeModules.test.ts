@@ -60,43 +60,4 @@ export class HeavyNodeModules {
             should(out.data.keyFor).beOkay();
         });
     }
-
-    "Should bundle core-js"() {
-        return createEnv({
-            project: {
-                files: {
-                    "index.js": `
-                       exports.data = require("core-js");
-                    `
-                },
-                plugins: [JSONPlugin()],
-                instructions: "index.js",
-            },
-        }).then((result) => {
-            const out = result.project.FuseBox.import("./index");
-            should(out.data.version).beOkay();
-        });
-    }
-
-    // "Should bundle babylon"() {
-    //     return createEnv({
-    //         project: {
-    //             files: {
-    //                 "index.js": `
-    //                    var generator = require('babel-generator')
-    //                     var babylon = require('babylon')
-    //                     const code = 'class Example {}';
-    //                     const ast = babylon.parse(code);
-
-    //                     exports.test = generator.default(ast, {}, code);
-    //                 `
-    //             },
-    //             plugins: [JSONPlugin()],
-    //             instructions: "index.js",
-    //         },
-    //     }).then((result) => {
-    //         const out = result.project.FuseBox.import("./index");
-    //         should(out.test.code).equal("class Example {}");
-    //     });
-    // }
 }
