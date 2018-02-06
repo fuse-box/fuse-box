@@ -7,7 +7,8 @@ import * as path from "path";
 import { ensureFuseBoxPath, transpileToEs5 } from "../../Utils";
 
 import {
-    matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier,
+    matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction,
+    matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier,
     trackRequireMember, matchNamedExport,
     isExportMisused, matchesNodeEnv, matchesExportReference,
     matchesIfStatementProcessEnv, compareStatement, matchesIfStatementFuseBoxIsEnvironment, isExportComputed, matchesRequireFunction
@@ -28,11 +29,8 @@ const globalNames = new Set<string>(["__filename", "__dirname", "exports", "modu
 const SystemVars = new Set<string>(["module", "exports", "require", "window", "global"]);
 
 export class FileAbstraction {
-    private id: string;
-    private treeShakingRestricted = false;
-    private removalRestricted = false;
+
     public dependents = new Set<FileAbstraction>();
-    private dependencies = new Map<FileAbstraction, Set<RequireStatement​​>>();
     public ast: any;
     public fuseBoxDir;
     public referencedRequireStatements = new Set<RequireStatement​​>();
@@ -75,7 +73,10 @@ export class FileAbstraction {
     public wrapperArguments: string[];
     public localExportUsageAmount = new Map<string, number>();
     private globalVariables = new Set<string>();
-
+    private id: string;
+    private treeShakingRestricted = false;
+    private removalRestricted = false;
+    private dependencies = new Map<FileAbstraction, Set<RequireStatement​​>>();
 
     constructor(public fuseBoxPath: string, public packageAbstraction: PackageAbstraction) {
         this.fuseBoxDir = ensureFuseBoxPath(path.dirname(fuseBoxPath));
@@ -174,7 +175,7 @@ export class FileAbstraction {
             list = new Set<RequireStatement>()
             this.dependencies.set(file, list);
         }
-        list.add(statement)
+        list.add(statement);
     }
 
     public getDependencies() {
@@ -185,7 +186,7 @@ export class FileAbstraction {
      */
     public loadAst(ast: any) {
         // fix the initial node
-        ast.type = "Program"
+        ast.type = "Program";
         this.ast = ast;
         this.analyse();
     }
@@ -194,12 +195,12 @@ export class FileAbstraction {
      * Finds require statements with given mask
      */
     public findRequireStatements(exp: RegExp): RequireStatement[] {
-        let list: RequireStatement[] = [];
+        const list: RequireStatement[] = [];
         this.requireStatements.forEach(statement => {
             if (exp.test(statement.value)) {
                 list.push(statement);
             }
-        })
+        });
         return list;
     }
 
@@ -257,17 +258,14 @@ export class FileAbstraction {
         if (ensureEs5 && this.isEcmaScript6) {
             code = transpileToEs5(code);
         }
-
-        //if (this.wrapperArguments) {
         let fn = ["function(", this.wrapperArguments ? this.wrapperArguments.join(",") : "", '){\n'];
-        // inject __dirname
         if (this.isDirnameUsed()) {
             fn.push(`var __dirname = ${JSON.stringify(this.fuseBoxDir)};` + "\n");
         }
         if (this.isFilenameUsed()) {
             fn.push(`var __filename = ${JSON.stringify(this.fuseBoxPath)};` + "\n");
         }
-        fn.push(code, '\n}');
+        fn.push(code, "\n}");
         code = fn.join("");
         return code;
     }
@@ -279,6 +277,7 @@ export class FileAbstraction {
      * @param prop
      * @param idx
      */
+    // tslint:disable-next-line:cyclomatic-complexity
     private onNode(node, parent, prop, idx) {
 
         // process.env
@@ -360,7 +359,7 @@ export class FileAbstraction {
             if (isComputed) {
                 this.restrictTreeShaking();
             }
-        })
+        });
         // trying to match a case where an export is misused
         // for example exports.foo.bar.prototype
         // we can't tree shake this exports
@@ -381,11 +380,11 @@ export class FileAbstraction {
          */
         const matchesExportIdentifier = matchesExportReference(node);
         if (matchesExportIdentifier) {
-            let ref = this.localExportUsageAmount.get(matchesExportIdentifier)
+            let ref = this.localExportUsageAmount.get(matchesExportIdentifier);
             if (ref === undefined) {
-                this.localExportUsageAmount.set(matchesExportIdentifier, 1)
+                this.localExportUsageAmount.set(matchesExportIdentifier, 1);
             } else {
-                this.localExportUsageAmount.set(matchesExportIdentifier, ++ref)
+                this.localExportUsageAmount.set(matchesExportIdentifier, ++ref);
             }
         }
         matchNamedExport(node, (name, referencedVariableName) => {
@@ -398,7 +397,7 @@ export class FileAbstraction {
             if (!this.namedExports.get(name)) {
                 namedExport = new NamedExport();
                 namedExport.name = name;
-                this.namedExports.set(name, namedExport)
+                this.namedExports.set(name, namedExport);
             } else {
                 namedExport = this.namedExports.get(name);
             }
@@ -409,7 +408,7 @@ export class FileAbstraction {
         // e.g const req = require
         // should replace it to:
         // const req = $fsx
-        if( matchesRequireFunction(node)){
+        if (matchesRequireFunction(node)) {
             node.name = this.core.opts.quantumVariableName;
         }
         //console.log(node);
@@ -459,15 +458,15 @@ export class FileAbstraction {
         }
 
         if (matchesTypeOf(node, "global")) {
-            this.typeofGlobalKeywords.add(new GenericAst(parent, prop, node))
+            this.typeofGlobalKeywords.add(new GenericAst(parent, prop, node));
         }
         if (matchesTypeOf(node, "define")) {
-            this.typeofDefineKeywords.add(new GenericAst(parent, prop, node))
+            this.typeofDefineKeywords.add(new GenericAst(parent, prop, node));
         }
 
         // typeof window
         if (matchesTypeOf(node, "window")) {
-            this.typeofWindowKeywords.add(new GenericAst(parent, prop, node))
+            this.typeofWindowKeywords.add(new GenericAst(parent, prop, node));
         }
 
         /**
@@ -496,7 +495,7 @@ export class FileAbstraction {
                 parent.callee = {
                     type: "Identifier",
                     name: "require"
-                }
+                };
                 // treat it like any any other require statements
                 this.requireStatements.add(new RequireStatement(this, parent, parent.$parent));
             }
