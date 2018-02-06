@@ -136,13 +136,18 @@ export function matchesEcmaScript6(node) {
 }
 
 export function matchesRequireFunction(node: any) {
-    if( node.type === "Identifier" && node.name === "require"){
-        if ( node.$parent){
+    if (node.type === "Identifier" && node.name === "require") {
+        if (node.$parent) {
             const parent = node.$parent;
-            if( parent.property && parent.property.name === "require"){
+            if (parent.property && parent.property.name === "require") {
                 return false;
             }
-            if ( parent.callee && parent.callee.name === "require"){
+            if (parent.callee && parent.callee.name === "require") {
+                return false;
+            }
+
+            if (parent.type && parent.type === "MemberExpression" &&
+                parent.object && parent.object.name === "require") {
                 return false;
             }
             return true;
