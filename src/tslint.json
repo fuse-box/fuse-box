@@ -5,6 +5,7 @@
     "arrow-parens": [true, "ban-single-arg-parens"],
     "cyclomatic-complexity": [true, 20],
     "interface-name": false,
+    "trailing-comma" : false,
     "jsx-no-multiline-js": false,
     "ordered-imports" : false,
     "max-classes-per-file": false,

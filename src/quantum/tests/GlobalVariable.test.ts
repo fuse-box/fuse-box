@@ -42,7 +42,7 @@ export class GlobalVariableTEst {
                     plugins: [QuantumPlugin({
                         target: "browser"
                     })]
-                }
+                },
             }
         ).simple().then(test => test.browser(window => {
             const res = window.$fsx.r(0);
@@ -50,7 +50,7 @@ export class GlobalVariableTEst {
         }));
     }
 
-    "Should replace require statement"() {
+    public "Should replace require statement"() {
         return FuseTestEnv.create(
 
             {
@@ -67,9 +67,32 @@ export class GlobalVariableTEst {
                     })]
                 }
             }
-        ).simple().then(test => test.browser((window, env)=> {
+        ).simple().then(test => test.browser((window, env) => {
             const app = env.getScript("app.js");
             app.shouldNotFindString('require');
+        }));
+    }
+
+    
+    public "Should not replace require statement"() {
+        return FuseTestEnv.create(
+
+            {
+                testFolder: "_current_test",
+                project: {
+                    files: {
+                        "index.ts": `
+                            module.exports = require.main.filename;
+                    `
+                    },
+                    plugins: [QuantumPlugin({
+                        target: "browser"
+                    })]
+                }
+            }
+        ).simple().then(test => test.browser((window, env) => {
+            const app = env.getScript("app.js");
+            app.shouldFindString("require.main.filename");
         }));
     }
 
