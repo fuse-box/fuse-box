@@ -96,4 +96,26 @@ export class GlobalVariableTEst {
         }));
     }
 
+    public "Should not replace require statement"() {
+        return FuseTestEnv.create(
+
+            {
+                testFolder: "_current_test",
+                project: {
+                    files: {
+                        "index.ts": `
+                            module.exports = {require : 1};
+                    `
+                    },
+                    plugins: [QuantumPlugin({
+                        target: "browser"
+                    })]
+                }
+            }
+        ).simple().then(test => test.browser((window, env) => {
+            const app = env.getScript("app.js");
+            app.shouldFindString("{ require: 1 }");
+        }));
+    }
+
 }
