@@ -55,15 +55,15 @@ export class ImageBase64PluginClass implements Plugin {
             if (cached) {
                 file.isLoaded = true;
                 file.contents = cached.contents;
+                return;
             }
-            return;
         }
 
-        let exportsKey = this.opts.useDefault ? "module.exports.default" : "module.exports";
+        const exportsKey = this.opts.useDefault ? "module.exports.default" : "module.exports";
         const ext = path.extname(file.absPath);
         if (ext === ".svg") {
             file.loadContents();
-            let content = SVG2Base64.get(file.contents);
+            const content = SVG2Base64.get(file.contents);
             file.contents = `${exportsKey} = ${JSON.stringify(content)}`;
             return;
         }
