@@ -145,10 +145,14 @@ export function matchesRequireFunction(node: any) {
             if (parent.callee && parent.callee.name === "require") {
                 return false;
             }
-
-            if (parent.type && parent.type === "MemberExpression" &&
-                parent.object && parent.object.name === "require") {
-                return false;
+            if (parent.type) {
+                if (parent.type === "MemberExpression" &&
+                    parent.object && parent.object.name === "require") {
+                    return false;
+                }
+                if (parent.type === "Property" && parent.key && parent.key.name === "require") {
+                    return;
+                }
             }
             return true;
         }
