@@ -5,7 +5,7 @@ Code Splitting is required if you want to make your "home" bundle as lightweight
 
 Splitting is universal, meaning that you can lazy load them on a server (nodejs) as well.
 
-You can find an example project [here](https://github.com/fuse-box/fuse-box-3-preview/tree/master/smart-splitting)
+You can find an example project [here](https://github.com/fuse-box/fuse-box-examples/tree/master/examples/smart-splitting)
 
 ## Basics
 
