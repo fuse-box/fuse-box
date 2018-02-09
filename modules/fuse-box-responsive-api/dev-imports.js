@@ -67,7 +67,7 @@ var $fsmp$ = (function() {
 
     return function(id) {
 
-        return new Promise((resolve, reject) => {
+        return new Promise(function(resolve, reject) {
             if (FuseBox.exists(id)) {
                 return resolve(FuseBox.import(id));
             }
