@@ -24,7 +24,7 @@ export class CSSUrlParser {
                 return match;
             }
             
-            const replaced = fn(value);
+            const replaced = value && fn(value);
             if (typeof replaced === "string") {
                 return `url("${replaced}")`
             } else {
