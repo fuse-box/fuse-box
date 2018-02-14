@@ -612,7 +612,12 @@ export class File {
     public transpileUsingTypescript(){
         try {
             const ts = require("typescript");
-            return ts.transpileModule(this.contents, this.getTranspilationConfig());
+	    try {
+                return ts.transpileModule(this.contents, this.getTranspilationConfig());
+	    } catch(e) {
+	        this.context.fatal(`${this.info.absPath}: ${e}`);
+                return;
+	    }
         } catch(e){
             this.context.fatal('You need TypeScript installed to transpile modules automatically');
             return;
