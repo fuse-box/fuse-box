@@ -1,7 +1,7 @@
 (function(__root__){
 if (__root__["FuseBox"]) return __root__["FuseBox"];
 var $isWebWorker = typeof WorkerGlobalScope !== "undefined";
-var $isBrowser = typeof window !== "undefined" && window.navigator || $isWebWorker;
+var $isBrowser = typeof window !== "undefined" && typeof window.navigator !== "undefined" || $isWebWorker;
 var g = $isBrowser ? ($isWebWorker ? {} : window) : global;
 if ($isBrowser) {
     g["global"] = $isWebWorker ? {} : window;
