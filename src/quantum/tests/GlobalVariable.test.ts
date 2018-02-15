@@ -73,7 +73,7 @@ export class GlobalVariableTEst {
         }));
     }
 
-    
+
     public "Should not replace require statement"() {
         return FuseTestEnv.create(
 
@@ -96,7 +96,7 @@ export class GlobalVariableTEst {
         }));
     }
 
-    public "Should not replace require statement"() {
+    public "Should not replace require statement 1"() {
         return FuseTestEnv.create(
 
             {

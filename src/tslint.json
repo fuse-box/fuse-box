@@ -16,7 +16,7 @@
     "no-parameter-properties": false,
     "no-use-before-declare": true,
     "no-var-requires": false,
-    "object-literal-sort-keys": [true, "ignore-case"],
+    "object-literal-sort-keys": [false, "ignore-case"],
     "semicolon": [true, "always", "ignore-bound-class-methods"],
     "variable-name": [true, "ban-keywords"]
   }

@@ -43,6 +43,34 @@ QuantumPlugin({
 })
 ```
 
+## definedExpressions
+
+If you are planning to set up process.env, you should use [EnvPlugin](/page/env-plugin) instead
+```js
+QuantumPlugin({
+    definedExpressions: {
+        'foo.bar' : 'foo'
+    }
+})
+```
+
+In this case, Quantum will be aware of `foo.bar` member expression, which will result in dead code elimination (like process.env)
+
+For example:
+
+
+```js
+if ( foo.bar === "foo" ) {
+  console.log("i am foo")
+} else {
+  console.log("i am not foo")
+}
+```
+
+The result will look like:
+```js
+console.log("I am foo")
+```
 
 ## polyfills
 
