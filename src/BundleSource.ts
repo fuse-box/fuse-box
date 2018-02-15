@@ -62,6 +62,20 @@ export class BundleSource {
      */
     public init() {
         this.concat.add(null, "(function(FuseBox){FuseBox.$fuse$=FuseBox;");
+
+        // handle server bundle
+        if (this.context.target) {
+            this.concat.add(null, `FuseBox.target = "${this.context.target}"`);
+        }
+
+        if (this.context.serverBundle) {
+            this.concat.add(null, `FuseBox.isServer = true;`);
+        }
+
+        if (this.context.fuse.producer && this.context.fuse.producer.allowSyntheticDefaultImports) {
+            this.concat.add(null, `// allowSyntheticDefaultImports`);
+            this.concat.add(null, `FuseBox.sdep = true`);
+        }
     }
 
     public annotate(comment: string) {
@@ -190,19 +204,6 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
 
         let mainEntry;
 
-        // handle server bundle
-        if (this.context.target) {
-            this.concat.add(null, `FuseBox.target = "${this.context.target}"`);
-        }
-
-        if (context.serverBundle) {
-            this.concat.add(null, `FuseBox.isServer = true;`);
-        }
-
-        if ( context.fuse.producer && context.fuse.producer.allowSyntheticDefaultImports ){
-            this.concat.add(null, `// allowSyntheticDefaultImports`);
-            this.concat.add(null, `FuseBox.sdep = true`);
-        }
         // writing other bundles info
         if (this.bundleInfoObject) {
             this.concat.add(null, `FuseBox.global("__fsbx__bundles__",${JSON.stringify(this.bundleInfoObject)})`);
