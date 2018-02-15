@@ -553,6 +553,8 @@ export class WorkFlowContext {
         if (this.target === "electron") {
             return isElectronPolyfill(name)
         }
+
+        return false
     }
 
     public resetNodeModules() {
