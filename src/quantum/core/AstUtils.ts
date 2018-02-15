@@ -43,6 +43,45 @@ const ES6_TYPES = new Set([
     "ArrowFunctionExpression"
 ]);
 
+export function matchesDefinedExpression(node, expressions: { [key: string]: boolean | string | number })
+    : { isConditional: boolean; node: any; key: string; value: any } {
+    let targetNode = node;
+    let isConditional = false;
+
+    if (node.type === "IfStatement" && node.test && node.test.type === "BinaryExpression"
+        && node.test.left && ( node.test.left.type === "MemberExpression" || node.test.left.type === "Identifier" ) ) {
+        targetNode = node.test.left;
+        isConditional = true;
+    }
+    for (const key in expressions) {
+        if (matchesPath(targetNode, key)) {
+            return {
+                isConditional: isConditional,
+                node: targetNode,
+                key: key,
+                value: expressions[key]
+            }
+        }
+    }
+}
+export function matchesDefinedIfExpression(node, expressions: { [key: string]: boolean | string | number }): string {
+    if (node.type && node.type === "IfStatement") {
+        // prevent detecting if else statement
+        if (node.$parent && node.$parent.type === "IfStatement") {
+            return;
+        }
+        if (node.test && node.test.type === "BinaryExpression") {
+            if (node.test.left) {
+                for (const key in expressions) {
+                    if (matchesPath(node.test.left, key)) {
+                        return key;
+                    }
+                }
+            }
+        }
+    }
+}
+
 export function matchesIfStatementProcessEnv(node): string {
     if (node.type && node.type === "IfStatement") {
         // prevent detecting if else statement
@@ -123,6 +162,29 @@ export function matchesNodeEnv(node, veriableName?: string) {
 }
 
 
+export function matchesPath(node, variablePath: string) {
+    const paths = variablePath.split('.');
+    if (paths.length >= 1) {
+        if (paths.length === 2) {
+            if (node.type === "MemberExpression") {
+                if (node.object && node.property) {
+                    const matchesFirst = node.object.type === "Identifier" && node.object.name === paths[0];
+                    const matchesSecond = node.property.type === "Identifier" && node.property.name === paths[1];
+                    if (matchesFirst && matchesSecond) {
+                        return variablePath;
+                    }
+                }
+            }
+        }
+        //console.log(paths);
+        if (paths.length === 1) {
+            if (matchesSigleVariable(node, variablePath)) {
+                return variablePath;
+            }
+        }
+    }
+}
+
 export function matchesEcmaScript6(node) {
     if (node) {
         if (ES6_TYPES.has(node.type)) {
@@ -135,28 +197,38 @@ export function matchesEcmaScript6(node) {
     return false;
 }
 
-export function matchesRequireFunction(node: any) {
-    if (node.type === "Identifier" && node.name === "require") {
+export function matchesSigleVariable(node: any, name: string) {
+    if (node.type === "Identifier" && node.name === name) {
         if (node.$parent) {
             const parent = node.$parent;
-            if (parent.property && parent.property.name === "require") {
+            if (parent.type === "VariableDeclarator" && parent.id && parent.id.name === name) {
                 return false;
             }
-            if (parent.callee && parent.callee.name === "require") {
+            if (parent.property && parent.property.name === name) {
+                return false;
+            }
+            if (parent.callee && parent.callee.name === name) {
                 return false;
             }
             if (parent.type) {
                 if (parent.type === "MemberExpression" &&
-                    parent.object && parent.object.name === "require") {
+                    parent.object && parent.object.name === name) {
                     return false;
                 }
-                if (parent.type === "Property" && parent.key && parent.key.name === "require") {
+                if (parent.type === "Property" && parent.key && parent.key.name === name) {
                     return;
                 }
             }
             return true;
+        } else {
+            return true;
         }
     }
+}
+
+
+export function matchesRequireFunction(node: any) {
+    return matchesSigleVariable(node, "require");
 }
 
 export function matchesSingleFunction(node: any, name: string) {

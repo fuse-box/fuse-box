@@ -193,3 +193,7 @@ if ( key === "production" ){
 Which is less efficient than just declaring it in the if statement.
 
 Quantum works with [Env Plugin](/plugins/env-plugin#usage) therefore all the environmental variables will be replaced accordingly.
+
+### definedExpressions
+
+Similar to process.env Quantum will respect [definedExpressions](/page/quantum#definedExpressions) option.

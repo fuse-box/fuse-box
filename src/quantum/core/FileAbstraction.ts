@@ -11,7 +11,7 @@ import {
     matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier,
     trackRequireMember, matchNamedExport,
     isExportMisused, matchesNodeEnv, matchesExportReference,
-    matchesIfStatementProcessEnv, compareStatement, matchesIfStatementFuseBoxIsEnvironment, isExportComputed, matchesRequireFunction
+    matchesIfStatementProcessEnv, compareStatement, matchesIfStatementFuseBoxIsEnvironment, isExportComputed, matchesRequireFunction, matchesDefinedExpression
 } from "./AstUtils";
 import { ExportsInterop } from "./nodes/ExportsInterop";
 import { UseStrict } from "./nodes/UseStrict";
@@ -282,6 +282,25 @@ export class FileAbstraction {
 
         // process.env
         if (this.core) {
+            if( this.core.opts.definedExpressions){
+                const matchedExpression = matchesDefinedExpression(node, this.core.opts.definedExpressions)
+                if ( matchedExpression ){
+                    if( matchedExpression.isConditional ){
+                        const result = compareStatement(node, matchedExpression.value);
+                        const block = new ReplaceableBlock(node.test, "left", node.test.left);
+                        this.processNodeEnv.add(block);
+                        return block.conditionalAnalysis(node, result);
+                    } else {
+                        const block = new ReplaceableBlock(parent, prop, node);
+                        if(block === undefined){
+                            block.setUndefinedValue()
+                        } else {
+                            block.setValue(matchedExpression.value)
+                        }
+                        this.processNodeEnv.add(block);
+                    }
+                }
+            }
             const processKeyInIfStatement = matchesIfStatementProcessEnv(node);
             const value = this.core.producer.userEnvVariables[processKeyInIfStatement];
             if (processKeyInIfStatement) {

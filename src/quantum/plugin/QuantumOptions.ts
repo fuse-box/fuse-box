@@ -23,10 +23,11 @@ export interface IQuantumExtensionParams {
     globalRequire?: boolean;
     extendServerImport?: boolean;
     polyfills?: string[];
+    definedExpressions?: { [key: string]: boolean | string | number }
     processPolyfill?: boolean;
     css?: {
         path?: string,
-        clean? : boolean
+        clean?: boolean
     } | boolean,
     hoisting?: boolean | { names: string[] };
     containedAPI?: boolean,
@@ -59,10 +60,11 @@ export class QuantumOptions {
     public apiCallback: { (core: QuantumCore): void }
     public optsTarget: string = "browser";
     public treeshake = false;
-    private cleanCSS : any;
+    private cleanCSS: any;
     private css = false;
     private cssPath = "styles.css";
     public quantumVariableName = "$fsx";
+    public definedExpressions: { [key: string]: boolean | string | number };
     public webIndexPlugin: WebIndexPluginClass;
 
     constructor(public producer: BundleProducer, opts: IQuantumExtensionParams) {
@@ -84,7 +86,10 @@ export class QuantumOptions {
         if (opts.api) {
             this.apiCallback = opts.api;
         }
-
+    
+        if (opts.definedExpressions) {
+            this.definedExpressions = opts.definedExpressions;
+        }
         if (opts.manifest !== undefined) {
             if (typeof opts.manifest === "string") {
                 this.manifestFile = opts.manifest;
@@ -181,7 +186,7 @@ export class QuantumOptions {
         return this.css === true;
     }
 
-    public getCleanCSSOptions(){
+    public getCleanCSSOptions() {
         return this.cleanCSS;
     }
 
@@ -289,7 +294,7 @@ export class QuantumOptions {
         return this.bakeApiIntoBundle && (this.bakeApiIntoBundle === true || this.bakeApiIntoBundle.indexOf(bundleName) !== -1);
     }
 
-    public getMissingBundles(bundles: Map<string, Bundle>){
+    public getMissingBundles(bundles: Map<string, Bundle>) {
         if (!this.bakeApiIntoBundle || this.bakeApiIntoBundle === true) {
             return [];
         }
