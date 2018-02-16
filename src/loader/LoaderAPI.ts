@@ -7,7 +7,7 @@ declare let __fbx__dnm__: any;
 declare const WorkerGlobalScope: any;
 
 const $isWebWorker = typeof WorkerGlobalScope !== "undefined";
-const $isBrowser = typeof window !== "undefined" && window.navigator || $isWebWorker;
+const $isBrowser = typeof window !== "undefined" && typeof window.navigator !== "undefined" || $isWebWorker;
 const g = $isBrowser ? ($isWebWorker ? {} : window) : global;
 
 
