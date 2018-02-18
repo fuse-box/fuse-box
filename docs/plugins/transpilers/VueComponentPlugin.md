@@ -12,10 +12,8 @@ This plugin depends on the following node modules:
 - `vue`
 
 ```bash
-# Using yarn:
 yarn add vue-template-compiler vue-template-es2015-compiler vue-hot-reload-api vue postcss-selector-parser --dev
 
-# Using npm:
 npm install vue-template-compiler vue-template-es2015-compiler vue-hot-reload-api vue postcss-selector-parser --save-dev
 ```
 
