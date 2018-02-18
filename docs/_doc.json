@@ -51,6 +51,7 @@
             "plugins/transpilers/CoffeePlugin.md",
             "plugins/transpilers/VuePlugin.md",
             "plugins/transpilers/VueComponentPlugin.md",
+            "plugins/misc/AngularTemplatePlugin.md",
             "plugins/misc/RawPlugin.md",
             "plugins/misc/PlainJSPlugin.md",
             "plugins/misc/BannerPlugin.md",
