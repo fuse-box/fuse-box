@@ -17,9 +17,7 @@ yarn add uglify-es --dev
 npm install uglify-es --save-dev
 ```
 
-## Usage
-
-### Setup
+## Setup
 Import from FuseBox
 
 ```js
