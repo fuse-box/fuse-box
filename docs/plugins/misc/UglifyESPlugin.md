@@ -10,10 +10,7 @@ Unlike the **UglifyJS** plugin, the **UglifyES** plugin supports ES2015+ (ES6+) 
 This package depends on the `uglify-es` package.
 
 ```bash
-# Using yarn:
 yarn add uglify-es --dev
-
-# Using npm:
 npm install uglify-es --save-dev
 ```
 
