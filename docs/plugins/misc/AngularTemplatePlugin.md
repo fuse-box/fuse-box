@@ -1,8 +1,5 @@
 # NGTemplatePlugin
 
-(https://www.npmjs.org/package/fuse-box-ng-template-plugin) [![npm version](https://badge.fury.io/js/fuse-box-ng-template-plugin.svg)](https://www.npmjs.com/package/fuse-box-ng-template-plugin) [![Build Status](https://img.shields.io/travis/TobiasTimm/fuse-box-ng-template-plugin/master.svg)](https://travis-ci.org/TobiasTimm/fuse-box-ng-template-plugin)
-
-
 https://github.com/TobiasTimm/fuse-box-ng-template-plugin
 
 Includes your AngularJS templates into your fuse-box bundle. Pre-loads the AngularJS template cache to remove initial load times of templates.
