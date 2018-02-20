@@ -36,7 +36,7 @@ You can tell which files FuseBox needs to reload. In fact you implement the enti
 ```js
 
 const customizedHMRPlugin = {
-    hmrUpdate: ({ type, path, content }) => {
+    hmrUpdate: ({ type, path, content, dependants }) => { // Dependants only available when emitHMRDependencies = true
         if (type === "js") {
             FuseBox.flush();
             FuseBox.dynamic(path, content);
