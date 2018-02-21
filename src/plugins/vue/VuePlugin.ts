@@ -269,7 +269,7 @@ export class VueComponentClass implements Plugin {
         if (${process}.env.NODE_ENV !== "production") {
           var api = require('vue-hot-reload-api');
 
-          if (__VUE_HOT_MAP__ && !__VUE_HOT_MAP__['${moduleId}']) {
+          if (api && !api.isRecorded('${moduleId}')) {
             api.createRecord('${moduleId}', module.exports.default);
           }
         }
