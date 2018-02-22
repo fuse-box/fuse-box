@@ -1,139 +1,139 @@
     if (typeof global === "object") {
         global.require = require;
     }
-    var _c9fc = {};
-    _c9fc.f = {}
+    var _f70e = {};
+    _f70e.f = {}
     // cached modules
-    _c9fc.m = {};
-    _c9fc.s = function(id) {
-        var result = _c9fc.r(id);
+    _f70e.m = {};
+    _f70e.s = function(id) {
+        var result = _f70e.r(id);
         if (result === undefined) {
             var result = require(id);
             return result;
         }
     }
-    _c9fc.r = function(id) {
-        var cached = _c9fc.m[id];
+    _f70e.r = function(id) {
+        var cached = _f70e.m[id];
         // resolve if in cache
         if (cached) {
             return cached.m.exports;
         }
-        var file = _c9fc.f[id];
+        var file = _f70e.f[id];
         if (!file)
             return;
-        cached = _c9fc.m[id] = {};
+        cached = _f70e.m[id] = {};
         cached.exports = {};
         cached.m = { exports: cached.exports };
         file.call(cached.exports, cached.m, cached.exports);
         return cached.m.exports;
     };
 // default/index.js
-_c9fc.f[0] = function(module,exports){
+_f70e.f[0] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const CacheBreaker_1 = _c9fc.r(1);
+const CacheBreaker_1 = _f70e.r(1);
 CacheBreaker_1.breakCache();
-var WorkflowContext_1 = _c9fc.r(5);
+var WorkflowContext_1 = _f70e.r(5);
 exports.Plugin = WorkflowContext_1.Plugin;
 exports.WorkFlowContext = WorkflowContext_1.WorkFlowContext;
-var Bundle_1 = _c9fc.r(28);
+var Bundle_1 = _f70e.r(28);
 exports.Bundle = Bundle_1.Bundle;
-var BundleProducer_1 = _c9fc.r(40);
+var BundleProducer_1 = _f70e.r(40);
 exports.BundleProducer = BundleProducer_1.BundleProducer;
-var FuseBox_1 = _c9fc.r(29);
+var FuseBox_1 = _f70e.r(29);
 exports.FuseBoxOptions = FuseBox_1.FuseBoxOptions;
-var QuantumOptions_1 = _c9fc.r(63);
+var QuantumOptions_1 = _f70e.r(63);
 exports.IQuantumExtensionParams = QuantumOptions_1.IQuantumExtensionParams;
-var ComputerStatementRule_1 = _c9fc.r(64);
+var ComputerStatementRule_1 = _f70e.r(64);
 exports.ComputedStatementRule = ComputerStatementRule_1.ComputedStatementRule;
-var QuantumPlugin_1 = _c9fc.r(65);
+var QuantumPlugin_1 = _f70e.r(65);
 exports.QuantumPlugin = QuantumPlugin_1.QuantumPlugin;
-var ReplacePlugin_1 = _c9fc.r(85);
+var ReplacePlugin_1 = _f70e.r(85);
 exports.ReplacePlugin = ReplacePlugin_1.ReplacePlugin;
-var VuePlugin_1 = _c9fc.r(86);
+var VuePlugin_1 = _f70e.r(86);
 exports.VuePlugin = VuePlugin_1.VuePlugin;
-var VuePlugin_2 = _c9fc.r(87);
+var VuePlugin_2 = _f70e.r(87);
 exports.VueComponentPlugin = VuePlugin_2.VueComponentPlugin;
-var ImageBase64Plugin_1 = _c9fc.r(101);
+var ImageBase64Plugin_1 = _f70e.r(101);
 exports.ImageBase64Plugin = ImageBase64Plugin_1.ImageBase64Plugin;
-var CSSResourcePlugin_1 = _c9fc.r(103);
+var CSSResourcePlugin_1 = _f70e.r(103);
 exports.CSSResourcePlugin = CSSResourcePlugin_1.CSSResourcePlugin;
-var HotReloadPlugin_1 = _c9fc.r(61);
+var HotReloadPlugin_1 = _f70e.r(61);
 exports.HotReloadPlugin = HotReloadPlugin_1.HotReloadPlugin;
-var EnvPlugin_1 = _c9fc.r(105);
+var EnvPlugin_1 = _f70e.r(105);
 exports.EnvPlugin = EnvPlugin_1.EnvPlugin;
-var ConcatPlugin_1 = _c9fc.r(106);
+var ConcatPlugin_1 = _f70e.r(106);
 exports.ConcatPlugin = ConcatPlugin_1.ConcatPlugin;
-var StylusPlugin_1 = _c9fc.r(93);
+var StylusPlugin_1 = _f70e.r(93);
 exports.StylusPlugin = StylusPlugin_1.StylusPlugin;
-var PostCSSPlugin_1 = _c9fc.r(107);
+var PostCSSPlugin_1 = _f70e.r(107);
 exports.PostCSS = PostCSSPlugin_1.PostCSS;
-var PostCSSPlugin_2 = _c9fc.r(107);
+var PostCSSPlugin_2 = _f70e.r(107);
 exports.PostCSSPlugin = PostCSSPlugin_2.PostCSS;
-var SVGPlugin_1 = _c9fc.r(108);
+var SVGPlugin_1 = _f70e.r(108);
 exports.SVGPlugin = SVGPlugin_1.SVGPlugin;
-var BabelPlugin_1 = _c9fc.r(95);
+var BabelPlugin_1 = _f70e.r(95);
 exports.BabelPlugin = BabelPlugin_1.BabelPlugin;
-var BublePlugin_1 = _c9fc.r(109);
+var BublePlugin_1 = _f70e.r(109);
 exports.BublePlugin = BublePlugin_1.BublePlugin;
-var CoffeePlugin_1 = _c9fc.r(96);
+var CoffeePlugin_1 = _f70e.r(96);
 exports.CoffeePlugin = CoffeePlugin_1.CoffeePlugin;
-var LESSPlugin_1 = _c9fc.r(91);
+var LESSPlugin_1 = _f70e.r(91);
 exports.LESSPlugin = LESSPlugin_1.LESSPlugin;
-var CSSplugin_1 = _c9fc.r(88);
+var CSSplugin_1 = _f70e.r(88);
 exports.CSSPlugin = CSSplugin_1.CSSPlugin;
-var HTMLplugin_1 = _c9fc.r(94);
+var HTMLplugin_1 = _f70e.r(94);
 exports.HTMLPlugin = HTMLplugin_1.HTMLPlugin;
-var Markdownplugin_1 = _c9fc.r(110);
+var Markdownplugin_1 = _f70e.r(110);
 exports.MarkdownPlugin = Markdownplugin_1.MarkdownPlugin;
-var JSONplugin_1 = _c9fc.r(34);
+var JSONplugin_1 = _f70e.r(34);
 exports.JSONPlugin = JSONplugin_1.JSONPlugin;
-var BannerPlugin_1 = _c9fc.r(111);
+var BannerPlugin_1 = _f70e.r(111);
 exports.BannerPlugin = BannerPlugin_1.BannerPlugin;
-var SassPlugin_1 = _c9fc.r(92);
+var SassPlugin_1 = _f70e.r(92);
 exports.SassPlugin = SassPlugin_1.SassPlugin;
-var UglifyESPlugin_1 = _c9fc.r(112);
+var UglifyESPlugin_1 = _f70e.r(112);
 exports.UglifyESPlugin = UglifyESPlugin_1.UglifyESPlugin;
-var UglifyJSPlugin_1 = _c9fc.r(113);
+var UglifyJSPlugin_1 = _f70e.r(113);
 exports.UglifyJSPlugin = UglifyJSPlugin_1.UglifyJSPlugin;
-var SourceMapPlainJsPlugin_1 = _c9fc.r(114);
+var SourceMapPlainJsPlugin_1 = _f70e.r(114);
 exports.SourceMapPlainJsPlugin = SourceMapPlainJsPlugin_1.SourceMapPlainJsPlugin;
-var RawPlugin_1 = _c9fc.r(115);
+var RawPlugin_1 = _f70e.r(115);
 exports.RawPlugin = RawPlugin_1.RawPlugin;
-var OptimizeJSPlugin_1 = _c9fc.r(116);
+var OptimizeJSPlugin_1 = _f70e.r(116);
 exports.OptimizeJSPlugin = OptimizeJSPlugin_1.OptimizeJSPlugin;
-var Fluent_1 = _c9fc.r(38);
+var Fluent_1 = _f70e.r(38);
 exports.Fluent = Fluent_1.Fluent;
-var FuseBox_2 = _c9fc.r(29);
+var FuseBox_2 = _f70e.r(29);
 exports.FuseBox = FuseBox_2.FuseBox;
-var Sparky_1 = _c9fc.r(117);
+var Sparky_1 = _f70e.r(117);
 exports.Sparky = Sparky_1.Sparky;
-var SparkyContext_1 = _c9fc.r(122);
+var SparkyContext_1 = _f70e.r(122);
 exports.SparkyContext = SparkyContext_1.SparkyContext;
-var Cli_1 = _c9fc.r(123);
+var Cli_1 = _f70e.r(123);
 exports.CLI = Cli_1.CLI;
-var CSSModules_1 = _c9fc.r(124);
+var CSSModules_1 = _f70e.r(124);
 exports.CSSModules = CSSModules_1.CSSModules;
-var CopyPlugin_1 = _c9fc.r(125);
+var CopyPlugin_1 = _f70e.r(125);
 exports.CopyPlugin = CopyPlugin_1.CopyPlugin;
-var WebIndexPlugin_1 = _c9fc.r(126);
+var WebIndexPlugin_1 = _f70e.r(126);
 exports.WebIndexPlugin = WebIndexPlugin_1.WebIndexPlugin;
-var PlainJSPlugin_1 = _c9fc.r(127);
+var PlainJSPlugin_1 = _f70e.r(127);
 exports.PlainJSPlugin = PlainJSPlugin_1.PlainJSPlugin;
-var ConsolidatePlugin_1 = _c9fc.r(97);
+var ConsolidatePlugin_1 = _f70e.r(97);
 exports.ConsolidatePlugin = ConsolidatePlugin_1.ConsolidatePlugin;
-var File_1 = _c9fc.r(7);
+var File_1 = _f70e.r(7);
 exports.File = File_1.File;
-const _SparkyCollection = _c9fc.r(128);
+const _SparkyCollection = _f70e.r(128);
 exports.SparkyCollection = _SparkyCollection;
 }
 // default/CacheBreaker.js
-_c9fc.f[1] = function(module,exports){
+_f70e.f[1] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const Config_1 = _c9fc.r(2);
-const path = _c9fc.s('path');
-const Utils_1 = _c9fc.r(3);
-const fs = _c9fc.s('fs');
-const Log_1 = _c9fc.r(4);
+const Config_1 = _f70e.r(2);
+const path = _f70e.s('path');
+const Utils_1 = _f70e.r(3);
+const fs = _f70e.s('fs');
+const Log_1 = _f70e.r(4);
 function breakCache() {
     const mainFile = require.main.filename;
     const fileKey = Utils_1.fastHash(mainFile);
@@ -160,11 +160,11 @@ function breakCache() {
 exports.breakCache = breakCache;
 }
 // default/Config.js
-_c9fc.f[2] = function(module,exports){
+_f70e.f[2] = function(module,exports){
 var __dirname = ".";
 Object.defineProperty(exports, '__esModule', { value: true });
-const appRoot = _c9fc.s('app-root-path');
-const path = _c9fc.s('path');
+const appRoot = _f70e.s('app-root-path');
+const path = _f70e.s('path');
 const PROJECT_ROOT = process.env.FUSEBOX_DIST_ROOT || path.resolve(__dirname);
 const MAIN_FILE = require.main.filename;
 if (MAIN_FILE.indexOf('gulp.js') > -1 && !process.env.PROJECT_ROOT) {
@@ -179,21 +179,21 @@ class Configuration {
         this.TEMP_FOLDER = process.env.FUSEBOX_TEMP_FOLDER || path.join(appRoot.path, '.fusebox');
         this.PROJECT_FOLDER = appRoot.path;
         this.PROJECT_ROOT = process.env.PROJECT_ROOT || path.dirname(MAIN_FILE);
-        this.FUSEBOX_VERSION = process.env.FUSEBOX_VERSION || _c9fc.s(path.join(PROJECT_ROOT, 'package.json')).version;
+        this.FUSEBOX_VERSION = process.env.FUSEBOX_VERSION || _f70e.s(path.join(PROJECT_ROOT, 'package.json')).version;
     }
 }
 exports.Config = new Configuration();
 }
 // default/Utils.js
-_c9fc.f[3] = function(module,exports){
+_f70e.f[3] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const path = _c9fc.s('path');
-const fs = _c9fc.s('fs');
-const fsExtra = _c9fc.s('fs-extra');
-const realm_utils_1 = _c9fc.s('realm-utils');
-const Config_1 = _c9fc.r(2);
-const LegoAPI = _c9fc.s('lego-api');
-const Log_1 = _c9fc.r(4);
+const path = _f70e.s('path');
+const fs = _f70e.s('fs');
+const fsExtra = _f70e.s('fs-extra');
+const realm_utils_1 = _f70e.s('realm-utils');
+const Config_1 = _f70e.r(2);
+const LegoAPI = _f70e.s('lego-api');
+const Log_1 = _f70e.r(4);
 const userFuseDir = Config_1.Config.PROJECT_ROOT;
 const stylesheetExtensions = new Set([
     '.css',
@@ -207,7 +207,7 @@ const MBLACKLIST = [
     'freelist',
     'sys'
 ];
-exports.Concat = _c9fc.s('fuse-concat-with-sourcemaps');
+exports.Concat = _f70e.s('fuse-concat-with-sourcemaps');
 function contains(array, obj) {
     return array && array.indexOf(obj) > -1;
 }
@@ -235,7 +235,7 @@ function jsCommentTemplate(fname, conditions, variables, raw, replaceRaw) {
 }
 exports.jsCommentTemplate = jsCommentTemplate;
 function getFuseBoxInfo() {
-    return _c9fc.s(path.join(Config_1.Config.FUSEBOX_ROOT, 'package.json'));
+    return _f70e.s(path.join(Config_1.Config.FUSEBOX_ROOT, 'package.json'));
 }
 exports.getFuseBoxInfo = getFuseBoxInfo;
 let VERSION_PRINTED = false;
@@ -262,7 +262,7 @@ function uglify(contents, {
     es6 = false,
     ...opts
 } = {}) {
-    const UglifyJs = es6 ? _c9fc.s('uglify-es') : _c9fc.s('uglify-js');
+    const UglifyJs = es6 ? _f70e.s('uglify-es') : _f70e.s('uglify-js');
     return UglifyJs.minify(contents.toString(), opts);
 }
 exports.uglify = uglify;
@@ -421,7 +421,7 @@ function ensureCorrectBundlePath(input) {
 }
 exports.ensureCorrectBundlePath = ensureCorrectBundlePath;
 function transpileToEs5(contents) {
-    const ts = _c9fc.s('typescript');
+    const ts = _f70e.s('typescript');
     let tsconfg = {
         compilerOptions: {
             module: 'commonjs',
@@ -511,7 +511,7 @@ function filter(items, fn) {
     }
 }
 exports.filter = filter;
-const readline = _c9fc.s('readline');
+const readline = _f70e.s('readline');
 class Spinner {
     constructor(options) {
         this.text = '';
@@ -571,13 +571,13 @@ class Spinner {
 }
 }
 // default/Log.js
-_c9fc.f[4] = function(module,exports){
+_f70e.f[4] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const log = _c9fc.s('fliplog');
-const prettysize = _c9fc.s('prettysize');
-const prettyTime = _c9fc.s('pretty-time');
-const zlib = _c9fc.s('zlib');
-const Utils_1 = _c9fc.r(3);
+const log = _f70e.s('fliplog');
+const prettysize = _f70e.s('prettysize');
+const prettyTime = _f70e.s('pretty-time');
+const zlib = _f70e.s('zlib');
+const Utils_1 = _f70e.r(3);
 class Indenter {
     constructor() {
         this.store = new Map();
@@ -900,25 +900,25 @@ Log.deferred = [];
 exports.Log = Log;
 }
 // default/core/WorkflowContext.js
-_c9fc.f[5] = function(module,exports){
+_f70e.f[5] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const path = _c9fc.s('path');
-const escodegen = _c9fc.s('escodegen');
-const BundleSource_1 = _c9fc.r(6);
-const File_1 = _c9fc.r(7);
-const Log_1 = _c9fc.r(4);
-const NativeEmitter = _c9fc.s('events');
-const PathMaster_1 = _c9fc.r(19);
-const ModuleCache_1 = _c9fc.r(20);
-const EventEmitter_1 = _c9fc.r(22);
-const realm_utils_1 = _c9fc.s('realm-utils');
-const Utils_1 = _c9fc.r(3);
-const AutoImportedModule_1 = _c9fc.r(23);
-const Defer_1 = _c9fc.r(24);
-const QuantumSplit_1 = _c9fc.r(25);
-const ServerPolyfillList_1 = _c9fc.r(26);
-const CSSDependencyExtractor_1 = _c9fc.r(27);
-const appRoot = _c9fc.s('app-root-path');
+const path = _f70e.s('path');
+const escodegen = _f70e.s('escodegen');
+const BundleSource_1 = _f70e.r(6);
+const File_1 = _f70e.r(7);
+const Log_1 = _f70e.r(4);
+const NativeEmitter = _f70e.s('events');
+const PathMaster_1 = _f70e.r(19);
+const ModuleCache_1 = _f70e.r(20);
+const EventEmitter_1 = _f70e.r(22);
+const realm_utils_1 = _f70e.s('realm-utils');
+const Utils_1 = _f70e.r(3);
+const AutoImportedModule_1 = _f70e.r(23);
+const Defer_1 = _f70e.r(24);
+const QuantumSplit_1 = _f70e.r(25);
+const ServerPolyfillList_1 = _f70e.r(26);
+const CSSDependencyExtractor_1 = _f70e.r(27);
+const appRoot = _f70e.s('app-root-path');
 class WorkFlowContext {
     constructor() {
         this.appRoot = appRoot.path;
@@ -1351,12 +1351,12 @@ class WorkFlowContext {
 exports.WorkFlowContext = WorkFlowContext;
 }
 // default/BundleSource.js
-_c9fc.f[6] = function(module,exports){
+_f70e.f[6] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const Utils_1 = _c9fc.r(3);
-const Config_1 = _c9fc.r(2);
-const path = _c9fc.s('path');
-const fs = _c9fc.s('fs');
+const Utils_1 = _f70e.r(3);
+const Config_1 = _f70e.r(2);
+const path = _f70e.s('path');
+const fs = _f70e.s('fs');
 class BundleSource {
     constructor(context) {
         this.context = context;
@@ -1496,14 +1496,14 @@ ${ file.headerContent ? file.headerContent.join('\n') : '' }`);
 exports.BundleSource = BundleSource;
 }
 // default/core/File.js
-_c9fc.f[7] = function(module,exports){
+_f70e.f[7] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const FileAnalysis_1 = _c9fc.r(8);
-const SourceMapGenerator_1 = _c9fc.r(18);
-const realm_utils_1 = _c9fc.s('realm-utils');
-const fs = _c9fc.s('fs');
-const path = _c9fc.s('path');
-const Utils_1 = _c9fc.r(3);
+const FileAnalysis_1 = _f70e.r(8);
+const SourceMapGenerator_1 = _f70e.r(18);
+const realm_utils_1 = _f70e.s('realm-utils');
+const fs = _f70e.s('fs');
+const path = _f70e.s('path');
+const Utils_1 = _f70e.r(3);
 var ScriptTarget;
 (function (ScriptTarget) {
     ScriptTarget[ScriptTarget['ES5'] = 1] = 'ES5';
@@ -1890,7 +1890,7 @@ class File {
     }
     transpileUsingTypescript() {
         try {
-            const ts = _c9fc.s('typescript');
+            const ts = _f70e.s('typescript');
             try {
                 return ts.transpileModule(this.contents, this.getTranspilationConfig());
             } catch (e) {
@@ -1976,20 +1976,20 @@ class File {
 exports.File = File;
 }
 // default/analysis/FileAnalysis.js
-_c9fc.f[8] = function(module,exports){
+_f70e.f[8] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const ASTTraverse_1 = _c9fc.r(9);
-const PrettyError_1 = _c9fc.r(10);
-const acorn = _c9fc.s('acorn');
-const AutoImport_1 = _c9fc.r(11);
-const LanguageLevel_1 = _c9fc.r(12);
-const OwnVariable_1 = _c9fc.r(13);
-const OwnBundle_1 = _c9fc.r(14);
-const ImportDeclaration_1 = _c9fc.r(15);
-const DynamicImportStatement_1 = _c9fc.r(16);
-const Utils_1 = _c9fc.r(3);
-_c9fc.s('acorn-jsx/inject')(acorn);
-_c9fc.r(17)(acorn);
+const ASTTraverse_1 = _f70e.r(9);
+const PrettyError_1 = _f70e.r(10);
+const acorn = _f70e.s('acorn');
+const AutoImport_1 = _f70e.r(11);
+const LanguageLevel_1 = _f70e.r(12);
+const OwnVariable_1 = _f70e.r(13);
+const OwnBundle_1 = _f70e.r(14);
+const ImportDeclaration_1 = _f70e.r(15);
+const DynamicImportStatement_1 = _f70e.r(16);
+const Utils_1 = _f70e.r(3);
+_f70e.s('acorn-jsx/inject')(acorn);
+_f70e.r(17)(acorn);
 const plugins = [
     AutoImport_1.AutoImport,
     OwnVariable_1.OwnVariable,
@@ -2108,7 +2108,7 @@ class FileAnalysis {
 exports.FileAnalysis = FileAnalysis;
 }
 // default/ASTTraverse.js
-_c9fc.f[9] = function(module,exports){
+_f70e.f[9] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class ASTTraverse {
     static traverse(root, options) {
@@ -2155,9 +2155,9 @@ class ASTTraverse {
 exports.ASTTraverse = ASTTraverse;
 }
 // default/PrettyError.js
-_c9fc.f[10] = function(module,exports){
+_f70e.f[10] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const ansi = _c9fc.s('ansi');
+const ansi = _f70e.s('ansi');
 const cursor = ansi(process.stdout);
 class PrettyError {
     static errorWithContents(error, file) {
@@ -2192,7 +2192,7 @@ class PrettyError {
 exports.PrettyError = PrettyError;
 }
 // default/analysis/plugins/AutoImport.js
-_c9fc.f[11] = function(module,exports){
+_f70e.f[11] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class AutoImport {
     static onNode(file, node, parent) {
@@ -2235,9 +2235,9 @@ class AutoImport {
 exports.AutoImport = AutoImport;
 }
 // default/analysis/plugins/LanguageLevel.js
-_c9fc.f[12] = function(module,exports){
+_f70e.f[12] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const File_1 = _c9fc.r(7);
+const File_1 = _f70e.r(7);
 class LanguageLevel {
     static onNode(file, node, parent) {
         if (node.async === true) {
@@ -2262,7 +2262,7 @@ class LanguageLevel {
 exports.LanguageLevel = LanguageLevel;
 }
 // default/analysis/plugins/OwnVariable.js
-_c9fc.f[13] = function(module,exports){
+_f70e.f[13] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class OwnVariable {
     static onNode(file, node, parent) {
@@ -2279,9 +2279,9 @@ class OwnVariable {
 exports.OwnVariable = OwnVariable;
 }
 // default/analysis/plugins/OwnBundle.js
-_c9fc.f[14] = function(module,exports){
+_f70e.f[14] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const escodegen = _c9fc.s('escodegen');
+const escodegen = _f70e.s('escodegen');
 function extractMainFileFromPackageEntry(input) {
     let res = input.split('/');
     if (res.length > 1) {
@@ -2358,7 +2358,7 @@ class OwnBundle {
 exports.OwnBundle = OwnBundle;
 }
 // default/analysis/plugins/ImportDeclaration.js
-_c9fc.f[15] = function(module,exports){
+_f70e.f[15] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class ImportDeclaration {
     static onNode(file, node, parent) {
@@ -2432,9 +2432,9 @@ class ImportDeclaration {
 exports.ImportDeclaration = ImportDeclaration;
 }
 // default/analysis/plugins/DynamicImportStatement.js
-_c9fc.f[16] = function(module,exports){
+_f70e.f[16] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const fs = _c9fc.s('fs');
+const fs = _f70e.s('fs');
 class DynamicImportStatement {
     static onNode(file, node, parent) {
         const analysis = file.analysis;
@@ -2481,7 +2481,7 @@ class DynamicImportStatement {
 exports.DynamicImportStatement = DynamicImportStatement;
 }
 // default/analysis/acorn-ext/obj-rest-spread.js
-_c9fc.f[17] = function(module,exports){
+_f70e.f[17] = function(module,exports){
 function wrap(func, wrapper) {
     return function (...args) {
         return wrapper.call(this, func, args);
@@ -2563,10 +2563,10 @@ function isAsyncProp(parser, propNode) {
 }
 }
 // default/core/SourceMapGenerator.js
-_c9fc.f[18] = function(module,exports){
+_f70e.f[18] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const acorn = _c9fc.s('acorn');
-const SourceMap = _c9fc.s('source-map');
+const acorn = _f70e.s('acorn');
+const SourceMap = _f70e.s('source-map');
 class SourceMapGenerator {
     static generate(file, tokens) {
         const fileContent = file.contents;
@@ -2593,12 +2593,12 @@ class SourceMapGenerator {
 exports.SourceMapGenerator = SourceMapGenerator;
 }
 // default/core/PathMaster.js
-_c9fc.f[19] = function(module,exports){
+_f70e.f[19] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const Utils_1 = _c9fc.r(3);
-const Config_1 = _c9fc.r(2);
-const path = _c9fc.s('path');
-const fs = _c9fc.s('fs');
+const Utils_1 = _f70e.r(3);
+const Config_1 = _f70e.r(2);
+const path = _f70e.s('path');
+const fs = _f70e.s('fs');
 const NODE_MODULE = /^([a-z@](?!:).*)$/;
 const isRelative = /^[\.\/\\]+$/;
 const jsExtensions = [
@@ -2826,7 +2826,7 @@ class PathMaster {
         if (!ext) {
             const folderJsonPath = path.join(root, name, 'package.json');
             if (fs.existsSync(folderJsonPath)) {
-                const folderJSON = _c9fc.s(folderJsonPath);
+                const folderJSON = _f70e.s(folderJsonPath);
                 if (folderJSON.main) {
                     const resolved = path.resolve(root, name, folderJSON.main);
                     const opts = {
@@ -2894,7 +2894,7 @@ class PathMaster {
         const readMainFile = (folder, isCustom) => {
             const packageJSONPath = path.join(folder, 'package.json');
             if (fs.existsSync(packageJSONPath)) {
-                const json = _c9fc.s(packageJSONPath);
+                const json = _f70e.s(packageJSONPath);
                 let entryFile;
                 let entryRoot;
                 let jsNext = false;
@@ -3004,14 +3004,14 @@ class PathMaster {
 exports.PathMaster = PathMaster;
 }
 // default/ModuleCache.js
-_c9fc.f[20] = function(module,exports){
+_f70e.f[20] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const ModuleCollection_1 = _c9fc.r(21);
-const Config_1 = _c9fc.r(2);
-const realm_utils_1 = _c9fc.s('realm-utils');
-const fsExtra = _c9fc.s('fs-extra');
-const fs = _c9fc.s('fs');
-const path = _c9fc.s('path');
+const ModuleCollection_1 = _f70e.r(21);
+const Config_1 = _f70e.r(2);
+const realm_utils_1 = _f70e.s('realm-utils');
+const fsExtra = _f70e.s('fs-extra');
+const fs = _f70e.s('fs');
+const path = _f70e.s('path');
 const MEMORY_CACHE = {};
 class ModuleCache {
     constructor(context) {
@@ -3034,7 +3034,7 @@ class ModuleCache {
             fsExtra.ensureDirSync(this.staticCacheFolder);
             if (fs.existsSync(this.cacheFile)) {
                 try {
-                    this.cachedDeps = _c9fc.s(this.cacheFile);
+                    this.cachedDeps = _f70e.s(this.cacheFile);
                 } catch (e) {
                     this.cachedDeps = {
                         tree: {},
@@ -3095,7 +3095,7 @@ class ModuleCache {
             let dest = path.join(this.staticCacheFolder, fileName);
             if (fs.existsSync(dest)) {
                 try {
-                    data = _c9fc.s(dest);
+                    data = _f70e.s(dest);
                 } catch (e) {
                     console.log(e);
                     return;
@@ -3126,7 +3126,7 @@ class ModuleCache {
             let dest = path.join(this.staticCacheFolder, fileName);
             if (fs.existsSync(dest)) {
                 try {
-                    data = _c9fc.s(dest);
+                    data = _f70e.s(dest);
                 } catch (e) {
                     console.log(e);
                     return;
@@ -3316,12 +3316,12 @@ _ : ${ JSON.stringify(cacheData._ || {}) }
 exports.ModuleCache = ModuleCache;
 }
 // default/core/ModuleCollection.js
-_c9fc.f[21] = function(module,exports){
+_f70e.f[21] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const File_1 = _c9fc.r(7);
-const PathMaster_1 = _c9fc.r(19);
-const Utils_1 = _c9fc.r(3);
-const realm_utils_1 = _c9fc.s('realm-utils');
+const File_1 = _f70e.r(7);
+const PathMaster_1 = _f70e.r(19);
+const Utils_1 = _f70e.r(3);
+const realm_utils_1 = _f70e.s('realm-utils');
 class ModuleCollection {
     constructor(context, name, info) {
         this.context = context;
@@ -3508,7 +3508,7 @@ class ModuleCollection {
 exports.ModuleCollection = ModuleCollection;
 }
 // default/EventEmitter.js
-_c9fc.f[22] = function(module,exports){
+_f70e.f[22] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class EventEmitter {
     constructor() {
@@ -3536,10 +3536,10 @@ class EventEmitter {
 exports.EventEmitter = EventEmitter;
 }
 // default/core/AutoImportedModule.js
-_c9fc.f[23] = function(module,exports){
+_f70e.f[23] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const realm_utils_1 = _c9fc.s('realm-utils');
-const Utils_1 = _c9fc.r(3);
+const realm_utils_1 = _f70e.s('realm-utils');
+const Utils_1 = _f70e.r(3);
 class AutoImportedModule {
     constructor(variable, pkg) {
         this.variable = variable;
@@ -3574,7 +3574,7 @@ function registerDefaultAutoImportModules(userConfig) {
 exports.registerDefaultAutoImportModules = registerDefaultAutoImportModules;
 }
 // default/Defer.js
-_c9fc.f[24] = function(module,exports){
+_f70e.f[24] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class Defer {
     constructor() {
@@ -3609,7 +3609,7 @@ class Defer {
 exports.Defer = Defer;
 }
 // default/quantum/plugin/QuantumSplit.js
-_c9fc.f[25] = function(module,exports){
+_f70e.f[25] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class QuantumSplitConfig {
     constructor(context) {
@@ -3644,7 +3644,7 @@ class QuantumSplitConfig {
 exports.QuantumSplitConfig = QuantumSplitConfig;
 }
 // default/core/ServerPolyfillList.js
-_c9fc.f[26] = function(module,exports){
+_f70e.f[26] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 const SERVER_POLYFILL = new Set([
     'assert',
@@ -3701,10 +3701,10 @@ function isElectronPolyfill(name) {
 exports.isElectronPolyfill = isElectronPolyfill;
 }
 // default/lib/CSSDependencyExtractor.js
-_c9fc.f[27] = function(module,exports){
+_f70e.f[27] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const path = _c9fc.s('path');
-const fs = _c9fc.s('fs');
+const path = _f70e.s('path');
+const fs = _f70e.s('fs');
 class CSSDependencyExtractor {
     constructor(opts) {
         this.opts = opts;
@@ -3801,16 +3801,16 @@ class CSSDependencyExtractor {
 exports.CSSDependencyExtractor = CSSDependencyExtractor;
 }
 // default/core/Bundle.js
-_c9fc.f[28] = function(module,exports){
+_f70e.f[28] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const FuseBox_1 = _c9fc.r(29);
-const FuseProcess_1 = _c9fc.r(60);
-const HotReloadPlugin_1 = _c9fc.r(61);
-const path = _c9fc.s('path');
-const BundleTestRunner_1 = _c9fc.r(62);
-const Config_1 = _c9fc.r(2);
-const EventEmitter_1 = _c9fc.r(22);
-const ExtensionOverrides_1 = _c9fc.r(58);
+const FuseBox_1 = _f70e.r(29);
+const FuseProcess_1 = _f70e.r(60);
+const HotReloadPlugin_1 = _f70e.r(61);
+const path = _f70e.s('path');
+const BundleTestRunner_1 = _f70e.r(62);
+const Config_1 = _f70e.r(2);
+const EventEmitter_1 = _f70e.r(22);
+const ExtensionOverrides_1 = _f70e.r(58);
 class Bundle {
     constructor(name, fuse, producer) {
         this.name = name;
@@ -3950,7 +3950,7 @@ class Bundle {
         str += ` +fuse-test-runner ${ opts.reporter } -ansi`;
         const fuse = FuseBox_1.FuseBox.init(clonedOpts);
         fuse.bundle('test').instructions(str).completed(proc => {
-            const bundle = _c9fc.s(proc.filePath);
+            const bundle = _f70e.s(proc.filePath);
             let runner = new BundleTestRunner_1.BundleTestRunner(bundle, opts);
             runner.start();
         });
@@ -4009,27 +4009,27 @@ class Bundle {
 exports.Bundle = Bundle;
 }
 // default/core/FuseBox.js
-_c9fc.f[29] = function(module,exports){
+_f70e.f[29] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const fs = _c9fc.s('fs');
-const process = _c9fc.s('process');
-const realm_utils_1 = _c9fc.s('realm-utils');
-const Utils_1 = _c9fc.r(3);
-const ShimCollection_1 = _c9fc.r(30);
-const Server_1 = _c9fc.r(31);
-const JSONplugin_1 = _c9fc.r(34);
-const PathMaster_1 = _c9fc.r(19);
-const WorkflowContext_1 = _c9fc.r(5);
-const CollectionSource_1 = _c9fc.r(35);
-const Arithmetic_1 = _c9fc.r(36);
-const ModuleCollection_1 = _c9fc.r(21);
-const UserOutput_1 = _c9fc.r(39);
-const BundleProducer_1 = _c9fc.r(40);
-const Bundle_1 = _c9fc.r(28);
-const File_1 = _c9fc.r(7);
-const ExtensionOverrides_1 = _c9fc.r(58);
-const TypescriptConfig_1 = _c9fc.r(59);
-const appRoot = _c9fc.s('app-root-path');
+const fs = _f70e.s('fs');
+const process = _f70e.s('process');
+const realm_utils_1 = _f70e.s('realm-utils');
+const Utils_1 = _f70e.r(3);
+const ShimCollection_1 = _f70e.r(30);
+const Server_1 = _f70e.r(31);
+const JSONplugin_1 = _f70e.r(34);
+const PathMaster_1 = _f70e.r(19);
+const WorkflowContext_1 = _f70e.r(5);
+const CollectionSource_1 = _f70e.r(35);
+const Arithmetic_1 = _f70e.r(36);
+const ModuleCollection_1 = _f70e.r(21);
+const UserOutput_1 = _f70e.r(39);
+const BundleProducer_1 = _f70e.r(40);
+const Bundle_1 = _f70e.r(28);
+const File_1 = _f70e.r(7);
+const ExtensionOverrides_1 = _f70e.r(58);
+const TypescriptConfig_1 = _f70e.r(59);
+const appRoot = _f70e.s('app-root-path');
 class FuseBox {
     constructor(opts) {
         this.opts = opts;
@@ -4214,7 +4214,7 @@ class FuseBox {
             server.start(opts);
             if (opts.open) {
                 try {
-                    const opn = _c9fc.s('opn');
+                    const opn = _f70e.s('opn');
                     opn(typeof opts.open === 'string' ? opts.open : `http://localhost:${ opts.port }`);
                 } catch (e) {
                     this.context.log.echoRed('If you want to open the browser, please install "opn" package. "npm install opn --save-dev"');
@@ -4342,10 +4342,10 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 }
 // default/ShimCollection.js
-_c9fc.f[30] = function(module,exports){
+_f70e.f[30] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const ModuleCollection_1 = _c9fc.r(21);
-const File_1 = _c9fc.r(7);
+const ModuleCollection_1 = _f70e.r(21);
+const File_1 = _f70e.r(7);
 class ShimCollection {
     static create(context, name, exports) {
         let entryInfo = {
@@ -4365,13 +4365,13 @@ class ShimCollection {
 exports.ShimCollection = ShimCollection;
 }
 // default/devServer/Server.js
-_c9fc.f[31] = function(module,exports){
+_f70e.f[31] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const SocketServer_1 = _c9fc.r(32);
-const Utils_1 = _c9fc.r(3);
-const HTTPServer_1 = _c9fc.r(33);
-const realm_utils_1 = _c9fc.s('realm-utils');
-const process = _c9fc.s('process');
+const SocketServer_1 = _f70e.r(32);
+const Utils_1 = _f70e.r(3);
+const HTTPServer_1 = _f70e.r(33);
+const realm_utils_1 = _f70e.s('realm-utils');
+const process = _f70e.s('process');
 class Server {
     constructor(fuse) {
         this.fuse = fuse;
@@ -4407,9 +4407,9 @@ class Server {
 exports.Server = Server;
 }
 // default/devServer/SocketServer.js
-_c9fc.f[32] = function(module,exports){
+_f70e.f[32] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const uws_1 = _c9fc.s('uws');
+const uws_1 = _f70e.s('uws');
 class SocketServer {
     constructor(server, fuse) {
         this.server = server;
@@ -4465,12 +4465,12 @@ class SocketServer {
 exports.SocketServer = SocketServer;
 }
 // default/devServer/HTTPServer.js
-_c9fc.f[33] = function(module,exports){
+_f70e.f[33] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const http = _c9fc.s('http');
-const express = _c9fc.s('express');
-const SocketServer_1 = _c9fc.r(32);
-const Utils_1 = _c9fc.r(3);
+const http = _f70e.s('http');
+const express = _f70e.s('express');
+const SocketServer_1 = _f70e.r(32);
+const Utils_1 = _f70e.r(3);
 class HTTPServer {
     constructor(fuse) {
         this.fuse = fuse;
@@ -4490,7 +4490,7 @@ class HTTPServer {
         if (userSettings && userSettings.proxy) {
             let proxyInstance;
             try {
-                proxyInstance = _c9fc.s('http-proxy-middleware');
+                proxyInstance = _f70e.s('http-proxy-middleware');
             } catch (e) {
             }
             if (proxyInstance) {
@@ -4533,7 +4533,7 @@ Development server running http://localhost:${ port } @ ${ packageInfo.version }
 exports.HTTPServer = HTTPServer;
 }
 // default/plugins/JSONplugin.js
-_c9fc.f[34] = function(module,exports){
+_f70e.f[34] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class FuseBoxJSONPlugin {
     constructor() {
@@ -4563,7 +4563,7 @@ exports.JSONPlugin = () => {
 };
 }
 // default/CollectionSource.js
-_c9fc.f[35] = function(module,exports){
+_f70e.f[35] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class CollectionSource {
     constructor(context) {
@@ -4600,15 +4600,15 @@ class CollectionSource {
 exports.CollectionSource = CollectionSource;
 }
 // default/arithmetic/Arithmetic.js
-_c9fc.f[36] = function(module,exports){
+_f70e.f[36] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const ArithmeticStringParser_1 = _c9fc.r(37);
-const Config_1 = _c9fc.r(2);
-const realm_utils_1 = _c9fc.s('realm-utils');
-const path = _c9fc.s('path');
-const fs = _c9fc.s('fs');
-const fsExtra = _c9fc.s('fs-extra');
-const glob = _c9fc.s('glob');
+const ArithmeticStringParser_1 = _f70e.r(37);
+const Config_1 = _f70e.r(2);
+const realm_utils_1 = _f70e.s('realm-utils');
+const path = _f70e.s('path');
+const fs = _f70e.s('fs');
+const fsExtra = _f70e.s('fs-extra');
+const glob = _f70e.s('glob');
 const deleteFolderRecursive = p => {
     if (fs.existsSync(p)) {
         fs.readdirSync(p).forEach((file, index) => {
@@ -4747,7 +4747,7 @@ class Arithmetic {
 exports.Arithmetic = Arithmetic;
 }
 // default/arithmetic/ArithmeticStringParser.js
-_c9fc.f[37] = function(module,exports){
+_f70e.f[37] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 var STATES;
 (function (STATES) {
@@ -4909,7 +4909,7 @@ class PropParser {
 exports.PropParser = PropParser;
 }
 // default/arithmetic/Fluent.js
-_c9fc.f[38] = function(module,exports){
+_f70e.f[38] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 function strIncludesAnyOf(string, strings, delimiter = false) {
     if (delimiter && typeof strings === 'string' && strings.includes(','))
@@ -5037,13 +5037,13 @@ exports.Fluent = Fluent;
 exports.default = Fluent;
 }
 // default/core/UserOutput.js
-_c9fc.f[39] = function(module,exports){
+_f70e.f[39] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const Utils_1 = _c9fc.r(3);
-const path = _c9fc.s('path');
-const crypto = _c9fc.s('crypto');
-const fs = _c9fc.s('fs');
-const shortHash = _c9fc.s('shorthash');
+const Utils_1 = _f70e.r(3);
+const path = _f70e.s('path');
+const crypto = _f70e.s('crypto');
+const fs = _f70e.s('fs');
+const shortHash = _f70e.s('shorthash');
 class UserOutputResult {
 }
 class UserOutput {
@@ -5122,7 +5122,7 @@ class UserOutput {
     getManifest() {
         let fullpath = this.getPath(`${ this.context.bundle.name }.manifest.json`);
         if (fs.existsSync(fullpath)) {
-            return _c9fc.s(fullpath);
+            return _f70e.s(fullpath);
         }
     }
     writeToOutputFolder(userPath, content, hashAllowed = false) {
@@ -5188,17 +5188,17 @@ class UserOutput {
 exports.UserOutput = UserOutput;
 }
 // default/core/BundleProducer.js
-_c9fc.f[40] = function(module,exports){
+_f70e.f[40] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const Utils_1 = _c9fc.r(3);
-const events_1 = _c9fc.s('events');
-const Arithmetic_1 = _c9fc.r(36);
-const SharedCustomPackage_1 = _c9fc.r(41);
-const BundleRunner_1 = _c9fc.r(42);
-const chokidar = _c9fc.s('chokidar');
-const realm_utils_1 = _c9fc.s('realm-utils');
-const ProducerAbstraction_1 = _c9fc.r(43);
-const BundleAbstraction_1 = _c9fc.r(46);
+const Utils_1 = _f70e.r(3);
+const events_1 = _f70e.s('events');
+const Arithmetic_1 = _f70e.r(36);
+const SharedCustomPackage_1 = _f70e.r(41);
+const BundleRunner_1 = _f70e.r(42);
+const chokidar = _f70e.s('chokidar');
+const realm_utils_1 = _f70e.s('realm-utils');
+const ProducerAbstraction_1 = _f70e.r(43);
+const BundleAbstraction_1 = _f70e.r(46);
 class BundleProducer {
     constructor(fuse) {
         this.fuse = fuse;
@@ -5369,9 +5369,9 @@ class BundleProducer {
 exports.BundleProducer = BundleProducer;
 }
 // default/core/SharedCustomPackage.js
-_c9fc.f[41] = function(module,exports){
+_f70e.f[41] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const path = _c9fc.s('path');
+const path = _f70e.s('path');
 class SharedCustomPackage {
     constructor(name, data) {
         this.name = name;
@@ -5387,9 +5387,9 @@ class SharedCustomPackage {
 exports.SharedCustomPackage = SharedCustomPackage;
 }
 // default/core/BundleRunner.js
-_c9fc.f[42] = function(module,exports){
+_f70e.f[42] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const realm_utils_1 = _c9fc.s('realm-utils');
+const realm_utils_1 = _f70e.s('realm-utils');
 class BundleRunner {
     constructor(fuse) {
         this.fuse = fuse;
@@ -5425,10 +5425,10 @@ class BundleRunner {
 exports.BundleRunner = BundleRunner;
 }
 // default/quantum/core/ProducerAbstraction.js
-_c9fc.f[43] = function(module,exports){
+_f70e.f[43] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const utils_1 = _c9fc.r(44);
-const ProducerWarning_1 = _c9fc.r(45);
+const utils_1 = _f70e.r(44);
+const ProducerWarning_1 = _f70e.r(45);
 class ProducerAbstraction {
     constructor(opts) {
         this.warnings = new Set();
@@ -5471,10 +5471,10 @@ class ProducerAbstraction {
 exports.ProducerAbstraction = ProducerAbstraction;
 }
 // default/quantum/core/utils.js
-_c9fc.f[44] = function(module,exports){
+_f70e.f[44] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const path = _c9fc.s('path');
-const Utils_1 = _c9fc.r(3);
+const path = _f70e.s('path');
+const Utils_1 = _f70e.r(3);
 function generateFileCombinations(input) {
     if (!input || input === '.') {
         return undefined;
@@ -5494,7 +5494,7 @@ function generateFileCombinations(input) {
 exports.generateFileCombinations = generateFileCombinations;
 }
 // default/quantum/core/ProducerWarning.js
-_c9fc.f[45] = function(module,exports){
+_f70e.f[45] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class ProducerWarning {
     constructor(msg) {
@@ -5504,11 +5504,11 @@ class ProducerWarning {
 exports.ProducerWarning = ProducerWarning;
 }
 // default/quantum/core/BundleAbstraction.js
-_c9fc.f[46] = function(module,exports){
+_f70e.f[46] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const PackageAbstraction_1 = _c9fc.r(47);
-const ASTTraverse_1 = _c9fc.r(9);
-const FileAnalysis_1 = _c9fc.r(8);
+const PackageAbstraction_1 = _f70e.r(47);
+const ASTTraverse_1 = _f70e.r(9);
+const FileAnalysis_1 = _f70e.r(8);
 class BundleAbstraction {
     constructor(name) {
         this.name = name;
@@ -5562,10 +5562,10 @@ class BundleAbstraction {
 exports.BundleAbstraction = BundleAbstraction;
 }
 // default/quantum/core/PackageAbstraction.js
-_c9fc.f[47] = function(module,exports){
+_f70e.f[47] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const FileAbstraction_1 = _c9fc.r(48);
-const ASTTraverse_1 = _c9fc.r(9);
+const FileAbstraction_1 = _f70e.r(48);
+const ASTTraverse_1 = _f70e.r(9);
 class PackageAbstraction {
     constructor(name, bundleAbstraction) {
         this.name = name;
@@ -5610,22 +5610,22 @@ class PackageAbstraction {
 exports.PackageAbstraction = PackageAbstraction;
 }
 // default/quantum/core/FileAbstraction.js
-_c9fc.f[48] = function(module,exports){
+_f70e.f[48] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const FileAnalysis_1 = _c9fc.r(8);
-const ASTTraverse_1 = _c9fc.r(9);
-const RequireStatement_1 = _c9fc.r(49);
-const escodegen = _c9fc.s('escodegen');
-const path = _c9fc.s('path');
-const Utils_1 = _c9fc.r(3);
-const AstUtils_1 = _c9fc.r(50);
-const ExportsInterop_1 = _c9fc.r(51);
-const UseStrict_1 = _c9fc.r(53);
-const TypeOfExportsKeyword_1 = _c9fc.r(54);
-const TypeOfModuleKeyword_1 = _c9fc.r(55);
-const NamedExport_1 = _c9fc.r(56);
-const GenericAst_1 = _c9fc.r(52);
-const ReplaceableBlock_1 = _c9fc.r(57);
+const FileAnalysis_1 = _f70e.r(8);
+const ASTTraverse_1 = _f70e.r(9);
+const RequireStatement_1 = _f70e.r(49);
+const escodegen = _f70e.s('escodegen');
+const path = _f70e.s('path');
+const Utils_1 = _f70e.r(3);
+const AstUtils_1 = _f70e.r(50);
+const ExportsInterop_1 = _f70e.r(51);
+const UseStrict_1 = _f70e.r(53);
+const TypeOfExportsKeyword_1 = _f70e.r(54);
+const TypeOfModuleKeyword_1 = _f70e.r(55);
+const NamedExport_1 = _f70e.r(56);
+const GenericAst_1 = _f70e.r(52);
+const ReplaceableBlock_1 = _f70e.r(57);
 const globalNames = new Set([
     '__filename',
     '__dirname',
@@ -6038,11 +6038,11 @@ class FileAbstraction {
 exports.FileAbstraction = FileAbstraction;
 }
 // default/quantum/core/nodes/RequireStatement.js
-_c9fc.f[49] = function(module,exports){
+_f70e.f[49] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const path = _c9fc.s('path');
-const Utils_1 = _c9fc.r(3);
-const FileAnalysis_1 = _c9fc.r(8);
+const path = _f70e.s('path');
+const Utils_1 = _f70e.r(3);
+const FileAnalysis_1 = _f70e.r(8);
 function isString(node) {
     return node.type === 'Literal' || node.type === 'StringLiteral';
 }
@@ -6208,7 +6208,7 @@ class RequireStatement {
 exports.RequireStatement = RequireStatement;
 }
 // default/quantum/core/AstUtils.js
-_c9fc.f[50] = function(module,exports){
+_f70e.f[50] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 function matchesAssignmentExpression(node, part1, part2) {
     if (node.type === 'ExpressionStatement') {
@@ -6584,15 +6584,15 @@ function astQuery(node, args, value) {
 }
 }
 // default/quantum/core/nodes/ExportsInterop.js
-_c9fc.f[51] = function(module,exports){
+_f70e.f[51] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const GenericAst_1 = _c9fc.r(52);
+const GenericAst_1 = _f70e.r(52);
 class ExportsInterop extends GenericAst_1.GenericAst {
 }
 exports.ExportsInterop = ExportsInterop;
 }
 // default/quantum/core/nodes/GenericAst.js
-_c9fc.f[52] = function(module,exports){
+_f70e.f[52] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class GenericAst {
     constructor(ast, astProp, node) {
@@ -6630,33 +6630,33 @@ class GenericAst {
 exports.GenericAst = GenericAst;
 }
 // default/quantum/core/nodes/UseStrict.js
-_c9fc.f[53] = function(module,exports){
+_f70e.f[53] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const GenericAst_1 = _c9fc.r(52);
+const GenericAst_1 = _f70e.r(52);
 class UseStrict extends GenericAst_1.GenericAst {
 }
 exports.UseStrict = UseStrict;
 }
 // default/quantum/core/nodes/TypeOfExportsKeyword.js
-_c9fc.f[54] = function(module,exports){
+_f70e.f[54] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const GenericAst_1 = _c9fc.r(52);
+const GenericAst_1 = _f70e.r(52);
 class TypeOfExportsKeyword extends GenericAst_1.GenericAst {
 }
 exports.TypeOfExportsKeyword = TypeOfExportsKeyword;
 }
 // default/quantum/core/nodes/TypeOfModuleKeyword.js
-_c9fc.f[55] = function(module,exports){
+_f70e.f[55] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const GenericAst_1 = _c9fc.r(52);
+const GenericAst_1 = _f70e.r(52);
 class TypeOfModuleKeyword extends GenericAst_1.GenericAst {
 }
 exports.TypeOfModuleKeyword = TypeOfModuleKeyword;
 }
 // default/quantum/core/nodes/NamedExport.js
-_c9fc.f[56] = function(module,exports){
+_f70e.f[56] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const GenericAst_1 = _c9fc.r(52);
+const GenericAst_1 = _f70e.r(52);
 class NamedExport {
     constructor() {
         this.isUsed = false;
@@ -6674,9 +6674,9 @@ class NamedExport {
 exports.NamedExport = NamedExport;
 }
 // default/quantum/core/nodes/ReplaceableBlock.js
-_c9fc.f[57] = function(module,exports){
+_f70e.f[57] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const GenericAst_1 = _c9fc.r(52);
+const GenericAst_1 = _f70e.r(52);
 class ReplaceableBlock extends GenericAst_1.GenericAst {
     constructor() {
         super(...arguments);
@@ -6776,10 +6776,10 @@ class ReplaceableBlock extends GenericAst_1.GenericAst {
 exports.ReplaceableBlock = ReplaceableBlock;
 }
 // default/core/ExtensionOverrides.js
-_c9fc.f[58] = function(module,exports){
+_f70e.f[58] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const fs = _c9fc.s('fs');
-const path = _c9fc.s('path');
+const fs = _f70e.s('fs');
+const path = _f70e.s('path');
 class ExtensionOverrides {
     constructor(overrides) {
         this.overrides = [];
@@ -6823,13 +6823,13 @@ class ExtensionOverrides {
 exports.ExtensionOverrides = ExtensionOverrides;
 }
 // default/core/TypescriptConfig.js
-_c9fc.f[59] = function(module,exports){
+_f70e.f[59] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const path = _c9fc.s('path');
-const Utils_1 = _c9fc.r(3);
-const File_1 = _c9fc.r(7);
-const fs = _c9fc.s('fs');
-const Config_1 = _c9fc.r(2);
+const path = _f70e.s('path');
+const Utils_1 = _f70e.r(3);
+const File_1 = _f70e.r(7);
+const fs = _f70e.s('fs');
+const Config_1 = _f70e.r(2);
 const CACHED = {};
 class TypescriptConfig {
     constructor(context) {
@@ -6898,7 +6898,7 @@ class TypescriptConfig {
             if (configFile) {
                 this.context.log.echoInfo(`Typescript config file:  ${ configFile.replace(this.context.appRoot, '') }`);
                 configFileFound = true;
-                config = _c9fc.s(configFile);
+                config = _f70e.s(configFile);
             }
             if (Array.isArray(this.customTsConfig)) {
                 tsConfigOverride = this.customTsConfig[0];
@@ -6932,9 +6932,9 @@ class TypescriptConfig {
 exports.TypescriptConfig = TypescriptConfig;
 }
 // default/FuseProcess.js
-_c9fc.f[60] = function(module,exports){
+_f70e.f[60] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const child_process_1 = _c9fc.s('child_process');
+const child_process_1 = _f70e.s('child_process');
 class FuseProcess {
     constructor(bundle) {
         this.bundle = bundle;
@@ -6952,7 +6952,7 @@ class FuseProcess {
         this.exec();
         return this;
     }
-    _c9fc(opts = {}) {
+    _f70e(opts = {}) {
         function getMainExport(mdl) {
             return mdl && mdl.FuseBox && mdl.FuseBox.mainFile ? mdl.FuseBox.import(mdl.FuseBox.mainFile) : mdl;
         }
@@ -6980,7 +6980,7 @@ class FuseProcess {
             closePromise.then(() => {
                 var exps = false;
                 try {
-                    exps = _c9fc.s(this.filePath);
+                    exps = _f70e.s(this.filePath);
                 } catch (x) {
                     reject(x);
                 }
@@ -7003,7 +7003,7 @@ class FuseProcess {
 exports.FuseProcess = FuseProcess;
 }
 // default/plugins/HotReloadPlugin.js
-_c9fc.f[61] = function(module,exports){
+_f70e.f[61] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class HotReloadPluginClass {
     constructor(opts = {}) {
@@ -7033,7 +7033,7 @@ exports.HotReloadPlugin = options => {
 };
 }
 // default/BundleTestRunner.js
-_c9fc.f[62] = function(module,exports){
+_f70e.f[62] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class BundleTestRunner {
     constructor(bundle, opts) {
@@ -7054,9 +7054,9 @@ class BundleTestRunner {
 exports.BundleTestRunner = BundleTestRunner;
 }
 // default/quantum/plugin/QuantumOptions.js
-_c9fc.f[63] = function(module,exports){
+_f70e.f[63] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const Utils_1 = _c9fc.r(3);
+const Utils_1 = _f70e.r(3);
 class QuantumOptions {
     constructor(producer, opts) {
         this.producer = producer;
@@ -7307,7 +7307,7 @@ class QuantumOptions {
 exports.QuantumOptions = QuantumOptions;
 }
 // default/quantum/plugin/ComputerStatementRule.js
-_c9fc.f[64] = function(module,exports){
+_f70e.f[64] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class ComputedStatementRule {
     constructor(path, rules) {
@@ -7318,10 +7318,10 @@ class ComputedStatementRule {
 exports.ComputedStatementRule = ComputedStatementRule;
 }
 // default/quantum/plugin/QuantumPlugin.js
-_c9fc.f[65] = function(module,exports){
+_f70e.f[65] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const QuantumOptions_1 = _c9fc.r(63);
-const QuantumCore_1 = _c9fc.r(66);
+const QuantumOptions_1 = _f70e.r(63);
+const QuantumCore_1 = _f70e.r(66);
 class QuantumPluginClass {
     constructor(coreOpts) {
         if (coreOpts) {
@@ -7376,29 +7376,29 @@ exports.QuantumPlugin = opts => {
 };
 }
 // default/quantum/plugin/QuantumCore.js
-_c9fc.f[66] = function(module,exports){
+_f70e.f[66] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const FlatFileGenerator_1 = _c9fc.r(67);
-const realm_utils_1 = _c9fc.s('realm-utils');
-const StatementModifaction_1 = _c9fc.r(68);
-const EnvironmentConditionModification_1 = _c9fc.r(69);
-const BundleWriter_1 = _c9fc.r(70);
-const InteropModifications_1 = _c9fc.r(72);
-const UseStrictModification_1 = _c9fc.r(73);
-const BundleAbstraction_1 = _c9fc.r(46);
-const PackageAbstraction_1 = _c9fc.r(47);
-const ResponsiveAPI_1 = _c9fc.r(74);
-const TypeOfModifications_1 = _c9fc.r(75);
-const TreeShake_1 = _c9fc.r(76);
-const ProcessEnvModification_1 = _c9fc.r(77);
-const Utils_1 = _c9fc.r(3);
-const ComputerStatementRule_1 = _c9fc.r(64);
-const Bundle_1 = _c9fc.r(28);
-const DynamicImportStatements_1 = _c9fc.r(78);
-const Hoisting_1 = _c9fc.r(80);
-const CSSModifications_1 = _c9fc.r(81);
-const CSSCollection_1 = _c9fc.r(83);
-const QuantumTask_1 = _c9fc.r(84);
+const FlatFileGenerator_1 = _f70e.r(67);
+const realm_utils_1 = _f70e.s('realm-utils');
+const StatementModifaction_1 = _f70e.r(68);
+const EnvironmentConditionModification_1 = _f70e.r(69);
+const BundleWriter_1 = _f70e.r(70);
+const InteropModifications_1 = _f70e.r(72);
+const UseStrictModification_1 = _f70e.r(73);
+const BundleAbstraction_1 = _f70e.r(46);
+const PackageAbstraction_1 = _f70e.r(47);
+const ResponsiveAPI_1 = _f70e.r(74);
+const TypeOfModifications_1 = _f70e.r(75);
+const TreeShake_1 = _f70e.r(76);
+const ProcessEnvModification_1 = _f70e.r(77);
+const Utils_1 = _f70e.r(3);
+const ComputerStatementRule_1 = _f70e.r(64);
+const Bundle_1 = _f70e.r(28);
+const DynamicImportStatements_1 = _f70e.r(78);
+const Hoisting_1 = _f70e.r(80);
+const CSSModifications_1 = _f70e.r(81);
+const CSSCollection_1 = _f70e.r(83);
+const QuantumTask_1 = _f70e.r(84);
 class QuantumCore {
     constructor(producer, opts) {
         this.producer = producer;
@@ -7605,7 +7605,7 @@ class QuantumCore {
 exports.QuantumCore = QuantumCore;
 }
 // default/quantum/plugin/FlatFileGenerator.js
-_c9fc.f[67] = function(module,exports){
+_f70e.f[67] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class FlatFileGenerator {
     constructor(core, bundleAbstraction) {
@@ -7699,9 +7699,9 @@ class FlatFileGenerator {
 exports.FlatFileGenerator = FlatFileGenerator;
 }
 // default/quantum/plugin/modifications/StatementModifaction.js
-_c9fc.f[68] = function(module,exports){
+_f70e.f[68] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const realm_utils_1 = _c9fc.s('realm-utils');
+const realm_utils_1 = _f70e.s('realm-utils');
 class StatementModification {
     static perform(core, file) {
         return realm_utils_1.each(file.requireStatements, statement => {
@@ -7752,9 +7752,9 @@ class StatementModification {
 exports.StatementModification = StatementModification;
 }
 // default/quantum/plugin/modifications/EnvironmentConditionModification.js
-_c9fc.f[69] = function(module,exports){
+_f70e.f[69] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const realm_utils_1 = _c9fc.s('realm-utils');
+const realm_utils_1 = _f70e.s('realm-utils');
 class EnvironmentConditionModification {
     static perform(core, file) {
         return realm_utils_1.each(file.fuseboxIsEnvConditions, replacable => {
@@ -7778,14 +7778,14 @@ class EnvironmentConditionModification {
 exports.EnvironmentConditionModification = EnvironmentConditionModification;
 }
 // default/quantum/plugin/BundleWriter.js
-_c9fc.f[70] = function(module,exports){
+_f70e.f[70] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const realm_utils_1 = _c9fc.s('realm-utils');
-const Bundle_1 = _c9fc.r(28);
-const Utils_1 = _c9fc.r(3);
-const fs = _c9fc.s('fs');
-const File_1 = _c9fc.r(7);
-const CSSOptimizer_1 = _c9fc.r(71);
+const realm_utils_1 = _f70e.s('realm-utils');
+const Bundle_1 = _f70e.r(28);
+const Utils_1 = _f70e.r(3);
+const fs = _f70e.s('fs');
+const File_1 = _f70e.r(7);
+const CSSOptimizer_1 = _f70e.r(71);
 class BundleWriter {
     constructor(core) {
         this.core = core;
@@ -7977,7 +7977,7 @@ class BundleWriter {
 exports.BundleWriter = BundleWriter;
 }
 // default/quantum/plugin/CSSOptimizer.js
-_c9fc.f[71] = function(module,exports){
+_f70e.f[71] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class CSSOptimizer {
     constructor(core) {
@@ -7987,7 +7987,7 @@ class CSSOptimizer {
         let CleanCSS;
         this.core.log.echoInfo('CSS: Using "clean-css" module to optimise CSS');
         try {
-            CleanCSS = _c9fc.s('clean-css');
+            CleanCSS = _f70e.s('clean-css');
         } catch (e) {
             this.core.log.echoWarning('"clean-css" module was not found! RUN: npm install clean-css');
             return;
@@ -8011,9 +8011,9 @@ class CSSOptimizer {
 exports.CSSOptimizer = CSSOptimizer;
 }
 // default/quantum/plugin/modifications/InteropModifications.js
-_c9fc.f[72] = function(module,exports){
+_f70e.f[72] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const realm_utils_1 = _c9fc.s('realm-utils');
+const realm_utils_1 = _f70e.s('realm-utils');
 class InteropModifications {
     static perform(core, file) {
         if (core.opts.shouldRemoveExportsInterop()) {
@@ -8026,9 +8026,9 @@ class InteropModifications {
 exports.InteropModifications = InteropModifications;
 }
 // default/quantum/plugin/modifications/UseStrictModification.js
-_c9fc.f[73] = function(module,exports){
+_f70e.f[73] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const realm_utils_1 = _c9fc.s('realm-utils');
+const realm_utils_1 = _f70e.s('realm-utils');
 class UseStrictModification {
     static perform(core, file) {
         if (core.opts.shouldRemoveUseStrict()) {
@@ -8041,11 +8041,11 @@ class UseStrictModification {
 exports.UseStrictModification = UseStrictModification;
 }
 // default/quantum/plugin/ResponsiveAPI.js
-_c9fc.f[74] = function(module,exports){
+_f70e.f[74] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const path = _c9fc.s('path');
-const Utils_1 = _c9fc.r(3);
-const Config_1 = _c9fc.r(2);
+const path = _f70e.s('path');
+const Utils_1 = _f70e.r(3);
+const Config_1 = _f70e.r(2);
 class ResponsiveAPI {
     constructor(core) {
         this.core = core;
@@ -8171,9 +8171,9 @@ class ResponsiveAPI {
 exports.ResponsiveAPI = ResponsiveAPI;
 }
 // default/quantum/plugin/modifications/TypeOfModifications.js
-_c9fc.f[75] = function(module,exports){
+_f70e.f[75] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const realm_utils_1 = _c9fc.s('realm-utils');
+const realm_utils_1 = _f70e.s('realm-utils');
 class TypeOfModifications {
     static perform(core, file) {
         if (!core.opts.shouldReplaceTypeOf()) {
@@ -8231,9 +8231,9 @@ class TypeOfModifications {
 exports.TypeOfModifications = TypeOfModifications;
 }
 // default/quantum/plugin/TreeShake.js
-_c9fc.f[76] = function(module,exports){
+_f70e.f[76] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const realm_utils_1 = _c9fc.s('realm-utils');
+const realm_utils_1 = _f70e.s('realm-utils');
 class TreeShake {
     constructor(core) {
         this.core = core;
@@ -8324,9 +8324,9 @@ class TreeShake {
 exports.TreeShake = TreeShake;
 }
 // default/quantum/plugin/modifications/ProcessEnvModification.js
-_c9fc.f[77] = function(module,exports){
+_f70e.f[77] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const realm_utils_1 = _c9fc.s('realm-utils');
+const realm_utils_1 = _f70e.s('realm-utils');
 class ProcessEnvModification {
     static perform(core, file) {
         if (core.opts.shouldReplaceProcessEnv()) {
@@ -8343,10 +8343,10 @@ class ProcessEnvModification {
 exports.ProcessEnvModification = ProcessEnvModification;
 }
 // default/quantum/plugin/modifications/DynamicImportStatements.js
-_c9fc.f[78] = function(module,exports){
+_f70e.f[78] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const realm_utils_1 = _c9fc.s('realm-utils');
-const QuantumBit_1 = _c9fc.r(79);
+const realm_utils_1 = _f70e.s('realm-utils');
+const QuantumBit_1 = _f70e.r(79);
 class DynamicImportStatementsModifications {
     static perform(core, file) {
         return realm_utils_1.each(file.dynamicImportStatements, statement => {
@@ -8373,9 +8373,9 @@ class DynamicImportStatementsModifications {
 exports.DynamicImportStatementsModifications = DynamicImportStatementsModifications;
 }
 // default/quantum/plugin/QuantumBit.js
-_c9fc.f[79] = function(module,exports){
+_f70e.f[79] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const Utils_1 = _c9fc.r(3);
+const Utils_1 = _f70e.r(3);
 class QuantumBit {
     constructor(entry, requireStatement) {
         this.entry = entry;
@@ -8555,9 +8555,9 @@ class QuantumBit {
 exports.QuantumBit = QuantumBit;
 }
 // default/quantum/plugin/Hoisting.js
-_c9fc.f[80] = function(module,exports){
+_f70e.f[80] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const realm_utils_1 = _c9fc.s('realm-utils');
+const realm_utils_1 = _f70e.s('realm-utils');
 class Hoisting {
     constructor(core) {
         this.core = core;
@@ -8605,10 +8605,10 @@ class Hoisting {
 exports.Hoisting = Hoisting;
 }
 // default/quantum/plugin/modifications/CSSModifications.js
-_c9fc.f[81] = function(module,exports){
+_f70e.f[81] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const realm_utils_1 = _c9fc.s('realm-utils');
-const CSSFile_1 = _c9fc.r(82);
+const realm_utils_1 = _f70e.s('realm-utils');
+const CSSFile_1 = _f70e.r(82);
 class CSSModifications {
     static async perform(core, file) {
         if (!core.opts.shouldGenerateCSS()) {
@@ -8660,7 +8660,7 @@ class CSSModifications {
 exports.CSSModifications = CSSModifications;
 }
 // default/quantum/core/CSSFile.js
-_c9fc.f[82] = function(module,exports){
+_f70e.f[82] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class CSSFile {
     constructor(name, contents) {
@@ -8671,9 +8671,9 @@ class CSSFile {
 exports.CSSFile = CSSFile;
 }
 // default/quantum/core/CSSCollection.js
-_c9fc.f[83] = function(module,exports){
+_f70e.f[83] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const Utils_1 = _c9fc.r(3);
+const Utils_1 = _f70e.r(3);
 class CSSCollection {
     constructor(core) {
         this.core = core;
@@ -8720,7 +8720,7 @@ class CSSCollection {
 exports.CSSCollection = CSSCollection;
 }
 // default/quantum/core/QuantumTask.js
-_c9fc.f[84] = function(module,exports){
+_f70e.f[84] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class QuantumTask {
     constructor(core) {
@@ -8739,7 +8739,7 @@ class QuantumTask {
 exports.QuantumTask = QuantumTask;
 }
 // default/plugins/ReplacePlugin.js
-_c9fc.f[85] = function(module,exports){
+_f70e.f[85] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class ReplacePluginClass {
     constructor(options = {}) {
@@ -8761,10 +8761,10 @@ exports.ReplacePlugin = options => {
 };
 }
 // default/plugins/VuePlugin.js
-_c9fc.f[86] = function(module,exports){
+_f70e.f[86] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const fs = _c9fc.s('fs');
-const path = _c9fc.s('path');
+const fs = _f70e.s('fs');
+const path = _f70e.s('path');
 let vueCompiler;
 let vueTranspiler;
 let typescriptTranspiler;
@@ -8796,8 +8796,8 @@ class VuePluginClass {
         }
         file.loadContents();
         if (!vueCompiler) {
-            vueCompiler = _c9fc.s('vue-template-compiler');
-            vueTranspiler = _c9fc.s('vue-template-es2015-compiler');
+            vueCompiler = _f70e.s('vue-template-compiler');
+            vueTranspiler = _f70e.s('vue-template-es2015-compiler');
         }
         let result = vueCompiler.parseComponent(file.contents, this.options);
         if (result.template && result.template.type === 'template') {
@@ -8846,7 +8846,7 @@ function compileTemplateContent(context, engine, content) {
         if (!engine) {
             return resolve(content);
         }
-        const cons = _c9fc.s('consolidate');
+        const cons = _f70e.s('consolidate');
         if (!cons[engine]) {
             return content;
         }
@@ -8872,7 +8872,7 @@ function compileScript(file, options, context, html, script, styles) {
 }
 function compileTypeScript(file, options, context, html, script, styles) {
     if (!typescriptTranspiler) {
-        typescriptTranspiler = _c9fc.s('typescript');
+        typescriptTranspiler = _f70e.s('typescript');
     }
     try {
         const jsTranspiled = typescriptTranspiler.transpileModule(script.content, context.tsConfig.getConfig());
@@ -8884,7 +8884,7 @@ function compileTypeScript(file, options, context, html, script, styles) {
 }
 function compileBabel(file, options, context, html, script, styles) {
     if (!babelCore) {
-        babelCore = _c9fc.s('babel-core');
+        babelCore = _f70e.s('babel-core');
         if (options.babel !== undefined) {
             babelConfig = options.babel.config;
         } else {
@@ -8930,16 +8930,16 @@ exports.VuePlugin = options => {
 };
 }
 // default/plugins/vue/VuePlugin.js
-_c9fc.f[87] = function(module,exports){
+_f70e.f[87] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const CSSplugin_1 = _c9fc.r(88);
-const Utils_1 = _c9fc.r(3);
-const VueTemplateFile_1 = _c9fc.r(89);
-const VueStyleFile_1 = _c9fc.r(98);
-const VueScriptFile_1 = _c9fc.r(100);
-const path = _c9fc.s('path');
-const fs = _c9fc.s('fs');
-const realm_utils_1 = _c9fc.s('realm-utils');
+const CSSplugin_1 = _f70e.r(88);
+const Utils_1 = _f70e.r(3);
+const VueTemplateFile_1 = _f70e.r(89);
+const VueStyleFile_1 = _f70e.r(98);
+const VueScriptFile_1 = _f70e.r(100);
+const path = _f70e.s('path');
+const fs = _f70e.s('fs');
+const realm_utils_1 = _f70e.s('realm-utils');
 class VueComponentClass {
     constructor(options) {
         this.test = /\.vue$/;
@@ -9044,7 +9044,7 @@ class VueComponentClass {
     }
     async transform(file) {
         this.hasProcessedVueFile = true;
-        const vueCompiler = _c9fc.s('vue-template-compiler');
+        const vueCompiler = _f70e.s('vue-template-compiler');
         const bundle = file.context.bundle;
         let cacheValid = false;
         if (file.context.useCache && file.loadFromCache()) {
@@ -9180,12 +9180,12 @@ exports.VueComponentPlugin = (options = {}) => {
 };
 }
 // default/plugins/stylesheet/CSSplugin.js
-_c9fc.f[88] = function(module,exports){
+_f70e.f[88] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const path = _c9fc.s('path');
-const File_1 = _c9fc.r(7);
-const realm_utils_1 = _c9fc.s('realm-utils');
-const Utils_1 = _c9fc.r(3);
+const path = _f70e.s('path');
+const File_1 = _f70e.r(7);
+const realm_utils_1 = _f70e.s('realm-utils');
+const Utils_1 = _f70e.r(3);
 const ensureCSSExtension = file => {
     let str = file instanceof File_1.File ? file.info.fuseBoxPath : file;
     const ext = path.extname(str);
@@ -9350,16 +9350,16 @@ exports.CSSPlugin = opts => {
 };
 }
 // default/plugins/vue/VueTemplateFile.js
-_c9fc.f[89] = function(module,exports){
+_f70e.f[89] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const VueBlockFile_1 = _c9fc.r(90);
+const VueBlockFile_1 = _f70e.r(90);
 class VueTemplateFile extends VueBlockFile_1.VueBlockFile {
     toFunction(code) {
-        const vueTranspiler = _c9fc.s('vue-template-es2015-compiler');
+        const vueTranspiler = _f70e.s('vue-template-es2015-compiler');
         return vueTranspiler(`function render () {${ code }}`);
     }
     async process() {
-        const vueCompiler = _c9fc.s('vue-template-compiler');
+        const vueCompiler = _f70e.s('vue-template-compiler');
         this.loadContents();
         return this.pluginChain.reduce((chain, plugin) => {
             return chain.then(() => {
@@ -9382,19 +9382,19 @@ class VueTemplateFile extends VueBlockFile_1.VueBlockFile {
 exports.VueTemplateFile = VueTemplateFile;
 }
 // default/plugins/vue/VueBlockFile.js
-_c9fc.f[90] = function(module,exports){
+_f70e.f[90] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const fs = _c9fc.s('fs');
-const Utils_1 = _c9fc.r(3);
-const File_1 = _c9fc.r(7);
-const CSSplugin_1 = _c9fc.r(88);
-const LESSPlugin_1 = _c9fc.r(91);
-const SassPlugin_1 = _c9fc.r(92);
-const StylusPlugin_1 = _c9fc.r(93);
-const HTMLplugin_1 = _c9fc.r(94);
-const BabelPlugin_1 = _c9fc.r(95);
-const CoffeePlugin_1 = _c9fc.r(96);
-const ConsolidatePlugin_1 = _c9fc.r(97);
+const fs = _f70e.s('fs');
+const Utils_1 = _f70e.r(3);
+const File_1 = _f70e.r(7);
+const CSSplugin_1 = _f70e.r(88);
+const LESSPlugin_1 = _f70e.r(91);
+const SassPlugin_1 = _f70e.r(92);
+const StylusPlugin_1 = _f70e.r(93);
+const HTMLplugin_1 = _f70e.r(94);
+const BabelPlugin_1 = _f70e.r(95);
+const CoffeePlugin_1 = _f70e.r(96);
+const ConsolidatePlugin_1 = _f70e.r(97);
 const PLUGIN_LANG_MAP = new Map().set('css', new CSSplugin_1.CSSPluginClass()).set('less', new LESSPlugin_1.LESSPluginClass()).set('scss', new SassPlugin_1.SassPluginClass({ importer: true })).set('styl', new StylusPlugin_1.StylusPluginClass()).set('html', new HTMLplugin_1.FuseBoxHTMLPlugin()).set('js', new BabelPlugin_1.BabelPluginClass()).set('ts', null).set('coffee', new CoffeePlugin_1.CoffeePluginClass());
 class VueBlockFile extends File_1.File {
     constructor(file, info, block, scopeId, pluginChain) {
@@ -9464,9 +9464,9 @@ class VueBlockFile extends File_1.File {
 exports.VueBlockFile = VueBlockFile;
 }
 // default/plugins/stylesheet/LESSPlugin.js
-_c9fc.f[91] = function(module,exports){
+_f70e.f[91] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const path = _c9fc.s('path');
+const path = _f70e.s('path');
 let less;
 class LESSPluginClass {
     constructor(options = {}) {
@@ -9489,7 +9489,7 @@ class LESSPluginClass {
             sourceMapRootpath: file.info.absDir
         };
         if (!less) {
-            less = _c9fc.s('less');
+            less = _f70e.s('less');
         }
         options.filename = options.filename ? path.join(file.context.homeDir, options.filename) : file.info.absPath;
         if ('sourceMapConfig' in context) {
@@ -9536,10 +9536,10 @@ exports.LESSPlugin = opts => {
 };
 }
 // default/plugins/stylesheet/SassPlugin.js
-_c9fc.f[92] = function(module,exports){
+_f70e.f[92] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const path = _c9fc.s('path');
-const Config_1 = _c9fc.r(2);
+const path = _f70e.s('path');
+const Config_1 = _f70e.r(2);
 let sass;
 class SassPluginClass {
     constructor(options = {}) {
@@ -9563,7 +9563,7 @@ class SassPluginClass {
             return;
         }
         if (!sass) {
-            sass = _c9fc.s('node-sass');
+            sass = _f70e.s('node-sass');
         }
         const defaultMacro = {
             '$homeDir': file.context.homeDir,
@@ -9639,7 +9639,7 @@ exports.SassPlugin = options => {
 };
 }
 // default/plugins/stylesheet/StylusPlugin.js
-_c9fc.f[93] = function(module,exports){
+_f70e.f[93] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 let stylus;
 class StylusPluginClass {
@@ -9664,7 +9664,7 @@ class StylusPluginClass {
         };
         file.loadContents();
         if (!stylus)
-            stylus = _c9fc.s('stylus');
+            stylus = _f70e.s('stylus');
         options.filename = file.info.fuseBoxPath;
         if (!options.paths) {
             options.paths = [];
@@ -9711,7 +9711,7 @@ exports.StylusPlugin = options => {
 };
 }
 // default/plugins/HTMLplugin.js
-_c9fc.f[94] = function(module,exports){
+_f70e.f[94] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class FuseBoxHTMLPlugin {
     constructor(opts = {}) {
@@ -9753,11 +9753,11 @@ exports.HTMLPlugin = options => {
 };
 }
 // default/plugins/js-transpilers/BabelPlugin.js
-_c9fc.f[95] = function(module,exports){
+_f70e.f[95] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const fs = _c9fc.s('fs');
-const path = _c9fc.s('path');
-const Utils_1 = _c9fc.r(3);
+const fs = _f70e.s('fs');
+const path = _f70e.s('path');
+const Utils_1 = _f70e.r(3);
 let babelCore;
 class BabelPluginClass {
     constructor(opts = {}) {
@@ -9813,7 +9813,7 @@ class BabelPluginClass {
     transform(file, ast) {
         file.wasTranspiled = true;
         if (!babelCore) {
-            babelCore = _c9fc.s('babel-core');
+            babelCore = _f70e.s('babel-core');
         }
         if (this.configPrinted === false && this.context.doLog === true) {
             file.context.debug('BabelPlugin', `\n\tConfiguration: ${ JSON.stringify(this.config) }`);
@@ -9866,7 +9866,7 @@ exports.BabelPlugin = (opts = {}) => {
 };
 }
 // default/plugins/js-transpilers/CoffeePlugin.js
-_c9fc.f[96] = function(module,exports){
+_f70e.f[96] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 let coffee;
 class CoffeePluginClass {
@@ -9888,7 +9888,7 @@ class CoffeePluginClass {
     transform(file) {
         file.loadContents();
         if (!coffee) {
-            coffee = _c9fc.s('coffee-script');
+            coffee = _f70e.s('coffeescript');
         }
         return new Promise((res, rej) => {
             try {
@@ -9907,7 +9907,7 @@ exports.CoffeePlugin = options => {
 };
 }
 // default/plugins/ConsolidatePlugin.js
-_c9fc.f[97] = function(module,exports){
+_f70e.f[97] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class ConsolidatePluginClass {
     constructor(options) {
@@ -9924,7 +9924,7 @@ class ConsolidatePluginClass {
         context.allowExtension(this.extension);
     }
     async transform(file) {
-        const consolidate = _c9fc.s('consolidate');
+        const consolidate = _f70e.s('consolidate');
         if (file.context.useCache) {
             const cached = file.context.cache.getStaticCache(file);
             if (cached) {
@@ -9967,11 +9967,11 @@ exports.ConsolidatePlugin = options => {
 };
 }
 // default/plugins/vue/VueStyleFile.js
-_c9fc.f[98] = function(module,exports){
+_f70e.f[98] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const VueBlockFile_1 = _c9fc.r(90);
-const CSSplugin_1 = _c9fc.r(88);
-const PostCSSPlugins_1 = _c9fc.r(99);
+const VueBlockFile_1 = _f70e.r(90);
+const CSSplugin_1 = _f70e.r(88);
+const PostCSSPlugins_1 = _f70e.r(99);
 class VueStyleFile extends VueBlockFile_1.VueBlockFile {
     fixSourceMapName() {
         if (this.context.useSourceMaps && this.sourceMap) {
@@ -9985,7 +9985,7 @@ class VueStyleFile extends VueBlockFile_1.VueBlockFile {
         }
     }
     async applyScopeIdToStyles(scopeId) {
-        const postcss = _c9fc.s('postcss');
+        const postcss = _f70e.s('postcss');
         const plugins = [
             PostCSSPlugins_1.TrimPlugin(),
             PostCSSPlugins_1.AddScopeIdPlugin({ id: scopeId })
@@ -10023,11 +10023,11 @@ class VueStyleFile extends VueBlockFile_1.VueBlockFile {
 exports.VueStyleFile = VueStyleFile;
 }
 // default/plugins/vue/PostCSSPlugins.js
-_c9fc.f[99] = function(module,exports){
+_f70e.f[99] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const postcss = _c9fc.s('postcss');
+const postcss = _f70e.s('postcss');
 exports.AddScopeIdPlugin = postcss.plugin('add-scope-id', function (opts) {
-    const selectorParser = _c9fc.s('postcss-selector-parser');
+    const selectorParser = _f70e.s('postcss-selector-parser');
     return function (root) {
         const keyframes = Object.create(null);
         root.each(function rewriteSelector(node) {
@@ -10097,12 +10097,12 @@ exports.TrimPlugin = postcss.plugin('trim', function (opts) {
 });
 }
 // default/plugins/vue/VueScriptFile.js
-_c9fc.f[100] = function(module,exports){
+_f70e.f[100] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const VueBlockFile_1 = _c9fc.r(90);
+const VueBlockFile_1 = _f70e.r(90);
 class VueScriptFile extends VueBlockFile_1.VueBlockFile {
     async process() {
-        const typescriptTranspiler = _c9fc.s('typescript');
+        const typescriptTranspiler = _f70e.s('typescript');
         this.loadContents();
         if (this.pluginChain.length > 1) {
             const message = 'VueComponentClass - only one script transpiler can be used in the plugin chain';
@@ -10128,11 +10128,11 @@ class VueScriptFile extends VueBlockFile_1.VueBlockFile {
 exports.VueScriptFile = VueScriptFile;
 }
 // default/plugins/images/ImageBase64Plugin.js
-_c9fc.f[101] = function(module,exports){
+_f70e.f[101] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const path = _c9fc.s('path');
-const SVG2Base64_1 = _c9fc.r(102);
-const base64Img = _c9fc.s('base64-img');
+const path = _f70e.s('path');
+const SVG2Base64_1 = _f70e.r(102);
+const base64Img = _f70e.s('base64-img');
 class ImageBase64PluginClass {
     constructor(opts) {
         this.test = /\.(gif|png|jpg|jpeg|svg)$/i;
@@ -10177,7 +10177,7 @@ exports.ImageBase64Plugin = opts => {
 };
 }
 // default/lib/SVG2Base64.js
-_c9fc.f[102] = function(module,exports){
+_f70e.f[102] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class SVG2Base64 {
     static get(content) {
@@ -10192,15 +10192,15 @@ class SVG2Base64 {
 exports.SVG2Base64 = SVG2Base64;
 }
 // default/plugins/stylesheet/CSSResourcePlugin.js
-_c9fc.f[103] = function(module,exports){
+_f70e.f[103] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const Utils_1 = _c9fc.r(3);
-const path = _c9fc.s('path');
-const realm_utils_1 = _c9fc.s('realm-utils');
-const fs = _c9fc.s('fs');
-const SVG2Base64_1 = _c9fc.r(102);
-const CSSUrlParser_1 = _c9fc.r(104);
-const base64Img = _c9fc.s('base64-img');
+const Utils_1 = _f70e.r(3);
+const path = _f70e.s('path');
+const realm_utils_1 = _f70e.s('realm-utils');
+const fs = _f70e.s('fs');
+const SVG2Base64_1 = _f70e.r(102);
+const CSSUrlParser_1 = _f70e.r(104);
+const base64Img = _f70e.s('base64-img');
 const IMG_CACHE = {};
 let resourceFolderChecked = false;
 const copyFile = (source, target) => {
@@ -10358,7 +10358,7 @@ exports.CSSResourcePlugin = options => {
 };
 }
 // default/lib/CSSUrlParser.js
-_c9fc.f[104] = function(module,exports){
+_f70e.f[104] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class CSSUrlParser {
     constructor() {
@@ -10396,7 +10396,7 @@ class CSSUrlParser {
 exports.CSSUrlParser = CSSUrlParser;
 }
 // default/plugins/EnvPlugin.js
-_c9fc.f[105] = function(module,exports){
+_f70e.f[105] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class EnvPluginClass {
     constructor(env) {
@@ -10421,7 +10421,7 @@ exports.EnvPlugin = options => {
 };
 }
 // default/plugins/ConcatPlugin.js
-_c9fc.f[106] = function(module,exports){
+_f70e.f[106] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class ConcatPluginClass {
     constructor(opts = {}) {
@@ -10467,7 +10467,7 @@ exports.ConcatPlugin = options => {
 };
 }
 // default/plugins/stylesheet/PostCSSPlugin.js
-_c9fc.f[107] = function(module,exports){
+_f70e.f[107] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 let postcss;
 class PostCSSPluginClass {
@@ -10506,7 +10506,7 @@ class PostCSSPluginClass {
         });
         file.cssDependencies = cssDependencies;
         if (!postcss) {
-            postcss = _c9fc.s('postcss');
+            postcss = _f70e.s('postcss');
         }
         postCssOptions.map = file.context.useSourceMaps ? { inline: false } : false;
         let fromFile = file.getCorrectSourceMapPath();
@@ -10551,7 +10551,7 @@ function extractPlugins(opts) {
 }
 }
 // default/plugins/images/SVGPlugin.js
-_c9fc.f[108] = function(module,exports){
+_f70e.f[108] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class SVGSimplePlugin {
     constructor() {
@@ -10578,7 +10578,7 @@ exports.SVGPlugin = () => {
 };
 }
 // default/plugins/js-transpilers/BublePlugin.js
-_c9fc.f[109] = function(module,exports){
+_f70e.f[109] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 let bubleCore;
 class BublePluginClass {
@@ -10598,7 +10598,7 @@ class BublePluginClass {
     }
     transform(file, ast) {
         if (!bubleCore) {
-            bubleCore = _c9fc.s('buble');
+            bubleCore = _f70e.s('buble');
         }
         if (this.configPrinted === false && this.context.doLog === true) {
             file.context.debug('BublePlugin', `\n\tConfiguration: ${ JSON.stringify(this.config) }`);
@@ -10644,7 +10644,7 @@ exports.BublePlugin = opts => {
 };
 }
 // default/plugins/Markdownplugin.js
-_c9fc.f[110] = function(module,exports){
+_f70e.f[110] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 let marked;
 class FuseBoxMarkdownPlugin {
@@ -10680,7 +10680,7 @@ class FuseBoxMarkdownPlugin {
         }
         file.loadContents();
         if (!marked) {
-            marked = _c9fc.s('marked');
+            marked = _f70e.s('marked');
         }
         if (this.options.renderer) {
             this.options.renderer = new marked.Renderer();
@@ -10704,7 +10704,7 @@ exports.MarkdownPlugin = options => {
 };
 }
 // default/plugins/BannerPlugin.js
-_c9fc.f[111] = function(module,exports){
+_f70e.f[111] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class BannerPluginClass {
     constructor(banner) {
@@ -10720,16 +10720,16 @@ exports.BannerPlugin = banner => {
 };
 }
 // default/plugins/UglifyESPlugin.js
-_c9fc.f[112] = function(module,exports){
+_f70e.f[112] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const BundleSource_1 = _c9fc.r(6);
+const BundleSource_1 = _f70e.r(6);
 class UglifyESPluginClass {
     constructor(options = {}) {
         this.options = options;
     }
     postBundle(context) {
         const mainOptions = {};
-        const UglifyES = _c9fc.s('uglify-es');
+        const UglifyES = _f70e.s('uglify-es');
         const concat = context.source.getResult();
         const source = concat.content.toString();
         const sourceMap = concat.sourceMap;
@@ -10758,16 +10758,16 @@ exports.UglifyESPlugin = options => {
 };
 }
 // default/plugins/UglifyJSPlugin.js
-_c9fc.f[113] = function(module,exports){
+_f70e.f[113] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const BundleSource_1 = _c9fc.r(6);
+const BundleSource_1 = _f70e.r(6);
 class UglifyJSPluginClass {
     constructor(options = {}) {
         this.options = options;
     }
     postBundle(context) {
         const mainOptions = {};
-        const UglifyJs = _c9fc.s('uglify-js');
+        const UglifyJs = _f70e.s('uglify-js');
         if (UglifyJs.mangle_properties !== undefined) {
             mainOptions.fromString = true;
         }
@@ -10811,10 +10811,10 @@ exports.UglifyJSPlugin = options => {
 };
 }
 // default/plugins/SourceMapPlainJsPlugin.js
-_c9fc.f[114] = function(module,exports){
+_f70e.f[114] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const acorn = _c9fc.s('acorn');
-const SourceMap = _c9fc.s('source-map');
+const acorn = _f70e.s('acorn');
+const SourceMap = _f70e.s('source-map');
 class SourceMapPlainJsPluginClass {
     constructor(options = {}) {
         this.test = /\.js$/;
@@ -10879,10 +10879,10 @@ exports.SourceMapPlainJsPlugin = options => {
 };
 }
 // default/plugins/RawPlugin.js
-_c9fc.f[115] = function(module,exports){
+_f70e.f[115] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const realm_utils_1 = _c9fc.s('realm-utils');
-const Utils_1 = _c9fc.r(3);
+const realm_utils_1 = _f70e.s('realm-utils');
+const Utils_1 = _f70e.r(3);
 class RawPluginClass {
     constructor(options = []) {
         this.test = /.*/;
@@ -10938,7 +10938,7 @@ exports.RawPlugin = options => {
 };
 }
 // default/plugins/OptimizeJSPlugin.js
-_c9fc.f[116] = function(module,exports){
+_f70e.f[116] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class OptimizeJSClass {
     constructor(opts) {
@@ -10954,7 +10954,7 @@ class OptimizeJSClass {
         this.context = context;
     }
     transform(file, ast) {
-        const optimizeJs = _c9fc.s('optimize-js');
+        const optimizeJs = _f70e.s('optimize-js');
         let output;
         try {
             output = optimizeJs(file.contents, this.opts);
@@ -10972,15 +10972,15 @@ class OptimizeJSClass {
 exports.OptimizeJSPlugin = OptimizeJSClass.init;
 }
 // default/sparky/Sparky.js
-_c9fc.f[117] = function(module,exports){
+_f70e.f[117] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const SparkTask_1 = _c9fc.r(118);
-const SparkFlow_1 = _c9fc.r(119);
-const realm_utils_1 = _c9fc.s('realm-utils');
-const WorkflowContext_1 = _c9fc.r(5);
-const Log_1 = _c9fc.r(4);
-const SparkyContext_1 = _c9fc.r(122);
-const FuseBox_1 = _c9fc.r(29);
+const SparkTask_1 = _f70e.r(118);
+const SparkFlow_1 = _f70e.r(119);
+const realm_utils_1 = _f70e.s('realm-utils');
+const WorkflowContext_1 = _f70e.r(5);
+const Log_1 = _f70e.r(4);
+const SparkyContext_1 = _f70e.r(122);
+const FuseBox_1 = _f70e.r(29);
 const context = new WorkflowContext_1.WorkFlowContext();
 context.doLog = process.env.SPARKY_LOG !== 'false';
 exports.log = new Log_1.Log(context);
@@ -11088,7 +11088,7 @@ Sparky.tasks = new Map();
 exports.Sparky = Sparky;
 }
 // default/sparky/SparkTask.js
-_c9fc.f[118] = function(module,exports){
+_f70e.f[118] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class SparkTask {
     constructor(name, dependencies, fn) {
@@ -11109,17 +11109,17 @@ class SparkTask {
 exports.SparkTask = SparkTask;
 }
 // default/sparky/SparkFlow.js
-_c9fc.f[119] = function(module,exports){
+_f70e.f[119] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const glob = _c9fc.s('glob');
-const fs = _c9fc.s('fs-extra');
-const chokidar = _c9fc.s('chokidar');
-const path = _c9fc.s('path');
-const realm_utils_1 = _c9fc.s('realm-utils');
-const Utils_1 = _c9fc.r(3);
-const SparkyFile_1 = _c9fc.r(120);
-const Sparky_1 = _c9fc.r(117);
-const SparkyFilePattern_1 = _c9fc.r(121);
+const glob = _f70e.s('glob');
+const fs = _f70e.s('fs-extra');
+const chokidar = _f70e.s('chokidar');
+const path = _f70e.s('path');
+const realm_utils_1 = _f70e.s('realm-utils');
+const Utils_1 = _f70e.r(3);
+const SparkyFile_1 = _f70e.r(120);
+const Sparky_1 = _f70e.r(117);
+const SparkyFilePattern_1 = _f70e.r(121);
 class SparkFlow {
     constructor() {
         this.activities = [];
@@ -11260,13 +11260,13 @@ class SparkFlow {
 exports.SparkFlow = SparkFlow;
 }
 // default/sparky/SparkyFile.js
-_c9fc.f[120] = function(module,exports){
+_f70e.f[120] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const fs = _c9fc.s('fs-extra');
-const path = _c9fc.s('path');
-const Mustache = _c9fc.s('mustache');
-const Utils_1 = _c9fc.r(3);
-const Config_1 = _c9fc.r(2);
+const fs = _f70e.s('fs-extra');
+const path = _f70e.s('path');
+const Mustache = _f70e.s('mustache');
+const Utils_1 = _f70e.r(3);
+const Config_1 = _f70e.r(2);
 class SparkyFile {
     constructor(filepath, root) {
         this.savingRequired = false;
@@ -11369,10 +11369,10 @@ class SparkyFile {
 exports.SparkyFile = SparkyFile;
 }
 // default/sparky/SparkyFilePattern.js
-_c9fc.f[121] = function(module,exports){
+_f70e.f[121] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const path = _c9fc.s('path');
-const Config_1 = _c9fc.r(2);
+const path = _f70e.s('path');
+const Config_1 = _f70e.r(2);
 function parse(str, opts) {
     const base = opts ? opts.base || '' : '';
     const isGlob = /[*{}}]/.test(str);
@@ -11400,10 +11400,10 @@ function parse(str, opts) {
 exports.parse = parse;
 }
 // default/sparky/SparkyContext.js
-_c9fc.f[122] = function(module,exports){
+_f70e.f[122] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const realm_utils_1 = _c9fc.s('realm-utils');
-const Utils_1 = _c9fc.r(3);
+const realm_utils_1 = _f70e.s('realm-utils');
+const Utils_1 = _f70e.r(3);
 class SparkyContextClass {
     constructor(target) {
         this.target = target;
@@ -11430,10 +11430,10 @@ function SparkyContext(target) {
 exports.SparkyContext = SparkyContext;
 }
 // default/cli/Cli.js
-_c9fc.f[123] = function(module,exports){
+_f70e.f[123] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const yargs = _c9fc.s('yargs');
-const Sparky_1 = _c9fc.r(117);
+const yargs = _f70e.s('yargs');
+const Sparky_1 = _f70e.r(117);
 ;
 ;
 class FuseBoxCLI {
@@ -11568,9 +11568,9 @@ function CLI(settings) {
 exports.CLI = CLI;
 }
 // default/plugins/stylesheet/CSSModules.js
-_c9fc.f[124] = function(module,exports){
+_f70e.f[124] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const postcss = _c9fc.s('postcss');
+const postcss = _f70e.s('postcss');
 class CSSModulesClass {
     constructor(options = {}) {
         this.test = /\.css$/;
@@ -11605,7 +11605,7 @@ class CSSModulesClass {
                 extensions: ['css']
             });
             file.cssDependencies = cssDependencies;
-            return postcss([_c9fc.s('postcss-modules')({
+            return postcss([_f70e.s('postcss-modules')({
                     root: this.options.root || file.info.absDir,
                     getJSON: (cssFileName, json) => {
                         let exportsKey = this.useDefault ? 'module.exports.default' : 'module.exports';
@@ -11634,12 +11634,12 @@ exports.CSSModules = options => {
 };
 }
 // default/plugins/CopyPlugin.js
-_c9fc.f[125] = function(module,exports){
+_f70e.f[125] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const realm_utils_1 = _c9fc.s('realm-utils');
-const Utils_1 = _c9fc.r(3);
-const fs = _c9fc.s('fs-extra');
-const path = _c9fc.s('path');
+const realm_utils_1 = _f70e.s('realm-utils');
+const Utils_1 = _f70e.r(3);
+const fs = _f70e.s('fs-extra');
+const path = _f70e.s('path');
 class CopyPluginClass {
     constructor(options = {}) {
         this.options = options;
@@ -11700,11 +11700,11 @@ exports.CopyPlugin = options => {
 };
 }
 // default/plugins/WebIndexPlugin.js
-_c9fc.f[126] = function(module,exports){
+_f70e.f[126] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const fs = _c9fc.s('fs');
-const Utils_1 = _c9fc.r(3);
-const path = _c9fc.s('path');
+const fs = _f70e.s('fs');
+const Utils_1 = _f70e.r(3);
+const path = _f70e.s('path');
 class WebIndexPluginClass {
     constructor(opts) {
         this.opts = opts;
@@ -11798,7 +11798,7 @@ exports.WebIndexPlugin = opts => {
 };
 }
 // default/plugins/PlainJSPlugin.js
-_c9fc.f[127] = function(module,exports){
+_f70e.f[127] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
 class PlainJSPluginClass {
     constructor() {
@@ -11823,11 +11823,11 @@ exports.PlainJSPlugin = () => {
 };
 }
 // default/sparky/index.js
-_c9fc.f[128] = function(module,exports){
+_f70e.f[128] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const Sparky_1 = _c9fc.r(117);
-const SparkyContext_1 = _c9fc.r(122);
-var SparkyUtils_1 = _c9fc.r(129);
+const Sparky_1 = _f70e.r(117);
+const SparkyContext_1 = _f70e.r(122);
+var SparkyUtils_1 = _f70e.r(129);
 exports.npmPublish = SparkyUtils_1.npmPublish;
 exports.tsc = SparkyUtils_1.tsc;
 exports.bumpVersion = SparkyUtils_1.bumpVersion;
@@ -11840,11 +11840,11 @@ exports.init = Sparky_1.Sparky.init.bind(Sparky_1.Sparky);
 exports.fuse = Sparky_1.Sparky.fuse.bind(Sparky_1.Sparky);
 }
 // default/sparky/SparkyUtils.js
-_c9fc.f[129] = function(module,exports){
+_f70e.f[129] = function(module,exports){
 Object.defineProperty(exports, '__esModule', { value: true });
-const child_process_1 = _c9fc.s('child_process');
-const fs = _c9fc.s('fs');
-const Utils_1 = _c9fc.r(3);
+const child_process_1 = _f70e.s('child_process');
+const fs = _f70e.s('fs');
+const Utils_1 = _f70e.r(3);
 async function tsc(root, opts) {
     let tscOptions = [];
     root = Utils_1.ensureAbsolutePath(root);
@@ -11947,4 +11947,4 @@ function bumpVersion(packageJSONPath, opts) {
 }
 exports.bumpVersion = bumpVersion;
 }
-module.exports = _c9fc.r(0)
+module.exports = _f70e.r(0)

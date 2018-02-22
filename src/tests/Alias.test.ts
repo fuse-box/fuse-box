@@ -50,7 +50,7 @@ export class AliasTest {
                     "moose/eh/igloo.js": "export default { result: 'igloo'}",
                 },
                 instructions: "index.js",
-                plugins: [BabelPlugin({ config: { "presets": ["latest"] } })],
+                plugins: [BabelPlugin({ config: { "env": ["latest"] } })],
             },
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
@@ -69,7 +69,7 @@ export class AliasTest {
                     "moose/eh/igloo2.js": "export default { result: 'igloo'}",
                 },
                 instructions: "> index.js",
-                plugins: [BabelPlugin({ config: { "presets": ["latest"] } })],
+                plugins: [BabelPlugin({ config: { "env": ["latest"] } })],
             },
         }).then((result) => {
             const out = result.project.FuseBox.import("./index");
