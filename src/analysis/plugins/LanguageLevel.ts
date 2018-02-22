@@ -10,6 +10,8 @@ export class LanguageLevel {
             file.setLanguageLevel(ScriptTarget.ES2015);
         } else if (node.type === "ArrowFunctionExpression") {
             file.setLanguageLevel(ScriptTarget.ES2015);
+        } else if (node.type === "TemplateLiteral") {
+            file.setLanguageLevel(ScriptTarget.ES2015);
         }
     }
     public static onEnd(file: File) {
