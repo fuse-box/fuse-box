@@ -332,7 +332,7 @@ gulp.task("installDevDeps", function(done) {
     var deps = [
         "babel-core",
         "babel-generator",
-        "babel-preset-latest",
+        "babel-preset-env",
         "babel-plugin-transform-es2015-modules-commonjs",
         "babylon",
         "cheerio",
@@ -346,7 +346,7 @@ gulp.task("installDevDeps", function(done) {
         "uglify-js",
         "uglify-es",
         "source-map@0.5.7",
-        "coffee-script",
+        "coffeescript",
         "@types/node",
         "vue-template-compiler",
         "vue-template-es2015-compiler",
