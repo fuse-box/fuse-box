@@ -81,7 +81,7 @@ export class PostCSSPluginClass implements Plugin {
             fromFile = fromFile.slice(1)
         }
         postCssOptions.from = postCssOptions.from || file.info.absPath;
-        postCssOptions.to = fromFile
+        postCssOptions.to = postCssOptions.to || fromFile;
         return postcss(this.processors)
             .process(file.contents, postCssOptions)
             .then(result => {
