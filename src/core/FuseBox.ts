@@ -59,6 +59,7 @@ export interface FuseBoxOptions {
     files?: any;
     alias?: any;
     useJsNext?: boolean | string[],
+    stdin?: boolean,
     ensureTsConfig? : boolean;
     runAllMatchedPlugins?: boolean;
     showErrors?: boolean
@@ -261,6 +262,11 @@ export class FuseBox {
         const tsConfig = new TypescriptConfig(this.context);;
         tsConfig.setConfigFile(opts.tsConfig);
         this.context.tsConfig = tsConfig;
+
+        if( opts.stdin){
+            process.stdin.on('end', () => { process.exit(0) });
+            process.stdin.resume();
+        }
     }
 
     public triggerPre() {
