@@ -68,6 +68,12 @@ Will be converted accordingly to:
 
 However it is strongly recommended to use `$name` in your output template, as `out.js` will be ignored
 
+## stdin
+
+Listens to stdin.
+
+Combinations like `CMD+D` will gracefully shut down any process.
+
 ## Cache
 
 You can turn off caching if you like. By default caching is on. FuseBox will create a folder `.fusebox` in your project path, and store related files. Don't forget to add it to .gitignore.
