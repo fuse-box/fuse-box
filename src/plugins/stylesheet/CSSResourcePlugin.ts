@@ -20,6 +20,7 @@ const copyFile = (source, target) => {
             rd.on("error", (err) => {
                 return reject(err);
             });
+            ensureDir(path.dirname(target));
             let wr = fs.createWriteStream(target);
             wr.on("error", (err) => {
                 return reject(err);
@@ -61,6 +62,7 @@ export interface CSSResourcePluginOptions {
     resolve?: (path: string) => any;
     macros?: any;
     resolveMissing?: any,
+    useOriginalFilenames?: boolean
 }
 
 /**
@@ -75,6 +77,7 @@ export class CSSResourcePluginClass implements Plugin {
     public inlineImages: boolean;
     public macros: any;
     public resolveMissingFn: any;
+    public useOriginalFilenames: boolean = false;
     constructor(opts: CSSResourcePluginOptions = {}) {
         if (opts.dist) {
             this.distFolder = ensureDir(opts.dist);
@@ -91,6 +94,9 @@ export class CSSResourcePluginClass implements Plugin {
         if (utils.isFunction(opts.resolveMissing)) {
             this.resolveMissingFn = opts.resolveMissing;
         }
+        if (opts.useOriginalFilenames) {
+            this.useOriginalFilenames = opts.useOriginalFilenames;
+        }
     }
 
     public init(context: WorkFlowContext) {
@@ -99,7 +105,7 @@ export class CSSResourcePluginClass implements Plugin {
 
     public resolveFn = (p) => path.join("/css-resources", p)
 
-    public createResouceFolder(file: File) {
+    public createResourceFolder(file: File) {
         if (resourceFolderChecked === false) {
 
             resourceFolderChecked = true;
@@ -115,7 +121,7 @@ export class CSSResourcePluginClass implements Plugin {
         file.addStringDependency("fuse-box-css");
         file.loadContents();
         if (this.distFolder) {
-            this.createResouceFolder(file);
+            this.createResourceFolder(file);
         }
 
         const currentFolder = file.info.absDir;
@@ -182,7 +188,8 @@ export class CSSResourcePluginClass implements Plugin {
 
             // copy files
             if (this.distFolder) {
-                let newFileName = generateNewFileName(urlFile);
+                let newFileName = this.useOriginalFilenames ? path.relative(file.context.homeDir, urlFile) : generateNewFileName(urlFile);
+
                 if (!files[urlFile]) {
                     let newPath = path.join(this.distFolder, newFileName);
                     tasks.push(copyFile(urlFile, newPath));

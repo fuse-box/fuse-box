@@ -1,7 +1,7 @@
 # CSS Resource Plugin
 
 ## Description
-This program is designed to make it easy to import a css library from an npm package.
+This program is designed to make it easy to import a css library from an npm package.  It can also be used to bring assets spread around your project folder into a single directory when building.
 
 ## Usage
 note: The CSSResource plugin generates CSS, Therefor it must be chained prior to the CSSPlugin to be used.
@@ -111,3 +111,7 @@ body {
     background: url("$static/logo.png");
 }
 ```
+
+## useOriginalFilenames
+
+By default the plugin will generate unique file names for resources which take the form of random numbers.  If you set `useOriginalFilenames` the the original path and filename of the resource will be used instead.  This is useful when developing.
