@@ -4,6 +4,7 @@ import { ensureUserPath, findFileBackwards } from "../Utils";
 import { ScriptTarget } from "./File";
 import * as fs from "fs";
 import { Config } from "../Config";
+import * as json from 'comment-json';
 
 const CACHED: { [path: string]: any } = {};
 
@@ -86,7 +87,7 @@ export class TypescriptConfig {
             if (configFile) {
                 this.context.log.echoInfo(`Typescript config file:  ${configFile.replace(this.context.appRoot, "")}`);
                 configFileFound = true;
-                config = require(configFile);
+                config = json.parse(fs.readFileSync(configFile).toString());
             }
 
 

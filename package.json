@@ -30,6 +30,7 @@
   },
   "homepage": "https://github.com/fuse-box/fuse-box#readme",
   "devDependencies": {
+    "@types/comment-json": "^1.1.1",
     "@types/node": "^6.0.74",
     "cheerio": "^0.22.0",
     "commitizen": "^2.9.6",
@@ -75,6 +76,7 @@
     "base64-js": "^1.2.0",
     "chokidar": "^1.6.1",
     "clean-css": "^4.1.9",
+    "comment-json": "^1.1.3",
     "escodegen": "^1.8.1",
     "express": "^4.14.0",
     "fliplog": "^0.3.13",
