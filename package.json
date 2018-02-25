@@ -30,6 +30,7 @@
   },
   "homepage": "https://github.com/fuse-box/fuse-box#readme",
   "devDependencies": {
+    "@types/comment-json": "^1.1.1",
     "@types/node": "^6.0.74",
     "cheerio": "^0.22.0",
     "commitizen": "^2.9.6",
@@ -67,7 +68,6 @@
     "wires-reactive": "^1.1.1"
   },
   "dependencies": {
-    "@types/comment-json": "^1.1.1",
     "acorn": "^5.1.2",
     "acorn-jsx": "^4.0.1",
     "ansi": "^0.3.1",
