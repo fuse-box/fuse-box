@@ -152,6 +152,27 @@ task('default', ['copy-assets'], async context => {
 });
 ```
 
+## Help
+
+You can use the `help` method to add a help message.   You can then run fuse-box with a single
+`help` argument to get a list of available tasks and their associated help messages.
+
+For example:
+
+```
+task('dev', /* the task implementation */).help("Run a development environment");
+```
+
+```
+$ node fuse.js help
+
+Usage
+  node [TASK] [OPTIONS...]
+
+Available tasks
+  dev  Run a development environment
+```
+
 ## src
 
 This method lets `Sparky` know what files it needs to operate on. This funtionality is built on top of [glob](https://github.com/isaacs/node-glob).

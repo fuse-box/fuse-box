@@ -1,6 +1,7 @@
 export class SparkTask {
     public parallelDependencies: string[] = [];
     public waterfallDependencies: string[] = [];
+    public help: string = "";
 
     constructor(public name: string, dependencies: string[], public fn: any) {
         dependencies.forEach(dependency => {

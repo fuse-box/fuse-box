@@ -22,7 +22,7 @@ export class Sparky {
     }
 
     /** Create a new task */
-    public static task(name: string, ...args): Sparky {
+    public static task(name: string, ...args): { help: (msg: string) => void } {
         let callback: any;
         let dependencies: string[] = [];
         let secondArgument = arguments[1];
@@ -33,7 +33,8 @@ export class Sparky {
         } else {
             callback = arguments[1];
         }
-        this.tasks.set(name, new SparkTask(name, dependencies, callback));
+        const sparkTask = new SparkTask(name, dependencies, callback)
+        this.tasks.set(name, sparkTask);
         // launching the task on next tick
         if (this.launch === false && this.testMode === false) {
             this.launch = true;
@@ -41,7 +42,9 @@ export class Sparky {
                 await this.start()
             });
         }
-        return this;
+        return {
+            help: msg => sparkTask.help = msg
+        };
     }
 
     public static context(target:
@@ -98,6 +101,12 @@ export class Sparky {
     public static async start(tname?: string): Promise<any> {
         let start = process.hrtime();
         const taskName = tname || process.argv[2] || "default";
+
+        if (taskName.toLowerCase() === "help") {
+            Sparky.showHelp();
+            return Promise.resolve();
+        }
+
         if (!this.tasks.get(taskName)) {
             log.echoWarning(`Task with such name ${taskName} was not found!`);
             return Promise.reject("Task not found");
@@ -131,6 +140,24 @@ export class Sparky {
             return log.echoWarning(`Task with such name ${name} was not found!`);
         }
         return await this.start(name);
+    }
+
+    private static showHelp() {
+        log
+            .echoPlain('')
+            .groupHeader('Usage')
+            .echoPlain(`  ${process.argv[0]} [TASK] [OPTIONS...]`)
+            .echoPlain('')
+            .groupHeader('Available tasks');
+        
+        // Figure out the length of the longest task so we can have a nice margin
+        const maxTaskNameLength = Array.from(Sparky.tasks.keys()).reduce((acc, taskName) => Math.max(acc, taskName.length), 0);
+
+        // Display each task name and its help message
+        Sparky.tasks.forEach((task, taskName) => {
+            const marginLength = maxTaskNameLength - taskName.length + 2;
+            log.echoSparkyTaskHelp(taskName + " ".repeat(marginLength), task.help);
+        });
     }
 
 }

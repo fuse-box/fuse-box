@@ -342,9 +342,19 @@ export class Log {
         console.log(str.join(''));
         return this;
     }
+
     public echoStatus(str: string) {
         log.title(`→`).cyan(`${str}`).echo();
         return this;
+    }
+
+    public echoSparkyTaskHelp(taskName: string, taskHelp: string) {
+        log
+            .ansi()
+            .write(' ')
+            .cyan(taskName)
+            .white(taskHelp)
+            .echo();
     }
 
     // --- generalized ---
@@ -383,6 +393,10 @@ export class Log {
     // -----------
     public echo(str: string) {
         log.time(true).green(str).echo();
+        return this;
+    }
+    public echoPlain(str: string) {
+        log.text(str).echo();
         return this;
     }
     public echoBoldRed(msg) {
