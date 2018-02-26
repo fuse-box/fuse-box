@@ -12,11 +12,10 @@ export class SourceMapGenerator {
             if (token.type.label === "eof") return true;
 
             const lineInfo = acorn.getLineInfo(fileContent, token.start);
-            const mapping = {
+            const mapping: SourceMap.Mapping = {
                 original: lineInfo,
                 generated: lineInfo,
-                source: filePath,
-                name: false,
+                source: filePath
             };
 
             if (token.type.label === "name") mapping.name = token.value;
