@@ -118,4 +118,26 @@ export class GlobalVariableTEst {
         }));
     }
 
+    public "Should not replace require statement 2"() {
+        return FuseTestEnv.create(
+            {
+                project: {
+                    files: {
+                        "index.ts": `
+                        if (typeof require !== 'undefined' && require.extensions) {
+                        }
+                    `
+                    },
+                    plugins: [QuantumPlugin({
+                        target: "browser",
+                        replaceTypeOf: false
+                    })]
+                }
+            }
+        ).simple().then(test => test.browser((window, env) => {
+            const app = env.getScript("app.js");
+            app.shouldFindString("typeof require");
+        }));
+    }
+
 }
