@@ -211,6 +211,11 @@ export function matchesSigleVariable(node: any, name: string) {
                 return false;
             }
             if (parent.type) {
+                if( parent.type === "UnaryExpression"){
+                    if ( parent.argument && parent.argument.type === "Identifier" && parent.argument.name === name){
+                        return false;
+                    }
+                }
                 if (parent.type === "MemberExpression" &&
                     parent.object && parent.object.name === name) {
                     return false;
