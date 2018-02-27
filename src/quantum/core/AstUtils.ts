@@ -212,7 +212,7 @@ export function matchesSigleVariable(node: any, name: string) {
             }
             if (parent.type) {
                 if( parent.type === "UnaryExpression"){
-                    if ( parent.argument && parent.argument.type === "Identifier" && parent.argument.name === name){
+                    if ( parent.argument && parent.operator === "typeof" && parent.argument.type === "Identifier" && parent.argument.name === name){
                         return false;
                     }
                 }
