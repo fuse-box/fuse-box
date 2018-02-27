@@ -4,6 +4,7 @@
   "description": "Fuse-Box a bundler that does it right",
   "typings": "index.d.ts",
   "main": "index.js",
+  "bin" : { "fuse" : "./cli/entry.js" },
   "scripts": {
     "help": "node bin/fsbx --help",
     "test": "cross-env FUSE_TEST_TIMEOUT=5000 node ./test.js",
