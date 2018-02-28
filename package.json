@@ -4,7 +4,9 @@
   "description": "Fuse-Box a bundler that does it right",
   "typings": "index.d.ts",
   "main": "index.js",
-  "bin" : { "fuse" : "./cli/entry.js" },
+  "bin": {
+    "fuse": "./cli/entry.js"
+  },
   "scripts": {
     "help": "node bin/fsbx --help",
     "test": "cross-env FUSE_TEST_TIMEOUT=5000 node ./test.js",
@@ -87,6 +89,7 @@
     "ieee754": "^1.1.8",
     "inquirer": "^3.0.6",
     "lego-api": "^1.0.7",
+    "less": "^3.0.1",
     "mustache": "^2.3.0",
     "postcss": "^6.0.1",
     "pretty-time": "^0.2.0",

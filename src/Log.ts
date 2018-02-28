@@ -60,12 +60,13 @@ export class Indenter {
 export class Log {
     public timeStart = process.hrtime();
     public printLog: any = true;
+    public showBundledFiles: boolean = true;
     public debugMode: any = false;
     public spinner: any;
     public indent: Indenter = new Indenter();
     private totalSize = 0;
     private static deferred: Function[] = [];
-    public static defer (fn: Function) {
+    public static defer(fn: Function) {
         Log.deferred.push(fn)
     }
 
@@ -142,6 +143,10 @@ export class Log {
         // }
         // this.indent.indent(-2)
         return this;
+    }
+
+    public clearTerminal() {
+        console.log('\x1Bc');
     }
 
     // --- start end ---
@@ -230,14 +235,16 @@ export class Log {
 
         // @example └──  (5 files, 7.6 kB) default
         // @TODO auto indent as with ansi
-        collection.dependencies.forEach(file => {
-            if (file.info.isRemoteFile) { return; }
-            const indent = this.indent.level(4).toString()
-            log
-                // .tags('filelist')
-                .white(`${indent}${file.info.fuseBoxPath}`)
-                .echo()
-        });
+        if (this.showBundledFiles) {
+            collection.dependencies.forEach(file => {
+                if (file.info.isRemoteFile) { return; }
+                const indent = this.indent.level(4).toString()
+                log
+                    // .tags('filelist')
+                    .white(`${indent}${file.info.fuseBoxPath}`)
+                    .echo()
+            });
+        }
 
         log
             .ansi()
@@ -333,7 +340,7 @@ export class Log {
         return this;
     }
 
-    public echoSparkyTaskEnd(taskName, took: [number, number]){
+    public echoSparkyTaskEnd(taskName, took: [number, number]) {
         const gray = log.chalk().gray;
         const magenta = log.chalk().magenta;
         let str = ['[', gray(getDateTime()), ']', ' Resolved']

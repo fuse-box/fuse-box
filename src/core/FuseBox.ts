@@ -37,7 +37,7 @@ export interface FuseBoxOptions {
      * default: "universal@es5"
      */
     target?: string,
-    log?: boolean;
+    log?: { enabled?: boolean, showBundledFiles?: boolean, clearTerminalOnBundle?: boolean };
     globals?: { [packageName: string]: /** Variable name */ string };
     plugins?: Array<Plugin | Plugin[]>;
     autoImport?: any;
@@ -213,8 +213,17 @@ export class FuseBox {
             this.context.filterFile = opts.filterFile;
         }
 
+        if (opts.log) {
+            if (opts.log.enabled) {
+                this.context.doLog = opts.log.enabled;
+                this.context.log.printLog = opts.log.enabled;
+            }
+
+            this.context.log.showBundledFiles = opts.log.showBundledFiles;
+        }
+
         if (opts.log !== undefined) {
-            this.context.doLog = opts.log;
+            this.context.doLog = true;
             this.context.log.printLog = opts.log;
         }
 
@@ -352,6 +361,11 @@ export class FuseBox {
     }
 
     public process(bundleData: BundleData, bundleReady?: () => any) {
+        // If clearTerminalOnBundle is turned on then clear the terminal each time we bundle
+        if (this.opts.log && this.opts.log.clearTerminalOnBundle) {
+            this.context.log.clearTerminal();
+        }
+
         let bundleCollection = new ModuleCollection(this.context, this.context.defaultPackageName);
         bundleCollection.pm = new PathMaster(this.context, bundleData.homeDir);
         // swiching on typescript compiler
@@ -372,7 +386,6 @@ export class FuseBox {
                 public defaultContents: string;
                 public globalContents = [];
                 public setDefaultCollection() {
-
                     return bundleCollection;
                 }
 
