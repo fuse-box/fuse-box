@@ -75,7 +75,7 @@ export class MarkdownPluginTest {
       return FuseTestEnv.create({
           project: {
             extensionOverrides: ['.foo.md'],
-            plugins: [MarkdownPlugin({useDefault: false})]
+            plugins: [MarkdownPlugin({useDefault: false})],
             files: {
                 "file.md": `# I should not be included`,
                 "file.foo.md": `# I should be included`

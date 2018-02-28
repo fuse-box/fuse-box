@@ -8,7 +8,7 @@ function strip(str: string): string {
 }
 
 export class BublePluginTest {
-    "Should bundle es6 with Buble"(): Promise {
+    "Should bundle es6 with Buble"() {
         const forofStub = [{
           description: 'transpiles for-of with array assumption with `transforms.dangerousForOf`',
           options: { transforms: { dangerousForOf: true } },

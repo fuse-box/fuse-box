@@ -28,7 +28,7 @@ export class CLITest {
             this.cli = CLI();
             Sparky.task("test:all", () => {});
 
-            const logStub = sinon.stub(console, "log", function(txt) {
+            const logStub = sinon.stub(console, "log").callsFake(function (txt) {
                 logStub.restore();
                 should(txt).findString("test:all");
                 resolve();
@@ -114,7 +114,7 @@ export class CLITest {
 
     "Should show help properly"() {
         return new Promise(done => {
-            const logStub = sinon.stub(console, "log", function(txt) {
+            const logStub = sinon.stub(console, "log").callsFake(function(txt) {
                 logStub.restore();
                 should(txt).findString("--test");
                 done();
@@ -133,12 +133,12 @@ export class CLITest {
             this.cli = CLI();
             this.cli.parse(["--help"]);
             
-            const logStub = sinon.stub(console, "log", function(txt) {
+            const logStub = sinon.stub(console, "log").callsFake(function(txt) {
                 logStub.restore();
                 should(txt).findString("test:task");
                 done();
             });
-            const helpStub = sinon.stub(this.cli, "showHelp", function() {
+            const helpStub = sinon.stub(this.cli, "showHelp").callsFake(function() {
                 helpStub.restore();
                 this.showHelp();
             });

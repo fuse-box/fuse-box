@@ -70,7 +70,7 @@ export class UglifyJSPluginTest {
                 instructions: ">index.ts",
             },
         }).then((result) => {
-            const out = result.project.FuseBox.import("./index");
+            // const out = result.project.FuseBox.import("./index");
             should(("__compressed__" in result.project)).beTrue();
             should(result.project.__compressed__()).findString("str1 str2");
         });

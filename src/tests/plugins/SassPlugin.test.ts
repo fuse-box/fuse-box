@@ -41,7 +41,7 @@ export class CssPluginTest {
             extensionOverrides: ['.foo.scss'],
             files: {
                 "index.ts": `import './main.scss'`,
-                "main.scss": `html { background: red; }`
+                "main.scss": `html { background: red; }`,
                 "main.foo.scss": `html { background: blue; }`
             }
           }
@@ -85,7 +85,7 @@ export class CssPluginTest {
             extensionOverrides: ['.foo.scss'],
             files: {
                 "index.ts": `import './main.scss'`,
-                "main.scss": `@import '$homeDir/b.scss';`
+                "main.scss": `@import '$homeDir/b.scss';`,
                 "b.scss": `html { color: blue; }`,
                 "b.foo.scss": `html { color: red; }`
             }

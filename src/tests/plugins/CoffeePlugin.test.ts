@@ -16,7 +16,7 @@ export class CoffeePluginTest {
                     "app.coffee": coffeeFileSource,
                 },
                 plugins: [
-                    [CoffeePlugin({}), RawPlugin({})]
+                    [CoffeePlugin(), RawPlugin()]
                 ],
                 instructions: ">app.coffee",
             },
@@ -24,16 +24,12 @@ export class CoffeePluginTest {
             const out = result.project.FuseBox.import("./app.coffee");
             should(out).equal(`var Demo;
 
-Demo = (function() {
-  function Demo() {}
-
-  Demo.prototype.demo = function() {
+Demo = class Demo {
+  demo() {
     return "hello";
-  };
+  }
 
-  return Demo;
-
-})();
+};
 `
             );
         });
@@ -48,7 +44,7 @@ Demo = (function() {
                 plugins: [
                     [CoffeePlugin({
                         bare: false,
-                    }), RawPlugin({})]
+                    }), RawPlugin()]
                 ],
                 instructions: ">app.coffee",
             },
@@ -57,16 +53,12 @@ Demo = (function() {
             should(out).equal(`(function() {
   var Demo;
 
-  Demo = (function() {
-    function Demo() {}
-
-    Demo.prototype.demo = function() {
+  Demo = class Demo {
+    demo() {
       return "hello";
-    };
+    }
 
-    return Demo;
-
-  })();
+  };
 
 }).call(this);
 `
@@ -78,7 +70,7 @@ Demo = (function() {
       return FuseTestEnv.create({
           project: {
             extensionOverrides: ['.foo.coffee'],
-            plugins: [CoffeePlugin({})]
+            plugins: [CoffeePlugin({})],
             files: {
                 "hello.coffee": `module.exports = getMessage: -> 'I should not be included'`,
                 "hello.foo.coffee": `module.exports = getMessage: -> 'I should be included'`
