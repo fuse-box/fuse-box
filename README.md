@@ -139,7 +139,7 @@ fuse.bundle("app")
 fuse.run();
 ```
 
-## [Examples and seeds](http://fuse-box.org:3333/page/examples-and-seeds)
+## [Examples and seeds](http://fuse-box.org/page/examples-and-seeds)
 
 
 Join our [gitter channel](https://gitter.im/fusebox-bundler/Lobby) we are very active and friendly!
