@@ -4,6 +4,7 @@ import { ensureUserPath, findFileBackwards } from "../Utils";
 import { ScriptTarget } from "./File";
 import * as fs from "fs";
 import { Config } from "../Config";
+import * as ts from "typescript";
 
 const CACHED: { [path: string]: any } = {};
 
@@ -84,9 +85,14 @@ export class TypescriptConfig {
                 }
             }
             if (configFile) {
-                this.context.log.echoInfo(`Typescript config file:  ${configFile.replace(this.context.appRoot, "")}`);
+                const configFileRelPath = configFile.replace(this.context.appRoot, "");
+                this.context.log.echoInfo(`Typescript config file:  ${configFileRelPath}`);
                 configFileFound = true;
-                config = require(configFile);
+                const res = ts.readConfigFile(configFile, (p) => fs.readFileSync(p).toString());
+                config = res.config;
+                if (res.error) {
+                    this.context.log.echoError(`Errors in ${configFileRelPath}`);
+                }
             }
 
 
