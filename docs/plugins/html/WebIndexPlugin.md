@@ -55,5 +55,6 @@ A custom template has the following macro available:
 | ------------- | ------------- |
 | ` $title `   | Html Title  |
 | ` $bundles `   | A list of script tags |
+| ` $css `   | A list of styles tags |
 
 github_example: vendor-splitting
