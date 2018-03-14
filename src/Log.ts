@@ -230,7 +230,8 @@ export class Log {
 
         // @example └──  (5 files, 7.6 kB) default
         // @TODO auto indent as with ansi
-        collection.dependencies.forEach(file => {
+        const dependencies = new Map(Array.from(collection.dependencies).sort());
+        dependencies.forEach(file => {
             if (file.info.isRemoteFile) { return; }
             const indent = this.indent.level(4).toString()
             log
