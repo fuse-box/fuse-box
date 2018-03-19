@@ -96,17 +96,39 @@ fuse.bundle("app")
     .instructions("> index.ts")
 ```
 
-## Debug and Log
-Additional logging and debugging can be enabled, but keep in mind they can reduce performance.
+## Debug
+
+Additional debugging can be enabled, but keep in mind they can reduce performance.
 ```js
 const fuse = FuseBox.init({
   homeDir: "src",
   output: "build/$name.js",
-  log: true,
   debug: true
 })
 ```
 
+## Log
+
+Log output can be customized using the `log` option:
+```js
+const fuse = FuseBox.init({
+  log: {
+      showBundledFiles: false, // Don't list all the bundled files every time we bundle
+      clearTerminalOnBundle: true, // Clear the terminal window every time we bundle
+  }
+})
+```
+
+These options are useful for seeing only the things you are interested in when developing incrementally using `.watch`.
+
+You can also disable logging completely:
+```js
+const fuse = FuseBox.init({
+  log: {
+      enabled: false
+  }
+})
+```
 
 ## Custom modules folder
 
