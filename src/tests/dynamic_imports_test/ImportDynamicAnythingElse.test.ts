@@ -1,7 +1,6 @@
 import { should } from "fuse-test-runner";
 import { FuseTestEnv } from "../stubs/FuseTestEnv";
-import { QuantumPlugin } from "../../index";
-
+import { QuantumPlugin } from "../../";
 
 export class ImportDynamicAnythingElse {
     "Should import a remote txt file file with Vanilla API (browser)"() {

@@ -1,11 +1,10 @@
 import * as path from "path";
 import { each } from "realm-utils";
-import { FuseBox, FuseBoxOptions } from "../../core/FuseBox";
+import { FuseBox, FuseBoxOptions, QuantumPlugin } from "../../";
 import * as fs from "fs";
 import * as appRoot from "app-root-path";
 import { removeFolder } from "../../Utils";
 import * as fsExtra from "fs-extra";
-import { QuantumPlugin } from "../../index";
 const jsdom = require("jsdom");
 
 

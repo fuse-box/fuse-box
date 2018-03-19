@@ -1,6 +1,6 @@
 import { createEnv } from "./stubs/TestEnvironment";
 import { should } from "fuse-test-runner";
-import { JSONPlugin } from "../index";
+import { JSONPlugin } from "../";
 
 export class HeavyNodeModules {
     "Should bundle cheerio"() {

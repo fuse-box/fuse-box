@@ -1,7 +1,7 @@
-import { createEnv } from "./../stubs/TestEnvironment";
+import { createEnv } from "../stubs/TestEnvironment";
 import { FuseTestEnv } from "../stubs/FuseTestEnv";
 import { should } from "fuse-test-runner";
-import { MarkdownPlugin } from "../../plugins/Markdownplugin";
+import { MarkdownPlugin } from "../../";
 
 export class MarkdownPluginTest {
     "Should get Template with Default as export"() {
@@ -75,7 +75,7 @@ export class MarkdownPluginTest {
       return FuseTestEnv.create({
           project: {
             extensionOverrides: ['.foo.md'],
-            plugins: [MarkdownPlugin({useDefault: false})]
+            plugins: [MarkdownPlugin({useDefault: false})],
             files: {
                 "file.md": `# I should not be included`,
                 "file.foo.md": `# I should be included`

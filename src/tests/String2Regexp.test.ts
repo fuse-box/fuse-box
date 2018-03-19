@@ -1,5 +1,6 @@
 import { string2RegExp } from "../Utils";
 import { should } from "fuse-test-runner";
+
 export class String2Regexp {
     "Should convert string to regex (1)"() {
         should("/etc/lib/styles/hello/hello/match.css").match(

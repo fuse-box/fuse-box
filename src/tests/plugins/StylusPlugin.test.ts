@@ -1,8 +1,7 @@
-import { createEnv } from "./../stubs/TestEnvironment";
+import { createEnv } from "../stubs/TestEnvironment";
 import { FuseTestEnv } from "../stubs/FuseTestEnv";
 import { should } from "fuse-test-runner";
-import { CSSPlugin } from "../../plugins/stylesheet/CSSplugin";
-import { StylusPlugin } from "../../plugins/stylesheet/StylusPlugin";
+import { CSSPlugin, StylusPlugin } from "../../";
 
 export class StylusPluginTest {
     "Should import compiled css code"() {

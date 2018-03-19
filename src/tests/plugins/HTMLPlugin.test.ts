@@ -1,7 +1,7 @@
-import { createEnv } from "./../stubs/TestEnvironment";
+import { createEnv } from "../stubs/TestEnvironment";
 import { FuseTestEnv } from "../stubs/FuseTestEnv";
 import { should } from "fuse-test-runner";
-import { HTMLPlugin } from "../../plugins/HTMLplugin";
+import { HTMLPlugin } from "../../";
 
 export class HtmlPluginTest {
     "Should get Template with Default as export"() {
@@ -75,7 +75,7 @@ export class HtmlPluginTest {
       return FuseTestEnv.create({
           project: {
             extensionOverrides: ['.foo.html'],
-            plugins: [HTMLPlugin({ useDefault: false })]
+            plugins: [HTMLPlugin({ useDefault: false })],
             files: {
               "index.ts": `const template = require('./index.html');`,
               "index.html": `<h1>I should not be included</h1>`,

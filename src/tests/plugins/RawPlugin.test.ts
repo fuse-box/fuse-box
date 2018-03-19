@@ -1,7 +1,7 @@
-import { createEnv } from "./../stubs/TestEnvironment";
+import { createEnv } from "../stubs/TestEnvironment";
 import { FuseTestEnv } from "../stubs/FuseTestEnv";
 import { should } from "fuse-test-runner";
-import { RawPlugin } from "../../plugins/RawPlugin";
+import { RawPlugin } from "../../";
 
 const rawFile = `
 this is

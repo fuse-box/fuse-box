@@ -1,7 +1,6 @@
 import { createEnv } from "./stubs/TestEnvironment";
 import { should } from "fuse-test-runner";
 
-
 export class ImportEventTest {
     RegisterEventAfterImport(done) {
         createEnv({

@@ -1,6 +1,6 @@
 import { should } from "fuse-test-runner";
 import { createEnv } from "../stubs/TestEnvironment";
-import { UglifyESPlugin } from "../../plugins/UglifyESPlugin";
+import { UglifyESPlugin } from "../../";
 
 export class UglifyESPluginTest {
     "Should return compressed js 1"() {

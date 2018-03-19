@@ -1,7 +1,7 @@
-import { createEnv } from "./../stubs/TestEnvironment";
+import { createEnv } from "../stubs/TestEnvironment";
 import { FuseTestEnv } from "../stubs/FuseTestEnv";
 import { should } from "fuse-test-runner";
-import { JSONPlugin } from "../../plugins/JSONplugin";
+import { JSONPlugin } from "../../";
 
 export class JSONPluginTest {
     "Should import JSON file as object"() {
@@ -28,7 +28,7 @@ export class JSONPluginTest {
       return FuseTestEnv.create({
           project: {
             extensionOverrides: ['.foo.json'],
-            plugins: [JSONPlugin()]
+            plugins: [JSONPlugin()],
             files: {
                 "file.json": `{ "contents": "I should not be included" }`,
                 "file.foo.json": `{ "contents": "I should be included" }`,

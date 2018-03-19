@@ -1,11 +1,11 @@
-import { createEnv } from "./../stubs/TestEnvironment";
+import { createEnv } from "../stubs/TestEnvironment";
 import { FuseTestEnv } from "../stubs/FuseTestEnv";
-import { CSSPlugin } from "../../plugins/stylesheet/CSSplugin";
+import { CSSPlugin, SassPlugin } from "../../";
 import { should } from "fuse-test-runner";
-import { SassPlugin } from "../../plugins/stylesheet/SassPlugin";
 import { Config } from "../../Config";
 import * as fs from "fs";
 import * as path from "path";
+
 export class CssPluginTest {
 
     "Should import reset.css"() {
@@ -41,7 +41,7 @@ export class CssPluginTest {
             extensionOverrides: ['.foo.scss'],
             files: {
                 "index.ts": `import './main.scss'`,
-                "main.scss": `html { background: red; }`
+                "main.scss": `html { background: red; }`,
                 "main.foo.scss": `html { background: blue; }`
             }
           }
@@ -85,7 +85,7 @@ export class CssPluginTest {
             extensionOverrides: ['.foo.scss'],
             files: {
                 "index.ts": `import './main.scss'`,
-                "main.scss": `@import '$homeDir/b.scss';`
+                "main.scss": `@import '$homeDir/b.scss';`,
                 "b.scss": `html { color: blue; }`,
                 "b.foo.scss": `html { color: red; }`
             }

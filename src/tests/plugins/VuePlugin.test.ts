@@ -1,4 +1,4 @@
-import { VuePlugin, RawPlugin } from "../../index";
+import { VuePlugin } from "../../";
 import { createEnv } from "../stubs/TestEnvironment";
 import { should } from "fuse-test-runner";
 

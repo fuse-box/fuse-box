@@ -1,5 +1,5 @@
 import { FuseTestEnv, createRealNodeModule } from "../stubs/FuseTestEnv";
-import { QuantumPlugin } from "../../index";
+import { QuantumPlugin } from "../../";
 
 const HOME_COMPONENT_SCRIPT = "92380585.js";
 const ABOUT_COMPONENT_SCRIPT = "167ae727.js";
