@@ -21,6 +21,7 @@ export interface IndexPluginOptions {
     async?: boolean;
     pre?: { relType: 'fetch' | 'load' };
     resolve?: { (output: UserOutput): string };
+    emitBundles?: (bundles: string[]) => string;
 }
 export class WebIndexPluginClass implements Plugin {
     constructor(public opts?: IndexPluginOptions) {
@@ -83,9 +84,9 @@ $bundles
             }
         }
 
-        let jsTags = bundlePaths.map(bundle =>
-            `<script ${this.opts.async ? 'async' : ''} type="text/javascript" src="${bundle}"></script>`
-        ).join("\n");
+        let jsTags = this.opts.emitBundles
+            ? this.opts.emitBundles(bundlePaths)
+            : bundlePaths.map(bundle => `<script ${this.opts.async ? 'async' : ''} type="text/javascript" src="${bundle}"></script>`).join('\n');
 
         let preloadTags;
         if (this.opts.pre) {
