@@ -65,11 +65,16 @@ export class Log {
 
     public timeStart = process.hrtime();
     public printLog: any = true;
+    public showBundledFiles: boolean = true;
     public debugMode: any = false;
     public spinner: any;
     public indent: Indenter = new Indenter();
     private totalSize = 0;
 
+    private static deferred: Function[] = [];
+    public static defer(fn: Function) {
+        Log.deferred.push(fn)
+    }
     constructor(public context: WorkFlowContext) {
         this.printLog = context.doLog;
         this.debugMode = context.debugMode;
@@ -143,6 +148,10 @@ export class Log {
         // }
         // this.indent.indent(-2)
         return this;
+    }
+
+    public clearTerminal() {
+        console.log('\x1Bc');
     }
 
     // --- start end ---
@@ -231,15 +240,18 @@ export class Log {
 
         // @example └──  (5 files, 7.6 kB) default
         // @TODO auto indent as with ansi
-        const dependencies = new Map(Array.from(collection.dependencies).sort());
-        dependencies.forEach(file => {
-            if (file.info.isRemoteFile) { return; }
-            const indentItem = this.indent.level(4).toString();
-            log
-                // .tags('filelist')
-                .white(`${indentItem}${file.info.fuseBoxPath}`)
-                .echo();
-        });
+
+        if (this.showBundledFiles) {
+          const dependencies = new Map(Array.from(collection.dependencies).sort());
+          dependencies.forEach(file => {
+              if (file.info.isRemoteFile) { return; }
+              const indentItem = this.indent.level(4).toString();
+              log
+                  // .tags('filelist')
+                  .white(`${indentItem}${file.info.fuseBoxPath}`)
+                  .echo();
+          });
+        }
 
         log
             .ansi()

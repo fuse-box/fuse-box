@@ -45,7 +45,7 @@ export class BundleWriter {
                 if (item.source) {
                     let shimPath = ensureUserPath(item.source);
                     if (!fs.existsSync(shimPath)) {
-                        console.warn(`Shim erro: Not found: ${shimPath}`);
+                        console.warn(`Shim error: Not found: ${shimPath}`);
                     } else {
                         shims.push(fs.readFileSync(shimPath).toString())
                     }
@@ -68,7 +68,7 @@ export class BundleWriter {
             throw result.error;
         }
         bundle.generatedCode = result.code;
-        this.core.log.echoInfo(`Done Uglifying ${bundle.name}`)
+        this.core.log.echoInfo(`Done uglifying ${bundle.name}`)
         this.core.log.echoGzip(result.code);
     }
 
@@ -98,7 +98,7 @@ export class BundleWriter {
             splitFileOptions = {
                 c: {
                     b: splitConf.getBrowserPath(),
-                    s:  splitConf.getServerPath()},
+                    s: splitConf.getServerPath()},
                 i: {}
             };
             this.core.api.setBundleMapping(splitFileOptions);
