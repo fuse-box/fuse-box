@@ -366,7 +366,7 @@ export class FuseBox {
     public process(bundleData: BundleData, bundleReady?: () => any) {
 
         // If clearTerminalOnBundle is turned on then clear the terminal each time we bundle
-        if (this.opts.log && this.opts.log.clearTerminalOnBundle) {
+        if (typeof this.opts.log === "object" && this.opts.log.clearTerminalOnBundle) {
             this.context.log.clearTerminal();
         }
 
