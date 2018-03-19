@@ -15,7 +15,7 @@
     "devDeps": "gulp installDevDeps",
     "dist": "gulp dist",
     "commit": "git-cz",
-    "commitmsg": "validate-commit-msg",
+    "commitmsg": "commitlint -e $GIT_PARAMS",
     "lint": "tslint --project ./src"
   },
   "engines": {
@@ -33,6 +33,8 @@
   },
   "homepage": "https://github.com/fuse-box/fuse-box#readme",
   "devDependencies": {
+    "@commitlint/cli": "^6.1.3",
+    "@commitlint/config-conventional": "^6.1.3",
     "@types/node": "^6.0.74",
     "cheerio": "^0.22.0",
     "commitizen": "^2.9.6",
@@ -66,7 +68,6 @@
     "sinon": "^1.17.6",
     "typescript": "^2.8.0-dev.20180204",
     "uglify-js": "^3.1.8",
-    "validate-commit-msg": "^2.14.0",
     "wires-reactive": "^1.1.1"
   },
   "dependencies": {
@@ -108,17 +109,6 @@
     "logo": "https://opencollective.com/opencollective/logo.txt"
   },
   "config": {
-    "validate-commit-msg": {
-      "scope": {
-        "required": false,
-        "allowed": [
-          "*"
-        ],
-        "validate": false,
-        "multiple": false
-      },
-      "helpMessage": "Valid commit message formats are: \n - <type>(<scope>): <subject> \n - <type>: <subject>"
-    },
     "commitizen": {
       "path": "cz-conventional-changelog"
     }
