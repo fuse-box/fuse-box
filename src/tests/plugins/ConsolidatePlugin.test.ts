@@ -1,4 +1,4 @@
-import { ConsolidatePlugin } from "../../index";
+import { ConsolidatePlugin } from "../../";
 import { createEnv } from "../stubs/TestEnvironment";
 import { FuseTestEnv } from "../stubs/FuseTestEnv";
 import { should } from "fuse-test-runner";
@@ -63,7 +63,7 @@ export class ConsolidatePluginTest {
             extensionOverrides: ['.foo.pug'],
             plugins: [ConsolidatePlugin({
               engine: 'pug'
-            })]
+            })],
             files: {
                 "template.pug": "p I should not be included",
                 "template.foo.pug": "p I should be included"

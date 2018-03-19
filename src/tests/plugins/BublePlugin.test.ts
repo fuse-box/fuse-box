@@ -1,6 +1,6 @@
-import { createEnv } from "./../stubs/TestEnvironment";
+import { createEnv } from "../stubs/TestEnvironment";
 import { should } from "fuse-test-runner";
-import { BublePlugin } from "../../plugins/js-transpilers/BublePlugin";
+import { BublePlugin } from "../../";
 // import forofStub from "../stubs/buble/for-of";
 
 function strip(str: string): string {
@@ -8,7 +8,7 @@ function strip(str: string): string {
 }
 
 export class BublePluginTest {
-    "Should bundle es6 with Buble"(): Promise {
+    "Should bundle es6 with Buble"() {
         const forofStub = [{
           description: 'transpiles for-of with array assumption with `transforms.dangerousForOf`',
           options: { transforms: { dangerousForOf: true } },

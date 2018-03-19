@@ -1,9 +1,5 @@
-import { BundleProducer } from "../core/BundleProducer";
-import { FuseBox } from "../index";
+import { BundleProducer, FuseBox, Bundle } from "../";
 import { should } from "fuse-test-runner";
-import { Bundle } from "../core/Bundle";
-
-
 
 const createFuse = (): FuseBox => {
     return FuseBox.init({

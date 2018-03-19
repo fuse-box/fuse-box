@@ -1,12 +1,10 @@
-import { createEnv } from "./../stubs/TestEnvironment";
+import { createEnv } from "../stubs/TestEnvironment";
 import { FuseTestEnv } from "../stubs/FuseTestEnv";
 import { should } from "fuse-test-runner";
 import * as path from "path";
 import * as appRoot from "app-root-path";
 import * as fs from "fs";
-import { CSSResourcePlugin } from "../../plugins/stylesheet/CSSResourcePlugin";
-import { SassPlugin } from "../../plugins/stylesheet/SassPlugin";
-import { CSSPlugin } from "../../plugins/stylesheet/CSSplugin";
+import { CSSResourcePlugin, SassPlugin, CSSPlugin } from "../../";
 import * as fsExtra from "fs-extra";
 
 let tmp, shouldExist;
@@ -287,7 +285,7 @@ export class CssPluginTest {
             extensionOverrides: ['.foo.css'],
             files: {
                 "index.ts": `import './main.css'`,
-                "main.css": `html { background: red; }`
+                "main.css": `html { background: red; }`,
                 "main.foo.css": `html { background: blue; }`
             }
           }

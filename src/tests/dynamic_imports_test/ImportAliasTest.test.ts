@@ -1,7 +1,6 @@
 import { should } from "fuse-test-runner";
 import { FuseTestEnv } from "../stubs/FuseTestEnv";
 
-
 export class ImportAliasTest {
     "Should split using an alias"() {
         return FuseTestEnv.create(

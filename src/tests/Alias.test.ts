@@ -1,6 +1,6 @@
 import { createEnv } from "./stubs/TestEnvironment";
 import { should } from "fuse-test-runner";
-import { BabelPlugin } from "../plugins/js-transpilers/BabelPlugin";
+import { BabelPlugin } from "../";
 
 export class AliasTest {
     "Should replace an alias - case 1"() {

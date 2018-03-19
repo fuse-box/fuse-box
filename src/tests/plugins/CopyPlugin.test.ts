@@ -1,8 +1,6 @@
-import { createEnv } from "./../stubs/TestEnvironment";
-import { CopyPlugin } from "../../plugins/CopyPlugin";
+import { createEnv } from "../stubs/TestEnvironment";
+import { CopyPlugin } from "../../";
 import { should } from "fuse-test-runner";
-
-
 
 export class CssPluginTest {
     /** DEV (easy hashing) */

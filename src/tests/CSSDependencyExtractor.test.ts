@@ -3,7 +3,6 @@ import { CSSDependencyExtractor } from "../lib/CSSDependencyExtractor";
 import * as path from "path";
 import * as appRoot from "app-root-path";
 
-
 const stubs = path.join(appRoot.path, "src/tests/stubs/css/path1");
 const nestedStubs = path.join(appRoot.path, "src/tests/stubs/css/nested");
 

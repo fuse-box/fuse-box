@@ -1,5 +1,5 @@
 import { FuseTestEnv } from "./stubs/FuseTestEnv";
-import { QuantumPlugin } from "../index";
+import { QuantumPlugin } from "../";
 import { should } from "fuse-test-runner";
 
 export class Dummy {

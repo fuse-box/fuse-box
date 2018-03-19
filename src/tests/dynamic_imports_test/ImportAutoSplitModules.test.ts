@@ -1,7 +1,6 @@
 import { should } from "fuse-test-runner";
 import { FuseTestEnv } from "../stubs/FuseTestEnv";
 
-
 export class ImportAutoSplitModules {
     "Should auto split file"() {
         return FuseTestEnv.create(

@@ -1,6 +1,6 @@
 import { should } from "fuse-test-runner";
 import { FuseTestEnv } from "../stubs/FuseTestEnv";
-import { QuantumPlugin } from "../../index";
+import { QuantumPlugin } from "../../";
 
 const TINY_LIB = "https://unpkg.com/bespoke@1.1.0/lib/bespoke.js";
 
@@ -71,6 +71,7 @@ export class ImportDynamicExternalFile {
             `, (data) => {
                     should(data).deepEqual({
                         "error": {
+                          "message": "getaddrinfo ENOTFOUND asdfasdfs.js asdfasdfs.js:80",
                           "code": "ENOTFOUND",
                           "errno": "ENOTFOUND",
                           "syscall": "getaddrinfo",

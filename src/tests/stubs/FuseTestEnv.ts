@@ -1,8 +1,7 @@
 import * as path from "path";
 import * as fs from "fs-extra";
 import * as appRoot from "app-root-path";
-import { FuseBox } from "../../index";
-import { BundleProducer } from "../../core/BundleProducer";
+import { FuseBox, BundleProducer } from "../../";
 import { fork } from "child_process";
 import { removeFolder } from "../../Utils";
 import * as request from "request";

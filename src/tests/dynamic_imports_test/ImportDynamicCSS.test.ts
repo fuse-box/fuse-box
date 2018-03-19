@@ -1,7 +1,6 @@
 import { should } from "fuse-test-runner";
 import { FuseTestEnv } from "../stubs/FuseTestEnv";
-import { QuantumPlugin } from "../../index";
-
+import { QuantumPlugin } from "../../";
 
 export class ImportDynamicCssTest {
     "Should import a remote css file with Vanilla API (browser)"() {

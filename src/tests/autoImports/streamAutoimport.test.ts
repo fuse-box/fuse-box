@@ -1,4 +1,3 @@
-
 import { should } from "fuse-test-runner";
 import { createEnv } from "../stubs/TestEnvironment";
 

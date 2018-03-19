@@ -1,6 +1,6 @@
 import { UserOutput } from "../core/UserOutput";
 import { should } from "fuse-test-runner";
-import { WorkFlowContext } from "../core/WorkflowContext";
+import { WorkFlowContext } from "../";
 import * as fs from "fs";
 import { ensureFuseBoxPath } from "../Utils";
 

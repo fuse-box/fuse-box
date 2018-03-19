@@ -1,6 +1,6 @@
 import { createEnv } from "./stubs/TestEnvironment";
 import { should } from "fuse-test-runner";
-import { JSONPlugin } from "../index";
+import { JSONPlugin } from "../";
 
 export class WildCardTest {
     "Should import 2 javascript files without ext"() {
@@ -72,7 +72,7 @@ export class WildCardTest {
                     "foo/a.json": "module.exports = {a : 1}",
                     "foo/b.json": "module.exports = {b : 1}"
                 },
-                plugins: [JSONPlugin​​()],
+                plugins: [JSONPlugin()],
                 instructions: "**/**.json"
             }
         }).then((result) => {
@@ -89,7 +89,7 @@ export class WildCardTest {
                     "foo/a.json": "module.exports = {a : 1}",
                     "foo/b.json": "module.exports = {b : 1}",
                 },
-                plugins: [JSONPlugin​​()],
+                plugins: [JSONPlugin()],
                 instructions: "**/**.json"
             }
         }).then((result) => {

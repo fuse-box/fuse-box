@@ -1,4 +1,4 @@
-import { Sparky } from "../../index";
+import { Sparky } from "../../";
 import { getStubsFolder, TestFolder } from "../stubs/TestEnvironment";
 import * as path from "path";
 

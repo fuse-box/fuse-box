@@ -1,7 +1,6 @@
 import {createEnv} from "../stubs/TestEnvironment";
 import {should} from "fuse-test-runner";
-import {CSSPlugin} from "../../plugins/stylesheet/CSSplugin";
-import {PostCSS} from "../../plugins/stylesheet/PostCSSPlugin";
+import {CSSPlugin, PostCSS} from "../../";
 
 const postcss = require("postcss");
 

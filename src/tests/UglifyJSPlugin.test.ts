@@ -1,6 +1,6 @@
 import { should } from "fuse-test-runner";
 import { createEnv } from "./stubs/TestEnvironment";
-import { UglifyJSPlugin } from "../plugins/UglifyJSPlugin";
+import { UglifyJSPlugin } from "../";
 
 export class UglifyJSPluginTest {
     "Should return compressed js 1"() {
@@ -70,7 +70,7 @@ export class UglifyJSPluginTest {
                 instructions: ">index.ts",
             },
         }).then((result) => {
-            const out = result.project.FuseBox.import("./index");
+            result.project.FuseBox.import("./index");
             should(("__compressed__" in result.project)).beTrue();
             should(result.project.__compressed__()).findString("str1 str2");
         });

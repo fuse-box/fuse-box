@@ -1,4 +1,4 @@
-import { CoffeePlugin, RawPlugin } from "../../index";
+import { CoffeePlugin, RawPlugin } from "../../";
 import { createEnv } from "../stubs/TestEnvironment";
 import { FuseTestEnv } from "../stubs/FuseTestEnv";
 import { should } from "fuse-test-runner";
@@ -16,7 +16,7 @@ export class CoffeePluginTest {
                     "app.coffee": coffeeFileSource,
                 },
                 plugins: [
-                    [CoffeePlugin({}), RawPlugin({})]
+                    [CoffeePlugin(), RawPlugin()]
                 ],
                 instructions: ">app.coffee",
             },
@@ -48,7 +48,7 @@ Demo = (function() {
                 plugins: [
                     [CoffeePlugin({
                         bare: false,
-                    }), RawPlugin({})]
+                    }), RawPlugin()]
                 ],
                 instructions: ">app.coffee",
             },
@@ -78,7 +78,7 @@ Demo = (function() {
       return FuseTestEnv.create({
           project: {
             extensionOverrides: ['.foo.coffee'],
-            plugins: [CoffeePlugin({})]
+            plugins: [CoffeePlugin()],
             files: {
                 "hello.coffee": `module.exports = getMessage: -> 'I should not be included'`,
                 "hello.foo.coffee": `module.exports = getMessage: -> 'I should be included'`
