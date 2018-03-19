@@ -6,7 +6,7 @@ import { SourceMapGenerator } from "./SourceMapGenerator";
 import { utils, each } from "realm-utils";
 import * as fs from "fs";
 import * as path from "path";
-import { ensureFuseBoxPath, readFuseBoxModule, isStylesheetExtension, fastHash } from "../Utils";
+import { ensureFuseBoxPath, readFuseBoxModule, isStylesheetExtension, fastHash, joinFuseBoxPath } from "../Utils";
 
 /**
  * Same Target Enumerator used in TypeScript
@@ -626,7 +626,7 @@ export class File {
 
     public generateInlinedCSS(){
         const re = /(\/*#\s*sourceMappingURL=\s*)([^\s]+)(\s*\*\/)/g
-        const newName = path.join("/", this.context.inlineCSSPath, `${fastHash(this.info.fuseBoxPath)}.map`)
+        const newName = joinFuseBoxPath("/", this.context.inlineCSSPath, `${fastHash(this.info.fuseBoxPath)}.map`)
         this.contents = this.contents.replace(re, `$1${newName}$3`);
         this.context.output.writeToOutputFolder(newName, this.sourceMap)
         if( this.context.fuse && this.context.fuse.producer ){
