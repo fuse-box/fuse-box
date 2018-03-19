@@ -216,12 +216,15 @@ export class FuseBox {
         }
 
         if (opts.log) {
-            if (opts.log.enabled) {
-                this.context.doLog = opts.log.enabled;
-                this.context.log.printLog = opts.log.enabled;
+            if (typeof opts.log === "boolean") {
+                this.context.doLog = opts.log;
             }
 
-            this.context.log.showBundledFiles = opts.log.showBundledFiles;
+            if (typeof opts.log === "object" && opts.log.enabled) {
+                this.context.doLog = opts.log.enabled;
+                this.context.log.printLog = opts.log.enabled;
+                this.context.log.showBundledFiles = opts.log.showBundledFiles;
+            }
         }
 
         if (opts.log !== undefined) {
@@ -297,7 +300,7 @@ export class FuseBox {
     }
 
     public copy(): FuseBox {
-        const config = {...this.opts};
+        const config = { ...this.opts };
         config.plugins = [].concat(config.plugins || []);
         return FuseBox.init(config);
     }
