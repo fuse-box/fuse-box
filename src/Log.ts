@@ -58,9 +58,7 @@ export class Indenter {
  * - [ ] fix the →→→→→→→
  */
 export class Log {
-    public static defer(fn: Function) {
-        Log.deferred.push(fn);
-    }
+
     private static deferred: Function[] = [];
 
     public timeStart = process.hrtime();
@@ -71,7 +69,6 @@ export class Log {
     public indent: Indenter = new Indenter();
     private totalSize = 0;
 
-    private static deferred: Function[] = [];
     public static defer(fn: Function) {
         Log.deferred.push(fn)
     }
