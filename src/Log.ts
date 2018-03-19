@@ -4,18 +4,18 @@ import * as log from "fliplog";
 import * as prettysize from "prettysize";
 import * as  prettyTime from "pretty-time";
 import * as zlib from "zlib";
-import { getDateTime } from './Utils';
+import { getDateTime } from "./Utils";
 
 // @TODO: I've moved this into fliplog in v1, migrate to that
 export class Indenter {
-    public store: Map<string, any> = new Map()
+    public store: Map<string, any> = new Map();
     constructor() {
-        this.set('indent', 0);
+        this.set("indent", 0);
     }
 
     // easy set/set
     public set(key: string, val: any): Indenter {
-        this.store.set(key, val)
+        this.store.set(key, val);
         return this;
     }
     public get(key: string) {
@@ -23,7 +23,7 @@ export class Indenter {
     }
     // back to 0
     public reset(): Indenter {
-        return this.set('indent', 0);
+        return this.set("indent", 0);
     }
     // tap value
     public tap(key: string, cb: Function): Indenter {
@@ -32,22 +32,22 @@ export class Indenter {
     }
     // increment
     public indent(level: number): Indenter {
-        return this.tap('indent', indent => indent + level);
+        return this.tap("indent", indent => indent + level);
     }
     // specific number
     public level(level: number): Indenter {
-        return this.set('indent', level);
+        return this.set("indent", level);
     }
     // string repeat indent
     public toString(): string {
-        return ' '.repeat(this.get('indent'))
+        return " ".repeat(this.get("indent"));
     }
     public toNumber(): number {
-        return this.get('indent');
+        return this.get("indent");
     }
     public [Symbol.toPrimitive](hint: string) {
-        if (hint === 'number') { return this.toNumber(); }
-        return this.toString();;
+        if (hint === "number") { return this.toNumber(); }
+        return this.toString();
     }
 }
 
@@ -58,46 +58,47 @@ export class Indenter {
  * - [ ] fix the →→→→→→→
  */
 export class Log {
+    public static defer(fn: Function) {
+        Log.deferred.push(fn);
+    }
+    private static deferred: Function[] = [];
+
     public timeStart = process.hrtime();
     public printLog: any = true;
     public debugMode: any = false;
     public spinner: any;
     public indent: Indenter = new Indenter();
     private totalSize = 0;
-    private static deferred: Function[] = [];
-    public static defer (fn: Function) {
-        Log.deferred.push(fn)
-    }
 
     constructor(public context: WorkFlowContext) {
         this.printLog = context.doLog;
         this.debugMode = context.debugMode;
 
-        log.filter((arg) => {
+        log.filter(arg => {
             // conditions for filtering specific tags
-            const debug = this.debugMode
-            const level = this.printLog
+            const debug = this.debugMode;
+            const level = this.printLog;
             const hasTag = tag =>
-                arg.tags.includes(tag)
+                arg.tags.includes(tag);
             const levelHas = tag =>
-                debug || (level && level.includes && level.includes(tag) && !level.includes('!' + tag));
+                debug || (level && level.includes && level.includes(tag) && !level.includes("!" + tag));
 
 
             // when off, silent
-            if (level === false) return false;
+            if (level === false) { return false; }
 
             // counting this as verbose for now
             if (level === true && debug === true) { return null; }
 
-            if (level == 'error') {
-                if (!hasTag('error')) { return false; }
+            if (level === "error") {
+                if (!hasTag("error")) { return false; }
             }
             // could be verbose, reasoning, etc
-            if (hasTag('magic')) {
-                if (!levelHas('magic')) { return false; }
+            if (hasTag("magic")) {
+                if (!levelHas("magic")) { return false; }
             }
-            if (hasTag('filelist')) {
-                if (!levelHas('filelist')) { return false; }
+            if (hasTag("filelist")) {
+                if (!levelHas("filelist")) { return false; }
             }
 
             // if not false and conditions pass, log it
@@ -106,10 +107,10 @@ export class Log {
 
         setTimeout(() => {
             if (this.printLog) {
-                Log.deferred.forEach(x => x(this))
+                Log.deferred.forEach(x => x(this));
             }
-            Log.deferred = []
-        })
+            Log.deferred = [];
+        });
     }
     // --- config ---
 
@@ -120,21 +121,21 @@ export class Log {
         return this;
     }
     public printOptions(title: string, obj: any) {
-        let indent = this.indent.level(2) + '';;
+        const indent = this.indent.level(2) + "";
 
-        let indent2 = this.indent.level(4) + '';;
+        const indent2 = this.indent.level(4) + "";
 
         // @TODO: moved this into fliplog v1, migrate
-        log.addPreset('min', instance => {
+        log.addPreset("min", instance => {
             instance.formatter(data => {
-                return log.inspector()(data).split('\n')
-                    .map(data => indent2 + data)
-                    .map(data => data.replace(/[{},]/, ''))
-                    .join('\n');;
+                return log.inspector()(data).split("\n")
+                    .map(data2 => indent2 + data2)
+                    .map(data2 => data2.replace(/[{},]/, ""))
+                    .join("\n");
             });
         });
 
-        log.bold().yellow(`${indent}→ ${title}\n`).preset('min').data(obj).echo();
+        log.bold().yellow(`${indent}→ ${title}\n`).preset("min").data(obj).echo();
 
         // for (let i in obj) {
         //     indent = this.indent.level(6) + ''
@@ -160,7 +161,7 @@ export class Log {
         return this;
     }
     public bundleEnd(name: string, collection: ModuleCollection) {
-        let took = process.hrtime(this.timeStart) as [number, number];
+        const took = process.hrtime(this.timeStart) as [number, number];
 
         log
             .ansi()
@@ -178,12 +179,12 @@ export class Log {
         const indentStr = this.indent.toString();
         const indent = +this.indent;
         const interval = 20;
-        const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'].map(frame => indentStr + frame);
+        const frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"].map(frame => indentStr + frame);
         const spinner = { frames, interval };
 
         // @TODO @FIXME the spinner needs to be scoped inside of fliplog, has todo to update
         // instantiate
-        this.spinner = log.requirePkg('ora')({ text, indent, spinner });
+        this.spinner = log.requirePkg("ora")({ text, indent, spinner });
         this.spinner.start();
         this.spinner.indent = +this.indent;
         this.spinner.succeeded = false;
@@ -191,7 +192,7 @@ export class Log {
         // safety for if errors happen so it does not keep spinning
         setTimeout(() => {
             if (this.spinner.succeeded === false && this.spinner.fail) {
-                this.spinner.fail();;
+                this.spinner.fail();
             }
         }, 1000);
 
@@ -221,22 +222,23 @@ export class Log {
 
     // @TODO: list vendor files as filter
     public echoDefaultCollection(collection: ModuleCollection, contents: string) {
-        if (this.printLog === false) return this;
-        let bytes = Buffer.byteLength(contents, "utf8");
-        let size = prettysize(bytes);
+        if (this.printLog === false) { return this; }
+        const bytes = Buffer.byteLength(contents, "utf8");
+        const size = prettysize(bytes);
         this.totalSize += bytes;
 
         const indent = this.indent.reset().indent(+1).toString();
 
         // @example └──  (5 files, 7.6 kB) default
         // @TODO auto indent as with ansi
-        collection.dependencies.forEach(file => {
+        const dependencies = new Map(Array.from(collection.dependencies).sort());
+        dependencies.forEach(file => {
             if (file.info.isRemoteFile) { return; }
-            const indent = this.indent.level(4).toString()
+            const indentItem = this.indent.level(4).toString();
             log
                 // .tags('filelist')
-                .white(`${indent}${file.info.fuseBoxPath}`)
-                .echo()
+                .white(`${indentItem}${file.info.fuseBoxPath}`)
+                .echo();
         });
 
         log
@@ -255,8 +257,8 @@ export class Log {
     // └── lodash 14.2 kB (12 files)
     public echoCollection(collection: ModuleCollection, contents: string) {
         if (this.printLog === false) { return this; }
-        let bytes = Buffer.byteLength(contents, "utf8");
-        let size = prettysize(bytes);
+        const bytes = Buffer.byteLength(contents, "utf8");
+        const size = prettysize(bytes);
         this.totalSize += bytes;
         const indent = this.indent.toString(); // reset
 
@@ -274,7 +276,7 @@ export class Log {
     }
 
     public end(header?: string) {
-        let took = process.hrtime(this.timeStart) as [number, number];
+        const took = process.hrtime(this.timeStart) as [number, number];
         this.echoBundleStats(header || "Bundle", this.totalSize, took);
         return this;
     }
@@ -285,18 +287,18 @@ export class Log {
      *
      * string | number | Buffer
      */
-    public echoGzip(size: any, msg: string | any = '') {
-        if (!size) return this;
+    public echoGzip(size: any, msg: string | any = "") {
+        if (!size) { return this; }
         const yellow = log.chalk().yellow;
         const gzipped = zlib.gzipSync(size, { level: 9 }).length;
-        const gzippedSize = prettysize(gzipped) + ' (gzipped)';
+        const gzippedSize = prettysize(gzipped) + " (gzipped)";
         const compressedSize = prettysize(size.length);
         const prettyGzip = yellow(`${compressedSize}, ${gzippedSize}`);
         log
-            .title(this.indent + '')
+            .title(this.indent + "")
             .when(msg,
             () => log.text(msg),
-            () => log.bold('size: '))
+            () => log.bold("size: "))
             .data(prettyGzip)
             .echo();
         return this;
@@ -327,19 +329,19 @@ export class Log {
     public echoSparkyTaskStart(taskName: string) {
         const gray = log.chalk().gray;
         const magenta = log.chalk().magenta;
-        let str = ['[', gray(getDateTime()), ']', ' Starting']
-        str.push(` '${magenta(taskName)}' `)
-        console.log(str.join(''));
+        const str = ["[", gray(getDateTime()), "]", " Starting"];
+        str.push(` '${magenta(taskName)}' `);
+        console.log(str.join(""));
         return this;
     }
 
-    public echoSparkyTaskEnd(taskName, took: [number, number]){
+    public echoSparkyTaskEnd(taskName, took: [number, number]) {
         const gray = log.chalk().gray;
         const magenta = log.chalk().magenta;
-        let str = ['[', gray(getDateTime()), ']', ' Resolved']
-        str.push(` '${magenta(taskName)}' `, 'after ')
+        const str = ["[", gray(getDateTime()), "]", " Resolved"];
+        str.push(` '${magenta(taskName)}' `, "after ");
         str.push(`${gray(prettyTime(took, "ms"))}`);
-        console.log(str.join(''));
+        console.log(str.join(""));
         return this;
     }
 
@@ -351,7 +353,7 @@ export class Log {
     public echoSparkyTaskHelp(taskName: string, taskHelp: string) {
         log
             .ansi()
-            .write(' ')
+            .write(" ")
             .cyan(taskName)
             .white(taskHelp)
             .echo();
@@ -359,12 +361,12 @@ export class Log {
 
     // --- generalized ---
     public groupHeader(str: string) {
-        log.color('bold.underline').text(`${str}`).echo();
+        log.color("bold.underline").text(`${str}`).echo();
         return this;
     }
     public echoInfo(str: string) {
         const indent = this.indent.level(2);
-        log.preset('info').green(`${indent}→ ${str}`).echo();
+        log.preset("info").green(`${indent}→ ${str}`).echo();
         return this;
     }
     public error(error: Error) {
@@ -373,7 +375,7 @@ export class Log {
         //     log.factory().notify({title: error.message, message: error.stack}).echo()
         // }
 
-        log.tags('error').data(error).echo();
+        log.tags("error").data(error).echo();
         return this;
     }
 
@@ -382,7 +384,7 @@ export class Log {
         if (metadata) {
             log.data(metadata);
         }
-        log.tags('magic').magenta(str).echo();
+        log.tags("magic").magenta(str).echo();
         return this;
     }
 
@@ -404,7 +406,7 @@ export class Log {
         return this;
     }
     public echoError(str: string) {
-        log.red(`  → ERROR ${str}`).echo()
+        log.red(`  → ERROR ${str}`).echo();
     }
     public echoRed(msg) {
         log.red(msg).echo();
