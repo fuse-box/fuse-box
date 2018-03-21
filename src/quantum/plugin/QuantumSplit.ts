@@ -16,7 +16,7 @@ export class QuantumSplitConfig {
         if ( this.resolveOptions && this.resolveOptions.browser ){
             return this.resolveOptions.browser;
         }
-        return "./";
+        return "";
     }
 
     public getServerPath(){
