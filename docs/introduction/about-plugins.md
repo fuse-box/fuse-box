@@ -40,16 +40,16 @@ FuseBox plugins support chaining.
 
 ```js
 plugins: [
-    [ SassPlugin(), CSSResoucePlugin(), CSSPlugin() ] // make sure you've got an array here
+    [ SassPlugin(), CSSResourcePlugin(), CSSPlugin() ] // make sure you've got an array here
 ]
 ```
 
-Here we start off by taking any `.sass` file, piping the contents into `CSSResoucePlugin` which extracts the resources and copies them into your dist folder, and finally `CSSPlugin` takes care of loading them, re-loading on HMR and much more. If you work with CSS, make sure that `CSSPlugin()` is the last one on the list.
+Here we start off by taking any `.sass` file, piping the contents into `CSSResourcePlugin` which extracts the resources and copies them into your dist folder, and finally `CSSPlugin` takes care of loading them, re-loading on HMR and much more. If you work with CSS, make sure that `CSSPlugin()` is the last one on the list.
 
 Certainly, you can specify a mask to capture required files.
 
 ```js
 plugins: [
-    [ "sass_files/*.scss", SassPlugin(), CSSResoucePlugin(), CSSPlugin() ]
+    [ "sass_files/*.scss", SassPlugin(), CSSResourcePlugin(), CSSPlugin() ]
 ]
 ```
