@@ -6,9 +6,10 @@ declare let __root__: any;
 declare let __fbx__dnm__: any;
 declare const WorkerGlobalScope: any;
 
+const $isServiceWorker = typeof ServiceWorkerGlobalScope !== "undefined";
 const $isWebWorker = typeof WorkerGlobalScope !== "undefined";
-const $isBrowser = typeof window !== "undefined" && typeof window.navigator !== "undefined" || $isWebWorker;
-const g = $isBrowser ? ($isWebWorker ? {} : window) : global;
+const $isBrowser = typeof window !== "undefined" && typeof window.navigator !== "undefined" || $isWebWorker || $isServiceWorker;
+const g = $isBrowser ? (($isWebWorker || $isServiceWorker) ? {} : window) : global;
 
 
 /**
@@ -53,7 +54,7 @@ type FSBX = {
 
 // Patching global variable
 if ($isBrowser) {
-    g["global"] = $isWebWorker ? {} : window;
+    g["global"] = ($isWebWorker || $isServiceWorker) ? {} : window;
 }
 
 // Set root
@@ -64,7 +65,7 @@ __root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports :
 /**
  * A runtime storage for FuseBox
  */
-const $fsbx: FSBX = $isBrowser ? $isWebWorker ? {} : (window["__fsbx__"] = window["__fsbx__"] || {})
+const $fsbx: FSBX = $isBrowser ? ($isWebWorker || $isServiceWorker) ? {} : (window["__fsbx__"] = window["__fsbx__"] || {})
     : g["$fsbx"] = g["$fsbx"] || {}; // in case of nodejs
 
 if (!$isBrowser) {
