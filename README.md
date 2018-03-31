@@ -127,6 +127,8 @@ There is so much more. FuseBox pushing it to a whole new level!
 npm install typescript fuse-box --save-dev
 ```
 
+`fuse.js`:
+
 ```ts
 const { FuseBox } = require("fuse-box");
 const fuse = FuseBox.init({
