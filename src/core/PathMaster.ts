@@ -382,19 +382,22 @@ export class PathMaster {
         for (let key in browserOverrides) {
             let value = browserOverrides[key];
             if (typeof value === "string") {
-                if (/\.\//.test(key)) {
-                    key = key.slice(2);
-                }
-                if (/\.\//.test(value)) {
-                    value = "~/" + value.slice(2);
+                if (/^[a-z]/.test(value) && !/.js$/.test(value)) {
+                    value = value;
                 } else {
-                    value = "~/" + value;
-                }
-                if (!/.js$/.test(value)) {
-                    value = value + ".js";
+                    if (/\.\//.test(key)) {
+                        key = key.slice(2);
+                    }
+                    if (/\.\//.test(value)) {
+                        value = "~/" + value.slice(2);
+                    } else {
+                        value = "~/" + value;
+                    }
+                    if (!/.js$/.test(value)) {
+                        value = value + ".js";
+                    }
                 }
             }
-
             newOverrides[key] = value;
         }
         return newOverrides;

@@ -96,7 +96,7 @@ export class BrowserFieldPackageJsonTest {
             "package.json": JSON.stringify({
                 name: name,
                 browser: {
-                    "hello.js": "target"
+                    "hello.js": "path"
                 }
             }),
             "index.js": `module.exports = require("./hello")`,
@@ -115,7 +115,7 @@ export class BrowserFieldPackageJsonTest {
             }
         ).simple().then(test => test.browser(window => {
             const index = window.FuseBox.import("./index");
-            should(index).deepEqual({ data: { target: 'world' } });
+            should(index.data.resolve).beFunction();
         }));
     }
 
@@ -191,7 +191,7 @@ export class BrowserFieldPackageJsonTest {
             "package.json": JSON.stringify({
                 name: name,
                 browser: {
-                    "hello.js": "target"
+                    "hello.js": "target.js"
                 }
             }),
             "index.js": `
