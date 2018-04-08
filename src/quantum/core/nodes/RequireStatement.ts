@@ -158,8 +158,9 @@ export class RequireStatement {
 
     public setExpression(raw: string) {
         const astStatemet = acornParse​​(raw);
-        if (astStatemet.body[0].expression) {
-            this.ast.arguments = [astStatemet.body[0].expression];
+        const body = astStatemet.body[0];
+        if (body.type === "ExpressionStatement") {
+            this.ast.arguments = [body.expression];
         }
     }
 

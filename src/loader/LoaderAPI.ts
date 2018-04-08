@@ -5,6 +5,7 @@
 declare let __root__: any;
 declare let __fbx__dnm__: any;
 declare const WorkerGlobalScope: any;
+declare const ServiceWorkerGlobalScope: any;
 
 const $isServiceWorker = typeof ServiceWorkerGlobalScope !== "undefined";
 const $isWebWorker = typeof WorkerGlobalScope !== "undefined";

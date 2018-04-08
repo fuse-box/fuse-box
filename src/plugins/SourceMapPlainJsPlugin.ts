@@ -98,7 +98,7 @@ export class SourceMapPlainJsPluginClass implements Plugin {
 
         smGenerator.setSourceContent(filePath, fileContent);
 
-        return JSON.stringify(smGenerator.toJSON());
+        return JSON.stringify(smGenerator);
     }
 }
 

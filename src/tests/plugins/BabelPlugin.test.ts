@@ -24,7 +24,7 @@ export class BabelPluginTest {
       return FuseTestEnv.create({
           project: {
             extensionOverrides: ['.foo.js'],
-            plugins: [BabelPlugin({ config: { presets: ["latest"] } })]
+            plugins: [BabelPlugin({ config: { presets: ["latest"] } })],
             files: {
                 "index.js": `export {getMessage} from './hello'`,
                 "hello.js": `export function getMessage() { return 'I should not be included'; }`,
@@ -40,7 +40,7 @@ export class BabelPluginTest {
       return FuseTestEnv.create({
           project: {
             extensionOverrides: ['.foo.wxyz'],
-            plugins: [BabelPlugin({ extensions: [".wxyz"], config: { "presets": ["latest"] } })]
+            plugins: [BabelPlugin({ extensions: [".wxyz"], config: { "presets": ["latest"] } })],
             files: {
                 "index.wxyz": `export {getMessage} from './hello.wxyz'`,
                 "hello.wxyz": `export function getMessage() { return 'I should not be included'; }`,
