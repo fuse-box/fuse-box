@@ -1,1 +1,1 @@
-module.exports = {Hello : 1}
+export const Hello = 1;

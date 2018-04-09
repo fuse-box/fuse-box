@@ -34,7 +34,7 @@ export class ExtensionOverridesTest {
             main: "./index.js"
         }),
         "index.js": `module.exports = require("./target.js")`,
-        "target.js": `module.exports = {message : "I should be included"}`
+        "target.js": `module.exports = {message : "I should be included"}`,
         "target.foo.js": `module.exports = {message : "I should not be included"}`
     });
 
