@@ -287,7 +287,7 @@ export class CssPluginTest {
             extensionOverrides: ['.foo.css'],
             files: {
                 "index.ts": `import './main.css'`,
-                "main.css": `html { background: red; }`
+                "main.css": `html { background: red; }`,
                 "main.foo.css": `html { background: blue; }`
             }
           }

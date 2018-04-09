@@ -1,8 +1,7 @@
 {
     "compilerOptions": {
-        "target": "es5",
-        "module": "commonjs",
-        "lib": ["dom", "es2015.promise", "es5"],
+        "target": "es2015",
+        "module": "commonjs",        
         "moduleResolution": "node",
         "isolatedModules": false,
         "jsx": "react",
