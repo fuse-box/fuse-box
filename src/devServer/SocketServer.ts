@@ -1,5 +1,5 @@
 import { FuseBox } from "../core/FuseBox";
-import { Server } from "uws";
+import { Server } from "ws";
 
 export class SocketServer {
 
