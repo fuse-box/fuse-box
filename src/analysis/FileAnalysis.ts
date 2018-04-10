@@ -9,7 +9,6 @@ import { OwnBundle } from "./plugins/OwnBundle";
 import { ImportDeclaration } from "./plugins/ImportDeclaration";
 import { DynamicImportStatement } from "./plugins/DynamicImportStatement";
 import { escapeRegExp } from '../Utils';
-import { Program } from "estree";
 require("acorn-jsx/inject")(acorn);
 require("./acorn-ext/obj-rest-spread")(acorn);
 
@@ -20,7 +19,7 @@ export interface TraversalPlugin {
 
 const plugins: TraversalPlugin[] = [AutoImport, OwnVariable, OwnBundle, ImportDeclaration, DynamicImportStatement, LanguageLevel];
 
-export function acornParse(contents, options?: any): Program {
+export function acornParse(contents, options?: any): any {
     return acorn.parse(contents, {
         ...options || {}, ...{
             sourceType: "module",
