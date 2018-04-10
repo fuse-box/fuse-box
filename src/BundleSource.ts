@@ -65,7 +65,7 @@ export class BundleSource {
 
         // handle server bundle
         if (this.context.target) {
-            this.concat.add(null, `FuseBox.target = "${this.context.target}"`);
+            this.concat.add(null, `FuseBox.target = "${this.context.target}";`);
         }
 
         if (this.context.serverBundle) {
@@ -74,7 +74,7 @@ export class BundleSource {
 
         if (this.context.fuse.producer && this.context.fuse.producer.allowSyntheticDefaultImports) {
             this.concat.add(null, `// allowSyntheticDefaultImports`);
-            this.concat.add(null, `FuseBox.sdep = true`);
+            this.concat.add(null, `FuseBox.sdep = true;`);
         }
     }
 
