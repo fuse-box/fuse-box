@@ -43,7 +43,7 @@ export class QuantumCore {
     public postTasks = new QuantumTask(this);
     public log: Log;
     public opts: QuantumOptions;
-    public cssCollection = new CSSCollection(this);
+    public cssCollection = new Map<string, CSSCollection>();
     public writer = new BundleWriter(this);
     public context: WorkFlowContext;
     public requiredMappings = new Set<RegExp>();
