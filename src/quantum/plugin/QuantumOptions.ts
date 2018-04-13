@@ -29,6 +29,7 @@ export interface IQuantumExtensionParams {
         path?: string,
         clean?: boolean
     } | boolean,
+    cssFiles?: { [key: string]: string }
     hoisting?: boolean | { names: string[] };
     containedAPI?: boolean,
     noConflictApi?: boolean;
@@ -63,6 +64,7 @@ export class QuantumOptions {
     private cleanCSS: any;
     private css = false;
     private cssPath = "styles.css";
+    private readonly cssFiles: { [key: string]: string };
     public quantumVariableName = "$fsx";
     public definedExpressions: { [key: string]: boolean | string | number };
     public webIndexPlugin: WebIndexPluginClass;
@@ -82,6 +84,9 @@ export class QuantumOptions {
             } else {
                 this.cleanCSS = true;
             }
+        }
+        if (opts.cssFiles) {
+            this.cssFiles = opts.cssFiles;
         }
         if (opts.api) {
             this.apiCallback = opts.api;
@@ -192,6 +197,10 @@ export class QuantumOptions {
 
     public getCSSPath() {
         return this.cssPath;
+    }
+
+    public getCSSFiles() {
+        return this.cssFiles;
     }
 
     public getCSSSourceMapsPath() {
