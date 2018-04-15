@@ -8,6 +8,7 @@ export interface SassPluginOptions {
     macros?: { [key: string]: string };
     importer?: boolean | ImporterFunc;
     cache?: boolean;
+    header?: string;
     indentedSyntax?: boolean,
     functions?: { [key: string]: (...args: any[]) => any }
 }
@@ -58,9 +59,13 @@ export class SassPluginClass implements Plugin {
             "~": Config.NODE_MODULES_DIR + "/",
         };
 
+        if (this.options.header) {
+            file.contents = this.options.header + "\n" + file.contents;
+        }
+
         const options = Object.assign({
             data: file.contents,
-            file: context.homeDir+"/"+file.info.fuseBoxPath,
+            file: context.homeDir + "/" + file.info.fuseBoxPath,
             sourceMap: true,
             outFile: file.info.fuseBoxPath,
             sourceMapContents: true
@@ -90,7 +95,7 @@ export class SassPluginClass implements Plugin {
                 let file = path.normalize(url);
 
                 if (context.extensionOverrides) {
-                  file = context.extensionOverrides.getPathOverride(file) || file;
+                    file = context.extensionOverrides.getPathOverride(file) || file;
                 }
 
                 done({ file });
