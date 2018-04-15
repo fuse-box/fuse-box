@@ -93,7 +93,6 @@ export class QuantumCore {
         abstraction.quantumCore = this;
         this.producerAbstraction = abstraction;
         this.log.echoInfo("Abstraction generated");
-
         await each(abstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
             return this.prepareFiles(bundleAbstraction);
         });
@@ -225,6 +224,7 @@ export class QuantumCore {
         if (globals) {
             for (let i in globals) { globalsName = globals[i]; }
         }
+        //console.log("here", bundleAbstraction.packageAbstractions);
         bundleAbstraction.packageAbstractions.forEach(packageAbstraction => {
             packageAbstraction.fileAbstractions.forEach((fileAbstraction, key: string) => {
                 let fileId = fileAbstraction.getFuseBoxFullPath();
