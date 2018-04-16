@@ -145,14 +145,14 @@ export class BundleWriter {
                 }
                 //output.write(this.core.opts.getCSSPath(), cssString)
                 const cssResultData = await output.writeToOutputFolder(name, cssCollection.getString(), true);
-                bundleManifest[key] = {
+                bundleManifest[name] = {
                     filename : cssResultData.filename,
                     type : "css",
                     hash : cssResultData.hash,
                     absPath : cssResultData.path,
                     relativePath : cssResultData.relativePath,
                     webIndexed : true
-                }
+                };
                 this.core.producer.injectedCSSFiles.add(cssResultData.filename);
                 if ( useSourceMaps ) {
                     output.writeToOutputFolder(this.core.opts.getCSSSourceMapsPath(), cssCollection.sourceMap);
