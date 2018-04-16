@@ -21,7 +21,7 @@ export class CSSModifications {
                     }
                     const cssPath = args[0].value;
                     const cssRaw = args[1].value;
-                    const cssFile = new CSSFile(cssPath, cssRaw);
+                    const cssFile = new CSSFile(cssPath, cssRaw, statement.file.packageAbstraction.name);
                     const collection = this.getCSSCollection(core, cssFile);
                     collection.add(cssFile);
                     core.postTasks.add(() => {
@@ -56,8 +56,12 @@ export class CSSModifications {
 
     private static getCSSGroup(core: QuantumCore, cssFile: CSSFile): string {
         for (let key in core.opts.getCSSFiles()) {
-            const regex = string2RegExp(key);
-            if (regex.test(cssFile.name)) {
+            let [packageName, pattern] = key.split('/', 2);
+            if (!pattern) {
+                pattern = '*';
+            }
+            const regex = string2RegExp(pattern);
+            if ((packageName === '*' || packageName === cssFile.packageName) && regex.test(cssFile.name)) {
                 return key;
             }
         }
