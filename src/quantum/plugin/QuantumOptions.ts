@@ -188,7 +188,7 @@ export class QuantumOptions {
         }
     }
     public shouldGenerateCSS() {
-        return this.css === true;
+        return this.css === true || this.cssFiles;
     }
 
     public getCleanCSSOptions() {
