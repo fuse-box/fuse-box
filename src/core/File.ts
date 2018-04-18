@@ -622,7 +622,9 @@ export class File {
                 return;
 	    }
         } catch(e){
-            this.context.fatal('You need TypeScript installed to transpile modules automatically');
+            this.context.fatal(`TypeScript automatic transpilation has failed. Please check that:
+            - You have TypeScript installed
+            - Your tsconfig.json file is not malformed.\nError message: ${e.message}`)
             return;
         }
     }
