@@ -451,6 +451,9 @@ export class File {
                 this.context.fuse.producer.addWarning('unresolved',
                     `Statement "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
             }
+            if (/\.html$/.test(this.info.fuseBoxPath)){
+                this.addError(`HTML Template Reference "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
+            }
             this.notFound = true;
             return;
         }
