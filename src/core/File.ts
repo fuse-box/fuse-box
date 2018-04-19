@@ -450,9 +450,8 @@ export class File {
             if (/\.js$/.test(this.info.fuseBoxPath) && this.context.fuse && this.context.fuse.producer) {
                 this.context.fuse.producer.addWarning('unresolved',
                     `Statement "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
-            }
-            if (/\.html$/.test(this.info.fuseBoxPath)){
-                this.addError(`HTML Template Reference "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
+            } else {
+                this.addError(`Asset reference "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
             }
             this.notFound = true;
             return;
