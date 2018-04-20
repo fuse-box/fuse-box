@@ -1213,8 +1213,8 @@ class WorkFlowContext {
         return this.fileGroups.get(name);
     }
     allowExtension(ext) {
-        if (!PathMaster_1.AllowedExtenstions.has(ext)) {
-            PathMaster_1.AllowedExtenstions.add(ext);
+        if (!PathMaster_1.AllowedExtensions.has(ext)) {
+            PathMaster_1.AllowedExtensions.add(ext);
         }
     }
     addAlias(obj, value) {
@@ -2618,7 +2618,7 @@ const tsExtensions = jsExtensions.concat([
     'ts',
     'tsx'
 ]);
-class AllowedExtenstions {
+class AllowedExtensions {
     static add(name) {
         if (!this.list.has(name)) {
             this.list.add(name);
@@ -2628,7 +2628,7 @@ class AllowedExtenstions {
         return this.list.has(name);
     }
 }
-AllowedExtenstions.list = new Set([
+AllowedExtensions.list = new Set([
     '.js',
     '.jsx',
     '.ts',
@@ -2638,7 +2638,7 @@ AllowedExtenstions.list = new Set([
     '.css',
     '.html'
 ]);
-exports.AllowedExtenstions = AllowedExtenstions;
+exports.AllowedExtensions = AllowedExtensions;
 class PathMaster {
     constructor(context, rootPackagePath) {
         this.context = context;
@@ -2846,7 +2846,7 @@ class PathMaster {
                 }
             }
         }
-        if (!AllowedExtenstions.has(ext)) {
+        if (!AllowedExtensions.has(ext)) {
             let fileNameCheck = this.checkFileName(root, name);
             if (fileNameCheck) {
                 return { resolved: fileNameCheck };
