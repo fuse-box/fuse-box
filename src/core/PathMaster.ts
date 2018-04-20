@@ -56,7 +56,7 @@ export interface IPackageInformation {
  * Manages the allowed extensions e.g.
  * should user be allowed to do `require('./foo.ts')`
  */
-export class AllowedExtenstions {
+export class AllowedExtensions {
     /**
      * Users are allowed to require files with these extensions by default
      **/
@@ -337,7 +337,7 @@ export class PathMaster {
             }
         }
 
-        if (!AllowedExtenstions.has(ext)) {
+        if (!AllowedExtensions.has(ext)) {
             let fileNameCheck = this.checkFileName(root, name);
             if (fileNameCheck) {
                 return { resolved: fileNameCheck };

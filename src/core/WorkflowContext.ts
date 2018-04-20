@@ -4,7 +4,7 @@ import { BundleSource } from "../BundleSource";
 import { File, ScriptTarget } from "./File";
 import { Log } from "../Log";
 import * as NativeEmitter from "events";
-import { IPackageInformation, IPathInformation, AllowedExtenstions } from "./PathMaster";
+import { IPackageInformation, IPathInformation, AllowedExtensions } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "../ModuleCache";
 import { EventEmitter } from "../EventEmitter";
@@ -481,8 +481,8 @@ export class WorkFlowContext {
     }
 
     public allowExtension(ext: string) {
-        if (!AllowedExtenstions.has(ext)) {
-            AllowedExtenstions.add(ext);
+        if (!AllowedExtensions.has(ext)) {
+            AllowedExtensions.add(ext);
         }
     }
 
