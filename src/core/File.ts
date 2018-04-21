@@ -450,6 +450,8 @@ export class File {
             if (/\.js$/.test(this.info.fuseBoxPath) && this.context.fuse && this.context.fuse.producer) {
                 this.context.fuse.producer.addWarning('unresolved',
                     `Statement "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
+            } else {
+                this.context.fuse.producer.addWarning('notfound', `File "${this.absPath}" was not found`);
             }
             this.notFound = true;
             return;
