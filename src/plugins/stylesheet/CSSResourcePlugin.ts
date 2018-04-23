@@ -136,7 +136,7 @@ export class CSSResourcePluginClass implements Plugin {
                 }
             }
 
-            if (url.startsWith('https:') || url.startsWith('http:') || url.startsWith('//')) {
+            if (url.startsWith('https:') || url.startsWith('http:') || url.startsWith('//') || url.startsWith('#')) {
                 return url
             }
 
