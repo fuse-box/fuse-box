@@ -447,7 +447,7 @@ export class File {
 
         if (!fs.existsSync(this.info.absPath)) {
 
-            if (/\.js$/.test(this.info.fuseBoxPath) && this.context.fuse && this.context.fuse.producer) {
+            if (/\.jsx?$/.test(this.info.fuseBoxPath) && this.context.fuse && this.context.fuse.producer) {
                 this.context.fuse.producer.addWarning('unresolved',
                     `Statement "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
             } else {
