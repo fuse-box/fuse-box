@@ -241,7 +241,7 @@ export class Bundle {
                 }).then(source => {
                 }).catch(e => {
                     console.error(e);
-                    return reject(reject);
+                    return reject(e);
                 });
             return this;
         });
