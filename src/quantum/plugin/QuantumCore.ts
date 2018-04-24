@@ -232,7 +232,7 @@ export class QuantumCore {
                 this.handleMappings(fileId, id);
                 this.index++;
                 if (fileId === entryId) {
-                    fileAbstraction.setEnryPoint(globalsName);
+                    fileAbstraction.setEntryPoint(globalsName);
                 }
                 fileAbstraction.setID(id);
             });
