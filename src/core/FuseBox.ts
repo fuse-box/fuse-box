@@ -493,6 +493,7 @@ export class FuseBox {
             return contents;
         }).catch(e => {
             console.log(e.stack || e);
+            throw e;
         });
     }
 }
