@@ -246,7 +246,7 @@ export class FileAbstraction {
         return this.globalVariables.has("exports") || this.globalVariables.has("module");
     }
 
-    public setEnryPoint(globalsName?: string) {
+    public setEntryPoint(globalsName?: string) {
         this.isEntryPoint = true;
         this.globalsName = globalsName;
         this.treeShakingRestricted = true;

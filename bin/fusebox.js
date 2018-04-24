@@ -5823,7 +5823,7 @@ class FileAbstraction {
     isExportInUse() {
         return this.globalVariables.has('exports') || this.globalVariables.has('module');
     }
-    setEnryPoint(globalsName) {
+    setEntryPoint(globalsName) {
         this.isEntryPoint = true;
         this.globalsName = globalsName;
         this.treeShakingRestricted = true;
@@ -7587,7 +7587,7 @@ class QuantumCore {
                 this.handleMappings(fileId, id);
                 this.index++;
                 if (fileId === entryId) {
-                    fileAbstraction.setEnryPoint(globalsName);
+                    fileAbstraction.setEntryPoint(globalsName);
                 }
                 fileAbstraction.setID(id);
             });
