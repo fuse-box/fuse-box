@@ -218,30 +218,19 @@ export class QuantumCore {
             entryId = `${this.producer.entryPackageName}/${this.producer.entryPackageFile}`;
         }
 
-        // define globals
-        const globals = this.producer.fuse.context.globals;
-
         bundleAbstraction.packageAbstractions.forEach(packageAbstraction => {
             packageAbstraction.fileAbstractions.forEach((fileAbstraction, key: string) => {
                 let fileId = fileAbstraction.getFuseBoxFullPath();
                 const id = this.index;
                 this.handleMappings(fileId, id);
                 this.index++;
-                fileAbstraction.setID(id);
                 if (fileId === entryId) {
-                    // iterate globals, add them as well.
-                    fileAbstraction.requireStatements.forEach(requireStatement => {
-                        if (Object.keys(globals).indexOf(requireStatement.value) != -1) {
-                            this.index++;
-                            requireStatement.file.setID(this.index);
-                            fileAbstraction.setEntryPoint(globals[requireStatement.value], id);
-                        }
-                    })
+                    fileAbstraction.setEntryPoint();
                 }
+                fileAbstraction.setID(id);
             });
         });
     }
-
     public async processBundle(bundleAbstraction: BundleAbstraction) {
         this.log.echoInfo(`Process bundle ${bundleAbstraction.name}`);
         await each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
@@ -264,11 +253,14 @@ export class QuantumCore {
     }
     public render() {
         return each(this.producerAbstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
-
+            const globals = this.producer.fuse.context.globals;
             const generator = new FlatFileGenerator(this, bundleAbstraction);
             generator.init();
             return each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
                 return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) => {
+                    if (fileAbstraction.fuseBoxPath == packageAbstraction.entryFile && globals && Object.keys(globals).indexOf(packageAbstraction.name) != -1) {
+                        generator.setGlobals(globals[packageAbstraction.name], fileAbstraction.getID());
+                    }
                     return generator.addFile(fileAbstraction, this.opts.shouldEnsureES5());
                 });
 

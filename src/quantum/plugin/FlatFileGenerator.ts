@@ -5,8 +5,12 @@ import { BundleAbstraction } from "../core/BundleAbstraction";
 export class FlatFileGenerator {
     public contents = [];
     public entryId;
-    public globals: Map<string, number>;
+    public globals = new Map<string, string>();
     constructor(public core: QuantumCore, public bundleAbstraction?: BundleAbstraction​​) { }
+
+    public setGlobals(packageName: string, fileID: string) {
+        this.globals.set(packageName, fileID);
+    }
 
     public init() {
         if (this.core.opts.isTargetBrowser() || this.core.opts.isTargetUniveral()) {
@@ -40,7 +44,6 @@ export class FlatFileGenerator {
         let fileId = file.getID();
         if (file.isEntryPoint) {
             this.entryId = fileId;
-            this.globals = file.globals;
         }
         this.contents.push(`// ${file.packageAbstraction.name}/${file.fuseBoxPath}`);
         this.contents.push(`${this.core.opts.quantumVariableName}.f[${JSON.stringify(fileId)}] = ${file.generate(ensureES5)}`);
@@ -66,26 +69,22 @@ export class FlatFileGenerator {
             }
         }
 
+        this.globals.forEach((fileID, globalName) => {
+            const req = `${this.core.opts.quantumVariableName}.r(${JSON.stringify(fileID)})`;
+            if (this.core.opts.isTargetNpm() || this.core.opts.isTargetServer()) {
+                this.contents.push(`module.exports = ${req}`);
+            }
+
+            if (this.core.opts.isTargetBrowser()) {
+                this.contents.push(`window['${globalName}']=${req}`);
+            }
+
+
+        })
+
         if (this.entryId !== undefined) {
             const req = `${this.core.opts.quantumVariableName}.r(${JSON.stringify(this.entryId)})`;
-
-            if (this.globals) {
-                this.globals.forEach((fileID, globalName) => {
-                    const req = `${this.core.opts.quantumVariableName}.r(${JSON.stringify(fileID)})`;
-                    if (this.core.opts.isTargetNpm() || this.core.opts.isTargetServer()) {
-                        this.contents.push(`module.exports = ${req}`);
-                    }
-
-                    if (this.core.opts.isTargetBrowser()) {
-                        this.contents.push(`window['${globalName}']=${req}`);
-                    }
-
-
-                })
-
-            } else {
-                this.contents.push(req);
-            }
+            this.contents.push(req);
         }
         // finish wrapping
         if (this.core.opts.isTargetBrowser() || this.core.opts.isTargetUniveral()) {

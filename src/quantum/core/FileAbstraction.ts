@@ -37,7 +37,6 @@ export class FileAbstraction {
 
     public isEcmaScript6 = false;
     public shakable = false;
-    public globals = new Map<string, number>();
     public amountOfReferences = 0;
     public canBeRemoved = false;
 
@@ -135,6 +134,7 @@ export class FileAbstraction {
         this.ast = acornParse​​(contents);
         this.analyse();
     }
+    
     public setID(id: any) {
         this.id = id;
     }
@@ -246,9 +246,8 @@ export class FileAbstraction {
         return this.globalVariables.has("exports") || this.globalVariables.has("module");
     }
 
-    public setEntryPoint(globalName: string, fileID: number) {
+    public setEntryPoint() {
         this.isEntryPoint = true;
-        this.globals.set(globalName, fileID);
         this.treeShakingRestricted = true;
     }
 
