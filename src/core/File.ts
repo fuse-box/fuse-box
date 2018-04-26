@@ -447,9 +447,11 @@ export class File {
 
         if (!fs.existsSync(this.info.absPath)) {
 
-            if (/\.js$/.test(this.info.fuseBoxPath) && this.context.fuse && this.context.fuse.producer) {
+            if (/\.jsx?$/.test(this.info.fuseBoxPath) && this.context.fuse && this.context.fuse.producer) {
                 this.context.fuse.producer.addWarning('unresolved',
                     `Statement "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
+            } else {
+                this.addError(`Asset reference "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
             }
             this.notFound = true;
             return;
@@ -619,7 +621,9 @@ export class File {
                 return;
 	    }
         } catch(e){
-            this.context.fatal('You need TypeScript installed to transpile modules automatically');
+            this.context.fatal(`TypeScript automatic transpilation has failed. Please check that:
+            - You have TypeScript installed
+            - Your tsconfig.json file is not malformed.\nError message: ${e.message}`)
             return;
         }
     }
