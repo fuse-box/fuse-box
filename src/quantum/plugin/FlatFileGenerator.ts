@@ -59,33 +59,56 @@ export class FlatFileGenerator {
     public render() {
         if (this.bundleAbstraction) {
             this.addHoistedVariables();
-        }
-        if (this.bundleAbstraction) {
+
             if (this.bundleAbstraction.globalVariableRequired) {
                 const defineGlobalFn = "var global = window";
                 if (this.core.opts.isTargetBrowser()) {
                     this.contents.push(defineGlobalFn);
                 }
             }
+
         }
 
-        this.globals.forEach((fileID, globalName) => {
-            const req = `${this.core.opts.quantumVariableName}.r(${JSON.stringify(fileID)})`;
-            if (this.core.opts.isTargetNpm() || this.core.opts.isTargetServer()) {
-                this.contents.push(`module.exports = ${req}`);
-            }
-
-            if (this.core.opts.isTargetBrowser()) {
-                this.contents.push(`window['${globalName}']=${req}`);
-            }
-
-
-        })
+        if (this.core.opts.isTargetBrowser()) {
+            this.globals.forEach((fileID, globalName) => {
+                const req = `${this.core.opts.quantumVariableName}.r(${JSON.stringify(fileID)})`;
+                if (globalName == '*') {
+                    this.contents.push(`var r = ${req}`);
+                    this.contents.push(`if (r){for(var i in r){ window[i] = r[i] }}`);
+                } else {
+                    this.contents.push(`window['${globalName}']=${req}`);
+                }
+            })
+        }
 
         if (this.entryId !== undefined) {
+
             const req = `${this.core.opts.quantumVariableName}.r(${JSON.stringify(this.entryId)})`;
-            this.contents.push(req);
+
+            if (this.core.opts.isTargetNpm() || this.core.opts.isTargetServer()) {
+
+                // look for a global mention of the entry package, ignore other settings. this could use some improvement.
+                var dirtyCheck = false;
+                this.globals.forEach((fileID, globalName) => {
+                    if (fileID == this.entryId && globalName == '*') {
+                        dirtyCheck = true;
+                    }
+                });
+
+                if (dirtyCheck) {
+                    this.contents.push(`module.exports = ${req}`);
+                } else {
+                    this.contents.push(req);
+                }
+
+            } else {
+
+                this.contents.push(req);
+
+            }
+
         }
+
         // finish wrapping
         if (this.core.opts.isTargetBrowser() || this.core.opts.isTargetUniveral()) {
             if (this.core.opts.isContained()) {
