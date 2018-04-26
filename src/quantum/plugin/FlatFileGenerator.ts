@@ -5,11 +5,8 @@ import { BundleAbstraction } from "../core/BundleAbstraction";
 export class FlatFileGenerator {
     public contents = [];
     public entryId;
-    public globalsName: string;
+    public globals: Map<string, number>;
     constructor(public core: QuantumCore, public bundleAbstraction?: BundleAbstraction​​) { }
-    public addGlobal(code: string) {
-        this.contents.push(code);
-    }
 
     public init() {
         if (this.core.opts.isTargetBrowser() || this.core.opts.isTargetUniveral()) {
@@ -43,7 +40,7 @@ export class FlatFileGenerator {
         let fileId = file.getID();
         if (file.isEntryPoint) {
             this.entryId = fileId;
-            this.globalsName = file.globalsName;
+            this.globals = file.globals;
         }
         this.contents.push(`// ${file.packageAbstraction.name}/${file.fuseBoxPath}`);
         this.contents.push(`${this.core.opts.quantumVariableName}.f[${JSON.stringify(fileId)}] = ${file.generate(ensureES5)}`);
@@ -68,22 +65,24 @@ export class FlatFileGenerator {
                 }
             }
         }
+
         if (this.entryId !== undefined) {
             const req = `${this.core.opts.quantumVariableName}.r(${JSON.stringify(this.entryId)})`;
 
-            if (this.globalsName) {
-                if (this.core.opts.isTargetNpm() || this.core.opts.isTargetServer()) {
-                    this.contents.push(`module.exports = ${req}`);
-                }
-
-                if (this.core.opts.isTargetBrowser()) {
-                    if (this.globalsName === "*") {
-                        this.contents.push(`var r = ${req}`);
-                        this.contents.push(`if (r){for(var i in r){ window[i] = r[i] }}`);
-                    } else {
-                        this.contents.push(`window['${this.globalsName}']=${req}`);
+            if (this.globals) {
+                this.globals.forEach((fileID, globalName) => {
+                    const req = `${this.core.opts.quantumVariableName}.r(${JSON.stringify(fileID)})`;
+                    if (this.core.opts.isTargetNpm() || this.core.opts.isTargetServer()) {
+                        this.contents.push(`module.exports = ${req}`);
                     }
-                }
+
+                    if (this.core.opts.isTargetBrowser()) {
+                        this.contents.push(`window['${globalName}']=${req}`);
+                    }
+
+
+                })
+
             } else {
                 this.contents.push(req);
             }

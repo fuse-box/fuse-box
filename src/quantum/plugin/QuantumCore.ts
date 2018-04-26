@@ -220,28 +220,31 @@ export class QuantumCore {
 
         // define globals
         const globals = this.producer.fuse.context.globals;
-        let globalsName;
-        if (globals) {
-            for (let i in globals) { globalsName = globals[i]; }
-        }
-        //console.log("here", bundleAbstraction.packageAbstractions);
+
         bundleAbstraction.packageAbstractions.forEach(packageAbstraction => {
             packageAbstraction.fileAbstractions.forEach((fileAbstraction, key: string) => {
                 let fileId = fileAbstraction.getFuseBoxFullPath();
                 const id = this.index;
                 this.handleMappings(fileId, id);
                 this.index++;
-                if (fileId === entryId) {
-                    fileAbstraction.setEntryPoint(globalsName);
-                }
                 fileAbstraction.setID(id);
+                if (fileId === entryId) {
+                    // iterate globals, add them as well.
+                    fileAbstraction.requireStatements.forEach(requireStatement => {
+                        if (Object.keys(globals).indexOf(requireStatement.value) != -1) {
+                            this.index++;
+                            requireStatement.file.setID(this.index);
+                            fileAbstraction.setEntryPoint(globals[requireStatement.value], id);
+                        }
+                    })
+                }
             });
         });
     }
 
     public async processBundle(bundleAbstraction: BundleAbstraction) {
         this.log.echoInfo(`Process bundle ${bundleAbstraction.name}`);
-        await  each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
+        await each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
             const fileSize = packageAbstraction.fileAbstractions.size;
             this.log.echoInfo(`Process package ${packageAbstraction.name} `);
             this.log.echoInfo(`  Files: ${fileSize} `);
