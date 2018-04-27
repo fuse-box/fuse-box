@@ -267,12 +267,10 @@ function lookUpTreeForBodyWithRequireFlag(node, ignoreFlagCheck) {
 // if it still passes thorough, it's piped to the matchesSingleVariable function for good measure.
 export function isTrueRequireFunction(node) {
     if (node.type === "Identifier" && node.name === "require") {
-        const isVar = node.$parent && node.$parent.type === 'VariableDeclarator';
+        const isVar = node.$parent && node.$parent.type === 'VariableDeclarator' && node.$parent.left === node;
         const isParam = node.$prop == 'params';
         if (isVar || isParam) {
             // get nearest body up chain and set flag.
-            console.log(isVar)
-            console.log(isParam)
             if (node.body) {
                 node.body.skipRequireSubstitution = true;
             }
