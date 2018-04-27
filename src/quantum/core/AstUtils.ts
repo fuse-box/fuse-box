@@ -49,7 +49,7 @@ export function matchesDefinedExpression(node, expressions: { [key: string]: boo
     let isConditional = false;
 
     if (node.type === "IfStatement" && node.test && node.test.type === "BinaryExpression"
-        && node.test.left && ( node.test.left.type === "MemberExpression" || node.test.left.type === "Identifier" ) ) {
+        && node.test.left && (node.test.left.type === "MemberExpression" || node.test.left.type === "Identifier")) {
         targetNode = node.test.left;
         isConditional = true;
     }
@@ -211,8 +211,8 @@ export function matchesSingleVariable(node: any, name: string) {
                 return false;
             }
             if (parent.type) {
-                if( parent.type === "UnaryExpression"){
-                    if ( parent.argument && parent.operator === "typeof" && parent.argument.type === "Identifier" && parent.argument.name === name){
+                if (parent.type === "UnaryExpression") {
+                    if (parent.argument && parent.operator === "typeof" && parent.argument.type === "Identifier" && parent.argument.name === name) {
                         return false;
                     }
                 }
@@ -231,9 +231,65 @@ export function matchesSingleVariable(node: any, name: string) {
     }
 }
 
+// this function serves two purposes, and is for isTrueRequireFunction.
+// ignoreFlagCheck true => looks for the closest node up the tree with a BODY. otherwise returns false.
+// ignoreFlagCheck false => looks for the closest node up the tree with a BODY AND A `skipRequireSubstitution` property.
+// returns the node it found.
+// otherwise, returns false.
+function lookUpTreeForBodyWithRequireFlag(node, ignoreFlagCheck) {
+    if (node.body) {
+        if (ignoreFlagCheck) {
+            return node;
+        }
+        if (node.body.skipRequireSubstitution === undefined) {
+            if (node.$parent) {
+                return lookUpTreeForBodyWithRequireFlag(node.$parent, ignoreFlagCheck)
+            } else {
+                return false;
+            }
+        } else {
+            return node;
+        }
+    } else {
+        if (node.$parent) {
+            return lookUpTreeForBodyWithRequireFlag(node.$parent, ignoreFlagCheck)
+        } else {
+            // hit root, no body available with relevant flag.
+            return false;
+        }
+    }
+}
 
-export function matchesRequireFunction(node: any) {
-    return matchesSingleVariable(node, "require");
+// this function attempts to skip a node with the 'require' name, as it might be a false positive.
+// it checks firstly whether the node should be treated as a false positive.
+// if it's a false positive, it looks for the closest node up the tree using lookUpTreeForBodyWithRequireFlag and sets `skipRequireSubstitution` = true on the closest node.
+// if it appears fine, it looks up the chain for any nodes with the `skipRequireSubstitution` flag. if so, its ignored.
+// if it still passes thorough, it's piped to the matchesSingleVariable function for good measure.
+export function isTrueRequireFunction(node) {
+    if (node.type === "Identifier" && node.name === "require") {
+        const isVar = node.$parent && node.$parent.type === 'VariableDeclarator';
+        const isParam = node.$prop == 'params';
+        if (isVar || isParam) {
+            // get nearest body up chain and set flag.
+            console.log(isVar)
+            console.log(isParam)
+            if (node.body) {
+                node.body.skipRequireSubstitution = true;
+            }
+            var nearestNodeWithBody = lookUpTreeForBodyWithRequireFlag(node, true);
+            if (nearestNodeWithBody) {
+                nearestNodeWithBody.body.skipRequireSubstitution = true;
+            }
+            return false;
+        }
+
+        if (lookUpTreeForBodyWithRequireFlag(node, false) == false) {
+            return matchesSingleVariable(node, 'require');
+        } else {
+            return false;
+        }
+    }
+    return false;
 }
 
 export function matchesSingleFunction(node: any, name: string) {
