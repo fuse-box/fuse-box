@@ -74,6 +74,60 @@ export class GlobalVariableTEst {
     }
 
 
+    public "Should replace require statement 2"() {
+        return FuseTestEnv.create(
+            {
+                project: {
+                    files: {
+                        "index.ts": `
+                        function testFunction(){
+                            var test = 5;
+                            var require = test;
+                            if (isString(require)) {
+
+                            }
+                        }
+                        testFunction()
+                    `
+                    },
+                    plugins: [QuantumPlugin({
+                        target: "browser"
+                    })]
+                }
+            }
+        ).simple().then(test => test.browser((window, env) => {
+            const app = env.getScript("app.js");
+            app.shouldFindString("require");
+        }));
+    }
+
+    public "Should replace require statement 3"() {
+        return FuseTestEnv.create(
+            {
+                project: {
+                    files: {
+                        "index.ts": `
+                        function test () {
+                            (function(require){
+                                if (isString(require)) {
+                                    console.log(require);
+                                }
+                            }())
+                        }
+                        test();
+                    `
+                    },
+                    plugins: [QuantumPlugin({
+                        target: "browser"
+                    })]
+                }
+            }
+        ).simple().then(test => test.browser((window, env) => {
+            const app = env.getScript("app.js");
+            app.shouldFindString("require");
+        }));
+    }
+
     public "Should not replace require statement"() {
         return FuseTestEnv.create(
 
@@ -137,6 +191,31 @@ export class GlobalVariableTEst {
         ).simple().then(test => test.browser((window, env) => {
             const app = env.getScript("app.js");
             app.shouldFindString("typeof require");
+        }));
+    }
+
+    public "Should not replace require statement 3"() {
+        return FuseTestEnv.create(
+            {
+                project: {
+                    files: {
+                        "index.ts": `
+                        const require = 2
+                        (function(){
+                            (function(){
+                                require('test')
+                            }())
+                        }())
+                    `
+                    },
+                    plugins: [QuantumPlugin({
+                        target: "browser"
+                    })]
+                }
+            }
+        ).simple().then(test => test.browser((window, env) => {
+            const app = env.getScript("app.js");
+            app.shouldNotFindString("require('test')");
         }));
     }
 
