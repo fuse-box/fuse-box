@@ -178,7 +178,7 @@ export function matchesPath(node, variablePath: string) {
         }
         //console.log(paths);
         if (paths.length === 1) {
-            if (matchesSigleVariable(node, variablePath)) {
+            if (matchesSingleVariable(node, variablePath)) {
                 return variablePath;
             }
         }
@@ -197,7 +197,7 @@ export function matchesEcmaScript6(node) {
     return false;
 }
 
-export function matchesSigleVariable(node: any, name: string) {
+export function matchesSingleVariable(node: any, name: string) {
     if (node.type === "Identifier" && node.name === name) {
         if (node.$parent) {
             const parent = node.$parent;
@@ -233,7 +233,7 @@ export function matchesSigleVariable(node: any, name: string) {
 
 
 export function matchesRequireFunction(node: any) {
-    return matchesSigleVariable(node, "require");
+    return matchesSingleVariable(node, "require");
 }
 
 export function matchesSingleFunction(node: any, name: string) {
