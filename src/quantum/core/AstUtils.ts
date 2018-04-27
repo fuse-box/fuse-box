@@ -49,7 +49,7 @@ export function matchesDefinedExpression(node, expressions: { [key: string]: boo
     let isConditional = false;
 
     if (node.type === "IfStatement" && node.test && node.test.type === "BinaryExpression"
-        && node.test.left && ( node.test.left.type === "MemberExpression" || node.test.left.type === "Identifier" ) ) {
+        && node.test.left && (node.test.left.type === "MemberExpression" || node.test.left.type === "Identifier")) {
         targetNode = node.test.left;
         isConditional = true;
     }
@@ -211,8 +211,8 @@ export function matchesSingleVariable(node: any, name: string) {
                 return false;
             }
             if (parent.type) {
-                if( parent.type === "UnaryExpression"){
-                    if ( parent.argument && parent.operator === "typeof" && parent.argument.type === "Identifier" && parent.argument.name === name){
+                if (parent.type === "UnaryExpression") {
+                    if (parent.argument && parent.operator === "typeof" && parent.argument.type === "Identifier" && parent.argument.name === name) {
                         return false;
                     }
                 }
@@ -232,8 +232,19 @@ export function matchesSingleVariable(node: any, name: string) {
 }
 
 
-export function matchesRequireFunction(node: any) {
-    return matchesSingleVariable(node, "require");
+export function isTrueRequireFunction(node: any) {
+    if (matchesSingleVariable(node, "require")) {
+        const isVar = ["var", "const", "let"].indexOf(node.type) > -1;
+        const isParam = node.$prop == 'params';
+        const hasParentWithFlag = node.$parent && node.$parent.skipRequireSubstitution;
+        if (isVar || isParam || hasParentWithFlag) {
+            node.$parent.skipRequireSubstitution = true;
+            node.skipRequireSubstitution = true;
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
 
 export function matchesSingleFunction(node: any, name: string) {
