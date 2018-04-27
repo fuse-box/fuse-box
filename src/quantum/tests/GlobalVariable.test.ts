@@ -97,7 +97,7 @@ export class GlobalVariableTEst {
             }
         ).simple().then(test => test.browser((window, env) => {
             const app = env.getScript("app.js");
-            app.shouldFindString("require");
+            app.shouldFindString("isString(require)");
         }));
     }
 
@@ -124,7 +124,10 @@ export class GlobalVariableTEst {
             }
         ).simple().then(test => test.browser((window, env) => {
             const app = env.getScript("app.js");
-            app.shouldFindString("require");
+            app.shouldFindString("function (require)");
+            app.shouldFindString("isString(require)");
+            app.shouldNotFindString("function ($fsx)");
+            app.shouldNotFindString("isString($fsx)");
         }));
     }
 
@@ -203,7 +206,7 @@ export class GlobalVariableTEst {
                         const require = 2
                         (function(){
                             (function(){
-                                require('test')
+                                require(2)
                             }())
                         }())
                     `
@@ -215,7 +218,38 @@ export class GlobalVariableTEst {
             }
         ).simple().then(test => test.browser((window, env) => {
             const app = env.getScript("app.js");
-            app.shouldNotFindString("require('test')");
+            app.shouldNotFindString("require(2)");
+        }));
+    }
+
+    public "Should not replace require statement 4"() {
+        return FuseTestEnv.create(
+            {
+                project: {
+                    files: {
+                        "index.ts": `
+                        const require = function(str){ return str };
+                        const hello = {
+                            foo  : {
+                                bar : {
+                                    woo : () => return require("foobar")
+                                    
+                                }
+                            }
+                        }
+                            
+
+                        module.exports = hello.foo.bar.woo()
+                    `
+                    },
+                    plugins: [QuantumPlugin({
+                        target: "browser"
+                    })]
+                }
+            }
+        ).simple().then(test => test.browser((window, env) => {
+            const res = window.$fsx.r(0);
+            should(res).equal("foobar")
         }));
     }
 
