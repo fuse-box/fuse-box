@@ -8,6 +8,7 @@
     /* @end */
 
     /* @if allowSyntheticDefaultImports */
+    // NOTE: Should match syntheticDefaultExportPolyfill in LoaderAPI.ts
     function syntheticDefaultExportPolyfill(input) {
         if( input === null ||
             ['function', 'object', 'array'].indexOf(typeof input) === -1 ||
