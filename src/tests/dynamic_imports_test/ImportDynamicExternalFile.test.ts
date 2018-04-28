@@ -69,6 +69,10 @@ export class ImportDynamicExternalFile {
                     process.send({ error: e});
                 })
             `, (data) => {
+                    // Node 8 doesn't provide a message and Node 9 does.
+                    // Removing it from data error object.
+                    delete data.error.message;
+
                     should(data).deepEqual({
                         "error": {
                           "code": "ENOTFOUND",
