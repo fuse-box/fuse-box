@@ -73,4 +73,40 @@ export class ConsolidatePluginTest {
           should(window.FuseBox.import("./template.pug")).deepEqual({ default: '<p>I should be included</p>' });
         }));
     }
+
+    "Should allow user to specify baseDir"() {
+        return createEnv({
+            project: {
+                files: {
+                    "template.pug": "p Compiled with Pug"
+                },
+                plugins: [ConsolidatePlugin({
+                  engine: 'pug',
+                  baseDir: ''
+                })],
+                instructions: "template.pug"
+            },
+        }).then((result) => {
+          const template = result.project.FuseBox.import('./template.pug');
+          should(template.default).equal("<p>Compiled with Pug</p>");
+        });
+    }
+
+    "Should allow user to specify includeDir"() {
+        return createEnv({
+            project: {
+                files: {
+                    "template.pug": "p Compiled with Pug"
+                },
+                plugins: [ConsolidatePlugin({
+                  engine: 'pug',
+                  includeDir: ''
+                })],
+                instructions: "template.pug"
+            },
+        }).then((result) => {
+          const template = result.project.FuseBox.import('./template.pug');
+          should(template.default).equal("<p>Compiled with Pug</p>");
+        });
+    }
 }
