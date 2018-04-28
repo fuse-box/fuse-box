@@ -36,7 +36,6 @@ export class BundleProducer {
     }
 
     public run(opts: { chokidar?: any, runType?: string }): Promise<BundleProducer> {
-        console.log("RUN");
         if (opts) {
             this.chokidarOptions = opts.chokidar;
         }
