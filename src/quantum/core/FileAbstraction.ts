@@ -11,7 +11,7 @@ import {
     matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier,
     trackRequireMember, matchNamedExport,
     isExportMisused, matchesNodeEnv, matchesExportReference,
-    matchesIfStatementProcessEnv, compareStatement, matchesIfStatementFuseBoxIsEnvironment, isExportComputed, matchesRequireFunction, matchesDefinedExpression
+    matchesIfStatementProcessEnv, compareStatement, matchesIfStatementFuseBoxIsEnvironment, isExportComputed, isTrueRequireFunction, matchesDefinedExpression
 } from "./AstUtils";
 import { ExportsInterop } from "./nodes/ExportsInterop";
 import { UseStrict } from "./nodes/UseStrict";
@@ -134,7 +134,7 @@ export class FileAbstraction {
         this.ast = acornParse​​(contents);
         this.analyse();
     }
-    
+
     public setID(id: any) {
         this.id = id;
     }
@@ -426,7 +426,7 @@ export class FileAbstraction {
         // e.g const req = require
         // should replace it to:
         // const req = $fsx
-        if (matchesRequireFunction(node)) {
+        if (isTrueRequireFunction(node)) {
             node.name = this.core.opts.quantumVariableName;
         }
         //console.log(node);
