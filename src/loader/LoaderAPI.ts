@@ -395,10 +395,27 @@ function $trigger(name: string, args: any) {
     }
 };
 
+// NOTE: Should match syntheticDefaultExportPolyfill in fuse-box-responsive-api/index.js
 function syntheticDefaultExportPolyfill(input){
-    return input !== null && ['function', 'object', 'array']
-        .indexOf(typeof input) > -1 && input.default === undefined ?
-             Object.isFrozen(input) ? input.default = input : Object.defineProperty(input, "default", {value : input, writable : true, enumerable : false}) : void 0;
+    if( input === null ||
+        ['function', 'object', 'array'].indexOf(typeof input) === -1 ||
+        input.hasOwnProperty("default") // use hasOwnProperty to avoid triggering usage warnings from libraries like mobx
+    ) {
+        return
+    }
+
+    // to get around frozen input
+    if (Object.isFrozen(input) ) {
+        input.default = input;
+        return;
+    }
+
+    // free to define properties
+    Object.defineProperty(input, "default", {
+        value: input,
+        writable: true,
+        enumerable: false
+    });
 }
 
 /**
