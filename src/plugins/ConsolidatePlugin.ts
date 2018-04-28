@@ -5,6 +5,8 @@ export interface IConsolidatePluginOptions {
   engine: string;
   extension?: string;
   useDefault?: boolean;
+  baseDir?: string;
+  includeDir?: string;
 }
 
 export class ConsolidatePluginClass implements Plugin {
@@ -12,6 +14,8 @@ export class ConsolidatePluginClass implements Plugin {
   private extension: string;
   private engine: string;
   private useDefault: boolean;
+  private baseDir: string;
+  private includeDir: string;
 
   constructor(options: IConsolidatePluginOptions) {
     if (!options.engine) {
@@ -22,6 +26,8 @@ export class ConsolidatePluginClass implements Plugin {
     this.engine = options.engine;
     this.extension = options.extension || `.${options.engine}`;
     this.useDefault = (options.useDefault !== undefined) ? options.useDefault : true;
+    this.baseDir = options.baseDir;
+    this.includeDir = options.includeDir;
     this.test = new RegExp(this.extension);
   }
 
@@ -54,8 +60,8 @@ export class ConsolidatePluginClass implements Plugin {
       file.contents = await consolidate[this.engine].render(file.contents, {
         cache: false,
         filename: 'base',
-        basedir: file.context.homeDir,
-        includeDir: file.context.homeDir
+        baseDir: this.baseDir || file.context.homeDir,
+        includeDir: this.includeDir || file.context.homeDir
       });
 
       if (this.useDefault) {
