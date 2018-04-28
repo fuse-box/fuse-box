@@ -66,6 +66,49 @@ ConsolidatePlugin({ engine: 'pug', extension: '.custom-extension' }) // will pro
 
 You can mix and match as you please.
 
+### baseDir
+The `baseDir` option allows you to set the root path
+```js
+ConsolidatePlugin({ baseDir: 'my/root/path' })
+```
+
+### includeDir
+The `includeDir` option allows you to set the root path to include something
+```js
+ConsolidatePlugin({ engine: 'my/include/root/' })
+```
+
+Also, it allows to avoid `../../../../../` mess for example let's take a look at this `pug` file:
+
+```pug
+extends ../layouts/base
+block content
+	include ../partials/header
+	include ../partials/side-nav
+
+	+header
+	+side-nav
+	section
+		h2 I love ConsolidatePlugin !
+```
+*the `pug` file is located in `views/`*
+
+As you can see, the `pug` file extends and includes other `pug` files.
+By setting the `includeDir` option it allows you to avoid doing `../` to go outside `views/`.
+So it'll look like this:
+
+```pug
+extends /layouts/base
+block content
+	include /partials/header
+	include /partials/side-nav
+
+	+header
+	+side-nav
+	section
+		h2 I love ConsolidatePlugin !
+```
+
 ### useDefault
 `useDefault` is enable by default. So the transpiled output would look like:
 
