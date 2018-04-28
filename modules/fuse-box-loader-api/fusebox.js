@@ -234,9 +234,20 @@ function $trigger(name, args) {
 }
 ;
 function syntheticDefaultExportPolyfill(input) {
-    return input !== null && ['function', 'object', 'array']
-        .indexOf(typeof input) > -1 && input.default === undefined ?
-        Object.isFrozen(input) ? input.default = input : Object.defineProperty(input, "default", { value: input, writable: true, enumerable: false }) : void 0;
+    if (input === null ||
+        ['function', 'object', 'array'].indexOf(typeof input) === -1 ||
+        input.hasOwnProperty("default")) {
+        return;
+    }
+    if (Object.isFrozen(input)) {
+        input.default = input;
+        return;
+    }
+    Object.defineProperty(input, "default", {
+        value: input,
+        writable: true,
+        enumerable: false
+    });
 }
 function $import(name, o) {
     if (o === void 0) { o = {}; }
