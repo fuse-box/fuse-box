@@ -60,7 +60,7 @@ export class ConsolidatePluginClass implements Plugin {
       file.contents = await consolidate[this.engine].render(file.contents, {
         cache: false,
         filename: 'base',
-        baseDir: this.baseDir || file.context.homeDir,
+        basedir: this.baseDir || file.context.homeDir,
         includeDir: this.includeDir || file.context.homeDir
       });
 
