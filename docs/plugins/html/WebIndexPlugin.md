@@ -38,6 +38,7 @@ fuse.plugin(
 
 
 note: If you specify template and templateString then template will take precedent 
+
 note: `scriptAttributes` option replace both previous `async` and `defer` options
 
 ### Resolve example
