@@ -34,10 +34,11 @@ fuse.plugin(
 | ` resolve `   | `resolve ?: {(output : UserOutput) : string}` Allows to completely override the output  |
 | `pre ` | `{ relType: 'fetch' | 'load' }`  Config object to either preload or prefetch the output javascript bundles in the head of the document |
 | ` appendBundles ` | Append $bundles to provided template |
-| ` async ` | Add the `async` attribute to javascript `<script>` tags (boolean) |
-| ` defer ` | Add the `defer` attribute to javascript `<script>` tags (boolean) |
+| ` scriptAttributes ` | Provide additional attribute(s) to `<script>` tags (type string) |
+
 
 note: If you specify template and templateString then template will take precedent 
+note: `scriptAttributes` option replace both previous `async` and `defer` options
 
 ### Resolve example
 `resolve` option allows you to completely override the path
