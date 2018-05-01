@@ -51,7 +51,8 @@ export class VueComponentClass implements Plugin {
 
   private createVirtualFile(file: File, block: any, scopeId: string, pluginChain: Plugin[]): VueBlockFile {
     let extension = block.lang || this.getDefaultExtension(block);
-    let src = `./${block.type}.${extension}`;
+	let name = file.relativePath.split('/').pop();
+	let src = `./${name}.${extension}`;
 
     if (block.src) {
         let srcExtension = path.extname(block.src) || '';
