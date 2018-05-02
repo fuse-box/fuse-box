@@ -18,6 +18,7 @@ export interface IndexPluginOptions {
     template?: string;
     templateString?: string;
     appendBundles?: boolean;
+    async?: boolean;
     scriptAttributes?: string;
     pre?: { relType: 'fetch' | 'load' };
     resolve?: { (output: UserOutput): string };
@@ -83,12 +84,10 @@ $bundles
                 }
             }
         }
-        
-        if (this.opts.async) {}
 
         let jsTags = this.opts.emitBundles
             ? this.opts.emitBundles(bundlePaths)
-            : bundlePaths.map(bundle => `<script ${this.opts.scriptAttributes ? this.opts.scriptAttributes : ''} type="text/javascript" src="${bundle}"></script>`).join('\n');
+            : bundlePaths.map(bundle => `<script ${this.opts.async ? this.opts.async : ''} ${this.opts.scriptAttributes ? this.opts.scriptAttributes : ''} type="text/javascript" src="${bundle}"></script>`).join('\n');
 
         let preloadTags;
         if (this.opts.pre) {
