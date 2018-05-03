@@ -34,7 +34,7 @@ fuse.plugin(
 | ` resolve `   | `resolve ?: {(output : UserOutput) : string}` Allows to completely override the output  |
 | `pre ` | `{ relType: 'fetch' | 'load' }`  Config object to either preload or prefetch the output javascript bundles in the head of the document |
 | ` appendBundles ` | Append $bundles to provided template |
-| ` async ` | Provide `async` attribute to `<script>` tags (boolena) |
+| ` async ` | Provide `async` attribute to `<script>` tags (boolean) |
 | ` scriptAttributes ` | Provide additional attribute(s) to `<script>` tags (string) |
 
 
