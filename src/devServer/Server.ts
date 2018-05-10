@@ -19,7 +19,7 @@ export interface ServerOptions {
     port?: number;
 
     /** Enable https (Must provide cert and key) */
-    https?: { cert: string, key: string };
+    https?: { cert: string, key: string, passphrase?: string };
 
     /**
      * - If false nothing is served.
