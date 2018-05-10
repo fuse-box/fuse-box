@@ -27,7 +27,7 @@ node_modules
 stuff
   src
     index.ts
-    fuse.js
+  fuse.js
 ```
 
 
