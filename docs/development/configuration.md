@@ -72,7 +72,7 @@ However it is strongly recommended to use `$name` in your output template, as `o
 
 Listens to stdin.
 
-Combinations like `CMD+D` will gracefully shut down any process.
+Combinations like `Ctrl+D` will gracefully shut down any process.
 
 ## Cache
 
