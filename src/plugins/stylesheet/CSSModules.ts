@@ -6,11 +6,12 @@ import * as postcss from "postcss";
 export interface CSSModulesOptions {
     useDefault?: boolean;
     scopedName?: string;
-    paths?: string[];
+    paths?: string[],
     root?: string;
 }
 
 export class CSSModulesClass implements Plugin {
+
     public test: RegExp = /\.css$/;
     public options: CSSModulesOptions;
     public useDefault = true;
@@ -42,7 +43,7 @@ export class CSSModulesClass implements Plugin {
             file.loadContents();
             const context = file.context;
 
-            const paths = [file.info.absDir, ...(this.options.paths || [])];
+            const paths = [file.info.absDir, ...this.options.paths || []]
 
             const cssDependencies = context.extractCSSDependencies(file, {
                 paths: paths,
@@ -52,39 +53,28 @@ export class CSSModulesClass implements Plugin {
             file.cssDependencies = cssDependencies;
 
             return postcss([
-                require("postcss-modules")({
+                require('postcss-modules')({
                     root: this.options.root || file.info.absDir,
                     getJSON: (cssFileName, json) => {
-                        let exportsKey = this.useDefault
-                            ? "module.exports.default"
-                            : "module.exports";
+                        let exportsKey = this.useDefault ? "module.exports.default" : "module.exports";
                         const cnt = [];
                         if (this.useDefault) {
-                            cnt.push(
-                                `Object.defineProperty(exports, "__esModule", { value: true });`
-                            );
+                            cnt.push(`Object.defineProperty(exports, "__esModule", { value: true });`);
                         }
                         cnt.push(`${exportsKey} = ${JSON.stringify(json)};`);
-                        file.addAlternativeContent(cnt.join("\n"));
+                        file.addAlternativeContent(cnt.join('\n'));
                     },
-                    generateScopedName: this.scopedName
-                        ? this.scopedName
-                        : "_[local]___[hash:base64:5]"
+                    generateScopedName: this.scopedName ? this.scopedName : '_[local]___[hash:base64:5]'
                 })
-            ])
-                .process(file.contents, {})
+            ]).process(file.contents, {})
                 .then(result => {
                     file.contents = result.css;
                     if (context.useCache) {
                         file.analysis.dependencies = cssDependencies;
-                        context.cache.writeStaticCache(
-                            file,
-                            file.sourceMap,
-                            "cssmodules"
-                        );
+                        context.cache.writeStaticCache(file, file.sourceMap, "cssmodules");
                         file.analysis.dependencies = [];
                     }
-                    return resolve();
+                    return resolve()
                 });
         });
     }
