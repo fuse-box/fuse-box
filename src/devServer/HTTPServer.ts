@@ -76,13 +76,14 @@ Development server running ${opts.https ? 'https' : 'http'}://localhost:${port} 
         return socketServer;
     }
 
-    private createServer() {
+    private createServer(): http.Server | https.Server {
         let server;
         if (this.opts.https) {
             server = https.createServer(this.opts.https);
         } else {
             server = http.createServer();
         }
+        return server;
     }
 
     public serveStatic(userPath, userFolder) {
