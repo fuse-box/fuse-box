@@ -18,6 +18,9 @@ export interface ServerOptions {
     /** Defaults to 4444 if not specified */
     port?: number;
 
+    /** Enable https (Must provide cert and key) */
+    https?: { cert: string, key: string };
+
     /**
      * - If false nothing is served.
      * - If string specified this is the folder served from express.static
@@ -62,6 +65,7 @@ export class Server {
         const root: string | boolean = opts.root !== undefined
             ? (utils.isString(opts.root) ? ensureUserPath(opts.root as string) : false) : rootDir;
         const port = opts.port || 4444;
+        const https = opts.https
         if (opts.hmr !== false && this.fuse.context.useCache === true) {
 
             setTimeout(() => {
@@ -80,7 +84,7 @@ export class Server {
             if (opts.httpServer === false) {
                 this.socketServer = SocketServer.startSocketServer(port, this.fuse);
             } else {
-                this.socketServer = this.httpServer.launch({ root, port }, opts);
+                this.socketServer = this.httpServer.launch({ root, port, https }, opts);
             }
         });
         return this;

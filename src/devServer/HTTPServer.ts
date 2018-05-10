@@ -65,7 +65,7 @@ export class HTTPServer {
             server.listen(port, () => {
                 const msg = `
 -----------------------------------------------------------------
-Development server running http://localhost:${port} @ ${packageInfo.version}
+Development server running ${opts.https ? 'https' : 'http'}://localhost:${port} @ ${packageInfo.version}
 -----------------------------------------------------------------
 `
                 console.log(msg);
