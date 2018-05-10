@@ -9,7 +9,7 @@ import { ServerOptions } from "./Server";
 export interface HTTPServerOptions {
     /** Defaults to 4444 if not specified */
     port?: number;
-    https?: { key: string, cert: string }
+    https?: https.ServerOptions;
 
     /**
      * If specfied this is the folder served from express.static

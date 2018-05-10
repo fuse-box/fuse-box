@@ -4,6 +4,7 @@ import { HTTPServer } from "./HTTPServer";
 import { FuseBox } from "../core/FuseBox";
 import { utils } from "realm-utils";
 import * as process from "process";
+import * as https from 'https';
 
 export type HotReloadEmitter = (server: Server, sourceChangedInfo: any) => any;
 
@@ -19,7 +20,7 @@ export interface ServerOptions {
     port?: number;
 
     /** Enable https (Must provide cert and key) */
-    https?: { cert: string, key: string, passphrase?: string };
+    https?: https.ServerOptions;
 
     /**
      * - If false nothing is served.
