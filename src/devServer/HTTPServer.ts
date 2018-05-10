@@ -9,6 +9,7 @@ import { ServerOptions } from "./Server";
 export interface HTTPServerOptions {
     /** Defaults to 4444 if not specified */
     port?: number;
+    /** Provide https server options to enable https */
     https?: https.ServerOptions;
 
     /**

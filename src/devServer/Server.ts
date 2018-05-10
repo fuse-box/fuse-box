@@ -19,7 +19,7 @@ export interface ServerOptions {
     /** Defaults to 4444 if not specified */
     port?: number;
 
-    /** Enable https (Must provide cert and key) */
+    /** If not specified it uses regular http */
     https?: https.ServerOptions;
 
     /**
