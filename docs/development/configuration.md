@@ -20,13 +20,15 @@ FuseBox.init({
 ```
 
 files:
-node_modules
- placeholder.js
-stuff
- src
-  index.ts
- fuse.js
 
+```
+node_modules
+  placeholder.js
+stuff
+  src
+    index.ts
+  fuse.js
+```
 
 
 In the example above your `homeDir` will be pointing to `stuff/src` next to `fuse.js` file.
