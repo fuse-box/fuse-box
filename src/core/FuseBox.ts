@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as process from "process";
 import { each, utils, chain, Chainable } from "realm-utils";
 import { CustomTransformers } from "typescript";
-import { ensureUserPath, contains } from "./../Utils";
+import { ensureUserPath, contains, printCurrentVersion } from "./../Utils";
 import { ShimCollection } from "./../ShimCollection";
 import { Server, ServerOptions } from "./../devServer/Server";
 import { JSONPlugin } from "./../plugins/JSONplugin";
@@ -36,32 +36,35 @@ export interface FuseBoxOptions {
      *
      * default: "universal@es5"
      */
+
     target?: string,
-    log?: boolean;
+    log?: { enabled?: boolean, showBundledFiles?: boolean, clearTerminalOnBundle?: boolean } | boolean;
     globals?: { [packageName: string]: /** Variable name */ string };
-    plugins?: Array<Plugin | Plugin[]>;
+    plugins?: Array<Plugin | Array<Plugin | string>>;
     autoImport?: any;
     natives?: any;
-    warnings?: boolean,
+    warnings?: boolean;
     shim?: any;
     writeBundles?: boolean;
     useTypescriptCompiler?: boolean;
     standalone?: boolean;
-    sourceMaps?: boolean | { vendor?: boolean, inline?: boolean, project?: boolean, sourceRoot?: string };
-    hash?: string | Boolean;
-    ignoreModules?: string[],
+    sourceMaps?: boolean | { vendor?: boolean, inlineCSSPath?: string; inline?: boolean, project?: boolean, sourceRoot?: string };
+    hash?: string | boolean;
+    ignoreModules?: string[];
     customAPIFile?: string;
     output?: string;
     emitHMRDependencies?: boolean;
-    filterFile?: { (file: File): boolean }
+    filterFile?: (file: File) => boolean;
+    allowSyntheticDefaultImports?: boolean;
     debug?: boolean;
     files?: any;
     alias?: any;
-    useJsNext?: boolean | string[],
-    ensureTsConfig? : boolean;
+    useJsNext?: boolean | string[];
+    stdin?: boolean;
+    ensureTsConfig?: boolean;
     runAllMatchedPlugins?: boolean;
-    showErrors?: boolean
-    showErrorsInBrowser?: boolean
+    showErrors?: boolean;
+    showErrorsInBrowser?: boolean;
     polyfillNonStandardDefaultUsage?: boolean | string[];
     transformers?: CustomTransformers;
     extensionOverrides?: string[];
@@ -93,7 +96,9 @@ export class FuseBox {
      *
      * @memberOf FuseBox
      */
+    // tslint:disable-next-line:cyclomatic-complexity
     constructor(public opts?: FuseBoxOptions) {
+        printCurrentVersion();
         this.context = new WorkFlowContext();
         this.context.fuse = this;
         this.collectionSource = new CollectionSource(this.context);
@@ -104,17 +109,22 @@ export class FuseBox {
         }
         // setting targets
         opts.target = opts.target || "browser";
-        const [target, languageLevel] = opts.target.toLowerCase().split('@')
-        this.context.target = target
+        const [target, languageLevel] = opts.target.toLowerCase().split("@");
+        this.context.target = target;
         const level = languageLevel && Object.keys(ScriptTarget)
-            .find(t => t.toLowerCase() === languageLevel)
+            .find(t => t.toLowerCase() === languageLevel);
         if (level) {
             this.context.forcedLanguageLevel = ScriptTarget[level];
         }
-        this.context.languageLevel = ScriptTarget[level] || ScriptTarget.ES6;
+        this.context.languageLevel = ScriptTarget[level] || ScriptTarget.ES2016;
 
         if (opts.polyfillNonStandardDefaultUsage !== undefined) {
-            this.context.polyfillNonStandardDefaultUsage = opts.polyfillNonStandardDefaultUsage;
+            this.context.deprecation("polyfillNonStandardDefaultUsage has been depreacted in favour of allowSyntheticDefaultImports");
+            this.producer.allowSyntheticDefaultImports = opts.allowSyntheticDefaultImports;
+        }
+
+        if (opts.allowSyntheticDefaultImports !== undefined) {
+            this.producer.allowSyntheticDefaultImports = opts.allowSyntheticDefaultImports;
         }
 
         if (opts.useJsNext !== undefined) {
@@ -136,7 +146,7 @@ export class FuseBox {
             this.context.emitHMRDependencies = true;
         }
         if (opts.homeDir) {
-            homeDir = ensureUserPath(opts.homeDir)
+            homeDir = ensureUserPath(opts.homeDir);
         }
         if (opts.debug !== undefined) {
             this.context.debugMode = opts.debug;
@@ -154,7 +164,7 @@ export class FuseBox {
             this.context.showErrors = opts.showErrors;
 
             if (opts.showErrorsInBrowser === undefined) {
-                this.context.showErrorsInBrowser = opts.showErrors
+                this.context.showErrorsInBrowser = opts.showErrors;
             }
         }
 
@@ -177,7 +187,7 @@ export class FuseBox {
             this.context.setSourceMapsProperty(opts.sourceMaps);
         }
 
-        this.context.runAllMatchedPlugins = !!opts.runAllMatchedPlugins
+        this.context.runAllMatchedPlugins = !!opts.runAllMatchedPlugins;
         this.context.plugins = opts.plugins as Plugin[] || [JSONPlugin()];
 
         if (opts.package) {
@@ -185,10 +195,10 @@ export class FuseBox {
                 const packageOptions: any = opts.package;
                 this.context.defaultPackageName = packageOptions.name || "default";
                 this.context.defaultEntryPoint = packageOptions.main;
-            } else if (typeof opts.package === 'string') {
+            } else if (typeof opts.package === "string") {
                 this.context.defaultPackageName = opts.package;
             } else {
-                throw new Error('`package` must be a string or an object of the form {name: string, main: string}');
+                throw new Error("`package` must be a string or an object of the form {name: string, main: string}");
             }
 
         }
@@ -205,8 +215,20 @@ export class FuseBox {
             this.context.filterFile = opts.filterFile;
         }
 
+        if (opts.log) {
+            if (typeof opts.log === "boolean") {
+                this.context.doLog = opts.log;
+            }
+
+            if (typeof opts.log === "object" && opts.log.enabled) {
+                this.context.doLog = opts.log.enabled;
+                this.context.log.printLog = opts.log.enabled;
+                this.context.log.showBundledFiles = opts.log.showBundledFiles;
+            }
+        }
+
         if (opts.log !== undefined) {
-            this.context.doLog = opts.log;
+            this.context.doLog = true;
             this.context.log.printLog = opts.log;
         }
 
@@ -218,7 +240,7 @@ export class FuseBox {
             this.context.addAlias(opts.alias);
         }
 
-        this.context.initAutoImportConfig(opts.natives, opts.autoImport)
+        this.context.initAutoImportConfig(opts.natives, opts.autoImport);
 
 
         if (opts.globals) {
@@ -251,9 +273,14 @@ export class FuseBox {
             this.context.extensionOverrides = new ExtensionOverrides(opts.extensionOverrides);
         }
 
-        const tsConfig = new TypescriptConfig(this.context);;
+        const tsConfig = new TypescriptConfig(this.context);
         tsConfig.setConfigFile(opts.tsConfig);
         this.context.tsConfig = tsConfig;
+
+        if (opts.stdin) {
+            process.stdin.on("end", () => { process.exit(0); });
+            process.stdin.resume();
+        }
     }
 
     public triggerPre() {
@@ -273,13 +300,13 @@ export class FuseBox {
     }
 
     public copy(): FuseBox {
-        const config = Object.assign({}, this.opts);
-        config.plugins = [].concat(config.plugins || [])
+        const config = { ...this.opts };
+        config.plugins = [].concat(config.plugins || []);
         return FuseBox.init(config);
     }
 
     public bundle(name: string, arithmetics?: string): Bundle {
-        let fuse = this.copy();
+        const fuse = this.copy();
         const bundle = new Bundle(name, fuse, this.producer);
 
         bundle.arithmetics = arithmetics;
@@ -287,37 +314,35 @@ export class FuseBox {
         return bundle;
     }
 
-
-
-    public sendPageReload(){
-        if ( this.producer.devServer && this.producer.devServer.socketServer){
+    public sendPageReload() {
+        if (this.producer.devServer && this.producer.devServer.socketServer) {
             const socket = this.producer.devServer.socketServer;
             socket.send("page-reload", []);
         }
     }
 
-    public sendPageHMR(){
-        if ( this.producer.devServer && this.producer.devServer.socketServer){
+    public sendPageHMR() {
+        if (this.producer.devServer && this.producer.devServer.socketServer) {
             const socket = this.producer.devServer.socketServer;
             socket.send("page-hmr", []);
         }
     }
 
     /** Starts the dev server and returns it */
-    public dev(opts?: ServerOptions, fn?: { (server: Server): void }) {
+    public dev(opts?: ServerOptions, fn?: (server: Server) => void) {
         opts = opts || {};
         opts.port = opts.port || 4444;
         this.producer.devServerOptions = opts;
         this.producer.runner.bottom(() => {
-            let server = new Server(this);
+            const server = new Server(this);
             this.producer.devServer = server;
             server.start(opts);
             if (opts.open) {
                 try {
-                    const opn = require('opn');
-                    opn(typeof opts.open === 'string' ? opts.open : `http://localhost:${opts.port}`);
+                    const opn = require("opn");
+                    opn(typeof opts.open === "string" ? opts.open : `http://localhost:${opts.port}`);
                 } catch (e) {
-                    this.context.log.echoRed('If you want to open the browser, please install "opn" package. "npm install opn --save-dev"')
+                    this.context.log.echoRed('If you want to open the browser, please install "opn" package. "npm install opn --save-dev"');
                 }
 
             }
@@ -339,7 +364,14 @@ export class FuseBox {
     }
 
     public process(bundleData: BundleData, bundleReady?: () => any) {
-        let bundleCollection = new ModuleCollection(this.context, this.context.defaultPackageName);
+
+        // If clearTerminalOnBundle is turned on then clear the terminal each time we bundle
+        if (typeof this.opts.log === "object" && this.opts.log.clearTerminalOnBundle) {
+            this.context.log.clearTerminal();
+        }
+
+        const bundleCollection = new ModuleCollection(this.context, this.context.defaultPackageName);
+
         bundleCollection.pm = new PathMaster(this.context, bundleData.homeDir);
         // swiching on typescript compiler
         if (bundleData.typescriptMode) {
@@ -347,7 +379,7 @@ export class FuseBox {
             bundleCollection.pm.setTypeScriptMode();
         }
 
-        let self = this;
+        const self = this;
         return bundleCollection.collectBundle(bundleData).then(module => {
             if (this.context.emitHMRDependencies) {
                 this.context.emitter.emit("bundle-collected");
@@ -359,7 +391,6 @@ export class FuseBox {
                 public defaultContents: string;
                 public globalContents = [];
                 public setDefaultCollection() {
-
                     return bundleCollection;
                 }
 
@@ -370,7 +401,8 @@ export class FuseBox {
                 }
 
                 public addNodeModules() {
-                    return each(self.context.nodeModules, (collection: ModuleCollection) => {
+                    const nodeModules = new Map(Array.from(self.context.nodeModules).sort());
+                    return each(nodeModules, (collection: ModuleCollection) => {
                         if (collection.cached || (collection.info && !collection.info.missing)) {
                             return self.collectionSource.get(collection).then((cnt: string) => {
                                 self.context.log.echoCollection(collection, cnt);
@@ -390,7 +422,7 @@ export class FuseBox {
                 }
 
             }).then(result => {
-                let self = this;
+                const self = this;
                 // @NOTE: content is here, but this is not the uglified content
                 // self.context.source.getResult().content.toString()
                 self.context.log.end();
@@ -406,20 +438,20 @@ export class FuseBox {
 
     public addShims() {
         // add all shims
-        let shim = this.context.shim;
+        const shim = this.context.shim;
         if (shim) {
-            for (let name in shim) {
+            for (const name in shim) {
                 if (shim.hasOwnProperty(name)) {
-                    let data = shim[name];
+                    const data = shim[name];
                     if (data.exports) {
                         // creating a fake collection
-                        let shimedCollection
+                        const shimedCollection
                             = ShimCollection.create(this.context, name, data.exports);
                         this.context.addNodeModule(name, shimedCollection);
 
                         if (data.source) {
-                            let source = ensureUserPath(data.source);
-                            let contents = fs.readFileSync(source).toString();
+                            const source = ensureUserPath(data.source);
+                            const contents = fs.readFileSync(source).toString();
                             this.context.source.addContent(contents);
                         }
                     }
@@ -438,7 +470,7 @@ export class FuseBox {
         this.addShims();
         this.triggerStart();
 
-        let parser = Arithmetic.parse(str);
+        const parser = Arithmetic.parse(str);
         let bundle: BundleData;
         return Arithmetic.getFiles(parser, this.virtualFiles, this.context.homeDir).then(data => {
             bundle = data;
@@ -456,15 +488,16 @@ export class FuseBox {
             }
 
             return this.process(data, bundleReady);
-        }).then((contents) => {
+        }).then(contents => {
             bundle.finalize(); // Clean up temp folder if required
             return contents;
         }).catch(e => {
             console.log(e.stack || e);
+            throw e;
         });
     }
 }
 
-process.on('unhandledRejection', (reason, promise) => {
+process.on("unhandledRejection", (reason, promise) => {
     console.log(reason.stack);
 });

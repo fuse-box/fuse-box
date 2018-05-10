@@ -60,11 +60,10 @@ export class PostCSSPluginClass implements Plugin {
 
         const {
             sourceMaps = true,
-            paths = [],
             ...postCssOptions
         } = this.options;
 
-        paths.push(file.info.absDir);
+        const paths = [file.info.absDir, ...this.options.paths || []]
 
         const cssDependencies = file.context.extractCSSDependencies(file, {
             paths: paths,
@@ -76,15 +75,21 @@ export class PostCSSPluginClass implements Plugin {
         if (!postcss) {
             postcss = require("postcss");
         }
-
+        postCssOptions.map = file.context.useSourceMaps ? { inline: false } : false
+        let fromFile = file.getCorrectSourceMapPath();
+        if( fromFile.charAt(0) === "/"){
+            fromFile = fromFile.slice(1)
+        }
+        postCssOptions.from = postCssOptions.from || file.info.absPath;
+        postCssOptions.to = postCssOptions.to || fromFile;
         return postcss(this.processors)
             .process(file.contents, postCssOptions)
             .then(result => {
                 file.contents = result.css;
-
+                file.sourceMap = result.map ? result.map.toString() : undefined;
                 if (file.context.useCache) {
                     file.analysis.dependencies = cssDependencies;
-                    file.context.cache.writeStaticCache(file, sourceMaps && file.sourceMap, "postcss");
+                    file.context.cache.writeStaticCache(file, file.sourceMap, "postcss");
                     file.analysis.dependencies = [];
                 }
                 return result.css;

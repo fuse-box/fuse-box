@@ -5,10 +5,12 @@
 declare let __root__: any;
 declare let __fbx__dnm__: any;
 declare const WorkerGlobalScope: any;
+declare const ServiceWorkerGlobalScope: any;
 
+const $isServiceWorker = typeof ServiceWorkerGlobalScope !== "undefined";
 const $isWebWorker = typeof WorkerGlobalScope !== "undefined";
-const $isBrowser = typeof window !== "undefined" && window.navigator || $isWebWorker;
-const g = $isBrowser ? ($isWebWorker ? {} : window) : global;
+const $isBrowser = typeof window !== "undefined" && typeof window.navigator !== "undefined" || $isWebWorker || $isServiceWorker;
+const g = $isBrowser ? (($isWebWorker || $isServiceWorker) ? {} : window) : global;
 
 
 /**
@@ -53,7 +55,7 @@ type FSBX = {
 
 // Patching global variable
 if ($isBrowser) {
-    g["global"] = $isWebWorker ? {} : window;
+    g["global"] = ($isWebWorker || $isServiceWorker) ? {} : window;
 }
 
 // Set root
@@ -64,7 +66,7 @@ __root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports :
 /**
  * A runtime storage for FuseBox
  */
-const $fsbx: FSBX = $isBrowser ? $isWebWorker ? {} : (window["__fsbx__"] = window["__fsbx__"] || {})
+const $fsbx: FSBX = $isBrowser ? ($isWebWorker || $isServiceWorker) ? {} : (window["__fsbx__"] = window["__fsbx__"] || {})
     : g["$fsbx"] = g["$fsbx"] || {}; // in case of nodejs
 
 if (!$isBrowser) {
@@ -393,6 +395,29 @@ function $trigger(name: string, args: any) {
     }
 };
 
+// NOTE: Should match syntheticDefaultExportPolyfill in fuse-box-responsive-api/index.js
+function syntheticDefaultExportPolyfill(input){
+    if( input === null ||
+        ['function', 'object', 'array'].indexOf(typeof input) === -1 ||
+        input.hasOwnProperty("default") // use hasOwnProperty to avoid triggering usage warnings from libraries like mobx
+    ) {
+        return
+    }
+
+    // to get around frozen input
+    if (Object.isFrozen(input) ) {
+        input.default = input;
+        return;
+    }
+
+    // free to define properties
+    Object.defineProperty(input, "default", {
+        value: input,
+        writable: true,
+        enumerable: false
+    });
+}
+
 /**
  * Imports File
  * With opt provided it's possible to set:
@@ -463,11 +488,13 @@ function $import(name: string, o: any = {}) {
     locals.exports = {};
     locals.module = { exports: locals.exports };
     locals.require = (name: string, optionalCallback: any) => {
-        return $import(name, {
+        const result =  $import(name, {
             pkg,
             path,
             v: ref.versions,
         });
+        if( FuseBox["sdep"] ){ syntheticDefaultExportPolyfill(result); }
+        return result;
     };
 
     if ($isBrowser || !g["require"].main) {
@@ -479,7 +506,7 @@ function $import(name: string, o: any = {}) {
     let args = [locals.module.exports, locals.require, locals.module, ref.validPath, path, pkg];
     $trigger("before-import", args);
 
-    file.fn.apply(0, args);
+    file.fn.apply(args[0], args);
     // fn(locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName)
     $trigger("after-import", args);
     return locals.module.exports;

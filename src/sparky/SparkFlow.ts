@@ -3,7 +3,7 @@ import * as fs from "fs-extra";
 import * as chokidar from "chokidar";
 import * as path from "path";
 import { each } from "realm-utils";
-import { ensureDir, string2RegExp } from "../Utils";
+import { ensureDir, string2RegExp, ensureUserPath } from "../Utils";
 import { SparkyFile } from "./SparkyFile";
 import { log } from "./Sparky";
 import { Plugin } from '../core/WorkflowContext';
@@ -38,13 +38,13 @@ export class SparkFlow {
         }
     }
 
-    public watch(globs: string[], opts?: SparkyFilePatternOptions): SparkFlow {
+    public watch(globs: string[], opts?: SparkyFilePatternOptions, fn?: any): SparkFlow {
         this.files = [];
         log.echoStatus(`Watch ${globs}`)
         this.activities.push(() => new Promise((resolve, reject) => {
 
             var chokidarOptions = {
-                cwd: opts ? opts.base : null
+                cwd: opts ? ensureUserPath(opts.base) : null
             };
 
             this.watcher = chokidar.watch(globs, chokidarOptions)
@@ -53,6 +53,9 @@ export class SparkFlow {
                     if (this.initialWatch) {
                         this.files = [];
                         log.echoStatus(`Changed ${fp}`)
+                        if (fn) {
+                            fn(event, fp)
+                        }
                     }
                     let info = parse(fp, opts);
                     this.files.push(new SparkyFile(info.filepath, info.root))

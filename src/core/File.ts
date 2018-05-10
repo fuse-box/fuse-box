@@ -6,7 +6,7 @@ import { SourceMapGenerator } from "./SourceMapGenerator";
 import { utils, each } from "realm-utils";
 import * as fs from "fs";
 import * as path from "path";
-import { ensureFuseBoxPath, readFuseBoxModule, isStylesheetExtension } from "../Utils";
+import { ensureFuseBoxPath, readFuseBoxModule, isStylesheetExtension, fastHash, joinFuseBoxPath } from "../Utils";
 
 /**
  * Same Target Enumerator used in TypeScript
@@ -14,10 +14,10 @@ import { ensureFuseBoxPath, readFuseBoxModule, isStylesheetExtension } from "../
 export enum ScriptTarget {
     ES5 = 1,
     ES2015 = 2,
+    ES6 = 2,
     ES2016 = 3,
-    ES6 = 3,
+    ES7 = 3,
     ES2017 = 4,
-    ES7 = 4,
     ESNext = 5
 }
 
@@ -447,15 +447,14 @@ export class File {
 
         if (!fs.existsSync(this.info.absPath)) {
 
-            if (/\.js$/.test(this.info.fuseBoxPath) && this.context.fuse && this.context.fuse.producer) {
+            if (/\.jsx?$/.test(this.info.fuseBoxPath) && this.context.fuse && this.context.fuse.producer) {
                 this.context.fuse.producer.addWarning('unresolved',
                     `Statement "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
+            } else {
+                this.addError(`Asset reference "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
             }
             this.notFound = true;
             return;
-        }
-        if (this.context.polyfillNonStandardDefaultUsage) {
-            this.addStringDependency('fuse-heresy-default');
         }
         if (/\.ts(x)?$/.test(this.absPath)) {
 
@@ -545,6 +544,9 @@ export class File {
             if (cached.sourceMap) {
                 this.sourceMap = cached.sourceMap;
             }
+            if ( cached.ac){
+                this.alternativeContent = cached.ac;
+            }
             this.context.setCSSDependencies(this, cached.dependencies);
             if (!this.fileDependsOnLastChangedCSS()) {
                 this.isLoaded = true;
@@ -565,6 +567,9 @@ export class File {
             this.cached = true;
             if (cached._) {
                 this.cacheData = cached._;
+            }
+            if ( cached.ac){
+                this.alternativeContent = cached.ac;
             }
             if (cached.devLibsRequired) {
                 cached.devLibsRequired.forEach(item => {
@@ -606,6 +611,37 @@ export class File {
 
     }
 
+    public transpileUsingTypescript(){
+        try {
+            const ts = require("typescript");
+	    try {
+                return ts.transpileModule(this.contents, this.getTranspilationConfig());
+	    } catch(e) {
+	        this.context.fatal(`${this.info.absPath}: ${e}`);
+                return;
+	    }
+        } catch(e){
+            this.context.fatal(`TypeScript automatic transpilation has failed. Please check that:
+            - You have TypeScript installed
+            - Your tsconfig.json file is not malformed.\nError message: ${e.message}`)
+            return;
+        }
+    }
+
+    public generateInlinedCSS(){
+        const re = /(\/*#\s*sourceMappingURL=\s*)([^\s]+)(\s*\*\/)/g
+        const newName = joinFuseBoxPath("/", this.context.inlineCSSPath, `${fastHash(this.info.fuseBoxPath)}.map`)
+        this.contents = this.contents.replace(re, `$1${newName}$3`);
+        this.context.output.writeToOutputFolder(newName, this.sourceMap)
+        if( this.context.fuse && this.context.fuse.producer ){
+            const producer = this.context.fuse.producer;
+            producer.sharedSourceMaps.set(this.info.fuseBoxPath, this.sourceMap);
+        }
+    }
+
+    public getCorrectSourceMapPath(){
+        return this.context.sourceMapsRoot + "/" + this.relativePath;
+    }
     /**
      *
      *
@@ -622,26 +658,24 @@ export class File {
                 return;
             }
         }
-        const ts = require("typescript");
-
         this.loadContents();
         // handle import()
         this.replaceDynamicImports();
         // Calling it before transpileModule on purpose
         this.tryTypescriptPlugins();
         this.context.debug("TypeScript", `Transpile ${this.info.fuseBoxPath}`)
-        
-        let result = ts.transpileModule(this.contents, this.getTranspilationConfig());
+        let result = this.transpileUsingTypescript();
         if (result.sourceMapText && this.context.useSourceMaps) {
             let jsonSourceMaps = JSON.parse(result.sourceMapText);
             jsonSourceMaps.file = this.info.fuseBoxPath;
-            jsonSourceMaps.sources = [this.context.sourceMapsRoot + "/" + this.relativePath.replace(/\.js(x?)$/, ".ts$1")];
-
+            jsonSourceMaps.sources = [this.getCorrectSourceMapPath().replace(/\.js(x?)$/, ".ts$1")];
             if (!this.context.inlineSourceMaps) {
                 delete jsonSourceMaps.sourcesContent;
-            }
-
-            result.outputText = result.outputText.replace("//# sourceMappingURL=module.js.map", "");
+			}
+            result.outputText = result
+                .outputText
+                .replace(`//# sourceMappingURL=${this.info.fuseBoxPath}.map`, `//# sourceMappingURL=${this.context.bundle.name}.js.map`)
+                .replace("//# sourceMappingURL=module.js.map", "");
             this.sourceMap = JSON.stringify(jsonSourceMaps);
         }
         this.contents = result.outputText;
@@ -653,8 +687,8 @@ export class File {
         if (this.context.useCache) {
             // emit new file
             this.context.emitJavascriptHotReload(this);
-
-            this.context.cache.writeStaticCache(this, this.sourceMap);
+			
+			this.context.cache.writeStaticCache(this, this.sourceMap);	
         }
     }
     public cacheData: { [key: string]: any };

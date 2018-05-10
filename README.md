@@ -12,11 +12,6 @@
 # FuseBox
 http://fuse-box.org/
 
----
-FuseBox 3.0 is being cooked at the moment.
-Contributing guidelines are located [here](https://github.com/fuse-box/fuse-box/blob/master/.github/CONTRIBUTING.md)
----
-
 FuseBox is a bundler/module loader that combines the power of webpack, JSPM and SystemJS. 
 
 It is blazing fast (it takes 50-100ms to re-bundle) which makes it extremely convenient for developers. It requires zero configuration to bundle such monsters like `babel-core`.
@@ -132,6 +127,8 @@ There is so much more. FuseBox pushing it to a whole new level!
 npm install typescript fuse-box --save-dev
 ```
 
+`fuse.js`:
+
 ```ts
 const { FuseBox } = require("fuse-box");
 const fuse = FuseBox.init({
@@ -144,7 +141,7 @@ fuse.bundle("app")
 fuse.run();
 ```
 
-## [Examples and seeds](http://fuse-box.org:3333/page/examples-and-seeds)
+## [Examples and seeds](http://fuse-box.org/page/examples-and-seeds)
 
 
 Join our [gitter channel](https://gitter.im/fusebox-bundler/Lobby) we are very active and friendly!

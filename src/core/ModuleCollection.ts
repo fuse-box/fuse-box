@@ -310,6 +310,7 @@ export class ModuleCollection {
             : collection.resolveEntry();
     }
 
+
     public transformGroups() {
         const promises = [];
         this.context.fileGroups.forEach((group: File, name: string) => {
@@ -398,7 +399,7 @@ export class ModuleCollection {
 
             return each(file.analysis.dependencies, name => {
                 const newFile = new File(this.context,
-                    this.pm.resolve(name, file.info.absDir, fileLimitPath));
+                    this.pm.resolve(name, file.info.absDir, fileLimitPath, file));
                 newFile.resolveDepsOnly = file.resolveDepsOnly;
                 if (this.context.emitHMRDependencies && file.belongsToProject()) {
                     this.context.registerDependant(newFile, file);

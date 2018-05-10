@@ -1,4 +1,4 @@
-import { ensurePublicExtension, Concat, ensureUserPath } from "./Utils";
+import { ensurePublicExtension, Concat, ensureUserPath, ensureCorrectBundlePath } from "./Utils";
 import { ModuleCollection } from "./core/ModuleCollection";
 import { WorkFlowContext } from "./core/WorkflowContext";
 import { BundleData } from "./arithmetic/Arithmetic";
@@ -62,6 +62,20 @@ export class BundleSource {
      */
     public init() {
         this.concat.add(null, "(function(FuseBox){FuseBox.$fuse$=FuseBox;");
+
+        // handle server bundle
+        if (this.context.target) {
+            this.concat.add(null, `FuseBox.target = "${this.context.target}";`);
+        }
+
+        if (this.context.serverBundle) {
+            this.concat.add(null, `FuseBox.isServer = true;`);
+        }
+
+        if (this.context.fuse.producer && this.context.fuse.producer.allowSyntheticDefaultImports) {
+            this.concat.add(null, `// allowSyntheticDefaultImports`);
+            this.concat.add(null, `FuseBox.sdep = true;`);
+        }
     }
 
     public annotate(comment: string) {
@@ -109,7 +123,7 @@ export class BundleSource {
         let entry = collection.entryFile ? collection.entryFile.info.fuseBoxPath : "";
         entry = entry || collection.bundle && collection.bundle.entry
         if (entry) {
-            this.collectionSource.add(null, `return ___scope___.entry = "${entry}";`);
+            this.collectionSource.add(null, `return ___scope___.entry = "${ensureCorrectBundlePath(entry)}";`);
         }
         this.collectionSource.add(null, "});");
 
@@ -159,10 +173,6 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         this.collectionSource.add(null, file.alternativeContent !== undefined ? file.alternativeContent : file.contents, file.sourceMap);
         this.annotate(`/* fuse:end-file "${file.info.fuseBoxPath}"*/`);
 
-        if (this.context.shouldPolyfillNonStandardDefault(file)) {
-            this.collectionSource.add(null, "require('fuse-heresy-default')(module.exports)");
-        }
-
         this.collectionSource.add(null, "});");
     }
 
@@ -194,15 +204,6 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
 
         let mainEntry;
 
-        // handle server bundle
-        if (this.context.target) {
-            this.concat.add(null, `FuseBox.target = "${this.context.target}"`);
-        }
-
-        if (context.serverBundle) {
-            this.concat.add(null, `FuseBox.isServer = true;`);
-        }
-
         // writing other bundles info
         if (this.bundleInfoObject) {
             this.concat.add(null, `FuseBox.global("__fsbx__bundles__",${JSON.stringify(this.bundleInfoObject)})`);
@@ -230,10 +231,10 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
 
         if (entry) {
             mainEntry = `${context.defaultPackageName}/${entry}`;
-            this.concat.add(null, `\nFuseBox.import("${mainEntry}");`);
+            this.concat.add(null, `\nFuseBox.import("${ensureCorrectBundlePath(mainEntry)}");`);
         }
         if (mainEntry) {
-            this.concat.add(null, `FuseBox.main("${mainEntry}");`);
+            this.concat.add(null, `FuseBox.main("${ensureCorrectBundlePath(mainEntry)}");`);
         }
 
 

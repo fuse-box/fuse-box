@@ -2,6 +2,12 @@
     "compilerOptions": {
         "target": "es5",
         "module": "commonjs",
+        "lib": [
+            "dom",            
+            "es5",
+            "es2015.symbol",
+            "es2015.iterable"
+        ],
         "moduleResolution": "node",
         "isolatedModules": false,
         "jsx": "react",

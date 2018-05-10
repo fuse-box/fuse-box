@@ -27,6 +27,9 @@ import { Bundle } from "../../core/Bundle";
 import { DynamicImportStatementsModifications } from "./modifications/DynamicImportStatements";
 import { Hoisting } from "./Hoisting";
 import { QuantumBit } from "./QuantumBit";
+import { CSSModifications } from './modifications/CSSModifications';
+import { CSSCollection } from '../core/CSSCollection';
+import { QuantumTask } from '../core/QuantumTask';
 
 
 export interface QuantumStatementMapping {
@@ -37,8 +40,10 @@ export class QuantumCore {
     public producerAbstraction: ProducerAbstraction;
     public api: ResponsiveAPI;
     public index = 0;
+    public postTasks = new QuantumTask(this);
     public log: Log;
     public opts: QuantumOptions;
+    public cssCollection = new CSSCollection(this);
     public writer = new BundleWriter(this);
     public context: WorkFlowContext;
     public requiredMappings = new Set<RegExp>();
@@ -88,7 +93,6 @@ export class QuantumCore {
         abstraction.quantumCore = this;
         this.producerAbstraction = abstraction;
         this.log.echoInfo("Abstraction generated");
-
         await each(abstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
             return this.prepareFiles(bundleAbstraction);
         });
@@ -96,6 +100,8 @@ export class QuantumCore {
         await each(abstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
             return this.processBundle(bundleAbstraction);
         });
+
+        await this.postTasks.execute();
 
         await this.prepareQuantumBits();
         await this.treeShake();
@@ -212,12 +218,6 @@ export class QuantumCore {
             entryId = `${this.producer.entryPackageName}/${this.producer.entryPackageFile}`;
         }
 
-        // define globals
-        const globals = this.producer.fuse.context.globals;
-        let globalsName;
-        if (globals) {
-            for (let i in globals) { globalsName = globals[i]; }
-        }
         bundleAbstraction.packageAbstractions.forEach(packageAbstraction => {
             packageAbstraction.fileAbstractions.forEach((fileAbstraction, key: string) => {
                 let fileId = fileAbstraction.getFuseBoxFullPath();
@@ -225,23 +225,24 @@ export class QuantumCore {
                 this.handleMappings(fileId, id);
                 this.index++;
                 if (fileId === entryId) {
-                    fileAbstraction.setEnryPoint(globalsName);
+                    fileAbstraction.setEntryPoint();
                 }
                 fileAbstraction.setID(id);
             });
         });
     }
-
-    public processBundle(bundleAbstraction: BundleAbstraction) {
+    public async processBundle(bundleAbstraction: BundleAbstraction) {
         this.log.echoInfo(`Process bundle ${bundleAbstraction.name}`);
-        return each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
+        await each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
             const fileSize = packageAbstraction.fileAbstractions.size;
             this.log.echoInfo(`Process package ${packageAbstraction.name} `);
             this.log.echoInfo(`  Files: ${fileSize} `);
             return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) => {
                 return this.modify(fileAbstraction);
             });
-        }).then(() => this.hoist());
+        });
+
+        await this.hoist();
     }
 
     public treeShake() {
@@ -252,11 +253,14 @@ export class QuantumCore {
     }
     public render() {
         return each(this.producerAbstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
-
+            const globals = this.producer.fuse.context.globals;
             const generator = new FlatFileGenerator(this, bundleAbstraction);
             generator.init();
             return each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
                 return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) => {
+                    if (fileAbstraction.fuseBoxPath == packageAbstraction.entryFile && globals && Object.keys(globals).indexOf(packageAbstraction.name) != -1) {
+                        generator.setGlobals(globals[packageAbstraction.name], fileAbstraction.getID());
+                    }
                     return generator.addFile(fileAbstraction, this.opts.shouldEnsureES5());
                 });
 
@@ -277,6 +281,9 @@ export class QuantumCore {
 
     public modify(file: FileAbstraction) {
         const modifications = [
+            // CSS
+            CSSModifications,
+
             // modify require statements: require -> $fsx.r
             StatementModification,
 

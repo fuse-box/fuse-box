@@ -47,7 +47,7 @@ export const AddScopeIdPlugin = postcss.plugin('add-scope-id', function (opts) {
             attribute: opts.id
           }))
         })
-      }).process(node.selector).result
+      }).processSync(node.selector)
     })
 
     // If keyframes are found in this <style>, find and rewrite animation names

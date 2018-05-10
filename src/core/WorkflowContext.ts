@@ -4,7 +4,7 @@ import { BundleSource } from "../BundleSource";
 import { File, ScriptTarget } from "./File";
 import { Log } from "../Log";
 import * as NativeEmitter from "events";
-import { IPackageInformation, IPathInformation, AllowedExtenstions } from "./PathMaster";
+import { IPackageInformation, IPathInformation, AllowedExtensions } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "../ModuleCache";
 import { EventEmitter } from "../EventEmitter";
@@ -18,7 +18,7 @@ import { FuseBox } from "./FuseBox";
 import { Bundle } from "./Bundle";
 import { BundleProducer } from "./BundleProducer";
 import { QuantumSplitConfig, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
-import { isPolyfilledByFuseBox } from "./ServerPolyfillList";
+import { isServerPolyfill, isElectronPolyfill } from "./ServerPolyfillList";
 import { CSSDependencyExtractor, ICSSDependencyExtractorOptions } from "../lib/CSSDependencyExtractor";
 import { ExtensionOverrides } from "./ExtensionOverrides";
 import { TypescriptConfig } from "./TypescriptConfig";
@@ -115,7 +115,6 @@ export class WorkFlowContext {
 
     public filterFile: { (file: File): boolean }
 
-    public polyfillNonStandardDefaultUsage: boolean | string[] = false;
 
     public customAPIFile: string;
 
@@ -128,6 +127,8 @@ export class WorkFlowContext {
     public hash: string | Boolean;
 
     public target: string = "universal";
+
+    public inlineCSSPath : string = "css-sourcemaps";
     /**
      * Explicitly target bundle to server
      */
@@ -233,22 +234,6 @@ export class WorkFlowContext {
         return this.target === "browser";
     }
 
-    public shouldPolyfillNonStandardDefault(file: File) {
-        if (file.belongsToProject()) {
-            return false;
-        }
-        let collectionName = file.collection && file.collection.name;
-        if (collectionName === "fuse-heresy-default") {
-            return false;
-        }
-        if (this.polyfillNonStandardDefaultUsage === true) {
-            return true;
-        }
-        if (Array.isArray(this.polyfillNonStandardDefaultUsage)) {
-            return this.polyfillNonStandardDefaultUsage.indexOf(collectionName) > -1
-        }
-    }
-
     public shouldUseJsNext(libName: string) {
         if (this.useJsNext === true) {
             return true;
@@ -348,6 +333,9 @@ export class WorkFlowContext {
             this.sourceMapsProject = params;
         } else {
             if (utils.isPlainObject(params)) {
+                if( params.inlineCSSPath){
+                    this.inlineCSSPath = params.inlineCSSPath;
+                }
                 this.sourceMapsProject = params.project !== undefined ? params.project : true;
                 this.sourceMapsVendor = params.vendor === true;
                 if (params.inline !== undefined) {
@@ -365,6 +353,12 @@ export class WorkFlowContext {
 
     public warning(str: string) {
         return this.log.echoWarning(str);
+    }
+
+    public deprecation(str: string) {
+        setTimeout(() => {
+            this.log.echoWarning(str);
+        }, 1000);
     }
 
     public fatal(str: string) {
@@ -487,8 +481,8 @@ export class WorkFlowContext {
     }
 
     public allowExtension(ext: string) {
-        if (!AllowedExtenstions.has(ext)) {
-            AllowedExtenstions.add(ext);
+        if (!AllowedExtensions.has(ext)) {
+            AllowedExtensions.add(ext);
         }
     }
 
@@ -553,9 +547,14 @@ export class WorkFlowContext {
             return true;
         }
         if (this.target === "server") {
-            return isPolyfilledByFuseBox(name)
+            return isServerPolyfill(name)
         }
 
+        if (this.target === "electron") {
+            return isElectronPolyfill(name)
+        }
+
+        return false
     }
 
     public resetNodeModules() {

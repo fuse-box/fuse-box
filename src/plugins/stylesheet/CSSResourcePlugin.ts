@@ -1,13 +1,12 @@
 import { File } from "../../core/File";
 import { Plugin, WorkFlowContext } from "../../core/WorkflowContext";
-import { ensureDir } from "../../Utils";
+import { ensureDir, joinFuseBoxPath } from "../../Utils";
 import * as path from "path";
 import { utils } from "realm-utils";
 import * as fs from "fs";
-import { PostCSSResourcePlugin } from "../../lib/postcss/PostCSSResourcePlugin";
 import { SVG2Base64 } from "../../lib/SVG2Base64";
+import { CSSUrlParser } from '../../lib/CSSUrlParser';
 const base64Img = require("base64-img");
-const postcss = require("postcss");
 const IMG_CACHE = {};
 let resourceFolderChecked = false;
 
@@ -21,6 +20,7 @@ const copyFile = (source, target) => {
             rd.on("error", (err) => {
                 return reject(err);
             });
+            ensureDir(path.dirname(target));
             let wr = fs.createWriteStream(target);
             wr.on("error", (err) => {
                 return reject(err);
@@ -62,6 +62,7 @@ export interface CSSResourcePluginOptions {
     resolve?: (path: string) => any;
     macros?: any;
     resolveMissing?: any,
+    useOriginalFilenames?: boolean
 }
 
 /**
@@ -76,6 +77,7 @@ export class CSSResourcePluginClass implements Plugin {
     public inlineImages: boolean;
     public macros: any;
     public resolveMissingFn: any;
+    public useOriginalFilenames: boolean = false;
     constructor(opts: CSSResourcePluginOptions = {}) {
         if (opts.dist) {
             this.distFolder = ensureDir(opts.dist);
@@ -92,15 +94,18 @@ export class CSSResourcePluginClass implements Plugin {
         if (utils.isFunction(opts.resolveMissing)) {
             this.resolveMissingFn = opts.resolveMissing;
         }
+        if (opts.useOriginalFilenames) {
+            this.useOriginalFilenames = opts.useOriginalFilenames;
+        }
     }
 
     public init(context: WorkFlowContext) {
         context.allowExtension(".css");
     }
 
-    public resolveFn = (p) => path.join("/css-resources", p)
+    public resolveFn = (p) => joinFuseBoxPath("/css-resources", p)
 
-    public createResouceFolder(file: File) {
+    public createResourceFolder(file: File) {
         if (resourceFolderChecked === false) {
 
             resourceFolderChecked = true;
@@ -115,89 +120,85 @@ export class CSSResourcePluginClass implements Plugin {
     public transform(file: File) {
         file.addStringDependency("fuse-box-css");
         file.loadContents();
-        let contents = file.contents;
-
         if (this.distFolder) {
-            this.createResouceFolder(file);
+            this.createResourceFolder(file);
         }
 
         const currentFolder = file.info.absDir;
         const files = {};
         const tasks = [];
 
-        return postcss([PostCSSResourcePlugin({
-            fn: (url) => {
-                if (this.macros) {
-                    for (let key in this.macros) {
-                        url = url.replace('$' + key, this.macros[key])
-                    }
+
+        const walker = (url) => {
+            if (this.macros) {
+                for (let key in this.macros) {
+                    url = url.replace('$' + key, this.macros[key])
                 }
+            }
 
-                if (url.startsWith('https:') || url.startsWith('http:') || url.startsWith('//')) {
-                    return url
+            if (url.startsWith('https:') || url.startsWith('http:') || url.startsWith('//') || url.startsWith('#')) {
+                return url
+            }
+
+            let urlFile = path.isAbsolute(url) ? url : path.resolve(currentFolder, url);
+            urlFile = urlFile.replace(/[?\#].*$/, "");
+
+            if (file.context.extensionOverrides && file.belongsToProject()) {
+              urlFile = file.context.extensionOverrides.getPathOverride(urlFile) || urlFile;
+            }
+
+            if (this.inlineImages) {
+                if (IMG_CACHE[urlFile]) {
+                    return IMG_CACHE[urlFile];
                 }
-
-                let urlFile = path.isAbsolute(url) ? url : path.resolve(currentFolder, url);
-                urlFile = urlFile.replace(/[?\#].*$/, "");
-
-                if (file.context.extensionOverrides && file.belongsToProject()) {
-                  urlFile = file.context.extensionOverrides.getPathOverride(urlFile) || urlFile;
-                }
-
-                if (this.inlineImages) {
-                    if (IMG_CACHE[urlFile]) {
-                        return IMG_CACHE[urlFile];
-                    }
-                    if (!fs.existsSync(urlFile)) {
-                        if (this.resolveMissingFn) {
-                            urlFile = this.resolveMissingFn(urlFile, this)
-                            if (!urlFile || !fs.existsSync(urlFile)) {
-                                file.context.debug("CSSResourcePlugin", `Can't find (resolved) file ${urlFile}`);
-                                return
-                            }
-                        }
-                        else {
-                            file.context.debug("CSSResourcePlugin", `Can't find file ${urlFile}`);
-                            return;
+                if (!fs.existsSync(urlFile)) {
+                    if (this.resolveMissingFn) {
+                        urlFile = this.resolveMissingFn(urlFile, this)
+                        if (!urlFile || !fs.existsSync(urlFile)) {
+                            file.context.debug("CSSResourcePlugin", `Can't find (resolved) file ${urlFile}`);
+                            return
                         }
                     }
-                    const ext = path.extname(urlFile);
-                    let fontsExtensions = {
-                        ".woff": "application/font-woff",
-                        ".woff2": "application/font-woff2",
-                        ".eot": "application/vnd.ms-fontobject",
-                        ".ttf": "application/x-font-ttf",
-                        ".otf": "font/opentype",
-                    };
-                    if (fontsExtensions[ext]) {
-                        let content = new Buffer(fs.readFileSync(urlFile)).toString("base64");
-                        return `data:${fontsExtensions[ext]};charset=utf-8;base64,${content}`;
+                    else {
+                        file.context.debug("CSSResourcePlugin", `Can't find file ${urlFile}`);
+                        return;
                     }
-                    if (ext === ".svg") {
-                        let content = SVG2Base64.get(fs.readFileSync(urlFile).toString());
-                        IMG_CACHE[urlFile] = content;
-                        return content;
-                    }
-                    let result = base64Img.base64Sync(urlFile);
-                    IMG_CACHE[urlFile] = result;
-                    return result;
                 }
+                const ext = path.extname(urlFile);
+                let fontsExtensions = {
+                    ".woff": "application/font-woff",
+                    ".woff2": "application/font-woff2",
+                    ".eot": "application/vnd.ms-fontobject",
+                    ".ttf": "application/x-font-ttf",
+                    ".otf": "font/opentype",
+                };
+                if (fontsExtensions[ext]) {
+                    let content = new Buffer(fs.readFileSync(urlFile)).toString("base64");
+                    return `data:${fontsExtensions[ext]};charset=utf-8;base64,${content}`;
+                }
+                if (ext === ".svg") {
+                    let content = SVG2Base64.get(fs.readFileSync(urlFile).toString());
+                    IMG_CACHE[urlFile] = content;
+                    return content;
+                }
+                let result = base64Img.base64Sync(urlFile);
+                IMG_CACHE[urlFile] = result;
+                return result;
+            }
 
-                // copy files
-                if (this.distFolder) {
-                    let newFileName = generateNewFileName(urlFile);
-                    if (!files[urlFile]) {
-                        let newPath = path.join(this.distFolder, newFileName);
-                        tasks.push(copyFile(urlFile, newPath));
-                        files[urlFile] = true;
-                    }
-                    return this.resolveFn(newFileName);
+            // copy files
+            if (this.distFolder) {
+                let newFileName = this.useOriginalFilenames ? path.relative(file.context.homeDir, urlFile) : generateNewFileName(urlFile);
+
+                if (!files[urlFile]) {
+                    let newPath = path.join(this.distFolder, newFileName);
+                    tasks.push(copyFile(urlFile, newPath));
+                    files[urlFile] = true;
                 }
-            },
-        })]).process(contents).then(result => {
-            file.contents = result.css;
-            return Promise.all(tasks);
-        });
+                return this.resolveFn(newFileName);
+            }
+        }
+        file.contents = CSSUrlParser.walk(file.contents, walker);
     }
 }
 

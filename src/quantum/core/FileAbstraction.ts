@@ -7,10 +7,11 @@ import * as path from "path";
 import { ensureFuseBoxPath, transpileToEs5 } from "../../Utils";
 
 import {
-    matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction, matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier,
+    matchesAssignmentExpression, matchesLiteralStringExpression, matchesSingleFunction,
+    matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier,
     trackRequireMember, matchNamedExport,
     isExportMisused, matchesNodeEnv, matchesExportReference,
-    matchesIfStatementProcessEnv, compareStatement, matchesIfStatementFuseBoxIsEnvironment, isExportComputed
+    matchesIfStatementProcessEnv, compareStatement, matchesIfStatementFuseBoxIsEnvironment, isExportComputed, isTrueRequireFunction, matchesDefinedExpression
 } from "./AstUtils";
 import { ExportsInterop } from "./nodes/ExportsInterop";
 import { UseStrict } from "./nodes/UseStrict";
@@ -28,17 +29,14 @@ const globalNames = new Set<string>(["__filename", "__dirname", "exports", "modu
 const SystemVars = new Set<string>(["module", "exports", "require", "window", "global"]);
 
 export class FileAbstraction {
-    private id: string;
-    private treeShakingRestricted = false;
+
     public dependents = new Set<FileAbstraction>();
-    private dependencies = new Map<FileAbstraction, Set<RequireStatement​​>>();
     public ast: any;
     public fuseBoxDir;
     public referencedRequireStatements = new Set<RequireStatement​​>();
 
     public isEcmaScript6 = false;
     public shakable = false;
-    public globalsName: string;
     public amountOfReferences = 0;
     public canBeRemoved = false;
 
@@ -74,7 +72,10 @@ export class FileAbstraction {
     public wrapperArguments: string[];
     public localExportUsageAmount = new Map<string, number>();
     private globalVariables = new Set<string>();
-
+    private id: string;
+    private treeShakingRestricted = false;
+    private removalRestricted = false;
+    private dependencies = new Map<FileAbstraction, Set<RequireStatement​​>>();
 
     constructor(public fuseBoxPath: string, public packageAbstraction: PackageAbstraction) {
         this.fuseBoxDir = ensureFuseBoxPath(path.dirname(fuseBoxPath));
@@ -133,6 +134,7 @@ export class FileAbstraction {
         this.ast = acornParse​​(contents);
         this.analyse();
     }
+
     public setID(id: any) {
         this.id = id;
     }
@@ -150,8 +152,15 @@ export class FileAbstraction {
 
 
     public isTreeShakingAllowed() {
-
         return this.treeShakingRestricted === false && this.shakable;
+    }
+
+    public restrictRemoval() {
+        this.removalRestricted = true;
+    }
+
+    public isRemovalAllowed() {
+        return this.removalRestricted === false;
     }
 
     public restrictTreeShaking() {
@@ -166,7 +175,7 @@ export class FileAbstraction {
             list = new Set<RequireStatement>()
             this.dependencies.set(file, list);
         }
-        list.add(statement)
+        list.add(statement);
     }
 
     public getDependencies() {
@@ -177,7 +186,7 @@ export class FileAbstraction {
      */
     public loadAst(ast: any) {
         // fix the initial node
-        ast.type = "Program"
+        ast.type = "Program";
         this.ast = ast;
         this.analyse();
     }
@@ -186,12 +195,12 @@ export class FileAbstraction {
      * Finds require statements with given mask
      */
     public findRequireStatements(exp: RegExp): RequireStatement[] {
-        let list: RequireStatement[] = [];
+        const list: RequireStatement[] = [];
         this.requireStatements.forEach(statement => {
             if (exp.test(statement.value)) {
                 list.push(statement);
             }
-        })
+        });
         return list;
     }
 
@@ -237,9 +246,8 @@ export class FileAbstraction {
         return this.globalVariables.has("exports") || this.globalVariables.has("module");
     }
 
-    public setEnryPoint(globalsName?: string) {
+    public setEntryPoint() {
         this.isEntryPoint = true;
-        this.globalsName = globalsName;
         this.treeShakingRestricted = true;
     }
 
@@ -249,17 +257,14 @@ export class FileAbstraction {
         if (ensureEs5 && this.isEcmaScript6) {
             code = transpileToEs5(code);
         }
-
-        //if (this.wrapperArguments) {
         let fn = ["function(", this.wrapperArguments ? this.wrapperArguments.join(",") : "", '){\n'];
-        // inject __dirname
         if (this.isDirnameUsed()) {
             fn.push(`var __dirname = ${JSON.stringify(this.fuseBoxDir)};` + "\n");
         }
         if (this.isFilenameUsed()) {
             fn.push(`var __filename = ${JSON.stringify(this.fuseBoxPath)};` + "\n");
         }
-        fn.push(code, '\n}');
+        fn.push(code, "\n}");
         code = fn.join("");
         return code;
     }
@@ -271,10 +276,30 @@ export class FileAbstraction {
      * @param prop
      * @param idx
      */
+    // tslint:disable-next-line:cyclomatic-complexity
     private onNode(node, parent, prop, idx) {
 
         // process.env
         if (this.core) {
+            if (this.core.opts.definedExpressions) {
+                const matchedExpression = matchesDefinedExpression(node, this.core.opts.definedExpressions)
+                if (matchedExpression) {
+                    if (matchedExpression.isConditional) {
+                        const result = compareStatement(node, matchedExpression.value);
+                        const block = new ReplaceableBlock(node.test, "left", node.test.left);
+                        this.processNodeEnv.add(block);
+                        return block.conditionalAnalysis(node, result);
+                    } else {
+                        const block = new ReplaceableBlock(parent, prop, node);
+                        if (block === undefined) {
+                            block.setUndefinedValue()
+                        } else {
+                            block.setValue(matchedExpression.value)
+                        }
+                        this.processNodeEnv.add(block);
+                    }
+                }
+            }
             const processKeyInIfStatement = matchesIfStatementProcessEnv(node);
             const value = this.core.producer.userEnvVariables[processKeyInIfStatement];
             if (processKeyInIfStatement) {
@@ -352,7 +377,7 @@ export class FileAbstraction {
             if (isComputed) {
                 this.restrictTreeShaking();
             }
-        })
+        });
         // trying to match a case where an export is misused
         // for example exports.foo.bar.prototype
         // we can't tree shake this exports
@@ -373,11 +398,11 @@ export class FileAbstraction {
          */
         const matchesExportIdentifier = matchesExportReference(node);
         if (matchesExportIdentifier) {
-            let ref = this.localExportUsageAmount.get(matchesExportIdentifier)
+            let ref = this.localExportUsageAmount.get(matchesExportIdentifier);
             if (ref === undefined) {
-                this.localExportUsageAmount.set(matchesExportIdentifier, 1)
+                this.localExportUsageAmount.set(matchesExportIdentifier, 1);
             } else {
-                this.localExportUsageAmount.set(matchesExportIdentifier, ++ref)
+                this.localExportUsageAmount.set(matchesExportIdentifier, ++ref);
             }
         }
         matchNamedExport(node, (name, referencedVariableName) => {
@@ -390,16 +415,23 @@ export class FileAbstraction {
             if (!this.namedExports.get(name)) {
                 namedExport = new NamedExport();
                 namedExport.name = name;
-                this.namedExports.set(name, namedExport)
+                this.namedExports.set(name, namedExport);
             } else {
                 namedExport = this.namedExports.get(name);
             }
 
             namedExport.addNode(parent, prop, node, referencedVariableName);
         });
+        // handles a case where require is being used without arguments
+        // e.g const req = require
+        // should replace it to:
+        // const req = $fsx
+        if (isTrueRequireFunction(node)) {
+            node.name = this.core.opts.quantumVariableName;
+        }
+        //console.log(node);
         // require statements
         if (matchesSingleFunction(node, "require")) {
-            
             // adding a require statement
             this.requireStatements.add(new RequireStatement(this, node));
         }
@@ -444,15 +476,15 @@ export class FileAbstraction {
         }
 
         if (matchesTypeOf(node, "global")) {
-            this.typeofGlobalKeywords.add(new GenericAst(parent, prop, node))
+            this.typeofGlobalKeywords.add(new GenericAst(parent, prop, node));
         }
         if (matchesTypeOf(node, "define")) {
-            this.typeofDefineKeywords.add(new GenericAst(parent, prop, node))
+            this.typeofDefineKeywords.add(new GenericAst(parent, prop, node));
         }
 
         // typeof window
         if (matchesTypeOf(node, "window")) {
-            this.typeofWindowKeywords.add(new GenericAst(parent, prop, node))
+            this.typeofWindowKeywords.add(new GenericAst(parent, prop, node));
         }
 
         /**
@@ -481,7 +513,7 @@ export class FileAbstraction {
                 parent.callee = {
                     type: "Identifier",
                     name: "require"
-                }
+                };
                 // treat it like any any other require statements
                 this.requireStatements.add(new RequireStatement(this, parent, parent.$parent));
             }

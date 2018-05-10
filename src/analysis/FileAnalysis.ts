@@ -19,7 +19,7 @@ export interface TraversalPlugin {
 
 const plugins: TraversalPlugin[] = [AutoImport, OwnVariable, OwnBundle, ImportDeclaration, DynamicImportStatement, LanguageLevel];
 
-export function acornParse(contents, options?: any) {
+export function acornParse(contents, options?: any): any {
     return acorn.parse(contents, {
         ...options || {}, ...{
             sourceType: "module",
@@ -143,6 +143,14 @@ export class FileAnalysis {
         return node.type === "Literal" || node.type === "StringLiteral";
     }
 
+    public replaceAliases(collection : Set<{ from: string, to: string }>){
+        collection.forEach(item => {
+            const regExp =
+                new RegExp(`(require|\\$fsmp\\$)\\(('|")${escapeRegExp(item.from)}('|")\\)`)
+            this.file.contents = this.file.contents.replace(regExp, `$1("${item.to}")`)
+        });
+    }
+
     public analyze(traversalOptions?: { plugins: TraversalPlugin[] }) {
         // We don't want to make analysis 2 times
         if (this.wasAnalysed || this.skipAnalysis) {
@@ -169,20 +177,14 @@ export class FileAnalysis {
 
         this.wasAnalysed = true;
         // regenerate content
-        this.statementReplacement.forEach(item => {
-            const regExp =
-                new RegExp(`(require|\\$fsmp\\$)\\(('|")${escapeRegExp(item.from)}('|")\\)`)
-            this.file.contents = this.file.contents.replace(regExp, `$1("${item.to}")`)
-        });
-
+        this.replaceAliases(this.statementReplacement);
         if (this.requiresRegeneration) {
             this.file.contents = this.file.context.generateCode(this.ast, {
             });
         }
 
         if (this.requiresTranspilation) {
-            const ts = require("typescript");
-            let result = ts.transpileModule(this.file.contents, this.file.context.tsConfig.getConfig());
+            let result = this.file.transpileUsingTypescript();
             this.file.contents = result.outputText;
         }
     }

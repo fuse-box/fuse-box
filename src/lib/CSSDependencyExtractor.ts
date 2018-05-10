@@ -10,18 +10,18 @@ export interface ICSSDependencyExtractorOptions {
 }
 
 export class CSSDependencyExtractor {
+    private filesProcessed = new Set<string>();
     private dependencies: string[] = [];
     constructor(public opts: ICSSDependencyExtractorOptions) {
-
         this.extractDepsFromString(opts.content);
     }
 
 
     private extractDepsFromString(input: string, currentPath? : string) {
-        const re = /@import\s+("|')([^"']+)/g;
+        const re = /@(?:import|value)[^"']+["']([^"']+)/g;
         let match;
         while (match = re.exec(input)) {
-            let target = this.findTarget(match[2], currentPath);
+            let target = this.findTarget(match[1], currentPath);
             if (target) {
                 this.readFile(target, path.dirname(target));
                 this.dependencies.push(target);
@@ -30,14 +30,20 @@ export class CSSDependencyExtractor {
     }
 
     private readFile(fileName: string, currentPath? : string) {
-        let contents = fs.readFileSync(fileName).toString();
-        this.extractDepsFromString(contents, currentPath)
+        if ( !this.filesProcessed.has(fileName)){
+            this.filesProcessed.add(fileName);
+            const contents = fs.readFileSync(fileName).toString();
+            this.extractDepsFromString(contents, currentPath)
+        }
     }
     public getDependencies() {
         return this.dependencies;
     }
 
     private tryFile(filePath: string): string {
+        if(!filePath){
+            return;
+        }
         // restrict node_module
         // we don't want to detect stuff from there
         if (filePath.indexOf("node_modules") > -1) {
@@ -64,6 +70,9 @@ export class CSSDependencyExtractor {
             fileName = this.opts.importer(fileName, null, info => {
                 target = info.file;
             });
+        }
+        if(!target){
+            return;
         }
         if (path.isAbsolute(target)) {
             return target;

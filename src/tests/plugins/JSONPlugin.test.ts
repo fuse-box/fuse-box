@@ -28,7 +28,7 @@ export class JSONPluginTest {
       return FuseTestEnv.create({
           project: {
             extensionOverrides: ['.foo.json'],
-            plugins: [JSONPlugin()]
+            plugins: [JSONPlugin()],
             files: {
                 "file.json": `{ "contents": "I should not be included" }`,
                 "file.foo.json": `{ "contents": "I should be included" }`,

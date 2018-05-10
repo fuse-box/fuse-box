@@ -2,7 +2,7 @@ import { WebIndexPluginClass } from "../../plugins/WebIndexPlugin";
 import { QuantumCore } from "./QuantumCore";
 import { readFuseBoxModule, hashString } from "../../Utils";
 import { FileAbstraction } from "../core/FileAbstraction";
-import { BundleProducer } from '../../index';
+import { BundleProducer, Bundle } from '../../index';
 export interface ITreeShakeOptions {
     shouldRemove: { (file: FileAbstraction): void }
 }
@@ -18,12 +18,17 @@ export interface IQuantumExtensionParams {
     treeshake?: boolean | ITreeShakeOptions;
     api?: { (core: QuantumCore): void }
     warnings?: boolean;
-    bakeApiIntoBundle?: string;
+    bakeApiIntoBundle?: string | string[] | true;
     shimsPath?: string;
     globalRequire?: boolean;
     extendServerImport?: boolean;
     polyfills?: string[];
+    definedExpressions?: { [key: string]: boolean | string | number }
     processPolyfill?: boolean;
+    css?: {
+        path?: string,
+        clean?: boolean
+    } | boolean,
     hoisting?: boolean | { names: string[] };
     containedAPI?: boolean,
     noConflictApi?: boolean;
@@ -38,7 +43,7 @@ export class QuantumOptions {
     private replaceProcessEnv = true;
     private containedAPI = false;
     private processPolyfill = false;
-    private bakeApiIntoBundle: string;
+    private bakeApiIntoBundle: string[] | true | undefined;
     private noConflictApi = false;
 
     private replaceTypeOf: boolean = true;
@@ -55,21 +60,36 @@ export class QuantumOptions {
     public apiCallback: { (core: QuantumCore): void }
     public optsTarget: string = "browser";
     public treeshake = false;
+    private cleanCSS: any;
+    private css = false;
+    private cssPath = "styles.css";
     public quantumVariableName = "$fsx";
+    public definedExpressions: { [key: string]: boolean | string | number };
     public webIndexPlugin: WebIndexPluginClass;
 
     constructor(public producer: BundleProducer, opts: IQuantumExtensionParams) {
-        opts = opts || {};
+        opts = opts || {} as IQuantumExtensionParams;
         if (opts.target) {
             this.optsTarget = opts.target;
         } else {
             this.optsTarget = this.producer.fuse.context.target;
         }
-
+        if (opts.css) {
+            this.css = true;
+            if (typeof opts.css === "object") {
+                this.cssPath = opts.css.path || "styles.css";
+                this.cleanCSS = opts.css.clean !== undefined ? opts.css.clean : true;
+            } else {
+                this.cleanCSS = true;
+            }
+        }
         if (opts.api) {
             this.apiCallback = opts.api;
         }
-
+    
+        if (opts.definedExpressions) {
+            this.definedExpressions = opts.definedExpressions;
+        }
         if (opts.manifest !== undefined) {
             if (typeof opts.manifest === "string") {
                 this.manifestFile = opts.manifest;
@@ -137,7 +157,11 @@ export class QuantumOptions {
         }
 
         if (opts.bakeApiIntoBundle) {
-            this.bakeApiIntoBundle = opts.bakeApiIntoBundle;
+            if (typeof opts.bakeApiIntoBundle === "string") {
+                this.bakeApiIntoBundle = [opts.bakeApiIntoBundle];
+            } else {
+                this.bakeApiIntoBundle = opts.bakeApiIntoBundle;
+            }
         }
 
         if (opts.extendServerImport !== undefined) {
@@ -158,7 +182,21 @@ export class QuantumOptions {
             this.genenerateQuantumVariableName();
         }
     }
+    public shouldGenerateCSS() {
+        return this.css === true;
+    }
 
+    public getCleanCSSOptions() {
+        return this.cleanCSS;
+    }
+
+    public getCSSPath() {
+        return this.cssPath;
+    }
+
+    public getCSSSourceMapsPath() {
+        return `${this.cssPath}.map`;
+    }
     public genenerateQuantumVariableName() {
         let randomHash = hashString(new Date().getTime().toString() + Math.random());
         if (randomHash.indexOf("-") === 0) {
@@ -248,8 +286,20 @@ export class QuantumOptions {
         return this.uglify;
     }
 
-    public shouldBakeApiIntoBundle() {
-        return this.bakeApiIntoBundle;
+    public shouldCreateApiBundle() {
+        return !this.bakeApiIntoBundle;
+    }
+
+    public shouldBakeApiIntoBundle(bundleName: string) {
+        return this.bakeApiIntoBundle && (this.bakeApiIntoBundle === true || this.bakeApiIntoBundle.indexOf(bundleName) !== -1);
+    }
+
+    public getMissingBundles(bundles: Map<string, Bundle>) {
+        if (!this.bakeApiIntoBundle || this.bakeApiIntoBundle === true) {
+            return [];
+        }
+
+        return this.bakeApiIntoBundle.filter(bundle => !bundles.has(bundle));
     }
 
     public shouldTreeShake() {

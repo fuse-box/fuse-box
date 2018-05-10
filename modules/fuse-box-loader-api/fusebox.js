@@ -1,13 +1,14 @@
 (function(__root__){
 if (__root__["FuseBox"]) return __root__["FuseBox"];
+var $isServiceWorker = typeof ServiceWorkerGlobalScope !== "undefined";
 var $isWebWorker = typeof WorkerGlobalScope !== "undefined";
-var $isBrowser = typeof window !== "undefined" && window.navigator || $isWebWorker;
-var g = $isBrowser ? ($isWebWorker ? {} : window) : global;
+var $isBrowser = typeof window !== "undefined" && typeof window.navigator !== "undefined" || $isWebWorker || $isServiceWorker;
+var g = $isBrowser ? (($isWebWorker || $isServiceWorker) ? {} : window) : global;
 if ($isBrowser) {
-    g["global"] = $isWebWorker ? {} : window;
+    g["global"] = ($isWebWorker || $isServiceWorker) ? {} : window;
 }
 __root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports : __root__;
-var $fsbx = $isBrowser ? $isWebWorker ? {} : (window["__fsbx__"] = window["__fsbx__"] || {})
+var $fsbx = $isBrowser ? ($isWebWorker || $isServiceWorker) ? {} : (window["__fsbx__"] = window["__fsbx__"] || {})
     : g["$fsbx"] = g["$fsbx"] || {};
 if (!$isBrowser) {
     g["require"] = require;
@@ -232,6 +233,22 @@ function $trigger(name, args) {
     }
 }
 ;
+function syntheticDefaultExportPolyfill(input) {
+    if (input === null ||
+        ['function', 'object', 'array'].indexOf(typeof input) === -1 ||
+        input.hasOwnProperty("default")) {
+        return;
+    }
+    if (Object.isFrozen(input)) {
+        input.default = input;
+        return;
+    }
+    Object.defineProperty(input, "default", {
+        value: input,
+        writable: true,
+        enumerable: false
+    });
+}
 function $import(name, o) {
     if (o === void 0) { o = {}; }
     if (name.charCodeAt(4) === 58 || name.charCodeAt(5) === 58) {
@@ -275,11 +292,15 @@ function $import(name, o) {
     locals.exports = {};
     locals.module = { exports: locals.exports };
     locals.require = function (name, optionalCallback) {
-        return $import(name, {
+        var result = $import(name, {
             pkg: pkg,
             path: path,
             v: ref.versions,
         });
+        if (FuseBox["sdep"]) {
+            syntheticDefaultExportPolyfill(result);
+        }
+        return result;
     };
     if ($isBrowser || !g["require"].main) {
         locals.require.main = { filename: "./", paths: [] };
@@ -289,7 +310,7 @@ function $import(name, o) {
     }
     var args = [locals.module.exports, locals.require, locals.module, ref.validPath, path, pkg];
     $trigger("before-import", args);
-    file.fn.apply(0, args);
+    file.fn.apply(args[0], args);
     $trigger("after-import", args);
     return locals.module.exports;
 }

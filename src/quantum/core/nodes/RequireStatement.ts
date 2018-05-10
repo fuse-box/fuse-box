@@ -20,7 +20,7 @@ export class RequireStatement {
     public localReferences = 0;
     public isDynamicImport = false;
 
-    
+
 
     private resolvedAbstraction: FileAbstraction;
     private resolved = false;
@@ -35,6 +35,8 @@ export class RequireStatement {
         if (ast.arguments.length === 1 && isString(arg1)) {
 
             this.value = ast.arguments[0].value;
+            // replace duplicate slashes
+            this.value = this.value.replace(/([/]{2,})/g, '/')
             let moduleValues = this.value.match(/^([a-z@](?!:).*)$/);
 
             this.isNodeModule = moduleValues !== null && moduleValues !== undefined;
@@ -60,7 +62,7 @@ export class RequireStatement {
             // limit it to require
             if (this.functionName === "require") {
                 let showWarning = true;
-                
+
                 // notify producer
                 customComputedStatementPaths.forEach((regexp, path) => {
 
@@ -78,6 +80,39 @@ export class RequireStatement {
                 }
             }
 
+        }
+    }
+
+
+    public removeCallExpression(): { success: boolean, empty?: boolean } {
+        const expressionStatement = this.ast.$parent.$parent;
+        let parent = expressionStatement.$parent;
+        let prop = expressionStatement.$prop;
+        if (prop === undefined || !parent || !Array.isArray(parent[prop])) {
+            return;
+        }
+        const index = parent[prop].indexOf(expressionStatement);
+        if (index > -1) {
+            parent[prop].splice(index, 1);
+            return { success: true, empty: parent[prop].length === 0 };
+        }
+        return { success: false }
+    }
+
+    public remove() {
+        const expressionStatement = this.ast.$parent;
+        if (!expressionStatement) {
+            return;
+        }
+        let parent = expressionStatement.$parent;
+        let prop = expressionStatement.$prop;
+        if (prop === undefined || !parent || !Array.isArray(parent[prop])) {
+            return;
+        }
+        const index = parent[prop].indexOf(expressionStatement);
+        if (index > -1) {
+            parent[prop].splice(index, 1);
+            return true;
         }
     }
 
@@ -123,8 +158,9 @@ export class RequireStatement {
 
     public setExpression(raw: string) {
         const astStatemet = acornParse​​(raw);
-        if (astStatemet.body[0].expression) {
-            this.ast.arguments = [astStatemet.body[0].expression];
+        const body = astStatemet.body[0];
+        if (body.type === "ExpressionStatement") {
+            this.ast.arguments = [body.expression];
         }
     }
 
@@ -156,20 +192,20 @@ export class RequireStatement {
                 }
                 resolved = producerAbstraction.findFileAbstraction(pkgName, resolvedName);
             } else {
-                
+
                 resolved = producerAbstraction.findFileAbstraction(pkgName, this.nodeModulePartialRequire);
             }
             if (resolved) {
-             
+
                 // register dependency
                 this.file.addDependency(resolved, this);
             }
             this.resolvedAbstraction = resolved;
         }
-        if( this.resolvedAbstraction){
-            this.resolvedAbstraction.referencedRequireStatements.add(this);    
+        if (this.resolvedAbstraction) {
+            this.resolvedAbstraction.referencedRequireStatements.add(this);
         }
-        
+
         return this.resolvedAbstraction;
     }
 }

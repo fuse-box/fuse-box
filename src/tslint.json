@@ -1,0 +1,23 @@
+{
+  "defaultSeverity": "error",
+  "extends": ["tslint:latest", "tslint-react", "tslint-eslint-rules", "tslint-immutable", "tslint-clean-code"],
+  "rules": {
+    "arrow-parens": [true, "ban-single-arg-parens"],
+    "cyclomatic-complexity": [true, 20],
+    "interface-name": false,
+    "trailing-comma" : false,
+    "jsx-no-multiline-js": false,
+    "ordered-imports" : false,
+    "max-classes-per-file": false,
+    "max-line-length": [true, 160],
+    "no-consecutive-blank-lines": [true, 2],
+    "no-console": false,
+    "no-debugger": false,
+    "no-parameter-properties": false,
+    "no-use-before-declare": true,
+    "no-var-requires": false,
+    "object-literal-sort-keys": [false, "ignore-case"],
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
+    "variable-name": [true, "ban-keywords"]
+  }
+}

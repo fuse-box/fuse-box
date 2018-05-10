@@ -8,7 +8,11 @@ export class QuantumPluginClass implements Plugin {
     public coreOpts: IQuantumExtensionParams;
 
     constructor(coreOpts?: IQuantumExtensionParams) {
-        this.coreOpts = coreOpts || {};
+        if( coreOpts ){
+            this.coreOpts = coreOpts;
+        }  else {
+            this.coreOpts = {} as IQuantumExtensionParams;
+        }
     }
 
     init(context: WorkFlowContext) {
@@ -43,10 +47,16 @@ export class QuantumPluginClass implements Plugin {
             })
         });
     }
-
-    producerEnd(producer: BundleProducer) {
+    private consume(producer: BundleProducer){
         let core = new QuantumCore(producer, new QuantumOptions(producer, this.coreOpts));
         return core.consume();
+    }
+
+    producerEnd(producer: BundleProducer) {
+        producer.sharedEvents.on('file-changed', () => {
+            this.consume(producer);
+        });
+        return this.consume(producer);
     }
 };
 

@@ -32,9 +32,13 @@ fuse.plugin(
 | ` templateString `   | Provide your own template as a string  |
 | ` target `   | The main filename. Default is `index.html`  |
 | ` resolve `   | `resolve ?: {(output : UserOutput) : string}` Allows to completely override the output  |
+| `pre ` | `{ relType: 'fetch' | 'load' }`  Config object to either preload or prefetch the output javascript bundles in the head of the document |
 | ` appendBundles ` | Append $bundles to provided template |
+| ` async ` | Provide `async` attribute to `<script>` tags (boolean) |
+| ` scriptAttributes ` | Provide additional attribute(s) to `<script>` tags (string) |
 
-note: If you specify template and templateString then template will take precedent 
+
+note: If you specify template and templateString then template will take precedent
 
 ### Resolve example
 `resolve` option allows you to completely override the path
@@ -54,5 +58,6 @@ A custom template has the following macro available:
 | ------------- | ------------- |
 | ` $title `   | Html Title  |
 | ` $bundles `   | A list of script tags |
+| ` $css `   | A list of styles tags |
 
 github_example: vendor-splitting
