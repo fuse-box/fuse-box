@@ -105,6 +105,12 @@ export class BundleApiTest {
         should(fuse.producer.devServerOptions).deepEqual({ port: 7777 })
     }
 
+    "Should setup devServer with https param"() {
+        const fuse = createFuse();
+        fuse.dev({ https: { cert: "cert", key: "key" } });
+        should(fuse.producer.devServerOptions).deepEqual({ port: 4444, https: { cert: "cert", key: "key" } })
+    }
+
     "Should inject 1 plugin"() {
         const fuse = createFuse();
         const bundle = fuse.bundle("app").plugin("first");
