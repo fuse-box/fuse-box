@@ -122,14 +122,6 @@ CSSModules({
 })
 ```
 
-### root
-Set `postcss-modules` root path. _see wef_
-```js
-CSSModules({
-  root: path.resolve(__dirname, 'src')
-})
-```
-
 ## Development mode
 In development, the imported stylesheets are appended to the `<head>` of
 the document by the outputted JavaScript bundle. This allows for the files
