@@ -30,7 +30,7 @@ For example, the code snippet above is equivalent to:
 
 ```js
 plugins: [
-    [ /mypath\/**.css/, CSSPlugin() ]
+    [ /mypath\/\*\*\.css/, CSSPlugin() ]
 ]
 ```
 
