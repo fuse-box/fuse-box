@@ -40,6 +40,18 @@ fuse.dev({
 })
 ```
 
+## Https
+You can enable https by providing `https` options
+_(takes `https.ServerOptions`, see https://nodejs.org/api/https.html#https_https_createserver_options_requestlistener)_
+
+```js
+fuse.dev({
+    https: {
+        key: fs.readFileSync('./cert/app.key', 'utf8'),
+        cert: fs.readFileSync('./cert/app.crt', 'utf8')
+    }
+})
+```
 
 ## Opening in browser
 
