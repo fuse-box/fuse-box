@@ -111,6 +111,12 @@ export class BundleApiTest {
         should(fuse.producer.devServerOptions).deepEqual({ port: 4444, https: { cert: "cert", key: "key" } })
     }
 
+    "Should setup devServer with fallback param"() {
+        const fuse = createFuse();
+        fuse.dev({ fallback: "index.html" });
+        should(fuse.producer.devServerOptions).deepEqual({ port: 4444, fallback: "index.html" })
+    }
+
     "Should inject 1 plugin"() {
         const fuse = createFuse();
         const bundle = fuse.bundle("app").plugin("first");

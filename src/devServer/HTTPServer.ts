@@ -12,6 +12,9 @@ export interface HTTPServerOptions {
     /** Provide https server options to enable https */
     https?: https.ServerOptions;
 
+    /** 404 fallback */
+    fallback?: string;
+
     /**
      * If specfied this is the folder served from express.static
      * It can be an absolute path or relative to `appRootPath`
@@ -100,6 +103,11 @@ Development server running ${opts.https ? 'https' : 'http'}://localhost:${port} 
                 this.fuse.context.log.echoWarning("Make sure you are not using dev server for production!")
                 this.app.use(this.fuse.context.sourceMapsRoot, express.static(this.fuse.context.homeDir));
             }
+        }
+        if (this.opts.fallback) {
+            this.app.use('*', (req, res) => {
+                res.sendFile(this.opts.fallback)
+            })
         }
     }
 }
