@@ -31,6 +31,17 @@ fuse.dev({
 })
 ```
 
+## Fallback
+
+If you develop a SPA app you can set a fallback. All 404's will return the fallback file you specify. The file path is relative to your served root.
+
+```js
+fuse.dev({
+    root: 'public/build',
+    fallback: 'index.html'
+})
+```
+
 ## Port
 By default you will get `express` application running and a `socket` server (if [HMR](#hot-module-reload) is enabled) bound to port `4444`. To change the port provide `port` option.
 
