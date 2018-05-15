@@ -5,7 +5,6 @@ import * as fs from "fs";
 import { ensureAbsolutePath, joinFuseBoxPath } from "../Utils";
 import { UserOutput } from "../core/UserOutput";
 import * as path from "path";
-import * as consolidate from "consolidate";
 
 export interface IndexPluginOptions {
     title?: string;
@@ -136,7 +135,7 @@ $bundles
         };
 
         if (this.opts.engine && this.opts.template) {
-            html = await consolidate[this.opts.engine](ensureAbsolutePath(this.opts.template), {...macro, ...this.opts.data})
+            html = await require('consolidate')[this.opts.engine](ensureAbsolutePath(this.opts.template), {...macro, ...this.opts.data})
         } else {
             for (const key in macro) {
                 if (macro.hasOwnProperty(key)) {
