@@ -18,7 +18,7 @@ export interface IndexPluginOptions {
     template?: string;
     templateString?: string;
     engine?: string | null;
-    data?: {[key: string]: any};
+    locals?: {[key: string]: any};
     appendBundles?: boolean;
     async?: boolean;
     scriptAttributes?: string;
@@ -135,7 +135,7 @@ $bundles
         };
 
         if (this.opts.engine && this.opts.template) {
-            html = await require('consolidate')[this.opts.engine](ensureAbsolutePath(this.opts.template), {...macro, ...this.opts.data})
+            html = await require('consolidate')[this.opts.engine](ensureAbsolutePath(this.opts.template), {...macro, ...this.opts.locals})
         } else {
             for (const key in macro) {
                 if (macro.hasOwnProperty(key)) {
