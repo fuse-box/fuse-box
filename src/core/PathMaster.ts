@@ -56,7 +56,7 @@ export interface IPackageInformation {
  * Manages the allowed extensions e.g.
  * should user be allowed to do `require('./foo.ts')`
  */
-export class AllowedExtenstions {
+export class AllowedExtensions {
     /**
      * Users are allowed to require files with these extensions by default
      **/
@@ -337,7 +337,7 @@ export class PathMaster {
             }
         }
 
-        if (!AllowedExtenstions.has(ext)) {
+        if (!AllowedExtensions.has(ext)) {
             let fileNameCheck = this.checkFileName(root, name);
             if (fileNameCheck) {
                 return { resolved: fileNameCheck };
@@ -382,19 +382,22 @@ export class PathMaster {
         for (let key in browserOverrides) {
             let value = browserOverrides[key];
             if (typeof value === "string") {
-                if (/\.\//.test(key)) {
-                    key = key.slice(2);
-                }
-                if (/\.\//.test(value)) {
-                    value = "~/" + value.slice(2);
+                if (/^[a-z]/.test(value) && !/.js$/.test(value)) {
+                    value = value;
                 } else {
-                    value = "~/" + value;
-                }
-                if (!/.js$/.test(value)) {
-                    value = value + ".js";
+                    if (/\.\//.test(key)) {
+                        key = key.slice(2);
+                    }
+                    if (/\.\//.test(value)) {
+                        value = "~/" + value.slice(2);
+                    } else {
+                        value = "~/" + value;
+                    }
+                    if (!/.js$/.test(value)) {
+                        value = value + ".js";
+                    }
                 }
             }
-
             newOverrides[key] = value;
         }
         return newOverrides;

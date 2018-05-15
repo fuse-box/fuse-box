@@ -31,7 +31,8 @@
         "Guides" : [
             "guides/working-with-targets.md",
 			"guides/publishing-to-npm.md",
-			"guides/debugging-with-vscode.md"
+            "guides/debugging-with-vscode.md",
+            "guides/development-with.docker.md"
         ],
         "Plugins" : [
             "plugins/css/CSSPlugin.md",

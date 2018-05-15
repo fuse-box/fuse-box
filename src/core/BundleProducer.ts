@@ -39,9 +39,11 @@ export class BundleProducer {
         if (opts) {
             this.chokidarOptions = opts.chokidar;
         }
+        
         /** Collect information about watchers and start watching */
         this.watch();
-
+        //this.runner = new BundleRunner(this.fuse);
+        
         return this.runner.run(opts).then(() => {
 
             this.sharedEvents.emit("producer-done");
@@ -51,7 +53,10 @@ export class BundleProducer {
                     return plugin.producerEnd(this);
                 }
             });
-        }).then(() => this);
+        }).then(() => { 
+           // this.bundles = new Map<string, Bundle>();
+            return this 
+        });
     }
 
     public addUserProcessEnvVariables(data: any) {

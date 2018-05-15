@@ -1,4 +1,5 @@
 import * as http from "http";
+import * as https from "https";
 import * as express from "express";
 import { FuseBox } from "../";
 import { SocketServer } from "./SocketServer";
@@ -8,6 +9,11 @@ import { ServerOptions } from "./Server";
 export interface HTTPServerOptions {
     /** Defaults to 4444 if not specified */
     port?: number;
+    /** Provide https server options to enable https */
+    https?: https.ServerOptions;
+
+    /** 404 fallback */
+    fallback?: string;
 
     /**
      * If specfied this is the folder served from express.static
@@ -35,7 +41,7 @@ export class HTTPServer {
     public launch(opts: HTTPServerOptions, userSettings?: ServerOptions): SocketServer {
         this.opts = opts || {};
         const port = this.opts.port || 4444;
-        let server = http.createServer();
+        let server = this.createServer();
         const socketServer = SocketServer.createInstance(server, this.fuse);
         this.setup();
 
@@ -63,7 +69,7 @@ export class HTTPServer {
             server.listen(port, () => {
                 const msg = `
 -----------------------------------------------------------------
-Development server running http://localhost:${port} @ ${packageInfo.version}
+Development server running ${opts.https ? 'https' : 'http'}://localhost:${port} @ ${packageInfo.version}
 -----------------------------------------------------------------
 `
                 console.log(msg);
@@ -72,6 +78,16 @@ Development server running http://localhost:${port} @ ${packageInfo.version}
             });
         }, 10);
         return socketServer;
+    }
+
+    private createServer(): http.Server | https.Server {
+        let server;
+        if (this.opts.https) {
+            server = https.createServer(this.opts.https);
+        } else {
+            server = http.createServer();
+        }
+        return server;
     }
 
     public serveStatic(userPath, userFolder) {
@@ -87,6 +103,11 @@ Development server running http://localhost:${port} @ ${packageInfo.version}
                 this.fuse.context.log.echoWarning("Make sure you are not using dev server for production!")
                 this.app.use(this.fuse.context.sourceMapsRoot, express.static(this.fuse.context.homeDir));
             }
+        }
+        if (this.opts.fallback) {
+            this.app.use('*', (req, res) => {
+                res.sendFile(this.opts.fallback)
+            })
         }
     }
 }

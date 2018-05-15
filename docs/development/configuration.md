@@ -20,13 +20,15 @@ FuseBox.init({
 ```
 
 files:
-node_modules
- placeholder.js
-stuff
- src
-  index.ts
- fuse.js
 
+```
+node_modules
+  placeholder.js
+stuff
+  src
+    index.ts
+  fuse.js
+```
 
 
 In the example above your `homeDir` will be pointing to `stuff/src` next to `fuse.js` file.
@@ -72,7 +74,7 @@ However it is strongly recommended to use `$name` in your output template, as `o
 
 Listens to stdin.
 
-Combinations like `CMD+D` will gracefully shut down any process.
+Combinations like `Ctrl+D` will gracefully shut down any process.
 
 ## Cache
 

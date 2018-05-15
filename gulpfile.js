@@ -95,6 +95,10 @@ gulp.task("prepare:copy-package", function() {
     return result = gulp.src("./package.json")
         .pipe(gulp.dest(RELEASE_FOLDER))
 });
+gulp.task("prepare:copy-readme", function() {
+    return result = gulp.src("./README.md")
+        .pipe(gulp.dest(RELEASE_FOLDER))
+})
 
 gulp.task("prepare:dist-loader-typings", () => {
     return gulp.src("src/loader/LoaderAPI.ts")
@@ -140,6 +144,7 @@ gulp.task("dist", ["prepare:clean"], function(done) {
     return runSequence(
         "dist-modules",
         "dist:loader",
+        "prepare:copy-readme",
         "prepare:copy-package",
         "prepare:js",
         "prepare:copy-modules",
@@ -359,10 +364,10 @@ gulp.task("installDevDeps", function(done) {
         "buble",
         "consolidate",
         "pug",
-        "tslint", 
-        "tslint-react", 
-        "tslint-eslint-rules", 
-        "tslint-immutable", 
+        "tslint",
+        "tslint-react",
+        "tslint-eslint-rules",
+        "tslint-immutable",
         "tslint-clean-code"
     ];
 

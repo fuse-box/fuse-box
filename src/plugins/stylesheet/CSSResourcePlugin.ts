@@ -1,6 +1,6 @@
 import { File } from "../../core/File";
 import { Plugin, WorkFlowContext } from "../../core/WorkflowContext";
-import { ensureDir } from "../../Utils";
+import { ensureDir, joinFuseBoxPath } from "../../Utils";
 import * as path from "path";
 import { utils } from "realm-utils";
 import * as fs from "fs";
@@ -103,7 +103,7 @@ export class CSSResourcePluginClass implements Plugin {
         context.allowExtension(".css");
     }
 
-    public resolveFn = (p) => path.join("/css-resources", p)
+    public resolveFn = (p) => joinFuseBoxPath("/css-resources", p)
 
     public createResourceFolder(file: File) {
         if (resourceFolderChecked === false) {
@@ -136,7 +136,7 @@ export class CSSResourcePluginClass implements Plugin {
                 }
             }
 
-            if (url.startsWith('https:') || url.startsWith('http:') || url.startsWith('//')) {
+            if (url.startsWith('https:') || url.startsWith('http:') || url.startsWith('//') || url.startsWith('#')) {
                 return url
             }
 

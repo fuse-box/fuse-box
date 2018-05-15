@@ -85,7 +85,7 @@ export class PackageFolderAliasTest {
             "package.json": `{
                 "main" : "index.js",
                 "browser": {
-                    "./foo.js": "overrides/foo_browser"
+                    "./foo.js": "overrides/foo_browser.js"
                 }
             }`
         });
@@ -103,35 +103,6 @@ export class PackageFolderAliasTest {
         .simple().then(test => test.browser((window, env) => {
             const index = window.FuseBox.import("./index")
             should(index).equal("I am overrides/foo_browser");
-        }));
-    }
-
-    "Browser override case 2"() {
-        createRealNodeModule("pkg_with_browser_overrides_2", {
-            "index.js": `module.exports = require('./foo')`,
-            "foo.js": `module.exports = "Should not be required"`,
-            "overrides/foo_browser.js": `module.exports = "I am overrides/foo_browser2"`,
-            "package.json": `{
-                "main" : "index.js",
-                "browser": {
-                    "./foo.js": "overrides/foo_browser.js"
-                }
-            }`
-        });
-        return FuseTestEnv.create(
-            {
-                project: {
-                    files: {
-                        "index.ts": `
-                            module.exports = require("pkg_with_browser_overrides_2")
-                        `,
-                    }
-                }
-            }
-        )
-        .simple().then(test => test.browser((window, env) => {
-            const index = window.FuseBox.import("./index")
-            should(index).equal("I am overrides/foo_browser2");
         }));
     }
 }

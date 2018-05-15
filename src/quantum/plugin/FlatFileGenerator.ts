@@ -5,10 +5,11 @@ import { BundleAbstraction } from "../core/BundleAbstraction";
 export class FlatFileGenerator {
     public contents = [];
     public entryId;
-    public globalsName: string;
+    public globals = new Map<string, string>();
     constructor(public core: QuantumCore, public bundleAbstraction?: BundleAbstraction​​) { }
-    public addGlobal(code: string) {
-        this.contents.push(code);
+
+    public setGlobals(packageName: string, fileID: string) {
+        this.globals.set(packageName, fileID);
     }
 
     public init() {
@@ -43,7 +44,6 @@ export class FlatFileGenerator {
         let fileId = file.getID();
         if (file.isEntryPoint) {
             this.entryId = fileId;
-            this.globalsName = file.globalsName;
         }
         this.contents.push(`// ${file.packageAbstraction.name}/${file.fuseBoxPath}`);
         this.contents.push(`${this.core.opts.quantumVariableName}.f[${JSON.stringify(fileId)}] = ${file.generate(ensureES5)}`);
@@ -59,35 +59,56 @@ export class FlatFileGenerator {
     public render() {
         if (this.bundleAbstraction) {
             this.addHoistedVariables();
-        }
-        if (this.bundleAbstraction) {
+
             if (this.bundleAbstraction.globalVariableRequired) {
                 const defineGlobalFn = "var global = window";
                 if (this.core.opts.isTargetBrowser()) {
                     this.contents.push(defineGlobalFn);
                 }
             }
+
         }
+
+        if (this.core.opts.isTargetBrowser()) {
+            this.globals.forEach((fileID, globalName) => {
+                const req = `${this.core.opts.quantumVariableName}.r(${JSON.stringify(fileID)})`;
+                if (globalName == '*') {
+                    this.contents.push(`var r = ${req}`);
+                    this.contents.push(`if (r){for(var i in r){ window[i] = r[i] }}`);
+                } else {
+                    this.contents.push(`window['${globalName}']=${req}`);
+                }
+            })
+        }
+
         if (this.entryId !== undefined) {
+
             const req = `${this.core.opts.quantumVariableName}.r(${JSON.stringify(this.entryId)})`;
 
-            if (this.globalsName) {
-                if (this.core.opts.isTargetNpm() || this.core.opts.isTargetServer()) {
+            if (this.core.opts.isTargetNpm() || this.core.opts.isTargetServer()) {
+
+                // look for a global mention of the entry package, ignore other settings. this could use some improvement.
+                var dirtyCheck = false;
+                this.globals.forEach((fileID, globalName) => {
+                    if (fileID == this.entryId && globalName == '*') {
+                        dirtyCheck = true;
+                    }
+                });
+
+                if (dirtyCheck) {
                     this.contents.push(`module.exports = ${req}`);
+                } else {
+                    this.contents.push(req);
                 }
 
-                if (this.core.opts.isTargetBrowser()) {
-                    if (this.globalsName === "*") {
-                        this.contents.push(`var r = ${req}`);
-                        this.contents.push(`if (r){for(var i in r){ window[i] = r[i] }}`);
-                    } else {
-                        this.contents.push(`window['${this.globalsName}']=${req}`);
-                    }
-                }
             } else {
+
                 this.contents.push(req);
+
             }
+
         }
+
         // finish wrapping
         if (this.core.opts.isTargetBrowser() || this.core.opts.isTargetUniveral()) {
             if (this.core.opts.isContained()) {

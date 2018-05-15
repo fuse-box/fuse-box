@@ -40,7 +40,7 @@ export interface FuseBoxOptions {
     target?: string,
     log?: { enabled?: boolean, showBundledFiles?: boolean, clearTerminalOnBundle?: boolean } | boolean;
     globals?: { [packageName: string]: /** Variable name */ string };
-    plugins?: Array<Plugin | Plugin[]>;
+    plugins?: Array<Plugin | Array<Plugin | string>>;
     autoImport?: any;
     natives?: any;
     warnings?: boolean;
@@ -493,6 +493,7 @@ export class FuseBox {
             return contents;
         }).catch(e => {
             console.log(e.stack || e);
+            throw e;
         });
     }
 }

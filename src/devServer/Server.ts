@@ -4,6 +4,8 @@ import { HTTPServer } from "./HTTPServer";
 import { FuseBox } from "../core/FuseBox";
 import { utils } from "realm-utils";
 import * as process from "process";
+import * as https from 'https';
+import * as path from 'path';
 
 export type HotReloadEmitter = (server: Server, sourceChangedInfo: any) => any;
 
@@ -17,6 +19,12 @@ export type SourceChangedEvent = {
 export interface ServerOptions {
     /** Defaults to 4444 if not specified */
     port?: number;
+
+    /** If not specified it uses regular http */
+    https?: https.ServerOptions;
+
+    /** 404 fallback */
+    fallback?: string;
 
     /**
      * - If false nothing is served.
@@ -62,6 +70,8 @@ export class Server {
         const root: string | boolean = opts.root !== undefined
             ? (utils.isString(opts.root) ? ensureUserPath(opts.root as string) : false) : rootDir;
         const port = opts.port || 4444;
+        const https = opts.https
+        const fallback = root && opts.fallback && path.join(root, opts.fallback)
         if (opts.hmr !== false && this.fuse.context.useCache === true) {
 
             setTimeout(() => {
@@ -80,7 +90,7 @@ export class Server {
             if (opts.httpServer === false) {
                 this.socketServer = SocketServer.startSocketServer(port, this.fuse);
             } else {
-                this.socketServer = this.httpServer.launch({ root, port }, opts);
+                this.socketServer = this.httpServer.launch({ root, port, https, fallback }, opts);
             }
         });
         return this;

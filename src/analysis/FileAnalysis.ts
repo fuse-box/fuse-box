@@ -19,7 +19,7 @@ export interface TraversalPlugin {
 
 const plugins: TraversalPlugin[] = [AutoImport, OwnVariable, OwnBundle, ImportDeclaration, DynamicImportStatement, LanguageLevel];
 
-export function acornParse(contents, options?: any) {
+export function acornParse(contents, options?: any): any {
     return acorn.parse(contents, {
         ...options || {}, ...{
             sourceType: "module",

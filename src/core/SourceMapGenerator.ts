@@ -24,6 +24,6 @@ export class SourceMapGenerator {
         });
 
         smGenerator.setSourceContent(filePath, fileContent);
-        file.sourceMap = JSON.stringify(smGenerator.toJSON());
+        file.sourceMap = JSON.stringify(smGenerator);
     }
 }

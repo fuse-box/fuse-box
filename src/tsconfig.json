@@ -19,7 +19,9 @@
         "preserveConstEnums": true,
         "suppressImplicitAnyIndexErrors": true
     },
+    "include": [ "**/*.ts", ],
     "exclude": [
+      "**/*.d.ts",
       "loader/**/*",
       "modules/**/*"
     ]

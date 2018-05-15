@@ -11,7 +11,7 @@ import {
     matchesDoubleMemberExpression, matcheObjectDefineProperty, matchesEcmaScript6, matchesTypeOf, matchRequireIdentifier,
     trackRequireMember, matchNamedExport,
     isExportMisused, matchesNodeEnv, matchesExportReference,
-    matchesIfStatementProcessEnv, compareStatement, matchesIfStatementFuseBoxIsEnvironment, isExportComputed, matchesRequireFunction, matchesDefinedExpression
+    matchesIfStatementProcessEnv, compareStatement, matchesIfStatementFuseBoxIsEnvironment, isExportComputed, isTrueRequireFunction, matchesDefinedExpression
 } from "./AstUtils";
 import { ExportsInterop } from "./nodes/ExportsInterop";
 import { UseStrict } from "./nodes/UseStrict";
@@ -37,7 +37,6 @@ export class FileAbstraction {
 
     public isEcmaScript6 = false;
     public shakable = false;
-    public globalsName: string;
     public amountOfReferences = 0;
     public canBeRemoved = false;
 
@@ -135,6 +134,7 @@ export class FileAbstraction {
         this.ast = acornParse​​(contents);
         this.analyse();
     }
+
     public setID(id: any) {
         this.id = id;
     }
@@ -246,9 +246,8 @@ export class FileAbstraction {
         return this.globalVariables.has("exports") || this.globalVariables.has("module");
     }
 
-    public setEnryPoint(globalsName?: string) {
+    public setEntryPoint() {
         this.isEntryPoint = true;
-        this.globalsName = globalsName;
         this.treeShakingRestricted = true;
     }
 
@@ -282,17 +281,17 @@ export class FileAbstraction {
 
         // process.env
         if (this.core) {
-            if( this.core.opts.definedExpressions){
+            if (this.core.opts.definedExpressions) {
                 const matchedExpression = matchesDefinedExpression(node, this.core.opts.definedExpressions)
-                if ( matchedExpression ){
-                    if( matchedExpression.isConditional ){
+                if (matchedExpression) {
+                    if (matchedExpression.isConditional) {
                         const result = compareStatement(node, matchedExpression.value);
                         const block = new ReplaceableBlock(node.test, "left", node.test.left);
                         this.processNodeEnv.add(block);
                         return block.conditionalAnalysis(node, result);
                     } else {
                         const block = new ReplaceableBlock(parent, prop, node);
-                        if(block === undefined){
+                        if (block === undefined) {
                             block.setUndefinedValue()
                         } else {
                             block.setValue(matchedExpression.value)
@@ -427,7 +426,7 @@ export class FileAbstraction {
         // e.g const req = require
         // should replace it to:
         // const req = $fsx
-        if (matchesRequireFunction(node)) {
+        if (isTrueRequireFunction(node)) {
             node.name = this.core.opts.quantumVariableName;
         }
         //console.log(node);

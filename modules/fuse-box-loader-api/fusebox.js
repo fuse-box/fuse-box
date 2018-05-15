@@ -1,13 +1,14 @@
 (function(__root__){
 if (__root__["FuseBox"]) return __root__["FuseBox"];
+var $isServiceWorker = typeof ServiceWorkerGlobalScope !== "undefined";
 var $isWebWorker = typeof WorkerGlobalScope !== "undefined";
-var $isBrowser = typeof window !== "undefined" && typeof window.navigator !== "undefined" || $isWebWorker;
-var g = $isBrowser ? ($isWebWorker ? {} : window) : global;
+var $isBrowser = typeof window !== "undefined" && typeof window.navigator !== "undefined" || $isWebWorker || $isServiceWorker;
+var g = $isBrowser ? (($isWebWorker || $isServiceWorker) ? {} : window) : global;
 if ($isBrowser) {
-    g["global"] = $isWebWorker ? {} : window;
+    g["global"] = ($isWebWorker || $isServiceWorker) ? {} : window;
 }
 __root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports : __root__;
-var $fsbx = $isBrowser ? $isWebWorker ? {} : (window["__fsbx__"] = window["__fsbx__"] || {})
+var $fsbx = $isBrowser ? ($isWebWorker || $isServiceWorker) ? {} : (window["__fsbx__"] = window["__fsbx__"] || {})
     : g["$fsbx"] = g["$fsbx"] || {};
 if (!$isBrowser) {
     g["require"] = require;
@@ -233,9 +234,20 @@ function $trigger(name, args) {
 }
 ;
 function syntheticDefaultExportPolyfill(input) {
-    return input !== null && ['function', 'object', 'array']
-        .indexOf(typeof input) > -1 && input.default === undefined ?
-        Object.isFrozen(input) ? input.default = input : Object.defineProperty(input, "default", { value: input, writable: true, enumerable: false }) : void 0;
+    if (input === null ||
+        ['function', 'object', 'array'].indexOf(typeof input) === -1 ||
+        input.hasOwnProperty("default")) {
+        return;
+    }
+    if (Object.isFrozen(input)) {
+        input.default = input;
+        return;
+    }
+    Object.defineProperty(input, "default", {
+        value: input,
+        writable: true,
+        enumerable: false
+    });
 }
 function $import(name, o) {
     if (o === void 0) { o = {}; }
