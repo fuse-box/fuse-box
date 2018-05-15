@@ -18,6 +18,8 @@ export interface IndexPluginOptions {
     template?: string;
     templateString?: string;
     appendBundles?: boolean;
+    engine?: string;
+    locals?: {[key:string]: any}
     async?: boolean;
     scriptAttributes?: string;
     pre?: { relType: 'fetch' | 'load' };
@@ -29,7 +31,7 @@ export class WebIndexPluginClass implements Plugin {
 
     }
 
-    private generate(producer: BundleProducer) {
+    private async generate(producer: BundleProducer) {
         let bundlePaths = [];
         let bundles = producer.sortBundles();
         bundles.forEach((bundle) => {
@@ -43,7 +45,7 @@ export class WebIndexPluginClass implements Plugin {
             if (pass) {
                 const output = bundle.context.output;
                 if (output && output.lastPrimaryOutput) {
-                    if( this.opts.resolve){
+                    if (this.opts.resolve) {
                         bundlePaths.push(this.opts.resolve(output))
                     } else {
                         bundlePaths.push(
@@ -55,6 +57,7 @@ export class WebIndexPluginClass implements Plugin {
 
             }
         });
+
 
         let html = this.opts.templateString || `<!DOCTYPE html><html>
 <head>
@@ -70,17 +73,31 @@ $css
 $bundles
 </body>
 </html>`;
-        if (this.opts.template) {
-            let filePath = ensureAbsolutePath(this.opts.template);
-            html = fs.readFileSync(filePath).toString();
+        if (this.opts.engine) {
+            const engine = this.opts.engine;
+            const consolidate = require('consolidate');
+            if (!consolidate[engine]) {
+                const message = `ConsolidatePlugin - consolidate did not recognise the engine "${engine}"`;
+                throw new Error(message);
+            }
+            if (!this.opts.template) {
+                throw new Error("WebIndexPlugin with engine option requires 'template option specified' ");
+            }
+            const filePath = ensureAbsolutePath(this.opts.template);
+            html = await consolidate[engine](filePath, this.opts.locals || {});
+        } else {
+            if (this.opts.template) {
+                let filePath = ensureAbsolutePath(this.opts.template);
+                html = fs.readFileSync(filePath).toString();
 
-            if (this.opts.appendBundles && html.indexOf('$bundles') === -1) {
-                if (html.indexOf('</body>') !== -1) {
-                    html = html.replace('</body>', '$bundles</body>');
-                } else if (html.indexOf('</head>') !== -1) {
-                    html = html.replace('</head>', '$bundles</head>');
-                } else {
-                    html = `${html}$bundles`;
+                if (this.opts.appendBundles && html.indexOf('$bundles') === -1) {
+                    if (html.indexOf('</body>') !== -1) {
+                        html = html.replace('</body>', '$bundles</body>');
+                    } else if (html.indexOf('</head>') !== -1) {
+                        html = html.replace('</head>', '$bundles</head>');
+                    } else {
+                        html = `${html}$bundles`;
+                    }
                 }
             }
         }
@@ -96,7 +113,7 @@ $bundles
             ).join("\n");
         }
         let cssInjection = [];
-        if ( producer.injectedCSSFiles.size > 0 ){
+        if (producer.injectedCSSFiles.size > 0) {
             producer.injectedCSSFiles.forEach(f => {
                 const resolvedFile = this.opts.path ? path.join(this.opts.path, f) : path.join("/", f);
                 cssInjection.push(`<link rel="stylesheet" href="${resolvedFile}"/>`)
@@ -104,7 +121,7 @@ $bundles
         }
 
         let macro = {
-            css : cssInjection.join('\n'),
+            css: cssInjection.join('\n'),
             title: this.opts.title ? this.opts.title : "",
             charset: this.opts.charset ? `<meta charset="${this.opts.charset}">` : "",
             description: this.opts.description ? `<meta name="description" content="${this.opts.description}">` : "",
