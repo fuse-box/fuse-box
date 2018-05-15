@@ -4,9 +4,10 @@ import * as fsExtra from "fs-extra";
 import { utils } from "realm-utils";
 import { Config } from "./Config";
 import * as LegoAPI from "lego-api";
+import { Log } from "./Log";
 
 const userFuseDir = Config.PROJECT_ROOT;
-const stylesheetExtensions = new Set<string>([".css", ".sass", ".scss", ".styl", ".less"]);
+const stylesheetExtensions = new Set<string>([".css", ".sass", ".scss", ".styl", ".less", ".pcss"]);
 const MBLACKLIST = [
     "freelist",
     "sys",
@@ -19,7 +20,7 @@ export type Concat = {
 export type ConcatModule = {
     new(generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
 };
-export const Concat: ConcatModule = require("concat-with-sourcemaps");
+export const Concat: ConcatModule = require("fuse-concat-with-sourcemaps");
 
 export function contains(array: any[], obj: any) {
     return array && array.indexOf(obj) > -1;
@@ -31,47 +32,54 @@ export function replaceAliasRequireStatement(requireStatement: string, aliasName
     return requireStatement;
 }
 
-// export function legoApi(fname: string, conditions: any) {
-//     const contents = fs.readFileSync(fname).toString();
-//     const lines = contents.split(/\r?\n/);
-//     let result = [];
-//     let consume = true;
-//     lines.forEach(line => {
-//         const condition = line.match(/^\s*\/\*\s*@if\s([\w]+)+\s*\*\//)
-//         const endCondition = line.match(/^\s*\/\*\s*@end\s*\*\//);
-//         if (condition || endCondition) {
-//             if (condition) {
-//                 const variableName = condition[1];
-//                 if (!conditions[variableName]) {
-//                     consume = false;
-//                 }
-//             }
-//             if (endCondition) {
-//                 consume = true;
-//             }
-//         } else {
-//             if (consume) {
-//                 if (!/^\s+$/.test(line) && line) {
-//                     result.push(line);
-//                 }
-//             }
-//         }
-//     });
-//     return result.join("\n");
-// }
-
-export function jsCommentTemplate(fname: string, conditions: any, variables: any, raw: any) {
+export function jsCommentTemplate(fname: string, conditions: any, variables: any, raw: any, replaceRaw?: any) {
     const contents = fs.readFileSync(fname).toString();
 
     let data = LegoAPI.parse(contents).render(conditions);
     for (let varName in variables) {
         data = data.replace(`$${varName}$`, JSON.stringify(variables[varName]));
     }
+    if (replaceRaw) {
+        for (let varName in replaceRaw) {
+            data = data.split(varName).join(replaceRaw[varName]);
+        }
+    }
 
     for (let varName in raw) {
         data = data.replace(`$${varName}$`, raw[varName]);
     }
     return data;
+}
+
+export function getFuseBoxInfo() {
+    return require(path.join(Config.FUSEBOX_ROOT, "package.json"));
+}
+
+let VERSION_PRINTED = false;
+export function printCurrentVersion() {
+    if(!VERSION_PRINTED){
+        VERSION_PRINTED = true;
+        const info = getFuseBoxInfo();
+        Log.defer((log) => log.echoYellow(`--- FuseBox ${info.version} ---`));
+    }
+}
+
+
+export function getDateTime(){
+    const data = new Date();
+    let hours : string  | number = data.getHours()
+    let minutes : string  | number = data.getMinutes();
+    let seconds : string  | number = data.getSeconds();
+    hours = hours < 10 ? `0${hours}` : hours;
+    minutes = minutes < 10 ? `0${minutes}` : minutes;
+    seconds = seconds < 10 ? `0${seconds}` : seconds;
+    return `${hours}:${minutes}:${seconds}`;
+}
+
+
+export function uglify(contents: string | Buffer, { es6 = false, ...opts }: any = {}) {
+    const UglifyJs = es6 ? require("uglify-es") : require("uglify-js");
+    return UglifyJs.minify(contents.toString(), opts);
 }
 
 export function readFuseBoxModule(target: string) {
@@ -131,7 +139,7 @@ export function ensureAbsolutePath(userPath: string) {
     return userPath;
 }
 export function joinFuseBoxPath(...any): string {
-    return ensureFuseBoxPath(path.join.apply(path, arguments));
+    return ensureFuseBoxPath(path.join(...any));
 }
 export function ensureDir(userPath: string) {
     if (!path.isAbsolute(userPath)) {
@@ -146,6 +154,11 @@ export function isStylesheetExtension(str: string) {
     let ext = path.extname(str);
     return stylesheetExtensions.has(ext);
 }
+
+export function escapeRegExp(str: string) {
+    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
 export function string2RegExp(obj: any) {
     let escapedRegEx = obj
         .replace(/\*/g, "@")
@@ -196,6 +209,17 @@ export function hashString(text: string) {
     let data = hash >>> 0;
     return data.toString(16);
 }
+export function isClass(obj) {
+    const isCtorClass = obj.constructor
+        && obj.constructor.toString().substring(0, 5) === 'class'
+    if (obj.prototype === undefined) {
+        return isCtorClass
+    }
+    const isPrototypeCtorClass = obj.prototype.constructor
+        && obj.prototype.constructor.toString
+        && obj.prototype.constructor.toString().substring(0, 5) === 'class'
+    return isCtorClass || isPrototypeCtorClass
+}
 
 export function fastHash(text: string) {
     let hash = 0;
@@ -205,7 +229,11 @@ export function fastHash(text: string) {
         hash = ((hash << 5) - hash) + char;
         hash = hash & hash; // Convert to 32bit integer
     }
-    return hash.toString(16);
+    let result = hash.toString(16).toString();
+    if( result.charAt(0) === '-'){
+        result = result.replace(/-/, '0');
+    }
+    return result;
 }
 export function extractExtension(str: string) {
     const result = str.match(/\.([a-z0-9]+)\$?$/);
@@ -215,7 +243,12 @@ export function extractExtension(str: string) {
     return result[1];
 }
 export function ensureFuseBoxPath(input: string) {
-    return input.replace(/\\/g, "/");
+    return input.replace(/\\/g, "/").replace(/\/$/, "");
+}
+export function ensureCorrectBundlePath(input : string){
+    input = ensureFuseBoxPath(input);
+    input = ensurePublicExtension(input);
+    return input;
 }
 
 export function transpileToEs5(contents: string) {

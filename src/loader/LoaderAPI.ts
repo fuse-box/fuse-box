@@ -2,10 +2,16 @@
  * This whole file is wrapped in a function by our gulpfile.js
  * The function is injected the global `this` as `__root__`
  **/
-const $isBrowser = typeof window !== "undefined" && window.navigator;
-const g = $isBrowser ? window : global;
 declare let __root__: any;
 declare let __fbx__dnm__: any;
+declare const WorkerGlobalScope: any;
+declare const ServiceWorkerGlobalScope: any;
+
+const $isServiceWorker = typeof ServiceWorkerGlobalScope !== "undefined";
+const $isWebWorker = typeof WorkerGlobalScope !== "undefined";
+const $isBrowser = typeof window !== "undefined" && typeof window.navigator !== "undefined" || $isWebWorker || $isServiceWorker;
+const g = $isBrowser ? (($isWebWorker || $isServiceWorker) ? {} : window) : global;
+
 
 /**
  * Package name to version
@@ -49,7 +55,7 @@ type FSBX = {
 
 // Patching global variable
 if ($isBrowser) {
-    g["global"] = window;
+    g["global"] = ($isWebWorker || $isServiceWorker) ? {} : window;
 }
 
 // Set root
@@ -60,7 +66,7 @@ __root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports :
 /**
  * A runtime storage for FuseBox
  */
-const $fsbx: FSBX = $isBrowser ? (window["__fsbx__"] = window["__fsbx__"] || {})
+const $fsbx: FSBX = $isBrowser ? ($isWebWorker || $isServiceWorker) ? {} : (window["__fsbx__"] = window["__fsbx__"] || {})
     : g["$fsbx"] = g["$fsbx"] || {}; // in case of nodejs
 
 if (!$isBrowser) {
@@ -293,9 +299,14 @@ function $getRef(name: string, o: RefOpts): IReference {
         wildcard = validPath;
     }
     if (!file && !wildcard) {
-        // try folder index.js
+        // try index.js
         validPath = $pathJoin(filePath, "/", "index.js");
         file = pkg.f[validPath];
+
+        if (!file && filePath === ".") {
+            validPath = pkg.s && pkg.s.entry || "index.js";
+            file = pkg.f[validPath];
+        }
         // last resort try adding .js extension
         // Some libraries have a weired convention of naming file lile "foo.bar""
         if (!file) {
@@ -384,6 +395,29 @@ function $trigger(name: string, args: any) {
     }
 };
 
+// NOTE: Should match syntheticDefaultExportPolyfill in fuse-box-responsive-api/index.js
+function syntheticDefaultExportPolyfill(input){
+    if( input === null ||
+        ['function', 'object', 'array'].indexOf(typeof input) === -1 ||
+        input.hasOwnProperty("default") // use hasOwnProperty to avoid triggering usage warnings from libraries like mobx
+    ) {
+        return
+    }
+
+    // to get around frozen input
+    if (Object.isFrozen(input) ) {
+        input.default = input;
+        return;
+    }
+
+    // free to define properties
+    Object.defineProperty(input, "default", {
+        value: input,
+        writable: true,
+        enumerable: false
+    });
+}
+
 /**
  * Imports File
  * With opt provided it's possible to set:
@@ -454,21 +488,25 @@ function $import(name: string, o: any = {}) {
     locals.exports = {};
     locals.module = { exports: locals.exports };
     locals.require = (name: string, optionalCallback: any) => {
-        return $import(name, {
+        const result =  $import(name, {
             pkg,
             path,
             v: ref.versions,
         });
+        if( FuseBox["sdep"] ){ syntheticDefaultExportPolyfill(result); }
+        return result;
     };
-    locals.require.main = {
-        filename: $isBrowser ? "./" : g["require"].main.filename,
-        paths: $isBrowser ? [] : g["require"].main.paths,
-    };
+
+    if ($isBrowser || !g["require"].main) {
+        locals.require.main = { filename: "./", paths: [] };
+    } else {
+        locals.require.main = g["require"].main;
+    }
 
     let args = [locals.module.exports, locals.require, locals.module, ref.validPath, path, pkg];
     $trigger("before-import", args);
 
-    file.fn.apply(0, args);
+    file.fn.apply(args[0], args);
     // fn(locals.module.exports, locals.require, locals.module, validPath, fuseBoxDirname, pkgName)
     $trigger("after-import", args);
     return locals.module.exports;

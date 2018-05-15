@@ -1,4 +1,4 @@
-import { ensurePublicExtension, Concat, ensureUserPath } from "./Utils";
+import { ensurePublicExtension, Concat, ensureUserPath, ensureCorrectBundlePath } from "./Utils";
 import { ModuleCollection } from "./core/ModuleCollection";
 import { WorkFlowContext } from "./core/WorkflowContext";
 import { BundleData } from "./arithmetic/Arithmetic";
@@ -32,6 +32,16 @@ export class BundleSource {
 
     private collectionSource: any;
 
+    /**
+     * Provied an info if this BundleSource should
+     * include the sourceMaps
+     *
+     * @private
+     * @type boolean
+     * @memberOf BundleSource
+     */
+    public includeSourceMaps: boolean = false;
+
     public bundleInfoObject: any;
 
     /**
@@ -52,14 +62,25 @@ export class BundleSource {
      */
     public init() {
         this.concat.add(null, "(function(FuseBox){FuseBox.$fuse$=FuseBox;");
-    }
 
-    public annotate(comment: string) {
-        if (this.context.rollupOptions) {
-            this.collectionSource.add(null, comment);
+        // handle server bundle
+        if (this.context.target) {
+            this.concat.add(null, `FuseBox.target = "${this.context.target}";`);
+        }
+
+        if (this.context.serverBundle) {
+            this.concat.add(null, `FuseBox.isServer = true;`);
+        }
+
+        if (this.context.fuse.producer && this.context.fuse.producer.allowSyntheticDefaultImports) {
+            this.concat.add(null, `// allowSyntheticDefaultImports`);
+            this.concat.add(null, `FuseBox.sdep = true;`);
         }
     }
 
+    public annotate(comment: string) {
+        //this.collectionSource.add(null, comment);
+    }
     /**
      *
      *
@@ -100,9 +121,9 @@ export class BundleSource {
      */
     public endCollection(collection: ModuleCollection) {
         let entry = collection.entryFile ? collection.entryFile.info.fuseBoxPath : "";
-
+        entry = entry || collection.bundle && collection.bundle.entry
         if (entry) {
-            this.collectionSource.add(null, `return ___scope___.entry = "${entry}";`);
+            this.collectionSource.add(null, `return ___scope___.entry = "${ensureCorrectBundlePath(entry)}";`);
         }
         this.collectionSource.add(null, "});");
 
@@ -137,6 +158,11 @@ export class BundleSource {
         if (file.info.isRemoteFile || file.notFound
             || file.collection && file.collection.acceptFiles === false) {
             return;
+        }
+
+        if(!this.includeSourceMaps) {
+            // set to true if this file has relevant sourceMaps
+            this.includeSourceMaps = file.belongsToProject() && this.context.sourceMapsProject || !file.belongsToProject() && this.context.sourceMapsVendor;
         }
 
         this.collectionSource.add(null,
@@ -178,27 +204,9 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
 
         let mainEntry;
 
-        // handle server bundle
-
-        if (this.context.target === "electron") {
-            this.concat.add(null, `FuseBox.target = "electron"`);
-        }
-
-        if (context.serverBundle) {
-            this.concat.add(null, `FuseBox.isServer = true;`);
-        }
-
         // writing other bundles info
         if (this.bundleInfoObject) {
             this.concat.add(null, `FuseBox.global("__fsbx__bundles__",${JSON.stringify(this.bundleInfoObject)})`);
-        }
-
-        if (this.context.fuse && this.context.fuse.producer) {
-            const masterContext = this.context.fuse.producer.fuse.context;
-            const splitConfig = masterContext.getQuantumDevelepmentConfig();
-            if (splitConfig) {
-                this.concat.add(null, `FuseBox.global("__fsbx__bundles__",${JSON.stringify(splitConfig)})`);
-            }
         }
 
         // Handle globals
@@ -223,10 +231,10 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
 
         if (entry) {
             mainEntry = `${context.defaultPackageName}/${entry}`;
-            this.concat.add(null, `\nFuseBox.import("${mainEntry}");`);
+            this.concat.add(null, `\nFuseBox.import("${ensureCorrectBundlePath(mainEntry)}");`);
         }
         if (mainEntry) {
-            this.concat.add(null, `FuseBox.main("${mainEntry}");`);
+            this.concat.add(null, `FuseBox.main("${ensureCorrectBundlePath(mainEntry)}");`);
         }
 
 

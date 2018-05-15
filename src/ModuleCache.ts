@@ -62,25 +62,27 @@ export class ModuleCache {
      */
     constructor(public context: WorkFlowContext) { }
 
+    private isFileCache() {
+        return this.context.cacheType === "file";
+    }
     public initialize() {
         this.cacheFolder = path.join(Config.TEMP_FOLDER, "cache",
-            Config.FUSEBOX_VERSION, this.context.output.getUniqueHash());
-
+            encodeURIComponent(Config.FUSEBOX_VERSION), this.context.output.getUniqueHash());
         this.permanentCacheFolder = path.join(this.cacheFolder, "permanent");
-        fsExtra.ensureDirSync(this.permanentCacheFolder);
-
         this.staticCacheFolder = path.join(this.cacheFolder, "static");
-        fsExtra.ensureDirSync(this.staticCacheFolder);
-
         this.cacheFile = path.join(this.cacheFolder, "deps.json");
-        if (fs.existsSync(this.cacheFile)) {
-            try {
-                this.cachedDeps = require(this.cacheFile);
-            } catch (e) {
-                this.cachedDeps = {
-                    tree: {},
-                    flat: {},
-                };
+        if (this.isFileCache()) {
+            fsExtra.ensureDirSync(this.permanentCacheFolder);
+            fsExtra.ensureDirSync(this.staticCacheFolder);
+            if (fs.existsSync(this.cacheFile)) {
+                try {
+                    this.cachedDeps = require(this.cacheFile);
+                } catch (e) {
+                    this.cachedDeps = {
+                        tree: {},
+                        flat: {},
+                    };
+                }
             }
         }
     }
@@ -88,7 +90,9 @@ export class ModuleCache {
     public setPermanentCache(key: string, contents: string) {
         key = encodeURIComponent(key);
         let filePath = path.join(this.permanentCacheFolder, key);
-        fs.writeFile(filePath, contents, () => { });
+        if (this.isFileCache()) {
+            fs.writeFile(filePath, contents, () => { });
+        }
         MEMORY_CACHE[filePath] = contents;
     }
 
@@ -98,15 +102,17 @@ export class ModuleCache {
         if (MEMORY_CACHE[filePath]) {
             return MEMORY_CACHE[filePath];
         }
-        if (fs.existsSync(filePath)) {
-            const contents = fs.readFileSync(filePath).toString();
-            MEMORY_CACHE[filePath] = contents;
-            return contents;
+        if (this.isFileCache()) {
+            if (fs.existsSync(filePath)) {
+                const contents = fs.readFileSync(filePath).toString();
+                MEMORY_CACHE[filePath] = contents;
+                return contents;
+            }
         }
     }
 
-    public getStaticCacheKey(file: File) {
-        return encodeURIComponent(this.context.bundle.name + file.absPath);
+    public getStaticCacheKey(file: File, type: string = "") {
+        return encodeURIComponent(this.context.bundle.name + type + file.absPath);
     }
 
     public encodeCacheFileName(str: string) {
@@ -116,6 +122,7 @@ export class ModuleCache {
         }
         return encodeURIComponent(str);
     }
+
     /**
      *
      *
@@ -124,11 +131,14 @@ export class ModuleCache {
      *
      * @memberOf ModuleCache
      */
-    public getStaticCache(file: File) {
+    public getStaticCache(file: File, type: string = "") {
+        if (file.ignoreCache) {
+            return;
+        }
 
         let stats = fs.statSync(file.absPath);
-        let fileName = this.encodeCacheFileName(file.info.fuseBoxPath);
-        let memCacheKey = this.getStaticCacheKey(file);
+        let fileName = this.encodeCacheFileName(type + file.info.fuseBoxPath);
+        let memCacheKey = this.getStaticCacheKey(file, type);
         let data;
 
         if (MEMORY_CACHE[memCacheKey]) {
@@ -157,6 +167,40 @@ export class ModuleCache {
 
     }
 
+    public getCSSCache(file: File) {
+        if (file.ignoreCache) {
+            return;
+        }
+        let stats = fs.statSync(file.absPath);
+        let fileName = this.encodeCacheFileName(file.info.fuseBoxPath);
+        let memCacheKey = this.getStaticCacheKey(file);
+        let data;
+
+        if (MEMORY_CACHE[memCacheKey]) {
+            data = MEMORY_CACHE[memCacheKey];
+            if (data.mtime !== stats.mtime.getTime()) {
+                return;
+            }
+            return data;
+        } else {
+            let dest = path.join(this.staticCacheFolder, fileName);
+            if (fs.existsSync(dest)) {
+                try {
+                    data = require(dest);
+                } catch (e) {
+                    console.log(e);
+                    return;
+                }
+                if (data.mtime !== stats.mtime.getTime()) {
+                    return;
+                }
+                MEMORY_CACHE[memCacheKey] = data;
+                return data;
+            }
+        }
+
+    }
+
     /**
      *
      *
@@ -166,19 +210,23 @@ export class ModuleCache {
      *
      * @memberOf ModuleCache
      */
-    public writeStaticCache(file: File, sourcemaps: string) {
-        let fileName = this.encodeCacheFileName(file.info.fuseBoxPath);
-        let memCacheKey = this.getStaticCacheKey(file);
+    public writeStaticCache(file: File, sourcemaps: string, type: string = "") {
+        if (file.ignoreCache) {
+            return;
+        }
+        let fileName = this.encodeCacheFileName(type + file.info.fuseBoxPath);
+        let memCacheKey = this.getStaticCacheKey(file, type);
         let dest = path.join(this.staticCacheFolder, fileName);
         let stats: any = fs.statSync(file.absPath);
-
 
         let cacheData: any = {
             contents: file.contents,
             dependencies: file.analysis.dependencies,
             sourceMap: sourcemaps || {},
             headerContent: file.headerContent,
-            mtime: stats.mtime.getTime()
+            ac : file.alternativeContent,
+            mtime: stats.mtime.getTime(),
+            _: file.cacheData || {}
         };
         if (file.devLibsRequired) {
             cacheData.devLibsRequired = file.devLibsRequired;
@@ -188,10 +236,12 @@ dependencies: ${JSON.stringify(cacheData.dependencies)},
 sourceMap: ${JSON.stringify(cacheData.sourceMap)},
 headerContent: ${JSON.stringify(cacheData.headerContent)},
 mtime: ${cacheData.mtime},
-devLibsRequired : ${JSON.stringify(cacheData.devLibsRequired)}
-};`;
+devLibsRequired : ${JSON.stringify(cacheData.devLibsRequired)},
+ac : ${JSON.stringify(file.alternativeContent)},
+_ : ${JSON.stringify(cacheData._ || {})}
+}
+`;
         MEMORY_CACHE[memCacheKey] = cacheData;
-
         fs.writeFileSync(dest, data);
     }
 

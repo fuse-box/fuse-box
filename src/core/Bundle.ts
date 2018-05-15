@@ -5,14 +5,21 @@ import { FuseProcess } from "../FuseProcess";
 import { HotReloadPlugin } from "../plugins/HotReloadPlugin";
 import { SocketServer } from "../devServer/SocketServer";
 import { File } from "./File";
-import { BundleSplit } from "./BundleSplit";
 import * as path from "path";
 import { BundleTestRunner } from "../BundleTestRunner";
 import { Config } from "../Config";
-import { QuantumItem, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
+import { QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
 import { BundleAbstraction } from "../quantum/core/BundleAbstraction";
 import { PackageAbstraction } from "../quantum/core/PackageAbstraction";
+import { EventEmitter } from '../EventEmitter';
+import { ExtensionOverrides } from "./ExtensionOverrides";
+import { QuantumBit } from "../quantum/plugin/QuantumBit";
 
+export interface HMROptions {
+    port?: number;
+    socketURI? : string;
+    reload?: boolean;
+}
 export class Bundle {
     public context: WorkFlowContext;
     public watchRule: string;
@@ -26,9 +33,11 @@ export class Bundle {
     public lastChangedFile: string;
     public webIndexed = true;
     public splitFiles: Map<string, File>;
+    public quantumBit : QuantumBit;
+    private errors: string[] = [];
+    private errorEmitter = new EventEmitter<string>()
+    private clearErrorEmitter = new EventEmitter<null>()
 
-    public bundleSplit: BundleSplit;
-    public quantumItem: QuantumItem;
 
     constructor(public name: string, public fuse: FuseBox, public producer: BundleProducer) {
         this.context = fuse.context;
@@ -49,7 +58,7 @@ export class Bundle {
     }
 
     public tsConfig(fpath: string): Bundle {
-        this.context.tsConfig = fpath;
+        this.context.tsConfig.setConfigFile(fpath);
         return this;
     }
 
@@ -59,7 +68,7 @@ export class Bundle {
         return this;
     }
     /** Enable HMR in this bundle and inject HMR plugin */
-    public hmr(opts?: any): Bundle {
+    public hmr(opts?: HMROptions): Bundle {
         if (!this.producer.hmrAllowed) {
             return this;
         }
@@ -67,7 +76,7 @@ export class Bundle {
         if (!this.producer.hmrInjected) {
             opts = opts || {};
             opts.port = this.producer.devServerOptions && this.producer.devServerOptions.port || 4444;
-            let plugin = HotReloadPlugin({ port: opts.port, uri: opts.socketURI });
+            let plugin = HotReloadPlugin({ port: opts.port, uri: opts.socketURI, reload : opts.reload });
             this.context.plugins = this.context.plugins || [];
             this.context.plugins.push(plugin);
 
@@ -85,6 +94,32 @@ export class Bundle {
                     server.send("source-changed", info);
                 }
             });
+
+            if (this.context.showErrorsInBrowser) {
+                const type = "update-bundle-errors",
+                    getData = () => ({
+                        bundleName: this.name,
+                        messages: this.errors
+                    })
+
+                this.errorEmitter.on(message => {
+                    server.send("bundle-error", {
+                        bundleName: this.name,
+                        message
+                    })
+                })
+
+                this.clearErrorEmitter.on(() => {
+                    server.send(type, getData())
+                })
+
+                server.server.on("connection", client => {
+                    client.send(JSON.stringify({
+                        type,
+                        data: getData()
+                    }))
+                })
+            }
         });
         return this;
     }
@@ -94,25 +129,8 @@ export class Bundle {
         return this;
     }
 
-    public split(rule: string, str: string): Bundle {
-
-        const arithmetics = str.match(/(\S+)\s*>\s(\S+)/i)
-        if (!arithmetics) {
-            throw new Error("Can't parse split arithmetics. Should look like:")
-        }
-        const bundleName = arithmetics[1];
-        const mainFile = arithmetics[2];
-
-        if (this.context.experimentalFeaturesEnabled) {
-            this.producer.fuse.context.quantumSplit(rule, bundleName, mainFile);
-        } else {
-            if (!this.bundleSplit) {
-                this.bundleSplit = new BundleSplit(this);
-            }
-
-            this.bundleSplit.getFuseBoxInstance(bundleName, mainFile);
-            this.bundleSplit.addRule(rule, bundleName);
-        }
+    public split(name: string, filePath: string): Bundle {
+        this.producer.fuse.context.nameSplit(name, filePath);
         return this;
     }
 
@@ -124,24 +142,7 @@ export class Bundle {
     }
 
     public splitConfig(opts: QuantumSplitResolveConfiguration): Bundle {
-        if (this.context.experimentalFeaturesEnabled) {
-            this.producer.fuse.context.configureQuantumSplitResolving(opts);
-        } else {
-            if (!this.bundleSplit) {
-                this.bundleSplit = new BundleSplit(this);
-            }
-
-            if (opts.browser) {
-                this.bundleSplit.browserPath = opts.browser;
-            }
-            if (opts.server) {
-                this.bundleSplit.serverPath = opts.server;
-            }
-
-            if (opts.dest) {
-                this.bundleSplit.dest = opts.dest;
-            }
-        }
+        this.producer.fuse.context.configureQuantumSplitResolving(opts);
         return this;
     }
 
@@ -150,6 +151,16 @@ export class Bundle {
         this.context.doLog = log;
         this.context.log.printLog = log;
         return this;
+    }
+
+    public extensionOverrides(...overrides: string[]) {
+      if (!this.context.extensionOverrides) {
+        this.context.extensionOverrides = new ExtensionOverrides(overrides);
+      } else {
+        overrides.forEach((override) => this.context.extensionOverrides.add(override));
+      }
+
+      return this;
     }
 
     /**
@@ -217,19 +228,20 @@ export class Bundle {
 
     public exec(): Promise<Bundle> {
         return new Promise((resolve, reject) => {
-            this.fuse.context.log.bundleStart(this.name);
+            this.clearErrors();
             this.fuse
                 .initiateBundle(this.arithmetics || "", () => {
-
-                    this.process.setFilePath(this.fuse.context.output.lastWrittenPath);
-                    if (this.onDoneCallback) {
-                        this.onDoneCallback(this.process)
+                    const output = this.fuse.context.output;
+                    this.process.setFilePath(output.lastPrimaryOutput ? output.lastPrimaryOutput.path : output.lastGeneratedFileName);
+                    if (this.onDoneCallback && this.producer.writeBundles === true) {
+                        this.onDoneCallback(this.process);
                     }
+                    this.printErrors()
                     return resolve(this);
                 }).then(source => {
                 }).catch(e => {
                     console.error(e);
-                    return reject(reject);
+                    return reject(e);
                 });
             return this;
         });
@@ -249,4 +261,26 @@ export class Bundle {
         }
     }
 
+    private clearErrors() {
+        this.errors = []
+        this.clearErrorEmitter.emit(null)
+    }
+
+    public addError(message: string) {
+        this.errors.push(message)
+        this.errorEmitter.emit(message)
+    }
+
+    public getErrors() {
+        return this.errors.slice()
+    }
+
+    public printErrors() {
+        if (this.errors.length && this.fuse.context.showErrors) {
+            this.fuse.context.log.echoBreak()
+            this.fuse.context.log.echoBoldRed(`Errors for ${this.name} bundle`)
+            this.errors.forEach(error => this.fuse.context.log.echoError(error))
+            this.fuse.context.log.echoBreak()
+        }
+    }
 }

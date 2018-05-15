@@ -239,4 +239,25 @@ export class AbstractPathResolving {
         should(rq.packageAbstraction.name).equal("@angular/core")
         should(rq.fuseBoxPath).equal("index.js");
     }
+
+
+    "Should find an abstraction with priority on a file"() {
+        const files = new Map<string, string>();
+        files.set("foo/bar/index.js", "require('./world')");
+        files.set("foo/bar/world/index.js", "");
+        files.set("foo/bar/world.js", "");
+
+
+        const pkg = createDefaultPackageAbstraction(files);
+
+        const indexFile = pkg.fileAbstractions.get("foo/bar/index.js");
+        const worldReference = indexFile.findRequireStatements(/.*/)[0]
+
+        const res = worldReference.resolve();
+
+        should(res)
+            .beOkay()
+            .mutate((res: FileAbstraction​​) => res.fuseBoxPath)
+            .equal("foo/bar/world.js");
+    }
 }

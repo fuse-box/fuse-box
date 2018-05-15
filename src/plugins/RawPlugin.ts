@@ -2,7 +2,7 @@ import { File } from "../core/File";
 import { WorkFlowContext } from "../core/WorkflowContext";
 import { Plugin } from "../core/WorkflowContext";
 import { utils } from "realm-utils";
-import { extractExtension, string2RegExp } from "../Utils";
+import { extractExtension, string2RegExp, isStylesheetExtension } from "../Utils";
 
 export interface RawPluginOptionsObj {
     extensions: string[];
@@ -46,9 +46,21 @@ export class RawPluginClass implements Plugin {
         }
     }
 
+    isRefreshRequired(file: File): boolean {
+        const bundle = file.context.bundle;
+        if (bundle && bundle.lastChangedFile) {
+            const lastFile = file.context.convertToFuseBoxPath(bundle.lastChangedFile);
+            if (isStylesheetExtension(bundle.lastChangedFile)) {
+                return (lastFile === file.info.fuseBoxPath ||
+                        file.context.getItem("HMR_FILE_REQUIRED", []).indexOf(file.info.fuseBoxPath) > -1 ||
+                        !!file.subFiles.find((subFile) => subFile.info.fuseBoxPath === bundle.lastChangedFile));
+            }
+        }
+    }
+
     transform(file: File) {
         const context = file.context;
-        if (context.useCache) {
+        if (context.useCache && !this.isRefreshRequired(file)) {
             let cached = context.cache.getStaticCache(file);
             if (cached) {
                 file.isLoaded = true;

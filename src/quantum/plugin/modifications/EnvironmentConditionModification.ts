@@ -1,40 +1,28 @@
 import { each } from "realm-utils";
-import { FuseBoxIsBrowserCondition } from "../../core/nodes/FuseBoxIsBrowserCondition";
-import { FuseBoxIsServerCondition } from "../../core/nodes/FuseBoxIsServerCondition";
 import { FileAbstraction } from "../../core/FileAbstraction";
 import { QuantumCore } from "../QuantumCore";
+import { ReplaceableBlock } from "../../core/nodes/ReplaceableBlock";
 
 export class EnvironmentConditionModification {
     public static perform(core: QuantumCore, file: FileAbstraction) {
         // FuseBox.isServer
-        return each(file.fuseboxIsServerConditions, (isServerCondition: FuseBoxIsServerCondition) => {
+
+        return each(file.fuseboxIsEnvConditions, (replacable: ReplaceableBlock) => {
+
             if (core.opts.isTargetUniveral()) {
-                core.api.addIsServerFunction();
-                isServerCondition.setFunctionName("$fsx.cs");
-            } else {
-                if (core.opts.isTargetBrowser()) {
-                    isServerCondition.setFunctionName("false");
+                if (replacable.identifier === "isServer") {
+                    replacable.setFunctionName(`${core.opts.quantumVariableName}.cs`);
                 }
-                if (core.opts.isTargetServer()) {
-                    isServerCondition.setFunctionName("true");
+                if (replacable.identifier === "isBrowser") {
+                    replacable.setFunctionName(`${core.opts.quantumVariableName}.cb`);
+                }
+            } else {
+                if (replacable.isConditional) {
+                    replacable.handleActiveCode();
+                } else {
+                    replacable.replaceWithValue();
                 }
             }
-        }).then(() => {
-
-            return each(file.fuseboxIsBrowserConditions, (isBrowserCondition: FuseBoxIsBrowserCondition) => {
-
-                if (core.opts.isTargetUniveral()) {
-                    core.api.addIsBrowserFunction();
-                    isBrowserCondition.setFunctionName("$fsx.cb")
-                } else {
-                    if (core.opts.isTargetBrowser()) {
-                        isBrowserCondition.setFunctionName("true")
-                    }
-                    if (core.opts.isTargetServer()) {
-                        isBrowserCondition.setFunctionName("false")
-                    }
-                }
-            });
         });
     }
 }

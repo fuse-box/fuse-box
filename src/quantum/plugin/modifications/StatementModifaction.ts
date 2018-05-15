@@ -11,28 +11,51 @@ export class StatementModification {
                 let customSolution = core.getCustomSolution(file);
 
                 if (customSolution && !core.api.hashesUsed()) {
-                    customSolution.rules.fn(statement, core);
-                    statement.setFunctionName("$fsx.p");
+                    if (customSolution.rules) {
+                        customSolution.rules.fn(statement, core);
+                    }
+                    statement.setFunctionName(`${core.opts.quantumVariableName}.p`);
                 } else {
-                    statement.setFunctionName("$fsx.c");
-                    statement.bindID(file.getID());
-                    // file map is requested with computed require statements
-                    file.addFileMap();
+                    if (core.opts.isTargetServer() || core.opts.isTargetUniveral()) {
+                        core.api.useServerRequire();
+                        statement.setFunctionName(`${core.opts.quantumVariableName}.s`);
+                    } else {
+                        statement.setFunctionName(`${core.opts.quantumVariableName}.r`);
+                    }
                 }
             } else {
                 let resolvedFile = statement.resolve();
                 if (resolvedFile) {
+                    if (resolvedFile.isProcessPolyfill() && !core.opts.shouldBundleProcessPolyfill()) {
+                        return statement.removeWithIdentifier();
+                    }
+                    if (!resolvedFile.dependents.has(file)) {
+                        resolvedFile.dependents.add(file);
+                    }
                     resolvedFile.amountOfReferences++;
                     // trying to setup hoisting here
                     if (statement.identifier) {
                         file.registerHoistedIdentifiers(statement.identifier, statement, resolvedFile);
                     }
 
-                    statement.setFunctionName('$fsx.r');
+                    statement.setFunctionName(`${core.opts.quantumVariableName}.r`);
                     statement.setValue(resolvedFile.getID());
                 } else {
-                    core.api.considerStatement(statement);
-                    statement.setFunctionName('$fsx.l');
+
+                    // Unresolved modules are handled differently here.
+                    // with target npm we preserve original require statements
+                    // in order for other bundlers to pick it up
+                    if (core.opts.isTargetNpm()) {
+                        statement.setFunctionName('require');
+                    } else if (core.opts.isTargetServer() || core.opts.isTargetUniveral()) {
+                        // server or universal targets will detect the environment
+                        core.api.useServerRequire();
+                        statement.setFunctionName(`${core.opts.quantumVariableName}.s`);
+                    } else {
+                        // if it's a browser, we use async
+                        statement.setFunctionName(`${core.opts.quantumVariableName}.r`);
+                    }
+
                 }
             }
         });

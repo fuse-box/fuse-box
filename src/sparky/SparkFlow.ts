@@ -1,17 +1,19 @@
 import * as glob from "glob";
 import * as fs from "fs-extra";
 import * as chokidar from "chokidar";
+import * as path from "path";
 import { each } from "realm-utils";
-import { ensureDir, string2RegExp } from "../Utils";
+import { ensureDir, string2RegExp, ensureUserPath } from "../Utils";
 import { SparkyFile } from "./SparkyFile";
 import { log } from "./Sparky";
+import { Plugin } from '../core/WorkflowContext';
 import { parse, SparkyFilePatternOptions } from "./SparkyFilePattern";
 
 export class SparkFlow {
     private activities = [];
     private watcher: any;
     private files: SparkyFile[];
-    private complatedCallback: any;
+    private completedCallback: any;
     private initialWatch = false;
 
     constructor() { }
@@ -21,19 +23,28 @@ export class SparkFlow {
         return this;
     }
 
+    public createFiles(paths : string[]){
+        this.files = [];
+        paths.forEach(p => {
+            const isAbsolute = path.isAbsolute(p)
+            const fpath = isAbsolute ? p : path.join(process.cwd(), p);
+            this.files.push(new SparkyFile(fpath, isAbsolute ? path.dirname(p) : process.cwd()))
+        })
+    }
+
     public stopWatching() {
         if (this.watcher) {
             this.watcher.close();
         }
     }
 
-    public watch(globs: string[], opts?: SparkyFilePatternOptions): SparkFlow {
+    public watch(globs: string[], opts?: SparkyFilePatternOptions, fn?: any): SparkFlow {
         this.files = [];
         log.echoStatus(`Watch ${globs}`)
         this.activities.push(() => new Promise((resolve, reject) => {
 
             var chokidarOptions = {
-                cwd: opts ? opts.base : null
+                cwd: opts ? ensureUserPath(opts.base) : null
             };
 
             this.watcher = chokidar.watch(globs, chokidarOptions)
@@ -42,6 +53,9 @@ export class SparkFlow {
                     if (this.initialWatch) {
                         this.files = [];
                         log.echoStatus(`Changed ${fp}`)
+                        if (fn) {
+                            fn(event, fp)
+                        }
                     }
                     let info = parse(fp, opts);
                     this.files.push(new SparkyFile(info.filepath, info.root))
@@ -60,7 +74,7 @@ export class SparkFlow {
     }
 
     public completed(fn: any): SparkFlow {
-        this.complatedCallback = fn;
+        this.completedCallback = fn;
         return this;
     }
 
@@ -122,6 +136,15 @@ export class SparkFlow {
         return this;
     }
 
+    public each(fn : (file: SparkyFile) => void){
+        this.activities.push(() => {
+            return each(this.files, (file: SparkyFile) => {
+                return fn(file);
+            })
+        });
+        return this;
+    }
+
     public file(mask: string, fn: any) {
         this.activities.push(() => {
             let regexp = string2RegExp(mask);
@@ -135,7 +158,14 @@ export class SparkFlow {
         return this;
     }
 
-
+    public next(fn : (file : SparkyFile) => void){
+        this.activities.push(() => {
+            return each(this.files, (file: SparkyFile) => {
+                return fn(file);
+            });
+        });
+        return this;
+    }
 
 
     public dest(dest: string): SparkFlow {
@@ -149,8 +179,8 @@ export class SparkFlow {
     public exec() {
         return each(this.activities, (activity: any) => activity && activity())
             .then(() => {
-                if (this.complatedCallback) {
-                    this.complatedCallback(this.files);
+                if (this.completedCallback) {
+                    this.completedCallback(this.files);
                 }
                 this.files = [];
             });

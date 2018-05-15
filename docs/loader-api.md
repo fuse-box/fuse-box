@@ -5,7 +5,7 @@
 
 Well, it's pure magic - nodejs wrapper for browser. FuseBox wrapper provides 100% compatible nodejs ecosystem,  having `virtual files` and `virtual packages`. Everything is registered and shared by the API. It means, that you can have two script tags that will fuse and merge each other.
 
-Plugins inject dependent packages/javascript code, that becomes a part of FuseBox loader. In principal, a plugin might work at build time and runtime, which unfolds some crazy optimisation possibilities. 
+Plugins inject dependent packages/javascript code, that becomes a part of FuseBox loader. In principal, a plugin might work at build time and runtime, which unfolds some crazy optimisation possibilities.
 
 FuseBox bundle works in both environments. Essentially, it does not matter where you run it. FuseBox will persist itself in browser window, or nodejs globals.
 
@@ -23,7 +23,7 @@ FuseBox.import("fs");
 ```
 
 Please note that some libraries like "fs" are faked in the browser. Meaning that it won't spit out an error, but won't work as expected on the server for known reasons.
-Nodejs environment, however, will get authentic "fs" module. (Concerns http, net, tty e.t.c )
+Nodejs environment, however, will get authentic "fs" module. (Concerns http, net, tty etc )
 
 
 ### Point to the root
@@ -54,7 +54,7 @@ If a module is not found within FuseBox' context, it tries to load it via HTTP r
 import "./myModule".
 ```
 
-You can load other bundles as well. For example [here](#bundle-in-a-bundle) 
+You can load other bundles as well. For example [here](#bundle-in-a-bundle)
 
 ## Wildcard import
 With wildcard imports `*` you can require all files that match a particular pattern. A wildcard with no default extension will fallback to `.js`.
@@ -97,7 +97,7 @@ require("~/stuff/boo.js").hello
 ```
 
 ## Remove
-You can completely remove a module from memory. 
+You can completely remove a module from memory.
 
 ```js
 FuseBox.remove("./foo")
@@ -125,7 +125,7 @@ Another feature that allows you to register `commonjs` modules at runtime in bro
 FuseBox.dynamic("foo/bar.js", "module.exports = {foo : 'bar'}")
 ```
 
-Note how `foo/bar.js` is set. It's called "FuseBox path", which should not start with slashes or periods. FuseBox will register a file in the `default`project. Hence, it is possible to override your local files, but impossible to do the same with external packages. 
+Note how `foo/bar.js` is set. It's called "FuseBox path", which should not start with slashes or periods. FuseBox will register a file in the `default`project. Hence, it is possible to override your local files, but impossible to do the same with external packages.
 
 It's imperative to bear in mind __file's path__ as well. Having `foo/bar.js` as a dynamic module, means that its `require` context will be pointed to the folder `foo`
 To make it clear, let's register two files
@@ -141,16 +141,16 @@ See how `wow.js` is referring to the `foo/bar.js`. A dynamic module is a fully f
 require("~/foo/*") // will give 2 files
 ```
 
-It's impossible to transpile dynamic modules at the moment. You can easily do it yourself, since the API accepts a string, 
+It's impossible to transpile dynamic modules at the moment. You can easily do it yourself, since the API accepts a string,
 
 
 
 ## Loader Plugins
-Loader plugins can intercept hmr updates to override the default behavior. Here is the current plugin interface: 
+Loader plugins can intercept hmr updates to override the default behavior. Here is the current plugin interface:
 
 ```js
 interface LoaderPlugin {
-    /** 
+    /**
      * If true is returned by the plugin
      *  it means that module change has been handled
      *  by plugin and no special work is needed by FuseBox
@@ -166,7 +166,7 @@ type SourceChangedEvent = {
 }
 ```
 
-You register a plugin using `FuseBox.addPlugin(YourPlugin)`. 
+You register a plugin using `FuseBox.addPlugin(YourPlugin)`.
 
 * As an example here is a way to register a plugin that just reloads the window for *js* files instead of the default behavior:
 
@@ -205,6 +205,3 @@ FuseBox.init({
   ],
 }};
 ```
-
-### Loader Plugin Examples
-- [vue plugin](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/VuePlugin.ts#L7)

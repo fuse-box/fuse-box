@@ -1,4 +1,0 @@
-src/arithmetic/*.ts
-src/modules/**/*.ts
-src/build/*.ts
-src/build/**/*.ts

@@ -12,7 +12,7 @@ export class ResponsiveAPI {
     private customMappings = {};
     private lazyLoading = false;
     private customStatementResolve = false;
-
+    private serverRequire = false;
     private bundleMapping: any;
     private ajaxRequired = false;
     private codeSplitting = false;
@@ -73,6 +73,10 @@ export class ResponsiveAPI {
         this.isBrowserFunction = true;
     }
 
+    public useServerRequire() {
+        this.serverRequire = true;
+    }
+
     public considerStatement(statement: RequireStatement) {
         this.addLazyLoading();
         if (statement.isComputed) {
@@ -100,10 +104,13 @@ export class ResponsiveAPI {
             browser: this.core.opts.isTargetBrowser(),
             universal: this.core.opts.isTargetUniveral(),
             server: this.core.opts.isTargetServer(),
+            globalRequire : this.core.opts.globalRequire,
             isServerFunction: this.isServerFunction,
             isBrowserFunction: this.isBrowserFunction,
             computedStatements: this.computedStatements,
+            allowSyntheticDefaultImports : this.core.context.fuse.producer.allowSyntheticDefaultImports === true,
             hashes: this.hashes,
+            serverRequire: this.serverRequire,
             customStatementResolve: this.customStatementResolve,
             lazyLoading: this.lazyLoading,
             codeSplitting: this.codeSplitting,
@@ -118,6 +125,7 @@ export class ResponsiveAPI {
 
         const variables: any = {};
         const raw: any = {};
+        let replaceRaw : any = {};
         if (Object.keys(this.customMappings).length > 0) {
             variables.customMappings = this.customMappings;
         }
@@ -129,6 +137,10 @@ export class ResponsiveAPI {
         if (this.bundleMapping) {
             variables.bundleMapping = this.bundleMapping;
         }
-        return jsCommentTemplate(path.join(Config.FUSEBOX_MODULES, "fuse-box-responsive-api/index.js"), options, variables, raw);
+        if( this.core.opts.quantumVariableName !== "$fsx"){
+            replaceRaw = {"$fsx" : this.core.opts.quantumVariableName }
+        }
+
+        return jsCommentTemplate(path.join(Config.FUSEBOX_MODULES, "fuse-box-responsive-api/index.js"), options, variables, raw, replaceRaw);
     }
 }

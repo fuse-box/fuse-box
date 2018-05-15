@@ -105,6 +105,18 @@ export class BundleApiTest {
         should(fuse.producer.devServerOptions).deepEqual({ port: 7777 })
     }
 
+    "Should setup devServer with https param"() {
+        const fuse = createFuse();
+        fuse.dev({ https: { cert: "cert", key: "key" } });
+        should(fuse.producer.devServerOptions).deepEqual({ port: 4444, https: { cert: "cert", key: "key" } })
+    }
+
+    "Should setup devServer with fallback param"() {
+        const fuse = createFuse();
+        fuse.dev({ fallback: "index.html" });
+        should(fuse.producer.devServerOptions).deepEqual({ port: 4444, fallback: "index.html" })
+    }
+
     "Should inject 1 plugin"() {
         const fuse = createFuse();
         const bundle = fuse.bundle("app").plugin("first");
@@ -135,6 +147,34 @@ export class BundleApiTest {
         should(bundle2.context.plugins).deepEqual(["bar"]);
     }
 
+    "Should set extension overrides"() {
+        const fuse = createFuse();
+        const bundle = fuse.bundle("app")
+            .extensionOverrides(".foo.js", ".foo.json")
+            .extensionOverrides(".foo.css", ".foo.less");
+
+        should(bundle.context.extensionOverrides.overrides).deepEqual([".foo.js", ".foo.json", ".foo.css", ".foo.less"]);
+    }
+
+    "Should not add an extension override if it is invalid"() {
+        const fuse = createFuse();
+        const bundle = fuse.bundle("app")
+            .extensionOverrides("foo.js", ".foo.json");
+
+        should(bundle.context.extensionOverrides.overrides).deepEqual([".foo.json"]);
+    }
+
+    "Should not share extension overrides across bundles"() {
+        const fuse = createFuse();
+        const bundle1 = fuse.bundle("app")
+            .extensionOverrides(".foo.js", ".foo.json");
+        const bundle2 = fuse.bundle("app")
+            .extensionOverrides(".bar.js", ".bar.json");
+
+        should(bundle1.context.extensionOverrides.overrides).deepEqual([".foo.js", ".foo.json"]);
+        should(bundle2.context.extensionOverrides.overrides).deepEqual([".bar.js", ".bar.json"]);
+    }
+
     "Should setup arithmetics"() {
         const fuse = createFuse();
         const bundle = fuse.bundle("app").instructions("hello");
@@ -148,12 +188,12 @@ export class BundleApiTest {
         should(bundle.context.sourceMapsVendor).beFalse();
     }
 
-    "Should set sourcemaps for vendor only"() {
-        const fuse = createFuse();
-        const bundle = fuse.bundle("app").sourceMaps({ vendor: true });
-        should(bundle.context.sourceMapsProject).beFalse();
-        should(bundle.context.sourceMapsVendor).beTrue();
-    }
+    // "Should set sourcemaps for vendor only"() {
+    //     const fuse = createFuse();
+    //     const bundle = fuse.bundle("app").sourceMaps({ vendor: true });
+    //     should(bundle.context.sourceMapsProject).beFalse();
+    //     should(bundle.context.sourceMapsVendor).beTrue();
+    // }
 
     "Should set sourcemaps for both vendor and app"() {
         const fuse = createFuse();

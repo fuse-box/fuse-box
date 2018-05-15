@@ -1,7 +1,7 @@
 import * as fs from "fs-extra";
 import * as path from "path";
 import * as Mustache from "mustache";
-import { replaceExt, ensureUserPath } from "../Utils";
+import { replaceExt, ensureUserPath, ensureDir } from "../Utils";
 import { Config } from "../Config";
 import { Plugin } from "../core/WorkflowContext";
 
@@ -46,6 +46,7 @@ export class SparkyFile {
             if (typeof this.contents === "object") {
                 this.contents = JSON.stringify(contents, null, 2);
             }
+            ensureDir(path.dirname(this.filepath))
             fs.writeFileSync(this.filepath, this.contents);
         }
         return this;
@@ -83,8 +84,17 @@ export class SparkyFile {
         return this;
     }
 
+    public rename(name: string): SparkyFile {
+        this.name = name;
+        return this;
+    }
+
     public copy(dest: string) {
         return new Promise((resolve, reject) => {
+            const isDirectory = fs.statSync(this.filepath).isDirectory();
+            if (isDirectory) {
+                return resolve();
+            }
             const isTemplate = dest.indexOf("$") > -1;
             if (isTemplate) {
                 if (!path.isAbsolute(dest)) {

@@ -66,7 +66,7 @@ export class CopyPluginClass implements Plugin {
                 if (err) {
                     return reject();
                 }
-                return context.output.write(userPath, data).then(result => {
+                return context.output.writeToOutputFolder(userPath, data, true).then(result => {
                     if (result.hash) {
                         file.alternativeContent = (`${exportsKey} = "${joinFuseBoxPath(this.resolve, result.filename)}";`);
                     }

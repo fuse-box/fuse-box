@@ -4,6 +4,10 @@ import * as appRoot from "app-root-path";
 import { FuseBox } from "../../index";
 import { BundleProducer } from "../../core/BundleProducer";
 import { fork } from "child_process";
+import { removeFolder } from "../../Utils";
+import * as request from "request";
+import { UserOutputResult } from "../../core/UserOutput";
+
 const jsdom = require("jsdom");
 
 function createTestFolders(customFolder: string): { root, homeDir, dist } {
@@ -33,22 +37,65 @@ function createFiles(dir: string, files: any) {
         fs.writeFileSync(filePath, content);
     }
 }
+export function createRealNodeModule(name: string, files: any) {
+
+    const path2Module = path.join(appRoot.path, "node_modules", name);
+    if (fs.existsSync(path2Module)) {
+        removeFolder(path2Module);
+    }
+    fs.ensureDirSync(path2Module);
+    createFiles(path2Module, files);
+}
+
+export class ScriptTest {
+    public contents : string;
+    constructor(public result : UserOutputResult){
+
+    }
+
+    private load(){
+        if(!this.contents){
+            this.contents = fs.readFileSync(this.result.path);
+        }
+    }
+
+    public shouldFindString(str : string){
+        this.load();
+        if( this.contents.indexOf(str) === -1){
+            throw new Error(`Expected string "${str}" was not found`)
+        }
+    }
+
+    public shouldNotFindString(str : string){
+        this.load();
+        if( this.contents.indexOf(str) > -1){
+            throw new Error(`Expected string "${str}" was not expected to be found`)
+        }
+    }
+}
 export class FuseTestEnv {
     public fuse: FuseBox;
     public window: any;
     public producer: BundleProducer;
     public dirs: { root, homeDir, dist };
+    public scripts = new Map<string,ScriptTest>();
 
     constructor(config: any) {
         this.dirs = createTestFolders(config.testFolder);
         const basicConfig = {
             homeDir: this.dirs.homeDir,
             log: false,
-            experimentalFeatures: true,
             output: `${this.dirs.dist}/$name.js`
         }
         config.project = config.project || {};
-        createFiles(this.dirs.homeDir, config.project.files);
+        config.ensureTsConfig = false;
+
+        if( config.project.fromStubs ){
+            basicConfig.homeDir = path.join(appRoot.path, "src/tests/stubs/cases/",  config.project.fromStubs );
+            this.dirs.homeDir = basicConfig.homeDir;
+        } else {
+            createFiles(this.dirs.homeDir, config.project.files);
+        }
 
         if (config.project.distFiles) {
             createFiles(this.dirs.dist, config.project.distFiles);
@@ -79,7 +126,9 @@ export class FuseTestEnv {
             const scripts = [];
             const bundles = this.producer.sortBundles();
             bundles.forEach(bundle => {
+            
                 if (bundle.webIndexed) {
+                    
                     let contents = fs.readFileSync(bundle.context.output.lastPrimaryOutput.path).toString();
                     scripts.push(contents);
                 }
@@ -97,10 +146,28 @@ export class FuseTestEnv {
             });
         });
     }
+
+    public getScript(name : string) : ScriptTest {
+        return this.scripts.get(name);
+    }
+
+    public scriptShouldExist(name : string){
+        if( !this.getScript(name)){
+            throw new Error(`Script ${name} should exist`);
+        }
+    }
+    public scriptShouldNotExist(name : string){
+        if( this.getScript(name)){
+            throw new Error(`Script ${name} should not exist`);
+        }
+    }
+
+
     public browser(fn: { (window: any, test: FuseTestEnv): any }): Promise<FuseTestEnv> {
         const scripts = [path.join(appRoot.path, "src/tests/stubs/DummyXMLHttpRequest.js")];
         const bundles = this.producer.sortBundles();
         bundles.forEach(bundle => {
+            this.scripts.set(bundle.context.output.lastPrimaryOutput.relativePath, new ScriptTest(bundle.context.output.lastPrimaryOutput))
             if (bundle.webIndexed) {
                 scripts.push(bundle.context.output.lastPrimaryOutput.path);
             }
@@ -115,6 +182,14 @@ export class FuseTestEnv {
                 //virtualConsole: jsdom.createVirtualConsole().sendTo(console),
                 done: (err, window) => {
                     window.__ajax = (url, fn) => {
+                        if ( /^http(s)\:/.test(url)){
+                            return request(url, function (error, response, body) {
+                                if(error){
+                                    return fn(400, body);
+                                }
+                                fn(200,body);
+                              });
+                        }
                         const target = path.join(this.dirs.dist, url);
                         if (fs.existsSync(target)) {
                             return fn(200, fs.readFileSync(target).toString());

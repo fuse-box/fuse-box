@@ -8,6 +8,8 @@ export interface SassPluginOptions {
     macros?: { [key: string]: string };
     importer?: boolean | ImporterFunc;
     cache?: boolean;
+    header?: string;
+    indentedSyntax?: boolean,
     functions?: { [key: string]: (...args: any[]) => any }
 }
 
@@ -38,18 +40,11 @@ export class SassPluginClass implements Plugin {
     public transform(file: File): Promise<any> {
         file.addStringDependency("fuse-box-css");
         const context = file.context;
-        if (context.useCache && this.options.cache) {
-            let cached = context.cache.getStaticCache(file);
-            if (cached) {
-                if (cached.sourceMap) {
-                    file.sourceMap = cached.sourceMap;
-                }
-                file.isLoaded = true;
-                file.contents = cached.contents;
-                return;
-            }
-        }
 
+        if (file.isCSSCached("sass")) {
+            return;
+        }
+        file.bustCSSCache = true;
         file.loadContents();
         if (!file.contents) {
             return;
@@ -64,8 +59,13 @@ export class SassPluginClass implements Plugin {
             "~": Config.NODE_MODULES_DIR + "/",
         };
 
+        if (this.options.header) {
+            file.contents = this.options.header + "\n" + file.contents;
+        }
+
         const options = Object.assign({
             data: file.contents,
+            file: context.homeDir + "/" + file.info.fuseBoxPath,
             sourceMap: true,
             outFile: file.info.fuseBoxPath,
             sourceMapContents: true
@@ -77,6 +77,7 @@ export class SassPluginClass implements Plugin {
                 options.includePaths.push(path);
             });
         }
+
         options.macros = Object.assign(defaultMacro, this.options.macros || {}, );
 
         if (this.options.importer === true) {
@@ -90,22 +91,42 @@ export class SassPluginClass implements Plugin {
                         url = url.replace(key, options.macros[key]);
                     }
                 }
-                done({ file: path.normalize(url) });
+
+                let file = path.normalize(url);
+
+                if (context.extensionOverrides) {
+                    file = context.extensionOverrides.getPathOverride(file) || file;
+                }
+
+                done({ file });
             };
         }
 
         options.includePaths.push(file.info.absDir);
+
+        const cssDependencies = file.context.extractCSSDependencies(file, {
+            paths: options.includePaths,
+            content: file.contents,
+            sassStyle: true,
+            importer: options.importer as any,
+            extensions: ["css", options.indentedSyntax ? "sass" : "scss"]
+        });
+        file.cssDependencies = cssDependencies;
         return new Promise((resolve, reject) => {
             return sass.render(options, (err, result) => {
                 if (err) {
+                    const errorFile = err.file === 'stdin' ? file.absPath : err.file
                     file.contents = "";
-                    console.log(err.stack || err)
+                    file.addError(`${err.message}\n      at ${errorFile}:${err.line}:${err.column}`)
                     return resolve();
                 }
+
                 file.sourceMap = result.map && result.map.toString();
                 file.contents = result.css.toString();
-                if (context.useCache && this.options.cache) {
-                    context.cache.writeStaticCache(file, file.sourceMap);
+                if (context.useCache) {
+                    file.analysis.dependencies = cssDependencies;
+                    context.cache.writeStaticCache(file, file.sourceMap, "sass");
+                    file.analysis.dependencies = [];
                 }
                 return resolve();
             });

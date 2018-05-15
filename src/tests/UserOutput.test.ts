@@ -101,7 +101,7 @@ export class UserOutputTest {
         let result = output.getPath("bundle");
         should(
             ensureFuseBoxPath(result) // fixing slashes for windows
-        ).findString("/.fusebox/test-dir/bundle__.js");
+        ).findString("/.fusebox/test-dir/bundle.js");
     }
 
     "Should give a path with directory"() {

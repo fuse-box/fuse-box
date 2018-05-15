@@ -7,8 +7,39 @@
     $promisePolyfill$
     /* @end */
 
+    /* @if allowSyntheticDefaultImports */
+    // NOTE: Should match syntheticDefaultExportPolyfill in LoaderAPI.ts
+    function syntheticDefaultExportPolyfill(input) {
+        if( input === null ||
+            ['function', 'object', 'array'].indexOf(typeof input) === -1 ||
+            input.hasOwnProperty("default") // use hasOwnProperty to avoid triggering usage warnings from libraries like mobx
+        ) {
+            return
+        }
+
+        // to get around frozen input
+        if (Object.isFrozen(input) ) {
+            input.default = input;
+            return;
+        }
+
+        // free to define properties
+        Object.defineProperty(input, "default", {
+            value: input,
+            writable: true,
+            enumerable: false
+        });
+    }
+    /* @end */
+
     /* @if universal */
+
     var isBrowser = typeof window !== "undefined";
+    /* @if globalRequire */
+    if (!isBrowser) {
+        global.require = require;
+    }
+    /* @end */
 
     /* @if !isContained */
     var storage = isBrowser ? window : global;
@@ -44,6 +75,11 @@
 
 
     /* @if server */
+    /* @if globalRequire */
+    if (typeof global === "object") {
+        global.require = require;
+    }
+    /* @end */
     /* @if !isContained */
     var $fsx = global.$fsx = {}
     if ($fsx.r) {
@@ -55,19 +91,6 @@
     /* @end */
     /* @end */
 
-    /* @if hashes */
-    function fastHash(text) {
-        var hash = 0;
-        if (text.length == 0) return hash;
-        for (var i = 0; i < text.length; i++) {
-            var char = text.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash; // Convert to 32bit integer
-        };
-        return hash.toString(16);
-    }
-    /* @end */
-
 
     /* @if isServerFunction */
     $fsx.cs = !isBrowser
@@ -76,69 +99,8 @@
 
     /* @if isBrowserFunction */
     $fsx.cb = isBrowser
+        /* @end */
 
-    /* @end */
-
-
-    /* @if computedStatements */
-
-    // define a collection of file names based on id
-    // so here $fsx.s["f9ee3k"] = "foo/bar.js"
-    $fsx.s = {};
-
-    function $join() {
-        var parts = [];
-        for (var i = 0, l = arguments.length; i < l; i++) {
-            parts = parts.concat(arguments[i].split("/"));
-        };
-        var newParts = [];
-        for (var i = 0, l = parts.length; i < l; i++) {
-            var part = parts[i];
-            if (!part || part === ".") continue;
-            if (part === "..") {
-                newParts.pop();
-            } else {
-                newParts.push(part);
-            }
-        };
-        if (parts[0] === "") newParts.unshift("");
-        return newParts.join("/") || (newParts.length ? "/" : ".");
-    };
-
-
-    function findModule(id, path) {
-        if (!$fsx.s[id]) {
-            return;
-        };
-        var target = $join($fsx.s[id][1], path);
-        var pkg = $fsx.s[id][0];
-        var targetStr = pkg + "/" + target;
-        var combo = [targetStr]
-        if (!/\.js$/.test(target)) {
-            combo.push(targetStr + ".js", targetStr + "/index.js")
-        };
-        var dest;
-        var index = 0;
-        while (!dest && index < combo.length) {
-            var hash = fastHash(combo[index]);
-            if ($fsx.f[hash]) {
-                dest = hash;
-            }
-            index++;
-        };
-        if (dest) {
-            return $fsx.r(dest);
-        };
-        return dest;
-    }
-
-
-    $fsx.c = function(path) {
-        // getting the base
-        return findModule(this.id, path);
-    }
-
-    /* @end */
     $fsx.f = {}
 
 
@@ -239,6 +201,25 @@
         return input;
     }
 
+    /* @if extendServerImport */
+    function extendServerImport(url, cb) {
+        if (/^http(s)?\:/.test(url)) {
+            return require("request")(url, function(error, response, body) {
+                if (error) { return cb(error); }
+                return cb(null, evaluateModule(url, body, response.headers['content-type']));
+            });
+        }
+        if (/\.(js|json)$/.test(url)) {
+            return cb(null, require(url))
+        } else {
+            return require("fs").readFile(require("path").join(__dirname, url), function(err, result) {
+                if (err) { cb(err) } else {
+                    cb(null, result.toString())
+                }
+            })
+        }
+    }
+    /* @end */
 
     function req(url, cb) {
         /* @if browser */
@@ -249,17 +230,9 @@
         if (isBrowser) aj(url, cb)
         else try {
             /* @if extendServerImport */
-            if (/\.(js|json)$/.test(url)) {
-                cb(null, require(url))
-            } else {
-                cb(null, require("fs")
-                    .readFile(require("path")
-                        .join(__dirname, url)),
-                    function(err, result) {
-                        if (err) { reject(err) } else { resolve(result.toString()) }
-                    });
+            if (extendServerImport(url, cb)) {
+                return;
             }
-
             /* @end */
 
             /* @if !extendServerImport */
@@ -273,13 +246,9 @@
 
         /* @if server */
         try {
-            /* @if extendServerImport  */
-            if (/\.(js|json)$/.test(url)) {
-                cb(null, require(url))
-            } else {
-                cb(null, require("fs")
-                    .readFileSync(require("path")
-                        .join(__dirname, url)).toString());
+            /* @if extendServerImport */
+            if (extendServerImport(url, cb)) {
+                return;
             }
             /* @end */
 
@@ -298,7 +267,17 @@
             /* @if codeSplitting */
             if (bMapping.i && bMapping.i[id]) {
                 var data = bMapping.i[id];
-                req(bMapping.c.b + data[0], function(err, result) {
+                /* @if universal */
+                var path = isBrowser ? bMapping.c.b : bMapping.c.s;
+                /* @end */
+                /* @if server */
+                var path = bMapping.c.s;
+                /* @end */
+
+                /* @if browser */
+                var path = bMapping.c.b;
+                /* @end */
+                req(path + data[0], function(err, result) {
 
                     /* @if browser */
                     if (!err) { new Function(result)(); }
@@ -309,6 +288,9 @@
                     /* @end */
 
                     $cache[id] = $fsx.r(data[1]);
+                    /* @if allowSyntheticDefaultImports */
+                    syntheticDefaultExportPolyfill($cache[id]);
+                    /* @end */
                     !err ? resolve($cache[id]) : reject(err);
                 });
             } else {
@@ -320,23 +302,41 @@
                 /* @if cssLoader */
                 isCSS = /\.css$/.test(id);
                 /* @end */
-
-                if ((id.charCodeAt(4) === 58 || id.charCodeAt(5) === 58) || isCSS) {
+                // id.charCodeAt(4) === 58 || id.charCodeAt(5) === 58)
+                if (isCSS) {
                     return loadRemoteScript(id, isCSS);
                 }
                 /* @end */
                 req(id, function(err, result, ctype) {
                     if (!err) {
                         /* @if browser */
-                        resolve($cache[id] = evaluateModule(id, result, ctype));
+                        var res = $cache[id] = evaluateModule(id, result, ctype)
+                        /* @if allowSyntheticDefaultImports */
+                        syntheticDefaultExportPolyfill(res);
+                        /* @end */
+                        resolve(res);
                         /* @end */
 
                         /* @if server */
+                            /* @if allowSyntheticDefaultImports */
+                            syntheticDefaultExportPolyfill(result);
+                            /* @end */
                         resolve(result);
                         /* @end */
 
                         /* @if universal */
-                        isBrowser ? resolve($cache[id] = evaluateModule(id, result, ctype)) : resolve(result);
+                        if( isBrowser){
+                            var res = $cache[id] = evaluateModule(id, result, ctype);
+                            /* @if allowSyntheticDefaultImports */
+                            syntheticDefaultExportPolyfill(res);
+                            /* @end */
+                            resolve(res);
+                        } else {
+                             /* @if allowSyntheticDefaultImports */
+                             syntheticDefaultExportPolyfill(result);
+                             /* @end */
+                             resolve(result);
+                        }
                         /* @end */
                     } else {
                         reject(err);
@@ -350,11 +350,35 @@
 
     /* @end */
 
-
-
-
     // cached modules
     $fsx.m = {};
+
+    /* @if serverRequire */
+    $fsx.s = function(id) {
+        var result = $fsx.r(id);
+        if (result === undefined) {
+            /* @if server */
+            var result = require(id);
+             /* @if allowSyntheticDefaultImports */
+                syntheticDefaultExportPolyfill(result);
+              /* @end */
+            return result;
+            /* @end */
+
+            /* @if universal */
+            if (!isBrowser) {
+                var result = require(id);
+                /* @if allowSyntheticDefaultImports */
+                    syntheticDefaultExportPolyfill(result);
+                /* @end */
+                return result;
+            }
+            /* @end */
+        }
+    }
+
+    /* @end */
+
     $fsx.r = function(id) {
         var cached = $fsx.m[id];
 
@@ -369,7 +393,10 @@
         cached = $fsx.m[id] = {};
         cached.exports = {};
         cached.m = { exports: cached.exports };
-        file(cached.m, cached.exports);
+        file.call(cached.exports, cached.m, cached.exports);
+        /* @if allowSyntheticDefaultImports */
+        syntheticDefaultExportPolyfill(cached.m.exports);
+        /* @end */
         return cached.m.exports;
     };
 

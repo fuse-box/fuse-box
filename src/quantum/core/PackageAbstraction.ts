@@ -1,14 +1,25 @@
 import { BundleAbstraction } from "./BundleAbstraction";
 import { FileAbstraction } from "./FileAbstraction";
 import { ASTTraverse } from "../../ASTTraverse";
+import { QuantumBit } from "../plugin/QuantumBit";
 
 export class PackageAbstraction {
     public fileAbstractions = new Map<string, FileAbstraction>();
     public entryFile: string = "index.js";
+    public entries = new Map<string, FileAbstraction>();
+        
+    public quantumBit : QuantumBit;
+    public quantumBitBanned = false;
+    public quantumDynamic = false;
     constructor(public name: string, public bundleAbstraction: BundleAbstraction) {
         bundleAbstraction.registerPackageAbstraction(this);
     }
 
+    public assignBundle(bundleAbstraction : BundleAbstraction){
+        this.bundleAbstraction.packageAbstractions.delete(this.name);
+        this.bundleAbstraction = bundleAbstraction;
+        bundleAbstraction.packageAbstractions.set(this.name, this);
+    }
     public registerFileAbstraction(fileAbstraction: FileAbstraction) {
         this.fileAbstractions.set(fileAbstraction.fuseBoxPath, fileAbstraction);
     }

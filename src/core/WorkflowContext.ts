@@ -1,14 +1,15 @@
 import * as path from "path";
 import * as escodegen from "escodegen";
 import { BundleSource } from "../BundleSource";
-import { File } from "./File";
+import { File, ScriptTarget } from "./File";
 import { Log } from "../Log";
-import { IPackageInformation, IPathInformation, AllowedExtenstions } from "./PathMaster";
+import * as NativeEmitter from "events";
+import { IPackageInformation, IPathInformation, AllowedExtensions } from "./PathMaster";
 import { ModuleCollection } from "./ModuleCollection";
 import { ModuleCache } from "../ModuleCache";
 import { EventEmitter } from "../EventEmitter";
 import { utils } from "realm-utils";
-import { ensureUserPath, findFileBackwards, ensureDir, removeFolder } from "../Utils";
+import { ensureDir, removeFolder } from "../Utils";
 import { SourceChangedEvent } from "../devServer/Server";
 import { registerDefaultAutoImportModules, AutoImportedModule } from "./AutoImportedModule";
 import { Defer } from "../Defer";
@@ -16,8 +17,12 @@ import { UserOutput } from "./UserOutput";
 import { FuseBox } from "./FuseBox";
 import { Bundle } from "./Bundle";
 import { BundleProducer } from "./BundleProducer";
-import { QuantumSplitConfig, QuantumItem, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
-
+import { QuantumSplitConfig, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
+import { isServerPolyfill, isElectronPolyfill } from "./ServerPolyfillList";
+import { CSSDependencyExtractor, ICSSDependencyExtractorOptions } from "../lib/CSSDependencyExtractor";
+import { ExtensionOverrides } from "./ExtensionOverrides";
+import { TypescriptConfig } from "./TypescriptConfig";
+import { QuantumBit } from "../quantum/plugin/QuantumBit";
 
 const appRoot = require("app-root-path");
 
@@ -64,13 +69,33 @@ export class WorkFlowContext {
      */
     public appRoot: any = appRoot.path;
 
+    public dynamicImportsEnabled = true;
+
     public shim: any;
 
     public writeBundles = true;
 
     public fuse: FuseBox;
 
+    public useTypescriptCompiler = false;
+
+    public userWriteBundles = true;
+
+    public showWarnings = true;
+
+    public ensureTsConfig = true;
+
+    public useJsNext: boolean | string[] = false;
+
+    public showErrors = true;
+
+    public showErrorsInBrowser = true;
+
     public sourceChangedEmitter = new EventEmitter<SourceChangedEvent>();
+
+    public emitter = new NativeEmitter();
+
+    public quantumBits = new Map<string, QuantumBit>();
 
     /**
      * The default package name or the package name configured in options
@@ -83,19 +108,27 @@ export class WorkFlowContext {
 
     public pendingPromises: Promise<any>[] = [];
 
-    public customAPIFile: string;
+    public emitHMRDependencies = false;
+    public languageLevel: ScriptTarget;
+    public forcedLanguageLevel: ScriptTarget;
 
-    public experimentalFeaturesEnabled = false;
+
+    public filterFile: { (file: File): boolean }
+
+
+    public customAPIFile: string;
 
     public defaultEntryPoint: string;
 
-    public rollupOptions: any;
-
     public output: UserOutput;
+
+    public extensionOverrides?: ExtensionOverrides;
 
     public hash: string | Boolean;
 
     public target: string = "universal";
+
+    public inlineCSSPath : string = "css-sourcemaps";
     /**
      * Explicitly target bundle to server
      */
@@ -109,6 +142,8 @@ export class WorkFlowContext {
 
     public printLogs = true;
 
+    public runAllMatchedPlugins = false;
+
     public plugins: Plugin[];
 
     public fileGroups: Map<string, File>;
@@ -119,13 +154,15 @@ export class WorkFlowContext {
 
     public cache: ModuleCache;
 
-    public tsConfig: any;
+    public tsConfig: TypescriptConfig;
 
     public customModulesFolder: string;
 
     public tsMode = false;
 
     public loadedTsConfig: string;
+
+    public dependents = new Map<string, Set<string>>();
 
     public globals: { [packageName: string]: /** Variable name */ string };
 
@@ -135,19 +172,19 @@ export class WorkFlowContext {
 
     public sourceMapsProject: boolean = false;
     public sourceMapsVendor: boolean = false;
-    public useSourceMaps = false;
+    public inlineSourceMaps: boolean = true;
+    public sourceMapsRoot: string = "";
+    public useSourceMaps: boolean;
 
     public initialLoad = true;
 
     public debugMode = false;
 
-    public quantumSplitConfig: QuantumSplitConfig;
+    public quantumSplitConfig: QuantumSplitConfig = new QuantumSplitConfig(this)
 
     public log: Log = new Log(this);
 
     public pluginTriggers: Map<string, Set<String>>;
-
-
 
     public natives = {
         process: true,
@@ -169,6 +206,7 @@ export class WorkFlowContext {
 
     public defer = new Defer;
 
+    public cacheType = 'file';
 
     public initCache() {
         this.cache = new ModuleCache(this);
@@ -184,68 +222,96 @@ export class WorkFlowContext {
         this.pendingPromises.push(obj);
     }
 
+
+    public convertToFuseBoxPath(name: string) {
+        let root = this.homeDir;
+        name = name.replace(/\\/g, "/");
+        root = root.replace(/\\/g, "/");
+        name = name.replace(root, "").replace(/^\/|\\/, "");
+        return name;
+    }
     public isBrowserTarget() {
         return this.target === "browser";
     }
 
-    public quantumSplit(rule: string, bundleName: string, entryFile: string) {
-        if (!this.quantumSplitConfig) {
-            this.quantumSplitConfig = new QuantumSplitConfig(this);
+    public shouldUseJsNext(libName: string) {
+        if (this.useJsNext === true) {
+            return true;
         }
-        this.quantumSplitConfig.register(rule, bundleName, entryFile);
+        if (Array.isArray(this.useJsNext)) {
+
+            return this.useJsNext.indexOf(libName) > -1
+        }
+    }
+
+    public nameSplit(name: string, filePath: string) {
+        this.quantumSplitConfig.register(name, filePath);
     }
 
     public configureQuantumSplitResolving(opts: QuantumSplitResolveConfiguration) {
-        if (!this.quantumSplitConfig) {
-            this.quantumSplitConfig = new QuantumSplitConfig(this);
-        }
         this.quantumSplitConfig.resolveOptions = opts;
-    }
-
-    public getQuantumDevelepmentConfig() {
-        if (this.quantumSplitConfig) {
-            let opts: any = this.quantumSplitConfig.resolveOptions;
-            opts.bundles = {};
-            this.quantumSplitConfig.getItems().forEach(item => {
-                opts.bundles[item.name] = { main: item.entry };
-            });
-            return opts;
-        }
-    }
-
-    public requiresQuantumSplitting(path: string): QuantumItem {
-        if (!this.quantumSplitConfig) {
-            return;
-        }
-        return this.quantumSplitConfig.matches(path);
     }
 
     public setCodeGenerator(fn: any) {
         this.customCodeGenerator = fn;
     }
 
-
-
-    public generateCode(ast: any) {
+    public generateCode(ast: any, opts?: any) {
         if (this.customCodeGenerator) {
             try {
                 return this.customCodeGenerator(ast);
             } catch (e) { }
         }
-        return escodegen.generate(ast);
+        return escodegen.generate(ast, opts);
+    }
+
+    public replaceAliases(requireStatement: string)
+        : { requireStatement: string, replaced: boolean } {
+        const aliasCollection = this.aliasCollection;
+        let replaced = false;
+        if (aliasCollection) {
+            aliasCollection.forEach(props => {
+                if (props.expr.test(requireStatement)) {
+                    replaced = true;
+                    requireStatement = requireStatement.replace(props.expr, `${props.replacement}$2`);
+                }
+            });
+        }
+        return { requireStatement, replaced };
     }
 
     public emitJavascriptHotReload(file: File) {
-        let content = file.contents;
-        if (file.headerContent) {
-            content = file.headerContent.join("\n") + "\n" + content;
+        if (file.ignoreCache) {
+            return
         }
 
-        this.sourceChangedEmitter.emit({
-            type: "js",
-            content,
-            path: file.info.fuseBoxPath,
-        });
+        let content = file.contents;
+        if (file.context.emitHMRDependencies) {
+            this.emitter.addListener("bundle-collected", () => {
+                if (file.headerContent) {
+                    content = file.headerContent.join("\n") + "\n" + content;
+                }
+                let dependants = {};
+                this.dependents.forEach((set, key) => {
+                    dependants[key] = [...set];
+                });
+                this.sourceChangedEmitter.emit({
+                    type: "js",
+                    content,
+                    dependants: dependants,
+                    path: file.info.fuseBoxPath,
+                });
+            });
+        } else {
+            if (file.headerContent) {
+                content = file.headerContent.join("\n") + "\n" + content;
+            }
+            this.sourceChangedEmitter.emit({
+                type: "js",
+                content,
+                path: file.info.fuseBoxPath,
+            });
+        }
     }
 
     public debug(group: string, text: string) {
@@ -267,8 +333,17 @@ export class WorkFlowContext {
             this.sourceMapsProject = params;
         } else {
             if (utils.isPlainObject(params)) {
-                this.sourceMapsProject = params.project === true;
+                if( params.inlineCSSPath){
+                    this.inlineCSSPath = params.inlineCSSPath;
+                }
+                this.sourceMapsProject = params.project !== undefined ? params.project : true;
                 this.sourceMapsVendor = params.vendor === true;
+                if (params.inline !== undefined) {
+                    this.inlineSourceMaps = params.inline;
+                }
+                if (params.sourceRoot || params.sourceRoot === '') {
+                    this.sourceMapsRoot = params.sourceRoot;
+                }
             }
         }
         if (this.sourceMapsProject || this.sourceMapsVendor) {
@@ -278,6 +353,12 @@ export class WorkFlowContext {
 
     public warning(str: string) {
         return this.log.echoWarning(str);
+    }
+
+    public deprecation(str: string) {
+        setTimeout(() => {
+            this.log.echoWarning(str);
+        }, 1000);
     }
 
     public fatal(str: string) {
@@ -315,6 +396,8 @@ export class WorkFlowContext {
      */
     public reset() {
         this.log.reset();
+        this.dependents = new Map<string, Set<string>>();
+        this.emitter = new NativeEmitter();
         this.storage = new Map();
         this.source = new BundleSource(this);
         this.nodeModules = new Map();
@@ -323,11 +406,27 @@ export class WorkFlowContext {
         this.libPaths = new Map();
     }
 
+    public registerDependant(target: File, dependant: File) {
+
+        let fileSet: Set<string>;
+        if (!this.dependents.has(target.info.fuseBoxPath)) {
+            fileSet = new Set<string>();
+            this.dependents.set(target.info.fuseBoxPath, fileSet);
+        } else {
+            fileSet = this.dependents.get(target.info.fuseBoxPath);
+        }
+        if (!fileSet.has(dependant.info.fuseBoxPath)) {
+            fileSet.add(dependant.info.fuseBoxPath);
+        }
+    }
+
     public initAutoImportConfig(userNatives, userImports) {
-        this.autoImportConfig = registerDefaultAutoImportModules(userNatives);
-        if (utils.isPlainObject(userImports)) {
-            for (let varName in userImports) {
-                this.autoImportConfig[varName] = new AutoImportedModule(varName, userImports[varName]);
+        if (this.target !== "server") {
+            this.autoImportConfig = registerDefaultAutoImportModules(userNatives);
+            if (utils.isPlainObject(userImports)) {
+                for (let varName in userImports) {
+                    this.autoImportConfig[varName] = new AutoImportedModule(varName, userImports[varName]);
+                }
             }
         }
     }
@@ -336,10 +435,26 @@ export class WorkFlowContext {
         this.storage.set(key, obj);
     }
 
-    public getItem(key: string): any {
-        return this.storage.get(key);
+    public getItem(key: string, defaultValue?: any): any {
+        return this.storage.get(key) !== undefined ? this.storage.get(key) : defaultValue;
     }
 
+    public setCSSDependencies(file: File, userDeps: string[]) {
+        let collection = this.getItem("cssDependencies") || {};
+        collection[file.info.absPath] = userDeps;
+        this.setItem("cssDependencies", collection);
+    }
+
+    public extractCSSDependencies(file: File, opts: ICSSDependencyExtractorOptions): string[] {
+        const extractor = CSSDependencyExtractor.init(opts);
+        this.setCSSDependencies(file, extractor.getDependencies())
+        return extractor.getDependencies();
+    }
+
+    public getCSSDependencies(file: File): string[] {
+        let collection = this.getItem("cssDependencies") || {};
+        return collection[file.info.absPath];
+    }
     /**
      * Create a new file group
      * Mocks up file
@@ -366,8 +481,8 @@ export class WorkFlowContext {
     }
 
     public allowExtension(ext: string) {
-        if (!AllowedExtenstions.has(ext)) {
-            AllowedExtenstions.add(ext);
+        if (!AllowedExtensions.has(ext)) {
+            AllowedExtensions.add(ext);
         }
     }
 
@@ -387,7 +502,6 @@ export class WorkFlowContext {
         } else {
             aliases.push({ expr: new RegExp(`^(${obj})(/|$)`), replacement: value });
         }
-
 
         this.aliasCollection = this.aliasCollection || [];
         this.aliasCollection = this.aliasCollection.concat(aliases)
@@ -429,7 +543,18 @@ export class WorkFlowContext {
     }
 
     public isGlobalyIgnored(name: string): boolean {
-        return this.ignoreGlobal.indexOf(name) > -1;
+        if (this.ignoreGlobal.indexOf(name) > -1) {
+            return true;
+        }
+        if (this.target === "server") {
+            return isServerPolyfill(name)
+        }
+
+        if (this.target === "electron") {
+            return isElectronPolyfill(name)
+        }
+
+        return false
     }
 
     public resetNodeModules() {
@@ -438,51 +563,6 @@ export class WorkFlowContext {
 
     public addNodeModule(name: string, collection: ModuleCollection) {
         this.nodeModules.set(name, collection);
-    }
-
-    /**
-     * Retuns the parsed `tsconfig.json` contents
-     */
-    public getTypeScriptConfig() {
-        if (this.loadedTsConfig) {
-            return this.loadedTsConfig;
-        }
-
-        let url, configFile;
-        let config: any = {
-            compilerOptions: {},
-        };;
-        if (this.tsConfig) {
-            configFile = ensureUserPath(this.tsConfig);
-        } else {
-            url = path.join(this.homeDir, "tsconfig.json");
-            let tsconfig = findFileBackwards(url, this.appRoot);
-            if (tsconfig) {
-                configFile = tsconfig;
-            }
-        }
-
-        if (configFile) {
-            this.log.echoStatus(`Typescript config:  ${configFile.replace(this.appRoot, "")}`);
-            config = require(configFile);
-        } else {
-            this.log.echoStatus(`Typescript config file was not found. Improvising`);
-        }
-
-        config.compilerOptions.module = "commonjs";
-
-        if (this.useSourceMaps) {
-            config.compilerOptions.sourceMap = true;
-            config.compilerOptions.inlineSources = true;
-        }
-        // switch to target es6
-        if (this.rollupOptions) {
-            this.debug("Typescript", "Forcing es6 output for typescript. Rollup deteced");
-            config.compilerOptions.module = "es6";
-            config.compilerOptions.target = "es6";
-        }
-        this.loadedTsConfig = config;
-        return config;
     }
 
     public isFirstTime() {
@@ -494,12 +574,17 @@ export class WorkFlowContext {
 
         const res = this.source.getResult();
         if (this.bundle) {
+
             this.bundle.generatedCode = res.content;
         }
 
         if (this.output && (!this.bundle || this.bundle && this.bundle.producer.writeBundles)) {
             this.output.writeCurrent(res.content).then(() => {
-                this.writeSourceMaps(res);
+
+                if (this.source.includeSourceMaps) {
+                    this.writeSourceMaps(res);
+                }
+
                 this.defer.unlock();
                 if (utils.isFunction(outFileWritten)) {
                     outFileWritten();
@@ -514,17 +599,9 @@ export class WorkFlowContext {
 
     protected writeSourceMaps(result: any) {
         // Writing sourcemaps
-        if (this.sourceMapsProject || this.sourceMapsVendor) {
-            this.output.write(`${this.output.filename}.js.map`, result.sourceMap, true);
+        if ((this.sourceMapsProject || this.sourceMapsVendor)) {
+            this.output.writeToOutputFolder(`${this.output.filename}.js.map`, result.sourceMap);
         }
-    }
-    public shouldSplit(file: File): boolean {
-        if (!this.experimentalFeaturesEnabled) {
-            if (this.bundle && this.bundle.bundleSplit) {
-                return this.bundle.bundleSplit.verify(file);
-            }
-        }
-        return false;
     }
 
     public getNodeModule(name: string): ModuleCollection {

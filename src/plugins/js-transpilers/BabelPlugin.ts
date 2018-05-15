@@ -28,9 +28,7 @@ export class BabelPluginClass implements Plugin {
     private configPrinted = false;
     private configLoaded = false;
 
-    constructor(opts: any) {
-        opts = opts || {};
-
+    constructor(opts: any = {}) {
         // if it is an object containing only a babel config
         if (opts.config === undefined && opts.test === undefined && opts.limit2project === undefined && opts.extensions === undefined && Object.keys(opts).length) {
             this.config = opts;
@@ -62,13 +60,19 @@ export class BabelPluginClass implements Plugin {
 
         let babelRcConfig;
         let babelRcPath = path.join(this.context.appRoot, `.babelrc`);
+
         if (fs.existsSync(babelRcPath)) {
             babelRcConfig = fs.readFileSync(babelRcPath).toString();
-            if (babelRcConfig) babelRcConfig = JSON.parse(babelRcConfig);
+
+            if (babelRcConfig) {
+              babelRcConfig = Object.assign({}, JSON.parse(babelRcConfig), this.config);
+            }
         }
+
         if (babelRcConfig) {
             this.config = babelRcConfig;
         }
+
         this.configLoaded = true;
     }
 
@@ -87,6 +91,7 @@ export class BabelPluginClass implements Plugin {
      * @param {File} file
      */
     public transform(file: File, ast: any) {
+        file.wasTranspiled = true;
         if (!babelCore) {
             babelCore = require("babel-core");
         }
@@ -135,10 +140,14 @@ export class BabelPluginClass implements Plugin {
 
                 file.contents = result.code;
                 file.analysis.analyze();
-                
+
                 if (sourceMaps) {
                     sourceMaps.file = file.info.fuseBoxPath;
-                    sourceMaps.sources = [file.info.fuseBoxPath];
+                    sourceMaps.sources = [file.context.sourceMapsRoot + "/" + file.info.fuseBoxPath];
+                    if (!file.context.inlineSourceMaps) {
+                        delete sourceMaps.sourcesContent;
+                    }
+
                     file.sourceMap = JSON.stringify(sourceMaps);
                 }
 
@@ -152,6 +161,6 @@ export class BabelPluginClass implements Plugin {
     }
 }
 
-export const BabelPlugin = (opts: any) => {
+export const BabelPlugin = (opts: any = {}) => {
     return new BabelPluginClass(opts);
 };

@@ -5,7 +5,7 @@ import { EventEmitter } from "events";
 import { Arithmetic, BundleData } from "../arithmetic/Arithmetic";
 import { SharedCustomPackage } from "./SharedCustomPackage";
 import { BundleRunner } from "./BundleRunner";
-import { ServerOptions } from "../devServer/Server";
+import { ServerOptions, Server } from "../devServer/Server";
 import * as chokidar from "chokidar";
 import { utils, each } from "realm-utils";
 import { ProducerAbstraction, ProducerAbtractionOptions } from "../quantum/core/ProducerAbstraction";
@@ -15,11 +15,15 @@ export class BundleProducer {
     public bundles = new Map<string, Bundle>();
     public hmrInjected = false;
     public hmrAllowed = true;
-
+    public allowSyntheticDefaultImports = false;
+    public sharedSourceMaps = new Map<string, string>();
+    public injectedCSSFiles = new Set<string>();
+    public devServer: Server;
     public sharedEvents = new EventEmitter();
     public writeBundles = true;
     public sharedCustomPackages: Map<string, SharedCustomPackage​>;
     public runner: BundleRunner;
+    public userEnvVariables: any = Object.assign({ NODE_ENV: "production" }, process.env);
     public devServerOptions: ServerOptions;
 
     public entryPackageName: string;
@@ -35,9 +39,11 @@ export class BundleProducer {
         if (opts) {
             this.chokidarOptions = opts.chokidar;
         }
+        
         /** Collect information about watchers and start watching */
         this.watch();
-
+        //this.runner = new BundleRunner(this.fuse);
+        
         return this.runner.run(opts).then(() => {
 
             this.sharedEvents.emit("producer-done");
@@ -47,11 +53,17 @@ export class BundleProducer {
                     return plugin.producerEnd(this);
                 }
             });
-        }).then(() => this);
+        }).then(() => { 
+           // this.bundles = new Map<string, Bundle>();
+            return this 
+        });
     }
 
+    public addUserProcessEnvVariables(data: any) {
+        this.userEnvVariables = Object.assign(this.userEnvVariables, data);
+    }
     public printWarnings() {
-        if (this.warnings.size > 0) {
+        if (this.warnings.size > 0 && this.fuse.context.showWarnings) {
             this.fuse.context.log.echoBreak();
             this.warnings.forEach(warnings => {
                 warnings.forEach(list => {
@@ -71,6 +83,12 @@ export class BundleProducer {
             list = this.warnings.get(key)
         }
         list.push(message);
+    }
+
+    public getErrors() {
+        const errors = []
+        this.bundles.forEach(bundle => errors.push(...bundle.getErrors()))
+        return errors
     }
 
     public devCodeHasBeenInjected(key: string) {
@@ -187,7 +205,8 @@ export class BundleProducer {
                 const bundle = this.bundles.get(bundleName);
 
                 const defer = bundle.fuse.context.defer;
-                bundle.lastChangedFile = path;
+
+                bundle.lastChangedFile = bundle.fuse.context.convertToFuseBoxPath(path);
                 // to ensure new process is not kicked in before the previous has completed
                 defer.queue(bundleName, () => {
                     return bundle.exec().then(result => {

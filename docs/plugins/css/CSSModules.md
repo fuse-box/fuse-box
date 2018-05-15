@@ -1,4 +1,4 @@
-# CSSModules Plugin
+# CSS Modules Plugin
 
 ## Description
 CSSModules allow you to include stylesheets as key value map of the
@@ -102,6 +102,31 @@ plugin.
 ```js
 CSSModules({
   useDefault: false,
+})
+```
+
+### generateScopedName
+
+By default, `CSSModules` uses the following class naming strategy:
+
+```
+_[local]___[hash:base64:5]
+```
+
+To override that, use the `scopedName` property when initializing the
+plugin.
+
+```js
+CSSModules({
+  scopedName: '[name]__[local]___[hash:base64:3]',
+})
+```
+
+### root
+Set `postcss-modules` root path. _see wef_
+```js
+CSSModules({
+  root: path.resolve(__dirname, 'src')
 })
 ```
 

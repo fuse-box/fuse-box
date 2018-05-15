@@ -15,6 +15,10 @@ It is packed with features, and unfolds limitless possibilities of extending the
 
 Join [gitter channel](https://gitter.im/fusebox-bundler/Lobby), we are active! / View on [github](https://github.com/fuse-box/fuse-box) / Submit an [issue](https://github.com/fuse-box/fuse-box/issues/new) / Contribute to this [documentation](https://github.com/fuse-box/fuse-box/tree/master/docs)
 
+## Help us!
+Never forget - FuseBox is free to use, but it requires a great deal of time and effort to maintain it!
+To ensure FuseBox survival in this competitive world, donate a few bucks to our [opencollective](https://opencollective.com/fuse-box)
+
 ## Features
 
 FuseBox is a next generation bundler and module loader, it is the result of our years of experience dealing with complex projects requirements and many of the development tools out there.

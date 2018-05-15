@@ -1,12 +1,8 @@
-# WebIndexPlugin
+# Web Index Plugin
 
 
 ## Description
 Generates a HTML file once a producer's job is completed
-
-note: This plugin is under development
-
-
 
 ## Usage
 
@@ -31,9 +27,27 @@ fuse.plugin(
 | ------------- | ------------- |
 | ` title `   | Sets the title  |
 | ` bundles ` | Provide a list of bundle names (if not set all registered bundles are through) |
-| ` path `   | Joins a string with bundles. For example `/assets`  |
+| ` path `   | The relative url bundles are served from. Default is `/`. Empty is set with `.`  |
 | ` template `   | Provide a path to your own template  |
+| ` templateString `   | Provide your own template as a string  |
+| ` target `   | The main filename. Default is `index.html`  |
+| ` resolve `   | `resolve ?: {(output : UserOutput) : string}` Allows to completely override the output  |
+| `pre ` | `{ relType: 'fetch' | 'load' }`  Config object to either preload or prefetch the output javascript bundles in the head of the document |
+| ` appendBundles ` | Append $bundles to provided template |
+| ` async ` | Provide `async` attribute to `<script>` tags (boolean) |
+| ` scriptAttributes ` | Provide additional attribute(s) to `<script>` tags (string) |
 
+
+note: If you specify template and templateString then template will take precedent
+
+### Resolve example
+`resolve` option allows you to completely override the path
+
+```js
+WebIndexPlugin({
+    resolve : output => output.lastPrimaryOutput.filename
+})
+```
 
 
 ## Custom template
@@ -44,5 +58,6 @@ A custom template has the following macro available:
 | ------------- | ------------- |
 | ` $title `   | Html Title  |
 | ` $bundles `   | A list of script tags |
+| ` $css `   | A list of styles tags |
 
 github_example: vendor-splitting

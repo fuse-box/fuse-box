@@ -1,10 +1,11 @@
 {
     "compilerOptions": {
-        "target": "es6",
+        "target": "esnext",
         "module": "commonjs",
         "moduleResolution": "node",
         "isolatedModules": false,
         "jsx": "react",
+        "importHelpers": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "noUnusedLocals": true,
@@ -12,18 +13,16 @@
         "noImplicitAny": false,
         "noImplicitUseStrict": false,
         "removeComments": true,
+        "noEmitHelpers": true,
         "noLib": false,
         "outDir": "build/",
         "preserveConstEnums": true,
         "suppressImplicitAnyIndexErrors": true
     },
+    "include": [ "**/*.ts", ],
     "exclude": [
+      "**/*.d.ts",
       "loader/**/*",
       "modules/**/*"
-    ],
-    "compileOnSave": false,
-    "buildOnSave": false,
-    "atom": {
-        "rewriteTsconfig": false
-    }
+    ]
 }

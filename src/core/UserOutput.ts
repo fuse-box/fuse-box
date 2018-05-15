@@ -10,6 +10,7 @@ export class UserOutputResult {
     public hash: string;
     public filename: string;
     public relativePath?: string;
+    public content?: string | Buffer;
 }
 
 export class UserOutput {
@@ -87,10 +88,12 @@ export class UserOutput {
 
         const userExt = path.extname(str);
         const templateExt = path.extname(template);
-
-        // making use user has a priority on extensions
+        
+        // user has a priority on extensions
         if (userExt && templateExt) {
-            template = template.replace(templateExt, '')
+            if( userExt === ".js" || userExt === ".html"){
+                template = template.replace(templateExt, '');
+            }
         }
 
         let basename = path.basename(str);
@@ -107,7 +110,7 @@ export class UserOutput {
         } else {
             fname = template
                 .replace('$name', basename)
-                .replace('$hash', "")
+                .replace(/([-_]*\$hash[-_]*)/, "")
         }
         this.lastGeneratedFileName = fname;
         let result = path.join(this.dir, dirname, fname);
@@ -129,6 +132,32 @@ export class UserOutput {
         }
     }
 
+    public writeToOutputFolder(userPath: string, content: string | Buffer, hashAllowed = false): Promise<UserOutputResult> {
+        let targetPath = path.join(this.dir, userPath);
+        ensureUserPath(targetPath);
+        let hash;
+        if (this.useHash && hashAllowed) {
+            hash = this.generateHash(content.toString());
+            let fileName = `${hash}-${path.basename(targetPath)}`;
+            let dirName = path.dirname(targetPath);
+            targetPath = path.join(dirName, fileName);
+            this.lastWrittenHash = hash;
+        }
+
+        return new Promise((resolve, reject) => {
+            fs.writeFile(targetPath, content, (e) => {
+                if (e) {
+                    return reject(e);
+                }
+                let result = new UserOutputResult();
+                result.content = content;
+                result.hash = hash;
+                result.path = targetPath;
+                result.filename = path.basename(targetPath);
+                return resolve(result);
+            });
+        });
+    }
     /**
      *
      *
@@ -150,19 +179,22 @@ export class UserOutput {
         fullpath = ensureUserPath(fullpath);
         let result = new UserOutputResult();
         return new Promise((resolve, reject) => {
-            fs.writeFile(fullpath, content, (e) => {
-                if (e) {
-                    return reject(e);
-                }
-
-                result.path = fullpath;
-                result.hash = hash;
-                result.filename = path.basename(fullpath);
-                result.relativePath = joinFuseBoxPath(this.folderFromBundleName || ".", result.filename);
-
-                this.lastWrittenPath = fullpath;
-                return resolve(result)
-            })
+            result.path = fullpath;
+            result.hash = hash;
+            result.filename = path.basename(fullpath);
+            result.relativePath = joinFuseBoxPath(this.folderFromBundleName || ".", result.filename);
+            this.lastWrittenPath = fullpath;
+            if (this.context.userWriteBundles) {
+                fs.writeFile(fullpath, content, (e) => {
+                    if (e) {
+                        return reject(e);
+                    }
+                    return resolve(result)
+                })
+            } else {
+                result.content = content;
+                return resolve(result);
+            }
         });
     }
 

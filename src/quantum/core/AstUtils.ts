@@ -43,31 +43,102 @@ const ES6_TYPES = new Set([
     "ArrowFunctionExpression"
 ]);
 
-export function matchesDeadProcessEnvCode(node: any, envString: string) {
+export function matchesDefinedExpression(node, expressions: { [key: string]: boolean | string | number })
+    : { isConditional: boolean; node: any; key: string; value: any } {
+    let targetNode = node;
+    let isConditional = false;
+
+    if (node.type === "IfStatement" && node.test && node.test.type === "BinaryExpression"
+        && node.test.left && (node.test.left.type === "MemberExpression" || node.test.left.type === "Identifier")) {
+        targetNode = node.test.left;
+        isConditional = true;
+    }
+    for (const key in expressions) {
+        if (matchesPath(targetNode, key)) {
+            return {
+                isConditional: isConditional,
+                node: targetNode,
+                key: key,
+                value: expressions[key]
+            }
+        }
+    }
+}
+export function matchesDefinedIfExpression(node, expressions: { [key: string]: boolean | string | number }): string {
     if (node.type && node.type === "IfStatement") {
+        // prevent detecting if else statement
+        if (node.$parent && node.$parent.type === "IfStatement") {
+            return;
+        }
         if (node.test && node.test.type === "BinaryExpression") {
             if (node.test.left) {
-                if (matchesNodeEnv(node.test.left)) {
-                    const right = node.test.right;
-                    if (right && right.type === "Literal") {
-                        const value = right.value;
-                        const operator = node.test.operator;
-                        if (operator === "===" || operator === "==") {
-                            //if ( "production" === "production" ) {}
-                            return value !== envString;
-                        }
-                        if (operator === "!==" || operator === "!=") {
-                            //if ( "production" !== "production" ) {}
-                            return value === envString;
-                        }
+                for (const key in expressions) {
+                    if (matchesPath(node.test.left, key)) {
+                        return key;
                     }
                 }
             }
         }
     }
 }
-export function matchesNodeEnv(node) {
-    let isProcess, isEnv, isNodeEnv;
+
+export function matchesIfStatementProcessEnv(node): string {
+    if (node.type && node.type === "IfStatement") {
+        // prevent detecting if else statement
+        if (node.$parent && node.$parent.type === "IfStatement") {
+            return;
+        }
+        if (node.test && node.test.type === "BinaryExpression") {
+            if (node.test.left) {
+                const variableName = matchesNodeEnv(node.test.left);
+                return variableName;
+            }
+        }
+    }
+}
+
+export function matchesIfStatementFuseBoxIsEnvironment(node) {
+    if (node.type && node.type === "IfStatement") {
+        if (node.test && node.test.type === "MemberExpression") {
+            const test = node.test;
+            if (test.object.type === "Identifier" && test.object.name === "FuseBox" && test.property) {
+                return test.property.name;
+            }
+        }
+    }
+}
+export function compareStatement(node: any, input: string | undefined) {
+    const right = node.test.right;
+
+    if (right) {
+        const operator = node.test.operator;
+        if (right.type === "Literal") {
+            const value = right.value;
+
+
+            if (operator === "===" || operator === "==") {
+                //if ( "production" === "production" ) {}
+                return value === input;
+            }
+            if (operator === "!==" || operator === "!=") {
+                //if ( "production" !== "production" ) {}
+                return value !== input;
+            }
+        }
+        if (right.type === "Identifier" && right.name === "undefined") {
+            if (operator === "!==" || operator === "!=") {
+                return input !== undefined;
+            }
+            if (operator === "===" || operator === "==") {
+                return input === undefined;
+            }
+        }
+
+    }
+}
+
+export function matchesNodeEnv(node, veriableName?: string) {
+    let isProcess, isEnv;
     isProcess = astQuery(node,
         ["/MemberExpression", ".object", "/MemberExpression", ".object", ".name"], 'process')
     if (!isProcess) {
@@ -78,13 +149,42 @@ export function matchesNodeEnv(node) {
     if (!isEnv) {
         return false;
     }
-    isNodeEnv =
-        astQuery(node, ["/MemberExpression", ".property", ".name"], "NODE_ENV")
-    if (!isNodeEnv) {
-        return false;
+    if (node.property) {
+        let value;
+        if (node.property.type === "Literal") {
+            value = node.property.value;
+        }
+        if (node.property.type === "Identifier") {
+            value = node.property.name;
+        }
+        return veriableName !== undefined ? veriableName === value : value;
     }
-    return true;
 }
+
+
+export function matchesPath(node, variablePath: string) {
+    const paths = variablePath.split('.');
+    if (paths.length >= 1) {
+        if (paths.length === 2) {
+            if (node.type === "MemberExpression") {
+                if (node.object && node.property) {
+                    const matchesFirst = node.object.type === "Identifier" && node.object.name === paths[0];
+                    const matchesSecond = node.property.type === "Identifier" && node.property.name === paths[1];
+                    if (matchesFirst && matchesSecond) {
+                        return variablePath;
+                    }
+                }
+            }
+        }
+        //console.log(paths);
+        if (paths.length === 1) {
+            if (matchesSingleVariable(node, variablePath)) {
+                return variablePath;
+            }
+        }
+    }
+}
+
 export function matchesEcmaScript6(node) {
     if (node) {
         if (ES6_TYPES.has(node.type)) {
@@ -96,6 +196,100 @@ export function matchesEcmaScript6(node) {
     }
     return false;
 }
+
+export function matchesSingleVariable(node: any, name: string) {
+    if (node.type === "Identifier" && node.name === name) {
+        if (node.$parent) {
+            const parent = node.$parent;
+            if (parent.type === "VariableDeclarator" && parent.id && parent.id.name === name) {
+                return false;
+            }
+            if (parent.property && parent.property.name === name) {
+                return false;
+            }
+            if (parent.callee && parent.callee.name === name) {
+                return false;
+            }
+            if (parent.type) {
+                if (parent.type === "UnaryExpression") {
+                    if (parent.argument && parent.operator === "typeof" && parent.argument.type === "Identifier" && parent.argument.name === name) {
+                        return false;
+                    }
+                }
+                if (parent.type === "MemberExpression" &&
+                    parent.object && parent.object.name === name) {
+                    return false;
+                }
+                if (parent.type === "Property" && parent.key && parent.key.name === name) {
+                    return;
+                }
+            }
+            return true;
+        } else {
+            return true;
+        }
+    }
+}
+
+// this function serves two purposes, and is for isTrueRequireFunction.
+// ignoreFlagCheck true => looks for the closest node up the tree with a BODY. otherwise returns false.
+// ignoreFlagCheck false => looks for the closest node up the tree with a BODY AND A `skipRequireSubstitution` property.
+// returns the node it found.
+// otherwise, returns false.
+function lookUpTreeForBodyWithRequireFlag(node, ignoreFlagCheck) {
+    if (node.body) {
+        if (ignoreFlagCheck) {
+            return node;
+        }
+        if (node.body.skipRequireSubstitution === undefined) {
+            if (node.$parent) {
+                return lookUpTreeForBodyWithRequireFlag(node.$parent, ignoreFlagCheck)
+            } else {
+                return false;
+            }
+        } else {
+            return node;
+        }
+    } else {
+        if (node.$parent) {
+            return lookUpTreeForBodyWithRequireFlag(node.$parent, ignoreFlagCheck)
+        } else {
+            // hit root, no body available with relevant flag.
+            return false;
+        }
+    }
+}
+
+// this function attempts to skip a node with the 'require' name, as it might be a false positive.
+// it checks firstly whether the node should be treated as a false positive.
+// if it's a false positive, it looks for the closest node up the tree using lookUpTreeForBodyWithRequireFlag and sets `skipRequireSubstitution` = true on the closest node.
+// if it appears fine, it looks up the chain for any nodes with the `skipRequireSubstitution` flag. if so, its ignored.
+// if it still passes thorough, it's piped to the matchesSingleVariable function for good measure.
+export function isTrueRequireFunction(node) {
+    if (node.type === "Identifier" && node.name === "require") {
+        const isVar = node.$parent && node.$parent.type === 'VariableDeclarator' && node.$parent.init !== node && !matchesSingleFunction(node, 'require');
+        const isParam = node.$prop == 'params';
+        if (isVar || isParam) {
+            // get nearest body up chain and set flag.
+            if (node.body) {
+                node.body.skipRequireSubstitution = true;
+            }
+            var nearestNodeWithBody = lookUpTreeForBodyWithRequireFlag(node, true);
+            if (nearestNodeWithBody) {
+                nearestNodeWithBody.body.skipRequireSubstitution = true;
+            }
+            return false;
+        }
+
+        if (lookUpTreeForBodyWithRequireFlag(node, false) == false) {
+            return matchesSingleVariable(node, 'require');
+        } else {
+            return false;
+        }
+    }
+    return false;
+}
+
 export function matchesSingleFunction(node: any, name: string) {
     return node.callee && node.callee.type === "Identifier" && node.callee.name === name
 }
@@ -129,6 +323,15 @@ export function matchesTypeOf(node: any, name: string) {
         && node.argument && node.argument.type === "Identifier" && node.argument.name === name;
 }
 
+
+export function isExportComputed(node: any, fn: { (result: boolean) }) {
+    if (astQuery(node, [
+        "/MemberExpression", ".object", ".name"
+    ], "exports")) {
+        return fn(node.computed === true);
+    }
+}
+
 export function isExportMisused(node: any, fn: { (name: string) }) {
     const isMisused = astQuery(node, [
         "/MemberExpression", ".object", "/MemberExpression",
@@ -145,7 +348,14 @@ export function matchNamedExport(node: any, fn: any) {
         ".expression", "/AssignmentExpression", ".left", "/MemberExpression",
         ".object", ".name"], "exports")) {
         if (node.expression.left.property.type === "Identifier") {
-            fn(node.expression.left.property.name);
+            let referencedVariable;
+            if (node.expression.right) {
+                const right = node.expression.right;
+                if (right.object && right.object.type === "Identifier") {
+                    referencedVariable = right.object.name;
+                }
+            }
+            fn(node.expression.left.property.name, referencedVariable);
             return true;
         }
     }
@@ -182,7 +392,7 @@ export function matcheObjectDefineProperty(node, name: string) {
     }
 }
 
-export function astQuery(node, args: any[], value: string) {
+export function astQuery(node, args: any[], value?: string) {
     let obj = node;
     for (const i in args) {
         if (obj === undefined) {
@@ -220,5 +430,8 @@ export function astQuery(node, args: any[], value: string) {
             obj = obj[item];
         }
     }
-    return obj === value;
+    if (value !== undefined) {
+        return obj === value;
+    }
+    return obj;
 }

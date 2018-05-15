@@ -1,4 +1,5 @@
 import { createEnv } from "./../stubs/TestEnvironment";
+import { FuseTestEnv } from "../stubs/FuseTestEnv";
 import { should } from "fuse-test-runner";
 import * as path from "path";
 import * as appRoot from "app-root-path";
@@ -277,5 +278,23 @@ export class CssPluginTest {
             const js = result.projectContents.toString();
             should(js).findString(`require("fuse-box-css")("all.css", "`);
         });
+    }
+
+    "Should allow overrides of .css extensions"() {
+      return FuseTestEnv.create({
+          project: {
+            plugins: [CSSPlugin()],
+            extensionOverrides: ['.foo.css'],
+            files: {
+                "index.ts": `import './main.css'`,
+                "main.css": `html { background: red; }`,
+                "main.foo.css": `html { background: blue; }`
+            }
+          }
+        }).simple().then((env) => env.browser((window) => {
+          should(window.document.querySelectorAll('style')).haveLength(1);
+          should(window.document.querySelector('style').attributes.id.value).equal("main-css");
+          should(window.document.querySelector('style').innerHTML).equal('html { background: blue; }');
+        }));
     }
 }

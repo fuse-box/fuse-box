@@ -155,6 +155,12 @@ export class ModuleCollection {
     public resolveEntry(shouldIgnoreDeps?: boolean) {
         if (this.entryFile && !this.entryResolved) {
             this.entryResolved = true;
+            
+            //console.log("resolve entry", this.entryFile.info);
+            if( this.entryFile.info.tsMode){
+                this.pm.setTypeScriptMode();
+            }
+          
             return this.resolve(this.entryFile, shouldIgnoreDeps);
         }
     }
@@ -192,6 +198,7 @@ export class ModuleCollection {
 
         return each(depsOnly, (withDeps, modulePath) => {
             let file = new File(this.context, this.pm.init(modulePath));
+            file.resolveDepsOnly = true;
             return this.resolve(file);
         }).then(() => {
 
@@ -210,13 +217,11 @@ export class ModuleCollection {
         }
 
         return this.resolveDepsOnly(data.depsOnly).then(() => {
-
             return each(data.including, (withDeps, modulePath) => {
                 let file = new File(this.context, this.pm.init(modulePath));
                 return this.resolve(file);
             })
                 .then(() => this.context.resolve())
-                .then(() => this.transformGroups())
                 .then(() => {
                     return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
                 }).then(toResolve => {
@@ -225,6 +230,7 @@ export class ModuleCollection {
                 // node modules might need to resolved asynchronously
                 // like css plugins
                 .then(() => this.context.resolve())
+                .then(() => this.transformGroups())
                 .then(() => this.context.cache && this.context.cache.buildMap(this))
                 .catch(e => {
                     this.context.defer.unlock();
@@ -234,7 +240,7 @@ export class ModuleCollection {
         });
 
     }
-
+ 
     /**
      *
      *
@@ -304,6 +310,7 @@ export class ModuleCollection {
             : collection.resolveEntry();
     }
 
+
     public transformGroups() {
         const promises = [];
         this.context.fileGroups.forEach((group: File, name: string) => {
@@ -338,8 +345,8 @@ export class ModuleCollection {
      *
      * @memberOf ModuleCollection
      */
-    public resolve(file: File, shouldIgnoreDeps?: boolean) {
-
+    public async resolve(file: File, shouldIgnoreDeps?: boolean) {
+        file.shouldIgnoreDeps = shouldIgnoreDeps;
         file.collection = this;
         if (this.bundle) {
             if (this.bundle.fileBlackListed(file)) {
@@ -350,6 +357,11 @@ export class ModuleCollection {
             }
         }
 
+        if (this.context.filterFile) {
+            if (!this.context.filterFile(file)) {
+                return;
+            }
+        }
         if (file.info.isNodeModule) {
             if (this.context.isGlobalyIgnored(file.info.nodeModuleName)) {
                 return;
@@ -373,13 +385,8 @@ export class ModuleCollection {
 
             // Consuming file
             // Here we read it and return a list of require statements
-            file.consume();
-
-            // if a file belong to a split bundle, pipe it there
-            if (this.isDefault && this.context.shouldSplit(file)) {
-                return;
-            }
-
+            await file.consume();
+            
             this.dependencies.set(file.absPath, file);
             let fileLimitPath;
             // Checking for the limits
@@ -391,8 +398,13 @@ export class ModuleCollection {
             // Process file dependencies recursively
 
             return each(file.analysis.dependencies, name => {
-                return this.resolve(new File(this.context,
-                    this.pm.resolve(name, file.info.absDir, fileLimitPath)), shouldIgnoreDeps);
+                const newFile = new File(this.context,
+                    this.pm.resolve(name, file.info.absDir, fileLimitPath, file));
+                newFile.resolveDepsOnly = file.resolveDepsOnly;
+                if (this.context.emitHMRDependencies && file.belongsToProject()) {
+                    this.context.registerDependant(newFile, file);
+                }
+                return this.resolve(newFile, shouldIgnoreDeps);
             });
         }
     }

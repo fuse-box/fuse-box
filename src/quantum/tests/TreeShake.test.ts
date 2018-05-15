@@ -273,4 +273,206 @@ export class TreeShakeTest {
             should(contents).notFindString('exports.foo')
         });
     }
+
+
+    "Should remove deeply"() {
+        return createOptimisedBundleEnv({
+            stubs: true,
+            options: {
+                treeshake: true
+            },
+
+            project: {
+                natives: {
+                    process: false
+                },
+                files: {
+                    "index.ts": `
+                        if ( process.env.NODE_ENV !== "production"){
+                            require("./bar")
+                        } else {
+                            console.log("Production")
+                        }
+                    `,
+                    "bar.ts": `
+                        console.log('i am bar');
+                        exports.bar = require("./foo");
+
+                    `,
+                    "foo.ts": `
+                        console.log('i am foo');
+                        exports.foo = 1;
+
+                    `
+                },
+                instructions: "> index.ts",
+            },
+        }).then((result) => {
+            const contents = result.contents["index.js"];
+            should(contents).notFindString('i am bar')
+            should(contents).notFindString('i am foo')
+        });
+    }
+
+    "Should not remove a module that is cross referenced"() {
+        return createOptimisedBundleEnv({
+            stubs: true,
+            options: {
+                treeshake: true
+            },
+
+            project: {
+                natives: {
+                    process: false
+                },
+                files: {
+                    "index.ts": `
+                        if ( process.env.NODE_ENV !== "production"){
+                            require("./bar")
+                        } else {
+                            require("./foo")
+                            console.log("Production")
+                        }
+                    `,
+                    "bar.ts": `
+                        console.log('i am bar');
+                        exports.bar = require("./foo");
+
+                    `,
+                    "foo.ts": `
+                        console.log('i am foo');
+                        exports.foo = 1;
+
+                    `
+                },
+                instructions: "> index.ts",
+            },
+        }).then((result) => {
+            const contents = result.contents["index.js"];
+            should(contents).notFindString('i am bar')
+            should(contents).findString('i am foo')
+        });
+    }
+
+    "Should exports from a module that is double exported"() {
+        return createOptimisedBundleEnv({
+            stubs: true,
+            options: {
+                treeshake: true
+            },
+
+            project: {
+                natives: {
+                    process: false
+                },
+                files: {
+                    "index.ts": `
+                        import {hello} from "./bar";
+                        console.log(hello);
+                    `,
+                    "bar.ts": `
+                        export {hello, hello2} from "./utils"
+
+
+                    `,
+                    "utils.ts": `
+                        export function hello(){}
+                        export function hello2(){}
+
+                    `
+                },
+                instructions: "> index.ts",
+            },
+        }).then((result) => {
+            const contents = result.contents["index.js"];
+            // to be resolved....
+            //console.log(contents);
+
+        });
+    }
+
+
+    "Should tree shake unreferenced require statements"() {
+        return createOptimisedBundleEnv({
+            stubs: true,
+
+            options: {
+                treeshake: true
+            },
+
+            project: {
+                natives: {
+                    process: false
+                },
+                files: {
+                    "hello.ts": `
+                        export {bar} from "./bar"
+                        export {foo} from "./foo"
+                    `,
+                    "index.ts": `
+                       import {bar} from "./hello";
+                       bar()
+                    
+                    `,
+                    "bar.ts": `
+                        export function bar(){return "i am bar"}
+
+                    `,
+                    "foo.ts": `
+                        export function foo(){return "i am foo"}
+
+                    `
+                },
+                instructions: "> index.ts",
+            },
+        }).then((result) => {
+
+            const contents = result.contents["index.js"];
+            should(contents).notFindString('i am foo');
+            should(contents).findString('i am bar');
+        });
+    }
+
+    "Should NOT tree shake unreferenced require statements"() {
+        return createOptimisedBundleEnv({
+            stubs: true,
+
+            options: {
+                treeshake: true
+            },
+
+            project: {
+                natives: {
+                    process: false
+                },
+                files: {
+                    "hello.ts": `
+                        export {bar} from "./bar"
+                        import {foo} from "./foo"
+                        foo()
+                        export.foo = foo
+                    `,
+                    "index.ts": `
+                       import {bar} from "./hello";
+                       bar()
+                    
+                    `,
+                    "bar.ts": `
+                        export function bar(){return "i am bar"}
+
+                    `,
+                    "foo.ts": `
+                        export function foo(){return "i am foo"}
+
+                    `
+                },
+                instructions: "> index.ts",
+            },
+        }).then((result) => {
+
+            const contents = result.contents["index.js"];
+            should(contents).findString('i am foo');
+            should(contents).findString('i am bar');
+        });
+    }
 }

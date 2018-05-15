@@ -8,7 +8,11 @@ export class QuantumPluginClass implements Plugin {
     public coreOpts: IQuantumExtensionParams;
 
     constructor(coreOpts?: IQuantumExtensionParams) {
-        this.coreOpts = coreOpts || {};
+        if( coreOpts ){
+            this.coreOpts = coreOpts;
+        }  else {
+            this.coreOpts = {} as IQuantumExtensionParams;
+        }
     }
 
     init(context: WorkFlowContext) {
@@ -19,27 +23,40 @@ export class QuantumPluginClass implements Plugin {
         context.bundle.producer.bundles.forEach(bundle => {
             const plugins = bundle.context.plugins;
             plugins.forEach((plugin, index) => {
-                if (plugin.constructor.name === "UglifyJSPluginClass") {
-                    this.coreOpts.uglify = plugin.options || {};
-                    // remove uglify js
-                    delete plugins[index];
-                }
-
-                if (plugin.constructor.name === "WebIndexPluginClass") {
-                    this.coreOpts.webIndexPlugin = plugin as WebIndexPluginClass;
-                    // remove WebIndex
-                    delete plugins[index];
-                }
-                if (plugin.constructor.name === "HotReloadPluginClass") {
-                    delete plugins[index];
+                if ( plugin && plugin.constructor ){
+                    if (plugin.constructor.name === "UglifyJSPluginClass") {
+                        this.coreOpts.uglify = plugin.options || {};
+                        // remove uglify js
+                        delete plugins[index];
+                    }
+                    if (plugin.constructor.name === "UglifyESPluginClass") {
+                        this.coreOpts.uglify = { es6:true, ...plugin.options };
+                        // remove uglify es
+                        delete plugins[index];
+                    }
+    
+                    if (plugin.constructor.name === "WebIndexPluginClass") {
+                        this.coreOpts.webIndexPlugin = plugin as WebIndexPluginClass;
+                        // remove WebIndex
+                        delete plugins[index];
+                    }
+                    if (plugin.constructor.name === "HotReloadPluginClass") {
+                        delete plugins[index];
+                    }
                 }
             })
         });
     }
+    private consume(producer: BundleProducer){
+        let core = new QuantumCore(producer, new QuantumOptions(producer, this.coreOpts));
+        return core.consume();
+    }
 
     producerEnd(producer: BundleProducer) {
-        let core = new QuantumCore(producer, new QuantumOptions(this.coreOpts));
-        return core.consume();
+        producer.sharedEvents.on('file-changed', () => {
+            this.consume(producer);
+        });
+        return this.consume(producer);
     }
 };
 

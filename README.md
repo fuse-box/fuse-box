@@ -109,7 +109,7 @@ Simple example using React with babel (compiles in 50ms!)
 
 * No headache, minimal configuration
 * First class [typescript](http://fuse-box.org/page/typescript) support
-* Built-in [Rollup](http://fuse-box.org/page/rollup) support
+* Tree shaking
 * [Arithmetic instructions](http://fuse-box.org/page/bundle#arithmetic-instructions)
 * Blazing fast bundle time
 * [Wildcard imports](http://fuse-box.org/page/loader-api#wildcard-import)
@@ -127,6 +127,8 @@ There is so much more. FuseBox pushing it to a whole new level!
 npm install typescript fuse-box --save-dev
 ```
 
+`fuse.js`:
+
 ```ts
 const { FuseBox } = require("fuse-box");
 const fuse = FuseBox.init({
@@ -139,7 +141,7 @@ fuse.bundle("app")
 fuse.run();
 ```
 
-## [Examples and seeds](http://fuse-box.org:3333/page/examples-and-seeds)
+## [Examples and seeds](http://fuse-box.org/page/examples-and-seeds)
 
 
 Join our [gitter channel](https://gitter.im/fusebox-bundler/Lobby) we are very active and friendly!

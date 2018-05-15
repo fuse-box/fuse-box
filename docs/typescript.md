@@ -41,3 +41,8 @@ Irrespective of the settings in `tsconfig.json`:
 
 * We automatically set the `module` to `commonjs`.
 * If you set `sourceMaps` in your `FuseBox` options, we automatically setup the sourcemap settings for TypeScript `compilerOptions`.
+
+## Typechecking
+Use this plugin to do typechecking
+
+https://github.com/fuse-box/fuse-box-typechecker
