@@ -121,5 +121,8 @@
     "commitizen": {
       "path": "cz-conventional-changelog"
     }
+  },
+  "peerDependencies": {
+    "consolidate": "^0.15.1"
   }
 }
