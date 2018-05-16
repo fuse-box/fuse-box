@@ -13,6 +13,7 @@ export class TypescriptConfig {
     // the actual typescript config
     private config: any;
     private customTsConfig: string;
+    private configFile: string;
 
     constructor(public context: WorkFlowContext) { }
 
@@ -29,6 +30,25 @@ export class TypescriptConfig {
         }
         if (this.context.forcedLanguageLevel) {
             this.forceCompilerTarget(this.context.forcedLanguageLevel);
+        }
+
+        if (compilerOptions.baseUrl === "." && this.context.automaticAlias) {
+            let aliasConfig = {};
+            let log = [];
+            fs.readdirSync(this.context.homeDir).forEach(file => {
+                const extension = path.extname(file);
+                if (!extension || extension === ".ts" || extension === ".tsx") {
+                    let name = file;
+                    if (extension) {
+                        name = file.replace(/\.tsx?/, "")
+                    }
+                    log.push(`\t${name} => "~/${name}"`)
+                    aliasConfig[name] = `~/${name}`;
+                }
+            });
+            this.context.log.echoInfo(`Applying automatic alias based on baseUrl in tsconfig.json`)
+            this.context.log.echoInfo(`\n ${log.join("\n")}`)
+            this.context.addAlias(aliasConfig);
         }
     }
 
@@ -68,27 +88,27 @@ export class TypescriptConfig {
         if (CACHED[cacheKey]) {
             this.config = CACHED[cacheKey];
         } else {
-            let url, configFile;
+            let url;
             let config: any = {
                 compilerOptions: {},
             };;
             let configFileFound = false;
             let tsConfigOverride: any;
             if (typeof this.customTsConfig === "string") {
-                configFile = ensureUserPath(this.customTsConfig);
+                this.configFile = ensureUserPath(this.customTsConfig);
             } else {
                 url = path.join(this.context.homeDir, "tsconfig.json");
                 let tsconfig = findFileBackwards(url, this.context.appRoot);
                 if (tsconfig) {
                     configFileFound = true;
-                    configFile = tsconfig;
+                    this.configFile = tsconfig;
                 }
             }
-            if (configFile) {
-                const configFileRelPath = configFile.replace(this.context.appRoot, "");
+            if (this.configFile) {
+                const configFileRelPath = this.configFile.replace(this.context.appRoot, "");
                 this.context.log.echoInfo(`Typescript config file:  ${configFileRelPath}`);
                 configFileFound = true;
-                const res = ts.readConfigFile(configFile, (p) => fs.readFileSync(p).toString());
+                const res = ts.readConfigFile(this.configFile, (p) => fs.readFileSync(p).toString());
                 config = res.config;
                 if (res.error) {
                     this.context.log.echoError(`Errors in ${configFileRelPath}`);
@@ -108,8 +128,8 @@ export class TypescriptConfig {
                 config.compilerOptions = Object.assign(config.compilerOptions, tsConfigOverride);
             }
             // allowSyntheticDefaultImports
-            if( config.compilerOptions.allowSyntheticDefaultImports !== undefined ){
-                if( this.context.fuse && this.context.fuse.producer ) {
+            if (config.compilerOptions.allowSyntheticDefaultImports !== undefined) {
+                if (this.context.fuse && this.context.fuse.producer) {
                     this.context.fuse.producer.allowSyntheticDefaultImports = config.compilerOptions.allowSyntheticDefaultImports;;
                 }
             }
