@@ -36,3 +36,12 @@ Additionally, you can provide [chokidar](https://github.com/paulmillr/chokidar) 
 ```js
 fuse.run({chokidar : {ignored: /(^|[\/\\])\../} })
 ```
+
+
+### Problems with some cloud providers
+
+To solve some issues with running on docker container providers set this:
+
+```ts
+fuse.run({chokidar : {awaitWriteFinish : true}});
+```
