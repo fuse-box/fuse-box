@@ -55,6 +55,7 @@ export interface FuseBoxOptions {
     output?: string;
     emitHMRDependencies?: boolean;
     filterFile?: (file: File) => boolean;
+    automaticAlias: boolean;
     allowSyntheticDefaultImports?: boolean;
     debug?: boolean;
     files?: any;
@@ -107,6 +108,11 @@ export class FuseBox {
         if (opts.writeBundles !== undefined) {
             this.context.userWriteBundles = opts.writeBundles;
         }
+
+        if (opts.automaticAlias !== undefined) {
+            this.context.automaticAlias = opts.automaticAlias;
+        }
+
         // setting targets
         opts.target = opts.target || "browser";
         const [target, languageLevel] = opts.target.toLowerCase().split("@");

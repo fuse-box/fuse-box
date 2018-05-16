@@ -71,6 +71,8 @@ export class WorkFlowContext {
 
     public dynamicImportsEnabled = true;
 
+    public automaticAlias = true;
+
     public shim: any;
 
     public writeBundles = true;
