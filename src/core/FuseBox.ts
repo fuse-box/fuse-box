@@ -55,7 +55,7 @@ export interface FuseBoxOptions {
     output?: string;
     emitHMRDependencies?: boolean;
     filterFile?: (file: File) => boolean;
-    automaticAlias: boolean;
+    automaticAlias?: boolean;
     allowSyntheticDefaultImports?: boolean;
     debug?: boolean;
     files?: any;
