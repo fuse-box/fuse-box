@@ -252,7 +252,8 @@ export class CSSPluginClass implements Plugin {
             let safeContents = JSON.stringify(file.contents);
             file.sourceMap = undefined;
 
-            file.addAlternativeContent(`${this.getFunction()}("${filePath}", ${safeContents})`);
+            const fullPath = `${file.collection && file.collection.name || "default"}/${filePath}`;
+            file.addAlternativeContent(`${this.getFunction()}("${fullPath}", ${safeContents})`);
 
             // We want to emit CSS Changes only if an actual CSS file was changed.
             this.emitHMR(file);
