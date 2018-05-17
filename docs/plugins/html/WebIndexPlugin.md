@@ -29,6 +29,8 @@ fuse.plugin(
 | ` bundles ` | Provide a list of bundle names (if not set all registered bundles are through) |
 | ` path `   | The relative url bundles are served from. Default is `/`. Empty is set with `.`  |
 | ` template `   | Provide a path to your own template  |
+| ` engine `   | You can use conslidate plugin by providing an engine name  |
+| ` locals `   | Pass variable to consolidate module  |
 | ` templateString `   | Provide your own template as a string  |
 | ` target `   | The main filename. Default is `index.html`  |
 | ` resolve `   | `resolve ?: {(output : UserOutput) : string}` Allows to completely override the output  |

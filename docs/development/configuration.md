@@ -631,14 +631,6 @@ FuseBox.init({
 })
 ```
 
-Alternatively you can use the chainable API
-
-```js
-fuse.bundle("app")
-    .alias("foo", "~/foo/f")
-    .alias("bar", "~/bar/b")
-```
-
 
 In your code, you would use it in a way similar to this:
 ```js
@@ -648,6 +640,39 @@ import faraway from "faraway";
 console.log(utils, faraway);
 ```
 
+
+`baseUrl` option will automatically list your home directory and create aliases, unless `automaticAlias` is set
+```json
+{
+  "compilerOptions": {
+    "baseUrl": "."
+  }
+}
+```
+
+## Automatic alias
+
+The option `automaticAlias` is enabled by default, and works only if `tsconfig.json` is found and you are dealing with typescript
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": "."
+  }
+}
+```
+
+FuseBox will automatically list all your homeDir directories and map aliases for you. Note, that baseURL should be equal `.` and located right in your home directory (for example `src/`)
+
+
+```
+→ Applying automatic alias based on baseUrl in tsconfig.json
+→
+    components => "~/components"
+    foo => "~/foo"
+    index => "~/index"
+    ui => "~/ui"
+```
 ## Extension Overrides
 
 You can optionally override how file extensions are resolved. This is useful if you want to create platform specific bundles:
