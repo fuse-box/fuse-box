@@ -175,10 +175,25 @@
 
 
 
-    /* @if codeSplitting */
-    var bMapping = $bundleMapping$;
-    /* @end */
-
+    /* @if codeSplitting */ 
+        /* @if !runtimeBundleMapping */
+        var bMapping = $bundleMapping$; 
+        /* @end */       
+      
+        /* @if runtimeBundleMapping */
+            var bMapping = {};
+            var runtimeVarName = $runtimeBundleMappingVariableName$; 
+            /* @if server */  
+                bMapping = global[runtimeVarName];
+            /* @end *
+            /* @if browser */  
+                bMapping = window[runtimeVarName];
+            /* @end */
+            /* @if universal */  
+                bMapping = isBrowser ? window[runtimeVarName] :  global[runtimeVarName]
+            /* @end */
+        /* @end */ 
+   /* @end */ 
 
     /* @if lazyLoading */
 
