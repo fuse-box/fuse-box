@@ -1,5 +1,6 @@
 import { FuseTestEnv, createRealNodeModule } from "../stubs/FuseTestEnv";
 import { QuantumPlugin } from "../../index";
+import { should } from "fuse-test-runner";
 
 const HOME_COMPONENT_SCRIPT = "92380585.js";
 const ABOUT_COMPONENT_SCRIPT = "167ae727.js";
@@ -704,6 +705,58 @@ export class CodeSplittingFileIntegrityTest {
                 libAScript.shouldNotFindString('// lib_b/b_mod.js');
             }));
     }
+
+    "Should if check browser data is it correctly"() {
+        return FuseTestEnv.create(
+            {
+                project: {
+                    files: {
+                        "index.ts": `
+                            export async function getRemoteFile() {
+                                await import("./components/HomeComponent")
+                            }
+                        `,
+                        "components/HomeComponent.ts": `
+                            export function home(){ return "home"  }
+                        `,
+
+                    },
+                    plugins: [
+                        QuantumPlugin({
+                            target: "browser",
+                            runtimeBundleMapping: "newBundleMapping"
+                        })
+                    ]
+                }
+            }
+        )
+            .simple().then(test => test.browser((window, env) => {
+                window['newBundleMapping'] = {
+                    c: {
+                        b: './asdasd',
+                        s: './asdasdasd'},
+                    i: {}
+                };
+
+                window.$fsx.r(0);
+
+                // const index = window.FuseBox.import("./index");
+                // return index.getRemoteFile().then(result => {
+                //     should(result).equal("home");
+                // })
+                
+                // env.scriptShouldExist(HOME_COMPONENT_SCRIPT);
+               
+                // const appScript = env.getScript("app.js");
+                
+                // appScript.shouldNotFindString('// default/components/HomeComponent.js');
+                
+
+                // const homeScript = env.getScript(HOME_COMPONENT_SCRIPT)
+                // homeScript.shouldFindString('// default/components/HomeComponent.js');
+            }));
+    }
+
 
 
 
