@@ -176,18 +176,15 @@
 
 
     /* @if codeSplitting */ 
-        /* @if !runtimeBundleMapping */
-        var bMapping = $bundleMapping$; 
-        /* @end */       
+        var bMapping = $bundleMapping$;    
         
         /* @if runtimeBundleMapping */
-            var bMapping = {};
             var runtimeVarName = $runtimeBundleMappingVariableName$; 
             /* @if server */  
-                bMapping = global[runtimeVarName];
+                bMapping = Object.assign(bMapping, global[runtimeVarName]);
             /* @end */
             /* @if browser */  
-                bMapping = window[runtimeVarName];
+                bMapping = Object.assign(bMapping, window[runtimeVarName]);
             /* @end */
             /* @if universal */  
                 bMapping = isBrowser ? window[runtimeVarName] :  global[runtimeVarName];

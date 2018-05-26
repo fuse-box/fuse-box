@@ -706,60 +706,69 @@ export class CodeSplittingFileIntegrityTest {
             }));
     }
 
-    "Should if check browser data is it correctly"() {
+    "Should check if browser data is set correctly"() {
+        let bundleMappingScript = "src/tests/stubs/browserBundleMapping.js";
         return FuseTestEnv.create(
             {
                 project: {
                     files: {
                         "index.ts": `
                             export async function getRemoteFile() {
-                                await import("./components/HomeComponent")
+                                const module = await import("./components/HomeComponent");
+                                return module.home();
                             }
                         `,
                         "components/HomeComponent.ts": `
-                            export function home(){ return "home"  }
-                        `,
-
+                            export function home(){ return "home" }
+                        `
                     },
                     plugins: [
                         QuantumPlugin({
                             target: "browser",
-                            runtimeBundleMapping: "newBundleMapping"
+                            runtimeBundleMapping: 'newBundleMapping'
                         })
                     ]
                 }
             }
         )
             .simple().then(test => test.browser((window, env) => {
-                window['newBundleMapping'] = {
-                    c: {
-                        b: './asdasd',
-                        s: './asdasdasd'},
-                    i: {}
-                };
-
-                window.$fsx.r(0);
-
-                // const index = window.FuseBox.import("./index");
-                // return index.getRemoteFile().then(result => {
-                //     should(result).equal("home");
-                // })
+                var index = window.$fsx.r(0);
                 
-                // env.scriptShouldExist(HOME_COMPONENT_SCRIPT);
-               
-                // const appScript = env.getScript("app.js");
-                
-                // appScript.shouldNotFindString('// default/components/HomeComponent.js');
-                
-
-                // const homeScript = env.getScript(HOME_COMPONENT_SCRIPT)
-                // homeScript.shouldFindString('// default/components/HomeComponent.js');
-            }));
+                return index.getRemoteFile().then(result => {
+                    should(result).equal("home");
+                });
+            }, bundleMappingScript));
     }
 
-
-
-
+    "Should check if server data is set correctly"() {
+        let bundleMappingScript = "src/tests/stubs/browserBundleMapping.js";
+        return FuseTestEnv.create({
+            project: {
+                files: {
+                    "index.ts": `
+                        export function getRemoteFile() {
+                            return import("./components/HomeComponent");
+                        }
+                    `,
+                    "components/HomeComponent.ts": `
+                        export function home(){ return "home" }
+                    `
+                },
+                plugins: [QuantumPlugin({
+                    target: "server",
+                    runtimeBundleMapping: 'newBundleMapping'
+                })]
+            }
+        }).simple().then(test => test.server(`
+                const index = $fsx.r(0);
+                index.getRemoteFile().then(result => {
+                    process.send({ response: result.home()});
+                });
+            `, (data) => {
+                should(data.response).equal(`home`)
+            }, bundleMappingScript));
+    }
+    
     "Should ignore a file with nested references"() {
         return FuseTestEnv.create(
             {
