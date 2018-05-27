@@ -1,0 +1,6 @@
+.github
+docs
+src
+gulpfile.js
+test.js
+logo.*
