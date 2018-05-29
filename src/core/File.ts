@@ -274,12 +274,12 @@ export class File {
      * @memberOf File
      */
     public tryPlugins(_ast?: any): Promise<any> {
-        
+
         if (this.context.runAllMatchedPlugins) { return this.tryAllPlugins(_ast) }
         if (this.context.plugins && this.relativePath) {
             let target: Plugin;
             let index = 0;
-            
+
             while (!target && index < this.context.plugins.length) {
                 let item = this.context.plugins[index];
                 let itemTest: RegExp;
@@ -298,8 +298,8 @@ export class File {
                 } else {
                     itemTest = item && item.test;
                 }
-                
-                
+
+
                 if (itemTest && utils.isFunction(itemTest.test) && itemTest.test(this.relativePath)) {
                     target = item;
                 }
@@ -662,9 +662,13 @@ export class File {
         this.context.debug("TypeScript", `Transpile ${this.info.fuseBoxPath}`)
         let result = this.transpileUsingTypescript();
         if (result.sourceMapText && this.context.useSourceMaps) {
+            const correctSourceMapPath = this.getCorrectSourceMapPath();
             let jsonSourceMaps = JSON.parse(result.sourceMapText);
             jsonSourceMaps.file = this.info.fuseBoxPath;
-            jsonSourceMaps.sources = [this.getCorrectSourceMapPath().replace(/\.js(x?)$/, ".ts$1")];
+            jsonSourceMaps.sources = [ this.context.useTypescriptCompiler
+                ? correctSourceMapPath
+                : correctSourceMapPath.replace(/\.js(x?)$/, ".ts$1")
+            ];
             if (!this.context.inlineSourceMaps) {
                 delete jsonSourceMaps.sourcesContent;
 			}
@@ -683,8 +687,8 @@ export class File {
         if (this.context.useCache) {
             // emit new file
             this.context.emitJavascriptHotReload(this);
-			
-			this.context.cache.writeStaticCache(this, this.sourceMap);	
+
+			this.context.cache.writeStaticCache(this, this.sourceMap);
         }
     }
     public cacheData: { [key: string]: any };
