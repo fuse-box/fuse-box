@@ -217,7 +217,7 @@ export class CSSResourcePluginClass implements Plugin {
                     // We also store a string which uniquely identify this array
                     // To avoid watch loop
                     this.copiedFilesID = this.copiedFiles.map(
-                        copiedFile => generateNewFileName( copiedFile.from )
+                        copiedFile => newFileName( copiedFile.from )
                     ).join('+');
                 }
                 return this.resolveFn(newFileName);
