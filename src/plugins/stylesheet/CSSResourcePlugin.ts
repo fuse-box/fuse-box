@@ -10,6 +10,9 @@ const base64Img = require("base64-img");
 const IMG_CACHE = {};
 let resourceFolderChecked = false;
 
+// Needs a patch
+// @see : https://github.com/fuse-box/fuse-box/issues/1060
+// This fork is not about this
 const copyFile = (source, target) => {
     return new Promise((resolve, reject) => {
         fs.exists(source, (exists) => {
@@ -61,8 +64,9 @@ export interface CSSResourcePluginOptions {
     inline?: boolean;
     resolve?: (path: string) => any;
     macros?: any;
-    resolveMissing?: any,
-    useOriginalFilenames?: boolean
+    resolveMissing?: any;
+    useOriginalFilenames?: boolean;
+    filesMapping?: (files: {from: string, to: string}[]) => void
 }
 
 /**
@@ -78,6 +82,13 @@ export class CSSResourcePluginClass implements Plugin {
     public macros: any;
     public resolveMissingFn: any;
     public useOriginalFilenames: boolean = false;
+    
+    public files = {};
+    public copiedFiles: {from: string, to: string}[] = [];
+    public filesMapping: (files: {from: string, to: string}[]) => void;
+    public copiedFilesID: string = '';
+    public previousCopiedFilesID:string;
+    
     constructor(opts: CSSResourcePluginOptions = {}) {
         if (opts.dist) {
             this.distFolder = ensureDir(opts.dist);
@@ -96,6 +107,9 @@ export class CSSResourcePluginClass implements Plugin {
         }
         if (opts.useOriginalFilenames) {
             this.useOriginalFilenames = opts.useOriginalFilenames;
+        }
+        if (opts.filesMapping) {
+            this.filesMapping = opts.filesMapping;
         }
     }
 
@@ -125,7 +139,6 @@ export class CSSResourcePluginClass implements Plugin {
         }
 
         const currentFolder = file.info.absDir;
-        const files = {};
         const tasks = [];
 
 
@@ -190,15 +203,53 @@ export class CSSResourcePluginClass implements Plugin {
             if (this.distFolder) {
                 let newFileName = this.useOriginalFilenames ? path.relative(file.context.homeDir, urlFile) : generateNewFileName(urlFile);
 
-                if (!files[urlFile]) {
+                if (!this.files[urlFile]) {
                     let newPath = path.join(this.distFolder, newFileName);
                     tasks.push(copyFile(urlFile, newPath));
-                    files[urlFile] = true;
+                    this.files[urlFile] = true;
+                    
+                    // We store this copied file source and destination path for the middleware
+                    this.copiedFiles.push({
+                        from: urlFile,
+                        to: newPath
+                    });
+
+                    // We also store a string which uniquely identify this array
+                    // To avoid watch loop
+                    this.copiedFilesID = this.copiedFiles.map(
+                        copiedFile => generateNewFileName( copiedFile.from )
+                    ).join('+');
                 }
                 return this.resolveFn(newFileName);
             }
         }
         file.contents = CSSUrlParser.walk(file.contents, walker);
+    }
+    
+
+    bundleEnd (producer)
+    {
+        // If there is no middleware from config, quit
+        if (!this.filesMapping) return;
+
+        // Get home dir (src path)
+        const homeDir = producer.fuse.opts.homeDir;
+
+        // We store the copied file ID and continue only if it changed
+        // It allow us to avoid watch loop when fileMapping middleware is producing a source file
+        if (this.previousCopiedFilesID === this.copiedFilesID) return;
+        this.previousCopiedFilesID = this.copiedFilesID;
+
+        // Call middleware with copied files path
+        this.filesMapping(
+
+            // Patch all files paths from src and dist folders
+            this.copiedFiles.map( fileMapping => ({
+                from: path.relative( homeDir, fileMapping.from ),
+                to: path.relative( this.distFolder, fileMapping.to )
+            }))
+
+        );
     }
 }
 
