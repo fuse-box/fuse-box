@@ -86,8 +86,7 @@ export class CSSResourcePluginClass implements Plugin {
     public files = {};
     public copiedFiles: {from: string, to: string}[] = [];
     public filesMapping: (files: {from: string, to: string}[]) => void;
-    public copiedFilesID: string = '';
-    public previousCopiedFilesID:string;
+    public filesMappingNeedsToTrigger:boolean = false;
     
     constructor(opts: CSSResourcePluginOptions = {}) {
         if (opts.dist) {
@@ -214,11 +213,8 @@ export class CSSResourcePluginClass implements Plugin {
                         to: newPath
                     });
 
-                    // We also store a string which uniquely identify this array
-                    // To avoid watch loop
-                    this.copiedFilesID = this.copiedFiles.map(
-                        copiedFile => generateNewFileName( copiedFile.from )
-                    ).join('+');
+                    // Copied files list has changed and filesMapping option needs to be triggered
+                    this.filesMappingNeedsToTrigger = true;
                 }
                 return this.resolveFn(newFileName);
             }
@@ -232,13 +228,13 @@ export class CSSResourcePluginClass implements Plugin {
         // If there is no middleware from config, quit
         if (!this.filesMapping) return;
 
+        // If there is no new copied files list, quit
+        // It allow us to avoid watch loop when fileMapping middleware is producing a source file
+        if (!this.filesMappingNeedsToTrigger) return;
+        this.filesMappingNeedsToTrigger = false;
+
         // Get home dir (src path)
         const homeDir = producer.fuse.opts.homeDir;
-
-        // We store the copied file ID and continue only if it changed
-        // It allow us to avoid watch loop when fileMapping middleware is producing a source file
-        if (this.previousCopiedFilesID === this.copiedFilesID) return;
-        this.previousCopiedFilesID = this.copiedFilesID;
 
         // Call middleware with copied files path
         this.filesMapping(
