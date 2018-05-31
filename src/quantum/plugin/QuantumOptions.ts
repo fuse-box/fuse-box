@@ -33,6 +33,7 @@ export interface IQuantumExtensionParams {
     containedAPI?: boolean,
     noConflictApi?: boolean;
     manifest?: boolean | string,
+    runtimeBundleMapping?: string;
 }
 
 export class QuantumOptions {
@@ -66,6 +67,7 @@ export class QuantumOptions {
     public quantumVariableName = "$fsx";
     public definedExpressions: { [key: string]: boolean | string | number };
     public webIndexPlugin: WebIndexPluginClass;
+    public runtimeBundleMapping: string;
 
     constructor(public producer: BundleProducer, opts: IQuantumExtensionParams) {
         opts = opts || {} as IQuantumExtensionParams;
@@ -181,7 +183,16 @@ export class QuantumOptions {
         if (this.isContained() || this.noConflictApi === true) {
             this.genenerateQuantumVariableName();
         }
+
+        if(opts.runtimeBundleMapping !== undefined && typeof opts.runtimeBundleMapping == "string") {
+            this.runtimeBundleMapping = opts.runtimeBundleMapping;
+        }
     }
+
+    public shouldSetBundleMappingsAtRuntime() {
+        return !!this.runtimeBundleMapping;
+    }
+
     public shouldGenerateCSS() {
         return this.css === true;
     }
