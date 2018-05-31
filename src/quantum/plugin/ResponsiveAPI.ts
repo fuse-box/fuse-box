@@ -120,7 +120,8 @@ export class ResponsiveAPI {
             promisePolyfill: false,
             loadRemoteScript: this.loadRemoteScript,
             isContained: this.core.opts.isContained(),
-            extendServerImport: this.core.opts.shouldExtendServerImport()
+            extendServerImport: this.core.opts.shouldExtendServerImport(),
+            runtimeBundleMapping: this.core.opts.shouldSetBundleMappingsAtRuntime()
         };
 
         const variables: any = {};
@@ -136,6 +137,9 @@ export class ResponsiveAPI {
         }
         if (this.bundleMapping) {
             variables.bundleMapping = this.bundleMapping;
+        }
+        if(this.core.opts.shouldSetBundleMappingsAtRuntime()) {
+            variables.runtimeBundleMappingVariableName = this.core.opts.runtimeBundleMapping;
         }
         if( this.core.opts.quantumVariableName !== "$fsx"){
             replaceRaw = {"$fsx" : this.core.opts.quantumVariableName }
