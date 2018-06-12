@@ -87,6 +87,7 @@
     "ieee754": "^1.1.8",
     "inquirer": "^3.0.6",
     "lego-api": "^1.0.7",
+    "minimist": "^1.2.0",
     "mustache": "^2.3.0",
     "node-sass": "^4.9.0",
     "postcss": "^6.0.1",
