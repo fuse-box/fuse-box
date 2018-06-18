@@ -130,7 +130,7 @@ export class WorkFlowContext {
 
     public target: string = "universal";
 
-    public inlineCSSPath : string = "css-sourcemaps";
+    public inlineCSSPath: string = "css-sourcemaps";
     /**
      * Explicitly target bundle to server
      */
@@ -158,7 +158,7 @@ export class WorkFlowContext {
 
     public tsConfig: TypescriptConfig;
 
-    public customModulesFolder: string;
+    public customModulesFolder: string[];
 
     public tsMode = false;
 
@@ -335,7 +335,7 @@ export class WorkFlowContext {
             this.sourceMapsProject = params;
         } else {
             if (utils.isPlainObject(params)) {
-                if( params.inlineCSSPath){
+                if (params.inlineCSSPath) {
                     this.inlineCSSPath = params.inlineCSSPath;
                 }
                 this.sourceMapsProject = params.project !== undefined ? params.project : true;
