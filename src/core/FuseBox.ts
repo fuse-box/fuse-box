@@ -22,7 +22,7 @@ const appRoot = require("app-root-path");
 
 export interface FuseBoxOptions {
     homeDir?: string;
-    modulesFolder?: string;
+    modulesFolder?: string | string[];
     tsConfig?: string;
     package?: string | { name: string, main: string };
     dynamicImportsEnabled?: boolean;
@@ -184,9 +184,16 @@ export class FuseBox {
 
         this.context.debugMode = opts.debug !== undefined ? opts.debug : contains(process.argv, "--debug");
 
-        if (opts.modulesFolder) {
-            this.context.customModulesFolder =
-                ensureUserPath(opts.modulesFolder);
+        let modulesFolders = opts.modulesFolder;
+        if (modulesFolders) {
+            if (!Array.isArray(modulesFolders)) {
+                modulesFolders = [modulesFolders];
+            }
+            modulesFolders = modulesFolders.map((folder) => ensureUserPath(folder));
+            this.context.customModulesFolder = modulesFolders;
+        }
+        else {
+            this.context.customModulesFolder = [];
         }
 
         if (opts.sourceMaps) {

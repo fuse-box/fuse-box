@@ -142,6 +142,8 @@ FuseBox.init({
 })
 ```
 
+Optionally, modulesFolder can be an array of paths. In that case the module will be searched for in priority order, this is, from the first array item to last.
+
 
 You local `npm` will have the highest priority. In essence, you can override fusebox's [path](https://github.com/fuse-box/fuse-box/blob/master/modules/path/index.js) of [fs](https://github.com/fuse-box/fuse-box/blob/master/modules/fs/index.js) module if you like. Customize you packages in your own manner!
 
