@@ -140,7 +140,7 @@ export class PathMaster {
                     // nodeModuleInfo.browserOverrides[name] = info.name + "/" + absPath.alias;
                     if (parent) {
                         parent.analysis.
-                            replaceAliases(new Set([{from : name,  to : info.name + "/" + absPath.alias  }]))
+                            replaceAliases(new Set([{ from: name, to: info.name + "/" + absPath.alias }]))
                     }
                     data.fuseBoxAlias = absPath.alias;
                 }
@@ -166,7 +166,7 @@ export class PathMaster {
                     data.fuseBoxAlias = absPath.alias;
                     if (parent) {
                         parent.analysis.
-                            replaceAliases(new Set([{from : name,  to : `~/` + absPath.alias  }]))
+                            replaceAliases(new Set([{ from: name, to: `~/` + absPath.alias }]))
                     }
                 }
                 data.absPath = absPath.resolved;
@@ -495,12 +495,13 @@ export class PathMaster {
             }
         }
 
-
-        if (this.context.customModulesFolder) {
-
-            let customFolder = path.join(this.context.customModulesFolder, name);
-            if (fs.existsSync(customFolder)) {
-                return readMainFile(customFolder, false);
+        const customModulesFolder = this.context.customModulesFolder;
+        if (customModulesFolder) {
+            for (const customModulesFolderItem of customModulesFolder) {
+                const customFolder = path.join(customModulesFolderItem, name);
+                if (fs.existsSync(customFolder)) {
+                    return readMainFile(customFolder, false);
+                }
             }
         }
 
