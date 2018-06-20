@@ -7,6 +7,9 @@
             "introduction/about-plugins.md",
             "introduction/production-vs-dev.md"
         ],
+        "CLI" : [
+            "cli.md"
+        ],
         "Development" : [
             "development/configuration.md",
             "development/instructions.md",
