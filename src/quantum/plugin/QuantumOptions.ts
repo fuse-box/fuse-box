@@ -339,7 +339,7 @@ export class QuantumOptions {
     }
 
     public isTargetServer() {
-        return this.optsTarget === "server" || this.optsTarget === "electron";
+        return this.optsTarget === "server" || this.optsTarget === "electron" || this.optsTarget === "npm";
     }
 
     public isTargetBrowser() {
