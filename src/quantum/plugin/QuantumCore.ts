@@ -267,11 +267,13 @@ export class QuantumCore {
 
             }).then(() => {
                 
-                Object.keys(globals).forEach(globalPackageName => {
-                    if(globalFileMap[globalPackageName] !== undefined) {
-                        generator.setGlobals(globals[globalPackageName], globalFileMap[globalPackageName]);
-                    }
-                })
+                if(globals){
+                    Object.keys(globals).forEach(globalPackageName => {
+                        if(globalFileMap[globalPackageName] !== undefined) {
+                            generator.setGlobals(globals[globalPackageName], globalFileMap[globalPackageName]);
+                        }
+                    })
+                }
                 
                 this.log.echoInfo(`Render bundle ${bundleAbstraction.name}`);
                 const bundleCode = generator.render();
