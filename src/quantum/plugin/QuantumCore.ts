@@ -254,17 +254,25 @@ export class QuantumCore {
     public render() {
         return each(this.producerAbstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
             const globals = this.producer.fuse.context.globals;
+            const globalFileMap = {};
             const generator = new FlatFileGenerator(this, bundleAbstraction);
             generator.init();
             return each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
                 return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) => {
                     if (fileAbstraction.fuseBoxPath == packageAbstraction.entryFile && globals && Object.keys(globals).indexOf(packageAbstraction.name) != -1) {
-                        generator.setGlobals(globals[packageAbstraction.name], fileAbstraction.getID());
+                        globalFileMap[packageAbstraction.name] = fileAbstraction.getID();
                     }
                     return generator.addFile(fileAbstraction, this.opts.shouldEnsureES5());
                 });
 
             }).then(() => {
+                
+                Object.keys(globals).forEach(globalPackageName => {
+                    if(globalFileMap[globalPackageName]) {
+                        generator.setGlobals(globals[globalPackageName], globalFileMap[globalPackageName]);
+                    }
+                })
+                
                 this.log.echoInfo(`Render bundle ${bundleAbstraction.name}`);
                 const bundleCode = generator.render();
                 this.producer.bundles.get(bundleAbstraction.name).generatedCode = new Buffer(bundleCode);
