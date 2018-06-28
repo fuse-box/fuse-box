@@ -268,7 +268,7 @@ export class QuantumCore {
             }).then(() => {
                 
                 Object.keys(globals).forEach(globalPackageName => {
-                    if(globalFileMap[globalPackageName]) {
+                    if(globalFileMap[globalPackageName] !== undefined) {
                         generator.setGlobals(globals[globalPackageName], globalFileMap[globalPackageName]);
                     }
                 })
