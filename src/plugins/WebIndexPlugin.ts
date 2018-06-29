@@ -102,34 +102,85 @@ $bundles
             }
         }
 
-        let jsTags = this.opts.emitBundles
-            ? this.opts.emitBundles(bundlePaths)
-            : bundlePaths.map(bundle => `<script ${this.opts.async ? 'async' : ''} ${this.opts.scriptAttributes ? this.opts.scriptAttributes : ''} type="text/javascript" src="${bundle}"></script>`).join('\n');
+                // Generate preload and prefetch resource tags by tag type.
+        // ex. pre: {relType: 'load', tagTypes: ['style', 'script']}
+        let preloadTags = '';
+        let preloadCSS = false;
+        let preloadJS = false;
 
-        let preloadTags;
-        if (this.opts.pre) {
-            preloadTags = bundlePaths.map(bundle =>
-                `<link rel="pre${this.opts.pre.relType}" as="script" href="${bundle}">`
-            ).join("\n");
+        if (this.opts.pre && Array.isArray(this.opts.pre.tagTypes)) {
+            // CSS
+            if (
+                this.opts.pre.tagTypes.indexOf('style') >= 0 &&
+                producer.injectedCSSFiles.size > 0
+            ) {
+                preloadCSS = true;
+
+                producer.injectedCSSFiles.forEach((f) => {
+                    const resolvedFile = this.opts.path
+                        ? path.join(this.opts.path, f)
+                        : path.join('/', f);
+
+                    preloadTags += `<link rel="pre${
+                        this.opts.pre.relType
+                    }" as="style" href="${resolvedFile}">`;
+                });
+            }
+
+            // JS
+            if (this.opts.pre.tagTypes.indexOf('script') >= 0 && bundlePaths.length > 0) {
+                preloadJS = true;
+
+                preloadTags += bundlePaths
+                    .map((bundle) => {
+                        `<link rel="pre${this.opts.pre.relType}" as="script" href="${bundle}">`;
+                    })
+                    .join('\n');
+            }
         }
-        let cssInjection = [];
-        if (producer.injectedCSSFiles.size > 0) {
-            producer.injectedCSSFiles.forEach(f => {
-                const resolvedFile = this.opts.path ? path.join(this.opts.path, f) : path.join("/", f);
-                cssInjection.push(`<link rel="stylesheet" href="${resolvedFile}"/>`)
-            })
+
+        // Do not add CSS link tags if being preloaded.
+        if (preloadCSS === false) {
+            let cssInjection = [];
+            if (producer.injectedCSSFiles.size > 0) {
+                producer.injectedCSSFiles.map((f) => {
+                    const resolvedFile = this.opts.path
+                        ? path.join(this.opts.path, f)
+                        : path.join('/', f);
+                    cssInjection.push(`<link rel="stylesheet" href="${resolvedFile}"/>`);
+                });
+            }
+        }
+
+        // Do not add JavaScript script tags if being preloaded.
+        if (preloadJS === false) {
+            let jsTags = this.opts.emitBundles
+                ? this.opts.emitBundles(bundlePaths)
+                : bundlePaths
+                      .map(
+                          (bundle) =>
+                              `<script ${this.opts.async ? 'async' : ''} ${
+                                  this.opts.scriptAttributes ? this.opts.scriptAttributes : ''
+                              } type="text/javascript" src="${bundle}"></script>`
+                      )
+                      .join('\n');
         }
 
         let macro = {
-            css: cssInjection.join('\n'),
-            title: this.opts.title ? this.opts.title : "",
-            charset: this.opts.charset ? `<meta charset="${this.opts.charset}">` : "",
-            description: this.opts.description ? `<meta name="description" content="${this.opts.description}">` : "",
-            keywords: this.opts.keywords ? `<meta name="keywords" content="${this.opts.keywords}">` : "",
-            author: this.opts.author ? `<meta name="author" content="${this.opts.author}">` : "",
-            bundles: jsTags,
-            preload: this.opts.pre ? preloadTags : "",
-        }
+            css: preloadCSS === true ? '' : cssInjection.join('\n'),
+            title: this.opts.title ? this.opts.title : '',
+            charset: this.opts.charset ? `<meta charset="${this.opts.charset}">` : '',
+            description: this.opts.description
+                ? `<meta name="description" content="${this.opts.description}">`
+                : '',
+            keywords: this.opts.keywords
+                ? `<meta name="keywords" content="${this.opts.keywords}">`
+                : '',
+            author: this.opts.author ? `<meta name="author" content="${this.opts.author}">` : '',
+            bundles: preloadJS === true ? '' : jsTags,
+            preload: this.opts.pre ? preloadTags : ''
+        };
+        
         for (let key in macro) {
             html = html.replace('$' + key, macro[key])
         }
