@@ -450,6 +450,7 @@ export class File {
                 // Was looking for .js but found .json (Node allows `require('config')` to refer to a .json file)
                 this.absPath += 'on';
                 this.relativePath += 'on';
+                this.info.absPath = this.absPath;
             } else {
                 if (/\.jsx?$/.test(this.info.fuseBoxPath) && this.context.fuse && this.context.fuse.producer) {
                     this.context.fuse.producer.addWarning('unresolved',
