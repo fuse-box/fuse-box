@@ -10,7 +10,7 @@ Generates a HTML file once a producer's job is completed
 Import from FuseBox
 
 ```js
-const { WebIndexPlugin } = require("fuse-box");
+const { WebIndexPlugin } = require('fuse-box');
 ```
 
 Inject into a chain
@@ -21,21 +21,43 @@ fuse.plugin(
 )
 ```
 
+Include in the `plugins` array property in the `init` configuration
+
+```js
+fuse.init({
+    homeDir: 'src',
+    output: 'build/$name.js',
+    target: 'browser',
+    plugins: [
+      WebIndexPlugin()
+    ]
+});
+```
+
 ## Options
 
-| Name | Meaning |
-| ------------- | ------------- |
-| ` title `   | Sets the title  |
-| ` bundles ` | Provide a list of bundle names (if not set all registered bundles are through) |
-| ` path `   | The relative url bundles are served from. Default is `/`. Empty is set with `.`  |
-| ` template `   | Provide a path to your own template  |
-| ` templateString `   | Provide your own template as a string  |
-| ` target `   | The main filename. Default is `index.html`  |
-| ` resolve `   | `resolve ?: {(output : UserOutput) : string}` Allows to completely override the output  |
-| `pre ` | `{ relType: 'fetch' | 'load' }`  Config object to either preload or prefetch the output javascript bundles in the head of the document |
-| ` appendBundles ` | Append $bundles to provided template |
+> Note: If a `template` and `templateString` option are both specified, then the `template`
+> will take precedent.
+> If no default value is specified below, the option will not be applied.
 
-note: If you specify template and templateString then template will take precedent 
+| Name | Type | Description | Default |
+| -----| ---- | ----------- | -------
+| `appendBundles` | `boolean` | Append the $bundles to provided template | `true` |
+| `async`   | `boolean`| Adds the `async` attribute to the `<script />` tags that link the output javascript bundles | `false` |
+| `author`  | `string` | Set the the `content` attribute of a  `<meta name="author"` tag |
+| `bundles` | `string[]` | Provide a list of bundle names. (if not set all registered bundles are through) |
+| `charset` | `string` | Set the the `charset` attribute of a  `<meta />` tag |
+| `description` | `string` | Set the the `content` attribute of a  `<meta name="description" />` tag |
+| `emitBundles` | `(bundles: string[]) => string` | Function that returns the list of paths to each output bundle |
+| `keywords`| `string` | Set the the `content` attribute of a  `<meta name="keywords" />` tag |
+| `path`    | `string` | The relative url that bundles are served from. Empty is set with `"."`  | `"/"` |
+| `pre`     | `string` | Must be specified using either `'fetch'` or `'load'`. Adds `<link />` tags with `preload` or `prefetch` attributes for each of the output javascript bundles. The tags will be injected into the head of the html document or where specified by the `$pre` macro |
+| `resolve` | `resolve ?: {(output : UserOutput) : string}` | Function that allows to completely override the output |
+| `target`  | `string` | The name of the output `.html` file  | `index.html` |
+| `template`|  `string`| Provide a path to your own template  |
+| `templateString` | `string` | Provide your own template  |
+| `title`   | `string` | Sets the title of the generated HTML document |
+
 
 ### Resolve example
 `resolve` option allows you to completely override the path
@@ -51,10 +73,13 @@ WebIndexPlugin({
 
 A custom template has the following macro available:
 
-| Symbol | Meaning |
+| Macro | Meaning |
 | ------------- | ------------- |
-| ` $title `   | Html Title  |
-| ` $bundles `   | A list of script tags |
-| ` $css `   | A list of styles tags |
-
-github_example: vendor-splitting
+| `$author` | Define where the author meta tags will be injected into the html document |
+| `$bundles`   | A list of script tags |
+| `$charset` | Define where the charset meta tags will be injected into the html document |
+| `$css`   | A list of styles tags |
+| `$description` | Define where the description meta tags will be injected into the html document |
+| `$keywords` | Define where the keywords meta tags will be injected into the html document |
+| `$pre` | Define where the prefetch/preload link tags will be injected into the html document |
+| `$title`   | Html Title  |
