@@ -1,11 +1,11 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from "fs";
+import * as path from "path";
 
-import { } from '../core/File';
-import { Plugin } from '../core/WorkflowContext';
-import { BundleProducer } from '../core/BundleProducer';
-import { UserOutput } from '../core/UserOutput';
-import { ensureAbsolutePath, joinFuseBoxPath } from '../Utils';
+import { } from "../core/File";
+import { Plugin } from "../core/WorkflowContext";
+import { BundleProducer } from "../core/BundleProducer";
+import { UserOutput } from "../core/UserOutput";
+import { ensureAbsolutePath, joinFuseBoxPath } from "../Utils";
 
 export interface IndexPluginOptions {
     appendBundles?: boolean;
@@ -19,7 +19,7 @@ export interface IndexPluginOptions {
     keywords?: string;
     locals?: { [key: string]: any }
     path?: string;
-    pre?: string;
+    pre?: { relType: "fetch" | "load" } | string;
     resolve?: { (output: UserOutput): string };
     scriptAttributes?: string;
     target?: string;
@@ -28,7 +28,7 @@ export interface IndexPluginOptions {
     title?: string;
 }
 
-const validPreAttrs = ['fetch', 'load'];
+const validPreAttrs = ["fetch", "load"];
 
 export class WebIndexPluginClass implements Plugin {
     constructor(public opts?: IndexPluginOptions) {
@@ -55,7 +55,7 @@ export class WebIndexPluginClass implements Plugin {
                         bundlePaths.push(this.opts.resolve(output));
                     } else {
                         bundlePaths.push(
-                            joinFuseBoxPath(this.opts.path ? this.opts.path : '/', output.folderFromBundleName || '/',
+                            joinFuseBoxPath(this.opts.path ? this.opts.path : "/", output.folderFromBundleName || "/",
                                 output.lastPrimaryOutput.filename)
                         );
                     }
@@ -83,7 +83,7 @@ export class WebIndexPluginClass implements Plugin {
 
         if (this.opts.engine) {
             const engine = this.opts.engine;
-            const consolidate = require('consolidate');
+            const consolidate = require("consolidate");
             if (!consolidate[engine]) {
                 const message = `ConsolidatePlugin - consolidate did not recognise the engine "${engine}"`;
                 throw new Error(message);
@@ -96,13 +96,13 @@ export class WebIndexPluginClass implements Plugin {
         } else {
             if (this.opts.template) {
                 const pathToTemplate = ensureAbsolutePath(this.opts.template);
-                html = fs.readFileSync(pathToTemplate, 'UTF-8')
+                html = fs.readFileSync(pathToTemplate, "UTF-8")
 
-                if (this.opts.appendBundles && !html.includes('$bundles')) {
-                    if (!html.includes('</body>')) {
-                        html = html.replace('</body>', '$bundles</body>');
-                    } else if (!html.includes('</head>')) {
-                        html = html.replace('</head>', '$bundles</head>');
+                if (this.opts.appendBundles && !html.includes("$bundles")) {
+                    if (!html.includes("</body>")) {
+                        html = html.replace("</body>", "$bundles</body>");
+                    } else if (!html.includes("</head>")) {
+                        html = html.replace("</head>", "$bundles</head>");
                     } else {
                         html = `${html}$bundles`;
                     }
@@ -112,45 +112,64 @@ export class WebIndexPluginClass implements Plugin {
 
         const jsTags = this.opts.emitBundles
             ? this.opts.emitBundles(bundlePaths)
-            : bundlePaths.map(bundle => `<script ${this.opts.async ? 'async' : ''} ${this.opts.scriptAttributes ? this.opts.scriptAttributes : ''} type="text/javascript" src="${bundle}"></script>`).join('\n');
+            : bundlePaths.map(bundle => `<script ${this.opts.async ? "async" : ""} ${this.opts.scriptAttributes ? this.opts.scriptAttributes : ""} type="text/javascript" src="${bundle}"></script>`).join("\n");
 
         let preLinkTags;
-        if (this.opts.pre && validPreAttrs.includes[this.opts.pre]) {
-            preLinkTags = bundlePaths.map(bundle =>
-                `<link rel="pre${this.opts.pre}" as="script" href="${bundle}">`
-            ).join('\n');
+
+        if (this.opts.pre) {
+            /* Handle errors */
+            if ((typeof this.opts.pre === "string" && !validPreAttrs.includes(this.opts.pre))
+            || (this.opts.pre.relType && !validPreAttrs.includes(Object.values(this.opts.pre.relType)))) {
+                throw new Error("Invalid `pre` option specified. Please adjust your configuration object or string as either 'fetch' or 'load'.");
+            }
+
+
+            /* New API */
+            if (typeof this.opts.pre === "string" && validPreAttrs.includes(this.opts.pre)) {
+                preLinkTags = bundlePaths.map(bundle =>
+                    `<link rel="pre${this.opts.pre}" as="script" href="${bundle}">`
+                ).join("\n");
+            }
+
+            /* Legacy API */
+            if (this.opts.pre.relType && validPreAttrs.includes(Object.values(this.opts.pre.relType))) {
+                preLinkTags = bundlePaths.map(bundle =>
+                    `<link rel="pre${this.opts.pre.relType}" as="script" href="${bundle}">`
+                ).join("\n");
+            }
         }
+
 
         let cssInjection = [];
         if (producer.injectedCSSFiles.size > 0) {
             producer.injectedCSSFiles.forEach(file => {
-                const resolvedFile = this.opts.path ? path.join(this.opts.path, file) : path.join('/', file);
+                const resolvedFile = this.opts.path ? path.join(this.opts.path, file) : path.join("/", file);
                 cssInjection.push(`<link rel="stylesheet" href="${resolvedFile}"/>`);
             });
         }
 
         let macro = {
-            author: this.opts.author ? `<meta name="author" content="${this.opts.author}">` : '',
+            author: this.opts.author ? `<meta name="author" content="${this.opts.author}">` : "",
             bundles: jsTags,
-            charset: this.opts.charset ? `<meta charset="${this.opts.charset}">` : '',
-            css: cssInjection.join('\n'),
-            description: this.opts.description ? `<meta name="description" content="${this.opts.description}">` : '',
-            keywords: this.opts.keywords ? `<meta name="keywords" content="${this.opts.keywords}">` : '',
-            pre: this.opts.pre ? preLinkTags : '',
-            title: this.opts.title ? this.opts.title : '',
+            charset: this.opts.charset ? `<meta charset="${this.opts.charset}">` : "",
+            css: cssInjection.join("\n"),
+            description: this.opts.description ? `<meta name="description" content="${this.opts.description}">` : "",
+            keywords: this.opts.keywords ? `<meta name="keywords" content="${this.opts.keywords}">` : "",
+            pre: this.opts.pre ? preLinkTags : "",
+            title: this.opts.title ? this.opts.title : "",
         }
 
         for (let key in macro) {
-            html = html.replace('$' + key, macro[key])
+            html = html.replace("$" + key, macro[key])
         }
 
         producer.fuse.context
-            .output.writeToOutputFolder(this.opts.target || 'index.html', html);
+            .output.writeToOutputFolder(this.opts.target || "index.html", html);
     }
 
     producerEnd(producer: BundleProducer) {
         this.generate(producer);
-        producer.sharedEvents.on('file-changed', () => {
+        producer.sharedEvents.on("file-changed", () => {
             this.generate(producer);
         });
     }
