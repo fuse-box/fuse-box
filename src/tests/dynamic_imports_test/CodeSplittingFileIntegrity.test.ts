@@ -1,5 +1,6 @@
 import { FuseTestEnv, createRealNodeModule } from "../stubs/FuseTestEnv";
 import { QuantumPlugin } from "../../index";
+import { should } from "fuse-test-runner";
 
 const HOME_COMPONENT_SCRIPT = "92380585.js";
 const ABOUT_COMPONENT_SCRIPT = "167ae727.js";
@@ -705,8 +706,69 @@ export class CodeSplittingFileIntegrityTest {
             }));
     }
 
+    "Should check if browser data is set correctly"() {
+        let bundleMappingScript = "src/tests/stubs/browserBundleMapping.js";
+        return FuseTestEnv.create(
+            {
+                project: {
+                    files: {
+                        "index.ts": `
+                            export async function getRemoteFile() {
+                                const module = await import("./components/HomeComponent");
+                                return module.home();
+                            }
+                        `,
+                        "components/HomeComponent.ts": `
+                            export function home(){ return "home" }
+                        `
+                    },
+                    plugins: [
+                        QuantumPlugin({
+                            target: "browser",
+                            runtimeBundleMapping: 'newBundleMapping'
+                        })
+                    ]
+                }
+            }
+        )
+            .simple().then(test => test.browser((window, env) => {
+                var index = window.$fsx.r(0);
+                
+                return index.getRemoteFile().then(result => {
+                    should(result).equal("home");
+                });
+            }, bundleMappingScript));
+    }
 
-
+    "Should check if server data is set correctly"() {
+        let bundleMappingScript = "src/tests/stubs/browserBundleMapping.js";
+        return FuseTestEnv.create({
+            project: {
+                files: {
+                    "index.ts": `
+                        export function getRemoteFile() {
+                            return import("./components/HomeComponent");
+                        }
+                    `,
+                    "components/HomeComponent.ts": `
+                        export function home(){ return "home" }
+                    `
+                },
+                plugins: [QuantumPlugin({
+                    target: "server",
+                    runtimeBundleMapping: 'newBundleMapping'
+                })]
+            }
+        }).simple().then(test => test.server(`
+                const index = $fsx.r(0);
+                index.getRemoteFile().then(result => {
+                    process.send({ response: result.home()});
+                });
+            `, (data) => {
+                should(data.response).equal(`home`)
+            }, bundleMappingScript));
+    }
+    
     "Should ignore a file with nested references"() {
         return FuseTestEnv.create(
             {

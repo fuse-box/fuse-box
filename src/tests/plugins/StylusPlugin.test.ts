@@ -43,7 +43,7 @@ export class StylusPluginTest {
           }
         }).simple().then((env) => env.browser((window) => {
           should(window.document.querySelectorAll('style')).haveLength(1);
-          should(window.document.querySelector('style').attributes.id.value).equal("main-styl");
+          should(window.document.querySelector('style').attributes.id.value).equal("default-main-styl");
           should(window.document.querySelector('style').innerHTML).findString('color: #00f;');
         }));
     }

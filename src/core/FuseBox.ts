@@ -22,7 +22,7 @@ const appRoot = require("app-root-path");
 
 export interface FuseBoxOptions {
     homeDir?: string;
-    modulesFolder?: string;
+    modulesFolder?: string | string[];
     tsConfig?: string;
     package?: string | { name: string, main: string };
     dynamicImportsEnabled?: boolean;
@@ -55,6 +55,7 @@ export interface FuseBoxOptions {
     output?: string;
     emitHMRDependencies?: boolean;
     filterFile?: (file: File) => boolean;
+    automaticAlias?: boolean;
     allowSyntheticDefaultImports?: boolean;
     debug?: boolean;
     files?: any;
@@ -107,6 +108,11 @@ export class FuseBox {
         if (opts.writeBundles !== undefined) {
             this.context.userWriteBundles = opts.writeBundles;
         }
+
+        if (opts.automaticAlias !== undefined) {
+            this.context.automaticAlias = opts.automaticAlias;
+        }
+
         // setting targets
         opts.target = opts.target || "browser";
         const [target, languageLevel] = opts.target.toLowerCase().split("@");
@@ -178,9 +184,16 @@ export class FuseBox {
 
         this.context.debugMode = opts.debug !== undefined ? opts.debug : contains(process.argv, "--debug");
 
-        if (opts.modulesFolder) {
-            this.context.customModulesFolder =
-                ensureUserPath(opts.modulesFolder);
+        let modulesFolders = opts.modulesFolder;
+        if (modulesFolders) {
+            if (!Array.isArray(modulesFolders)) {
+                modulesFolders = [modulesFolders];
+            }
+            modulesFolders = modulesFolders.map((folder) => ensureUserPath(folder));
+            this.context.customModulesFolder = modulesFolders;
+        }
+        else {
+            this.context.customModulesFolder = [];
         }
 
         if (opts.sourceMaps) {

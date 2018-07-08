@@ -47,7 +47,7 @@ export class CssPluginTest {
           }
         }).simple().then((env) => env.browser((window) => {
           should(window.document.querySelectorAll('style')).haveLength(1);
-          should(window.document.querySelector('style').attributes.id.value).equal("main-scss");
+          should(window.document.querySelector('style').attributes.id.value).equal("default-main-scss");
           should(window.document.querySelector('style').innerHTML).findString('background: blue;');
         }));
     }
@@ -92,7 +92,7 @@ export class CssPluginTest {
           }
         }).simple().then((env) => env.browser((window) => {
           should(window.document.querySelectorAll('style')).haveLength(1);
-          should(window.document.querySelector('style').attributes.id.value).equal("main-scss");
+          should(window.document.querySelector('style').attributes.id.value).equal("default-main-scss");
           should(window.document.querySelector('style').innerHTML).findString('color: red;');
         }));
     }

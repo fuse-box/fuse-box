@@ -101,7 +101,7 @@ To execute the task, run `node fuse.js foo`.
 
 ## Waterfall vs Parallel
 
-`Sparky` has two modes for executing tasks, `waterfall` and `parallel`. In `waterfall` mode, tasks are executed sequentially based on the order they are defined within the task array. This is good if you require a task to wait until another task is completed. In `parallel` mode tasks are executed asynchronously, meaning that they will not depend on each other's completion. To run tasks in `waterfall` mode, just prefix the task name with an `&`.
+`Sparky` has two modes for executing tasks, `waterfall` and `parallel`. In `waterfall` mode, tasks are executed sequentially based on the order they are defined within the task array. This is good if you require a task to wait until another task is completed. In `parallel` mode tasks are executed asynchronously, meaning that they will not depend on each other's completion. To run tasks in `parallel` mode, just prefix the task name with an `&`.
 
 ```js
 task('foo', () => {

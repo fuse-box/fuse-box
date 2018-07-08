@@ -121,14 +121,17 @@ export class FuseTestEnv {
         });
     }
 
-    public server(message, fn: { (response): any }): Promise<FuseTestEnv> {
+    public server(message, fn: { (response): any }, preloadScriptPath?: string): Promise<FuseTestEnv> {
         return new Promise((resolve, reject) => {
             const scripts = [];
+
+            if(preloadScriptPath) {
+                scripts.push(fs.readFileSync(path.join(appRoot.path, preloadScriptPath)).toString());
+            }
+
             const bundles = this.producer.sortBundles();
             bundles.forEach(bundle => {
-            
                 if (bundle.webIndexed) {
-                    
                     let contents = fs.readFileSync(bundle.context.output.lastPrimaryOutput.path).toString();
                     scripts.push(contents);
                 }
@@ -163,9 +166,14 @@ export class FuseTestEnv {
     }
 
 
-    public browser(fn: { (window: any, test: FuseTestEnv): any }): Promise<FuseTestEnv> {
+    public browser(fn: { (window: any, test: FuseTestEnv): any }, preloadScriptPath?: string): Promise<FuseTestEnv> {
         const scripts = [path.join(appRoot.path, "src/tests/stubs/DummyXMLHttpRequest.js")];
         const bundles = this.producer.sortBundles();
+
+        if(preloadScriptPath) {
+            scripts.push(path.join(appRoot.path, preloadScriptPath));
+        }
+        
         bundles.forEach(bundle => {
             this.scripts.set(bundle.context.output.lastPrimaryOutput.relativePath, new ScriptTest(bundle.context.output.lastPrimaryOutput))
             if (bundle.webIndexed) {
