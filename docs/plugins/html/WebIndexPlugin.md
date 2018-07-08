@@ -25,9 +25,9 @@ Include in the `plugins` array property in the `init` configuration
 
 ```js
 fuse.init({
-    homeDir: 'src',
-    output: 'build/$name.js',
-    target: 'browser',
+    homeDir: "src",
+    output: "build/$name.js",
+    target: "browser",
     plugins: [
       WebIndexPlugin()
     ]
@@ -53,7 +53,7 @@ fuse.init({
 | `keywords`| `string` | Set the the `content` attribute of a  `<meta name="keywords" />` tag |
 | `locals`  | `{ [key: string]: any }` | Pass variable to consolidate module  |
 | `path`    | `string` | The relative url that bundles are served from. Empty is set with `"."`  | `"/"` |
-| `pre`     | `string` | Must be specified using either `'fetch'` or `'load'`. Adds `<link />` tags with `preload` or `prefetch` attributes for each of the output javascript bundles. The tags will be injected into the head of the html document or where specified by the `$pre` macro |
+| `pre`     | `string` or `{ relType: "fetch" | "load" }` | Must be specified using either `'fetch'` or `'load'` as the value for the `relType` key, if using the object configuration or as a plain string. Adds `<link />` tags with `preload` or `prefetch` attributes for each of the output javascript bundles. The tags will be injected into the head of the html document or where specified by the `$pre` macro |
 | `resolve` | `resolve ?: {(output : UserOutput) : string}` | Function that allows to completely override the output |
 | `target`  | `string` | The name of the output `.html` file  | `index.html` |
 | `template`|  `string`| Provide a path to your own template  |
