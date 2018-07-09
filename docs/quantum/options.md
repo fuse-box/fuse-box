@@ -498,3 +498,59 @@ github_example: quantum_computed_resolve
 ### Improvements
 
 It should be possible to create a simple FuseBox plugin, for example `QuantumMomentJsSolution` to be shared with other people.
+
+
+## runtimeBundleMapping
+
+- string: name of runtime variable which will contain the bundle mapping string.
+
+
+The runtimeBundleMapping option enables setting the bundle mapping dynamically at runtime.
+When using code splitting, a bundle mapping path can be [configured](/page/code-splitting#configuring) at buildtime for resolving bundles from a specific endpoint.
+
+
+```js
+QuantumPlugin({
+        runtimeBundleMapping: "foo"
+    })
+```
+
+It is important to ensure, that the runtime variable is instantiated on the respective global object used by the target.
+
+The global object for `target="browser"` is `window`
+The global object for `target="server"` is `global`
+
+### Example
+
+
+```js
+const fuse = FuseBox.init({
+    target: "browser",
+    homeDir: "src",
+    output: "dist/$name.js",
+    plugins: [
+        QuantumPlugin({
+            runtimeBundleMapping: "foo"
+        })
+    ]
+})
+
+fuse.bundle("app")
+    .splitConfig()
+    .instructions(`> [index.ts]`)
+
+fuse.run();
+
+```
+
+A variable should be set at runtime before FuseBox is loaded:
+
+`window.foo = "./x/y"`
+
+Which ultimately, will be equivalent to the following static code splitting configuration with target "browser":
+
+```js
+fuse.bundle("app")
+    .splitConfig({ browser: './x/y' })
+    .instructions(`> [index.ts]`)
+```
