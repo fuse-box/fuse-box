@@ -34,7 +34,7 @@ export class CssPluginTest {
             },
         }).then((result) => {
             const js = result.projectContents.toString();
-            should(js).findString(`require("fuse-box-css")("main.css", "body {}")`);
+            should(js).findString(`require("fuse-box-css")("default/main.css", "body {}")`);
         });
     }
 
@@ -234,7 +234,7 @@ export class CssPluginTest {
             },
         }).then((result) => {
             const js = result.projectContents.toString();
-            should(js).findString(`require("fuse-box-css")("main.css", "body {}")`);
+            should(js).findString(`require("fuse-box-css")("default/main.css", "body {}")`);
         });
     }
     // failing here....
@@ -293,7 +293,7 @@ export class CssPluginTest {
           }
         }).simple().then((env) => env.browser((window) => {
           should(window.document.querySelectorAll('style')).haveLength(1);
-          should(window.document.querySelector('style').attributes.id.value).equal("main-css");
+          should(window.document.querySelector('style').attributes.id.value).equal("default-main-css");
           should(window.document.querySelector('style').innerHTML).equal('html { background: blue; }');
         }));
     }

@@ -156,6 +156,13 @@ gulp.task("dist", ["prepare:clean"], function(done) {
         done)
 });
 
+gulp.task("dev-cli", [], function(done) {
+    runSequence("prepare:js")
+    return result = gulp.watch("src/**/**", done => {
+        return runSequence("prepare:js")
+    })
+});
+
 gulp.task("prepare:es6-index", () => {
     const contents = `
         const path = require("path");

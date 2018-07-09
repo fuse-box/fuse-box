@@ -115,3 +115,28 @@ body {
 ## useOriginalFilenames
 
 By default the plugin will generate unique file names for resources which take the form of random numbers.  If you set `useOriginalFilenames` the the original path and filename of the resource will be used instead.  This is useful when developing.
+
+
+## filesMapping
+
+If you need unique file names and also a list of all generated CSS resources, set `filesMapping` option as a function to get all generated file names.
+
+```js
+CSSResourcePlugin({
+  dist: "resources/",
+
+  // Called when a new set of resources is copied to the resources/ folder
+  filesMapping: (files) =>
+  {
+    // Log copied files
+    files.map( fileMapping =>
+    {
+      console.log(fileMapping.from, "has been copied to", fileMapping.to);
+      // -> Write a json file of all resources for example
+    });
+  }
+})
+```
+
+This function also fires in watch mode. It only fires when a new resources is added, this is to avoid watch infinite loop, if you are creating a typescript file in sources folder from this function for example.
+It can be useful when generated resources file names are needed on the javascript side (asset preloading), or to create a manifest of all resources.
