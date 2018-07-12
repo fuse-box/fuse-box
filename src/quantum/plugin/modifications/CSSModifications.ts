@@ -3,6 +3,8 @@ import { FileAbstraction } from "../../core/FileAbstraction";
 import { QuantumCore } from "../QuantumCore";
 import { RequireStatement } from "../../core/nodes/RequireStatement";
 import { CSSFile } from '../../core/CSSFile';
+import { CSSCollection } from "../../core/CSSCollection";
+import { string2RegExp } from "../../../Utils";
 
 export class CSSModifications {
     public static async perform(core: QuantumCore, file: FileAbstraction): Promise<void> {
@@ -19,8 +21,9 @@ export class CSSModifications {
                     }
                     const cssPath = args[0].value;
                     const cssRaw = args[1].value;
-                    const cssFile = new CSSFile(cssPath, cssRaw);
-                    core.cssCollection.add(cssFile);
+                    const cssFile = new CSSFile(cssPath, cssRaw, statement.file.packageAbstraction.name);
+                    const collection = this.getCSSCollection(core, cssFile);
+                    collection.add(cssFile);
                     core.postTasks.add(() => {
                         this.removeStatement(statement);
                     });
@@ -49,6 +52,32 @@ export class CSSModifications {
                 if (matched) { depStatement.remove(); }
             })
         })
+    }
 
+    private static getCSSGroup(core: QuantumCore, cssFile: CSSFile): string {
+        for (let key in core.opts.getCSSFiles()) {
+            let [packageName, pattern] = key.split('/', 2);
+            if (!pattern) {
+                pattern = '*';
+            }
+            const regex = string2RegExp(pattern);
+            if ((packageName === '*' || packageName === cssFile.packageName) && regex.test(cssFile.name)) {
+                return key;
+            }
+        }
+
+        return 'default';
+    }
+
+    private static getCSSCollection(core: QuantumCore, cssFile: CSSFile): CSSCollection {
+        const group = this.getCSSGroup(core, cssFile);
+        let collection = core.cssCollection.get(group);
+        if (!collection) {
+            // Collection doesn't exist yet, so lets create it.
+            collection = new CSSCollection(core);
+            core.cssCollection.set(group, collection);
+        }
+
+        return collection;
     }
 }
