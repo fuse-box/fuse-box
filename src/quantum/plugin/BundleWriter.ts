@@ -146,7 +146,7 @@ export class BundleWriter {
                 //output.write(this.core.opts.getCSSPath(), cssString)
                 const cssResultData = await output.writeToOutputFolder(name, cssCollection.getString(), true);
                 bundleManifest[name] = {
-                    filename : cssResultData.filename,
+                    fileName : cssResultData.filename,
                     type : "css",
                     hash : cssResultData.hash,
                     absPath : cssResultData.path,

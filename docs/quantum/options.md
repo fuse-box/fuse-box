@@ -116,6 +116,19 @@ QuantumPlugin({css: { clean : { compatibility : {}} }})
 ```
 
 
+Additionally it's possible to provide masks to group CSS files into multiple by definding `cssFiles` option
+
+```ts
+QuantumPlugin({
+    cssFiles : {
+        "default/theme_dark**" : "dark.css",
+        "default/theme_light**" : "light.css",
+    }
+})
+```
+
+All files that match `theme_dark/index.scss` will go into `dark.css` file
+
 ## containedAPI
 Default value: `false`
 
