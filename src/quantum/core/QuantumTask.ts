@@ -11,5 +11,6 @@ export class QuantumTask {
         for (const task of this.tasks) {
             await task();
         }
+        this.tasks = new Set<() => void>();
     }
 }
