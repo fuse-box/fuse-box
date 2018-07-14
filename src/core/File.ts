@@ -446,18 +446,23 @@ export class File {
         this.context.extensionOverrides && this.context.extensionOverrides.setOverrideFileInfo(this);
 
         if (!fs.existsSync(this.info.absPath)) {
-
-            if (/\.jsx?$/.test(this.info.fuseBoxPath) && this.context.fuse && this.context.fuse.producer) {
-                this.context.fuse.producer.addWarning('unresolved',
-                    `Statement "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
+            if (/.js$/.test(this.info.absPath) && fs.existsSync(this.info.absPath + 'on')) {
+                // Was looking for .js but found .json (Node allows `require('config')` to refer to a .json file)
+                this.absPath += 'on';
+                this.relativePath += 'on';
+                this.info.absPath = this.absPath;
             } else {
-                this.addError(`Asset reference "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
+                if (/\.jsx?$/.test(this.info.fuseBoxPath) && this.context.fuse && this.context.fuse.producer) {
+                    this.context.fuse.producer.addWarning('unresolved',
+                        `Statement "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
+                } else {
+                    this.addError(`Asset reference "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
+                }
+                this.notFound = true;
+                return;
             }
-            this.notFound = true;
-            return;
         }
         if (/\.ts(x)?$/.test(this.absPath)) {
-
             this.context.debug("Typescript", `Captured  ${this.info.fuseBoxPath}`);
             return this.handleTypescript();
         }
