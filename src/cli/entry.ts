@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-const argv = require('minimist')(process.argv.slice(2));
+const argv = require('getopts')(process.argv.slice(2));
 import { Install } from './Install';
 import { Help } from './Help';
 
