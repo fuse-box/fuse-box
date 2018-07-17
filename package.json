@@ -99,8 +99,7 @@
     "tslib": "^1.8.0",
     "watch": "^1.0.1",
     "ws": "^1.1.1",
-    "getopts": "^2.1.1",
-    "yargs": "9.0.1"
+    "getopts": "^2.1.1"
   },
   "collective": {
     "type": "opencollective",
