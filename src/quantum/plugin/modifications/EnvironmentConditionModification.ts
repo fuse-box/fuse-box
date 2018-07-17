@@ -9,7 +9,7 @@ export class EnvironmentConditionModification {
 
         return each(file.fuseboxIsEnvConditions, (replacable: ReplaceableBlock) => {
 
-            if (core.opts.isTargetUniveral() || core.opts.isTargetNpm()) {
+            if (core.opts.isTargetUniveral()) {
                 if (replacable.identifier === "isServer") {
                     replacable.setFunctionName(`${core.opts.quantumVariableName}.cs`);
                 }
