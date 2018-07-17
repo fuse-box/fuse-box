@@ -43,7 +43,7 @@ export class QuantumCore {
     public postTasks = new QuantumTask(this);
     public log: Log;
     public opts: QuantumOptions;
-    public cssCollection = new CSSCollection(this);
+    public cssCollection = new Map<string, CSSCollection>();
     public writer = new BundleWriter(this);
     public context: WorkFlowContext;
     public requiredMappings = new Set<RegExp>();
@@ -105,6 +105,10 @@ export class QuantumCore {
 
         await this.prepareQuantumBits();
         await this.treeShake();
+        await this.processCSS();
+        // make sure additional tasks are executed after the css is removed
+        await this.postTasks.execute();
+
         await this.render();
         this.compriseAPI();
         await this.writer.process();
@@ -168,21 +172,6 @@ export class QuantumCore {
         });
     }
     private printStat() {
-        // let apiStyle = "Optimised numbers (Best performance)";
-        // if (this.api.hashesUsed()) {
-        //     apiStyle = "Hashes (Might cause issues)";
-        // }
-        // this.log.printOptions("Stats", {
-        //     warnings: this.producerAbstraction.warnings.size,
-        //     apiStyle: apiStyle,
-        //     target: this.opts.optsTarget,
-        //     uglify: this.opts.shouldUglify(),
-        //     removeExportsInterop: this.opts.shouldRemoveExportsInterop(),
-        //     removeUseStrict: this.opts.shouldRemoveUseStrict(),
-        //     replaceProcessEnv: this.opts.shouldReplaceProcessEnv(),
-        //     ensureES5: this.opts.shouldEnsureES5(),
-        //     treeshake: this.opts.shouldTreeShake(),
-        // });
         if (this.opts.shouldShowWarnings()) {
             this.producerAbstraction.warnings.forEach(warning => {
                 this.log.echoBreak();
@@ -245,6 +234,23 @@ export class QuantumCore {
         await this.hoist();
     }
 
+    private async processCSS(){
+        if (!this.opts.shouldGenerateCSS()) {
+            return;
+        }
+        await each(this.producerAbstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
+            return each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
+                return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) => {
+                    // make sure that the files that were removed
+                    // during treeshake aren't grouped and processed
+                    if(!fileAbstraction.canBeRemoved){
+                        return CSSModifications.perform(this, fileAbstraction)
+                    }
+                });
+            });
+        });
+    }
+
     public treeShake() {
         if (this.opts.shouldTreeShake()) {
             const shaker = new TreeShake(this);
@@ -254,17 +260,25 @@ export class QuantumCore {
     public render() {
         return each(this.producerAbstraction.bundleAbstractions, (bundleAbstraction: BundleAbstraction​​) => {
             const globals = this.producer.fuse.context.globals;
+            const globalFileMap = {};
             const generator = new FlatFileGenerator(this, bundleAbstraction);
             generator.init();
             return each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
                 return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) => {
                     if (fileAbstraction.fuseBoxPath == packageAbstraction.entryFile && globals && Object.keys(globals).indexOf(packageAbstraction.name) != -1) {
-                        generator.setGlobals(globals[packageAbstraction.name], fileAbstraction.getID());
+                        globalFileMap[packageAbstraction.name] = fileAbstraction.getID();
                     }
                     return generator.addFile(fileAbstraction, this.opts.shouldEnsureES5());
                 });
 
             }).then(() => {
+                if(globals){
+                    Object.keys(globals).forEach(globalPackageName => {
+                        if(globalFileMap[globalPackageName] !== undefined) {
+                            generator.setGlobals(globals[globalPackageName], globalFileMap[globalPackageName]);
+                        }
+                    })
+                }
                 this.log.echoInfo(`Render bundle ${bundleAbstraction.name}`);
                 const bundleCode = generator.render();
                 this.producer.bundles.get(bundleAbstraction.name).generatedCode = new Buffer(bundleCode);
@@ -281,9 +295,6 @@ export class QuantumCore {
 
     public modify(file: FileAbstraction) {
         const modifications = [
-            // CSS
-            CSSModifications,
-
             // modify require statements: require -> $fsx.r
             StatementModification,
 

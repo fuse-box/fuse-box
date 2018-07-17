@@ -62,6 +62,12 @@ export class HTTPServer {
             }
 
         }
+        
+        if (this.opts.fallback) {
+            this.app.use('*', (req, res) => {
+                res.sendFile(this.opts.fallback)
+            })
+        }
 
         server.on("request", this.app);
         setTimeout(() => {
@@ -103,11 +109,6 @@ Development server running ${opts.https ? 'https' : 'http'}://localhost:${port} 
                 this.fuse.context.log.echoWarning("Make sure you are not using dev server for production!")
                 this.app.use(this.fuse.context.sourceMapsRoot, express.static(this.fuse.context.homeDir));
             }
-        }
-        if (this.opts.fallback) {
-            this.app.use('*', (req, res) => {
-                res.sendFile(this.opts.fallback)
-            })
         }
     }
 }
