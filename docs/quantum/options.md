@@ -15,7 +15,7 @@ Some operations are implicit
 
 ## Target
 Default value: `browser`
-Possible values `server`, `browser`, `universal`,  `electron`, `npm`
+Possible values `server`, `browser`, `universal`,  `electron`, `npm-server`, `npm-browser`, `npm-universal` (for backward compatibility, `npm` can be used and equates to `npm-server`)
 
 ```js
 QuantumPlugin({
