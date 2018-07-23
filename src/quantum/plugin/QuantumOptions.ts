@@ -341,17 +341,18 @@ export class QuantumOptions {
         return this.optsTarget === "electron";
     }
     public isTargetUniveral() {
-        return this.optsTarget === "universal";
+        return this.optsTarget === "universal" || this.optsTarget === "npm-universal";
     }
     public isTargetNpm() {
-        return this.optsTarget === "npm";
+        return this.optsTarget === "npm" || this.optsTarget === "npm-server" ||
+			this.optsTarget === "npm-browser" || this.optsTarget === "npm-universal";
     }
 
     public isTargetServer() {
-        return this.optsTarget === "server" || this.optsTarget === "electron" || this.optsTarget === "npm";
+        return this.optsTarget === "server" || this.optsTarget === "electron" || this.optsTarget === "npm" || this.optsTarget === "npm-server";
     }
 
     public isTargetBrowser() {
-        return this.optsTarget === "browser";
+        return this.optsTarget === "browser" || this.optsTarget === "npm-browser";
     }
 }
