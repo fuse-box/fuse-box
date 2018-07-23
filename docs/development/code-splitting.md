@@ -68,3 +68,5 @@ fuse.bundle("app")
 
 fuse.run()
 ```
+
+The bundle mapping path for browser/server can be dynamically resolved at runtime using the Quantum option [Runtime Bundle Mapping](/page/quantum-configuration#runtimebundlemapping)
