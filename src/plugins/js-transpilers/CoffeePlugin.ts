@@ -54,7 +54,7 @@ export class CoffeePluginClass implements Plugin {
         file.loadContents();
 
         if (!coffee) {
-            coffee = require("coffee-script");
+            coffee = require("coffeescript");
         }
 
         return new Promise((res, rej) => {
