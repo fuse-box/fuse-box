@@ -1,6 +1,6 @@
 {
   "name": "fuse-box",
-  "version": "3.3.0",
+  "version": "3.5.0-next.1",
   "description": "Fuse-Box a bundler that does it right",
   "typings": "index.d.ts",
   "main": "index.js",
@@ -83,7 +83,6 @@
     "lego-api": "^1.0.8",
     "minimist": "^1.2.0",
     "mustache": "^2.3.0",
-    "node-sass": "^4.9.0",
     "postcss": "^6.0.22",
     "pretty-time": "^1.0.0",
     "prettysize": "1.1.0",
@@ -94,7 +93,7 @@
     "tslib": "^1.9.1",
     "watch": "^1.0.2",
     "ws": "^5.1.1",
-    "yargs": "^11.0.0"
+    "getopts": "^2.1.1"
   },
   "collective": {
     "type": "opencollective",
