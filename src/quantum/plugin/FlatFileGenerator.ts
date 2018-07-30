@@ -85,7 +85,7 @@ export class FlatFileGenerator {
 
             const req = `${this.core.opts.quantumVariableName}.r(${JSON.stringify(this.entryId)})`;
 
-            if (this.core.opts.isTargetNpm() || this.core.opts.isTargetServer()) {
+            if (this.core.opts.isTargetServer()) {
 
                 // look for a global mention of the entry package, ignore other settings. this could use some improvement.
                 var dirtyCheck = false;

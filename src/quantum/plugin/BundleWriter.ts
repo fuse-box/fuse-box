@@ -6,6 +6,7 @@ import * as fs from "fs";
 import { QuantumSplitConfig } from "./QuantumSplit";
 import { ScriptTarget } from "../../core/File";
 import { CSSOptimizer } from './CSSOptimizer';
+import { CSSCollection } from "../core/CSSCollection";
 
 export class BundleWriter {
     private bundles = new Map<string, Bundle>();
@@ -128,34 +129,40 @@ export class BundleWriter {
                 }
             });
         }
-        const cssCollection = this.core.cssCollection;
-        const cssData = cssCollection.collection;
+        const writeCSS = async (cssCollection: CSSCollection, key: string) => {
+            const cssData = cssCollection.collection;
 
-        if( this.core.opts.shouldGenerateCSS() && cssData.size > 0 ) {
-            const output = this.core.producer.fuse.context.output;
-            const name = this.core.opts.getCSSPath();
-            cssCollection.render(name);
-            let useSourceMaps = cssCollection.useSourceMaps;
+            if( cssData.size > 0 ) {
+                const output = this.core.producer.fuse.context.output;
+                const name = key === 'default' ? this.core.opts.getCSSPath() : this.core.opts.getCSSFiles()[key];
+                cssCollection.render(name);
+                let useSourceMaps = cssCollection.useSourceMaps;
 
-            const cleanCSSOptions = this.core.opts.getCleanCSSOptions();
-            if( cleanCSSOptions){
-                const optimer = new CSSOptimizer(this.core);
-                optimer.optimize(cssCollection, cleanCSSOptions);
+                const cleanCSSOptions = this.core.opts.getCleanCSSOptions();
+                if( cleanCSSOptions){
+                    const optimer = new CSSOptimizer(this.core);
+                    optimer.optimize(cssCollection, cleanCSSOptions);
+                }
+                //output.write(this.core.opts.getCSSPath(), cssString)
+                const cssResultData = await output.writeToOutputFolder(name, cssCollection.getString(), true);
+                bundleManifest[name] = {
+                    fileName : cssResultData.filename,
+                    type : "css",
+                    hash : cssResultData.hash,
+                    absPath : cssResultData.path,
+                    relativePath : cssResultData.relativePath,
+                    webIndexed : true
+                };
+                this.core.producer.injectedCSSFiles.add(cssResultData.filename);
+                if ( useSourceMaps ) {
+                    output.writeToOutputFolder(this.core.opts.getCSSSourceMapsPath(), cssCollection.sourceMap);
+                }
             }
-            //output.write(this.core.opts.getCSSPath(), cssString)
-            const cssResultData = await output.writeToOutputFolder(name, cssCollection.getString(), true);
-            bundleManifest["css"] = {
-                filename : cssResultData.filename,
-                type : "css",
-                hash : cssResultData.hash,
-                absPath : cssResultData.path,
-                relativePath : cssResultData.relativePath,
-                webIndexed : true
-            }
-            this.core.producer.injectedCSSFiles.add(cssResultData.filename);
-            if ( useSourceMaps ) {
-                output.writeToOutputFolder(this.core.opts.getCSSSourceMapsPath(), cssCollection.sourceMap);
-            }
+
+        };
+
+        if ( this.core.opts.shouldGenerateCSS() ) {
+            this.core.cssCollection.forEach(writeCSS)
         }
 
         return each(producer.bundles, (bundle: Bundle) => {

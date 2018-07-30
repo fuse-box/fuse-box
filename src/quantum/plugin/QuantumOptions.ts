@@ -29,6 +29,7 @@ export interface IQuantumExtensionParams {
         path?: string,
         clean?: boolean
     } | boolean,
+    cssFiles?: { [key: string]: string }
     hoisting?: boolean | { names: string[] };
     containedAPI?: boolean,
     noConflictApi?: boolean;
@@ -64,6 +65,7 @@ export class QuantumOptions {
     private cleanCSS: any;
     private css = false;
     private cssPath = "styles.css";
+    private readonly cssFiles: { [key: string]: string };
     public quantumVariableName = "$fsx";
     public definedExpressions: { [key: string]: boolean | string | number };
     public webIndexPlugin: WebIndexPluginClass;
@@ -84,6 +86,9 @@ export class QuantumOptions {
             } else {
                 this.cleanCSS = true;
             }
+        }
+        if (opts.cssFiles) {
+            this.cssFiles = opts.cssFiles;
         }
         if (opts.api) {
             this.apiCallback = opts.api;
@@ -194,7 +199,7 @@ export class QuantumOptions {
     }
 
     public shouldGenerateCSS() {
-        return this.css === true;
+        return this.css === true || this.cssFiles;
     }
 
     public getCleanCSSOptions() {
@@ -203,6 +208,10 @@ export class QuantumOptions {
 
     public getCSSPath() {
         return this.cssPath;
+    }
+
+    public getCSSFiles() {
+        return this.cssFiles;
     }
 
     public getCSSSourceMapsPath() {
@@ -332,17 +341,18 @@ export class QuantumOptions {
         return this.optsTarget === "electron";
     }
     public isTargetUniveral() {
-        return this.optsTarget === "universal";
+        return this.optsTarget === "universal" || this.optsTarget === "npm-universal";
     }
     public isTargetNpm() {
-        return this.optsTarget === "npm";
+        return this.optsTarget === "npm" || this.optsTarget === "npm-server" ||
+			this.optsTarget === "npm-browser" || this.optsTarget === "npm-universal";
     }
 
     public isTargetServer() {
-        return this.optsTarget === "server" || this.optsTarget === "electron" || this.optsTarget === "npm";
+        return this.optsTarget === "server" || this.optsTarget === "electron" || this.optsTarget === "npm" || this.optsTarget === "npm-server";
     }
 
     public isTargetBrowser() {
-        return this.optsTarget === "browser";
+        return this.optsTarget === "browser" || this.optsTarget === "npm-browser";
     }
 }

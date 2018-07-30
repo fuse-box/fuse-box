@@ -446,12 +446,13 @@ export class File {
         this.context.extensionOverrides && this.context.extensionOverrides.setOverrideFileInfo(this);
 
         if (!fs.existsSync(this.info.absPath)) {
-
-            if (/\.jsx?$/.test(this.info.fuseBoxPath) && this.context.fuse && this.context.fuse.producer) {
-                this.context.fuse.producer.addWarning('unresolved',
-                    `Statement "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
-            } else {
-                this.addError(`Asset reference "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
+            if (!/\*/.test(this.info.fuseBoxPath)) {
+                if (/\.js(x)?$/.test(this.info.fuseBoxPath) && this.context.fuse && this.context.fuse.producer) {
+                    this.context.fuse.producer.addWarning('unresolved',
+                        `Statement "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
+                } else {
+                    this.addError(`Asset reference "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
+                }
             }
             this.notFound = true;
             return;
