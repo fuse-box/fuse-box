@@ -320,7 +320,7 @@ You can retrieve bundle names from a [producer](/page/bundle#producer) like so:
 ```js
 fuse.run().then(producer => {
     producer.bundles.forEach((bundle, name) => {
-       bundle.output.lastPrimaryOutput.filename
+       bundle.context.output.lastPrimaryOutput.filename
     });
 })
 ```
