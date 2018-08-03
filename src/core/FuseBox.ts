@@ -228,21 +228,13 @@ export class FuseBox {
             this.context.filterFile = opts.filterFile;
         }
 
-        if (opts.log) {
-            if (typeof opts.log === "boolean") {
-                this.context.doLog = opts.log;
-            }
-
-            if (typeof opts.log === "object" && opts.log.enabled) {
-                this.context.doLog = opts.log.enabled;
-                this.context.log.printLog = opts.log.enabled;
-                this.context.log.showBundledFiles = opts.log.showBundledFiles;
-            }
+        if (typeof opts.log === "boolean") {
+            this.context.log.printLog = opts.log;
         }
 
-        if (opts.log !== undefined) {
-            this.context.doLog = true;
-            this.context.log.printLog = opts.log;
+        if (typeof opts.log === "object") {
+            this.context.log.printLog = opts.log.enabled !== false;
+            this.context.log.showBundledFiles = opts.log.showBundledFiles;
         }
 
         if (opts.hash !== undefined) {
