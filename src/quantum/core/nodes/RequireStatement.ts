@@ -45,8 +45,8 @@ export class RequireStatement {
 
                 if (moduleValue.charAt(0) === '@') {
                     // matching @angular/animations/browser
-                    // where package name is @angular/animations 
-                    let matched = moduleValue.match(/(@[\w_-]+\/[\w_-]+)\/?(.*)/i);
+                    // where package name is @angular/animations
+                    let matched = moduleValue.match(/(@[a-zA-Z0-9][a-zA-Z0-9_\.-]*\/[a-zA-Z0-9][a-zA-Z0-9_-]*)\/?(.*)/i);
                     if (matched) {
                         this.nodeModuleName = matched[1]
                         this.nodeModulePartialRequire = matched[2]
