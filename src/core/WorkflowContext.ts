@@ -324,6 +324,7 @@ export class WorkFlowContext {
 
     public nukeCache() {
         this.resetNodeModules();
+        this.pendingPromises = [];
         if (this.cache) {
             removeFolder(this.cache.cacheFolder);
             this.cache.initialize();
