@@ -64,7 +64,7 @@
     "run-sequence": "^1.2.2",
     "should": "^11.1.0",
     "sinon": "^1.17.6",
-    "typescript": "^2.8.0-dev.20180204",
+    "typescript": "^3.1.0-dev.20180804",
     "uglify-js": "^3.1.8",
     "validate-commit-msg": "^2.14.0",
     "wires-reactive": "^1.1.1"
@@ -83,6 +83,7 @@
     "fliplog": "^0.3.13",
     "fs-extra": "^2.0.0",
     "fuse-concat-with-sourcemaps": "^1.0.5",
+    "getopts": "^2.1.1",
     "glob": "^7.1.1",
     "ieee754": "^1.1.8",
     "inquirer": "^3.0.6",
@@ -98,8 +99,7 @@
     "source-map": "^0.7.1",
     "tslib": "^1.8.0",
     "watch": "^1.0.1",
-    "ws": "^1.1.1",
-    "getopts": "^2.1.1"
+    "ws": "^1.1.1"
   },
   "collective": {
     "type": "opencollective",
