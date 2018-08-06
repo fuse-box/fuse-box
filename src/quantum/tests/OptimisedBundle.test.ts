@@ -102,7 +102,7 @@ export class FlatAPItest {
     }
 
     "Should bundle a partial require on a scoped repository"() {
-        // gets a module from src/tests/stubs/test_modules/fbjs
+        // gets a module from src/tests/stubs/test_modules/@bar
         return createOptimisedBundleEnv({
             stubs: true,
             project: {
@@ -116,5 +116,21 @@ export class FlatAPItest {
 
             should(first).deepEqual({ something: { hello: '@bar/animations/browser' } })
         });
+    }
+
+    "Should bundle a partial require on a scoped (with valid naming) repository"() {
+      // gets a module from src/tests/stubs/test_modules/@bar.foo
+      return createOptimisedBundleEnv({
+          stubs: true,
+          project: {
+              files: {
+                  "index.js": `exports.something = require("@bar.foo/animations/browser")`
+              },
+              instructions: "index.js",
+          },
+      }).then((result) => {
+          const first = result.window.$fsx.r(0);
+          should(first).deepEqual({ something: { hello: '@bar/animations/browser' } })
+      });
     }
 }
