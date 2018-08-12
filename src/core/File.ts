@@ -679,7 +679,7 @@ export class File {
 			}
             result.outputText = result
                 .outputText
-                .replace(`//# sourceMappingURL=${this.info.fuseBoxPath}.map`, `//# sourceMappingURL=${this.context.bundle.name}.js.map`)
+                .replace(`//# sourceMappingURL=${this.info.fuseBoxPath}.map`, `//# sourceMappingURL=${this.context.bundle.name}.js.map?tm=${this.context.cacheBustPreffix}`)
                 .replace("//# sourceMappingURL=module.js.map", "");
             this.sourceMap = JSON.stringify(jsonSourceMaps);
         }

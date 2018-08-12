@@ -256,7 +256,8 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`);
         }
         if (this.context.sourceMapsProject || this.context.sourceMapsVendor) {
             let sourceName = /[^\/]*$/.exec(this.context.output.filename)[0];
-            this.concat.add(null, `//# sourceMappingURL=${sourceName}.js.map`);
+
+            this.concat.add(null, `//# sourceMappingURL=${sourceName}.js.map?tm=${this.context.cacheBustPreffix}`);
         }
     }
 
