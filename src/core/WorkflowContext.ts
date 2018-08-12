@@ -69,6 +69,8 @@ export class WorkFlowContext {
      */
     public appRoot: any = appRoot.path;
 
+    public cacheBustPreffix : string;
+
     public dynamicImportsEnabled = true;
 
     public automaticAlias = true;
@@ -399,6 +401,7 @@ export class WorkFlowContext {
      */
     public reset() {
         this.log.reset();
+        this.cacheBustPreffix = new Date().getTime().toString();
         this.dependents = new Map<string, Set<string>>();
         this.emitter = new NativeEmitter();
         this.storage = new Map();
