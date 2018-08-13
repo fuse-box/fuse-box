@@ -3,13 +3,16 @@ import { FileAbstraction } from "../core/FileAbstraction";
 import { hashString, joinFuseBoxPath } from "../../Utils";
 import { PackageAbstraction } from "../core/PackageAbstraction";
 import { QuantumCore } from "./QuantumCore";
+import { CSSCollection } from '../core/CSSCollection';
 
 export class QuantumBit {
     public name: string;
     public core: QuantumCore;
+    public cssCollection : CSSCollection;
     private candidates: Map<string, FileAbstraction> = new Map();
     private modulesCanidates = new Map<string, PackageAbstraction>();
     private isEntryModule = false;
+
     private modules2proccess : FileAbstraction[] = [];
     public files: Map<string, FileAbstraction> = new Map();
 
