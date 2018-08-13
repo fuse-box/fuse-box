@@ -10,27 +10,27 @@ import { Log } from "./Log";
  * @export
  */
 export function breakCache() {
-    const mainFile = require.main.filename;
-    const fileKey = fastHash(mainFile);
-    const currentStat = fs.statSync(mainFile);
-    const fileModificationTime = currentStat.mtime.getTime()
-    const bustingCacheFolder = path.join(Config.NODE_MODULES_DIR, "fuse-box/.cache-busting");
+	const mainFile = require.main.filename;
+	const fileKey = fastHash(mainFile);
+	const currentStat = fs.statSync(mainFile);
+	const fileModificationTime = currentStat.mtime.getTime();
+	const bustingCacheFolder = path.join(Config.NODE_MODULES_DIR, "fuse-box/.cache-busting");
 
-    try {
-      ensureDir(bustingCacheFolder);
-    } catch (error) {
-      return;
-    }
+	try {
+		ensureDir(bustingCacheFolder);
+	} catch (error) {
+		return;
+	}
 
-    const infoFile = path.join(bustingCacheFolder, fileKey as string);
-    if (fs.existsSync(infoFile)) {
-        const lastModifiedStored = fs.readFileSync(infoFile).toString();
-        if (fileModificationTime.toString() !== lastModifiedStored) {
-            Log.defer((log) => log.echoGray(`--- cache cleared ---`));
-            removeFolder(Config.TEMP_FOLDER);
-            fs.writeFileSync(infoFile, fileModificationTime.toString());
-        }
-    } else {
-        fs.writeFileSync(infoFile, fileModificationTime.toString());
-    }
+	const infoFile = path.join(bustingCacheFolder, fileKey as string);
+	if (fs.existsSync(infoFile)) {
+		const lastModifiedStored = fs.readFileSync(infoFile).toString();
+		if (fileModificationTime.toString() !== lastModifiedStored) {
+			Log.defer(log => log.echoGray(`--- cache cleared ---`));
+			removeFolder(Config.TEMP_FOLDER);
+			fs.writeFileSync(infoFile, fileModificationTime.toString());
+		}
+	} else {
+		fs.writeFileSync(infoFile, fileModificationTime.toString());
+	}
 }

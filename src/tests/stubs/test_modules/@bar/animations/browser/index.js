@@ -1,1 +1,1 @@
-module.exports = { hello: "@bar/animations/browser" }
+module.exports = { hello: "@bar/animations/browser" };

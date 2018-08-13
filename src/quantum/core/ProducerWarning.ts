@@ -1,3 +1,3 @@
 export class ProducerWarning {
-    constructor(public msg: string) { }
+	constructor(public msg: string) {}
 }

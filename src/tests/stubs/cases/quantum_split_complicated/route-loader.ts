@@ -11,15 +11,15 @@ const routeLoader = [testRoute, anotherTestRoute];
 
 // mock router call
 export async function loadRoute() {
-  routeLoader.forEach(r => {
-    runRoute(r);
-  });
+	routeLoader.forEach(r => {
+		runRoute(r);
+	});
 }
 
 async function runRoute(r: typeof testRoute) {
-  const component = await r.component();
-  component();
+	const component = await r.component();
+	component();
 
-  const components = await Promise.all(r.moreComponents.map(r => r()));
-  components.forEach(c => c());
+	const components = await Promise.all(r.moreComponents.map(r => r()));
+	components.forEach(c => c());
 }

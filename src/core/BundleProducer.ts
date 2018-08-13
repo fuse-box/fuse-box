@@ -12,209 +12,213 @@ import { ProducerAbstraction, ProducerAbtractionOptions } from "../quantum/core/
 import { BundleAbstraction } from "../quantum/core/BundleAbstraction";
 
 export class BundleProducer {
-    public bundles = new Map<string, Bundle>();
-    public hmrInjected = false;
-    public hmrAllowed = true;
-    public allowSyntheticDefaultImports = false;
-    public sharedSourceMaps = new Map<string, string>();
-    public injectedCSSFiles = new Set<string>();
-    public devServer: Server;
-    public sharedEvents = new EventEmitter();
-    public writeBundles = true;
-    public sharedCustomPackages: Map<string, SharedCustomPackage​>;
-    public runner: BundleRunner;
-    public userEnvVariables: any = Object.assign({ NODE_ENV: "production" }, process.env);
-    public devServerOptions: ServerOptions;
+	public bundles = new Map<string, Bundle>();
+	public hmrInjected = false;
+	public hmrAllowed = true;
+	public allowSyntheticDefaultImports = false;
+	public sharedSourceMaps = new Map<string, string>();
+	public injectedCSSFiles = new Set<string>();
+	public devServer: Server;
+	public sharedEvents = new EventEmitter();
+	public writeBundles = true;
+	public sharedCustomPackages: Map<string, SharedCustomPackage>;
+	public runner: BundleRunner;
+	public userEnvVariables: any = Object.assign({ NODE_ENV: "production" }, process.env);
+	public devServerOptions: ServerOptions;
 
-    public entryPackageName: string;
-    public entryPackageFile: string;
-    private injectedCode = new Map<string, string>();
-    private chokidarOptions: any;
-    private warnings = new Map<string, string[]>();
-    constructor(public fuse: FuseBox) {
-        this.runner = new BundleRunner(this.fuse);
-    }
+	public entryPackageName: string;
+	public entryPackageFile: string;
+	private injectedCode = new Map<string, string>();
+	private chokidarOptions: any;
+	private warnings = new Map<string, string[]>();
+	constructor(public fuse: FuseBox) {
+		this.runner = new BundleRunner(this.fuse);
+	}
 
-    public run(opts: { chokidar?: any, runType?: string }): Promise<BundleProducer> {
-        if (opts) {
-            this.chokidarOptions = opts.chokidar;
-        }
-        
-        /** Collect information about watchers and start watching */
-        this.watch();
-        //this.runner = new BundleRunner(this.fuse);
-        
-        return this.runner.run(opts).then(() => {
+	public run(opts: { chokidar?: any; runType?: string }): Promise<BundleProducer> {
+		if (opts) {
+			this.chokidarOptions = opts.chokidar;
+		}
 
-            this.sharedEvents.emit("producer-done");
-            this.printWarnings();
-            return each(this.fuse.context.plugins, plugin => {
-                if (plugin && utils.isFunction(plugin.producerEnd)) {
-                    return plugin.producerEnd(this);
-                }
-            });
-        }).then(() => { 
-           // this.bundles = new Map<string, Bundle>();
-            return this 
-        });
-    }
+		/** Collect information about watchers and start watching */
+		this.watch();
+		//this.runner = new BundleRunner(this.fuse);
 
-    public addUserProcessEnvVariables(data: any) {
-        this.userEnvVariables = Object.assign(this.userEnvVariables, data);
-    }
-    public printWarnings() {
-        if (this.warnings.size > 0 && this.fuse.context.showWarnings) {
-            this.fuse.context.log.echoBreak();
-            this.warnings.forEach(warnings => {
-                warnings.forEach(list => {
-                    this.fuse.context.log.echoWarning(list);
-                });
-            });
-            this.fuse.context.log.echoBreak();
-        }
-    }
+		return this.runner
+			.run(opts)
+			.then(() => {
+				this.sharedEvents.emit("producer-done");
+				this.printWarnings();
+				return each(this.fuse.context.plugins, plugin => {
+					if (plugin && utils.isFunction(plugin.producerEnd)) {
+						return plugin.producerEnd(this);
+					}
+				});
+			})
+			.then(() => {
+				// this.bundles = new Map<string, Bundle>();
+				return this;
+			});
+	}
 
-    public addWarning(key: string, message: string) {
-        let list;
-        if (!this.warnings.has(key)) {
-            list = []
-            this.warnings.set(key, list)
-        } else {
-            list = this.warnings.get(key)
-        }
-        list.push(message);
-    }
+	public addUserProcessEnvVariables(data: any) {
+		this.userEnvVariables = Object.assign(this.userEnvVariables, data);
+	}
+	public printWarnings() {
+		if (this.warnings.size > 0 && this.fuse.context.showWarnings) {
+			this.fuse.context.log.echoBreak();
+			this.warnings.forEach(warnings => {
+				warnings.forEach(list => {
+					this.fuse.context.log.echoWarning(list);
+				});
+			});
+			this.fuse.context.log.echoBreak();
+		}
+	}
 
-    public getErrors() {
-        const errors = []
-        this.bundles.forEach(bundle => errors.push(...bundle.getErrors()))
-        return errors
-    }
+	public addWarning(key: string, message: string) {
+		let list;
+		if (!this.warnings.has(key)) {
+			list = [];
+			this.warnings.set(key, list);
+		} else {
+			list = this.warnings.get(key);
+		}
+		list.push(message);
+	}
 
-    public devCodeHasBeenInjected(key: string) {
-        return this.injectedCode.has(key);
-    }
+	public getErrors() {
+		const errors = [];
+		this.bundles.forEach(bundle => errors.push(...bundle.getErrors()));
+		return errors;
+	}
 
-    public getDevInjections(): Map<string, string> {
-        return this.injectedCode;
-    }
+	public devCodeHasBeenInjected(key: string) {
+		return this.injectedCode.has(key);
+	}
 
-    public injectDevCode(key: string, code: string) {
-        if (!this.injectedCode.has(key)) {
-            this.injectedCode.set(key, code)
-        }
-    }
+	public getDevInjections(): Map<string, string> {
+		return this.injectedCode;
+	}
 
-    public sortBundles(): Bundle[] {
-        let bundles = [...this.bundles.values()];
-        bundles = bundles.sort((a, b) => {
-            if (a.webIndexPriority < b.webIndexPriority) {
-                return 1;
-            }
-            if (a.webIndexPriority > b.webIndexPriority) {
-                return -1;
-            }
-            return 0;
-        });
-        return bundles;
-    }
+	public injectDevCode(key: string, code: string) {
+		if (!this.injectedCode.has(key)) {
+			this.injectedCode.set(key, code);
+		}
+	}
 
-    public generateAbstraction(opts?: ProducerAbtractionOptions): Promise<ProducerAbstraction> {
-        const abstraction = new ProducerAbstraction(opts);
+	public sortBundles(): Bundle[] {
+		let bundles = [...this.bundles.values()];
+		bundles = bundles.sort((a, b) => {
+			if (a.webIndexPriority < b.webIndexPriority) {
+				return 1;
+			}
+			if (a.webIndexPriority > b.webIndexPriority) {
+				return -1;
+			}
+			return 0;
+		});
+		return bundles;
+	}
 
-        return each(this.bundles, (bundle: Bundle) => {
-            const bundleAbstraction = new BundleAbstraction(bundle.name);
-            abstraction.registerBundleAbstraction(bundleAbstraction);
-            return bundleAbstraction.parse(bundle.generatedCode.toString());
-        }).then(() => {
-            return abstraction;
-        });
-    }
+	public generateAbstraction(opts?: ProducerAbtractionOptions): Promise<ProducerAbstraction> {
+		const abstraction = new ProducerAbstraction(opts);
 
-    public register(packageName: string, opts: any) {
-        let instructions = opts.instructions;
-        if (!packageName) {
-            throw new Error("Package name is required");
-        }
-        if (!opts.homeDir) {
-            throw new Error("Register requires homeDir!");
-        }
-        let homeDir = ensureUserPath(opts.homeDir);
+		return each(this.bundles, (bundle: Bundle) => {
+			const bundleAbstraction = new BundleAbstraction(bundle.name);
+			abstraction.registerBundleAbstraction(bundleAbstraction);
+			return bundleAbstraction.parse(bundle.generatedCode.toString());
+		}).then(() => {
+			return abstraction;
+		});
+	}
 
-        if (!instructions) {
-            throw new Error("Register requires opts.instructions!");
-        }
-        let parser = Arithmetic.parse(instructions);
-        // doing the arithmetic magic here
-        if (!this.sharedCustomPackages) {
-            this.sharedCustomPackages = new Map<string, SharedCustomPackage​>();
-        }
+	public register(packageName: string, opts: any) {
+		let instructions = opts.instructions;
+		if (!packageName) {
+			throw new Error("Package name is required");
+		}
+		if (!opts.homeDir) {
+			throw new Error("Register requires homeDir!");
+		}
+		let homeDir = ensureUserPath(opts.homeDir);
 
-        return Arithmetic.getFiles(parser, false, homeDir).then((data: BundleData) => {
-            let pkg = new SharedCustomPackage​​(packageName, data);
-            pkg.init(homeDir, opts.main || "index.js");
-            this.sharedCustomPackages.set(packageName, pkg);
-        });
-    }
+		if (!instructions) {
+			throw new Error("Register requires opts.instructions!");
+		}
+		let parser = Arithmetic.parse(instructions);
+		// doing the arithmetic magic here
+		if (!this.sharedCustomPackages) {
+			this.sharedCustomPackages = new Map<string, SharedCustomPackage>();
+		}
 
-    public isShared(name: string) {
-        return this.sharedCustomPackages && this.sharedCustomPackages.get(name);
-    }
+		return Arithmetic.getFiles(parser, false, homeDir).then((data: BundleData) => {
+			let pkg = new SharedCustomPackage(packageName, data);
+			pkg.init(homeDir, opts.main || "index.js");
+			this.sharedCustomPackages.set(packageName, pkg);
+		});
+	}
 
-    public getSharedPackage(name: string): SharedCustomPackage {
-        return this.sharedCustomPackages.get(name);
-    }
+	public isShared(name: string) {
+		return this.sharedCustomPackages && this.sharedCustomPackages.get(name);
+	}
 
-    public add(name: string, bundle: Bundle) {
-        this.bundles.set(name, bundle);
-        /** Add bundle to the runner */
-        this.runner.bundle(bundle);
-    }
+	public getSharedPackage(name: string): SharedCustomPackage {
+		return this.sharedCustomPackages.get(name);
+	}
 
-    public watch() {
-        let settings = new Map<string, RegExp>();
-        let isRequired = false;
-        // collecting paths and bundles name
-        this.bundles.forEach(bundle => {
-            if (bundle.watchRule) {
-                isRequired = true;
-                settings.set(bundle.name, string2RegExp(bundle.watchRule));
-            }
-        });
-        // Initiate watch if any of the bundles within producer requires a watcher
-        if (!isRequired) {
-            return;
-        }
+	public add(name: string, bundle: Bundle) {
+		this.bundles.set(name, bundle);
+		/** Add bundle to the runner */
+		this.runner.bundle(bundle);
+	}
 
-        let ready = false;
-        chokidar.watch(this.fuse.context.homeDir, this.chokidarOptions || {})
-            .on('all', (event, fp) => {
-                if (ready) {
-                    this.onChanges(settings, fp)
-                }
-            }).on('ready', () => {
-                ready = true;
-            });
-    }
+	public watch() {
+		let settings = new Map<string, RegExp>();
+		let isRequired = false;
+		// collecting paths and bundles name
+		this.bundles.forEach(bundle => {
+			if (bundle.watchRule) {
+				isRequired = true;
+				settings.set(bundle.name, string2RegExp(bundle.watchRule));
+			}
+		});
+		// Initiate watch if any of the bundles within producer requires a watcher
+		if (!isRequired) {
+			return;
+		}
 
-    /** Trigger bundles that are affected */
-    protected onChanges(settings: Map<string, RegExp>, path: string) {
-        path = ensureFuseBoxPath​​(path);
-        settings.forEach((expression, bundleName) => {
-            if (expression.test(path)) {
-                const bundle = this.bundles.get(bundleName);
+		let ready = false;
+		chokidar
+			.watch(this.fuse.context.homeDir, this.chokidarOptions || {})
+			.on("all", (event, fp) => {
+				if (ready) {
+					this.onChanges(settings, fp);
+				}
+			})
+			.on("ready", () => {
+				ready = true;
+			});
+	}
 
-                const defer = bundle.fuse.context.defer;
+	/** Trigger bundles that are affected */
+	protected onChanges(settings: Map<string, RegExp>, path: string) {
+		path = ensureFuseBoxPath(path);
+		settings.forEach((expression, bundleName) => {
+			if (expression.test(path)) {
+				const bundle = this.bundles.get(bundleName);
 
-                bundle.lastChangedFile = bundle.fuse.context.convertToFuseBoxPath(path);
-                // to ensure new process is not kicked in before the previous has completed
-                defer.queue(bundleName, () => {
-                    return bundle.exec().then(result => {
-                        this.sharedEvents.emit("file-changed", [bundle, path]);
-                        return result;
-                    });
-                });
-            }
-        });
-    }
+				const defer = bundle.fuse.context.defer;
+
+				bundle.lastChangedFile = bundle.fuse.context.convertToFuseBoxPath(path);
+				// to ensure new process is not kicked in before the previous has completed
+				defer.queue(bundleName, () => {
+					return bundle.exec().then(result => {
+						this.sharedEvents.emit("file-changed", [bundle, path]);
+						return result;
+					});
+				});
+			}
+		});
+	}
 }

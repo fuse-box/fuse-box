@@ -1,11 +1,10 @@
 import { should } from "fuse-test-runner";
 import { createBundleAbstraction } from "./helper";
 
-
 export class AbstractPackageTest {
-    "Should register an entry point"() {
-        let app = createBundleAbstraction({})
-        app.parse(`
+	"Should register an entry point"() {
+		let app = createBundleAbstraction({});
+		app.parse(`
         (function(FuseBox) {
             FuseBox.pkg("foo", {}, function(___scope___) {
                 ___scope___.file("bar.js", function(exports, require, module, __filename, __dirname) {
@@ -13,14 +12,14 @@ export class AbstractPackageTest {
                 });
                 return ___scope___.entry = "bar.js";
             });
-        })();`)
-        const defaultPackage = app.packageAbstractions.get("foo")
-        should(defaultPackage).beOkay();
-    }
+        })();`);
+		const defaultPackage = app.packageAbstractions.get("foo");
+		should(defaultPackage).beOkay();
+	}
 
-    "Should have correct structure"() {
-        let app = createBundleAbstraction({})
-        app.parse(`
+	"Should have correct structure"() {
+		let app = createBundleAbstraction({});
+		app.parse(`
         (function(FuseBox) {
             FuseBox.pkg("default", {}, function(___scope___) {
                 ___scope___.file("index.js", function(exports, require, module, __filename, __dirname) {
@@ -29,16 +28,16 @@ export class AbstractPackageTest {
                 ___scope___.file("hello.js", function(exports, require, module, __filename, __dirname) {
                 });
             });
-        })();`)
-        const defaultPackage = app.packageAbstractions.get("default")
-        should(defaultPackage).beOkay();
-        should(defaultPackage.fileAbstractions.get("hello.js")).beOkay();
-        should(defaultPackage.fileAbstractions.get("index.js")).beOkay();
-    }
+        })();`);
+		const defaultPackage = app.packageAbstractions.get("default");
+		should(defaultPackage).beOkay();
+		should(defaultPackage.fileAbstractions.get("hello.js")).beOkay();
+		should(defaultPackage.fileAbstractions.get("index.js")).beOkay();
+	}
 
-    "Should resolve a file within the same package"() {
-        let app = createBundleAbstraction({})
-        app.parse(`
+	"Should resolve a file within the same package"() {
+		let app = createBundleAbstraction({});
+		app.parse(`
         (function(FuseBox) {
             FuseBox.pkg("default", {}, function(___scope___) {
                 ___scope___.file("index.js", function(exports, require, module, __filename, __dirname) {
@@ -48,18 +47,18 @@ export class AbstractPackageTest {
                     console.log("i am hello");
                 });
             });
-        })();`)
-        const defaultPackage = app.packageAbstractions.get("default")
-        const indexFile = defaultPackage.fileAbstractions.get("index.js");
-        const helloStatement = indexFile.findRequireStatements(/hello/)[0];
-        const helloFile = helloStatement.resolve();
+        })();`);
+		const defaultPackage = app.packageAbstractions.get("default");
+		const indexFile = defaultPackage.fileAbstractions.get("index.js");
+		const helloStatement = indexFile.findRequireStatements(/hello/)[0];
+		const helloFile = helloStatement.resolve();
 
-        should(helloFile.generate()).equal("function(){\nconsole.log('i am hello');\n}");
-    }
+		should(helloFile.generate()).equal("function(){\nconsole.log('i am hello');\n}");
+	}
 
-    "Should resolve a file within the same package (package fusing)"() {
-        let app = createBundleAbstraction({})
-        app.parse(`
+	"Should resolve a file within the same package (package fusing)"() {
+		let app = createBundleAbstraction({});
+		app.parse(`
         (function(FuseBox) {
             FuseBox.pkg("default", {}, function(___scope___) {
                 ___scope___.file("index.js", function(exports, require, module, __filename, __dirname) {
@@ -74,12 +73,12 @@ export class AbstractPackageTest {
                 });
             });
 
-        })();`)
-        const defaultPackage = app.packageAbstractions.get("default")
-        const indexFile = defaultPackage.fileAbstractions.get("index.js");
-        const helloStatement = indexFile.findRequireStatements(/hello/)[0];
-        const helloFile = helloStatement.resolve();
-        // resolves and finds a AbstractFile and generates the code
-        should(helloFile.generate()).equal("function(){\nconsole.log('i am hello');\n}");
-    }
+        })();`);
+		const defaultPackage = app.packageAbstractions.get("default");
+		const indexFile = defaultPackage.fileAbstractions.get("index.js");
+		const helloStatement = indexFile.findRequireStatements(/hello/)[0];
+		const helloFile = helloStatement.resolve();
+		// resolves and finds a AbstractFile and generates the code
+		should(helloFile.generate()).equal("function(){\nconsole.log('i am hello');\n}");
+	}
 }

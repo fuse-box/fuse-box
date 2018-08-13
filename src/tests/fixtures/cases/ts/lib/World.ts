@@ -1,5 +1,5 @@
 export class World {
-    constructor() {
-        console.log("new world111");
-    }
+	constructor() {
+		console.log("new world111");
+	}
 }

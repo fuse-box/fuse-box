@@ -3,11 +3,10 @@
 var reactive = require("wires-reactive");
 console.log(reactive);
 
-
 //  //var prc = require("process")
 //console.log(process.env);
-require("cheerio")
-require("babylon")
+require("cheerio");
+require("babylon");
 console.log(require("acorn"));
 
 //var a = process.env.dosm();

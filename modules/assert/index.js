@@ -36,7 +36,7 @@ var hasOwn = Object.prototype.hasOwnProperty;
 // AssertionError's when particular conditions are not met. The
 // assert module must conform to the following interface.
 
-var assert = module.exports = ok;
+var assert = (module.exports = ok);
 
 // 2. The AssertionError is defined in assert.
 // new assert.AssertionError({ message: message,
@@ -44,70 +44,68 @@ var assert = module.exports = ok;
 //                             expected: expected })
 
 assert.AssertionError = function AssertionError(options) {
-    this.name = "AssertionError";
-    this.actual = options.actual;
-    this.expected = options.expected;
-    this.operator = options.operator;
-    if (options.message) {
-        this.message = options.message;
-        this.generatedMessage = false;
-    } else {
-        this.message = getMessage(this);
-        this.generatedMessage = true;
-    }
-    var stackStartFunction = options.stackStartFunction || fail;
+	this.name = "AssertionError";
+	this.actual = options.actual;
+	this.expected = options.expected;
+	this.operator = options.operator;
+	if (options.message) {
+		this.message = options.message;
+		this.generatedMessage = false;
+	} else {
+		this.message = getMessage(this);
+		this.generatedMessage = true;
+	}
+	var stackStartFunction = options.stackStartFunction || fail;
 
-    if (Error.captureStackTrace) {
-        Error.captureStackTrace(this, stackStartFunction);
-    } else {
-        // non v8 browsers so we can have a stacktrace
-        var err = new Error();
-        if (err.stack) {
-            var out = err.stack;
+	if (Error.captureStackTrace) {
+		Error.captureStackTrace(this, stackStartFunction);
+	} else {
+		// non v8 browsers so we can have a stacktrace
+		var err = new Error();
+		if (err.stack) {
+			var out = err.stack;
 
-            // try to strip useless frames
-            var fn_name = stackStartFunction.name;
-            var idx = out.indexOf("\n" + fn_name);
-            if (idx >= 0) {
-                // once we have located the function frame
-                // we need to strip out everything before it (and its line)
-                var next_line = out.indexOf("\n", idx + 1);
-                out = out.substring(next_line + 1);
-            }
+			// try to strip useless frames
+			var fn_name = stackStartFunction.name;
+			var idx = out.indexOf("\n" + fn_name);
+			if (idx >= 0) {
+				// once we have located the function frame
+				// we need to strip out everything before it (and its line)
+				var next_line = out.indexOf("\n", idx + 1);
+				out = out.substring(next_line + 1);
+			}
 
-            this.stack = out;
-        }
-    }
+			this.stack = out;
+		}
+	}
 };
 
 // assert.AssertionError instanceof Error
 util.inherits(assert.AssertionError, Error);
 
 function replacer(key, value) {
-    if (util.isUndefined(value)) {
-        return "" + value;
-    }
-    if (util.isNumber(value) && !isFinite(value)) {
-        return value.toString();
-    }
-    if (util.isFunction(value) || util.isRegExp(value)) {
-        return value.toString();
-    }
-    return value;
+	if (util.isUndefined(value)) {
+		return "" + value;
+	}
+	if (util.isNumber(value) && !isFinite(value)) {
+		return value.toString();
+	}
+	if (util.isFunction(value) || util.isRegExp(value)) {
+		return value.toString();
+	}
+	return value;
 }
 
 function truncate(s, n) {
-    if (util.isString(s)) {
-        return s.length < n ? s : s.slice(0, n);
-    } else {
-        return s;
-    }
+	if (util.isString(s)) {
+		return s.length < n ? s : s.slice(0, n);
+	} else {
+		return s;
+	}
 }
 
 function getMessage(self) {
-    return truncate(JSON.stringify(self.actual, replacer), 128) + " " +
-        self.operator + " " +
-        truncate(JSON.stringify(self.expected, replacer), 128);
+	return truncate(JSON.stringify(self.actual, replacer), 128) + " " + self.operator + " " + truncate(JSON.stringify(self.expected, replacer), 128);
 }
 
 // At present only the three keys mentioned above are used and
@@ -122,13 +120,13 @@ function getMessage(self) {
 // display purposes.
 
 function fail(actual, expected, message, operator, stackStartFunction) {
-    throw new assert.AssertionError({
-        message: message,
-        actual: actual,
-        expected: expected,
-        operator: operator,
-        stackStartFunction: stackStartFunction
-    });
+	throw new assert.AssertionError({
+		message: message,
+		actual: actual,
+		expected: expected,
+		operator: operator,
+		stackStartFunction: stackStartFunction
+	});
 }
 
 // EXTENSION! allows for well behaved errors defined elsewhere.
@@ -142,7 +140,7 @@ assert.fail = fail;
 // assert.strictEqual(true, guard, message_opt);.
 
 function ok(value, message) {
-    if (!value) fail(value, true, message, "==", assert.ok);
+	if (!value) fail(value, true, message, "==", assert.ok);
 }
 assert.ok = ok;
 
@@ -151,210 +149,212 @@ assert.ok = ok;
 // assert.equal(actual, expected, message_opt);
 
 assert.equal = function equal(actual, expected, message) {
-    if (actual != expected) fail(actual, expected, message, "==", assert.equal);
+	if (actual != expected) fail(actual, expected, message, "==", assert.equal);
 };
 
 // 6. The non-equality assertion tests for whether two objects are not equal
 // with != assert.notEqual(actual, expected, message_opt);
 
 assert.notEqual = function notEqual(actual, expected, message) {
-    if (actual == expected) {
-        fail(actual, expected, message, "!=", assert.notEqual);
-    }
+	if (actual == expected) {
+		fail(actual, expected, message, "!=", assert.notEqual);
+	}
 };
 
 // 7. The equivalence assertion tests a deep equality relation.
 // assert.deepEqual(actual, expected, message_opt);
 
 assert.deepEqual = function deepEqual(actual, expected, message) {
-    if (!_deepEqual(actual, expected)) {
-        fail(actual, expected, message, "deepEqual", assert.deepEqual);
-    }
+	if (!_deepEqual(actual, expected)) {
+		fail(actual, expected, message, "deepEqual", assert.deepEqual);
+	}
 };
 
 function _deepEqual(actual, expected) {
-    // 7.1. All identical values are equivalent, as determined by ===.
-    if (actual === expected) {
-        return true;
+	// 7.1. All identical values are equivalent, as determined by ===.
+	if (actual === expected) {
+		return true;
+	} else if (util.isBuffer(actual) && util.isBuffer(expected)) {
+		if (actual.length != expected.length) return false;
 
-    } else if (util.isBuffer(actual) && util.isBuffer(expected)) {
-        if (actual.length != expected.length) return false;
+		for (var i = 0; i < actual.length; i++) {
+			if (actual[i] !== expected[i]) return false;
+		}
 
-        for (var i = 0; i < actual.length; i++) {
-            if (actual[i] !== expected[i]) return false;
-        }
+		return true;
 
-        return true;
+		// 7.2. If the expected value is a Date object, the actual value is
+		// equivalent if it is also a Date object that refers to the same time.
+	} else if (util.isDate(actual) && util.isDate(expected)) {
+		return actual.getTime() === expected.getTime();
 
-        // 7.2. If the expected value is a Date object, the actual value is
-        // equivalent if it is also a Date object that refers to the same time.
-    } else if (util.isDate(actual) && util.isDate(expected)) {
-        return actual.getTime() === expected.getTime();
+		// 7.3 If the expected value is a RegExp object, the actual value is
+		// equivalent if it is also a RegExp object with the same source and
+		// properties (`global`, `multiline`, `lastIndex`, `ignoreCase`).
+	} else if (util.isRegExp(actual) && util.isRegExp(expected)) {
+		return (
+			actual.source === expected.source &&
+			actual.global === expected.global &&
+			actual.multiline === expected.multiline &&
+			actual.lastIndex === expected.lastIndex &&
+			actual.ignoreCase === expected.ignoreCase
+		);
 
-        // 7.3 If the expected value is a RegExp object, the actual value is
-        // equivalent if it is also a RegExp object with the same source and
-        // properties (`global`, `multiline`, `lastIndex`, `ignoreCase`).
-    } else if (util.isRegExp(actual) && util.isRegExp(expected)) {
-        return actual.source === expected.source &&
-            actual.global === expected.global &&
-            actual.multiline === expected.multiline &&
-            actual.lastIndex === expected.lastIndex &&
-            actual.ignoreCase === expected.ignoreCase;
+		// 7.4. Other pairs that do not both pass typeof value == 'object',
+		// equivalence is determined by ==.
+	} else if (!util.isObject(actual) && !util.isObject(expected)) {
+		return actual == expected;
 
-        // 7.4. Other pairs that do not both pass typeof value == 'object',
-        // equivalence is determined by ==.
-    } else if (!util.isObject(actual) && !util.isObject(expected)) {
-        return actual == expected;
-
-        // 7.5 For all other Object pairs, including Array objects, equivalence is
-        // determined by having the same number of owned properties (as verified
-        // with Object.prototype.hasOwnProperty.call), the same set of keys
-        // (although not necessarily the same order), equivalent values for every
-        // corresponding key, and an identical 'prototype' property. Note: this
-        // accounts for both named and indexed properties on Arrays.
-    } else {
-        return objEquiv(actual, expected);
-    }
+		// 7.5 For all other Object pairs, including Array objects, equivalence is
+		// determined by having the same number of owned properties (as verified
+		// with Object.prototype.hasOwnProperty.call), the same set of keys
+		// (although not necessarily the same order), equivalent values for every
+		// corresponding key, and an identical 'prototype' property. Note: this
+		// accounts for both named and indexed properties on Arrays.
+	} else {
+		return objEquiv(actual, expected);
+	}
 }
 
 function isArguments(object) {
-    return Object.prototype.toString.call(object) == "[object Arguments]";
+	return Object.prototype.toString.call(object) == "[object Arguments]";
 }
 
 function objEquiv(a, b) {
-    if (util.isNullOrUndefined(a) || util.isNullOrUndefined(b))
-        return false;
-    // an identical 'prototype' property.
-    if (a.prototype !== b.prototype) return false;
-    // if one is a primitive, the other must be same
-    if (util.isPrimitive(a) || util.isPrimitive(b)) {
-        return a === b;
-    }
-    var aIsArgs = isArguments(a),
-        bIsArgs = isArguments(b);
-    if ((aIsArgs && !bIsArgs) || (!aIsArgs && bIsArgs))
-        return false;
-    if (aIsArgs) {
-        a = pSlice.call(a);
-        b = pSlice.call(b);
-        return _deepEqual(a, b);
-    }
-    var ka = objectKeys(a),
-        kb = objectKeys(b),
-        key, i;
-    // having the same number of owned properties (keys incorporates
-    // hasOwnProperty)
-    if (ka.length != kb.length)
-        return false;
-    //the same set of keys (although not necessarily the same order),
-    ka.sort();
-    kb.sort();
-    //~~~cheap key test
-    for (i = ka.length - 1; i >= 0; i--) {
-        if (ka[i] != kb[i])
-            return false;
-    }
-    //equivalent values for every corresponding key, and
-    //~~~possibly expensive deep test
-    for (i = ka.length - 1; i >= 0; i--) {
-        key = ka[i];
-        if (!_deepEqual(a[key], b[key])) return false;
-    }
-    return true;
+	if (util.isNullOrUndefined(a) || util.isNullOrUndefined(b)) return false;
+	// an identical 'prototype' property.
+	if (a.prototype !== b.prototype) return false;
+	// if one is a primitive, the other must be same
+	if (util.isPrimitive(a) || util.isPrimitive(b)) {
+		return a === b;
+	}
+	var aIsArgs = isArguments(a),
+		bIsArgs = isArguments(b);
+	if ((aIsArgs && !bIsArgs) || (!aIsArgs && bIsArgs)) return false;
+	if (aIsArgs) {
+		a = pSlice.call(a);
+		b = pSlice.call(b);
+		return _deepEqual(a, b);
+	}
+	var ka = objectKeys(a),
+		kb = objectKeys(b),
+		key,
+		i;
+	// having the same number of owned properties (keys incorporates
+	// hasOwnProperty)
+	if (ka.length != kb.length) return false;
+	//the same set of keys (although not necessarily the same order),
+	ka.sort();
+	kb.sort();
+	//~~~cheap key test
+	for (i = ka.length - 1; i >= 0; i--) {
+		if (ka[i] != kb[i]) return false;
+	}
+	//equivalent values for every corresponding key, and
+	//~~~possibly expensive deep test
+	for (i = ka.length - 1; i >= 0; i--) {
+		key = ka[i];
+		if (!_deepEqual(a[key], b[key])) return false;
+	}
+	return true;
 }
 
 // 8. The non-equivalence assertion tests for any deep inequality.
 // assert.notDeepEqual(actual, expected, message_opt);
 
 assert.notDeepEqual = function notDeepEqual(actual, expected, message) {
-    if (_deepEqual(actual, expected)) {
-        fail(actual, expected, message, "notDeepEqual", assert.notDeepEqual);
-    }
+	if (_deepEqual(actual, expected)) {
+		fail(actual, expected, message, "notDeepEqual", assert.notDeepEqual);
+	}
 };
 
 // 9. The strict equality assertion tests strict equality, as determined by ===.
 // assert.strictEqual(actual, expected, message_opt);
 
 assert.strictEqual = function strictEqual(actual, expected, message) {
-    if (actual !== expected) {
-        fail(actual, expected, message, "===", assert.strictEqual);
-    }
+	if (actual !== expected) {
+		fail(actual, expected, message, "===", assert.strictEqual);
+	}
 };
 
 // 10. The strict non-equality assertion tests for strict inequality, as
 // determined by !==.  assert.notStrictEqual(actual, expected, message_opt);
 
 assert.notStrictEqual = function notStrictEqual(actual, expected, message) {
-    if (actual === expected) {
-        fail(actual, expected, message, "!==", assert.notStrictEqual);
-    }
+	if (actual === expected) {
+		fail(actual, expected, message, "!==", assert.notStrictEqual);
+	}
 };
 
 function expectedException(actual, expected) {
-    if (!actual || !expected) {
-        return false;
-    }
+	if (!actual || !expected) {
+		return false;
+	}
 
-    if (Object.prototype.toString.call(expected) == "[object RegExp]") {
-        return expected.test(actual);
-    } else if (actual instanceof expected) {
-        return true;
-    } else if (expected.call({}, actual) === true) {
-        return true;
-    }
+	if (Object.prototype.toString.call(expected) == "[object RegExp]") {
+		return expected.test(actual);
+	} else if (actual instanceof expected) {
+		return true;
+	} else if (expected.call({}, actual) === true) {
+		return true;
+	}
 
-    return false;
+	return false;
 }
 
 function _throws(shouldThrow, block, expected, message) {
-    var actual;
+	var actual;
 
-    if (util.isString(expected)) {
-        message = expected;
-        expected = null;
-    }
+	if (util.isString(expected)) {
+		message = expected;
+		expected = null;
+	}
 
-    try {
-        block();
-    } catch (e) {
-        actual = e;
-    }
+	try {
+		block();
+	} catch (e) {
+		actual = e;
+	}
 
-    message = (expected && expected.name ? " (" + expected.name + ")." : ".") +
-        (message ? " " + message : ".");
+	message = (expected && expected.name ? " (" + expected.name + ")." : ".") + (message ? " " + message : ".");
 
-    if (shouldThrow && !actual) {
-        fail(actual, expected, "Missing expected exception" + message);
-    }
+	if (shouldThrow && !actual) {
+		fail(actual, expected, "Missing expected exception" + message);
+	}
 
-    if (!shouldThrow && expectedException(actual, expected)) {
-        fail(actual, expected, "Got unwanted exception" + message);
-    }
+	if (!shouldThrow && expectedException(actual, expected)) {
+		fail(actual, expected, "Got unwanted exception" + message);
+	}
 
-    if ((shouldThrow && actual && expected &&
-            !expectedException(actual, expected)) || (!shouldThrow && actual)) {
-        throw actual;
-    }
+	if ((shouldThrow && actual && expected && !expectedException(actual, expected)) || (!shouldThrow && actual)) {
+		throw actual;
+	}
 }
 
 // 11. Expected to throw an error:
 // assert.throws(block, Error_opt, message_opt);
 
 assert.throws = function(block, /*optional*/ error, /*optional*/ message) {
-    _throws.apply(this, [true].concat(pSlice.call(arguments)));
+	_throws.apply(this, [true].concat(pSlice.call(arguments)));
 };
 
 // EXTENSION! This is annoying to write outside this module.
 assert.doesNotThrow = function(block, /*optional*/ message) {
-    _throws.apply(this, [false].concat(pSlice.call(arguments)));
+	_throws.apply(this, [false].concat(pSlice.call(arguments)));
 };
 
-assert.ifError = function(err) { if (err) { throw err; } };
-
-var objectKeys = Object.keys || function(obj) {
-    var keys = [];
-    for (var key in obj) {
-        if (hasOwn.call(obj, key)) keys.push(key);
-    }
-    return keys;
+assert.ifError = function(err) {
+	if (err) {
+		throw err;
+	}
 };
+
+var objectKeys =
+	Object.keys ||
+	function(obj) {
+		var keys = [];
+		for (var key in obj) {
+			if (hasOwn.call(obj, key)) keys.push(key);
+		}
+		return keys;
+	};

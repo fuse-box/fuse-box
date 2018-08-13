@@ -1,5 +1,5 @@
 if (FuseBox.isServer) {
-    module.exports = global.require("net");
+	module.exports = global.require("net");
 } else {
-    module.exports = {};
+	module.exports = {};
 }
