@@ -1,1 +1,1 @@
-module.exports = {bar : 1}
+module.exports = { bar: 1 };

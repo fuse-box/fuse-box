@@ -40,7 +40,7 @@ export { OptimizeJSPlugin } from "./plugins/OptimizeJSPlugin";
 export { Fluent } from "./arithmetic/Fluent";
 export { FuseBox } from "./core/FuseBox";
 export { Sparky } from "./sparky/Sparky";
-export { SparkyContext } from './sparky/SparkyContext';
+export { SparkyContext } from "./sparky/SparkyContext";
 export { CSSModules } from "./plugins/stylesheet/CSSModules";
 export { CopyPlugin } from "./plugins/CopyPlugin";
 export { WebIndexPlugin } from "./plugins/WebIndexPlugin";
