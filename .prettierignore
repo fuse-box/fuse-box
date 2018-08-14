@@ -1,4 +1,7 @@
+_current_test
+.fusebox
 bin
+dist
 docs
 modules
 package.json

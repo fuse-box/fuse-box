@@ -13,218 +13,221 @@ const homedir = require("homedir");
 const fs = require("fs");
 const header = require("gulp-header");
 const path = require("path");
-const os = require('os');
+const os = require("os");
 const fsExtra = require("fs-extra");
 
-
 let RELEASE_FOLDER = "./dist";
-let FUSEBOX_BIN = "./dist/index"
+let FUSEBOX_BIN = "./dist/index";
 
 const getDistFuseBoxConfig = (conf, quantum) => {
-    process.env.PROJECT_ROOT = __dirname;
-    process.env.FUSEBOX_MODULES = path.resolve(RELEASE_FOLDER, "modules");
-    const { FuseBox, JSONPlugin, QuantumPlugin } = require(FUSEBOX_BIN);
-    let quantumConf = Object.assign({
-        bakeApiIntoBundle: "fusebox",
-        uglify: false,
-        ensureES5: false,
-        replaceProcessEnv: false,
-        treeshake: true,
-        target: "server",
-        containedAPI: true,
-        warnings: false
-    }, quantum || {});
+	process.env.PROJECT_ROOT = __dirname;
+	process.env.FUSEBOX_MODULES = path.resolve(RELEASE_FOLDER, "modules");
+	const { FuseBox, JSONPlugin, QuantumPlugin } = require(FUSEBOX_BIN);
+	let quantumConf = Object.assign(
+		{
+			bakeApiIntoBundle: "fusebox",
+			uglify: false,
+			ensureES5: false,
+			replaceProcessEnv: false,
+			treeshake: true,
+			target: "server",
+			containedAPI: true,
+			warnings: false
+		},
+		quantum || {}
+	);
 
-    let selfConfig = {
-        homeDir: RELEASE_FOLDER,
-        output: "$name.js",
-        target: "server@esnext",
-        cache: false,
-        globals: { "default": "*" },
-        plugins: [
-            JSONPlugin(),
-            quantum !== false && QuantumPlugin(quantumConf)
-        ],
-    }
-    selfConfig = Object.assign(selfConfig, conf)
+	let selfConfig = {
+		homeDir: RELEASE_FOLDER,
+		output: "$name.js",
+		target: "server@esnext",
+		cache: false,
+		globals: { default: "*" },
+		plugins: [JSONPlugin(), quantum !== false && QuantumPlugin(quantumConf)]
+	};
+	selfConfig = Object.assign(selfConfig, conf);
 
-    return FuseBox.init(selfConfig)
-}
-
+	return FuseBox.init(selfConfig);
+};
 
 let watching = false;
 
 function onError(error) {
-    if (!watching) {
-        //process.exit(1);
-    }
+	if (!watching) {
+		//process.exit(1);
+	}
 }
 
 let projectTypings = ts.createProject("src/tsconfig.json", {
-    removeComments: false,
-    declaration: true
+	removeComments: false,
+	declaration: true
 });
 let projectCommonjs = ts.createProject("src/tsconfig.json", {
-    target: "esnext"
+	target: "esnext"
 });
 
 let projectLoader = ts.createProject("src/loader/tsconfig.json");
 let projectLoaderTypings = ts.createProject("src/loader/tsconfig.json", {
-    removeComments: false,
+	removeComments: false
 });
 let projectModule = ts.createProject("src/modules/tsconfig.json");
 let filesMain = ["src/**/*.ts", "!./**/tests/**/**", "!./src/loader/LoaderAPI.ts", "!./src/modules/**/*.ts"];
 
-
 gulp.task("prepare:js", function() {
-    return result = gulp.src(filesMain)
-        .pipe(projectCommonjs()).js
-        .pipe(gulp.dest(RELEASE_FOLDER));
+	return (result = gulp
+		.src(filesMain)
+		.pipe(projectCommonjs())
+		.js.pipe(gulp.dest(RELEASE_FOLDER)));
 });
 
 gulp.task("prepare:typings", function() {
-    return result = gulp.src(filesMain)
-        .pipe(projectTypings()).dts
-        .pipe(gulp.dest(RELEASE_FOLDER));
+	return (result = gulp
+		.src(filesMain)
+		.pipe(projectTypings())
+		.dts.pipe(gulp.dest(RELEASE_FOLDER)));
 });
 gulp.task("prepare:clean", function() {
-    return result = gulp.src(RELEASE_FOLDER, { read: false })
-        .pipe(clean());
+	return (result = gulp.src(RELEASE_FOLDER, { read: false }).pipe(clean()));
 });
 gulp.task("prepare:copy-package", function() {
-    return result = gulp.src("./package.json")
-        .pipe(gulp.dest(RELEASE_FOLDER))
+	return (result = gulp.src("./package.json").pipe(gulp.dest(RELEASE_FOLDER)));
 });
 gulp.task("prepare:copy-readme", function() {
-    return result = gulp.src("./README.md")
-        .pipe(gulp.dest(RELEASE_FOLDER))
-})
+	return (result = gulp.src("./README.md").pipe(gulp.dest(RELEASE_FOLDER)));
+});
 
 gulp.task("prepare:dist-loader-typings", () => {
-    return gulp.src("src/loader/LoaderAPI.ts")
-        .pipe(projectLoaderTypings()).dts
-        .pipe(rename("LoaderAPI.ts"))
-        .pipe(gulp.dest("src/modules/fuse-loader"));
+	return gulp
+		.src("src/loader/LoaderAPI.ts")
+		.pipe(projectLoaderTypings())
+		.dts.pipe(rename("LoaderAPI.ts"))
+		.pipe(gulp.dest("src/modules/fuse-loader"));
 });
 
 gulp.task("prepare:modules", ["prepare:dist-loader-typings"], () => {
-    return gulp.src(`src/modules/**/*.ts`)
-        .pipe(projectModule()).on("error", onError)
-        .pipe(gulp.dest(path.join(RELEASE_FOLDER, "modules")));
+	return gulp
+		.src(`src/modules/**/*.ts`)
+		.pipe(projectModule())
+		.on("error", onError)
+		.pipe(gulp.dest(path.join(RELEASE_FOLDER, "modules")));
 });
 
 gulp.task("prepare:copy-modules", function() {
-    return result = gulp.src("modules/**/**.**")
-        .pipe(gulp.dest(path.join(RELEASE_FOLDER, "modules")))
+	return (result = gulp.src("modules/**/**.**").pipe(gulp.dest(path.join(RELEASE_FOLDER, "modules"))));
 });
 
-const prepareLoader = (folder) => {
-    return gulp.src("src/loader/LoaderAPI.ts")
-        .pipe(projectLoader()).on("error", onError).js
-        .pipe(wrap(`(function(__root__){
+const prepareLoader = folder => {
+	return gulp
+		.src("src/loader/LoaderAPI.ts")
+		.pipe(projectLoader())
+		.on("error", onError)
+		.js.pipe(
+			wrap(`(function(__root__){
 if (__root__["FuseBox"]) return __root__["FuseBox"];
 <%= contents %>
-return __root__["FuseBox"] = FuseBox; } )(this)`))
-        .pipe(rename("fusebox.js"))
-        .pipe(gulp.dest(path.join(folder, "modules/fuse-box-loader-api")))
-        .pipe(rename("fusebox.min.js"))
-        .pipe(uglify())
-        .pipe(replace(/;$/, ""))
-        .pipe(replace(/^\!/, ""))
-        .pipe(gulp.dest(path.join(folder, "modules/fuse-box-loader-api")));
-}
+return __root__["FuseBox"] = FuseBox; } )(this)`)
+		)
+		.pipe(rename("fusebox.js"))
+		.pipe(gulp.dest(path.join(folder, "modules/fuse-box-loader-api")))
+		.pipe(rename("fusebox.min.js"))
+		.pipe(uglify())
+		.pipe(replace(/;$/, ""))
+		.pipe(replace(/^\!/, ""))
+		.pipe(gulp.dest(path.join(folder, "modules/fuse-box-loader-api")));
+};
 gulp.task("prepare:loader", () => {
-    return prepareLoader(RELEASE_FOLDER);
+	return prepareLoader(RELEASE_FOLDER);
 });
 gulp.task("dist:loader", () => {
-    return prepareLoader("./");
+	return prepareLoader("./");
 });
 
 gulp.task("dist", ["prepare:clean"], function(done) {
-    return runSequence(
-        "dist-modules",
-        "dist:loader",
-        "prepare:copy-readme",
-        "prepare:copy-package",
-        "prepare:js",
-        "prepare:copy-modules",
-        "prepare:loader",
-        "prepare:typings",
-        "prepare:modules",
-        "prepare:es6-bundle",
-        "prepare:es6-index",
-        done)
+	return runSequence(
+		"dist-modules",
+		"dist:loader",
+		"prepare:copy-readme",
+		"prepare:copy-package",
+		"prepare:js",
+		"prepare:copy-modules",
+		"prepare:loader",
+		"prepare:typings",
+		"prepare:modules",
+		"prepare:es6-bundle",
+		"prepare:es6-index",
+		done
+	);
 });
 
 gulp.task("dev-cli", [], function(done) {
-    runSequence("prepare:js")
-    return result = gulp.watch("src/**/**", done => {
-        return runSequence("prepare:js")
-    })
+	runSequence("prepare:js");
+	return (result = gulp.watch("src/**/**", done => {
+		return runSequence("prepare:js");
+	}));
 });
 
 gulp.task("prepare:es6-index", () => {
-    const contents = `
+	const contents = `
         const path = require("path");
         process.env.FUSEBOX_DIST_ROOT = path.resolve(__dirname, "../");
         process.env.FUSEBOX_MODULES = path.resolve(__dirname, "../modules");
         process.env.FUSEBOX_VERSION = path.resolve(__dirname, "../package.json")
         module.exports = require('./es6.js');
-    `
-    fs.writeFileSync(path.resolve("./dist/es6/index.js"), contents);
+    `;
+	fs.writeFileSync(path.resolve("./dist/es6/index.js"), contents);
 });
 
-gulp.task("prepare:es6-bundle", (done) => {
-    const fuse = getDistFuseBoxConfig({
-        homeDir: "src",
-        output: "dist/es6/$name.js",
-        target: "server@es2015",
-        cache : false,
-        tsConfig: [{
-            target: "es2015"
-        }]
-    }, {
-        bakeApiIntoBundle: "es6",
-        uglify: false
-    });
-    fuse.bundle("es6")
-        .instructions(">[index.ts]");
-    return fuse.run();
+gulp.task("prepare:es6-bundle", done => {
+	const fuse = getDistFuseBoxConfig(
+		{
+			homeDir: "src",
+			output: "dist/es6/$name.js",
+			target: "server@es2015",
+			cache: false,
+			tsConfig: [
+				{
+					target: "es2015"
+				}
+			]
+		},
+		{
+			bakeApiIntoBundle: "es6",
+			uglify: false
+		}
+	);
+	fuse.bundle("es6").instructions(">[index.ts]");
+	return fuse.run();
 });
-
 
 gulp.task("increment-next-version", function() {
-    const pkgPath = path.resolve("package.json");
-    let json = require(pkgPath);
-    let main = json.version;
-    let matched = main.match(/(.*)(next\.)(\d{1,})/i);
-    if (matched) {
-        json.version = `${matched[1]}${matched[2]}${(matched[3] * 1) + 1}`;
-        fs.writeFileSync(pkgPath, JSON.stringify(json, 2, 2));
-    } else {
-        throw new Error("Invalid next template")
-    }
+	const pkgPath = path.resolve("package.json");
+	let json = require(pkgPath);
+	let main = json.version;
+	let matched = main.match(/(.*)(next\.)(\d{1,})/i);
+	if (matched) {
+		json.version = `${matched[1]}${matched[2]}${matched[3] * 1 + 1}`;
+		fs.writeFileSync(pkgPath, JSON.stringify(json, 2, 2));
+	} else {
+		throw new Error("Invalid next template");
+	}
 });
-
 
 gulp.task("next", [], function(done) {
-    runSequence("increment-next-version", "dist", "publish-next", done);
+	runSequence("increment-next-version", "dist", "publish-next", done);
 });
-
 
 gulp.task("publish-next", function(done) {
-    var publish = spawn("npm", ["publish", "--tag", "next"], {
-        stdio: "inherit",
-        cwd: path.resolve(RELEASE_FOLDER)
-    });
-    publish.on("close", function(code) {
-        if (code === 8) {
-            gulp.log("Error detected, waiting for changes...");
-        }
-        done();
-    });
+	var publish = spawn("npm", ["publish", "--tag", "next"], {
+		stdio: "inherit",
+		cwd: path.resolve(RELEASE_FOLDER)
+	});
+	publish.on("close", function(code) {
+		if (code === 8) {
+			gulp.log("Error detected, waiting for changes...");
+		}
+		done();
+	});
 });
-
 
 gulp.task("dist-loader", ["dist-loader-js", "dist-loader-typings"]);
 
@@ -232,74 +235,81 @@ gulp.task("dist-loader", ["dist-loader-js", "dist-loader-typings"]);
  * Used to build the fusebox modules
  * When adding a new module here be sure to .gitignore `modules/${name}/`
  */
-gulp.task("dist-modules",() => {
-    return gulp.src(`src/modules/**/*.ts`)
-        .pipe(projectModule()).on("error", onError)
-        .pipe(gulp.dest(`modules`));
+gulp.task("dist-modules", () => {
+	return gulp
+		.src(`src/modules/**/*.ts`)
+		.pipe(projectModule())
+		.on("error", onError)
+		.pipe(gulp.dest(`modules`));
 });
 
 gulp.task("commit-release", function(done) {
-    let json = JSON.parse(fs.readFileSync(__dirname + "/package.json").toString());
-    exec(`git add .; git commit -m "chore(publish): Release ${json.version}" -a; git tag v${json.version}; git push origin master --tags`, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`exec error: ${error}`);
-            return;
-        }
-        console.log(`stdout: ${stdout}`);
-        console.log(`stderr: ${stderr}`);
-        done();
-    });
+	let json = JSON.parse(fs.readFileSync(__dirname + "/package.json").toString());
+	exec(
+		`git add .; git commit -m "chore(publish): Release ${json.version}" -a; git tag v${json.version}; git push origin master --tags`,
+		(error, stdout, stderr) => {
+			if (error) {
+				console.error(`exec error: ${error}`);
+				return;
+			}
+			console.log(`stdout: ${stdout}`);
+			console.log(`stderr: ${stderr}`);
+			done();
+		}
+	);
 });
 
-gulp.task("changelog", (done) => {
-    exec("conventional-changelog -p angular", (e, m) => {
-        console.log(m);
-        done();
-    })
-})
-
-gulp.task("make-test-runner", (done) => {
-    const fuse = getDistFuseBoxConfig({
-        homeDir: 'src',
-        output: `bin/$name.js`
-    });
-    fuse.bundle("fusebox")
-        .instructions(">[index.ts]");
-    return fuse.run();
+gulp.task("changelog", done => {
+	exec("conventional-changelog -p angular", (e, m) => {
+		console.log(m);
+		done();
+	});
 });
 
+gulp.task("make-test-runner", done => {
+	const fuse = getDistFuseBoxConfig({
+		homeDir: "src",
+		output: `bin/$name.js`
+	});
+	fuse.bundle("fusebox").instructions(">[index.ts]");
+	return fuse.run();
+});
 
 gulp.task("dev-index", () => {
-    const contents = `
+	const contents = `
         const path = require("path");
         process.env.FUSEBOX_DIST_ROOT = __dirname;
         process.env.FUSEBOX_MODULES = path.join(__dirname, "./modules");
         process.env.FUSEBOX_VERSION = path.join(__dirname, "../package.json")
         module.exports = require('./fusebox.js');
-    `
-    fs.writeFileSync(path.resolve("./.dev/index.js"), contents);
+    `;
+	fs.writeFileSync(path.resolve("./.dev/index.js"), contents);
 });
 
 gulp.task("dev-fuse", () => {
-    const fuse = getDistFuseBoxConfig({
-		homeDir: "src",
-		sourceMaps: true,
-        output: ".dev/$name.js",
-        target: "server@esnext",
-        cache: false,
-    }, false);
-    fuse.bundle("fusebox")
-        .instructions(">[index.ts]")
-        .watch()
-    return fuse.run();
+	const fuse = getDistFuseBoxConfig(
+		{
+			homeDir: "src",
+			sourceMaps: true,
+			output: ".dev/$name.js",
+			target: "server@esnext",
+			cache: false
+		},
+		false
+	);
+	fuse
+		.bundle("fusebox")
+		.instructions(">[index.ts]")
+		.watch();
+	return fuse.run();
 });
 
 gulp.task("dev:ensure-playground", () => {
-    const playgroundFolder = path.resolve("./_playground/generic");
-    if (!fs.existsSync(playgroundFolder)) {
-        fsExtra.ensureDirSync(playgroundFolder);
-        fsExtra.ensureDirSync(path.join(playgroundFolder, "src"));
-        const fuseFile = `const { FuseBox, WebIndexPlugin } = require("../../.dev");
+	const playgroundFolder = path.resolve("./_playground/generic");
+	if (!fs.existsSync(playgroundFolder)) {
+		fsExtra.ensureDirSync(playgroundFolder);
+		fsExtra.ensureDirSync(path.join(playgroundFolder, "src"));
+		const fuseFile = `const { FuseBox, WebIndexPlugin } = require("../../.dev");
 const fuse = FuseBox.init({
     homeDir : "src",
     output : "dist/$name.js",
@@ -315,71 +325,71 @@ fuse.bundle("app")
     .watch()
     .hmr()
     .instructions(" > index.ts");
-fuse.run();`
-        fs.writeFileSync(path.join(playgroundFolder, "fuse.js"), fuseFile)
-        fs.writeFileSync(path.join(playgroundFolder, "src/index.ts"), `console.log("Hello World")`)
-    }
-
-
-})
+fuse.run();`;
+		fs.writeFileSync(path.join(playgroundFolder, "fuse.js"), fuseFile);
+		fs.writeFileSync(path.join(playgroundFolder, "src/index.ts"), `console.log("Hello World")`);
+	}
+});
 gulp.task("dev", () => {
-    RELEASE_FOLDER = path.resolve(".dev");
-    FUSEBOX_BIN = path.resolve("./bin/fusebox.js");
-    return runSequence(
-        "dist:loader",
-        "prepare:copy-package",
-        "prepare:copy-modules",
-        "prepare:loader",
-        "prepare:modules",
-        "dist-modules",
-        "dev-fuse",
-        "dev:ensure-playground",
-        "dev-index", () => {
-            console.log(">> FuseBox bundle is ready ");
-            console.log(">> You can go playground folder 'cd _playground/generic'");
-            console.log(">> Start developing `node fuse.js`");
-        });
+	RELEASE_FOLDER = path.resolve(".dev");
+	FUSEBOX_BIN = path.resolve("./bin/fusebox.js");
+	return runSequence(
+		"dist:loader",
+		"prepare:copy-package",
+		"prepare:copy-modules",
+		"prepare:loader",
+		"prepare:modules",
+		"dist-modules",
+		"dev-fuse",
+		"dev:ensure-playground",
+		"dev-index",
+		() => {
+			console.log(">> FuseBox bundle is ready ");
+			console.log(">> You can go playground folder 'cd _playground/generic'");
+			console.log(">> Start developing `node fuse.js`");
+		}
+	);
 });
 gulp.task("installDevDeps", function(done) {
-    var deps = [
-        "babel-core",
-        "babel-generator",
-        "babel-preset-latest",
-        "babel-plugin-transform-es2015-modules-commonjs",
-        "babylon",
-        "cheerio",
-        "@angular/core",
-        "stylus",
-        "less",
-        "postcss",
-        "postcss-selector-parser",
-        "marked",
-        "node-sass",
-        "uglify-js",
-        "uglify-es",
-        "source-map@0.5.7",
-        "coffee-script",
-        "@types/node",
-        "vue-template-compiler",
-        "vue-template-es2015-compiler",
-        "vue",
-        "jwt-decode",
-        "vue-server-renderer",
-        "vue-hot-reload-api",
-        "vue-class-component",
-        "rollup",
-        "buble",
-        "consolidate",
-        "pug",
-        "tslint",
-        "tslint-react",
-        "tslint-eslint-rules",
-        "tslint-immutable",
-        "tslint-clean-code"
-    ];
+	var deps = [
+		"babel-core",
+		"babel-generator",
+		"babel-preset-latest",
+		"babel-plugin-transform-es2015-modules-commonjs",
+		"babylon",
+		"cheerio",
+		"@angular/core",
+		"stylus",
+		"less",
+		"postcss",
+		"postcss-selector-parser",
+		"marked",
+		"node-sass",
+		"uglify-js",
+		"uglify-es",
+		"source-map@0.5.7",
+		"coffee-script",
+		"@types/node",
+		"vue-template-compiler",
+		"vue-template-es2015-compiler",
+		"vue",
+		"jwt-decode",
+		"vue-server-renderer",
+		"vue-hot-reload-api",
+		"vue-class-component",
+		"rollup",
+		"buble",
+		"consolidate",
+		"pug",
+		"tslint",
+		"tslint-react",
+		"tslint-eslint-rules",
+		"tslint-immutable",
+		"tslint-clean-code"
+	];
 
-    const ext = /^win/.test(os.platform()) ? ".cmd" : ""
-    spawn("npm" + ext, ["install", "--no-save"].concat(deps), {
-        stdio: "inherit",
-    });
+	const ext = /^win/.test(os.platform()) ? ".cmd" : "";
+	spawn("npm" + ext, ["install", "--no-save"].concat(deps), {
+		stdio: "inherit"
+	});
 });

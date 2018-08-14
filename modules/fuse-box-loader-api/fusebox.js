@@ -2,26 +2,25 @@
 if (__root__["FuseBox"]) return __root__["FuseBox"];
 var $isServiceWorker = typeof ServiceWorkerGlobalScope !== "undefined";
 var $isWebWorker = typeof WorkerGlobalScope !== "undefined";
-var $isBrowser = typeof window !== "undefined" && typeof window.navigator !== "undefined" || $isWebWorker || $isServiceWorker;
-var g = $isBrowser ? (($isWebWorker || $isServiceWorker) ? {} : window) : global;
+var $isBrowser = (typeof window !== "undefined" && typeof window.navigator !== "undefined") || $isWebWorker || $isServiceWorker;
+var g = $isBrowser ? ($isWebWorker || $isServiceWorker ? {} : window) : global;
 if ($isBrowser) {
-    g["global"] = ($isWebWorker || $isServiceWorker) ? {} : window;
+    g["global"] = $isWebWorker || $isServiceWorker ? {} : window;
 }
 __root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports : __root__;
-var $fsbx = $isBrowser ? ($isWebWorker || $isServiceWorker) ? {} : (window["__fsbx__"] = window["__fsbx__"] || {})
-    : g["$fsbx"] = g["$fsbx"] || {};
+var $fsbx = $isBrowser ? ($isWebWorker || $isServiceWorker ? {} : (window["__fsbx__"] = window["__fsbx__"] || {})) : (g["$fsbx"] = g["$fsbx"] || {});
 if (!$isBrowser) {
     g["require"] = require;
 }
-var $packages = $fsbx.p = $fsbx.p || {};
-var $events = $fsbx.e = $fsbx.e || {};
+var $packages = ($fsbx.p = $fsbx.p || {});
+var $events = ($fsbx.e = $fsbx.e || {});
 function $getNodeModuleName(name) {
     var n = name.charCodeAt(0);
     var s = name.charCodeAt(1);
     if (!$isBrowser && s === 58) {
         return;
     }
-    if (n >= 97 && n <= 122 || n === 64) {
+    if ((n >= 97 && n <= 122) || n === 64) {
         if (n === 64) {
             var s_1 = name.split("/");
             var target = s_1.splice(2, s_1.length).join("/");
@@ -36,11 +35,9 @@ function $getNodeModuleName(name) {
         return [first, second];
     }
 }
-;
 function $getDir(filePath) {
     return filePath.substring(0, filePath.lastIndexOf("/")) || "./";
 }
-;
 function $pathJoin() {
     var string = [];
     for (var _i = 0; _i < arguments.length; _i++) {
@@ -66,7 +63,6 @@ function $pathJoin() {
         newParts.unshift("");
     return newParts.join("/") || (newParts.length ? "/" : ".");
 }
-;
 function $ensureExtension(name) {
     var matched = name.match(/\.(\w{1,})$/);
     if (matched) {
@@ -77,7 +73,6 @@ function $ensureExtension(name) {
     }
     return name + ".js";
 }
-;
 function $loadURL(url) {
     if ($isBrowser) {
         var d = document;
@@ -98,7 +93,6 @@ function $loadURL(url) {
         head.insertBefore(target, head.firstChild);
     }
 }
-;
 function $loopObjKey(obj, func) {
     for (var key in obj) {
         if (obj.hasOwnProperty(key)) {
@@ -106,11 +100,9 @@ function $loopObjKey(obj, func) {
         }
     }
 }
-;
 function $serverRequire(path) {
     return { server: require(path) };
 }
-;
 function $getRef(name, o) {
     var basePath = o.path || "./";
     var pkgName = o.pkg || "default";
@@ -155,7 +147,7 @@ function $getRef(name, o) {
         validPath = $pathJoin(filePath, "/", "index.js");
         file = pkg.f[validPath];
         if (!file && filePath === ".") {
-            validPath = pkg.s && pkg.s.entry || "index.js";
+            validPath = (pkg.s && pkg.s.entry) || "index.js";
             file = pkg.f[validPath];
         }
         if (!file) {
@@ -176,15 +168,14 @@ function $getRef(name, o) {
         pkgName: pkgName,
         versions: pkg.v,
         filePath: filePath,
-        validPath: validPath,
+        validPath: validPath
     };
 }
-;
 function $async(file, cb, o) {
     if (o === void 0) { o = {}; }
     if ($isBrowser) {
         if (o && o.ajaxed === file) {
-            return console.error(file, 'does not provide a module');
+            return console.error(file, "does not provide a module");
         }
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function () {
@@ -205,7 +196,7 @@ function $async(file, cb, o) {
                     cb(FuseBox.import(file, { ajaxed: file }));
                 }
                 else {
-                    console.error(file, 'not found on request');
+                    console.error(file, "not found on request");
                     cb(undefined);
                 }
             }
@@ -219,7 +210,6 @@ function $async(file, cb, o) {
         return cb("");
     }
 }
-;
 function $trigger(name, args) {
     var e = $events[name];
     if (e) {
@@ -229,13 +219,11 @@ function $trigger(name, args) {
                 return false;
             }
         }
-        ;
     }
 }
-;
 function syntheticDefaultExportPolyfill(input) {
     if (input === null ||
-        ['function', 'object', 'array'].indexOf(typeof input) === -1 ||
+        ["function", "object", "array"].indexOf(typeof input) === -1 ||
         input.hasOwnProperty("default")) {
         return;
     }
@@ -282,12 +270,12 @@ function $import(name, o) {
         if (processStopped === false) {
             return;
         }
-        return $async(name, function (result) { return asyncMode_1 ? o(result) : null; }, o);
+        return $async(name, function (result) { return (asyncMode_1 ? o(result) : null); }, o);
     }
     var pkg = ref.pkgName;
     if (file.locals && file.locals.module)
         return file.locals.module.exports;
-    var locals = file.locals = {};
+    var locals = (file.locals = {});
     var path = $getDir(ref.validPath);
     locals.exports = {};
     locals.module = { exports: locals.exports };
@@ -295,7 +283,7 @@ function $import(name, o) {
         var result = $import(name, {
             pkg: pkg,
             path: path,
-            v: ref.versions,
+            v: ref.versions
         });
         if (FuseBox["sdep"]) {
             syntheticDefaultExportPolyfill(result);
@@ -314,7 +302,6 @@ function $import(name, o) {
     $trigger("after-import", args);
     return locals.module.exports;
 }
-;
 var FuseBox = (function () {
     function FuseBox() {
     }
@@ -355,10 +342,10 @@ var FuseBox = (function () {
             var alias = obj[k].alias;
             var xp = $import(obj[k].pkg);
             if (alias === "*") {
-                $loopObjKey(xp, function (exportKey, value) { return __root__[exportKey] = value; });
+                $loopObjKey(xp, function (exportKey, value) { return (__root__[exportKey] = value); });
             }
             else if (typeof alias === "object") {
-                $loopObjKey(alias, function (exportKey, value) { return __root__[value] = xp[exportKey]; });
+                $loopObjKey(alias, function (exportKey, value) { return (__root__[value] = xp[exportKey]); });
             }
             else {
                 __root__[alias] = xp;
@@ -369,7 +356,7 @@ var FuseBox = (function () {
         }
     };
     FuseBox.dynamic = function (path, str, opts) {
-        this.pkg(opts && opts.pkg || "default", {}, function (___scope___) {
+        this.pkg((opts && opts.pkg) || "default", {}, function (___scope___) {
             ___scope___.file(path, function (exports, require, module, __filename, __dirname) {
                 var res = new Function("__fbx__dnm__", "exports", "require", "module", "__filename", "__dirname", "__root__", str);
                 res(true, exports, require, module, __filename, __dirname, __root__);
@@ -387,11 +374,11 @@ var FuseBox = (function () {
     FuseBox.pkg = function (name, v, fn) {
         if ($packages[name])
             return fn($packages[name].s);
-        var pkg = $packages[name] = {};
+        var pkg = ($packages[name] = {});
         pkg.f = {};
         pkg.v = v;
         pkg.s = {
-            file: function (name, fn) { return pkg.f[name] = { fn: fn }; },
+            file: function (name, fn) { return (pkg.f[name] = { fn: fn }); }
         };
         return fn(pkg.s);
     };

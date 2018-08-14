@@ -1,2 +1,2 @@
 import { GenericAst } from "./GenericAst";
-export class UseStrict extends GenericAst { }
+export class UseStrict extends GenericAst {}

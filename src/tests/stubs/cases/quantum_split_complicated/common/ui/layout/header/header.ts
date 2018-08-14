@@ -1,3 +1,3 @@
 export function loadHeaderComponent() {
-  console.log("load header component");
+	console.log("load header component");
 }

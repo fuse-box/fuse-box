@@ -1,8 +1,8 @@
 if (FuseBox.isServer) {
-    module.exports = global.require("module");
+	module.exports = global.require("module");
 } else {
-    module.exports = {
-        _load: FuseBox.import,
-        globalPaths: [],
-    };
+	module.exports = {
+		_load: FuseBox.import,
+		globalPaths: []
+	};
 }

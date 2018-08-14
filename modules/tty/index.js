@@ -1,9 +1,9 @@
 if (FuseBox.isServer) {
-    module.exports = global.require("tty");
+	module.exports = global.require("tty");
 } else {
-    module.exports = {
-        isatty: function() {
-            return false;
-        }
-    };
+	module.exports = {
+		isatty: function() {
+			return false;
+		}
+	};
 }

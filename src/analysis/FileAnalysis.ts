@@ -8,31 +8,33 @@ import { OwnVariable } from "./plugins/OwnVariable";
 import { OwnBundle } from "./plugins/OwnBundle";
 import { ImportDeclaration } from "./plugins/ImportDeclaration";
 import { DynamicImportStatement } from "./plugins/DynamicImportStatement";
-import { escapeRegExp } from '../Utils';
+import { escapeRegExp } from "../Utils";
 require("acorn-jsx/inject")(acorn);
 require("./acorn-ext/obj-rest-spread")(acorn);
 
 export interface TraversalPlugin {
-    onNode(file: File, node: any, parent: any): void
-    onEnd(file: File): void
+	onNode(file: File, node: any, parent: any): void;
+	onEnd(file: File): void;
 }
 
 const plugins: TraversalPlugin[] = [AutoImport, OwnVariable, OwnBundle, ImportDeclaration, DynamicImportStatement, LanguageLevel];
 
 export function acornParse(contents, options?: any): any {
-    return acorn.parse(contents, {
-        ...options || {}, ...{
-            sourceType: "module",
-            tolerant: true,
-            locations: true,
-            ranges: true,
-            ecmaVersion: '2018',
-            plugins: {
-                jsx: true, objRestSpread: true
-            },
-            jsx: { allowNamespacedObjects: true },
-        },
-    });
+	return acorn.parse(contents, {
+		...(options || {}),
+		...{
+			sourceType: "module",
+			tolerant: true,
+			locations: true,
+			ranges: true,
+			ecmaVersion: "2018",
+			plugins: {
+				jsx: true,
+				objRestSpread: true
+			},
+			jsx: { allowNamespacedObjects: true }
+		}
+	});
 }
 /**
  * Makes static analysis on the code
@@ -44,148 +46,142 @@ export function acornParse(contents, options?: any): any {
  * @class FileAST
  */
 export class FileAnalysis {
+	public ast: any;
 
-    public ast: any;
+	private wasAnalysed = false;
 
-    private wasAnalysed = false;
+	public skipAnalysis = false;
 
-    public skipAnalysis = false;
+	public bannedImports = {};
 
-    public bannedImports = {};
+	public nativeImports = {};
 
-    public nativeImports = {};
+	public fuseBoxMainFile;
 
-    public fuseBoxMainFile;
+	public requiresRegeneration = false;
 
-    public requiresRegeneration = false;
+	public statementReplacement = new Set<{ from: string; to: string }>();
 
-    public statementReplacement = new Set<{ from: string, to: string }>();
+	public requiresTranspilation = false;
 
-    public requiresTranspilation = false;
+	public fuseBoxVariable = "FuseBox";
 
-    public fuseBoxVariable = "FuseBox";
+	public dependencies: string[] = [];
 
-    public dependencies: string[] = [];
+	constructor(public file: File) {}
 
-    constructor(public file: File) { }
+	public astIsLoaded(): boolean {
+		return this.ast !== undefined;
+	}
 
-    public astIsLoaded(): boolean {
-        return this.ast !== undefined;
-    }
+	/**
+	 * Loads an AST
+	 *
+	 * @param {*} ast
+	 *
+	 * @memberOf FileAnalysis
+	 */
+	public loadAst(ast: any) {
+		this.ast = ast;
+	}
 
-    /**
-     * Loads an AST
-     *
-     * @param {*} ast
-     *
-     * @memberOf FileAnalysis
-     */
-    public loadAst(ast: any) {
-        this.ast = ast;
-    }
+	public skip() {
+		this.skipAnalysis = true;
+	}
 
-    public skip() {
-        this.skipAnalysis = true;
-    }
+	/**
+	 *
+	 *
+	 * @private
+	 *
+	 * @memberOf FileAST
+	 */
+	public parseUsingAcorn(options?: any) {
+		try {
+			this.ast = acornParse(this.file.contents, options);
+		} catch (err) {
+			return PrettyError.errorWithContents(err, this.file);
+		}
+	}
 
-    /**
-     *
-     *
-     * @private
-     *
-     * @memberOf FileAST
-     */
-    public parseUsingAcorn(options?: any) {
-        try {
-            this.ast = acornParse(this.file.contents, options);
-        } catch (err) {
-            return PrettyError.errorWithContents(err, this.file);
-        }
-    }
+	public registerReplacement(rawRequireStatement: string, targetReplacement: string) {
+		if (rawRequireStatement !== targetReplacement) {
+			this.statementReplacement.add({ from: rawRequireStatement, to: targetReplacement });
+		}
+	}
 
-    public registerReplacement(rawRequireStatement: string, targetReplacement: string) {
-        if( rawRequireStatement !== targetReplacement ){
-            this.statementReplacement.add({ from: rawRequireStatement, to: targetReplacement })
-        }
-    }
+	public handleAliasReplacement(requireStatement: string): string {
+		if (!this.file.context.experimentalAliasEnabled) {
+			return requireStatement;
+		}
+		// enable aliases only for the current project
+		// if (this.file.collection.name !== this.file.context.defaultPackageName) {
+		//    return requireStatement;
+		// }
 
-    public handleAliasReplacement(requireStatement: string): string {
+		const aliasCollection = this.file.context.aliasCollection;
+		aliasCollection.forEach(props => {
+			if (props.expr.test(requireStatement)) {
+				requireStatement = requireStatement.replace(props.expr, `${props.replacement}$2`);
+				// only if we need it
 
-        if (!this.file.context.experimentalAliasEnabled) {
-            return requireStatement;
-        }
-        // enable aliases only for the current project
-        // if (this.file.collection.name !== this.file.context.defaultPackageName) {
-        //    return requireStatement;
-        // }
+				this.requiresRegeneration = true;
+			}
+		});
+		return requireStatement;
+	}
 
-        const aliasCollection = this.file.context.aliasCollection;
-        aliasCollection.forEach(props => {
-            if (props.expr.test(requireStatement)) {
-                requireStatement = requireStatement.replace(props.expr, `${props.replacement}$2`);
-                // only if we need it
+	public addDependency(name: string) {
+		this.dependencies.push(name);
+	}
 
-                this.requiresRegeneration = true;
-            }
-        });
-        return requireStatement;
-    }
+	public resetDependencies() {
+		this.dependencies = [];
+	}
 
-    public addDependency(name: string) {
-        this.dependencies.push(name);
-    }
+	public nodeIsString(node) {
+		return node.type === "Literal" || node.type === "StringLiteral";
+	}
 
-    public resetDependencies() {
-        this.dependencies = [];
-    }
+	public replaceAliases(collection: Set<{ from: string; to: string }>) {
+		collection.forEach(item => {
+			const regExp = new RegExp(`(require|\\$fsmp\\$)\\(('|")${escapeRegExp(item.from)}('|")\\)`);
+			this.file.contents = this.file.contents.replace(regExp, `$1("${item.to}")`);
+		});
+	}
 
-    public nodeIsString(node) {
-        return node.type === "Literal" || node.type === "StringLiteral";
-    }
+	public analyze(traversalOptions?: { plugins: TraversalPlugin[] }) {
+		// We don't want to make analysis 2 times
+		if (this.wasAnalysed || this.skipAnalysis) {
+			return;
+		}
+		// setting es6 module
+		// to transpile it with typescrip
+		if (this.file.collection && this.file.collection.info && this.file.collection.info.jsNext) {
+			this.file.es6module = true;
+		}
 
-    public replaceAliases(collection : Set<{ from: string, to: string }>){
-        collection.forEach(item => {
-            const regExp =
-                new RegExp(`(require|\\$fsmp\\$)\\(('|")${escapeRegExp(item.from)}('|")\\)`)
-            this.file.contents = this.file.contents.replace(regExp, `$1("${item.to}")`)
-        });
-    }
+		let traversalPlugins = plugins;
+		if (traversalOptions && Array.isArray(traversalOptions.plugins)) {
+			traversalPlugins = plugins.concat(traversalOptions.plugins);
+		}
 
-    public analyze(traversalOptions?: { plugins: TraversalPlugin[] }) {
-        // We don't want to make analysis 2 times
-        if (this.wasAnalysed || this.skipAnalysis) {
-            return;
-        }
-        // setting es6 module
-        // to transpile it with typescrip
-        if (this.file.collection && this.file.collection.info && this.file.collection.info.jsNext) {
-            this.file.es6module = true;
-        }
+		ASTTraverse.traverse(this.ast, {
+			pre: (node, parent, prop, idx) => traversalPlugins.forEach(plugin => plugin.onNode(this.file, node, parent))
+		});
 
-        let traversalPlugins = plugins;
-        if (traversalOptions && Array.isArray(traversalOptions.plugins)) {
-            traversalPlugins = plugins.concat(traversalOptions.plugins)
-        }
+		traversalPlugins.forEach(plugin => plugin.onEnd(this.file));
 
+		this.wasAnalysed = true;
+		// regenerate content
+		this.replaceAliases(this.statementReplacement);
+		if (this.requiresRegeneration) {
+			this.file.contents = this.file.context.generateCode(this.ast, {});
+		}
 
-        ASTTraverse.traverse(this.ast, {
-            pre: (node, parent, prop, idx) =>
-                traversalPlugins.forEach(plugin => plugin.onNode(this.file, node, parent)),
-        });
-
-        traversalPlugins.forEach(plugin => plugin.onEnd(this.file));
-
-        this.wasAnalysed = true;
-        // regenerate content
-        this.replaceAliases(this.statementReplacement);
-        if (this.requiresRegeneration) {
-            this.file.contents = this.file.context.generateCode(this.ast, {
-            });
-        }
-
-        if (this.requiresTranspilation) {
-            let result = this.file.transpileUsingTypescript();
-            this.file.contents = result.outputText;
-        }
-    }
+		if (this.requiresTranspilation) {
+			let result = this.file.transpileUsingTypescript();
+			this.file.contents = result.outputText;
+		}
+	}
 }

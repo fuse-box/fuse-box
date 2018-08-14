@@ -39,15 +39,14 @@
     "escodegen": "^1.8.1",
     "express": "^4.14.0",
     "fliplog": "^0.3.13",
-    "fs-extra": "^2.0.0",
+    "fs-extra": "^7.0.0",
     "fuse-concat-with-sourcemaps": "^1.0.5",
+    "getopts": "^2.1.1",
     "glob": "^7.1.1",
     "ieee754": "^1.1.8",
     "inquirer": "^3.0.6",
     "lego-api": "^1.0.7",
-    "minimist": "^1.2.0",
     "mustache": "^2.3.0",
-    "node-sass": "^4.9.0",
     "postcss": "^6.0.1",
     "pretty-time": "^0.2.0",
     "prettysize": "0.0.3",
@@ -58,8 +57,7 @@
     "source-map": "^0.7.1",
     "tslib": "^1.8.0",
     "watch": "^1.0.1",
-    "ws": "^1.1.1",
-    "yargs": "^9.0.1"
+    "ws": "^1.1.1"
   },
   "description": "Fuse-Box a bundler that does it right",
   "devDependencies": {
@@ -95,7 +93,7 @@
     "run-sequence": "^1.2.2",
     "should": "^11.1.0",
     "sinon": "^1.17.6",
-    "typescript": "^2.8.0-dev.20180204",
+    "typescript": "^3.1.0-dev.20180804",
     "uglify-js": "^3.1.8",
     "validate-commit-msg": "^2.14.0",
     "wires-reactive": "^1.1.1"
@@ -117,8 +115,8 @@
     "commitmsg": "validate-commit-msg",
     "devDeps": "gulp installDevDeps",
     "dist": "gulp dist",
-    "format": "prettier --list-different \"**/*.{js,json,md,scss,ts,yml,yaml}\"",
-    "format:fix": "prettier --write \"**/*.{js,json,md,scss,ts,yml,yaml}\"",
+    "format": "prettier --list-different \"**/*.{js,json,md,ts,yml}\"",
+    "format:fix": "prettier --write \"**/*.{js,json,md,ts,yml}\"",
     "help": "node bin/fsbx --help",
     "lint": "tslint --project ./src",
     "start": "gulp watch",
@@ -126,5 +124,5 @@
     "test:once": "cross-env gulp dist && TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js"
   },
   "typings": "index.d.ts",
-  "version": "3.3.0"
+  "version": "3.5.0-next.5"
 }
