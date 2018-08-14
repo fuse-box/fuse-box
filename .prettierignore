@@ -1,0 +1,5 @@
+bin
+docs
+modules
+package.json
+package-lock.json
