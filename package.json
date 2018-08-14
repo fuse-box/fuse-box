@@ -120,8 +120,7 @@
     "help": "node bin/fsbx --help",
     "lint": "tslint --project ./src",
     "start": "gulp watch",
-    "test": "cross-env FUSE_TEST_TIMEOUT=5000 node ./test.js",
-    "test:once": "cross-env gulp dist && TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js"
+    "test": "node test.js"
   },
   "typings": "index.d.ts",
   "version": "3.5.0-next.5"
