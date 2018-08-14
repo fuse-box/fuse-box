@@ -72,7 +72,7 @@ export class FuseProcess {
 	/** Spawns another proces */
 	public exec(): FuseProcess {
 		const node = spawn("node", [this.filePath], {
-			stdio: "inherit"
+			stdio: "inherit",
 		});
 		node.on("close", code => {
 			if (code === 8) {

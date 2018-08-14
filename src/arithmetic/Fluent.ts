@@ -38,7 +38,7 @@ class FluentBundle {
 	public addCmd(cmd: any, bundle: any) {
 		this.cmds.push({
 			bundle,
-			cmd: "execute"
+			cmd: "execute",
 		});
 		return this;
 	}

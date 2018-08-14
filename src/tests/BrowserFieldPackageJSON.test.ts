@@ -8,11 +8,11 @@ export class BrowserFieldPackageJsonTest {
 			"package.json": JSON.stringify({
 				name: name,
 				browser: {
-					"./hello.js": "./target.js"
-				}
+					"./hello.js": "./target.js",
+				},
 			}),
 			"index.js": `module.exports = require("./hello.js")`,
-			"target.js": `module.exports = {target : "world"}`
+			"target.js": `module.exports = {target : "world"}`,
 		});
 		return FuseTestEnv.create({
 			project: {
@@ -20,16 +20,16 @@ export class BrowserFieldPackageJsonTest {
 				files: {
 					"index.ts": `
                             module.exports.data = require("${name}")
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
 				test.browser(window => {
 					const index = window.FuseBox.import("./index");
 					should(index).deepEqual({ data: { target: "world" } });
-				})
+				}),
 			);
 	}
 
@@ -39,11 +39,11 @@ export class BrowserFieldPackageJsonTest {
 			"package.json": JSON.stringify({
 				name: name,
 				browser: {
-					"./hello.js": "./target.js"
-				}
+					"./hello.js": "./target.js",
+				},
 			}),
 			"index.js": `module.exports = require("./hello")`,
-			"target.js": `module.exports = {target : "world"}`
+			"target.js": `module.exports = {target : "world"}`,
 		});
 		return FuseTestEnv.create({
 			project: {
@@ -51,16 +51,16 @@ export class BrowserFieldPackageJsonTest {
 				files: {
 					"index.ts": `
                             module.exports.data = require("${name}")
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
 				test.browser(window => {
 					const index = window.FuseBox.import("./index");
 					should(index).deepEqual({ data: { target: "world" } });
-				})
+				}),
 			);
 	}
 
@@ -70,11 +70,11 @@ export class BrowserFieldPackageJsonTest {
 			"package.json": JSON.stringify({
 				name: name,
 				browser: {
-					"hello.js": "./target.js"
-				}
+					"hello.js": "./target.js",
+				},
 			}),
 			"index.js": `module.exports = require("./hello")`,
-			"target.js": `module.exports = {target : "world"}`
+			"target.js": `module.exports = {target : "world"}`,
 		});
 		return FuseTestEnv.create({
 			project: {
@@ -82,16 +82,16 @@ export class BrowserFieldPackageJsonTest {
 				files: {
 					"index.ts": `
                             module.exports.data = require("${name}")
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
 				test.browser(window => {
 					const index = window.FuseBox.import("./index");
 					should(index).deepEqual({ data: { target: "world" } });
-				})
+				}),
 			);
 	}
 
@@ -101,11 +101,11 @@ export class BrowserFieldPackageJsonTest {
 			"package.json": JSON.stringify({
 				name: name,
 				browser: {
-					"hello.js": "path"
-				}
+					"hello.js": "path",
+				},
 			}),
 			"index.js": `module.exports = require("./hello")`,
-			"target.js": `module.exports = {target : "world"}`
+			"target.js": `module.exports = {target : "world"}`,
 		});
 		return FuseTestEnv.create({
 			project: {
@@ -113,16 +113,16 @@ export class BrowserFieldPackageJsonTest {
 				files: {
 					"index.ts": `
                             module.exports.data = require("${name}")
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
 				test.browser(window => {
 					const index = window.FuseBox.import("./index");
 					should(index.data.resolve).beFunction();
-				})
+				}),
 			);
 	}
 
@@ -132,11 +132,11 @@ export class BrowserFieldPackageJsonTest {
 			"package.json": JSON.stringify({
 				name: name,
 				browser: {
-					hello: "target.js"
-				}
+					hello: "target.js",
+				},
 			}),
 			"index.js": `module.exports = require("hello")`,
-			"target.js": `module.exports = {target : "world"}`
+			"target.js": `module.exports = {target : "world"}`,
 		});
 		return FuseTestEnv.create({
 			project: {
@@ -144,16 +144,16 @@ export class BrowserFieldPackageJsonTest {
 				files: {
 					"index.ts": `
                             module.exports.data = require("${name}")
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
 				test.browser(window => {
 					const index = window.FuseBox.import("./index");
 					should(index).deepEqual({ data: { target: "world" } });
-				})
+				}),
 			);
 	}
 
@@ -163,8 +163,8 @@ export class BrowserFieldPackageJsonTest {
 			"package.json": JSON.stringify({
 				name: name,
 				browser: {
-					path: false
-				}
+					path: false,
+				},
 			}),
 			"index.js": `
                 if (typeof window === 'undefined') {
@@ -172,7 +172,7 @@ export class BrowserFieldPackageJsonTest {
                 }  else {
                     module.exports = {empty : true}
                 }
-            `
+            `,
 		});
 		return FuseTestEnv.create({
 			project: {
@@ -183,16 +183,16 @@ export class BrowserFieldPackageJsonTest {
                             const data =  require("${name}")
 
                             module.exports = data;
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
 				test.browser(window => {
 					const index = window.FuseBox.import("./index");
 					should(index).deepEqual({ empty: true });
-				})
+				}),
 			);
 	}
 
@@ -202,15 +202,15 @@ export class BrowserFieldPackageJsonTest {
 			"package.json": JSON.stringify({
 				name: name,
 				browser: {
-					"hello.js": "target.js"
-				}
+					"hello.js": "target.js",
+				},
 			}),
 			"index.js": `
             
                 module.exports = [ require("path").join("a", "b"), require("./hello") ]
                 
             `,
-			"target.js": `module.exports = {target : true}`
+			"target.js": `module.exports = {target : true}`,
 		});
 		return FuseTestEnv.create({
 			project: {
@@ -221,16 +221,16 @@ export class BrowserFieldPackageJsonTest {
                             const data =  require("${name}")
 
                             module.exports = data;
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
 				test.browser(window => {
 					const index = window.FuseBox.import("./index");
 					should(index).deepEqual(["a/b", { target: true }]);
-				})
+				}),
 			);
 	}
 }

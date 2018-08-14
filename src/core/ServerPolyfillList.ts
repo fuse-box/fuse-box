@@ -19,7 +19,7 @@ const SERVER_POLYFILL = new Set<string>([
 	"tty",
 	"url",
 	"util",
-	"zlib"
+	"zlib",
 ]);
 
 const ELECTRON_POLYFILL = new Set<string>([
@@ -42,7 +42,7 @@ const ELECTRON_POLYFILL = new Set<string>([
 	"tty",
 	"url",
 	"util",
-	"zlib"
+	"zlib",
 ]);
 export function isServerPolyfill(name: string) {
 	return SERVER_POLYFILL.has(name);

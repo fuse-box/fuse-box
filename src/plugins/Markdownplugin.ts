@@ -33,7 +33,7 @@ export class FuseBoxMarkdownPlugin implements Plugin {
 		pedantic: false,
 		sanitize: true,
 		smartLists: true,
-		smartypants: false
+		smartypants: false,
 	};
 
 	constructor(opts: MarkdownPluginOptions = {}) {

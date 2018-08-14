@@ -6,14 +6,14 @@ export class TypeOfReplacementTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				removeUseStrict: false
+				removeUseStrict: false,
 			},
 			project: {
 				files: {
-					"index.ts": `module.exports = {result : typeof module === "object"}`
+					"index.ts": `module.exports = {result : typeof module === "object"}`,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 
@@ -25,10 +25,10 @@ export class TypeOfReplacementTest {
 			stubs: true,
 			project: {
 				files: {
-					"index.ts": `module.exports = {result : typeof exports === "object"}`
+					"index.ts": `module.exports = {result : typeof exports === "object"}`,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString("'object' === 'object'");
@@ -49,10 +49,10 @@ export class TypeOfReplacementTest {
                        }
                        module.exports.something = hello("123123")
 
-                    `
+                    `,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString("'object' === 'string'");
@@ -72,10 +72,10 @@ export class TypeOfReplacementTest {
                        }
                        module.exports.something = hello("123123")
 
-                    `
+                    `,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString("typeof module === 'string'");
@@ -96,10 +96,10 @@ export class TypeOfReplacementTest {
                        }
                        module.exports.something = hello("123123")
 
-                    `
+                    `,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString("'undefined' === 'string'");
@@ -120,10 +120,10 @@ export class TypeOfReplacementTest {
                        }
                        module.exports.something = hello("123123")
 
-                    `
+                    `,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString("typeof global === 'string'");
@@ -142,10 +142,10 @@ export class TypeOfReplacementTest {
                        }
                        module.exports.something = hello("123123")
                     
-                    `
+                    `,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString("var t = typeof module");

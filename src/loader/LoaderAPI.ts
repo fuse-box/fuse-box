@@ -9,7 +9,8 @@ declare const ServiceWorkerGlobalScope: any;
 
 const $isServiceWorker = typeof ServiceWorkerGlobalScope !== "undefined";
 const $isWebWorker = typeof WorkerGlobalScope !== "undefined";
-const $isBrowser = (typeof window !== "undefined" && typeof window.navigator !== "undefined") || $isWebWorker || $isServiceWorker;
+const $isBrowser =
+	(typeof window !== "undefined" && typeof window.navigator !== "undefined") || $isWebWorker || $isServiceWorker;
 const g = $isBrowser ? ($isWebWorker || $isServiceWorker ? {} : window) : global;
 
 /**
@@ -65,7 +66,11 @@ __root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports :
 /**
  * A runtime storage for FuseBox
  */
-const $fsbx: FSBX = $isBrowser ? ($isWebWorker || $isServiceWorker ? {} : (window["__fsbx__"] = window["__fsbx__"] || {})) : (g["$fsbx"] = g["$fsbx"] || {}); // in case of nodejs
+const $fsbx: FSBX = $isBrowser
+	? $isWebWorker || $isServiceWorker
+		? {}
+		: (window["__fsbx__"] = window["__fsbx__"] || {})
+	: (g["$fsbx"] = g["$fsbx"] || {}); // in case of nodejs
 
 if (!$isBrowser) {
 	g["require"] = require;
@@ -332,7 +337,7 @@ function $getRef(name: string, o: RefOpts): IReference {
 		pkgName,
 		versions: pkg.v,
 		filePath,
-		validPath
+		validPath,
 	};
 }
 
@@ -413,7 +418,7 @@ function syntheticDefaultExportPolyfill(input) {
 	Object.defineProperty(input, "default", {
 		value: input,
 		writable: true,
-		enumerable: false
+		enumerable: false,
 	});
 }
 
@@ -452,7 +457,7 @@ function $import(name: string, o: any = {}) {
 				.replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&")
 				.replace(/@@/g, ".*")
 				.replace(/@/g, "[a-z0-9$_-]+"),
-			"i"
+			"i",
 		);
 
 		let pkg = $packages[ref.pkgName];
@@ -492,7 +497,7 @@ function $import(name: string, o: any = {}) {
 		const result = $import(name, {
 			pkg,
 			path,
-			v: ref.versions
+			v: ref.versions,
 		});
 		if (FuseBox["sdep"]) {
 			syntheticDefaultExportPolyfill(result);
@@ -615,11 +620,20 @@ class FuseBox {
 		opts?: {
 			/** The name of the package */
 			pkg: string;
-		}
+		},
 	) {
 		this.pkg((opts && opts.pkg) || "default", {}, function(___scope___: any) {
 			___scope___.file(path, function(exports: any, require: any, module: any, __filename: string, __dirname: string) {
-				var res = new Function("__fbx__dnm__", "exports", "require", "module", "__filename", "__dirname", "__root__", str);
+				var res = new Function(
+					"__fbx__dnm__",
+					"exports",
+					"require",
+					"module",
+					"__filename",
+					"__dirname",
+					"__root__",
+					str,
+				);
 				res(true, exports, require, module, __filename, __dirname, __root__);
 			});
 		});
@@ -658,7 +672,7 @@ class FuseBox {
 		// scope
 		pkg.s = {
 			// Scope file
-			file: (name: string, fn: any) => (pkg.f[name] = { fn })
+			file: (name: string, fn: any) => (pkg.f[name] = { fn }),
 		};
 		return fn(pkg.s);
 	}

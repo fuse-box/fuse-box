@@ -35,7 +35,7 @@ export class TreeShakeTest {
 			stubs: true,
 			options: {
 				hoisting: true,
-				treeshake: true
+				treeshake: true,
 			},
 			project: {
 				files: {
@@ -45,10 +45,10 @@ export class TreeShakeTest {
                     `,
 					"reflux.ts": `
                         
-                    `
+                    `,
 				},
-				instructions: "**/**.ts"
-			}
+				instructions: "**/**.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString("var Reflux = $fsx.r(1);\nReflux.createAction();");
@@ -60,7 +60,7 @@ export class TreeShakeTest {
 			stubs: true,
 			options: {
 				hoisting: true,
-				treeshake: true
+				treeshake: true,
 			},
 			project: {
 				files: {
@@ -74,10 +74,10 @@ export class TreeShakeTest {
                     `,
 					"reflux.ts": `
                         
-                    `
+                    `,
 				},
-				instructions: "**/**.ts"
-			}
+				instructions: "**/**.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString("var Reflux = $fsx.r(1);\n})($fsx);");

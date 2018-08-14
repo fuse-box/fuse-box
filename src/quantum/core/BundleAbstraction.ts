@@ -69,7 +69,7 @@ export class BundleAbstraction {
 						return false;
 					}
 				}
-			}
+			},
 		});
 	}
 }

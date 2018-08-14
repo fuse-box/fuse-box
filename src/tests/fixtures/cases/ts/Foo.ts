@@ -37,7 +37,7 @@ enum STATES {
 	/**
 	 *
 	 */
-	ENTRY_POINT
+	ENTRY_POINT,
 }
 /**
  *

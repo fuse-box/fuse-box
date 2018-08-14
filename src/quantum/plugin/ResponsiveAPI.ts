@@ -121,7 +121,7 @@ export class ResponsiveAPI {
 			loadRemoteScript: this.loadRemoteScript,
 			isContained: this.core.opts.isContained(),
 			extendServerImport: this.core.opts.shouldExtendServerImport(),
-			runtimeBundleMapping: this.core.opts.shouldSetBundleMappingsAtRuntime()
+			runtimeBundleMapping: this.core.opts.shouldSetBundleMappingsAtRuntime(),
 		};
 
 		const variables: any = {};
@@ -145,6 +145,12 @@ export class ResponsiveAPI {
 			replaceRaw = { $fsx: this.core.opts.quantumVariableName };
 		}
 
-		return jsCommentTemplate(path.join(Config.FUSEBOX_MODULES, "fuse-box-responsive-api/index.js"), options, variables, raw, replaceRaw);
+		return jsCommentTemplate(
+			path.join(Config.FUSEBOX_MODULES, "fuse-box-responsive-api/index.js"),
+			options,
+			variables,
+			raw,
+			replaceRaw,
+		);
 	}
 }

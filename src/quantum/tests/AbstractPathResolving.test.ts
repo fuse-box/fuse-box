@@ -153,14 +153,14 @@ export class AbstractPathResolving {
 		const bundleAbstraction = createBundleAbstraction({
 			default: {
 				files: {
-					"index.js": "require('foo')"
-				}
+					"index.js": "require('foo')",
+				},
 			},
 			foo: {
 				files: {
-					"index.js": ""
-				}
-			}
+					"index.js": "",
+				},
+			},
 		});
 
 		let programIndex = bundleAbstraction.packageAbstractions.get("default").fileAbstractions.get("index.js");
@@ -174,15 +174,15 @@ export class AbstractPathResolving {
 		const bundleAbstraction = createBundleAbstraction({
 			default: {
 				files: {
-					"index.js": "require('foo/stuff')"
-				}
+					"index.js": "require('foo/stuff')",
+				},
 			},
 			foo: {
 				files: {
 					"index.js": "",
-					"stuff.js": ""
-				}
-			}
+					"stuff.js": "",
+				},
+			},
 		});
 
 		let programIndex = bundleAbstraction.packageAbstractions.get("default").fileAbstractions.get("index.js");
@@ -197,15 +197,15 @@ export class AbstractPathResolving {
 		const bundleAbstraction = createBundleAbstraction({
 			default: {
 				files: {
-					"index.js": "require('foo/stuff')"
-				}
+					"index.js": "require('foo/stuff')",
+				},
 			},
 			foo: {
 				files: {
 					"index.js": "",
-					"stuff/index.js": ""
-				}
-			}
+					"stuff/index.js": "",
+				},
+			},
 		});
 
 		let programIndex = bundleAbstraction.packageAbstractions.get("default").fileAbstractions.get("index.js");
@@ -220,14 +220,14 @@ export class AbstractPathResolving {
 		const bundleAbstraction = createBundleAbstraction({
 			default: {
 				files: {
-					"index.js": "require('@angular/core')"
-				}
+					"index.js": "require('@angular/core')",
+				},
 			},
 			"@angular/core": {
 				files: {
-					"index.js": ""
-				}
-			}
+					"index.js": "",
+				},
+			},
 		});
 
 		let programIndex = bundleAbstraction.packageAbstractions.get("default").fileAbstractions.get("index.js");

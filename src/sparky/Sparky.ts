@@ -43,11 +43,13 @@ export class Sparky {
 			});
 		}
 		return {
-			help: msg => (sparkTask.help = msg)
+			help: msg => (sparkTask.help = msg),
 		};
 	}
 
-	public static context(target: () => { [key: string]: any } | (new () => any) | { [key: string]: any }): SparkyContextClass {
+	public static context(
+		target: () => { [key: string]: any } | (new () => any) | { [key: string]: any },
+	): SparkyContextClass {
 		return SparkyContext(target);
 	}
 
@@ -73,7 +75,7 @@ export class Sparky {
 						sparkyContext._fuseInstance = sparkyContext._getFuseBoxOptions();
 					}
 					return sparkyContext._fuseInstance;
-				}
+				},
 			});
 			return sparkyContext._fuseInstance;
 		});
@@ -115,7 +117,7 @@ export class Sparky {
 			// resolve parallel dependencies
 			Promise.all(task.parallelDependencies.map(name => this.resolve(name))),
 			// resolve waterfal dependencies
-			each(task.waterfallDependencies, name => this.resolve(name))
+			each(task.waterfallDependencies, name => this.resolve(name)),
 		]);
 		let res;
 		if (typeof task.fn === "function") {
@@ -148,7 +150,10 @@ export class Sparky {
 			.groupHeader("Available tasks");
 
 		// Figure out the length of the longest task so we can have a nice margin
-		const maxTaskNameLength = Array.from(Sparky.tasks.keys()).reduce((acc, taskName) => Math.max(acc, taskName.length), 0);
+		const maxTaskNameLength = Array.from(Sparky.tasks.keys()).reduce(
+			(acc, taskName) => Math.max(acc, taskName.length),
+			0,
+		);
 
 		// Display each task name and its help message
 		Sparky.tasks.forEach((task, taskName) => {

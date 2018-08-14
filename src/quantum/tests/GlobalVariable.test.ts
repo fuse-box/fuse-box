@@ -11,14 +11,14 @@ export class GlobalVariableTEst {
 					"index.ts": `
                         global.foo = "bar"
                         module.exports = global.foo
-                    `
+                    `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "server"
-					})
-				]
-			}
+						target: "server",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -30,8 +30,8 @@ export class GlobalVariableTEst {
             `,
 					data => {
 						should(data.response).equal("bar");
-					}
-				)
+					},
+				),
 			);
 	}
 
@@ -42,21 +42,21 @@ export class GlobalVariableTEst {
 					"index.ts": `
                         global.foo = "bar"
                         module.exports = global.foo
-                    `
+                    `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
 				test.browser(window => {
 					const res = window.$fsx.r(0);
 					should(res).equal("bar");
-				})
+				}),
 			);
 	}
 
@@ -73,14 +73,14 @@ export class GlobalVariableTEst {
                             }())
                         }
                         test();
-                    `
+                    `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -90,7 +90,7 @@ export class GlobalVariableTEst {
 					app.shouldFindString("isString(require)");
 					app.shouldNotFindString("function ($fsx)");
 					app.shouldNotFindString("isString($fsx)");
-				})
+				}),
 			);
 	}
 
@@ -101,21 +101,21 @@ export class GlobalVariableTEst {
 				files: {
 					"index.ts": `
                             module.exports = require.main.filename;
-                    `
+                    `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
 				test.browser((window, env) => {
 					const app = env.getScript("app.js");
 					app.shouldFindString("require.main.filename");
-				})
+				}),
 			);
 	}
 
@@ -126,21 +126,21 @@ export class GlobalVariableTEst {
 				files: {
 					"index.ts": `
                             module.exports = {require : 1};
-                    `
+                    `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
 				test.browser((window, env) => {
 					const app = env.getScript("app.js");
 					app.shouldFindString("{ require: 1 }");
-				})
+				}),
 			);
 	}
 
@@ -151,22 +151,22 @@ export class GlobalVariableTEst {
 					"index.ts": `
                         if (typeof require !== 'undefined' && require.extensions) {
                         }
-                    `
+                    `,
 				},
 				plugins: [
 					QuantumPlugin({
 						target: "browser",
-						replaceTypeOf: false
-					})
-				]
-			}
+						replaceTypeOf: false,
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
 				test.browser((window, env) => {
 					const app = env.getScript("app.js");
 					app.shouldFindString("typeof require");
-				})
+				}),
 			);
 	}
 
@@ -183,21 +183,21 @@ export class GlobalVariableTEst {
                             }
                         }
                         testFunction()
-                    `
+                    `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
 				test.browser((window, env) => {
 					const app = env.getScript("app.js");
 					app.shouldFindString("isString(require)");
-				})
+				}),
 			);
 	}
 
@@ -209,21 +209,21 @@ export class GlobalVariableTEst {
 					"index.ts": `
                             const req = require
                             module.exports = req('s');
-                    `
+                    `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
 				test.browser((window, env) => {
 					const app = env.getScript("app.js");
 					app.shouldNotFindString("require");
-				})
+				}),
 			);
 	}
 }

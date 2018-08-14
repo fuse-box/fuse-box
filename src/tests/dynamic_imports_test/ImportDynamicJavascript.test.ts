@@ -7,15 +7,15 @@ export class ImportDynamicJavascript {
 		return FuseTestEnv.create({
 			project: {
 				distFiles: {
-					"hello.js": "exports.remoteFN = function(){ return 'some result from a remote file'}"
+					"hello.js": "exports.remoteFN = function(){ return 'some result from a remote file'}",
 				},
 				files: {
 					"index.ts": `
                     export function getRemoteFile(){ 
                         return import("./hello.js")
-                    }`
-				}
-			}
+                    }`,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
@@ -24,7 +24,7 @@ export class ImportDynamicJavascript {
 					return index.getRemoteFile().then(result => {
 						should(result.remoteFN()).equal(`some result from a remote file`);
 					});
-				})
+				}),
 			);
 	}
 
@@ -32,15 +32,15 @@ export class ImportDynamicJavascript {
 		return FuseTestEnv.create({
 			project: {
 				distFiles: {
-					"hello.js": "exports.remoteFN = function(){ return 'some result from a remote file'}"
+					"hello.js": "exports.remoteFN = function(){ return 'some result from a remote file'}",
 				},
 				files: {
 					"index.ts": `
                     export function getRemoteFile(){ 
                         return import("./hello.js")
-                    }`
-				}
-			}
+                    }`,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
@@ -53,8 +53,8 @@ export class ImportDynamicJavascript {
             `,
 					data => {
 						should(data.response).equal(`some result from a remote file`);
-					}
-				)
+					},
+				),
 			);
 	}
 
@@ -62,20 +62,20 @@ export class ImportDynamicJavascript {
 		return FuseTestEnv.create({
 			project: {
 				distFiles: {
-					"hello.js": "exports.remoteFN = function(){ return 'some result from a remote file'}"
+					"hello.js": "exports.remoteFN = function(){ return 'some result from a remote file'}",
 				},
 				files: {
 					"index.ts": `
                     export function getRemoteFile(){ 
                         return import("./hello.js")
-                    }`
+                    }`,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -84,7 +84,7 @@ export class ImportDynamicJavascript {
 					return index.getRemoteFile().then(result => {
 						should(result.remoteFN()).equal(`some result from a remote file`);
 					});
-				})
+				}),
 			);
 	}
 
@@ -92,20 +92,20 @@ export class ImportDynamicJavascript {
 		return FuseTestEnv.create({
 			project: {
 				distFiles: {
-					"hello.js": "exports.remoteFN = function(){ return 'some result from a remote file'}"
+					"hello.js": "exports.remoteFN = function(){ return 'some result from a remote file'}",
 				},
 				files: {
 					"index.ts": `
                     export function getRemoteFile(){ 
                         return import("./hello.js")
-                    }`
+                    }`,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "universal"
-					})
-				]
-			}
+						target: "universal",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -114,7 +114,7 @@ export class ImportDynamicJavascript {
 					return index.getRemoteFile().then(result => {
 						should(result.remoteFN()).equal(`some result from a remote file`);
 					});
-				})
+				}),
 			);
 	}
 
@@ -122,20 +122,20 @@ export class ImportDynamicJavascript {
 		return FuseTestEnv.create({
 			project: {
 				distFiles: {
-					"hello.js": "exports.remoteFN = function(){ return 'some result from a remote file'}"
+					"hello.js": "exports.remoteFN = function(){ return 'some result from a remote file'}",
 				},
 				files: {
 					"index.ts": `
                     export function getRemoteFile(){ 
                         return import("./hello.js")
-                    }`
+                    }`,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "server"
-					})
-				]
-			}
+						target: "server",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -148,8 +148,8 @@ export class ImportDynamicJavascript {
             `,
 					data => {
 						should(data.response).equal(`some result from a remote file`);
-					}
-				)
+					},
+				),
 			);
 	}
 
@@ -157,20 +157,20 @@ export class ImportDynamicJavascript {
 		return FuseTestEnv.create({
 			project: {
 				distFiles: {
-					"hello.js": "exports.remoteFN = function(){ return 'some result from a remote file'}"
+					"hello.js": "exports.remoteFN = function(){ return 'some result from a remote file'}",
 				},
 				files: {
 					"index.ts": `
                     export function getRemoteFile(){ 
                         return import("./hello2.js")
-                    }`
+                    }`,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -184,7 +184,7 @@ export class ImportDynamicJavascript {
 						.catch(e => {
 							should(e.code).equal(404);
 						});
-				})
+				}),
 			);
 	}
 
@@ -192,20 +192,20 @@ export class ImportDynamicJavascript {
 		return FuseTestEnv.create({
 			project: {
 				distFiles: {
-					"hello.js": "exports.remoteFN = function(){ return 'some result from a remote file'}"
+					"hello.js": "exports.remoteFN = function(){ return 'some result from a remote file'}",
 				},
 				files: {
 					"index.ts": `
                     export function getRemoteFile(){ 
                         return import("./hello2.js")
-                    }`
+                    }`,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "universal"
-					})
-				]
-			}
+						target: "universal",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -219,7 +219,7 @@ export class ImportDynamicJavascript {
 						.catch(e => {
 							should(e).deepEqual({ code: 404, msg: "Not Found" });
 						});
-				})
+				}),
 			);
 	}
 
@@ -227,26 +227,26 @@ export class ImportDynamicJavascript {
 		return FuseTestEnv.create({
 			project: {
 				distFiles: {
-					"hello.js": "exports.remoteFN = function(){ return 'some result from a remote file'}"
+					"hello.js": "exports.remoteFN = function(){ return 'some result from a remote file'}",
 				},
 				files: {
 					"index.ts": `
                     export function getRemoteFile(){ 
                         return import("./hello.js")
-                    }`
+                    }`,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "server"
-					})
-				]
-			}
+						target: "server",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
 				test.browser(window => {
 					should(window.$fsx).beUndefined();
-				})
+				}),
 			);
 	}
 }

@@ -5,14 +5,14 @@ createRealNodeModule("pkg_folder_alias_without_ext", {
 	"hello.js": `module.exports = "world"`,
 	"foo/package.json": `{
         "main" : "../hello"
-    }`
+    }`,
 });
 
 createRealNodeModule("pkg_folder_alias_with_ext", {
 	"hello.js": `module.exports = "world2"`,
 	"foo/package.json": `{
         "main" : "../hello.js"
-    }`
+    }`,
 });
 
 export class PackageFolderAliasTest {
@@ -22,16 +22,16 @@ export class PackageFolderAliasTest {
 				files: {
 					"index.ts": `
                             module.exports = require("pkg_folder_alias_without_ext/foo")
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
 				test.browser((window, env) => {
 					const index = window.FuseBox.import("./index");
 					should(index).equal("world");
-				})
+				}),
 			);
 	}
 
@@ -41,16 +41,16 @@ export class PackageFolderAliasTest {
 				files: {
 					"index.ts": `
                             module.exports = require("pkg_folder_alias_with_ext/foo")
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
 				test.browser((window, env) => {
 					const index = window.FuseBox.import("./index");
 					should(index).equal("world2");
-				})
+				}),
 			);
 	}
 
@@ -64,16 +64,16 @@ export class PackageFolderAliasTest {
 					"hello/other.js": "module.exports = 'Should work'",
 					"index.ts": `
                             module.exports = require("./some")
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
 				test.browser((window, env) => {
 					const index = window.FuseBox.import("./index");
 					should(index).equal("Should work");
-				})
+				}),
 			);
 	}
 
@@ -87,23 +87,23 @@ export class PackageFolderAliasTest {
                 "browser": {
                     "./foo.js": "overrides/foo_browser.js"
                 }
-            }`
+            }`,
 		});
 		return FuseTestEnv.create({
 			project: {
 				files: {
 					"index.ts": `
                             module.exports = require("pkg_with_browser_overrides_1")
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
 				test.browser((window, env) => {
 					const index = window.FuseBox.import("./index");
 					should(index).equal("I am overrides/foo_browser");
-				})
+				}),
 			);
 	}
 }

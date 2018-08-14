@@ -50,7 +50,7 @@ export class ModuleCache {
 	 */
 	private cachedDeps = {
 		tree: {},
-		flat: {}
+		flat: {},
 	};
 
 	/**
@@ -66,7 +66,12 @@ export class ModuleCache {
 		return this.context.cacheType === "file";
 	}
 	public initialize() {
-		this.cacheFolder = path.join(Config.TEMP_FOLDER, "cache", encodeURIComponent(Config.FUSEBOX_VERSION), this.context.output.getUniqueHash());
+		this.cacheFolder = path.join(
+			Config.TEMP_FOLDER,
+			"cache",
+			encodeURIComponent(Config.FUSEBOX_VERSION),
+			this.context.output.getUniqueHash(),
+		);
 		this.permanentCacheFolder = path.join(this.cacheFolder, "permanent");
 		this.staticCacheFolder = path.join(this.cacheFolder, "static");
 		this.cacheFile = path.join(this.cacheFolder, "deps.json");
@@ -79,7 +84,7 @@ export class ModuleCache {
 				} catch (e) {
 					this.cachedDeps = {
 						tree: {},
-						flat: {}
+						flat: {},
 					};
 				}
 			}
@@ -223,7 +228,7 @@ export class ModuleCache {
 			headerContent: file.headerContent,
 			ac: file.alternativeContent,
 			mtime: stats.mtime.getTime(),
-			_: file.cacheData || {}
+			_: file.cacheData || {},
 		};
 		if (file.devLibsRequired) {
 			cacheData.devLibsRequired = file.devLibsRequired;
@@ -330,7 +335,7 @@ _ : ${JSON.stringify(cacheData._ || {})}
 								cacheReset = true;
 								return resolve();
 							}
-						})
+						}),
 					);
 					this.context.addNodeModule(key, collection);
 					required.push(key);
@@ -408,7 +413,7 @@ _ : ${JSON.stringify(cacheData._ || {})}
 					json.flat[key] = {
 						name: collection.name,
 						version: collection.info.version,
-						files: []
+						files: [],
 					};
 				}
 				flatFiles = json.flat[key].files;
@@ -421,7 +426,7 @@ _ : ${JSON.stringify(cacheData._ || {})}
 				root[key] = {
 					deps: dependencies,
 					name: collection.info.name,
-					version: collection.info.version
+					version: collection.info.version,
 				};
 				collection.traversed = true;
 				return traverse(collection.nodeModules, dependencies);

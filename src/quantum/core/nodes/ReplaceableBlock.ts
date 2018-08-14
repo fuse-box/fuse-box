@@ -22,12 +22,12 @@ export class ReplaceableBlock extends GenericAst {
 		if (target instanceof Array && $idx !== undefined) {
 			this.ast[this.astProp][$idx] = {
 				type: "Identifier",
-				name: name
+				name: name,
 			};
 		} else {
 			this.ast[this.astProp] = {
 				type: "Identifier",
-				name: name
+				name: name,
 			};
 		}
 	}

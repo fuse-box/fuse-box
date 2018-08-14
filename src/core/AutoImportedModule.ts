@@ -25,15 +25,17 @@ export function registerDefaultAutoImportModules(userConfig) {
 	let nativeImports: any = {};
 	nativeImports.stream = new AutoImportedModule("stream", {
 		pkg: "stream",
-		statement: `require("stream").Stream`
+		statement: `require("stream").Stream`,
 	});
 
 	nativeImports.process = new AutoImportedModule("process", "process");
 	nativeImports.Buffer = new AutoImportedModule("Buffer", {
 		pkg: "buffer",
-		statement: `require("buffer").Buffer`
+		statement: `require("buffer").Buffer`,
 	});
 	nativeImports.http = new AutoImportedModule("http", "http");
 
-	return userConfig ? filter(nativeImports, (value, key) => userConfig[key] === undefined || userConfig[key] === true) : nativeImports;
+	return userConfig
+		? filter(nativeImports, (value, key) => userConfig[key] === undefined || userConfig[key] === true)
+		: nativeImports;
 }

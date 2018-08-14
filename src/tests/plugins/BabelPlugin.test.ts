@@ -9,11 +9,11 @@ export class BabelPluginTest {
 			project: {
 				files: {
 					"index.wxyz": `export {default as canada} from './moose/eh/igloo.wxyz'`,
-					"moose/eh/igloo.wxyz": "export default { result: 'igloo'}"
+					"moose/eh/igloo.wxyz": "export default { result: 'igloo'}",
 				},
 				instructions: "index.wxyz",
-				plugins: [BabelPlugin({ extensions: [".wxyz"], config: { presets: ["latest"] } })]
-			}
+				plugins: [BabelPlugin({ extensions: [".wxyz"], config: { presets: ["latest"] } })],
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index.wxyz");
 			should(out).deepEqual({ canada: { result: "igloo" } });
@@ -28,15 +28,15 @@ export class BabelPluginTest {
 				files: {
 					"index.js": `export {getMessage} from './hello'`,
 					"hello.js": `export function getMessage() { return 'I should not be included'; }`,
-					"hello.foo.js": `export function getMessage() { return 'I should be included'; }`
-				}
-			}
+					"hello.foo.js": `export function getMessage() { return 'I should be included'; }`,
+				},
+			},
 		})
 			.simple("> index.js")
 			.then(env =>
 				env.browser(window => {
 					should(window.FuseBox.import("./index").getMessage()).equal("I should be included");
-				})
+				}),
 			);
 	}
 
@@ -48,15 +48,15 @@ export class BabelPluginTest {
 				files: {
 					"index.wxyz": `export {getMessage} from './hello.wxyz'`,
 					"hello.wxyz": `export function getMessage() { return 'I should not be included'; }`,
-					"hello.foo.wxyz": `export function getMessage() { return 'I should be included'; }`
-				}
-			}
+					"hello.foo.wxyz": `export function getMessage() { return 'I should be included'; }`,
+				},
+			},
 		})
 			.simple("> index.wxyz")
 			.then(env =>
 				env.browser(window => {
 					should(window.FuseBox.import("./index.wxyz").getMessage()).equal("I should be included");
-				})
+				}),
 			);
 	}
 }

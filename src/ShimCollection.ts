@@ -24,7 +24,7 @@ export class ShimCollection {
 		// faking entry
 		let entryInfo = <IPathInformation>{
 			isNodeModule: false,
-			fuseBoxPath: "index.js"
+			fuseBoxPath: "index.js",
 		};
 		let entryFile = new File(context, entryInfo);
 		entryFile.isLoaded = true;
@@ -32,7 +32,7 @@ export class ShimCollection {
 		entryFile.contents = `module.exports = ${exports}`;
 
 		let collection = new ModuleCollection(context, name, <IPackageInformation>{
-			missing: false
+			missing: false,
 		});
 		collection.dependencies.set(name, entryFile);
 		collection.setupEntry(entryFile);

@@ -10,10 +10,10 @@ export class ServerEnvironmentConditionTest {
 			stubs: true,
 			project: {
 				files: {
-					"index.js": `exports.something = FuseBox.isServer`
+					"index.js": `exports.something = FuseBox.isServer`,
 				},
-				instructions: "> index.js"
-			}
+				instructions: "> index.js",
+			},
 		}).then(result => {
 			const first = result.window.$fsx.r(0);
 			should(first).deepEqual({ something: false });
@@ -26,10 +26,10 @@ export class ServerEnvironmentConditionTest {
 			stubs: true,
 			project: {
 				files: {
-					"index.js": `exports.something = FuseBox.isBrowser`
+					"index.js": `exports.something = FuseBox.isBrowser`,
 				},
-				instructions: "index.js"
-			}
+				instructions: "index.js",
+			},
 		}).then(result => {
 			const first = result.window.$fsx.r(0);
 
@@ -43,10 +43,10 @@ export class ServerEnvironmentConditionTest {
 			stubs: true,
 			project: {
 				files: {
-					"index.js": `exports.something = [FuseBox.isServer]`
+					"index.js": `exports.something = [FuseBox.isServer]`,
 				},
-				instructions: "index.js"
-			}
+				instructions: "index.js",
+			},
 		}).then(result => {
 			const first = result.window.$fsx.r(0);
 			should(first).deepEqual({ something: [false] });
@@ -58,10 +58,10 @@ export class ServerEnvironmentConditionTest {
 			stubs: true,
 			project: {
 				files: {
-					"index.js": `exports.something = [FuseBox.isServer, FuseBox.isBrowser]`
+					"index.js": `exports.something = [FuseBox.isServer, FuseBox.isBrowser]`,
 				},
-				instructions: "index.js"
-			}
+				instructions: "index.js",
+			},
 		}).then(result => {
 			const first = result.window.$fsx.r(0);
 			should(first).deepEqual({ something: [false, true] });
@@ -78,10 +78,10 @@ export class ServerEnvironmentConditionTest {
                         if (FuseBox.isServer){
                             console.log("server")
                         }
-                    `
+                    `,
 				},
-				instructions: "index.js"
-			}
+				instructions: "index.js",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).notFindString("server");
@@ -99,10 +99,10 @@ export class ServerEnvironmentConditionTest {
                         } else {
                             console.log("browser")
                         }
-                    `
+                    `,
 				},
-				instructions: "index.js"
-			}
+				instructions: "index.js",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).notFindString("server");
@@ -116,14 +116,14 @@ export class ServerEnvironmentConditionTest {
 				files: {
 					"index.ts": `
                         module.exports = require("path").join('a')
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "universal"
-					})
-				]
-			}
+						target: "universal",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -135,8 +135,8 @@ export class ServerEnvironmentConditionTest {
             `,
 					data => {
 						should(data.response).equal("a");
-					}
-				)
+					},
+				),
 			);
 	}
 
@@ -146,14 +146,14 @@ export class ServerEnvironmentConditionTest {
 				files: {
 					"index.ts": `
                         module.exports = FuseBox.target
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "electron"
-					})
-				]
-			}
+						target: "electron",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -165,8 +165,8 @@ export class ServerEnvironmentConditionTest {
             `,
 					data => {
 						should(data.response).equal("electron");
-					}
-				)
+					},
+				),
 			);
 	}
 }

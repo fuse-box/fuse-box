@@ -3,7 +3,7 @@ export default [
 		description: "ignores for-of with `transforms.forOf === false`",
 		options: { transforms: { forOf: false } },
 		input: `for ( x of y ) {}`,
-		output: `for ( x of y ) {}`
+		output: `for ( x of y ) {}`,
 	},
 
 	{
@@ -20,7 +20,7 @@ export default [
 				var member = list[i];
 
 				doSomething( member );
-			}`
+			}`,
 	},
 
 	{
@@ -37,7 +37,7 @@ export default [
 				var member = list[i];
 
 				doSomething( member );
-			}`
+			}`,
 	},
 
 	{
@@ -60,7 +60,7 @@ export default [
 				});
 			};
 
-			for ( var i = 0, list = [ 'a', 'b', 'c' ]; i < list.length; i += 1 ) loop();`
+			for ( var i = 0, list = [ 'a', 'b', 'c' ]; i < list.length; i += 1 ) loop();`,
 	},
 
 	{
@@ -75,7 +75,7 @@ export default [
 				var member = list[i];
 
 				console.log( member );
-			}`
+			}`,
 	},
 
 	{
@@ -94,7 +94,7 @@ export default [
 				var key = list[i];
 
 				console.log(key);
-			}`
+			}`,
 	},
 
 	{
@@ -111,7 +111,7 @@ export default [
 				var item = list[i];
 
 				if ( item.foo ) { continue; }
-			}`
+			}`,
 	},
 
 	{
@@ -139,7 +139,7 @@ export default [
 				});
 			};
 
-			for ( var i = 0, list = items; i < list.length; i += 1 ) loop();`
+			for ( var i = 0, list = items; i < list.length; i += 1 ) loop();`,
 	},
 
 	{
@@ -150,7 +150,7 @@ export default [
 			for ( let x of y ) {}`,
 
 		output: `
-			`
+			`,
 	},
 
 	{
@@ -161,7 +161,7 @@ export default [
 			for ( var x of y ) {}`,
 
 		output: `
-			var x;`
+			var x;`,
 	},
 
 	{
@@ -196,7 +196,7 @@ export default [
 
 					if ( returned ) return returned.v;
 				}
-			}`
+			}`,
 	},
 
 	{
@@ -215,6 +215,6 @@ export default [
 				var y = ref.y;
 
 				console.log(x, y);
-			}`
-	}
+			}`,
+	},
 ];

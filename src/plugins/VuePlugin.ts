@@ -27,7 +27,7 @@ export class VuePluginClass implements Plugin {
 	public transform(file: File) {
 		const context = file.context;
 		context.log.echoWarning(
-			`VuePlugin is deprecated and will be removed in a future release. Please migrate to the new VueComponentPlugin: http://fuse-box.org/plugins/vue-component-plugin`
+			`VuePlugin is deprecated and will be removed in a future release. Please migrate to the new VueComponentPlugin: http://fuse-box.org/plugins/vue-component-plugin`,
 		);
 
 		// caching ...
@@ -109,14 +109,14 @@ function compileTemplateContent(context: any, engine: string, content: string) {
 			{
 				filename: "base",
 				basedir: context.homeDir,
-				includeDir: context.homeDir
+				includeDir: context.homeDir,
 			},
 			(err, html) => {
 				if (err) {
 					return reject(err);
 				}
 				resolve(html);
-			}
+			},
 		);
 	});
 }
@@ -169,7 +169,9 @@ function reduceVueToScript(file, jsContent, html, styles): string {
 	var cssInclude = "";
 	if (styles.global) cssInclude += styles.global;
 	if (styles.scoped) console.error("Functionality not yet supported: scoped style");
-	if (cssInclude) cssInclude = 'require("fuse-box-css")(' + JSON.stringify(file.info.fuseBoxPath) + "," + JSON.stringify(cssInclude) + ");";
+	if (cssInclude)
+		cssInclude =
+			'require("fuse-box-css")(' + JSON.stringify(file.info.fuseBoxPath) + "," + JSON.stringify(cssInclude) + ");";
 	return (
 		`var _p = {};
 var _v = function(exports){${jsContent}

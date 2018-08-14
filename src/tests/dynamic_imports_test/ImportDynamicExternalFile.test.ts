@@ -12,9 +12,9 @@ export class ImportDynamicExternalFile {
 					"index.ts": `
                             export function getRemoteFile(){ 
                                 return import("${TINY_LIB}")
-                            }`
-				}
-			}
+                            }`,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
@@ -23,7 +23,7 @@ export class ImportDynamicExternalFile {
 					return index.getRemoteFile().then(result => {
 						should(result.from).beFunction();
 					});
-				})
+				}),
 			);
 	}
 
@@ -34,9 +34,9 @@ export class ImportDynamicExternalFile {
 					"index.ts": `
                             export function getRemoteFile(){ 
                                 return import("${TINY_LIB}")
-                            }`
-				}
-			}
+                            }`,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
@@ -49,8 +49,8 @@ export class ImportDynamicExternalFile {
             `,
 					data => {
 						should(data).deepEqual({ response: true });
-					}
-				)
+					},
+				),
 			);
 	}
 
@@ -61,9 +61,9 @@ export class ImportDynamicExternalFile {
 					"index.ts": `
                             export function getRemoteFile(){ 
                                 return import("http://asdfasdfs.js")
-                            }`
-				}
-			}
+                            }`,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
@@ -88,11 +88,11 @@ export class ImportDynamicExternalFile {
 								syscall: "getaddrinfo",
 								hostname: "asdfasdfs.js",
 								host: "asdfasdfs.js",
-								port: 80
-							}
+								port: 80,
+							},
 						});
-					}
-				)
+					},
+				),
 			);
 	}
 
@@ -104,15 +104,15 @@ export class ImportDynamicExternalFile {
                         export function getRemoteFile(){ 
                             return import("${TINY_LIB}")
                         }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
 						target: "universal",
-						extendServerImport: true
-					})
-				]
-			}
+						extendServerImport: true,
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -121,7 +121,7 @@ export class ImportDynamicExternalFile {
 					return index.getRemoteFile().then(result => {
 						should(result.from).beFunction();
 					});
-				})
+				}),
 			);
 	}
 
@@ -133,15 +133,15 @@ export class ImportDynamicExternalFile {
                         export function getRemoteFile(){ 
                             return import("${TINY_LIB}")
                         }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
 						target: "browser",
-						extendServerImport: true
-					})
-				]
-			}
+						extendServerImport: true,
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -150,7 +150,7 @@ export class ImportDynamicExternalFile {
 					return index.getRemoteFile().then(result => {
 						should(result.from).beFunction();
 					});
-				})
+				}),
 			);
 	}
 
@@ -161,15 +161,15 @@ export class ImportDynamicExternalFile {
 					"index.ts": `
                             export function getRemoteFile(){ 
                                 return import("${TINY_LIB}")
-                            }`
+                            }`,
 				},
 				plugins: [
 					QuantumPlugin({
 						target: "universal",
-						extendServerImport: true
-					})
-				]
-			}
+						extendServerImport: true,
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -182,8 +182,8 @@ export class ImportDynamicExternalFile {
             `,
 					data => {
 						should(data).deepEqual({ response: true });
-					}
-				)
+					},
+				),
 			);
 	}
 
@@ -194,15 +194,15 @@ export class ImportDynamicExternalFile {
 					"index.ts": `
                             export function getRemoteFile(){ 
                                 return import("${TINY_LIB}")
-                            }`
+                            }`,
 				},
 				plugins: [
 					QuantumPlugin({
 						target: "server",
-						extendServerImport: true
-					})
-				]
-			}
+						extendServerImport: true,
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -215,8 +215,8 @@ export class ImportDynamicExternalFile {
             `,
 					data => {
 						should(data).deepEqual({ response: true });
-					}
-				)
+					},
+				),
 			);
 	}
 }

@@ -7,7 +7,7 @@ export class ImportAliasTest {
 			//testFolder : "_current_test",
 			project: {
 				alias: {
-					foo: "~/foo-bar/module/"
+					foo: "~/foo-bar/module/",
 				},
 				files: {
 					"index.ts": `
@@ -20,9 +20,9 @@ export class ImportAliasTest {
                             export function foo(){
                                 return "hello world"
                             }
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
@@ -31,7 +31,7 @@ export class ImportAliasTest {
 					return index.getRemoteFile().then(result => {
 						should(result).equal("hello world");
 					});
-				})
+				}),
 			);
 	}
 }

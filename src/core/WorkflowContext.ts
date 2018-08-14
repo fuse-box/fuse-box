@@ -29,7 +29,14 @@ const appRoot = require("app-root-path");
 /**
  * All the plugin method names
  */
-export type PluginMethodName = "init" | "preBuild" | "preBundle" | "bundleStart" | "bundleEnd" | "postBundle" | "postBuild";
+export type PluginMethodName =
+	| "init"
+	| "preBuild"
+	| "preBundle"
+	| "bundleStart"
+	| "bundleEnd"
+	| "postBundle"
+	| "postBuild";
 
 /**
  * Interface for a FuseBox plugin
@@ -185,7 +192,7 @@ export class WorkFlowContext {
 		process: true,
 		stream: true,
 		Buffer: true,
-		http: true
+		http: true,
 	};
 	public autoImportConfig = {};
 
@@ -291,7 +298,7 @@ export class WorkFlowContext {
 					type: "js",
 					content,
 					dependants: dependants,
-					path: file.info.fuseBoxPath
+					path: file.info.fuseBoxPath,
 				});
 			});
 		} else {
@@ -301,7 +308,7 @@ export class WorkFlowContext {
 			this.sourceChangedEmitter.emit({
 				type: "js",
 				content,
-				path: file.info.fuseBoxPath
+				path: file.info.fuseBoxPath,
 			});
 		}
 	}
@@ -455,7 +462,7 @@ export class WorkFlowContext {
 	public createFileGroup(name: string, collection: ModuleCollection, handler: Plugin): File {
 		let info = <IPathInformation>{
 			fuseBoxPath: name,
-			absPath: name
+			absPath: name,
 		};
 		let file = new File(this, info);
 		file.collection = collection;

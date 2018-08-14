@@ -5,15 +5,15 @@ export class GlobalsTest {
 	"Should expose globals (all *) for browser"() {
 		return createOptimisedBundleEnv({
 			options: {
-				target: "browser"
+				target: "browser",
 			},
 			project: {
 				files: {
-					"index.js": `exports.something = "hello"`
+					"index.js": `exports.something = "hello"`,
 				},
 				globals: { default: "*" },
-				instructions: "> index.js"
-			}
+				instructions: "> index.js",
+			},
 		}).then(result => {
 			should(result.window.something).equal("hello");
 		});
@@ -22,15 +22,15 @@ export class GlobalsTest {
 	"Should expose globals (by name) for browser"() {
 		return createOptimisedBundleEnv({
 			options: {
-				target: "browser"
+				target: "browser",
 			},
 			project: {
 				files: {
-					"index.js": `exports.something = "hello"`
+					"index.js": `exports.something = "hello"`,
 				},
 				globals: { default: "stuff" },
-				instructions: "> index.js"
-			}
+				instructions: "> index.js",
+			},
 		}).then(result => {
 			should(result.window.stuff).deepEqual({ something: "hello" });
 		});
@@ -40,15 +40,15 @@ export class GlobalsTest {
 		return createOptimisedBundleEnv({
 			options: {
 				target: "server",
-				bakeAPI: "index.js"
+				bakeAPI: "index.js",
 			},
 			project: {
 				files: {
-					"index.js": `exports.something = "hello"`
+					"index.js": `exports.something = "hello"`,
 				},
 				globals: { default: "*" },
-				instructions: "> index.js"
-			}
+				instructions: "> index.js",
+			},
 		}).then(result => {
 			should(result.bundles[1]).deepEqual({ something: "hello" });
 		});

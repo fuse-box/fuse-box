@@ -53,7 +53,8 @@ export class CopyPluginClass implements Plugin {
 	public transform(file: File) {
 		const context = file.context;
 		file.isLoaded = true;
-		let userFile = (!context.hash ? hashString(file.info.fuseBoxPath) + "-" : "") + path.basename(file.info.fuseBoxPath);
+		let userFile =
+			(!context.hash ? hashString(file.info.fuseBoxPath) + "-" : "") + path.basename(file.info.fuseBoxPath);
 		let userPath = path.join(this.dest, userFile);
 		let exportsKey = this.useDefault ? "module.exports.default" : "module.exports";
 

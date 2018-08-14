@@ -319,7 +319,7 @@ export class ModuleCollection {
 								return result.then(resolve).catch(reject);
 							}
 							return resolve();
-						})
+						}),
 					);
 				}
 			}

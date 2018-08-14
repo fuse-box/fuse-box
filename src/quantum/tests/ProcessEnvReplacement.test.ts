@@ -7,14 +7,14 @@ export class ProcessEnvReplacement {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				treeshake: false
+				treeshake: false,
 			},
 			project: {
 				files: {
-					"index.ts": `exports.env = process.env.NODE_ENV`
+					"index.ts": `exports.env = process.env.NODE_ENV`,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString("exports.env = 'production'");
@@ -25,14 +25,14 @@ export class ProcessEnvReplacement {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				treeshake: false
+				treeshake: false,
 			},
 			project: {
 				files: {
-					"index.ts": `exports.env = process.env["NODE_ENV"]`
+					"index.ts": `exports.env = process.env["NODE_ENV"]`,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString("exports.env = 'production'");
@@ -43,14 +43,14 @@ export class ProcessEnvReplacement {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				treeshake: false
+				treeshake: false,
 			},
 			project: {
 				files: {
-					"index.ts": `exports.env = process.env.LOL`
+					"index.ts": `exports.env = process.env.LOL`,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString("exports.env = undefined");
@@ -61,15 +61,15 @@ export class ProcessEnvReplacement {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				treeshake: false
+				treeshake: false,
 			},
 			project: {
 				plugins: [EnvPlugin({ foo: "foo" })],
 				files: {
-					"index.ts": `exports.env = process.env.foo`
+					"index.ts": `exports.env = process.env.foo`,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString("exports.env = 'foo'");
@@ -80,15 +80,15 @@ export class ProcessEnvReplacement {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				treeshake: false
+				treeshake: false,
 			},
 			project: {
 				plugins: [EnvPlugin({ foo: "foo" })],
 				files: {
-					"index.ts": `console.log(process.env.foo)`
+					"index.ts": `console.log(process.env.foo)`,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 
@@ -100,7 +100,7 @@ export class ProcessEnvReplacement {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				treeshake: false
+				treeshake: false,
 			},
 			project: {
 				plugins: [EnvPlugin({ foo: "foo" })],
@@ -111,10 +111,10 @@ export class ProcessEnvReplacement {
                             return info
                         }
                         hello(1, process.env.foo)
-                    `
+                    `,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString("hello(1, 'foo')");
@@ -125,7 +125,7 @@ export class ProcessEnvReplacement {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				treeshake: false
+				treeshake: false,
 			},
 			project: {
 				plugins: [EnvPlugin({ foo: "foo" })],
@@ -136,10 +136,10 @@ export class ProcessEnvReplacement {
                         }
                         
                     }
-                    `
+                    `,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString("else if ('production' !== 'production')");

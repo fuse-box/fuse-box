@@ -117,7 +117,7 @@ export async function tsc(root: string, opts?: TscOptions) {
 
 	return new Promise((resolve, reject) => {
 		const proc = spawn("tsc" + (/^win/.test(process.platform) ? ".cmd" : ""), tscOptions, {
-			stdio: "inherit"
+			stdio: "inherit",
 		});
 		proc.on("close", function(code) {
 			if (code === 8) {
@@ -134,7 +134,7 @@ export async function npmPublish(opts: { path: string; tag?: string }) {
 	return new Promise((resolve, reject) => {
 		const publish = spawn("npm", ["publish", "--tag", opts.tag], {
 			stdio: "inherit",
-			cwd: ensureAbsolutePath(opts.path)
+			cwd: ensureAbsolutePath(opts.path),
 		});
 		publish.on("close", function(code) {
 			if (code === 8) {
@@ -150,7 +150,7 @@ export function bumpVersion(
 	opts: {
 		userJson?: { version: string };
 		type: "minor" | "major" | "patch" | "next" | "alpha" | "beta" | "rc" | "dev";
-	}
+	},
 ) {
 	let filePath, json;
 	if (!opts.userJson) {

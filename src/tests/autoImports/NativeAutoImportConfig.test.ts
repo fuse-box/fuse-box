@@ -6,7 +6,7 @@ export class NativeAutoImportConfig {
 		return createEnv({
 			project: {
 				natives: {
-					process: true
+					process: true,
 				},
 				files: {
 					"index.ts": `
@@ -14,10 +14,10 @@ export class NativeAutoImportConfig {
                         module.exports = {
                             hello : process.env
                         }
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.projectContents.toString();
 			should(contents).findString(`/* fuse:injection: */ var process`);
@@ -28,7 +28,7 @@ export class NativeAutoImportConfig {
 		return createEnv({
 			project: {
 				natives: {
-					process: false
+					process: false,
 				},
 				files: {
 					"index.ts": `
@@ -36,10 +36,10 @@ export class NativeAutoImportConfig {
                         module.exports = {
                             hello : process.env
                         }
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.projectContents.toString();
 			should(contents).notFindString(`/* fuse:injection: */ var process`);
@@ -50,7 +50,7 @@ export class NativeAutoImportConfig {
 		return createEnv({
 			project: {
 				natives: {
-					process: false
+					process: false,
 				},
 				files: {
 					"index.ts": `
@@ -58,10 +58,10 @@ export class NativeAutoImportConfig {
                         module.exports = {
                             hello : http
                         }
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.projectContents.toString();
 			should(contents).findString(`/* fuse:injection: */ var http`);

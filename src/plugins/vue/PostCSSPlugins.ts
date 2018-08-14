@@ -46,8 +46,8 @@ export const AddScopeIdPlugin = postcss.plugin("add-scope-id", function(opts) {
 					selector.insertAfter(
 						node,
 						selectorParser.attribute({
-							attribute: opts.id
-						})
+							attribute: opts.id,
+						}),
 					);
 				});
 			}).processSync(node.selector);

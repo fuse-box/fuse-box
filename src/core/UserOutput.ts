@@ -73,7 +73,7 @@ export class UserOutput {
 			crypto
 				.createHash("md5")
 				.update(content, "utf8")
-				.digest("hex")
+				.digest("hex"),
 		);
 	}
 
@@ -132,7 +132,11 @@ export class UserOutput {
 		}
 	}
 
-	public writeToOutputFolder(userPath: string, content: string | Buffer, hashAllowed = false): Promise<UserOutputResult> {
+	public writeToOutputFolder(
+		userPath: string,
+		content: string | Buffer,
+		hashAllowed = false,
+	): Promise<UserOutputResult> {
 		let targetPath = path.join(this.dir, userPath);
 		ensureUserPath(targetPath);
 		let hash;

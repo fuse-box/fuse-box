@@ -31,26 +31,26 @@ export class ExtensionOverridesTest {
 		createRealNodeModule(name, {
 			"package.json": JSON.stringify({
 				name: name,
-				main: "./index.js"
+				main: "./index.js",
 			}),
 			"index.js": `module.exports = require("./target.js")`,
 			"target.js": `module.exports = {message : "I should be included"}`,
-			"target.foo.js": `module.exports = {message : "I should not be included"}`
+			"target.foo.js": `module.exports = {message : "I should not be included"}`,
 		});
 
 		return FuseTestEnv.create({
 			project: {
 				extensionOverrides: [".foo.ts"],
 				files: {
-					"index.ts": `module.exports = require("${name}")`
-				}
-			}
+					"index.ts": `module.exports = require("${name}")`,
+				},
+			},
 		})
 			.simple()
 			.then(env =>
 				env.browser(window => {
 					should(window.FuseBox.import("./index")).deepEqual({ message: "I should be included" });
-				})
+				}),
 			);
 	}
 
@@ -61,15 +61,15 @@ export class ExtensionOverridesTest {
 				files: {
 					"index.ts": `export {getMessage} from './hello'`,
 					"hello.ts": `export function getMessage() { return 'I should not be included'; }`,
-					"hello.foo.ts": `export function getMessage() { return 'I should be included'; }`
-				}
-			}
+					"hello.foo.ts": `export function getMessage() { return 'I should be included'; }`,
+				},
+			},
 		})
 			.simple()
 			.then(env =>
 				env.browser(window => {
 					should(window.FuseBox.import("./index").getMessage()).equal("I should be included");
-				})
+				}),
 			);
 	}
 }

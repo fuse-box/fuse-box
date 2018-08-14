@@ -8,16 +8,16 @@ export class Dummy {
 			testFolder: "_current_test",
 			project: {
 				distFiles: {
-					"hello.js": "exports.remoteFN = function(){ return 'some result from a remote file'}"
+					"hello.js": "exports.remoteFN = function(){ return 'some result from a remote file'}",
 				},
 				plugins: [QuantumPlugin()],
 				files: {
 					"index.ts": `export function getRemoteFile(){ 
                         return import("./hello.js")
 
-                    }`
-				}
-			}
+                    }`,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
@@ -26,7 +26,7 @@ export class Dummy {
 					return firstFile.getRemoteFile().then(result => {
 						should(result.remoteFN()).equal(`some result from a remote file`);
 					});
-				})
+				}),
 			);
 	}
 }

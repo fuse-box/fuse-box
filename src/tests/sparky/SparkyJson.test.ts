@@ -22,7 +22,7 @@ export class SparkyJsonTest {
 						.json(obj => {
 							obj.version = random;
 						})
-						.save()
+						.save(),
 				);
 		});
 		return Sparky.start("default").then(() => {
@@ -44,7 +44,7 @@ export class SparkyJsonTest {
 						.json(obj => {
 							obj.version = random;
 						})
-						.save()
+						.save(),
 				);
 		});
 		return Sparky.start("default").then(() => {
@@ -66,13 +66,13 @@ export class SparkyJsonTest {
 						.json(obj => {
 							obj.sup = random;
 						})
-						.save()
+						.save(),
 				);
 		});
 		return Sparky.start("default").then(() => {
 			should(JSON.parse(testFolder.readFile("e.json"))).deepEqual({
 				hello: "world",
-				sup: random
+				sup: random,
 			});
 		});
 	}
@@ -90,7 +90,7 @@ export class SparkyJsonTest {
 						.json(obj => {
 							return { foo: random };
 						})
-						.save()
+						.save(),
 				);
 		});
 		return Sparky.start("default").then(() => {
@@ -108,7 +108,7 @@ export class SparkyJsonTest {
 				.file("**", file =>
 					file.json(obj => {
 						obj.version = random;
-					})
+					}),
 				)
 				.dest(`${testFolder.folder}/$name`);
 		});
@@ -128,7 +128,7 @@ export class SparkyJsonTest {
 				.file("d.json", file =>
 					file.json(obj => {
 						obj.version = random;
-					})
+					}),
 				)
 				.dest(`${testFolder.folder}/$name`);
 		});
@@ -148,14 +148,14 @@ export class SparkyJsonTest {
 				.file("**", file =>
 					file.json(obj => {
 						obj.sup = random;
-					})
+					}),
 				)
 				.dest(`${testFolder.folder}/$name`);
 		});
 		return Sparky.start("default").then(() => {
 			should(JSON.parse(testFolder.readFile("e.json"))).deepEqual({
 				hello: "world",
-				sup: random
+				sup: random,
 			});
 		});
 	}
@@ -170,7 +170,7 @@ export class SparkyJsonTest {
 				.file("**", file =>
 					file.json(obj => {
 						return { foo: random };
-					})
+					}),
 				)
 				.dest(`${testFolder.folder}/$name`);
 		});

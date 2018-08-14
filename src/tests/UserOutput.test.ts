@@ -57,7 +57,7 @@ export class UserOutputTest {
 		let output = new UserOutput(new WorkFlowContext(), testDir);
 		let result = output.getPath("bundle");
 		should(
-			ensureFuseBoxPath(result) // fixing slashes for windows
+			ensureFuseBoxPath(result), // fixing slashes for windows
 		).findString("/.fusebox/test-dir/bundle.js");
 	}
 
@@ -65,7 +65,7 @@ export class UserOutputTest {
 		let output = new UserOutput(new WorkFlowContext(), ".fusebox/test-dir/$name");
 		let result = output.getPath("bundle");
 		should(
-			ensureFuseBoxPath(result) // fixing slashes for windows
+			ensureFuseBoxPath(result), // fixing slashes for windows
 		).match(/\/\.fusebox\/test-dir\/bundle$/);
 	}
 
@@ -73,7 +73,7 @@ export class UserOutputTest {
 		let output = new UserOutput(new WorkFlowContext(), testDir);
 		let result = output.getPath("bundle.html");
 		should(
-			ensureFuseBoxPath(result) // fixing slashes for windows
+			ensureFuseBoxPath(result), // fixing slashes for windows
 		).match(/\/\.fusebox\/test-dir\/bundle\.html$/);
 	}
 
@@ -81,7 +81,7 @@ export class UserOutputTest {
 		let output = new UserOutput(new WorkFlowContext(), testDir);
 		let result = output.getPath("bundle", "123");
 		should(
-			ensureFuseBoxPath(result) // fixing slashes for windows
+			ensureFuseBoxPath(result), // fixing slashes for windows
 		).findString("/.fusebox/test-dir/123-bundle.js");
 	}
 
@@ -89,7 +89,7 @@ export class UserOutputTest {
 		let output = new UserOutput(new WorkFlowContext(), ".fusebox/test-dir/$name__$hash.js");
 		let result = output.getPath("bundle", "123");
 		should(
-			ensureFuseBoxPath(result) // fixing slashes for windows
+			ensureFuseBoxPath(result), // fixing slashes for windows
 		).findString("/.fusebox/test-dir/bundle__123.js");
 	}
 
@@ -97,7 +97,7 @@ export class UserOutputTest {
 		let output = new UserOutput(new WorkFlowContext(), ".fusebox/test-dir/$name__$hash.js");
 		let result = output.getPath("bundle");
 		should(
-			ensureFuseBoxPath(result) // fixing slashes for windows
+			ensureFuseBoxPath(result), // fixing slashes for windows
 		).findString("/.fusebox/test-dir/bundle.js");
 	}
 
@@ -105,7 +105,7 @@ export class UserOutputTest {
 		let output = new UserOutput(new WorkFlowContext(), testDir);
 		let result = output.getPath("hello/bundle");
 		should(
-			ensureFuseBoxPath(result) // fixing slashes for windows
+			ensureFuseBoxPath(result), // fixing slashes for windows
 		).findString("/.fusebox/test-dir/hello/bundle.js");
 	}
 
@@ -113,7 +113,7 @@ export class UserOutputTest {
 		let output = new UserOutput(new WorkFlowContext(), testDir);
 		let result = output.getPath("hello/bundle", "456");
 		should(
-			ensureFuseBoxPath(result) // fixing slashes for windows
+			ensureFuseBoxPath(result), // fixing slashes for windows
 		).findString("/.fusebox/test-dir/hello/456-bundle.js");
 	}
 
@@ -121,7 +121,7 @@ export class UserOutputTest {
 		let output = new UserOutput(new WorkFlowContext(), ".fusebox/test-dir/foo-$name.js");
 		let result = output.getPath("hello/bundle");
 		should(
-			ensureFuseBoxPath(result) // fixing slashes for windows
+			ensureFuseBoxPath(result), // fixing slashes for windows
 		).findString("/.fusebox/test-dir/hello/foo-bundle.js");
 	}
 

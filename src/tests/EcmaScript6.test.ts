@@ -11,10 +11,10 @@ export class EcmaScript6Test {
                     `,
 					"foo.js": `
                         export function foo(){return 1}
-                    `
+                    `,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const fuse = result.project.FuseBox;
 			should(fuse.import("./index.js").foo()).equal(1);
@@ -30,10 +30,10 @@ export class EcmaScript6Test {
                     `,
 					"foo.js": `
                         export function foo(){return 1}
-                    `
+                    `,
 				},
-				instructions: "index.js"
-			}
+				instructions: "index.js",
+			},
 		}).then(result => {
 			const fuse = result.project.FuseBox;
 			should(fuse.import("./index.js").foo()).equal(1);

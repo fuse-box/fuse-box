@@ -16,9 +16,9 @@ export class ImportAutoSplitModules {
                             export function foo(){
                                 return "hello"
                             }
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
@@ -27,7 +27,7 @@ export class ImportAutoSplitModules {
 					return index.getRemoteFile().then(result => {
 						should(result).equal("hello");
 					});
-				})
+				}),
 			);
 	}
 
@@ -40,9 +40,9 @@ export class ImportAutoSplitModules {
                                 const path = await import("path")
                                 return path.join("a", "b");
                             }
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
@@ -51,7 +51,7 @@ export class ImportAutoSplitModules {
 					return index.asyncOp().then(result => {
 						should(result).equal("a/b");
 					});
-				})
+				}),
 			);
 	}
 }

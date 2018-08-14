@@ -13,16 +13,16 @@ export class ImportDynamicExternalFile {
                             import Foo from "./foo"
                             exports.result = Foo;
                         `,
-					"foo.js": `exports.foo = "bar" }`
-				}
-			}
+					"foo.js": `exports.foo = "bar" }`,
+				},
+			},
 		})
 			.simple(">index.js")
 			.then(test =>
 				test.browser(window => {
 					const index = window.FuseBox.import("./index");
 					should(index.result).deepEqual({ foo: "bar" });
-				})
+				}),
 			);
 	}
 
@@ -37,16 +37,16 @@ export class ImportDynamicExternalFile {
                             import Foo from "./foo"
                             exports.result = Foo;
                         `,
-					"foo.js": `module.exports.foo = "bar" }`
-				}
-			}
+					"foo.js": `module.exports.foo = "bar" }`,
+				},
+			},
 		})
 			.simple(">index.js")
 			.then(test =>
 				test.browser(window => {
 					const index = window.FuseBox.import("./index");
 					should(index.result).deepEqual({ foo: "bar" });
-				})
+				}),
 			);
 	}
 
@@ -61,16 +61,16 @@ export class ImportDynamicExternalFile {
                             import Foo from "./foo"
                             exports.result = Foo;
                         `,
-					"foo.js": `module.exports = {foo: "bar"} }`
-				}
-			}
+					"foo.js": `module.exports = {foo: "bar"} }`,
+				},
+			},
 		})
 			.simple(">index.js")
 			.then(test =>
 				test.browser(window => {
 					const index = window.FuseBox.import("./index");
 					should(index.result).deepEqual({ foo: "bar" });
-				})
+				}),
 			);
 	}
 
@@ -85,16 +85,16 @@ export class ImportDynamicExternalFile {
                             import Foo from "./foo"
                             exports.result = Foo;
                         `,
-					"foo.js": `module.exports = false`
-				}
-			}
+					"foo.js": `module.exports = false`,
+				},
+			},
 		})
 			.simple(">index.js")
 			.then(test =>
 				test.browser(window => {
 					const index = window.FuseBox.import("./index");
 					should(index.result).equal(undefined);
-				})
+				}),
 			);
 	}
 
@@ -109,16 +109,16 @@ export class ImportDynamicExternalFile {
                             import Foo from "./foo"
                             exports.result = Foo;
                         `,
-					"foo.js": `module.exports = 1`
-				}
-			}
+					"foo.js": `module.exports = 1`,
+				},
+			},
 		})
 			.simple(">index.js")
 			.then(test =>
 				test.browser(window => {
 					const index = window.FuseBox.import("./index");
 					should(index.result).equal(undefined);
-				})
+				}),
 			);
 	}
 
@@ -133,16 +133,16 @@ export class ImportDynamicExternalFile {
                             import Foo from "./foo"
                             exports.result = Foo;
                         `,
-					"foo.js": `module.exports = [1, 2]`
-				}
-			}
+					"foo.js": `module.exports = [1, 2]`,
+				},
+			},
 		})
 			.simple(">index.js")
 			.then(test =>
 				test.browser(window => {
 					const index = window.FuseBox.import("./index");
 					should(index.result).deepEqual([1, 2]);
-				})
+				}),
 			);
 	}
 
@@ -157,16 +157,16 @@ export class ImportDynamicExternalFile {
                             import Foo from "./foo"
                             exports.result = Foo;
                         `,
-					"foo.js": `exports.foo = "bar" }`
-				}
-			}
+					"foo.js": `exports.foo = "bar" }`,
+				},
+			},
 		})
 			.simple(">index.js")
 			.then(test =>
 				test.browser(window => {
 					const index = window.$fsx.r(0);
 					should(index.result).deepEqual({ foo: "bar" });
-				})
+				}),
 			);
 	}
 
@@ -182,16 +182,16 @@ export class ImportDynamicExternalFile {
                             import Foo from "./foo"
                             exports.result = Foo;
                         `,
-					"foo.js": `module.exports.foo = "bar" }`
-				}
-			}
+					"foo.js": `module.exports.foo = "bar" }`,
+				},
+			},
 		})
 			.simple(">index.js")
 			.then(test =>
 				test.browser(window => {
 					const index = window.$fsx.r(0);
 					should(index.result).deepEqual({ foo: "bar" });
-				})
+				}),
 			);
 	}
 
@@ -207,16 +207,16 @@ export class ImportDynamicExternalFile {
                             import Foo from "./foo"
                             exports.result = Foo;
                         `,
-					"foo.js": `module.exports = {foo: "bar"} }`
-				}
-			}
+					"foo.js": `module.exports = {foo: "bar"} }`,
+				},
+			},
 		})
 			.simple(">index.js")
 			.then(test =>
 				test.browser(window => {
 					const index = window.$fsx.r(0);
 					should(index.result).deepEqual({ foo: "bar" });
-				})
+				}),
 			);
 	}
 }

@@ -180,7 +180,7 @@ export class CSSResourcePluginClass implements Plugin {
 					".woff2": "application/font-woff2",
 					".eot": "application/vnd.ms-fontobject",
 					".ttf": "application/x-font-ttf",
-					".otf": "font/opentype"
+					".otf": "font/opentype",
 				};
 				if (fontsExtensions[ext]) {
 					let content = new Buffer(fs.readFileSync(urlFile)).toString("base64");
@@ -198,7 +198,9 @@ export class CSSResourcePluginClass implements Plugin {
 
 			// copy files
 			if (this.distFolder) {
-				let newFileName = this.useOriginalFilenames ? path.relative(file.context.homeDir, urlFile) : generateNewFileName(urlFile);
+				let newFileName = this.useOriginalFilenames
+					? path.relative(file.context.homeDir, urlFile)
+					: generateNewFileName(urlFile);
 
 				if (!this.files[urlFile]) {
 					let newPath = path.join(this.distFolder, newFileName);
@@ -208,7 +210,7 @@ export class CSSResourcePluginClass implements Plugin {
 					// We store this copied file source and destination path for the middleware
 					this.copiedFiles.push({
 						from: urlFile,
-						to: newPath
+						to: newPath,
 					});
 
 					// Copied files list has changed and filesMapping option needs to be triggered
@@ -237,8 +239,8 @@ export class CSSResourcePluginClass implements Plugin {
 			// Patch all files paths from src and dist folders
 			this.copiedFiles.map(fileMapping => ({
 				from: path.relative(homeDir, fileMapping.from),
-				to: path.relative(this.distFolder, fileMapping.to)
-			}))
+				to: path.relative(this.distFolder, fileMapping.to),
+			})),
 		);
 	}
 }

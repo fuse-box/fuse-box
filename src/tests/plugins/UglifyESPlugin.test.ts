@@ -11,11 +11,11 @@ export class UglifyESPluginTest {
                 const longVar = 'str1';
                 let longVar2 = 'str2';
                 module.exports = () => { return longVar + ' ' + longVar2; }
-                `
+                `,
 				},
 				plugins: [UglifyESPlugin()],
-				instructions: ">index.ts"
-			}
+				instructions: ">index.ts",
+			},
 		}).then(result => {
 			result.project.FuseBox.import("./index");
 			const contents = result.projectContents.toString();
@@ -31,12 +31,12 @@ export class UglifyESPluginTest {
                     const longVar = 'str1';
                     let longVar2 = 'str2';
                     module.exports = () => { return longVar + ' ' + longVar2; }
-                  `
+                  `,
 				},
 				globals: { default: "__compressed__" },
 				plugins: [UglifyESPlugin()],
-				instructions: ">index.ts"
-			}
+				instructions: ">index.ts",
+			},
 		}).then(result => {
 			result.project.FuseBox.import("./index");
 			should("__compressed__" in result.project).beTrue();

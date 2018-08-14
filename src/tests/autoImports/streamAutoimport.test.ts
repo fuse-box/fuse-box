@@ -11,10 +11,10 @@ export class StreamAutoImportTest {
                         module.exports = {
                             hello : myStream
                         }
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.projectContents.toString();
 			should(contents).findString(`/* fuse:injection: */ var stream`);
@@ -29,10 +29,10 @@ export class StreamAutoImportTest {
                         module.exports = {
                             hello : stream
                         }
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.projectContents.toString();
 			should(contents).findString(`/* fuse:injection: */ var stream`);

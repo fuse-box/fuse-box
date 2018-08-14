@@ -25,7 +25,7 @@ function createTestFolders(customFolder: string): { root; homeDir; dist } {
 	return {
 		root: root,
 		homeDir: homeDir,
-		dist: output
+		dist: output,
 	};
 }
 
@@ -82,7 +82,7 @@ export class FuseTestEnv {
 		const basicConfig = {
 			homeDir: this.dirs.homeDir,
 			log: false,
-			output: `${this.dirs.dist}/$name.js`
+			output: `${this.dirs.dist}/$name.js`,
 		};
 		config.project = config.project || {};
 		config.ensureTsConfig = false;
@@ -171,7 +171,10 @@ export class FuseTestEnv {
 		}
 
 		bundles.forEach(bundle => {
-			this.scripts.set(bundle.context.output.lastPrimaryOutput.relativePath, new ScriptTest(bundle.context.output.lastPrimaryOutput));
+			this.scripts.set(
+				bundle.context.output.lastPrimaryOutput.relativePath,
+				new ScriptTest(bundle.context.output.lastPrimaryOutput),
+			);
 			if (bundle.webIndexed) {
 				scripts.push(bundle.context.output.lastPrimaryOutput.path);
 			}
@@ -204,7 +207,7 @@ export class FuseTestEnv {
 						return reject(err);
 					}
 					return resolve(fn(window, this));
-				}
+				},
 			});
 		});
 	}
