@@ -151,6 +151,17 @@ export class QuantumCore {
 
 		await each(this.quantumBits, async (bit: QuantumBit, key: string) => {
 			bit.populate();
+			// check if there is an entry point which was banned
+			bit.files.forEach(file => {
+				if (file.quantumBitEntry && file.quantumBitBanned) {
+					bit.banned = true;
+				}
+			});
+			if (bit.banned) {
+				this.log.echoInfo(`QuantumBit: Ignoring import of ${bit.entry.getFuseBoxFullPath()}`);
+				return;
+			}
+
 			let bundle = this.ensureBitBundle(bit);
 			bit.files.forEach(file => {
 				this.log.echoInfo(`QuantumBit: Adding ${file.getFuseBoxFullPath()} to ${bit.name}`);

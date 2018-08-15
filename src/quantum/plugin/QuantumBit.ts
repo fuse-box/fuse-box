@@ -8,6 +8,7 @@ import { CSSCollection } from "../core/CSSCollection";
 export class QuantumBit {
 	public name: string;
 	public core: QuantumCore;
+	public banned = false;
 	public cssCollection: CSSCollection;
 	private candidates: Map<string, FileAbstraction> = new Map();
 	private modulesCanidates = new Map<string, PackageAbstraction>();

@@ -102,6 +102,13 @@ export class BundleWriter {
 				i: {},
 			};
 			this.core.api.setBundleMapping(splitFileOptions);
+			this.core.quantumBits.forEach(bit => {
+				// even though bit is banned we still need to map it
+				// in order for await import() to work
+				if (bit.banned) {
+					splitFileOptions.i[bit.name] = bit.entry.getID();
+				}
+			});
 		}
 
 		let index = 1;
