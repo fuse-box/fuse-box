@@ -12,11 +12,11 @@ export class JSONPluginTest {
 					"config.json": `{
                     "name":"test",
                     "tags":["fusebox","test"]
-                    }`
+                    }`,
 				},
 				plugins: [JSONPlugin()],
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./config.json");
 			should(out).deepEqual({ name: "test", tags: ["fusebox", "test"] });
@@ -30,15 +30,15 @@ export class JSONPluginTest {
 				plugins: [JSONPlugin()],
 				files: {
 					"file.json": `{ "contents": "I should not be included" }`,
-					"file.foo.json": `{ "contents": "I should be included" }`
-				}
-			}
+					"file.foo.json": `{ "contents": "I should be included" }`,
+				},
+			},
 		})
 			.simple(">file.json")
 			.then(env =>
 				env.browser(window => {
 					should(window.FuseBox.import("./file.json")).deepEqual({ contents: "I should be included" });
-				})
+				}),
 			);
 	}
 }

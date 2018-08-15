@@ -51,7 +51,7 @@ export class LESSPluginClass implements Plugin {
 
 		const sourceMapDef = {
 			sourceMapBasepath: ".",
-			sourceMapRootpath: file.info.absDir
+			sourceMapRootpath: file.info.absDir,
 		};
 
 		if (!less) {
@@ -73,7 +73,7 @@ export class LESSPluginClass implements Plugin {
 			paths: options.paths,
 			content: file.contents,
 			sassStyle: true,
-			extensions: ["less", "css"]
+			extensions: ["less", "css"],
 		});
 
 		file.cssDependencies = cssDependencies;

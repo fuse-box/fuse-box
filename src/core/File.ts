@@ -18,7 +18,7 @@ export enum ScriptTarget {
 	ES2016 = 3,
 	ES7 = 3,
 	ES2017 = 4,
-	ESNext = 5
+	ESNext = 5,
 }
 
 /**
@@ -183,7 +183,7 @@ export class File {
 	public static createByName(collection: ModuleCollection, name: string): File {
 		let info = <IPathInformation>{
 			fuseBoxPath: name,
-			absPath: name
+			absPath: name,
 		};
 		let file = new File(collection.context, info);
 		file.collection = collection;
@@ -195,7 +195,7 @@ export class File {
 			fuseBoxPath: name,
 			absPath: name,
 			isNodeModule: true,
-			nodeModuleInfo: packageInfo
+			nodeModuleInfo: packageInfo,
 		};
 		let file = new File(collection.context, info);
 		file.collection = collection;
@@ -414,7 +414,10 @@ export class File {
 				if (this.context.fuse && this.context.fuse.producer) {
 					this.devLibsRequired = ["fuse-imports"];
 					if (!this.context.fuse.producer.devCodeHasBeenInjected("fuse-imports")) {
-						this.context.fuse.producer.injectDevCode("fuse-imports", readFuseBoxModule("fuse-box-responsive-api/dev-imports.js"));
+						this.context.fuse.producer.injectDevCode(
+							"fuse-imports",
+							readFuseBoxModule("fuse-box-responsive-api/dev-imports.js"),
+						);
 					}
 				}
 			}
@@ -447,10 +450,14 @@ export class File {
 				if (/\.js(x)?$/.test(this.info.fuseBoxPath) && this.context.fuse && this.context.fuse.producer) {
 					this.context.fuse.producer.addWarning(
 						"unresolved",
-						`Statement "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`
+						`Statement "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection &&
+							this.collection.name}"`,
 					);
 				} else {
-					this.addError(`Asset reference "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection && this.collection.name}"`);
+					this.addError(
+						`Asset reference "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection &&
+							this.collection.name}"`,
+					);
 				}
 			}
 			this.notFound = true;
@@ -492,7 +499,10 @@ export class File {
 		return this.tryPlugins().then(result => {
 			if (!this.isLoaded) {
 				this.contents = "";
-				this.context.fuse.producer.addWarning("missing-plugin", `The contents of ${this.absPath} weren't loaded. Missing a plugin?`);
+				this.context.fuse.producer.addWarning(
+					"missing-plugin",
+					`The contents of ${this.absPath} weren't loaded. Missing a plugin?`,
+				);
 			}
 
 			return result;
@@ -663,14 +673,16 @@ export class File {
 			const correctSourceMapPath = this.getCorrectSourceMapPath();
 			let jsonSourceMaps = JSON.parse(result.sourceMapText);
 			jsonSourceMaps.file = this.info.fuseBoxPath;
-			jsonSourceMaps.sources = [this.context.useTypescriptCompiler ? correctSourceMapPath : correctSourceMapPath.replace(/\.js(x?)$/, ".ts$1")];
+			jsonSourceMaps.sources = [
+				this.context.useTypescriptCompiler ? correctSourceMapPath : correctSourceMapPath.replace(/\.js(x?)$/, ".ts$1"),
+			];
 			if (!this.context.inlineSourceMaps) {
 				delete jsonSourceMaps.sourcesContent;
 			}
 			result.outputText = result.outputText
 				.replace(
 					`//# sourceMappingURL=${this.info.fuseBoxPath}.map`,
-					`//# sourceMappingURL=${this.context.bundle.name}.js.map?tm=${this.context.cacheBustPreffix}`
+					`//# sourceMappingURL=${this.context.bundle.name}.js.map?tm=${this.context.cacheBustPreffix}`,
 				)
 				.replace("//# sourceMappingURL=module.js.map", "");
 			this.sourceMap = JSON.stringify(jsonSourceMaps);
@@ -722,7 +734,7 @@ export class File {
 	private getTranspilationConfig() {
 		return Object.assign({}, this.context.tsConfig.getConfig(), {
 			fileName: this.info.absPath,
-			transformers: this.context.fuse.opts.transformers || {}
+			transformers: this.context.fuse.opts.transformers || {},
 		});
 	}
 

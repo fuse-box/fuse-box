@@ -46,7 +46,9 @@ export class FlatFileGenerator {
 			this.entryId = fileId;
 		}
 		this.contents.push(`// ${file.packageAbstraction.name}/${file.fuseBoxPath}`);
-		this.contents.push(`${this.core.opts.quantumVariableName}.f[${JSON.stringify(fileId)}] = ${file.generate(ensureES5)}`);
+		this.contents.push(
+			`${this.core.opts.quantumVariableName}.f[${JSON.stringify(fileId)}] = ${file.generate(ensureES5)}`,
+		);
 	}
 
 	public addHoistedVariables() {

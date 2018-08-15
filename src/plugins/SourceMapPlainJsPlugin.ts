@@ -88,7 +88,7 @@ export class SourceMapPlainJsPluginClass implements Plugin {
 			const mapping: SourceMap.Mapping = {
 				original: lineInfo,
 				generated: lineInfo,
-				source: filePath
+				source: filePath,
 			};
 
 			if (token.type.label === "name") mapping.name = token.value;

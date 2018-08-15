@@ -50,7 +50,7 @@ const idToClassPlugin = postcss.plugin("IdToClass", function(options) {
 export class PostcssPluginTest {
 	"Should be unmodified with no plugins"() {
 		return setup({
-			plugins: [[PostCSS(), CSSPlugin({})]]
+			plugins: [[PostCSS(), CSSPlugin({})]],
 		}).then(result => {
 			const out = result.projectContents.toString();
 			should(out).findString(`display: grid;`);
@@ -59,7 +59,7 @@ export class PostcssPluginTest {
 
 	"Should execute single plugin"() {
 		return setup({
-			plugins: [[PostCSS([changeDisplayPlugin]), CSSPlugin({})]]
+			plugins: [[PostCSS([changeDisplayPlugin]), CSSPlugin({})]],
 		}).then(result => {
 			const out = result.projectContents.toString();
 			should(out).findString(`display: block`);
@@ -68,7 +68,7 @@ export class PostcssPluginTest {
 
 	"Should execute several plugins"() {
 		return setup({
-			plugins: [[PostCSS([changeDisplayPlugin, idToClassPlugin]), CSSPlugin({})]]
+			plugins: [[PostCSS([changeDisplayPlugin, idToClassPlugin]), CSSPlugin({})]],
 		}).then(result => {
 			const out = result.projectContents.toString();
 			should(out).findString(`display: block`);
@@ -79,7 +79,7 @@ export class PostcssPluginTest {
 
 	"Should execute several plugins (legacy option)"() {
 		return setup({
-			plugins: [[PostCSS([changeDisplayPlugin], { plugins: [idToClassPlugin] }), CSSPlugin({})]]
+			plugins: [[PostCSS([changeDisplayPlugin], { plugins: [idToClassPlugin] }), CSSPlugin({})]],
 		}).then(result => {
 			const out = result.projectContents.toString();
 			should(out).findString(`display: block`);
@@ -90,7 +90,7 @@ export class PostcssPluginTest {
 
 	"Should execute several plugins (legacy option 2)"() {
 		return setup({
-			plugins: [[PostCSS({ plugins: [changeDisplayPlugin, idToClassPlugin] }), CSSPlugin({})]]
+			plugins: [[PostCSS({ plugins: [changeDisplayPlugin, idToClassPlugin] }), CSSPlugin({})]],
 		}).then(result => {
 			const out = result.projectContents.toString();
 			should(out).findString(`display: block`);
@@ -106,7 +106,7 @@ export class PostcssPluginTest {
         body {
             background-image: url("paper.gif");
         }
-      `
+      `,
 		}).then(result => {
 			const out = result.projectContents.toString();
 			should(out).findString(`background-image: url(\\"./somedir/paper.gif\\")`);
@@ -128,10 +128,10 @@ function setup({ plugins, styleContent = style }) {
 		project: {
 			files: {
 				"index.ts": `exports.style = require("./style.css")`,
-				"style.css": styleContent
+				"style.css": styleContent,
 			},
 			plugins: plugins,
-			instructions: "index.ts"
-		}
+			instructions: "index.ts",
+		},
 	});
 }

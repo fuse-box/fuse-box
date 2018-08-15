@@ -54,7 +54,7 @@ export class UglifyJSPluginClass implements Plugin {
 
 		var opt = {
 			...this.options,
-			...mainOptions
+			...mainOptions,
 		};
 
 		const result = UglifyJs.minify(source, opt);

@@ -11,7 +11,12 @@ export function generateFileCombinations(input: string): string[] {
 		combinations.push(joinFuseBoxPath(input, "index.js"), joinFuseBoxPath(input, "index.jsx"));
 	} else {
 		if (!ext) {
-			combinations.push(`${input}.js`, `${input}.jsx`, joinFuseBoxPath(input, "index.js"), joinFuseBoxPath(input, "index.jsx"));
+			combinations.push(
+				`${input}.js`,
+				`${input}.jsx`,
+				joinFuseBoxPath(input, "index.js"),
+				joinFuseBoxPath(input, "index.jsx"),
+			);
 		}
 	}
 	// some cases have weired conventions

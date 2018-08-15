@@ -13,11 +13,11 @@ export class StylusPluginTest {
 					"style.styl": `
 				body
 					color white
-			`
+			`,
 				},
 				plugins: [[StylusPlugin({}), CSSPlugin({})]],
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const out = result.projectContents.toString();
 			should(out).findString(`color: #fff`);
@@ -38,9 +38,9 @@ export class StylusPluginTest {
 					"main.foo.styl": `
               body
                 color blue
-              `
-				}
-			}
+              `,
+				},
+			},
 		})
 			.simple()
 			.then(env =>
@@ -48,7 +48,7 @@ export class StylusPluginTest {
 					should(window.document.querySelectorAll("style")).haveLength(1);
 					should(window.document.querySelector("style").attributes.id.value).equal("default-main-styl");
 					should(window.document.querySelector("style").innerHTML).findString("color: #00f;");
-				})
+				}),
 			);
 	}
 }

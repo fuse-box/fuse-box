@@ -10,7 +10,7 @@ createRealNodeModule("lib_a", {
 	"index.js": `module.exports = function(){ 
             return "from lib a (" + require("./a_mod") + ")";
     }`,
-	"a_mod.js": `module.exports = function(){ return "a_mob_func" }`
+	"a_mod.js": `module.exports = function(){ return "a_mob_func" }`,
 });
 createRealNodeModule("lib_b", {
 	"index.js": `
@@ -23,7 +23,7 @@ createRealNodeModule("lib_b", {
         module.exports = function(){
             return "b_mob_func"
         }
-    `
+    `,
 });
 
 export class CodeSplittingFileIntegrityTest {
@@ -38,14 +38,14 @@ export class CodeSplittingFileIntegrityTest {
                         `,
 					"components/HomeComponent.ts": `
                             export function home(){ return "home" }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -59,7 +59,7 @@ export class CodeSplittingFileIntegrityTest {
 
 					const homeScript = env.getScript(HOME_COMPONENT_SCRIPT);
 					homeScript.shouldFindString("// default/components/HomeComponent.js");
-				})
+				}),
 			);
 	}
 
@@ -79,14 +79,14 @@ export class CodeSplittingFileIntegrityTest {
                         `,
 					"components/HomeHelper.ts": `
                             export function homeHelper(){ return "home" }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -102,7 +102,7 @@ export class CodeSplittingFileIntegrityTest {
 					const homeScript = env.getScript(HOME_COMPONENT_SCRIPT);
 					homeScript.shouldFindString("// default/components/HomeComponent.js");
 					homeScript.shouldFindString("// default/components/HomeHelper.js");
-				})
+				}),
 			);
 	}
 
@@ -130,14 +130,14 @@ export class CodeSplittingFileIntegrityTest {
                     `,
 					"components/AboutHelper.ts": `
                             export function aboutHelper(){ return "home" }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -163,7 +163,7 @@ export class CodeSplittingFileIntegrityTest {
 					aboutScript.shouldFindString("// default/components/AboutHelper.js");
 					aboutScript.shouldNotFindString("// default/components/HomeComponent.js");
 					aboutScript.shouldNotFindString("// default/components/HomeHelper.js");
-				})
+				}),
 			);
 	}
 
@@ -199,14 +199,14 @@ export class CodeSplittingFileIntegrityTest {
                             export function sharedFunc(){
                                 return "shared";
                             }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -235,7 +235,7 @@ export class CodeSplittingFileIntegrityTest {
 					aboutScript.shouldNotFindString("// default/components/HomeComponent.js");
 					aboutScript.shouldNotFindString("// default/components/HomeHelper.js");
 					aboutScript.shouldNotFindString("// default/shared.js");
-				})
+				}),
 			);
 	}
 
@@ -270,14 +270,14 @@ export class CodeSplittingFileIntegrityTest {
                             export function sharedFunc(){
                                 return "shared";
                             }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -306,7 +306,7 @@ export class CodeSplittingFileIntegrityTest {
 					aboutScript.shouldNotFindString("// default/components/HomeComponent.js");
 					aboutScript.shouldNotFindString("// default/components/HomeHelper.js");
 					aboutScript.shouldNotFindString("// default/shared.js");
-				})
+				}),
 			);
 	}
 
@@ -344,14 +344,14 @@ export class CodeSplittingFileIntegrityTest {
                             export function sharedFunc(){
                                 return "shared";
                             }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -391,7 +391,7 @@ export class CodeSplittingFileIntegrityTest {
 					aboutScript.shouldNotFindString("// default/components/HomeComponent.js");
 					aboutScript.shouldNotFindString("// default/components/HomeHelper.js");
 					aboutScript.shouldNotFindString("// default/shared.js");
-				})
+				}),
 			);
 	}
 
@@ -431,14 +431,14 @@ export class CodeSplittingFileIntegrityTest {
                             export function sharedFunc(){
                                 return "shared";
                             }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -478,7 +478,7 @@ export class CodeSplittingFileIntegrityTest {
 					aboutScript.shouldNotFindString("// default/components/HomeComponent.js");
 					aboutScript.shouldNotFindString("// default/components/HomeHelper.js");
 					aboutScript.shouldNotFindString("// default/shared.js");
-				})
+				}),
 			);
 	}
 
@@ -496,14 +496,14 @@ export class CodeSplittingFileIntegrityTest {
                         `,
 					"components/HomeComponent.ts": `
                             export function home(){ return homeHelper()  }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -529,7 +529,7 @@ export class CodeSplittingFileIntegrityTest {
 					libAScript.shouldFindString("// lib_a/a_mod.js");
 					libAScript.shouldFindString("// lib_b/index.js");
 					libAScript.shouldFindString("// lib_b/b_mod.js");
-				})
+				}),
 			);
 	}
 
@@ -548,14 +548,14 @@ export class CodeSplittingFileIntegrityTest {
                         `,
 					"components/HomeComponent.ts": `
                             export function home(){ return homeHelper()  }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -581,7 +581,7 @@ export class CodeSplittingFileIntegrityTest {
 					libAScript.shouldFindString("// lib_a/a_mod.js");
 					libAScript.shouldFindString("// lib_b/index.js");
 					libAScript.shouldFindString("// lib_b/b_mod.js");
-				})
+				}),
 			);
 	}
 
@@ -599,14 +599,14 @@ export class CodeSplittingFileIntegrityTest {
 					"components/HomeComponent.ts": `
                             const lib_b_1 = import('lib_b');
                             export function home(){ return homeHelper()  }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -632,7 +632,7 @@ export class CodeSplittingFileIntegrityTest {
 					libAScript.shouldFindString("// lib_a/a_mod.js");
 					libAScript.shouldFindString("// lib_b/index.js");
 					libAScript.shouldFindString("// lib_b/b_mod.js");
-				})
+				}),
 			);
 	}
 
@@ -651,14 +651,14 @@ export class CodeSplittingFileIntegrityTest {
 					"components/HomeComponent.ts": `
                             const lib_b_1 = import('lib_b');
                             export function home(){ return homeHelper()  }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -684,7 +684,7 @@ export class CodeSplittingFileIntegrityTest {
 					libAScript.shouldNotFindString("// lib_a/a_mod.js");
 					libAScript.shouldNotFindString("// lib_b/index.js");
 					libAScript.shouldNotFindString("// lib_b/b_mod.js");
-				})
+				}),
 			);
 	}
 
@@ -701,15 +701,15 @@ export class CodeSplittingFileIntegrityTest {
                         `,
 					"components/HomeComponent.ts": `
                             export function home(){ return "home" }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
 						target: "browser",
-						runtimeBundleMapping: "newBundleMapping"
-					})
-				]
-			}
+						runtimeBundleMapping: "newBundleMapping",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -719,7 +719,7 @@ export class CodeSplittingFileIntegrityTest {
 					return index.getRemoteFile().then(result => {
 						should(result).equal("home");
 					});
-				}, bundleMappingScript)
+				}, bundleMappingScript),
 			);
 	}
 
@@ -735,15 +735,15 @@ export class CodeSplittingFileIntegrityTest {
                     `,
 					"components/HomeComponent.ts": `
                         export function home(){ return "home" }
-                    `
+                    `,
 				},
 				plugins: [
 					QuantumPlugin({
 						target: "server",
-						runtimeBundleMapping: "newBundleMapping"
-					})
-				]
-			}
+						runtimeBundleMapping: "newBundleMapping",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -757,8 +757,8 @@ export class CodeSplittingFileIntegrityTest {
 					data => {
 						should(data.response).equal(`home`);
 					},
-					bundleMappingScript
-				)
+					bundleMappingScript,
+				),
 			);
 	}
 
@@ -769,10 +769,10 @@ export class CodeSplittingFileIntegrityTest {
 				fromStubs: "quantum_split_complicated",
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -792,7 +792,7 @@ export class CodeSplittingFileIntegrityTest {
 						"// default/common/ui/layout/header/index.js",
 						"// default/common/ui/layout/header/header.js",
 						"// default/common/ui/layout/content/index.js",
-						"// default/common/ui/layout/content/content.js"
+						"// default/common/ui/layout/content/content.js",
 						//'// default/modules/test/routes/another-test-route.js'
 					];
 					sharedFiles.forEach(file => {
@@ -812,7 +812,7 @@ export class CodeSplittingFileIntegrityTest {
 
 					split3.shouldFindString("// default/modules/test/views/test-component-header/index.js");
 					split3.shouldFindString("// default/modules/test/views/test-component-header/test-component-header.jsx");
-				})
+				}),
 			);
 	}
 
@@ -823,10 +823,10 @@ export class CodeSplittingFileIntegrityTest {
 				fromStubs: "quantum_split_2",
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -852,7 +852,7 @@ export class CodeSplittingFileIntegrityTest {
 						`// default/modules/test/routes/another-test-route.js`,
 						`// jwt-decode/lib/index.js`,
 						`// jwt-decode/lib/base64_url_decode.js`,
-						`// jwt-decode/lib/atob.js`
+						`// jwt-decode/lib/atob.js`,
 					];
 					sharedFiles.forEach(file => {
 						master.shouldFindString(file);
@@ -869,7 +869,7 @@ export class CodeSplittingFileIntegrityTest {
 
 					split3.shouldFindString("// default/modules/test/views/test-component-header/index.js");
 					split3.shouldFindString("// default/modules/test/views/test-component-header/test-component-header.jsx");
-				})
+				}),
 			);
 	}
 }

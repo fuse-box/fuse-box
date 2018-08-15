@@ -24,8 +24,8 @@ export class BublePluginTest {
       				var member = array1[i];
 
       				doSomething( member );
-      			}`
-			}
+      			}`,
+			},
 		];
 		const tests = forofStub.map(stub => {
 			const { input, output, options } = stub;
@@ -33,8 +33,8 @@ export class BublePluginTest {
 				project: {
 					files: { "index.ts": input },
 					plugins: [BublePlugin(options)],
-					instructions: "! index.ts"
-				}
+					instructions: "! index.ts",
+				},
 			}).then(result => {
 				const js = result.projectContents.toString();
 				should(strip(js)).findString(strip(output));

@@ -19,6 +19,6 @@ const fuse = FuseBox.init({
 	log: false,
 	dynamicImportsEnabled: false,
 	output: ".fusebox/$name.js",
-	cache: false
+	cache: false,
 });
 fuse.bundle("fusebox").test(`[**/${mask}]`);

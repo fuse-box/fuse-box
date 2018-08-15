@@ -14,7 +14,7 @@ export class EventEmitter<T> {
 	on = (listener: Listener<T>): Disposable => {
 		this.listeners.push(listener);
 		return {
-			dispose: () => this.off(listener)
+			dispose: () => this.off(listener),
 		};
 	};
 

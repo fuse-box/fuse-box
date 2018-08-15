@@ -59,13 +59,17 @@ export class Install {
 		return new Promise((resolve, reject) => {
 			fsExtra.ensureDirSync(REPOSITORY_PATH);
 			log.info("Cloning https://github.com/fuse-box/bootstrap-collection");
-			exec("git clone https://github.com/fuse-box/bootstrap-collection .", { cwd: REPOSITORY_PATH }, (error, stdout, stderr) => {
-				if (error) {
-					return reject(error);
-				}
-				log.info("Cloned successfully");
-				return resolve();
-			});
+			exec(
+				"git clone https://github.com/fuse-box/bootstrap-collection .",
+				{ cwd: REPOSITORY_PATH },
+				(error, stdout, stderr) => {
+					if (error) {
+						return reject(error);
+					}
+					log.info("Cloned successfully");
+					return resolve();
+				},
+			);
 		});
 	}
 	private async verifyRepository() {

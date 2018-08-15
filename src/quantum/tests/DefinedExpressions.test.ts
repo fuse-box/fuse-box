@@ -15,15 +15,15 @@ export class DefinedExpressionsTest {
                         }  else {
                             console.log("i am not foo bar");
                         }
-                    `
+                    `,
 				},
 				plugins: [
 					QuantumPlugin({
 						target: "server",
-						definedExpressions: { foo: "bar" }
-					})
-				]
-			}
+						definedExpressions: { foo: "bar" },
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -32,7 +32,7 @@ export class DefinedExpressionsTest {
 					app.shouldNotFindString(`foo === 'bar'`);
 					app.shouldFindString("i am foo bar");
 					app.shouldNotFindString("i am not foo bar");
-				})
+				}),
 			);
 	}
 
@@ -47,15 +47,15 @@ export class DefinedExpressionsTest {
                         }  else {
                             console.log("i am not foo bar");
                         }
-                    `
+                    `,
 				},
 				plugins: [
 					QuantumPlugin({
 						target: "server",
-						definedExpressions: { foo: "11" }
-					})
-				]
-			}
+						definedExpressions: { foo: "11" },
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -64,7 +64,7 @@ export class DefinedExpressionsTest {
 					app.shouldNotFindString(`foo === 'bar'`);
 					app.shouldNotFindString("i am foo bar");
 					app.shouldFindString("i am not foo bar");
-				})
+				}),
 			);
 	}
 
@@ -79,15 +79,15 @@ export class DefinedExpressionsTest {
                         }  else {
                             console.log("i am not foo bar");
                         }
-                    `
+                    `,
 				},
 				plugins: [
 					QuantumPlugin({
 						target: "server",
-						definedExpressions: { "foo.bar": "bar" }
-					})
-				]
-			}
+						definedExpressions: { "foo.bar": "bar" },
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -96,7 +96,7 @@ export class DefinedExpressionsTest {
 					app.shouldNotFindString(`foo.bar === 'bar'`);
 					app.shouldFindString("i am foo bar");
 					app.shouldNotFindString("i am not foo bar");
-				})
+				}),
 			);
 	}
 
@@ -111,15 +111,15 @@ export class DefinedExpressionsTest {
                         }  else {
                             console.log("i am not foo bar");
                         }
-                    `
+                    `,
 				},
 				plugins: [
 					QuantumPlugin({
 						target: "server",
-						definedExpressions: { "foo.bar": "11" }
-					})
-				]
-			}
+						definedExpressions: { "foo.bar": "11" },
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -128,7 +128,7 @@ export class DefinedExpressionsTest {
 					app.shouldNotFindString(`foo.bar === 'bar'`);
 					app.shouldNotFindString("i am foo bar");
 					app.shouldFindString("i am not foo bar");
-				})
+				}),
 			);
 	}
 }

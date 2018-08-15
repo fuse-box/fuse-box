@@ -25,7 +25,7 @@ export class VueStyleFile extends VueBlockFile {
 		return postcss(plugins)
 			.process(this.contents, {
 				map: false,
-				from: this.file.info.absPath
+				from: this.file.info.absPath,
 			})
 			.then(result => {
 				this.contents = result.css;

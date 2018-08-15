@@ -32,9 +32,9 @@ const getDistFuseBoxConfig = (conf, quantum) => {
 			treeshake: true,
 			target: "server",
 			containedAPI: true,
-			warnings: false
+			warnings: false,
 		},
-		quantum || {}
+		quantum || {},
 	);
 
 	let selfConfig = {
@@ -43,7 +43,7 @@ const getDistFuseBoxConfig = (conf, quantum) => {
 		target: "server@esnext",
 		cache: false,
 		globals: { default: "*" },
-		plugins: [JSONPlugin(), quantum !== false && QuantumPlugin(quantumConf)]
+		plugins: [JSONPlugin(), quantum !== false && QuantumPlugin(quantumConf)],
 	};
 	selfConfig = Object.assign(selfConfig, conf);
 
@@ -60,15 +60,15 @@ function onError(error) {
 
 let projectTypings = ts.createProject("src/tsconfig.json", {
 	removeComments: false,
-	declaration: true
+	declaration: true,
 });
 let projectCommonjs = ts.createProject("src/tsconfig.json", {
-	target: "esnext"
+	target: "esnext",
 });
 
 let projectLoader = ts.createProject("src/loader/tsconfig.json");
 let projectLoaderTypings = ts.createProject("src/loader/tsconfig.json", {
-	removeComments: false
+	removeComments: false,
 });
 let projectModule = ts.createProject("src/modules/tsconfig.json");
 let filesMain = ["src/**/*.ts", "!./**/tests/**/**", "!./src/loader/LoaderAPI.ts", "!./src/modules/**/*.ts"];
@@ -125,7 +125,7 @@ const prepareLoader = folder => {
 			wrap(`(function(__root__){
 if (__root__["FuseBox"]) return __root__["FuseBox"];
 <%= contents %>
-return __root__["FuseBox"] = FuseBox; } )(this)`)
+return __root__["FuseBox"] = FuseBox; } )(this)`),
 		)
 		.pipe(rename("fusebox.js"))
 		.pipe(gulp.dest(path.join(folder, "modules/fuse-box-loader-api")))
@@ -155,7 +155,7 @@ gulp.task("dist", ["prepare:clean"], function(done) {
 		"prepare:modules",
 		"prepare:es6-bundle",
 		"prepare:es6-index",
-		done
+		done,
 	);
 });
 
@@ -186,14 +186,14 @@ gulp.task("prepare:es6-bundle", done => {
 			cache: false,
 			tsConfig: [
 				{
-					target: "es2015"
-				}
-			]
+					target: "es2015",
+				},
+			],
 		},
 		{
 			bakeApiIntoBundle: "es6",
-			uglify: false
-		}
+			uglify: false,
+		},
 	);
 	fuse.bundle("es6").instructions(">[index.ts]");
 	return fuse.run();
@@ -219,7 +219,7 @@ gulp.task("next", [], function(done) {
 gulp.task("publish-next", function(done) {
 	var publish = spawn("npm", ["publish", "--tag", "next"], {
 		stdio: "inherit",
-		cwd: path.resolve(RELEASE_FOLDER)
+		cwd: path.resolve(RELEASE_FOLDER),
 	});
 	publish.on("close", function(code) {
 		if (code === 8) {
@@ -246,7 +246,9 @@ gulp.task("dist-modules", () => {
 gulp.task("commit-release", function(done) {
 	let json = JSON.parse(fs.readFileSync(__dirname + "/package.json").toString());
 	exec(
-		`git add .; git commit -m "chore(publish): Release ${json.version}" -a; git tag v${json.version}; git push origin master --tags`,
+		`git add .; git commit -m "chore(publish): Release ${json.version}" -a; git tag v${
+			json.version
+		}; git push origin master --tags`,
 		(error, stdout, stderr) => {
 			if (error) {
 				console.error(`exec error: ${error}`);
@@ -255,7 +257,7 @@ gulp.task("commit-release", function(done) {
 			console.log(`stdout: ${stdout}`);
 			console.log(`stderr: ${stderr}`);
 			done();
-		}
+		},
 	);
 });
 
@@ -269,7 +271,7 @@ gulp.task("changelog", done => {
 gulp.task("make-test-runner", done => {
 	const fuse = getDistFuseBoxConfig({
 		homeDir: "src",
-		output: `bin/$name.js`
+		output: `bin/$name.js`,
 	});
 	fuse.bundle("fusebox").instructions(">[index.ts]");
 	return fuse.run();
@@ -293,9 +295,9 @@ gulp.task("dev-fuse", () => {
 			sourceMaps: true,
 			output: ".dev/$name.js",
 			target: "server@esnext",
-			cache: false
+			cache: false,
 		},
-		false
+		false,
 	);
 	fuse
 		.bundle("fusebox")
@@ -347,7 +349,7 @@ gulp.task("dev", () => {
 			console.log(">> FuseBox bundle is ready ");
 			console.log(">> You can go playground folder 'cd _playground/generic'");
 			console.log(">> Start developing `node fuse.js`");
-		}
+		},
 	);
 });
 gulp.task("installDevDeps", function(done) {
@@ -385,11 +387,11 @@ gulp.task("installDevDeps", function(done) {
 		"tslint-react",
 		"tslint-eslint-rules",
 		"tslint-immutable",
-		"tslint-clean-code"
+		"tslint-clean-code",
 	];
 
 	const ext = /^win/.test(os.platform()) ? ".cmd" : "";
 	spawn("npm" + ext, ["install", "--no-save"].concat(deps), {
-		stdio: "inherit"
+		stdio: "inherit",
 	});
 });

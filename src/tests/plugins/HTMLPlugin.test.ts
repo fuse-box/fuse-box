@@ -9,11 +9,11 @@ export class HtmlPluginTest {
 			project: {
 				files: {
 					"index.ts": `const template= require('./index.html');`,
-					"index.html": `<h1>hello</h1>`
+					"index.html": `<h1>hello</h1>`,
 				},
 				plugins: [HTMLPlugin()],
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.projectContents.toString();
 			should(contents).findString(`module.exports.default =  "<h1>hello</h1>"`);
@@ -25,11 +25,11 @@ export class HtmlPluginTest {
 			project: {
 				files: {
 					"index.ts": `const template= require('./index.html');`,
-					"index.html": `<h1>hello</h1>`
+					"index.html": `<h1>hello</h1>`,
 				},
 				plugins: [HTMLPlugin({ useDefault: false })],
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.projectContents.toString();
 			should(contents).findString(`module.exports =  "<h1>hello</h1>"`);
@@ -41,15 +41,15 @@ export class HtmlPluginTest {
 			project: {
 				files: {
 					"index.ts": `const template= require('./index.html');`,
-					"index.html": `<h1>hello</h1>`
+					"index.html": `<h1>hello</h1>`,
 				},
 				plugins: [HTMLPlugin()],
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index.html");
 			should(out).deepEqual({
-				default: "<h1>hello</h1>"
+				default: "<h1>hello</h1>",
 			});
 		});
 	}
@@ -59,11 +59,11 @@ export class HtmlPluginTest {
 			project: {
 				files: {
 					"index.ts": `const template= require('./index.html');`,
-					"index.html": `<h1>hello</h1>`
+					"index.html": `<h1>hello</h1>`,
 				},
 				plugins: [HTMLPlugin({ useDefault: false })],
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index.html");
 			should(out).equal("<h1>hello</h1>");
@@ -78,15 +78,15 @@ export class HtmlPluginTest {
 				files: {
 					"index.ts": `const template = require('./index.html');`,
 					"index.html": `<h1>I should not be included</h1>`,
-					"index.foo.html": `<h1>I should be included</h1>`
-				}
-			}
+					"index.foo.html": `<h1>I should be included</h1>`,
+				},
+			},
 		})
 			.simple()
 			.then(env =>
 				env.browser(window => {
 					should(window.FuseBox.import("./index.html")).deepEqual("<h1>I should be included</h1>");
-				})
+				}),
 			);
 	}
 }

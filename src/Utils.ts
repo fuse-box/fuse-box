@@ -210,7 +210,9 @@ export function isClass(obj) {
 		return isCtorClass;
 	}
 	const isPrototypeCtorClass =
-		obj.prototype.constructor && obj.prototype.constructor.toString && obj.prototype.constructor.toString().substring(0, 5) === "class";
+		obj.prototype.constructor &&
+		obj.prototype.constructor.toString &&
+		obj.prototype.constructor.toString().substring(0, 5) === "class";
 	return isCtorClass || isPrototypeCtorClass;
 }
 
@@ -249,8 +251,8 @@ export function transpileToEs5(contents: string) {
 	let tsconfg: any = {
 		compilerOptions: {
 			module: "commonjs",
-			target: "es5"
-		}
+			target: "es5",
+		},
 	};
 	let result = ts.transpileModule(contents, tsconfg);
 	return result.outputText;
@@ -303,7 +305,7 @@ export function findFileBackwards(target: string, limitPath: string): string {
 
 export function walk(dir, options?: any) {
 	var defaults = {
-		recursive: false
+		recursive: false,
 	};
 	options = Object.assign(defaults, options);
 	var results = [];

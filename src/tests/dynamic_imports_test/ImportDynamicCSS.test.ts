@@ -11,14 +11,14 @@ export class ImportDynamicCssTest {
                             body: {
                                 background-color:red;
                             }
-                        `
+                        `,
 				},
 				files: {
 					"index.ts": `
                             import("./main.css")
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
@@ -30,7 +30,7 @@ export class ImportDynamicCssTest {
 							return resolve();
 						}, 1);
 					});
-				})
+				}),
 			);
 	}
 
@@ -42,19 +42,19 @@ export class ImportDynamicCssTest {
                             body: {
                                 background-color:red;
                             }
-                        `
+                        `,
 				},
 				files: {
 					"index.ts": `
                             import("./main.css")
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -66,7 +66,7 @@ export class ImportDynamicCssTest {
 							return resolve();
 						}, 1);
 					});
-				})
+				}),
 			);
 	}
 
@@ -78,19 +78,19 @@ export class ImportDynamicCssTest {
                             body: {
                                 background-color:red;
                             }
-                        `
+                        `,
 				},
 				files: {
 					"index.ts": `
                             import("./main.css")
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "universal"
-					})
-				]
-			}
+						target: "universal",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -102,7 +102,7 @@ export class ImportDynamicCssTest {
 							return resolve();
 						}, 1);
 					});
-				})
+				}),
 			);
 	}
 }

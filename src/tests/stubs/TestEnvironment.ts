@@ -12,7 +12,12 @@ export class TestFolder {
 	folder: string;
 	constructor(public customName?: string) {}
 	public make() {
-		this.folder = path.join(appRoot.path, ".fusebox", "tests", this.customName ? this.customName : new Date().getTime().toString());
+		this.folder = path.join(
+			appRoot.path,
+			".fusebox",
+			"tests",
+			this.customName ? this.customName : new Date().getTime().toString(),
+		);
 		fsExtra.ensureDirSync(this.folder);
 	}
 
@@ -53,7 +58,7 @@ export function createOptimisedBundleEnv(opts: any) {
 	let localPath = path.join(tmpFolder, name);
 
 	const output: any = {
-		modules: {}
+		modules: {},
 	};
 	const scripts = [];
 
@@ -83,7 +88,7 @@ export function createOptimisedBundleEnv(opts: any) {
 						moduleParams.onDone({
 							localPath,
 							filePath: moduleParams.output,
-							projectDir: path.join(localPath, "project")
+							projectDir: path.join(localPath, "project"),
 						});
 					}
 					scripts.push(moduleParams.output);
@@ -137,7 +142,7 @@ export function createOptimisedBundleEnv(opts: any) {
 								output.contents = contents;
 								output.window = window;
 								return resolve(output);
-							}
+							},
 						});
 					}
 				});
@@ -161,7 +166,7 @@ export function createEnv(opts: any) {
 	let localPath = path.join(tmpFolder, name);
 
 	const output: any = {
-		modules: {}
+		modules: {},
 	};
 	const scripts = [];
 
@@ -188,7 +193,7 @@ export function createEnv(opts: any) {
 						moduleParams.onDone({
 							localPath,
 							filePath: moduleParams.output,
-							projectDir: path.join(localPath, "project")
+							projectDir: path.join(localPath, "project"),
 						});
 					}
 
@@ -258,7 +263,7 @@ export function createEnv(opts: any) {
 								output.querySelectorAll = window.document.querySelectorAll;
 								output.projectContents = contents;
 								return resolve(output);
-							}
+							},
 						});
 					});
 				}
@@ -315,7 +320,7 @@ export function createFuseBox(opts: any): TestingFuseBox {
 		output: path.join(tmpFolder, "dist", "$name.js"),
 		cache: false,
 		log: false,
-		tsConfig: path.join(appRoot.path, "src/tests/fixtures", "tsconfig.json")
+		tsConfig: path.join(appRoot.path, "src/tests/fixtures", "tsconfig.json"),
 	};
 
 	const projectOptions = Object.assign({}, defaultProjectOptions, opts);

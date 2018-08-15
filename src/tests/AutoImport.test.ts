@@ -7,21 +7,21 @@ export class AutoImportTest {
 			modules: {
 				superFoo: {
 					files: {
-						"index.ts": `export const HelloFoo = "I am super"`
+						"index.ts": `export const HelloFoo = "I am super"`,
 					},
 					package: "superFoo",
-					instructions: ">index.ts"
-				}
+					instructions: ">index.ts",
+				},
 			},
 			project: {
 				autoImport: {
-					woops: "superFoo"
+					woops: "superFoo",
 				},
 				files: {
-					"index.ts": `exports.something = woops`
+					"index.ts": `exports.something = woops`,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index");
 			const contents = result.projectContents.toString();
@@ -36,21 +36,21 @@ export class AutoImportTest {
 			modules: {
 				superFoo: {
 					files: {
-						"index.ts": `export const HelloFoo = {someAction : () => "here"}`
+						"index.ts": `export const HelloFoo = {someAction : () => "here"}`,
 					},
 					package: "superFoo",
-					instructions: ">index.ts"
-				}
+					instructions: ">index.ts",
+				},
 			},
 			project: {
 				autoImport: {
-					woops: "superFoo"
+					woops: "superFoo",
 				},
 				files: {
-					"index.ts": `exports.something = woops.HelloFoo.someAction()`
+					"index.ts": `exports.something = woops.HelloFoo.someAction()`,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index");
 			const contents = result.projectContents.toString();
@@ -65,24 +65,24 @@ export class AutoImportTest {
 			modules: {
 				superFoo: {
 					files: {
-						"index.ts": `export const HelloFoo = "I am super"`
+						"index.ts": `export const HelloFoo = "I am super"`,
 					},
 					package: "superFoo",
-					instructions: ">index.ts"
-				}
+					instructions: ">index.ts",
+				},
 			},
 			project: {
 				autoImport: {
-					woops: "superFoo"
+					woops: "superFoo",
 				},
 				files: {
 					"index.ts": `
                         var coo = woops;
                         exports.something = coo;
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index");
 			const contents = result.projectContents.toString();
@@ -97,25 +97,25 @@ export class AutoImportTest {
 			modules: {
 				superFoo2: {
 					files: {
-						"index.ts": `export const HelloFoo = "I am super"`
+						"index.ts": `export const HelloFoo = "I am super"`,
 					},
 					package: "superFoo2",
-					instructions: ">index.ts"
-				}
+					instructions: ">index.ts",
+				},
 			},
 			project: {
 				autoImport: {
-					woops: "superFoo2"
+					woops: "superFoo2",
 				},
 				files: {
 					"index.ts": `
 
                         var woops = {nada : true}
                         exports.myExport = woops;
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index");
 			const contents = result.projectContents.toString();
@@ -133,21 +133,21 @@ export class AutoImportTest {
                             export function magic(){
                                 return "pure magic"
                             }
-                        `
+                        `,
 					},
 					package: "Inferno",
-					instructions: ">index.ts"
-				}
+					instructions: ">index.ts",
+				},
 			},
 			project: {
 				autoImport: {
-					Inferno: "inferno"
+					Inferno: "inferno",
 				},
 				files: {
-					"index.ts": `exports.result = Inferno.magic()`
+					"index.ts": `exports.result = Inferno.magic()`,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index");
 			const contents = result.projectContents.toString();
@@ -162,10 +162,10 @@ export class AutoImportTest {
 			project: {
 				files: {
 					"index.ts": ` exports.hello = new Buffer("sd");
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index");
 			const contents = result.projectContents.toString();
@@ -179,17 +179,17 @@ export class AutoImportTest {
 		return createEnv({
 			project: {
 				autoImport: {
-					woops: "superFoo"
+					woops: "superFoo",
 				},
 				files: {
 					"index.ts": `
                         function process(node) {
 
                         }
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.projectContents.toString();
 
@@ -201,15 +201,15 @@ export class AutoImportTest {
 		return createEnv({
 			project: {
 				autoImport: {
-					woops: "superFoo"
+					woops: "superFoo",
 				},
 				files: {
 					"index.ts": `
                         var a ={ process : "sdf"}
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.projectContents.toString();
 
@@ -221,15 +221,15 @@ export class AutoImportTest {
 		return createEnv({
 			project: {
 				autoImport: {
-					woops: "superFoo"
+					woops: "superFoo",
 				},
 				files: {
 					"index.ts": `
                         var a = function(process){}
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.projectContents.toString();
 			should(contents).notFindString(`/* fuse:injection: */ var process`);
@@ -240,15 +240,15 @@ export class AutoImportTest {
 		return createEnv({
 			project: {
 				autoImport: {
-					woops: "superFoo"
+					woops: "superFoo",
 				},
 				files: {
 					"index.ts": `
                        function Users(process){}
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.projectContents.toString();
 			should(contents).notFindString(`/* fuse:injection: */ var process`);
@@ -259,7 +259,7 @@ export class AutoImportTest {
 		return createEnv({
 			project: {
 				autoImport: {
-					woops: "superFoo"
+					woops: "superFoo",
 				},
 				files: {
 					"index.ts": `
@@ -267,10 +267,10 @@ export class AutoImportTest {
                         var a = () => {
                             return hello.process();
                         }
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.projectContents.toString();
 			should(contents).notFindString(`/* fuse:injection: */ var process`);
@@ -285,10 +285,10 @@ export class AutoImportTest {
                        module.exports = {
                            hello : process
                        }
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.projectContents.toString();
 

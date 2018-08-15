@@ -7,11 +7,11 @@ export class FlatAPItest {
 			project: {
 				files: {
 					"index.js": `exports.something = require("./foo")`,
-					"foo.js": "module.exports = { result : '1'}"
+					"foo.js": "module.exports = { result : '1'}",
 				},
 
-				instructions: "index.js"
-			}
+				instructions: "index.js",
+			},
 		}).then(result => {
 			const first = result.window.$fsx.r(0);
 			should(first).deepEqual({ something: { result: "1" } });
@@ -22,11 +22,11 @@ export class FlatAPItest {
 		return createOptimisedBundleEnv({
 			project: {
 				files: {
-					"index.js": `exports.out = __dirname`
+					"index.js": `exports.out = __dirname`,
 				},
 
-				instructions: "index.js"
-			}
+				instructions: "index.js",
+			},
 		}).then(result => {
 			const first = result.window.$fsx.r(0);
 			should(first).deepEqual({ out: "." });
@@ -37,11 +37,11 @@ export class FlatAPItest {
 		return createOptimisedBundleEnv({
 			project: {
 				files: {
-					"index.js": `exports.out = __filename`
+					"index.js": `exports.out = __filename`,
 				},
 
-				instructions: "index.js"
-			}
+				instructions: "index.js",
+			},
 		}).then(result => {
 			const first = result.window.$fsx.r(0);
 			should(first).deepEqual({ out: "index.js" });
@@ -56,10 +56,10 @@ export class FlatAPItest {
 					"index.ts": `
                         window.executed = "${random}";
                         module.export = {hello : "world" }
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			should(result.window.executed).equal(random);
 		});
@@ -70,10 +70,10 @@ export class FlatAPItest {
 			project: {
 				files: {
 					"index.js": `exports.something = require("./foo")`,
-					"foo.js": "module.exports = { result : '1'}"
+					"foo.js": "module.exports = { result : '1'}",
 				},
-				instructions: "> index.js"
-			}
+				instructions: "> index.js",
+			},
 		}).then(result => {
 			const first = result.window.$fsx.r(0);
 			should(first).deepEqual({ something: { result: "1" } });
@@ -86,10 +86,10 @@ export class FlatAPItest {
 			stubs: true,
 			project: {
 				files: {
-					"index.js": `exports.something = require("fbjs/lib/emptyFunction")()`
+					"index.js": `exports.something = require("fbjs/lib/emptyFunction")()`,
 				},
-				instructions: "index.js"
-			}
+				instructions: "index.js",
+			},
 		}).then(result => {
 			const first = result.window.$fsx.r(0);
 			should(first).deepEqual({ something: "I am empty" });
@@ -102,10 +102,10 @@ export class FlatAPItest {
 			stubs: true,
 			project: {
 				files: {
-					"index.js": `exports.something = require("@bar/animations/browser")`
+					"index.js": `exports.something = require("@bar/animations/browser")`,
 				},
-				instructions: "index.js"
-			}
+				instructions: "index.js",
+			},
 		}).then(result => {
 			const first = result.window.$fsx.r(0);
 
@@ -119,10 +119,10 @@ export class FlatAPItest {
 			stubs: true,
 			project: {
 				files: {
-					"index.js": `exports.something = require("@bar.foo/animations/browser")`
+					"index.js": `exports.something = require("@bar.foo/animations/browser")`,
 				},
-				instructions: "index.js"
-			}
+				instructions: "index.js",
+			},
 		}).then(result => {
 			const first = result.window.$fsx.r(0);
 			should(first).deepEqual({ something: { hello: "@bar/animations/browser" } });

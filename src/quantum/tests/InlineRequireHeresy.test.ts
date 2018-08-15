@@ -6,7 +6,7 @@ export class InlineRequireHeresyTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				removeUseStrict: false
+				removeUseStrict: false,
 			},
 			project: {
 				files: {
@@ -17,10 +17,10 @@ export class InlineRequireHeresyTest {
                                         { value: require('./foo') });
                         }
                     `,
-					"foo.ts": "export function hello(){}"
+					"foo.ts": "export function hello(){}",
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).notFindString("require");

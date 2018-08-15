@@ -8,10 +8,10 @@ export class WildCardTest {
 			project: {
 				files: {
 					"foo/a.ts": "module.exports = {a : 1}",
-					"foo/b.ts": "module.exports = {b : 1}"
+					"foo/b.ts": "module.exports = {b : 1}",
 				},
-				instructions: "**/**.ts"
-			}
+				instructions: "**/**.ts",
+			},
 		}).then(result => {
 			should(result.project.FuseBox.import("./foo/*")).deepEqual({ "foo/a.js": { a: 1 }, "foo/b.js": { b: 1 } });
 		});
@@ -22,10 +22,10 @@ export class WildCardTest {
 			project: {
 				files: {
 					"foo/a.ts": "module.exports = {a : 1}",
-					"foo/b.ts": "module.exports = {b : 1}"
+					"foo/b.ts": "module.exports = {b : 1}",
 				},
-				instructions: "**/**.ts"
-			}
+				instructions: "**/**.ts",
+			},
 		}).then(result => {
 			should(result.project.FuseBox.import("./foo/*.js")).deepEqual({ "foo/a.js": { a: 1 }, "foo/b.js": { b: 1 } });
 		});
@@ -37,12 +37,15 @@ export class WildCardTest {
 				files: {
 					"foo/a-comp.ts": "module.exports = {a : 1}",
 					"foo/b-comp.ts": "module.exports = {b : 1}",
-					"foo/c.ts": "module.exports = {c : 1}"
+					"foo/c.ts": "module.exports = {c : 1}",
 				},
-				instructions: "**/**.ts"
-			}
+				instructions: "**/**.ts",
+			},
 		}).then(result => {
-			should(result.project.FuseBox.import("./foo/*-comp")).deepEqual({ "foo/a-comp.js": { a: 1 }, "foo/b-comp.js": { b: 1 } });
+			should(result.project.FuseBox.import("./foo/*-comp")).deepEqual({
+				"foo/a-comp.js": { a: 1 },
+				"foo/b-comp.js": { b: 1 },
+			});
 		});
 	}
 
@@ -52,12 +55,15 @@ export class WildCardTest {
 				files: {
 					"foo/a-comp.ts": "module.exports = {a : 1}",
 					"foo/b-comp.ts": "module.exports = {b : 1}",
-					"foo/c.ts": "module.exports = {c : 1}"
+					"foo/c.ts": "module.exports = {c : 1}",
 				},
-				instructions: "**/**.ts"
-			}
+				instructions: "**/**.ts",
+			},
 		}).then(result => {
-			should(result.project.FuseBox.import("./foo/*-comp.js")).deepEqual({ "foo/a-comp.js": { a: 1 }, "foo/b-comp.js": { b: 1 } });
+			should(result.project.FuseBox.import("./foo/*-comp.js")).deepEqual({
+				"foo/a-comp.js": { a: 1 },
+				"foo/b-comp.js": { b: 1 },
+			});
 		});
 	}
 
@@ -66,11 +72,11 @@ export class WildCardTest {
 			project: {
 				files: {
 					"foo/a.json": "module.exports = {a : 1}",
-					"foo/b.json": "module.exports = {b : 1}"
+					"foo/b.json": "module.exports = {b : 1}",
 				},
 				plugins: [JSONPlugin()],
-				instructions: "**/**.json"
-			}
+				instructions: "**/**.json",
+			},
 		}).then(result => {
 			should(result.project.FuseBox.import("./foo/*")).deepEqual({ "foo/a.json": { a: 1 }, "foo/b.json": { b: 1 } });
 		});
@@ -81,13 +87,16 @@ export class WildCardTest {
 			project: {
 				files: {
 					"foo/a.json": "module.exports = {a : 1}",
-					"foo/b.json": "module.exports = {b : 1}"
+					"foo/b.json": "module.exports = {b : 1}",
 				},
 				plugins: [JSONPlugin()],
-				instructions: "**/**.json"
-			}
+				instructions: "**/**.json",
+			},
 		}).then(result => {
-			should(result.project.FuseBox.import("./foo/*.json")).deepEqual({ "foo/a.json": { a: 1 }, "foo/b.json": { b: 1 } });
+			should(result.project.FuseBox.import("./foo/*.json")).deepEqual({
+				"foo/a.json": { a: 1 },
+				"foo/b.json": { b: 1 },
+			});
 		});
 	}
 
@@ -96,10 +105,10 @@ export class WildCardTest {
 			project: {
 				files: {
 					"foo/A.js": "module.exports = {a : 1}",
-					"foo/B.js": "module.exports = {b : 1}"
+					"foo/B.js": "module.exports = {b : 1}",
 				},
-				instructions: "**/**.js"
-			}
+				instructions: "**/**.js",
+			},
 		}).then(result => {
 			should(result.project.FuseBox.import("./foo/*")).deepEqual({ "foo/A.js": { a: 1 }, "foo/B.js": { b: 1 } });
 		});
@@ -109,10 +118,10 @@ export class WildCardTest {
 		return createEnv({
 			project: {
 				files: {
-					"foo/D.js": "module.exports = {d : 1}"
+					"foo/D.js": "module.exports = {d : 1}",
 				},
-				instructions: "**/**.js"
-			}
+				instructions: "**/**.js",
+			},
 		}).then(result => {
 			should(result.project.FuseBox.import("./foo/*")).deepEqual({ "foo/D.js": { d: 1 } });
 		});
@@ -123,14 +132,14 @@ export class WildCardTest {
 			project: {
 				files: {
 					"foo/a/b/c/foo.js": "module.exports = {foo : 1}",
-					"foo/a/b/c/bar.js": "module.exports = {bar : 1}"
+					"foo/a/b/c/bar.js": "module.exports = {bar : 1}",
 				},
-				instructions: "**/**.js"
-			}
+				instructions: "**/**.js",
+			},
 		}).then(result => {
 			should(result.project.FuseBox.import("./foo/**")).deepEqual({
 				"foo/a/b/c/bar.js": { bar: 1 },
-				"foo/a/b/c/foo.js": { foo: 1 }
+				"foo/a/b/c/foo.js": { foo: 1 },
 			});
 		});
 	}

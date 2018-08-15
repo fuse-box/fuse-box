@@ -76,18 +76,23 @@ export class TypescriptConfig {
 		if (this.config.compilerOptions.importHelpers === true) {
 			const tslibPath = path.join(Config.NODE_MODULES_DIR, "tslib");
 			if (!fs.existsSync(tslibPath)) {
-				this.context.log.echoWarning(`You have enabled importHelpers. Please install tslib - https://github.com/Microsoft/tslib`);
+				this.context.log.echoWarning(
+					`You have enabled importHelpers. Please install tslib - https://github.com/Microsoft/tslib`,
+				);
 			}
 		}
 	}
 	public read() {
-		const cacheKey = (typeof this.customTsConfig === "string" ? this.customTsConfig : this.context.homeDir) + this.context.target + this.context.languageLevel;
+		const cacheKey =
+			(typeof this.customTsConfig === "string" ? this.customTsConfig : this.context.homeDir) +
+			this.context.target +
+			this.context.languageLevel;
 		if (CACHED[cacheKey]) {
 			this.config = CACHED[cacheKey];
 		} else {
 			let url;
 			let config: any = {
-				compilerOptions: {}
+				compilerOptions: {},
 			};
 			let configFileFound = false;
 			let tsConfigOverride: any;

@@ -169,7 +169,10 @@ export class PathMaster {
 				data.absDir = path.dirname(data.absPath);
 				data.fuseBoxPath = this.getFuseBoxPath(data.absPath, this.rootPackagePath);
 				if (path.relative(this.rootPackagePath, data.absPath).match(/^\.\.(\\|\/)/)) {
-					this.context.fuse.producer.addWarning("unresolved", `File "${data.absPath}" cannot be bundled because it's out of your project directory (homeDir)`);
+					this.context.fuse.producer.addWarning(
+						"unresolved",
+						`File "${data.absPath}" cannot be bundled because it's out of your project directory (homeDir)`,
+					);
 				}
 			}
 		}
@@ -212,7 +215,7 @@ export class PathMaster {
 		name: string,
 		root: string,
 		rootEntryLimit?: string,
-		explicit = false
+		explicit = false,
 	): {
 		resolved: string;
 		alias?: string;
@@ -303,7 +306,11 @@ export class PathMaster {
 		}
 	}
 
-	private ensureFolderAndExtensions(name: string, root: string, explicit = false): { resolved: string; alias?: string } {
+	private ensureFolderAndExtensions(
+		name: string,
+		root: string,
+		explicit = false,
+	): { resolved: string; alias?: string } {
 		let ext = path.extname(name);
 		if (ext === ".ts") {
 			this.tsMode = true;
@@ -326,7 +333,7 @@ export class PathMaster {
 					const resolved = path.resolve(root, name, folderJSON.main);
 					const opts = {
 						resolved: resolved,
-						alias: this.extractRelativeFuseBoxPath(root, resolved)
+						alias: this.extractRelativeFuseBoxPath(root, resolved),
 					};
 					return opts;
 				}
@@ -362,14 +369,14 @@ export class PathMaster {
 			// }
 			return {
 				name: `${s[0]}/${s[1]}`,
-				target: target
+				target: target,
 			};
 		}
 
 		let data = name.split(/\/(.+)?/);
 		return {
 			name: data[0],
-			target: data[1]
+			target: data[1],
 		};
 	}
 
@@ -414,7 +421,7 @@ export class PathMaster {
 					if (json.browser && !this.context.isBrowserTarget()) {
 						this.context.fuse.producer.addWarning(
 							"json.browser",
-							`Library "${name}" contains "browser" field. Set .target("browser") to avoid problems with your browser build!`
+							`Library "${name}" contains "browser" field. Set .target("browser") to avoid problems with your browser build!`,
 						);
 					}
 				}
@@ -456,7 +463,7 @@ export class PathMaster {
 					missing: false,
 					entryRoot,
 					entry: entryFile,
-					version: json.version || "1.0.0"
+					version: json.version || "1.0.0",
 				};
 			}
 
@@ -471,7 +478,7 @@ export class PathMaster {
 				root: folder,
 				entry: entryFile,
 				entryRoot: defaultEntryRoot,
-				version: "0.0.0"
+				version: "0.0.0",
 			};
 		};
 
@@ -489,7 +496,7 @@ export class PathMaster {
 				root: shared.homeDir,
 				entry: shared.mainPath,
 				entryRoot: shared.mainDir,
-				version: "0.0.0"
+				version: "0.0.0",
 			};
 		}
 

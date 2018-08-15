@@ -42,7 +42,7 @@ export class StylusPluginClass implements Plugin {
 		const options: StylusPluginOptions & InternalOpts = { ...this.options };
 		const sourceMapDef = {
 			comment: false,
-			sourceRoot: file.info.absDir
+			sourceRoot: file.info.absDir,
 		};
 
 		file.loadContents();
@@ -63,7 +63,7 @@ export class StylusPluginClass implements Plugin {
 			paths: options.paths,
 			content: file.contents,
 			sassStyle: true,
-			extensions: ["styl", "css"]
+			extensions: ["styl", "css"],
 		});
 		file.cssDependencies = cssDependencies;
 

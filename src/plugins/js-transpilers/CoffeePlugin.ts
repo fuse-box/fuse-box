@@ -42,9 +42,9 @@ export class CoffeePluginClass implements Plugin {
 				literate: false,
 				filename: false,
 				sourceFiles: false,
-				generatedFile: false
+				generatedFile: false,
 			},
-			options
+			options,
 		);
 	}
 
@@ -62,7 +62,7 @@ export class CoffeePluginClass implements Plugin {
 		return new Promise((res, rej) => {
 			try {
 				let options = Object.assign({}, this.options, {
-					filename: file.absPath
+					filename: file.absPath,
 				});
 				file.contents = coffee.compile(file.contents, options);
 				res(file.contents);

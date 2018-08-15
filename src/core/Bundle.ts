@@ -97,13 +97,13 @@ export class Bundle {
 				const type = "update-bundle-errors",
 					getData = () => ({
 						bundleName: this.name,
-						messages: this.errors
+						messages: this.errors,
 					});
 
 				this.errorEmitter.on(message => {
 					server.send("bundle-error", {
 						bundleName: this.name,
-						message
+						message,
 					});
 				});
 
@@ -115,8 +115,8 @@ export class Bundle {
 					client.send(
 						JSON.stringify({
 							type,
-							data: getData()
-						})
+							data: getData(),
+						}),
 					);
 				});
 			}
@@ -232,7 +232,9 @@ export class Bundle {
 			this.fuse
 				.initiateBundle(this.arithmetics || "", () => {
 					const output = this.fuse.context.output;
-					this.process.setFilePath(output.lastPrimaryOutput ? output.lastPrimaryOutput.path : output.lastGeneratedFileName);
+					this.process.setFilePath(
+						output.lastPrimaryOutput ? output.lastPrimaryOutput.path : output.lastGeneratedFileName,
+					);
 					if (this.onDoneCallback && this.producer.writeBundles === true) {
 						this.onDoneCallback(this.process);
 					}

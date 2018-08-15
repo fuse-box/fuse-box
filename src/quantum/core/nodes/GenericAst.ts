@@ -12,12 +12,12 @@ export class GenericAst {
 	public replaceWithString(value?: string) {
 		let ast: any = {
 			type: "Literal",
-			value: value
+			value: value,
 		};
 		if (value === undefined) {
 			ast = {
 				type: "Identifier",
-				name: "undefined"
+				name: "undefined",
 			};
 		}
 		if (this.astProp) {

@@ -8,16 +8,16 @@ export class ShimBundleTest {
 				shim: {
 					dirty: {
 						source: "src/tests/stubs/test_modules/foo/index.js",
-						exports: "window.fooLibrary"
-					}
+						exports: "window.fooLibrary",
+					},
 				},
 				files: {
-					"index.js": `exports.something = require("dirty")`
+					"index.js": `exports.something = require("dirty")`,
 				},
 				globals: { default: "*" },
 
-				instructions: "> index.js"
-			}
+				instructions: "> index.js",
+			},
 		}).then(result => {
 			should(result.window.something).deepEqual(result.window.something);
 

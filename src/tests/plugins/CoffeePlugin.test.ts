@@ -13,11 +13,11 @@ export class CoffeePluginTest {
 		return createEnv({
 			project: {
 				files: {
-					"app.coffee": coffeeFileSource
+					"app.coffee": coffeeFileSource,
 				},
 				plugins: [[CoffeePlugin({}), RawPlugin()]],
-				instructions: ">app.coffee"
-			}
+				instructions: ">app.coffee",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./app.coffee");
 			should(out).equal(`var Demo;
@@ -40,18 +40,18 @@ Demo = (function() {
 		return createEnv({
 			project: {
 				files: {
-					"app.coffee": coffeeFileSource
+					"app.coffee": coffeeFileSource,
 				},
 				plugins: [
 					[
 						CoffeePlugin({
-							bare: false
+							bare: false,
 						}),
-						RawPlugin()
-					]
+						RawPlugin(),
+					],
 				],
-				instructions: ">app.coffee"
-			}
+				instructions: ">app.coffee",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./app.coffee");
 			should(out).equal(`(function() {
@@ -80,15 +80,15 @@ Demo = (function() {
 				plugins: [CoffeePlugin({})],
 				files: {
 					"hello.coffee": `module.exports = getMessage: -> 'I should not be included'`,
-					"hello.foo.coffee": `module.exports = getMessage: -> 'I should be included'`
-				}
-			}
+					"hello.foo.coffee": `module.exports = getMessage: -> 'I should be included'`,
+				},
+			},
 		})
 			.simple(">hello.coffee")
 			.then(env =>
 				env.browser(window => {
 					should(window.FuseBox.import("./hello.coffee").getMessage()).equal("I should be included");
-				})
+				}),
 			);
 	}
 }

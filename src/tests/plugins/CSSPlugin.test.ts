@@ -27,11 +27,11 @@ export class CssPluginTest {
 			project: {
 				files: {
 					"index.ts": `exports.hello = { bar : require("./main.css") }`,
-					"main.css": "body {}"
+					"main.css": "body {}",
 				},
 				plugins: [CSSPlugin()],
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const js = result.projectContents.toString();
 			should(js).findString(`require("fuse-box-css")("default/main.css", "body {}")`);
@@ -44,15 +44,15 @@ export class CssPluginTest {
 			project: {
 				files: {
 					"index.ts": `exports.hello = { bar : require("./main.css") }`,
-					"main.css": "body {}"
+					"main.css": "body {}",
 				},
 				plugins: [
 					CSSPlugin({
-						outFile: file => `${tmp}/${file}`
-					})
+						outFile: file => `${tmp}/${file}`,
+					}),
 				],
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const js = result.projectContents.toString();
 			shouldExist("main.css");
@@ -66,16 +66,16 @@ export class CssPluginTest {
 			project: {
 				files: {
 					"index.ts": `exports.hello = { bar : require("./main.css") }`,
-					"main.css": "h1 {}"
+					"main.css": "h1 {}",
 				},
 				plugins: [
 					CSSPlugin({
 						outFile: file => `${tmp}/${file}`,
-						inject: false
-					})
+						inject: false,
+					}),
 				],
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const js = result.projectContents.toString();
 			shouldExist("main.css");
@@ -89,16 +89,16 @@ export class CssPluginTest {
 			project: {
 				files: {
 					"index.ts": `exports.hello = { bar : require("./main.css") }`,
-					"main.css": "h1 {}"
+					"main.css": "h1 {}",
 				},
 				plugins: [
 					CSSPlugin({
 						outFile: file => `${tmp}/${file}`,
-						inject: true
-					})
+						inject: true,
+					}),
 				],
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const js = result.projectContents.toString();
 			shouldExist("main.css");
@@ -112,16 +112,16 @@ export class CssPluginTest {
 			project: {
 				files: {
 					"index.ts": `exports.hello = { bar : require("./main.css") }`,
-					"main.css": "h1 {}"
+					"main.css": "h1 {}",
 				},
 				plugins: [
 					CSSPlugin({
 						outFile: file => `${tmp}/${file}`,
-						inject: file => `custom/${file}`
-					})
+						inject: file => `custom/${file}`,
+					}),
 				],
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const js = result.projectContents.toString();
 			shouldExist("main.css");
@@ -136,11 +136,11 @@ export class CssPluginTest {
 				files: {
 					"index.ts": `require("./a.css"); require("./b.css") }`,
 					"a.css": "body {};",
-					"b.css": "h1 {};"
+					"b.css": "h1 {};",
 				},
 				plugins: [CSSPlugin({ group: "app.css" })],
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const js = result.projectContents.toString();
 			should(js).findString(`require("fuse-box-css")("app.css", "body {};\\nh1 {};");`);
@@ -155,11 +155,11 @@ export class CssPluginTest {
 				files: {
 					"index.ts": `require("./a.css"); require("./b.css") }`,
 					"a.css": "body {};",
-					"b.css": "h1 {};"
+					"b.css": "h1 {};",
 				},
 				plugins: [CSSPlugin({ group: "app.css", outFile: `${tmp}/app.css` })],
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const js = result.projectContents.toString();
 			const contents = shouldExist("app.css");
@@ -181,11 +181,11 @@ export class CssPluginTest {
 				files: {
 					"index.ts": `require("./a.css"); require("./b.css") }`,
 					"a.css": "body {};",
-					"b.css": "h1 {};"
+					"b.css": "h1 {};",
 				},
 				plugins: [CSSPlugin({ group: "app.css", outFile: `${tmp}/app.css`, inject: false })],
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const js = result.projectContents.toString();
 			shouldExist("app.css");
@@ -201,17 +201,17 @@ export class CssPluginTest {
 				files: {
 					"index.ts": `require("./a.css"); require("./b.css") }`,
 					"a.css": "body {};",
-					"b.css": "h1 {};"
+					"b.css": "h1 {};",
 				},
 				plugins: [
 					CSSPlugin({
 						group: "app.css",
 						outFile: `${tmp}/app.css`,
-						inject: file => `custom/${file}`
-					})
+						inject: file => `custom/${file}`,
+					}),
 				],
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const js = result.projectContents.toString();
 			shouldExist("app.css");
@@ -225,11 +225,11 @@ export class CssPluginTest {
 			project: {
 				files: {
 					"index.ts": `exports.hello = { bar : require("./main.css") }`,
-					"main.css": "body {}"
+					"main.css": "body {}",
 				},
 				plugins: [[CSSResourcePlugin({ inline: true }), CSSPlugin()]],
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const js = result.projectContents.toString();
 			should(js).findString(`require("fuse-box-css")("default/main.css", "body {}")`);
@@ -244,11 +244,11 @@ export class CssPluginTest {
 				files: {
 					"index.ts": `require("./a.scss"); require("./b.scss") }`,
 					"a.scss": "body {color:red};",
-					"b.scss": "h1 {color:red};"
+					"b.scss": "h1 {color:red};",
 				},
 				plugins: [[SassPlugin(), CSSPlugin({ group: `all.css` })]],
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const js = result.projectContents.toString();
 			should(js).findString(`require("fuse-box-css")("all.css", "`);
@@ -262,11 +262,11 @@ export class CssPluginTest {
 				files: {
 					"index.ts": `require("./a.scss"); require("./b.scss") }`,
 					"a.scss": "body {color:red};",
-					"b.scss": "h1 {color:red};"
+					"b.scss": "h1 {color:red};",
 				},
 				plugins: [[SassPlugin(), CSSResourcePlugin({ inline: true }), CSSPlugin({ group: `all.css` })]],
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const js = result.projectContents.toString();
 			should(js).findString(`require("fuse-box-css")("all.css", "`);
@@ -281,9 +281,9 @@ export class CssPluginTest {
 				files: {
 					"index.ts": `import './main.css'`,
 					"main.css": `html { background: red; }`,
-					"main.foo.css": `html { background: blue; }`
-				}
-			}
+					"main.foo.css": `html { background: blue; }`,
+				},
+			},
 		})
 			.simple()
 			.then(env =>
@@ -291,7 +291,7 @@ export class CssPluginTest {
 					should(window.document.querySelectorAll("style")).haveLength(1);
 					should(window.document.querySelector("style").attributes.id.value).equal("default-main-css");
 					should(window.document.querySelector("style").innerHTML).equal("html { background: blue; }");
-				})
+				}),
 			);
 	}
 }

@@ -6,7 +6,7 @@ export class TreeShakeTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				treeshake: false
+				treeshake: false,
 			},
 			project: {
 				files: {
@@ -20,10 +20,10 @@ export class TreeShakeTest {
                         exports.Foo1 = Foo1;
                         exports.Foo2 = Foo2;
 
-                    `
+                    `,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString(`exports.Foo2`);
@@ -34,7 +34,7 @@ export class TreeShakeTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				treeshake: true
+				treeshake: true,
 			},
 			project: {
 				files: {
@@ -48,10 +48,10 @@ export class TreeShakeTest {
                         exports.Foo1 = Foo1;
                         exports.Foo2 = Foo2;
 
-                    `
+                    `,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).notFindString(`exports.Foo2`);
@@ -62,7 +62,7 @@ export class TreeShakeTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				treeshake: true
+				treeshake: true,
 			},
 			project: {
 				files: {
@@ -75,10 +75,10 @@ export class TreeShakeTest {
                         exports.Foo1 = Foo1;
                         exports.Foo2 = Foo2;
 
-                    `
+                    `,
 				},
-				instructions: "index.js"
-			}
+				instructions: "index.js",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			//console.log(contents);
@@ -90,7 +90,7 @@ export class TreeShakeTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				treeshake: true
+				treeshake: true,
 			},
 			project: {
 				files: {
@@ -105,10 +105,10 @@ export class TreeShakeTest {
                         }
                         exports.createSomething = () => {}
 
-                    `
+                    `,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString(`exports.createSomething`);
@@ -119,7 +119,7 @@ export class TreeShakeTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				treeshake: true
+				treeshake: true,
 			},
 			project: {
 				files: {
@@ -134,10 +134,10 @@ export class TreeShakeTest {
                         }
                         exports.createSomething = () => {}
 
-                    `
+                    `,
 				},
-				instructions: "**/**.ts > index.ts"
-			}
+				instructions: "**/**.ts > index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).notFindString(`exports.createSomething`);
@@ -148,7 +148,7 @@ export class TreeShakeTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				treeshake: true
+				treeshake: true,
 			},
 			project: {
 				files: {
@@ -162,10 +162,10 @@ export class TreeShakeTest {
 					"foo.ts": `
                         exports.foo = 1;
 
-                    `
+                    `,
 				},
-				instructions: "**/**.ts > index.ts"
-			}
+				instructions: "**/**.ts > index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).notFindString("exports.foo");
@@ -176,7 +176,7 @@ export class TreeShakeTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				treeshake: true
+				treeshake: true,
 			},
 			project: {
 				files: {
@@ -190,10 +190,10 @@ export class TreeShakeTest {
 					"foo.ts": `
                         exports.foo = 1;
 
-                    `
+                    `,
 				},
-				instructions: "**/**.ts > index.ts"
-			}
+				instructions: "**/**.ts > index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString("exports.foo");
@@ -209,8 +209,8 @@ export class TreeShakeTest {
 						if (file.fuseBoxPath === "foo.js") {
 							return false;
 						}
-					}
-				}
+					},
+				},
 			},
 			project: {
 				files: {
@@ -224,10 +224,10 @@ export class TreeShakeTest {
 					"foo.ts": `
                         exports.foo = 1;
 
-                    `
+                    `,
 				},
-				instructions: "**/**.ts > index.ts"
-			}
+				instructions: "**/**.ts > index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString("exports.foo");
@@ -243,8 +243,8 @@ export class TreeShakeTest {
 						if (file.fuseBoxPath === "foo.js") {
 							return true;
 						}
-					}
-				}
+					},
+				},
 			},
 			project: {
 				files: {
@@ -258,10 +258,10 @@ export class TreeShakeTest {
 					"foo.ts": `
                         exports.foo = 1;
 
-                    `
+                    `,
 				},
-				instructions: "**/**.ts > index.ts"
-			}
+				instructions: "**/**.ts > index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).notFindString("exports.foo");
@@ -272,12 +272,12 @@ export class TreeShakeTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				treeshake: true
+				treeshake: true,
 			},
 
 			project: {
 				natives: {
-					process: false
+					process: false,
 				},
 				files: {
 					"index.ts": `
@@ -296,10 +296,10 @@ export class TreeShakeTest {
                         console.log('i am foo');
                         exports.foo = 1;
 
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).notFindString("i am bar");
@@ -311,12 +311,12 @@ export class TreeShakeTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				treeshake: true
+				treeshake: true,
 			},
 
 			project: {
 				natives: {
-					process: false
+					process: false,
 				},
 				files: {
 					"index.ts": `
@@ -336,10 +336,10 @@ export class TreeShakeTest {
                         console.log('i am foo');
                         exports.foo = 1;
 
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).notFindString("i am bar");
@@ -351,12 +351,12 @@ export class TreeShakeTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				treeshake: true
+				treeshake: true,
 			},
 
 			project: {
 				natives: {
-					process: false
+					process: false,
 				},
 				files: {
 					"index.ts": `
@@ -372,10 +372,10 @@ export class TreeShakeTest {
                         export function hello(){}
                         export function hello2(){}
 
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			// to be resolved....
@@ -388,12 +388,12 @@ export class TreeShakeTest {
 			stubs: true,
 
 			options: {
-				treeshake: true
+				treeshake: true,
 			},
 
 			project: {
 				natives: {
-					process: false
+					process: false,
 				},
 				files: {
 					"hello.ts": `
@@ -412,10 +412,10 @@ export class TreeShakeTest {
 					"foo.ts": `
                         export function foo(){return "i am foo"}
 
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).notFindString("i am foo");
@@ -428,12 +428,12 @@ export class TreeShakeTest {
 			stubs: true,
 
 			options: {
-				treeshake: true
+				treeshake: true,
 			},
 
 			project: {
 				natives: {
-					process: false
+					process: false,
 				},
 				files: {
 					"hello.ts": `
@@ -454,10 +454,10 @@ export class TreeShakeTest {
 					"foo.ts": `
                         export function foo(){return "i am foo"}
 
-                    `
+                    `,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString("i am foo");

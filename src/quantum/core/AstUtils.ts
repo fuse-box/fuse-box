@@ -39,7 +39,7 @@ const ES6_TYPES = new Set(["ClassDeclaration", "SpreadElement", "ArrowFunctionEx
 
 export function matchesDefinedExpression(
 	node,
-	expressions: { [key: string]: boolean | string | number }
+	expressions: { [key: string]: boolean | string | number },
 ): { isConditional: boolean; node: any; key: string; value: any } {
 	let targetNode = node;
 	let isConditional = false;
@@ -60,7 +60,7 @@ export function matchesDefinedExpression(
 				isConditional: isConditional,
 				node: targetNode,
 				key: key,
-				value: expressions[key]
+				value: expressions[key],
 			};
 		}
 	}
@@ -208,7 +208,12 @@ export function matchesSingleVariable(node: any, name: string) {
 			}
 			if (parent.type) {
 				if (parent.type === "UnaryExpression") {
-					if (parent.argument && parent.operator === "typeof" && parent.argument.type === "Identifier" && parent.argument.name === name) {
+					if (
+						parent.argument &&
+						parent.operator === "typeof" &&
+						parent.argument.type === "Identifier" &&
+						parent.argument.name === name
+					) {
 						return false;
 					}
 				}
@@ -262,7 +267,11 @@ function lookUpTreeForBodyWithRequireFlag(node, ignoreFlagCheck) {
 // if it still passes thorough, it's piped to the matchesSingleVariable function for good measure.
 export function isTrueRequireFunction(node) {
 	if (node.type === "Identifier" && node.name === "require") {
-		const isVar = node.$parent && node.$parent.type === "VariableDeclarator" && node.$parent.init !== node && !matchesSingleFunction(node, "require");
+		const isVar =
+			node.$parent &&
+			node.$parent.type === "VariableDeclarator" &&
+			node.$parent.init !== node &&
+			!matchesSingleFunction(node, "require");
 		const isParam = node.$prop == "params";
 		if (isVar || isParam) {
 			// get nearest body up chain and set flag.
@@ -314,7 +323,13 @@ export function matchRequireIdentifier(node: any): string {
 }
 
 export function matchesTypeOf(node: any, name: string) {
-	return node && node.operator === "typeof" && node.argument && node.argument.type === "Identifier" && node.argument.name === name;
+	return (
+		node &&
+		node.operator === "typeof" &&
+		node.argument &&
+		node.argument.type === "Identifier" &&
+		node.argument.name === name
+	);
 }
 
 export function isExportComputed(node: any, fn: { (result: boolean) }) {
@@ -324,7 +339,11 @@ export function isExportComputed(node: any, fn: { (result: boolean) }) {
 }
 
 export function isExportMisused(node: any, fn: { (name: string) }) {
-	const isMisused = astQuery(node, ["/MemberExpression", ".object", "/MemberExpression", ".object", ".name"], "exports");
+	const isMisused = astQuery(
+		node,
+		["/MemberExpression", ".object", "/MemberExpression", ".object", ".name"],
+		"exports",
+	);
 	if (isMisused) {
 		if (node.object.property && node.object.property.name) {
 			return fn(node.object.property.name);
@@ -332,7 +351,21 @@ export function isExportMisused(node: any, fn: { (name: string) }) {
 	}
 }
 export function matchNamedExport(node: any, fn: any) {
-	if (astQuery(node, ["/ExpressionStatement", ".expression", "/AssignmentExpression", ".left", "/MemberExpression", ".object", ".name"], "exports")) {
+	if (
+		astQuery(
+			node,
+			[
+				"/ExpressionStatement",
+				".expression",
+				"/AssignmentExpression",
+				".left",
+				"/MemberExpression",
+				".object",
+				".name",
+			],
+			"exports",
+		)
+	) {
 		if (node.expression.left.property.type === "Identifier") {
 			let referencedVariable;
 			if (node.expression.right) {
@@ -348,7 +381,12 @@ export function matchNamedExport(node: any, fn: any) {
 }
 export function matchesDoubleMemberExpression(node: any, part1: string, part2?: string) {
 	const matches =
-		node.type === "MemberExpression" && node.object && node.object.type === "Identifier" && node.object && node.object.name === part1 && node.property;
+		node.type === "MemberExpression" &&
+		node.object &&
+		node.object.type === "Identifier" &&
+		node.object &&
+		node.object.name === part1 &&
+		node.property;
 
 	if (!part2) {
 		return matches;
@@ -358,14 +396,27 @@ export function matchesDoubleMemberExpression(node: any, part1: string, part2?: 
 }
 
 export function matchesExportReference(node: any): string {
-	if (node.type === "MemberExpression" && node.object && node.object.type === "Identifier" && node.object && node.object.name === "exports" && node.property) {
+	if (
+		node.type === "MemberExpression" &&
+		node.object &&
+		node.object.type === "Identifier" &&
+		node.object &&
+		node.object.name === "exports" &&
+		node.property
+	) {
 		if (node.property.type === "Identifier") {
 			return node.property.name;
 		}
 	}
 }
 export function matcheObjectDefineProperty(node, name: string) {
-	if (astQuery(node, ["/ExpressionStatement", ".expression", "/CallExpression", ".callee", "/MemberExpression", ".object", ".name"], "Object")) {
+	if (
+		astQuery(
+			node,
+			["/ExpressionStatement", ".expression", "/CallExpression", ".callee", "/MemberExpression", ".object", ".name"],
+			"Object",
+		)
+	) {
 		return astQuery(node, ["/ExpressionStatement", ".expression", "/CallExpression", ".arguments", 0, ".name"], name);
 	}
 }

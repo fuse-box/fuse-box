@@ -128,7 +128,7 @@ export class Arithmetic {
 					// check for a valid node module name
 					data.set(filePattern, {
 						deps: withDeps,
-						nodeModule: true
+						nodeModule: true,
 					});
 					return;
 				}
@@ -147,7 +147,7 @@ export class Arithmetic {
 					glob(fp, (err, files) => {
 						for (let i = 0; i < files.length; i++) {
 							data.set(files[i].normalize("NFC"), {
-								deps: withDeps
+								deps: withDeps,
 							});
 						}
 						return resolve();
@@ -199,7 +199,7 @@ export class Arithmetic {
 						return keys[0];
 					}
 				}
-			}
+			},
 		).then(result => {
 			let data = new BundleData();
 			data.homeDir = homeDir;

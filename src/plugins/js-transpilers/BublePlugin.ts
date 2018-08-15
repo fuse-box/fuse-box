@@ -61,7 +61,7 @@ export class BublePluginClass implements Plugin {
 			const config = {
 				...this.config,
 				output: file.info.fuseBoxPath,
-				source: file.info.absPath
+				source: file.info.absPath,
 			};
 			result = bubleCore.transform(file.contents, config);
 		} catch (e) {

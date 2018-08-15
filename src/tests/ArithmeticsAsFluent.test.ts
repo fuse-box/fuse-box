@@ -44,7 +44,7 @@ export class ArithmeticAsFluentTest {
 
 		// parsed
 		should(coolParsed.excluding).deepEqual({
-			"magic-in-me": true
+			"magic-in-me": true,
 		});
 		should(coolParsed.including).deepEqual({
 			"ooo.js": true,
@@ -52,10 +52,10 @@ export class ArithmeticAsFluentTest {
 			"fuse.magic.ts": false,
 			"*/**.js": false,
 			path: true,
-			fs: true
+			fs: true,
 		});
 		should(coolParsed.entry).deepEqual({
-			"ooo.js": true
+			"ooo.js": true,
 		});
 
 		// data
@@ -71,14 +71,14 @@ export class ArithmeticAsFluentTest {
 		// parsed
 		should(canadaParsed.depsOnly).deepEqual({});
 		should(canadaParsed.excluding).deepEqual({
-			fs: true
+			fs: true,
 		});
 		should(canadaParsed.including).deepEqual({
 			"/src/eh.js": true,
-			"webworkerfile.js": true
+			"webworkerfile.js": true,
 		});
 		should(canadaParsed.entry).deepEqual({
-			"/src/eh.js": true
+			"/src/eh.js": true,
 		});
 	}
 

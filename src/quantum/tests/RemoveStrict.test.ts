@@ -6,14 +6,14 @@ export class RemoveStrictTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				removeUseStrict: false
+				removeUseStrict: false,
 			},
 			project: {
 				files: {
-					"index.ts": `export class Hello {}`
+					"index.ts": `export class Hello {}`,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString("use strict");
@@ -24,14 +24,14 @@ export class RemoveStrictTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				removeUseStrict: true
+				removeUseStrict: true,
 			},
 			project: {
 				files: {
-					"index.ts": `export class Hello {}`
+					"index.ts": `export class Hello {}`,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).notFindString("use strict");
@@ -43,10 +43,10 @@ export class RemoveStrictTest {
 			options: {},
 			project: {
 				files: {
-					"index.ts": `export class Hello {}`
+					"index.ts": `export class Hello {}`,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).notFindString("use strict");

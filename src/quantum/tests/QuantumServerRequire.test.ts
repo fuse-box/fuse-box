@@ -10,14 +10,14 @@ export class ImportDynamicJSON {
 				files: {
 					"index.ts": `
                         module.exports = require("path").join('a')
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "universal"
-					})
-				]
-			}
+						target: "universal",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -29,8 +29,8 @@ export class ImportDynamicJSON {
             `,
 					data => {
 						should(data.response).equal("a");
-					}
-				)
+					},
+				),
 			);
 	}
 
@@ -40,14 +40,14 @@ export class ImportDynamicJSON {
 				files: {
 					"index.ts": `
                         module.exports = require("path").join('a')
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "universal"
-					})
-				]
-			}
+						target: "universal",
+					}),
+				],
+			},
 		})
 			.simple("[index.ts]")
 			.then(test =>
@@ -59,8 +59,8 @@ export class ImportDynamicJSON {
             `,
 					data => {
 						should(data.response).equal("a");
-					}
-				)
+					},
+				),
 			);
 	}
 
@@ -70,14 +70,14 @@ export class ImportDynamicJSON {
 				files: {
 					"index.ts": `
                         module.exports = require("path").join('a')
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "server"
-					})
-				]
-			}
+						target: "server",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -89,8 +89,8 @@ export class ImportDynamicJSON {
             `,
 					data => {
 						should(data.response).equal("a");
-					}
-				)
+					},
+				),
 			);
 	}
 	"Should execute node module (path) SERVER (path excluded)"() {
@@ -100,14 +100,14 @@ export class ImportDynamicJSON {
 				files: {
 					"index.ts": `
                         module.exports = require("path").join('a')
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "server"
-					})
-				]
-			}
+						target: "server",
+					}),
+				],
+			},
 		})
 			.simple("[index.ts]")
 			.then(test =>
@@ -119,8 +119,8 @@ export class ImportDynamicJSON {
             `,
 					data => {
 						should(data.response).equal("a");
-					}
-				)
+					},
+				),
 			);
 	}
 }

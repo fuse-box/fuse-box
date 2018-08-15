@@ -6,10 +6,10 @@ export class DynamicModulesTest {
 		return createEnv({
 			project: {
 				files: {
-					"hello.js": `module.exports = require("./stuff/boo");`
+					"hello.js": `module.exports = require("./stuff/boo");`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const fuse = result.project.FuseBox;
 			fuse.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}");
@@ -22,10 +22,10 @@ export class DynamicModulesTest {
 		return createEnv({
 			project: {
 				files: {
-					"hello.js": `module.exports = require("./stuff/boo.js");`
+					"hello.js": `module.exports = require("./stuff/boo.js");`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const fuse = result.project.FuseBox;
 			fuse.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}");
@@ -38,10 +38,10 @@ export class DynamicModulesTest {
 		return createEnv({
 			project: {
 				files: {
-					"hello.js": `module.exports = require("~/stuff/boo.js");`
+					"hello.js": `module.exports = require("~/stuff/boo.js");`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const fuse = result.project.FuseBox;
 			fuse.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}");
@@ -54,10 +54,10 @@ export class DynamicModulesTest {
 		return createEnv({
 			project: {
 				files: {
-					"hello.js": `module.exports = require("~/stuff/boo");`
+					"hello.js": `module.exports = require("~/stuff/boo");`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const fuse = result.project.FuseBox;
 			fuse.dynamic("stuff/boo.js", "module.exports = {hello : 'dynamic'}");
@@ -72,17 +72,17 @@ export class DynamicModulesTest {
 				files: {
 					"index.js": `
             FuseBox.dynamic("hello/world.js", "exports.itworks = require('../foo.js')")`,
-					"foo.js": `module.exports = {foo : "bar"}`
+					"foo.js": `module.exports = {foo : "bar"}`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const fuse = result.project.FuseBox;
 			fuse.import("./index");
 			should(fuse.import("./hello/world")).deepEqual({
 				itworks: {
-					foo: "bar"
-				}
+					foo: "bar",
+				},
 			});
 		});
 	}
@@ -93,17 +93,17 @@ export class DynamicModulesTest {
 				files: {
 					"index.js": `
             FuseBox.dynamic("hello/world.js", "exports.itworks = require('../foo')")`,
-					"foo.js": `module.exports = {foo : "bar"}`
+					"foo.js": `module.exports = {foo : "bar"}`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const fuse = result.project.FuseBox;
 			fuse.import("./index");
 			should(fuse.import("./hello/world")).deepEqual({
 				itworks: {
-					foo: "bar"
-				}
+					foo: "bar",
+				},
 			});
 		});
 	}
@@ -114,10 +114,10 @@ export class DynamicModulesTest {
 				files: {
 					"index.js": `
             FuseBox.dynamic("hello/world.js", "module.exports = require('~/foo')")`,
-					"foo.js": `module.exports = {foo : "bar"}`
+					"foo.js": `module.exports = {foo : "bar"}`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const fuse = result.project.FuseBox;
 			fuse.import("./index.js");
@@ -132,10 +132,10 @@ export class DynamicModulesTest {
 				files: {
 					"index.js": `
             FuseBox.dynamic("hello/world.js", "module.exports = require('~/foo.js')")`,
-					"foo.js": `module.exports = {foo : "bar"}`
+					"foo.js": `module.exports = {foo : "bar"}`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const fuse = result.project.FuseBox;
 			fuse.import("./index.js");
@@ -150,10 +150,10 @@ export class DynamicModulesTest {
 				files: {
 					"index.js": `
             FuseBox.dynamic("hello/world.js", "module.exports = require('~/foo.js')")`,
-					"foo.js": `module.exports = {foo : "bar"}`
+					"foo.js": `module.exports = {foo : "bar"}`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const fuse = result.project.FuseBox;
 			fuse.import("./index.js");
@@ -169,10 +169,10 @@ export class DynamicModulesTest {
 				files: {
 					"index.js": `
             FuseBox.dynamic("hello/world.js", "module.exports = require('~/foo.js')")`,
-					"foo.js": `module.exports = {foo : "bar"}`
+					"foo.js": `module.exports = {foo : "bar"}`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const fuse = result.project.FuseBox;
 			fuse.import("./index.js");
@@ -185,8 +185,8 @@ export class DynamicModulesTest {
 		return createEnv({
 			project: {
 				files: { "index.js": `` },
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const fuse = result.project.FuseBox;
 			fuse.import("./index.js");
@@ -204,10 +204,10 @@ export class DynamicModulesTest {
                 "hello/world.js", 
                 "module.exports = {hello : 'world'}", 
                 {pkg : 'foo'}
-            )`
+            )`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const fuse = result.project.FuseBox;
 			fuse.import("./index.js");

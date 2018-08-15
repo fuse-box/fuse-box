@@ -7,10 +7,10 @@ export class ImportEventTest {
 			project: {
 				files: {
 					"index.js": "exports.bar = 1; require('./foo/bar')",
-					"foo/bar.js": "module.exports = {bar : 1}"
+					"foo/bar.js": "module.exports = {bar : 1}",
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			let results = [];
 
@@ -30,10 +30,10 @@ export class ImportEventTest {
 			project: {
 				files: {
 					"index.js": "exports.bar = 1; require('./foo/bar')",
-					"foo/bar.js": "module.exports = {bar : 1}"
+					"foo/bar.js": "module.exports = {bar : 1}",
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			let results = [];
 			result.project.FuseBox.on("before-import", (exports, require, module, __filename, __dirname, pkg) => {
