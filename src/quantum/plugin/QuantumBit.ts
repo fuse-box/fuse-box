@@ -89,7 +89,11 @@ export class QuantumBit {
 			const dependency = item[0];
 			if (dependency.belongsToProject()) {
 				if (dependency.quantumBit && dependency.quantumBit !== this) {
-					dependency.quantumBitBanned = true;
+					dependency.referencedRequireStatements.forEach(ref => {
+						if (!ref.isDynamicImport) {
+							dependency.quantumBitBanned = true;
+						}
+					});
 				} else {
 					dependency.quantumBit = this;
 					if (!this.candidates.has(dependency.getFuseBoxFullPath())) {
