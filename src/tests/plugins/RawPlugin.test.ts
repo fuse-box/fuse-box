@@ -20,11 +20,11 @@ export class RawPluginTest {
 				require('./file2.onemoreraw');
 			`,
 					"file1.raw": rawFile,
-					"file2.onemoreraw": rawFile
+					"file2.onemoreraw": rawFile,
 				},
 				plugins: [[/raw$/, RawPlugin({ extensions: [".raw", ".onemoreraw"] })]],
-				instructions: ">index.js"
-			}
+				instructions: ">index.js",
+			},
 		}).then(result => {
 			const fileRaw1 = result.project.FuseBox.import("./file1.raw");
 			const fileRaw2 = result.project.FuseBox.import("./file2.onemoreraw");
@@ -41,15 +41,15 @@ export class RawPluginTest {
 				plugins: [/raw$/, RawPlugin({ extensions: [".raw"] })],
 				files: {
 					"file.raw": "I should not be included",
-					"file.foo.raw": "I should be included"
-				}
-			}
+					"file.foo.raw": "I should be included",
+				},
+			},
 		})
 			.simple(">file.raw")
 			.then(env =>
 				env.browser(window => {
 					should(window.FuseBox.import("./file.raw")).deepEqual("I should be included");
-				})
+				}),
 			);
 	}
 }

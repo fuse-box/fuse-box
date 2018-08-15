@@ -22,7 +22,7 @@ export class VueTemplateFile extends VueBlockFile {
 							this.contents
 								.replace("module.exports.default =", "")
 								.replace("module.exports =", "")
-								.trim()
+								.trim(),
 						);
 					})
 					.then(() => vueCompiler.compile(this.contents));

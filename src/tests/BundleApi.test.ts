@@ -5,7 +5,7 @@ import { Bundle } from "../core/Bundle";
 
 const createFuse = (): FuseBox => {
 	return FuseBox.init({
-		output: ".fusebox/test-bundle/$name.js"
+		output: ".fusebox/test-bundle/$name.js",
 	});
 };
 

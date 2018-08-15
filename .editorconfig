@@ -1,17 +1,18 @@
 root = true
 
 [*]
-indent_style = tab
-indent_size = 2
 charset = utf-8
-
-trim_trailing_whitespace = true
-insert_final_newline = true
-max_line_length=160
-
-[*.{yml,yaml,json}]
-indent_style = space
 indent_size = 2
+indent_style = tab
+quote_type = double
+
+insert_final_newline = true
+max_line_length=120
+trim_trailing_whitespace = true
+
+[*.{json,md,yml,yaml}]
+indent_style = space
 
 [*.md]
+max_line_length=80
 trim_trailing_whitespace = false

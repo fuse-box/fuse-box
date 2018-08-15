@@ -142,7 +142,9 @@ export class SparkyTest {
 		testFolder.make();
 
 		Sparky.task("default", () => {
-			return Sparky.src(["src/tests/stubs/sparky/foo/a.html", "src/tests/stubs/sparky/foo/b.html"]).dest(`${testFolder.folder}/$name`);
+			return Sparky.src(["src/tests/stubs/sparky/foo/a.html", "src/tests/stubs/sparky/foo/b.html"]).dest(
+				`${testFolder.folder}/$name`,
+			);
 		});
 		return Sparky.start("default").then(() => {
 			testFolder.shouldFindFile("a.html");

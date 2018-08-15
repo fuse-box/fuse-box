@@ -54,7 +54,9 @@ export class HTTPServer {
 					this.app.use(uPath, proxyInstance(userSettings.proxy[uPath]));
 				}
 			} else {
-				this.fuse.context.log.echoWarning("You are using development proxy but 'http-proxy-middleware' was not installed");
+				this.fuse.context.log.echoWarning(
+					"You are using development proxy but 'http-proxy-middleware' was not installed",
+				);
 			}
 		}
 

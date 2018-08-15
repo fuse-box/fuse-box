@@ -1,4 +1,10 @@
-import { string2RegExp, replaceExt, findFileBackwards, replaceAliasRequireStatement, ensureFuseBoxPath } from "../Utils";
+import {
+	string2RegExp,
+	replaceExt,
+	findFileBackwards,
+	replaceAliasRequireStatement,
+	ensureFuseBoxPath,
+} from "../Utils";
 import { should } from "fuse-test-runner";
 import * as path from "path";
 import { getStubsFolder } from "./stubs/TestEnvironment";

@@ -45,11 +45,11 @@ export class VuePluginTest {
 		return createEnv({
 			project: {
 				files: {
-					"app.vue": `${getTemplateBlock("", "DefaultValues")}${getScriptBlock()}${getStyleBlock()}`
+					"app.vue": `${getTemplateBlock("", "DefaultValues")}${getScriptBlock()}${getStyleBlock()}`,
 				},
 				plugins: [VueComponentPlugin()],
-				instructions: "app.vue"
-			}
+				instructions: "app.vue",
+			},
 		}).then(result => {
 			const Vue = require("vue");
 			const renderer = require("vue-server-renderer").createRenderer();
@@ -70,11 +70,13 @@ export class VuePluginTest {
 		return createEnv({
 			project: {
 				files: {
-					"app.vue": `${getTemplateBlock('lang="html"', "LangAttributes")}${getScriptBlock('lang="ts"')}${getStyleBlock('lang="scss"')}`
+					"app.vue": `${getTemplateBlock('lang="html"', "LangAttributes")}${getScriptBlock('lang="ts"')}${getStyleBlock(
+						'lang="scss"',
+					)}`,
 				},
 				plugins: [VueComponentPlugin()],
-				instructions: "app.vue"
-			}
+				instructions: "app.vue",
+			},
 		}).then(result => {
 			const Vue = require("vue");
 			const renderer = require("vue-server-renderer").createRenderer();
@@ -95,11 +97,13 @@ export class VuePluginTest {
 		return createEnv({
 			project: {
 				files: {
-					"app.vue": `${getTemplateBlock('lang="html"', "LangAttributes")}${getScriptBlock('lang="ts"')}${getStyleBlock('lang="scss"')}`
+					"app.vue": `${getTemplateBlock('lang="html"', "LangAttributes")}${getScriptBlock('lang="ts"')}${getStyleBlock(
+						'lang="scss"',
+					)}`,
 				},
 				plugins: [VueComponentPlugin()],
-				instructions: "app.vue"
-			}
+				instructions: "app.vue",
+			},
 		}).then(result => {
 			const Vue = require("vue");
 			const renderer = require("vue-server-renderer").createRenderer();
@@ -120,17 +124,17 @@ export class VuePluginTest {
 		return createEnv({
 			project: {
 				files: {
-					"app.vue": `${getTemplateBlock("", "PluginChain")}${getScriptBlock()}${getStyleBlock()}`
+					"app.vue": `${getTemplateBlock("", "PluginChain")}${getScriptBlock()}${getStyleBlock()}`,
 				},
 				plugins: [
 					VueComponentPlugin({
 						script: BabelPlugin(),
 						style: SassPlugin(),
-						template: HTMLPlugin()
-					})
+						template: HTMLPlugin(),
+					}),
 				],
-				instructions: "app.vue"
-			}
+				instructions: "app.vue",
+			},
 		}).then(result => {
 			const Vue = require("vue");
 			const renderer = require("vue-server-renderer").createRenderer();
@@ -151,17 +155,17 @@ export class VuePluginTest {
 		return createEnv({
 			project: {
 				files: {
-					"app.vue": `${getTemplateBlock("", "ScopedStyles")}${getScriptBlock()}${getStyleBlock("", true)}`
+					"app.vue": `${getTemplateBlock("", "ScopedStyles")}${getScriptBlock()}${getStyleBlock("", true)}`,
 				},
 				plugins: [
 					VueComponentPlugin({
 						script: BabelPlugin(),
 						style: SassPlugin(),
-						template: HTMLPlugin()
-					})
+						template: HTMLPlugin(),
+					}),
 				],
-				instructions: "app.vue"
-			}
+				instructions: "app.vue",
+			},
 		}).then(result => {
 			const Vue = require("vue");
 			const renderer = require("vue-server-renderer").createRenderer();
@@ -195,9 +199,9 @@ export class VuePluginTest {
 					"script.ts": "export default { message: 'I should not be included' }",
 					"script.foo.ts": "export default { message: 'I should be included' }",
 					"style.ts": "h1 { color: red; }",
-					"style.foo.ts": "h1 { color: blue; }"
-				}
-			}
+					"style.foo.ts": "h1 { color: blue; }",
+				},
+			},
 		})
 			.simple(">app.vue")
 			.then(env =>
@@ -212,7 +216,7 @@ export class VuePluginTest {
 					renderer.renderToString(app, (err, html) => {
 						should(html).findString("I should be included");
 					});
-				})
+				}),
 			);
 	}
 
@@ -221,11 +225,11 @@ export class VuePluginTest {
 			project: {
 				allowSyntheticDefaultImports: true,
 				files: {
-					"app.vue": `${getTemplateBlock("", "Decorators")}${getDecoratorScriptBlock()}${getStyleBlock("")}`
+					"app.vue": `${getTemplateBlock("", "Decorators")}${getDecoratorScriptBlock()}${getStyleBlock("")}`,
 				},
 				plugins: [VueComponentPlugin()],
-				instructions: "app.vue"
-			}
+				instructions: "app.vue",
+			},
 		}).then(result => {
 			const Vue = require("vue");
 			const renderer = require("vue-server-renderer").createRenderer();

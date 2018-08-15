@@ -12,7 +12,7 @@ class DummyXMLHTTPRequest {
 					readyState: 4,
 					status: status,
 					statusText: status === 404 ? "Not Found" : null,
-					responseText: responseText
+					responseText: responseText,
 				})();
 			});
 		}

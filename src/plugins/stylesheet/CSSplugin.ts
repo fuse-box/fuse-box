@@ -71,7 +71,9 @@ export class CSSPluginClass implements Plugin {
 		// { inject : path => path } -> customise automatic injection
 		// { inject : false } -> do not inject anything. User will manually put the script tag
 		// No inject at all, means automatic injection with default path
-		const resolvedPath = utils.isFunction(options.inject) ? options.inject(ensureCSSExtension(file)) : ensureCSSExtension(file);
+		const resolvedPath = utils.isFunction(options.inject)
+			? options.inject(ensureCSSExtension(file))
+			: ensureCSSExtension(file);
 
 		// noop the contents if a user wants to manually inject it
 		const result = options.inject !== false ? `${this.getFunction()}("${resolvedPath}");` : "";
@@ -130,7 +132,10 @@ export class CSSPluginClass implements Plugin {
 		if (bundle && bundle.lastChangedFile) {
 			const lastFile = file.context.convertToFuseBoxPath(bundle.lastChangedFile);
 			if (isStylesheetExtension(bundle.lastChangedFile)) {
-				if (lastFile === file.info.fuseBoxPath || file.context.getItem("HMR_FILE_REQUIRED", []).indexOf(file.info.fuseBoxPath) > -1) {
+				if (
+					lastFile === file.info.fuseBoxPath ||
+					file.context.getItem("HMR_FILE_REQUIRED", []).indexOf(file.info.fuseBoxPath) > -1
+				) {
 					emitRequired = true;
 				}
 
@@ -144,13 +149,13 @@ export class CSSPluginClass implements Plugin {
 			if (resolvedPath) {
 				file.context.sourceChangedEmitter.emit({
 					type: "hosted-css",
-					path: resolvedPath
+					path: resolvedPath,
 				});
 			} else {
 				file.context.sourceChangedEmitter.emit({
 					type: "css",
 					content: file.alternativeContent,
-					path: file.info.fuseBoxPath
+					path: file.info.fuseBoxPath,
 				});
 			}
 		}

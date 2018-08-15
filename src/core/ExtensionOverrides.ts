@@ -33,7 +33,9 @@ export class ExtensionOverrides {
 			if (overrideExtension.indexOf(fileInfo.ext) > -1 && fs.existsSync(overridePath)) {
 				file.absPath = file.info.absPath = overridePath;
 				file.hasExtensionOverride = true;
-				file.context.log.echoInfo(`Extension override found. Mapping ${file.info.fuseBoxPath} to ${path.basename(file.info.absPath)}`);
+				file.context.log.echoInfo(
+					`Extension override found. Mapping ${file.info.fuseBoxPath} to ${path.basename(file.info.absPath)}`,
+				);
 			}
 		}
 	}

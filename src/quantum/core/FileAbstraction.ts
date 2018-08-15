@@ -25,7 +25,7 @@ import {
 	matchesIfStatementFuseBoxIsEnvironment,
 	isExportComputed,
 	isTrueRequireFunction,
-	matchesDefinedExpression
+	matchesDefinedExpression,
 } from "./AstUtils";
 import { ExportsInterop } from "./nodes/ExportsInterop";
 import { UseStrict } from "./nodes/UseStrict";
@@ -128,7 +128,9 @@ export class FileAbstraction {
 				entryPointForQuantumBit = true;
 			}
 		}
-		return this.getID().toString() !== "0" && this.dependents.size === 0 && !entryPointForQuantumBit && !this.isEntryPoint;
+		return (
+			this.getID().toString() !== "0" && this.dependents.size === 0 && !entryPointForQuantumBit && !this.isEntryPoint
+		);
 	}
 
 	public releaseDependent(file: FileAbstraction) {
@@ -509,7 +511,7 @@ export class FileAbstraction {
 				// replace it right away with require statement
 				parent.callee = {
 					type: "Identifier",
-					name: "require"
+					name: "require",
 				};
 				// treat it like any any other require statements
 				this.requireStatements.add(new RequireStatement(this, parent, parent.$parent));
@@ -565,7 +567,7 @@ export class FileAbstraction {
 	public analyse() {
 		// console.log(JSON.stringify(this.ast, null, 2));
 		ASTTraverse.traverse(this.ast, {
-			pre: (node, parent, prop, idx) => this.onNode(node, parent, prop, idx)
+			pre: (node, parent, prop, idx) => this.onNode(node, parent, prop, idx),
 		});
 	}
 }

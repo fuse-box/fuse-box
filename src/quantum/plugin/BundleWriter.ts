@@ -22,7 +22,7 @@ export class BundleWriter {
 		}
 		return {
 			...opts,
-			es6: useUglifyEs
+			es6: useUglifyEs,
 		};
 	}
 
@@ -97,9 +97,9 @@ export class BundleWriter {
 			splitFileOptions = {
 				c: {
 					b: splitConf.getBrowserPath(),
-					s: splitConf.getServerPath()
+					s: splitConf.getServerPath(),
 				},
-				i: {}
+				i: {},
 			};
 			this.core.api.setBundleMapping(splitFileOptions);
 		}
@@ -118,7 +118,7 @@ export class BundleWriter {
 					entry: entryString,
 					absPath: output.path,
 					webIndexed: !bundle.quantumBit,
-					relativePath: output.relativePath
+					relativePath: output.relativePath,
 				};
 				// if this bundle belongs to splitting
 				// we need to remember the generated file name and store
@@ -146,7 +146,12 @@ export class BundleWriter {
 
 			if (cssData.size > 0) {
 				const output = this.core.producer.fuse.context.output;
-				let name = key === "default" ? this.core.opts.getCSSPath() : this.core.opts.getCSSFiles() ? this.core.opts.getCSSFiles()[key] : key;
+				let name =
+					key === "default"
+						? this.core.opts.getCSSPath()
+						: this.core.opts.getCSSFiles()
+							? this.core.opts.getCSSFiles()[key]
+							: key;
 				if (!/\.css$/.test(name)) {
 					name = `${name}.css`;
 				}
@@ -173,7 +178,7 @@ export class BundleWriter {
 					hash: cssResultData.hash,
 					absPath: cssResultData.path,
 					relativePath: cssResultData.relativePath,
-					webIndexed: cssCollection.splitCSS ? false : true
+					webIndexed: cssCollection.splitCSS ? false : true,
 				};
 				if (!cssCollection.splitCSS) {
 					this.core.producer.injectedCSSFiles.add(cssResultData.filename);
@@ -221,7 +226,11 @@ export class BundleWriter {
 						if (this.core.opts.shouldBakeApiIntoBundle(name)) {
 							const generatedAPIBundle = this.core.api.render();
 							if (this.core.opts.isContained()) {
-								bundle.generatedCode = new Buffer(bundle.generatedCode.toString().replace("/*$$CONTAINED_API_PLACEHOLDER$$*/", generatedAPIBundle.toString()));
+								bundle.generatedCode = new Buffer(
+									bundle.generatedCode
+										.toString()
+										.replace("/*$$CONTAINED_API_PLACEHOLDER$$*/", generatedAPIBundle.toString()),
+								);
 							} else {
 								bundle.generatedCode = new Buffer(generatedAPIBundle + "\n" + bundle.generatedCode);
 							}
@@ -237,7 +246,10 @@ export class BundleWriter {
 			.then(() => {
 				const manifestPath = this.core.opts.getManifestFilePath();
 				if (manifestPath) {
-					this.core.producer.fuse.context.output.writeToOutputFolder(manifestPath, JSON.stringify(bundleManifest, null, 2));
+					this.core.producer.fuse.context.output.writeToOutputFolder(
+						manifestPath,
+						JSON.stringify(bundleManifest, null, 2),
+					);
 				}
 				if (this.core.opts.webIndexPlugin) {
 					return this.core.opts.webIndexPlugin.producerEnd(producer);

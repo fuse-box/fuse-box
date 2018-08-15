@@ -16,10 +16,14 @@ export class DependencyExtractorTest {
             body {
                 background-color: blue;
             }
-            `
+            `,
 		});
 		let deps = extractor.getDependencies();
-		let expected = ["tests/stubs/css/path1/foo.scss", "tests/stubs/css/path1/woo.scss", "tests/stubs/css/path1/hello.scss"].map(path.normalize);
+		let expected = [
+			"tests/stubs/css/path1/foo.scss",
+			"tests/stubs/css/path1/woo.scss",
+			"tests/stubs/css/path1/hello.scss",
+		].map(path.normalize);
 		deps.forEach((dep, index) => {
 			should(dep).findString(expected[index]);
 		});
@@ -35,7 +39,7 @@ export class DependencyExtractorTest {
             body {
                 background-color: blue;
             }
-            `
+            `,
 		});
 		let deps = extractor.getDependencies();
 		let expected = ["tests/stubs/css/path1/_underscore.scss"].map(path.normalize);
@@ -54,7 +58,7 @@ export class DependencyExtractorTest {
             body {
                 background-color: blue;
             }
-            `
+            `,
 		});
 		let deps = extractor.getDependencies();
 		let expected = ["tests/stubs/css/path1/_underscore.scss"].map(path.normalize);
@@ -73,7 +77,7 @@ export class DependencyExtractorTest {
             body {
                 background-color: blue;
             }
-            `
+            `,
 		});
 		let deps = extractor.getDependencies();
 		let expected = ["tests/stubs/css/path1/_underscore_css.css"].map(path.normalize);
@@ -89,10 +93,14 @@ export class DependencyExtractorTest {
 			sassStyle: true,
 			content: `
             @import "main";
-            `
+            `,
 		});
 		let deps = extractor.getDependencies();
-		let expected = ["tests/stubs/css/nested/a/foo.scss", "tests/stubs/css/nested/a/b/bar.scss", "tests/stubs/css/nested/main.scss"].map(path.normalize);
+		let expected = [
+			"tests/stubs/css/nested/a/foo.scss",
+			"tests/stubs/css/nested/a/b/bar.scss",
+			"tests/stubs/css/nested/main.scss",
+		].map(path.normalize);
 		deps.forEach((dep, index) => {
 			should(dep).findString(expected[index]);
 		});

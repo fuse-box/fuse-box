@@ -30,7 +30,11 @@ export class HotReloadPluginClass implements Plugin {
 	public init() {}
 
 	public bundleEnd(context: WorkFlowContext) {
-		context.source.addContent(`FuseBox.import("fusebox-hot-reload").connect(${this.port}, ${JSON.stringify(this.uri)}, ${this.reload ? "true" : "false"})`);
+		context.source.addContent(
+			`FuseBox.import("fusebox-hot-reload").connect(${this.port}, ${JSON.stringify(this.uri)}, ${
+				this.reload ? "true" : "false"
+			})`,
+		);
 	}
 }
 

@@ -17,11 +17,11 @@ export class CssPluginTest {
                         body { font-size:12px }
 
                     `,
-					"reset.scss": "h1 { color:red}"
+					"reset.scss": "h1 { color:red}",
 				},
 				plugins: [[SassPlugin(), CSSPlugin()]],
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const js = result.projectContents.toString();
 
@@ -39,9 +39,9 @@ export class CssPluginTest {
 				files: {
 					"index.ts": `import './main.scss'`,
 					"main.scss": `html { background: red; }`,
-					"main.foo.scss": `html { background: blue; }`
-				}
-			}
+					"main.foo.scss": `html { background: blue; }`,
+				},
+			},
 		})
 			.simple()
 			.then(env =>
@@ -49,7 +49,7 @@ export class CssPluginTest {
 					should(window.document.querySelectorAll("style")).haveLength(1);
 					should(window.document.querySelector("style").attributes.id.value).equal("default-main-scss");
 					should(window.document.querySelector("style").innerHTML).findString("background: blue;");
-				})
+				}),
 			);
 	}
 
@@ -64,11 +64,11 @@ export class CssPluginTest {
                         body { font-size:12px }
 
                     `,
-					"b.scss": "h1 { color:red}"
+					"b.scss": "h1 { color:red}",
 				},
 				plugins: [[SassPlugin({ importer: true }), CSSPlugin()]],
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const js = result.projectContents.toString();
 			should(js)
@@ -86,9 +86,9 @@ export class CssPluginTest {
 					"index.ts": `import './main.scss'`,
 					"main.scss": `@import '$homeDir/b.scss';`,
 					"b.scss": `html { color: blue; }`,
-					"b.foo.scss": `html { color: red; }`
-				}
-			}
+					"b.foo.scss": `html { color: red; }`,
+				},
+			},
 		})
 			.simple()
 			.then(env =>
@@ -96,7 +96,7 @@ export class CssPluginTest {
 					should(window.document.querySelectorAll("style")).haveLength(1);
 					should(window.document.querySelector("style").attributes.id.value).equal("default-main-scss");
 					should(window.document.querySelector("style").innerHTML).findString("color: red;");
-				})
+				}),
 			);
 	}
 
@@ -111,11 +111,11 @@ export class CssPluginTest {
 
 
                         body { font-size:12px }
-                    `
+                    `,
 				},
 				plugins: [[SassPlugin({ importer: true }), CSSPlugin()]],
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const js = result.projectContents.toString();
 			should(js)
@@ -135,21 +135,21 @@ export class CssPluginTest {
 
 
                         body { font-size:12px }
-                    `
+                    `,
 				},
 				plugins: [
 					[
 						SassPlugin({
 							importer: true,
 							macros: {
-								$hello: Config.TEMP_FOLDER + "/"
-							}
+								$hello: Config.TEMP_FOLDER + "/",
+							},
 						}),
-						CSSPlugin()
-					]
+						CSSPlugin(),
+					],
 				],
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const js = result.projectContents.toString();
 			should(js)
@@ -169,21 +169,21 @@ export class CssPluginTest {
 
 
                         body { font-size:12px }
-                    `
+                    `,
 				},
 				plugins: [
 					[
 						SassPlugin({
 							importer: true,
 							macros: {
-								$homeDir: Config.TEMP_FOLDER + "/"
-							}
+								$homeDir: Config.TEMP_FOLDER + "/",
+							},
 						}),
-						CSSPlugin()
-					]
+						CSSPlugin(),
+					],
 				],
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const js = result.projectContents.toString();
 
@@ -201,7 +201,7 @@ export class CssPluginTest {
 					"a.scss": `
                         .foo { font-size: foo(1); }
                         .bar { font-size: bar(2, 2); }
-                    `
+                    `,
 				},
 				plugins: [
 					[
@@ -215,14 +215,14 @@ export class CssPluginTest {
 									a.setValue(a.getValue() * b.getValue());
 									a.setUnit("rem");
 									return a;
-								}
-							}
+								},
+							},
 						}),
-						CSSPlugin()
-					]
+						CSSPlugin(),
+					],
 				],
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const js = result.projectContents.toString();
 

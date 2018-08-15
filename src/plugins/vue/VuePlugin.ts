@@ -28,9 +28,9 @@ export class VueComponentClass implements Plugin {
 			{
 				script: [],
 				template: [],
-				style: []
+				style: [],
 			},
-			options
+			options,
 		);
 
 		this.options.script = Array.isArray(this.options.script) ? this.options.script : [this.options.script];
@@ -87,7 +87,7 @@ export class VueComponentClass implements Plugin {
 	private addToCacheObject(cacheItem: any, path: string, contents: string, sourceMap: any, file: VueBlockFile) {
 		cacheItem[path] = {
 			contents,
-			sourceMap
+			sourceMap,
 		};
 
 		cacheItem.override = file.hasExtensionOverride ? file.info.absPath : "";
@@ -175,7 +175,7 @@ export class VueComponentClass implements Plugin {
 		const cache = {
 			template: {},
 			script: {},
-			styles: {}
+			styles: {},
 		};
 		const component = vueCompiler.parseComponent(fs.readFileSync(file.info.absPath).toString());
 		const hasScopedStyles = component.styles && !!component.styles.find(style => style.scoped);
@@ -194,10 +194,22 @@ export class VueComponentClass implements Plugin {
 
 			if (cacheValid) {
 				const templateCacheData = file.cacheData.template[templateFile.info.fuseBoxPath];
-				this.addToCacheObject(cache.template, templateFile.info.fuseBoxPath, templateCacheData.contents, templateCacheData.sourceMap, templateFile);
+				this.addToCacheObject(
+					cache.template,
+					templateFile.info.fuseBoxPath,
+					templateCacheData.contents,
+					templateCacheData.sourceMap,
+					templateFile,
+				);
 			} else {
 				await templateFile.process();
-				this.addToCacheObject(cache.template, templateFile.info.fuseBoxPath, templateFile.contents, templateFile.sourceMap, templateFile);
+				this.addToCacheObject(
+					cache.template,
+					templateFile.info.fuseBoxPath,
+					templateFile.contents,
+					templateFile.sourceMap,
+					templateFile,
+				);
 				concat.add(null, templateFile.contents);
 			}
 		}
@@ -211,10 +223,22 @@ export class VueComponentClass implements Plugin {
 				scriptFile.isLoaded = true;
 				scriptFile.contents = scriptCacheData.contents;
 				scriptFile.sourceMap = scriptCacheData.sourceMap;
-				this.addToCacheObject(cache.script, scriptFile.info.fuseBoxPath, scriptCacheData.contents, scriptCacheData.sourceMap, scriptFile);
+				this.addToCacheObject(
+					cache.script,
+					scriptFile.info.fuseBoxPath,
+					scriptCacheData.contents,
+					scriptCacheData.sourceMap,
+					scriptFile,
+				);
 			} else {
 				await scriptFile.process();
-				this.addToCacheObject(cache.script, scriptFile.info.fuseBoxPath, scriptFile.contents, scriptFile.sourceMap, scriptFile);
+				this.addToCacheObject(
+					cache.script,
+					scriptFile.info.fuseBoxPath,
+					scriptFile.contents,
+					scriptFile.sourceMap,
+					scriptFile,
+				);
 				concat.add(null, scriptFile.contents, scriptFile.sourceMap);
 				concat.add(null, `Object.assign(exports.default.options||exports.default, _options)`);
 			}
@@ -239,7 +263,7 @@ export class VueComponentClass implements Plugin {
 					styleFile.sourceMap = file.cacheData.styles[styleFile.info.fuseBoxPath].sourceMap;
 					cache.styles[styleFile.info.fuseBoxPath] = {
 						contents: styleFile.contents,
-						sourceMap: styleFile.sourceMap
+						sourceMap: styleFile.sourceMap,
 					};
 					styleFile.fixSourceMapName();
 					return (CSSPlugin.transform(styleFile) || Promise.resolve()).then(() => styleFile);
@@ -248,7 +272,13 @@ export class VueComponentClass implements Plugin {
 						.process()
 						.then(() => styleFile)
 						.then(() => {
-							this.addToCacheObject(cache.styles, styleFile.info.fuseBoxPath, styleFile.contents, styleFile.sourceMap, styleFile);
+							this.addToCacheObject(
+								cache.styles,
+								styleFile.info.fuseBoxPath,
+								styleFile.contents,
+								styleFile.sourceMap,
+								styleFile,
+							);
 
 							if (styleFile.cssDependencies) {
 								styleFile.cssDependencies.forEach(path => {
@@ -266,7 +296,11 @@ export class VueComponentClass implements Plugin {
 					concat.add(null, styleFile.alternativeContent);
 				} else {
 					// TODO: Do we need this anymore? Everything seems to work without?
-					concat.add(null, `require('fuse-box-css')('${styleFile.info.fuseBoxPath}', ${JSON.stringify(styleFile.contents)})`, styleFile.sourceMap);
+					concat.add(
+						null,
+						`require('fuse-box-css')('${styleFile.info.fuseBoxPath}', ${JSON.stringify(styleFile.contents)})`,
+						styleFile.sourceMap,
+					);
 				}
 			});
 		}
@@ -285,7 +319,7 @@ export class VueComponentClass implements Plugin {
             api.createRecord('${moduleId}', module.exports.default);
           }
         }
-      `
+      `,
 			);
 
 			file.addStringDependency("vue-hot-reload-api");

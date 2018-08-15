@@ -29,7 +29,7 @@ enum STATES {
 	 */
 	ENTRY_POINT,
 
-	ONLY_DEPS
+	ONLY_DEPS,
 }
 /**
  *

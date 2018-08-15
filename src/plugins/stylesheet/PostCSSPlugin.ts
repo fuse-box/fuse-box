@@ -63,7 +63,7 @@ export class PostCSSPluginClass implements Plugin {
 		const cssDependencies = file.context.extractCSSDependencies(file, {
 			paths: paths,
 			content: file.contents,
-			extensions: ["css", "pcss"]
+			extensions: ["css", "pcss"],
 		});
 		file.cssDependencies = cssDependencies;
 
@@ -113,7 +113,7 @@ function extractPlugins(opts: PostCSSPluginOptions): { plugins: Processors; post
 	}
 	return {
 		plugins,
-		postCssOptions: otherOptions
+		postCssOptions: otherOptions,
 	};
 }
 

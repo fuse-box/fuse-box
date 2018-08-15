@@ -12,9 +12,9 @@ export class ImportDynamicSplitBundles {
                                 return import("./oi/a.ts") 
                             }
                         `,
-					"oi/a.ts": `export function oi(){ return "oi mate";}`
-				}
-			}
+					"oi/a.ts": `export function oi(){ return "oi mate";}`,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
@@ -23,7 +23,7 @@ export class ImportDynamicSplitBundles {
 					return index.load().then(result => {
 						should(result.oi()).equal("oi mate");
 					});
-				})
+				}),
 			);
 	}
 
@@ -36,9 +36,9 @@ export class ImportDynamicSplitBundles {
                                 return import("./oi/a") 
                             }
                         `,
-					"oi/a.ts": `export function oi(){ return "oi mate";}`
-				}
-			}
+					"oi/a.ts": `export function oi(){ return "oi mate";}`,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
@@ -51,8 +51,8 @@ export class ImportDynamicSplitBundles {
             `,
 					result => {
 						should(result.response).equal("oi mate");
-					}
-				)
+					},
+				),
 			);
 	}
 
@@ -65,14 +65,14 @@ export class ImportDynamicSplitBundles {
                                 return import("oi") 
                             }
                         `,
-					"oi/a.ts": `export function oi(){ return "oi mate";}`
+					"oi/a.ts": `export function oi(){ return "oi mate";}`,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.config(fuse => {
 				fuse
@@ -86,7 +86,7 @@ export class ImportDynamicSplitBundles {
 					return index.load().then(result => {
 						should(result.oi()).equal("oi mate");
 					});
-				})
+				}),
 			);
 	}
 
@@ -99,14 +99,14 @@ export class ImportDynamicSplitBundles {
                                 return import("oi") 
                             }
                         `,
-					"oi/a.ts": `export function oi(){ return "oi mate";}`
+					"oi/a.ts": `export function oi(){ return "oi mate";}`,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "universal"
-					})
-				]
-			}
+						target: "universal",
+					}),
+				],
+			},
 		})
 			.config(fuse => {
 				fuse
@@ -120,7 +120,7 @@ export class ImportDynamicSplitBundles {
 					return index.load().then(result => {
 						should(result.oi()).equal("oi mate");
 					});
-				})
+				}),
 			);
 	}
 
@@ -133,14 +133,14 @@ export class ImportDynamicSplitBundles {
                                 return import("oi") 
                             }
                         `,
-					"oi/a.ts": `export function oi(){ return "oi mate";}`
+					"oi/a.ts": `export function oi(){ return "oi mate";}`,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "server"
-					})
-				]
-			}
+						target: "server",
+					}),
+				],
+			},
 		})
 			.config(fuse => {
 				fuse
@@ -158,8 +158,8 @@ export class ImportDynamicSplitBundles {
             `,
 					result => {
 						should(result.response).equal("oi mate");
-					}
-				)
+					},
+				),
 			);
 	}
 
@@ -172,14 +172,14 @@ export class ImportDynamicSplitBundles {
                                 return import("./oi/a") 
                             }
                         `,
-					"oi/a.ts": `export function oi(){ return "oi mate";}`
+					"oi/a.ts": `export function oi(){ return "oi mate";}`,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.config(fuse => {
 				fuse.bundle("app").instructions("> index.ts");
@@ -190,7 +190,7 @@ export class ImportDynamicSplitBundles {
 					return index.load().then(result => {
 						should(result.oi()).equal("oi mate");
 					});
-				})
+				}),
 			);
 	}
 
@@ -203,14 +203,14 @@ export class ImportDynamicSplitBundles {
                                 return import("./oi/a") 
                             }
                         `,
-					"oi/a.ts": `export function oi(){ return "oi mate";}`
+					"oi/a.ts": `export function oi(){ return "oi mate";}`,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "universal"
-					})
-				]
-			}
+						target: "universal",
+					}),
+				],
+			},
 		})
 			.config(fuse => {
 				fuse.bundle("app").instructions("> index.ts");
@@ -221,7 +221,7 @@ export class ImportDynamicSplitBundles {
 					return index.load().then(result => {
 						should(result.oi()).equal("oi mate");
 					});
-				})
+				}),
 			);
 	}
 
@@ -234,14 +234,14 @@ export class ImportDynamicSplitBundles {
                                 return import("./oi/a") 
                             }
                         `,
-					"oi/a.ts": `export function oi(){ return "oi mate";}`
+					"oi/a.ts": `export function oi(){ return "oi mate";}`,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "server"
-					})
-				]
-			}
+						target: "server",
+					}),
+				],
+			},
 		})
 			.config(fuse => {
 				fuse.bundle("app").instructions("> index.ts **/**.ts");
@@ -256,8 +256,8 @@ export class ImportDynamicSplitBundles {
             `,
 					result => {
 						should(result.response).equal("oi mate");
-					}
-				)
+					},
+				),
 			);
 	}
 }

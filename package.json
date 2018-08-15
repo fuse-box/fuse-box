@@ -1,73 +1,31 @@
 {
-  "name": "fuse-box",
-  "version": "3.5.0-next.5",
-  "description": "Fuse-Box a bundler that does it right",
-  "typings": "index.d.ts",
-  "main": "index.js",
+  "author": "",
   "bin": {
     "fuse": "./cli/entry.js"
   },
-  "scripts": {
-    "help": "node bin/fsbx --help",
-    "test": "cross-env FUSE_TEST_TIMEOUT=5000 node ./test.js",
-    "test:once": "cross-env gulp dist && TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js",
-    "start": "gulp watch",
-    "devDeps": "gulp installDevDeps",
-    "dist": "gulp dist",
-    "commit": "git-cz",
-    "commitmsg": "validate-commit-msg",
-    "lint": "tslint --project ./src"
-  },
-  "engines": {
-    "node": ">= 8",
-    "npm": ">= 3.10.10"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/fuse-box/fuse-box.git"
-  },
-  "author": "",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/fuse-box/fuse-box/issues"
   },
-  "homepage": "https://github.com/fuse-box/fuse-box#readme",
-  "devDependencies": {
-    "@types/node": "^6.0.74",
-    "cheerio": "^0.22.0",
-    "commitizen": "^2.9.6",
-    "cross-env": "^5.1.3",
-    "cz-conventional-changelog": "^2.0.0",
-    "fuse-box-test-using-old-version": "^1.0.0",
-    "fuse-box-testcase1": "^1.0.0",
-    "fuse-box-testcase3": "^1.0.3",
-    "fuse-test-runner": "^1.0.14",
-    "gulp": "3.9.1",
-    "gulp-bump": "2.4.0",
-    "gulp-clean": "0.3.2",
-    "gulp-concat": "2.6.0",
-    "gulp-header": "^1.8.8",
-    "gulp-rename": "1.2.2",
-    "gulp-replace": "0.5.4",
-    "gulp-sourcemaps": "2.6.0",
-    "gulp-typescript": "3.1.5",
-    "gulp-uglify": "2.0.0",
-    "gulp-wrap": "0.13.0",
-    "homedir": "^0.6.0",
-    "husky": "^0.14.3",
-    "jsdom": "^9.12.0",
-    "mkdirp": "^0.5.1",
-    "mocha": "^3.1.0",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
-    "reflect-metadata": "^0.1.8",
-    "run-sequence": "^1.2.2",
-    "should": "^11.1.0",
-    "sinon": "^1.17.6",
-    "typescript": "^3.1.0-dev.20180804",
-    "uglify-js": "^3.1.8",
-    "validate-commit-msg": "^2.14.0",
-    "wires-reactive": "^1.1.1"
+  "collective": {
+    "logo": "https://opencollective.com/opencollective/logo.txt",
+    "type": "opencollective",
+    "url": "https://opencollective.com/fuse-box"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    },
+    "validate-commit-msg": {
+      "helpMessage": "Valid commit message formats are: \n - <type>(<scope>): <subject> \n - <type>: <subject>",
+      "scope": {
+        "allowed": [
+          "*"
+        ],
+        "multiple": false,
+        "required": false,
+        "validate": false
+      }
+    }
   },
   "dependencies": {
     "acorn": "^5.1.2",
@@ -101,25 +59,70 @@
     "watch": "^1.0.1",
     "ws": "^1.1.1"
   },
-  "collective": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/fuse-box",
-    "logo": "https://opencollective.com/opencollective/logo.txt"
+  "description": "Fuse-Box a bundler that does it right",
+  "devDependencies": {
+    "@types/node": "^6.0.74",
+    "cheerio": "^0.22.0",
+    "commitizen": "^2.9.6",
+    "cross-env": "^5.1.3",
+    "cz-conventional-changelog": "^2.0.0",
+    "fuse-box-test-using-old-version": "^1.0.0",
+    "fuse-box-testcase1": "^1.0.0",
+    "fuse-box-testcase3": "^1.0.3",
+    "fuse-test-runner": "^1.0.14",
+    "gulp": "3.9.1",
+    "gulp-bump": "2.4.0",
+    "gulp-clean": "0.3.2",
+    "gulp-concat": "2.6.0",
+    "gulp-header": "^1.8.8",
+    "gulp-rename": "1.2.2",
+    "gulp-replace": "0.5.4",
+    "gulp-sourcemaps": "2.6.0",
+    "gulp-typescript": "3.1.5",
+    "gulp-uglify": "2.0.0",
+    "gulp-wrap": "0.13.0",
+    "homedir": "^0.6.0",
+    "husky": "^0.14.3",
+    "jsdom": "^9.12.0",
+    "mkdirp": "^0.5.1",
+    "mocha": "^3.1.0",
+    "prettier": "^1.14.2",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "reflect-metadata": "^0.1.8",
+    "run-sequence": "^1.2.2",
+    "should": "^11.1.0",
+    "sinon": "^1.17.6",
+    "typescript": "^3.1.0-dev.20180804",
+    "uglify-js": "^3.1.8",
+    "validate-commit-msg": "^2.14.0",
+    "wires-reactive": "^1.1.1"
   },
-  "config": {
-    "validate-commit-msg": {
-      "scope": {
-        "required": false,
-        "allowed": [
-          "*"
-        ],
-        "validate": false,
-        "multiple": false
-      },
-      "helpMessage": "Valid commit message formats are: \n - <type>(<scope>): <subject> \n - <type>: <subject>"
-    },
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
-  }
+  "engines": {
+    "node": ">= 8",
+    "npm": ">= 3.10.10"
+  },
+  "homepage": "https://github.com/fuse-box/fuse-box#readme",
+  "license": "MIT",
+  "main": "index.js",
+  "name": "fuse-box",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fuse-box/fuse-box.git"
+  },
+  "scripts": {
+    "commit": "git-cz",
+    "commitmsg": "validate-commit-msg",
+    "devDeps": "gulp installDevDeps",
+    "dist": "gulp dist",
+    "format": "prettier --list-different \"**/*.{js,json,md,ts,yml}\"",
+    "format:fix": "prettier --write \"**/*.{js,json,md,ts,yml}\"",
+    "help": "node bin/fsbx --help",
+    "lint": "tslint --project ./src",
+    "start": "gulp watch",
+    "test": "cross-env FUSE_TEST_TIMEOUT=5000 node ./test.js",
+    "test:once": "cross-env gulp dist && TRAVIS=true ./node_modules/mocha/bin/mocha && node ./test.js"
+  },
+  "typings": "index.d.ts",
+  "version": "3.5.0-next.5"
 }

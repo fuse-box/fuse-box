@@ -64,7 +64,10 @@ export class QuantumCore {
 		this.context = this.producer.fuse.context;
 	}
 
-	public solveComputed(path: string, rules?: { mapping: string; fn: { (statement: RequireStatement, core: QuantumCore): void } }) {
+	public solveComputed(
+		path: string,
+		rules?: { mapping: string; fn: { (statement: RequireStatement, core: QuantumCore): void } },
+	) {
 		this.customStatementSolutions.add(string2RegExp(path));
 		if (rules && rules.mapping) {
 			this.requiredMappings.add(string2RegExp(rules.mapping));
@@ -84,7 +87,7 @@ export class QuantumCore {
 		this.log.echoInfo("Generating abstraction, this may take a while");
 		const abstraction = await this.producer.generateAbstraction({
 			quantumCore: this,
-			customComputedStatementPaths: this.customStatementSolutions
+			customComputedStatementPaths: this.customStatementSolutions,
 		});
 		abstraction.quantumCore = this;
 		this.producerAbstraction = abstraction;
@@ -260,7 +263,11 @@ export class QuantumCore {
 			generator.init();
 			return each(bundleAbstraction.packageAbstractions, (packageAbstraction: PackageAbstraction) => {
 				return each(packageAbstraction.fileAbstractions, (fileAbstraction: FileAbstraction) => {
-					if (fileAbstraction.fuseBoxPath == packageAbstraction.entryFile && globals && Object.keys(globals).indexOf(packageAbstraction.name) != -1) {
+					if (
+						fileAbstraction.fuseBoxPath == packageAbstraction.entryFile &&
+						globals &&
+						Object.keys(globals).indexOf(packageAbstraction.name) != -1
+					) {
 						globalFileMap[packageAbstraction.name] = fileAbstraction.getID();
 					}
 					return generator.addFile(fileAbstraction, this.opts.shouldEnsureES5());
@@ -304,7 +311,7 @@ export class QuantumCore {
 			// replace typeof module, typeof exports, typeof window
 			TypeOfModifications,
 			// process.env removal
-			ProcessEnvModification
+			ProcessEnvModification,
 		];
 		return each(modifications, (modification: IPerformable) => modification.perform(this, file));
 	}

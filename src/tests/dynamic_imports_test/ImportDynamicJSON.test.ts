@@ -7,16 +7,16 @@ export class ImportDynamicJSON {
 		return FuseTestEnv.create({
 			project: {
 				distFiles: {
-					"config.json": `{ "hello" : "json" }`
+					"config.json": `{ "hello" : "json" }`,
 				},
 				files: {
 					"index.ts": `
                         export function getRemoteFile(){ 
                             return import("./config.json")
                         }
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
@@ -25,7 +25,7 @@ export class ImportDynamicJSON {
 					return index.getRemoteFile().then(result => {
 						should(result).deepEqual({ hello: "json" });
 					});
-				})
+				}),
 			);
 	}
 
@@ -33,16 +33,16 @@ export class ImportDynamicJSON {
 		return FuseTestEnv.create({
 			project: {
 				distFiles: {
-					"config.json": `{ "hello" : "json" }`
+					"config.json": `{ "hello" : "json" }`,
 				},
 				files: {
 					"index.ts": `
                         export function getRemoteFile(){ 
                             return import("./config.json")
                         }
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
@@ -55,8 +55,8 @@ export class ImportDynamicJSON {
             `,
 					data => {
 						should(data.response).deepEqual({ hello: "json" });
-					}
-				)
+					},
+				),
 			);
 	}
 
@@ -64,21 +64,21 @@ export class ImportDynamicJSON {
 		return FuseTestEnv.create({
 			project: {
 				distFiles: {
-					"config.json": `{ "hello" : "json" }`
+					"config.json": `{ "hello" : "json" }`,
 				},
 				files: {
 					"index.ts": `
                         export function getRemoteFile(){ 
                             return import("./config.json")
                         }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -87,7 +87,7 @@ export class ImportDynamicJSON {
 					return index.getRemoteFile().then(result => {
 						should(result).deepEqual({ hello: "json" });
 					});
-				})
+				}),
 			);
 	}
 
@@ -95,21 +95,21 @@ export class ImportDynamicJSON {
 		return FuseTestEnv.create({
 			project: {
 				distFiles: {
-					"config.json": `{ "hello" : "json" }`
+					"config.json": `{ "hello" : "json" }`,
 				},
 				files: {
 					"index.ts": `
                         export function getRemoteFile(){ 
                             return import("./config.json")
                         }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "universal"
-					})
-				]
-			}
+						target: "universal",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -118,7 +118,7 @@ export class ImportDynamicJSON {
 					return index.getRemoteFile().then(result => {
 						should(result).deepEqual({ hello: "json" });
 					});
-				})
+				}),
 			);
 	}
 
@@ -126,21 +126,21 @@ export class ImportDynamicJSON {
 		return FuseTestEnv.create({
 			project: {
 				distFiles: {
-					"config.json": `{ "hello" : "json" }`
+					"config.json": `{ "hello" : "json" }`,
 				},
 				files: {
 					"index.ts": `
                         export function getRemoteFile(){ 
                             return import("./config.json")
                         }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "universal"
-					})
-				]
-			}
+						target: "universal",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -153,8 +153,8 @@ export class ImportDynamicJSON {
             `,
 					data => {
 						should(data.response).deepEqual({ hello: "json" });
-					}
-				)
+					},
+				),
 			);
 	}
 
@@ -162,16 +162,16 @@ export class ImportDynamicJSON {
 		return FuseTestEnv.create({
 			project: {
 				distFiles: {
-					"config.json": `{ "hello" : "json" }`
+					"config.json": `{ "hello" : "json" }`,
 				},
 				files: {
 					"index.ts": `
                         export function getRemoteFile(){ 
                             return import("./config1.json")
                         }
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
@@ -186,8 +186,8 @@ export class ImportDynamicJSON {
             `,
 					data => {
 						should(data.error).equal("Cannot find module './config1.json'");
-					}
-				)
+					},
+				),
 			);
 	}
 
@@ -195,21 +195,21 @@ export class ImportDynamicJSON {
 		return FuseTestEnv.create({
 			project: {
 				distFiles: {
-					"config.json": `{ "hello" : "json" }`
+					"config.json": `{ "hello" : "json" }`,
 				},
 				files: {
 					"index.ts": `
                         export function getRemoteFile(){ 
                             return import("./config1.json")
                         }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "universal"
-					})
-				]
-			}
+						target: "universal",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -224,8 +224,8 @@ export class ImportDynamicJSON {
             `,
 					data => {
 						should(data.error).equal("Cannot find module './config1.json'");
-					}
-				)
+					},
+				),
 			);
 	}
 
@@ -233,21 +233,21 @@ export class ImportDynamicJSON {
 		return FuseTestEnv.create({
 			project: {
 				distFiles: {
-					"config.json": `{ "hello" : "json" }`
+					"config.json": `{ "hello" : "json" }`,
 				},
 				files: {
 					"index.ts": `
                         export function getRemoteFile(){ 
                             return import("./config1.json")
                         }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "server"
-					})
-				]
-			}
+						target: "server",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -262,8 +262,8 @@ export class ImportDynamicJSON {
             `,
 					data => {
 						should(data.error).equal("Cannot find module './config1.json'");
-					}
-				)
+					},
+				),
 			);
 	}
 }

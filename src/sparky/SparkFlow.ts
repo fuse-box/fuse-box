@@ -45,7 +45,7 @@ export class SparkFlow {
 			() =>
 				new Promise((resolve, reject) => {
 					var chokidarOptions = {
-						cwd: opts ? ensureUserPath(opts.base) : null
+						cwd: opts ? ensureUserPath(opts.base) : null,
 					};
 
 					this.watcher = chokidar
@@ -72,7 +72,7 @@ export class SparkFlow {
 							this.activities[0] = undefined;
 							resolve();
 						});
-				})
+				}),
 		);
 		return this;
 	}
@@ -123,7 +123,7 @@ export class SparkFlow {
 						if (err) return reject(err);
 						return resolve();
 					});
-				})
+				}),
 		);
 		return this;
 	}

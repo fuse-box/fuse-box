@@ -34,6 +34,6 @@ export function parse(str: string, opts?: SparkyFilePatternOptions): SparkyFileP
 		isGlob: isGlob,
 		root: root,
 		glob: glob,
-		filepath: filepath
+		filepath: filepath,
 	};
 }

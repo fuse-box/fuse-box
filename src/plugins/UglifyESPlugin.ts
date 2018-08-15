@@ -42,7 +42,7 @@ export class UglifyESPluginClass implements Plugin {
 
 		const result = UglifyES.minify(source, {
 			...this.options,
-			...mainOptions
+			...mainOptions,
 		});
 
 		let took = process.hrtime(timeStart);

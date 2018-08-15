@@ -56,7 +56,7 @@ export class SassPluginClass implements Plugin {
 		const defaultMacro = {
 			$homeDir: file.context.homeDir,
 			$appRoot: context.appRoot,
-			"~": Config.NODE_MODULES_DIR + "/"
+			"~": Config.NODE_MODULES_DIR + "/",
 		};
 
 		if (this.options.header) {
@@ -69,9 +69,9 @@ export class SassPluginClass implements Plugin {
 				file: context.homeDir + "/" + file.info.fuseBoxPath,
 				sourceMap: true,
 				outFile: file.info.fuseBoxPath,
-				sourceMapContents: true
+				sourceMapContents: true,
 			},
-			this.options
+			this.options,
 		);
 
 		options.includePaths = [];
@@ -112,7 +112,7 @@ export class SassPluginClass implements Plugin {
 			content: file.contents,
 			sassStyle: true,
 			importer: options.importer as any,
-			extensions: ["css", options.indentedSyntax ? "sass" : "scss"]
+			extensions: ["css", options.indentedSyntax ? "sass" : "scss"],
 		});
 		file.cssDependencies = cssDependencies;
 		return new Promise((resolve, reject) => {

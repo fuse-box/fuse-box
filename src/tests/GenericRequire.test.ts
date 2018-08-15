@@ -7,10 +7,10 @@ export class GenericRequireTest {
 			project: {
 				files: {
 					"index.js": `require("./foo/bar.js");`,
-					"foo/bar.js": "module.exports = {bar : 1}"
+					"foo/bar.js": "module.exports = {bar : 1}",
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./foo/bar");
 			should(out).deepEqual({ bar: 1 });
@@ -23,10 +23,10 @@ export class GenericRequireTest {
 				files: {
 					"index.js": `exports.hello = require("./foo/bar.js");`,
 					"foo/bar.js": "module.exports = require('./hello.js')",
-					"foo/hello.js": "module.exports = {bar : 1}"
+					"foo/hello.js": "module.exports = {bar : 1}",
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./foo/bar");
 			should(out).deepEqual({ bar: 1 });
@@ -39,10 +39,10 @@ export class GenericRequireTest {
 				files: {
 					"index.js": `exports.allGood = require("./foo/bar.js");`,
 					"foo/bar.js": "module.exports = require('./hello.js')",
-					"foo/hello.js": "module.exports = {bar : 1}"
+					"foo/hello.js": "module.exports = {bar : 1}",
 				},
-				instructions: "> index.js"
-			}
+				instructions: "> index.js",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./foo/bar");
 			should(out).deepEqual({ bar: 1 });
@@ -55,10 +55,10 @@ export class GenericRequireTest {
 				files: {
 					"index.js": `module.exports = require("./foo/bar.js");`,
 					"foo/bar.js": "module.exports = require('./hello.js')",
-					"foo/hello.js": "module.exports = {bar : 1}"
+					"foo/hello.js": "module.exports = {bar : 1}",
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./foo/bar");
 			should(out).deepEqual({ bar: 1 });
@@ -71,10 +71,10 @@ export class GenericRequireTest {
 				files: {
 					"index.js": `module.exports = require("./foo/bar.js");`,
 					"foo/bar.js": "module.exports = require('~/foo/hello.js')",
-					"foo/hello.js": "module.exports = {bar : 1}"
+					"foo/hello.js": "module.exports = {bar : 1}",
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./foo/bar");
 			should(out).deepEqual({ bar: 1 });
@@ -87,10 +87,10 @@ export class GenericRequireTest {
 				files: {
 					"index.js": `module.exports = require("./foo/bar.js");`,
 					"foo/bar.js": "module.exports = require('~/foo/hello.js')",
-					"foo/hello.js": "exports.bar = 2"
+					"foo/hello.js": "exports.bar = 2",
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./foo/bar");
 			should(out).deepEqual({ bar: 2 });
@@ -101,10 +101,10 @@ export class GenericRequireTest {
 		return createEnv({
 			project: {
 				files: {
-					"index.js": `var a = 0; a++; exports.counter = a;`
+					"index.js": `var a = 0; a++; exports.counter = a;`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			let out1 = result.project.FuseBox.import("./index");
 			should(out1).deepEqual({ counter: 1 });
@@ -119,10 +119,10 @@ export class GenericRequireTest {
 			project: {
 				files: {
 					"index.js": `exports.foo = require("./foo")`,
-					"foo/index.js": `module.exports = {bar : 10}`
+					"foo/index.js": `module.exports = {bar : 10}`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index");
 			should(out).deepEqual({ foo: { bar: 10 } });
@@ -135,10 +135,10 @@ export class GenericRequireTest {
 				files: {
 					"index.js": `exports.foo = require("./foo")`,
 					"foo/index.js": `module.exports = require("~/bar")`,
-					"bar/index.js": `module.exports = {bar : 20}`
+					"bar/index.js": `module.exports = {bar : 20}`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index");
 			should(out).deepEqual({ foo: { bar: 20 } });
@@ -151,10 +151,10 @@ export class GenericRequireTest {
 				files: {
 					"index.js": `exports.foo = require("./foo")`,
 					"foo/index.js": `module.exports = require("~/bar/index")`,
-					"bar/index.js": `module.exports = {bar : 20}`
+					"bar/index.js": `module.exports = {bar : 20}`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index");
 			should(out).deepEqual({ foo: { bar: 20 } });
@@ -167,10 +167,10 @@ export class GenericRequireTest {
 				files: {
 					"index.js": `exports.foo = require("./foo")`,
 					"foo/index.js": `module.exports = require("~/bar/index.js")`,
-					"bar/index.js": `module.exports = {bar : 20}`
+					"bar/index.js": `module.exports = {bar : 20}`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index");
 			should(out).deepEqual({ foo: { bar: 20 } });
@@ -183,10 +183,10 @@ export class GenericRequireTest {
 				files: {
 					"index.js": `exports.foo = require("./foo")`,
 					"foo/index.js": `module.exports = require("../bar")`,
-					"bar/index.js": `module.exports = {bar : 30}`
+					"bar/index.js": `module.exports = {bar : 30}`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index");
 			should(out).deepEqual({ foo: { bar: 30 } });
@@ -199,10 +199,10 @@ export class GenericRequireTest {
 				files: {
 					"index.js": `exports.foo = require("./foo")`,
 					"foo/index.js": `module.exports = require("../bar/index")`,
-					"bar/index.js": `module.exports = {bar : 30}`
+					"bar/index.js": `module.exports = {bar : 30}`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index");
 			should(out).deepEqual({ foo: { bar: 30 } });
@@ -215,10 +215,10 @@ export class GenericRequireTest {
 				files: {
 					"index.js": `exports.foo = require("./foo")`,
 					"foo/index.js": `module.exports = require("../bar/index.js")`,
-					"bar/index.js": `module.exports = {bar : 30}`
+					"bar/index.js": `module.exports = {bar : 30}`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index");
 			should(out).deepEqual({ foo: { bar: 30 } });
@@ -230,10 +230,10 @@ export class GenericRequireTest {
 			project: {
 				files: {
 					"a.js": `exports.a = 1; require("./b");`,
-					"b.js": `exports.b = require("./a")`
+					"b.js": `exports.b = require("./a")`,
 				},
-				instructions: "**/*.js"
-			}
+				instructions: "**/*.js",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./b");
 			should(out).deepEqual({ b: { a: 1 } });

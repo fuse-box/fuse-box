@@ -106,7 +106,10 @@ export class BundleSource {
 			});
 		}
 
-		this.collectionSource.add(null, `FuseBox.pkg("${collection.name}", ${JSON.stringify(conflicting)}, function(___scope___){`);
+		this.collectionSource.add(
+			null,
+			`FuseBox.pkg("${collection.name}", ${JSON.stringify(conflicting)}, function(___scope___){`,
+		);
 
 		this.annotate(`/* fuse:start-collection "${collection.name}"*/`);
 	}
@@ -129,7 +132,11 @@ export class BundleSource {
 		this.annotate(`/* fuse:end-collection "${collection.name}"*/`);
 
 		let key = collection.info ? `${collection.info.name}@${collection.info.version}` : "default";
-		this.concat.add(`packages/${key}`, this.collectionSource.content, key !== undefined ? this.collectionSource.sourceMap : undefined);
+		this.concat.add(
+			`packages/${key}`,
+			this.collectionSource.content,
+			key !== undefined ? this.collectionSource.sourceMap : undefined,
+		);
 		return this.collectionSource.content.toString();
 	}
 
@@ -158,17 +165,23 @@ export class BundleSource {
 
 		if (!this.includeSourceMaps) {
 			// set to true if this file has relevant sourceMaps
-			this.includeSourceMaps = (file.belongsToProject() && this.context.sourceMapsProject) || (!file.belongsToProject() && this.context.sourceMapsVendor);
+			this.includeSourceMaps =
+				(file.belongsToProject() && this.context.sourceMapsProject) ||
+				(!file.belongsToProject() && this.context.sourceMapsVendor);
 		}
 
 		this.collectionSource.add(
 			null,
 			`___scope___.file("${file.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){
-${file.headerContent ? file.headerContent.join("\n") : ""}`
+${file.headerContent ? file.headerContent.join("\n") : ""}`,
 		);
 
 		this.annotate(`/* fuse:start-file "${file.info.fuseBoxPath}"*/`);
-		this.collectionSource.add(null, file.alternativeContent !== undefined ? file.alternativeContent : file.contents, file.sourceMap);
+		this.collectionSource.add(
+			null,
+			file.alternativeContent !== undefined ? file.alternativeContent : file.contents,
+			file.sourceMap,
+		);
 		this.annotate(`/* fuse:end-file "${file.info.fuseBoxPath}"*/`);
 
 		this.collectionSource.add(null, "});");
@@ -238,7 +251,11 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`
 		this.concat.add(null, "})");
 
 		if (context.standaloneBundle) {
-			let fuseboxLibFile = path.join(Config.FUSEBOX_MODULES, "fuse-box-loader-api", context.debugMode ? "fusebox.js" : "fusebox.min.js");
+			let fuseboxLibFile = path.join(
+				Config.FUSEBOX_MODULES,
+				"fuse-box-loader-api",
+				context.debugMode ? "fusebox.js" : "fusebox.min.js",
+			);
 			if (this.context.customAPIFile) {
 				fuseboxLibFile = ensureUserPath(this.context.customAPIFile);
 			}

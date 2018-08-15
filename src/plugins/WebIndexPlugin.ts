@@ -52,7 +52,13 @@ export class WebIndexPluginClass implements Plugin {
 					if (this.opts.resolve) {
 						bundlePaths.push(this.opts.resolve(output));
 					} else {
-						bundlePaths.push(joinFuseBoxPath(this.opts.path ? this.opts.path : "/", output.folderFromBundleName || "/", output.lastPrimaryOutput.filename));
+						bundlePaths.push(
+							joinFuseBoxPath(
+								this.opts.path ? this.opts.path : "/",
+								output.folderFromBundleName || "/",
+								output.lastPrimaryOutput.filename,
+							),
+						);
 					}
 				}
 			}
@@ -112,7 +118,7 @@ export class WebIndexPluginClass implements Plugin {
 						bundle =>
 							`<script ${this.opts.async ? "async" : ""} ${
 								this.opts.scriptAttributes ? this.opts.scriptAttributes : ""
-							} type="text/javascript" src="${bundle}"></script>`
+							} type="text/javascript" src="${bundle}"></script>`,
 					)
 					.join("\n");
 
@@ -124,17 +130,23 @@ export class WebIndexPluginClass implements Plugin {
 				(typeof this.opts.pre === "string" && !validPreAttrs.includes(this.opts.pre)) ||
 				(this.opts.pre.relType && !validPreAttrs.includes(Object.values(this.opts.pre.relType)))
 			) {
-				throw new Error("Invalid `pre` option specified. Please adjust your configuration object or string as either 'fetch' or 'load'.");
+				throw new Error(
+					"Invalid `pre` option specified. Please adjust your configuration object or string as either 'fetch' or 'load'.",
+				);
 			}
 
 			/* New API */
 			if (typeof this.opts.pre === "string" && validPreAttrs.includes(this.opts.pre)) {
-				preLinkTags = bundlePaths.map(bundle => `<link rel="pre${this.opts.pre}" as="script" href="${bundle}">`).join("\n");
+				preLinkTags = bundlePaths
+					.map(bundle => `<link rel="pre${this.opts.pre}" as="script" href="${bundle}">`)
+					.join("\n");
 			}
 
 			/* Legacy API */
 			if (this.opts.pre.relType && validPreAttrs.includes(Object.values(this.opts.pre.relType))) {
-				preLinkTags = bundlePaths.map(bundle => `<link rel="pre${this.opts.pre.relType}" as="script" href="${bundle}">`).join("\n");
+				preLinkTags = bundlePaths
+					.map(bundle => `<link rel="pre${this.opts.pre.relType}" as="script" href="${bundle}">`)
+					.join("\n");
 			}
 		}
 
@@ -154,7 +166,7 @@ export class WebIndexPluginClass implements Plugin {
 			description: this.opts.description ? `<meta name="description" content="${this.opts.description}">` : "",
 			keywords: this.opts.keywords ? `<meta name="keywords" content="${this.opts.keywords}">` : "",
 			pre: this.opts.pre ? preLinkTags : "",
-			title: this.opts.title ? this.opts.title : ""
+			title: this.opts.title ? this.opts.title : "",
 		};
 
 		for (let key in macro) {

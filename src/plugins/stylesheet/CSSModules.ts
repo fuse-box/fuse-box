@@ -47,7 +47,7 @@ export class CSSModulesClass implements Plugin {
 			const cssDependencies = context.extractCSSDependencies(file, {
 				paths: paths,
 				content: file.contents,
-				extensions: ["css"]
+				extensions: ["css"],
 			});
 			file.cssDependencies = cssDependencies;
 
@@ -63,8 +63,8 @@ export class CSSModulesClass implements Plugin {
 						cnt.push(`${exportsKey} = ${JSON.stringify(json)};`);
 						file.addAlternativeContent(cnt.join("\n"));
 					},
-					generateScopedName: this.scopedName ? this.scopedName : "_[local]___[hash:base64:5]"
-				})
+					generateScopedName: this.scopedName ? this.scopedName : "_[local]___[hash:base64:5]",
+				}),
 			])
 				.process(file.contents, {})
 				.then(result => {

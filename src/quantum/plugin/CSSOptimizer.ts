@@ -15,8 +15,8 @@ export class CSSOptimizer {
 		const response = new CleanCSS(
 			Object.assign(options || {}, {
 				sourceMap: cssCollection.useSourceMaps,
-				sourceMapInlineSources: true
-			})
+				sourceMapInlineSources: true,
+			}),
 		).minify(cssCollection.getString(), cssCollection.useSourceMaps ? cssCollection.sourceMap : undefined);
 
 		if (response.errors && response.errors.length) {

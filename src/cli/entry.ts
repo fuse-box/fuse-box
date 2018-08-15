@@ -5,7 +5,7 @@ import { Help } from "./Help";
 
 const CMD = {
 	install: Install,
-	help: Help
+	help: Help,
 };
 function extractParams(args) {
 	if (args.help) {

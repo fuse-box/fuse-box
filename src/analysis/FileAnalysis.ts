@@ -17,7 +17,14 @@ export interface TraversalPlugin {
 	onEnd(file: File): void;
 }
 
-const plugins: TraversalPlugin[] = [AutoImport, OwnVariable, OwnBundle, ImportDeclaration, DynamicImportStatement, LanguageLevel];
+const plugins: TraversalPlugin[] = [
+	AutoImport,
+	OwnVariable,
+	OwnBundle,
+	ImportDeclaration,
+	DynamicImportStatement,
+	LanguageLevel,
+];
 
 export function acornParse(contents, options?: any): any {
 	return acorn.parse(contents, {
@@ -30,10 +37,10 @@ export function acornParse(contents, options?: any): any {
 			ecmaVersion: "2018",
 			plugins: {
 				jsx: true,
-				objRestSpread: true
+				objRestSpread: true,
 			},
-			jsx: { allowNamespacedObjects: true }
-		}
+			jsx: { allowNamespacedObjects: true },
+		},
 	});
 }
 /**
@@ -167,7 +174,7 @@ export class FileAnalysis {
 		}
 
 		ASTTraverse.traverse(this.ast, {
-			pre: (node, parent, prop, idx) => traversalPlugins.forEach(plugin => plugin.onNode(this.file, node, parent))
+			pre: (node, parent, prop, idx) => traversalPlugins.forEach(plugin => plugin.onNode(this.file, node, parent)),
 		});
 
 		traversalPlugins.forEach(plugin => plugin.onEnd(this.file));

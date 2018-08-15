@@ -7,21 +7,21 @@ export class RemoveStrictTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				removeExportsInterop: false
+				removeExportsInterop: false,
 			},
 			project: {
 				natives: {
-					process: false
+					process: false,
 				},
 				files: {
 					"index.ts": `
                     if ( process.env.NODE_ENV !== "production") {
                         console.log("hello")
                     }`,
-					"dev.ts": ``
+					"dev.ts": ``,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			console.log(contents);
@@ -33,21 +33,21 @@ export class RemoveStrictTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				removeExportsInterop: false
+				removeExportsInterop: false,
 			},
 			project: {
 				natives: {
-					process: false
+					process: false,
 				},
 				files: {
 					"index.ts": `
                     if ( process.env["NODE_ENV"] !== "production") {
                         console.log("hello")
                     }`,
-					"dev.ts": ``
+					"dev.ts": ``,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).notFindString("hello");
@@ -58,21 +58,21 @@ export class RemoveStrictTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				removeExportsInterop: false
+				removeExportsInterop: false,
 			},
 			project: {
 				natives: {
-					process: false
+					process: false,
 				},
 				files: {
 					"index.ts": `
                     if ( process.env.FOO !== undefined) {
                         console.log("hello")
                     }`,
-					"dev.ts": ``
+					"dev.ts": ``,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).notFindString("hello");
@@ -83,21 +83,21 @@ export class RemoveStrictTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				removeExportsInterop: false
+				removeExportsInterop: false,
 			},
 			project: {
 				natives: {
-					process: false
+					process: false,
 				},
 				files: {
 					"index.ts": `
                     if ( process.env.NODE_ENV === "production") {
                         console.log("production")
                     }`,
-					"dev.ts": ``
+					"dev.ts": ``,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString("production");
@@ -107,11 +107,11 @@ export class RemoveStrictTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				removeExportsInterop: false
+				removeExportsInterop: false,
 			},
 			project: {
 				natives: {
-					process: false
+					process: false,
 				},
 				files: {
 					"index.ts": `
@@ -122,10 +122,10 @@ export class RemoveStrictTest {
                         }
 
                     `,
-					"dev.ts": ``
+					"dev.ts": ``,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).notFindString("if");
@@ -137,11 +137,11 @@ export class RemoveStrictTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				removeExportsInterop: false
+				removeExportsInterop: false,
 			},
 			project: {
 				natives: {
-					process: false
+					process: false,
 				},
 				files: {
 					"index.ts": `
@@ -152,10 +152,10 @@ export class RemoveStrictTest {
                         }
 
                     `,
-					"dev.ts": ``
+					"dev.ts": ``,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).notFindString("development");
@@ -168,11 +168,11 @@ export class RemoveStrictTest {
 			stubs: true,
 			options: {
 				treeshake: true,
-				removeExportsInterop: false
+				removeExportsInterop: false,
 			},
 			project: {
 				natives: {
-					process: false
+					process: false,
 				},
 				files: {
 					"index.ts": `
@@ -183,10 +183,10 @@ export class RemoveStrictTest {
                         }
 
                     `,
-					"dev.ts": `console.log("i am dev")`
+					"dev.ts": `console.log("i am dev")`,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).notFindString("i am dev");
@@ -197,7 +197,7 @@ export class RemoveStrictTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				removeExportsInterop: false
+				removeExportsInterop: false,
 			},
 			project: {
 				plugins: [EnvPlugin({ foo: "eh" })],
@@ -209,10 +209,10 @@ export class RemoveStrictTest {
                     }
 
                     `,
-					"dev.ts": ``
+					"dev.ts": ``,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 
@@ -224,7 +224,7 @@ export class RemoveStrictTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				removeExportsInterop: false
+				removeExportsInterop: false,
 			},
 			project: {
 				plugins: [EnvPlugin({ foo: "eh" })],
@@ -238,10 +238,10 @@ export class RemoveStrictTest {
                     }
 
                     `,
-					"dev.ts": ``
+					"dev.ts": ``,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 
@@ -255,7 +255,7 @@ export class RemoveStrictTest {
 			stubs: true,
 			options: {
 				treeshake: true,
-				removeExportsInterop: false
+				removeExportsInterop: false,
 			},
 			project: {
 				plugins: [EnvPlugin({ foo: "eh" })],
@@ -274,10 +274,10 @@ export class RemoveStrictTest {
                         }
                     `,
 					"dev2.ts": ``,
-					"dev.ts": ``
+					"dev.ts": ``,
 				},
-				instructions: "> index.ts"
-			}
+				instructions: "> index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 		});

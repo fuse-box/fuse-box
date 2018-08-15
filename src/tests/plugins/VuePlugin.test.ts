@@ -46,11 +46,11 @@ export class VuePluginTest {
 		return createEnv({
 			project: {
 				files: {
-					"app.vue": vueFileSource
+					"app.vue": vueFileSource,
 				},
 				plugins: [[VuePlugin()]],
-				instructions: "app.vue"
-			}
+				instructions: "app.vue",
+			},
 		}).then(result => {
 			const component = result.project.FuseBox.import("./app.vue").default;
 
@@ -77,11 +77,11 @@ export class VuePluginTest {
 		return createEnv({
 			project: {
 				files: {
-					"app.vue": vueBabelFileSource
+					"app.vue": vueBabelFileSource,
 				},
 				plugins: [VuePlugin()],
-				instructions: "app.vue"
-			}
+				instructions: "app.vue",
+			},
 		}).then(result => {
 			const component = result.project.FuseBox.import("./app.vue").default;
 

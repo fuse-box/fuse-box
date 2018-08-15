@@ -6,14 +6,14 @@ export class RemoveStrictTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				removeExportsInterop: false
+				removeExportsInterop: false,
 			},
 			project: {
 				files: {
-					"index.ts": `export class Hello {}`
+					"index.ts": `export class Hello {}`,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 
@@ -25,14 +25,14 @@ export class RemoveStrictTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				removeExportsInterop: true
+				removeExportsInterop: true,
 			},
 			project: {
 				files: {
-					"index.ts": `export class Hello {}`
+					"index.ts": `export class Hello {}`,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 

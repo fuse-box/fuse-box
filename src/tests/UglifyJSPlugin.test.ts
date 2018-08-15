@@ -11,11 +11,11 @@ export class UglifyJSPluginTest {
                 var longVar = 'str1';
                 var longVar2 = 'str2';
                 module.exports = function () {return longVar + ' ' + longVar2;}
-                `
+                `,
 				},
 				plugins: [UglifyJSPlugin()],
-				instructions: ">index.ts"
-			}
+				instructions: ">index.ts",
+			},
 		}).then(result => {
 			result.project.FuseBox.import("./index");
 			const contents = result.projectContents.toString();
@@ -63,12 +63,12 @@ export class UglifyJSPluginTest {
                   var longVar = 'str1';
                   var longVar2 = 'str2';
                   module.exports = function () {return longVar + ' ' + longVar2;}
-                  `
+                  `,
 				},
 				globals: { default: "__compressed__" },
 				plugins: [UglifyJSPlugin()],
-				instructions: ">index.ts"
-			}
+				instructions: ">index.ts",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index");
 			should("__compressed__" in result.project).beTrue();

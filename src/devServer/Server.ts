@@ -65,7 +65,8 @@ export class Server {
 
 		let rootDir = this.fuse.context.output.dir;
 
-		const root: string | boolean = opts.root !== undefined ? (utils.isString(opts.root) ? ensureUserPath(opts.root as string) : false) : rootDir;
+		const root: string | boolean =
+			opts.root !== undefined ? (utils.isString(opts.root) ? ensureUserPath(opts.root as string) : false) : rootDir;
 		const port = opts.port || 4444;
 		const https = opts.https;
 		const fallback = root && opts.fallback && path.join(root, opts.fallback);

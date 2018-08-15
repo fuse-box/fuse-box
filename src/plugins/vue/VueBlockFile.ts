@@ -24,7 +24,13 @@ const PLUGIN_LANG_MAP = new Map<string, any>()
 	.set("coffee", new CoffeePluginClass());
 
 export abstract class VueBlockFile extends File {
-	constructor(public file: File, public info: IPathInformation, public block: any, public scopeId: string, public pluginChain: Plugin[]) {
+	constructor(
+		public file: File,
+		public info: IPathInformation,
+		public block: any,
+		public scopeId: string,
+		public pluginChain: Plugin[],
+	) {
 		super(file.context, info);
 		this.collection = file.collection;
 		this.context.extensionOverrides && this.context.extensionOverrides.setOverrideFileInfo(this);
@@ -40,8 +46,8 @@ export abstract class VueBlockFile extends File {
 			} else if (block.type === "template" && extractExtension(this.info.absPath) !== "html") {
 				pluginChain.push(
 					new ConsolidatePluginClass({
-						engine: extractExtension(this.info.absPath)
-					})
+						engine: extractExtension(this.info.absPath),
+					}),
 				);
 			} else {
 				pluginChain.push(PLUGIN_LANG_MAP.get(defaultExtension));
@@ -58,8 +64,8 @@ export abstract class VueBlockFile extends File {
 					if (block.type === "template") {
 						pluginChain.push(
 							new ConsolidatePluginClass({
-								engine: block.lang.toLowerCase()
-							})
+								engine: block.lang.toLowerCase(),
+							}),
 						);
 					} else {
 						const message = `VueComponentClass - cannot find a plugin to transpile lang="${block.lang}"`;

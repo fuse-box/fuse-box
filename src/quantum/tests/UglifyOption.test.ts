@@ -7,7 +7,7 @@ export class TreeShakeTest {
 		return createOptimisedBundleEnv({
 			stubs: true,
 			options: {
-				treeshake: false
+				treeshake: false,
 			},
 			project: {
 				files: {
@@ -21,10 +21,10 @@ export class TreeShakeTest {
                         exports.Foo1 = Foo1;
                         exports.Foo2 = Foo2;
 
-                    `
+                    `,
 				},
-				instructions: "index.ts"
-			}
+				instructions: "index.ts",
+			},
 		}).then(result => {
 			const contents = result.contents["index.js"];
 			should(contents).findString(`exports.Foo2`);

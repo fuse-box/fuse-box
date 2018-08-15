@@ -61,7 +61,7 @@ export class ConsolidatePluginClass implements Plugin {
 				cache: false,
 				filename: "base",
 				basedir: this.baseDir || file.context.homeDir,
-				includeDir: this.includeDir || file.context.homeDir
+				includeDir: this.includeDir || file.context.homeDir,
 			});
 
 			if (this.useDefault) {

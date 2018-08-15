@@ -72,7 +72,9 @@ export class RequireStatement {
 				//}
 				// we assume it's a dynamic import
 				if (showWarning) {
-					producer.addWarning(`Computed statement warning in ${this.file.packageAbstraction.name}/${this.file.fuseBoxPath}`);
+					producer.addWarning(
+						`Computed statement warning in ${this.file.packageAbstraction.name}/${this.file.fuseBoxPath}`,
+					);
 				}
 			}
 		}

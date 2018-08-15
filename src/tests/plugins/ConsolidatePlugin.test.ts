@@ -8,15 +8,15 @@ export class ConsolidatePluginTest {
 		return createEnv({
 			project: {
 				files: {
-					"template.pug": "p Compiled with Pug"
+					"template.pug": "p Compiled with Pug",
 				},
 				plugins: [
 					ConsolidatePlugin({
-						engine: "pug"
-					})
+						engine: "pug",
+					}),
 				],
-				instructions: "template.pug"
-			}
+				instructions: "template.pug",
+			},
 		}).then(result => {
 			const template = result.project.FuseBox.import("./template.pug");
 			should(template.default).equal("<p>Compiled with Pug</p>");
@@ -27,16 +27,16 @@ export class ConsolidatePluginTest {
 		return createEnv({
 			project: {
 				files: {
-					"template.foobar": "p Compiled with Pug"
+					"template.foobar": "p Compiled with Pug",
 				},
 				plugins: [
 					ConsolidatePlugin({
 						engine: "pug",
-						extension: ".foobar"
-					})
+						extension: ".foobar",
+					}),
 				],
-				instructions: "template.foobar"
-			}
+				instructions: "template.foobar",
+			},
 		}).then(result => {
 			const template = result.project.FuseBox.import("./template.foobar");
 			should(template.default).equal("<p>Compiled with Pug</p>");
@@ -47,16 +47,16 @@ export class ConsolidatePluginTest {
 		return createEnv({
 			project: {
 				files: {
-					"template.pug": "p Compiled with Pug"
+					"template.pug": "p Compiled with Pug",
 				},
 				plugins: [
 					ConsolidatePlugin({
 						engine: "pug",
-						useDefault: false
-					})
+						useDefault: false,
+					}),
 				],
-				instructions: "template.pug"
-			}
+				instructions: "template.pug",
+			},
 		}).then(result => {
 			const template = result.project.FuseBox.import("./template.pug");
 			should(template).equal("<p>Compiled with Pug</p>");
@@ -69,20 +69,20 @@ export class ConsolidatePluginTest {
 				extensionOverrides: [".foo.pug"],
 				plugins: [
 					ConsolidatePlugin({
-						engine: "pug"
-					})
+						engine: "pug",
+					}),
 				],
 				files: {
 					"template.pug": "p I should not be included",
-					"template.foo.pug": "p I should be included"
-				}
-			}
+					"template.foo.pug": "p I should be included",
+				},
+			},
 		})
 			.simple(">template.pug")
 			.then(env =>
 				env.browser(window => {
 					should(window.FuseBox.import("./template.pug")).deepEqual({ default: "<p>I should be included</p>" });
-				})
+				}),
 			);
 	}
 
@@ -90,16 +90,16 @@ export class ConsolidatePluginTest {
 		return createEnv({
 			project: {
 				files: {
-					"template.pug": "p Compiled with Pug"
+					"template.pug": "p Compiled with Pug",
 				},
 				plugins: [
 					ConsolidatePlugin({
 						engine: "pug",
-						baseDir: ""
-					})
+						baseDir: "",
+					}),
 				],
-				instructions: "template.pug"
-			}
+				instructions: "template.pug",
+			},
 		}).then(result => {
 			const template = result.project.FuseBox.import("./template.pug");
 			should(template.default).equal("<p>Compiled with Pug</p>");
@@ -110,16 +110,16 @@ export class ConsolidatePluginTest {
 		return createEnv({
 			project: {
 				files: {
-					"template.pug": "p Compiled with Pug"
+					"template.pug": "p Compiled with Pug",
 				},
 				plugins: [
 					ConsolidatePlugin({
 						engine: "pug",
-						includeDir: ""
-					})
+						includeDir: "",
+					}),
 				],
-				instructions: "template.pug"
-			}
+				instructions: "template.pug",
+			},
 		}).then(result => {
 			const template = result.project.FuseBox.import("./template.pug");
 			should(template.default).equal("<p>Compiled with Pug</p>");

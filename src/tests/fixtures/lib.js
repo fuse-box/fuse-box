@@ -33,17 +33,17 @@ exports.getTestEnv = (files, str, config, returnConcat) => {
 					cache: false,
 					modulesFolder: `${__dirname}/modules/`,
 					plugins: [build.JSONPlugin()],
-					files
+					files,
 				},
-				config || {}
-			)
+				config || {},
+			),
 		);
 
 		fsb.bundle(str).then(data => {
 			if (returnConcat) return resolve(data);
 
 			let scope = {
-				navigator: 1
+				navigator: 1,
 			};
 			let str = data.content.toString();
 			str = str.replace(/\(this\)\);?$/, "(__root__))");
@@ -65,7 +65,7 @@ exports.createEnv = (opts, str, done) => {
 	let localPath = path.join(tmpFolder, name);
 
 	const output = {
-		modules: {}
+		modules: {},
 	};
 
 	const modulesFolder = path.join(localPath, "modules");
@@ -84,7 +84,7 @@ exports.createEnv = (opts, str, done) => {
 					moduleParams.onDone({
 						localPath,
 						filePath: moduleParams.outFile,
-						projectDir: path.join(localPath, "project")
+						projectDir: path.join(localPath, "project"),
 					});
 				}
 				output.modules[name] = require(moduleParams.outFile);

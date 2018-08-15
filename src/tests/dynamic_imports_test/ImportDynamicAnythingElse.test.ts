@@ -7,16 +7,16 @@ export class ImportDynamicAnythingElse {
 		return FuseTestEnv.create({
 			project: {
 				distFiles: {
-					"hello.txt": `some text is here`
+					"hello.txt": `some text is here`,
 				},
 				files: {
 					"index.ts": `
                         export function getRemoteFile(){ 
                             return import("./hello.txt")
                         }
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
@@ -25,7 +25,7 @@ export class ImportDynamicAnythingElse {
 					return index.getRemoteFile().then(result => {
 						should(result).equal("some text is here");
 					});
-				})
+				}),
 			);
 	}
 
@@ -33,21 +33,21 @@ export class ImportDynamicAnythingElse {
 		return FuseTestEnv.create({
 			project: {
 				distFiles: {
-					"hello.txt": `some text is here`
+					"hello.txt": `some text is here`,
 				},
 				files: {
 					"index.ts": `
                         export function getRemoteFile(){ 
                             return import("./hello.txt")
                         }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
-						target: "browser"
-					})
-				]
-			}
+						target: "browser",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -56,7 +56,7 @@ export class ImportDynamicAnythingElse {
 					return index.getRemoteFile().then(result => {
 						should(result).equal("some text is here");
 					});
-				})
+				}),
 			);
 	}
 
@@ -65,16 +65,16 @@ export class ImportDynamicAnythingElse {
 			testFolder: "_current_test",
 			project: {
 				distFiles: {
-					"hello.txt": `some text is here`
+					"hello.txt": `some text is here`,
 				},
 				files: {
 					"index.ts": `
                         export function getRemoteFile(){ 
                             return import("./hello.txt")
                         }
-                        `
-				}
-			}
+                        `,
+				},
+			},
 		})
 			.simple()
 			.then(test =>
@@ -87,8 +87,8 @@ export class ImportDynamicAnythingElse {
             `,
 					data => {
 						should(data.response).equal(`some text is here`);
-					}
-				)
+					},
+				),
 			);
 	}
 
@@ -97,22 +97,22 @@ export class ImportDynamicAnythingElse {
 			testFolder: "_current_test",
 			project: {
 				distFiles: {
-					"hello.txt": `some text is here`
+					"hello.txt": `some text is here`,
 				},
 				files: {
 					"index.ts": `
                         export function getRemoteFile(){ 
                             return import("./hello.txt")
                         }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
 						extendServerImport: true,
-						target: "server"
-					})
-				]
-			}
+						target: "server",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -125,8 +125,8 @@ export class ImportDynamicAnythingElse {
             `,
 					data => {
 						should(data.response).equal(`some text is here`);
-					}
-				)
+					},
+				),
 			);
 	}
 
@@ -135,22 +135,22 @@ export class ImportDynamicAnythingElse {
 			testFolder: "_current_test",
 			project: {
 				distFiles: {
-					"hello.txt": `some text is here`
+					"hello.txt": `some text is here`,
 				},
 				files: {
 					"index.ts": `
                         export function getRemoteFile(){ 
                             return import("./hello1.txt")
                         }
-                        `
+                        `,
 				},
 				plugins: [
 					QuantumPlugin({
 						extendServerImport: true,
-						target: "server"
-					})
-				]
-			}
+						target: "server",
+					}),
+				],
+			},
 		})
 			.simple()
 			.then(test =>
@@ -165,8 +165,8 @@ export class ImportDynamicAnythingElse {
             `,
 					data => {
 						should(data.error).findString("no such file or directory");
-					}
-				)
+					},
+				),
 			);
 	}
 }

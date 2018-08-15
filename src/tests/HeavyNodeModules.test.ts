@@ -14,11 +14,11 @@ export class HeavyNodeModules {
                         $('h2').addClass('welcome')
                         exports.str = $.html();
                     
-                    `
+                    `,
 				},
 				plugins: [JSONPlugin()],
-				instructions: "index.js"
-			}
+				instructions: "index.js",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index");
 			should(out).deepEqual({ str: '<h2 class="title welcome">Hello there!</h2>' });
@@ -33,11 +33,11 @@ export class HeavyNodeModules {
                         var generator = require('babel-generator');
                         exports.data = generator;
                     
-                    `
+                    `,
 				},
 				plugins: [JSONPlugin()],
-				instructions: "index.js"
-			}
+				instructions: "index.js",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index");
 			should(out.data.CodeGenerator).beOkay();
@@ -50,11 +50,11 @@ export class HeavyNodeModules {
 				files: {
 					"index.js": `
                         exports.data = require("core-js/library/fn/symbol");
-                    `
+                    `,
 				},
 				plugins: [JSONPlugin()],
-				instructions: "index.js"
-			}
+				instructions: "index.js",
+			},
 		}).then(result => {
 			const out = result.project.FuseBox.import("./index");
 			should(out.data.keyFor).beOkay();

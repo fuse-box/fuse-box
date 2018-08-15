@@ -48,7 +48,9 @@ export interface FuseBoxOptions {
 	writeBundles?: boolean;
 	useTypescriptCompiler?: boolean;
 	standalone?: boolean;
-	sourceMaps?: boolean | { vendor?: boolean; inlineCSSPath?: string; inline?: boolean; project?: boolean; sourceRoot?: string };
+	sourceMaps?:
+		| boolean
+		| { vendor?: boolean; inlineCSSPath?: string; inline?: boolean; project?: boolean; sourceRoot?: string };
 	hash?: string | boolean;
 	ignoreModules?: string[];
 	customAPIFile?: string;
@@ -124,7 +126,9 @@ export class FuseBox {
 		this.context.languageLevel = ScriptTarget[level] || ScriptTarget.ES2016;
 
 		if (opts.polyfillNonStandardDefaultUsage !== undefined) {
-			this.context.deprecation("polyfillNonStandardDefaultUsage has been depreacted in favour of allowSyntheticDefaultImports");
+			this.context.deprecation(
+				"polyfillNonStandardDefaultUsage has been depreacted in favour of allowSyntheticDefaultImports",
+			);
 			this.producer.allowSyntheticDefaultImports = opts.allowSyntheticDefaultImports;
 		}
 
@@ -344,7 +348,9 @@ export class FuseBox {
 					const opn = require("opn");
 					opn(typeof opts.open === "string" ? opts.open : `http://localhost:${opts.port}`);
 				} catch (e) {
-					this.context.log.echoRed('If you want to open the browser, please install "opn" package. "npm install opn --save-dev"');
+					this.context.log.echoRed(
+						'If you want to open the browser, please install "opn" package. "npm install opn --save-dev"',
+					);
 				}
 			}
 			if (fn) {
@@ -418,10 +424,10 @@ export class FuseBox {
 
 					public format() {
 						return {
-							contents: this.globalContents
+							contents: this.globalContents,
 						};
 					}
-				}
+				},
 			).then(result => {
 				const self = this;
 				// @NOTE: content is here, but this is not the uglified content
