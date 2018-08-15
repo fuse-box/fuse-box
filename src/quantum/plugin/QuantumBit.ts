@@ -162,6 +162,14 @@ export class QuantumBit {
 				});
 				if (dynamicStatementUsed && regularStatementUsed) {
 					moduleCandidate.quantumBitBanned = true;
+					if (this.entry === file) {
+						// if QuantumBit entry matches the file in a package
+						// e.g import('foobar') whereas foobar and its files (with the entry) are listed
+						// in moduleCandidates (which contains only one package
+						// in this case) the whole QuantumBit should be banned. Otherwise it will result
+						// in creating empty files
+						this.banned = true;
+					}
 				}
 			});
 			if (moduleCandidate.quantumBitBanned) {
