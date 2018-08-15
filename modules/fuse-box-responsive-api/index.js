@@ -286,6 +286,9 @@
 			/* @if codeSplitting */
 			if (bMapping.i && bMapping.i[id]) {
 				var data = bMapping.i[id];
+				if(typeof data === "number"){
+					return resolve($fsx.r(data))
+        }
 				/* @if universal */
 				var path = isBrowser ? bMapping.c.b : bMapping.c.s;
 				/* @end */
