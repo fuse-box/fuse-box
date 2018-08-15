@@ -1,3 +1,3 @@
 module.exports = function() {
-	return "I am empty";
+  return "I am empty";
 };

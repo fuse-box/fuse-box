@@ -1,38 +1,41 @@
-# Development with docker
+---
+id: development-with-docker
+title: Development with Docker
+---
 
-
-There is a trick on how to make docker listen to file changes.
-Based on the [issue](https://github.com/fuse-box/fuse-box/issues/1041)
-
+There is a trick on how to make docker listen to file changes. Based on the
+[issue](https://github.com/fuse-box/fuse-box/issues/1041)
 
 ## Configuring
+
 Working task:
 
 ```js
-task('start:dev', async (ctx) => {
-    const fuseConfig = ctx.getConfig();
+task("start:dev", async ctx => {
+  const fuseConfig = ctx.getConfig();
 
-    fuseConfig
-        .bundle('app')
-        .instructions('> client.tsx')
-        .watch()
-        .hmr();
+  fuseConfig
+    .bundle("app")
+    .instructions("> client.tsx")
+    .watch()
+    .hmr();
 
-    fuseConfig.dev({
-        port: 4444,
-        httpServer: true,
-        root: 'public'
-    });
+  fuseConfig.dev({
+    port: 4444,
+    httpServer: true,
+    root: "public",
+  });
 
-    return await fuseConfig.run({
-        chokidar: {
-            usePolling: true
-        }
-    });
+  return await fuseConfig.run({
+    chokidar: {
+      usePolling: true,
+    },
+  });
 });
 ```
 
 docker-compose.yml:
+
 ```
 version: "3"
 services:
@@ -48,54 +51,56 @@ services:
      - .:/usr/app
 ```
 
-For anyone else that uses bot docker and non-docker environments, here are the task that I made so that I can still take advantage of non-polling environments:
+For anyone else that uses bot docker and non-docker environments, here are the
+task that I made so that I can still take advantage of non-polling environments:
+
 ```js
-task('init:dev', async (ctx) => {
-    const fuseConfig = ctx.getConfig();
+task("init:dev", async ctx => {
+  const fuseConfig = ctx.getConfig();
 
-    fuseConfig
-        .bundle('app')
-        .instructions('> client.tsx')
-        .watch()
-        .hmr();
+  fuseConfig
+    .bundle("app")
+    .instructions("> client.tsx")
+    .watch()
+    .hmr();
 
-    fuseConfig.dev({
-        port: 4444,
-        httpServer: true,
-        root: 'public'
-    });
+  fuseConfig.dev({
+    port: 4444,
+    httpServer: true,
+    root: "public",
+  });
 });
 
-task('start:dev', ['init:dev'], async (ctx) => {
-    const fuseConfig = ctx.getConfig();
+task("start:dev", ["init:dev"], async ctx => {
+  const fuseConfig = ctx.getConfig();
 
-    return await fuseConfig.run();
+  return await fuseConfig.run();
 });
 
-task('start-docker:dev', ['init:dev'], async (ctx) => {
-    const fuseConfig = ctx.getConfig();
+task("start-docker:dev", ["init:dev"], async ctx => {
+  const fuseConfig = ctx.getConfig();
 
-    return await fuseConfig.run({
-        // https://github.com/paulmillr/chokidar
-        chokidar: {
-            persistent: true,
+  return await fuseConfig.run({
+    // https://github.com/paulmillr/chokidar
+    chokidar: {
+      persistent: true,
 
-            ignored: '*.txt',
-            ignoreInitial: false,
-            followSymlinks: true,
-            cwd: '.',
-            disableGlobbing: false,
+      ignored: "*.txt",
+      ignoreInitial: false,
+      followSymlinks: true,
+      cwd: ".",
+      disableGlobbing: false,
 
-            usePolling: true,
-            interval: 75,
-            binaryInterval: 300,
-            alwaysStat: false,
-            depth: 99,
-            awaitWriteFinish: false,
+      usePolling: true,
+      interval: 75,
+      binaryInterval: 300,
+      alwaysStat: false,
+      depth: 99,
+      awaitWriteFinish: false,
 
-            ignorePermissionErrors: false,
-            atomic: true
-        }
-    });
+      ignorePermissionErrors: false,
+      atomic: true,
+    },
+  });
 });
 ```

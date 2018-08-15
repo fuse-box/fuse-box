@@ -1,0 +1,65 @@
+{
+  "docs": {
+    "Introduction": [
+      "getting-started/installation",
+      "getting-started/setup",
+      "getting-started/about-plugins",
+      "getting-started/environments"
+    ],
+    "CLI": ["cli/cli-introduction"],
+    "Development": [
+      "development/configuration",
+      "development/instructions",
+      "development/development-server",
+      "development/watching",
+      "development/hmr",
+      "development/launching",
+      "development/code-splitting",
+      "development/dynamic-import"
+    ],
+    "Production Builds": [
+      "production-builds/quantum",
+      "production-builds/quantum-configuration"
+    ],
+    "Task Runner": [
+      "task-runner/getting-started-with-sparky",
+      "task-runner/sparky"
+    ],
+    "Test Runner": ["test-runner/test-runner"],
+    "Guides": [
+      "guides/working-with-targets",
+      "guides/publishing-to-npm",
+      "guides/debugging-with-vscode",
+      "guides/development-with-docker"
+    ],
+    "Plugins": [
+      "plugins/angular-template-plugin",
+      "plugins/babel-plugin",
+      "plugins/coffee-plugin",
+      "plugins/consolidate-plugin",
+      "plugins/copy-plugin",
+      "plugins/css-modules-plugin",
+      "plugins/css-plugin",
+      "plugins/css-resource-plugin",
+      "plugins/env-plugin",
+      "plugins/html-plugin",
+      "plugins/image-base64-plugin",
+      "plugins/json-plugin",
+      "plugins/less-plugin",
+      "plugins/markdown-plugin",
+      "plugins/plain-js-plugin",
+      "plugins/postcss-plugin",
+      "plugins/raw-plugin",
+      "plugins/replace-plugin",
+      "plugins/sass-plugin",
+      "plugins/source-map-plain-js-plugin",
+      "plugins/stylus-plugin",
+      "plugins/svg-plugin",
+      "plugins/uglifyes-plugin",
+      "plugins/uglifyjs-plugin",
+      "plugins/vue-component-plugin",
+      "plugins/vue-plugin",
+      "plugins/web-index-plugin"
+    ]
+  }
+}
