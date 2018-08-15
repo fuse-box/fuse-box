@@ -1,6 +1,7 @@
 # Typescript
 
-Typescript works out of the box, additional configuration is not required. Make sure you have the typescript compiler installed.
+Typescript works out of the box, additional configuration is not required. Make
+sure you have the typescript compiler installed.
 
 ```bash
 yarn add typescript --dev
@@ -11,38 +12,44 @@ Now let's define a simple configuration
 
 ```js
 const fuse = FuseBox.init({
-    homeDir: "src/",
-    output: "dist/$name",
+  homeDir: "src/",
+  output: "dist/$name",
 });
 
 fuse.bundle("app").instructions(">index.ts");
-fuse.run()
+fuse.run();
 ```
 
-FuseBox automatically switches to typescript mode by detecting the extension `.ts` / `.tsx`. FuseBox compiles and bundles your files.
+FuseBox automatically switches to typescript mode by detecting the extension
+`.ts` / `.tsx`. FuseBox compiles and bundles your files.
 
-note: For your own convenience you can also add the [Typescript helpers plugin](/plugins/typescript-helpers-plugin).
+note: For your own convenience you can also add the
+[Typescript helpers plugin](/plugins/typescript-helpers-plugin).
 
 ## tsConfig
 
-FuseBox comes with default ts options so you don't *need* a tsconfig.
+FuseBox comes with default ts options so you don't _need_ a tsconfig.
 
-If you have a tsconfig file in your `homeDir` or any directory up the file tree (e.g. `appRootPath`), it will be picked up automatically.
+If you have a tsconfig file in your `homeDir` or any directory up the file tree
+(e.g. `appRootPath`), it will be picked up automatically.
 
-Alternatively you can use the tsconfig option to customize the path to tsconfig.json (It can be an absolute path, Or relative to the project's folder).
+Alternatively you can use the tsconfig option to customize the path to
+tsconfig.json (It can be an absolute path, Or relative to the project's folder).
 
 ```js
 FuseBox.init({
-    tsConfig: "tsconfig.json",
-})
+  tsConfig: "tsconfig.json",
+});
 ```
 
 Irrespective of the settings in `tsconfig.json`:
 
-* We automatically set the `module` to `commonjs`.
-* If you set `sourceMaps` in your `FuseBox` options, we automatically setup the sourcemap settings for TypeScript `compilerOptions`.
+- We automatically set the `module` to `commonjs`.
+- If you set `sourceMaps` in your `FuseBox` options, we automatically setup the
+  sourcemap settings for TypeScript `compilerOptions`.
 
 ## Typechecking
+
 Use this plugin to do typechecking
 
 https://github.com/fuse-box/fuse-box-typechecker

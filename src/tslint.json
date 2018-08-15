@@ -1,6 +1,12 @@
 {
   "defaultSeverity": "error",
-  "extends": ["tslint:latest", "tslint-react", "tslint-eslint-rules", "tslint-immutable", "tslint-clean-code"],
+  "extends": [
+    "tslint:latest",
+    "tslint-react",
+    "tslint-eslint-rules",
+    "tslint-immutable",
+    "tslint-clean-code"
+  ],
   "rules": {
     "arrow-parens": [true, "ban-single-arg-parens"],
     "cyclomatic-complexity": [true, 20],
