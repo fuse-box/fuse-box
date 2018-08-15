@@ -176,8 +176,16 @@ export class RequireStatement {
 			if (this.isComputed) {
 				return;
 			}
-			const pkgName = !this.isNodeModule ? this.file.packageAbstraction.name : this.nodeModuleName;
-
+			let pkgName = !this.isNodeModule ? this.file.packageAbstraction.name : this.nodeModuleName;
+			const conflictingVersion =
+				this.file.packageAbstraction &&
+				this.file.packageAbstraction.conflictingLibraries &&
+				this.file.packageAbstraction.conflictingLibraries[pkgName];
+			// if an abstraction contains the override we need to consider it
+			// and reference with `{name}@{version}` as it's registered as such
+			if (conflictingVersion) {
+				pkgName += `@${conflictingVersion}`;
+			}
 			let resolvedName;
 			const producerAbstraction = this.file.packageAbstraction.bundleAbstraction.producerAbstraction;
 			if (!this.isNodeModule) {

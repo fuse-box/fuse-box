@@ -54,10 +54,20 @@ export class BundleAbstraction {
 						parent.arguments &&
 						parent.arguments.length === 3
 					) {
-						let pkgName = parent.arguments[0].value;
-						if (pkgName.charAt(0) !== "@") {
-							pkgName = pkgName.split("@")[0];
+						const conflictingLibraries: { [key: string]: string } = {};
+						// handle the following scenario
+						// FuseBox.pkg("aafoo", {"aaboo":"1.0.9"}, function(___scope___){
+						// Second arguments in original FuseBox bundle is responsible for
+						// conflicting libraries
+						if (parent.arguments[1] && parent.arguments[1].type === "ObjectExpression") {
+							const versionsNode = parent.arguments[1];
+							if (versionsNode.properties.length) {
+								versionsNode.properties.forEach(prop => {
+									conflictingLibraries[prop.key.value] = prop.value.value;
+								});
+							}
 						}
+						const pkgName = parent.arguments[0].value;
 						const packageAst = parent.arguments[2].body;
 						let packageAbstraction;
 						if (this.packageAbstractions.get(pkgName)) {
@@ -65,6 +75,8 @@ export class BundleAbstraction {
 						} else {
 							packageAbstraction = new PackageAbstraction(pkgName, this);
 						}
+						// store it so we can get to it from anywhere
+						packageAbstraction.conflictingLibraries = conflictingLibraries;
 						packageAbstraction.loadAst(packageAst);
 						return false;
 					}
