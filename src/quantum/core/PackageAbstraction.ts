@@ -9,6 +9,7 @@ export class PackageAbstraction {
 	public entries = new Map<string, FileAbstraction>();
 
 	public quantumBit: QuantumBit;
+	public conflictingLibraries: { [key: string]: string };
 	public quantumBitBanned = false;
 	public quantumDynamic = false;
 	constructor(public name: string, public bundleAbstraction: BundleAbstraction) {
