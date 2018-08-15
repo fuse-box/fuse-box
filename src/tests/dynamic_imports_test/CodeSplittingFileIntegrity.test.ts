@@ -666,7 +666,6 @@ export class CodeSplittingFileIntegrityTest {
 					window.$fsx.r(0);
 
 					env.scriptShouldExist(HOME_COMPONENT_SCRIPT);
-					env.scriptShouldExist(LIB_A_SCRIPT);
 
 					const appScript = env.getScript("app.js");
 					appScript.shouldNotFindString("// default/components/HomeComponent.js");
@@ -678,12 +677,6 @@ export class CodeSplittingFileIntegrityTest {
 
 					const homeScript = env.getScript(HOME_COMPONENT_SCRIPT);
 					homeScript.shouldFindString("// default/components/HomeComponent.js");
-
-					const libAScript = env.getScript(LIB_A_SCRIPT);
-					libAScript.shouldNotFindString("// lib_a/index.js");
-					libAScript.shouldNotFindString("// lib_a/a_mod.js");
-					libAScript.shouldNotFindString("// lib_b/index.js");
-					libAScript.shouldNotFindString("// lib_b/b_mod.js");
 				}),
 			);
 	}
@@ -869,6 +862,40 @@ export class CodeSplittingFileIntegrityTest {
 
 					split3.shouldFindString("// default/modules/test/views/test-component-header/index.js");
 					split3.shouldFindString("// default/modules/test/views/test-component-header/test-component-header.jsx");
+				}),
+			);
+	}
+
+	"Should avoid creating empty split bundle files"() {
+		return FuseTestEnv.create({
+			testFolder: "_current_test",
+			project: {
+				files: {
+					"index.ts": `
+							export async function test() {
+							   	await import("lib_a")
+									await import("./a")
+							}
+					`,
+					"a.ts": `
+						import * as lib_a from "lib_a"
+						module.exports = lib_a;
+					`,
+				},
+				plugins: [
+					QuantumPlugin({
+						target: "browser",
+					}),
+				],
+			},
+		})
+			.simple()
+			.then(test =>
+				test.browser((window, env) => {
+					window.$fsx.r(0);
+					const files = [];
+					env.scripts.forEach((item, key) => files.push(key));
+					should(files).deepEqual(["api.js", "app.js", "19879a97.js"]);
 				}),
 			);
 	}
