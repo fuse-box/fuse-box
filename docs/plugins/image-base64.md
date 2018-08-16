@@ -1,6 +1,6 @@
 ---
 id: image-base64-plugin
-title: Image base64
+title: ImageBase64Plugin
 ---
 
 ## Description

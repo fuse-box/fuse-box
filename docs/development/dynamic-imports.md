@@ -1,6 +1,6 @@
 ---
-id: dynamic-import
-title: Dynamic import
+id: dynamic-imports
+title: Dynamic imports
 ---
 
 In compliance with

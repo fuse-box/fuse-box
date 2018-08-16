@@ -1,6 +1,6 @@
 ---
 id: web-index-plugin
-title: Web Index
+title: WebIndexPlugin
 ---
 
 ## Description

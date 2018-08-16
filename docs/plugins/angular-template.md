@@ -1,6 +1,6 @@
 ---
 id: angular-template-plugin
-title: ngtemplate
+title: NgTemplatePlugin
 ---
 
 https://github.com/TobiasTimm/fuse-box-ng-template-plugin

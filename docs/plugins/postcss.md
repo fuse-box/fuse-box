@@ -1,6 +1,6 @@
 ---
 id: postcss-plugin
-title: PostCSS
+title: PostCSSPlugin
 ---
 
 ## Description

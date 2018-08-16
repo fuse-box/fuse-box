@@ -1,6 +1,6 @@
 ---
 id: svg-plugin
-title: SVG
+title: SVGPlugin
 ---
 
 ## Description

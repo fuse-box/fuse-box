@@ -1,6 +1,6 @@
 ---
 id: banner-plugin
-title: Banner
+title: BannerPlugin
 ---
 
 ## Description

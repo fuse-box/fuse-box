@@ -1,6 +1,6 @@
 ---
 id: raw-plugin
-title: Raw
+title: RawPlugin
 ---
 
 ## Description

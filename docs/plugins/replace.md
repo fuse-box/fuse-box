@@ -1,6 +1,6 @@
 ---
 id: replace-plugin
-title: Replace
+title: ReplacePlugin
 ---
 
 ## Description

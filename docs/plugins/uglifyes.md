@@ -1,6 +1,6 @@
 ---
 id: uglifyes-plugin
-title: UglifyES
+title: UglifyESPlugin
 ---
 
 ## Description

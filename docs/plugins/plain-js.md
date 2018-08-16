@@ -1,6 +1,6 @@
 ---
 id: plain-js-plugin
-title: Plain JavaScript
+title: PlainJSPlugin
 ---
 
 Handles cache and HMR for plain javascript

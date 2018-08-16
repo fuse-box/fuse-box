@@ -1,6 +1,6 @@
 ---
 id: html-plugin
-title: HTML
+title: HTMLPlugin
 ---
 
 ## Description

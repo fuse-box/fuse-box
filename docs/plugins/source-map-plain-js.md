@@ -1,6 +1,6 @@
 ---
 id: source-map-plain-js-plugin
-title: Source map plain JavaScript
+title: SourceMapPlainJsPlugin
 ---
 
 ## Description

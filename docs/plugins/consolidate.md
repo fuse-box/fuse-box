@@ -1,6 +1,6 @@
 ---
 id: consolidate-plugin
-title: Consolidate
+title: ConsolidatePlugin
 ---
 
 ## Description

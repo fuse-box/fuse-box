@@ -1,6 +1,6 @@
 ---
 id: coffee-plugin
-title: Coffee
+title: CoffeePlugin
 ---
 
 ## Description

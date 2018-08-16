@@ -1,6 +1,6 @@
 ---
 id: uglifyjs-plugin
-title: UglifyJS
+title: UglifyJSPlugin
 ---
 
 ## Description

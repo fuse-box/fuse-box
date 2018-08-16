@@ -1,6 +1,6 @@
 ---
 id: env-plugin
-title: Env
+title: EnvPlugin
 ---
 
 ## Description

@@ -6,7 +6,6 @@
       "getting-started/about-plugins",
       "getting-started/environments"
     ],
-    "CLI": ["cli/cli-introduction"],
     "Development": [
       "development/configuration",
       "development/instructions",
@@ -15,7 +14,7 @@
       "development/hmr",
       "development/launching",
       "development/code-splitting",
-      "development/dynamic-import"
+      "development/dynamic-imports"
     ],
     "Production Builds": [
       "production-builds/quantum",
@@ -58,7 +57,6 @@
       "plugins/uglifyes-plugin",
       "plugins/uglifyjs-plugin",
       "plugins/vue-component-plugin",
-      "plugins/vue-plugin",
       "plugins/web-index-plugin"
     ]
   }

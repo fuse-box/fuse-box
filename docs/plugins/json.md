@@ -1,6 +1,6 @@
 ---
 id: json-plugin
-title: JSON
+title: JSONPlugin
 ---
 
 ## Description

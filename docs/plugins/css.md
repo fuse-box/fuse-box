@@ -1,6 +1,6 @@
 ---
 id: css-plugin
-title: CSS
+title: CSSPlugin
 ---
 
 ## Description

@@ -1,4 +1,7 @@
-# Sparky
+---
+id: sparky
+title: Sparky
+---
 
 `Sparky` is a task runner much like `Gulp` or `Grunt`, but what sets it apart is
 that it is built on top of `FuseBox` technology. This means `Sparky` has the

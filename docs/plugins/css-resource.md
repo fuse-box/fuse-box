@@ -1,6 +1,6 @@
 ---
 id: css-resource-plugin
-title: CSS resource
+title: CSSResourcePlugin
 ---
 
 ## Description

@@ -1,6 +1,6 @@
 ---
 id: stylus-plugin
-title: Stylus
+title: StylusPlugin
 ---
 
 ## Description

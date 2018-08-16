@@ -1,6 +1,6 @@
 ---
 id: babel-plugin
-title: Babel
+title: BabelPlugin
 ---
 
 ## Description

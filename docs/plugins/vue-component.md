@@ -1,6 +1,6 @@
 ---
 id: vue-component-plugin
-title: Vue Component
+title: VueComponentPlugin
 ---
 
 ## Description

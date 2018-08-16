@@ -1,6 +1,6 @@
 ---
 id: sass-plugin
-title: Sass
+title: SassPlugin
 ---
 
 ## Description

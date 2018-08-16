@@ -1,6 +1,6 @@
 ---
 id: less-plugin
-title: Less
+title: LESSPlugin
 ---
 
 ## Description

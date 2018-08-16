@@ -2,6 +2,7 @@ import { File } from "../../core/File";
 import { WorkFlowContext } from "../../core/WorkflowContext";
 import { Plugin } from "../../core/WorkflowContext";
 import * as postcss from "postcss";
+import * as log from "fliplog";
 
 export interface CSSModulesOptions {
 	useDefault?: boolean;
@@ -45,7 +46,7 @@ export class CSSModulesClass implements Plugin {
 			const paths = [file.info.absDir, ...(this.options.paths || [])];
 
 			const cssDependencies = context.extractCSSDependencies(file, {
-				paths: paths,
+				paths,
 				content: file.contents,
 				extensions: ["css"],
 			});
@@ -55,7 +56,7 @@ export class CSSModulesClass implements Plugin {
 				require("postcss-modules")({
 					root: this.options.root || file.info.absDir,
 					getJSON: (cssFileName, json) => {
-						let exportsKey = this.useDefault ? "module.exports.default" : "module.exports";
+						const exportsKey = this.useDefault ? "module.exports.default" : "module.exports";
 						const cnt = [];
 						if (this.useDefault) {
 							cnt.push(`Object.defineProperty(exports, "__esModule", { value: true });`);
@@ -80,6 +81,13 @@ export class CSSModulesClass implements Plugin {
 	}
 }
 
-export const CSSModules = (options?: CSSModulesOptions) => {
-	return new CSSModulesClass(options);
+export const CSSModulesPlugin = (options?: CSSModulesOptions) => new CSSModulesClass(options);
+
+export const CSSModules: typeof CSSModulesPlugin = options => {
+	log
+		.preset("warning")
+		.data("CSSModulesPlugin deprecation notice: please rename your CSSModules imports to CSSModulesPlugin")
+		.echo();
+
+	return CSSModulesPlugin(options);
 };

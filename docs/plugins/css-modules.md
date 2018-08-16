@@ -1,17 +1,17 @@
 ---
 id: css-modules-plugin
-title: CSS Modules
+title: CSSModulesPlugin
 ---
 
 ## Description
 
-CSSModules allow you to include stylesheets as key value map of the class name
-in your file to the transformed value.
+CSSModulesPlugin allow you to include stylesheets as key value map of the class
+name in your file to the transformed value.
 
 ## Install
 
-Using the CSSModules plugin requires postcss-modules to transform the stylesheet
-into a JSON representation.
+Using the CSSModulesPlugin plugin requires postcss-modules to transform the
+stylesheet into a JSON representation.
 
 ```bash
 yarn add postcss-modules --dev
@@ -23,20 +23,20 @@ npm install postcss-modules --save-dev
 
 ## Usage
 
-After that you can use the `CSSModules` and `CSSPlugin` in your configuration in
-either the chainable or in the following verbose manner.
+After that you can use the `CSSModulesPlugin` and `CSSPlugin` in your
+configuration in either the chainable or in the following verbose manner.
 
 Import from FuseBox
 
 ```js
-import { Fusebox, CSSModules, CSSPlugin } from "fuse-box";
+import { Fusebox, CSSModulesPlugin, CSSPlugin } from "fuse-box";
 ```
 
 ```js
 Fusebox.init({
   homeDir: "src",
   output: "dist/$name.js",
-  plugins: [[CSSModules(), CSSPlugin()]],
+  plugins: [[CSSModulesPlugin(), CSSPlugin()]],
 })
   .bundle("app")
   .instructions(">index.js");
@@ -65,7 +65,7 @@ Set up FuseBox
 Fusebox.init({
   homeDir: "src",
   output: "dist/$name.js",
-  plugins: [[SassPlugin(), CSSModules(), CSSPlugin()]],
+  plugins: [[SassPlugin(), CSSModulesPlugin(), CSSPlugin()]],
 })
   .bundle("app")
   .instructions(">index.js");
@@ -100,18 +100,18 @@ declare module "*.scss";
 
 ### useDefault
 
-By default, `CSSModules` uses the default export of your `css` file. To disable
-that pass `useDefault: false` when initializing the plugin.
+By default, `CSSModulesPlugin` uses the default export of your `css` file. To
+disable that pass `useDefault: false` when initializing the plugin.
 
 ```js
-CSSModules({
+CSSModulesPlugin({
   useDefault: false,
 });
 ```
 
 ### generateScopedName
 
-By default, `CSSModules` uses the following class naming strategy:
+By default, `CSSModulesPlugin` uses the following class naming strategy:
 
 ```
 _[local]___[hash:base64:5]
@@ -120,7 +120,7 @@ _[local]___[hash:base64:5]
 To override that, use the `scopedName` property when initializing the plugin.
 
 ```js
-CSSModules({
+CSSModulesPlugin({
   scopedName: "[name]__[local]___[hash:base64:3]",
 });
 ```
@@ -130,7 +130,7 @@ CSSModules({
 Set `postcss-modules` root path. _see wef_
 
 ```js
-CSSModules({
+CSSModulesPlugin({
   root: path.resolve(__dirname, "src"),
 });
 ```
@@ -144,7 +144,7 @@ reloaded individually.
 ```js
 fuse
   .bundle("app")
-  .plugin(CSSModules(), CSSPlugin())
+  .plugin(CSSModulesPlugin(), CSSPlugin())
   .instructions("> index.ts");
 ```
 
@@ -159,7 +159,7 @@ example the `index.html` file.
 fuse
   .bundle("app")
   .plugin(
-    CSSModules(),
+    CSSModulesPlugin(),
     CSSPlugin({
       group: "bundle.css",
       outFile: `dist/bundle.css`,

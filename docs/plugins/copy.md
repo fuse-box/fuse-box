@@ -1,6 +1,6 @@
 ---
 id: copy-plugin
-title: Copy
+title: CopyPlugin
 ---
 
 ## Description

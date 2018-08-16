@@ -1,6 +1,6 @@
 ---
 id: markdown-plugin
-title: Markdown
+title: MarkdownPlugin
 ---
 
 ## Description
