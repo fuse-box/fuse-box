@@ -5,14 +5,14 @@
 const siteConfig = {
   baseUrl: "/",
   colors: {
-    primaryColor: "#5F5F5F",
-    secondaryColor: "#2E55A4",
+    primaryColor: "#223351",
+    secondaryColor: "#3160af",
   },
   cleanUrl: true,
   copyright: "Copyright © " + new Date().getFullYear() + " FuseBox",
   favicon: "img/favicon.png",
   footerIcon: "img/docusaurus.svg",
-  headerIcon: "img/docusaurus.svg",
+  headerIcon: "img/logo.svg",
   headerLinks: [
     {
       doc: "getting-started/installation",

@@ -1,4 +1,58 @@
-/* your custom css */
+@font-face {
+  font-family: Poppins-Regular;
+  src: url("./fonts/poppins/Poppins-Regular.ttf");
+}
+
+@font-face {
+  font-family: Poppins-Medium;
+  src: url("./fonts/poppins/Poppins-Medium.ttf");
+}
+
+@font-face {
+  font-family: Poppins-Bold;
+  src: url("./fonts/poppins/Poppins-Bold.ttf");
+}
+
+@font-face {
+  font-family: Poppins-SemiBold;
+  src: url("./fonts/poppins/Poppins-SemiBold.ttf");
+}
+
+body,
+html,
+#root,
+.root-layout {
+  font-family: "Poppins-Regular";
+  font-size: 14px;
+}
+
+.fixedHeaderContainer {
+  background-color: #223351;
+}
+.fixedHeaderContainer header {
+  height: 60px;
+  align-items: center;
+}
+.navPusher {
+  padding-top: 80px;
+}
+.projectTitle {
+  font-family: Poppins-Medium;
+}
+a.button {
+  border-color: #3160af;
+  color: #3160af;
+  border-radius: 4px;
+}
+a.button:hover {
+  background-color: #3160af;
+  color: white;
+}
+.slidingNav a {
+  font-size: 16px;
+  font-family: Poppins-Medium;
+  background-color: #223351;
+}
 
 @media only screen and (min-width: 1024px) {
   .docsNavContainer {
