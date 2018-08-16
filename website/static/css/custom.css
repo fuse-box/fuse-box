@@ -53,10 +53,27 @@ html,
   align-items: center;
 }
 .navPusher {
-  padding-top: 80px;
+  padding-top: 76px;
 }
 .projectTitle {
   font-weight: 500;
+}
+.projectLogo {
+  display: block !important;
+  position: static !important;
+  justify-content: center !important;
+}
+@media only screen and (max-width: 1024px) {
+  .homeContainer {
+    margin-top: 20px;
+  }
+  .projectLogo {
+    display: block !important;
+  }
+  .homeContainer .homeWrapper #inner {
+    max-width: 0;
+    padding-right: 40px;
+  }
 }
 a.button {
   border-color: #3160af;
@@ -71,6 +88,12 @@ a.button:hover {
   font-size: 16px;
   font-weight: 500;
   background-color: #223351;
+}
+.homeContainer {
+  /* background-image: url("../img/background.jpeg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center; */
 }
 
 @media only screen and (min-width: 1024px) {
