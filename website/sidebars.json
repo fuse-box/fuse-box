@@ -58,6 +58,7 @@
       "plugins/uglifyjs-plugin",
       "plugins/vue-component-plugin",
       "plugins/web-index-plugin"
-    ]
+    ],
+    "Contributing": ["contributing"]
   }
 }

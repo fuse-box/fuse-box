@@ -5,6 +5,7 @@
     "previous": "Previous",
     "tagline": "A bundler that does it right",
     "cli_api": "cli_api",
+    "contributing": "Contributing",
     "development/code-splitting": "Code splitting",
     "development/configuration": "Configuration",
     "development/development-server": "Development server",
@@ -68,7 +69,8 @@
     "Task Runner": "Task Runner",
     "Test Runner": "Test Runner",
     "Guides": "Guides",
-    "Plugins": "Plugins"
+    "Plugins": "Plugins",
+    "Contributing": "Contributing"
   },
   "pages-strings": {
     "Help Translate|recruit community translators for your project": "Help Translate",
