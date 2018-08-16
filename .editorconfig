@@ -3,16 +3,16 @@ root = true
 [*]
 charset = utf-8
 indent_size = 2
-indent_style = tab
+indent_style = space
 quote_type = double
 
 insert_final_newline = true
-max_line_length=120
+max_line_length=80
 trim_trailing_whitespace = true
 
-[*.{json,md,yml,yaml}]
-indent_style = space
-
 [*.md]
-max_line_length=80
 trim_trailing_whitespace = false
+
+[*.ts]
+indent_style = tab
+max_line_length=120

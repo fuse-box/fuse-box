@@ -1,49 +1,64 @@
-# Code splitting
+---
+id: code-splitting
+title: Code splitting
+---
 
+Code Splitting is required if you want to make your "home" bundle as lightweight
+as possible. A framework must set up accordingly. FuseBox offers great
+functionality to loading split bundles without any configuration or/nor magical
+commments
 
-Code Splitting is required if you want to make your "home" bundle as lightweight as possible. A framework must set up accordingly. FuseBox offers great functionality to loading split bundles without any configuration or/nor magical commments
+Splitting is universal, meaning that you can lazy load them on a server (nodejs)
+as well.
 
-Splitting is universal, meaning that you can lazy load them on a server (nodejs) as well.
-
-You can find an example project [here](https://github.com/fuse-box/fuse-box-examples/tree/master/examples/smart-splitting)
+You can find an example project
+[here](https://github.com/fuse-box/fuse-box-examples/tree/master/examples/smart-splitting)
 
 ## Basics
 
 FuseBox does as much as possible to automate the process.
 
-Physical code splitting (when the bundles are actually created) works ONLY in Quantum. For development purposes your split bundles will be present in the master bundle BY DESIGN
+Physical code splitting (when the bundles are actually created) works ONLY in
+Quantum. For development purposes your split bundles will be present in the
+master bundle BY DESIGN
 
-
-Just use dynamic `import` statement! It's that simple, FuseBox will do the heavy lifting for you
+Just use dynamic `import` statement! It's that simple, FuseBox will do the heavy
+lifting for you
 
 ```js
-import("./routes/about/AboutComponent")
+import("./routes/about/AboutComponent");
 ```
 
-Development version will be left untouched, however, when you will run it against Quantum, it will create a file `167ae727.js` which will contain all dependencies that do not cross with the project and/or other bundles. e.g if you are using `moment` library only in that bundle the entire module will be moved to `167ae727.js`
+Development version will be left untouched, however, when you will run it
+against Quantum, it will create a file `167ae727.js` which will contain all
+dependencies that do not cross with the project and/or other bundles. e.g if you
+are using `moment` library only in that bundle the entire module will be moved
+to `167ae727.js`
 
-
-FuseBox will detect which modules and files are shared and which belong only to this specific bundle. Long story short - let FuseBox take care of that.
+FuseBox will detect which modules and files are shared and which belong only to
+this specific bundle. Long story short - let FuseBox take care of that.
 
 ## Splitting packages
 
 You can also split packages
 
 ```js
-const moment = await import("moment")
+const moment = await import("moment");
 ```
 
-If moment wasn't used anywhere directly (synchronously) it will be split into a different bundle and lazy loaded for you. Just like that. No configuration required
+If moment wasn't used anywhere directly (synchronously) it will be split into a
+different bundle and lazy loaded for you. Just like that. No configuration
+required
 
 ## Named bundles
 
 Instead of importing by path, you can import by path for your convenience.
 
 ```js
-fuse.bundle("app")
-  .split("named_bundle", "routes/entryPointWithoutOpeningDot.tsx")
+fuse
+  .bundle("app")
+  .split("named_bundle", "routes/entryPointWithoutOpeningDot.tsx");
 ```
-
 
 ```js
 const namedBundle = await import("named_bundle");
@@ -53,20 +68,28 @@ const namedBundle = await import("named_bundle");
 
 You may need to configure how FuseBox resolves your bundles.
 
-`browser` key will help FuseBox to resolve your bundles in browser, and `server` on server accordingly.
-`dest` customises the output: it's consistent with our `output` configuration:
+`browser` key will help FuseBox to resolve your bundles in browser, and `server`
+on server accordingly. `dest` customises the output: it's consistent with our
+`output` configuration:
 
 ```js
 const fuse = FuseBox.init({
   homeDir: "src",
   output: "dist/$name.js",
-})
+});
 
-fuse.bundle("app")
-    .splitConfig({ browser: "/static/bundles/", server : "dist/static/bundles/", dest: "bundles/" })
-    .instructions(`> [app.tsx]`)
+fuse
+  .bundle("app")
+  .splitConfig({
+    browser: "/static/bundles/",
+    server: "dist/static/bundles/",
+    dest: "bundles/",
+  })
+  .instructions(`> [app.tsx]`);
 
-fuse.run()
+fuse.run();
 ```
 
-The bundle mapping path for browser/server can be dynamically resolved at runtime using the Quantum option [Runtime Bundle Mapping](/page/quantum-configuration#runtimebundlemapping)
+The bundle mapping path for browser/server can be dynamically resolved at
+runtime using the Quantum option
+[Runtime Bundle Mapping](/page/quantum-configuration#runtimebundlemapping)

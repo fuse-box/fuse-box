@@ -1,31 +1,32 @@
-.project
-.settings
-node_modules/
-.vscode/
-.alm/
-yarn.lock
-build/
-dist
-.dev/
-.DS_Store
-.tmp/
-.idea/
-sourcemaps.js.map
-.fusebox
+_current_test
 _dist
+_playground
+.alm
+.dev
+.DS_Store
+.fusebox
+.idea
+.project
+.release
+.settings
+.tmp
+.vscode
+build
+dist
+node_modules
 npm-debug.log*
 playground
-_playground
-_current_test
-.release
+sourcemaps.js.map
+yarn.lock
+website/.firebase
 
 # FuseBox Loader API built type definition
 # Which is then exported as a module from `src`
 src/modules/fuse-loader/LoaderAPI.ts
 
 # FuseBox modules built from TS
-modules/fsbx-default-css-plugin/
-modules/fusebox-hot-reload/
-modules/fusebox-websocket/
-modules/fuse-loader/
-modules/fuse-hmr/
+modules/fsbx-default-css-plugin
+modules/fuse-hmr
+modules/fuse-loader
+modules/fusebox-hot-reload
+modules/fusebox-websocket

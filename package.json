@@ -98,7 +98,6 @@
     "node-sass": "^4.9.3",
     "postcss-selector-parser": "^5.0.0-rc.3",
     "prettier": "^1.14.2",
-    "pug": "^2.0.3",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "reflect-metadata": "^0.1.8",

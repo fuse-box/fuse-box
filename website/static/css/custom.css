@@ -1,0 +1,7 @@
+/* your custom css */
+
+@media only screen and (min-width: 1024px) {
+  .docsNavContainer {
+    overflow-y: none;
+  }
+}
