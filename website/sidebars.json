@@ -1,6 +1,6 @@
 {
   "docs": {
-    "Introduction": [
+    "Getting Started": [
       "getting-started/installation",
       "getting-started/setup",
       "getting-started/about-plugins",
@@ -32,7 +32,6 @@
       "guides/development-with-docker"
     ],
     "Plugins": [
-      "plugins/angular-template-plugin",
       "plugins/babel-plugin",
       "plugins/coffee-plugin",
       "plugins/consolidate-plugin",
@@ -46,6 +45,7 @@
       "plugins/json-plugin",
       "plugins/less-plugin",
       "plugins/markdown-plugin",
+      "plugins/ng-template-plugin",
       "plugins/plain-js-plugin",
       "plugins/postcss-plugin",
       "plugins/raw-plugin",

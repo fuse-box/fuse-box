@@ -1,5 +1,5 @@
 ---
-id: angular-template-plugin
+id: ng-template-plugin
 title: NgTemplatePlugin
 ---
 

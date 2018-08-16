@@ -25,7 +25,6 @@ const siteConfig = {
   onPageNav: "separate",
   organizationName: "FuseBox",
   projectName: "fuse-box",
-  scripts: ["https://buttons.github.io/buttons.js"],
   tagline: "A bundler that does it right",
   title: "FuseBox",
   twitterImage: "img/docusaurus.png",
