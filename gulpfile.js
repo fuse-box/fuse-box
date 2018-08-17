@@ -17,12 +17,13 @@ const os = require("os");
 const fsExtra = require("fs-extra");
 
 let RELEASE_FOLDER = "./dist";
-let FUSEBOX_BIN = "./dist/index";
 
-const getDistFuseBoxConfig = (conf, quantum) => {
+const getDistFuseBoxConfig = (conf, quantum = {}, fuseBoxPackageId = "fuse-box") => {
 	process.env.PROJECT_ROOT = __dirname;
 	process.env.FUSEBOX_MODULES = path.resolve(RELEASE_FOLDER, "modules");
-	const { FuseBox, JSONPlugin, QuantumPlugin } = require(FUSEBOX_BIN);
+
+	const { FuseBox, JSONPlugin, QuantumPlugin } = require(fuseBoxPackageId);
+
 	let quantumConf = Object.assign(
 		{
 			bakeApiIntoBundle: "fusebox",
@@ -34,7 +35,7 @@ const getDistFuseBoxConfig = (conf, quantum) => {
 			containedAPI: true,
 			warnings: false,
 		},
-		quantum || {},
+		quantum,
 	);
 
 	let selfConfig = {
@@ -194,6 +195,7 @@ gulp.task("prepare:es6-bundle", done => {
 			bakeApiIntoBundle: "es6",
 			uglify: false,
 		},
+		"./dist/index",
 	);
 	fuse.bundle("es6").instructions(">[index.ts]");
 	return fuse.run();
@@ -268,15 +270,6 @@ gulp.task("changelog", done => {
 	});
 });
 
-gulp.task("make-test-runner", done => {
-	const fuse = getDistFuseBoxConfig({
-		homeDir: "src",
-		output: `bin/$name.js`,
-	});
-	fuse.bundle("fusebox").instructions(">[index.ts]");
-	return fuse.run();
-});
-
 gulp.task("dev-index", () => {
 	const contents = `
         const path = require("path");
@@ -289,16 +282,13 @@ gulp.task("dev-index", () => {
 });
 
 gulp.task("dev-fuse", () => {
-	const fuse = getDistFuseBoxConfig(
-		{
-			homeDir: "src",
-			sourceMaps: true,
-			output: ".dev/$name.js",
-			target: "server@esnext",
-			cache: false,
-		},
-		false,
-	);
+	const fuse = getDistFuseBoxConfig({
+		homeDir: "src",
+		sourceMaps: true,
+		output: ".dev/$name.js",
+		target: "server@esnext",
+		cache: false,
+	});
 	fuse
 		.bundle("fusebox")
 		.instructions(">[index.ts]")
@@ -334,7 +324,6 @@ fuse.run();`;
 });
 gulp.task("dev", () => {
 	RELEASE_FOLDER = path.resolve(".dev");
-	FUSEBOX_BIN = path.resolve("./bin/fusebox.js");
 	return runSequence(
 		"dist:loader",
 		"prepare:copy-package",
