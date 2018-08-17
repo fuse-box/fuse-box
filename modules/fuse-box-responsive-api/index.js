@@ -331,7 +331,7 @@ function loadRemoteScript(url, isCSS) {
 					Promise.all([loadRemoteScript(path + data[2].name, true), new Promise(function(resolve, reject) {
 						loadScript(path, data, $cache, id, resolve, reject);
 					});
-				]).then((values) => {
+				]).then(function(values) {
 						resolve(values[1]);
 					});
 				} else {
