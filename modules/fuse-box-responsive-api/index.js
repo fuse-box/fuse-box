@@ -140,7 +140,7 @@ function loadRemoteScript(url, isCSS) {
 	return new Promise(function(resolve, reject) {
 		/* @if universal */
 		if (!isBrowser) {
-			return;
+			return resolve();
 		}
 		/* @end */
 
