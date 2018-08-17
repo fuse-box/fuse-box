@@ -193,16 +193,35 @@ const Feature = props => (
   </div>
 );
 
-const typescriptFistMD = `
- * First class typescript support
- * No configuration required
- * Use it to replace Babel!
+const codeSplittingDescription = `
+* Support ES dynamic imports
+* Automatic CSS splitting and optimization
+* Tiny API, ~200 bytes
 `;
+
+const hotModuleReplacementDescription = `
+* Hightly customizable
+* Differential updates
+* No page reloads
+`;
+
+const performanceDescription = `
+* Incremental builds and HMR in ~250ms
+* Uses TypeScript compiler for JavaScript transpilation, it's faster than Babel!
+* Filesystem cache
+`;
+
+const typescriptFistDescription = `
+ * First class TypeScript support
+ * No configuration required
+ * Replaces Babel
+`;
+
 const TypesriptFirst = props => (
   <div className="typescript-first">
     <div className="typescript-logo" />
     <div className="checkpoints">
-      <MarkdownBlock>{typescriptFistMD}</MarkdownBlock>
+      <MarkdownBlock>{typescriptFistDescription}</MarkdownBlock>
     </div>
   </div>
 );
@@ -224,30 +243,20 @@ class Index extends React.Component {
           <div className="features">
             <Feature
               icon="laptop-code"
-              title="CODE SPLITTING"
-              desc={`
-* Emdebbed support for dynamic imports
-* Automatic CSS code splitting
-* Automatic CSS optimiser
-          `}
+              title="Code splitting"
+              desc={codeSplittingDescription}
             />
 
             <Feature
               icon="bezier-curve"
-              title="HMR"
-              desc={`
-* Why wait?! It's practically instant!
-* Hightly customisable HMR module
-          `}
+              title="Hot Module Replacement (HMR)"
+              desc={hotModuleReplacementDescription}
             />
 
             <Feature
               icon="fighter-jet"
-              title="PERFORMANCE"
-              desc={`
-* HMR speed - 200-300ms on an average project
-* Use typescript to compile JS, it's faster than Babel!
-            `}
+              title="Performance"
+              desc={performanceDescription}
             />
           </div>
           <TypesriptFirst />
