@@ -284,7 +284,7 @@ function loadRemoteScript(url, isCSS) {
 		/* @end */
 	}
 
-	function loadScript(path, data, cache, id) {
+	function loadScript(path, data, cache, id, resolve, reject) {
 		req(path + data[0], function(err, result) {
 			/* @if browser */
 			if (!err) {
@@ -298,11 +298,11 @@ function loadRemoteScript(url, isCSS) {
 			}
 			/* @end */
 
-			$cache[id] = $fsx.r(data[1]);
+			cache[id] = $fsx.r(data[1]);
 			/* @if allowSyntheticDefaultImports */
-			syntheticDefaultExportPolyfill($cache[id]);
+			syntheticDefaultExportPolyfill(cache[id]);
 			/* @end */
-			!err ? resolve($cache[id]) : reject(err);
+			!err ? resolve(cache[id]) : reject(err);
 		});
 	}
 
