@@ -1,17 +1,19 @@
 {
   "scripts": {
-    "examples": "docusaurus-examples",
-    "start": "docusaurus-start & npm run sass",
-    "sass" : "node sass.js",
-    "build": "docusaurus-build",
-    "publish-gh-pages": "docusaurus-publish",
-    "write-translations": "docusaurus-write-translations",
+    "start:dev": "run-p build:*:watch start:docusaurus",
+    "start:docusaurus": "docusaurus-start",
+    "build:styles": "sass sass/main.scss static/css/custom.css",
+    "build:styles:watch": "sass sass/main.scss static/css/custom.css --watch",
+    "build": "run-s build:styles build:docusaurus",
+    "build:docusaurus": "docusaurus-build",
     "version": "docusaurus-version",
     "rename-version": "docusaurus-rename-version",
     "publish": "firebase deploy"
   },
   "devDependencies": {
     "docusaurus": "^1.3.2",
-    "firebase-tools": "^4.1.1"
+    "firebase-tools": "^4.1.1",
+    "npm-run-all": "^4.1.3",
+    "sass": "^1.12.0"
   }
 }

@@ -17,8 +17,9 @@ node_modules
 npm-debug.log*
 playground
 sourcemaps.js.map
-yarn.lock
 website/.firebase
+website/static/css
+yarn.lock
 
 # FuseBox Loader API built type definition
 # Which is then exported as a module from `src`
