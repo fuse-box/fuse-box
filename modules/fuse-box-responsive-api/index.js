@@ -328,14 +328,13 @@ function loadRemoteScript(url, isCSS) {
 				/* @end */
 
 				if (data[2] && data[2].css === true) {
-					Promise.all([loadRemoteScript(path + data[2].name, true), new Promise(function(resolve, reject) {
-						loadScript(path, data, $cache, id, resolve, reject);
-					});
-				]).then(function(values) {
+					Promise.all([loadRemoteScript(path + data[2].name, true), new Promise(function (resolve, reject) {
+						loadScript(path, data, $cache, id, resolve, reject)
+					})]).then(function (values) {
 						resolve(values[1]);
 					});
 				} else {
-					loadScript(path, data, $cache, id, resolve, reject);
+					loadScript(path, data, $cache, id, resolve, reject)
 				}
 			} else {
 				/* @end */
