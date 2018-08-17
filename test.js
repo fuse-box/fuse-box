@@ -1,6 +1,6 @@
 const { join } = require("path");
 const { argv, env } = require("process");
-const { FuseBox } = require("./bin/fusebox");
+const { FuseBox } = require("fuse-box");
 
 const defaultTestFileMask = "*.test.ts";
 const projectRoot = __dirname;
