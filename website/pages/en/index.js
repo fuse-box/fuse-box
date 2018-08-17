@@ -112,13 +112,14 @@ const Features = props => (
   </Block>
 );
 
+const typescriptFistMD = `
+ * First class typescript support
+ * No configuration required
+`;
 const FeatureCallout = props => (
-  <div
-    className="productShowcaseSection paddingBottom"
-    style={{ textAlign: "center" }}
-  >
-    <h2>Feature Callout</h2>
-    <MarkdownBlock>These are features of this project</MarkdownBlock>
+  <div className="typescript-first">
+    <div className="typescript-logo" />
+    <MarkdownBlock>{typescriptFistMD}</MarkdownBlock>
   </div>
 );
 
@@ -191,16 +192,61 @@ const Showcase = props => {
   );
 };
 
+const Feature = props => (
+  <div className="feature">
+    <div className="feature-icon">
+      <i className={`fas fa-${props.icon}`} />
+    </div>
+    <div className="feature-heading">{props.title}</div>
+    <div className="feature-desc">
+      <MarkdownBlock>{props.desc}</MarkdownBlock>
+    </div>
+  </div>
+);
 class Index extends React.Component {
   render() {
     let language = this.props.language || "";
 
     return (
       <div>
+        <link
+          rel="stylesheet"
+          href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
+          crossOrigin="anonymous"
+        />
         <HomeSplash language={language} />
         <div className="mainContainer">
-          <Features />
+          <div className="features">
+            <Feature
+              icon="laptop-code"
+              title="CODE SPLITTING"
+              desc={`
+* Emdebbed support for dynamic imports
+* Automatic CSS code splitting
+* Automatic CSS optimiser
+          `}
+            />
+
+            <Feature
+              icon="bezier-curve"
+              title="HMR"
+              desc={`
+* No wait time! It's practically instant!
+* Hightly customisable Hot Module Reload!
+          `}
+            />
+
+            <Feature
+              icon="fighter-jet"
+              title="PERFORMANCE"
+              desc={`
+* HMR speed - 200-300ms on an average project
+            `}
+            />
+          </div>
           <FeatureCallout />
+
           <LearnHow />
           <TryOut />
           <Description />
