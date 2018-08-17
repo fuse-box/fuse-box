@@ -1,7 +1,8 @@
 {
   "scripts": {
     "examples": "docusaurus-examples",
-    "start": "docusaurus-start",
+    "start": "docusaurus-start & npm run sass",
+    "sass" : "node sass.js",
     "build": "docusaurus-build",
     "publish-gh-pages": "docusaurus-publish",
     "write-translations": "docusaurus-write-translations",

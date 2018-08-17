@@ -112,17 +112,6 @@ const Features = props => (
   </Block>
 );
 
-const typescriptFistMD = `
- * First class typescript support
- * No configuration required
-`;
-const FeatureCallout = props => (
-  <div className="typescript-first">
-    <div className="typescript-logo" />
-    <MarkdownBlock>{typescriptFistMD}</MarkdownBlock>
-  </div>
-);
-
 const LearnHow = props => (
   <Block background="light">
     {[
@@ -198,11 +187,26 @@ const Feature = props => (
       <i className={`fas fa-${props.icon}`} />
     </div>
     <div className="feature-heading">{props.title}</div>
-    <div className="feature-desc">
+    <div className="feature-desc checkpoints">
       <MarkdownBlock>{props.desc}</MarkdownBlock>
     </div>
   </div>
 );
+
+const typescriptFistMD = `
+ * First class typescript support
+ * No configuration required
+ * Use it to replace Babel!
+`;
+const TypesriptFirst = props => (
+  <div className="typescript-first">
+    <div className="typescript-logo" />
+    <div className="checkpoints">
+      <MarkdownBlock>{typescriptFistMD}</MarkdownBlock>
+    </div>
+  </div>
+);
+
 class Index extends React.Component {
   render() {
     let language = this.props.language || "";
@@ -232,8 +236,8 @@ class Index extends React.Component {
               icon="bezier-curve"
               title="HMR"
               desc={`
-* No wait time! It's practically instant!
-* Hightly customisable Hot Module Reload!
+* Why wait?! It's practically instant!
+* Hightly customisable HMR module
           `}
             />
 
@@ -242,10 +246,11 @@ class Index extends React.Component {
               title="PERFORMANCE"
               desc={`
 * HMR speed - 200-300ms on an average project
+* Use typescript to compile JS, it's faster than Babel!
             `}
             />
           </div>
-          <FeatureCallout />
+          <TypesriptFirst />
 
           <LearnHow />
           <TryOut />

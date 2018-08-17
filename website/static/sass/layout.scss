@@ -1,0 +1,13 @@
+.checkpoints {
+  ul li:before {
+    content: "✓";
+    color: rgb(24, 164, 24);
+    padding-right: 10px;
+  }
+  ul li {
+    margin-bottom: 5px;
+  }
+  ul {
+    list-style: none;
+  }
+}
