@@ -130,45 +130,49 @@
 	}
 	/* @end */
 
-	/* @if loadRemoteScript  */
-	function loadRemoteScript(url, isCSS) {
-		/* @if server */
-		return Promise.resolve();
-		/* @end */
-
-		/* @if browser || universal */
-		return Promise.resolve().then(function() {
-			/* @if universal */
-			if (!isBrowser) {
-				return;
-			}
-			/* @end */
-
-			var d = document;
-			var head = d.getElementsByTagName("head")[0];
-			var target;
-			/* @if cssLoader */
-			if (isCSS) {
-				target = d.createElement("link");
-				target.rel = "stylesheet";
-				target.type = "text/css";
-				target.href = url;
-			} else {
-				/* @end */
-
-				target = d.createElement("script");
-				target.type = "text/javascript";
-				target.src = url;
-				target.async = true;
-
-				/* @if cssLoader */
-			}
-			/* @end */
-			head.insertBefore(target, head.firstChild);
-		});
-		/* @end */
-	}
+/* @if loadRemoteScript  */
+function loadRemoteScript(url, isCSS) {
+	/* @if server */
+	return Promise.resolve();
 	/* @end */
+
+	/* @if browser || universal */
+	return new Promise(function(resolve, reject) {
+		/* @if universal */
+		if (!isBrowser) {
+			return resolve();
+		}
+		/* @end */
+
+		var d = document;
+		var head = d.getElementsByTagName("head")[0];
+		var target;
+		/* @if cssLoader */
+		if (isCSS) {
+			target = d.createElement("link");
+			target.rel = "stylesheet";
+			target.type = "text/css";
+			target.onload = resolve;
+			target.onerror = reject;
+			target.href = url;
+		} else {
+			/* @end */
+
+			target = d.createElement("script");
+			target.type = "text/javascript";
+			target.onload = resolve;
+			target.onerror = reject;
+			target.async = true; 
+			target.src = url;
+
+			/* @if cssLoader */
+		}
+		/* @end */
+		head.insertBefore(target, head.firstChild);
+	});
+	/* @end */
+}
+/* @end */
 
 	/* @if codeSplitting */
 
@@ -277,6 +281,29 @@
 
 		/* @end */
 	}
+
+	function loadScript(path, data, cache, id, resolve, reject) {
+		req(path + data[0], function(err, result) {
+			/* @if browser */
+			if (!err) {
+				new Function(result)();
+			}
+			/* @end */
+
+			/* @if universal */
+			if (!err && isBrowser) {
+				new Function(result)();
+			}
+			/* @end */
+
+			cache[id] = $fsx.r(data[1]);
+			/* @if allowSyntheticDefaultImports */
+			syntheticDefaultExportPolyfill(cache[id]);
+			/* @end */
+			!err ? resolve(cache[id]) : reject(err);
+		});
+	}
+
 	var $cache = {};
 	$fsx.l = function(id) {
 		return new Promise(function(resolve, reject) {
@@ -301,28 +328,14 @@
 				/* @end */
 
 				if (data[2] && data[2].css === true) {
-					loadRemoteScript(path + data[2].name, true);
+					Promise.all([loadRemoteScript(path + data[2].name, true), new Promise(function (resolve, reject) {
+						loadScript(path, data, $cache, id, resolve, reject)
+					})]).then(function (values) {
+						resolve(values[1]);
+					});
+				} else {
+					loadScript(path, data, $cache, id, resolve, reject)
 				}
-
-				req(path + data[0], function(err, result) {
-					/* @if browser */
-					if (!err) {
-						new Function(result)();
-					}
-					/* @end */
-
-					/* @if universal */
-					if (!err && isBrowser) {
-						new Function(result)();
-					}
-					/* @end */
-
-					$cache[id] = $fsx.r(data[1]);
-					/* @if allowSyntheticDefaultImports */
-					syntheticDefaultExportPolyfill($cache[id]);
-					/* @end */
-					!err ? resolve($cache[id]) : reject(err);
-				});
 			} else {
 				/* @end */
 
