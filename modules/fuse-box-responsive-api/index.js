@@ -162,8 +162,6 @@ function loadRemoteScript(url, isCSS) {
 			target.type = "text/javascript";
 			target.onload = resolve;
 			target.onerror = reject;
-			// Should this be defer to keep the order of script execution? Script still download in parallel but load in order of other defers.
-			// target.defer = true; 
 			target.async = true; 
 			target.src = url;
 
