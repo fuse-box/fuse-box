@@ -328,7 +328,7 @@ function loadRemoteScript(url, isCSS) {
 				/* @end */
 
 				if (data[2] && data[2].css === true) {
-					Promise.all([loadRemoteScript(path + data[2].name, true), new Promise((resolve, reject) => {
+					Promise.all([loadRemoteScript(path + data[2].name, true), new Promise(function(resolve, reject) {
 						loadScript(path, data, $cache, id, resolve, reject)
 					})
 				]).then((values) => {
