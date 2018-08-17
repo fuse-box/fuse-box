@@ -843,9 +843,8 @@ export class CodeSplittingFileIntegrityTest {
 						`// default/common/auth/index.js`,
 						`// default/common/auth/token.js`,
 						`// default/modules/test/routes/another-test-route.js`,
-						`// jwt-decode/lib/index.js`,
-						`// jwt-decode/lib/base64_url_decode.js`,
-						`// jwt-decode/lib/atob.js`,
+						`// ansi/lib/ansi.js`,
+						`// ansi/lib/newlines.js`,
 					];
 					sharedFiles.forEach(file => {
 						master.shouldFindString(file);

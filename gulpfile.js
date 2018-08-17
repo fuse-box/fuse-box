@@ -3,17 +3,12 @@ const rename = require("gulp-rename");
 const clean = require("gulp-clean");
 const replace = require("gulp-replace");
 const ts = require("gulp-typescript");
-const sourcemaps = require("gulp-sourcemaps");
 const runSequence = require("run-sequence");
-const bump = require("gulp-bump");
 const wrap = require("gulp-wrap");
 const uglify = require("gulp-uglify");
 const { exec, spawn } = require("child_process");
-const homedir = require("homedir");
 const fs = require("fs");
-const header = require("gulp-header");
 const path = require("path");
-const os = require("os");
 const fsExtra = require("fs-extra");
 
 let RELEASE_FOLDER = "./dist";
@@ -340,47 +335,4 @@ gulp.task("dev", () => {
 			console.log(">> Start developing `node fuse.js`");
 		},
 	);
-});
-gulp.task("installDevDeps", function(done) {
-	var deps = [
-		"babel-core",
-		"babel-generator",
-		"babel-preset-latest",
-		"babel-plugin-transform-es2015-modules-commonjs",
-		"babylon",
-		"cheerio",
-		"@angular/core",
-		"stylus",
-		"less",
-		"postcss",
-		"postcss-selector-parser",
-		"marked",
-		"node-sass",
-		"uglify-js",
-		"uglify-es",
-		"source-map@0.5.7",
-		"coffee-script",
-		"@types/node",
-		"vue-template-compiler",
-		"vue-template-es2015-compiler",
-		"vue",
-		"jwt-decode",
-		"vue-server-renderer",
-		"vue-hot-reload-api",
-		"vue-class-component",
-		"rollup",
-		"buble",
-		"consolidate",
-		"pug",
-		"tslint",
-		"tslint-react",
-		"tslint-eslint-rules",
-		"tslint-immutable",
-		"tslint-clean-code",
-	];
-
-	const ext = /^win/.test(os.platform()) ? ".cmd" : "";
-	spawn("npm" + ext, ["install", "--no-save"].concat(deps), {
-		stdio: "inherit",
-	});
 });
