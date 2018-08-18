@@ -11,3 +11,20 @@
     list-style: none;
   }
 }
+
+.post {
+  a {
+    border-bottom: 1px solid $lightGray2;
+    text-decoration: none;
+    transition: color 0.3s, border-color 0.3s;
+    color: $color1;
+    &:hover {
+      border-bottom: 1px solid $color1;
+      text-decoration: none;
+    }
+    &.active {
+      color: $color1;
+      border-bottom: 1px solid $color1;
+    }
+  }
+}

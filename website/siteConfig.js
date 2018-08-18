@@ -15,7 +15,7 @@ const siteConfig = {
   headerLinks: [
     {
       doc: "getting-started/installation",
-      label: "Docs",
+      label: "Documentation",
     },
   ],
   highlight: {

@@ -1,6 +1,6 @@
 ---
 id: setup
-title: Setup
+title: Getting started
 ---
 
 Before we proceed, let's make sure of that we are using NodeJS 8.2+ installed
