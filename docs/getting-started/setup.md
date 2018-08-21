@@ -71,48 +71,6 @@ You won't need any additional configuration to start working with typescript.
 - Make sure to choose the correct [target](#choosing-correct-target)
 - `tsconfig.json` will be created automatically if none was found
 
-## Start with JavaScript
-
-You are not forced to used typescript. However you should still have it
-installed, as typescript is not just a powerful tool for typechecking - it's
-also a very
-[powerful transpiler](../development/configuration#usetypescriptcompiler) too
-
-```js
-const fuse = FuseBox.init({
-  homeDir: "src",
-  target: "browser@es6",
-  output: "dist/$name.js",
-  useTypescriptCompiler: true,
-});
-fuse
-  .bundle("app")
-  .instructions(" > index.js")
-  .hmr()
-  .watch();
-fuse.run();
-```
-
-Use `useTypescriptCompiler` option and you won't need babel at all. But keep in
-mind synthetic default imports.
-
-Correct:
-
-```js
-import * as React from "react";
-```
-
-NOT correct:
-
-```js
-import React from "react"; // <-- not correct ()
-```
-
-It will work with
-[allowSyntheticDefaultImports](../development/configuration#allowSyntheticDefaultImports).
-However, it's not recommended adding this option as it adds additional overhead
-to your runtime.
-
 ## Start with CSS
 
 Adding CSS support it very easy.

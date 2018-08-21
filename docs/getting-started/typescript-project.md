@@ -6,6 +6,9 @@ title: TypeScript project
 In order to start with TypeScript you won't be required to setup anything
 special.
 
+You can find a comprehensive list of examples
+[here](https://github.com/fuse-box/fuse-box-examples/tree/master/examples)
+
 ## Getting started with TypeScript
 
 Create `fuse.js` with the following javascript code.
@@ -73,4 +76,4 @@ const fuse = FuseBox.init({
 });
 ```
 
-Read more about target in [this section](/docs/guides/working-with-targets)
+Read more about targets in [this section](/docs/guides/working-with-targets)

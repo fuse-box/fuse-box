@@ -4,6 +4,8 @@
       "getting-started/installation",
       "getting-started/setup",
       "getting-started/typescript-project",
+      "getting-started/javascript-project",
+      "getting-started/add-css",
       "getting-started/about-plugins",
       "getting-started/environments"
     ],
