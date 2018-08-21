@@ -405,9 +405,9 @@ QuantumPlugin({
 ```
 
 Alternatively, Quantum could pick up uglify's options from
-[UglifyJSPlugin](/plugins/misc/UglifyJSPlugin) or
-[UglifyESPlugin](/plugins/misc/UglifyESPlugin), so if you already have one of
-them set up then minification in Quantum should work right away.
+[UglifyJSPlugin](../plugins/uglifyjs-plugin) or
+[UglifyESPlugin](../plugins/uglifyes-plugin), so if you already have one of them
+set up then minification in Quantum should work right away.
 
 ## Computed statement resolution
 

@@ -59,22 +59,22 @@ FuseBox.init({
 If no `lang` attributes are specified (see below) the `VueComponentPlugin` will
 use the following configuration out of the box:
 
-- `<template>` Defaults to `html` and uses [HTMLPlugin](/plugins/html-plugin)
+- `<template>` Defaults to `html` and uses [HTMLPlugin](../plugins/html-plugin)
 - `<script>` Defaults to `ts` and uses FuseBox's integrated Typescript compiler
-- `<style>` Defaults to `css` and uses [CSSPlugin](/plugins/css-plugin)
+- `<style>` Defaults to `css` and uses [CSSPlugin](../plugins/css-plugin)
 
 ## Language Attributes
 
 When `VueComponentPlugin` detects a `lang` attribute on a block it will attempt
 to match with the corresponding FuseBox plugin. For example:
 
-- `<script lang="coffee">` - [CoffeeScriptPlugin](/plugins/coffee-script-plugin)
-- `<script lang="js">` - [BabelPlugin](/plugins/babel-plugin) (will read
+- `<script lang="coffee">` - [CoffeeScriptPlugin](../plugins/coffee-plugin)
+- `<script lang="js">` - [BabelPlugin](../plugins/babel) (will read
   configuration from `.babelrc` file)
-- `<style lang="less">` - [LESSPlugin](/plugins/less-plugin)
-- `<style lang="scss">` - [SASSPlugin](/plugins/sass-plugin)
-- `<template lang="pug">` - [ConsolidatePlugin](/plugins/consolidate-plugin)
-- `<template lang="hogan">` - [ConsolidatePlugin](/plugins/consolidate-plugin)
+- `<style lang="less">` - [LESSPlugin](../plugins/less-plugin)
+- `<style lang="scss">` - [SASSPlugin](../plugins/sass-plugin)
+- `<template lang="pug">` - [ConsolidatePlugin](../plugins/consolidate-plugin)
+- `<template lang="hogan">` - [ConsolidatePlugin](../plugins/consolidate-plugin)
 
 In addition, the `VueComponentPlugin` will try to infer the `lang` type if it is
 not explicitly set but the `src` contains an extension:

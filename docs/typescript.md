@@ -23,9 +23,6 @@ fuse.run();
 FuseBox automatically switches to typescript mode by detecting the extension
 `.ts` / `.tsx`. FuseBox compiles and bundles your files.
 
-note: For your own convenience you can also add the
-[Typescript helpers plugin](/plugins/typescript-helpers-plugin).
-
 ## tsConfig
 
 FuseBox comes with default ts options so you don't _need_ a tsconfig.

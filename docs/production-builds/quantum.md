@@ -61,9 +61,8 @@ Via yarn:
 yarn install uglify-js
 ```
 
-Make sure you are using
-[Web Index Plugin](/plugins/web-index-plugin#webindexplugin) as Quantum may
-produce more bundles than configured in the first place.
+Make sure you are using [Web Index Plugin](../plugins/web-index-plugin) as
+Quantum may produce more bundles than configured in the first place.
 
 ## How it works?
 
@@ -219,7 +218,7 @@ quantum
 
 Quantum merges `process.env` with `{NODE_ENV : "production"}`. It's made on
 purpose to avoid mistakes, as Quantum builds are made for production. You can
-override `NODE_ENV` variable by using [Env Plugin](/plugins/env-plugin#usage)
+override `NODE_ENV` variable by using [Env Plugin](../plugins/env-plugin#usage)
 
 ```js
 EnvPlugin({ NODE_ENV: "stage" });
@@ -257,7 +256,7 @@ if (key === "production") {
 
 Which is less efficient than just declaring it in the if statement.
 
-Quantum works with [Env Plugin](/plugins/env-plugin#usage) therefore all the
+Quantum works with [Env Plugin](../plugins/env-plugin#usage) therefore all the
 environmental variables will be replaced accordingly.
 
 ### definedExpressions

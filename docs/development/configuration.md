@@ -333,8 +333,8 @@ There are 2 ways to get to the generated file names
 
 ### Hashes and WebIndexPlugin
 
-Use [Web Index Plugin](/plugins/web-index-plugin#webindexplugin) which will take
-care of everything. Generated files names will be in your script tags
+Use [Web Index Plugin](../plugins/web-index-plugin#webindexplugin) which will
+take care of everything. Generated files names will be in your script tags
 
 ```js
 WebIndexPlugin({
