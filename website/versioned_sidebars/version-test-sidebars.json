@@ -1,0 +1,70 @@
+{
+  "version-test-docs": {
+    "Getting Started": [
+      "version-test-getting-started/installation",
+      "version-test-getting-started/setup",
+      "version-test-getting-started/about-plugins",
+      "version-test-getting-started/environments"
+    ],
+    "Development": [
+      "version-test-development/configuration",
+      "version-test-development/instructions",
+      "version-test-development/development-server",
+      "version-test-development/watching",
+      "version-test-development/hmr",
+      "version-test-development/launching",
+      "version-test-development/code-splitting",
+      "version-test-development/dynamic-imports"
+    ],
+    "Production Builds": [
+      "version-test-production-builds/quantum",
+      "version-test-production-builds/quantum-configuration"
+    ],
+    "Task Runner": [
+      "version-test-task-runner/getting-started-with-sparky",
+      "version-test-task-runner/sparky"
+    ],
+    "Test Runner": [
+      "version-test-test-runner/test-runner"
+    ],
+    "Guides": [
+      "version-test-guides/working-with-targets",
+      "version-test-guides/publishing-to-npm",
+      "version-test-guides/debugging-with-vscode",
+      "version-test-guides/development-with-docker"
+    ],
+    "Contributing": [
+      "version-test-contributing"
+    ]
+  },
+  "version-test-plugins": {
+    "Plugins": [
+      "version-test-plugins/babel-plugin",
+      "version-test-plugins/coffee-plugin",
+      "version-test-plugins/consolidate-plugin",
+      "version-test-plugins/copy-plugin",
+      "version-test-plugins/css-modules-plugin",
+      "version-test-plugins/css-plugin",
+      "version-test-plugins/css-resource-plugin",
+      "version-test-plugins/env-plugin",
+      "version-test-plugins/html-plugin",
+      "version-test-plugins/image-base64-plugin",
+      "version-test-plugins/json-plugin",
+      "version-test-plugins/less-plugin",
+      "version-test-plugins/markdown-plugin",
+      "version-test-plugins/ng-template-plugin",
+      "version-test-plugins/plain-js-plugin",
+      "version-test-plugins/postcss-plugin",
+      "version-test-plugins/raw-plugin",
+      "version-test-plugins/replace-plugin",
+      "version-test-plugins/sass-plugin",
+      "version-test-plugins/source-map-plain-js-plugin",
+      "version-test-plugins/stylus-plugin",
+      "version-test-plugins/svg-plugin",
+      "version-test-plugins/uglifyes-plugin",
+      "version-test-plugins/uglifyjs-plugin",
+      "version-test-plugins/vue-component-plugin",
+      "version-test-plugins/web-index-plugin"
+    ]
+  }
+}
