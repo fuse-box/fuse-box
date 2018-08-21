@@ -92,4 +92,4 @@ fuse.run();
 
 The bundle mapping path for browser/server can be dynamically resolved at
 runtime using the Quantum option
-[Runtime Bundle Mapping](/page/quantum-configuration#runtimebundlemapping)
+[Runtime Bundle Mapping](../production-builds/quantum-configuration#runtimebundlemapping)

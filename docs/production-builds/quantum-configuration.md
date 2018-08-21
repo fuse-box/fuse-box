@@ -53,7 +53,7 @@ QuantumPlugin({
 ## definedExpressions
 
 If you are planning to set up process.env, you should use
-[EnvPlugin](/page/env-plugin) instead
+[EnvPlugin](../plugins/env) instead
 
 ```js
 QuantumPlugin({
@@ -580,8 +580,8 @@ It should be possible to create a simple FuseBox plugin, for example
 
 The runtimeBundleMapping option enables setting the bundle mapping dynamically
 at runtime. When using code splitting, a bundle mapping path can be
-[configured](/page/code-splitting#configuring) at buildtime for resolving
-bundles from a specific endpoint.
+[configured](../development/code-splitting#configuring) at buildtime for
+resolving bundles from a specific endpoint.
 
 ```js
 QuantumPlugin({

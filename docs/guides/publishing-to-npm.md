@@ -46,7 +46,8 @@ this:
 ## What is the actual benefit of having typescript source exposed?
 
 - FuseBox will be able to convert it to any script level (es6/es5/esnext) you
-  desire. You can read up more on this [here](/page/configuration#target)
+  desire. You can read up more on this
+  [here](../development/configuration#target)
 - Tree Shaking will be done just right
 - You can do code splitting of external packages using `import()` statement
 
@@ -64,7 +65,7 @@ export async function checkPassword(pwd: string, opts?: any) {
 Once this library is bundled, FuseBox will automatically split `zxcvbn` library
 (which is heavy) to a separate bundle without you even knowing it (you will
 certainly notice it). Worth a mention - the actual splitting will happen when
-making a produdction build, using [Quantum](/page/quantum)
+making a produdction build, using [Quantum](../production-builds/quantum)
 
 ## Publish a contained bundle
 
@@ -76,6 +77,8 @@ You can follow the seed
 [here](https://github.com/fuse-box/fuse-box-npm-package-seed) to create an
 isolated bundle.
 
-It all comes down to two options - [containedAPI](/page/quantum#containedapi)
-and [bakeApiIntoBundle](/page/quantum#bakeapiintobundle) It's important to
-understand what these options actually do, so go ahead and read up on those.
+It all comes down to two options -
+[containedAPI](../production-builds/quantum#containedapi) and
+[bakeApiIntoBundle](../production-builds/quantum#bakeapiintobundle) It's
+important to understand what these options actually do, so go ahead and read up
+on those.

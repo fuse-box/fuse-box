@@ -164,18 +164,18 @@ exports.hello = function() {
 ```
 
 In order to achieve the best treeshaking experience, you need to understand
-[useJsNext](/page/configuration#usejsnext) option.
+[useJsNext](../development/configuration#usejsnext) option.
 
 FuseBox won't read `module` and `js:next` properties from `package.json` unless
 configured. This is done by design, as many libraries will simply get broken
 when transpiled with typescript. (FuseBox uses typescript to transpile es6
 modules). For example you can't use `react-router` with
-[useJsNext](/page/configuration#usejsnext) option, because it uses non-standard
-javascript in the code base, e.g - `import React from "react"` where React
-doesn't export `default`
+[useJsNext](../development/configuration#usejsnext) option, because it uses
+non-standard javascript in the code base, e.g - `import React from "react"`
+where React doesn't export `default`
 
 You may find
-[polyfillNonStandardDefaultUsage](/page/configuration#polyfillnonstandarddefaultusage)
+[polyfillNonStandardDefaultUsage](../development/configuration#polyfillnonstandarddefaultusage)
 option quite useful, but be careful, this is a non-standard way of cooking
 javascript!
 
@@ -263,4 +263,4 @@ environmental variables will be replaced accordingly.
 ### definedExpressions
 
 Similar to process.env Quantum will respect
-[definedExpressions](/page/quantum#definedExpressions) option.
+[definedExpressions](../production-builds/quantum#definedExpressions) option.

@@ -8,9 +8,9 @@ title: Getting started with sparky
 Let's start off by creating `fuse.js` in your repository. We will put all
 configuration here.
 
-To make your life easier in the future, let's use [sparky](/page/sparky). Sparky
-is a very smart task runner, you will be able to copy files, share
-configurations and much more!
+To make your life easier in the future, let's use
+[sparky](../task-runner/sparky). Sparky is a very smart task runner, you will be
+able to copy files, share configurations and much more!
 
 Let's require essential modules from FuseBox:
 
@@ -79,8 +79,8 @@ Now run `node fuse` and enjoy!
 
 ## Production build
 
-For production builds, we use [Quantum](/page/quantum). It's super plugin that
-makes a highly optimised API
+For production builds, we use [Quantum](../production-builds/quantum). It's
+super plugin that makes a highly optimised API
 
 ```js
 task("dist", async context => {

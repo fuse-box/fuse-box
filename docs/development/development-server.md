@@ -28,7 +28,7 @@ FuseBox will automatically serve your `build` folder e.g. with
 `output: "build/$name.js"` it will serve the folder `build/`.
 
 You can change it by passing in a string value to the `root` option (It can be
-an absolute path, Or relative to [homeDir](/page/configuration#home-directory)
+an absolute path, Or relative to [homeDir](./configuration#home-directory)
 
 ```js
 fuse.dev({

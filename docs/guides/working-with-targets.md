@@ -29,7 +29,7 @@ this:
 Once the config is created, you cannot override `"module": "commonjs"` it will
 always be set to use `commonjs`.
 
-Take a look a [target](/page/configuration#target) option.
+Take a look a [target](../development/configuration#target) option.
 
 ```js
 FuseBox.init({
@@ -44,7 +44,7 @@ importing a library and the script target is not `es5` FuseBox will transpile it
 down.
 
 An alternative way of overriding `tsconfig.json` is using
-[tsConfig](/page/configuration#tsconfig) option
+[tsConfig](../development/configuration#tsconfig) option
 
 ```js
 FuseBox.init({
@@ -56,7 +56,7 @@ FuseBox.init({
 
 Make sure you have `uglify-js` and/or `uglify-es` installed. If your target is
 higher than `es5`, Quantum will use `uglify-es`. More about it
-[here](/page/quantum#uglify) You can control that manually too.
+[here](../production-builds/quantum#uglify) You can control that manually too.
 
 ## Working with Babel
 
@@ -86,4 +86,5 @@ FuseBox.init({
 Because `TypeScript` is much much faster and it's easy to change the script
 target. By the way, if you are interested, FuseBox can transpile javascript
 using TypeScript. Read up on
-[useTypescriptCompiler](/page/configuration#usetypescriptcompiler) option
+[useTypescriptCompiler](../development/configuration#usetypescriptcompiler)
+option

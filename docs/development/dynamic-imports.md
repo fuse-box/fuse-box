@@ -10,7 +10,7 @@ and
 FuseBox supports `import` statement.
 
 On of the standard functionality, FuseBox offers much more.
-[Quantum](/page/quantum) supports all the features listed below.
+[Quantum](../production-builds/quantum) supports all the features listed below.
 
 ## Loading JSON
 
@@ -183,7 +183,8 @@ console.log(new aboutModule.AboutComponent());
 | Quantum          | universal | yes                                 |
 | Quantum          | server    | yes                                 |
 
-More information on code splitting is available [here](/page/code-splitting)
+More information on code splitting is available
+[here](../development/code-splitting)
 
 ### Working example
 

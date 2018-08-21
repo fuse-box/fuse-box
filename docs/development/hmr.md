@@ -19,12 +19,11 @@ const app = fuse
 
 You can add `hmr()` options to all of your bundles, however only the first
 defined will actually receive an `HMRPlugin` (FuseBox injects it automatically).
-It's important when dealing with [vendor bundles](/page/bundle#creating-vendors)
+It's important when dealing with vendor bundles.
 
-`HMRPlugin()` is an internal plugin which is being injected by FuseBox
-[Producer](/page/bundle#producer). You will have corresponding modules bundled
-along with your project. Make sure to disable it when doing production builds,
-for example with vendor:
+`HMRPlugin()` is an internal plugin which is being injected by FuseBox producer.
+You will have corresponding modules bundled along with your project. Make sure
+to disable it when doing production builds, for example with vendor:
 
 ```js
 const vendor = fuse.bundle("vendor").instructions(`~ **/**.{ts,tsx}`);
@@ -82,9 +81,9 @@ if (process.env.NODE_ENV !== "production") {
 ```
 
 It's important to have it wrapped in `process.env.NODE_ENV` condition. Because
-you won't be needing this code in production, and [Quantum](/page/quantum) will
-remove that block using
-[dead code elimination](/page/quantum#dead-code-elimination)
+you won't be needing this code in production, and
+[Quantum](../production-builds/quantum) will remove that block using
+[dead code elimination](../production-builds/quantum#dead-code-elimination)
 
 | Name                               | Description                        |
 | ---------------------------------- | ---------------------------------- |

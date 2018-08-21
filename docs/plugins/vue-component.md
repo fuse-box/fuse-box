@@ -144,4 +144,4 @@ the `module` attribute will be coming soon.
 ## HMR
 
 Hot Module Reloading is also fully supported, just enable it on your bundles by
-calling `.hmr()`. See [here](/page/development#hot-module-reload) for more info.
+calling `.hmr()`. See [here](../development/hmr) for more info.
