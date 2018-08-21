@@ -3,6 +3,7 @@
     "Getting Started": [
       "getting-started/installation",
       "getting-started/setup",
+      "getting-started/typescript-project",
       "getting-started/about-plugins",
       "getting-started/environments"
     ],

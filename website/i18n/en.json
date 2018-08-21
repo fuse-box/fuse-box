@@ -19,6 +19,7 @@
     "getting-started/installation": "Installation",
     "getting-started/environments": "Environments",
     "getting-started/setup": "Getting started",
+    "getting-started/typescript-project": "TypeScript project",
     "guides/debugging-with-vscode": "Debugging with VS Code",
     "guides/development-with-docker": "Development with Docker",
     "guides/publishing-to-npm": "Publishing to NPM",
