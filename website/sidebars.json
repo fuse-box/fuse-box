@@ -31,6 +31,9 @@
       "guides/debugging-with-vscode",
       "guides/development-with-docker"
     ],
+    "Contributing": ["contributing"]
+  },
+  "plugins": {
     "Plugins": [
       "plugins/babel-plugin",
       "plugins/coffee-plugin",
@@ -58,7 +61,6 @@
       "plugins/uglifyjs-plugin",
       "plugins/vue-component-plugin",
       "plugins/web-index-plugin"
-    ],
-    "Contributing": ["contributing"]
+    ]
   }
 }

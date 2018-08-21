@@ -118,7 +118,7 @@ const typescriptFistDescription = `
  * First class TypeScript support
  * No configuration required
  * Can replace Babel (for js projects)
- * Publish typescript packages to npm
+ * Publish TypeScript packages to npm
 `;
 
 const TypesriptFirst = props => (

@@ -17,6 +17,10 @@ const siteConfig = {
       doc: "getting-started/installation",
       label: "Documentation",
     },
+    {
+      doc: "plugins/babel-plugin",
+      label: "Plugins",
+    },
   ],
   highlight: {
     theme: "default",

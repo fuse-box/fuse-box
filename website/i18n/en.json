@@ -63,13 +63,13 @@
     "typescript": "typescript",
     "version3changelog": "version3changelog",
     "Documentation": "Documentation",
+    "Plugins": "Plugins",
     "Getting Started": "Getting Started",
     "Development": "Development",
     "Production Builds": "Production Builds",
     "Task Runner": "Task Runner",
     "Test Runner": "Test Runner",
     "Guides": "Guides",
-    "Plugins": "Plugins",
     "Contributing": "Contributing"
   },
   "pages-strings": {
