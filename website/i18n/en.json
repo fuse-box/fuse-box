@@ -13,6 +13,7 @@
     "development/hmr": "HMR",
     "development/instructions": "Instructions",
     "development/launching": "Launching",
+    "development/plugins": "Plugins",
     "development/watching": "Watching",
     "examples-seeds": "examples-seeds",
     "getting-started/about-plugins": "About plugins",

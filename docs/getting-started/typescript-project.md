@@ -48,4 +48,29 @@ one for you. Here is how it looks like by default:
 ```
 
 It will be placed in your
-[home directory](/docs/development/configuration#home-directory)
+[home directory](/docs/development/configuration#home-directory) and can be
+moved higher in the hirarchy (for example in your application root)
+
+## Module requirement
+
+Changing `module` in `tsconfig` option will not affect the build, since FuseBox
+requires commonjs module resolution (`require` function) in order to resolve
+files at runtime. That's why it's so fast!
+
+Fear not, FuseBox takes the full advantage of ES6 import statements.
+
+## Changing TypeScript target
+
+Pay attention to `target: "browser"` if no target is set, FuseBox will take the
+one from `tsconfig.json`, However, you can override the target by changing the
+`FuseBox.init` configuration
+
+```ts
+const fuse = FuseBox.init({
+  homeDir: "src",
+  target: "browser@es6",
+  output: "dist/$name.js",
+});
+```
+
+Read more about target in [this section](/docs/guides/working-with-targets)
