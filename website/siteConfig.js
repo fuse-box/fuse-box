@@ -21,6 +21,10 @@ const siteConfig = {
       doc: "plugins/babel-plugin",
       label: "Plugins",
     },
+    {
+      href: "https://github.com/fuse-box/fuse-box/releases",
+      label: "Release notes",
+    },
   ],
   highlight: {
     theme: "default",
