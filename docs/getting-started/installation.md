@@ -19,7 +19,7 @@ one to use, dependending on a selected target.
 Why do you need to install typescript even if you don't use it?
 
 Because FuseBox uses typescript to transpile node_modules to a required user
-target. Read up [here](/page/getting-started#choosing-correct-target)
+target. Read up [here](./setup#choosing-correct-target)
 
 ## Requirements
 
