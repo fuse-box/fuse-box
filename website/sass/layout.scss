@@ -13,6 +13,9 @@
 }
 
 .post {
+  h2 {
+  }
+
   a {
     border-bottom: 1px solid $lightGray2;
     text-decoration: none;
@@ -25,6 +28,13 @@
     &.active {
       color: $color1;
       border-bottom: 1px solid $color1;
+    }
+    &.anchor {
+      border: none;
+      &:hover {
+        border: none !important;
+        text-decoration: none;
+      }
     }
   }
 }

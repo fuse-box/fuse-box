@@ -73,9 +73,10 @@ class HomeSplash extends React.Component {
         <div className="inner">
           <ProjectTitle />
           <PromoSection>
-            <Button href="#try">Try It Out</Button>
-            <Button href={docUrl("doc1.html", language)}>Example Link</Button>
-            <Button href={docUrl("doc2.html", language)}>Example Link 2</Button>
+            <Button href="https://github.com/fuse-box/fuse-box">Github</Button>
+            <Button href={docUrl("getting-started/installation", language)}>
+              Getting started
+            </Button>
           </PromoSection>
         </div>
       </SplashContainer>
@@ -116,7 +117,8 @@ const performanceDescription = `
 const typescriptFistDescription = `
  * First class TypeScript support
  * No configuration required
- * Replaces Babel
+ * Can replace Babel (for js projects)
+ * Publish typescript packages to npm
 `;
 
 const TypesriptFirst = props => (
