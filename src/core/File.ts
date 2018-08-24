@@ -403,14 +403,15 @@ export class File {
 	 * that will recognised by Vanilla Api and Quantum
 	 * Injecting a development functionality
 	 */
-	public replaceDynamicImports() {
+	public replaceDynamicImports(localContent?: string) {
 		if (!this.context.dynamicImportsEnabled) {
 			return;
 		}
-		if (this.contents) {
+		let targetContent = localContent || this.contents;
+		if (targetContent) {
 			const expression = /(\s+|^)(import\()/g;
-			if (expression.test(this.contents)) {
-				this.contents = this.contents.replace(expression, "$1$fsmp$(");
+			if (expression.test(targetContent)) {
+				targetContent = targetContent.replace(expression, "$1$fsmp$(");
 				if (this.context.fuse && this.context.fuse.producer) {
 					this.devLibsRequired = ["fuse-imports"];
 					if (!this.context.fuse.producer.devCodeHasBeenInjected("fuse-imports")) {
@@ -421,7 +422,11 @@ export class File {
 					}
 				}
 			}
+			if (!localContent) {
+				this.contents = targetContent;
+			}
 		}
+		return targetContent;
 	}
 
 	public belongsToProject() {
