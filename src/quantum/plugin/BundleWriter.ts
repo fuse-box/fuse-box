@@ -112,43 +112,47 @@ export class BundleWriter {
 		}
 
 		let index = 1;
-		const writeBundle = (bundle: Bundle) => {
-			return bundle.context.output.writeCurrent(bundle.generatedCode).then(output => {
-				let entryString;
-				if (bundle.quantumBit && bundle.quantumBit.entry) {
-					entryString = bundle.quantumBit.entry.getFuseBoxFullPath();
-				}
-				bundleManifest[bundle.name] = {
-					fileName: output.filename,
-					hash: output.hash,
-					type: "js",
-					entry: entryString,
-					absPath: output.path,
-					webIndexed: !bundle.quantumBit,
-					relativePath: output.relativePath,
-				};
-				// if this bundle belongs to splitting
-				// we need to remember the generated file name and store
-				// and then pass to the API
-				if (bundle.quantumBit) {
-					const splitOpts: any = [output.relativePath, bundle.quantumBit.entry.getID()];
-					splitFileOptions.i[bundle.quantumBit.name] = splitOpts;
-					if (bundle.quantumBit.cssCollection) {
-						let cssName = bundle.quantumBit.name;
-						if (!/\.css$/.test(cssName)) {
-							cssName = `${cssName}.css`;
-						}
-						const splitConfig = this.core.context.quantumSplitConfig;
-						if (bundle.quantumBit && splitConfig && splitConfig.resolveOptions) {
-							const dest = splitConfig.getDest();
-							cssName = joinFuseBoxPath(dest, cssName);
-						}
-						splitOpts.push({ css: true, name: cssName });
+		const writeBundle = async (bundle: Bundle) => {
+			const output = await bundle.context.output.writeCurrent(bundle.generatedCode);
+			let entryString;
+			if (bundle.quantumBit && bundle.quantumBit.entry) {
+				entryString = bundle.quantumBit.entry.getFuseBoxFullPath();
+			}
+			bundleManifest[bundle.name] = {
+				fileName: output.filename,
+				hash: output.hash,
+				type: "js",
+				entry: entryString,
+				absPath: output.path,
+				webIndexed: !bundle.quantumBit,
+				relativePath: output.relativePath,
+			};
+			// if this bundle belongs to splitting
+			// we need to remember the generated file name and store
+			// and then pass to the API
+			if (bundle.quantumBit) {
+				const splitOpts: any = [output.relativePath, bundle.quantumBit.entry.getID()];
+				splitFileOptions.i[bundle.quantumBit.name] = splitOpts;
+				const cssCollection = bundle.quantumBit.cssCollection;
+				if (cssCollection) {
+					let cssName = bundle.quantumBit.name;
+					if (!/\.css$/.test(cssName)) {
+						cssName = `${cssName}.css`;
 					}
+					const splitConfig = this.core.context.quantumSplitConfig;
+					const output = await writeCSS(cssCollection, cssName);
+					if (bundle.quantumBit && splitConfig && splitConfig.resolveOptions) {
+						const dest = splitConfig.getDest();
+						cssName = joinFuseBoxPath(dest, output.filename);
+					}
+					splitOpts.push({ css: true, name: cssName });
 				}
-			});
+			}
 		};
 		const writeCSS = async (cssCollection: CSSCollection, key: string) => {
+			if (cssCollection.written) {
+				return;
+			}
 			const cssData = cssCollection.collection;
 
 			if (cssData.size > 0) {
@@ -194,12 +198,10 @@ export class BundleWriter {
 				if (useSourceMaps) {
 					output.writeToOutputFolder(cssCollection.sourceMapsPath, cssCollection.sourceMap);
 				}
+				cssCollection.written = true;
+				return cssResultData;
 			}
 		};
-
-		if (this.core.opts.shouldGenerateCSS()) {
-			this.core.cssCollection.forEach(writeCSS);
-		}
 
 		return each(producer.bundles, (bundle: Bundle) => {
 			if (bundle.name === "api.js") {
@@ -245,9 +247,16 @@ export class BundleWriter {
 							if (this.core.opts.shouldUglify()) {
 								this.uglifyBundle(bundle);
 							}
-
 							await writeBundle(bundle);
 						}
+					}
+				}
+			})
+			.then(async () => {
+				if (this.core.opts.shouldGenerateCSS()) {
+					for (const item of this.core.cssCollection) {
+						const cssCollection = item[1];
+						await writeCSS(cssCollection, item[0]);
 					}
 				}
 			})

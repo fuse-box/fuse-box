@@ -12,6 +12,7 @@ export class CSSCollection {
 	private renderedFileName: string;
 	public sourceMapsPath: string;
 	public splitCSS: boolean;
+	public written: boolean;
 	constructor(public core: QuantumCore) {}
 
 	public add(css: CSSFile) {
