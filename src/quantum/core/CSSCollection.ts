@@ -1,6 +1,6 @@
 import { CSSFile } from "./CSSFile";
 import { QuantumCore } from "../plugin/QuantumCore";
-import { Concat } from "../../Utils";
+import { Concat, joinFuseBoxPath } from "../../Utils";
 import { QuantumBit } from "../plugin/QuantumBit";
 
 export class CSSCollection {
@@ -10,6 +10,7 @@ export class CSSCollection {
 	public quantumBit: QuantumBit;
 	private renderedString: string;
 	private renderedFileName: string;
+	public sourceMapsPath: string;
 	public splitCSS: boolean;
 	constructor(public core: QuantumCore) {}
 
@@ -34,7 +35,8 @@ export class CSSCollection {
 			}
 		});
 		if (this.useSourceMaps) {
-			concat.add(null, `/*# sourceMappingURL=/${this.renderedFileName}.map */`);
+			this.sourceMapsPath = joinFuseBoxPath("/", `${this.renderedFileName}.map`);
+			concat.add(null, `/*# sourceMappingURL=${this.sourceMapsPath} */`);
 		}
 		this.sourceMap = concat.sourceMap;
 		this.renderedString = concat.content.toString();
@@ -47,7 +49,7 @@ export class CSSCollection {
 
 	public setString(str: string) {
 		if (this.useSourceMaps) {
-			str += "\n/*# sourceMappingURL=/" + this.renderedFileName + ".map */";
+			str += "\n/*# sourceMappingURL=" + this.sourceMapsPath + " */";
 		}
 		this.renderedString = str;
 		return str;
