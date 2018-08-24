@@ -7,6 +7,7 @@ import { fork } from "child_process";
 import { removeFolder } from "../../Utils";
 import * as request from "request";
 import { UserOutputResult } from "../../core/UserOutput";
+import { Bundle } from "../../core/Bundle";
 
 const jsdom = require("jsdom");
 
@@ -102,8 +103,11 @@ export class FuseTestEnv {
 		this.fuse = FuseBox.init(config);
 	}
 
-	public simple(instructions: string = "> index.ts"): Promise<FuseTestEnv> {
-		this.fuse.bundle("app").instructions(instructions);
+	public simple(instructions: string = "> index.ts", conf?: (bundle: Bundle) => void): Promise<FuseTestEnv> {
+		const bundle = this.fuse.bundle("app").instructions(instructions);
+		if (conf) {
+			conf(bundle);
+		}
 		return this.fuse.run().then(producer => {
 			this.producer = producer;
 			return this;
@@ -151,6 +155,19 @@ export class FuseTestEnv {
 		return this.scripts.get(name);
 	}
 
+	public fileShouldExist(name: string) {
+		const f = path.join(this.dirs.dist, name);
+		if (!fs.existsSync(f)) {
+			throw new Error(`File ${f} was not found`);
+		}
+		return f;
+	}
+
+	public getDistContent(name: string) {
+		const f = this.fileShouldExist(name);
+		return fs.readFileSync(f).toString();
+	}
+
 	public scriptShouldExist(name: string) {
 		if (!this.getScript(name)) {
 			throw new Error(`Script ${name} should exist`);
@@ -162,7 +179,18 @@ export class FuseTestEnv {
 		}
 	}
 
-	public browser(fn: { (window: any, test: FuseTestEnv): any }, preloadScriptPath?: string): Promise<FuseTestEnv> {
+	public delay(ms = 100) {
+		return new Promise((resolve, reject) => {
+			setTimeout(() => {
+				return resolve(ms);
+			}, ms);
+		});
+	}
+
+	public async browser(
+		fn: { (window: any, test: FuseTestEnv): any },
+		preloadScriptPath?: string,
+	): Promise<FuseTestEnv> {
 		const scripts = [path.join(appRoot.path, "src/tests/stubs/DummyXMLHttpRequest.js")];
 		const bundles = this.producer.sortBundles();
 
@@ -179,15 +207,37 @@ export class FuseTestEnv {
 				scripts.push(bundle.context.output.lastPrimaryOutput.path);
 			}
 		});
-		return new Promise((resolve, reject) => {
+		const webIndexFile = path.join(this.dirs.dist, "index.html");
+		let indexContent = `<html>
+		<head>
+		</head><body></body></html>
+`;
+
+		await this.delay(1);
+		if (fs.existsSync(webIndexFile)) {
+			indexContent = fs.readFileSync(webIndexFile).toString();
+		}
+		return new Promise<any>((resolve, reject) => {
 			jsdom.env({
-				html: `<html>
-                    <head>
-                    </head><body></body></html>
-                `,
+				html: indexContent,
 				scripts: scripts,
 				//virtualConsole: jsdom.createVirtualConsole().sendTo(console),
 				done: (err, window) => {
+					window.loadLinkTags = () => {
+						return new Promise((resolve, reject) => {
+							setTimeout(() => {
+								const items = window.document.querySelectorAll("link");
+								const links = [];
+								for (const i in items) {
+									const item = items[i];
+									if (item.attributes && item.attributes.href) {
+										links.push(item.attributes.href.value);
+									}
+								}
+								return resolve(links);
+							}, 1);
+						});
+					};
 					window.__ajax = (url, fn) => {
 						if (/^http(s)\:/.test(url)) {
 							return request(url, function(error, response, body) {
