@@ -637,9 +637,11 @@ export class File {
 		const newName = joinFuseBoxPath("/", this.context.inlineCSSPath, `${fastHash(this.info.fuseBoxPath)}.map`);
 		this.contents = this.contents.replace(re, `$1${newName}$3`);
 		this.context.output.writeToOutputFolder(newName, this.sourceMap);
+
 		if (this.context.fuse && this.context.fuse.producer) {
 			const producer = this.context.fuse.producer;
-			producer.sharedSourceMaps.set(this.info.fuseBoxPath, this.sourceMap);
+			const fullName = `${this.collection.name || "default"}/${this.info.fuseBoxPath}`;
+			producer.sharedSourceMaps.set(fullName, this.sourceMap);
 		}
 	}
 

@@ -190,8 +190,9 @@ export class BundleWriter {
 				if (!cssCollection.splitCSS) {
 					this.core.producer.injectedCSSFiles.add(cssResultData.filename);
 				}
+
 				if (useSourceMaps) {
-					output.writeToOutputFolder(this.core.opts.getCSSSourceMapsPath(), cssCollection.sourceMap);
+					output.writeToOutputFolder(cssCollection.sourceMapsPath, cssCollection.sourceMap);
 				}
 			}
 		};
