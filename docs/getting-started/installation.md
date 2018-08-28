@@ -3,7 +3,7 @@ id: installation
 title: Installation
 ---
 
-## Add to project
+## Add to a project
 
 You can install FuseBox from `npm`.
 
