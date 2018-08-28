@@ -29,6 +29,7 @@ const siteConfig = {
   highlight: {
     theme: "default",
   },
+  gaTrackingId: "UA-124354958-1",
   ogImage: "img/docusaurus.png",
   onPageNav: "separate",
   organizationName: "FuseBox",
