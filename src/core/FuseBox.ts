@@ -99,7 +99,6 @@ export class FuseBox {
 	 *
 	 * @memberOf FuseBox
 	 */
-	// tslint:disable-next-line:cyclomatic-complexity
 	constructor(public opts?: FuseBoxOptions) {
 		printCurrentVersion();
 		this.context = new WorkFlowContext();
