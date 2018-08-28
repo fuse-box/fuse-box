@@ -7,7 +7,7 @@ indent_style = space
 quote_type = double
 
 insert_final_newline = true
-max_line_length=80
+max_line_length = 80
 trim_trailing_whitespace = true
 
 [*.md]
@@ -15,4 +15,4 @@ trim_trailing_whitespace = false
 
 [*.ts]
 indent_style = tab
-max_line_length=120
+max_line_length = 120
