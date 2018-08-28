@@ -1,0 +1,43 @@
+.checkpoints {
+  ul li:before {
+    content: "✓";
+    color: rgb(24, 164, 24);
+    padding-right: 10px;
+  }
+  ul li {
+    margin-bottom: 5px;
+  }
+  ul {
+    list-style: none;
+  }
+}
+
+.post {
+  h2 {
+    border-top: 1px solid #ececec;
+    padding-top: 10px;
+    margin-top: 50px;
+  }
+
+  a {
+    border-bottom: 1px solid $lightGray2;
+    text-decoration: none;
+    transition: color 0.3s, border-color 0.3s;
+    color: $color1;
+    &:hover {
+      border-bottom: 1px solid $color1;
+      text-decoration: none;
+    }
+    &.active {
+      color: $color1;
+      border-bottom: 1px solid $color1;
+    }
+    &.anchor {
+      border: none;
+      &:hover {
+        border: none !important;
+        text-decoration: none;
+      }
+    }
+  }
+}
