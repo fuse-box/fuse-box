@@ -1,0 +1,8 @@
+.docsNavContainer {
+  .navListItem {
+    &.navListItemActive {
+      color: $color1 !important;
+      font-weight: 800;
+    }
+  }
+}

@@ -1,8 +1,8 @@
 var target = global || window;
 
 target["newBundleMapping"] = {
-	c: {
-		b: "",
-		s: "./",
-	},
+  c: {
+    b: "",
+    s: "./",
+  },
 };
