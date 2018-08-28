@@ -62,30 +62,20 @@ node fuse
 ```
 
 Feel free to create as many folders as required, `_playground` folder is in our
-`.gitignore`
+`.gitignore`.
 
 ### How to test
-
-Run
-
-```bash
-gulp installDevDeps
-```
-
-That will install a bunch of super heavy libraries, that's why they are not
-added to `devDependencies`. Mind `package.json`, your npm shouldn't save them
-there, if it did - please revert unnecessary changes.
 
 Run all tests
 
 ```bash
-node test
+npm run test
 ```
 
 Run one test case
 
 ```bash
-node test --file=CSSDependencyExtractor.test.ts
+npm run test -- --file=CSSDependencyExtractor.test.ts
 ```
 
 ## <a name="submission-guidelines"></a> Submission Guidelines

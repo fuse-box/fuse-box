@@ -3,6 +3,7 @@ import * as path from "path";
 import { PathMaster } from "../core/PathMaster";
 import { WorkFlowContext } from "../core/WorkflowContext";
 import { should } from "fuse-test-runner";
+import { createRealNodeModule } from "../tests/stubs/FuseTestEnv";
 
 const testFolder = path.join(appRoot.path, "src/tests/fixtures/path-test");
 const getTestFolder = name => {
@@ -199,8 +200,19 @@ export class PathMasterTest {
 	}
 
 	"Should handle sub module with @ operator"() {
-		let result = pm.resolve("@angular/core", getTestFolder("./bar/data.json"));
-		should(result.nodeModuleName).equal("@angular/core");
-		should(result.fuseBoxPath).equal("bundles/core.umd.js");
+		const moduleName = "@test-namespace/test-module";
+		const moduleMain = "test/path/to/entrypoint.js";
+
+		createRealNodeModule(moduleName, {
+			"package.json": JSON.stringify({
+				name: moduleName,
+				main: moduleMain,
+			}),
+		});
+
+		const result = pm.resolve(moduleName, getTestFolder("./bar/data.json"));
+
+		should(result.nodeModuleName).equal(moduleName);
+		should(result.fuseBoxPath).equal(moduleMain);
 	}
 }

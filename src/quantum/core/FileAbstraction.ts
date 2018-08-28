@@ -284,7 +284,6 @@ export class FileAbstraction {
 	 * @param prop
 	 * @param idx
 	 */
-	// tslint:disable-next-line:cyclomatic-complexity
 	private onNode(node, parent, prop, idx) {
 		// process.env
 		if (this.core) {
