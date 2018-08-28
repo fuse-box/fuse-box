@@ -144,6 +144,8 @@ export class BundleWriter {
 					if (bundle.quantumBit && splitConfig && splitConfig.resolveOptions) {
 						const dest = splitConfig.getDest();
 						cssName = joinFuseBoxPath(dest, output.filename);
+					} else {
+						cssName = output.filename;
 					}
 					splitOpts.push({ css: true, name: cssName });
 				}
