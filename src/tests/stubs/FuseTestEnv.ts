@@ -235,7 +235,7 @@ export class FuseTestEnv {
 									}
 								}
 								return resolve(links);
-							}, 1);
+							}, 10);
 						});
 					};
 					window.__ajax = (url, fn) => {
