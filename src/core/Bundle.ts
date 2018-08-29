@@ -15,6 +15,7 @@ import { EventEmitter } from "../EventEmitter";
 import { ExtensionOverrides } from "./ExtensionOverrides";
 import { QuantumBit } from "../quantum/plugin/QuantumBit";
 
+type WatchFilterFn = (path: string) => boolean
 export interface HMROptions {
 	port?: number;
 	socketURI?: string;
@@ -23,6 +24,7 @@ export interface HMROptions {
 export class Bundle {
 	public context: WorkFlowContext;
 	public watchRule: string;
+	public watchFilterFn?: WatchFilterFn;
 	public arithmetics: string;
 	public process: FuseProcess = new FuseProcess(this);
 	public onDoneCallback: any;
@@ -46,8 +48,14 @@ export class Bundle {
 		this.setup();
 	}
 
-	public watch(rules?: string): Bundle {
-		this.watchRule = rules ? rules : "**";
+	public watch(ruleOrFilterFn?: string | WatchFilterFn, filterFn?: WatchFilterFn): Bundle {
+		if (typeof ruleOrFilterFn === 'function') {
+			this.watchRule = "**";
+			this.watchFilterFn = ruleOrFilterFn;
+		} else {
+			this.watchRule = ruleOrFilterFn || "**";
+			this.watchFilterFn = filterFn;
+		}
 		return this;
 	}
 

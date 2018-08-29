@@ -207,6 +207,7 @@ export class BundleProducer {
 		settings.forEach((expression, bundleName) => {
 			if (expression.test(path)) {
 				const bundle = this.bundles.get(bundleName);
+				if (bundle.watchFilterFn && !bundle.watchFilterFn(path)) { return; }
 
 				const defer = bundle.fuse.context.defer;
 
