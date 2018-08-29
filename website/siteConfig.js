@@ -2,6 +2,10 @@
 // site configuration options.
 
 const siteConfig = {
+  algolia: {
+    apiKey: "7c4587628ca223f7abcd82db137ad7b4",
+    indexName: "fuse_box",
+  },
   baseUrl: "/",
   colors: {
     primaryColor: "#223351",
