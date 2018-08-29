@@ -14,7 +14,33 @@ html,
   font-style: normal;
   font-weight: 400;
 }
+@media only screen and (max-width: 1024px) {
+  .navPusher {
+    padding-top: 100px !important;
+  }
+}
 
+.navSearchWrapper .aa-dropdown-menu {
+  border: 1px solid $color1;
+  padding: 0;
+}
+.algolia-docsearch-footer {
+  color: #f9f9f9;
+  height: 40px;
+  &:hover {
+    background-color: #f9f9f9;
+  }
+  .algolia-docsearch-footer--logo {
+    background-color: #f9f9f9;
+    text-indent: inherit !important;
+    &:hover {
+      background-color: #f9f9f9;
+    }
+  }
+  a {
+    color: #f9f9f9;
+  }
+}
 .fixedHeaderContainer {
   background-color: $mainColor;
 }
