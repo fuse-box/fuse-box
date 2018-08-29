@@ -27,6 +27,25 @@ export class BundleApiTest {
 		fuse.bundle("app").watch("hello/*");
 		const bundle = fuse.producer.bundles.get("app");
 		should(bundle.watchRule).equal("hello/*");
+		should(bundle.watchFilterFn).beUndefined();
+	}
+
+	"Should add add a watch filter"() {
+		const fuse = createFuse();
+		const watchFilter = (path) => false
+		fuse.bundle("app").watch(watchFilter);
+		const bundle = fuse.producer.bundles.get("app");
+		should(bundle.watchRule).equal("**");
+		should(bundle.watchFilterFn).equal(watchFilter);
+	}
+
+	"Should add add a watch rule and filter"() {
+		const fuse = createFuse();
+		const watchFilter = (path) => false
+		fuse.bundle("app").watch("hello/*", watchFilter);
+		const bundle = fuse.producer.bundles.get("app");
+		should(bundle.watchRule).equal("hello/*");
+		should(bundle.watchFilterFn).equal(watchFilter);
 	}
 
 	"Should set globals"() {
