@@ -73,9 +73,7 @@ packed with features and unfolds limitless possibilities of extending.
 ### Task Runner
 
 FuseBox features a powerfull
-[here](https://github.com/fuse-box/fuse-box-examples). Don't hesitate to reach
-[task runner](https://fuse-box.org/page/getting-started-with-sparky) which is
-designed with simplicity and elegance in mind. It fits perfectly in the modern
+[task runner](https://fuse-box.org/page/getting-started-with-sparky). It fits perfectly in the modern
 API of FuseBox while resembling well established concepts behind
 [Gulp](https://gulpjs.org).
 
