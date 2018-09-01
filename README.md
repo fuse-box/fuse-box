@@ -73,6 +73,7 @@ packed with features and unfolds limitless possibilities of extending.
 ### Task Runner
 
 FuseBox features a powerfull
+[here](https://github.com/fuse-box/fuse-box-examples). Don't hesitate to reach
 [task runner](https://fuse-box.org/page/getting-started-with-sparky) which is
 designed with simplicity and elegance in mind. It fits perfectly in the modern
 API of FuseBox while resembling well established concepts behind
@@ -87,17 +88,16 @@ plug it in. If there's anything missing,
 ### Highlights
 
 - No headache, minimal configuration
-- First class [TypeScript](http://fuse-box.org/page/typescript) support
-- Tree shaking
-- [Arithmetic instructions](http://fuse-box.org/page/bundle#arithmetic-instructions)
+- First class
+  [TypeScript](https://fuse-box.org/docs/getting-started/typescript-project)
+  support
+- [Tree shaking](https://fuse-box.org/docs/production-builds/quantum#tree-shaking)
+- Code Splitting
+- [Dynamic imports](https://fuse-box.org/docs/development/dynamic-imports)
+- [CSS Code splitting](https://fuse-box.org/docs/getting-started/add-css#production-build)
 - Blazing fast bundle time
-- [Wildcard imports](http://fuse-box.org/page/loader-api#wildcard-import)
-- [Dynamic modules](http://fuse-box.org/page/loader-api#dynamic-modules) at
-  runtime
-- [Tilde support](http://fuse-box.org/page/loader-api#point-to-the-root)
-- [DevServer and HMR](http://fuse-box.org/page/development) integrate with
-  existing HTTP apps in 1 second!
-- Metadata, e.g. `__filename` for decorators.
+- [DevServer and HMR](https://fuse-box.org/docs/development/development-server)
+  integrate with existing HTTP apps in 1 second!
 - Works everywhere for easy universal applications
 
 There is so much more... FuseBox pushes bundling to a whole new level!
@@ -141,26 +141,21 @@ node fuse
 ### Documentation
 
 You can find a more detailed getting started guide on our
-[website](https://fuse-box.org/page/getting-started). It will walk you through
-the basics and give you a solid foundation to dig deeper.
+[website](https://fuse-box.org/docs/getting-started/setup). It will walk you
+through the basics and give you a solid foundation to dig deeper.
 
 ### Examples and seeds
 
 You can find many examples and application scaffolds on our
-[website](http://fuse-box.org/page/examples-and-seeds). Don't hesitate to reach
+[here](https://github.com/fuse-box/fuse-box-examples). Don't hesitate to reach
 out to us on [Gitter](https://gitter.im/fusebox-bundler/Lobby). Please consult
 our [Contributing guidelines](./CONTRIBUTING.md) before creating an issue, we're
 trying to keep it nice and tidy.
 
-#### Angular2 Example
-
-[Todo App](https://github.com/fuse-box/angular2-example) built on Angular2
-(compiles in 50-80ms!)
-
 #### React Example
 
-[Simple example](https://github.com/fuse-box/react-example) using React with
-babel (compiles in 50ms!)
+[React project](https://github.com/fuse-box/fuse-react-demo) using React with
+Code Splitting + CSS Splitting
 
 # Open Collective
 
