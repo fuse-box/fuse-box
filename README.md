@@ -147,7 +147,7 @@ through the basics and give you a solid foundation to dig deeper.
 You can find many examples and application scaffolds on our
 [here](https://github.com/fuse-box/fuse-box-examples). Don't hesitate to reach
 out to us on [Gitter](https://gitter.im/fusebox-bundler/Lobby). Please consult
-our [Contributing guidelines](./CONTRIBUTING.md) before creating an issue, we're
+our [Contributing guidelines](https://fuse-box.org/docs/contributing) before creating an issue, we're
 trying to keep it nice and tidy.
 
 #### React Example
@@ -215,10 +215,7 @@ site. [Become a sponsor](https://opencollective.com/fuse-box#sponsor)
 
 # Contributing
 
-Have you created an awesome plugin? Add it to the
-[list](https://github.com/fuse-box/fuse-box/blob/master/docs/third-party-plugins.md).
-
-Please consult [Contributing Guildelines](./CONTRIBUTING.md) for details. If you
+Please consult [Contributing Guildelines](https://fuse-box.org/docs/contributing) for details. If you
 already know it, here's a fastlane to our communication channels:
 
 - [Official Documentation](http://fuse-box.org/)
