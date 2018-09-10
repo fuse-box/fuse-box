@@ -67,7 +67,7 @@ export class CSSModulesClass implements Plugin {
 					generateScopedName: this.scopedName ? this.scopedName : "_[local]___[hash:base64:5]",
 				}),
 			])
-				.process(file.contents, {})
+				.process(file.contents, { from: file.absPath })
 				.then(result => {
 					file.contents = result.css;
 					if (context.useCache) {
