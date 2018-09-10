@@ -8,7 +8,11 @@ if ($isBrowser) {
     g["global"] = $isWebWorker || $isServiceWorker ? {} : window;
 }
 __root__ = !$isBrowser || typeof __fbx__dnm__ !== "undefined" ? module.exports : __root__;
-var $fsbx = $isBrowser ? ($isWebWorker || $isServiceWorker ? {} : (window["__fsbx__"] = window["__fsbx__"] || {})) : (g["$fsbx"] = g["$fsbx"] || {});
+var $fsbx = $isBrowser
+    ? $isWebWorker || $isServiceWorker
+        ? {}
+        : (window["__fsbx__"] = window["__fsbx__"] || {})
+    : (g["$fsbx"] = g["$fsbx"] || {});
 if (!$isBrowser) {
     g["require"] = require;
 }
@@ -168,7 +172,7 @@ function $getRef(name, o) {
         pkgName: pkgName,
         versions: pkg.v,
         filePath: filePath,
-        validPath: validPath
+        validPath: validPath,
     };
 }
 function $async(file, cb, o) {
@@ -234,7 +238,7 @@ function syntheticDefaultExportPolyfill(input) {
     Object.defineProperty(input, "default", {
         value: input,
         writable: true,
-        enumerable: false
+        enumerable: false,
     });
 }
 function $import(name, o) {
@@ -283,7 +287,7 @@ function $import(name, o) {
         var result = $import(name, {
             pkg: pkg,
             path: path,
-            v: ref.versions
+            v: ref.versions,
         });
         if (FuseBox["sdep"]) {
             syntheticDefaultExportPolyfill(result);
@@ -378,7 +382,7 @@ var FuseBox = (function () {
         pkg.f = {};
         pkg.v = v;
         pkg.s = {
-            file: function (name, fn) { return (pkg.f[name] = { fn: fn }); }
+            file: function (name, fn) { return (pkg.f[name] = { fn: fn }); },
         };
         return fn(pkg.s);
     };
