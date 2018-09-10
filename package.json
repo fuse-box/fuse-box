@@ -28,7 +28,7 @@
     }
   },
   "dependencies": {
-    "acorn": "^5.1.2",
+    "acorn": "^5.7.3",
     "acorn-jsx": "^4.0.1",
     "ansi": "^0.3.1",
     "app-root-path": "^2.0.1",
