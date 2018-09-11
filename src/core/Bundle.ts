@@ -14,6 +14,7 @@ import { PackageAbstraction } from "../quantum/core/PackageAbstraction";
 import { EventEmitter } from "../EventEmitter";
 import { ExtensionOverrides } from "./ExtensionOverrides";
 import { QuantumBit } from "../quantum/plugin/QuantumBit";
+import { CombinedTargetAndLanguageLevel } from './CombinedTargetAndLanguageLevel';
 
 type WatchFilterFn = (path: string) => boolean
 export interface HMROptions {
@@ -201,7 +202,10 @@ export class Bundle {
 	}
 
 	public target(target: string): Bundle {
-		this.context.target = target;
+		const combination = new CombinedTargetAndLanguageLevel(target);
+		this.context.target = combination.target();
+		this.context.forcedLanguageLevel = combination.languageLevel();
+		this.context.languageLevel = combination.languageLevelOrDefault();
 		return this;
 	}
 
