@@ -17,6 +17,7 @@ import { Bundle } from "./Bundle";
 import { File, ScriptTarget } from "./File";
 import { ExtensionOverrides } from "./ExtensionOverrides";
 import { TypescriptConfig } from "./TypescriptConfig";
+import { CombinedTargetAndLanguageLevel } from './CombinedTargetAndLanguageLevel';
 
 const appRoot = require("app-root-path");
 
@@ -115,14 +116,10 @@ export class FuseBox {
 		}
 
 		// setting targets
-		opts.target = opts.target || "browser";
-		const [target, languageLevel] = opts.target.toLowerCase().split("@");
-		this.context.target = target;
-		const level = languageLevel && Object.keys(ScriptTarget).find(t => t.toLowerCase() === languageLevel);
-		if (level) {
-			this.context.forcedLanguageLevel = ScriptTarget[level];
-		}
-		this.context.languageLevel = ScriptTarget[level] || ScriptTarget.ES2016;
+		const combination = new CombinedTargetAndLanguageLevel(opts.target);
+		this.context.target = combination.target();
+		this.context.forcedLanguageLevel = combination.languageLevel();
+		this.context.languageLevel = combination.languageLevelOrDefault();
 
 		if (opts.polyfillNonStandardDefaultUsage !== undefined) {
 			this.context.deprecation(
