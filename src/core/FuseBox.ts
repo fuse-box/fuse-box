@@ -14,7 +14,7 @@ import { ModuleCollection } from "./ModuleCollection";
 import { UserOutput } from "./UserOutput";
 import { BundleProducer } from "./BundleProducer";
 import { Bundle } from "./Bundle";
-import { File, ScriptTarget } from "./File";
+import { File } from "./File";
 import { ExtensionOverrides } from "./ExtensionOverrides";
 import { TypescriptConfig } from "./TypescriptConfig";
 import { CombinedTargetAndLanguageLevel } from './CombinedTargetAndLanguageLevel';
