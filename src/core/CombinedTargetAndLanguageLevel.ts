@@ -6,19 +6,19 @@ export class CombinedTargetAndLanguageLevel {
 		this.combination = this.combination || "browser";
 	}
 
-	public target(): string {
+	public getTarget(): string {
 		const [target,] = this.splitCombination();
 		return target;
 	}
 
-	public languageLevel(): ScriptTarget {
+	public getLanguageLevel(): ScriptTarget {
 		const [, languageLevel] = this.splitCombination();
 		const level = languageLevel && Object.keys(ScriptTarget).find(t => t.toLowerCase() === languageLevel);
 		return level ? ScriptTarget[level] : undefined;
 	}
 
-	public languageLevelOrDefault(defaultLanguageLevel: ScriptTarget = ScriptTarget.ES2016) {
-		const languageLevel = this.languageLevel();
+	public getLanguageLevelOrDefault(defaultLanguageLevel: ScriptTarget = ScriptTarget.ES2016) {
+		const languageLevel = this.getLanguageLevel();
 		return languageLevel ? languageLevel : defaultLanguageLevel;
 	}
 
