@@ -9,33 +9,33 @@ export class CombinedTargetAndLanguageLevelTest {
 
 	"Should default to browser target"() {
 		const combination = new CombinedTargetAndLanguageLevel(null);
-		should(combination.target()).equal(TARGET_BROWSER);
+		should(combination.getTarget()).equal(TARGET_BROWSER);
 	}
 
 	"Should detect target without language level"() {
 		const combination = new CombinedTargetAndLanguageLevel(TARGET_DUMMY);
-		should(combination.target()).equal(TARGET_DUMMY);
+		should(combination.getTarget()).equal(TARGET_DUMMY);
 	}
 
 	"Should provide undefined for missing language level"() {
 		const combination = new CombinedTargetAndLanguageLevel(TARGET_DUMMY);
-		should(combination.languageLevel()).beUndefined();
+		should(combination.getLanguageLevel()).beUndefined();
 	}
 
 	"Should detect target and language level"() {
 		const combination = new CombinedTargetAndLanguageLevel(`${TARGET_DUMMY}@es5`);
-		should(combination.target()).equal(TARGET_DUMMY);
-		should(combination.languageLevel()).equal(ScriptTarget.ES5);
+		should(combination.getTarget()).equal(TARGET_DUMMY);
+		should(combination.getLanguageLevel()).equal(ScriptTarget.ES5);
 	}
 
 	"Should default to language level es2016"() {
 		const combination = new CombinedTargetAndLanguageLevel(TARGET_DUMMY);
-		should(combination.languageLevelOrDefault()).equal(ScriptTarget.ES2016);
+		should(combination.getLanguageLevelOrDefault()).equal(ScriptTarget.ES2016);
 	}
 
 	"Should detect target and language level (for default variant)"() {
 		const combination = new CombinedTargetAndLanguageLevel(`${TARGET_DUMMY}@es5`);
-		should(combination.target()).equal(TARGET_DUMMY);
-		should(combination.languageLevelOrDefault()).equal(ScriptTarget.ES5);
+		should(combination.getTarget()).equal(TARGET_DUMMY);
+		should(combination.getLanguageLevelOrDefault()).equal(ScriptTarget.ES5);
 	}
 }
