@@ -203,9 +203,9 @@ export class Bundle {
 
 	public target(target: string): Bundle {
 		const combination = new CombinedTargetAndLanguageLevel(target);
-		this.context.target = combination.target();
-		this.context.forcedLanguageLevel = combination.languageLevel();
-		this.context.languageLevel = combination.languageLevelOrDefault();
+		this.context.target = combination.getTarget();
+		this.context.forcedLanguageLevel = combination.getLanguageLevel();
+		this.context.languageLevel = combination.getLanguageLevelOrDefault();
 		return this;
 	}
 
