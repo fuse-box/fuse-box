@@ -30,14 +30,16 @@ export class BundleProducer {
 	public entryPackageFile: string;
 	private injectedCode = new Map<string, string>();
 	private chokidarOptions: any;
+	private chokidarPaths: any;
 	private warnings = new Map<string, string[]>();
 	constructor(public fuse: FuseBox) {
 		this.runner = new BundleRunner(this.fuse);
 	}
 
-	public run(opts: { chokidar?: any; runType?: string }): Promise<BundleProducer> {
+	public run(opts: { chokidar?: any; chokidarPaths?: any; runType?: string }): Promise<BundleProducer> {
 		if (opts) {
 			this.chokidarOptions = opts.chokidar;
+			this.chokidarPaths = opts.chokidarPaths;
 		}
 
 		/** Collect information about watchers and start watching */
@@ -190,7 +192,7 @@ export class BundleProducer {
 
 		let ready = false;
 		chokidar
-			.watch(this.fuse.context.homeDir, this.chokidarOptions || {})
+			.watch(this.chokidarPaths || this.fuse.context.homeDir, this.chokidarOptions || {})
 			.on("all", (event, fp) => {
 				if (ready) {
 					this.onChanges(settings, fp);

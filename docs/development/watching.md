@@ -59,3 +59,9 @@ To solve some issues with running on docker container providers set this:
 ```ts
 fuse.run({ chokidar: { awaitWriteFinish: true } });
 ```
+
+This will allow you to stop the watcher from looking in folders like node_modules:
+
+```ts
+fuse.run({ chokidarPaths: ['path'] );
+```
