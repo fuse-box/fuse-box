@@ -63,5 +63,5 @@ fuse.run({ chokidar: { awaitWriteFinish: true } });
 This will allow you to stop the watcher from looking in folders like node_modules:
 
 ```ts
-fuse.run({ chokidarPaths: ['path'] );
+fuse.run({ chokidarPaths: ['path'] });
 ```
