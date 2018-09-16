@@ -210,13 +210,8 @@ export class QuantumCore {
 	}
 
 	public prepareFiles(bundleAbstraction: BundleAbstraction) {
-		// set ids first
-		let entryId;
-		if (this.producer.entryPackageFile && this.producer.entryPackageName) {
-			entryId = `${this.producer.entryPackageName}/${this.producer.entryPackageFile}`;
-		}
-
 		bundleAbstraction.packageAbstractions.forEach(packageAbstraction => {
+			let entryId = `${this.producer.entryPackageName}/${packageAbstraction.entryFile}`
 			packageAbstraction.fileAbstractions.forEach((fileAbstraction, key: string) => {
 				let fileId = fileAbstraction.getFuseBoxFullPath();
 				const id = this.index;
