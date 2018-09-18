@@ -1,42 +1,44 @@
-import { acornParse } from "../../analysis/FileAnalysis";
-import { PackageAbstraction } from "./PackageAbstraction";
-import { ASTTraverse } from "../../ASTTraverse";
-import { RequireStatement } from "./nodes/RequireStatement";
 import * as escodegen from "escodegen";
 import * as path from "path";
+import { acornParse } from "../../analysis/FileAnalysis";
+import { ASTTraverse } from "../../ASTTraverse";
 import { ensureFuseBoxPath, transpileToEs5 } from "../../Utils";
-
+import { QuantumBit } from "../plugin/QuantumBit";
+import { QuantumCore } from "../plugin/QuantumCore";
 import {
-	matchesAssignmentExpression,
-	matchesLiteralStringExpression,
-	matchesSingleFunction,
-	matchesDoubleMemberExpression,
+	compareStatement,
+	isExportComputed,
+	isExportMisused,
+	isTrueRequireFunction,
 	matcheObjectDefineProperty,
+	matchesAssignmentExpression,
+	matchesDefinedExpression,
+	matchesDoubleMemberExpression,
 	matchesEcmaScript6,
+	matchesExportReference,
+	matchesGlobalVariable,
+	matchesIfStatementFuseBoxIsEnvironment,
+	matchesIfStatementProcessEnv,
+	matchesLiteralStringExpression,
+	matchesNodeEnv,
+	matchesSingleFunction,
 	matchesTypeOf,
+	matchNamedExport,
 	matchRequireIdentifier,
 	trackRequireMember,
-	matchNamedExport,
-	isExportMisused,
-	matchesNodeEnv,
-	matchesExportReference,
-	matchesIfStatementProcessEnv,
-	compareStatement,
-	matchesIfStatementFuseBoxIsEnvironment,
-	isExportComputed,
-	isTrueRequireFunction,
-	matchesDefinedExpression,
+	matchesVariableDeclarator,
+	matchesGlobalVariableReference,
 } from "./AstUtils";
 import { ExportsInterop } from "./nodes/ExportsInterop";
-import { UseStrict } from "./nodes/UseStrict";
+import { GenericAst } from "./nodes/GenericAst";
+import { NamedExport } from "./nodes/NamedExport";
+import { ReplaceableBlock } from "./nodes/ReplaceableBlock";
+import { RequireStatement } from "./nodes/RequireStatement";
 import { TypeOfExportsKeyword } from "./nodes/TypeOfExportsKeyword";
 import { TypeOfModuleKeyword } from "./nodes/TypeOfModuleKeyword";
 import { TypeOfWindowKeyword } from "./nodes/TypeOfWindowKeyword";
-import { NamedExport } from "./nodes/NamedExport";
-import { GenericAst } from "./nodes/GenericAst";
-import { QuantumCore } from "../plugin/QuantumCore";
-import { ReplaceableBlock } from "./nodes/ReplaceableBlock";
-import { QuantumBit } from "../plugin/QuantumBit";
+import { UseStrict } from "./nodes/UseStrict";
+import { PackageAbstraction } from "./PackageAbstraction";
 
 const globalNames = new Set<string>(["__filename", "__dirname", "exports", "module"]);
 
@@ -75,6 +77,9 @@ export class FileAbstraction {
 	public typeofGlobalKeywords = new Set<GenericAst>();
 	public typeofDefineKeywords = new Set<GenericAst>();
 	public typeofRequireKeywords = new Set<GenericAst>();
+	public globalProcess: Set<GenericAst>;
+	public globalProcessVersion: Set<GenericAst>;
+	public processVariableDefined: boolean;
 
 	public namedExports = new Map<string, NamedExport>();
 	public processNodeEnv = new Set<ReplaceableBlock>();
@@ -90,9 +95,15 @@ export class FileAbstraction {
 	private removalRestricted = false;
 	private dependencies = new Map<FileAbstraction, Set<RequireStatement>>();
 
+	public renderedHeaders: string[];
+
 	constructor(public fuseBoxPath: string, public packageAbstraction: PackageAbstraction) {
 		this.fuseBoxDir = ensureFuseBoxPath(path.dirname(fuseBoxPath));
 		this.setID(fuseBoxPath);
+		this.globalProcess = new Set();
+		this.renderedHeaders = [];
+		this.globalProcessVersion = new Set();
+		this.processVariableDefined = false;
 		packageAbstraction.registerFileAbstraction(this);
 		this.core = this.packageAbstraction.bundleAbstraction.producerAbstraction.quantumCore;
 
@@ -269,6 +280,9 @@ export class FileAbstraction {
 		if (this.isDirnameUsed()) {
 			fn.push(`var __dirname = ${JSON.stringify(this.fuseBoxDir)};` + "\n");
 		}
+		if (this.renderedHeaders.length) {
+			fn.push(this.renderedHeaders.join("\n") + "\n");
+		}
 		if (this.isFilenameUsed()) {
 			fn.push(`var __filename = ${JSON.stringify(this.fuseBoxPath)};` + "\n");
 		}
@@ -286,6 +300,7 @@ export class FileAbstraction {
 	 */
 	private onNode(node, parent, prop, idx) {
 		// process.env
+
 		if (this.core) {
 			if (this.core.opts.definedExpressions) {
 				const matchedExpression = matchesDefinedExpression(node, this.core.opts.definedExpressions);
@@ -364,6 +379,15 @@ export class FileAbstraction {
 			}
 		}
 
+		if (matchesGlobalVariable(node, "process")) {
+			this.globalProcess.add(new GenericAst(parent, prop, node));
+		}
+		if (matchesGlobalVariableReference(node, "process.version")) {
+			this.globalProcessVersion.add(new GenericAst(parent, prop, node));
+		}
+		if (matchesVariableDeclarator(node, "process")) {
+			this.processVariableDefined = true;
+		}
 		// detecting es6
 		if (matchesEcmaScript6(node)) {
 			this.isEcmaScript6 = true;

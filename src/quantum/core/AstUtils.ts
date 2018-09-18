@@ -297,6 +297,35 @@ export function isTrueRequireFunction(node) {
 export function matchesSingleFunction(node: any, name: string) {
 	return node.callee && node.callee.type === "Identifier" && node.callee.name === name;
 }
+export function matchesGlobalVariable(node: any, name: string) {
+	const parent = node.$parent;
+	const isMemberExpression = parent && parent.type === "MemberExpression";
+	const isProperty = parent && parent.type === "Property";
+	const isDeclarator = parent && parent.type === "VariableDeclarator";
+	return node.type === "Identifier" && node.name === name && !isMemberExpression && !isProperty && !isDeclarator;
+}
+
+export function matchesGlobalVariableReference(node: any, name: string) {
+	const [first, second] = name.split(".");
+	const parent = node.$parent;
+	const isMemberExpression = parent && parent.type === "MemberExpression";
+	const isProperty = parent && parent.type === "Property";
+	const isDeclarator = parent && parent.type === "VariableDeclarator";
+
+	const initial =
+		node.type === "Identifier" && node.name === first && !isProperty && !isDeclarator && isMemberExpression;
+	let secondCondition = true;
+	if (second && initial) {
+		secondCondition = parent.property && parent.property.type === "Identifier" && parent.property.name === second;
+	}
+	return initial && secondCondition;
+}
+
+export function matchesVariableDeclarator(node: any, name: string) {
+	const parent = node.$parent;
+	const isDeclarator = parent && parent.type === "VariableDeclarator";
+	return node.type === "Identifier" && node.name === name && isDeclarator;
+}
 
 export function trackRequireMember(node: any, name: string): string {
 	if (node && node.type === "MemberExpression") {
