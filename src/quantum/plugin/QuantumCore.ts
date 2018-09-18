@@ -30,6 +30,8 @@ import { QuantumBit } from "./QuantumBit";
 import { CSSModifications } from "./modifications/CSSModifications";
 import { CSSCollection } from "../core/CSSCollection";
 import { QuantumTask } from "../core/QuantumTask";
+import { GlobalProcessReplacement } from "./modifications/GlobalProcessReplacement";
+import { GlobalProcessVersionReplacement } from "./modifications/GlobalProcessVersionReplacement";
 
 export interface QuantumStatementMapping {
 	statement: RequireStatement;
@@ -211,7 +213,7 @@ export class QuantumCore {
 
 	public prepareFiles(bundleAbstraction: BundleAbstraction) {
 		bundleAbstraction.packageAbstractions.forEach(packageAbstraction => {
-			let entryId = `${this.producer.entryPackageName}/${packageAbstraction.entryFile}`
+			let entryId = `${this.producer.entryPackageName}/${packageAbstraction.entryFile}`;
 			packageAbstraction.fileAbstractions.forEach((fileAbstraction, key: string) => {
 				let fileId = fileAbstraction.getFuseBoxFullPath();
 				const id = this.index;
@@ -318,6 +320,10 @@ export class QuantumCore {
 			TypeOfModifications,
 			// process.env removal
 			ProcessEnvModification,
+			// process global replacement with "undefined"
+			GlobalProcessReplacement,
+			// process.version global replacement with ""
+			GlobalProcessVersionReplacement,
 		];
 		return each(modifications, (modification: IPerformable) => modification.perform(this, file));
 	}
