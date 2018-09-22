@@ -192,7 +192,7 @@ export class QuantumCore {
 				this.log.echoYellow(`  - ${warning.msg}`);
 				this.log.echoGray("");
 				this.log.echoGray("  * Set { warnings : false } if you want to hide these messages");
-				this.log.echoGray("  * Read up on the subject http://fuse-box.org/page/quantum#computed-statement-resolution");
+				this.log.echoGray("  * Read up on the subject https://fuse-box.org/docs/production-builds/quantum-configuration#computed-statement-resolution");
 			});
 		}
 	}
