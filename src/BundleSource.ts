@@ -267,8 +267,14 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`,
 		}
 		if (this.context.sourceMapsProject || this.context.sourceMapsVendor) {
 			let sourceName = /[^\/]*$/.exec(this.context.output.filename)[0];
+			
+			if(this.context.target === "server"){
+				// cache busting should not be used if the target is a server, as it will interfere with local filesystem resolution
+				this.concat.add(null, `//# sourceMappingURL=${sourceName}.js.map`);
+			} else {
+				this.concat.add(null, `//# sourceMappingURL=${sourceName}.js.map?tm=${this.context.cacheBustPreffix}`);
+			}
 
-			this.concat.add(null, `//# sourceMappingURL=${sourceName}.js.map?tm=${this.context.cacheBustPreffix}`);
 		}
 	}
 
