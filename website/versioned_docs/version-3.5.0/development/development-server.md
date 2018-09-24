@@ -20,7 +20,7 @@ fuse.run();
 ```
 
 ```
-To avoid problems with HMR settings (bellow) set your development server config before you define further bundle configuration
+To avoid problems with HMR settings (below) set your development server config before you define further bundle configuration
 ```
 
 ## Served root
