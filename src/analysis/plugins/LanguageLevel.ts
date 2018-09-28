@@ -12,10 +12,15 @@ export class LanguageLevel {
 			file.setLanguageLevel(ScriptTarget.ES2015);
 		} else if (node.type === "TemplateLiteral") {
 			file.setLanguageLevel(ScriptTarget.ES2015);
+		} else if (node.type === "ClassDeclaration") {
+			file.setLanguageLevel(ScriptTarget.ES2015);
 		}
 	}
 	public static onEnd(file: File) {
-		const target = file.context.languageLevel;
+		// In case no target is explicitly specified in fuse.js, file.context.languageLevel defaults to ScriptTarget.ES2016
+		// and no transpilation will be done, regardless of what is specified in tsConfig. This must be wrong?
+		// I believe something like this is necessary.
+		const target = ScriptTarget[file.context.tsConfig.getConfig().compilerOptions.target as string]
 		if (file.languageLevel > target) {
 			file.analysis.requiresTranspilation = true;
 		}
