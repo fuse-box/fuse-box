@@ -2,6 +2,7 @@ import { File } from "../../core/File";
 import { WorkFlowContext, Plugin } from "../../core/WorkflowContext";
 import * as path from "path";
 import { Config } from "../../Config";
+import { ensureAbsolutePath } from "../../Utils";
 
 export interface SassPluginOptions {
 	includePaths?: string[];
@@ -9,6 +10,7 @@ export interface SassPluginOptions {
 	importer?: boolean | ImporterFunc;
 	cache?: boolean;
 	header?: string;
+	resources?: [{ test: RegExp; file: string }];
 	indentedSyntax?: boolean;
 	functions?: { [key: string]: (...args: any[]) => any };
 }
@@ -61,6 +63,19 @@ export class SassPluginClass implements Plugin {
 
 		if (this.options.header) {
 			file.contents = this.options.header + "\n" + file.contents;
+		}
+
+		if (this.options.resources) {
+			let resourceFile;
+			this.options.resources.forEach(item => {
+				if (item.test.test(file.info.absPath)) {
+					resourceFile = item.file;
+				}
+			});
+			if (resourceFile) {
+				const relativePath = path.relative(file.info.absDir, ensureAbsolutePath(resourceFile));
+				file.contents = `@import "${relativePath}";` + "\n" + file.contents;
+			}
 		}
 
 		const options = Object.assign(

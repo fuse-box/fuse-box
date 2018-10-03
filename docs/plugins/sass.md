@@ -91,6 +91,54 @@ fuse.plugin(
 );
 ```
 
+## Resource file
+
+To avoid setting resource file (which could contain variable and other shared
+resources) on each file, it's possible to define it in the config.
+
+```js
+plugins: [
+  [
+    SassPlugin({
+      resources: [{ test: /.*/, file: "resources.scss" }],
+    }),
+    CSSPlugin(),
+  ],
+];
+```
+
+In the example above, all the files in the project, including node_modules will
+share the same resource file which in our case located next to `fuse.js`. It
+would also understand an absolute path.
+
+For example, having an SCSS file with the contents:
+
+`project/src/index.scss`
+
+```scss
+body {
+  background-color: $color1;
+}
+```
+
+and a resource file in `project/resources.scss`
+
+```scss
+$color1: orange;
+```
+
+Will result in the following output:
+
+```scss
+@import "../resources.scss";
+body {
+  background-color: $color1;
+}
+```
+
+As you can see here, the resource file is resolved automatically relatively to
+the file's original location.
+
 ## Macros
 
 Macros is a unique feature available only in `FuseBox` to give you more
