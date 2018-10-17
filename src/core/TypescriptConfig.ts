@@ -110,7 +110,6 @@ export class TypescriptConfig {
 				const configFileRelPath = this.configFile.replace(this.context.appRoot, "");
 				this.context.log.echoInfo(`Typescript config file:  ${configFileRelPath}`);
 				configFileFound = true;
-				console.log(this.configFile)
 				const res = ts.readConfigFile(this.configFile, ts.sys.readFile);
 				config = { ...res.config, compilerOptions: ts.parseJsonConfigFileContent(res.config, ts.sys, this.context.appRoot).options }
 				if (res.error) {
