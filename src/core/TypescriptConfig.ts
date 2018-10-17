@@ -64,6 +64,7 @@ export class TypescriptConfig {
 	private initializeConfig() {
 		const compilerOptions = this.config.compilerOptions;
 		compilerOptions.jsx = "react";
+		compilerOptions.importHelpers = true;
 		compilerOptions.emitDecoratorMetadata = true;
 		compilerOptions.experimentalDecorators = true;
 		const targetFile = path.join(this.context.homeDir, "tsconfig.json");
