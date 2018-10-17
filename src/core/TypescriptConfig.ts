@@ -14,7 +14,7 @@ export class TypescriptConfig {
 	private customTsConfig: string;
 	private configFile: string;
 
-	constructor(public context: WorkFlowContext) { }
+	constructor(public context: WorkFlowContext) {}
 
 	public getConfig() {
 		this.read();
