@@ -14,7 +14,7 @@ export class TypescriptConfig {
 	private customTsConfig: string;
 	private configFile: string;
 
-	constructor(public context: WorkFlowContext) { }
+	constructor(public context: WorkFlowContext) {}
 
 	public getConfig() {
 		this.read();
@@ -157,7 +157,7 @@ function readConfigFile(configFilePath: string, rootDir: string) {
 	if (parentRes.config) {
 		const config = { ...res.config };
 		delete config.extends;
-		res.config = { ...config, ...parentRes.config, compilerOptions: { ...parentRes.config.compilerOptions, ...config.compilerOptions } };
+		res.config = { ...parentRes.config, ...config, compilerOptions: { ...parentRes.config.compilerOptions, ...config.compilerOptions } };
 	}
 	return res
 }
