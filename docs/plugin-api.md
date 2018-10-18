@@ -1,128 +1,201 @@
 # Plugin API
 
-Plugin API has a very powerful mechanism of manipulating the output.
+The FuseBox Plugin API is a powerful, chainable mechanism for customizing your
+build.
 
-Let's take a look a plugin's interface first
+When designing a plugin, keep in mind that plugins in arrays will be chained,
+so that, for example, LESS can be transformed to CSS before being made available
+to JS as possible `import` sources:
+
+```js
+FuseBox.init({
+  plugins: [JSONPlugin(), [LESSPlugin(), CSSPlugin()]],
+});
+```
+
+Therefore, if your plugin has a few stages of transformations, consider breaking
+it into reusable sub-plugins with standard output formats, and/or even chaining
+in existing plugins to achieve your desired behavior. Like building blocks, the
+possibilities are endless!
+
+## Transforming individual files
+
+Let's take a look at a plugin's interface first.
 
 ```typescript
 interface Plugin {
   test?: RegExp;
-  opts?: any;
-  init?: { (context: WorkFlowContext) };
-
-  transform: { (file: File, ast?: any) };
-  transformGroup?(file: File): any;
-  onTypescriptTransform?: { (file: File) };
+  options?: any;
 
   dependencies?: string[];
 
+  transform?(file: File, ast?: any): any;
+  transformGroup?(file: File): any;
+  onTypescriptTransform?(file: File): any;
+
+  init?(context: WorkFlowContext): any;
   preBundle?(context: WorkFlowContext);
   bundleStart?(context: WorkFlowContext);
   bundleEnd?(context: WorkFlowContext);
   postBundle?(context: WorkFlowContext);
-
-  // available, but not implemented yet
-  preBuild?(context: WorkFlowContext);
-  postBuild?(context: WorkFlowContext);
+  producerEnd?(producer: BundleProducer): any;
 }
 ```
-
-## Spec
-
 ### test [RegExp]
 
-Defining `test` will filter files into your plugin. For example `\.js$` If
-specified you plugin's `transform` will get triggered upon transformation. It's
-optional. Experiment with [regex101](http://regex101.com/) to see it will match.
+Defining an optional `test` Regex will filter the files sent to your plugin. For
+example, `\.js$` will only send your plugin files ending with the `.js`
+extension. If `test` matches, FuseBox will call your plugin's `transform` method
+to process the file. Experiment with [regex101](http://regex101.com/) to see
+what it will match.
 
 ### dependencies
 
-`dependencies` a list of npm dependencies your plugin might require. If
-provided, then the dependencies are loaded on the client before the plugin is
-invoked. For example
-[this case](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/stylesheet/CSSplugin.ts#L23)
-
-### init
-
-Happens when a plugin is initialized. It is common practice to reset your plugin
-state in this method.
+`dependencies` is an optional list of npm packages your plugin might require. If
+provided, FuseBox will load the listed dependencies on the client before the
+plugin is invoked. For an example, see the
+[CSSPlugin source](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/stylesheet/CSSplugin.ts)
 
 ### transform
 
-`transform` if your plugin has a `test` property, fusebox will trigger transform
-method sending [file][src-file] as a first argument.
+The `transform` method will be called on any file that matches your plugin's
+`test` property. The first argument will be the
+[`File`](https://github.com/fuse-box/fuse-box/blob/master/src/core/File.ts) object.
 
-### triggers
+### Hooks
 
-#### bundleStart
+FuseBox gives you hooks that let your plugin respond to different lifecycle
+events in the build before the bundle gets written to a file. In order, it
+calls
 
-Happens on bundle start. A good place to inject your custom code here. For
-example
-[here](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/HotReloadPlugin.ts#L14)
+1. `init` (called by
+  [ModuleCollection](https://github.com/fuse-box/fuse-box/blob/master/src/core/ModuleCollection.ts).initPlugins)
+2. `preBundle` ([FuseBox](https://github.com/fuse-box/fuse-box/blob/master/src/core/FuseBox.ts).triggerPre)
+3. `bundleStart` ([FuseBox](https://github.com/fuse-box/fuse-box/blob/master/src/core/FuseBox.ts).triggerStart)
+4. `bundleEnd` ([FuseBox](https://github.com/fuse-box/fuse-box/blob/master/src/core/FuseBox.ts).triggerEnd)
+5. `postBundle` ([FuseBox](https://github.com/fuse-box/fuse-box/blob/master/src/core/FuseBox.ts).triggerPost)
+6. `producerEnd` (after all bundles are finished,
+  [BundleProducer](https://github.com/fuse-box/fuse-box/blob/master/src/core/BundleProducer.ts).run)
 
-#### bundleEnd
+Each of the trigger handlers 1-5 is passed a WorkFlowContext as the argument,
+which tracks build data for the bundle under construction.
 
-All files are bundled. But it has not been finalized and written to a file.
+To have your plugin add code to the bundle, you define one of these supported
+trigger handlers 2-5, and have your handler call `context.source.addContent`
+with a string. This will tell FuseBox to append that string to whatever has
+been added to the bundle so far. `init` and `producerEnd` are special and will
+be discussed in their own sections below.
+
+In order of execution:
+
+#### init
+
+`init` is called to initialize a plugin. Here, you can process your `options`
+and setup your plugin state. A return value is not required.
 
 #### preBundle
 
-Triggered after adding shims.
+`preBundle` is called before anything has been added to the bundle at all. If
+something needs to be set up in global scope before the rest of a bundle
+executes, it can be added here.
+
+#### bundleStart
+
+The `bundleStart` method gets called after FuseBox has already added two things:
+1. The start of the function which wraps your bundle and hides it from global
+    scope. This also provides access to the `FuseBox` object. See
+[BundleSource](https://github.com/fuse-box/fuse-box/blob/master/src/BundleSource.ts).init.
+2. The shims from the `shim` object in your FuseBox config.
+
+Code added here will be wrapped in the same block of scope as your other bundled
+code, and also be hidden from global scope like they are. Variables set here
+will be accessible to the bundle.
+
+#### bundleEnd
+
+The `bundleEnd` method gets called after all files have been packed into the
+bundle, but before FuseBox's scope wrapping function is closed around your app's
+code.
+
+Code appended at this point will live in the same scope as your other bundled
+code and also have access to the `FuseBox` object. This is useful if your plugin
+needs access to bundle variables, and bundles don't need access to this part of
+your plugin. The
+[HotReloadPlugin](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/HotReloadPlugin.ts)
+uses this to its advantage so that it can change variables in the bundle without
+reloading the page in the browser.
 
 #### postBundle
 
-Triggered after the bundle source has been finalized, but before it is written
-to file. [UglifyPlugin](#UglifyJSPlugin) uses this trigger.
+`postBundle` is the last thing that happens before the bundle gets written to a
+file.
+[UglifyPlugin](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/UglifyJSPlugin.ts)
+uses this trigger so that it can completely replace `context.source` with
+minified JS.
 
-[see the source code that triggers these plugin methods](https://github.com/fuse-box/fuse-box/blob/master/src/core/FuseBox.ts#L179)
+#### producerEnd
 
-## Alternative content
+`producerEnd` is a special handler that gets called after all the bundles have
+been generated. This is a good place for functionality affecting the entire
+project, or many bundles at once. Unlike the other trigger handlers, which get
+the WorkflowContext object, this handler gets passed the BundleProducer object
+as its argument, and you can access all the bundles from `producer.bundles`.
+Even better, you can register your plugin to be notified for file changes like
+this:
 
-If for some reason we want to preserve file contents for a later reuse and
-override the output, we can use `file.alternativeContent` which affects directly
-bundling process over
-[here](https://github.com/fuse-box/fuse-box/blob/96b646a632f886f296a533ccf4c45f436cf443f3/src/BundleSource.ts#L133)
-
-It can be use for the [concat](#concat-files) technique for example
-
-If an array of plugins is passed, those plugins will be chained
-
-```js
-FuseBox.init({
-  plugins: [fsbx.JSONPlugin(), [fsbx.LESSPlugin(), fsbx.CSSPlugin()]],
-});
+```typescript
+producer.sharedEvents.on("file-changed",
+  (bundle: Bundle, path: string) => { /* your handler */ });
 ```
 
-## Transform
+You can inject additional CSS files with `producer.injectedCSSFiles.add(fname)`.
+You can also add warnings by modifying `producer.warnings`, which is a
+`Map<string, []string>` so that you can group your warnings by key.
 
-### Helpers
+For example usages, look at the `producerEnd` methods in
+* [QuantumPlugin](https://github.com/fuse-box/fuse-box/blob/master/src/quantum/plugin/QuantumPlugin.ts),
+    which goes over and tree-shakes all the bundles
+* [WebIndexPlugin](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/WebIndexPlugin.ts),
+    which rebuilds index.html, rewriting the CSS and JS dependencies there
 
-#### File
+### File
 
-- `file.contents`: can rewrite the output of a particular chunk, it is a simple
-  string
-- `file.info`: information about the file, such as `file.info.absPath` and
-  `file.info.fuseBoxPath`
-- `file.analysis.dependencies`: can clear/flush dependencies of a file by
-  setting it to an empty array.
-- [read the File source for more](https://github.com/fuse-box/fuse-box/blob/master/src/analysis/FileAnalysis.ts#L28)
+The File object contains the contents of a file as they have been transformed
+so far, its relative and absolute paths, and lists of other resources it
+depends on. Here are some of the most important fields of the File object:
 
-### AST
+- `contents` - a string which we can edit to change the output of a particular
+  chunk
+- `info: {}` - path information about the file, such as
+  - `info.absPath`
+  - `info.fuseBoxPath`
+- `analysis.dependencies`: an array of strings populated during
+  [file](https://github.com/fuse-box/fuse-box/blob/master/src/core/File.ts).analysis.analyze.
+  The dependencies can be erased by setting this to an empty array.
 
-To use the AST, you need to know if the AST has been loaded already. You can do
-this by checking whether `file.analysis.ast` is not `undefined`.
+Read the sources for more:
+- [File](https://github.com/fuse-box/fuse-box/blob/master/src/core/File.ts)
+- [FileAnalysis](https://github.com/fuse-box/fuse-box/blob/master/src/analysis/FileAnalysis.ts)
 
-If it has not been loaded, it can be loaded by doing:
+#### AST
+
+To use the AST of a file, we need to know if the AST has been loaded already.
+We can do this by checking whether `file.analysis.ast` is `undefined`. If the
+AST has not been loaded yet, we can load it like this:
 
 ```js
+// sets file.contents
 file.loadContents();
+// build the AST from file.contents
 file.analysis.parseUsingAcorn();
+// transform the AST with built-in FuseBox analysis plugins, and record deps
 file.analysis.analyze();
 ```
 
-If the babel plugin has been used, the AST will be loaded using
-[babel babylon](https://github.com/babel/babylon).
+If BabelPlugin has been used, [Babel](https://github.com/babel/babylon) will
+build the AST instead of acorn.
 
-You can load any ast parser you'd like by
+You can actually load any AST parser you'd like with this:
 
 ```js
 if (!file.analysis.ast) {
@@ -132,11 +205,18 @@ if (!file.analysis.ast) {
 }
 ```
 
-[read the FileAnalysis source for more](https://github.com/fuse-box/fuse-box/blob/master/src/core/File.ts)
+For more examples, see the other
+[JS transpiler plugins](https://github.com/fuse-box/fuse-box/tree/master/src/plugins/js-transpilers)
+included with FuseBox.
 
-## Transforming typescript
+To see how you can transform an AST, check out the
+[Analysis plugins folder](https://github.com/fuse-box/fuse-box/tree/master/src/analysis/plugins).
+These plugins are called during `file.analysis.analyze()`.
 
-You can transform typescript code before it actually gets to transpiling
+### Transforming TypeScript
+
+You can transform TypeScript code before it gets transpiled to JS by defining an
+`onTypescriptTransform` method in your plugin:
 
 ```js
 const MySuperTranformation = {
@@ -149,59 +229,94 @@ FuseBox.init({
 });
 ```
 
-## Concat files
+To transform other sources, consider using one of the triggers described above.
 
-It is possible to concat files into one using the plugin API. There is
-[ConcatPlugin](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/ConcatPlugin.ts#L51)
-which serves as an example for the subject.
+## Combining files
 
-In order to understand how it works imagine a plugin chain:
+Sometimes, it's enough to transform files so that there is just one product for
+each input. That is a common thing to do at the beginning of a plugin chain. At
+the end of a plugin chain, though, we often want to combine everything into one
+build product. FuseBox provides several tools our plugins can use to do that.
+
+### Alternative content
+
+For more advanced loading behavior, sometimes we want more indirection. That
+is, maybe we want to leverage the browser-side cache for future page loads, and
+have `require()` provide an über-module containing a bunch of little modules,
+instead of just one tiny module alone can use the browser-side cache. Maybe we
+want to lazily load certain bundles via AJAX if and only if needed.
+
+Whatever the reason, if we want to preserve `file.contents` for later use (e.g.
+in `transformGroup`, or even `bundleEnd` or `postBundle`), but make other code
+depending on this one see something different when they load it, we can set
+`file.alternativeContent` to a string. This tells BundleSource to insert
+`file.alternativeContent` instead of `file.contents` like normal. By default,
+`file.alternativeContent` is `undefined`.
+
+The ConcatPlugin described in the next section uses `alternativeContent` to make
+importers of little files get a larger file containing all the little files
+instead.
+
+### Concat files
+
+It is possible to string files together using the plugin API. We'll explore
+[ConcatPlugin](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/ConcatPlugin.ts)
+to show how.
+
+Imagine a plugin chain:
 
 ```js
-[/\.txt$/, fsbx.ConcatPlugin({ ext: ".txt", name: "textBundle.txt" })],
+[/\.txt$/, ConcatPlugin({ ext: ".txt", name: "txtBundle.txt" })],
 ```
 
 We have 2 files, `a.txt` and `b.txt` which are captured by the plugin API, and
-each of them is redirected to the ConcatPlugin's transform, which looks like
-this:
+each of them is routed into the ConcatPlugin's `transform` method, which looks
+like this:
 
-```js
+```typescript
 public transform(file: File) {
     // Loading the contents of file a.txt or b.txt
     file.loadContents();
 
     let context = file.context;
 
-    // create a file group in the context with name which is set in the plugin configuration
-    // let's say "txtBundle.txt"
+    // If this file is already part of a file group, reuse the group, and add
+    // another copy of the file.
     let fileGroup = context.getFileGroup(this.bundleName);
     if (!fileGroup) {
-        fileGroup = context.createFileGroup(this.bundleName);
+        // Create a file group, named after the bundle which you have defined in
+        // your FuseBox config. (A file group is actually just a File object,
+        // but we are creating it in memory. This lets us require() it later.)
+        fileGroup = context.createFileGroup(this.bundleName, file.collection, this);
     }
     // Adding current file (say a.txt) as a subFile
     fileGroup.addSubFile(file);
 
-    // making sure the current file refers to an object at runtime that calls our bundle
+    // Anytime someone requires this subfile, require the group instead
     file.alternativeContent = `module.exports = require("./${this.bundleName}")`;
 }
 ```
 
-When we register a new file group `context.createFileGroup("txtBundle.txt")`
-FuseBox creates a **fake** or a virtual file which is added to the dependency
-tree. This file has a special mode, called `groupMode`.
+When we register a new file group `context.createFileGroup("txtBundle.txt", ...)`
+FuseBox creates a **fake** or a virtual file which is now available to be
+`require()`-ed or `import`-ed.
 
-We need to alter the output as well using [alternative content](#Alternative
-content). Original contents will be ignored by the Source bundler.
+We need to alter the output as well using
+[alternative content](#alternative-content). This way, the original contents of
+the file will not be copied into bundles depending on this file. Instead, they
+will get a bite-sized `require` statement referring to our file group. (This is
+useful if, for example, you want a shared CSS file common to all pages in your
+site. Bonus: you don't have to modify imports in your sources! You can toggle it
+right from your FuseBox config!)
 
-After FuseBox has bundled all files related to your current project, it checks
-for groups over
-[here](https://github.com/fuse-box/fuse-box/blob/master/src/ModuleCollection.ts#L260),
-iterates and executes plugins. Then each plugin is tested accordingly (now our
-file name is called `txtBundle.txt` with `.txt` extension) and executes
-`transformGroup` of a plugin if set.
-
-You should understand that `txtBundle.txt` behaves like any other file, with one
-exception - it does not call `transform` but `tranformGroup` instead.
+After FuseBox has bundled all files related to your current project,
+[ModuleCollection](https://github.com/fuse-box/fuse-box/blob/master/src/core/ModuleCollection.ts).transformGroups
+will iterate over all the groups in `context.fileGroups`. FuseBox will know
+which plugin's `transformGroup` should handle this group by checking the
+imaginitively-named `group.groupHandler`. We already set this to an instance of
+ConcatPlugin earlier in `transform`, when we passed `this` in the call to
+`createFileGroup`. Now, FuseBox checks to make sure the `transformGroup` method
+is defined in ConcatPlugin, and calls it, providing the group as an argument.
 
 ```js
 public transformGroup(group: File) {
@@ -214,10 +329,16 @@ public transformGroup(group: File) {
 }
 ```
 
-Now our bundle has a virtual file which looks like this:
+Again, the `group` here is just a File object, so we can `require()` it like any
+other file. It just also happens to be listed in `context.fileGroups` so that it
+gets processed after the individual files (including the ones making up this
+group) have been processed.
+
+Now, if `a.txt` contained "hello" and `b.txt` contained "world", our bundle
+will have a virtual file which looks like this:
 
 ```js
-___scope___.file("textBundle.txt", function(
+___scope___.file("txtBundle.txt", function(
   exports,
   require,
   module,
@@ -228,16 +349,23 @@ ___scope___.file("textBundle.txt", function(
 });
 ```
 
-### Things to experiment with
+#### Things to experiment with
 
-- try changing the contents of a file
-- try logging the contents of the file in the transformation file
-- try logging the ast once it has been loading
+- Try logging the contents of the virtual file
+- Try changing the contents of a file
+- Try logging the AST once it has been loaded
 
-### Plugin API source code
+## Plugin API source code
 
-- [babel plugin](https://github.com/fuse-box/fuse-box/blob/v1.3.23/src/plugins/BabelPlugin.ts#L14)
-- [bundle source code](https://github.com/fuse-box/fuse-box/blob/96b646a632f886f296a533ccf4c45f436cf443f3/src/BundleSource.ts#L133)
-- [read the FileAnalysis code](https://github.com/fuse-box/fuse-box/blob/master/src/analysis/FileAnalysis.ts#L28)
-- [css plugin tests](https://github.com/fuse-box/fuse-box/blob/master/src/tests/CSSPlugin.test.ts)
-- [code for all built in plugins](https://github.com/fuse-box/fuse-box/tree/master/src/plugins)
+- [BabelPlugin](https://github.com/fuse-box/fuse-box/blob/master/src/plugins/BabelPlugin.ts)
+- [BundleSource](https://github.com/fuse-box/fuse-box/blob/master/src/BundleSource.ts)
+- [File](https://github.com/fuse-box/fuse-box/blob/master/src/core/File.ts)
+- [FileAnalysis](https://github.com/fuse-box/fuse-box/blob/master/src/analysis/FileAnalysis.ts)
+- [FileAnalysis plugins](https://github.com/fuse-box/fuse-box/tree/master/src/analysis/plugins) -
+    separate from regular plugins, these walk and transform a JS AST
+- [FuseBox](https://github.com/fuse-box/fuse-box/blob/master/src/core/FuseBox.ts)
+- [WorkflowContext](https://github.com/fuse-box/fuse-box/blob/master/src/core/WorkflowContext.ts)
+- [CSSPlugin tests](https://github.com/fuse-box/fuse-box/blob/master/src/tests/CSSPlugin.test.ts)
+- [All built-in plugins](https://github.com/fuse-box/fuse-box/tree/master/src/plugins) -
+    check out the folders, too!
+
