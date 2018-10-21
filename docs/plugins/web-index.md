@@ -84,3 +84,26 @@ A custom template has the following macros available:
 | `$keywords`    | Define where the keywords meta tags will be injected into the html document         |
 | `$pre`         | Define where the prefetch/preload link tags will be injected into the html document |
 | `$title`       | Html Title                                                                          |
+
+### Example
+
+Include these macros in your custom template. `FuseBox` will translate these macros to the equivalent html tags and content.
+
+```pug
+<!DOCTYPE html>
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    meta(http-equiv="X-UA-Compatible", content="ie=edge")
+    title Document
+    | $charset
+    | $description
+    | $keywords
+    | $pre
+    | $author
+    | $css
+  body
+    #root
+    | $bundles
+```
