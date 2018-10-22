@@ -110,7 +110,7 @@ export class TypescriptConfig {
 				const configFileRelPath = this.configFile.replace(this.context.appRoot, "");
 				this.context.log.echoInfo(`Typescript config file:  ${configFileRelPath}`);
 				configFileFound = true;
-				const res = ts.readConfigFile(this.configFile, p => fs.readFileSync(p).toString());
+				const res = readConfigFile(this.configFile, this.context.appRoot);
 				config = res.config;
 				if (res.error) {
 					this.context.log.echoError(`Errors in ${configFileRelPath}`);
@@ -147,4 +147,18 @@ export class TypescriptConfig {
 			CACHED[cacheKey] = this.config;
 		}
 	}
+}
+
+function readConfigFile(configFilePath: string, rootDir: string) {
+	const res = ts.readConfigFile(configFilePath, ts.sys.readFile);
+	if (res.error || !res.config || !res.config.extends) return res
+
+	const extendsFilePath = res.config.extends
+	const parentRes = readConfigFile(path.isAbsolute(extendsFilePath) ? extendsFilePath : path.join(rootDir, extendsFilePath), rootDir)
+	if (parentRes.config) {
+		const config = { ...res.config };
+		delete config.extends;
+		res.config = { ...parentRes.config, ...config, compilerOptions: { ...parentRes.config.compilerOptions, ...config.compilerOptions } };
+	}
+	return res
 }
