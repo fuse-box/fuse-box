@@ -409,7 +409,7 @@ export class File {
 		}
 		let targetContent = localContent || this.contents;
 		if (targetContent) {
-			const expression = /(\s+|^)(import\()/g;
+			const expression = /(\s+|^|\(|:)(import\()/g;
 			if (expression.test(targetContent)) {
 				targetContent = targetContent.replace(expression, "$1$fsmp$(");
 				if (this.context.fuse && this.context.fuse.producer) {
