@@ -87,13 +87,12 @@ A custom template has the following macros available:
 
 ### Example
 
-Include these macros in your custom template. `FuseBox` will translate these macros to the equivalent html tags and content.
+Include these macros in your custom template. `FuseBox` will translate these macros to the equivalent html tags and content. Example for custom template using `pug` engine:
 
 ```pug
 <!DOCTYPE html>
 html(lang="en")
   head
-    meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     meta(http-equiv="X-UA-Compatible", content="ie=edge")
     title Document
@@ -106,4 +105,48 @@ html(lang="en")
   body
     #root
     | $bundles
+```
+
+### Example with locals
+
+You can also use `locals` option to pass variables to consolidate module.
+
+Include `locals` in your `WebIndexPlugin` options:
+
+```jsx
+fuse.init({
+  plugins: [
+    WebIndexPlugin({
+      locals: {
+        title: 'FuseBox App',
+        description: 'Welcome to FuseBox App!'
+      }
+    })
+  ]
+})
+```
+
+Now you can include these variables in your custom template:
+
+```pug
+html(lang="en")
+  head
+    title #{title}
+    meta(name="description", content=description)
+  body
+    #root
+```
+
+Which will result in:
+
+```html
+<html lang="en">
+  <head>
+    <title>FuseBox App</title>
+    <meta name="description" content="Welcome to FuseBox App!">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
 ```
