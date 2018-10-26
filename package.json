@@ -34,6 +34,7 @@
     "app-root-path": "^2.0.1",
     "base64-img": "^1.0.3",
     "base64-js": "^1.2.0",
+    "bowser": "^2.0.0-beta.3",
     "chokidar": "^1.6.1",
     "clean-css": "^4.1.9",
     "escodegen": "^1.8.1",
