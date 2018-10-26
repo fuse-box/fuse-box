@@ -1,0 +1,4 @@
+{
+    "name": "dgram",
+    "ts:main" :"./index.ts"
+}
