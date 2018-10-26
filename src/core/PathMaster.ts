@@ -247,7 +247,7 @@ export class PathMaster {
 
 	private testFolder(folder: string, name: string) {
 		let extensions = jsExtensions;
-		if (this.tsMode) {
+		if (this.tsMode || this.context.useTypescriptCompiler) {
 			extensions = tsExtensions;
 		}
 
@@ -269,7 +269,7 @@ export class PathMaster {
 
 	private checkFileName(root: string, name: string) {
 		let extensions = jsExtensions;
-		if (this.tsMode) {
+		if (this.tsMode || this.context.useTypescriptCompiler) {
 			extensions = tsExtensions;
 		}
 		for (let i = 0; i < extensions.length; i++) {
@@ -315,7 +315,7 @@ export class PathMaster {
 		if (ext === ".ts") {
 			this.tsMode = true;
 		}
-		let fileExt = this.tsMode && !explicit ? ".ts" : ".js";
+		let fileExt = this.tsMode || (this.context.useTypescriptCompiler && !explicit) ? ".ts" : ".js";
 
 		if (name[0] === "~" && name[1] === "/" && this.rootPackagePath) {
 			name = "." + name.slice(1, name.length);
