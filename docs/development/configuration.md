@@ -224,6 +224,10 @@ note: TypeScript 2.4+ is required for custom transformers.
 
 ## Package Name
 
+WARNING: this is a very old option. Avoid setting it since Quantum will flatten
+your package. For more information read [this](/docs/guides/publishing-to-npm)
+section
+
 Your default package name is `default`. You don't need to change it if you are
 not planning on having isolated bundles. Any bundle added as a script tag will
 share the `default` package, keep that in mind. If you want to release a package
