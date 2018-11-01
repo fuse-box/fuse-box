@@ -146,5 +146,5 @@
     "test": "node test.js"
   },
   "typings": "index.d.ts",
-  "version": "3.6.0"
+  "version": "3.7.0-next.1"
 }
