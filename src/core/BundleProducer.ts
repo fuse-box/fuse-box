@@ -1,6 +1,6 @@
 import { Bundle } from "./Bundle";
 import { FuseBox } from "./FuseBox";
-import { string2RegExp, ensureUserPath, ensureFuseBoxPath } from "../Utils";
+import { string2RegExp, ensureUserPath, ensureFuseBoxPath, escapeRegExp } from "../Utils";
 import { EventEmitter } from "events";
 import { Arithmetic, BundleData } from "../arithmetic/Arithmetic";
 import { SharedCustomPackage } from "./SharedCustomPackage";
@@ -182,6 +182,7 @@ export class BundleProducer {
 		this.bundles.forEach(bundle => {
 			if (bundle.watchRule) {
 				isRequired = true;
+
 				settings.set(bundle.name, string2RegExp(bundle.watchRule));
 			}
 		});
@@ -190,9 +191,16 @@ export class BundleProducer {
 			return;
 		}
 
+		const chokidarOptions = this.chokidarOptions || {};
+
+		if (!chokidarOptions.ignored) {
+			const dirDirException = new RegExp(escapeRegExp(this.fuse.context.output.dir));
+			chokidarOptions.ignored = dirDirException;
+		}
+
 		let ready = false;
 		chokidar
-			.watch(this.chokidarPaths || this.fuse.context.homeDir, this.chokidarOptions || {})
+			.watch(this.chokidarPaths || this.fuse.context.homeDir, chokidarOptions)
 			.on("all", (event, fp) => {
 				if (ready) {
 					this.onChanges(settings, fp);
@@ -209,7 +217,9 @@ export class BundleProducer {
 		settings.forEach((expression, bundleName) => {
 			if (expression.test(path)) {
 				const bundle = this.bundles.get(bundleName);
-				if (bundle.watchFilterFn && !bundle.watchFilterFn(path)) { return; }
+				if (bundle.watchFilterFn && !bundle.watchFilterFn(path)) {
+					return;
+				}
 
 				const defer = bundle.fuse.context.defer;
 
