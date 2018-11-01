@@ -128,6 +128,8 @@ export class VueComponentClass implements Plugin {
                 if (!isComponentStyling) {
                   var component = FuseBox.import(fusePath).default;
                   api.reload(component._vueModuleId||component.options._vueModuleId, component);
+                } else {
+                	return false;
                 }
 
                 return true;
