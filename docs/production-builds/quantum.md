@@ -47,7 +47,7 @@ FuseBox.init({
 ```
 
 If you're planning to minify produced bundles make sure that you have the LATEST
-`uglify-js` (or `uglify-es` if your target is ES6) installed.
+`uglify-js` (or `terser` if your target is ES6) installed.
 
 Via NPM:
 

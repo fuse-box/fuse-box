@@ -54,8 +54,8 @@ FuseBox.init({
 
 ## Uglifying
 
-Make sure you have `uglify-js` and/or `uglify-es` installed. If your target is
-higher than `es5`, Quantum will use `uglify-es`. More about it
+Make sure you have `uglify-js` and/or `terser` installed. If your target is
+higher than `es5`, Quantum will use `terser`. More about it
 [here](../production-builds/quantum#uglify) You can control that manually too.
 
 ## Working with Babel

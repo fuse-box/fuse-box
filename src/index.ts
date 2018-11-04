@@ -32,6 +32,7 @@ export { MarkdownPlugin } from "./plugins/Markdownplugin";
 export { JSONPlugin } from "./plugins/JSONplugin";
 export { BannerPlugin } from "./plugins/BannerPlugin";
 export { SassPlugin } from "./plugins/stylesheet/SassPlugin";
+export { TerserPlugin } from "./plugins/TerserPlugin";
 export { UglifyESPlugin } from "./plugins/UglifyESPlugin";
 export { UglifyJSPlugin } from "./plugins/UglifyJSPlugin";
 export { SourceMapPlainJsPlugin } from "./plugins/SourceMapPlainJsPlugin";

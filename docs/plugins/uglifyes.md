@@ -9,7 +9,9 @@ Compresses the javascript code by using
 [UglifyES](https://github.com/mishoo/UglifyJS2/tree/harmony).
 
 Unlike the **UglifyJS** plugin, the **UglifyES** plugin supports ES2015+ (ES6+)
-code.
+code. Please note that because `uglify-es` is not longer supported this plugin
+will be removed in the next major release. You can use the `TerserPlugin` as a
+drop-in replacement.
 
 ## Install
 

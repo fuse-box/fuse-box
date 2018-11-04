@@ -34,6 +34,11 @@ export class QuantumPluginClass implements Plugin {
 						// remove uglify es
 						delete plugins[index];
 					}
+					if (plugin.constructor.name === "TerserPluginClass") {
+						this.coreOpts.uglify = { es6: true, ...plugin.options };
+						// remove terser
+						delete plugins[index];
+					}
 
 					if (plugin.constructor.name === "WebIndexPluginClass") {
 						this.coreOpts.webIndexPlugin = plugin as WebIndexPluginClass;
