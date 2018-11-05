@@ -14,15 +14,15 @@ export class BundleWriter {
 
 	private getUglifyJSOptions(): any {
 		const opts = this.core.opts.shouldUglify() || {};
-		const useUglifyEs = this.core.context.languageLevel > ScriptTarget.ES5 || !!opts.es6;
-		if (useUglifyEs) {
-			this.core.context.log.echoInfo("Using uglify-es because the target is greater than ES5 or es6 option is set");
+		const userTerser = this.core.context.languageLevel > ScriptTarget.ES5 || !!opts.es6;
+		if (userTerser) {
+			this.core.context.log.echoInfo("Using terser because the target is greater than ES5 or es6 option is set");
 		} else {
 			this.core.context.log.echoInfo("Using uglify-js because the target is set to ES5 and no es6 option is set");
 		}
 		return {
 			...opts,
-			es6: useUglifyEs,
+			es6: userTerser,
 		};
 	}
 

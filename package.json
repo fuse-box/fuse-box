@@ -108,6 +108,7 @@
     "run-sequence": "^1.2.2",
     "should": "^11.1.0",
     "stylus": "^0.54.5",
+    "terser": "^3.10.11",
     "typescript": "^3.1.0",
     "uglify-es": "^3.3.9",
     "uglify-js": "^3.4.7",

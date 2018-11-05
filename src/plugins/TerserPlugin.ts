@@ -1,31 +1,27 @@
 import { Plugin } from "../core/WorkflowContext";
 import { BundleSource } from "../BundleSource";
 
-// TODO get typings for UglifyES opts
-export interface UglifyESPluginOptions {
+// TODO get typings for Terser opts
+export interface TerserPluginOptions {
 	[key: string]: any;
 }
 
 /**
  * @export
- * @class UglifyESPluginClass
+ * @class TerserPluginClass
  * @implements {Plugin}
  */
-export class UglifyESPluginClass implements Plugin {
+export class TerserPluginClass implements Plugin {
 	/**
 	 * @type {any}
-	 * @memberOf UglifyESPluginClass
+	 * @memberOf TerserPluginClass
 	 */
 
-	constructor(public options: UglifyESPluginOptions = {}) {
-		console.warn(
-			"The UglifyESPlugin is no longer supported and will be removed in the next major release. Please use the 'TerserPlugin' instead",
-		);
-	}
+	constructor(public options: TerserPluginOptions = {}) {}
 
 	public postBundle(context) {
 		const mainOptions: any = {};
-		const UglifyES = require("uglify-es");
+		const Terser = require("terser");
 		const concat = context.source.getResult();
 		const source = concat.content.toString();
 		const sourceMap = concat.sourceMap;
@@ -44,7 +40,7 @@ export class UglifyESPluginClass implements Plugin {
 
 		let timeStart = process.hrtime();
 
-		const result = UglifyES.minify(source, {
+		const result = Terser.minify(source, {
 			...this.options,
 			...mainOptions,
 		});
@@ -58,6 +54,6 @@ export class UglifyESPluginClass implements Plugin {
 	}
 }
 
-export const UglifyESPlugin = (options?: UglifyESPluginOptions) => {
-	return new UglifyESPluginClass(options);
+export const TerserPlugin = (options?: TerserPluginOptions) => {
+	return new TerserPluginClass(options);
 };

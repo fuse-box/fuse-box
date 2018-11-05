@@ -377,8 +377,8 @@ Default value: `false`
 A boolean flag or an object literal with uglify's options.
 
 Quantum supports both [uglify-js](https://github.com/mishoo/UglifyJS2) and
-[uglify-es](https://github.com/mishoo/UglifyJS2/tree/harmony). Which one to use
-is determined by `es6` option.
+[terser](https://github.com/terser-js/terser). Which one to use is determined by
+`es6` option.
 
 Enable `uglify-js`:
 
@@ -396,7 +396,7 @@ QuantumPlugin({
 });
 ```
 
-Enable `uglify-es`:
+Enable `terser`:
 
 ```js
 QuantumPlugin({
@@ -406,8 +406,8 @@ QuantumPlugin({
 
 Alternatively, Quantum could pick up uglify's options from
 [UglifyJSPlugin](../plugins/uglifyjs-plugin) or
-[UglifyESPlugin](../plugins/uglifyes-plugin), so if you already have one of them
-set up then minification in Quantum should work right away.
+[TerserPlugin](../plugins/terser-plugin), so if you already have one of them set
+up then minification in Quantum should work right away.
 
 ## Computed statement resolution
 

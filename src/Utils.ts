@@ -73,7 +73,19 @@ export function getDateTime() {
 }
 
 export function uglify(contents: string | Buffer, { es6 = false, ...opts }: any = {}) {
-	const UglifyJs = es6 ? require("uglify-es") : require("uglify-js");
+	let UglifyJs: any;
+	if (es6) {
+		try {
+			UglifyJs = require("terser");
+		} catch (error) {
+			UglifyJs = require("uglify-es");
+			console.warn(
+				"uglify-es is no longer supported and will be removed in the next major release. Please use 'terser' instead",
+			);
+		}
+	} else {
+		UglifyJs = require("uglify-js");
+	}
 	return UglifyJs.minify(contents.toString(), opts);
 }
 
