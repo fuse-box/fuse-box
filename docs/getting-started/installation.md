@@ -8,11 +8,11 @@ title: Installation
 You can install FuseBox from `npm`.
 
 ```
-npm install fuse-box typescript uglify-es uglify-js --save-dev
+npm install fuse-box typescript terser uglify-js --save-dev
 ```
 
-You should install `uglify-es` and `uglify-js` too. FuseBox will decide which
-one to use, dependending on a selected target.
+You should install `terser` and `uglify-js` too. FuseBox will decide which one
+to use, dependending on a selected target.
 
 ## Why TypeScript
 
