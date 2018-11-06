@@ -38,3 +38,5 @@ website/node_modules
 website/static/css
 website/translated_docs
 website/yarn.lock
+
+some\.sh

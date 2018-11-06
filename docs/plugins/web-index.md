@@ -60,6 +60,44 @@ fuse.init({
 | `templateString` | `string`                                      | Provide your own template                                                                                                                                                                                                                                                                                                                                    |
 | `title`          | `string`                                      | Sets the title of the generated HTML document                                                                                                                                                                                                                                                                                                                |
 
+                                                                                                                          |
+
+### Resolving paths
+
+To resolve all javascript and CSS files add this option
+
+```
+WebIndexPlugin({
+    path: "/foobar",
+})
+```
+
+It will result in
+
+```html
+<link rel="stylesheet" href="/foobar/styles.css"/>
+<script  type="text/javascript" src="/foobar/api.js"></script>
+<script  type="text/javascript" src="/foobar/app.js"></script>
+```
+
+Additionally if you want to customise CSS path add `cssPath` option as shown
+below
+
+```
+ WebIndexPlugin({
+    path: "/foobar",
+    cssPath : "/styles"
+})
+```
+
+It will result in
+
+```html
+<link rel="stylesheet" href="/styles/styles.css"/>
+<script  type="text/javascript" src="/foobar/api.js"></script>
+<script  type="text/javascript" src="/foobar/app.js"></script>
+```
+
 ### Resolve example
 
 The `resolve` option allows you to completely override the path.
