@@ -19,6 +19,7 @@ export interface IndexPluginOptions {
 	keywords?: string;
 	locals?: { [key: string]: any };
 	path?: string;
+	cssPath?: string;
 	pre?: { relType: "fetch" | "load" } | string;
 	resolve?: { (output: UserOutput): string };
 	scriptAttributes?: string;
@@ -153,7 +154,16 @@ export class WebIndexPluginClass implements Plugin {
 		let cssInjection = [];
 		if (producer.injectedCSSFiles.size > 0) {
 			producer.injectedCSSFiles.forEach(file => {
-				const resolvedFile = this.opts.path ? path.join(this.opts.path, file) : path.join("/", file);
+				let resolvedFile;
+				if (this.opts.cssPath) {
+					resolvedFile = joinFuseBoxPath(this.opts.cssPath, file);
+				} else {
+					if (this.opts.path) {
+						resolvedFile = joinFuseBoxPath(this.opts.path, file);
+					} else {
+						resolvedFile = joinFuseBoxPath("/", file);
+					}
+				}
 				cssInjection.push(`<link rel="stylesheet" href="${resolvedFile}"/>`);
 			});
 		}
