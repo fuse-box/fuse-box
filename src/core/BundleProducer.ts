@@ -199,7 +199,7 @@ export class BundleProducer {
 		}
 
 		let ready = false;
-		const ignoredPatterns = [/\.fusebox/, /node-modules/];
+		const ignoredPatterns = [/\.fusebox/, /node_modules/];
 		chokidar
 			.watch(this.chokidarPaths || this.fuse.context.homeDir, chokidarOptions)
 			.on("all", (event, fp) => {
