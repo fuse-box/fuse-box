@@ -64,5 +64,5 @@ if (FuseBox.isServer) {
 		}
 		return d
 	}
-	return domain
+	module.exports = domain;
 }
