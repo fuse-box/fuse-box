@@ -2,7 +2,7 @@ var $fsmp$ = (function() {
 	function loadRemoteScript(url) {
 		return Promise.resolve().then(function() {
 			if (FuseBox.isBrowser) {
-				let d = document;
+				var d = document;
 				var head = d.getElementsByTagName("head")[0];
 				var target;
 				if (/\.css$/.test(url)) {
