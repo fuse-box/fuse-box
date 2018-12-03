@@ -41,14 +41,9 @@ export { OptimizeJSPlugin } from "./plugins/OptimizeJSPlugin";
 export { Fluent } from "./arithmetic/Fluent";
 export { FuseBox } from "./core/FuseBox";
 export { Sparky } from "./sparky/Sparky";
-<<<<<<< HEAD
-export { SparkyContext } from './sparky/SparkyContext';
-export { CSSModules } from "./plugins/stylesheet/CSSModules";
 export { PurgeCSSPlugin } from "./plugins/stylesheet/PurgeCSSPlugin";
-=======
 export { SparkyContext } from "./sparky/SparkyContext";
 export { CSSModules, CSSModulesPlugin } from "./plugins/stylesheet/CSSModules";
->>>>>>> upstream/master
 export { CopyPlugin } from "./plugins/CopyPlugin";
 export { WebIndexPlugin } from "./plugins/WebIndexPlugin";
 export { PlainJSPlugin } from "./plugins/PlainJSPlugin";
