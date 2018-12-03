@@ -42,6 +42,7 @@ export { FuseBox } from "./core/FuseBox";
 export { Sparky } from "./sparky/Sparky";
 export { SparkyContext } from './sparky/SparkyContext';
 export { CSSModules } from "./plugins/stylesheet/CSSModules";
+export { PurgeCSSPlugin } from "./plugins/stylesheet/PurgeCSSPlugin";
 export { CopyPlugin } from "./plugins/CopyPlugin";
 export { WebIndexPlugin } from "./plugins/WebIndexPlugin";
 export { PlainJSPlugin } from "./plugins/PlainJSPlugin";

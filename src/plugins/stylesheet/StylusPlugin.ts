@@ -8,7 +8,7 @@ export interface StylusPluginOptions {
 
 interface InternalOpts {
     filename?: string;
-    paths? : string[]
+    paths? : string[];
 }
 
 let stylus;
@@ -48,7 +48,7 @@ export class StylusPluginClass implements Plugin {
         file.loadContents();
 
         if (!stylus) stylus = require("stylus");
-        
+
 
         options.filename = file.info.fuseBoxPath;
         if(!options.paths){
@@ -59,7 +59,7 @@ export class StylusPluginClass implements Plugin {
         if ("sourceMapConfig" in context) {
             options.sourcemap = { ...sourceMapDef, ...this.options.sourcemap || {} };
         }
-        
+
         const cssDependencies = file.context.extractCSSDependencies(file, {
             paths: options.paths,
             content: file.contents,
