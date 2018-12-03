@@ -51,6 +51,7 @@
     "postcss": "^6.0.1",
     "pretty-time": "^0.2.0",
     "prettysize": "0.0.3",
+    "purge-from-html": "^1.0.3",
     "purgecss": "^1.1.0",
     "realm-utils": "^1.0.9",
     "regexpu-core": "^4.1.3",

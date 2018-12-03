@@ -8,9 +8,9 @@ export interface PurgeCSSPluginOptions {
     content?: T[];
     css?: T[];
 }
-
+let Purgecss
 let purge
-let Purge
+let purgeHtml
 let purgecssResult
 let css
 /**
@@ -39,20 +39,37 @@ export class PurgeCSSPluginClass implements Plugin {
 
         file.loadContents()
 
-        css = file.contents
-
-        if (!Purge) {
-            Purge = require("purgecss")
+        if (!css) {
+            css = file.contents
         }
 
-        purge = new Purge({
-            content: options.content,
-            css: file.contents,
-        })
+        if (!Purgecss) {
+            Purgecss = require('purgecss');
+            purgeHtml = require('purge-from-html');
+        }
 
-        purgecssResult = purge.result()
+        if (!purge) {
+            purge = new Purgecss({
+                ...options,
+                css: [
+                    {
+                        raw: css
+                    }
+                ],
+                extractors: [
+                    {
+                        extractor: purgeHtml,
+                        extensions: ['html', 'tpl']
+                    }
+                ],
+                stdout: true,
+            })
+            purgecssResult = purge.purge();
+        }
+        //        console.log(purge);
+        console.log(purgecssResult[0].css);
 
-		    return purge
+        //		    return purge
     }
 }
 
