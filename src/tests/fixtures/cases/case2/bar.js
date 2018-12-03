@@ -1,1 +1,1 @@
-exports.bar = { bar: "1" }
+exports.bar = { bar: "1" };

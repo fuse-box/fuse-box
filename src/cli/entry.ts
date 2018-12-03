@@ -1,23 +1,24 @@
-#!/usr/bin/env node
+#! /usr/bin/env node
+const argv = require("getopts")(process.argv.slice(2));
+import { Install } from "./Install";
+import { Help } from "./Help";
 
-import * as yargs from "yargs";
-import { FuseFileExecution } from './FuseFileExecution';
-
-const SYSTEM_ARGS = ["boostrap", "snippet", "run"];
-
-function extractParams(args){
-    const primaryArgs = args._;
-    const firstPrimaryArg = primaryArgs[0];
-    return {
-        primary : firstPrimaryArg,
-        args : args,
-        isSystemArgument : () => SYSTEM_ARGS.indexOf(firstPrimaryArg) > -1
-    }
+const CMD = {
+	install: Install,
+	help: Help,
+};
+function extractParams(args) {
+	if (args.help) {
+		return new Help(args);
+	}
+	args._.forEach((name, index) => {
+		if (CMD[name]) {
+			args._ = args._.splice(index + 1);
+			return new CMD[name](args);
+		}
+	});
 }
 function initCLI() {
-    const args = extractParams(yargs.args);
-    if( !args.primary || !args.isSystemArgument() && FuseFileExecution.test()){
-        return FuseFileExecution.init(args);
-    }
+	extractParams(argv);
 }
 initCLI();

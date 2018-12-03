@@ -1,1 +1,1 @@
-global.helloFirstShim = { result: "I am helloFirstShim and i am shimmed!" }
+global.helloFirstShim = { result: "I am helloFirstShim and i am shimmed!" };

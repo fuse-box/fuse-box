@@ -2,53 +2,55 @@ import { ModuleCollection } from "./core/ModuleCollection";
 import { WorkFlowContext } from "./core/WorkflowContext";
 import * as log from "fliplog";
 import * as prettysize from "prettysize";
-import * as  prettyTime from "pretty-time";
+import * as prettyTime from "pretty-time";
 import * as zlib from "zlib";
 import { getDateTime } from "./Utils";
 
 // @TODO: I've moved this into fliplog in v1, migrate to that
 export class Indenter {
-    public store: Map<string, any> = new Map();
-    constructor() {
-        this.set("indent", 0);
-    }
+	public store: Map<string, any> = new Map();
+	constructor() {
+		this.set("indent", 0);
+	}
 
-    // easy set/set
-    public set(key: string, val: any): Indenter {
-        this.store.set(key, val);
-        return this;
-    }
-    public get(key: string) {
-        return this.store.get(key);
-    }
-    // back to 0
-    public reset(): Indenter {
-        return this.set("indent", 0);
-    }
-    // tap value
-    public tap(key: string, cb: Function): Indenter {
-        const updated = cb(this.store.get(key));
-        return this.set(key, updated);
-    }
-    // increment
-    public indent(level: number): Indenter {
-        return this.tap("indent", indent => indent + level);
-    }
-    // specific number
-    public level(level: number): Indenter {
-        return this.set("indent", level);
-    }
-    // string repeat indent
-    public toString(): string {
-        return " ".repeat(this.get("indent"));
-    }
-    public toNumber(): number {
-        return this.get("indent");
-    }
-    public [Symbol.toPrimitive](hint: string) {
-        if (hint === "number") { return this.toNumber(); }
-        return this.toString();
-    }
+	// easy set/set
+	public set(key: string, val: any): Indenter {
+		this.store.set(key, val);
+		return this;
+	}
+	public get(key: string) {
+		return this.store.get(key);
+	}
+	// back to 0
+	public reset(): Indenter {
+		return this.set("indent", 0);
+	}
+	// tap value
+	public tap(key: string, cb: Function): Indenter {
+		const updated = cb(this.store.get(key));
+		return this.set(key, updated);
+	}
+	// increment
+	public indent(level: number): Indenter {
+		return this.tap("indent", indent => indent + level);
+	}
+	// specific number
+	public level(level: number): Indenter {
+		return this.set("indent", level);
+	}
+	// string repeat indent
+	public toString(): string {
+		return " ".repeat(this.get("indent"));
+	}
+	public toNumber(): number {
+		return this.get("indent");
+	}
+	public [Symbol.toPrimitive](hint: string) {
+		if (hint === "number") {
+			return this.toNumber();
+		}
+		return this.toString();
+	}
 }
 
 /**
@@ -58,383 +60,429 @@ export class Indenter {
  * - [ ] fix the →→→→→→→
  */
 export class Log {
+	private static deferred: Function[] = [];
 
-    private static deferred: Function[] = [];
+	public timeStart = process.hrtime();
+	public printLog: any = true;
+	public showBundledFiles: boolean = true;
+	public debugMode: any = false;
+	public spinner: any;
+	public indent: Indenter = new Indenter();
+	private totalSize = 0;
 
-    public timeStart = process.hrtime();
-    public printLog: any = true;
-    public showBundledFiles: boolean = true;
-    public debugMode: any = false;
-    public spinner: any;
-    public indent: Indenter = new Indenter();
-    private totalSize = 0;
+	public static defer(fn: Function) {
+		Log.deferred.push(fn);
+	}
+	constructor(public context: WorkFlowContext) {
+		this.printLog = context.doLog;
+		this.debugMode = context.debugMode;
 
-    public static defer(fn: Function) {
-        Log.deferred.push(fn)
-    }
-    constructor(public context: WorkFlowContext) {
-        this.printLog = context.doLog;
-        this.debugMode = context.debugMode;
+		log.filter(arg => {
+			// conditions for filtering specific tags
+			const debug = this.debugMode;
+			const level = this.printLog;
+			const hasTag = tag => arg.tags.includes(tag);
+			const levelHas = tag => debug || (level && level.includes && level.includes(tag) && !level.includes("!" + tag));
 
-        log.filter(arg => {
-            // conditions for filtering specific tags
-            const debug = this.debugMode;
-            const level = this.printLog;
-            const hasTag = tag =>
-                arg.tags.includes(tag);
-            const levelHas = tag =>
-                debug || (level && level.includes && level.includes(tag) && !level.includes("!" + tag));
+			// when off, silent
+			if (level === false) {
+				return false;
+			}
 
+			// counting this as verbose for now
+			if (level === true && debug === true) {
+				return null;
+			}
 
-            // when off, silent
-            if (level === false) { return false; }
+			if (level === "error") {
+				if (!hasTag("error")) {
+					return false;
+				}
+			}
+			// could be verbose, reasoning, etc
+			if (hasTag("magic")) {
+				if (!levelHas("magic")) {
+					return false;
+				}
+			}
+			if (hasTag("filelist")) {
+				if (!levelHas("filelist")) {
+					return false;
+				}
+			}
 
-            // counting this as verbose for now
-            if (level === true && debug === true) { return null; }
+			// if not false and conditions pass, log it
+			return null;
+		});
 
-            if (level === "error") {
-                if (!hasTag("error")) { return false; }
-            }
-            // could be verbose, reasoning, etc
-            if (hasTag("magic")) {
-                if (!levelHas("magic")) { return false; }
-            }
-            if (hasTag("filelist")) {
-                if (!levelHas("filelist")) { return false; }
-            }
+		setTimeout(() => {
+			if (this.printLog) {
+				Log.deferred.forEach(x => x(this));
+			}
+			Log.deferred = [];
+		});
+	}
+	// --- config ---
 
-            // if not false and conditions pass, log it
-            return null;
-        });
+	public reset(): Log {
+		this.timeStart = process.hrtime();
+		this.totalSize = 0;
+		this.indent.reset();
+		return this;
+	}
+	public printOptions(title: string, obj: any) {
+		const indent = this.indent.level(2) + "";
 
-        setTimeout(() => {
-            if (this.printLog) {
-                Log.deferred.forEach(x => x(this));
-            }
-            Log.deferred = [];
-        });
-    }
-    // --- config ---
+		const indent2 = this.indent.level(4) + "";
 
-    public reset(): Log {
-        this.timeStart = process.hrtime();
-        this.totalSize = 0;
-        this.indent.reset();
-        return this;
-    }
-    public printOptions(title: string, obj: any) {
-        const indent = this.indent.level(2) + "";
+		// @TODO: moved this into fliplog v1, migrate
+		log.addPreset("min", instance => {
+			instance.formatter(data => {
+				return log
+					.inspector()(data)
+					.split("\n")
+					.map(data2 => indent2 + data2)
+					.map(data2 => data2.replace(/[{},]/, ""))
+					.join("\n");
+			});
+		});
 
-        const indent2 = this.indent.level(4) + "";
+		log
+			.bold()
+			.yellow(`${indent}→ ${title}\n`)
+			.preset("min")
+			.data(obj)
+			.echo();
 
-        // @TODO: moved this into fliplog v1, migrate
-        log.addPreset("min", instance => {
-            instance.formatter(data => {
-                return log.inspector()(data).split("\n")
-                    .map(data2 => indent2 + data2)
-                    .map(data2 => data2.replace(/[{},]/, ""))
-                    .join("\n");
-            });
-        });
+		// for (let i in obj) {
+		//     indent = this.indent.level(6) + ''
+		//     log.green(`${indent}${i} : ${obj[i]}`).echo();
+		// }
+		// this.indent.indent(-2)
+		return this;
+	}
 
-        log.bold().yellow(`${indent}→ ${title}\n`).preset("min").data(obj).echo();
+	public clearTerminal() {
+		console.log("\x1Bc");
+	}
 
-        // for (let i in obj) {
-        //     indent = this.indent.level(6) + ''
-        //     log.green(`${indent}${i} : ${obj[i]}`).echo();
-        // }
-        // this.indent.indent(-2)
-        return this;
-    }
+	// --- start end ---
+	// @TODO add spinners here
+	// @TODO combine logs here, output when needed
+	// @TODO combine this and subBundleStart
+	public bundleStart(name: string) {
+		log.gray(``).echo();
+		log.gray(`--------------------------`).echo();
+		log.magenta(`Bundle "${name}" `).echo();
+		log.gray(``).echo();
+		return this;
+	}
+	public subBundleStart(name: string, parent: string) {
+		log.bold(`${name} (child of ${parent}) ->`).echo();
+		return this;
+	}
+	public bundleEnd(name: string, collection: ModuleCollection) {
+		const took = process.hrtime(this.timeStart) as [number, number];
 
-    public clearTerminal() {
-        console.log('\x1Bc');
-    }
+		log
+			.ansi()
+			.write(`-> Finished`)
+			.green(collection.cachedName || collection.name)
+			.yellow(`took: ${prettyTime(took, "ms")}`)
+			.echo();
+	}
 
-    // --- start end ---
-    // @TODO add spinners here
-    // @TODO combine logs here, output when needed
-    // @TODO combine this and subBundleStart
-    public bundleStart(name: string) {
-        log.gray(``).echo();
-        log.gray(`--------------------------`).echo();
-        log.magenta(`Bundle "${name}" `).echo();
-        log.gray(``).echo();
-        return this;
-    }
-    public subBundleStart(name: string, parent: string) {
-        log.bold(`${name} (child of ${parent}) ->`).echo();
-        return this;
-    }
-    public bundleEnd(name: string, collection: ModuleCollection) {
-        const took = process.hrtime(this.timeStart) as [number, number];
+	// --- spinner ---
+	public startSpinner(text: string) {
+		if (!this.printLog) {
+			return this;
+		}
 
-        log
-            .ansi()
-            .write(`-> Finished`)
-            .green(collection.cachedName || collection.name)
-            .yellow(`took: ${prettyTime(took, "ms")}`)
-            .echo();
-    }
+		// spinner opts
+		const indentStr = this.indent.toString();
+		const indent = +this.indent;
+		const interval = 20;
+		const frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"].map(frame => indentStr + frame);
+		const spinner = { frames, interval };
 
-    // --- spinner ---
-    public startSpinner(text: string) {
-        if (!this.printLog) { return this; }
+		// @TODO @FIXME the spinner needs to be scoped inside of fliplog, has todo to update
+		// instantiate
+		this.spinner = log.requirePkg("ora")({ text, indent, spinner });
+		this.spinner.start();
+		this.spinner.indent = +this.indent;
+		this.spinner.succeeded = false;
 
-        // spinner opts
-        const indentStr = this.indent.toString();
-        const indent = +this.indent;
-        const interval = 20;
-        const frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"].map(frame => indentStr + frame);
-        const spinner = { frames, interval };
+		// safety for if errors happen so it does not keep spinning
+		setTimeout(() => {
+			if (this.spinner.succeeded === false && this.spinner.fail) {
+				this.spinner.fail();
+			}
+		}, 1000);
 
-        // @TODO @FIXME the spinner needs to be scoped inside of fliplog, has todo to update
-        // instantiate
-        this.spinner = log.requirePkg("ora")({ text, indent, spinner });
-        this.spinner.start();
-        this.spinner.indent = +this.indent;
-        this.spinner.succeeded = false;
+		return this;
+	}
+	public stopSpinner(text?: string) {
+		if (!this.printLog) {
+			return this;
+		}
+		// safety, mark as success
+		if (this.spinner && this.spinner.succeeded === false) {
+			this.spinner.succeeded = true;
+			const reference = this.spinner;
+			const indent = this.indent.level(this.spinner.indent).toString();
 
-        // safety for if errors happen so it does not keep spinning
-        setTimeout(() => {
-            if (this.spinner.succeeded === false && this.spinner.fail) {
-                this.spinner.fail();
-            }
-        }, 1000);
+			// @override success to indent
+			// reference.succeed()
+			const success = log.chalk().green(`${indent}✔ `);
+			text = text || reference.text;
+			reference.stopAndPersist({ symbol: success, text });
 
-        return this;
-    }
-    public stopSpinner(text?: string) {
-        if (!this.printLog) { return this; }
-        // safety, mark as success
-        if (this.spinner && this.spinner.succeeded === false) {
-            this.spinner.succeeded = true;
-            const reference = this.spinner;
-            const indent = this.indent.level(this.spinner.indent).toString();
+			// it's too fast!
+			// setTimeout(() => reference.succeed(), 1)
+		}
+		return this;
+	}
 
-            // @override success to indent
-            // reference.succeed()
-            const success = log.chalk().green(`${indent}✔ `);
-            text = text || reference.text;
-            reference.stopAndPersist({ symbol: success, text });
+	// --- collection stats ---
 
-            // it's too fast!
-            // setTimeout(() => reference.succeed(), 1)
-        }
-        return this;
-    }
+	// @TODO: list vendor files as filter
+	public echoDefaultCollection(collection: ModuleCollection, contents: string) {
+		if (this.printLog === false) {
+			return this;
+		}
+		const bytes = Buffer.byteLength(contents, "utf8");
+		const size = prettysize(bytes);
+		this.totalSize += bytes;
 
-    // --- collection stats ---
+		const indent = this.indent
+			.reset()
+			.indent(+1)
+			.toString();
 
-    // @TODO: list vendor files as filter
-    public echoDefaultCollection(collection: ModuleCollection, contents: string) {
-        if (this.printLog === false) { return this; }
-        const bytes = Buffer.byteLength(contents, "utf8");
-        const size = prettysize(bytes);
-        this.totalSize += bytes;
+		// @example └──  (5 files, 7.6 kB) default
+		// @TODO auto indent as with ansi
 
-        const indent = this.indent.reset().indent(+1).toString();
+		if (this.showBundledFiles) {
+			const dependencies = new Map(Array.from(collection.dependencies).sort());
+			dependencies.forEach(file => {
+				if (file.info.isRemoteFile) {
+					return;
+				}
+				const indentItem = this.indent.level(4).toString();
+				log
+					// .tags('filelist')
+					.white(`${indentItem}${file.info.fuseBoxPath}`)
+					.echo();
+			});
+		}
 
-        // @example └──  (5 files, 7.6 kB) default
-        // @TODO auto indent as with ansi
+		log
+			.ansi()
+			.write(`└──`)
+			.yellow(`${indent}(${collection.dependencies.size} files,  ${size})`)
+			.green(collection.cachedName || collection.name)
+			.echo();
 
-        if (this.showBundledFiles) {
-          const dependencies = new Map(Array.from(collection.dependencies).sort());
-          dependencies.forEach(file => {
-              if (file.info.isRemoteFile) { return; }
-              const indentItem = this.indent.level(4).toString();
-              log
-                  // .tags('filelist')
-                  .white(`${indentItem}${file.info.fuseBoxPath}`)
-                  .echo();
-          });
-        }
+		this.indent.level(0);
+		return this;
+	}
 
-        log
-            .ansi()
-            .write(`└──`)
-            .yellow(`${indent}(${collection.dependencies.size} files,  ${size})`)
-            .green(collection.cachedName || collection.name)
-            .echo();
+	// @example
+	// └── fuse-box-css 1.5 kB (1 files)
+	// └── lodash 14.2 kB (12 files)
+	public echoCollection(collection: ModuleCollection, contents: string) {
+		if (this.printLog === false) {
+			return this;
+		}
+		const bytes = Buffer.byteLength(contents, "utf8");
+		const size = prettysize(bytes);
+		this.totalSize += bytes;
+		const indent = this.indent.toString(); // reset
 
-        this.indent.level(0);
-        return this;
-    }
+		const name = (collection.cachedName || collection.name).trim();
 
-    // @example
-    // └── fuse-box-css 1.5 kB (1 files)
-    // └── lodash 14.2 kB (12 files)
-    public echoCollection(collection: ModuleCollection, contents: string) {
-        if (this.printLog === false) { return this; }
-        const bytes = Buffer.byteLength(contents, "utf8");
-        const size = prettysize(bytes);
-        this.totalSize += bytes;
-        const indent = this.indent.toString(); // reset
+		log
+			.ansi()
+			.write(`${indent}└──`)
+			.green(name)
+			.yellow(size)
+			.write(`(${collection.dependencies.size} files)`)
+			.echo();
 
-        const name = (collection.cachedName || collection.name).trim();
+		return this;
+	}
 
-        log
-            .ansi()
-            .write(`${indent}└──`)
-            .green(name)
-            .yellow(size)
-            .write(`(${collection.dependencies.size} files)`)
-            .echo();
+	public end(header?: string) {
+		const took = process.hrtime(this.timeStart) as [number, number];
+		this.echoBundleStats(header || "Bundle", this.totalSize, took);
+		return this;
+	}
 
-        return this;
-    }
+	/**
+	 * @TODO
+	 *  - [ ] ensure header will not conflict if it is used in echoBundleStats
+	 *
+	 * string | number | Buffer
+	 */
+	public echoGzip(size: any, msg: string | any = "") {
+		if (!size) {
+			return this;
+		}
+		const yellow = log.chalk().yellow;
+		const gzipped = zlib.gzipSync(size, { level: 9 }).length;
+		const gzippedSize = prettysize(gzipped) + " (gzipped)";
+		const compressedSize = prettysize(size.length);
+		const prettyGzip = yellow(`${compressedSize}, ${gzippedSize}`);
+		log
+			.title(this.indent + "")
+			.when(msg, () => log.text(msg), () => log.bold("size: "))
+			.data(prettyGzip)
+			.echo();
+		return this;
+	}
 
-    public end(header?: string) {
-        const took = process.hrtime(this.timeStart) as [number, number];
-        this.echoBundleStats(header || "Bundle", this.totalSize, took);
-        return this;
-    }
+	/**
+	 * @TODO @FIXME
+	 * - [ ] bundle stats are wrong because they use accumulated size,
+	 *       not the uglified end result size
+	 *       use uglified and QuantumPlugin output
+	 */
+	public echoBundleStats(header: string, size: number, took: [number, number]) {
+		this.indent.reset();
+		const yellow = log.chalk().yellow;
+		const sized = yellow(`${prettysize(size)}`);
+		log.text(`size: ${sized} in ${prettyTime(took, "ms")}`).echo();
+		return this;
+	}
 
-    /**
-     * @TODO
-     *  - [ ] ensure header will not conflict if it is used in echoBundleStats
-     *
-     * string | number | Buffer
-     */
-    public echoGzip(size: any, msg: string | any = "") {
-        if (!size) { return this; }
-        const yellow = log.chalk().yellow;
-        const gzipped = zlib.gzipSync(size, { level: 9 }).length;
-        const gzippedSize = prettysize(gzipped) + " (gzipped)";
-        const compressedSize = prettysize(size.length);
-        const prettyGzip = yellow(`${compressedSize}, ${gzippedSize}`);
-        log
-            .title(this.indent + "")
-            .when(msg,
-            () => log.text(msg),
-            () => log.bold("size: "))
-            .data(prettyGzip)
-            .echo();
-        return this;
-    }
+	// --- bundle specifics ---
 
-    /**
-     * @TODO @FIXME
-     * - [ ] bundle stats are wrong because they use accumulated size,
-     *       not the uglified end result size
-     *       use uglified and QuantumPlugin output
-     */
-    public echoBundleStats(header: string, size: number, took: [number, number]) {
-        this.indent.reset();
-        const yellow = log.chalk().yellow;
-        const sized = yellow(`${prettysize(size)}`);
-        log.text(`size: ${sized} in ${prettyTime(took, "ms")}`).echo();
-        return this;
-    }
+	public echoHeader(str: string) {
+		this.indent.level(1);
+		log.yellow(`${this.indent}${str}`).echo();
+		return this;
+	}
 
-    // --- bundle specifics ---
+	public echoSparkyTaskStart(taskName: string) {
+		const gray = log.chalk().gray;
+		const magenta = log.chalk().magenta;
+		const str = ["[", gray(getDateTime()), "]", " Starting"];
+		str.push(` '${magenta(taskName)}' `);
+		console.log(str.join(""));
+		return this;
+	}
 
-    public echoHeader(str: string) {
-        this.indent.level(1);
-        log.yellow(`${this.indent}${str}`).echo();
-        return this;
-    }
+	public echoSparkyTaskEnd(taskName, took: [number, number]) {
+		const gray = log.chalk().gray;
+		const magenta = log.chalk().magenta;
+		const str = ["[", gray(getDateTime()), "]", " Resolved"];
+		str.push(` '${magenta(taskName)}' `, "after ");
+		str.push(`${gray(prettyTime(took, "ms"))}`);
+		console.log(str.join(""));
+		return this;
+	}
 
-    public echoSparkyTaskStart(taskName: string) {
-        const gray = log.chalk().gray;
-        const magenta = log.chalk().magenta;
-        const str = ["[", gray(getDateTime()), "]", " Starting"];
-        str.push(` '${magenta(taskName)}' `);
-        console.log(str.join(""));
-        return this;
-    }
+	public echoStatus(str: string) {
+		log
+			.title(`→`)
+			.cyan(`${str}`)
+			.echo();
+		return this;
+	}
 
-    public echoSparkyTaskEnd(taskName, took: [number, number]) {
-        const gray = log.chalk().gray;
-        const magenta = log.chalk().magenta;
-        const str = ["[", gray(getDateTime()), "]", " Resolved"];
-        str.push(` '${magenta(taskName)}' `, "after ");
-        str.push(`${gray(prettyTime(took, "ms"))}`);
-        console.log(str.join(""));
-        return this;
-    }
+	public echoSparkyTaskHelp(taskName: string, taskHelp: string) {
+		log
+			.ansi()
+			.write(" ")
+			.cyan(taskName)
+			.white(taskHelp)
+			.echo();
+	}
 
-    public echoStatus(str: string) {
-        log.title(`→`).cyan(`${str}`).echo();
-        return this;
-    }
+	// --- generalized ---
+	public groupHeader(str: string) {
+		log
+			.color("bold.underline")
+			.text(`${str}`)
+			.echo();
+		return this;
+	}
+	public echoInfo(str: string) {
+		const indent = this.indent.level(2);
+		log
+			.preset("info")
+			.green(`${indent}→ ${str}`)
+			.echo();
+		return this;
+	}
+	public error(error: Error) {
+		// @TODO: finish forking notifier & dep chain
+		// if (this.printLog.includes('notify')) {
+		//     log.factory().notify({title: error.message, message: error.stack}).echo()
+		// }
 
-    public echoSparkyTaskHelp(taskName: string, taskHelp: string) {
-        log
-            .ansi()
-            .write(" ")
-            .cyan(taskName)
-            .white(taskHelp)
-            .echo();
-    }
+		log
+			.tags("error")
+			.data(error)
+			.echo();
+		return this;
+	}
 
-    // --- generalized ---
-    public groupHeader(str: string) {
-        log.color("bold.underline").text(`${str}`).echo();
-        return this;
-    }
-    public echoInfo(str: string) {
-        const indent = this.indent.level(2);
-        log.preset("info").green(`${indent}→ ${str}`).echo();
-        return this;
-    }
-    public error(error: Error) {
-        // @TODO: finish forking notifier & dep chain
-        // if (this.printLog.includes('notify')) {
-        //     log.factory().notify({title: error.message, message: error.stack}).echo()
-        // }
+	// @NOTE: later this will be used with preset tags
+	public magicReason(str: string, metadata: any = false) {
+		if (metadata) {
+			log.data(metadata);
+		}
+		log
+			.tags("magic")
+			.magenta(str)
+			.echo();
+		return this;
+	}
 
-        log.tags("error").data(error).echo();
-        return this;
-    }
-
-    // @NOTE: later this will be used with preset tags
-    public magicReason(str: string, metadata: any = false) {
-        if (metadata) {
-            log.data(metadata);
-        }
-        log.tags("magic").magenta(str).echo();
-        return this;
-    }
-
-
-    // -----------
-    // simplified shorthands for external formatting
-    // @TODO: anything using these should be fomatted inside of the logger
-    // -----------
-    public echo(str: string) {
-        log.time(true).green(str).echo();
-        return this;
-    }
-    public echoPlain(str: string) {
-        log.text(str).echo();
-        return this;
-    }
-    public echoBoldRed(msg) {
-        log.red().bold(msg).echo();
-        return this;
-    }
-    public echoError(str: string) {
-        log.red(`  → ERROR ${str}`).echo();
-    }
-    public echoRed(msg) {
-        log.red(msg).echo();
-        return this;
-    }
-    public echoBreak() {
-        log.green(`\n  -------------- \n`).echo();
-        return this;
-    }
-    public echoWarning(str: string) {
-        log.yellow(`  → WARNING ${str}`).echo();
-        return this;
-    }
-    public echoYellow(str: string) {
-        log.yellow(str).echo();
-        return this;
-    }
-    public echoGray(str: string) {
-        log.gray(str).echo();
-        return this;
-    }
+	// -----------
+	// simplified shorthands for external formatting
+	// @TODO: anything using these should be fomatted inside of the logger
+	// -----------
+	public echo(str: string) {
+		log
+			.time(true)
+			.green(str)
+			.echo();
+		return this;
+	}
+	public echoPlain(str: string) {
+		log.text(str).echo();
+		return this;
+	}
+	public echoBoldRed(msg) {
+		log
+			.red()
+			.bold(msg)
+			.echo();
+		return this;
+	}
+	public echoError(str: string) {
+		log.red(`  → ERROR ${str}`).echo();
+	}
+	public echoRed(msg) {
+		log.red(msg).echo();
+		return this;
+	}
+	public echoBreak() {
+		log.green(`\n  -------------- \n`).echo();
+		return this;
+	}
+	public echoWarning(str: string) {
+		log.yellow(`  → WARNING ${str}`).echo();
+		return this;
+	}
+	public echoYellow(str: string) {
+		log.yellow(str).echo();
+		return this;
+	}
+	public echoGray(str: string) {
+		log.gray(str).echo();
+		return this;
+	}
 }

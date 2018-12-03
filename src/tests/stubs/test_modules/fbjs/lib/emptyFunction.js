@@ -1,1 +1,3 @@
-module.exports = function() { return "I am empty" }
+module.exports = function() {
+  return "I am empty";
+};

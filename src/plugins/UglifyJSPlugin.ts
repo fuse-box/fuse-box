@@ -3,7 +3,7 @@ import { BundleSource } from "../BundleSource";
 
 // TODO get typings for UglifyJS opts
 export interface UglifyJSPluginOptions {
-    [key: string]: any;
+	[key: string]: any;
 }
 
 /**
@@ -17,63 +17,62 @@ export class UglifyJSPluginClass implements Plugin {
 	 * @memberOf UglifyJSPluginClass
 	 */
 
-    constructor(public options: UglifyJSPluginOptions = {}) {}
+	constructor(public options: UglifyJSPluginOptions = {}) {}
 
-    public postBundle(context : WorkFlowContext) {
-        const mainOptions : any = {
-        };
-        const UglifyJs = require("uglify-js");
+	public postBundle(context: WorkFlowContext) {
+		const mainOptions: any = {};
+		const UglifyJs = require("uglify-js");
 		//TODO: there may be a better way to test for v2
-		if(UglifyJs.mangle_properties !== undefined) {
+		if (UglifyJs.mangle_properties !== undefined) {
 			mainOptions.fromString = true;
 		}
 
-        const includeSourceMaps = context.source.includeSourceMaps;
-        const concat = context.source.getResult();
-        const source = concat.content.toString();
-        const sourceMap = concat.sourceMap;
+		const includeSourceMaps = context.source.includeSourceMaps;
+		const concat = context.source.getResult();
+		const source = concat.content.toString();
+		const sourceMap = concat.sourceMap;
 
-        const newSource = new BundleSource(context);
-        newSource.includeSourceMaps = includeSourceMaps;
-        context.source = newSource;
+		const newSource = new BundleSource(context);
+		newSource.includeSourceMaps = includeSourceMaps;
+		context.source = newSource;
 
-        const newConcat = context.source.getResult();
+		const newConcat = context.source.getResult();
 
-        if ("sourceMapConfig" in context) {
-            if ((context as any).sourceMapConfig.bundleReference) {
-                mainOptions.inSourceMap = JSON.parse(sourceMap);
-                mainOptions.outSourceMap = (context as any).sourceMapConfig.bundleReference;
-            }
-        }
+		if ("sourceMapConfig" in context) {
+			if ((context as any).sourceMapConfig.bundleReference) {
+				mainOptions.inSourceMap = JSON.parse(sourceMap);
+				mainOptions.outSourceMap = (context as any).sourceMapConfig.bundleReference;
+			}
+		}
 
-        if(includeSourceMaps) {
-            mainOptions.inSourceMap = JSON.parse(sourceMap);
-            mainOptions.outSourceMap = `${context.output.filename}.js.map`;
-        }
+		if (includeSourceMaps) {
+			mainOptions.inSourceMap = JSON.parse(sourceMap);
+			mainOptions.outSourceMap = `${context.output.filename}.js.map`;
+		}
 
-        let timeStart = process.hrtime();
+		let timeStart = process.hrtime();
 
-        var opt = {
-            ...this.options,
-            ...mainOptions
-        };
+		var opt = {
+			...this.options,
+			...mainOptions,
+		};
 
-        const result = UglifyJs.minify(source, opt);
+		const result = UglifyJs.minify(source, opt);
 
-        if (result.error) {
-          const message = `UglifyJSPlugin - ${result.error.message}`;
-          context.log.echoError(message);
-          return Promise.reject(result.error);
-        }
+		if (result.error) {
+			const message = `UglifyJSPlugin - ${result.error.message}`;
+			context.log.echoError(message);
+			return Promise.reject(result.error);
+		}
 
-        let took = process.hrtime(timeStart);
-        let bytes = Buffer.byteLength(result.code, "utf8");
+		let took = process.hrtime(timeStart);
+		let bytes = Buffer.byteLength(result.code, "utf8");
 
-        context.log.echoBundleStats("Bundle (Uglified)", bytes, took);
-        newConcat.add(null, result.code, result.map || sourceMap);
-    }
+		context.log.echoBundleStats("Bundle (Uglified)", bytes, took);
+		newConcat.add(null, result.code, result.map || sourceMap);
+	}
 }
 
 export const UglifyJSPlugin = (options?: UglifyJSPluginOptions) => {
-    return new UglifyJSPluginClass(options);
+	return new UglifyJSPluginClass(options);
 };

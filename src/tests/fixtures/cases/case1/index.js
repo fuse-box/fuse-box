@@ -15,7 +15,6 @@ exports.bar = 2;
 //     FuseBox.exists(moduleName, "bar.js")
 // });
 
-
 // var f3 = require("fuse-box-testcase1");
 // console.log(f3.getBar());
 //require("fuse-box-testcase3/dist/bar")
@@ -32,17 +31,14 @@ exports.bar = 2;
 
 //console.log(require("core-js/library/fn/symbol"));
 
-
 //console.log(require("core-js"));
 // var tern = require('tern')
-
 
 // require("htmlparser2")
 // let hello = require("hello");
 // console.log(hello);
 //require("./foo");
 // require("~/sub/hello.js");
-
 
 // var asyncWatch = require("async-watch")
 // var reactive = require("wires-reactive")
@@ -62,7 +58,6 @@ exports.bar = 2;
 // var input = 'const getMessage = () => "Hello World";';
 // var output = (0, _babelStandalone.transform)(input, { presets: ['es2015'] }).code;
 //require("./test.css");
-
 
 //var generator = require('babel-runtime')
 //console.log(generator);

@@ -32,6 +32,7 @@ export { MarkdownPlugin } from "./plugins/Markdownplugin";
 export { JSONPlugin } from "./plugins/JSONplugin";
 export { BannerPlugin } from "./plugins/BannerPlugin";
 export { SassPlugin } from "./plugins/stylesheet/SassPlugin";
+export { TerserPlugin } from "./plugins/TerserPlugin";
 export { UglifyESPlugin } from "./plugins/UglifyESPlugin";
 export { UglifyJSPlugin } from "./plugins/UglifyJSPlugin";
 export { SourceMapPlainJsPlugin } from "./plugins/SourceMapPlainJsPlugin";
@@ -40,9 +41,14 @@ export { OptimizeJSPlugin } from "./plugins/OptimizeJSPlugin";
 export { Fluent } from "./arithmetic/Fluent";
 export { FuseBox } from "./core/FuseBox";
 export { Sparky } from "./sparky/Sparky";
+<<<<<<< HEAD
 export { SparkyContext } from './sparky/SparkyContext';
 export { CSSModules } from "./plugins/stylesheet/CSSModules";
 export { PurgeCSSPlugin } from "./plugins/stylesheet/PurgeCSSPlugin";
+=======
+export { SparkyContext } from "./sparky/SparkyContext";
+export { CSSModules, CSSModulesPlugin } from "./plugins/stylesheet/CSSModules";
+>>>>>>> upstream/master
 export { CopyPlugin } from "./plugins/CopyPlugin";
 export { WebIndexPlugin } from "./plugins/WebIndexPlugin";
 export { PlainJSPlugin } from "./plugins/PlainJSPlugin";

@@ -1,1 +1,1 @@
-require("./data.json")
+require("./data.json");

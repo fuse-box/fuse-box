@@ -1,2 +1,2 @@
-require("./sub/hello")
-exports.foo = "Hello Foo"
+require("./sub/hello");
+exports.foo = "Hello Foo";

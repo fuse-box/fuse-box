@@ -1,57 +1,57 @@
 export default [
-  {
-    description: 'ignores for-of with `transforms.forOf === false`',
-    options: { transforms: { forOf: false } },
-    input: `for ( x of y ) {}`,
-    output: `for ( x of y ) {}`,
-  },
+	{
+		description: "ignores for-of with `transforms.forOf === false`",
+		options: { transforms: { forOf: false } },
+		input: `for ( x of y ) {}`,
+		output: `for ( x of y ) {}`,
+	},
 
-  {
-    description: 'transpiles for-of with array assumption with `transforms.dangerousForOf`',
-    options: { transforms: { dangerousForOf: true } },
+	{
+		description: "transpiles for-of with array assumption with `transforms.dangerousForOf`",
+		options: { transforms: { dangerousForOf: true } },
 
-    input: `
+		input: `
 			for ( let member of array ) {
 				doSomething( member );
 			}`,
 
-    output: `
+		output: `
 			for ( var i = 0, list = array; i < list.length; i += 1 ) {
 				var member = list[i];
 
 				doSomething( member );
 			}`,
-  },
+	},
 
-  {
-    description: 'transpiles for-of with expression',
-    options: { transforms: { dangerousForOf: true } },
+	{
+		description: "transpiles for-of with expression",
+		options: { transforms: { dangerousForOf: true } },
 
-    input: `
+		input: `
 			for ( let member of [ 'a', 'b', 'c' ] ) {
 				doSomething( member );
 			}`,
 
-    output: `
+		output: `
 			for ( var i = 0, list = [ 'a', 'b', 'c' ]; i < list.length; i += 1 ) {
 				var member = list[i];
 
 				doSomething( member );
 			}`,
-  },
+	},
 
-  {
-    description: 'transpiles for-of that needs to be rewritten as function',
-    options: { transforms: { dangerousForOf: true } },
+	{
+		description: "transpiles for-of that needs to be rewritten as function",
+		options: { transforms: { dangerousForOf: true } },
 
-    input: `
+		input: `
 			for ( let member of [ 'a', 'b', 'c' ] ) {
 				setTimeout( function () {
 					doSomething( member );
 				});
 			}`,
 
-    output: `
+		output: `
 			var loop = function () {
 				var member = list[i];
 
@@ -61,33 +61,33 @@ export default [
 			};
 
 			for ( var i = 0, list = [ 'a', 'b', 'c' ]; i < list.length; i += 1 ) loop();`,
-  },
+	},
 
-  {
-    description: 'transpiles body-less for-of',
-    options: { transforms: { dangerousForOf: true } },
+	{
+		description: "transpiles body-less for-of",
+		options: { transforms: { dangerousForOf: true } },
 
-    input: `
+		input: `
 			for ( let member of array ) console.log( member );`,
 
-    output: `
+		output: `
 			for ( var i = 0, list = array; i < list.length; i += 1 ) {
 				var member = list[i];
 
 				console.log( member );
 			}`,
-  },
+	},
 
-  {
-    description: 'transpiles space-less for-of',
-    options: { transforms: { dangerousForOf: true } },
+	{
+		description: "transpiles space-less for-of",
+		options: { transforms: { dangerousForOf: true } },
 
-    input: `
+		input: `
 			for (const key of this.keys) {
 				console.log(key);
 			}`,
 
-    output: `
+		output: `
 			var this$1 = this;
 
 			for (var i = 0, list = this$1.keys; i < list.length; i += 1) {
@@ -95,30 +95,30 @@ export default [
 
 				console.log(key);
 			}`,
-  },
+	},
 
-  {
-    description: 'handles continue in for-of',
-    options: { transforms: { dangerousForOf: true } },
+	{
+		description: "handles continue in for-of",
+		options: { transforms: { dangerousForOf: true } },
 
-    input: `
+		input: `
 			for ( let item of items ) {
 				if ( item.foo ) continue;
 			}`,
 
-    output: `
+		output: `
 			for ( var i = 0, list = items; i < list.length; i += 1 ) {
 				var item = list[i];
 
 				if ( item.foo ) { continue; }
 			}`,
-  },
+	},
 
-  {
-    description: 'handles this and arguments in for-of',
-    options: { transforms: { dangerousForOf: true } },
+	{
+		description: "handles this and arguments in for-of",
+		options: { transforms: { dangerousForOf: true } },
 
-    input: `
+		input: `
 			for ( let item of items ) {
 				console.log( this, arguments, item );
 				setTimeout( () => {
@@ -126,7 +126,7 @@ export default [
 				});
 			}`,
 
-    output: `
+		output: `
 			var arguments$1 = arguments;
 			var this$1 = this;
 
@@ -140,35 +140,35 @@ export default [
 			};
 
 			for ( var i = 0, list = items; i < list.length; i += 1 ) loop();`,
-  },
+	},
 
-  {
-    description: 'for-of with empty block (#80)',
-    options: { transforms: { dangerousForOf: true } },
+	{
+		description: "for-of with empty block (#80)",
+		options: { transforms: { dangerousForOf: true } },
 
-    input: `
+		input: `
 			for ( let x of y ) {}`,
 
-    output: `
+		output: `
 			`,
-  },
+	},
 
-  {
-    description: 'for-of with empty block and var (#80)',
-    options: { transforms: { dangerousForOf: true } },
+	{
+		description: "for-of with empty block and var (#80)",
+		options: { transforms: { dangerousForOf: true } },
 
-    input: `
+		input: `
 			for ( var x of y ) {}`,
 
-    output: `
+		output: `
 			var x;`,
-  },
+	},
 
-  {
-    description: 'return from for-of loop rewritten as function',
-    options: { transforms: { dangerousForOf: true } },
+	{
+		description: "return from for-of loop rewritten as function",
+		options: { transforms: { dangerousForOf: true } },
 
-    input: `
+		input: `
 			function foo () {
 				for ( let x of y ) {
 					setTimeout( function () {
@@ -179,7 +179,7 @@ export default [
 				}
 			}`,
 
-    output: `
+		output: `
 			function foo () {
 				var loop = function () {
 					var x = list[i];
@@ -197,18 +197,18 @@ export default [
 					if ( returned ) return returned.v;
 				}
 			}`,
-  },
+	},
 
-  {
-    description: 'allows destructured variable declaration (#95)',
-    options: { transforms: { dangerousForOf: true } },
+	{
+		description: "allows destructured variable declaration (#95)",
+		options: { transforms: { dangerousForOf: true } },
 
-    input: `
+		input: `
 			for (var {x, y} of [{x: 1, y: 2}]) {
 				console.log(x, y);
 			}`,
 
-    output: `
+		output: `
 			for (var i = 0, list = [{x: 1, y: 2}]; i < list.length; i += 1) {
 				var ref = list[i];
 				var x = ref.x;
@@ -216,5 +216,5 @@ export default [
 
 				console.log(x, y);
 			}`,
-  },
-]
+	},
+];

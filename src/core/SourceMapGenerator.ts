@@ -3,27 +3,27 @@ import * as acorn from "acorn";
 import * as SourceMap from "source-map";
 
 export class SourceMapGenerator {
-    public static generate(file: File, tokens: any[]) {
-        const fileContent = file.contents;
-        const filePath = file.info.fuseBoxPath;
-        const smGenerator = new SourceMap.SourceMapGenerator({ file: `packages/${file.collection.name}/${filePath}` });
+	public static generate(file: File, tokens: any[]) {
+		const fileContent = file.contents;
+		const filePath = file.info.fuseBoxPath;
+		const smGenerator = new SourceMap.SourceMapGenerator({ file: `packages/${file.collection.name}/${filePath}` });
 
-        tokens.some(token => {
-            if (token.type.label === "eof") return true;
+		tokens.some(token => {
+			if (token.type.label === "eof") return true;
 
-            const lineInfo = acorn.getLineInfo(fileContent, token.start);
-            const mapping: SourceMap.Mapping = {
-                original: lineInfo,
-                generated: lineInfo,
-                source: filePath
-            };
+			const lineInfo = acorn.getLineInfo(fileContent, token.start);
+			const mapping: SourceMap.Mapping = {
+				original: lineInfo,
+				generated: lineInfo,
+				source: filePath,
+			};
 
-            if (token.type.label === "name") mapping.name = token.value;
+			if (token.type.label === "name") mapping.name = token.value;
 
-            smGenerator.addMapping(mapping);
-        });
+			smGenerator.addMapping(mapping);
+		});
 
-        smGenerator.setSourceContent(filePath, fileContent);
-        file.sourceMap = JSON.stringify(smGenerator.toJSON());
-    }
+		smGenerator.setSourceContent(filePath, fileContent);
+		file.sourceMap = JSON.stringify(smGenerator);
+	}
 }

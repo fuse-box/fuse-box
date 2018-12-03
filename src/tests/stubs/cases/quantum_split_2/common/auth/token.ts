@@ -1,5 +1,5 @@
-import * as decode from "jwt-decode";
-export function jwtdecode() {
-  console.log(decode);
-  return decode("");
+import * as ansi from "ansi";
+
+export function ansiTest() {
+	return ansi("");
 }

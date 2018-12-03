@@ -3,7 +3,7 @@ import { BundleSource } from "../BundleSource";
 
 // TODO get typings for UglifyES opts
 export interface UglifyESPluginOptions {
-    [key: string]: any;
+	[key: string]: any;
 }
 
 /**
@@ -17,44 +17,47 @@ export class UglifyESPluginClass implements Plugin {
 	 * @memberOf UglifyESPluginClass
 	 */
 
-    constructor(public options: UglifyESPluginOptions = {}) {}
+	constructor(public options: UglifyESPluginOptions = {}) {
+		console.warn(
+			"The UglifyESPlugin is no longer supported and will be removed in the next major release. Please use the 'TerserPlugin' instead",
+		);
+	}
 
-    public postBundle(context) {
-        const mainOptions : any = {
-        };
-        const UglifyES = require("uglify-es");
-        const concat = context.source.getResult();
-        const source = concat.content.toString();
-        const sourceMap = concat.sourceMap;
+	public postBundle(context) {
+		const mainOptions: any = {};
+		const UglifyES = require("uglify-es");
+		const concat = context.source.getResult();
+		const source = concat.content.toString();
+		const sourceMap = concat.sourceMap;
 
-        const newSource = new BundleSource(context);
-        context.source = newSource;
+		const newSource = new BundleSource(context);
+		context.source = newSource;
 
-        const newConcat = context.source.getResult();
+		const newConcat = context.source.getResult();
 
-        if ("sourceMapConfig" in context) {
-            if (context.sourceMapConfig.bundleReference) {
-                mainOptions.inSourceMap = JSON.parse(sourceMap);
-                mainOptions.outSourceMap = context.sourceMapConfig.bundleReference;
-            }
-        }
+		if ("sourceMapConfig" in context) {
+			if (context.sourceMapConfig.bundleReference) {
+				mainOptions.inSourceMap = JSON.parse(sourceMap);
+				mainOptions.outSourceMap = context.sourceMapConfig.bundleReference;
+			}
+		}
 
-        let timeStart = process.hrtime();
+		let timeStart = process.hrtime();
 
-        const result = UglifyES.minify(source, {
-            ...this.options,
-            ...mainOptions,
-        });
+		const result = UglifyES.minify(source, {
+			...this.options,
+			...mainOptions,
+		});
 
-        let took = process.hrtime(timeStart);
-        let bytes = Buffer.byteLength(result.code, "utf8");
+		let took = process.hrtime(timeStart);
+		let bytes = Buffer.byteLength(result.code, "utf8");
 
-        context.log.echoBundleStats("Bundle (Uglified)", bytes, took);
+		context.log.echoBundleStats("Bundle (Uglified)", bytes, took);
 
-        newConcat.add(null, result.code, result.map || sourceMap);
-    }
+		newConcat.add(null, result.code, result.map || sourceMap);
+	}
 }
 
 export const UglifyESPlugin = (options?: UglifyESPluginOptions) => {
-    return new UglifyESPluginClass(options);
+	return new UglifyESPluginClass(options);
 };

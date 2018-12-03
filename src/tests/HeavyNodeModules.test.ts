@@ -3,61 +3,61 @@ import { should } from "fuse-test-runner";
 import { JSONPlugin } from "../index";
 
 export class HeavyNodeModules {
-    "Should bundle cheerio"() {
-        return createEnv({
-            project: {
-                files: {
-                    "index.js": `
+	"Should bundle cheerio"() {
+		return createEnv({
+			project: {
+				files: {
+					"index.js": `
                          var cheerio = require("cheerio");
                         let $ = cheerio.load('<h2 class="title">Hello world</h2>')
                         $('h2.title').text('Hello there!')
                         $('h2').addClass('welcome')
                         exports.str = $.html();
                     
-                    `
-                },
-                plugins: [JSONPlugin()],
-                instructions: "index.js",
-            },
-        }).then((result) => {
-            const out = result.project.FuseBox.import("./index");
-            should(out).deepEqual({ str: "<h2 class=\"title welcome\">Hello there!</h2>" });
-        });
-    }
+                    `,
+				},
+				plugins: [JSONPlugin()],
+				instructions: "index.js",
+			},
+		}).then(result => {
+			const out = result.project.FuseBox.import("./index");
+			should(out).deepEqual({ str: '<h2 class="title welcome">Hello there!</h2>' });
+		});
+	}
 
-    "Should bundle babel-generator"() {
-        return createEnv({
-            project: {
-                files: {
-                    "index.js": `
+	"Should bundle babel-generator"() {
+		return createEnv({
+			project: {
+				files: {
+					"index.js": `
                         var generator = require('babel-generator');
                         exports.data = generator;
                     
-                    `
-                },
-                plugins: [JSONPlugin()],
-                instructions: "index.js",
-            },
-        }).then((result) => {
-            const out = result.project.FuseBox.import("./index");
-            should(out.data.CodeGenerator).beOkay();
-        });
-    }
+                    `,
+				},
+				plugins: [JSONPlugin()],
+				instructions: "index.js",
+			},
+		}).then(result => {
+			const out = result.project.FuseBox.import("./index");
+			should(out.data.CodeGenerator).beOkay();
+		});
+	}
 
-    "Should partially require problematic module from core-js"() {
-        return createEnv({
-            project: {
-                files: {
-                    "index.js": `
+	"Should partially require problematic module from core-js"() {
+		return createEnv({
+			project: {
+				files: {
+					"index.js": `
                         exports.data = require("core-js/library/fn/symbol");
-                    `
-                },
-                plugins: [JSONPlugin()],
-                instructions: "index.js",
-            },
-        }).then((result) => {
-            const out = result.project.FuseBox.import("./index");
-            should(out.data.keyFor).beOkay();
-        });
-    }
+                    `,
+				},
+				plugins: [JSONPlugin()],
+				instructions: "index.js",
+			},
+		}).then(result => {
+			const out = result.project.FuseBox.import("./index");
+			should(out.data.keyFor).beOkay();
+		});
+	}
 }

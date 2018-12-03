@@ -6,184 +6,179 @@ import { each } from "realm-utils";
 import { ensureDir, string2RegExp, ensureUserPath } from "../Utils";
 import { SparkyFile } from "./SparkyFile";
 import { log } from "./Sparky";
-import { Plugin } from '../core/WorkflowContext';
+import { Plugin } from "../core/WorkflowContext";
 import { parse, SparkyFilePatternOptions } from "./SparkyFilePattern";
 
 export class SparkFlow {
-    private activities = [];
-    private watcher: any;
-    private files: SparkyFile[];
-    private completedCallback: any;
-    private initialWatch = false;
+	private activities = [];
+	private watcher: any;
+	private files: SparkyFile[];
+	private completedCallback: any;
+	private initialWatch = false;
 
-    constructor() { }
+	constructor() {}
 
-    public glob(globs: string[], opts?: SparkyFilePatternOptions): SparkFlow {
-        this.activities.push(() => this.getFiles(globs, opts));
-        return this;
-    }
+	public glob(globs: string[], opts?: SparkyFilePatternOptions): SparkFlow {
+		this.activities.push(() => this.getFiles(globs, opts));
+		return this;
+	}
 
-    public createFiles(paths : string[]){
-        this.files = [];
-        paths.forEach(p => {
-            const isAbsolute = path.isAbsolute(p)
-            const fpath = isAbsolute ? p : path.join(process.cwd(), p);
-            this.files.push(new SparkyFile(fpath, isAbsolute ? path.dirname(p) : process.cwd()))
-        })
-    }
+	public createFiles(paths: string[]) {
+		this.files = [];
+		paths.forEach(p => {
+			const isAbsolute = path.isAbsolute(p);
+			const fpath = isAbsolute ? p : path.join(process.cwd(), p);
+			this.files.push(new SparkyFile(fpath, isAbsolute ? path.dirname(p) : process.cwd()));
+		});
+	}
 
-    public stopWatching() {
-        if (this.watcher) {
-            this.watcher.close();
-        }
-    }
+	public stopWatching() {
+		if (this.watcher) {
+			this.watcher.close();
+		}
+	}
 
-    public watch(globs: string[], opts?: SparkyFilePatternOptions, fn?: any): SparkFlow {
-        this.files = [];
-        log.echoStatus(`Watch ${globs}`)
-        this.activities.push(() => new Promise((resolve, reject) => {
+	public watch(globs: string[], opts?: SparkyFilePatternOptions, fn?: any): SparkFlow {
+		this.files = [];
+		log.echoStatus(`Watch ${globs}`);
+		this.activities.push(
+			() =>
+				new Promise((resolve, reject) => {
+					var chokidarOptions = {
+						cwd: opts ? ensureUserPath(opts.base) : null,
+					};
 
-            var chokidarOptions = {
-                cwd: opts ? ensureUserPath(opts.base) : null
-            };
+					this.watcher = chokidar
+						.watch(globs, chokidarOptions)
+						.on("all", (event, fp) => {
+							if (event === "addDir" || event === "unlinkDir") return;
+							if (this.initialWatch) {
+								this.files = [];
+								log.echoStatus(`Changed ${fp}`);
+								if (fn) {
+									fn(event, fp);
+								}
+							}
+							let info = parse(fp, opts);
+							this.files.push(new SparkyFile(info.filepath, info.root));
+							if (this.initialWatch) {
+								// call it again
+								this.exec();
+							}
+						})
+						.on("ready", () => {
+							this.initialWatch = true;
+							log.echoStatus(`Resolved ${this.files.length} files`);
+							this.activities[0] = undefined;
+							resolve();
+						});
+				}),
+		);
+		return this;
+	}
 
-            this.watcher = chokidar.watch(globs, chokidarOptions)
-                .on('all', (event, fp) => {
-                    if (event === 'addDir' || event === 'unlinkDir') return
-                    if (this.initialWatch) {
-                        this.files = [];
-                        log.echoStatus(`Changed ${fp}`)
-                        if (fn) {
-                            fn(event, fp)
-                        }
-                    }
-                    let info = parse(fp, opts);
-                    this.files.push(new SparkyFile(info.filepath, info.root))
-                    if (this.initialWatch) {
-                        // call it again
-                        this.exec();
-                    }
-                }).on('ready', () => {
-                    this.initialWatch = true;
-                    log.echoStatus(`Resolved ${this.files.length} files`)
-                    this.activities[0] = undefined;
-                    resolve();
-                });
-        }));
-        return this;
-    }
+	public completed(fn: any): SparkFlow {
+		this.completedCallback = fn;
+		return this;
+	}
 
-    public completed(fn: any): SparkFlow {
-        this.completedCallback = fn;
-        return this;
-    }
+	/** Gets all user files */
+	protected getFiles(globs: string[], opts?: SparkyFilePatternOptions): Promise<SparkyFile[]> {
+		this.files = [];
+		const getFilePromises = [];
+		globs.forEach(g => {
+			getFilePromises.push(this.getFile(g, opts));
+		});
+		return Promise.all(getFilePromises).then(results => {
+			this.files = [].concat.apply([], results);
+			return this.files;
+		});
+	}
 
+	protected getFile(globString, opts?: SparkyFilePatternOptions) {
+		let info = parse(globString, opts);
 
-    /** Gets all user files */
-    protected getFiles(globs: string[], opts?: SparkyFilePatternOptions): Promise<SparkyFile[]> {
-        this.files = [];
-        const getFilePromises = [];
-        globs.forEach(g => {
-            getFilePromises.push(this.getFile(g, opts));
-        })
-        return Promise.all(getFilePromises)
-            .then(results => {
-                this.files = [].concat.apply([], results);
-                return this.files;
-            })
-    }
+		return new Promise((resolve, reject) => {
+			if (!info.isGlob) {
+				return resolve([new SparkyFile(info.filepath, info.root)]);
+			}
+			glob(info.glob, (err, files: string[]) => {
+				if (err) {
+					return reject(err);
+				}
+				return resolve(files.map(file => new SparkyFile(file, info.root)));
+			});
+		});
+	}
 
-    protected getFile(globString, opts?: SparkyFilePatternOptions) {
-        let info = parse(globString, opts)
+	/**
+	 * Removes folder if exists
+	 * @param dest
+	 */
+	public clean(dest: string): SparkFlow {
+		this.activities.push(
+			() =>
+				new Promise((resolve, reject) => {
+					fs.remove(ensureDir(dest), err => {
+						if (err) return reject(err);
+						return resolve();
+					});
+				}),
+		);
+		return this;
+	}
 
-        return new Promise((resolve, reject) => {
-            if (!info.isGlob) {
-                return resolve([new SparkyFile(info.filepath, info.root)])
-            }
-            glob(info.glob, (err, files: string[]) => {
-                if (err) {
-                    return reject(err);
-                }
-                return resolve(files.map(file => new SparkyFile(file, info.root)))
-            });
-        });
-    }
+	public plugin(plugin: Plugin): SparkFlow {
+		this.activities.push(() => {
+			//Promise.all(this.files.map(file => file.copy(dest)))
+			//File.createByName(collection, "sd")
+		});
+		return this;
+	}
 
-    /**
-     * Removes folder if exists
-     * @param dest
-     */
-    public clean(dest: string): SparkFlow {
-        this.activities.push(() =>
-            new Promise((resolve, reject) => {
+	public each(fn: (file: SparkyFile) => void) {
+		this.activities.push(() => {
+			return each(this.files, (file: SparkyFile) => {
+				return fn(file);
+			});
+		});
+		return this;
+	}
 
-                fs.remove(ensureDir(dest), err => {
-                    if (err) return reject(err);
-                    return resolve();
-                })
-            })
-        );
-        return this;
-    }
+	public file(mask: string, fn: any) {
+		this.activities.push(() => {
+			let regexp = string2RegExp(mask);
+			return each(this.files, (file: SparkyFile) => {
+				if (regexp.test(file.filepath)) {
+					log.echoStatus(`Captured file ${file.homePath}`);
+					return fn(file);
+				}
+			});
+		});
+		return this;
+	}
 
+	public next(fn: (file: SparkyFile) => void) {
+		this.activities.push(() => {
+			return each(this.files, (file: SparkyFile) => {
+				return fn(file);
+			});
+		});
+		return this;
+	}
 
+	public dest(dest: string): SparkFlow {
+		log.echoStatus(`Copy to ${dest}`);
+		this.activities.push(() => Promise.all(this.files.map(file => file.copy(dest))));
+		return this;
+	}
 
-    public plugin(plugin: Plugin): SparkFlow {
-        this.activities.push(() => {
-            //Promise.all(this.files.map(file => file.copy(dest)))
-            //File.createByName(collection, "sd")
-        });
-        return this;
-    }
-
-    public each(fn : (file: SparkyFile) => void){
-        this.activities.push(() => {
-            return each(this.files, (file: SparkyFile) => {
-                return fn(file);
-            })
-        });
-        return this;
-    }
-
-    public file(mask: string, fn: any) {
-        this.activities.push(() => {
-            let regexp = string2RegExp(mask);
-            return each(this.files, (file: SparkyFile) => {
-                if (regexp.test(file.filepath)) {
-                    log.echoStatus(`Captured file ${file.homePath}`);
-                    return fn(file);
-                }
-            })
-        });
-        return this;
-    }
-
-    public next(fn : (file : SparkyFile) => void){
-        this.activities.push(() => {
-            return each(this.files, (file: SparkyFile) => {
-                return fn(file);
-            });
-        });
-        return this;
-    }
-
-
-    public dest(dest: string): SparkFlow {
-        log.echoStatus(`Copy to ${dest}`)
-        this.activities.push(() =>
-            Promise.all(this.files.map(file => file.copy(dest)))
-        );
-        return this;
-    }
-
-    public exec() {
-        return each(this.activities, (activity: any) => activity && activity())
-            .then(() => {
-                if (this.completedCallback) {
-                    this.completedCallback(this.files);
-                }
-                this.files = [];
-            });
-    }
-
+	public exec() {
+		return each(this.activities, (activity: any) => activity && activity()).then(() => {
+			if (this.completedCallback) {
+				this.completedCallback(this.files);
+			}
+			this.files = [];
+		});
+	}
 }

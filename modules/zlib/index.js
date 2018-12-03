@@ -1,5 +1,5 @@
 if (FuseBox.isServer) {
-    module.exports = global.require("zlib");
+	module.exports = global.require("zlib");
 } else {
-    module.exports = {};
+	module.exports = {};
 }
