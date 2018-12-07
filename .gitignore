@@ -18,6 +18,7 @@ npm-debug.log*
 playground
 sourcemaps.js.map
 yarn.lock
+some.sh
 
 # FuseBox Loader API built type definition
 # Which is then exported as a module from `src`

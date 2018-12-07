@@ -146,6 +146,8 @@ export class File {
 
 	public hasExtensionOverride = false;
 
+	private dynamicImportsReplaced = false;
+
 	public addAlternativeContent(str: string) {
 		this.alternativeContent = this.alternativeContent || "";
 		this.alternativeContent += "\n" + str;
@@ -233,6 +235,18 @@ export class File {
 	public getUniquePath() {
 		let collection = this.collection ? this.collection.name : "default";
 		return `${collection}/${this.info.fuseBoxPath}`;
+	}
+
+	public getSourceMapPath() {
+		let collection = this.collection ? this.collection.name : "default";
+		if (collection === this.context.defaultPackageName) {
+			collection = "src";
+		}
+		let filePath = this.info.fuseBoxPath;
+		if (/.ts(x?)$/.test(this.info.absPath)) {
+			filePath = this.info.fuseBoxPath.replace(/\.js(x?)$/, ".ts$1");
+		}
+		return `${collection}/${filePath}`;
 	}
 	/**
 	 *
@@ -393,6 +407,8 @@ export class File {
 
 	public makeAnalysis(parserOptions?: any, traversalOptions?: { plugins: TraversalPlugin[] }) {
 		if (!this.analysis.astIsLoaded()) {
+			parserOptions = parserOptions || {};
+			parserOptions.sourceMap = this.sourceMap;
 			this.analysis.parseUsingAcorn(parserOptions);
 		}
 		this.analysis.analyze(traversalOptions);
@@ -412,6 +428,7 @@ export class File {
 			const expression = /(\s+|^|\(|:)(import\()/g;
 			if (expression.test(targetContent)) {
 				targetContent = targetContent.replace(expression, "$1$fsmp$(");
+				this.dynamicImportsReplaced = true;
 				if (this.context.fuse && this.context.fuse.producer) {
 					this.devLibsRequired = ["fuse-imports"];
 					if (!this.context.fuse.producer.devCodeHasBeenInjected("fuse-imports")) {
@@ -677,12 +694,10 @@ export class File {
 		this.context.debug("TypeScript", `Transpile ${this.info.fuseBoxPath}`);
 		let result = this.transpileUsingTypescript();
 		if (result.sourceMapText && this.context.useSourceMaps) {
-			const correctSourceMapPath = this.getCorrectSourceMapPath();
+			//const correctSourceMapPath = this.getCorrectSourceMapPath();
 			let jsonSourceMaps = JSON.parse(result.sourceMapText);
 			jsonSourceMaps.file = this.info.fuseBoxPath;
-			jsonSourceMaps.sources = [
-				this.context.useTypescriptCompiler ? correctSourceMapPath : correctSourceMapPath.replace(/\.js(x?)$/, ".ts$1"),
-			];
+			jsonSourceMaps.sources = [this.getSourceMapPath()];
 			if (!this.context.inlineSourceMaps) {
 				delete jsonSourceMaps.sourcesContent;
 			}
@@ -692,8 +707,17 @@ export class File {
 					`//# sourceMappingURL=${this.context.bundle.name}.js.map?tm=${this.context.cacheBustPreffix}`,
 				)
 				.replace("//# sourceMappingURL=module.js.map", "");
+			if (this.dynamicImportsReplaced) {
+				// fixing the replaces import statements
+				// so the sourceContent will look the same
+				let sourcesContent = jsonSourceMaps.sourcesContent;
+				if (sourcesContent && sourcesContent[0]) {
+					sourcesContent[0] = sourcesContent[0].replace(/\$fsmp\$/g, "import");
+				}
+			}
 			this.sourceMap = JSON.stringify(jsonSourceMaps);
 		}
+
 		this.contents = result.outputText;
 
 		// consuming transpiled javascript

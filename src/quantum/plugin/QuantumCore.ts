@@ -1,37 +1,36 @@
-import { FlatFileGenerator } from "./FlatFileGenerator";
 import { each } from "realm-utils";
-import { StatementModification } from "./modifications/StatementModifaction";
-import { EnvironmentConditionModification } from "./modifications/EnvironmentConditionModification";
-import { BundleWriter } from "./BundleWriter";
-import { IPerformable } from "./modifications/IPerformable";
-import { InteropModifications } from "./modifications/InteropModifications";
-import { UseStrictModification } from "./modifications/UseStrictModification";
-import { ProducerAbstraction } from "../core/ProducerAbstraction";
-import { BundleProducer } from "../../core/BundleProducer";
-import { BundleAbstraction } from "../core/BundleAbstraction";
-import { PackageAbstraction } from "../core/PackageAbstraction";
-import { FileAbstraction } from "../core/FileAbstraction";
-import { ResponsiveAPI } from "./ResponsiveAPI";
-import { Log } from "../../Log";
-import { TypeOfModifications } from "./modifications/TypeOfModifications";
-import { TreeShake } from "./TreeShake";
-import { QuantumOptions } from "./QuantumOptions";
-
-import { ProcessEnvModification } from "./modifications/ProcessEnvModification";
-import { string2RegExp } from "../../Utils";
-import { ComputedStatementRule } from "./ComputerStatementRule";
-import { RequireStatement } from "../core/nodes/RequireStatement";
-import { WorkFlowContext } from "../../core/WorkflowContext";
-
 import { Bundle } from "../../core/Bundle";
-import { DynamicImportStatementsModifications } from "./modifications/DynamicImportStatements";
-import { Hoisting } from "./Hoisting";
-import { QuantumBit } from "./QuantumBit";
-import { CSSModifications } from "./modifications/CSSModifications";
+import { BundleProducer } from "../../core/BundleProducer";
+import { File } from "../../core/File";
+import { WorkFlowContext } from "../../core/WorkflowContext";
+import { Log } from "../../Log";
+import { string2RegExp } from "../../Utils";
+import { BundleAbstraction } from "../core/BundleAbstraction";
 import { CSSCollection } from "../core/CSSCollection";
+import { FileAbstraction } from "../core/FileAbstraction";
+import { RequireStatement } from "../core/nodes/RequireStatement";
+import { PackageAbstraction } from "../core/PackageAbstraction";
+import { ProducerAbstraction } from "../core/ProducerAbstraction";
 import { QuantumTask } from "../core/QuantumTask";
+import { BundleWriter } from "./BundleWriter";
+import { ComputedStatementRule } from "./ComputerStatementRule";
+import { FlatFileGenerator } from "./FlatFileGenerator";
+import { Hoisting } from "./Hoisting";
+import { CSSModifications } from "./modifications/CSSModifications";
+import { DynamicImportStatementsModifications } from "./modifications/DynamicImportStatements";
+import { EnvironmentConditionModification } from "./modifications/EnvironmentConditionModification";
 import { GlobalProcessReplacement } from "./modifications/GlobalProcessReplacement";
 import { GlobalProcessVersionReplacement } from "./modifications/GlobalProcessVersionReplacement";
+import { InteropModifications } from "./modifications/InteropModifications";
+import { IPerformable } from "./modifications/IPerformable";
+import { ProcessEnvModification } from "./modifications/ProcessEnvModification";
+import { StatementModification } from "./modifications/StatementModifaction";
+import { TypeOfModifications } from "./modifications/TypeOfModifications";
+import { UseStrictModification } from "./modifications/UseStrictModification";
+import { QuantumBit } from "./QuantumBit";
+import { QuantumOptions } from "./QuantumOptions";
+import { ResponsiveAPI } from "./ResponsiveAPI";
+import { TreeShake } from "./TreeShake";
 
 export interface QuantumStatementMapping {
 	statement: RequireStatement;
@@ -41,22 +40,32 @@ export class QuantumCore {
 	public producerAbstraction: ProducerAbstraction;
 	public api: ResponsiveAPI;
 	public index = 0;
-	public postTasks = new QuantumTask(this);
+	public postTasks: QuantumTask;
 	public log: Log;
 	public opts: QuantumOptions;
-	public cssCollection = new Map<string, CSSCollection>();
-	public writer = new BundleWriter(this);
+	public cssCollection: Map<string, CSSCollection>;
+	public writer: BundleWriter;
 	public context: WorkFlowContext;
-	public requiredMappings = new Set<RegExp>();
-	public quantumBits = new Map<string, QuantumBit>();
-	public customStatementSolutions = new Set<RegExp>();
-	public computedStatementRules = new Map<string, ComputedStatementRule>();
-	public splitFiles = new Set<FileAbstraction>();
+	public requiredMappings: Set<RegExp>;
+	public quantumBits: Map<string, QuantumBit>;
+	public customStatementSolutions: Set<RegExp>;
+	public computedStatementRules: Map<string, ComputedStatementRule>;
+	public splitFiles: Set<FileAbstraction>;
+	public originalFiles: Map<string, File>;
 
 	constructor(public producer: BundleProducer, opts: QuantumOptions) {
 		this.opts = opts;
-
+		this.cssCollection = new Map<string, CSSCollection>();
+		this.writer = new BundleWriter(this);
+		this.postTasks = new QuantumTask(this);
 		this.api = new ResponsiveAPI(this);
+		this.originalFiles = new Map<string, File>();
+		this.customStatementSolutions = new Set<RegExp>();
+		this.computedStatementRules = new Map<string, ComputedStatementRule>();
+		this.requiredMappings = new Set<RegExp>();
+		this.splitFiles = new Set<FileAbstraction>();
+		this.quantumBits = new Map<string, QuantumBit>();
+
 		this.log = producer.fuse.context.log;
 		this.log.echoBreak();
 		this.log.groupHeader("Launching quantum core");
@@ -64,6 +73,12 @@ export class QuantumCore {
 			this.opts.apiCallback(this);
 		}
 		this.context = this.producer.fuse.context;
+
+		if (producer) {
+			producer.defaultCollection.dependencies.forEach(item => {
+				this.originalFiles.set(item.getUniquePath(), item);
+			});
+		}
 	}
 
 	public solveComputed(
@@ -118,8 +133,8 @@ export class QuantumCore {
 	}
 
 	private ensureBitBundle(bit: QuantumBit) {
-		let bundle: Bundle;
-		if (!this.producer.bundles.get(bit.name)) {
+		let bundle: Bundle = this.producer.bundles.get(bit.name);
+		if (!bundle) {
 			this.log.echoInfo(`Create split bundle ${bit.name} with entry point ${bit.entry.getFuseBoxFullPath()}`);
 			const fusebox = this.context.fuse.copy();
 			bundle = new Bundle(bit.getBundleName(), fusebox, this.producer);
@@ -192,7 +207,9 @@ export class QuantumCore {
 				this.log.echoYellow(`  - ${warning.msg}`);
 				this.log.echoGray("");
 				this.log.echoGray("  * Set { warnings : false } if you want to hide these messages");
-				this.log.echoGray("  * Read up on the subject https://fuse-box.org/docs/production-builds/quantum-configuration#computed-statement-resolution");
+				this.log.echoGray(
+					"  * Read up on the subject https://fuse-box.org/docs/production-builds/quantum-configuration#computed-statement-resolution",
+				);
 			});
 		}
 	}
@@ -289,8 +306,13 @@ export class QuantumCore {
 					});
 				}
 				this.log.echoInfo(`Render bundle ${bundleAbstraction.name}`);
-				const bundleCode = generator.render();
-				this.producer.bundles.get(bundleAbstraction.name).generatedCode = new Buffer(bundleCode);
+				const targetBundle = this.producer.bundles.get(bundleAbstraction.name);
+
+				const bundleCode = generator.render(targetBundle);
+
+				targetBundle.generatedCode = new Buffer(bundleCode.content);
+				targetBundle.generatedSourceMapsPath = generator.sourceMapsPath;
+				targetBundle.generatedSourceMaps = generator.contents.sourceMap;
 			});
 		});
 	}

@@ -15,14 +15,15 @@ export class BundleAsbtractionTest {
 			.equal("./foo");
 	}
 
-	"Should generate code"() {
+	async "Should generate code"() {
 		const file = createAbstractFile("index.js");
 		let original = `var foo = require('./foo');`;
 		file.loadString(original);
-		should(file.generate()).equal("function(){\n" + original + "\n}");
+		const cnt = (await file.generate()).content.toString();
+		should(cnt).equal("function(){\n" + original + "\n}");
 	}
 
-	"Should modify value and generate"() {
+	async "Should modify value and generate"() {
 		const file = createAbstractFile("index.js");
 		let original = `var foo = require('./foo');`;
 		file.loadString(original);
@@ -34,11 +35,11 @@ export class BundleAsbtractionTest {
 
 		let foo = statements[0];
 		foo.setValue("./bar");
-
-		should(file.generate()).equal("function(){\nvar foo = require('./bar');\n}");
+		const cnt = (await file.generate()).content.toString();
+		should(cnt).equal("function(){\nvar foo = require('./bar');\n}");
 	}
 
-	"Should modify require function and generate"() {
+	async "Should modify require function and generate"() {
 		const file = createAbstractFile("index.js");
 		let original = `var foo = require('./foo');`;
 		file.loadString(original);
@@ -47,19 +48,18 @@ export class BundleAsbtractionTest {
 
 		let foo = statements[0];
 		foo.setFunctionName("$req");
-
-		should(file.generate()).equal("function(){\nvar foo = $req('./foo');\n}");
+		const cnt = (await file.generate()).content.toString();
+		should(cnt).equal("function(){\nvar foo = $req('./foo');\n}");
 	}
 
-	"Should create a wrapper"() {
+	async "Should create a wrapper"() {
 		const file = createAbstractFile("index.js");
 		file.loadString(`var foo = require('./foo');`);
 		file.wrapWithFunction(["a", "b"]);
-		let code = file.generate();
-
-		should(code).equal("function(a,b){\nvar foo = require('./foo');\n}");
+		const cnt = (await file.generate()).content.toString();
+		should(cnt).equal("function(a,b){\nvar foo = require('./foo');\n}");
 	}
-	"Should check for require usage / true"() {
+	async "Should check for require usage / true"() {
 		const file = createAbstractFile("index.js");
 		file.loadString(`var foo = require('./foo');`);
 
@@ -125,7 +125,7 @@ export class BundleAsbtractionTest {
 		worldReference.resolve();
 	}
 
-	"Should identify a dynamic import"() {
+	async "Should identify a dynamic import"() {
 		const files = new Map<string, string>();
 		files.set("foo/bar/index.js", "require('a' + './world')");
 
@@ -137,11 +137,11 @@ export class BundleAsbtractionTest {
 		should(worldReference.isComputed).beTrue();
 
 		worldReference.setFunctionName("$fsx.d");
-		//console.log(indexFile.generate());
-		should(indexFile.generate()).equal("function(){\n$fsx.d('a' + './world');\n}");
+		const cnt = (await indexFile.generate()).content.toString();
+		should(cnt).equal("function(){\n$fsx.d('a' + './world');\n}");
 	}
 
-	"Should bind id"() {
+	async "Should bind id"() {
 		const files = new Map<string, string>();
 		files.set("foo/bar/index.js", "require('a' + './world')");
 
@@ -153,8 +153,8 @@ export class BundleAsbtractionTest {
 		should(worldReference.isComputed).beTrue();
 
 		worldReference.bindID(20);
-
-		should(indexFile.generate()).equal("function(){\nrequire.bind({id:20})('a' + './world');\n}");
+		const cnt = (await indexFile.generate()).content.toString();
+		should(cnt).equal("function(){\nrequire.bind({id:20})('a' + './world');\n}");
 	}
 
 	"Should treat FuseBox.import like require"() {
@@ -171,10 +171,10 @@ export class BundleAsbtractionTest {
 	"Should find require references (usedNames) "() {
 		const file = createAbstractFile("index.js");
 		file.loadString(`
-            var foo = require("./foo");
-            console.log(foo.bar)
-            console.log(foo.woo)
-        `);
+	        var foo = require("./foo");
+	        console.log(foo.bar)
+	        console.log(foo.woo)
+	    `);
 		const first = [...file.requireStatements][0];
 		should([...first.usedNames]).deepEqual(["bar", "woo"]);
 	}
@@ -182,15 +182,15 @@ export class BundleAsbtractionTest {
 	"Should find named exports "() {
 		const file = createAbstractFile("index.js");
 		file.loadString(`
-            class Foo {
+	        class Foo {
 
-            }
-            class Bar {
+	        }
+	        class Bar {
 
-            }
-            exports.Foo = Foo
-            exports.Bar = Bar
-        `);
+	        }
+	        exports.Foo = Foo
+	        exports.Bar = Bar
+	    `);
 
 		should(file.namedExports.get("Foo")).beOkay();
 		should(file.namedExports.get("Bar")).beOkay();

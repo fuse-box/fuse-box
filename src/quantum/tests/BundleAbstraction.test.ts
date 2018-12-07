@@ -35,7 +35,7 @@ export class AbstractPackageTest {
 		should(defaultPackage.fileAbstractions.get("index.js")).beOkay();
 	}
 
-	"Should resolve a file within the same package"() {
+	async "Should resolve a file within the same package"() {
 		let app = createBundleAbstraction({});
 		app.parse(`
         (function(FuseBox) {
@@ -53,10 +53,10 @@ export class AbstractPackageTest {
 		const helloStatement = indexFile.findRequireStatements(/hello/)[0];
 		const helloFile = helloStatement.resolve();
 
-		should(helloFile.generate()).equal("function(){\nconsole.log('i am hello');\n}");
+		should(await helloFile.getGeneratedCode()).equal("function(){\nconsole.log('i am hello');\n}");
 	}
 
-	"Should resolve a file within the same package (package fusing)"() {
+	async "Should resolve a file within the same package (package fusing)"() {
 		let app = createBundleAbstraction({});
 		app.parse(`
         (function(FuseBox) {
@@ -79,6 +79,6 @@ export class AbstractPackageTest {
 		const helloStatement = indexFile.findRequireStatements(/hello/)[0];
 		const helloFile = helloStatement.resolve();
 		// resolves and finds a AbstractFile and generates the code
-		should(helloFile.generate()).equal("function(){\nconsole.log('i am hello');\n}");
+		should(await helloFile.getGeneratedCode()).equal("function(){\nconsole.log('i am hello');\n}");
 	}
 }
