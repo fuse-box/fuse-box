@@ -13,6 +13,9 @@ Before we proceed, let's make sure of that we are using NodeJS 8.2+ installed
 
 ## Hop on board
 
+If you are interested in a more step by step guide here is a great
+[article](https://auth0.com/blog/introducing-fusebox-an-alternative-to-webpack)
+
 - Create `fuse.js`
 - Define your producer
 - Dev options

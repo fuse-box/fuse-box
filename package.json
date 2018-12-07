@@ -57,6 +57,7 @@
     "shorthash": "0.0.2",
     "source-map": "^0.7.1",
     "stream-browserify": "^2.0.1",
+    "sourcemap-blender": "1.0.5",
     "tslib": "^1.8.0",
     "watch": "^1.0.1",
     "ws": "^1.1.1"

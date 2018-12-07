@@ -2,7 +2,7 @@ import { should } from "fuse-test-runner";
 import { createBundleAbstraction } from "./helper";
 
 export class AbstractPackageTest {
-	"Should inject a directory name"() {
+	async "Should inject a directory name"() {
 		let app = createBundleAbstraction({});
 		app.parse(`
         (function(FuseBox) {
@@ -15,10 +15,10 @@ export class AbstractPackageTest {
 		const defaultPackage = app.packageAbstractions.get("foo");
 		const barFile = defaultPackage.fileAbstractions.get("hello/bar.js");
 
-		should(barFile.generate()).findString('var __dirname = "hello";');
+		should((await barFile.getGeneratedCode()).toString()).findString('var __dirname = "hello";');
 	}
 
-	"Should inject a file name"() {
+	async "Should inject a file name"() {
 		let app = createBundleAbstraction({});
 		app.parse(`
         (function(FuseBox) {
@@ -31,10 +31,10 @@ export class AbstractPackageTest {
 		const defaultPackage = app.packageAbstractions.get("foo");
 		const barFile = defaultPackage.fileAbstractions.get("hello/bar.js");
 
-		should(barFile.generate()).findString('var __filename = "hello/bar.js";');
+		should((await barFile.getGeneratedCode()).toString()).findString('var __filename = "hello/bar.js";');
 	}
 
-	"Should inject both filename and dirname"() {
+	async "Should inject both filename and dirname"() {
 		let app = createBundleAbstraction({});
 		app.parse(`
         (function(FuseBox) {
@@ -47,7 +47,7 @@ export class AbstractPackageTest {
         })();`);
 		const defaultPackage = app.packageAbstractions.get("foo");
 		const barFile = defaultPackage.fileAbstractions.get("hello/bar.js");
-		const code = barFile.generate();
+		const code = (await barFile.getGeneratedCode()).toString();
 		should(code).findString('var __filename = "hello/bar.js";');
 		should(code).findString('var __dirname = "hello";');
 	}

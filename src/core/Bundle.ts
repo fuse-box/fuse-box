@@ -16,7 +16,7 @@ import { ExtensionOverrides } from "./ExtensionOverrides";
 import { QuantumBit } from "../quantum/plugin/QuantumBit";
 import { CombinedTargetAndLanguageLevel } from './CombinedTargetAndLanguageLevel';
 
-type WatchFilterFn = (path: string) => boolean
+type WatchFilterFn = (path: string) => boolean;
 export interface HMROptions {
 	port?: number;
 	socketURI?: string;
@@ -31,6 +31,8 @@ export class Bundle {
 	public onDoneCallback: any;
 	public webIndexPriority = 0;
 	public generatedCode: Buffer;
+	public generatedSourceMaps: string;
+	public generatedSourceMapsPath: string;
 	public bundleAbstraction: BundleAbstraction;
 	public packageAbstraction: PackageAbstraction;
 	public lastChangedFile: string;
@@ -50,7 +52,7 @@ export class Bundle {
 	}
 
 	public watch(ruleOrFilterFn?: string | WatchFilterFn, filterFn?: WatchFilterFn): Bundle {
-		if (typeof ruleOrFilterFn === 'function') {
+		if (typeof ruleOrFilterFn === "function") {
 			this.watchRule = "**";
 			this.watchFilterFn = ruleOrFilterFn;
 		} else {

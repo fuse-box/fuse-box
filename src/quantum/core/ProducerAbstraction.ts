@@ -10,7 +10,7 @@ export interface ProducerAbtractionOptions {
 }
 export class ProducerAbstraction {
 	public warnings = new Set<ProducerWarning>();
-	public bundleAbstractions = new Map<string, BundleAbstraction>();
+	public bundleAbstractions: Map<string, BundleAbstraction>;
 	public opts: ProducerAbtractionOptions;
 	public useNumbers = true;
 	public quantumCore: QuantumCore;
@@ -19,7 +19,7 @@ export class ProducerAbstraction {
 	constructor(opts?: ProducerAbtractionOptions) {
 		this.opts = opts || {};
 		this.quantumCore = this.opts.quantumCore;
-
+		this.bundleAbstractions = new Map<string, BundleAbstraction>();
 		this.opts.customComputedStatementPaths = this.opts.customComputedStatementPaths || new Set();
 	}
 

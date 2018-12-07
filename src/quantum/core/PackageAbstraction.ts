@@ -4,15 +4,17 @@ import { ASTTraverse } from "../../ASTTraverse";
 import { QuantumBit } from "../plugin/QuantumBit";
 
 export class PackageAbstraction {
-	public fileAbstractions = new Map<string, FileAbstraction>();
+	public fileAbstractions: Map<string, FileAbstraction>;
 	public entryFile: string = "index.js";
-	public entries = new Map<string, FileAbstraction>();
+	public entries: Map<string, FileAbstraction>;
 
 	public quantumBit: QuantumBit;
 	public conflictingLibraries: { [key: string]: string };
 	public quantumBitBanned = false;
 	public quantumDynamic = false;
 	constructor(public name: string, public bundleAbstraction: BundleAbstraction) {
+		this.entries = new Map<string, FileAbstraction>();
+		this.fileAbstractions = new Map<string, FileAbstraction>();
 		bundleAbstraction.registerPackageAbstraction(this);
 	}
 
