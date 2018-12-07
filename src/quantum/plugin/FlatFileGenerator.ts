@@ -1,12 +1,18 @@
+import { Bundle } from "../../core/Bundle";
+import { Concat } from "../../Utils";
+import { BundleAbstraction } from "../core/BundleAbstraction";
 import { FileAbstraction } from "../core/FileAbstraction";
 import { QuantumCore } from "./QuantumCore";
-import { BundleAbstraction } from "../core/BundleAbstraction";
 
 export class FlatFileGenerator {
-	public contents = [];
+	public contents: Concat;
 	public entryId;
-	public globals = new Map<string, string>();
-	constructor(public core: QuantumCore, public bundleAbstraction?: BundleAbstraction) {}
+	public globals: Map<string, string>;
+	public sourceMapsPath: string;
+	constructor(public core: QuantumCore, public bundleAbstraction?: BundleAbstraction) {
+		this.contents = new Concat(true, "", "\n");
+		this.globals = new Map<string, string>();
+	}
 
 	public setGlobals(packageName: string, fileID: string) {
 		this.globals.set(packageName, fileID);
@@ -15,18 +21,18 @@ export class FlatFileGenerator {
 	public init() {
 		if (this.core.opts.isTargetBrowser() || this.core.opts.isTargetUniveral()) {
 			if (this.core.opts.isContained()) {
-				this.contents.push("(function(){\n/*$$CONTAINED_API_PLACEHOLDER$$*/");
+				this.contents.add(null, "(function(){\n/*$$CONTAINED_API_PLACEHOLDER$$*/");
 			} else {
-				this.contents.push(`(function(${this.core.opts.quantumVariableName}){`);
+				this.contents.add(null, `(function(${this.core.opts.quantumVariableName}){`);
 			}
 		} else {
 			if (this.core.opts.isContained()) {
-				this.contents.push("/*$$CONTAINED_API_PLACEHOLDER$$*/");
+				this.contents.add(null, "/*$$CONTAINED_API_PLACEHOLDER$$*/");
 			}
 		}
 	}
 
-	public addFile(file: FileAbstraction, ensureES5 = false) {
+	public async addFile(file: FileAbstraction, ensureES5 = false) {
 		if (file.canBeRemoved) {
 			return;
 		}
@@ -45,26 +51,27 @@ export class FlatFileGenerator {
 		if (file.isEntryPoint) {
 			this.entryId = fileId;
 		}
-		this.contents.push(`// ${file.packageAbstraction.name}/${file.fuseBoxPath}`);
-		this.contents.push(
-			`${this.core.opts.quantumVariableName}.f[${JSON.stringify(fileId)}] = ${file.generate(ensureES5)}`,
-		);
+		this.contents.add(null, `// ${file.packageAbstraction.name}/${file.fuseBoxPath}`);
+		this.contents.add(null, `${this.core.opts.quantumVariableName}.f[${JSON.stringify(fileId)}] =`);
+		const cnt = await file.generate(ensureES5);
+
+		this.contents.add(null, cnt.content.toString(), cnt.sourceMap);
 	}
 
 	public addHoistedVariables() {
 		this.bundleAbstraction.hoisted.forEach((item, key) => {
-			this.contents.push(`var ${key} = ${this.core.opts.quantumVariableName}.r(${item.getID()});`);
+			this.contents.add(null, `var ${key} = ${this.core.opts.quantumVariableName}.r(${item.getID()});`);
 		});
 	}
 
-	public render() {
+	public render(bundle: Bundle) {
 		if (this.bundleAbstraction) {
 			this.addHoistedVariables();
 
 			if (this.bundleAbstraction.globalVariableRequired) {
 				const defineGlobalFn = "var global = window";
 				if (this.core.opts.isTargetBrowser()) {
-					this.contents.push(defineGlobalFn);
+					this.contents.add(null, defineGlobalFn);
 				}
 			}
 		}
@@ -73,10 +80,10 @@ export class FlatFileGenerator {
 			this.globals.forEach((fileID, globalName) => {
 				const req = `${this.core.opts.quantumVariableName}.r(${JSON.stringify(fileID)})`;
 				if (globalName == "*") {
-					this.contents.push(`var r = ${req}`);
-					this.contents.push(`if (r){for(var i in r){ window[i] = r[i] }}`);
+					this.contents.add(null, `var r = ${req}`);
+					this.contents.add(null, `if (r){for(var i in r){ window[i] = r[i] }}`);
 				} else {
-					this.contents.push(`window['${globalName}']=${req}`);
+					this.contents.add(null, `window['${globalName}']=${req}`);
 				}
 			});
 		}
@@ -94,23 +101,28 @@ export class FlatFileGenerator {
 				});
 
 				if (dirtyCheck) {
-					this.contents.push(`module.exports = ${req}`);
+					this.contents.add(null, `module.exports = ${req}`);
 				} else {
-					this.contents.push(req);
+					this.contents.add(null, req);
 				}
 			} else {
-				this.contents.push(req);
+				this.contents.add(null, req);
 			}
 		}
 
 		// finish wrapping
 		if (this.core.opts.isTargetBrowser() || this.core.opts.isTargetUniveral()) {
 			if (this.core.opts.isContained()) {
-				this.contents.push("})();");
+				this.contents.add(null, "})();");
 			} else {
-				this.contents.push(`})(${this.core.opts.quantumVariableName});`);
+				this.contents.add(null, `})(${this.core.opts.quantumVariableName});`);
 			}
 		}
-		return this.contents.join("\n");
+		this.contents.add(null, "\n");
+		if (this.core.context.useSourceMaps) {
+			this.sourceMapsPath = `${bundle.name}_quantum.js.map`;
+			this.contents.add(null, "//# sourceMappingURL=" + this.core.opts.getSourceMapsPath(this.sourceMapsPath));
+		}
+		return this.contents;
 	}
 }

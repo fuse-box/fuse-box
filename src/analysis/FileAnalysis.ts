@@ -26,6 +26,7 @@ const plugins: TraversalPlugin[] = [
 ];
 
 export function acornParse(contents, options?: any): any {
+	options = options || {};
 	return acorn.parse(contents, {
 		...(options || {}),
 		...{

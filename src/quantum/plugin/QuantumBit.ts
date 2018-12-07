@@ -1,26 +1,32 @@
-import { RequireStatement } from "../core/nodes/RequireStatement";
-import { FileAbstraction } from "../core/FileAbstraction";
 import { hashString, joinFuseBoxPath } from "../../Utils";
+import { CSSCollection } from "../core/CSSCollection";
+import { FileAbstraction } from "../core/FileAbstraction";
+import { RequireStatement } from "../core/nodes/RequireStatement";
 import { PackageAbstraction } from "../core/PackageAbstraction";
 import { QuantumCore } from "./QuantumCore";
-import { CSSCollection } from "../core/CSSCollection";
 
 export class QuantumBit {
 	public name: string;
 	public core: QuantumCore;
 	public banned = false;
 	public cssCollection: CSSCollection;
-	private candidates: Map<string, FileAbstraction> = new Map();
-	private modulesCanidates = new Map<string, PackageAbstraction>();
+	private candidates: Map<string, FileAbstraction>;
+	private modulesCanidates: Map<string, PackageAbstraction>;
 	private isEntryModule = false;
 
-	private modules2proccess: FileAbstraction[] = [];
-	public files: Map<string, FileAbstraction> = new Map();
+	private modules2proccess: FileAbstraction[];
+	public files: Map<string, FileAbstraction>;
 
-	public modules = new Map<string, PackageAbstraction>();
+	public modules: Map<string, PackageAbstraction>;
 
 	constructor(public entry: FileAbstraction, public requireStatement: RequireStatement) {
 		this.generateName();
+		this.modulesCanidates = new Map<string, PackageAbstraction>();
+		this.candidates = new Map();
+		this.modules = new Map();
+		this.files = new Map();
+		this.modules2proccess = [];
+
 		this.core = this.entry.core;
 		this.entry.quantumBitEntry = true;
 		this.isEntryModule = !this.entry.belongsToProject();

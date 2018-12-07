@@ -4,6 +4,7 @@ import { QuantumPlugin } from "../quantum/plugin/QuantumPlugin";
 import { CSSPlugin } from "../plugins/stylesheet/CSSplugin";
 import { WebIndexPlugin } from "../plugins/WebIndexPlugin";
 import { SassPlugin } from "../plugins/stylesheet/SassPlugin";
+
 const genericFiles = {
 	"index.ts": `
 	console.log("foobar");
@@ -14,7 +15,7 @@ const genericFiles = {
 
 		setTimeout(() => {
 			main();
-		},100}
+		},200}
 `,
 	"foobar.ts": `
 		import "./foobar.scss"
@@ -47,12 +48,12 @@ async function quantumEnv(conf, fn: (window: any, env: FuseTestEnv) => any) {
 		},
 	};
 	const test = await FuseTestEnv.create({
-		//testFolder: "_current_test",
+		testFolder: conf.test && "_current_test",
 		project: config,
 	}).simple(">index.ts", conf.bundle);
 
 	return test.browser(async (window, env) => {
-		await env.delay(10);
+		await env.delay(100);
 		return fn(window, env);
 	});
 }
@@ -182,7 +183,7 @@ export class QuantumCSSSplittingTest {
 				env.fileShouldExist("chunks/ea9fe601.css");
 				env.fileShouldExist("chunks/ea9fe601.css.map");
 				env.fileShouldExist("chunks/ea9fe601.js");
-				await env.delay(200);
+				await env.delay(500);
 				const newTags = await window.loadLinkTags();
 				should(newTags).deepEqual(["chunks/ea9fe601.css", "/styles.css"]);
 			},
@@ -204,17 +205,18 @@ export class QuantumCSSSplittingTest {
 				env.fileShouldExist("chunks/ea9fe601.css");
 				env.fileShouldExist("chunks/ea9fe601.css.map");
 				env.fileShouldExist("chunks/ea9fe601.js");
-				await env.delay(200);
+				await env.delay(300);
 				const newTags = await window.loadLinkTags();
 				should(newTags).deepEqual(["/chunks/ea9fe601.css", "/styles.css"]);
 			},
 		);
 	}
 
-	"Should dynamically split css file (different folder with slash) + hashing"() {
+	"Should dynamically split css file (different folder with slash) + hashing!"() {
 		return quantumEnv(
 			{
 				sourceMaps: true,
+				test: true,
 				hash: true,
 				bundle: bundle => {
 					bundle.splitConfig({ dest: "/chunks" });
@@ -222,11 +224,12 @@ export class QuantumCSSSplittingTest {
 				files: genericFiles,
 			},
 			async (window, env) => {
+				await env.delay(300);
 				env.fileShouldExist("6009cf7a-styles.css");
 				env.fileShouldExist("styles.css.map");
 				env.fileShouldExist("chunks/dcbf7349-ea9fe601.css");
 				env.fileShouldExist("chunks/ea9fe601.css.map");
-				env.fileShouldExist("chunks/5bd74940-ea9fe601.js");
+				env.fileShouldExist("chunks/c3eff8a7-ea9fe601.js");
 			},
 		);
 	}

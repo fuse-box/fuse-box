@@ -1,6 +1,6 @@
 import { WebIndexPluginClass } from "../../plugins/WebIndexPlugin";
 import { QuantumCore } from "./QuantumCore";
-import { readFuseBoxModule, hashString } from "../../Utils";
+import { readFuseBoxModule, hashString, joinFuseBoxPath } from "../../Utils";
 import { FileAbstraction } from "../core/FileAbstraction";
 import { BundleProducer, Bundle } from "../../index";
 export interface ITreeShakeOptions {
@@ -25,6 +25,10 @@ export interface IQuantumExtensionParams {
 	polyfills?: string[];
 	definedExpressions?: { [key: string]: boolean | string | number };
 	processPolyfill?: boolean;
+	sourceMaps?: {
+		path?: string;
+		vendor: boolean;
+	};
 	css?:
 		| {
 				path?: string;
@@ -47,6 +51,10 @@ export class QuantumOptions {
 	private replaceProcessEnv = true;
 	private containedAPI = false;
 	private processPolyfill = false;
+	private sourceMapsOption: {
+		vendor: boolean;
+		path?: string;
+	};
 	private bakeApiIntoBundle: string[] | true | undefined;
 	private noConflictApi = false;
 
@@ -95,7 +103,6 @@ export class QuantumOptions {
 		if (opts.api) {
 			this.apiCallback = opts.api;
 		}
-
 		if (opts.definedExpressions) {
 			this.definedExpressions = opts.definedExpressions;
 		}
@@ -106,6 +113,9 @@ export class QuantumOptions {
 			if (opts.manifest === true) {
 				this.manifestFile = "manifest.json";
 			}
+		}
+		if (opts.sourceMaps) {
+			this.sourceMapsOption = opts.sourceMaps;
 		}
 		if (opts.uglify) {
 			this.uglify = opts.uglify;
@@ -209,6 +219,21 @@ export class QuantumOptions {
 
 	public getCSSPath() {
 		return this.cssPath;
+	}
+
+	public getSourceMapsPath(file: string) {
+		let initial = "./";
+		if (this.sourceMapsOption) {
+			initial = this.sourceMapsOption.path || "./";
+		}
+		return joinFuseBoxPath(initial, file);
+	}
+
+	public shouldGenerateVendorSourceMaps() {
+		if (this.sourceMapsOption) {
+			return this.sourceMapsOption.vendor;
+		}
+		return false;
 	}
 
 	public getCSSFiles() {

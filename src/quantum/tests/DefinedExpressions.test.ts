@@ -42,12 +42,12 @@ export class DefinedExpressionsTest {
 			project: {
 				files: {
 					"index.ts": `
-                        if( foo === 'bar' ){
-                            console.log("i am foo bar");
-                        }  else {
-                            console.log("i am not foo bar");
-                        }
-                    `,
+	                    if( foo === 'bar' ){
+	                        console.log("i am foo bar");
+	                    }  else {
+	                        console.log("i am not foo bar");
+	                    }
+	                `,
 				},
 				plugins: [
 					QuantumPlugin({
@@ -74,12 +74,12 @@ export class DefinedExpressionsTest {
 			project: {
 				files: {
 					"index.ts": `
-                        if( foo.bar === 'bar' ){
-                            console.log("i am foo bar");
-                        }  else {
-                            console.log("i am not foo bar");
-                        }
-                    `,
+	                    if( foo.bar === 'bar' ){
+	                        console.log("i am foo bar");
+	                    }  else {
+	                        console.log("i am not foo bar");
+	                    }
+	                `,
 				},
 				plugins: [
 					QuantumPlugin({
@@ -106,12 +106,12 @@ export class DefinedExpressionsTest {
 			project: {
 				files: {
 					"index.ts": `
-                        if( foo.bar === 'bar' ){
-                            console.log("i am foo bar");
-                        }  else {
-                            console.log("i am not foo bar");
-                        }
-                    `,
+	                    if( foo.bar === 'bar' ){
+	                        console.log("i am foo bar");
+	                    }  else {
+	                        console.log("i am not foo bar");
+	                    }
+	                `,
 				},
 				plugins: [
 					QuantumPlugin({

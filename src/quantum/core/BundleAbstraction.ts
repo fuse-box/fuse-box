@@ -7,7 +7,7 @@ import { RequireStatement } from "./nodes/RequireStatement";
 
 export class BundleAbstraction {
 	public splitAbstraction = false;
-	public packageAbstractions = new Map<string, PackageAbstraction>();
+	public packageAbstractions: Map<string, PackageAbstraction>;
 	public producerAbstraction: ProducerAbstraction;
 	public globalVariableRequired = false;
 	/**
@@ -22,6 +22,7 @@ export class BundleAbstraction {
 
 	constructor(public name: string) {
 		//producerAbstraction.registerBundleAbstraction(this);
+		this.packageAbstractions = new Map<string, PackageAbstraction>();
 	}
 
 	public registerHoistedIdentifiers(identifier: string, statement: RequireStatement, file: FileAbstraction) {
@@ -39,7 +40,7 @@ export class BundleAbstraction {
 		this.packageAbstractions.set(packageAbstraction.name, packageAbstraction);
 	}
 
-	public parse(contents: string) {
+	public parse(contents: string, sourceMap?) {
 		const ast = acornParse(contents);
 		ASTTraverse.traverse(ast, {
 			pre: (node, parent, prop, idx) => {

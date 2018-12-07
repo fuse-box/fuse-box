@@ -53,8 +53,13 @@ export class ScriptTest {
 
 	private load() {
 		if (!this.contents) {
-			this.contents = fs.readFileSync(this.result.path);
+			this.contents = fs.readFileSync(this.result.path).toString();
 		}
+	}
+
+	public getContents() {
+		this.load();
+		return this.contents;
 	}
 
 	public shouldFindString(str: string) {
