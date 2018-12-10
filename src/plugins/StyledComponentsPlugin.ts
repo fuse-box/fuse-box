@@ -13,9 +13,6 @@ export class StyledComponentsPluginClass implements Plugin {
 	constructor(options = {}) {
     this.options = options;
   }
-  public tempTransformer() {
-    return null
-  }
 
   public init(context: WorkFlowContext) {
     context.allowExtension(".tsx");
