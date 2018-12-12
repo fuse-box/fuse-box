@@ -146,7 +146,11 @@ export function ensureAbsolutePath(userPath: string) {
 	return userPath;
 }
 export function joinFuseBoxPath(...any): string {
-	return ensureFuseBoxPath(path.join(...any));
+	let includesProtocol = any[0].includes('://');
+	let joinedPath = !includesProtocol
+		? path.join(...any)
+		: any[0].replace(/([^/])$/, '$1/') + path.join(...any.slice(1));
+	return ensureFuseBoxPath(joinedPath);
 }
 export function ensureDir(userPath: string) {
 	if (!path.isAbsolute(userPath)) {

@@ -141,4 +141,21 @@ export class CssPluginTest {
 			should(result.projectContents.toString()).findString(`module.exports.default = "/static/92849cf0-hello.txt";`);
 		});
 	}
+
+	"Should copy a file with custom resolver to external domain (hash)"() {
+		return createEnv({
+			project: {
+				hash: true,
+				files: {
+					"index.ts": `require("./hello.txt")`,
+					"hello.txt": "ololo",
+				},
+				plugins: [CopyPlugin({ resolve: "https://example.com/static/", files: [".txt"] })],
+				instructions: "> index.ts",
+			},
+		}).then(result => {
+			result.shouldExistInDist("assets/92849cf0-hello.txt");
+			should(result.projectContents.toString()).findString(`module.exports.default = "https://example.com/static/92849cf0-hello.txt";`);
+		});
+	}
 }
