@@ -1,8 +1,6 @@
 import { WorkFlowContext } from "./../core/WorkflowContext";
 import { Plugin } from "../core/WorkflowContext";
 
-const createStyledComponentsTransformer = require('typescript-plugin-styled-components').default;
-
 /**
  * @export
  * @class StyledComponentsPluginClass
@@ -15,11 +13,17 @@ export class StyledComponentsPluginClass implements Plugin {
   }
 
   public init(context: WorkFlowContext) {
+    try {
+      require.resolve('typescript-plugin-styled-components');
+    } catch(e) {
+        throw new Error(`Cannot find module 'typescript-plugin-styled-components', install it to devDependency\nnpm install --save-dev typescript-plugin-styled-components`)
+    }
+    const createStyledComponentsTransformer = require('typescript-plugin-styled-components').default;
     context.allowExtension(".tsx");
     const styledComponentsTransformer = createStyledComponentsTransformer(this.options);
     context.fuse.opts.transformers = {
-      before: [styledComponentsTransformer]
-    }
+        before: [styledComponentsTransformer]
+    };
   }
 }
 

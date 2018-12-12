@@ -10,14 +10,16 @@ StyledComponentsPlugin improves development experience of `styled-components` vi
 
 ## Install
 
-Using the StyledComponentsPlugin requires `styled-components` to transform  styled components to reactive components.
+Using the StyledComponentsPlugin requires `styled-components` and `typescript-plugin-styled-components` to transform  styled components to reactive components.
 
 ```bash
 yarn add styled-components --dev
+yarn add typescript-plugin-styled-components --dev
 
 // OR
 
 npm install styled-components --save-dev
+npm install typescript-plugin-styled-components --save-dev
 ```
 
 ## Usage
