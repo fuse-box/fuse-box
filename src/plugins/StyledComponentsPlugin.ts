@@ -13,10 +13,12 @@ export class StyledComponentsPluginClass implements Plugin {
   }
 
   public init(context: WorkFlowContext) {
-    try {
-      require.resolve('typescript-plugin-styled-components');
-    } catch(e) {
-        throw new Error(`Cannot find module 'typescript-plugin-styled-components', install it to devDependency\nnpm install --save-dev typescript-plugin-styled-components`)
+    if (typeof require.resolve === 'function') {
+      try {
+        require.resolve('typescript-plugin-styled-components');
+      } catch(e) {
+          throw new Error(`Cannot find module 'typescript-plugin-styled-components', install it to devDependency\nnpm install --save-dev typescript-plugin-styled-components`)
+      }
     }
     const createStyledComponentsTransformer = require('typescript-plugin-styled-components').default;
     context.allowExtension(".tsx");
