@@ -58,6 +58,7 @@
       "plugins/replace-plugin",
       "plugins/sass-plugin",
       "plugins/source-map-plain-js-plugin",
+      "plugins/styled-components-plugin",
       "plugins/stylus-plugin",
       "plugins/svg-plugin",
       "plugins/uglifyes-plugin",

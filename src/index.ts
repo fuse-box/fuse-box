@@ -47,6 +47,7 @@ export { CopyPlugin } from "./plugins/CopyPlugin";
 export { WebIndexPlugin } from "./plugins/WebIndexPlugin";
 export { PlainJSPlugin } from "./plugins/PlainJSPlugin";
 export { ConsolidatePlugin } from "./plugins/ConsolidatePlugin";
+export { StyledComponentsPlugin } from "./plugins/StyledComponentsPlugin";
 export { File } from "./core/File";
 import * as _SparkyCollection from "./sparky/index";
 export const SparkyCollection = _SparkyCollection;
