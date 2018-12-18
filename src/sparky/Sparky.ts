@@ -39,7 +39,12 @@ export class Sparky {
 		if (this.launch === false && this.testMode === false) {
 			this.launch = true;
 			process.nextTick(async () => {
-				await this.start();
+				try {
+					await this.start();
+				} catch (e) {
+					console.error(e);
+					process.exit(1);
+				}
 			});
 		}
 		return {
