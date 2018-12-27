@@ -98,7 +98,15 @@ export class Babel7PluginClass implements Plugin {
 	public transform(file: File) {
 		file.wasTranspiled = true;
 		if (!babel7Core) {
-			babel7Core = require("@babel/core");
+			try {
+				babel7Core = require("@babel/core");
+			} catch (error) {
+				if (error.code === "MODULE_NOT_FOUND") {
+					const message = "Babel7Plugin - requires @babel/core to be installed";
+					throw new Error(message);
+				}
+				throw error;
+			}
 		}
 		if (this.configPrinted === false && this.context.doLog === true) {
 			file.context.debug("Babel7Plugin", `\n\tConfiguration: ${JSON.stringify(this.config)}`);
