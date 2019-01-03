@@ -39,6 +39,7 @@
   "plugins": {
     "Plugins": [
       "plugins/babel-plugin",
+      "plugins/babel7-plugin",
       "plugins/coffee-plugin",
       "plugins/consolidate-plugin",
       "plugins/copy-plugin",
