@@ -64,6 +64,8 @@
   },
   "description": "Fuse-Box a bundler that does it right",
   "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
     "@types/node": "^6.0.116",
     "@types/styled-components": "^4.1.3",
     "babel-core": "^6.26.3",
