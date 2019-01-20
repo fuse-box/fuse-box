@@ -38,6 +38,7 @@ export { UglifyJSPlugin } from "./plugins/UglifyJSPlugin";
 export { SourceMapPlainJsPlugin } from "./plugins/SourceMapPlainJsPlugin";
 export { RawPlugin } from "./plugins/RawPlugin";
 export { OptimizeJSPlugin } from "./plugins/OptimizeJSPlugin";
+export { WorkerGlobalScopePlugin } from "./plugins/WorkerGlobalScopePlugin";
 export { Fluent } from "./arithmetic/Fluent";
 export { FuseBox } from "./core/FuseBox";
 export { Sparky } from "./sparky/Sparky";
