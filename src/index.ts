@@ -23,6 +23,7 @@ export { PostCSS } from "./plugins/stylesheet/PostCSSPlugin";
 export { PostCSS as PostCSSPlugin } from "./plugins/stylesheet/PostCSSPlugin";
 export { SVGPlugin } from "./plugins/images/SVGPlugin";
 export { BabelPlugin } from "./plugins/js-transpilers/BabelPlugin";
+export { Babel7Plugin } from "./plugins/js-transpilers/Babel7Plugin";
 export { BublePlugin } from "./plugins/js-transpilers/BublePlugin";
 export { CoffeePlugin } from "./plugins/js-transpilers/CoffeePlugin";
 export { LESSPlugin } from "./plugins/stylesheet/LESSPlugin";
