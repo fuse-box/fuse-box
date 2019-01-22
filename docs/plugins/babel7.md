@@ -24,7 +24,7 @@ npm install @babel/core @babel/preset-env @babel/preset-react --save-dev
 | config        | `Object`        | Babel config options. Takes priority over configuration loaded from `configFile` | `undefined` |
 | limit2project | `boolean`       | To use this plugin across an entire project (including other modules like npm)  | `true`                             |
 | extensions    | `Array<string>` | File extensions allowed to be transpiled with fuse-box      | `[".js", ".jsx", ".ts", ".tsx"]`                       |
-| test          | `Regex`         | RegExp for matching file extensions. If `extensions` is provided, this property is ignored.                          | <code>/\\.(j&#124;t)s(x)?$/</code> |
+| test          | `Regex`         | RegExp for matching file extensions                          | <code>/\\.(j&#124;t)s(x)?$/</code> |
 
 ## Examples
 
