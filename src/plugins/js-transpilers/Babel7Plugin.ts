@@ -18,65 +18,117 @@ export class Babel7PluginClass implements Plugin {
 	 * Because Babel won't capture it just being a Plugin
 	 * Typescript files are handled before any external plugin is executed
 	 */
-	public extensions: Array<string> = [".jsx"];
+	public extensions: Array<string> = [".js", ".jsx", ".ts", ".tsx"];
 	public test: RegExp = /\.(j|t)s(x)?$/;
 	public context: WorkFlowContext;
 	private limit2project: boolean = true;
-
-	private config?: any = {};
 	private configPrinted = false;
 	private configLoaded = false;
+	private configFile: string | false;
 
-	constructor(opts: any = { ast: true }) {
-		// if it is an object containing only a babel config
+	private configRequired = {
+		ast: true,
+		code: true,
+		babelrc: false,
+		configFile: false,
+		sourceType: "module",
+		filenameRelative: '', // homeDir
+		root: '', // homeDir
+	};
+	private config = Object.assign({}, this.configRequired);
+
+	constructor(opts: any) {
 		if (
+			typeof opts === "object" &&
 			opts.config === undefined &&
 			opts.test === undefined &&
 			opts.limit2project === undefined &&
 			opts.extensions === undefined &&
+			opts.configFile === undefined &&
 			Object.keys(opts).length
 		) {
-			this.config = opts;
+			Object.assign(this.config, opts, this.configRequired)
 			return;
 		}
 
-		if (opts.config) {
-			this.config = Object.assign({ ast: true }, opts.config);
-		}
-		if (opts.extensions !== undefined) {
-			this.extensions = opts.extensions;
-			if (opts.test === undefined) {
-				this.test = string2RegExp(opts.extensions.join("|"));
+		if (typeof opts === "object" && opts !== null) {
+			if (opts.limit2project) {
+				this.limit2project = !!opts.limit2project;
 			}
-		}
-		if (opts.test !== undefined) {
-			this.test = opts.test;
-		}
-		if (opts.limit2project !== undefined) {
-			this.limit2project = opts.limit2project;
+			if (opts.test) {
+				this.test = opts.test;
+			}
+			if (opts.extensions) {
+				this.extensions = opts.extensions;
+				if (opts.test === undefined) {
+					this.test = string2RegExp(opts.extensions.join("|"));
+				}
+			}
+			if (opts.config) {
+				if (typeof opts.config !== "object") {
+					throw new Error("Babel7Plugin - `config` property must be null | undefined | plain object");
+				}
+				Object.assign(this.config, opts.config, this.configRequired)
+			}
+			if (opts.configFile) {
+				this.configFile = opts.configFile;
+			}
+		} else if (opts !== null || opts !== undefined) {
+			throw new Error(`Babel7Plugin - Invalid options provided.`);
 		}
 	}
 
 	/**
 	 * @see this.init
 	 */
-	private handleBabelRc() {
+	private loadOptionsAndValidate() {
 		if (this.configLoaded) return;
 
-		let babelRcConfig;
-		let babelRcPath = path.join(this.context.appRoot, `.babelrc`);
-
-		if (fs.existsSync(babelRcPath)) {
-			babelRcConfig = fs.readFileSync(babelRcPath).toString();
-
-			if (babelRcConfig) {
-				babelRcConfig = Object.assign({}, JSON.parse(babelRcConfig), this.config);
+		if (
+			typeof this.configFile === "undefined" ||
+			this.configFile === null ||
+			this.configFile === true
+		) {
+			this.configFile = [
+				path.join(this.context.homeDir, ".babelrc"),
+				path.join(this.context.homeDir, "babel.config.js"),
+			].find(path => {
+				if (fs.existsSync(path)) return true
+				return false
+			})
+		} else if (typeof this.configFile === "string") {
+			const configPath = path.join(this.context.homeDir, this.configFile)
+			if (!fs.existsSync(configPath)) {
+				throw new Error(`Babel7Plugin - configuration file not found on path ${configPath}`);
 			}
+			this.configFile = configPath
 		}
 
-		if (babelRcConfig) {
-			this.config = babelRcConfig;
+		if (typeof this.configFile === "string") {
+			let configFileContents;
+
+			const ext = path.extname(this.configFile);
+
+			if (ext === "" || ext === ".json") {
+				configFileContents = JSON.parse(fs.readFileSync(this.configFile).toString());
+			} else if ([".js", ".jsx", ".mjs", ".ts", ".tsx"].includes(ext)) {
+				configFileContents = require(this.configFile);
+				if (typeof configFileContents !== "object") {
+					throw new Error("Babel7Plugin - your configuration file must have an object as default export./n	e.g: module.exports = { presets: ['@babel/preset-env'] }");
+				}
+			}
+
+			configFileContents.filenameRelative = this.context.homeDir;
+
+			// Load partial config and validate options
+			const partialConfig = babel7Core.loadPartialConfig(configFileContents);
+			Object.assign(this.config, partialConfig.options, this.config)
 		}
+
+		// Flatten presets into plugins and validate over-all configuration
+		this.config.root = this.context.homeDir
+		this.config.filenameRelative = this.context.homeDir
+		this.config = babel7Core.loadOptions(this.config);
 
 		this.configLoaded = true;
 	}
@@ -85,11 +137,21 @@ export class Babel7PluginClass implements Plugin {
 	 * @param {WorkFlowContext} context
 	 */
 	public init(context: WorkFlowContext) {
+		// Ensure babel7 is installed
+		try {
+			babel7Core = require("@babel/core");
+		} catch (error) {
+			if (error.code === "MODULE_NOT_FOUND") {
+				const message = "Babel7Plugin - requires @babel/core to be installed";
+				throw new Error(message);
+			}
+			throw error;
+		}
 		this.context = context;
 		if (Array.isArray(this.extensions)) {
 			this.extensions.forEach(ext => context.allowExtension(ext));
 		}
-		this.handleBabelRc();
+		this.loadOptionsAndValidate();
 	}
 
 	/**
@@ -97,19 +159,9 @@ export class Babel7PluginClass implements Plugin {
 	 */
 	public transform(file: File) {
 		file.wasTranspiled = true;
-		if (!babel7Core) {
-			try {
-				babel7Core = require("@babel/core");
-			} catch (error) {
-				if (error.code === "MODULE_NOT_FOUND") {
-					const message = "Babel7Plugin - requires @babel/core to be installed";
-					throw new Error(message);
-				}
-				throw error;
-			}
-		}
+
 		if (this.configPrinted === false && this.context.doLog === true) {
-			file.context.debug("Babel7Plugin", `\n\tConfiguration: ${JSON.stringify(this.config)}`);
+			file.context.debug("Babel7Plugin", `\n\tConfiguration: ${JSON.stringify(this.config, null, 2)}`);
 			this.configPrinted = true;
 		}
 
@@ -126,17 +178,18 @@ export class Babel7PluginClass implements Plugin {
 		// @TODO needs improvement for the regex matching of what to include
 		//       with globs & regex
 		if (this.limit2project === false || file.collection.name === file.context.defaultPackageName) {
+			const fileConfig = Object.assign({ filename: file.relativePath }, this.config)
 			let result;
 			try {
-				result = babel7Core.transformSync(file.contents, Object.assign({ ast: true }, this.config));
+				result = babel7Core.transformSync(file.contents, fileConfig);
 			} catch (e) {
 				file.analysis.skip();
-				console.error(e);
+				this.context.log.error(e);
 				return;
 			}
 
 			// By default we would want to limit the babel
-			// And use acorn instead (it's faster)
+			// And use acorn instead (it"s faster)
 			if (result.ast) {
 				file.analysis.loadAst(result.ast);
 				let sourceMaps = result.map;
@@ -146,7 +199,11 @@ export class Babel7PluginClass implements Plugin {
 				// This happens only when the code is required regeneration
 				// for example with aliases -> in any cases this will stay untouched
 				file.context.setCodeGenerator(ast => {
-					const result = babel7Core.transformFromAstSync(ast);
+					const result = babel7Core.transformFromAstSync(
+						ast,
+						void 0,
+						Object.assign({ filename: file.relativePath }, this.config)
+					);
 					sourceMaps = result.map;
 					return result.code;
 				});
