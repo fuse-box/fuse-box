@@ -6,20 +6,13 @@ import { SourceMapGenerator } from "./SourceMapGenerator";
 import { utils, each } from "realm-utils";
 import * as fs from "fs";
 import * as path from "path";
+import * as ts from "typescript"
 import { ensureFuseBoxPath, readFuseBoxModule, isStylesheetExtension, fastHash, joinFuseBoxPath } from "../Utils";
 
 /**
- * Same Target Enumerator used in TypeScript
+ * Same Target Enumerator used in current installed version of TypeScript
  */
-export enum ScriptTarget {
-	ES5 = 1,
-	ES2015 = 2,
-	ES6 = 2,
-	ES2016 = 3,
-	ES7 = 3,
-	ES2017 = 4,
-	ESNext = 5,
-}
+export { ScriptTarget } from "typescript";
 
 /**
  *
@@ -30,7 +23,7 @@ export enum ScriptTarget {
 export class File {
 	public isFuseBoxBundle = false;
 
-	public languageLevel = ScriptTarget.ES5;
+	public languageLevel = ts.ScriptTarget.ES5;
 
 	public es6module = false;
 
@@ -204,7 +197,7 @@ export class File {
 		return file;
 	}
 
-	public setLanguageLevel(level: ScriptTarget) {
+	public setLanguageLevel(level: ts.ScriptTarget) {
 		if (this.languageLevel < level) {
 			this.languageLevel = level;
 		}
@@ -637,20 +630,11 @@ export class File {
 		}
 	}
 
-	public transpileUsingTypescript() {
+	public transpileUsingTypescript(): ts.TranspileOutput | never {
 		try {
-			const ts = require("typescript");
-			try {
-				return ts.transpileModule(this.contents, this.getTranspilationConfig());
-			} catch (e) {
-				this.context.fatal(`${this.info.absPath}: ${e}`);
-				return;
-			}
+			return ts.transpileModule(this.contents, this.getTranspilationConfig())
 		} catch (e) {
-			this.context.fatal(`TypeScript automatic transpilation has failed. Please check that:
-            - You have TypeScript installed
-            - Your tsconfig.json file is not malformed.\nError message: ${e.message}`);
-			return;
+			this.context.fatal(`${this.info.absPath}: ${e}`);
 		}
 	}
 
