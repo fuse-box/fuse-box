@@ -469,6 +469,10 @@ export class Log {
 		log.red(msg).echo();
 		return this;
 	}
+	public echoBlue(msg) {
+		log.blue(msg).echo();
+		return this;
+	}
 	public echoBreak() {
 		log.green(`\n  -------------- \n`).echo();
 		return this;
