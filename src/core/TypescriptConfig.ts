@@ -8,13 +8,26 @@ import * as ts from "typescript";
 
 const CACHED: { [path: string]: any } = {};
 
+export interface ICategorizedDiagnostics {
+	errors: ReadonlyArray<ts.Diagnostic & { category: ts.DiagnosticCategory.Error }>,
+	warnings: ReadonlyArray<ts.Diagnostic & { category: ts.DiagnosticCategory.Warning }>,
+	messages: ReadonlyArray<ts.Diagnostic & { category: ts.DiagnosticCategory.Message }>,
+	suggestions: ReadonlyArray<ts.Diagnostic & { category: ts.DiagnosticCategory.Suggestion }>,
+}
+
 export class TypescriptConfig {
 	// the actual typescript config
 	private config: any;
 	private customTsConfig: string;
 	private configFile: string;
-
-	constructor(public context: WorkFlowContext) {}
+	private formatDiagnosticsHost: ts.FormatDiagnosticsHost;
+	constructor(public context: WorkFlowContext) {
+		this.formatDiagnosticsHost = {
+			getCanonicalFileName: file => file,
+			getCurrentDirectory: () => context.homeDir,
+			getNewLine: () => ts.sys.newLine,
+		}
+	}
 
 	public getConfig() {
 		this.read();
@@ -72,6 +85,36 @@ export class TypescriptConfig {
 		fs.writeFileSync(targetFile, JSON.stringify(this.config, null, 2));
 	}
 
+	private normalizeAndValidateCompilerOptions() {
+		let compilerOptions = this.config.compilerOptions
+		let normalizedCompilerOptions = ts.convertCompilerOptionsFromJson(compilerOptions, compilerOptions.baseUrl);
+
+		if (normalizedCompilerOptions.errors.length) {
+			this.logAllDiagnostics(normalizedCompilerOptions.errors);
+		}
+		this.config.compilerOptions = compilerOptions = normalizedCompilerOptions.options;
+		/**
+		 * Explicitely un-set in `transpileModule`:
+		 * https://github.com/Microsoft/TypeScript/blob/865b3e786277233585e1586edba52bf837b61b71/src/services/transpile.ts#L26
+		 * */
+		compilerOptions.isolatedModules = true;
+		compilerOptions.suppressOutputPathCheck = true;
+		compilerOptions.allowNonTsExtensions = true;
+		compilerOptions.noLib = true;
+		compilerOptions.lib = undefined;
+		compilerOptions.types = undefined;
+		compilerOptions.noEmit = undefined;
+		compilerOptions.noEmitOnError = undefined;
+		compilerOptions.paths = undefined;
+		compilerOptions.rootDirs = undefined;
+		compilerOptions.declaration = undefined;
+		compilerOptions.composite = undefined;
+		compilerOptions.declarationDir = undefined;
+		compilerOptions.out = undefined;
+		compilerOptions.outFile = undefined;
+		compilerOptions.noResolve = true;
+	}
+
 	private verifyTsLib() {
 		if (this.config.compilerOptions.importHelpers === true) {
 			const tslibPath = path.join(Config.NODE_MODULES_DIR, "tslib");
@@ -82,6 +125,88 @@ export class TypescriptConfig {
 			}
 		}
 	}
+
+	public categorizeDiagnostics(diagnostics: ReadonlyArray<ts.Diagnostic> | Readonly<ts.Diagnostic>): ICategorizedDiagnostics {
+		const errors = [];
+		const warnings = [];
+		const messages = [];
+		const suggestions = [];
+		const diagnosticsArray = Array.isArray(diagnostics)
+			? diagnostics
+			: [diagnostics];
+		const size = diagnosticsArray.length;
+		for (let i = 0; i < size; i++) {
+			const diagnostic: ts.Diagnostic = diagnosticsArray[i];
+			switch (diagnostic.category) {
+				case ts.DiagnosticCategory.Error: {
+					errors.push(diagnostic);
+					break;
+				}
+				case ts.DiagnosticCategory.Warning: {
+					warnings.push(diagnostic);
+					break;
+				}
+				case ts.DiagnosticCategory.Message: {
+					messages.push(diagnostic);
+					break;
+				}
+				// Commented for documentation. Technically we shouldn't get this.
+				// Displaying fails with "Error: Debug Failure. Should never get an Info diagnostic on the command line."
+				// TODO: If you find a known case where this could happen, open an issue
+				// case ts.DiagnosticCategory.Suggestion: {
+				// 	suggestions.push(diagnostic);
+				//	break;
+				// }
+			}
+		}
+		return { errors, warnings, messages, suggestions };
+	}
+
+	public formatDiagnostic(diagnostic: Readonly<ts.Diagnostic>): string {
+		return ts.formatDiagnosticsWithColorAndContext(
+			[diagnostic],
+			this.formatDiagnosticsHost,
+		).replace(/error|warning|message/, match => match.toUpperCase());
+	}
+
+	public logDiagnosticsByCategory(diagnostics: ReadonlyArray<ts.Diagnostic>, category: ts.DiagnosticCategory): void {
+		if (diagnostics.length) {
+			const size = diagnostics.length
+			for (let i = 0; i < size; i++) {
+				const diagnosticMsg = this.formatDiagnostic(diagnostics[i])
+				switch (category) {
+					case ts.DiagnosticCategory.Error: {
+						this.context.log.echoRed(`  → ${diagnosticMsg}`);
+						break;
+					}
+					case ts.DiagnosticCategory.Warning: {
+						this.context.log.echoYellow(`  → ${diagnosticMsg}`);
+						break;
+					}
+					case ts.DiagnosticCategory.Message: {
+						this.context.log.echoBlue(`  → ${diagnosticMsg}`);
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	public logAllDiagnostics(diagnostics: ReadonlyArray<ts.Diagnostic>) {
+		const categorizedDiagnostics = this.categorizeDiagnostics(diagnostics);
+		this.logDiagnosticsByCategory(categorizedDiagnostics.messages, ts.DiagnosticCategory.Message);
+		this.logDiagnosticsByCategory(categorizedDiagnostics.warnings, ts.DiagnosticCategory.Warning);
+		this.throwOnDiagnosticErrors(categorizedDiagnostics.errors);
+	}
+
+	public throwOnDiagnosticErrors(diagnostics: ReadonlyArray<ts.Diagnostic>): never | void {
+		if (diagnostics.length) {
+			this.logDiagnosticsByCategory(diagnostics, ts.DiagnosticCategory.Error)
+
+			this.context.fatal('Invalid `compilerOptions` settings')
+		}
+	}
+
 	public read() {
 		const cacheKey =
 			(typeof this.customTsConfig === "string" ? this.customTsConfig : this.context.homeDir) +
@@ -89,8 +214,9 @@ export class TypescriptConfig {
 			this.context.languageLevel;
 		if (CACHED[cacheKey]) {
 			this.config = CACHED[cacheKey];
+			return;
 		} else {
-			let url;
+			let tsConfigFilePath;
 			let config: any = {
 				compilerOptions: {},
 			};
@@ -99,8 +225,8 @@ export class TypescriptConfig {
 			if (typeof this.customTsConfig === "string") {
 				this.configFile = ensureUserPath(this.customTsConfig);
 			} else {
-				url = path.join(this.context.homeDir, "tsconfig.json");
-				let tsconfig = findFileBackwards(url, this.context.appRoot);
+				tsConfigFilePath = path.join(this.context.homeDir, "tsconfig.json");
+				let tsconfig = findFileBackwards(tsConfigFilePath, this.context.appRoot);
 				if (tsconfig) {
 					configFileFound = true;
 					this.configFile = tsconfig;
@@ -113,7 +239,7 @@ export class TypescriptConfig {
 				const res = readConfigFile(this.configFile, this.context.appRoot);
 				config = res.config;
 				if (res.error) {
-					this.context.log.echoError(`Errors in ${configFileRelPath}`);
+					this.logAllDiagnostics([res.error]);
 				}
 			}
 
@@ -143,7 +269,8 @@ export class TypescriptConfig {
 			if (this.context.ensureTsConfig === true) {
 				this.verifyTsLib();
 			}
-			this.context.log.echoInfo(`Typescript script target: ${config.compilerOptions.target}`);
+			this.normalizeAndValidateCompilerOptions()
+			this.context.log.echoInfo(`Typescript script target: ${ts.ScriptTarget[config.compilerOptions.target]}`);
 			CACHED[cacheKey] = this.config;
 		}
 	}
