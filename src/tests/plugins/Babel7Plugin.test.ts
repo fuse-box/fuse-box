@@ -4,6 +4,150 @@ import { should } from "fuse-test-runner";
 import { Babel7Plugin } from "../../plugins/js-transpilers/Babel7Plugin";
 
 export class Babel7PluginTest {
+	"Should bundle loading .babelrc implicitly (lookup for config)"() {
+		return FuseTestEnv.create({
+			project: {
+				files: {
+					".babelrc": `{ "plugins": ["./src/tests/plugins/Babel7PluginConfig/plugin-test.js"] }`,
+					"index.js": `
+						export function fn() {}
+						console.log(fn("something"))
+					`,
+				},
+				plugins: [Babel7Plugin({ extensions: [".js"] })],
+			},
+		})
+			.simple("> index.js")
+			.then(env =>
+				env.browser(window => {
+					const imported = window.FuseBox.import("./index");
+					should(imported.IwasTranspiledWithBabel).beFunction();
+					should(imported.IwasTranspiledWithBabel.name).equal("IwasTranspiledWithBabel");
+				}),
+			);
+	}
+	"Should bundle loading babel.config.js implicitly (lookup for config)"() {
+		return FuseTestEnv.create({
+			project: {
+				files: {
+					"babel.config.js": `
+						module.exports = {
+							"plugins": ["./src/tests/plugins/Babel7PluginConfig/plugin-test.js"]
+						}`,
+					"index.js": `
+						export function fn() {}
+					`,
+				},
+				plugins: [Babel7Plugin({ extensions: [".js"] })],
+			},
+		})
+			.simple("> index.js")
+			.then(env =>
+				env.browser(window => {
+					const imported = window.FuseBox.import("./index");
+					should(imported.IwasTranspiledWithBabel).beFunction();
+					should(imported.IwasTranspiledWithBabel.name).equal("IwasTranspiledWithBabel");
+				}),
+			);
+	}
+	"Should bundle with default if no config file found"() {
+		return FuseTestEnv.create({
+			project: {
+				files: {
+					"index.js": `
+						export function fn() {}
+					`,
+				},
+				plugins: [Babel7Plugin({ extensions: [".js"] })],
+			},
+		})
+			.simple("> index.js")
+			.then(env =>
+				env.browser(window => {
+					const imported = window.FuseBox.import("./index");
+					should(imported.fn).beFunction();
+					should(imported.fn.name).equal("fn");
+				}),
+			);
+	}
+	"Should bundle loading .babelrc explicitely ('configFile' provided)"() {
+		return FuseTestEnv.create({
+			project: {
+				files: {
+					"config/.babelrc": `{ "plugins": ["./src/tests/plugins/Babel7PluginConfig/plugin-test.js"] }`,
+					"index.js": `
+						export function fn() {}
+					`,
+				},
+				plugins: [Babel7Plugin({
+					extensions: [".js"],
+					configFile: './config/.babelrc'
+				})],
+			},
+		})
+			.simple("> index.js")
+			.then(env =>
+				env.browser(window => {
+					const imported = window.FuseBox.import("./index")
+					should(imported.IwasTranspiledWithBabel).beObject()
+					should(imported.IwasTranspiledWithBabel.name).equal('IwasTranspiledWithBabel')
+				}),
+			);
+	}
+	"Should bundle loading babel.config.js explicitely ('configFile' provided)"() {
+		return FuseTestEnv.create({
+			project: {
+				files: {
+					"config/babel.config.js": `
+						module.exports = {
+							"plugins": ["./src/tests/plugins/Babel7PluginConfig/plugin-test.js"]
+						}`,
+					"index.js": `
+						export function fn() {}
+					`,
+				},
+				plugins: [Babel7Plugin({
+					extensions: [".js"],
+					configFile: './config/babel.config.js'
+				})],
+			},
+		})
+			.simple("> index.js")
+			.then(env =>
+				env.browser(window => {
+					const imported = window.FuseBox.import("./index")
+					should(imported.IwasTranspiledWithBabel).beObject()
+					should(imported.IwasTranspiledWithBabel.name).equal('IwasTranspiledWithBabel')
+				}),
+			);
+	}
+	"Should pass 'filename' to plugin"() {
+		return FuseTestEnv.create({
+			project: {
+				files: {
+					"babel.config.js": `
+						module.exports = {
+							"plugins": ["./src/tests/plugins/Babel7PluginConfig/plugin-test.js"]
+						}`,
+					"qwerty.js": `export default 'replaceWithFilename'`,
+					"asdfgh.js": `export default 'replaceWithFilename'`,
+					"index.js": `
+						export { default as file1 } from './qwerty'
+						export { default as file2 } from './asdfgh'
+					`,
+				},
+				plugins: [Babel7Plugin({ extensions: [".js"] })],
+			},
+		})
+			.simple("> index.js")
+			.then(env =>
+				env.browser(window => {
+					const imported = window.FuseBox.import("./index");
+					should(imported.file1).findString('/qwerty.js');
+					should(imported.file2).findString('/asdfgh.js');
+				}),
+			);
+	}
 	"Should bundle wxyz with Babel using extensions"() {
 		return createEnv({
 			project: {
