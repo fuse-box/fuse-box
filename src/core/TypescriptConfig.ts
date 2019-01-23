@@ -93,26 +93,6 @@ export class TypescriptConfig {
 			this.logAllDiagnostics(normalizedCompilerOptions.errors);
 		}
 		this.config.compilerOptions = compilerOptions = normalizedCompilerOptions.options;
-		/**
-		 * Explicitely un-set in `transpileModule`:
-		 * https://github.com/Microsoft/TypeScript/blob/865b3e786277233585e1586edba52bf837b61b71/src/services/transpile.ts#L26
-		 * */
-		compilerOptions.isolatedModules = true;
-		compilerOptions.suppressOutputPathCheck = true;
-		compilerOptions.allowNonTsExtensions = true;
-		compilerOptions.noLib = true;
-		compilerOptions.lib = undefined;
-		compilerOptions.types = undefined;
-		compilerOptions.noEmit = undefined;
-		compilerOptions.noEmitOnError = undefined;
-		compilerOptions.paths = undefined;
-		compilerOptions.rootDirs = undefined;
-		compilerOptions.declaration = undefined;
-		compilerOptions.composite = undefined;
-		compilerOptions.declarationDir = undefined;
-		compilerOptions.out = undefined;
-		compilerOptions.outFile = undefined;
-		compilerOptions.noResolve = true;
 	}
 
 	private verifyTsLib() {
