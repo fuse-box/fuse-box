@@ -203,4 +203,36 @@ export class Babel7PluginTest {
 				}),
 			);
 	}
+	"Should resolve injected imports/requires to polyfills from @babel/preset-env"() {
+		return FuseTestEnv.create({
+			project: {
+				files: {
+					"index.js": `
+						export const promise = Promise.resolve('core-js/es6.promise.js added _v')
+					`,
+				},
+				plugins: [
+					Babel7Plugin({
+						config: {
+							presets: [
+								[
+									"@babel/preset-env",
+									{
+										useBuiltIns: "usage",
+										include: ["es6.promise"],
+									},
+								],
+							]
+						}
+					})
+				],
+			},
+		})
+			.simple("> index.js")
+			.then(env =>
+				env.browser(window => {
+					should(window.FuseBox.import("./index.js").promise._v).equal("core-js/es6.promise.js added _v");
+				}),
+			);
+	}
 }
