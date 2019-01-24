@@ -75,7 +75,7 @@ export class HTTPServer {
 Development server running ${opts.https ? "https" : "http"}://localhost:${port} @ ${packageInfo.version}
 -----------------------------------------------------------------
 `;
-				console.log(msg);
+				this.fuse.context.log.echoInfo(msg);
 				//this.spinner = new Spinner(msg);
 				//this.spinner.start()
 			});
