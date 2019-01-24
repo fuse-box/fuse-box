@@ -4,6 +4,8 @@ import { File } from "../../core/File";
 import { string2RegExp } from "../../Utils";
 import { WorkFlowContext } from "../../core/WorkflowContext";
 import { Plugin } from "../../core/WorkflowContext";
+import { ASTTraverse } from "../../ASTTraverse"
+import { ImportDeclaration } from "../../analysis/plugins/ImportDeclaration";
 
 let babel7Core;
 
@@ -191,6 +193,14 @@ export class Babel7PluginClass implements Plugin {
 			// By default we would want to limit the babel
 			// And use acorn instead (it"s faster)
 			if (result.ast) {
+				// When using @babel/preset-env with, for example, useBuiltIns: 'entry' | 'usage'
+				// It adds `require` statements to core-js or @babel/polyfill
+				// So transverse and resolve import declarations if any found
+				ASTTraverse.traverse(result.ast, {
+					pre: (node, parent, prop, idx) => ImportDeclaration.onNode(file, node, parent),
+				});
+				ImportDeclaration.onEnd(file);
+
 				file.analysis.loadAst(result.ast);
 				let sourceMaps = result.map;
 
