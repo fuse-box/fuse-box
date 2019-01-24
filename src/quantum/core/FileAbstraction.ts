@@ -455,6 +455,7 @@ export class FileAbstraction {
 		// restrict tree shaking if there is even a hint on computed properties
 		isExportComputed(node, isComputed => {
 			if (isComputed) {
+				this.canBeRemoved = false;
 				this.restrictTreeShaking();
 			}
 		});
