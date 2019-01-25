@@ -423,10 +423,10 @@ export class WorkFlowContext {
 	public initAutoImportConfig(userNatives, userImports) {
 		if (this.target !== "server") {
 			this.autoImportConfig = registerDefaultAutoImportModules(userNatives);
-			if (utils.isPlainObject(userImports)) {
-				for (let varName in userImports) {
-					this.autoImportConfig[varName] = new AutoImportedModule(varName, userImports[varName]);
-				}
+		}
+		if (utils.isPlainObject(userImports)) {
+			for (let varName in userImports) {
+				this.autoImportConfig[varName] = new AutoImportedModule(varName, userImports[varName]);
 			}
 		}
 	}
