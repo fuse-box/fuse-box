@@ -841,3 +841,22 @@ fuse
   })
   .instructions(`>app.tsx`);
 ```
+
+## emitHMRDependencies
+
+When true, FuseBox will construct a graph of all the dependent files in your bundles.
+
+```ts
+const fuse = FuseBox.init({
+  emitHMRDependencies: true
+})
+const bundle = fuse.bundle('app').instructions('> index.ts')
+
+fuse.run().then(() => {
+  // dependents is keyed with FuseBox file paths paired with a Set of dependent FuseBox file paths
+  //  dependents will be empty if emitHMRDependencies is set to false
+  const dependents: Map<string, Set<string>> = bundle.context.dependents
+
+})
+
+```
