@@ -13,7 +13,7 @@ export class BundleWriter {
 
 	private getUglifyJSOptions(bundle: Bundle): any {
 		let opts = this.core.opts.shouldUglify() || {};
-		const userTerser = this.core.context.languageLevel > ScriptTarget.ES5 || !!opts.es6;
+		const userTerser = this.core.context.languageLevel > ScriptTarget.es5 || !!opts.es6;
 		if (typeof opts === "boolean") {
 			opts = {};
 		}
