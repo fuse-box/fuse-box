@@ -31,7 +31,7 @@ export class AutoImportTest {
 		});
 	}
 
-	"Should inject a variable woops case 1 (target: server)"() {
+	"Should inject a variable woops case 1 ({ target: server })"() {
 		return createEnv({
 			modules: {
 				superFoo: {
@@ -90,7 +90,7 @@ export class AutoImportTest {
 		});
 	}
 
-	"Should inject a variable woops case 4 (target: server)"() {
+	"Should inject a variable woops case 4 ({ target: server })"() {
 		return createEnv({
 			modules: {
 				superFoo: {
@@ -151,7 +151,7 @@ export class AutoImportTest {
 			should(out).deepEqual({ something: { HelloFoo: "I am super" } });
 		});
 	}
-	"Should inject a variable woops case 2 (target: server)"() {
+	"Should inject a variable woops case 2 ({ target: server })"() {
 		return createEnv({
 			modules: {
 				superFoo: {
@@ -216,7 +216,7 @@ export class AutoImportTest {
 		});
 	}
 
-	"Should not inject a variable woops case 1 (target: server)"() {
+	"Should not inject a variable woops case 1 ({ target: server })"() {
 		return createEnv({
 			modules: {
 				superFoo2: {
@@ -282,7 +282,7 @@ export class AutoImportTest {
 		});
 	}
 
-	"Should inject a variable Inferno (target: server)"() {
+	"Should inject a variable Inferno ({ target: server })"() {
 		return createEnv({
 			modules: {
 				inferno: {
