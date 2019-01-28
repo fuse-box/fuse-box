@@ -17,9 +17,9 @@ export class FuseProcess {
 		}
 	}
 	/** Starts a process (for example express server) */
-	public start(): FuseProcess {
+	public start(cliArgs?: string[]): FuseProcess {
 		this.kill();
-		this.exec();
+		this.exec(cliArgs || []);
 		return this;
 	}
 
@@ -70,8 +70,8 @@ export class FuseProcess {
 		});
 	}
 	/** Spawns another proces */
-	public exec(): FuseProcess {
-		const node = spawn("node", [this.filePath], {
+	public exec(cliArgs?: string[]): FuseProcess {
+		const node = spawn("node", [this.filePath, ...cliArgs], {
 			stdio: "inherit",
 		});
 		node.on("close", code => {
