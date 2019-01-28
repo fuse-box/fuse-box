@@ -12,13 +12,13 @@ import { ensureFuseBoxPath, readFuseBoxModule, isStylesheetExtension, fastHash, 
  * Same Target Enumerator used in TypeScript
  */
 export enum ScriptTarget {
-	ES5 = 1,
-	ES2015 = 2,
-	ES6 = 2,
-	ES2016 = 3,
-	ES7 = 3,
-	ES2017 = 4,
-	ESNext = 5,
+	es5 = 1,
+	es6 = 2,
+	es2015 = 3,
+	es2016 = 4,
+	es2017 = 5,
+	es2018 = 6,
+	esnext = 7,
 }
 
 /**
@@ -30,7 +30,7 @@ export enum ScriptTarget {
 export class File {
 	public isFuseBoxBundle = false;
 
-	public languageLevel = ScriptTarget.ES5;
+	public languageLevel = ScriptTarget.es2018;
 
 	public es6module = false;
 
