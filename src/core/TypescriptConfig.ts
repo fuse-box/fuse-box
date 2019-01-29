@@ -5,6 +5,7 @@ import { ScriptTarget } from "./File";
 import * as fs from "fs";
 import { Config } from "../Config";
 import * as ts from "typescript";
+import { tsConfigFileCompilerOptions } from './FuseBox';
 
 const CACHED: { [path: string]: any } = {};
 
@@ -18,7 +19,7 @@ export interface ICategorizedDiagnostics {
 export class TypescriptConfig {
 	// the actual typescript config
 	private config: any;
-	private customTsConfig: string;
+	private customTsConfig: string | tsConfigFileCompilerOptions[];
 	private configFile: string;
 	private formatDiagnosticsHost: ts.FormatDiagnosticsHost;
 	constructor(public context: WorkFlowContext) {
@@ -65,13 +66,12 @@ export class TypescriptConfig {
 	}
 
 	public forceCompilerTarget(level: ScriptTarget) {
-		console.log(level, ScriptTarget[level]);
 		this.context.log.echoInfo(`Typescript forced script target: ${ScriptTarget[level]}`);
 		const compilerOptions = (this.config.compilerOptions = this.config.compilerOptions || {});
 		compilerOptions.target = ScriptTarget[level];
 	}
 
-	public setConfigFile(customTsConfig: string) {
+	public setConfigFile(customTsConfig: string | tsConfigFileCompilerOptions[]) {
 		this.customTsConfig = customTsConfig;
 	}
 
@@ -147,7 +147,9 @@ export class TypescriptConfig {
 		return ts.formatDiagnosticsWithColorAndContext(
 			[diagnostic],
 			this.formatDiagnosticsHost,
-		).replace(/error|warning|message/, match => match.toUpperCase());
+		)
+			.replace(/error|warning|message/, match => match.toUpperCase())
+			.replace(/\n/, '');
 	}
 
 	public logDiagnosticsByCategory(diagnostics: ReadonlyArray<ts.Diagnostic>, category: ts.DiagnosticCategory): void {
@@ -184,7 +186,17 @@ export class TypescriptConfig {
 		if (diagnostics.length) {
 			this.logDiagnosticsByCategory(diagnostics, ts.DiagnosticCategory.Error)
 
-			this.context.fatal('Invalid `compilerOptions` settings')
+			let errorMessage = `  └─ Invalid 'compilerOptions'`
+
+			if (this.configFile) {
+				errorMessage += `\n      - Verify the 'compilerOptions' in your Typescript config file:\n\n        ${this.configFile}\n`
+			}
+			if (Array.isArray(this.customTsConfig)) {
+				errorMessage += `\n      - Verify the 'compilerOptions' that you provided to FuseBox in the 'tsConfig' array property.`
+			}
+
+			this.context.log.echoBoldRed(`${errorMessage}\n`)
+			process.exit(1)
 		}
 	}
 
@@ -225,7 +237,8 @@ export class TypescriptConfig {
 			}
 
 			if (Array.isArray(this.customTsConfig)) {
-				tsConfigOverride = this.customTsConfig[0];
+				tsConfigOverride = {}
+				this.customTsConfig.forEach(config => Object.assign(tsConfigOverride, config))
 			}
 
 			config.compilerOptions.module = "commonjs";

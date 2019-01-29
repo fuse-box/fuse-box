@@ -16,7 +16,7 @@ export class CombinedTargetAndLanguageLevel {
 		return level ? ScriptTarget[level] : undefined;
 	}
 
-	public getLanguageLevelOrDefault(defaultLanguageLevel: ScriptTarget = ScriptTarget.es2018) {
+	public getLanguageLevelOrDefault(defaultLanguageLevel: ScriptTarget = ScriptTarget.ES2018) {
 		const languageLevel = this.getLanguageLevel();
 		return languageLevel ? languageLevel : defaultLanguageLevel;
 	}
