@@ -31,6 +31,36 @@ export class AutoImportTest {
 		});
 	}
 
+	"Should inject a variable woops case 1 ({ target: server })"() {
+		return createEnv({
+			modules: {
+				superFoo: {
+					files: {
+						"index.ts": `export const HelloFoo = "I am super"`,
+					},
+					package: "superFoo",
+					instructions: ">index.ts",
+				},
+			},
+			project: {
+				target: 'server',
+				autoImport: {
+					woops: "superFoo",
+				},
+				files: {
+					"index.ts": `exports.something = woops`,
+				},
+				instructions: "> index.ts",
+			},
+		}).then(result => {
+			const out = result.project.FuseBox.import("./index");
+			const contents = result.projectContents.toString();
+
+			should(contents).findString(`/* fuse:injection: */ var woops`);
+			should(out).deepEqual({ something: { HelloFoo: "I am super" } });
+		});
+	}
+
 	"Should inject a variable woops case 4"() {
 		return createEnv({
 			modules: {
@@ -60,6 +90,36 @@ export class AutoImportTest {
 		});
 	}
 
+	"Should inject a variable woops case 4 ({ target: server })"() {
+		return createEnv({
+			modules: {
+				superFoo: {
+					files: {
+						"index.ts": `export const HelloFoo = {someAction : () => "here"}`,
+					},
+					package: "superFoo",
+					instructions: ">index.ts",
+				},
+			},
+			project: {
+				target: 'server',
+				autoImport: {
+					woops: "superFoo",
+				},
+				files: {
+					"index.ts": `exports.something = woops.HelloFoo.someAction()`,
+				},
+				instructions: "> index.ts",
+			},
+		}).then(result => {
+			const out = result.project.FuseBox.import("./index");
+			const contents = result.projectContents.toString();
+
+			should(contents).findString(`/* fuse:injection: */ var woops`);
+			should(out).deepEqual({ something: "here" });
+		});
+	}
+
 	"Should inject a variable woops case 2"() {
 		return createEnv({
 			modules: {
@@ -72,6 +132,38 @@ export class AutoImportTest {
 				},
 			},
 			project: {
+				autoImport: {
+					woops: "superFoo",
+				},
+				files: {
+					"index.ts": `
+                        var coo = woops;
+                        exports.something = coo;
+                    `,
+				},
+				instructions: "> index.ts",
+			},
+		}).then(result => {
+			const out = result.project.FuseBox.import("./index");
+			const contents = result.projectContents.toString();
+
+			should(contents).findString(`/* fuse:injection: */ var woops`);
+			should(out).deepEqual({ something: { HelloFoo: "I am super" } });
+		});
+	}
+	"Should inject a variable woops case 2 ({ target: server })"() {
+		return createEnv({
+			modules: {
+				superFoo: {
+					files: {
+						"index.ts": `export const HelloFoo = "I am super"`,
+					},
+					package: "superFoo",
+					instructions: ">index.ts",
+				},
+			},
+			project: {
+				target: 'server',
 				autoImport: {
 					woops: "superFoo",
 				},
@@ -124,6 +216,39 @@ export class AutoImportTest {
 		});
 	}
 
+	"Should not inject a variable woops case 1 ({ target: server })"() {
+		return createEnv({
+			modules: {
+				superFoo2: {
+					files: {
+						"index.ts": `export const HelloFoo = "I am super"`,
+					},
+					package: "superFoo2",
+					instructions: ">index.ts",
+				},
+			},
+			project: {
+				target: 'server',
+				autoImport: {
+					woops: "superFoo2",
+				},
+				files: {
+					"index.ts": `
+
+                        var woops = {nada : true}
+                        exports.myExport = woops;
+                    `,
+				},
+				instructions: "> index.ts",
+			},
+		}).then(result => {
+			const out = result.project.FuseBox.import("./index");
+			const contents = result.projectContents.toString();
+			should(contents).notFindString(`/* fuse:injection: */ var woops`);
+			should(out).deepEqual({ myExport: { nada: true } });
+		});
+	}
+
 	"Should inject a variable Inferno"() {
 		return createEnv({
 			modules: {
@@ -140,6 +265,40 @@ export class AutoImportTest {
 				},
 			},
 			project: {
+				autoImport: {
+					Inferno: "inferno",
+				},
+				files: {
+					"index.ts": `exports.result = Inferno.magic()`,
+				},
+				instructions: "> index.ts",
+			},
+		}).then(result => {
+			const out = result.project.FuseBox.import("./index");
+			const contents = result.projectContents.toString();
+
+			should(contents).findString(`/* fuse:injection: */ var Inferno`);
+			should(out).deepEqual({ result: "pure magic" });
+		});
+	}
+
+	"Should inject a variable Inferno ({ target: server })"() {
+		return createEnv({
+			modules: {
+				inferno: {
+					files: {
+						"index.ts": `
+								export function magic(){
+										return "pure magic"
+								}
+						`,
+					},
+					package: "Inferno",
+					instructions: ">index.ts",
+				},
+			},
+			project: {
+				target: "server",
 				autoImport: {
 					Inferno: "inferno",
 				},

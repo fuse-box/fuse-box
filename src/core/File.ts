@@ -23,7 +23,7 @@ export { ScriptTarget } from "typescript";
 export class File {
 	public isFuseBoxBundle = false;
 
-	public languageLevel = ts.ScriptTarget.ES5;
+	public languageLevel = ts.ScriptTarget.ES2018;
 
 	public es6module = false;
 
@@ -466,12 +466,12 @@ export class File {
 					this.context.fuse.producer.addWarning(
 						"unresolved",
 						`Statement "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection &&
-							this.collection.name}"`,
+						this.collection.name}"`,
 					);
 				} else {
 					this.addError(
 						`Asset reference "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection &&
-							this.collection.name}"`,
+						this.collection.name}"`,
 					);
 				}
 			}

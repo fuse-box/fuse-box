@@ -65,6 +65,7 @@ export class TypescriptConfig {
 	}
 
 	public forceCompilerTarget(level: ScriptTarget) {
+		console.log(level, ScriptTarget[level]);
 		this.context.log.echoInfo(`Typescript forced script target: ${ScriptTarget[level]}`);
 		const compilerOptions = (this.config.compilerOptions = this.config.compilerOptions || {});
 		compilerOptions.target = ScriptTarget[level];
@@ -258,14 +259,21 @@ export class TypescriptConfig {
 
 function readConfigFile(configFilePath: string, rootDir: string) {
 	const res = ts.readConfigFile(configFilePath, ts.sys.readFile);
-	if (res.error || !res.config || !res.config.extends) return res
+	if (res.error || !res.config || !res.config.extends) return res;
 
-	const extendsFilePath = res.config.extends
-	const parentRes = readConfigFile(path.isAbsolute(extendsFilePath) ? extendsFilePath : path.join(rootDir, extendsFilePath), rootDir)
+	const extendsFilePath = res.config.extends;
+	const parentRes = readConfigFile(
+		path.isAbsolute(extendsFilePath) ? extendsFilePath : path.join(rootDir, extendsFilePath),
+		rootDir,
+	);
 	if (parentRes.config) {
 		const config = { ...res.config };
 		delete config.extends;
-		res.config = { ...parentRes.config, ...config, compilerOptions: { ...parentRes.config.compilerOptions, ...config.compilerOptions } };
+		res.config = {
+			...parentRes.config,
+			...config,
+			compilerOptions: { ...parentRes.config.compilerOptions, ...config.compilerOptions },
+		};
 	}
-	return res
+	return res;
 }

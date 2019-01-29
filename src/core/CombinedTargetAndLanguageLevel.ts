@@ -1,13 +1,12 @@
-import { ScriptTarget } from './File';
+import { ScriptTarget } from "./File";
 
 export class CombinedTargetAndLanguageLevel {
-
 	constructor(private combination: string) {
 		this.combination = this.combination || "browser";
 	}
 
 	public getTarget(): string {
-		const [target,] = this.splitCombination();
+		const [target] = this.splitCombination();
 		return target;
 	}
 
@@ -17,7 +16,7 @@ export class CombinedTargetAndLanguageLevel {
 		return level ? ScriptTarget[level] : undefined;
 	}
 
-	public getLanguageLevelOrDefault(defaultLanguageLevel: ScriptTarget = ScriptTarget.ES2016) {
+	public getLanguageLevelOrDefault(defaultLanguageLevel: ScriptTarget = ScriptTarget.es2018) {
 		const languageLevel = this.getLanguageLevel();
 		return languageLevel ? languageLevel : defaultLanguageLevel;
 	}

@@ -573,14 +573,15 @@ Possible levels
 
 - es5
 - es2015 (alias: es6)
-- es2016 (alias: es7)
+- es2016
 - es2017
+- es2018
 - esnext
 
-Aliases `es6` & `es7` are provided to align with the configuration options of
-TypeScript, but we recommend using the es-year form instead.
+Alias `es6` is provided to align with the configuration options of TypeScript,
+but we recommend using the es-year form instead.
 
-The default language level is `es2016`
+The default language level is `es2018`
 
 ### Example
 
@@ -840,4 +841,28 @@ fuse
     },
   })
   .instructions(`>app.tsx`);
+```
+
+## emitHMRDependencies
+
+When true, FuseBox will construct a graph of all the dependent files in your
+bundles.
+
+You can use it in your custom HMR [handler](/docs/development/hmr#custom-hmr):
+
+```ts
+({ type, path, content, dependants });
+```
+
+```ts
+const fuse = FuseBox.init({
+  emitHMRDependencies: true,
+});
+const bundle = fuse.bundle("app").instructions("> index.ts");
+
+fuse.run().then(() => {
+  // dependents is keyed with FuseBox file paths paired with a Set of dependent FuseBox file paths
+  // dependents will be empty if emitHMRDependencies is set to false
+  const dependents: Map<string, Set<string>> = bundle.context.dependents;
+});
 ```
