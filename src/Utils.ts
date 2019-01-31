@@ -9,6 +9,7 @@ import { Log } from "./Log";
 const userFuseDir = Config.PROJECT_ROOT;
 const stylesheetExtensions = new Set<string>([".css", ".sass", ".scss", ".styl", ".less", ".pcss"]);
 const MBLACKLIST = ["freelist", "sys"];
+export const MINIMAL_TYPESCRIPT_VERSION = "3.0";
 export type Concat = {
 	add(fileName: string | null, content: string | Buffer, sourceMap?: string): void;
 	content: Buffer;
@@ -58,6 +59,40 @@ export function printCurrentVersion() {
 		VERSION_PRINTED = true;
 		const info = getFuseBoxInfo();
 		Log.defer(log => log.echoYellow(`--- FuseBox ${info.version} ---`));
+	}
+}
+
+export function ensureTypescriptInstalled(): never | void {
+	const NO_TYPESCRIPT_MESSAGE = `
+  FuseBox failed to initialize. Please check that:
+      - you have TypeScript installed
+          -> if using NPM, run on your terminal:\n
+              npm i -D typescript\n
+          -> if using Yarn, run on your terminal:\n
+              yarn add typescript --dev\n
+      - the TypeScript version installed is >= ${MINIMAL_TYPESCRIPT_VERSION}
+`;
+	const TYPESCRIPT_NOT_SUPPORTED = `
+  FuseBox failed to initialize. Please check that:
+      - the TypeScript version installed is >= ${MINIMAL_TYPESCRIPT_VERSION}
+`;
+	try {
+		const ts = require("typescript");
+		if (typeof ts.versionMajorMinor === "string") {
+			if (Number(MINIMAL_TYPESCRIPT_VERSION) > Number(ts.versionMajorMinor)) {
+				console.log(TYPESCRIPT_NOT_SUPPORTED);
+				process.exit(1);
+			}
+			return
+		}
+		console.log(NO_TYPESCRIPT_MESSAGE);
+		process.exit(1);
+	} catch (error) {
+		if (error.code === "MODULE_NOT_FOUND") {
+			console.log(NO_TYPESCRIPT_MESSAGE);
+			process.exit(1);
+		}
+		throw error;
 	}
 }
 
