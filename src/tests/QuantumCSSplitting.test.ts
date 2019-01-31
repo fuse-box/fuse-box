@@ -229,7 +229,7 @@ export class QuantumCSSSplittingTest {
 				env.fileShouldExist("styles.css.map");
 				env.fileShouldExist("chunks/dcbf7349-ea9fe601.css");
 				env.fileShouldExist("chunks/ea9fe601.css.map");
-				env.fileShouldExist("chunks/c3eff8a7-ea9fe601.js");
+				env.fileShouldExist("chunks/b19fd844-ea9fe601.js");
 			},
 		);
 	}

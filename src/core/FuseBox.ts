@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as process from "process";
+import * as ts from "typescript";
 import { each, utils, chain, Chainable } from "realm-utils";
 import { CustomTransformers } from "typescript";
 import { ensureUserPath, contains, printCurrentVersion } from "./../Utils";
@@ -21,10 +22,43 @@ import { CombinedTargetAndLanguageLevel } from './CombinedTargetAndLanguageLevel
 
 const appRoot = require("app-root-path");
 
+/**
+ * Typecheck custom tsconfig provided as array.
+ * It's Compiler options but replaced enums to equivalent strings keys
+ * as it'd be seen in a `tsconfig.json` file
+ * Check `typescript.d.ts`:
+ * - `CompilerOptionsValue`
+ * - `CompilerOptions`
+ * e.g:
+ * - Instead of `target: 1`, user can input `target: 'ES5'`
+ */
+export type tsConfigFileCompilerOptions = {
+	[key in keyof ts.CompilerOptions]:
+	ts.CompilerOptions[key] extends string
+	? ts.CompilerOptions[key]
+	: ts.CompilerOptions[key] extends boolean
+	? ts.CompilerOptions[key]
+	: ts.CompilerOptions[key] extends ts.ScriptTarget
+	? keyof typeof ts.ScriptTarget
+	: ts.CompilerOptions[key] extends ts.JsxEmit
+	? keyof typeof ts.JsxEmit
+	: ts.CompilerOptions[key] extends string[]
+	? string[]
+	: ts.CompilerOptions[key] extends ts.ModuleKind
+	? keyof typeof ts.ModuleKind
+	: ts.CompilerOptions[key] extends ts.ModuleResolutionKind
+	? keyof typeof ts.ModuleResolutionKind
+	: ts.CompilerOptions extends ts.NewLineKind
+	? keyof typeof ts.NewLineKind
+	: ts.CompilerOptions extends ts.MapLike<string[]>
+	? ts.MapLike<string[]>
+	: string | number | boolean | (string | number)[] | string[] | ts.MapLike<string[]> | null | undefined
+}
+
 export interface FuseBoxOptions {
 	homeDir?: string;
 	modulesFolder?: string | string[];
-	tsConfig?: string;
+	tsConfig?: string | tsConfigFileCompilerOptions[];
 	package?: string | { name: string; main: string };
 	dynamicImportsEnabled?: boolean;
 	cache?: boolean;

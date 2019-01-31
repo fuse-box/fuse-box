@@ -3,17 +3,17 @@ import { File, ScriptTarget } from "../../core/File";
 export class LanguageLevel {
 	public static onNode(file: File, node: any, parent: any) {
 		if (node.async === true) {
-			file.setLanguageLevel(ScriptTarget.es2017);
+			file.setLanguageLevel(ScriptTarget.ES2017);
 		} else if (node.kind === "const") {
-			file.setLanguageLevel(ScriptTarget.es2015);
+			file.setLanguageLevel(ScriptTarget.ES2017);
 		} else if (node.kind === "let") {
-			file.setLanguageLevel(ScriptTarget.es2015);
+			file.setLanguageLevel(ScriptTarget.ES2015);
 		} else if (node.type === "ArrowFunctionExpression") {
-			file.setLanguageLevel(ScriptTarget.es2015);
+			file.setLanguageLevel(ScriptTarget.ES2015);
 		} else if (node.type === "TemplateLiteral") {
-			file.setLanguageLevel(ScriptTarget.es2015);
+			file.setLanguageLevel(ScriptTarget.ES2015);
 		} else if (node.type === "ClassDeclaration") {
-			file.setLanguageLevel(ScriptTarget.es2015);
+			file.setLanguageLevel(ScriptTarget.ES2015);
 		}
 	}
 	public static onEnd(file: File) {

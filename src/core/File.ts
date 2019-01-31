@@ -6,20 +6,13 @@ import { SourceMapGenerator } from "./SourceMapGenerator";
 import { utils, each } from "realm-utils";
 import * as fs from "fs";
 import * as path from "path";
+import * as ts from "typescript"
 import { ensureFuseBoxPath, readFuseBoxModule, isStylesheetExtension, fastHash, joinFuseBoxPath } from "../Utils";
 
 /**
- * Same Target Enumerator used in TypeScript
+ * Same Target Enumerator used in current installed version of TypeScript
  */
-export enum ScriptTarget {
-	es5 = 1,
-	es6 = 2,
-	es2015 = 3,
-	es2016 = 4,
-	es2017 = 5,
-	es2018 = 6,
-	esnext = 7,
-}
+export { ScriptTarget } from "typescript";
 
 /**
  *
@@ -30,7 +23,7 @@ export enum ScriptTarget {
 export class File {
 	public isFuseBoxBundle = false;
 
-	public languageLevel = ScriptTarget.es2018;
+	public languageLevel = ts.ScriptTarget.ES2018;
 
 	public es6module = false;
 
@@ -204,7 +197,7 @@ export class File {
 		return file;
 	}
 
-	public setLanguageLevel(level: ScriptTarget) {
+	public setLanguageLevel(level: ts.ScriptTarget) {
 		if (this.languageLevel < level) {
 			this.languageLevel = level;
 		}
@@ -473,12 +466,12 @@ export class File {
 					this.context.fuse.producer.addWarning(
 						"unresolved",
 						`Statement "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection &&
-							this.collection.name}"`,
+						this.collection.name}"`,
 					);
 				} else {
 					this.addError(
 						`Asset reference "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection &&
-							this.collection.name}"`,
+						this.collection.name}"`,
 					);
 				}
 			}
@@ -637,20 +630,11 @@ export class File {
 		}
 	}
 
-	public transpileUsingTypescript() {
+	public transpileUsingTypescript(): ts.TranspileOutput | never {
 		try {
-			const ts = require("typescript");
-			try {
-				return ts.transpileModule(this.contents, this.getTranspilationConfig());
-			} catch (e) {
-				this.context.fatal(`${this.info.absPath}: ${e}`);
-				return;
-			}
+			return ts.transpileModule(this.contents, this.getTranspilationConfig())
 		} catch (e) {
-			this.context.fatal(`TypeScript automatic transpilation has failed. Please check that:
-            - You have TypeScript installed
-            - Your tsconfig.json file is not malformed.\nError message: ${e.message}`);
-			return;
+			this.context.fatal(`${this.info.absPath}: ${e}`);
 		}
 	}
 

@@ -24,17 +24,17 @@ export class CombinedTargetAndLanguageLevelTest {
 	"Should detect target and language level"() {
 		const combination = new CombinedTargetAndLanguageLevel(`${TARGET_DUMMY}@es5`);
 		should(combination.getTarget()).equal(TARGET_DUMMY);
-		should(combination.getLanguageLevel()).equal(ScriptTarget.es5);
+		should(combination.getLanguageLevel()).equal(ScriptTarget.ES5);
 	}
 
 	"Should default to language level es2016"() {
 		const combination = new CombinedTargetAndLanguageLevel(TARGET_DUMMY);
-		should(combination.getLanguageLevelOrDefault()).equal(ScriptTarget.es2018);
+		should(combination.getLanguageLevelOrDefault()).equal(ScriptTarget.ES2018);
 	}
 
 	"Should detect target and language level (for default variant)"() {
 		const combination = new CombinedTargetAndLanguageLevel(`${TARGET_DUMMY}@es5`);
 		should(combination.getTarget()).equal(TARGET_DUMMY);
-		should(combination.getLanguageLevelOrDefault()).equal(ScriptTarget.es5);
+		should(combination.getLanguageLevelOrDefault()).equal(ScriptTarget.ES5);
 	}
 }
