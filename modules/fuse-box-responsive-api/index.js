@@ -168,7 +168,7 @@ function loadRemoteScript(url, isCSS) {
 			/* @if cssLoader */
 		}
 		/* @end */
-		head.insertBefore(target, head.firstChild);
+		head.appendChild(target)
 	});
 	/* @end */
 }

@@ -163,7 +163,7 @@ export class QuantumCSSSplittingTest {
 
 				await env.delay(200);
 				const newTags = await window.loadLinkTags();
-				should(newTags).deepEqual(["ea9fe601.css", "/styles.css"]);
+				should(newTags).deepEqual(["/styles.css", "ea9fe601.css"]);
 			},
 		);
 	}
@@ -185,7 +185,7 @@ export class QuantumCSSSplittingTest {
 				env.fileShouldExist("chunks/ea9fe601.js");
 				await env.delay(500);
 				const newTags = await window.loadLinkTags();
-				should(newTags).deepEqual(["chunks/ea9fe601.css", "/styles.css"]);
+				should(newTags).deepEqual(["/styles.css", "chunks/ea9fe601.css"]);
 			},
 		);
 	}
@@ -207,7 +207,7 @@ export class QuantumCSSSplittingTest {
 				env.fileShouldExist("chunks/ea9fe601.js");
 				await env.delay(300);
 				const newTags = await window.loadLinkTags();
-				should(newTags).deepEqual(["/chunks/ea9fe601.css", "/styles.css"]);
+				should(newTags).deepEqual(["/styles.css", "/chunks/ea9fe601.css"]);
 			},
 		);
 	}
