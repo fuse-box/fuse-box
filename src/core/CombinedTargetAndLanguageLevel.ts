@@ -1,4 +1,5 @@
 import { ScriptTarget } from "./File";
+import { getScriptLevelNumber } from "./TypescriptConfig";
 
 export class CombinedTargetAndLanguageLevel {
 	constructor(private combination: string) {
@@ -10,10 +11,10 @@ export class CombinedTargetAndLanguageLevel {
 		return target;
 	}
 
-	public getLanguageLevel(): ScriptTarget {
+	public getLanguageLevel(): ScriptTarget & number {
 		const [, languageLevel] = this.splitCombination();
-		const level = languageLevel && Object.keys(ScriptTarget).find(t => t.toLowerCase() === languageLevel);
-		return level ? ScriptTarget[level] : undefined;
+
+		return getScriptLevelNumber(languageLevel);
 	}
 
 	public getLanguageLevelOrDefault(defaultLanguageLevel: ScriptTarget = ScriptTarget.ES2018) {
