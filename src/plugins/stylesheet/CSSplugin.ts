@@ -147,15 +147,21 @@ export class CSSPluginClass implements Plugin {
 
 		if (emitRequired) {
 			if (resolvedPath) {
-				file.context.sourceChangedEmitter.emit({
-					type: "hosted-css",
-					path: resolvedPath,
+				file.context.hmrEmitter.emit({
+					event: "soruce-changed",
+					data: {
+						type: "hosted-css",
+						resolvedPath,
+					},
 				});
 			} else {
-				file.context.sourceChangedEmitter.emit({
-					type: "css",
-					content: file.alternativeContent,
-					path: file.info.fuseBoxPath,
+				file.context.hmrEmitter.emit({
+					event: "source-changed",
+					data: {
+						type: "css",
+						content: file.alternativeContent,
+						path: file.info.fuseBoxPath,
+					},
 				});
 			}
 		}

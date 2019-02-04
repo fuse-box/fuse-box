@@ -79,7 +79,7 @@ export class BundleSource {
 	}
 
 	public annotate(comment: string) {
-		//this.collectionSource.add(null, comment);
+		this.collectionSource.add(null, comment);
 	}
 	/**
 	 *
@@ -105,13 +105,12 @@ export class BundleSource {
 				conflicting[name] = version;
 			});
 		}
+		this.annotate(`/* fuse:start-collection "${collection.name}"*/`);
 
 		this.collectionSource.add(
 			null,
 			`FuseBox.pkg("${collection.name}", ${JSON.stringify(conflicting)}, function(___scope___){`,
 		);
-
-		this.annotate(`/* fuse:start-collection "${collection.name}"*/`);
 	}
 
 	/**
@@ -176,13 +175,11 @@ export class BundleSource {
 ${file.headerContent ? file.headerContent.join("\n") : ""}`,
 		);
 
-		this.annotate(`/* fuse:start-file "${file.info.fuseBoxPath}"*/`);
 		this.collectionSource.add(
 			null,
 			file.alternativeContent !== undefined ? file.alternativeContent : file.contents,
 			file.sourceMap,
 		);
-		this.annotate(`/* fuse:end-file "${file.info.fuseBoxPath}"*/`);
 
 		this.collectionSource.add(null, "});");
 	}
@@ -272,7 +269,7 @@ ${file.headerContent ? file.headerContent.join("\n") : ""}`,
 				// cache busting should not be used if the target is a server, as it will interfere with local filesystem resolution
 				this.concat.add(null, `//# sourceMappingURL=${sourceName}.js.map`);
 			} else {
-				this.concat.add(null, `//# sourceMappingURL=${sourceName}.js.map?tm=${this.context.cacheBustPreffix}`);
+				this.concat.add(null, `//# sourceMappingURL=${sourceName}.js.map`);
 			}
 		}
 	}

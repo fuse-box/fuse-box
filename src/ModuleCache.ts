@@ -127,6 +127,10 @@ export class ModuleCache {
 		return encodeURIComponent(str);
 	}
 
+	public findInMemoryCache(target: string) {
+		console.log(MEMORY_CACHE);
+	}
+
 	/**
 	 *
 	 *

@@ -1,8 +1,6 @@
-/**
- * @module listens to `source-changed` socket events and actions hot reload
- */
-
 import { SocketClient } from "../fusebox-websocket";
+import { resolve } from "dns";
+
 const Client: typeof SocketClient = require("fusebox-websocket").SocketClient,
 	bundleErrors: { [bundleName: string]: string[] } = {},
 	outputElement: HTMLDivElement = document.createElement("div"),
@@ -18,6 +16,10 @@ function storeSetting(key: string, value: boolean) {
 
 function getSetting(key: string) {
 	return localStorage[localStoragePrefix + key] === "true" ? true : false;
+}
+
+function log(text: string) {
+	console.info(`%c${text}`, "color: #237abe");
 }
 
 let outputInBody = false,
@@ -86,7 +88,7 @@ function displayBundleErrors() {
 						.replace(/\t/g, "&nbsp;&nbps;&npbs;&nbps;")
 						.replace(/ /g, "&nbsp;");
 					return `<pre>${messageOutput}</pre>`;
-				})
+				}),
 			);
 		}, []),
 		errorOutput = errorMessages.join("");
@@ -130,7 +132,7 @@ export const connect = (port: string, uri: string, reloadFullPage: boolean) => {
 	port = port || window.location.port;
 	let client = new Client({
 		port,
-		uri
+		uri,
 	});
 	client.connect();
 	client.on("page-reload", data => {
@@ -152,10 +154,109 @@ export const connect = (port: string, uri: string, reloadFullPage: boolean) => {
 			}
 		}
 	});
-	client.on("source-changed", data => {
-		console.info(`%cupdate "${data.path}"`, "color: #237abe");
+	async function getFuseBoxSources() {
+		const scriptTags = document.querySelectorAll("script[type='text/javascript']");
+		const paths = [];
+		scriptTags.forEach(scriptTag => {
+			const src = scriptTag.getAttribute("src");
+			if (src && !/^http/.test(src)) {
+				paths.push(src);
+			}
+		});
+		let content;
+		for (const item of paths) {
+			const result = await fetch(item);
+			const text = await result.text();
+			content += "\n" + text;
+		}
+		const re = /\/* fuse:start-collection "([@.\/a-z0-9_-]+)"\*\//gim;
+		let m;
+		const collectionNames = [];
+		while ((m = re.exec(content))) {
+			m[1] && collectionNames.push(m[1]);
+		}
+		const packages = [];
+		collectionNames.map(name => {
+			const start = new RegExp(
+				`\\/\\* fuse:start-collection "${name}"\\*\\/([\\s\\S]+)\\/\\* fuse:end-collection "${name}"\\*\\/`,
+				"im",
+			);
+			const contents = content.match(start);
+			packages[name] = contents[1];
+		});
+		return packages;
+	}
+
+	async function updateVendors() {
+		log(`Getting fresh scripts ...`);
+		const packages = await getFuseBoxSources();
+		log(`Updating ${Object.keys(packages).length} vendors.`);
+		const excludedPackages = ["default", "fusebox-hot-reload", "fusebox-websocket"];
+		for (const packageName in packages) {
+			if (excludedPackages.indexOf(packageName) === -1) {
+				const js = packages[packageName];
+				// flush package from memeory
+				delete FuseBox.packages[packageName];
+				new Function(js)(true);
+			}
+		}
+		log(`Vendors synchronized!`);
+	}
+
+	client.on("dependency-update", async input => {
+		if (input.vendors && input.vendors.length) {
+			log(`Vendor update required ...`);
+			await updateVendors();
+		}
+		if (input && input.files && input.files.length) {
+			input.files.map(item => {
+				if (item.path && item.package && item.content) {
+					const fullPath = `${item.package}/${item.path}`;
+					log(`Update "${fullPath}"`);
+					FuseBox.consume(item.content);
+				}
+			});
+		}
+
+		if (input.originalHMRRequest) {
+			return onSourceChanged(input.originalHMRRequest, true);
+		}
+	});
+
+	function onSourceChanged(data, secondaryRequest?) {
+		log(`Update "${data.path}"`);
 		if (reloadFullPage) {
 			return window.location.reload();
+		}
+
+		// we should verify that all dependencies are registered in FuseBox client's memory
+		if (data.type && data.type === "js" && data.dependencies) {
+			const req = {
+				original: data,
+				loadedPackages: [],
+				files: [],
+			};
+			for (const pkgName in FuseBox.packages) {
+				req.loadedPackages.push(pkgName);
+			}
+			data.dependencies.map(item => {
+				if (item.path && item.module) {
+					if (!FuseBox.exists(`${item.module}/${item.path}`)) {
+						req.files.push(item);
+					}
+				}
+			});
+
+			if (req.files.length) {
+				if (!secondaryRequest) {
+					log("Sending request for missing dependencies " + req.files.map(i => `${i.module}/${i.path}`));
+					client.send("request-dependency", JSON.stringify(req));
+					// should not proceed here
+					return;
+				} else {
+					log("Error occured while updating dependency with list " + req.files.map(i => `${i.module}/${i.path}`));
+				}
+			}
 		}
 
 		/**
@@ -163,7 +264,7 @@ export const connect = (port: string, uri: string, reloadFullPage: boolean) => {
 		 **/
 		for (var index = 0; index < FuseBox.plugins.length; index++) {
 			var plugin = FuseBox.plugins[index];
-			if (plugin.hmrUpdate && plugin.hmrUpdate(data)) {
+			if (plugin.hmrUpdate && plugin.hmrUpdate(data, client)) {
 				return;
 			}
 		}
@@ -182,24 +283,26 @@ export const connect = (port: string, uri: string, reloadFullPage: boolean) => {
 				document.getElementsByTagName("head")[0].appendChild(node);
 			}
 		}
-
-		if (data.type === "js" || data.type === "css") {
+		if (data.type === "js") {
+			FuseBox.flush();
+			FuseBox.consume(data.content);
+			if (FuseBox.mainFile) {
+				FuseBox.import(FuseBox.mainFile);
+			}
+		}
+		if (data.type === "css") {
 			FuseBox.flush();
 			FuseBox.dynamic(data.path, data.content);
 			if (FuseBox.mainFile) {
-				try {
-					FuseBox.import(FuseBox.mainFile);
-				} catch (e) {
-					if (typeof e === "string") {
-						if (/not found/.test(e)) {
-							return window.location.reload();
-						}
-					}
-					console.error(e);
-				}
+				FuseBox.import(FuseBox.mainFile);
 			}
 		}
+	}
+
+	client.on("source-changed", data => {
+		onSourceChanged(data);
 	});
+
 	client.on("error", error => {
 		console.log(error);
 	});

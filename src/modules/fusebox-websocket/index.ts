@@ -73,7 +73,7 @@ export class SocketClient {
 			let data = event.data;
 			if (data) {
 				let item = JSON.parse(data);
-				this.emitter.emit(item.type, item.data);
+				this.emitter.emit(item.event, item.data);
 				this.emitter.emit("*", item);
 			}
 		};
