@@ -1,29 +1,29 @@
-import * as path from "path";
 import * as escodegen from "escodegen";
-import { BundleSource } from "../BundleSource";
-import { File, ScriptTarget } from "./File";
-import { Log } from "../Log";
 import * as NativeEmitter from "events";
-import { IPackageInformation, IPathInformation, AllowedExtensions } from "./PathMaster";
-import { ModuleCollection } from "./ModuleCollection";
-import { ModuleCache } from "../ModuleCache";
-import { EventEmitter } from "../EventEmitter";
+import * as path from "path";
 import { utils } from "realm-utils";
-import { ensureDir, removeFolder } from "../Utils";
-import { SourceChangedEvent } from "../devServer/Server";
-import { registerDefaultAutoImportModules, AutoImportedModule } from "./AutoImportedModule";
+import { BundleSource } from "../BundleSource";
 import { Defer } from "../Defer";
-import { UserOutput } from "./UserOutput";
-import { FuseBox } from "./FuseBox";
+import { EventEmitter } from "../EventEmitter";
+import { CSSDependencyExtractor, ICSSDependencyExtractorOptions } from "../lib/CSSDependencyExtractor";
+import { Log } from "../Log";
+import { ModuleCache } from "../ModuleCache";
+import { QuantumBit } from "../quantum/plugin/QuantumBit";
+import { QuantumSplitConfig, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
+import { ensureDir, removeFolder, Concat } from "../Utils";
+import { AutoImportedModule, registerDefaultAutoImportModules } from "./AutoImportedModule";
 import { Bundle } from "./Bundle";
 import { BundleProducer } from "./BundleProducer";
-import { QuantumSplitConfig, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
-import { isServerPolyfill, isElectronPolyfill } from "./ServerPolyfillList";
-import { CSSDependencyExtractor, ICSSDependencyExtractorOptions } from "../lib/CSSDependencyExtractor";
 import { ExtensionOverrides } from "./ExtensionOverrides";
+import { File, ScriptTarget } from "./File";
+import { FuseBox } from "./FuseBox";
+import { ModuleCollection } from "./ModuleCollection";
+import { AllowedExtensions, IPackageInformation, IPathInformation } from "./PathMaster";
+import { isElectronPolyfill, isServerPolyfill } from "./ServerPolyfillList";
 import { TypescriptConfig } from "./TypescriptConfig";
-import { QuantumBit } from "../quantum/plugin/QuantumBit";
-
+import { UserOutput } from "./UserOutput";
+import * as convertSourceMap from "convert-source-map";
+import * as offsetLines from "offset-sourcemap-lines";
 const appRoot = require("app-root-path");
 
 /**
@@ -95,7 +95,7 @@ export class WorkFlowContext {
 
 	public showErrorsInBrowser = true;
 
-	public sourceChangedEmitter = new EventEmitter<SourceChangedEvent>();
+	public hmrEmitter = new EventEmitter<{ event: string; data: any }>();
 
 	public emitter = new NativeEmitter();
 
@@ -286,33 +286,35 @@ export class WorkFlowContext {
 			return;
 		}
 
-		let content = file.contents;
-		if (file.context.emitHMRDependencies) {
-			this.emitter.addListener("bundle-collected", () => {
-				if (file.headerContent) {
-					content = file.headerContent.join("\n") + "\n" + content;
+		this.emitter.addListener("bundle-collected", () => {
+			const hmrDependencies = [];
+			file.resolvedDependencies.map(f => {
+				const info = f.info;
+				if (!info.isNodeModule) {
+					hmrDependencies.push({ module: this.defaultPackageName, path: `${info.fuseBoxPath}` });
+				} else {
+					hmrDependencies.push({ module: info.nodeModuleName, path: info.fuseBoxPath });
 				}
-				let dependants = {};
+			});
+
+			let dependants = {};
+			if (file.context.emitHMRDependencies) {
 				this.dependents.forEach((set, key) => {
 					dependants[key] = [...set];
 				});
-				this.sourceChangedEmitter.emit({
-					type: "js",
-					content,
-					dependants: dependants,
-					path: file.info.fuseBoxPath,
-				});
-			});
-		} else {
-			if (file.headerContent) {
-				content = file.headerContent.join("\n") + "\n" + content;
 			}
-			this.sourceChangedEmitter.emit({
-				type: "js",
-				content,
-				path: file.info.fuseBoxPath,
+
+			this.hmrEmitter.emit({
+				event: "source-changed",
+				data: {
+					type: "js",
+					dependencies: hmrDependencies,
+					dependants: dependants,
+					content: file.getHMRContent(),
+					path: file.info.fuseBoxPath,
+				},
 			});
-		}
+		});
 	}
 
 	public debug(group: string, text: string) {

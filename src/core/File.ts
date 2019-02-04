@@ -1,7 +1,19 @@
-import { ModuleCollection } from "./ModuleCollection";
+import * as convertSourceMap from "convert-source-map";
+import * as fs from "fs";
+import * as offsetLines from "offset-sourcemap-lines";
+import * as path from "path";
+import { each, utils } from "realm-utils";
 import { FileAnalysis, TraversalPlugin } from "../analysis/FileAnalysis";
-import { WorkFlowContext, Plugin } from "./WorkflowContext";
-import { IPathInformation, IPackageInformation } from "./PathMaster";
+import {
+	ensureFuseBoxPath,
+	fastHash,
+	isStylesheetExtension,
+	joinFuseBoxPath,
+	readFuseBoxModule,
+	Concat,
+} from "../Utils";
+import { ModuleCollection } from "./ModuleCollection";
+import { IPackageInformation, IPathInformation } from "./PathMaster";
 import { SourceMapGenerator } from "./SourceMapGenerator";
 import { utils, each } from "realm-utils";
 import * as fs from "fs";
@@ -54,6 +66,8 @@ export class File {
 	public cached = false;
 
 	public devLibsRequired;
+
+	public resolvedDependencies: Array<File>;
 	/**
 	 *
 	 *
@@ -154,6 +168,7 @@ export class File {
 	 * @memberOf File
 	 */
 	constructor(public context: WorkFlowContext, public info: IPathInformation) {
+		this.resolvedDependencies = [];
 		if (info.params) {
 			this.params = info.params;
 		}
@@ -654,6 +669,35 @@ export class File {
 	public getCorrectSourceMapPath() {
 		return this.context.sourceMapsRoot + "/" + this.relativePath;
 	}
+
+	public getHMRContent() {
+		const concat = new Concat(true, "", "\n");
+		const packageName = this.collection.name;
+		const source = this.alternativeContent ? this.alternativeContent : this.contents;
+		if (source) {
+			concat.add(null, `FuseBox.pkg("${packageName}", {}, function(___scope___){`);
+			concat.add(
+				null,
+				`___scope___.file("${this.info.fuseBoxPath}", function(exports, require, module, __filename, __dirname){`,
+			);
+			if (this.headerContent) {
+				concat.add(null, this.headerContent.join("\n"));
+			}
+			concat.add(this.getSourceMapPath(), source, this.sourceMap);
+			concat.add(null, "}); });");
+			let content = concat.content.toString();
+
+			if (this.sourceMap && concat.sourceMap) {
+				let json = JSON.parse(concat.sourceMap);
+				// since new Function wrapoer adds extra 2 lines we need to shift sourcemaps
+				json = offsetLines(json, 2);
+				const sm = convertSourceMap.fromObject(json).toComment();
+				content += "\n" + sm;
+			}
+			return content;
+		}
+	}
+
 	/**
 	 *
 	 *
@@ -688,7 +732,8 @@ export class File {
 			result.outputText = result.outputText
 				.replace(
 					`//# sourceMappingURL=${this.info.fuseBoxPath}.map`,
-					`//# sourceMappingURL=${this.context.bundle.name}.js.map?tm=${this.context.cacheBustPreffix}`,
+					"",
+					//`//# sourceMappingURL=${this.context.bundle.name}.js.map?tm=${this.context.cacheBustPreffix}`,
 				)
 				.replace("//# sourceMappingURL=module.js.map", "");
 			if (this.dynamicImportsReplaced) {
