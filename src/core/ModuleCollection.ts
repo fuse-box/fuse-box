@@ -394,14 +394,18 @@ export class ModuleCollection {
 
 			// Process file dependencies recursively
 
-			return each(file.analysis.dependencies, name => {
-				const newFile = new File(this.context, this.pm.resolve(name, file.info.absDir, fileLimitPath, file));
+			const resolvedFiles = await each(file.analysis.dependencies, async name => {
+				const resolvedInfo = this.pm.resolve(name, file.info.absDir, fileLimitPath, file);
+				const newFile = new File(this.context, resolvedInfo);
+				file.resolvedDependencies.push(newFile);
 				newFile.resolveDepsOnly = file.resolveDepsOnly;
 				if (this.context.emitHMRDependencies && file.belongsToProject()) {
 					this.context.registerDependant(newFile, file);
 				}
-				return this.resolve(newFile, shouldIgnoreDeps);
+				await this.resolve(newFile, shouldIgnoreDeps);
 			});
+
+			return resolvedFiles;
 		}
 	}
 }

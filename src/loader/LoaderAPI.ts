@@ -608,6 +608,10 @@ class FuseBox {
 		}
 	}
 
+	public static consume(contents: string) {
+		new Function(contents)(true);
+	}
+
 	/**
 	 * Registers a dynamic path
 	 *

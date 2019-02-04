@@ -359,6 +359,9 @@ var FuseBox = (function () {
             _loop_1(k);
         }
     };
+    FuseBox.consume = function (contents) {
+        new Function(contents)(true);
+    };
     FuseBox.dynamic = function (path, str, opts) {
         this.pkg((opts && opts.pkg) || "default", {}, function (___scope___) {
             ___scope___.file(path, function (exports, require, module, __filename, __dirname) {

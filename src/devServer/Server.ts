@@ -10,9 +10,13 @@ import * as path from "path";
 export type HotReloadEmitter = (server: Server, sourceChangedInfo: any) => any;
 
 export type SourceChangedEvent = {
-	type: "js" | "css" | "css-file" | "hosted-css";
+	eventName?: string;
+	data?: any;
+	type?: "js" | "css" | "css-file" | "hosted-css" | "dependency-update";
 	content?: string;
-	path: string;
+	package?: string;
+	path?: string;
+	dependencies?: any;
 	dependants?: any;
 };
 
