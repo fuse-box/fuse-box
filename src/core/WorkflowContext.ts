@@ -113,8 +113,10 @@ export class WorkFlowContext {
 	public pendingPromises: Promise<any>[] = [];
 
 	public emitHMRDependencies = false;
-	public languageLevel: ScriptTarget;
-	public forcedLanguageLevel: ScriptTarget;
+
+	public languageLevel: ScriptTarget & number;
+
+	public forcedLanguageLevel: ScriptTarget & number;
 
 	public filterFile: { (file: File): boolean };
 
