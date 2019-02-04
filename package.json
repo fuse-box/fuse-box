@@ -37,6 +37,7 @@
     "bowser": "^2.0.0-beta.3",
     "chokidar": "^1.6.1",
     "clean-css": "^4.1.9",
+    "convert-source-map": "^1.6.0",
     "escodegen": "^1.8.1",
     "express": "^4.14.0",
     "fliplog": "^0.3.13",
@@ -48,6 +49,7 @@
     "inquirer": "^3.0.6",
     "lego-api": "^1.0.7",
     "mustache": "^2.3.0",
+    "offset-sourcemap-lines": "^1.0.1",
     "postcss": "^6.0.1",
     "pretty-time": "^0.2.0",
     "prettysize": "0.0.3",
@@ -56,8 +58,8 @@
     "request": "^2.79.0",
     "shorthash": "0.0.2",
     "source-map": "^0.7.1",
-    "stream-browserify": "^2.0.1",
     "sourcemap-blender": "1.0.5",
+    "stream-browserify": "^2.0.1",
     "tslib": "^1.8.0",
     "watch": "^1.0.1",
     "ws": "^1.1.1"
@@ -151,6 +153,7 @@
     "format": "prettier --list-different \"**/*.{js,json,md,ts,yml}\"",
     "format:fix": "prettier --write \"**/*.{js,json,md,ts,yml}\"",
     "start": "gulp watch",
+    "dev": "rm -rf ./.fusebox; rm -rf ./.dev; gulp dev",
     "test": "node test.js"
   },
   "typings": "index.d.ts",

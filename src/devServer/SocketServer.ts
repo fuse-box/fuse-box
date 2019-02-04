@@ -1,8 +1,30 @@
 import { FuseBox } from "../core/FuseBox";
 import { Server } from "ws";
+import { HMRHandler } from "../hmr/HMRHandler";
 
 export class SocketServer {
 	public static server: SocketServer;
+	public cursor: any;
+	public clients = new Set<HMRHandler>();
+
+	constructor(public server: any, public fuse: FuseBox) {
+		// emit only for this producer
+		this.fuse.producer.sharedEvents.emit("SocketServerReady", this);
+		server.on("connection", ws => {
+			const hmr = new HMRHandler(ws, fuse);
+			this.clients.add(hmr);
+
+			ws.on("close", () => {
+				this.clients.delete(hmr);
+			});
+		});
+	}
+
+	public emit(eventName: string, data: any) {
+		this.clients.forEach(client => {
+			client.emit(eventName, data);
+		});
+	}
 
 	public static createInstance(server: any, fuse: FuseBox) {
 		if (!this.server) {
@@ -31,35 +53,11 @@ export class SocketServer {
 		return this.server;
 	}
 
-	public cursor: any;
-	public clients = new Set<any>();
-
-	constructor(public server: any, public fuse: FuseBox) {
-		// emit only for this producer
-		this.fuse.producer.sharedEvents.emit("SocketServerReady", this);
-
-		server.on("connection", ws => {
-			this.fuse.context.log.echo("Client connected");
-			this.clients.add(ws);
-
-			ws.on("message", message => {
-				let input = JSON.parse(message);
-				if (input.event) {
-					this.onMessage(ws, input.event, input.data);
-				}
-			});
-			ws.on("close", () => {
-				this.fuse.context.log.echo("Connection closed");
-				this.clients.delete(ws);
-			});
-		});
+	protected onMessage(client: any, type: string, data: any) {
+		if (type === "request-dependency") {
+			if (this.fuse.context) {
+				this.fuse.context.onHMRRequestDependency(JSON.parse(data));
+			}
+		}
 	}
-
-	public send(type: string, data: any) {
-		this.clients.forEach(client => {
-			client.send(JSON.stringify({ type, data }));
-		});
-	}
-
-	protected onMessage(client: any, type: string, data: any) {}
 }

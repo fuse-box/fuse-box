@@ -97,10 +97,9 @@ export class Bundle {
 		 * This will allow use to enable HMR on any bundle within current producer
 		 */
 		this.producer.sharedEvents.on("SocketServerReady", (server: SocketServer) => {
-			this.fuse.context.sourceChangedEmitter.on(info => {
+			this.fuse.context.hmrEmitter.on(req => {
 				if (this.fuse.context.isFirstTime() === false) {
-					this.fuse.context.log.echo(`Source changed for ${info.path}`);
-					server.send("source-changed", info);
+					server.emit(req.event, req.data);
 				}
 			});
 
@@ -112,23 +111,21 @@ export class Bundle {
 					});
 
 				this.errorEmitter.on(message => {
-					server.send("bundle-error", {
-						bundleName: this.name,
-						message,
+					this.context.hmrEmitter.emit({
+						event: "bundle-error",
+						data: {
+							bundleName: this.name,
+							message,
+						},
 					});
 				});
 
 				this.clearErrorEmitter.on(() => {
-					server.send(type, getData());
+					server.emit(type, getData());
 				});
 
 				server.server.on("connection", client => {
-					client.send(
-						JSON.stringify({
-							type,
-							data: getData(),
-						}),
-					);
+					this.context.hmrEmitter.emit({ event: type, data: getData() });
 				});
 			}
 		});

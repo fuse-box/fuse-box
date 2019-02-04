@@ -385,9 +385,8 @@ export class FuseBox {
 
 		const self = this;
 		return bundleCollection.collectBundle(bundleData).then(module => {
-			if (this.context.emitHMRDependencies) {
-				this.context.emitter.emit("bundle-collected");
-			}
+			this.context.emitter.emit("bundle-collected");
+
 			this.context.log.bundleStart(this.context.bundle.name);
 			return chain(
 				class extends Chainable {
