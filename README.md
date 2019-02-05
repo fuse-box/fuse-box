@@ -56,7 +56,7 @@
 The next version of **FuseBox (4.0)** will feature major improvements to speed
 and HMR. See the [changelog](./FuseBox4.0_changelog.md) here.
 
----
+--
 
 # Introduction
 
