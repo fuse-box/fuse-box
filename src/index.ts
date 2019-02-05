@@ -1,5 +1,5 @@
 import { breakCache } from "./CacheBreaker";
-import { ensureTypescriptInstalled } from './Utils'
+import { ensureTypescriptInstalled } from "./Utils";
 
 ensureTypescriptInstalled();
 // kill cache if required beforehand

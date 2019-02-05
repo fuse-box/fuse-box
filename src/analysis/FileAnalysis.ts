@@ -36,7 +36,7 @@ export function acornParse(contents, options?: any): any {
 			ranges: true,
 			ecmaVersion: "2018",
 			plugins: {
-				jsx: true
+				jsx: true,
 			},
 			jsx: { allowNamespacedObjects: true },
 		},

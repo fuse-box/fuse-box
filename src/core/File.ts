@@ -6,7 +6,7 @@ import { SourceMapGenerator } from "./SourceMapGenerator";
 import { utils, each } from "realm-utils";
 import * as fs from "fs";
 import * as path from "path";
-import * as ts from "typescript"
+import * as ts from "typescript";
 import { ensureFuseBoxPath, readFuseBoxModule, isStylesheetExtension, fastHash, joinFuseBoxPath } from "../Utils";
 
 /**
@@ -466,12 +466,12 @@ export class File {
 					this.context.fuse.producer.addWarning(
 						"unresolved",
 						`Statement "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection &&
-						this.collection.name}"`,
+							this.collection.name}"`,
 					);
 				} else {
 					this.addError(
 						`Asset reference "${this.info.fuseBoxPath}" has failed to resolve in module "${this.collection &&
-						this.collection.name}"`,
+							this.collection.name}"`,
 					);
 				}
 			}
@@ -632,7 +632,7 @@ export class File {
 
 	public transpileUsingTypescript(): ts.TranspileOutput | never {
 		try {
-			return ts.transpileModule(this.contents, this.getTranspilationConfig())
+			return ts.transpileModule(this.contents, this.getTranspilationConfig());
 		} catch (e) {
 			this.context.fatal(`${this.info.absPath}: ${e}`);
 		}

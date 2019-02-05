@@ -79,18 +79,20 @@ export class Babel7PluginTest {
 						export function fn() {}
 					`,
 				},
-				plugins: [Babel7Plugin({
-					extensions: [".js"],
-					configFile: './config/.babelrc'
-				})],
+				plugins: [
+					Babel7Plugin({
+						extensions: [".js"],
+						configFile: "./config/.babelrc",
+					}),
+				],
 			},
 		})
 			.simple("> index.js")
 			.then(env =>
 				env.browser(window => {
-					const imported = window.FuseBox.import("./index")
-					should(imported.IwasTranspiledWithBabel).beObject()
-					should(imported.IwasTranspiledWithBabel.name).equal('IwasTranspiledWithBabel')
+					const imported = window.FuseBox.import("./index");
+					should(imported.IwasTranspiledWithBabel).beObject();
+					should(imported.IwasTranspiledWithBabel.name).equal("IwasTranspiledWithBabel");
 				}),
 			);
 	}
@@ -106,18 +108,20 @@ export class Babel7PluginTest {
 						export function fn() {}
 					`,
 				},
-				plugins: [Babel7Plugin({
-					extensions: [".js"],
-					configFile: './config/babel.config.js'
-				})],
+				plugins: [
+					Babel7Plugin({
+						extensions: [".js"],
+						configFile: "./config/babel.config.js",
+					}),
+				],
 			},
 		})
 			.simple("> index.js")
 			.then(env =>
 				env.browser(window => {
-					const imported = window.FuseBox.import("./index")
-					should(imported.IwasTranspiledWithBabel).beObject()
-					should(imported.IwasTranspiledWithBabel.name).equal('IwasTranspiledWithBabel')
+					const imported = window.FuseBox.import("./index");
+					should(imported.IwasTranspiledWithBabel).beObject();
+					should(imported.IwasTranspiledWithBabel.name).equal("IwasTranspiledWithBabel");
 				}),
 			);
 	}
@@ -143,8 +147,8 @@ export class Babel7PluginTest {
 			.then(env =>
 				env.browser(window => {
 					const imported = window.FuseBox.import("./index");
-					should(imported.file1).findString('/qwerty.js');
-					should(imported.file2).findString('/asdfgh.js');
+					should(imported.file1).findString("/qwerty.js");
+					should(imported.file2).findString("/asdfgh.js");
 				}),
 			);
 	}
@@ -222,9 +226,9 @@ export class Babel7PluginTest {
 										include: ["es6.promise"],
 									},
 								],
-							]
-						}
-					})
+							],
+						},
+					}),
 				],
 			},
 		})

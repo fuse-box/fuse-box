@@ -43,7 +43,7 @@ export class AutoImportTest {
 				},
 			},
 			project: {
-				target: 'server',
+				target: "server",
 				autoImport: {
 					woops: "superFoo",
 				},
@@ -102,7 +102,7 @@ export class AutoImportTest {
 				},
 			},
 			project: {
-				target: 'server',
+				target: "server",
 				autoImport: {
 					woops: "superFoo",
 				},
@@ -163,7 +163,7 @@ export class AutoImportTest {
 				},
 			},
 			project: {
-				target: 'server',
+				target: "server",
 				autoImport: {
 					woops: "superFoo",
 				},
@@ -228,7 +228,7 @@ export class AutoImportTest {
 				},
 			},
 			project: {
-				target: 'server',
+				target: "server",
 				autoImport: {
 					woops: "superFoo2",
 				},
