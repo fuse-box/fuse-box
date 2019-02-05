@@ -13,9 +13,9 @@ const app = fuse
   .watch();
 ```
 
-`watch()` accepts two optional arguments; 1) a simplified regex (if you
-want to customize the watched folder), and 2) a filter function that includes
-any files that return a truthy value.
+`watch()` accepts two optional arguments; 1) a simplified regex (if you want to
+customize the watched folder), and 2) a filter function that includes any files
+that return a truthy value.
 
 Let's watch server and client bundle at the same time.
 
@@ -28,7 +28,7 @@ fuse
 fuse
   .bundle("server/app")
   .instructions(`> index.ts`)
-  .watch("server/**", (path) => !path.match('.*\.temp'));
+  .watch("server/**", path => !path.match(".*.temp"));
 ```
 
 In this example whenever a change happen in `homeDir` FuseBox will figure out
@@ -60,8 +60,9 @@ To solve some issues with running on docker container providers set this:
 fuse.run({ chokidar: { awaitWriteFinish: true } });
 ```
 
-This will allow you to stop the watcher from looking in folders like node_modules:
+This will allow you to stop the watcher from looking in folders like
+node_modules:
 
 ```ts
-fuse.run({ chokidarPaths: ['path'] });
+fuse.run({ chokidarPaths: ["path"] });
 ```

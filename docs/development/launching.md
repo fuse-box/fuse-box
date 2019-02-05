@@ -23,10 +23,11 @@ completed(proc => proc.exec());
 The following code will spawn a separate nodejs process once.
 
 ```js
-completed(proc => proc.exec(["option1","option2"]));
+completed(proc => proc.exec(["option1", "option2"]));
 ```
 
-Optionally you can add command line arguments to your process, which populate the process.argv array for your application.
+Optionally you can add command line arguments to your process, which populate
+the process.argv array for your application.
 
 ## Start / restart
 
@@ -38,10 +39,11 @@ The following code will spawn a separate nodejs process, if a process is already
 running FuseBox will kill and spawn a new one.
 
 ```js
-completed(proc => proc.start(["option1","option2"]));
+completed(proc => proc.start(["option1", "option2"]));
 ```
 
-Optionally you can add command line arguments to your process, which populate the process.argv array for your application.
+Optionally you can add command line arguments to your process, which populate
+the process.argv array for your application.
 
 ## Require
 

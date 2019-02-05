@@ -21,17 +21,18 @@ env.SPARKY_LOG = false;
  * A --file flag can be used to override a default test mask.
  */
 const maybeFileFlag = argv[2];
-const fileFlag = typeof maybeFileFlag === "string" && maybeFileFlag.match(/^--file=(.*)/);
+const fileFlag =
+  typeof maybeFileFlag === "string" && maybeFileFlag.match(/^--file=(.*)/);
 
 const testFileMask = fileFlag === false ? defaultTestFileMask : fileFlag[1];
 
 const fuse = FuseBox.init({
-	homeDir: "src",
-	target: "server@esnext",
-	log: false,
-	dynamicImportsEnabled: false,
-	output: ".fusebox/$name.js",
-	cache: false,
+  homeDir: "src",
+  target: "server@esnext",
+  log: false,
+  dynamicImportsEnabled: false,
+  output: ".fusebox/$name.js",
+  cache: false,
 });
 
 fuse.bundle("fusebox").test(`[**/${testFileMask}]`);

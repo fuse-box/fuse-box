@@ -83,7 +83,7 @@ export function ensureTypescriptInstalled(): never | void {
 				console.log(TYPESCRIPT_NOT_SUPPORTED);
 				process.exit(1);
 			}
-			return
+			return;
 		}
 		console.log(NO_TYPESCRIPT_MESSAGE);
 		process.exit(1);
@@ -181,10 +181,10 @@ export function ensureAbsolutePath(userPath: string) {
 	return userPath;
 }
 export function joinFuseBoxPath(...any): string {
-	let includesProtocol = any[0].includes('://');
+	let includesProtocol = any[0].includes("://");
 	let joinedPath = !includesProtocol
 		? path.join(...any)
-		: any[0].replace(/([^/])$/, '$1/') + path.join(...any.slice(1));
+		: any[0].replace(/([^/])$/, "$1/") + path.join(...any.slice(1));
 	return ensureFuseBoxPath(joinedPath);
 }
 export function ensureDir(userPath: string) {

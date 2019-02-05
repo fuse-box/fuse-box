@@ -11,18 +11,18 @@ const getTempDir = () => {
 	const name = `test-tsconfig-${new Date().getTime()}`;
 	let tmpFolder = path.join(appRoot.path, ".fusebox", "tests", name);
 	fsExtra.ensureDirSync(tmpFolder);
-	return tmpFolder
-}
+	return tmpFolder;
+};
 
 export class TypescriptConfigTest {
 	"Should get number language level (level: 'es5' -> 1)"() {
-		should(getScriptLevelNumber('Es5')).equal(ts.ScriptTarget.ES5);
+		should(getScriptLevelNumber("Es5")).equal(ts.ScriptTarget.ES5);
 	}
 	"Should get number language level (level: 1 -> 1)"() {
 		should(getScriptLevelNumber(ts.ScriptTarget.ES5)).equal(ts.ScriptTarget.ES5);
 	}
 	"Should get number language level (level: 'esnext' -> 6)"() {
-		should(getScriptLevelNumber('esnext')).equal(ts.ScriptTarget.ESNext);
+		should(getScriptLevelNumber("esnext")).equal(ts.ScriptTarget.ESNext);
 	}
 	"Should get number language level (level: 6 -> 6)"() {
 		should(getScriptLevelNumber(ts.ScriptTarget.ESNext)).equal(ts.ScriptTarget.ESNext);
@@ -31,13 +31,13 @@ export class TypescriptConfigTest {
 		should(getScriptLevelNumber(ts.ScriptTarget.JSON)).equal(undefined);
 	}
 	"Should get number language level (level: unknown -> undefined)"() {
-		should(getScriptLevelNumber('asd')).equal(undefined);
+		should(getScriptLevelNumber("asd")).equal(undefined);
 	}
 	"Should get string language level (level: 1 -> 'ES5')"() {
-		should(getScriptLevelString(ts.ScriptTarget.ES5)).equal('ES5');
+		should(getScriptLevelString(ts.ScriptTarget.ES5)).equal("ES5");
 	}
 	"Should get string language level (level: 6 -> 'ESNext')"() {
-		should(getScriptLevelString(ts.ScriptTarget.ESNext)).equal('ESNext');
+		should(getScriptLevelString(ts.ScriptTarget.ESNext)).equal("ESNext");
 	}
 	"Should get string language level (level: 100 [JSON] -> undefined)"() {
 		should(getScriptLevelString(ts.ScriptTarget.JSON)).equal(undefined);
@@ -58,8 +58,8 @@ export class TypescriptConfigTest {
 				baseUrl: ".",
 				importHelpers: true,
 				emitDecoratorMetadata: true,
-				experimentalDecorators: true
-			}
+				experimentalDecorators: true,
+			},
 		});
 		should(config).deepEqual({
 			compilerOptions: {
@@ -69,9 +69,9 @@ export class TypescriptConfigTest {
 				baseUrl: ".",
 				importHelpers: true,
 				emitDecoratorMetadata: true,
-				experimentalDecorators: true
+				experimentalDecorators: true,
 			},
-			errors: []
+			errors: [],
 		});
 	}
 	"Should generate recommended tsconfig.json file (with source maps)"() {
@@ -96,7 +96,7 @@ export class TypescriptConfigTest {
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
-			}
+			},
 		});
 		should(config).deepEqual({
 			compilerOptions: {
@@ -110,7 +110,7 @@ export class TypescriptConfigTest {
 				sourceMap: true,
 				inlineSources: true,
 			},
-			errors: []
+			errors: [],
 		});
 	}
 	"Should generate recommended tsconfig.json file (with forced language level: esnext)"() {
@@ -136,7 +136,7 @@ export class TypescriptConfigTest {
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
-			}
+			},
 		});
 		should(config).deepEqual({
 			compilerOptions: {
@@ -150,7 +150,7 @@ export class TypescriptConfigTest {
 				sourceMap: true,
 				inlineSources: true,
 			},
-			errors: []
+			errors: [],
 		});
 	}
 	"Should generate recommended tsconfig.json file (with forced language level: es2015)"() {
@@ -176,7 +176,7 @@ export class TypescriptConfigTest {
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
-			}
+			},
 		});
 		should(config).deepEqual({
 			compilerOptions: {
@@ -190,7 +190,7 @@ export class TypescriptConfigTest {
 				sourceMap: true,
 				inlineSources: true,
 			},
-			errors: []
+			errors: [],
 		});
 	}
 	"Should generate recommended tsconfig.json file (with forced language level: 2)"() {
@@ -216,7 +216,7 @@ export class TypescriptConfigTest {
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
-			}
+			},
 		});
 		should(config).deepEqual({
 			compilerOptions: {
@@ -230,19 +230,19 @@ export class TypescriptConfigTest {
 				sourceMap: true,
 				inlineSources: true,
 			},
-			errors: []
+			errors: [],
 		});
 	}
 	"Should load tsconfig file with extends"() {
 		const testDir = getTempDir();
 		const tsconfig1 = JSON.stringify({
 			compilerOptions: {},
-			extends: "./tsconfig2.json"
+			extends: "./tsconfig2.json",
 		});
 		const tsconfig2 = JSON.stringify({
 			compilerOptions: {
 				target: "es3",
-			}
+			},
 		});
 
 		fs.writeFileSync(path.resolve(testDir, "tsconfig1.json"), tsconfig1);
@@ -263,18 +263,18 @@ export class TypescriptConfigTest {
 				target: ts.ScriptTarget.ES3,
 				module: ts.ModuleKind.CommonJS,
 				sourceMap: true,
-				inlineSources: true
+				inlineSources: true,
 			},
 			errors: [],
 			compileOnSave: false,
 			raw: {
 				compilerOptions: {},
-				extends: "./tsconfig2.json"
+				extends: "./tsconfig2.json",
 			},
 			typeAcquisition: {
 				enable: false,
 				include: [],
-				exclude: []
+				exclude: [],
 			},
 		});
 	}
@@ -312,7 +312,7 @@ export class TypescriptConfigTest {
 			typeAcquisition: {
 				enable: false,
 				include: [],
-				exclude: []
+				exclude: [],
 			},
 		});
 	}
@@ -353,8 +353,8 @@ export class TypescriptConfigTest {
 		const tsconfig = JSON.stringify({
 			compilerOptions: {
 				target: "es3000",
-				jsx: "inferno"
-			}
+				jsx: "inferno",
+			},
 		});
 
 		fs.writeFileSync(path.resolve(testDir, "tsconfig.json"), tsconfig);
@@ -364,7 +364,7 @@ export class TypescriptConfigTest {
 		should(config.errors.length).equal(2);
 		should(config.errors[0].category).equal(ts.DiagnosticCategory.Error);
 		should(config.errors[1].category).equal(ts.DiagnosticCategory.Error);
-		should(config.errors[0].messageText).findString('--target');
-		should(config.errors[1].messageText).findString('--jsx');
+		should(config.errors[0].messageText).findString("--target");
+		should(config.errors[1].messageText).findString("--jsx");
 	}
 }

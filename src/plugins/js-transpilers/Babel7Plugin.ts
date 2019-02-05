@@ -4,7 +4,7 @@ import { File } from "../../core/File";
 import { string2RegExp } from "../../Utils";
 import { WorkFlowContext } from "../../core/WorkflowContext";
 import { Plugin } from "../../core/WorkflowContext";
-import { ASTTraverse } from "../../ASTTraverse"
+import { ASTTraverse } from "../../ASTTraverse";
 import { ImportDeclaration } from "../../analysis/plugins/ImportDeclaration";
 
 let babel7Core;
@@ -34,8 +34,8 @@ export class Babel7PluginClass implements Plugin {
 		babelrc: false,
 		configFile: false,
 		sourceType: "module",
-		filenameRelative: '', // homeDir
-		root: '', // homeDir
+		filenameRelative: "", // homeDir
+		root: "", // homeDir
 	};
 	private config = Object.assign({}, this.configRequired);
 
@@ -49,7 +49,7 @@ export class Babel7PluginClass implements Plugin {
 			opts.configFile === undefined &&
 			Object.keys(opts).length
 		) {
-			Object.assign(this.config, opts, this.configRequired)
+			Object.assign(this.config, opts, this.configRequired);
 			return;
 		}
 
@@ -70,7 +70,7 @@ export class Babel7PluginClass implements Plugin {
 				if (typeof opts.config !== "object") {
 					throw new Error("Babel7Plugin - `config` property must be null | undefined | plain object");
 				}
-				Object.assign(this.config, opts.config, this.configRequired)
+				Object.assign(this.config, opts.config, this.configRequired);
 			}
 			if (opts.configFile) {
 				this.configFile = opts.configFile;
@@ -86,24 +86,20 @@ export class Babel7PluginClass implements Plugin {
 	private loadOptionsAndValidate() {
 		if (this.configLoaded) return;
 
-		if (
-			typeof this.configFile === "undefined" ||
-			this.configFile === null ||
-			this.configFile === true
-		) {
+		if (typeof this.configFile === "undefined" || this.configFile === null || this.configFile === true) {
 			this.configFile = [
 				path.join(this.context.homeDir, ".babelrc"),
 				path.join(this.context.homeDir, "babel.config.js"),
 			].find(path => {
-				if (fs.existsSync(path)) return true
-				return false
-			})
+				if (fs.existsSync(path)) return true;
+				return false;
+			});
 		} else if (typeof this.configFile === "string") {
-			const configPath = path.join(this.context.homeDir, this.configFile)
+			const configPath = path.join(this.context.homeDir, this.configFile);
 			if (!fs.existsSync(configPath)) {
 				throw new Error(`Babel7Plugin - configuration file not found on path ${configPath}`);
 			}
-			this.configFile = configPath
+			this.configFile = configPath;
 		}
 
 		if (typeof this.configFile === "string") {
@@ -116,7 +112,9 @@ export class Babel7PluginClass implements Plugin {
 			} else if ([".js", ".jsx", ".mjs", ".ts", ".tsx"].includes(ext)) {
 				configFileContents = require(this.configFile);
 				if (typeof configFileContents !== "object") {
-					throw new Error("Babel7Plugin - your configuration file must have an object as default export./n	e.g: module.exports = { presets: ['@babel/preset-env'] }");
+					throw new Error(
+						"Babel7Plugin - your configuration file must have an object as default export./n	e.g: module.exports = { presets: ['@babel/preset-env'] }",
+					);
 				}
 			}
 
@@ -124,12 +122,12 @@ export class Babel7PluginClass implements Plugin {
 
 			// Load partial config and validate options
 			const partialConfig = babel7Core.loadPartialConfig(configFileContents);
-			Object.assign(this.config, partialConfig.options, this.config)
+			Object.assign(this.config, partialConfig.options, this.config);
 		}
 
 		// Flatten presets into plugins and validate over-all configuration
-		this.config.root = this.context.homeDir
-		this.config.filenameRelative = this.context.homeDir
+		this.config.root = this.context.homeDir;
+		this.config.filenameRelative = this.context.homeDir;
 		this.config = babel7Core.loadOptions(this.config);
 
 		this.configLoaded = true;
@@ -180,7 +178,7 @@ export class Babel7PluginClass implements Plugin {
 		// @TODO needs improvement for the regex matching of what to include
 		//       with globs & regex
 		if (this.limit2project === false || file.collection.name === file.context.defaultPackageName) {
-			const fileConfig = Object.assign({ filename: file.relativePath }, this.config)
+			const fileConfig = Object.assign({ filename: file.relativePath }, this.config);
 			let result;
 			try {
 				result = babel7Core.transformSync(file.contents, fileConfig);
@@ -212,7 +210,7 @@ export class Babel7PluginClass implements Plugin {
 					const result = babel7Core.transformFromAstSync(
 						ast,
 						void 0,
-						Object.assign({ filename: file.relativePath }, this.config)
+						Object.assign({ filename: file.relativePath }, this.config),
 					);
 					sourceMaps = result.map;
 					return result.code;

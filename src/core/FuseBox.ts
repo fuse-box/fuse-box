@@ -17,7 +17,7 @@ import { Bundle } from "./Bundle";
 import { File } from "./File";
 import { ExtensionOverrides } from "./ExtensionOverrides";
 import { TypescriptConfig, rawCompilerOptions } from "./TypescriptConfig";
-import { CombinedTargetAndLanguageLevel } from './CombinedTargetAndLanguageLevel';
+import { CombinedTargetAndLanguageLevel } from "./CombinedTargetAndLanguageLevel";
 
 const appRoot = require("app-root-path");
 
@@ -50,8 +50,8 @@ export interface FuseBoxOptions {
 	useTypescriptCompiler?: boolean;
 	standalone?: boolean;
 	sourceMaps?:
-	| boolean
-	| { vendor?: boolean; inlineCSSPath?: string; inline?: boolean; project?: boolean; sourceRoot?: string };
+		| boolean
+		| { vendor?: boolean; inlineCSSPath?: string; inline?: boolean; project?: boolean; sourceRoot?: string };
 	hash?: string | boolean;
 	ignoreModules?: string[];
 	customAPIFile?: string;

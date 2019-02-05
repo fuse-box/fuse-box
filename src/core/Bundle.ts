@@ -14,7 +14,7 @@ import { PackageAbstraction } from "../quantum/core/PackageAbstraction";
 import { EventEmitter } from "../EventEmitter";
 import { ExtensionOverrides } from "./ExtensionOverrides";
 import { QuantumBit } from "../quantum/plugin/QuantumBit";
-import { CombinedTargetAndLanguageLevel } from './CombinedTargetAndLanguageLevel';
+import { CombinedTargetAndLanguageLevel } from "./CombinedTargetAndLanguageLevel";
 
 type WatchFilterFn = (path: string) => boolean;
 export interface HMROptions {

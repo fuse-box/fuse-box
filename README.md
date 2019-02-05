@@ -73,9 +73,9 @@ packed with features and unfolds limitless possibilities of extending.
 ### Task Runner
 
 FuseBox features a powerfull
-[task runner](https://fuse-box.org/docs/task-runner/getting-started-with-sparky). It fits perfectly in the modern
-API of FuseBox while resembling well established concepts behind
-[Gulp](https://gulpjs.org).
+[task runner](https://fuse-box.org/docs/task-runner/getting-started-with-sparky).
+It fits perfectly in the modern API of FuseBox while resembling well established
+concepts behind [Gulp](https://gulpjs.org).
 
 ### Plugins
 
@@ -147,8 +147,8 @@ through the basics and give you a solid foundation to dig deeper.
 You can find many examples and application scaffolds on our
 [here](https://github.com/fuse-box/fuse-box-examples). Don't hesitate to reach
 out to us on [Gitter](https://gitter.im/fusebox-bundler/Lobby). Please consult
-our [Contributing guidelines](https://fuse-box.org/docs/contributing) before creating an issue, we're
-trying to keep it nice and tidy.
+our [Contributing guidelines](https://fuse-box.org/docs/contributing) before
+creating an issue, we're trying to keep it nice and tidy.
 
 #### React Example
 
@@ -215,8 +215,9 @@ site. [Become a sponsor](https://opencollective.com/fuse-box#sponsor)
 
 # Contributing
 
-Please consult [Contributing Guildelines](https://fuse-box.org/docs/contributing) for details. If you
-already know it, here's a fastlane to our communication channels:
+Please consult
+[Contributing Guildelines](https://fuse-box.org/docs/contributing) for details.
+If you already know it, here's a fastlane to our communication channels:
 
 - [Official Documentation](http://fuse-box.org/)
 - [Submit an Issue](https://github.com/fuse-box/fuse-box/issues/new)

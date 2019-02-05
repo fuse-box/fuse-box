@@ -155,7 +155,9 @@ export class CssPluginTest {
 			},
 		}).then(result => {
 			result.shouldExistInDist("assets/92849cf0-hello.txt");
-			should(result.projectContents.toString()).findString(`module.exports.default = "https://example.com/static/92849cf0-hello.txt";`);
+			should(result.projectContents.toString()).findString(
+				`module.exports.default = "https://example.com/static/92849cf0-hello.txt";`,
+			);
 		});
 	}
 }

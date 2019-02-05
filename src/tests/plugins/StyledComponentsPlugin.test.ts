@@ -23,7 +23,7 @@ export class StyledComponentsPluginTest {
 		}).then(result => {
 			result.project.FuseBox.import("./index");
 			const contents = result.projectContents.toString();
-			should(contents).findString("React.createElement(MyHeader, null, \"Test\")");
+			should(contents).findString('React.createElement(MyHeader, null, "Test")');
 		});
 	}
 
@@ -41,11 +41,13 @@ export class StyledComponentsPluginTest {
                 ReactDOM.render(
 									<MyHeader>Test</MyHeader>, document.getElementById('root'));`,
 				},
-				plugins: [StyledComponentsPlugin({
-					getDisplayName: function(filename, bindingName) {
-						return 'Testing_' + bindingName + '_value';
-					}
-				})],
+				plugins: [
+					StyledComponentsPlugin({
+						getDisplayName: function(filename, bindingName) {
+							return "Testing_" + bindingName + "_value";
+						},
+					}),
+				],
 				instructions: ">index.tsx",
 			},
 		}).then(result => {
@@ -54,5 +56,4 @@ export class StyledComponentsPluginTest {
 			should(contents).findString("Testing_MyTestTitle_value");
 		});
 	}
-
 }

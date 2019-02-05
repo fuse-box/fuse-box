@@ -199,9 +199,7 @@ export class CSSResourcePluginClass implements Plugin {
 			// copy files
 			if (this.distFolder) {
 				const relativeUrlFile = path.relative(file.context.homeDir, urlFile);
-				let newFileName = this.useOriginalFilenames
-					? relativeUrlFile
-					: generateNewFileName(relativeUrlFile);
+				let newFileName = this.useOriginalFilenames ? relativeUrlFile : generateNewFileName(relativeUrlFile);
 
 				if (!this.files[urlFile]) {
 					let newPath = path.join(this.distFolder, newFileName);
