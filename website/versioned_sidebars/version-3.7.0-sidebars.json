@@ -1,0 +1,75 @@
+{
+  "version-3.7.0-docs": {
+    "Getting Started": [
+      "version-3.7.0-getting-started/installation",
+      "version-3.7.0-getting-started/setup",
+      "version-3.7.0-getting-started/typescript-project",
+      "version-3.7.0-getting-started/javascript-project",
+      "version-3.7.0-getting-started/add-css",
+      "version-3.7.0-getting-started/about-plugins",
+      "version-3.7.0-getting-started/environments"
+    ],
+    "Development": [
+      "version-3.7.0-development/configuration",
+      "version-3.7.0-development/instructions",
+      "version-3.7.0-development/development-server",
+      "version-3.7.0-development/watching",
+      "version-3.7.0-development/hmr",
+      "version-3.7.0-development/launching",
+      "version-3.7.0-development/code-splitting",
+      "version-3.7.0-development/dynamic-imports"
+    ],
+    "Production Builds": [
+      "version-3.7.0-production-builds/quantum",
+      "version-3.7.0-production-builds/quantum-configuration"
+    ],
+    "Task Runner": [
+      "version-3.7.0-task-runner/getting-started-with-sparky",
+      "version-3.7.0-task-runner/sparky"
+    ],
+    "Test Runner": [
+      "version-3.7.0-test-runner/test-runner"
+    ],
+    "Guides": [
+      "version-3.7.0-guides/working-with-targets",
+      "version-3.7.0-guides/publishing-to-npm",
+      "version-3.7.0-guides/debugging-with-vscode",
+      "version-3.7.0-guides/development-with-docker"
+    ],
+    "Contributing": [
+      "version-3.7.0-contributing"
+    ]
+  },
+  "version-3.7.0-plugins": {
+    "Plugins": [
+      "version-3.7.0-plugins/babel-plugin",
+      "version-3.7.0-plugins/babel7-plugin",
+      "version-3.7.0-plugins/coffee-plugin",
+      "version-3.7.0-plugins/consolidate-plugin",
+      "version-3.7.0-plugins/copy-plugin",
+      "version-3.7.0-plugins/css-modules-plugin",
+      "version-3.7.0-plugins/css-plugin",
+      "version-3.7.0-plugins/css-resource-plugin",
+      "version-3.7.0-plugins/env-plugin",
+      "version-3.7.0-plugins/html-plugin",
+      "version-3.7.0-plugins/image-base64-plugin",
+      "version-3.7.0-plugins/json-plugin",
+      "version-3.7.0-plugins/less-plugin",
+      "version-3.7.0-plugins/markdown-plugin",
+      "version-3.7.0-plugins/ng-template-plugin",
+      "version-3.7.0-plugins/plain-js-plugin",
+      "version-3.7.0-plugins/postcss-plugin",
+      "version-3.7.0-plugins/raw-plugin",
+      "version-3.7.0-plugins/replace-plugin",
+      "version-3.7.0-plugins/sass-plugin",
+      "version-3.7.0-plugins/source-map-plain-js-plugin",
+      "version-3.7.0-plugins/styled-components-plugin",
+      "version-3.7.0-plugins/stylus-plugin",
+      "version-3.7.0-plugins/svg-plugin",
+      "version-3.7.0-plugins/uglifyes-plugin",
+      "version-3.7.0-plugins/uglifyjs-plugin",
+      "version-3.7.0-plugins/vue-component-plugin",
+      "version-3.7.0-plugins/web-index-plugin"
+    ]
+  }
+}

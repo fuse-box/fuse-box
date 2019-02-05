@@ -1,22 +1,19 @@
 ---
-id: version-3.6.0-styled-components-plugin
-title: CSSModules
+id: version-3.7.0-styled-components-plugin
+title: Styled Components
 original_id: styled-components-plugin
 ---
 
 ## Description
 
 StyledComponentsPlugin improves development experience of `styled-components`
-via transformer/plugin `typescript-plugin-styled-components`. Which main purpose
-is to provide compile-time information of creates styled components, such as
-names of these components, for the run-time, allowing to operate with proper
-names of such the components.
+using the transformer/plugin `typescript-plugin-styled-components`.
 
 ## Install
 
-Using the StyledComponentsPlugin requires `styled-components` and
-`typescript-plugin-styled-components` to transform styled components to reactive
-components.
+The plugin requires `styled-components` and
+`typescript-plugin-styled-components` to transform styled components into the
+reactive ones.
 
 ```bash
 yarn add styled-components --dev
@@ -30,7 +27,7 @@ npm install typescript-plugin-styled-components --save-dev
 
 ## Usage
 
-After that you can use the `StyledComponentsPlugin` in your configuration.
+Add `StyledComponentsPlugin` into your configuration
 
 ```js
 Fusebox.init({
@@ -42,8 +39,8 @@ Fusebox.init({
   .instructions(">index.js");
 ```
 
-This will create styled components with `bundleName` variable. For example if
-you have `header.tsx` file:
+This will create styled components with `bundleName` postfix. For example if you
+have `header.tsx` file:
 
 ```tsx
 const MyHeader = styled.header`
@@ -56,7 +53,7 @@ render {
 }
 ```
 
-you will get rendered header like this:
+you will get it rendered as follows below:
 
 ```html
 <header class="MyHeader-hkmgDS fuUxah">This is my styled header</header>
@@ -67,13 +64,11 @@ you will get rendered header like this:
 ### getDisplayName
 
 By default, `StyledComponentsPlugin` uses `bundleName` variable, but you can
-change it by using `getDisplayName` function:
+customise the postfix by implementing `getDisplayName` function:
 
 ```js
 StyledComponentsPlugin({
   getDisplayName: (filename, bindingName) => {
-    // typescript-plugin-styled-components gives path to a filename variable
-    // we change a path to a real filename in PascalCase
     filename = filename
       .replace(/^.*[\\\/]/, "")
       .match(/[a-z]+/gi)
@@ -88,17 +83,11 @@ StyledComponentsPlugin({
 });
 ```
 
-You can do whatever you like with filename or bindingName variables or return
-other string if you like. The result of previous `header.tsx` file would look
-like this:
-
 ```html
 <header class="Header_MyHeader-hkmgDS fuUxah">This is my styled header</header>
 ```
 
-`StyledComponentsPlugin` just passes options straight to the
-`typescript-plugin-styled-components` transformer as object and without any
-additional check. It will allow to use modified transformer in the future
-without changing `StyledComponentsPlugin`. For more how to use the
-`typescript-plugin-styled-components` transformer read
+`StyledComponentsPlugin` passes options directly to the
+`typescript-plugin-styled-components` transformer as object without any
+modifications. For more information read
 [here](https://github.com/Igorbek/typescript-plugin-styled-components#options)
