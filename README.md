@@ -51,6 +51,13 @@
   </a>
 </p>
 
+---
+
+The next version of **FuseBox (4.0)** will feature major improvements to speed
+and HMR. See the [changelog](./FuseBox4.0_changelog.md) here.
+
+--
+
 # Introduction
 
 FuseBox is a performant bundler/module loader, where you measure you build time
