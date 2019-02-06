@@ -174,7 +174,7 @@ non-standard javascript in the code base, e.g - `import React from "react"`
 where React doesn't export `default`
 
 You may find
-[polyfillNonStandardDefaultUsage](../development/configuration#polyfillnonstandarddefaultusage)
+[allowsyntheticdefaultimports](/docs/development/configuration#allowsyntheticdefaultimports)
 option quite useful, but be careful, this is a non-standard way of cooking
 javascript!
 

@@ -69,7 +69,6 @@ export interface FuseBoxOptions {
 	runAllMatchedPlugins?: boolean;
 	showErrors?: boolean;
 	showErrorsInBrowser?: boolean;
-	polyfillNonStandardDefaultUsage?: boolean | string[];
 	transformers?: CustomTransformers;
 	extensionOverrides?: string[];
 }
@@ -122,13 +121,6 @@ export class FuseBox {
 		this.context.target = combination.getTarget();
 		this.context.forcedLanguageLevel = combination.getLanguageLevel();
 		this.context.languageLevel = combination.getLanguageLevelOrDefault();
-
-		if (opts.polyfillNonStandardDefaultUsage !== undefined) {
-			this.context.deprecation(
-				"polyfillNonStandardDefaultUsage has been depreacted in favour of allowSyntheticDefaultImports",
-			);
-			this.producer.allowSyntheticDefaultImports = opts.allowSyntheticDefaultImports;
-		}
 
 		if (opts.allowSyntheticDefaultImports !== undefined) {
 			this.producer.allowSyntheticDefaultImports = opts.allowSyntheticDefaultImports;
