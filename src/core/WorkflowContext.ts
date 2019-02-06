@@ -22,8 +22,7 @@ import { AllowedExtensions, IPackageInformation, IPathInformation } from "./Path
 import { isElectronPolyfill, isServerPolyfill } from "./ServerPolyfillList";
 import { TypescriptConfig } from "./TypescriptConfig";
 import { UserOutput } from "./UserOutput";
-import * as convertSourceMap from "convert-source-map";
-import * as offsetLines from "offset-sourcemap-lines";
+
 const appRoot = require("app-root-path");
 
 /**
@@ -180,6 +179,8 @@ export class WorkFlowContext {
 	public sourceMapsRoot: string = "";
 	public useSourceMaps: boolean;
 
+	public lastChangedFuseBoxPath: string;
+
 	public initialLoad = true;
 
 	public debugMode = false;
@@ -282,10 +283,14 @@ export class WorkFlowContext {
 	}
 
 	public emitJavascriptHotReload(file: File) {
-		if (file.ignoreCache) {
+		if (file.ignoreCache || !this.lastChangedFuseBoxPath) {
 			return;
 		}
 
+		if (file.info.fuseBoxPath !== this.lastChangedFuseBoxPath) {
+			this.fuse.context.log.echoInfo(`Changed but not emitted ${file.info.fuseBoxPath} to HMR`);
+			return;
+		}
 		this.emitter.addListener("bundle-collected", () => {
 			const hmrDependencies = [];
 			file.resolvedDependencies.map(f => {
