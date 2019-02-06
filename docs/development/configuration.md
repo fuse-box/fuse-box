@@ -602,11 +602,7 @@ FuseBox understands wildcards which are converted to RegExp
 For example:
 
 ```js
-plugins: [
-  ["styles/*.css", CSSPlugin({ group: "bundle.css" })][ // will group files under "styles" folder
-    ("components/*.css", CSSPlugin())
-  ], // will inline all styles that match components path
-];
+plugins: [["styles/*.css", CSSPlugin()][("components/*.css", CSSPlugin())]];
 ```
 
 | Name                | Description                                   |
