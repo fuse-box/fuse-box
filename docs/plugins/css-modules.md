@@ -151,12 +151,6 @@ example the `index.html` file.
 ```js
 fuse
   .bundle("app")
-  .plugin(
-    CSSModules(),
-    CSSPlugin({
-      group: "bundle.css",
-      outFile: `dist/bundle.css`,
-    }),
-  )
+  .plugin(CSSModules(), CSSPlugin())
   .instructions("> index.ts");
 ```
