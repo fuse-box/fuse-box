@@ -433,21 +433,6 @@ That will allow doing the following
 import React from "react";
 ```
 
-## polyfillNonStandardDefaultUsage
-
-Deprecated in favour of
-[allowSyntheticDefaultImports](#allowSyntheticDefaultImports)
-
-The problem with `polyfillNonStandardDefaultUsage` is that it adds an additional
-line of code in each file, polluting the build. `allowSyntheticDefaultImports`
-will be baked into the API and will work out of the box.
-
-Development API (without Quantum) will always have it enabled, Quantum, however,
-will require the option toggled.
-
-`polyfillNonStandardDefaultUsage` will display a warning, setting
-`allowSyntheticDefaultImports`. No breaking changes will occur.
-
 ## writeBundles
 
 If you wish to write bundles yourself, set
