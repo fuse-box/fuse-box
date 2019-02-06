@@ -16,6 +16,7 @@ import {
 import { ModuleCollection } from "./ModuleCollection";
 import { IPackageInformation, IPathInformation } from "./PathMaster";
 import { SourceMapGenerator } from "./SourceMapGenerator";
+import { WorkFlowContext } from "./WorkflowContext";
 
 /**
  * Same Target Enumerator used in current installed version of TypeScript
@@ -250,7 +251,7 @@ export class File {
 		if (/.ts(x?)$/.test(this.info.absPath)) {
 			filePath = this.info.fuseBoxPath.replace(/\.js(x?)$/, ".ts$1");
 		}
-		return `${collection}/${filePath}`;
+		return `/${collection}/${filePath}`;
 	}
 	/**
 	 *
