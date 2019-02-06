@@ -82,12 +82,3 @@ export class CSSModulesClass implements Plugin {
 }
 
 export const CSSModulesPlugin = (options?: CSSModulesOptions) => new CSSModulesClass(options);
-
-export const CSSModules: typeof CSSModulesPlugin = options => {
-	log
-		.preset("warning")
-		.data("CSSModulesPlugin deprecation notice: please rename your CSSModules imports to CSSModulesPlugin")
-		.echo();
-
-	return CSSModulesPlugin(options);
-};

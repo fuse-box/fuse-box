@@ -8,3 +8,4 @@ Here there will be a detailed description of all changes/improvements/
   handled entirely by Quantum
 - polyfillNonStandardDefaultUsage has been removed in favour of
   [allowSyntheticDefaultImports](#allowSyntheticDefaultImports)
+- Removed `CSSModules` exports in favour of conventional `CSSModulesPlugin`
