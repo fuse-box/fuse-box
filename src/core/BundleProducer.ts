@@ -1,6 +1,6 @@
 import { Bundle } from "./Bundle";
 import { FuseBox } from "./FuseBox";
-import { string2RegExp, ensureUserPath, ensureFuseBoxPath, escapeRegExp } from "../Utils";
+import { string2RegExp, ensureUserPath, ensureFuseBoxPath, escapeRegExp, ensureCorrectBundlePath } from "../Utils";
 import { EventEmitter } from "events";
 import { Arithmetic, BundleData } from "../arithmetic/Arithmetic";
 import { SharedCustomPackage } from "./SharedCustomPackage";
@@ -207,12 +207,18 @@ export class BundleProducer {
 
 		let ready = false;
 		const ignoredPatterns = [/\.fusebox/, /node_modules/];
+		let tm;
 		chokidar
 			.watch(this.chokidarPaths || this.fuse.context.homeDir, chokidarOptions)
 			.on("all", (event, fp) => {
 				if (ready) {
 					if (!ignoredPatterns.find(pattern => pattern.test(fp))) {
-						this.onChanges(settings, fp);
+						clearTimeout(tm);
+						// make sure we won't trigger it dozen times if user switches branched
+						// which leads to a multiple file change
+						tm = setTimeout(() => {
+							this.onChanges(settings, fp);
+						}, 10);
 					}
 				}
 			})
@@ -232,8 +238,9 @@ export class BundleProducer {
 				}
 
 				const defer = bundle.fuse.context.defer;
-
 				bundle.lastChangedFile = bundle.fuse.context.convertToFuseBoxPath(path);
+				bundle.context.lastChangedFuseBoxPath = ensureCorrectBundlePath(bundle.lastChangedFile);
+
 				// to ensure new process is not kicked in before the previous has completed
 				defer.queue(bundleName, () => {
 					return bundle.exec().then(result => {
