@@ -157,5 +157,5 @@
     "test": "node test.js"
   },
   "typings": "index.d.ts",
-  "version": "3.7.1"
+  "version": "4.0.0-next.2"
 }
