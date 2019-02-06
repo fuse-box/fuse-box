@@ -21,7 +21,7 @@ export class HMRHandler extends HMRClient {
 	}
 
 	public onSourceChanged(data: ISourceChangedHMR) {
-		this.fuse.context.log.echo(`Source changed for ${data.path}`);
+		this.fuse.context.log.echo(`Sending an HMR update changed for ${data.path}`);
 		return data;
 	}
 }

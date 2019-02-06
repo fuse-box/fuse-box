@@ -3,23 +3,19 @@ import * as fs from "fs";
 import * as offsetLines from "offset-sourcemap-lines";
 import * as path from "path";
 import { each, utils } from "realm-utils";
+import * as ts from "typescript";
 import { FileAnalysis, TraversalPlugin } from "../analysis/FileAnalysis";
 import {
+	Concat,
 	ensureFuseBoxPath,
 	fastHash,
 	isStylesheetExtension,
 	joinFuseBoxPath,
 	readFuseBoxModule,
-	Concat,
 } from "../Utils";
 import { ModuleCollection } from "./ModuleCollection";
 import { IPackageInformation, IPathInformation } from "./PathMaster";
 import { SourceMapGenerator } from "./SourceMapGenerator";
-import { utils, each } from "realm-utils";
-import * as fs from "fs";
-import * as path from "path";
-import * as ts from "typescript";
-import { ensureFuseBoxPath, readFuseBoxModule, isStylesheetExtension, fastHash, joinFuseBoxPath } from "../Utils";
 
 /**
  * Same Target Enumerator used in current installed version of TypeScript
