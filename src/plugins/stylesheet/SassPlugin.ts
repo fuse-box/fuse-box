@@ -81,9 +81,9 @@ export class SassPluginClass implements Plugin {
 		const options = Object.assign(
 			{
 				data: file.contents,
-				file: context.homeDir + "/" + file.info.fuseBoxPath,
+				file: file.info.absPath,
 				sourceMap: true,
-				outFile: file.info.fuseBoxPath,
+				outFile: file.info.absPath,
 				sourceMapContents: true,
 			},
 			this.options,

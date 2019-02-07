@@ -71,7 +71,7 @@ export class PostCSSPluginClass implements Plugin {
 			postcss = require("postcss");
 		}
 		postCssOptions.map = file.context.useSourceMaps ? { inline: false } : false;
-		let fromFile = file.getCorrectSourceMapPath();
+		let fromFile = file.getSourceMapPath();
 		if (fromFile.charAt(0) === "/") {
 			fromFile = fromFile.slice(1);
 		}

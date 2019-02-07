@@ -157,6 +157,16 @@ export function parseQuery(qstr) {
 	return query;
 }
 
+export function extractFuseBoxPath(homeDir: string, targetPath: string) {
+	homeDir = ensureFuseBoxPath(homeDir);
+	targetPath = ensureFuseBoxPath(targetPath);
+	let result = targetPath.replace(homeDir, "");
+	if (result[0] === "/") {
+		result = result.slice(1);
+	}
+	return result;
+}
+
 /**
  * Does two things:
  * - If a relative path is given,

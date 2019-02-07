@@ -12,6 +12,7 @@ import {
 	isStylesheetExtension,
 	joinFuseBoxPath,
 	readFuseBoxModule,
+	extractFuseBoxPath,
 } from "../Utils";
 import { ModuleCollection } from "./ModuleCollection";
 import { IPackageInformation, IPathInformation } from "./PathMaster";
@@ -242,16 +243,20 @@ export class File {
 		return `${collection}/${this.info.fuseBoxPath}`;
 	}
 
-	public getSourceMapPath() {
+	public getSourceMapPath(customName?: string) {
 		let collection = this.collection ? this.collection.name : "default";
 		if (collection === this.context.defaultPackageName) {
-			collection = "src";
+			if (this.context.sourceMapsRoot) {
+				collection = this.context.sourceMapsRoot;
+			} else {
+				collection = "/" + this.context.homeDirBase;
+			}
 		}
 		let filePath = this.info.fuseBoxPath;
 		if (/.ts(x?)$/.test(this.info.absPath)) {
 			filePath = this.info.fuseBoxPath.replace(/\.js(x?)$/, ".ts$1");
 		}
-		return `/${collection}/${filePath}`;
+		return `${collection}/${customName ? customName : filePath}`;
 	}
 	/**
 	 *
@@ -665,10 +670,6 @@ export class File {
 		}
 	}
 
-	public getCorrectSourceMapPath() {
-		return this.context.sourceMapsRoot + "/" + this.relativePath;
-	}
-
 	public getHMRContent() {
 		const concat = new Concat(true, "", "\n");
 		const packageName = this.collection.name;
@@ -721,7 +722,6 @@ export class File {
 		this.context.debug("TypeScript", `Transpile ${this.info.fuseBoxPath}`);
 		let result = this.transpileUsingTypescript();
 		if (result.sourceMapText && this.context.useSourceMaps) {
-			//const correctSourceMapPath = this.getCorrectSourceMapPath();
 			let jsonSourceMaps = JSON.parse(result.sourceMapText);
 			jsonSourceMaps.file = this.info.fuseBoxPath;
 			jsonSourceMaps.sources = [this.getSourceMapPath()];
@@ -769,7 +769,9 @@ export class File {
 			let jsonSourceMaps = JSON.parse(this.sourceMap);
 			jsonSourceMaps.file = this.info.fuseBoxPath;
 			jsonSourceMaps.sources = jsonSourceMaps.sources.map((source: string) => {
-				return this.context.sourceMapsRoot + "/" + (fname || source);
+				const sourcePath = path.join(this.info.absDir, source);
+				const fuseBoxPath = extractFuseBoxPath(this.context.homeDir, sourcePath);
+				return this.getSourceMapPath(fuseBoxPath);
 			});
 
 			if (!this.context.inlineSourceMaps) {

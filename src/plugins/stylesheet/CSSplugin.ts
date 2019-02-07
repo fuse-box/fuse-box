@@ -1,9 +1,7 @@
 import * as path from "path";
 import { File } from "../../core/File";
-import { WorkFlowContext } from "../../core/WorkflowContext";
-import { Plugin } from "../../core/WorkflowContext";
-import { utils } from "realm-utils";
-import { Concat, ensureUserPath, write, isStylesheetExtension } from "../../Utils";
+import { Plugin, WorkFlowContext } from "../../core/WorkflowContext";
+import { isStylesheetExtension } from "../../Utils";
 
 export interface CSSPluginOptions {}
 
@@ -131,13 +129,6 @@ export class CSSPluginClass implements Plugin {
 
 		// We want to emit CSS Changes only if an actual CSS file was changed.
 		this.emitHMR(file);
-	}
-
-	private minifyContents(contents) {
-		return contents
-			.replace(/\s{2,}/g, " ")
-			.replace(/\t|\r|\n/g, "")
-			.trim();
 	}
 }
 
