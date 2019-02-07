@@ -144,6 +144,8 @@ export class WorkFlowContext {
 
 	public homeDir: string;
 
+	public homeDirBase: string;
+
 	public printLogs = true;
 
 	public runAllMatchedPlugins = false;
@@ -545,6 +547,7 @@ export class WorkFlowContext {
 	}
 	public setHomeDir(dir: string) {
 		this.homeDir = ensureDir(dir);
+		this.homeDirBase = path.parse(this.homeDir).base;
 	}
 
 	public setLibInfo(name: string, version: string, info: IPackageInformation) {
