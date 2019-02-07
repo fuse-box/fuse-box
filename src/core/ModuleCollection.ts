@@ -227,7 +227,6 @@ export class ModuleCollection {
 					// node modules might need to resolved asynchronously
 					// like css plugins
 					.then(() => this.context.resolve())
-					.then(() => this.transformGroups())
 					.then(() => this.context.cache && this.context.cache.buildMap(this))
 					.catch(e => {
 						this.context.defer.unlock();
@@ -304,27 +303,6 @@ export class ModuleCollection {
 		return file.info.nodeModuleExplicitOriginal && collection.pm
 			? collection.resolve(new File(this.context, collection.pm.init(file.info.absPath, file.info.fuseBoxAlias)))
 			: collection.resolveEntry();
-	}
-
-	public transformGroups() {
-		const promises = [];
-		this.context.fileGroups.forEach((group: File, name: string) => {
-			this.dependencies.set(group.info.fuseBoxPath, group);
-			if (group.groupHandler) {
-				if (utils.isFunction(group.groupHandler.transformGroup)) {
-					promises.push(
-						new Promise((resolve, reject) => {
-							const result = group.groupHandler.transformGroup(group);
-							if (utils.isPromise(result)) {
-								return result.then(resolve).catch(reject);
-							}
-							return resolve();
-						}),
-					);
-				}
-			}
-		});
-		return Promise.all(promises);
 	}
 
 	public resolveSplitFiles(files: File[]): Promise<void> {
