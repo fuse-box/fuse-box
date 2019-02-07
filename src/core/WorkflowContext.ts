@@ -10,7 +10,7 @@ import { Log } from "../Log";
 import { ModuleCache } from "../ModuleCache";
 import { QuantumBit } from "../quantum/plugin/QuantumBit";
 import { QuantumSplitConfig, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
-import { ensureDir, removeFolder, Concat } from "../Utils";
+import { ensureDir, removeFolder } from "../Utils";
 import { AutoImportedModule, registerDefaultAutoImportModules } from "./AutoImportedModule";
 import { Bundle } from "./Bundle";
 import { BundleProducer } from "./BundleProducer";
@@ -132,6 +132,7 @@ export class WorkFlowContext {
 	public target: string = "universal";
 
 	public inlineCSSPath: string = "css-sourcemaps";
+
 	/**
 	 * Explicitly target bundle to server
 	 */
@@ -298,7 +299,32 @@ export class WorkFlowContext {
 				if (!info.isNodeModule) {
 					hmrDependencies.push({ module: this.defaultPackageName, path: `${info.fuseBoxPath}` });
 				} else {
-					hmrDependencies.push({ module: info.nodeModuleName, path: info.fuseBoxPath });
+					let requiredVendorCheck = true;
+					// electron should be handled differently
+					if (this.target === "electron") {
+						const otherBannedVendors = ["electron"];
+						if (isElectronPolyfill(info.nodeModuleName)) {
+							requiredVendorCheck = false;
+						}
+						if (otherBannedVendors.includes(info.nodeModuleName)) {
+							requiredVendorCheck = false;
+						}
+						let foundInVendors = false;
+						this.nodeModules.forEach((collection, key) => {
+							if (foundInVendors) {
+								return;
+							}
+							const [name] = key.split("@");
+							foundInVendors = info.nodeModuleName === name;
+						});
+						if (!foundInVendors) {
+							requiredVendorCheck = false;
+						}
+					}
+
+					if (requiredVendorCheck) {
+						hmrDependencies.push({ module: info.nodeModuleName, path: info.fuseBoxPath });
+					}
 				}
 			});
 
@@ -405,6 +431,7 @@ export class WorkFlowContext {
 	 */
 	public reset() {
 		this.log.reset();
+
 		this.cacheBustPreffix = new Date().getTime().toString();
 		this.dependents = new Map<string, Set<string>>();
 		this.emitter = new NativeEmitter();
