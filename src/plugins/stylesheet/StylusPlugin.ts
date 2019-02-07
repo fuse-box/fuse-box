@@ -49,7 +49,7 @@ export class StylusPluginClass implements Plugin {
 
 		if (!stylus) stylus = require("stylus");
 
-		options.filename = file.info.fuseBoxPath;
+		options.filename = file.info.absPath;
 		if (!options.paths) {
 			options.paths = [];
 		}
