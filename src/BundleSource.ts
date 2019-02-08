@@ -30,7 +30,7 @@ export class BundleSource {
 	 */
 	public concat: Concat;
 
-	private collectionSource: any;
+	public collectionSource: Concat;
 
 	/**
 	 * Provied an info if this BundleSource should
@@ -130,12 +130,7 @@ export class BundleSource {
 
 		this.annotate(`/* fuse:end-collection "${collection.name}"*/`);
 
-		let key = collection.info ? `${collection.info.name}@${collection.info.version}` : "default";
-		this.concat.add(
-			`packages/${key}`,
-			this.collectionSource.content,
-			key !== undefined ? this.collectionSource.sourceMap : undefined,
-		);
+		this.concat.add(null, this.collectionSource.content, this.collectionSource.sourceMap);
 		return this.collectionSource.content.toString();
 	}
 
@@ -146,8 +141,8 @@ export class BundleSource {
 	 *
 	 * @memberOf BundleSource
 	 */
-	public addContent(data: string) {
-		this.concat.add(null, data);
+	public addContent(data: string, sourceMap?) {
+		this.concat.add(null, data, sourceMap);
 	}
 
 	/**

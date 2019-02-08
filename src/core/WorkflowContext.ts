@@ -179,6 +179,7 @@ export class WorkFlowContext {
 	public sourceMapsProject: boolean = false;
 	public sourceMapsVendor: boolean = false;
 	public inlineSourceMaps: boolean = true;
+
 	public sourceMapsRoot: string = "";
 	public useSourceMaps: boolean;
 

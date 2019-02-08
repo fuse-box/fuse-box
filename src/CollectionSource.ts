@@ -5,12 +5,19 @@ import { File } from "./core/File";
 export class CollectionSource {
 	constructor(public context: WorkFlowContext) {}
 
-	public get(collection: ModuleCollection): Promise<string> {
+	public async get(collection: ModuleCollection): Promise<string> {
+		const cacheCollectionSouceMaps =
+			collection.name !== this.context.defaultPackageName && this.context.useCache && this.context.sourceMapsVendor;
+
+		const sourceMapCacheKey = `${collection.name}.map`;
+
 		if (collection.cachedContent) {
-			return new Promise((resolve, reject) => {
-				this.context.source.addContent(collection.cachedContent);
-				return resolve(collection.cachedContent);
-			});
+			let sourceMap;
+			if (this.context.cache && cacheCollectionSouceMaps) {
+				sourceMap = this.context.cache.getPermanentCache(sourceMapCacheKey);
+			}
+			this.context.source.addContent(collection.cachedContent, sourceMap);
+			return collection.cachedContent;
 		}
 		this.context.source.createCollection(collection);
 		let files = this.filterFiles(collection.dependencies);
@@ -20,7 +27,13 @@ export class CollectionSource {
 			this.context.source.addFile(f);
 		});
 
-		return Promise.resolve(this.context.source.endCollection(collection));
+		const currentCollection = this.context.source.collectionSource;
+		// Source maps caching for vendors
+		if (cacheCollectionSouceMaps) {
+			this.context.cache.setPermanentCache(sourceMapCacheKey, currentCollection.sourceMap);
+		}
+
+		return this.context.source.endCollection(collection);
 	}
 
 	private filterFiles(files: Map<string, File>): File[] {
