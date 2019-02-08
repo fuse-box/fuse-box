@@ -484,32 +484,19 @@ FuseBox.init({
 });
 ```
 
-`sourceMaps` can also be configured via the chainable API:
+Please note, that turning on vendor source maps drastically degrades the overall
+performance and consumes an incredible amount of memory on your machine. Use it
+wisely
 
-```js
-fuse.bundle("app").sourceMaps(true);
-```
-
-Sourcemaps currently work with typescript, BabelPlugin and
-SourceMapPlainJsPlugin
-
-### Hosting source files
-
-By default FuseBox inlines sources, that can be changed
-
-```js
-FuseBox.init({
-  sourceMaps: { inline: false },
-});
-```
+### Changing source root
 
 If you want to serve your sourcemaps from the `homeDir`, you can use
 `sourceRoot`property to define the route mapped to your development server. The
-default value is `src/`
+default value is your base directory
 
 ```js
 FuseBox.init({
-  sourceMaps: { inline: false, sourceRoot: "/sources" },
+  sourceMaps: { sourceRoot: "/sources" },
 });
 ```
 
