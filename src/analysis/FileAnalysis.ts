@@ -185,7 +185,7 @@ export class FileAnalysis {
 			this.file.contents = this.file.context.generateCode(this.ast, {});
 		}
 
-		if (this.requiresTranspilation) {
+		if (this.requiresTranspilation && !this.file.wasTranspiledUsingTypescript) {
 			let result = this.file.transpileUsingTypescript();
 			this.file.contents = result.outputText;
 		}
