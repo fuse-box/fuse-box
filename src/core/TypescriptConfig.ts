@@ -103,6 +103,7 @@ export class TypescriptConfig {
 	private customTsConfig: string | rawCompilerOptions[];
 	private configFile: string;
 	private formatDiagnosticsHost: ts.FormatDiagnosticsHost;
+	private baseURLAutomaticAlias: boolean;
 	constructor(public context: WorkFlowContext) {
 		this.formatDiagnosticsHost = {
 			getCanonicalFileName: file => file,
@@ -152,6 +153,10 @@ export class TypescriptConfig {
 				return config;
 			}
 
+			if (parsedJSONFile.config && parsedJSONFile.config.compilerOptions) {
+				this.baseURLAutomaticAlias = parsedJSONFile.config.compilerOptions.baseUrl === ".";
+			}
+
 			// Report errors in tsconfig file (settings / options)
 			// Parse the `JSONSourceFile` as TS config JSON file.
 			// Better than `ts.convertCompilerOptionsFromJson`,
@@ -194,6 +199,7 @@ export class TypescriptConfig {
 				config.compilerOptions.baseUrl || ".",
 				"",
 			);
+
 			const virtualJSONSourceFile = ts.parseJsonText("[FuseBoxOptions.tsConfig]", JSON.stringify(this.customTsConfig));
 
 			const errors = this.normalizeDiagnostics(parsedVirtualJSONConfig.errors);
@@ -243,8 +249,7 @@ export class TypescriptConfig {
 			this.forceCompilerTarget(this.context.forcedLanguageLevel);
 		}
 
-		const isValidBaseURL = compilerOptions.baseUrl === "." || compilerOptions.baseUrl === this.context.homeDir;
-		if (isValidBaseURL && this.context.automaticAlias) {
+		if (this.baseURLAutomaticAlias && this.context.automaticAlias) {
 			let aliasConfig = {};
 			let log = [];
 			fs.readdirSync(this.context.homeDir).forEach(file => {

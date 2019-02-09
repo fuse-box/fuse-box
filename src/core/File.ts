@@ -629,8 +629,10 @@ export class File {
 			this.context.cache.setPermanentCache(key, this.sourceMap);
 		}
 	}
+	public wasTranspiledUsingTypescript;
 
 	public transpileUsingTypescript(): ts.TranspileOutput | never {
+		this.wasTranspiledUsingTypescript = true;
 		try {
 			return ts.transpileModule(this.contents, this.getTranspilationConfig());
 		} catch (e) {
