@@ -287,7 +287,7 @@ export class File {
 	public tryTypescriptPlugins() {
 		if (this.context.plugins) {
 			this.context.plugins.map(plugin => {
-				if (utils.isFunction(plugin.onTypescriptTransform)) {
+				if (plugin && utils.isFunction(plugin.onTypescriptTransform)) {
 					plugin.onTypescriptTransform(this);
 				}
 			});
