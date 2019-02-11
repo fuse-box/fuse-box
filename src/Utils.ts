@@ -229,6 +229,10 @@ export function string2RegExp(obj: any) {
 	return new RegExp(escapedRegEx);
 }
 
+export function tsKeyPath2RegExp(key: string): RegExp {
+	return new RegExp(`^${key.replace(/[\-\[\]\/\{\}\(\)\+\?\.\\\^\$\|]/g, "\\$&").replace("*", ".*")}$`);
+}
+
 export function removeFolder(userPath) {
 	fsExtra.removeSync(userPath);
 }
