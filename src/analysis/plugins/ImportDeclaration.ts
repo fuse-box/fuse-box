@@ -67,7 +67,7 @@ export class ImportDeclaration {
 					} else {
 						if (overrides[requireStatement] === false) {
 							// which means that's the package should not be bundled and return undefined;
-							file.analysis.registerReplacement(requireStatement, "fuse-empty-package", { strict: true });
+							file.analysis.registerReplacement(requireStatement, "fuse-empty-package");
 							file.analysis.addDependency("fuse-empty-package");
 							return;
 						}
@@ -80,10 +80,13 @@ export class ImportDeclaration {
 						if (overrides[fuseBoxPath] !== undefined) {
 							if (typeof overrides[fuseBoxPath] === "string") {
 								requireStatement = overrides[fuseBoxPath];
-
-								//file.analysis.requiresRegeneration = true;
 							} else {
-								// which means that's is probable "false" and shouldn't be bundled
+								if (overrides[fuseBoxPath] === false) {
+									// which means that's the package should not be bundled and return undefined;
+									file.analysis.registerReplacement(requireStatement, "fuse-empty-package");
+									file.analysis.addDependency("fuse-empty-package");
+									return;
+								}
 								return;
 							}
 						}
