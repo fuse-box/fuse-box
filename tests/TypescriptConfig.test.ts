@@ -58,6 +58,7 @@ describe("TypescriptConfigTest", () => {
 				importHelpers: true,
 				emitDecoratorMetadata: true,
 				experimentalDecorators: true,
+				moduleResolution: "NodeJs",
 			},
 		});
 		expect(config).toEqual({
@@ -69,6 +70,7 @@ describe("TypescriptConfigTest", () => {
 				importHelpers: true,
 				emitDecoratorMetadata: true,
 				experimentalDecorators: true,
+				moduleResolution: ts.ModuleResolutionKind.NodeJs,
 			},
 			errors: [],
 		});
@@ -95,6 +97,7 @@ describe("TypescriptConfigTest", () => {
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
+				moduleResolution: "NodeJs",
 			},
 		});
 		expect(config).toEqual({
@@ -108,6 +111,7 @@ describe("TypescriptConfigTest", () => {
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
+				moduleResolution: ts.ModuleResolutionKind.NodeJs,
 			},
 			errors: [],
 		});
@@ -135,6 +139,7 @@ describe("TypescriptConfigTest", () => {
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
+				moduleResolution: "NodeJs",
 			},
 		});
 		expect(config).toEqual({
@@ -148,6 +153,7 @@ describe("TypescriptConfigTest", () => {
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
+				moduleResolution: ts.ModuleResolutionKind.NodeJs,
 			},
 			errors: [],
 		});
@@ -175,6 +181,7 @@ describe("TypescriptConfigTest", () => {
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
+				moduleResolution: "NodeJs",
 			},
 		});
 		expect(config).toEqual({
@@ -188,6 +195,7 @@ describe("TypescriptConfigTest", () => {
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
+				moduleResolution: ts.ModuleResolutionKind.NodeJs,
 			},
 			errors: [],
 		});
@@ -215,6 +223,7 @@ describe("TypescriptConfigTest", () => {
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
+				moduleResolution: "NodeJs",
 			},
 		});
 		expect(config).toEqual({
@@ -228,6 +237,7 @@ describe("TypescriptConfigTest", () => {
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
+				moduleResolution: ts.ModuleResolutionKind.NodeJs,
 			},
 			errors: [],
 		});
