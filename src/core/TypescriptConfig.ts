@@ -103,7 +103,7 @@ export class TypescriptConfig {
 	private customTsConfig: string | rawCompilerOptions[];
 	private configFile: string;
 	private formatDiagnosticsHost: ts.FormatDiagnosticsHost;
-	private baseURLAutomaticAlias: boolean;
+	// private baseURLAutomaticAlias: boolean;
 	constructor(public context: WorkFlowContext) {
 		this.formatDiagnosticsHost = {
 			getCanonicalFileName: file => file,
@@ -125,15 +125,18 @@ export class TypescriptConfig {
 		return findFileBackwards(tsConfigFilePath, this.context.appRoot);
 	}
 
-	private resolveBaseUrl(baseUrl: string): string {
-		return ensureAbsolutePath(
-			ensureFuseBoxPath(
-				baseUrl
-					? path.normalize(baseUrl)
-					: this.configFile
-					? path.normalize(path.dirname(this.configFile))
-					: this.context.homeDir,
-			),
+	private resolveBaseUrl(baseUrl?: string): string {
+		return (
+			baseUrl &&
+			ensureAbsolutePath(
+				ensureFuseBoxPath(
+					baseUrl
+						? path.normalize(baseUrl)
+						: this.configFile
+						? path.normalize(path.dirname(this.configFile))
+						: this.context.homeDir,
+				),
+			)
 		);
 	}
 
@@ -141,8 +144,17 @@ export class TypescriptConfig {
 		const options = this.config.compilerOptions;
 		const globalPathsMatch: string[] = [];
 		const normalizedPaths: ts.MapLike<string[]> = {};
+		const log: string[] = [];
+		const absHomeDir = ensureAbsolutePath(ensureFuseBoxPath(this.context.homeDir));
 
 		if (typeof options.paths === "object" && options.paths !== null) {
+			if (!options.baseUrl.includes(absHomeDir)) {
+				this.context.warning(
+					`Automatic aliasing cannot be applied because the "baseUrl" path in your tsconfig file is outside of "homeDir"`,
+				);
+				return;
+			}
+
 			for (let key in options.paths) {
 				const lookupArray = options.paths[key];
 				const normalizedLookup = [];
@@ -154,7 +166,7 @@ export class TypescriptConfig {
 
 				if (!Array.isArray(lookupArray)) {
 					this.context.warning(
-						`Cannot resolve invalid TS path "${key}". Expected an array of files or directory names but instead got ${lookupArray}`,
+						`Cannot resolve invalid TS path "${key}". Expected an array of files or directory names but instead got "${lookupArray}"`,
 					);
 					break;
 				}
@@ -173,14 +185,59 @@ export class TypescriptConfig {
 				}
 
 				if (normalizedLookup.length) {
+					log.push(`\t${key} => "${normalizedLookup.join('" | "')}"`);
 					normalizedPaths[key] = normalizedLookup;
 					globalPathsMatch.push(`(${tsKeyPath2RegExp(key).source})`);
 				}
 			}
 
+			fs.readdirSync(options.baseUrl).forEach(file => {
+				// skip files that start with .
+				if (file[0] === ".") {
+					return;
+				}
+
+				const absPath = path.resolve(options.baseUrl, file);
+
+				if (ts.sys.directoryExists(absPath)) {
+					const dirKey = `${file}/*`;
+
+					if (options.paths[dirKey]) return;
+
+					const lookupDir = `./${file}/*`;
+
+					options.paths[dirKey] = [lookupDir];
+					globalPathsMatch.push(`(${tsKeyPath2RegExp(dirKey).source})`);
+					log.push(`\t${dirKey} => "${lookupDir}"`);
+
+					return;
+				}
+
+				if (ts.sys.fileExists(absPath)) {
+					const extension = path.extname(file);
+
+					if (
+						!extension ||
+						(options.allowJs && (extension === ".js" || extension === ".jsx")) || // jsconfig file or explicit `allowJs`
+						extension === ".ts" ||
+						extension === ".tsx"
+					) {
+						let name = extension ? file.substr(0, file.length - extension.length) : file;
+
+						if (options.paths[name]) return;
+
+						log.push(`\t${name} => "./${name}"`);
+						globalPathsMatch.push(`(${tsKeyPath2RegExp(name).source})`);
+						options.paths[name] = [`./${name}`];
+					}
+				}
+			});
+
 			options.paths = normalizedPaths;
 
 			if (globalPathsMatch.length) {
+				this.context.log.echoInfo(`Applying automatic alias relative to baseUrl in tsconfig.json`);
+				this.context.log.echoInfo(`\n    homeDir: ${absHomeDir}\n    baseUrl: ${options.baseUrl}\n${log.join("\n")}`);
 				this.context.tsPathsRegExp = new RegExp(globalPathsMatch.join("|"));
 				this.context.tsModuleResolutionCache = ts.createModuleResolutionCache(this.context.homeDir, f => f);
 			}
@@ -213,10 +270,6 @@ export class TypescriptConfig {
 			if (parsedJSONFile.error) {
 				config.errors = [parsedJSONFile.error];
 				return config;
-			}
-
-			if (parsedJSONFile.config && parsedJSONFile.config.compilerOptions) {
-				this.baseURLAutomaticAlias = parsedJSONFile.config.compilerOptions.baseUrl === ".";
 			}
 
 			// Report errors in tsconfig file (settings / options)
@@ -283,7 +336,10 @@ export class TypescriptConfig {
 		}
 
 		config.compilerOptions.module = ts.ModuleKind.CommonJS;
-		config.compilerOptions.baseUrl = this.resolveBaseUrl(config.compilerOptions.baseUrl || ".");
+
+		if (config.compilerOptions.baseUrl) {
+			config.compilerOptions.baseUrl = this.resolveBaseUrl(config.compilerOptions.baseUrl);
+		}
 
 		if (!("target" in config.compilerOptions)) {
 			config.compilerOptions.target = this.context.languageLevel;
@@ -297,9 +353,9 @@ export class TypescriptConfig {
 			this.context.fuse.producer.allowSyntheticDefaultImports = config.compilerOptions.allowSyntheticDefaultImports;
 		}
 
-		if (config.compilerOptions.baseUrl === this.resolveBaseUrl(".")) {
-			this.baseURLAutomaticAlias = true;
-		}
+		// if (config.compilerOptions.baseUrl === this.resolveBaseUrl(".")) {
+		// 	this.baseURLAutomaticAlias = true;
+		// }
 
 		return config;
 	}
@@ -317,28 +373,28 @@ export class TypescriptConfig {
 			this.forceCompilerTarget(this.context.forcedLanguageLevel);
 		}
 
-		if (this.baseURLAutomaticAlias && this.context.automaticAlias) {
-			let aliasConfig = {};
-			let log = [];
-			fs.readdirSync(this.context.homeDir).forEach(file => {
-				// skip files that start with .
-				if (file[0] === ".") {
-					return;
-				}
-				const extension = path.extname(file);
-				if (!extension || extension === ".ts" || extension === ".tsx") {
-					let name = file;
-					if (extension) {
-						name = file.replace(/\.tsx?/, "");
-					}
-					log.push(`\t${name} => "~/${name}"`);
-					aliasConfig[name] = `~/${name}`;
-				}
-			});
-			this.context.log.echoInfo(`Applying automatic alias based on baseUrl in tsconfig.json`);
-			this.context.log.echoInfo(`\n ${log.join("\n")}`);
-			this.context.addAlias(aliasConfig);
-		}
+		// if (this.context.automaticAlias) {
+		// 	let aliasConfig = {};
+		// 	let log = [];
+		// 	fs.readdirSync(this.context.homeDir).forEach(file => {
+		// 		// skip files that start with .
+		// 		if (file[0] === ".") {
+		// 			return;
+		// 		}
+		// 		const extension = path.extname(file);
+		// 		if (!extension || extension === ".ts" || extension === ".tsx") {
+		// 			let name = file;
+		// 			if (extension) {
+		// 				name = file.replace(/\.tsx?/, "");
+		// 			}
+		// 			log.push(`\t${name} => "~/${name}"`);
+		// 			aliasConfig[name] = `~/${name}`;
+		// 		}
+		// 	});
+		// 	this.context.log.echoInfo(`Applying automatic alias based on baseUrl in tsconfig.json`);
+		// 	this.context.log.echoInfo(`\n ${log.join("\n")}`);
+		// 	this.context.addAlias(aliasConfig);
+		// }
 	}
 
 	public forceCompilerTarget(level: ScriptTarget) {
@@ -359,13 +415,19 @@ export class TypescriptConfig {
 				importHelpers: true,
 				emitDecoratorMetadata: true,
 				experimentalDecorators: true,
-			});
+				moduleResolution: ts.ModuleResolutionKind.NodeJs,
+			} as ts.CompilerOptions);
 			// Raw compiler options
-			const compilerOptions: rawCompilerOptions = Object.assign({}, this.config.compilerOptions as any, {
-				target: getScriptLevelString(this.config.compilerOptions.target),
-				module: "CommonJS",
-				jsx: "react",
-			});
+			const compilerOptions: rawCompilerOptions = Object.assign(
+				{},
+				this.config.compilerOptions as any,
+				{
+					target: getScriptLevelString(this.config.compilerOptions.target),
+					module: "CommonJS",
+					jsx: "react",
+					moduleResolution: "NodeJs",
+				} as rawCompilerOptions,
+			);
 			const targetFile = path.join(this.context.homeDir, "tsconfig.json");
 			this.context.log.echoInfo(`Generating recommended tsconfig.json:  ${targetFile}`);
 			fs.writeFileSync(targetFile, JSON.stringify({ compilerOptions }, null, 2));
@@ -498,7 +560,7 @@ export class TypescriptConfig {
 		this.initializeConfig();
 		this.verifyTsLib();
 
-		if (this.context.automaticTSPathAlias) {
+		if (this.config.compilerOptions.baseUrl && this.context.automaticAlias) {
 			this.normalizeTSPaths();
 		}
 
