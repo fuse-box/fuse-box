@@ -107,27 +107,6 @@ export class FileAnalysis {
 		}
 	}
 
-	public handleAliasReplacement(requireStatement: string): string {
-		if (!this.file.context.experimentalAliasEnabled) {
-			return requireStatement;
-		}
-		// enable aliases only for the current project
-		// if (this.file.collection.name !== this.file.context.defaultPackageName) {
-		//    return requireStatement;
-		// }
-
-		const aliasCollection = this.file.context.aliasCollection;
-		aliasCollection.forEach(props => {
-			if (props.expr.test(requireStatement)) {
-				requireStatement = requireStatement.replace(props.expr, `${props.replacement}$2`);
-				// only if we need it
-
-				this.requiresRegeneration = true;
-			}
-		});
-		return requireStatement;
-	}
-
 	public addDependency(name: string) {
 		this.dependencies.push(name);
 	}
