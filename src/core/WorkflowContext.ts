@@ -1,6 +1,7 @@
 import * as escodegen from "escodegen";
 import * as NativeEmitter from "events";
 import * as path from "path";
+import * as ts from "typescript";
 import { utils } from "realm-utils";
 import { BundleSource } from "../BundleSource";
 import { Defer } from "../Defer";
@@ -10,7 +11,7 @@ import { Log } from "../Log";
 import { ModuleCache } from "../ModuleCache";
 import { QuantumBit } from "../quantum/plugin/QuantumBit";
 import { QuantumSplitConfig, QuantumSplitResolveConfiguration } from "../quantum/plugin/QuantumSplit";
-import { ensureDir, removeFolder } from "../Utils";
+import { ensureDir, removeFolder, ensureFuseBoxPath } from "../Utils";
 import { AutoImportedModule, registerDefaultAutoImportModules } from "./AutoImportedModule";
 import { Bundle } from "./Bundle";
 import { BundleProducer } from "./BundleProducer";
@@ -68,11 +69,19 @@ export class WorkFlowContext {
 	 */
 	public appRoot: any = appRoot.path;
 
+	public cwd: string = ensureFuseBoxPath(process.cwd());
+
 	public cacheBustPreffix: string;
 
 	public dynamicImportsEnabled = true;
 
 	public automaticAlias = true;
+
+	public automaticTSPathAlias = false;
+
+	public tsPathsRegExp?: RegExp;
+
+	public tsModuleResolutionCache?: ts.ModuleResolutionCache;
 
 	public shim: any;
 
@@ -272,9 +281,50 @@ export class WorkFlowContext {
 		return escodegen.generate(ast, opts);
 	}
 
+	public replaceTSPathAliases(requireStatement: string): { requireStatement: string; replaced: boolean } {
+		let replaced = false;
+
+		const { compilerOptions } = this.tsConfig.getConfig();
+		const normalizedRequireStmt = requireStatement.replace(/\\/g, "/");
+		const { resolvedModule } = ts.resolveModuleName(
+			normalizedRequireStmt,
+			"",
+			compilerOptions,
+			ts.sys,
+			this.tsModuleResolutionCache,
+		);
+
+		if (!resolvedModule) return { requireStatement, replaced };
+
+		if (resolvedModule.packageId) {
+			requireStatement = resolvedModule.packageId.name;
+			replaced = true;
+		} else if (resolvedModule.resolvedFileName) {
+			requireStatement = path.relative(this.homeDir, resolvedModule.resolvedFileName);
+
+			if (resolvedModule.extension) {
+				requireStatement = requireStatement.substr(0, requireStatement.length - resolvedModule.extension.length);
+			}
+
+			requireStatement = `~/${requireStatement}`;
+
+			replaced = true;
+		}
+
+		return { requireStatement, replaced };
+	}
+
 	public replaceAliases(requireStatement: string): { requireStatement: string; replaced: boolean } {
 		const aliasCollection = this.aliasCollection;
 		let replaced = false;
+
+		if (this.automaticTSPathAlias && this.tsPathsRegExp && this.tsPathsRegExp.test(requireStatement)) {
+			const resolved = this.replaceTSPathAliases(requireStatement);
+			if (resolved.replaced) {
+				return resolved;
+			}
+		}
+
 		if (aliasCollection) {
 			aliasCollection.forEach(props => {
 				if (props.expr.test(requireStatement)) {
