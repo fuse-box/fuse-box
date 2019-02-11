@@ -1,0 +1,2 @@
+node test;
+npm test
