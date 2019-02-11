@@ -15,6 +15,16 @@ yarn add node-sass --dev
 npm install node-sass --save-dev
 ```
 
+Note: Instead of `node-sass`, you may also use the reference implementation 
+[`sass`](https://github.com/sass/dart-sass) together with its optional
+dependency `fibers`. SassPlugin will use whatever one you installed.
+
+```bash
+yarn add sass fibers --dev
+// OR
+npm install sass fibers --save-dev
+```
+
 ## Usage
 
 check [Sass website](http://sass-lang.com/) for more information. note: The Sass
