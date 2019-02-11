@@ -26,7 +26,7 @@ export class DynamicImportStatement {
 							}
 						}
 					}
-					let result = file.context.replaceAliases(requireStatement);
+					let result = file.context.replaceAliases(requireStatement, file);
 					requireStatement = result.requireStatement;
 					let resolved = file.collection.pm.resolve(requireStatement, file.info.absDir);
 					if (resolved) {

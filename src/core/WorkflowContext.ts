@@ -77,7 +77,7 @@ export class WorkFlowContext {
 
 	public automaticAlias = true;
 
-	public automaticTSPathAlias = false;
+	// public automaticTSPathAlias = false;
 
 	public tsPathsRegExp?: RegExp;
 
@@ -314,11 +314,16 @@ export class WorkFlowContext {
 		return { requireStatement, replaced };
 	}
 
-	public replaceAliases(requireStatement: string): { requireStatement: string; replaced: boolean } {
+	public replaceAliases(requireStatement: string, file: File): { requireStatement: string; replaced: boolean } {
 		const aliasCollection = this.aliasCollection;
 		let replaced = false;
 
-		if (this.automaticTSPathAlias && this.tsPathsRegExp && this.tsPathsRegExp.test(requireStatement)) {
+		if (
+			this.automaticAlias &&
+			file.collection.name === this.defaultPackageName &&
+			this.tsPathsRegExp &&
+			this.tsPathsRegExp.test(requireStatement)
+		) {
 			const resolved = this.replaceTSPathAliases(requireStatement);
 			if (resolved.replaced) {
 				return resolved;
