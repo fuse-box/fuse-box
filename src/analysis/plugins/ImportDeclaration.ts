@@ -64,10 +64,13 @@ export class ImportDeclaration {
 				if (overrides[requireStatement] !== undefined) {
 					if (typeof overrides[requireStatement] === "string") {
 						requireStatement = overrides[requireStatement];
-						//file.analysis.requiresRegeneration = true;
 					} else {
-						// which means that's is probable "false" and shouldn't be bundled
-						return;
+						if (overrides[requireStatement] === false) {
+							// which means that's the package should not be bundled and return undefined;
+							file.analysis.registerReplacement(requireStatement, "fuse-empty-package", { strict: true });
+							file.analysis.addDependency("fuse-empty-package");
+							return;
+						}
 					}
 				} else {
 					const resolved = pm.resolve(requireStatement, file.info.absDir);
@@ -77,6 +80,7 @@ export class ImportDeclaration {
 						if (overrides[fuseBoxPath] !== undefined) {
 							if (typeof overrides[fuseBoxPath] === "string") {
 								requireStatement = overrides[fuseBoxPath];
+
 								//file.analysis.requiresRegeneration = true;
 							} else {
 								// which means that's is probable "false" and shouldn't be bundled
@@ -89,9 +93,6 @@ export class ImportDeclaration {
 		}
 
 		let result = file.context.replaceAliases(requireStatement);
-		if (result.replaced) {
-			//file.analysis.requiresRegeneration = true;
-		}
 		return result.requireStatement;
 	}
 }
