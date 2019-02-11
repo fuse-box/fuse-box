@@ -1,6 +1,6 @@
 import { WorkFlowContext } from "./WorkflowContext";
 import * as path from "path";
-import { ensureUserPath, findFileBackwards } from "../Utils";
+import { ensureUserPath, findFileBackwards, ensureFuseBoxPath, ensureAbsolutePath, tsKeyPath2RegExp } from "../Utils";
 import { ScriptTarget } from "./File";
 import * as fs from "fs";
 import { Config } from "../Config";
@@ -125,6 +125,68 @@ export class TypescriptConfig {
 		return findFileBackwards(tsConfigFilePath, this.context.appRoot);
 	}
 
+	private resolveBaseUrl(baseUrl: string): string {
+		return ensureAbsolutePath(
+			ensureFuseBoxPath(
+				baseUrl
+					? path.normalize(baseUrl)
+					: this.configFile
+					? path.normalize(path.dirname(this.configFile))
+					: this.context.homeDir,
+			),
+		);
+	}
+
+	private normalizeTSPaths() {
+		const options = this.config.compilerOptions;
+		const globalPathsMatch: string[] = [];
+		const normalizedPaths: ts.MapLike<string[]> = {};
+
+		if (typeof options.paths === "object" && options.paths !== null) {
+			for (let key in options.paths) {
+				const lookupArray = options.paths[key];
+				const normalizedLookup = [];
+
+				if (/\*{2,}/g.test(key)) {
+					this.context.warning(`Cannot resolve invalid TS path "${key}". A TS path can have at most one star`);
+					break;
+				}
+
+				if (!Array.isArray(lookupArray)) {
+					this.context.warning(
+						`Cannot resolve invalid TS path "${key}". Expected an array of files or directory names but instead got ${lookupArray}`,
+					);
+					break;
+				}
+
+				for (let i = 0; i < lookupArray.length; i++) {
+					const lookupPath = String(lookupArray[i]).replace(/\\/g, "/");
+
+					if (/\*{2,}/g.test(lookupPath)) {
+						this.context.warning(
+							`Cannot resolve invalid TS path "${key}". A lookup file/dir "${lookupPath}" can have at most one star`,
+						);
+						break;
+					}
+
+					normalizedLookup.push(lookupPath);
+				}
+
+				if (normalizedLookup.length) {
+					normalizedPaths[key] = normalizedLookup;
+					globalPathsMatch.push(`(${tsKeyPath2RegExp(key).source})`);
+				}
+			}
+
+			options.paths = normalizedPaths;
+
+			if (globalPathsMatch.length) {
+				this.context.tsPathsRegExp = new RegExp(globalPathsMatch.join("|"));
+				this.context.tsModuleResolutionCache = ts.createModuleResolutionCache(this.context.homeDir, f => f);
+			}
+		}
+	}
+
 	public readJsonConfigFile(): TSParsedConfig {
 		const config: TSParsedConfig = { compilerOptions: {}, errors: [] };
 
@@ -166,6 +228,7 @@ export class TypescriptConfig {
 				ts.sys,
 				path.dirname(this.configFile),
 			);
+
 			if (parsedJSONConfigFile.errors.length) {
 				const errors = this.normalizeDiagnostics(parsedJSONConfigFile.errors);
 				if (errors.length) {
@@ -196,7 +259,7 @@ export class TypescriptConfig {
 
 			const parsedVirtualJSONConfig = ts.convertCompilerOptionsFromJson(
 				tsConfigOverrideCompilerOptions,
-				config.compilerOptions.baseUrl || ".",
+				this.context.cwd,
 				"",
 			);
 
@@ -220,6 +283,7 @@ export class TypescriptConfig {
 		}
 
 		config.compilerOptions.module = ts.ModuleKind.CommonJS;
+		config.compilerOptions.baseUrl = this.resolveBaseUrl(config.compilerOptions.baseUrl || ".");
 
 		if (!("target" in config.compilerOptions)) {
 			config.compilerOptions.target = this.context.languageLevel;
@@ -231,6 +295,10 @@ export class TypescriptConfig {
 			this.context.fuse.producer
 		) {
 			this.context.fuse.producer.allowSyntheticDefaultImports = config.compilerOptions.allowSyntheticDefaultImports;
+		}
+
+		if (config.compilerOptions.baseUrl === this.resolveBaseUrl(".")) {
+			this.baseURLAutomaticAlias = true;
 		}
 
 		return config;
@@ -429,6 +497,10 @@ export class TypescriptConfig {
 		this.defaultSetup();
 		this.initializeConfig();
 		this.verifyTsLib();
+
+		if (this.context.automaticTSPathAlias) {
+			this.normalizeTSPaths();
+		}
 
 		this.context.log.echoInfo(`Typescript script target: ${getScriptLevelString(config.compilerOptions.target)}`);
 		CACHED[cacheKey] = this.config;
