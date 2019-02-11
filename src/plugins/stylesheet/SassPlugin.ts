@@ -13,13 +13,41 @@ export interface SassPluginOptions {
 	resources?: [{ test: RegExp; file: string }];
 	indentedSyntax?: boolean;
 	functions?: { [key: string]: (...args: any[]) => any };
+	fiber?: () => void;
 }
 
 export interface ImporterFunc {
 	(url: string, prev: string, done: (opts: { url?: string; file?: string }) => any): any;
 }
 
-let sass;
+let sass: {
+	compiler: any;
+	fiber?: () => void;
+};
+
+function tryRequire(moduleName: string) {
+	try {
+		return require(moduleName);
+	} catch (e) {
+	}
+}
+
+function getSass() {
+	let compiler = tryRequire('node-sass');
+
+	if (compiler) {
+		return {compiler};
+	}
+
+	compiler = tryRequire('sass');
+
+	if (compiler) {
+		const fiber = tryRequire('fibers');
+		return {compiler, fiber};
+	}
+
+	throw new Error('SassPlugin: Couldn\'t require local sass dependecy. Please install either node-sass or sass.')
+}
 
 /**
  * @export
@@ -52,7 +80,7 @@ export class SassPluginClass implements Plugin {
 		}
 
 		if (!sass) {
-			sass = require("node-sass");
+			sass = getSass();
 		}
 
 		const defaultMacro = {
@@ -88,6 +116,10 @@ export class SassPluginClass implements Plugin {
 			},
 			this.options,
 		);
+
+		if (sass.fiber) {
+			options.fiber = sass.fiber;
+		}
 
 		options.includePaths = [];
 		if (typeof this.options.includePaths !== "undefined") {
@@ -131,7 +163,7 @@ export class SassPluginClass implements Plugin {
 		});
 		file.cssDependencies = cssDependencies;
 		return new Promise((resolve, reject) => {
-			return sass.render(options, (err, result) => {
+			return sass.compiler.render(options, (err, result) => {
 				if (err) {
 					const errorFile = err.file === "stdin" ? file.absPath : err.file;
 					file.contents = "";
