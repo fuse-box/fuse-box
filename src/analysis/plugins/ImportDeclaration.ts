@@ -95,7 +95,7 @@ export class ImportDeclaration {
 			}
 		}
 
-		let result = file.context.replaceAliases(requireStatement);
+		let result = file.context.replaceAliases(requireStatement, file);
 		return result.requireStatement;
 	}
 }
