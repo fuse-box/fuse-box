@@ -1,13 +1,10 @@
-import * as path from "path";
-import * as fs from "fs-extra";
 import * as appRoot from "app-root-path";
-import { FuseBox } from "../../index";
-import { BundleProducer } from "../../core/BundleProducer";
 import { fork } from "child_process";
-import { removeFolder } from "../../Utils";
-import * as request from "request";
-import { UserOutputResult } from "../../core/UserOutput";
-import { Bundle } from "../../core/Bundle";
+import * as fs from "fs-extra";
+import * as path from "path";
+import { Bundle, BundleProducer, FuseBox } from "../../../src";
+import { UserOutputResult } from "../../../src/core/UserOutput";
+import { removeFolder } from "../../../src/Utils";
 
 const jsdom = require("jsdom");
 
@@ -94,7 +91,7 @@ export class FuseTestEnv {
 		config.ensureTsConfig = false;
 
 		if (config.project.fromStubs) {
-			basicConfig.homeDir = path.join(appRoot.path, "src/tests/stubs/cases/", config.project.fromStubs);
+			basicConfig.homeDir = path.join(appRoot.path, "tests/_helpers/stubs/cases/", config.project.fromStubs);
 			this.dirs.homeDir = basicConfig.homeDir;
 		} else {
 			createFiles(this.dirs.homeDir, config.project.files);
@@ -196,7 +193,7 @@ export class FuseTestEnv {
 		fn: { (window: any, test: FuseTestEnv): any },
 		preloadScriptPath?: string,
 	): Promise<FuseTestEnv> {
-		const scripts = [path.join(appRoot.path, "src/tests/stubs/DummyXMLHttpRequest.js")];
+		const scripts = [path.join(appRoot.path, "tests/_helpers/stubs/DummyXMLHttpRequest.js")];
 		const bundles = this.producer.sortBundles();
 
 		if (preloadScriptPath) {
@@ -245,12 +242,10 @@ export class FuseTestEnv {
 					};
 					window.__ajax = (url, fn) => {
 						if (/^http(s)\:/.test(url)) {
-							return request(url, function(error, response, body) {
-								if (error) {
-									return fn(400, body);
-								}
-								fn(200, body);
-							});
+							return fn(
+								200,
+								`module.exports = {  someText : "External lib", from : () => {}, someFunction : () => {}}`,
+							);
 						}
 						const target = path.join(this.dirs.dist, url);
 						if (fs.existsSync(target)) {

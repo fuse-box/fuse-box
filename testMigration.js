@@ -14,9 +14,10 @@ const replaceWords = line => {
   const words = [
     [/should\(/, "expect("],
     [/\.findString\(/, ".toContain("],
+    [/\.haveLength\(/, ".toHaveLength("],
     [/\.notFindString\(/, ".not.toContain("],
-    [/\.deepEqual\(/, ".toEqual("],
-    [/\.beObject\(/, ".toBeTruthy("],
+    [/\.(deepEqual|equal)\(/, ".toEqual("],
+    [/\.(beObject|beOkay|beTrue)\(/, ".toBeTruthy("],
   ];
   words.map(item => {
     line = line.replace(item[0], item[1]);

@@ -8,8 +8,8 @@ import { Plugin } from "../core/WorkflowContext";
  */
 export class StyledComponentsPluginClass implements Plugin {
 	public options;
-	constructor(options = {}) {
-		this.options = options;
+	constructor(options?: any) {
+		this.options = options || {};
 	}
 
 	public init(context: WorkFlowContext) {
@@ -31,6 +31,6 @@ export class StyledComponentsPluginClass implements Plugin {
 	}
 }
 
-export const StyledComponentsPlugin = options => {
+export const StyledComponentsPlugin = (options?: any) => {
 	return new StyledComponentsPluginClass(options);
 };
