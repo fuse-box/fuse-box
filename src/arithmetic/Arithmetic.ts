@@ -56,11 +56,7 @@ export class BundleData {
 		return this.including.has(file.getCrossPlatormPath());
 	}
 
-	public finalize() {
-		if (this.tmpFolder) {
-			deleteFolderRecursive(this.tmpFolder);
-		}
-	}
+	public finalize() {}
 
 	public shouldIgnore(name: string) {
 		return this.excluding.has(name);

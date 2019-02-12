@@ -21,6 +21,7 @@ module.exports = {
     "_current_test",
     "website",
   ],
+  maxConcurrency: 1,
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node", "json"],
   //collectCoverage: true,
 };

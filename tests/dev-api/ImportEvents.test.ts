@@ -2,7 +2,7 @@ import { createEnv } from "../_helpers/OldEnv";
 
 describe("ImportEventTest", () => {
 	it("RegisterEventAfterImport", done => {
-		createEnv({
+		return createEnv({
 			project: {
 				files: {
 					"index.js": "exports.bar = 1; require('./foo/bar')",
@@ -24,7 +24,7 @@ describe("ImportEventTest", () => {
 		});
 	});
 	it("registerBeforeImport", done => {
-		createEnv({
+		return createEnv({
 			project: {
 				files: {
 					"index.js": "exports.bar = 1; require('./foo/bar')",

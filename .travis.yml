@@ -1,6 +1,6 @@
 language: node_js
 cache: npm
-script: sh testAll.sh
+script: npm test
 node_js:
   - "10"
 install:

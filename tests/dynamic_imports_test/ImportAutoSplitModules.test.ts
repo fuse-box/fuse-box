@@ -1,5 +1,4 @@
-import { QuantumPlugin } from "../../src";
-import { createRealNodeModule, FuseTestEnv } from "../_helpers/stubs/FuseTestEnv";
+import { FuseTestEnv } from "../_helpers/stubs/FuseTestEnv";
 
 describe("ImportAutoSplitModules", () => {
 	it("Should auto split file", () => {

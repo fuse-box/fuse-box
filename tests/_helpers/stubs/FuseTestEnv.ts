@@ -9,10 +9,12 @@ import { removeFolder } from "../../../src/Utils";
 const jsdom = require("jsdom");
 
 function createTestFolders(customFolder: string): { root; homeDir; dist } {
-	let root = path.join(appRoot.path, ".fusebox", "tests", new Date().getTime().toString() + "_" + Math.random());
-	if (customFolder) {
-		root = path.join(appRoot.path, customFolder);
-	}
+	let root = path.join(
+		appRoot.path,
+		".fusebox",
+		"tests",
+		new Date().getTime().toString() + "_" + Math.random() + "_" + Math.random(),
+	);
 	fs.ensureDirSync(root);
 
 	const homeDir = path.join(root, "src");
@@ -219,6 +221,7 @@ export class FuseTestEnv {
 		if (fs.existsSync(webIndexFile)) {
 			indexContent = fs.readFileSync(webIndexFile).toString();
 		}
+
 		return new Promise<any>((resolve, reject) => {
 			jsdom.env({
 				html: indexContent,
@@ -237,7 +240,7 @@ export class FuseTestEnv {
 									}
 								}
 								return resolve(links);
-							}, 10);
+							}, 0);
 						});
 					};
 					window.__ajax = (url, fn) => {

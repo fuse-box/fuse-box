@@ -1,12 +1,21 @@
+import * as appRoot from "app-root-path";
+import * as fs from "fs";
+import * as fsExtra from "fs-extra";
 import * as path from "path";
 import { each } from "realm-utils";
-import { FuseBox, FuseBoxOptions } from "../../core/FuseBox";
-import * as fs from "fs";
-import * as appRoot from "app-root-path";
-import { removeFolder } from "../../Utils";
-import * as fsExtra from "fs-extra";
-import { QuantumPlugin } from "../../index";
+import { FuseBox, FuseBoxOptions, QuantumPlugin } from "../../../src";
+import { removeFolder } from "../../../src/Utils";
+
 const jsdom = require("jsdom");
+
+function createFiles(dir: string, files: any) {
+	for (let name in files) {
+		const content = files[name];
+		const filePath = path.join(dir, name);
+		fsExtra.ensureDirSync(path.dirname(filePath));
+		fs.writeFileSync(filePath, content);
+	}
+}
 
 export class TestFolder {
 	folder: string;
@@ -40,42 +49,44 @@ export class TestFolder {
 	}
 
 	public clean() {
-		removeFolder(this.folder);
+		//removeFolder(this.folder);
 	}
 }
 
 export function getStubsFolder() {
-	return path.join(appRoot.path, "src/tests/stubs");
+	return path.join(appRoot.path, "tests/_helpers/stubs");
 }
 
 export function createOptimisedBundleEnv(opts: any) {
-	const name = opts.name || `test-${new Date().getTime()}`;
-
-	let tmpFolder = path.join(appRoot.path, ".fusebox", "tests", name);
-	const optimisedBundleOpts = opts.options || {};
-
-	fsExtra.ensureDirSync(tmpFolder);
-	let localPath = path.join(tmpFolder, name);
+	process.env.NODE_ENV = "production";
+	const randomName = `test-${new Date().getTime()}-${Math.random()}`;
+	const root = path.join(appRoot.path, ".fusebox/old-tests/", randomName);
+	const projectsHomeDir = path.join(root, "project");
+	let modulesFolder = path.join(root, "modules");
+	fsExtra.ensureDirSync(projectsHomeDir);
+	fsExtra.ensureDirSync(modulesFolder);
 
 	const output: any = {
 		modules: {},
 	};
 	const scripts = [];
 
-	let modulesFolder = path.join(localPath, "modules");
+	const optimisedBundleOpts = opts.options || {};
+
 	if (opts.stubs) {
-		modulesFolder = path.join(appRoot.path, "src/tests/stubs/test_modules");
+		modulesFolder = path.join(appRoot.path, "tests/_helpers/stubs/test_modules");
 	}
 
 	// creating modules
 	return each(opts.modules, (moduleParams, name) => {
 		return new Promise((resolve, reject) => {
-			moduleParams.output = path.join(modulesFolder, name, "index.js");
+			moduleParams.homeDir = path.join(modulesFolder, name);
+			moduleParams.output = path.join(modulesFolder, name, "dist/index.js");
 			moduleParams.package = name;
 			moduleParams.cache = false;
 			moduleParams.log = moduleParams.log || false;
 
-			moduleParams.tsConfig = path.join(appRoot.path, "src/tests/fixtures", "tsconfig.json");
+			moduleParams.tsConfig = path.join(appRoot.path, "tests/_helpers/fixtures", "tsconfig.json");
 			const fuse = FuseBox.init(moduleParams);
 			fuse
 				.bundle("index.js")
@@ -86,9 +97,9 @@ export function createOptimisedBundleEnv(opts: any) {
 				.then(bundle => {
 					if (moduleParams.onDone) {
 						moduleParams.onDone({
-							localPath,
+							root,
 							filePath: moduleParams.output,
-							projectDir: path.join(localPath, "project"),
+							projectDir: moduleParams.homeDir,
 						});
 					}
 					scripts.push(moduleParams.output);
@@ -99,13 +110,16 @@ export function createOptimisedBundleEnv(opts: any) {
 	})
 		.then(() => {
 			const projectOptions = opts.project;
-			projectOptions.output = path.join(localPath, "project", "index.js");
+			projectOptions.homeDir = projectsHomeDir;
+			projectOptions.output = path.join(projectsHomeDir, "dist", "index.js");
 			projectOptions.cache = false;
 			projectOptions.log = projectOptions.log || false;
-			projectOptions.tsConfig = path.join(appRoot.path, "src/tests/fixtures", "tsconfig.json");
+			projectOptions.tsConfig = path.join(appRoot.path, "tests/_helpers/fixtures", "tsconfig.json");
 			projectOptions.modulesFolder = modulesFolder;
 
 			projectOptions.plugins = projectOptions.plugins || [];
+			createFiles(projectsHomeDir, projectOptions.files);
+			delete projectOptions.files;
 			projectOptions.plugins.push(QuantumPlugin(optimisedBundleOpts));
 			const fuse = FuseBox.init(projectOptions);
 
@@ -149,38 +163,38 @@ export function createOptimisedBundleEnv(opts: any) {
 			});
 		})
 		.then(() => {
-			setTimeout(() => {
-				removeFolder(localPath);
-			}, 5);
 			return output;
 		});
 }
 
 export function createEnv(opts: any) {
-	const name = opts.name || `test-${new Date().getTime()}`;
+	const randomName = `test-${new Date().getTime()}-${Math.random()}`;
+	const root = path.join(appRoot.path, ".fusebox/old-tests/", randomName);
+	const projectsHomeDir = path.join(root, "project");
+	const modulesFolder = path.join(root, "modules");
+	fsExtra.ensureDirSync(projectsHomeDir);
+	fsExtra.ensureDirSync(modulesFolder);
 
-	let tmpFolder = path.join(appRoot.path, ".fusebox", "tests", name);
 	const serverOnly = opts.server === true;
-
-	fsExtra.ensureDirSync(tmpFolder);
-	let localPath = path.join(tmpFolder, name);
 
 	const output: any = {
 		modules: {},
 	};
 	const scripts = [];
 
-	const modulesFolder = path.join(localPath, "modules");
 	// creating modules
 	return each(opts.modules, (moduleParams, name) => {
 		return new Promise((resolve, reject) => {
-			moduleParams.output = path.join(modulesFolder, name, "index.js");
+			moduleParams.homeDir = path.join(modulesFolder, name);
+			moduleParams.output = path.join(modulesFolder, name, "dist/index.js");
 			moduleParams.package = name;
 			moduleParams.ensureTsConfig = false;
 			moduleParams.cache = false;
 			moduleParams.log = false;
 
-			moduleParams.tsConfig = path.join(appRoot.path, "src/tests/fixtures", "tsconfig.json");
+			moduleParams.tsConfig = path.join(appRoot.path, "tests/_helpers/fixtures", "tsconfig.json");
+			createFiles(moduleParams.homeDir, moduleParams.files);
+			delete moduleParams.files;
 			const fuse = FuseBox.init(moduleParams);
 			fuse
 				.bundle("index.js")
@@ -191,9 +205,9 @@ export function createEnv(opts: any) {
 				.then(bundle => {
 					if (moduleParams.onDone) {
 						moduleParams.onDone({
-							localPath,
+							root,
 							filePath: moduleParams.output,
-							projectDir: path.join(localPath, "project"),
+							projectDir: projectsHomeDir,
 						});
 					}
 
@@ -210,13 +224,15 @@ export function createEnv(opts: any) {
 	})
 		.then(() => {
 			const projectOptions = opts.project;
-			projectOptions.output = path.join(localPath, "project", "index.js");
+			projectOptions.homeDir = projectsHomeDir;
+			projectOptions.output = path.join(projectsHomeDir, "dist", "index.js");
 			projectOptions.cache = false;
 			projectOptions.log = false;
 			projectOptions.ensureTsConfig = false;
-			projectOptions.tsConfig = path.join(appRoot.path, "src/tests/fixtures", "tsconfig.json");
+			projectOptions.tsConfig = path.join(appRoot.path, "tests/_helpers/fixtures", "tsconfig.json");
 			projectOptions.modulesFolder = modulesFolder;
-
+			createFiles(projectsHomeDir, projectOptions.files);
+			delete projectOptions.files;
 			const fuse = FuseBox.init(projectOptions);
 
 			fuse
@@ -270,9 +286,6 @@ export function createEnv(opts: any) {
 			});
 		})
 		.then(() => {
-			setTimeout(() => {
-				removeFolder(localPath);
-			}, 5);
 			return output;
 		});
 }
@@ -284,12 +297,6 @@ export class TestingFuseBox extends FuseBox {
 
 	public runAndLoad(modules: string[], callback: (any, string) => any) {
 		// todo: move cleanup to afterAll
-		const cleanup = result => {
-			setTimeout(() => {
-				removeFolder(this.tmpFolder);
-			}, 15);
-			return result;
-		};
 
 		return this.run()
 			.then(producer => {
@@ -302,10 +309,7 @@ export class TestingFuseBox extends FuseBox {
 					return acc;
 				}, {});
 			})
-			.then(loaded => callback(loaded, path.dirname(this.opts.output)) || loaded)
-			.then(cleanup, e => {
-				throw cleanup(e);
-			});
+			.then(loaded => callback(loaded, path.dirname(this.opts.output)) || loaded);
 	}
 }
 
@@ -320,7 +324,7 @@ export function createFuseBox(opts: any): TestingFuseBox {
 		output: path.join(tmpFolder, "dist", "$name.js"),
 		cache: false,
 		log: false,
-		tsConfig: path.join(appRoot.path, "src/tests/fixtures", "tsconfig.json"),
+		tsConfig: path.join(appRoot.path, "tests/_helpers/fixtures", "tsconfig.json"),
 	};
 
 	const projectOptions = Object.assign({}, defaultProjectOptions, opts);
