@@ -60,7 +60,6 @@ describe("ImportDynamicAnythingElse", () => {
 
 	it("Should import a txt file with VANILLA API (server)", () => {
 		return FuseTestEnv.create({
-			testFolder: "_current_test",
 			project: {
 				distFiles: {
 					"hello.txt": `some text is here`,
@@ -92,7 +91,6 @@ describe("ImportDynamicAnythingElse", () => {
 
 	it("Should import a txt file with Quantum API (server)", () => {
 		return FuseTestEnv.create({
-			testFolder: "_current_test",
 			project: {
 				distFiles: {
 					"hello.txt": `some text is here`,

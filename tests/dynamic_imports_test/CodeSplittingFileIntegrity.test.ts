@@ -534,7 +534,6 @@ describe("CodeSplittingFileIntegrityTest", () => {
 
 	it("Should lazy load node_module 'lib_b' 2 times", () => {
 		return FuseTestEnv.create({
-			//testFolder : "_current_test",
 			project: {
 				files: {
 					"index.ts": `
@@ -567,6 +566,7 @@ describe("CodeSplittingFileIntegrityTest", () => {
 					const appScript = env.getScript("app.js");
 					appScript.shouldNotFindString("// default/components/HomeComponent.js");
 					// libs
+
 					appScript.shouldNotFindString("// lib_a/index.js");
 					appScript.shouldNotFindString("// lib_a/a_mod.js");
 					appScript.shouldNotFindString("// lib_b/index.js");
@@ -681,7 +681,7 @@ describe("CodeSplittingFileIntegrityTest", () => {
 	});
 
 	it("Should check if browser data is set correctly", () => {
-		let bundleMappingScript = "src/tests/stubs/browserBundleMapping.js";
+		let bundleMappingScript = "tests/_helpers/stubs/browserBundleMapping.js";
 		return FuseTestEnv.create({
 			project: {
 				files: {
@@ -716,7 +716,7 @@ describe("CodeSplittingFileIntegrityTest", () => {
 	});
 
 	it("Should check if server data is set correctly", () => {
-		let bundleMappingScript = "src/tests/stubs/browserBundleMapping.js";
+		let bundleMappingScript = "tests/_helpers/stubs/browserBundleMapping.js";
 		return FuseTestEnv.create({
 			project: {
 				files: {
@@ -866,7 +866,6 @@ describe("CodeSplittingFileIntegrityTest", () => {
 
 	it("Should avoid creating empty split bundle files", () => {
 		return FuseTestEnv.create({
-			testFolder: "_current_test",
 			project: {
 				files: {
 					"index.ts": `

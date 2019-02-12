@@ -380,7 +380,7 @@ export class ModuleCollection {
 				if (this.context.emitHMRDependencies && file.belongsToProject()) {
 					this.context.registerDependant(newFile, file);
 				}
-				await this.resolve(newFile, shouldIgnoreDeps);
+				return await this.resolve(newFile, shouldIgnoreDeps);
 			});
 
 			return resolvedFiles;

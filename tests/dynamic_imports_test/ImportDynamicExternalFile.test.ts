@@ -1,5 +1,5 @@
 import { QuantumPlugin } from "../../src";
-import { createRealNodeModule, FuseTestEnv } from "../_helpers/stubs/FuseTestEnv";
+import { FuseTestEnv } from "../_helpers/stubs/FuseTestEnv";
 const TINY_LIB = "https://unpkg.com/bespoke@1.1.0/lib/bespoke.js";
 
 describe("ImportDynamicExternalFile", () => {
