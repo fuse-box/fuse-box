@@ -149,10 +149,14 @@ export function createOptimisedBundleEnv(opts: any) {
 			});
 		})
 		.then(() => {
-			setTimeout(() => {
-				removeFolder(localPath);
-			}, 5);
-			return output;
+			return new Promise((resolve, reject) => {
+				setTimeout(() => {
+					try {
+						resolve(output);
+						removeFolder(localPath);
+					} catch (e) {}
+				}, 10);
+			});
 		});
 }
 
