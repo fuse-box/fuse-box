@@ -23,6 +23,7 @@ const SERVER_POLYFILL = new Set<string>([
 ]);
 
 const ELECTRON_POLYFILL = new Set<string>([
+	"electron",
 	"assert",
 	"buffer",
 	"child_process",
