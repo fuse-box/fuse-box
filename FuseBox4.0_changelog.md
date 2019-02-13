@@ -45,3 +45,4 @@ I am expecting a 10x-20x increase in performance. Stay tuned! it's comming soon!
   [allowSyntheticDefaultImports](#allowSyntheticDefaultImports)
 - Removed `CSSModules` exports in favour of conventional `CSSModulesPlugin`
 - Removed `VuePlugin` in favour of `VueComponentPlugin`
+- Removed `Uglify-es` plugin in favour of `TerserPlugin`
