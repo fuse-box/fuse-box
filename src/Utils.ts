@@ -113,10 +113,7 @@ export function uglify(contents: string | Buffer, { es6 = false, ...opts }: any 
 		try {
 			UglifyJs = require("terser");
 		} catch (error) {
-			UglifyJs = require("uglify-es");
-			console.warn(
-				"uglify-es is no longer supported and will be removed in the next major release. Please use 'terser' instead",
-			);
+			console.warn("Please install 'terser' plugin");
 		}
 	} else {
 		UglifyJs = require("uglify-js");

@@ -41,7 +41,6 @@ export { PostCSS, PostCSS as PostCSSPlugin } from "./plugins/stylesheet/PostCSSP
 export { SassPlugin } from "./plugins/stylesheet/SassPlugin";
 export { StylusPlugin } from "./plugins/stylesheet/StylusPlugin";
 export { TerserPlugin } from "./plugins/TerserPlugin";
-export { UglifyESPlugin } from "./plugins/UglifyESPlugin";
 export { UglifyJSPlugin } from "./plugins/UglifyJSPlugin";
 export { VueComponentPlugin } from "./plugins/vue/VuePlugin";
 export { WebIndexPlugin } from "./plugins/WebIndexPlugin";
