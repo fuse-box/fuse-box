@@ -246,43 +246,47 @@ export function createEnv(opts: any) {
 						projectOptions.output = bundle.context.output.lastPrimaryOutput.path;
 					});
 				}
+				return new Promise((done, reject) => {
+					setTimeout(() => {
+						let contents = fs.readFileSync(projectOptions.output);
+						const length = contents.buffer.byteLength;
+						output.projectContents = contents;
+						output.dist = path.dirname(projectOptions.output);
 
-				let contents = fs.readFileSync(projectOptions.output);
-				const length = contents.buffer.byteLength;
-				output.projectContents = contents;
-				output.dist = path.dirname(projectOptions.output);
+						output.projectSize = length;
+						output.shouldExistInDist = name => {
+							let target = path.join(output.dist, name);
 
-				output.projectSize = length;
-				output.shouldExistInDist = name => {
-					let target = path.join(output.dist, name);
+							if (!fs.existsSync(target)) {
+								throw new Error(`Expected to find ${name} in dist!`);
+							}
+						};
+						if (serverOnly) {
+							output.project = require(projectOptions.output);
+						} else {
+							scripts.push(projectOptions.output);
+							return new Promise((resolve, reject) => {
+								jsdom.env({
+									html: "<html><head></head><body></body></html>",
+									scripts: scripts,
+									done: function(err, window) {
+										if (err) {
+											return reject(err);
+										}
 
-					if (!fs.existsSync(target)) {
-						throw new Error(`Expected to find ${name} in dist!`);
-					}
-				};
-				if (serverOnly) {
-					output.project = require(projectOptions.output);
-				} else {
-					scripts.push(projectOptions.output);
-					return new Promise((resolve, reject) => {
-						jsdom.env({
-							html: "<html><head></head><body></body></html>",
-							scripts: scripts,
-							done: function(err, window) {
-								if (err) {
-									return reject(err);
-								}
-
-								output.project = window;
-								output.projectSize = length;
-								output.querySelector = window.document.querySelector;
-								output.querySelectorAll = window.document.querySelectorAll;
-								output.projectContents = contents;
-								return resolve(output);
-							},
-						});
-					});
-				}
+										output.project = window;
+										output.projectSize = length;
+										output.querySelector = window.document.querySelector;
+										output.querySelectorAll = window.document.querySelectorAll;
+										output.projectContents = contents;
+										return done(output);
+									},
+								});
+							});
+						}
+						return done(output);
+					}, 1);
+				});
 			});
 		})
 		.then(() => {
