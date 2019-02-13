@@ -27,7 +27,6 @@
       "task-runner/getting-started-with-sparky",
       "task-runner/sparky"
     ],
-    "Test Runner": ["test-runner/test-runner"],
     "Guides": [
       "guides/working-with-targets",
       "guides/publishing-to-npm",
