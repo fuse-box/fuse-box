@@ -88,7 +88,6 @@
     "fuse-box-test-using-old-version": "^1.0.0",
     "fuse-box-testcase1": "^1.0.0",
     "fuse-box-testcase3": "^1.0.3",
-    "fuse-test-runner": "^1.0.14",
     "gulp": "3.9.1",
     "gulp-bump": "2.4.0",
     "gulp-clean": "0.3.2",
