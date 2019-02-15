@@ -1,16 +1,16 @@
-import { Bundle } from "./Bundle";
-import { FuseBox } from "./FuseBox";
-import { string2RegExp, ensureUserPath, ensureFuseBoxPath, escapeRegExp, ensureCorrectBundlePath } from "../Utils";
-import { EventEmitter } from "events";
-import { Arithmetic, BundleData } from "../arithmetic/Arithmetic";
-import { SharedCustomPackage } from "./SharedCustomPackage";
-import { BundleRunner } from "./BundleRunner";
-import { ServerOptions, Server } from "../devServer/Server";
 import * as chokidar from "chokidar";
-import { utils, each } from "realm-utils";
-import { ProducerAbstraction, ProducerAbtractionOptions } from "../quantum/core/ProducerAbstraction";
+import { EventEmitter } from "events";
+import { each, utils } from "realm-utils";
+import { Arithmetic, BundleData } from "../arithmetic/Arithmetic";
+import { Server, ServerOptions } from "../devServer/Server";
 import { BundleAbstraction } from "../quantum/core/BundleAbstraction";
+import { ProducerAbstraction, ProducerAbtractionOptions } from "../quantum/core/ProducerAbstraction";
+import { ensureCorrectBundlePath, ensureFuseBoxPath, ensureUserPath, escapeRegExp, string2RegExp } from "../Utils";
+import { Bundle } from "./Bundle";
+import { BundleRunner } from "./BundleRunner";
+import { FuseBox } from "./FuseBox";
 import { ModuleCollection } from "./ModuleCollection";
+import { SharedCustomPackage } from "./SharedCustomPackage";
 
 export class BundleProducer {
 	public bundles: Map<string, Bundle>;
@@ -43,7 +43,7 @@ export class BundleProducer {
 		this.bundles = new Map<string, Bundle>();
 	}
 
-	public run(opts: { chokidar?: any; runType?: string }): Promise<BundleProducer> {
+	public async run(opts: { chokidar?: any; runType?: string }): Promise<BundleProducer> {
 		if (opts) {
 			this.chokidarOptions = opts.chokidar;
 			this.chokidarPaths = opts.chokidarPaths;
@@ -51,23 +51,20 @@ export class BundleProducer {
 
 		/** Collect information about watchers and start watching */
 		this.watch();
+		//await workerPool.init();
 		//this.runner = new BundleRunner(this.fuse);
 
-		return this.runner
-			.run(opts)
-			.then(() => {
-				this.sharedEvents.emit("producer-done");
-				this.printWarnings();
-				return each(this.fuse.context.plugins, plugin => {
-					if (plugin && utils.isFunction(plugin.producerEnd)) {
-						return plugin.producerEnd(this);
-					}
-				});
-			})
-			.then(() => {
-				// this.bundles = new Map<string, Bundle>();
-				return this;
-			});
+		await this.runner.run(opts);
+
+		this.sharedEvents.emit("producer-done");
+		this.printWarnings();
+		for (const plugin of this.fuse.context.plugins) {
+			if (plugin && utils.isFunction(plugin.producerEnd)) {
+				plugin.producerEnd(this);
+			}
+		}
+
+		return this;
 	}
 
 	public addUserProcessEnvVariables(data: any) {

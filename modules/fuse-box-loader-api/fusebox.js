@@ -228,7 +228,7 @@ function $trigger(name, args) {
 function syntheticDefaultExportPolyfill(input) {
     if (input === null ||
         ["function", "object", "array"].indexOf(typeof input) === -1 ||
-        input.hasOwnProperty("default")) {
+        (input && Object.prototype.hasOwnProperty.call(input, "default"))) {
         return;
     }
     if (Object.isFrozen(input)) {

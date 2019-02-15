@@ -403,7 +403,7 @@ function syntheticDefaultExportPolyfill(input) {
 	if (
 		input === null ||
 		["function", "object", "array"].indexOf(typeof input) === -1 ||
-		input.hasOwnProperty("default") // use hasOwnProperty to avoid triggering usage warnings from libraries like mobx
+		(input && Object.prototype.hasOwnProperty.call(input, "default")) // use hasOwnProperty to avoid triggering usage warnings from libraries like mobx
 	) {
 		return;
 	}

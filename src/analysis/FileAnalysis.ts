@@ -9,6 +9,7 @@ import { OwnBundle } from "./plugins/OwnBundle";
 import { ImportDeclaration } from "./plugins/ImportDeclaration";
 import { DynamicImportStatement } from "./plugins/DynamicImportStatement";
 import { escapeRegExp } from "../Utils";
+import { workerPool } from "../worker/pool/WorkerPool";
 require("acorn-jsx/inject")(acorn);
 
 export interface TraversalPlugin {
@@ -186,8 +187,12 @@ export class FileAnalysis {
 		}
 
 		if (this.requiresTranspilation && !this.file.wasTranspiledUsingTypescript) {
-			let result = this.file.transpileUsingTypescript();
+			const result = this.file.transpileUsingTypescript();
 			this.file.contents = result.outputText;
+			// workerPool.queue(async () => {
+			// 	const result = await this.file.transpileWithWorker();
+			// 	this.file.contents = result.outputText;
+			// });
 		}
 	}
 }

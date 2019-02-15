@@ -42,6 +42,7 @@ const getDistFuseBoxConfig = (
     output: "$name.js",
     target: "server@esnext",
     cache: false,
+    sourceMap: false,
     globals: { default: "*" },
     plugins: [JSONPlugin(), quantum !== false && QuantumPlugin(quantumConf)],
   };
@@ -207,6 +208,24 @@ gulp.task("prepare:es6-bundle", done => {
   return fuse.run();
 });
 
+gulp.task("dev-worker", done => {
+  process.env.PROJECT_ROOT = __dirname;
+  process.env.FUSEBOX_MODULES = path.resolve(RELEASE_FOLDER, "modules");
+  const { FuseBox, JSONPlugin, QuantumPlugin } = require("fuse-box");
+  const fuse = FuseBox.init({
+    homeDir: "src",
+    output: ".dev/$name.js",
+    target: "server@esnext",
+    cache: false,
+  });
+
+  const app = fuse
+    .bundle("worker")
+    .instructions(">[worker/slave/WorkerSlave.ts]");
+  app.watch();
+  return fuse.run();
+});
+
 gulp.task("increment-next-version", function() {
   const pkgPath = path.resolve("package.json");
   let json = require(pkgPath);
@@ -282,6 +301,7 @@ gulp.task("dev-index", () => {
   const contents = `
         const path = require("path");
         process.env.FUSEBOX_DIST_ROOT = __dirname;
+        process.env.FUSEBOX_WORKER_PATH = path.join(__dirname, "worker.js")
         process.env.FUSEBOX_MODULES = path.join(__dirname, "./modules");
         process.env.FUSEBOX_VERSION = path.join(__dirname, "../package.json")
         module.exports = require('./fusebox.js');
@@ -292,7 +312,7 @@ gulp.task("dev-index", () => {
 gulp.task("dev-fuse", () => {
   const fuse = getDistFuseBoxConfig({
     homeDir: "src",
-    sourceMaps: true,
+    sourceMaps: false,
     output: ".dev/$name.js",
     target: "server@esnext",
     cache: false,
@@ -301,7 +321,7 @@ gulp.task("dev-fuse", () => {
     .bundle("fusebox")
     .instructions(">[index.ts]")
     .watch();
-  return fuse.run();
+  return fuse.run({ chokidar: { ignored: /\/worker\/slave/ } });
 });
 
 gulp.task("dev:ensure-playground", () => {
@@ -344,6 +364,7 @@ gulp.task("dev", () => {
     "dist-modules",
     "dev-fuse",
     "dev:ensure-playground",
+    "dev-worker",
     "dev-index",
     () => {
       console.log(">> FuseBox bundle is ready ");
