@@ -19,6 +19,7 @@ import { ModuleCollection } from "./ModuleCollection";
 import { IPackageInformation, IPathInformation } from "./PathMaster";
 import { SourceMapGenerator } from "./SourceMapGenerator";
 import { WorkFlowContext, Plugin } from "./WorkflowContext";
+//import { workerPool } from "../worker/pool/WorkerPool";
 
 /**
  * Same Target Enumerator used in current installed version of TypeScript
@@ -464,6 +465,7 @@ export class File {
 	public belongsToProject() {
 		return this.collection && this.collection.name === this.context.defaultPackageName;
 	}
+
 	/**
 	 *
 	 *
@@ -527,13 +529,9 @@ export class File {
 				}
 				return;
 			}
-			const vendorSourceMaps = this.context.sourceMapsVendor && !this.belongsToProject();
 
-			// if (vendorSourceMaps) {
-			// 	this.loadVendorSourceMap();
-			// } else {
 			this.makeAnalysis();
-			//}
+
 			return;
 		}
 
@@ -657,11 +655,24 @@ export class File {
 	}
 	public wasTranspiledUsingTypescript;
 
-	public wasTranspiledUsingTypescript;
+	// public async transpileWithWorker() {
+	// 	try {
+	// 		this.context.debug("TypeScript", `Worker transpile ${this.info.fuseBoxPath}`);
+	// 		const result = await workerPool.transpile(this.contents, this.getTranspilationConfig());
+	// 		if (this.belongsToProject() || this.context.sourceMapsVendor) {
+	// 			this.attachSourceMaps(result);
+	// 		}
+	// 		return result;
+	// 	} catch (e) {
+	// 		this.context.fatal(`${this.info.absPath}: ${e}`);
+	// 	}
+	// }
 
 	public transpileUsingTypescript(): ts.TranspileOutput | never {
 		this.wasTranspiledUsingTypescript = true;
+
 		try {
+			this.context.debug("TypeScript", `Transpile ${this.info.fuseBoxPath}`);
 			const result = ts.transpileModule(this.contents, this.getTranspilationConfig());
 			if (this.belongsToProject() || this.context.sourceMapsVendor) {
 				this.attachSourceMaps(result);
@@ -743,7 +754,7 @@ export class File {
 	 *
 	 * @memberOf File
 	 */
-	private handleTypescript() {
+	private async handleTypescript() {
 		this.wasTranspiled = true;
 		if (this.context.useCache) {
 			if (this.loadFromCache()) {
@@ -756,7 +767,7 @@ export class File {
 		this.replaceDynamicImports();
 		// Calling it before transpileModule on purpose
 		this.tryTypescriptPlugins();
-		this.context.debug("TypeScript", `Transpile ${this.info.fuseBoxPath}`);
+
 		let result = this.transpileUsingTypescript();
 
 		this.contents = result.outputText;
