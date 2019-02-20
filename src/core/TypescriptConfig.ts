@@ -147,7 +147,7 @@ export class TypescriptConfig {
 		const log: string[] = [];
 		const absHomeDir = ensureAbsolutePath(ensureFuseBoxPath(this.context.homeDir));
 
-		if (typeof options.paths === "object" && options.paths !== null) {
+		if (typeof options.paths === "object" || options.paths == null) {
 			if (!options.baseUrl.includes(absHomeDir)) {
 				this.context.warning(
 					`Automatic aliasing cannot be applied because the "baseUrl" path in your tsconfig file is outside of "homeDir"`,
@@ -155,40 +155,46 @@ export class TypescriptConfig {
 				return;
 			}
 
-			for (let key in options.paths) {
-				const lookupArray = options.paths[key];
-				const normalizedLookup = [];
+			if (typeof options.paths === "object" && options.paths != null) {
+				for (let key in options.paths) {
+					const lookupArray = options.paths[key];
+					const normalizedLookup = [];
+					const logPath = [];
 
-				if (/\*{2,}/g.test(key)) {
-					this.context.warning(`Cannot resolve invalid TS path "${key}". A TS path can have at most one star`);
-					break;
-				}
+					if (/\*{2,}/g.test(key)) {
+						this.context.warning(`Cannot resolve invalid TS path "${key}". A TS path can have at most one star`);
+						break;
+					}
 
-				if (!Array.isArray(lookupArray)) {
-					this.context.warning(
-						`Cannot resolve invalid TS path "${key}". Expected an array of files or directory names but instead got "${lookupArray}"`,
-					);
-					break;
-				}
-
-				for (let i = 0; i < lookupArray.length; i++) {
-					const lookupPath = String(lookupArray[i]).replace(/\\/g, "/");
-
-					if (/\*{2,}/g.test(lookupPath)) {
+					if (!Array.isArray(lookupArray)) {
 						this.context.warning(
-							`Cannot resolve invalid TS path "${key}". A lookup file/dir "${lookupPath}" can have at most one star`,
+							`Cannot resolve invalid TS path "${key}". Expected an array of files or directory names but instead got "${lookupArray}"`,
 						);
 						break;
 					}
 
-					normalizedLookup.push(lookupPath);
-				}
+					for (let i = 0; i < lookupArray.length; i++) {
+						const lookupPath = String(lookupArray[i]).replace(/\\/g, "/");
 
-				if (normalizedLookup.length) {
-					log.push(`\t${key} => "${normalizedLookup.join('" | "')}"`);
-					normalizedPaths[key] = normalizedLookup;
-					globalPathsMatch.push(`(${tsKeyPath2RegExp(key).source})`);
+						if (/\*{2,}/g.test(lookupPath)) {
+							this.context.warning(
+								`Cannot resolve invalid TS path "${key}". A lookup file/dir "${lookupPath}" can have at most one star`,
+							);
+							break;
+						}
+
+						normalizedLookup.push(lookupPath);
+						logPath.push(`~/${lookupPath.replace("./", "")}`);
+					}
+
+					if (normalizedLookup.length) {
+						log.push(`\t${key} => ${logPath.join(", ")}`);
+						normalizedPaths[key] = normalizedLookup;
+						globalPathsMatch.push(`(${tsKeyPath2RegExp(key).source})`);
+					}
 				}
+			} else {
+				options.paths = {};
 			}
 
 			fs.readdirSync(options.baseUrl).forEach(file => {
@@ -208,7 +214,7 @@ export class TypescriptConfig {
 
 					options.paths[dirKey] = [lookupDir];
 					globalPathsMatch.push(`(${tsKeyPath2RegExp(dirKey).source})`);
-					log.push(`\t${dirKey} => "${lookupDir}"`);
+					log.push(`\t${dirKey} => ~/${file}/*`);
 
 					return;
 				}
@@ -226,7 +232,7 @@ export class TypescriptConfig {
 
 						if (options.paths[name]) return;
 
-						log.push(`\t${name} => "./${name}"`);
+						log.push(`\t${name} => ~/${name}`);
 						globalPathsMatch.push(`(${tsKeyPath2RegExp(name).source})`);
 						options.paths[name] = [`./${name}`];
 					}
@@ -237,7 +243,7 @@ export class TypescriptConfig {
 
 			if (globalPathsMatch.length) {
 				this.context.log.echoInfo(`Applying automatic alias relative to baseUrl in tsconfig.json`);
-				this.context.log.echoInfo(`\n    homeDir: ${absHomeDir}\n    baseUrl: ${options.baseUrl}\n${log.join("\n")}`);
+				this.context.log.echoInfo(`\n${log.join("\n")}`);
 				this.context.tsPathsRegExp = new RegExp(globalPathsMatch.join("|"));
 				this.context.tsModuleResolutionCache = ts.createModuleResolutionCache(this.context.homeDir, f => f);
 			}
@@ -372,29 +378,6 @@ export class TypescriptConfig {
 		if (this.context.forcedLanguageLevel) {
 			this.forceCompilerTarget(this.context.forcedLanguageLevel);
 		}
-
-		// if (this.context.automaticAlias) {
-		// 	let aliasConfig = {};
-		// 	let log = [];
-		// 	fs.readdirSync(this.context.homeDir).forEach(file => {
-		// 		// skip files that start with .
-		// 		if (file[0] === ".") {
-		// 			return;
-		// 		}
-		// 		const extension = path.extname(file);
-		// 		if (!extension || extension === ".ts" || extension === ".tsx") {
-		// 			let name = file;
-		// 			if (extension) {
-		// 				name = file.replace(/\.tsx?/, "");
-		// 			}
-		// 			log.push(`\t${name} => "~/${name}"`);
-		// 			aliasConfig[name] = `~/${name}`;
-		// 		}
-		// 	});
-		// 	this.context.log.echoInfo(`Applying automatic alias based on baseUrl in tsconfig.json`);
-		// 	this.context.log.echoInfo(`\n ${log.join("\n")}`);
-		// 	this.context.addAlias(aliasConfig);
-		// }
 	}
 
 	public forceCompilerTarget(level: ScriptTarget) {
@@ -411,7 +394,7 @@ export class TypescriptConfig {
 		if (!this.configFile && this.context.ensureTsConfig === true) {
 			Object.assign(this.config.compilerOptions, {
 				jsx: ts.JsxEmit.React,
-				baseUrl: ".",
+				baseUrl: this.resolveBaseUrl(this.context.homeDir),
 				importHelpers: true,
 				emitDecoratorMetadata: true,
 				experimentalDecorators: true,
@@ -423,6 +406,7 @@ export class TypescriptConfig {
 				this.config.compilerOptions as any,
 				{
 					target: getScriptLevelString(this.config.compilerOptions.target),
+					baseUrl: ".",
 					module: "CommonJS",
 					jsx: "react",
 					moduleResolution: "NodeJs",
