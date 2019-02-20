@@ -1,15 +1,12 @@
+import * as acorn from "acorn";
+import { File } from "../core/File";
+import { escapeRegExp } from "../Utils";
 import { ASTTraverse } from "./../ASTTraverse";
 import { PrettyError } from "./../PrettyError";
-import { File } from "../core/File";
-import * as acorn from "acorn";
 import { AutoImport } from "./plugins/AutoImport";
-import { LanguageLevel } from "./plugins/LanguageLevel";
-import { OwnVariable } from "./plugins/OwnVariable";
-import { OwnBundle } from "./plugins/OwnBundle";
-import { ImportDeclaration } from "./plugins/ImportDeclaration";
 import { DynamicImportStatement } from "./plugins/DynamicImportStatement";
-import { escapeRegExp } from "../Utils";
-import { workerPool } from "../worker/pool/WorkerPool";
+import { ImportDeclaration } from "./plugins/ImportDeclaration";
+import { LanguageLevel } from "./plugins/LanguageLevel";
 require("acorn-jsx/inject")(acorn);
 
 export interface TraversalPlugin {
@@ -17,14 +14,7 @@ export interface TraversalPlugin {
 	onEnd(file: File): void;
 }
 
-const plugins: TraversalPlugin[] = [
-	AutoImport,
-	OwnVariable,
-	OwnBundle,
-	ImportDeclaration,
-	DynamicImportStatement,
-	LanguageLevel,
-];
+const plugins: TraversalPlugin[] = [AutoImport, ImportDeclaration, DynamicImportStatement, LanguageLevel];
 
 export function acornParse(contents, options?: any): any {
 	options = options || {};
