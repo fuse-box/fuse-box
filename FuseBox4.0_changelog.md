@@ -37,6 +37,8 @@ I am expecting a 10x-20x increase in performance. Stay tuned! it's comming soon!
 
 ## Deleted
 
+- `Own bundle` - removed due to the presense of Quantum. OwnBundle check was
+  used to check if user requires a development Fuse bundle.
 - Test runner Unfortunately the test runner had to be removed. There are great
   alternatives like `jest`. We will focus on bundling.
 - CSSPlugin no longer accepts any options. Since the production output is
