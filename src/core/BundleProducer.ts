@@ -60,7 +60,7 @@ export class BundleProducer {
 		this.printWarnings();
 		for (const plugin of this.fuse.context.plugins) {
 			if (plugin && utils.isFunction(plugin.producerEnd)) {
-				plugin.producerEnd(this);
+				await plugin.producerEnd(this);
 			}
 		}
 
