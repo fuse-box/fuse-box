@@ -1,8 +1,9 @@
 import * as appRoot from "app-root-path";
-import * as fs from "fs";
+import * as fs from "fs-extra";
 import * as fsExtra from "fs-extra";
 import * as path from "path";
 import * as ts from "typescript";
+import { FuseTestEnv } from "./_helpers/stubs/FuseTestEnv";
 import { FuseBox } from "../src";
 import { getScriptLevelNumber, getScriptLevelString } from "../src/core/TypescriptConfig";
 
@@ -66,11 +67,12 @@ describe("TypescriptConfigTest", () => {
 				module: ts.ModuleKind.CommonJS,
 				target: ts.ScriptTarget.ES2018,
 				jsx: ts.JsxEmit.React,
-				baseUrl: ".",
+				baseUrl: fuse.context.homeDir,
 				importHelpers: true,
 				emitDecoratorMetadata: true,
 				experimentalDecorators: true,
 				moduleResolution: ts.ModuleResolutionKind.NodeJs,
+				paths: {},
 			},
 			errors: [],
 		});
@@ -105,13 +107,14 @@ describe("TypescriptConfigTest", () => {
 				module: ts.ModuleKind.CommonJS,
 				target: ts.ScriptTarget.ES2018,
 				jsx: ts.JsxEmit.React,
-				baseUrl: ".",
+				baseUrl: fuse.context.homeDir,
 				importHelpers: true,
 				emitDecoratorMetadata: true,
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
 				moduleResolution: ts.ModuleResolutionKind.NodeJs,
+				paths: {},
 			},
 			errors: [],
 		});
@@ -147,13 +150,14 @@ describe("TypescriptConfigTest", () => {
 				module: ts.ModuleKind.CommonJS,
 				target: ts.ScriptTarget.ESNext,
 				jsx: ts.JsxEmit.React,
-				baseUrl: ".",
+				baseUrl: fuse.context.homeDir,
 				importHelpers: true,
 				emitDecoratorMetadata: true,
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
 				moduleResolution: ts.ModuleResolutionKind.NodeJs,
+				paths: {},
 			},
 			errors: [],
 		});
@@ -189,13 +193,14 @@ describe("TypescriptConfigTest", () => {
 				module: ts.ModuleKind.CommonJS,
 				target: ts.ScriptTarget.ES2015,
 				jsx: ts.JsxEmit.React,
-				baseUrl: ".",
+				baseUrl: fuse.context.homeDir,
 				importHelpers: true,
 				emitDecoratorMetadata: true,
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
 				moduleResolution: ts.ModuleResolutionKind.NodeJs,
+				paths: {},
 			},
 			errors: [],
 		});
@@ -231,13 +236,14 @@ describe("TypescriptConfigTest", () => {
 				module: ts.ModuleKind.CommonJS,
 				target: ts.ScriptTarget.ES2015,
 				jsx: ts.JsxEmit.React,
-				baseUrl: ".",
+				baseUrl: fuse.context.homeDir,
 				importHelpers: true,
 				emitDecoratorMetadata: true,
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
 				moduleResolution: ts.ModuleResolutionKind.NodeJs,
+				paths: {},
 			},
 			errors: [],
 		});
@@ -375,5 +381,129 @@ describe("TypescriptConfigTest", () => {
 		expect(config.errors[1].category).toEqual(ts.DiagnosticCategory.Error);
 		expect(config.errors[0].messageText).toContain("--target");
 		expect(config.errors[1].messageText).toContain("--jsx");
+	});
+	it("Should have correct defaults when ensureTsConfig: false", () => {
+		const testDir = getTempDir();
+
+		const fuse = FuseBox.init({
+			homeDir: testDir,
+			log: false,
+			ensureTsConfig: false,
+			sourceMaps: true,
+		});
+		const config = fuse.context.tsConfig.getConfig();
+
+		expect(config).toEqual({
+			compilerOptions: {
+				module: ts.ModuleKind.CommonJS,
+				target: ts.ScriptTarget.ES2018,
+				sourceMap: true,
+				inlineSources: true,
+			},
+			errors: [],
+		});
+	});
+	it("Should auto-alias root (baseUrl)", () => {
+		return FuseTestEnv.create({
+			project: {
+				ensureTsConfig: true,
+				files: {
+					"tsconfig.json": JSON.stringify({
+						compilerOptions: {
+							baseUrl: ".",
+						},
+					}),
+					"index.ts": `
+						exports.foo = require('src/foo')
+						exports.bar = require('bar')
+					`,
+					"src/foo.ts": `export default 'foo'`,
+					"bar.ts": `export default 'bar'`,
+				},
+			},
+		})
+			.simple()
+			.then(test =>
+				test.browser(window => {
+					const index = window.FuseBox.import("./index");
+					expect(index).toEqual({
+						foo: {
+							default: "foo",
+						},
+						bar: {
+							default: "bar",
+						},
+					});
+				}),
+			);
+	});
+	it("should resolve tsconfig paths", () => {
+		return FuseTestEnv.create({
+			project: {
+				ensureTsConfig: true,
+				files: {
+					"tsconfig.json": JSON.stringify({
+						compilerOptions: {
+							baseUrl: ".",
+							paths: {
+								thefoo: ["./notexistingpath/wrongfoo", "./src/foo"],
+								"thestarfoo*": ["./src/foo"],
+								"thestarpath*": ["./src/*"],
+								"the*file": ["./src/*"],
+								"the*alwaysfoo": ["./src/foo"],
+								"dir/*/any": ["./src/*/bar"],
+								typescript: ["./src/fake-typescript"],
+								"~/*": ["src/*"],
+							},
+						},
+					}),
+					"index.ts": `
+						import { foo as thefoo } from "thefoo"
+						import { foo as thestarfoo } from "thestarfooANYTHINGELSE"
+						import { foo as thestarpath } from "thestarpathfoo"
+						import { foo as thefile } from "thefoofile"
+						import { foo as thealwaysfoo } from "theANYTHINGHEREalwaysfoo"
+						import { bar as barfromdir } from "dir/barplace/any"
+						import { fakeTS } from "typescript"
+						import { bar as barfromhome } from "~/barplace/bar"
+						import { foo as foofromhome } from "~/foo"
+
+						export default {
+							thefoo,
+							thestarfoo,
+							thestarpath,
+							thefile,
+							thealwaysfoo,
+							barfromdir,
+							fakeTS,
+							barfromhome,
+							foofromhome,
+						}
+					`,
+					"src/foo.ts": `export const foo = 'foo'`,
+					"src/barplace/bar.ts": `export const bar = 'bar'`,
+					"src/fake-typescript.ts": `export const fakeTS = 'fake typescript'`,
+				},
+			},
+		})
+			.simple()
+			.then(test =>
+				test.browser(window => {
+					const index = window.FuseBox.import("./index");
+					expect(index).toEqual({
+						default: {
+							thefoo: "foo",
+							thestarfoo: "foo",
+							thestarpath: "foo",
+							thefile: "foo",
+							thealwaysfoo: "foo",
+							barfromdir: "bar",
+							fakeTS: "fake typescript",
+							barfromhome: "bar",
+							foofromhome: "foo",
+						},
+					});
+				}),
+			);
 	});
 });
