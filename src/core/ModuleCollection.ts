@@ -1,9 +1,9 @@
-import { File } from "./File";
-import { PathMaster, IPackageInformation } from "./PathMaster";
-import { WorkFlowContext } from "./WorkflowContext";
+import { each, utils } from "realm-utils";
 import { BundleData } from "../arithmetic/Arithmetic";
 import { ensurePublicExtension, string2RegExp } from "../Utils";
-import { each, utils } from "realm-utils";
+import { File } from "./File";
+import { IPackageInformation, PathMaster } from "./PathMaster";
+import { WorkFlowContext } from "./WorkflowContext";
 
 /**
  *
@@ -191,18 +191,16 @@ export class ModuleCollection {
 		});
 	}
 
-	public resolveDepsOnly(depsOnly: Map<string, any>) {
-		return each(depsOnly, (withDeps, modulePath) => {
-			let file = new File(this.context, this.pm.init(modulePath));
+	public async resolveDepsOnly(depsOnly: Map<string, any>) {
+		for (const item of depsOnly) {
+			let file = new File(this.context, this.pm.init(item[1]));
 			file.resolveDepsOnly = true;
-			return this.resolve(file);
-		}).then(() => {
-			// reset current dependencies
-			// so they won't get bundled
-			this.dependencies = new Map<string, File>();
-		});
+			await this.resolve(file);
+		}
+		this.dependencies = new Map<string, File>();
 	}
-	public collectBundle(data: BundleData): Promise<void> {
+
+	public async collectBundle(data: BundleData): Promise<void> {
 		this.bundle = data;
 		this.delayedResolve = true;
 		this.initPlugins();
@@ -211,31 +209,23 @@ export class ModuleCollection {
 			this.entryFile = File.createByName(this, ensurePublicExtension(this.context.defaultEntryPoint));
 		}
 
-		return this.resolveDepsOnly(data.depsOnly).then(() => {
-			return (
-				each(data.including, (withDeps, modulePath) => {
-					let file = new File(this.context, this.pm.init(modulePath));
-					return this.resolve(file);
-				})
-					.then(() => this.context.resolve())
-					.then(() => {
-						return this.context.useCache ? this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
-					})
-					.then(toResolve => {
-						return each(toResolve, (file: File) => this.resolveNodeModule(file));
-					})
-					// node modules might need to resolved asynchronously
-					// like css plugins
-					.then(() => this.context.resolve())
-					//.then(() => workerPool.resolve())
-					.then(() => this.context.cache && this.context.cache.buildMap(this))
-					.catch(e => {
-						this.context.defer.unlock();
-						this.context.nukeCache();
-						console.error(e);
-					})
-			);
-		});
+		try {
+			await this.resolveDepsOnly(data.depsOnly);
+			for (const item of data.including) {
+				let file = new File(this.context, this.pm.init(item[0]));
+				await this.resolve(file);
+			}
+			await this.context.resolve();
+			const toResolve = this.context.useCache ? await this.context.cache.resolve(this.toBeResolved) : this.toBeResolved;
+			for (const file of toResolve) {
+				await this.resolveNodeModule(file);
+			}
+			await this.context.resolve();
+		} catch (e) {
+			this.context.defer.unlock();
+			this.context.nukeCache();
+			console.error(e);
+		}
 	}
 
 	/**
@@ -372,8 +362,8 @@ export class ModuleCollection {
 			}
 
 			// Process file dependencies recursively
-
-			const resolvedFiles = await each(file.analysis.dependencies, async name => {
+			const resolvedFiles: Array<File> = [];
+			for (const name of file.analysis.dependencies) {
 				const resolvedInfo = this.pm.resolve(name, file.info.absDir, fileLimitPath, file);
 				const newFile = new File(this.context, resolvedInfo);
 				file.resolvedDependencies.push(newFile);
@@ -381,8 +371,8 @@ export class ModuleCollection {
 				if (this.context.emitHMRDependencies && file.belongsToProject()) {
 					this.context.registerDependant(newFile, file);
 				}
-				return await this.resolve(newFile, shouldIgnoreDeps);
-			});
+				resolvedFiles.push(await this.resolve(newFile, shouldIgnoreDeps));
+			}
 
 			return resolvedFiles;
 		}

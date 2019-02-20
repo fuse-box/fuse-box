@@ -1,23 +1,23 @@
 import * as fs from "fs";
 import * as process from "process";
-import { each, utils, chain, Chainable } from "realm-utils";
+import { utils } from "realm-utils";
 import { CustomTransformers } from "typescript";
-import { ensureUserPath, contains, printCurrentVersion } from "./../Utils";
-import { ShimCollection } from "./../ShimCollection";
+import { Arithmetic, BundleData } from "./../arithmetic/Arithmetic";
+import { CollectionSource } from "./../CollectionSource";
 import { Server, ServerOptions } from "./../devServer/Server";
 import { JSONPlugin } from "./../plugins/JSONplugin";
-import { PathMaster } from "./PathMaster";
-import { WorkFlowContext, Plugin } from "./WorkflowContext";
-import { CollectionSource } from "./../CollectionSource";
-import { Arithmetic, BundleData } from "./../arithmetic/Arithmetic";
-import { ModuleCollection } from "./ModuleCollection";
-import { UserOutput } from "./UserOutput";
-import { BundleProducer } from "./BundleProducer";
+import { ShimCollection } from "./../ShimCollection";
+import { contains, ensureUserPath, printCurrentVersion } from "./../Utils";
 import { Bundle } from "./Bundle";
-import { File } from "./File";
-import { ExtensionOverrides } from "./ExtensionOverrides";
-import { TypescriptConfig, rawCompilerOptions } from "./TypescriptConfig";
+import { BundleProducer } from "./BundleProducer";
 import { CombinedTargetAndLanguageLevel } from "./CombinedTargetAndLanguageLevel";
+import { ExtensionOverrides } from "./ExtensionOverrides";
+import { File } from "./File";
+import { ModuleCollection } from "./ModuleCollection";
+import { PathMaster } from "./PathMaster";
+import { rawCompilerOptions, TypescriptConfig } from "./TypescriptConfig";
+import { UserOutput } from "./UserOutput";
+import { Plugin, WorkFlowContext } from "./WorkflowContext";
 
 const appRoot = require("app-root-path");
 
@@ -313,14 +313,14 @@ export class FuseBox {
 	public sendPageReload() {
 		if (this.producer.devServer && this.producer.devServer.socketServer) {
 			const socket = this.producer.devServer.socketServer;
-			socket.send("page-reload", []);
+			socket.emit("page-reload", []);
 		}
 	}
 
 	public sendPageHMR() {
 		if (this.producer.devServer && this.producer.devServer.socketServer) {
 			const socket = this.producer.devServer.socketServer;
-			socket.send("page-hmr", []);
+			socket.emit("page-hmr", []);
 		}
 	}
 
@@ -360,7 +360,7 @@ export class FuseBox {
 		return this.producer.run(opts);
 	}
 
-	public process(bundleData: BundleData, bundleReady?: () => any) {
+	public async process(bundleData: BundleData, bundleReady?: () => any) {
 		// If clearTerminalOnBundle is turned on then clear the terminal each time we bundle
 		if (typeof this.opts.log === "object" && this.opts.log.clearTerminalOnBundle) {
 			this.context.log.clearTerminal();
@@ -376,62 +376,35 @@ export class FuseBox {
 		}
 
 		const self = this;
-		return bundleCollection.collectBundle(bundleData).then(module => {
-			this.context.emitter.emit("bundle-collected");
 
-			this.context.log.bundleStart(this.context.bundle.name);
-			return chain(
-				class extends Chainable {
-					public defaultCollection: ModuleCollection;
-					public nodeModules: Map<string, ModuleCollection>;
-					public defaultContents: string;
-					public globalContents = [];
-					public setDefaultCollection() {
-						return bundleCollection;
-					}
-
-					public addDefaultContents() {
-						if (self.producer) {
-							self.producer.defaultCollection = this.defaultCollection;
-						}
-						return self.collectionSource.get(this.defaultCollection).then((cnt: string) => {
-							self.context.log.echoDefaultCollection(this.defaultCollection, cnt);
-						});
-					}
-
-					public addNodeModules() {
-						const nodeModules = new Map(Array.from(self.context.nodeModules).sort());
-						return each(nodeModules, (collection: ModuleCollection) => {
-							if (collection.cached || (collection.info && !collection.info.missing)) {
-								return self.collectionSource.get(collection).then((cnt: string) => {
-									self.context.log.echoCollection(collection, cnt);
-									if (!collection.cachedName && self.context.useCache) {
-										self.context.cache.set(collection.info, cnt);
-									}
-									this.globalContents.push(cnt);
-								});
-							}
-						});
-					}
-
-					public format() {
-						return {
-							contents: this.globalContents,
-						};
-					}
-				},
-			).then(result => {
-				const self = this;
-				// @NOTE: content is here, but this is not the uglified content
-				// self.context.source.getResult().content.toString()
-				self.context.log.end();
-				this.triggerEnd();
-				self.context.source.finalize(bundleData);
-				this.triggerPost();
-				this.context.writeOutput(bundleReady);
-				return self.context.source.getResult();
-			});
-		});
+		await bundleCollection.collectBundle(bundleData);
+		this.context.emitter.emit("bundle-collected");
+		this.context.log.bundleStart(this.context.bundle.name);
+		const defaultCollection = bundleCollection;
+		if (self.producer) {
+			self.producer.defaultCollection = defaultCollection;
+		}
+		const cnt = await self.collectionSource.get(defaultCollection);
+		self.context.log.echoDefaultCollection(defaultCollection, cnt);
+		const globalContents = [];
+		const nodeModules = new Map(Array.from(self.context.nodeModules).sort());
+		for (const item of nodeModules) {
+			const collection = item[1];
+			if (collection.cached || (collection.info && !collection.info.missing)) {
+				const cnt = await self.collectionSource.get(collection);
+				self.context.log.echoCollection(collection, cnt);
+				if (!collection.cachedName && self.context.useCache) {
+					self.context.cache.set(collection.info, cnt);
+				}
+				globalContents.push(cnt);
+			}
+		}
+		self.context.log.end();
+		this.triggerEnd();
+		self.context.source.finalize(bundleData);
+		this.triggerPost();
+		this.context.writeOutput(bundleReady);
+		return self.context.source.getResult();
 	}
 
 	public addShims() {
