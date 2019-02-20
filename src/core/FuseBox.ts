@@ -59,7 +59,6 @@ export interface FuseBoxOptions {
 	emitHMRDependencies?: boolean;
 	filterFile?: (file: File) => boolean;
 	automaticAlias?: boolean;
-	// automaticTSPathAlias?: boolean;
 	allowSyntheticDefaultImports?: boolean;
 	debug?: boolean;
 	files?: any;
@@ -116,10 +115,6 @@ export class FuseBox {
 		if (opts.automaticAlias !== undefined) {
 			this.context.automaticAlias = opts.automaticAlias;
 		}
-
-		// if (opts.automaticTSPathAlias !== undefined) {
-		// 	this.context.automaticTSPathAlias = opts.automaticTSPathAlias;
-		// }
 
 		// setting targets
 		const combination = new CombinedTargetAndLanguageLevel(opts.target);
