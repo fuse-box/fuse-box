@@ -52,12 +52,4 @@ export class SocketServer {
 
 		return this.server;
 	}
-
-	protected onMessage(client: any, type: string, data: any) {
-		if (type === "request-dependency") {
-			if (this.fuse.context) {
-				this.fuse.context.onHMRRequestDependency(JSON.parse(data));
-			}
-		}
-	}
 }
