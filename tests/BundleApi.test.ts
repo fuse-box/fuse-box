@@ -186,20 +186,6 @@ describe("BundleApiTest", () => {
 		expect(bundle.arithmetics).toEqual("hello");
 	});
 
-	it("Should set sourcemaps without vendor", () => {
-		const fuse = createFuse();
-		const bundle = fuse.bundle("app").sourceMaps(true);
-		expect(bundle.context.sourceMapsProject).toBeTruthy();
-		expect(bundle.context.sourceMapsVendor).toEqual(false);
-	});
-
-	it("Should set sourcemaps for both vendor and app", () => {
-		const fuse = createFuse();
-		const bundle = fuse.bundle("app").sourceMaps({ vendor: true, project: true });
-		expect(bundle.context.sourceMapsProject).toBeTruthy();
-		expect(bundle.context.sourceMapsVendor).toBeTruthy();
-	});
-
 	it("Should setup completed callbacked", () => {
 		const fuse = createFuse();
 		const bundle = fuse.bundle("app").completed(() => "done");

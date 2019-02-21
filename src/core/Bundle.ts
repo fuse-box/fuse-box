@@ -208,11 +208,6 @@ export class Bundle {
 		return this;
 	}
 
-	public sourceMaps(params: any): Bundle {
-		this.context.setSourceMapsProperty(params);
-		return this;
-	}
-
 	public exec(): Promise<Bundle> {
 		return new Promise((resolve, reject) => {
 			this.clearErrors();

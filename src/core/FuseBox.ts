@@ -403,7 +403,7 @@ export class FuseBox {
 		this.triggerEnd();
 		self.context.source.finalize(bundleData);
 		this.triggerPost();
-		this.context.writeOutput(bundleReady);
+		await this.context.writeOutput(bundleReady);
 		return self.context.source.getResult();
 	}
 

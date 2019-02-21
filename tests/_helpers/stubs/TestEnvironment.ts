@@ -285,7 +285,7 @@ export function createEnv(opts: any) {
 							});
 						}
 						return done(output);
-					}, 1);
+					}, 50);
 				});
 			});
 		})
