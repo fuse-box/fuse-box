@@ -609,29 +609,33 @@ export class WorkFlowContext {
 		return this.initialLoad === true;
 	}
 
-	public writeOutput(outFileWritten?: () => any) {
-		this.initialLoad = false;
+	public async writeOutput(outFileWritten?: () => any) {
+		return new Promise((resolve, reject) => {
+			this.initialLoad = false;
 
-		const res = this.source.getResult();
-		if (this.bundle) {
-			this.bundle.generatedCode = res.content;
-		}
+			const res = this.source.getResult();
+			if (this.bundle) {
+				this.bundle.generatedCode = res.content;
+			}
 
-		if (this.output && (!this.bundle || (this.bundle && this.bundle.producer.writeBundles))) {
-			this.output.writeCurrent(res.content).then(() => {
-				if (this.source.includeSourceMaps) {
-					this.writeSourceMaps(res);
-				}
+			if (this.output && (!this.bundle || (this.bundle && this.bundle.producer.writeBundles))) {
+				this.output.writeCurrent(res.content).then(() => {
+					if (this.source.includeSourceMaps) {
+						this.writeSourceMaps(res);
+					}
 
+					this.defer.unlock();
+					if (utils.isFunction(outFileWritten)) {
+						outFileWritten();
+					}
+					return resolve();
+				});
+			} else {
 				this.defer.unlock();
-				if (utils.isFunction(outFileWritten)) {
-					outFileWritten();
-				}
-			});
-		} else {
-			this.defer.unlock();
-			outFileWritten();
-		}
+				outFileWritten();
+				return resolve();
+			}
+		});
 	}
 
 	protected writeSourceMaps(result: any) {

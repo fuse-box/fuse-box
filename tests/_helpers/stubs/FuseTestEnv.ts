@@ -217,7 +217,7 @@ export class FuseTestEnv {
 		</head><body></body></html>
 `;
 
-		await this.delay(1);
+		await this.delay(20);
 		if (fs.existsSync(webIndexFile)) {
 			indexContent = fs.readFileSync(webIndexFile).toString();
 		}
@@ -240,7 +240,7 @@ export class FuseTestEnv {
 									}
 								}
 								return resolve(links);
-							}, 0);
+							}, 50);
 						});
 					};
 					window.__ajax = (url, fn) => {
