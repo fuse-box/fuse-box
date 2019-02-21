@@ -38,7 +38,7 @@
     "chokidar": "^1.6.1",
     "clean-css": "^4.1.9",
     "convert-source-map": "^1.6.0",
-    "escodegen": "^1.8.1",
+    "escodegen": "^1.11.1",
     "express": "^4.14.0",
     "fliplog": "^0.3.13",
     "fs-extra": "^7.0.0",
