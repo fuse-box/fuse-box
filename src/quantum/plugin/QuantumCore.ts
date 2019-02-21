@@ -52,9 +52,11 @@ export class QuantumCore {
 	public computedStatementRules: Map<string, ComputedStatementRule>;
 	public splitFiles: Set<FileAbstraction>;
 	public originalFiles: Map<string, File>;
+	public allowProcessRemoval: boolean;
 
 	constructor(public producer: BundleProducer, opts: QuantumOptions) {
 		this.opts = opts;
+		this.allowProcessRemoval = true;
 		this.cssCollection = new Map<string, CSSCollection>();
 		this.writer = new BundleWriter(this);
 		this.postTasks = new QuantumTask(this);

@@ -144,4 +144,50 @@ describe("ProcessEnvReplacement", () => {
 			expect(contents).toContain("else if ('production' !== 'production')");
 		});
 	});
+
+	it("Should keep process untouched in case of something usage else but replacable objects (treeshake off)", () => {
+		return createOptimisedBundleEnv({
+			stubs: true,
+			options: {
+				treeshake: false,
+			},
+			project: {
+				plugins: [EnvPlugin({ foo: "foo" })],
+				files: {
+					"index.ts": `
+						export const res = process.cwd();
+          `,
+				},
+				instructions: "index.ts",
+			},
+		}).then(result => {
+			const contents = result.contents["index.js"];
+
+			expect(contents).toContain("// process/index.js");
+			expect(contents).toContain("var process = $fsx.r(1);");
+		});
+	});
+
+	it("Should keep process untouched in case of something usage else but replacable objects (treeshake on)", () => {
+		return createOptimisedBundleEnv({
+			stubs: true,
+			options: {
+				treeshake: true,
+			},
+			project: {
+				plugins: [EnvPlugin({ foo: "foo" })],
+				files: {
+					"index.ts": `
+						export const res = process.cwd();
+          `,
+				},
+				instructions: "index.ts",
+			},
+		}).then(result => {
+			const contents = result.contents["index.js"];
+
+			expect(contents).toContain("// process/index.js");
+			expect(contents).toContain("var process = $fsx.r(1);");
+		});
+	});
 });

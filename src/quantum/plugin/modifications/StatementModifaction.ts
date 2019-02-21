@@ -25,7 +25,11 @@ export class StatementModification {
 			} else {
 				let resolvedFile = statement.resolve();
 				if (resolvedFile) {
-					if (resolvedFile.isProcessPolyfill() && !core.opts.shouldBundleProcessPolyfill()) {
+					if (
+						resolvedFile.isProcessPolyfill() &&
+						!core.opts.shouldBundleProcessPolyfill() &&
+						file.canRemoveProcessRequireStatement
+					) {
 						return statement.removeWithIdentifier();
 					}
 					if (!resolvedFile.dependents.has(file)) {

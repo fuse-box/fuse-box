@@ -96,10 +96,12 @@ export class FileAbstraction {
 	private id: string;
 	private treeShakingRestricted = false;
 	private removalRestricted = false;
+	public canRemoveProcessRequireStatement: boolean;
 
 	public renderedHeaders: string[];
 
 	constructor(public fuseBoxPath: string, public packageAbstraction: PackageAbstraction) {
+		this.canRemoveProcessRequireStatement = true;
 		this.referencedRequireStatements = new Set<RequireStatement>();
 		this.namedRequireStatements = new Map<string, RequireStatement>();
 		this.requireStatements = new Set<RequireStatement>();
@@ -200,6 +202,7 @@ export class FileAbstraction {
 	}
 
 	public restrictRemoval() {
+		this.canBeRemoved = false;
 		this.removalRestricted = true;
 	}
 
@@ -431,6 +434,22 @@ export class FileAbstraction {
 				}
 			}
 		}
+		if (matchesVariableDeclarator(node, "process")) {
+			this.processVariableDefined = true;
+		}
+		const processObject = matchesGlobalVariableReference(node, "process.*");
+		// check if some of the objects can't be replaced
+		if (!this.processVariableDefined && processObject && !this.isProcessPolyfill()) {
+			const passingMethods = ["env", "version"];
+			if (!passingMethods.includes(processObject)) {
+				if (this.core) {
+					if (this.core.opts.isTargetBrowser()) {
+						this.core.allowProcessRemoval = false;
+						this.canRemoveProcessRequireStatement = false;
+					}
+				}
+			}
+		}
 
 		if (matchesGlobalVariable(node, "process")) {
 			this.globalProcess.add(new GenericAst(parent, prop, node));
@@ -438,9 +457,7 @@ export class FileAbstraction {
 		if (matchesGlobalVariableReference(node, "process.version")) {
 			this.globalProcessVersion.add(new GenericAst(parent, prop, node));
 		}
-		if (matchesVariableDeclarator(node, "process")) {
-			this.processVariableDefined = true;
-		}
+
 		// detecting es6
 		if (matchesEcmaScript6(node)) {
 			this.isEcmaScript6 = true;

@@ -72,6 +72,10 @@ export class TreeShake {
 				}
 			});
 			if (file.isRemovalAllowed() && file.isNotUsedAnywhere() && this.core.opts.canBeRemovedByTreeShaking(file)) {
+				if (file.isProcessPolyfill() && !this.core.allowProcessRemoval) {
+					file.restrictRemoval();
+					return;
+				}
 				this.core.log.echoInfo(`tree shaking: Mark for removal ${file.getFuseBoxFullPath()}`);
 				file.markForRemoval();
 			}

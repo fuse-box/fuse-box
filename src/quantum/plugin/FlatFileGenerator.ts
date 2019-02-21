@@ -33,6 +33,9 @@ export class FlatFileGenerator {
 	}
 
 	public async addFile(file: FileAbstraction, ensureES5 = false) {
+		if (file.isProcessPolyfill() && !this.core.allowProcessRemoval) {
+			file.canBeRemoved = false;
+		}
 		if (file.canBeRemoved) {
 			return;
 		}
