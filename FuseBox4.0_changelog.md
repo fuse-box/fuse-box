@@ -29,9 +29,11 @@ too, so now, you can restart the process and get them as fast and your SSD
 allows. But bear in mind, that the process of generating/retrieving/injecting is
 very greedy on RAM and can and will degrade the performance.
 
-## Workers are comign next!
+## Other
 
-I am expecting a 10x-20x increase in performance. Stay tuned! it's comming soon!
+- Keep `process` object if other than `process` and `env` variables are met.
+  That used to cause problems where the browser yielded an error
+  `process is not defined` because Quantum used to remove it.
 
 # Breaking changes
 

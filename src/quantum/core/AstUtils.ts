@@ -316,6 +316,9 @@ export function matchesGlobalVariableReference(node: any, name: string) {
 		node.type === "Identifier" && node.name === first && !isProperty && !isDeclarator && isMemberExpression;
 	let secondCondition = true;
 	if (second && initial) {
+		if (second === "*") {
+			return parent.property && parent.property.type === "Identifier" && parent.property.name;
+		}
 		secondCondition = parent.property && parent.property.type === "Identifier" && parent.property.name === second;
 	}
 	return initial && secondCondition;
