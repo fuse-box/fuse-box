@@ -103,7 +103,7 @@ export class TypescriptConfig {
 	private customTsConfig: string | rawCompilerOptions[];
 	private configFile: string;
 	private formatDiagnosticsHost: ts.FormatDiagnosticsHost;
-	// private baseURLAutomaticAlias: boolean;
+
 	constructor(public context: WorkFlowContext) {
 		this.formatDiagnosticsHost = {
 			getCanonicalFileName: file => file,
@@ -544,7 +544,7 @@ export class TypescriptConfig {
 		this.initializeConfig();
 		this.verifyTsLib();
 
-		if (this.config.compilerOptions.baseUrl && this.context.automaticAlias) {
+		if (this.config.compilerOptions.baseUrl) {
 			this.normalizeTSPaths();
 		}
 
