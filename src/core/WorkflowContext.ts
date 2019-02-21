@@ -75,10 +75,6 @@ export class WorkFlowContext {
 
 	public dynamicImportsEnabled = true;
 
-	public automaticAlias = true;
-
-	// public automaticTSPathAlias = false;
-
 	public tsPathsRegExp?: RegExp;
 
 	public tsModuleResolutionCache?: ts.ModuleResolutionCache;
@@ -319,7 +315,6 @@ export class WorkFlowContext {
 		let replaced = false;
 
 		if (
-			this.automaticAlias &&
 			file.collection.name === this.defaultPackageName &&
 			this.tsPathsRegExp &&
 			this.tsPathsRegExp.test(requireStatement)
