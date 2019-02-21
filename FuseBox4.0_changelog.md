@@ -2,6 +2,17 @@
 
 # Improvements
 
+## TypeScript `paths` module resolution
+
+FuseBox will now resolve automatically `paths` defined in `tsconfig.json` file
+in `compilerOptions` when these conditions are met:
+- `baseUrl` option should be defined in `compilerOptions`
+- `baseUrl` path should be `homeDir` or point to a directory within `homeDir`
+
+If a `tsconfig.json` file is not used but `paths` and `baseUrl` are set in
+`tsConfig` FuseBox options on `init`, these are taken into account with the
+same conditions mentioned above.
+
 ## HMR
 
 We all know this annoying moment when you create a **new file** and you need to
@@ -51,3 +62,4 @@ very greedy on RAM and can and will degrade the performance.
 - Removed `CSSModules` exports in favour of conventional `CSSModulesPlugin`
 - Removed `VuePlugin` in favour of `VueComponentPlugin`
 - Removed `Uglify-es` plugin in favour of `TerserPlugin`
+- Removed `automaticAlias` from FuseBox options
