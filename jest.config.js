@@ -15,7 +15,6 @@ module.exports = {
     "/lib/",
     "/node_modules/",
     "_playground/",
-    "src/",
     "dist/",
     ".dev/",
     "_current_test",
