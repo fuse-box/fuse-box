@@ -1,4 +1,8 @@
+import * as ts from "typescript";
+import { extractFuseBoxPath, ensurePublicExtension } from "../Utils";
+
 export interface IResolverProps {
+	homeDir?: string;
 	filePath?: string;
 	target: string;
 	package?: IResolverPackage;
@@ -70,6 +74,33 @@ export interface IResolver {
 	*/
 	alias?: string;
 }
-export function resolveModule(props: IResolverProps): IResolver {
-	return;
+
+function isExternalModule(props: IResolverProps): Partial<IResolver> {
+	if (/^https?:/.test(props.target)) {
+		return {
+			isExternal: true,
+		};
+	}
+}
+
+export function resolveModule(props: IResolverProps): Partial<IResolver> {
+	const external = isExternalModule(props);
+	if (external) {
+		return external;
+	}
+
+	const response = ts.resolveModuleName(props.target, props.filePath, { allowJs: true }, ts.createCompilerHost({}));
+	const resolved = response.resolvedModule;
+	if (!resolved) {
+		return;
+	}
+
+	const extension = resolved.extension;
+	const absPath = resolved.resolvedFileName;
+
+	return {
+		extension,
+		absPath,
+		fuseBoxPath: props.homeDir && ensurePublicExtension(extractFuseBoxPath(props.homeDir, absPath)),
+	};
 }
