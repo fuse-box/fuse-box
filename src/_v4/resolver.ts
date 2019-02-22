@@ -14,6 +14,7 @@ export interface IResolverPackage {
 	tsMain?: string;
 	main?: string;
 	version?: string;
+	packageJSONLocation?: string;
 	// If a package is a part of another package under it's own node_modules
 	// we need to set it to true. This will be used to bundle multiple version of the same package
 	// and resolve conflicting version
