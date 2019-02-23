@@ -1,5 +1,5 @@
-import { getMemoryAdapter } from "../adapters";
-import { ICacheAdapter } from "../Interfaces";
+import { getMemoryAdapter } from "../../cache/adapters";
+import { ICacheAdapter } from "../../cache/Interfaces";
 
 describe("Memory adapter", () => {
 	let adapter: ICacheAdapter;

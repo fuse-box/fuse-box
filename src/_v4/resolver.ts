@@ -1,5 +1,6 @@
+import * as path from "path";
 import * as ts from "typescript";
-import { extractFuseBoxPath, ensurePublicExtension } from "../Utils";
+import { ensurePublicExtension, extractFuseBoxPath } from "../Utils";
 
 export interface IResolverProps {
 	homeDir?: string;
@@ -49,6 +50,8 @@ export interface IResolver {
 	// tsx and ts needs to be replaced with js and jsx
 	fuseBoxPath: string;
 
+	forcedStatement?: string;
+
 	/*
 	 If a resolved module doesn't look like the original one this needs to tell us the difference
 	 a resolved folder contains package.json which instead of index.js routes to foobar.js
@@ -84,24 +87,74 @@ function isExternalModule(props: IResolverProps): Partial<IResolver> {
 	}
 }
 
+function makeFuseBoxPath(homeDir: string, absPath: string) {
+	return homeDir && ensurePublicExtension(extractFuseBoxPath(homeDir, absPath));
+}
+
 export function resolveModule(props: IResolverProps): Partial<IResolver> {
 	const external = isExternalModule(props);
 	if (external) {
 		return external;
 	}
+	let forcedStatement: string;
+	let alias: string;
+	let packageJSONPath: string;
+	let forceReplacement = false;
 
-	const response = ts.resolveModuleName(props.target, props.filePath, { allowJs: true }, ts.createCompilerHost({}));
+	function fileExists(fileName: string): boolean {
+		return ts.sys.fileExists(fileName);
+	}
+
+	function readFile(fileName: string): string | undefined {
+		const baseName = path.basename(fileName);
+
+		const contents = ts.sys.readFile(fileName);
+		if (baseName === "package.json") {
+			console.log(fileName);
+			packageJSONPath = fileName;
+			forceReplacement = true;
+		}
+		return contents;
+	}
+
+	const response = ts.resolveModuleName(
+		props.target,
+		props.filePath,
+		{ allowJs: true },
+		{
+			fileExists,
+			readFile,
+		},
+	);
 	const resolved = response.resolvedModule;
 	if (!resolved) {
 		return;
 	}
 
+	let pkg: IResolverPackage;
+	if (resolved.isExternalLibraryImport && resolved.packageId) {
+		// drop force replacement, as it's coming naturally without an override
+		forceReplacement = false;
+		pkg = {
+			name: resolved.packageId.name,
+			version: resolved.packageId.version,
+			packageJSONLocation: packageJSONPath,
+		};
+	}
+
 	const extension = resolved.extension;
 	const absPath = resolved.resolvedFileName;
+	const fuseBoxPath = makeFuseBoxPath(pkg ? path.dirname(pkg.packageJSONLocation) : props.homeDir, absPath);
 
+	if (forceReplacement) {
+		forcedStatement = `~/${fuseBoxPath}`;
+	}
 	return {
+		alias,
+		package: pkg,
 		extension,
 		absPath,
-		fuseBoxPath: props.homeDir && ensurePublicExtension(extractFuseBoxPath(props.homeDir, absPath)),
+		fuseBoxPath,
+		forcedStatement,
 	};
 }
