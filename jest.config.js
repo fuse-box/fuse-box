@@ -10,10 +10,10 @@ module.exports = {
     "^.+\\.ts?$": "ts-jest",
   },
 
-  testRegex: "tests/.*\\.test\\.ts$",
+  testRegex: "(/(tests|__tests__)/.*|(\\.|/)(test|spec))\\.[jt]sx?$",
   testPathIgnorePatterns: [
     "/lib/",
-    "/node_modules/",
+    "node_modules/",
     "_playground/",
     "dist/",
     ".dev/",
