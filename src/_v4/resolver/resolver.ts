@@ -1,6 +1,7 @@
 import * as path from "path";
 import * as ts from "typescript";
-import { ensurePublicExtension, extractFuseBoxPath } from "../Utils";
+import { ensurePublicExtension, extractFuseBoxPath } from "../../Utils";
+import { fileLookup } from "./fileLookup";
 
 export interface IResolverProps {
 	homeDir?: string;
@@ -101,57 +102,36 @@ export function resolveModule(props: IResolverProps): Partial<IResolver> {
 	let packageJSONPath: string;
 	let forceReplacement = false;
 
-	function fileExists(fileName: string): boolean {
-		return ts.sys.fileExists(fileName);
-	}
+	const lookupResult = fileLookup({ filePath: props.filePath, target: props.target });
 
-	function readFile(fileName: string): string | undefined {
-		const baseName = path.basename(fileName);
-
-		const contents = ts.sys.readFile(fileName);
-		if (baseName === "package.json") {
-			console.log(fileName);
-			packageJSONPath = fileName;
-			forceReplacement = true;
-		}
-		return contents;
-	}
-
-	const response = ts.resolveModuleName(
-		props.target,
-		props.filePath,
-		{ allowJs: true },
-		{
-			fileExists,
-			readFile,
-		},
-	);
-	const resolved = response.resolvedModule;
-	if (!resolved) {
+	if (!lookupResult.fileExists) {
 		return;
 	}
-
-	let pkg: IResolverPackage;
-	if (resolved.isExternalLibraryImport && resolved.packageId) {
-		// drop force replacement, as it's coming naturally without an override
-		forceReplacement = false;
-		pkg = {
-			name: resolved.packageId.name,
-			version: resolved.packageId.version,
-			packageJSONLocation: packageJSONPath,
-		};
+	if (lookupResult.customIndex) {
+		forceReplacement = true;
 	}
 
-	const extension = resolved.extension;
-	const absPath = resolved.resolvedFileName;
-	const fuseBoxPath = makeFuseBoxPath(pkg ? path.dirname(pkg.packageJSONLocation) : props.homeDir, absPath);
+	// let pkg: IResolverPackage;
+	// if (resolved.isExternalLibraryImport && resolved.packageId) {
+	// 	// drop force replacement, as it's coming naturally without an override
+	// 	forceReplacement = false;
+	// 	pkg = {
+	// 		name: resolved.packageId.name,
+	// 		version: resolved.packageId.version,
+	// 		packageJSONLocation: packageJSONPath,
+	// 	};
+	// }
+
+	const extension = lookupResult.extension;
+	const absPath = lookupResult.absPath;
+	const fuseBoxPath = makeFuseBoxPath(props.homeDir, absPath);
 
 	if (forceReplacement) {
 		forcedStatement = `~/${fuseBoxPath}`;
 	}
 	return {
 		alias,
-		package: pkg,
+		//package: pkg,
 		extension,
 		absPath,
 		fuseBoxPath,
