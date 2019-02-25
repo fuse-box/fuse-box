@@ -73,6 +73,103 @@ describe("Resolver test", () => {
 		});
 	});
 
+	describe("Alias replacement", () => {
+		const homeDir = path.join(cases, "src1");
+		const filePath = path.join(homeDir, "foo.js");
+		it("Should replace alias 1", () => {
+			const info = resolveModule({
+				homeDir: homeDir,
+				filePath: filePath,
+				alias: {
+					gibberish$: "./some5",
+				},
+				target: "gibberish",
+			});
+			expect(info.absPath).toMatchFilePath("cases/src1/some5/foo.js$");
+
+			expect(info.forcedStatement).toEqual("~/some5/foo.js");
+		});
+
+		it("Should replace alias 2", () => {
+			const info = resolveModule({
+				homeDir: homeDir,
+				filePath: filePath,
+				alias: {
+					ololo$: "./some1",
+				},
+				target: "ololo",
+			});
+
+			expect(info.absPath).toMatchFilePath("some1/index.js$");
+			expect(info.forcedStatement).toEqual("~/some1/index.js");
+		});
+
+		test.only("Should not Replace alias and have forcedStatement false", () => {
+			const info = resolveModule({
+				homeDir: homeDir,
+				filePath: filePath,
+				alias: {
+					ololo$: "./some1",
+				},
+				target: "./some1",
+			});
+			expect(info.absPath).toMatchFilePath("some1/index.js$");
+			expect(info.forcedStatement).toBeFalsy();
+		});
+	});
+
+	describe("Typescripts paths resolution", () => {
+		const homeDir = path.join(cases, "paths_lookup/src1");
+		const filePath = path.join(homeDir, "Moi.ts");
+		it("Should resolve with ts paths and just baseURL", () => {
+			const info = resolveModule({
+				homeDir: homeDir,
+				filePath: filePath,
+				typescriptPaths: {
+					baseURL: homeDir,
+				},
+				target: "bar/Bar",
+			});
+
+			expect(info.absPath).toMatchFilePath("src1/bar/Bar.tsx$");
+			expect(info.forcedStatement).toEqual("~/bar/Bar.jsx");
+		});
+
+		it("Should resolve with ts paths and custom paths 1", () => {
+			const result = resolveModule({
+				homeDir: homeDir,
+				filePath: filePath,
+				typescriptPaths: {
+					baseURL: homeDir,
+					paths: {
+						"@app/*": ["something/app/*"],
+					},
+				},
+				target: "@app/Foo",
+			});
+			expect(result.extension).toEqual(".tsx");
+			expect(result.absPath).toMatchFilePath("something/app/Foo.tsx$");
+			expect(result.forcedStatement).toEqual("~/something/app/Foo.jsx");
+		});
+
+		it("Should resolve with ts paths and custom paths 2", () => {
+			const result = resolveModule({
+				homeDir: homeDir,
+				filePath: filePath,
+				typescriptPaths: {
+					baseURL: homeDir,
+					paths: {
+						"@app/*": ["something/app/*", "something/other/*"],
+					},
+				},
+				target: "@app/AnotherFile",
+			});
+			expect(result.extension).toEqual(".jsx");
+			expect(result.absPath).toMatchFilePath("something/other/AnotherFile.jsx$");
+			expect(result.forcedStatement).toEqual("~/something/other/AnotherFile.jsx");
+		});
+	});
+
 	describe("Package resolution", () => {
 		const homeDir = path.join(cases, "src1");
 		const filePath = path.join(homeDir, "foo.js");

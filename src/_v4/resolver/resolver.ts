@@ -1,13 +1,21 @@
-import * as path from "path";
-import * as ts from "typescript";
 import { ensurePublicExtension, extractFuseBoxPath } from "../../Utils";
-import { fileLookup } from "./fileLookup";
+import { fileLookup, ILookupProps, ILookupResult } from "./fileLookup";
+import { pathsLookup } from "./pathsLookup";
+import { path2Regex } from "../utils";
 
 export interface IResolverProps {
+	cache?: boolean;
 	homeDir?: string;
 	filePath?: string;
 	target: string;
 	package?: IResolverPackage;
+	alias?: {
+		[key: string]: string;
+	};
+	typescriptPaths?: {
+		baseURL: string;
+		paths?: { [key: string]: Array<string> };
+	};
 }
 
 export interface IResolverPackage {
@@ -92,17 +100,65 @@ function makeFuseBoxPath(homeDir: string, absPath: string) {
 	return homeDir && ensurePublicExtension(extractFuseBoxPath(homeDir, absPath));
 }
 
+function replaceAliases(
+	props: IResolverProps,
+): {
+	forceReplacement: boolean;
+	target: string;
+} {
+	let forceReplacement = false;
+	let target = props.target;
+	for (const key in props.alias) {
+		const regex = path2Regex(key);
+		const value = props.alias[key];
+		if (regex.test(target)) {
+			target = target.replace(regex, value);
+			return { target, forceReplacement: true };
+		}
+	}
+	return { target, forceReplacement };
+}
+
 export function resolveModule(props: IResolverProps): Partial<IResolver> {
 	const external = isExternalModule(props);
 	if (external) {
 		return external;
 	}
+	let target = props.target;
 	let forcedStatement: string;
 	let alias: string;
 	let packageJSONPath: string;
 	let forceReplacement = false;
 
-	const lookupResult = fileLookup({ filePath: props.filePath, target: props.target });
+	let lookupResult: ILookupResult;
+
+	// replace aliaes
+	// props.target will be updated
+	if (props.alias) {
+		const res = replaceAliases(props);
+		forceReplacement = res.forceReplacement;
+		target = res.target;
+	}
+
+	// handle typescript paths
+	// in this cases it should always send a forceStatement
+	if (props.typescriptPaths) {
+		lookupResult = pathsLookup({
+			baseURL: props.typescriptPaths.baseURL,
+			cachePaths: props.cache,
+			homeDir: props.homeDir,
+			paths: props.typescriptPaths.paths,
+			target: target,
+		});
+		if (lookupResult) {
+			forceReplacement = true;
+		}
+	}
+
+	// continue looking for the file
+	if (!lookupResult) {
+		lookupResult = fileLookup({ filePath: props.filePath, target: target });
+	}
 
 	if (!lookupResult.fileExists) {
 		return;

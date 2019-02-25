@@ -1,6 +1,34 @@
 import * as fs from "fs-extra";
 import * as path from "path";
 import * as appRoot from "app-root-path";
+import { ensureFuseBoxPath } from "../../Utils";
+
+declare global {
+	namespace jest {
+		// tslint:disable-next-line:interface-name
+		interface Matchers<R> {
+			toMatchFilePath(path: string): R;
+		}
+	}
+}
+
+expect.extend({
+	toMatchFilePath(expectedPath, comparedPath) {
+		expectedPath = ensureFuseBoxPath(expectedPath);
+		comparedPath = ensureFuseBoxPath(comparedPath);
+		comparedPath = comparedPath
+			.split(".")
+			.join("\\.")
+			.split("/")
+			.join("\\/");
+		const exp = new RegExp(comparedPath);
+		const isMatched = exp.test(expectedPath);
+		return {
+			pass: isMatched,
+			message: () => `Expected ${exp} to match ${expectedPath}`,
+		};
+	},
+});
 
 function createFiles(dir: string, files: any) {
 	for (let name in files) {
