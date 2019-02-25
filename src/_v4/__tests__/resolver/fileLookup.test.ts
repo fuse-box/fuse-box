@@ -1,7 +1,7 @@
 import * as path from "path";
 import { fileLookup } from "../../resolver/fileLookup";
 const cases = path.join(__dirname, "cases/lk");
-
+import "../utils";
 describe("lookup test", () => {
 	it("Should resolve (with ext", () => {
 		const response = fileLookup({ fileDir: cases, target: "a/index.js" });
@@ -79,5 +79,13 @@ describe("lookup test", () => {
 	it("Should not fail on an uknown directory", () => {
 		const response = fileLookup({ fileDir: cases, target: "g" });
 		expect(response.fileExists).toEqual(false);
+	});
+
+	test.only("Should resolve a json file", () => {
+		const response = fileLookup({ fileDir: cases, target: "z/foo" });
+		expect(response.customIndex).toEqual(true);
+		expect(response.absPath).toMatchFilePath("z/foo.json$");
+		expect(response.fileExists).toBe(true);
+		expect(response.extension).toBe(".json");
 	});
 });
