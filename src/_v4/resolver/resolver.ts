@@ -96,6 +96,10 @@ function isExternalModule(props: IResolverProps): Partial<IResolver> {
 	}
 }
 
+function isNodeModule(path: string) {
+	return /^([a-z@](?!:).*)$/.test(path);
+}
+
 function makeFuseBoxPath(homeDir: string, absPath: string) {
 	return homeDir && ensurePublicExtension(extractFuseBoxPath(homeDir, absPath));
 }
@@ -157,7 +161,10 @@ export function resolveModule(props: IResolverProps): Partial<IResolver> {
 
 	// continue looking for the file
 	if (!lookupResult) {
-		lookupResult = fileLookup({ filePath: props.filePath, target: target });
+		if (isNodeModule(target)) {
+		} else {
+			lookupResult = fileLookup({ filePath: props.filePath, target: target });
+		}
 	}
 
 	if (!lookupResult.fileExists) {

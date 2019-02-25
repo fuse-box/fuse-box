@@ -78,10 +78,10 @@ export function fileLookup(props: ILookupProps): ILookupResult {
 	// try files without extensions first
 	let fileExtensions: Array<string> = TS_EXTENSIONS_FIRST;
 	if (props.javascriptFirst) {
-		fileExtensions = TS_EXTENSIONS_FIRST;
+		fileExtensions = JS_EXTENSIONS_FIRST;
 	}
 	if (props.typescriptFirst) {
-		fileExtensions = JS_EXTENSIONS_FIRST;
+		fileExtensions = TS_EXTENSIONS_FIRST;
 	}
 	const targetFile = tryExtensions(resolved, fileExtensions);
 	if (targetFile) {
@@ -92,11 +92,13 @@ export function fileLookup(props: ILookupProps): ILookupResult {
 		};
 	}
 
+	let isDirectory: boolean;
 	// try directory indexes
 	const exists = fs.existsSync(resolved);
 	if (exists) {
 		const stat = fs.lstatSync(resolved);
 		if (stat.isDirectory) {
+			isDirectory = true;
 			let indexes: Array<string> = TS_INDEXES_FIRST;
 			if (props.javascriptFirst) {
 				indexes = JS_INDEXES_FIRST;
@@ -126,6 +128,20 @@ export function fileLookup(props: ILookupProps): ILookupResult {
 					fileExists: fs.existsSync(entryFile),
 				};
 			}
+		}
+	}
+
+	// as a last resort, we should try ".json" which is a very rare case
+	// that's why it has the lowest priority here
+	if (!isDirectory) {
+		const targetFile = tryExtensions(resolved, [".json"]);
+		if (targetFile) {
+			return {
+				customIndex: true, // it still needs to be re-written because FuseBox client API won't find it
+				absPath: targetFile,
+				extension: path.extname(targetFile),
+				fileExists: true,
+			};
 		}
 	}
 	return {
