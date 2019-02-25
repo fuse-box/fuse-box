@@ -43,15 +43,17 @@ export function removeFolder(userPath) {
 	fs.removeSync(userPath);
 }
 
-export function createRealNodeModule(name: string, packageJSON, files: { [key: string]: string }) {
+export function createRealNodeModule(name: string, packageJSON, files: { [key: string]: string }): string {
 	const path2Module = path.join(appRoot.path, "node_modules", name);
 	if (fs.existsSync(path2Module)) {
 		removeFolder(path2Module);
 	}
 	fs.ensureDirSync(path2Module);
+	const s = name.split("/");
 
-	packageJSON.name = name;
+	packageJSON.name = s[s.length - 1];
 	files["package.json"] = JSON.stringify(packageJSON);
 
 	createFiles(path2Module, files);
+	return path2Module;
 }
