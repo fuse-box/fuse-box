@@ -13,15 +13,6 @@ type DirectoryListing = Array<{ nameWithoutExtension: string; name: string }>;
 type TypescriptPaths = Array<(target: string) => Array<string>>;
 const CACHED_LISTING: { [key: string]: DirectoryListing } = {};
 const CACHED_PATHS: { [key: string]: TypescriptPaths } = {};
-/**
- "paths": {
-			"@app/*": ["app/*"],
-			"@config/*": ["app/_config/*"],
-			"@environment/*": ["environments/*"],
-			"@shared/*": ["app/_shared/*"],
-			"@helpers/*": ["helpers/*"]
-	}
- */
 
 function pathRegex(input: string) {
 	const str = input.replace(/\*/, "(.*)").replace(/[\-\[\]\/\{\}\+\?\\\^\$\|]/g, "\\$&");
@@ -58,6 +49,12 @@ function getPathsData(props: IPathsLookupProps): TypescriptPaths {
 	return fns;
 }
 
+/**
+ * Listing homeDir directories to simplify matching and makae it easier for the matcher
+ *
+ * @param {IPathsLookupProps} props
+ * @returns {(DirectoryListing | undefined)}
+ */
 function getIndexFiles(props: IPathsLookupProps): DirectoryListing | undefined {
 	let indexFiles: Array<{ nameWithoutExtension: string; name: string }>;
 	if (props.baseURL === props.homeDir) {
@@ -99,6 +96,9 @@ export function pathsLookup(props: IPathsLookupProps): ILookupResult {
 		}
 	}
 
+	// Performing the actual typescript paths match
+	// "items" should be cached, so we are getting simple functions that contain
+	// regular expressions
 	const items = getPathsData(props);
 	for (const i in items) {
 		const test = items[i];

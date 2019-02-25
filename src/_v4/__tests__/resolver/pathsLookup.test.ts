@@ -1,6 +1,6 @@
 import * as path from "path";
 import { pathsLookup } from "../../resolver/pathsLookup";
-
+import "../utils";
 const CASE1 = path.join(__dirname, "cases/paths_lookup/src1");
 
 describe("Paths lookup", () => {
@@ -10,18 +10,20 @@ describe("Paths lookup", () => {
 
 			expect(result.fileExists).toBe(true);
 			expect(result.absPath).toMatch(/Bar\.tsx$/);
+			expect(result.absPath).toMatchFilePath("Bar.tsx$");
 		});
 
 		it("Should lookup and resolve baseURL . (foo/index.ts)", () => {
 			const result = pathsLookup({ baseURL: CASE1, homeDir: CASE1, target: "foo" });
 			expect(result.fileExists).toBe(true);
-			expect(result.absPath).toMatch(/foo\/index\.ts$/);
+
+			expect(result.absPath).toMatchFilePath("foo/index.ts$");
 		});
 
 		it("Should lookup and resolve baseURL . (foo/index.ts) with slash", () => {
 			const result = pathsLookup({ baseURL: CASE1, homeDir: CASE1, target: "foo/" });
 			expect(result.fileExists).toBe(true);
-			expect(result.absPath).toMatch(/foo\/index\.ts$/);
+			expect(result.absPath).toMatchFilePath("foo/index.ts$");
 		});
 
 		it("Should fail to resolve", () => {
@@ -32,7 +34,8 @@ describe("Paths lookup", () => {
 		it("Should result just a file name Moi.ts", () => {
 			const result = pathsLookup({ baseURL: CASE1, homeDir: CASE1, target: "Moi" });
 			expect(result.fileExists).toBe(true);
-			expect(result.absPath).toMatch(/Moi.ts$/);
+
+			expect(result.absPath).toMatchFilePath("Moi.ts$");
 		});
 	});
 
@@ -48,7 +51,7 @@ describe("Paths lookup", () => {
 			});
 			expect(result.fileExists).toBe(true);
 			expect(result.extension).toEqual(".tsx");
-			expect(result.absPath).toMatch(/something\/app\/Foo\.tsx$/);
+			expect(result.absPath).toMatchFilePath("something/app/Foo.tsx$");
 		});
 
 		it("should look up an find in 2 directories", () => {
@@ -62,7 +65,7 @@ describe("Paths lookup", () => {
 			});
 			expect(result.fileExists).toBe(true);
 			expect(result.extension).toEqual(".jsx");
-			expect(result.absPath).toMatch(/something\/other\/AnotherFile\.jsx$/);
+			expect(result.absPath).toMatchFilePath("something/other/AnotherFile.jsx$");
 		});
 	});
 });
