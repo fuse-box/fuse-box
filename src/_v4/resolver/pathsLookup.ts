@@ -43,7 +43,6 @@ function getPathsData(props: IPathsLookupProps): TypescriptPaths {
 	for (const key in props.paths) {
 		fns.push((target: string) => {
 			const re = pathRegex(key);
-
 			const matched = target.match(re);
 			if (matched) {
 				const variable = matched[1];
@@ -80,6 +79,7 @@ function getIndexFiles(props: IPathsLookupProps): DirectoryListing | undefined {
 	}
 	return indexFiles;
 }
+
 export function pathsLookup(props: IPathsLookupProps): ILookupResult {
 	// if baseDir is the same as homeDir we can assume aliasing directories
 	// and files without the need in specifying "paths"
@@ -91,7 +91,7 @@ export function pathsLookup(props: IPathsLookupProps): ILookupResult {
 			// check if starts with it only
 			const regex = new RegExp(`^${item.nameWithoutExtension}($|\\.|\\/)`);
 			if (regex.test(props.target)) {
-				const result = fileLookup({ fileDir: props.homeDir, target: props.target });
+				const result = fileLookup({ fileDir: props.baseURL, target: props.target });
 				if (result && result.fileExists) {
 					return result;
 				}
@@ -103,7 +103,6 @@ export function pathsLookup(props: IPathsLookupProps): ILookupResult {
 	for (const i in items) {
 		const test = items[i];
 		const directories = test(props.target);
-
 		if (directories) {
 			for (const j in directories) {
 				const directory = directories[j];

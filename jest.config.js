@@ -10,8 +10,9 @@ module.exports = {
     "^.+\\.ts?$": "ts-jest",
   },
 
-  testRegex: "(/(tests|__tests__)/.*|(\\.|/)(test|spec))\\.[jt]sx?$",
+  testRegex: "(/(__tests__|tests)/.*|(\\.|/))\\.test\\.tsx?$",
   testPathIgnorePatterns: [
+    ".fusebox/",
     "/lib/",
     "node_modules/",
     "_playground/",
