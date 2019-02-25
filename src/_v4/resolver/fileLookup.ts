@@ -61,7 +61,7 @@ export function getFolderEntryPointFromPackageJSON(json: any) {
 }
 
 export function fileLookup(props: ILookupProps): ILookupResult {
-	if (!props.fileDir && props.filePath) {
+	if (!props.fileDir && !props.filePath) {
 		throw new Error("Failed to lookup. Provide either fileDir or filePath");
 	}
 	let resolved = path.join(props.filePath ? path.dirname(props.filePath) : props.fileDir, props.target);
