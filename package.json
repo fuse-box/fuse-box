@@ -41,7 +41,7 @@
     "escodegen": "^1.11.1",
     "express": "^4.14.0",
     "fliplog": "^0.3.13",
-    "fs-extra": "^7.0.0",
+    "fs-extra": "^7.0.1",
     "fuse-concat-with-sourcemaps": "^1.0.5",
     "getopts": "^2.1.1",
     "glob": "^7.1.1",
