@@ -5,7 +5,11 @@ import * as fs from "fs";
 
 const PROJECT_NODE_MODULES = path.join(appRoot.path, "node_modules");
 
-function traverseUp(fileName: string, limit: string) {}
+function findPackageRoot(fileName: string) {
+	const dir = path.dirname(fileName);
+	const lastIndex = dir.lastIndexOf("node_modules");
+	return dir.substring(0, lastIndex);
+}
 
 function getPrimaryModule(props: IResolverProps) {
 	const targetPath = path.join(PROJECT_NODE_MODULES, props.target);
@@ -35,8 +39,11 @@ export function findTargetFolder(props: IResolverProps, folders?: Array<string>)
 			return targetPath;
 		}
 	} else {
-		console.log(props.filePath);
-		console.log(path.join(props.filePath, "../"));
+		const packageRoot = findPackageRoot(props.filePath);
+		console.log(props.filePath, packageRoot);
+
+		// console.log(props.filePath);
+		// console.log(path.join(props.filePath, "../"));
 		// otherwise we are inside the node_modules, which means we shoudl
 		// traverse back until we find node_modules/[lib] and try finding node_modules underneath it,
 		// otherwise we drop back to the primary node_module
