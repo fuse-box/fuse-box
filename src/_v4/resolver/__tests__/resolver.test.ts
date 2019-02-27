@@ -1,6 +1,6 @@
-import { resolveModule } from "../../resolver/resolver";
+import { resolveModule } from "../resolver";
 import * as path from "path";
-import { createRealNodeModule } from "../utils";
+import { createRealNodeModule } from "../../test_utils";
 
 const cases = path.join(__dirname, "cases/");
 

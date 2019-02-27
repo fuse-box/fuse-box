@@ -1,7 +1,7 @@
 import * as path from "path";
-import { fileLookup } from "../../resolver/fileLookup";
+import { fileLookup } from "../fileLookup";
 const cases = path.join(__dirname, "cases/lk");
-import "../utils";
+import "../../test_utils";
 describe("lookup test", () => {
 	it("Should resolve (with ext", () => {
 		const response = fileLookup({ fileDir: cases, target: "a/index.js" });

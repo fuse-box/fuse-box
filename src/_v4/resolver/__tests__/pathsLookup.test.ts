@@ -1,6 +1,6 @@
 import * as path from "path";
-import { pathsLookup } from "../../resolver/pathsLookup";
-import "../utils";
+import { pathsLookup } from "../pathsLookup";
+import "../../test_utils";
 const CASE1 = path.join(__dirname, "cases/paths_lookup/src1");
 
 describe("Paths lookup", () => {
