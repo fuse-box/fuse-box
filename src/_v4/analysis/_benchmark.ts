@@ -3,6 +3,7 @@ import * as acorn from "acorn";
 import * as fs from "fs";
 import * as path from "path";
 import { fastAnalysis } from "./fastAnalysis";
+import { createSourceFile, getImports } from "./tsParser";
 
 const str = fs.readFileSync(path.join(__dirname, "file.js")).toString();
 
@@ -32,8 +33,15 @@ function measure(name: string, fn: () => void) {
 
 for (let i = 0; i < 100; i++) {
 	const input = `${str} /* ${Math.random()} */ ${str.replace("should take", Math.random().toString())}`;
+	const source = createSourceFile("module.tsx", str);
+
 	measure("parseWithAcorn", () => parseWithAcorn(str));
 	measure("fastAnalysis", () => fastAnalysis({ input: str }));
+	measure("tsParser (create source + getImports from AST)", () => {
+		const sourceFile = createSourceFile("module.tsx", str);
+		return getImports(sourceFile);
+	});
+	measure("tsParser (getImports from AST)", () => getImports(source));
 }
 
 for (const item in result) {
