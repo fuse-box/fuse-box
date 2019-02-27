@@ -1,4 +1,4 @@
-import { fastAnalysis } from "../../analysis/fastAnalysis";
+import { fastAnalysis } from "../fastAnalysis";
 
 describe("Fast analysis test", () => {
 	describe("require statements", () => {

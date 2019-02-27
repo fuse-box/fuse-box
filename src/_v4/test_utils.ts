@@ -1,7 +1,7 @@
 import * as fs from "fs-extra";
 import * as path from "path";
 import * as appRoot from "app-root-path";
-import { ensureFuseBoxPath } from "../../Utils";
+import { ensureFuseBoxPath } from "../Utils";
 
 declare global {
 	namespace jest {

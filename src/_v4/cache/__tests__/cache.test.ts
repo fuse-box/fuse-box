@@ -1,7 +1,7 @@
 import * as path from "path";
-import { getMemoryAdapter } from "../../cache/adapters";
-import { getCache, getTree } from "../../cache/cache";
-import { ICacheAdapter } from "../../cache/Interfaces";
+import { getMemoryAdapter } from "../adapters";
+import { getCache, getTree } from "../cache";
+import { ICacheAdapter } from "../Interfaces";
 
 const CASES = path.join(__dirname, "cases");
 
