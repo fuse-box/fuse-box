@@ -1,6 +1,6 @@
-import { findTargetFolder } from "../nodeModuleLookup";
 import * as path from "path";
 import { createRealNodeModule } from "../../test_utils";
+import { findTargetFolder } from "../nodeModuleLookup";
 
 const homeDir = path.join(__dirname, "cases/nm_lookup/src1");
 
