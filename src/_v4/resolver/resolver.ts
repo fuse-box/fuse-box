@@ -1,7 +1,7 @@
 import { ensurePublicExtension, extractFuseBoxPath } from "../../Utils";
-import { fileLookup, ILookupProps, ILookupResult } from "./fileLookup";
-import { pathsLookup } from "./pathsLookup";
 import { path2Regex } from "../utils";
+import { fileLookup, ILookupResult } from "./fileLookup";
+import { pathsLookup } from "./pathsLookup";
 
 export interface IResolverProps {
 	cache?: boolean;
