@@ -293,10 +293,10 @@ export class WorkFlowContext {
 		if (!resolvedModule) return { requireStatement, replaced };
 
 		if (resolvedModule.packageId) {
-			requireStatement = resolvedModule.packageId.name;
+			requireStatement = ensureFuseBoxPath(resolvedModule.packageId.name);
 			replaced = true;
 		} else if (resolvedModule.resolvedFileName) {
-			requireStatement = path.relative(this.homeDir, resolvedModule.resolvedFileName);
+			requireStatement = ensureFuseBoxPath(path.relative(this.homeDir, resolvedModule.resolvedFileName));
 
 			if (resolvedModule.extension) {
 				requireStatement = requireStatement.substr(0, requireStatement.length - resolvedModule.extension.length);
