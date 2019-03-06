@@ -1,14 +1,18 @@
-import { ensurePublicExtension, extractFuseBoxPath } from "../../Utils";
-import { path2Regex } from "../utils";
+import { makeFuseBoxPath, path2Regex } from "../utils";
 import { fileLookup, ILookupResult } from "./fileLookup";
+import { isNodeModule, nodeModuleLookup, INodeModuleLookup } from "./nodeModuleLookup";
 import { pathsLookup } from "./pathsLookup";
+import { isServerPolyfill, isElectronPolyfill } from "./polyfills";
 
 export interface IResolverProps {
+	buildTarget?: "browser" | "server" | "electron";
+	// user string
+	target: string;
 	cache?: boolean;
 	homeDir?: string;
 	filePath?: string;
-	target: string;
-	package?: IResolverPackage;
+	packageMeta?: IPackageMeta;
+	modules?: Array<string>;
 	alias?: {
 		[key: string]: string;
 	};
@@ -18,40 +22,27 @@ export interface IResolverProps {
 	};
 }
 
-export interface IResolverPackage {
+export interface IPackageMeta {
 	name: string;
-	// custom fusebox typescript entry
-	tsMain?: string;
-	main?: string;
+	entryAbsPath?: string;
+	entryFuseBoxPath?: string;
 	version?: string;
+	packageRoot?: string;
 	packageJSONLocation?: string;
-	// If a package is a part of another package under it's own node_modules
-	// we need to set it to true. This will be used to bundle multiple version of the same package
-	// and resolve conflicting version
-	isFlat?: boolean;
-
 	// https://github.com/defunctzombie/package-browser-field-spec
-	browser?: { [key: string]: string | boolean };
+	browser?: { [key: string]: string | boolean } | string;
 }
 
 export interface IResolver {
-	// default is browser
-	target?: "browser" | "server" | "electron";
-
+	// skip bundling
+	skip?: boolean;
 	// external e.g. http://something.com/main.css
 	isExternal?: boolean;
 	// e.g ".css" ".js"
 	extension?: string;
 
 	// this is resolved one from the main project and passed later as IResolverProps.package
-	package?: IResolverPackage;
-
-	// if it's the entry point
-	isPackageEntry?: boolean;
-
-	// If user make a partial require (e.g require("foo/bar.js"))
-	// isPackageEntry in this case should be false
-	packagePartial?: boolean;
+	package?: INodeModuleLookup;
 
 	// resolved absolute path
 	absPath: string;
@@ -60,32 +51,6 @@ export interface IResolver {
 	fuseBoxPath: string;
 
 	forcedStatement?: string;
-
-	/*
-	 If a resolved module doesn't look like the original one this needs to tell us the difference
-	 a resolved folder contains package.json which instead of index.js routes to foobar.js
-
-	 Having an original request to resolve
-	 {
-		filePath : "lib/foo.js"
-		target : "../some/path"
-	 }
-	 {
-		 alias ; "~/some/path/foobar.js" // <-- in a simple case that should be "index.js"
-	 }
-
-	 It should also take into consideration modules. If it's a package then the alias should contain a full package name:
-	 e.g "mypackage/some/path/foobar.js"
-
-	 Another case is "browser" field
-	 https://github.com/defunctzombie/package-browser-field-spec
-	 if the target is browser, and the props were set to respect it (see package.browser)
-	 Having:
-	 "module-a": false
-
-	 Should give us "fuse-empty-package" since it should be replaced with a placeholder
-	*/
-	alias?: string;
 }
 
 function isExternalModule(props: IResolverProps): Partial<IResolver> {
@@ -94,14 +59,6 @@ function isExternalModule(props: IResolverProps): Partial<IResolver> {
 			isExternal: true,
 		};
 	}
-}
-
-function isNodeModule(path: string) {
-	return /^([a-z@](?!:).*)$/.test(path);
-}
-
-function makeFuseBoxPath(homeDir: string, absPath: string) {
-	return homeDir && ensurePublicExtension(extractFuseBoxPath(homeDir, absPath));
 }
 
 function replaceAliases(
@@ -128,10 +85,11 @@ export function resolveModule(props: IResolverProps): Partial<IResolver> {
 	if (external) {
 		return external;
 	}
+	const isBrowserBuild = props.buildTarget === "browser";
+	const isServerBuild = props.buildTarget === "server";
+	const isElectronBuild = props.buildTarget === "electron";
 	let target = props.target;
 	let forcedStatement: string;
-	let alias: string;
-	let packageJSONPath: string;
 	let forceReplacement = false;
 
 	let lookupResult: ILookupResult;
@@ -142,6 +100,23 @@ export function resolveModule(props: IResolverProps): Partial<IResolver> {
 		const res = replaceAliases(props);
 		forceReplacement = res.forceReplacement;
 		target = res.target;
+	}
+
+	if (props.packageMeta) {
+		if (isBrowserBuild && props.packageMeta.browser && typeof props.packageMeta.browser === "object") {
+			// a match should direct according to the specs
+			const browserReplacement = props.packageMeta.browser[props.target];
+			if (browserReplacement !== undefined) {
+				if (typeof browserReplacement === "string") {
+					forcedStatement = target;
+					target = browserReplacement;
+				} else if (browserReplacement === false) {
+					// library should be ignored
+					target = "fuse-empty-package";
+					forceReplacement = true;
+				}
+			}
+		}
 	}
 
 	// handle typescript paths
@@ -161,7 +136,21 @@ export function resolveModule(props: IResolverProps): Partial<IResolver> {
 
 	// continue looking for the file
 	if (!lookupResult) {
-		if (isNodeModule(target)) {
+		const moduleParsed = isNodeModule(target);
+		if (moduleParsed) {
+			// first check if we need to bundle it at all;
+			if (isServerBuild && isServerPolyfill(moduleParsed.name)) {
+				return { skip: true };
+			}
+			if (isElectronBuild && isElectronPolyfill(moduleParsed.name)) {
+				return { skip: true };
+			}
+			const pkg = nodeModuleLookup(props, moduleParsed);
+			const aliasForced = forceReplacement && target;
+			return {
+				forcedStatement: pkg.forcedStatement ? pkg.forcedStatement : aliasForced,
+				package: pkg,
+			};
 		} else {
 			lookupResult = fileLookup({ filePath: props.filePath, target: target });
 		}
@@ -174,27 +163,19 @@ export function resolveModule(props: IResolverProps): Partial<IResolver> {
 		forceReplacement = true;
 	}
 
-	// let pkg: IResolverPackage;
-	// if (resolved.isExternalLibraryImport && resolved.packageId) {
-	// 	// drop force replacement, as it's coming naturally without an override
-	// 	forceReplacement = false;
-	// 	pkg = {
-	// 		name: resolved.packageId.name,
-	// 		version: resolved.packageId.version,
-	// 		packageJSONLocation: packageJSONPath,
-	// 	};
-	// }
-
 	const extension = lookupResult.extension;
 	const absPath = lookupResult.absPath;
-	const fuseBoxPath = makeFuseBoxPath(props.homeDir, absPath);
+	const packageRoot = props.packageMeta ? props.packageMeta.packageRoot : props.homeDir;
+	const fuseBoxPath = makeFuseBoxPath(packageRoot, absPath);
 
 	if (forceReplacement) {
-		forcedStatement = `~/${fuseBoxPath}`;
+		if (props.packageMeta) {
+			forcedStatement = `${props.packageMeta.name}/${fuseBoxPath}`;
+		} else {
+			forcedStatement = `~/${fuseBoxPath}`;
+		}
 	}
 	return {
-		alias,
-		//package: pkg,
 		extension,
 		absPath,
 		fuseBoxPath,

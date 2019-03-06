@@ -1,82 +1,110 @@
+import * as appRoot from "app-root-path";
 import * as path from "path";
-import { createRealNodeModule } from "../../test_utils";
-import { findTargetFolder } from "../nodeModuleLookup";
+import { ensureDir } from "../../../Utils";
+import "../../test_utils";
+import { findTargetFolder, isNodeModule, parseAllModulePaths } from "../nodeModuleLookup";
 
-const homeDir = path.join(__dirname, "cases/nm_lookup/src1");
+const PROJECT_NODE_MODULES = path.join(appRoot.path, "node_modules");
+describe("isNodeModule", () => {
+	it("case 1", () => {
+		const res = isNodeModule("foo");
+		expect(res).toEqual({ name: "foo" });
+	});
 
-describe("Node module lookup", () => {
-	describe("Correct node_modules paths finder", () => {
-		const filePath = path.join(homeDir, "foo.js");
-		const moduleNames = {
-			primary: { name: "nm-lookup-test-a", submodule: { name: "nm-submod_a" } },
-		};
-		const primaryPath = createRealNodeModule(
-			moduleNames.primary.name,
-			{
-				main: "index.js",
-				version: "1.0.1",
-			},
-			{
-				"index.js": "module.exports = {}",
-			},
-		);
+	it("case 2", () => {
+		const res = isNodeModule("foo/");
+		expect(res).toEqual({ name: "foo" });
+	});
+	it("case 3", () => {
+		const res = isNodeModule("foo/some.js");
+		expect(res).toEqual({ name: "foo", target: "some.js" });
+	});
+	it("case 4", () => {
+		const res = isNodeModule("foo/some");
+		expect(res).toEqual({ name: "foo", target: "some" });
+	});
 
-		const secondaryPath = createRealNodeModule(
-			`${moduleNames.primary.name}/node_modules/${moduleNames.primary.submodule.name}`,
-			{
-				main: "index.js",
-				version: "2.0.1",
-			},
-			{
-				"index.js": "module.exports = {}",
-			},
-		);
+	it("case 4", () => {
+		const res = isNodeModule("@core/foo");
+		expect(res).toEqual({ name: "@core/foo" });
+	});
 
-		const thirdPath = createRealNodeModule(
-			`${moduleNames.primary.name}/node_modules/${moduleNames.primary.submodule.name}/node_modules/foomod`,
-			{
-				main: "index.js",
-				version: "2.0.1",
-			},
-			{
-				"index.js": "module.exports = {}",
-			},
-		);
+	it("case 5", () => {
+		const res = isNodeModule("@core/foo/");
+		expect(res).toEqual({ name: "@core/foo" });
+	});
 
-		it("Should find corrent node_modules paths", () => {
-			const result = findTargetFolder({
-				homeDir: homeDir,
-				filePath: filePath,
-				target: moduleNames.primary.name,
-			});
-			expect(result).toMatchFilePath("node_modules/nm-lookup-test-a$");
-		});
+	it("case 6", () => {
+		const res = isNodeModule("@core/foo/something");
+		expect(res).toEqual({ name: "@core/foo", target: "something" });
+	});
 
-		it("Should find a submodule", () => {
-			const result = findTargetFolder({
-				homeDir: homeDir,
-				filePath: path.join(primaryPath, "foo/index.js"),
-				target: moduleNames.primary.submodule.name,
-			});
-			//	console.log(result);
-			//expect(result).toMatchFilePath("node_modules/nm-lookup-test-a$");
-		});
+	it("case 9", () => {
+		const res = isNodeModule("some-stuff-here");
+		expect(res).toEqual({ name: "some-stuff-here" });
+	});
 
-		/*
-				nm-lookup-test-a/
-					node_modules/nm-submod_a
-													<- we are here, requesting "foomod"
-													node_modules/foomod
-		*/
+	it("case 10", () => {
+		const res = isNodeModule("some-stuff_here");
+		expect(res).toEqual({ name: "some-stuff_here" });
+	});
+});
 
-		test.only("Should find a third submodule", () => {
-			const result = findTargetFolder({
-				homeDir: homeDir,
-				filePath: path.join(secondaryPath, "foo/index.js"),
-				target: "foomod",
-			});
-			//console.log(result);
-			//expect(result).toMatchFilePath("node_modules/nm-lookup-test-a$");
-		});
+describe("parseAllModulePaths", () => {
+	it("Should parse 1", () => {
+		const path = "a/node_modules/@angular/core/node_modules/foo/node_modules/bar/far/woo/index.js";
+		const paths = parseAllModulePaths(path);
+		expect(paths).toEqual([
+			"a/node_modules",
+			"a/node_modules/@angular/core/node_modules",
+			"a/node_modules/@angular/core/node_modules/foo/node_modules",
+			"a/node_modules/@angular/core/node_modules/foo/node_modules/bar/node_modules",
+		]);
+	});
+
+	it("Should give a primary path ", () => {
+		const path = "some/user/file";
+		const paths = parseAllModulePaths(path);
+		expect(paths).toHaveLength(1);
+		expect(paths[0]).toMatchFilePath("fuse-box/fuse-box/node_modules$");
+	});
+});
+
+describe("folder lookup", () => {
+	ensureDir(path.join(PROJECT_NODE_MODULES, "nm-lookup-test-b"));
+	ensureDir(path.join(PROJECT_NODE_MODULES, "nm-lookup-test-a/node_modules/b/node_modules/d/"));
+	ensureDir(path.join(PROJECT_NODE_MODULES, "nm-lookup-test-a/node_modules/crazy-module/"));
+	ensureDir(path.join(PROJECT_NODE_MODULES, "nm-lookup-test-a/node_modules/nm-lookup-test-b"));
+	it("case 1", () => {
+		const dir = ensureDir(path.join(PROJECT_NODE_MODULES, "nm-lookup-test-a/node_modules/b/node_modules/c/"));
+		const target = path.join(dir, "foo/bar/index.js");
+		const targetFolder = findTargetFolder({ target: "a", filePath: target }, { name: "d" });
+		expect(targetFolder).toMatchFilePath("fuse-box/node_modules/nm-lookup-test-a/node_modules/b/node_modules/d$");
+	});
+
+	it("case 2", () => {
+		const dir = ensureDir(path.join(PROJECT_NODE_MODULES, "nm-lookup-test-a/node_modules/b/node_modules/c/"));
+		const target = path.join(dir, "foo/bar/index.js");
+		const targetFolder = findTargetFolder({ target: "a", filePath: target }, { name: "crazy-module" });
+		expect(targetFolder).toMatchFilePath("fuse-box/node_modules/nm-lookup-test-a/node_modules/crazy-module$");
+	});
+
+	it("case 3", () => {
+		const dir = ensureDir(path.join(PROJECT_NODE_MODULES, "nm-lookup-test-a/node_modules/b/node_modules/c/"));
+		const target = path.join(dir, "foo/bar/index.js");
+		const targetFolder = findTargetFolder({ target: "a", filePath: target }, { name: "nm-lookup-test-b" });
+		expect(targetFolder).toMatchFilePath("fuse-box/node_modules/nm-lookup-test-a/node_modules/nm-lookup-test-b$");
+	});
+
+	it("case 4", () => {
+		const target = path.join(PROJECT_NODE_MODULES, "nm-lookup-test-a/index.js");
+		const targetFolder = findTargetFolder({ target: "a", filePath: target }, { name: "nm-lookup-test-b" });
+		expect(targetFolder).toMatchFilePath("fuse-box/node_modules/nm-lookup-test-b$");
+	});
+
+	it("case 5 (not inside node_modules)", () => {
+		const target = path.join(__dirname, "nm-lookup-test-b");
+		const targetFolder = findTargetFolder({ target: "a", filePath: target }, { name: "nm-lookup-test-b" });
+		expect(targetFolder).toMatchFilePath("fuse-box/node_modules/nm-lookup-test-b$");
 	});
 });

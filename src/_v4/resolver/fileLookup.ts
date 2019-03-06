@@ -1,5 +1,6 @@
 import * as path from "path";
 import * as fs from "fs";
+import { getFolderEntryPointFromPackageJSON } from "./shared";
 
 export interface ILookupProps {
 	typescriptFirst?: boolean;
@@ -46,18 +47,6 @@ function tryExtensions(target: string, extensions: Array<string>) {
 			return resolved;
 		}
 	}
-}
-export function getFolderEntryPointFromPackageJSON(json: any) {
-	if (json.module) {
-		return json.module;
-	}
-	if (json.tsMain) {
-		return json.tsMain;
-	}
-	if (json["jsnext:main"]) {
-		return json["jsnext:main"];
-	}
-	return json.main;
 }
 
 export function fileLookup(props: ILookupProps): ILookupResult {
