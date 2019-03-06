@@ -52,14 +52,14 @@ describe("TypescriptConfigTest", () => {
 		expect(fs.existsSync(tsconfigFileName)).toBeTruthy();
 		expect(JSON.parse(fs.readFileSync(tsconfigFileName).toString())).toEqual({
 			compilerOptions: {
-				module: "CommonJS",
+				module: "commonjs",
 				target: "ES2018",
 				jsx: "react",
 				baseUrl: ".",
 				importHelpers: true,
 				emitDecoratorMetadata: true,
 				experimentalDecorators: true,
-				moduleResolution: "NodeJs",
+				moduleResolution: "node",
 			},
 		});
 		expect(config).toEqual({
@@ -90,7 +90,7 @@ describe("TypescriptConfigTest", () => {
 		expect(fs.existsSync(tsconfigFileName)).toBeTruthy();
 		expect(JSON.parse(fs.readFileSync(tsconfigFileName).toString())).toEqual({
 			compilerOptions: {
-				module: "CommonJS",
+				module: "commonjs",
 				target: "ES2018",
 				jsx: "react",
 				baseUrl: ".",
@@ -99,7 +99,7 @@ describe("TypescriptConfigTest", () => {
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
-				moduleResolution: "NodeJs",
+				moduleResolution: "node",
 			},
 		});
 		expect(config).toEqual({
@@ -133,7 +133,7 @@ describe("TypescriptConfigTest", () => {
 		expect(fs.existsSync(tsconfigFileName)).toBeTruthy();
 		expect(JSON.parse(fs.readFileSync(tsconfigFileName).toString())).toEqual({
 			compilerOptions: {
-				module: "CommonJS",
+				module: "commonjs",
 				target: "ESNext",
 				jsx: "react",
 				baseUrl: ".",
@@ -142,7 +142,7 @@ describe("TypescriptConfigTest", () => {
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
-				moduleResolution: "NodeJs",
+				moduleResolution: "node",
 			},
 		});
 		expect(config).toEqual({
@@ -176,7 +176,7 @@ describe("TypescriptConfigTest", () => {
 		expect(fs.existsSync(tsconfigFileName)).toBeTruthy();
 		expect(JSON.parse(fs.readFileSync(tsconfigFileName).toString())).toEqual({
 			compilerOptions: {
-				module: "CommonJS",
+				module: "commonjs",
 				target: "ES2015",
 				jsx: "react",
 				baseUrl: ".",
@@ -185,7 +185,7 @@ describe("TypescriptConfigTest", () => {
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
-				moduleResolution: "NodeJs",
+				moduleResolution: "node",
 			},
 		});
 		expect(config).toEqual({
@@ -219,7 +219,7 @@ describe("TypescriptConfigTest", () => {
 		expect(fs.existsSync(tsconfigFileName)).toBeTruthy();
 		expect(JSON.parse(fs.readFileSync(tsconfigFileName).toString())).toEqual({
 			compilerOptions: {
-				module: "CommonJS",
+				module: "commonjs",
 				target: "ES2015",
 				jsx: "react",
 				baseUrl: ".",
@@ -228,7 +228,7 @@ describe("TypescriptConfigTest", () => {
 				experimentalDecorators: true,
 				sourceMap: true,
 				inlineSources: true,
-				moduleResolution: "NodeJs",
+				moduleResolution: "node",
 			},
 		});
 		expect(config).toEqual({
