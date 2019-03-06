@@ -19,29 +19,25 @@ const CACHED: { [path: string]: any } = {};
  * - Instead of `target: 1`, user can input `target: 'ES5'`
  */
 export type rawScriptTarget = Exclude<keyof typeof ts.ScriptTarget, "JSON" | "Latest">;
-export type rawCompilerOptions = {
-	[key in keyof ts.CompilerOptions]: key extends "maxNodeModuleJsDepth"
-		? number
-		: ts.CompilerOptions[key] extends ts.ScriptTarget
-			? rawScriptTarget
-			: ts.CompilerOptions[key] extends ts.JsxEmit
-				? "react" | "preserve" | "react-native"
-				: ts.CompilerOptions[key] extends ts.ModuleKind
-					? keyof typeof ts.ModuleKind
-					: ts.CompilerOptions[key] extends ts.ModuleResolutionKind
-						? keyof typeof ts.ModuleResolutionKind
-						: ts.CompilerOptions[key] extends ts.NewLineKind
-							? "CRLF" | "LF"
-							: ts.CompilerOptions[key] extends ts.MapLike<string[]>
-								? ts.MapLike<string[]>
-								: ts.CompilerOptions[key] extends string[]
-									? string[]
-									: ts.CompilerOptions[key] extends string
-										? ts.CompilerOptions[key]
-										: ts.CompilerOptions[key] extends boolean
-											? ts.CompilerOptions[key]
-											: ts.CompilerOptions[key] extends number ? number : any
-};
+
+export interface rawCompilerOptions {
+	target?: rawScriptTarget;
+	module?: "commonjs";
+	lib?: string[];
+	allowJs?: boolean;
+	jsx?: "react" | "preserver" | "react-native";
+	sourceMap?: boolean;
+	removeComments?: boolean;
+	importHelpers?: boolean;
+	downlevelIteration?: boolean;
+	moduleResolution?: "node";
+	baseUrl?: string;
+	paths?: ts.MapLike<string[]>;
+	allowSyntheticDefaultImports?: boolean;
+	esModuleInterop?: boolean;
+	experimentalDecorators?: boolean;
+	emitDecoratorMetadata?: boolean;
+}
 
 export function getScriptLevelNumber(level: any): ScriptTarget & number | undefined {
 	if (Number.isNaN(Number(level)) && typeof level === "string") {
@@ -407,9 +403,9 @@ export class TypescriptConfig {
 				{
 					target: getScriptLevelString(this.config.compilerOptions.target),
 					baseUrl: ".",
-					module: "CommonJS",
+					module: "commonjs",
 					jsx: "react",
-					moduleResolution: "NodeJs",
+					moduleResolution: "node",
 				} as rawCompilerOptions,
 			);
 			const targetFile = path.join(this.context.homeDir, "tsconfig.json");
