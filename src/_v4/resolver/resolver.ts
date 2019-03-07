@@ -1,11 +1,11 @@
-import { makeFuseBoxPath, path2Regex } from "../utils";
+import { makeFuseBoxPath, path2Regex } from "../utils/utils";
 import { fileLookup, ILookupResult } from "./fileLookup";
 import { isNodeModule, nodeModuleLookup, INodeModuleLookup } from "./nodeModuleLookup";
 import { pathsLookup } from "./pathsLookup";
 import { isServerPolyfill, isElectronPolyfill } from "./polyfills";
 
 export interface IResolverProps {
-	buildTarget?: "browser" | "server" | "electron";
+	buildTarget?: "browser" | "server" | "electron" | "universal";
 	// user string
 	target: string;
 	cache?: boolean;
@@ -45,15 +45,15 @@ export interface IResolver {
 	package?: INodeModuleLookup;
 
 	// resolved absolute path
-	absPath: string;
+	absPath?: string;
 	// make sure that it's a public path. E.g "components/MyComponent.jsx"
 	// tsx and ts needs to be replaced with js and jsx
-	fuseBoxPath: string;
+	fuseBoxPath?: string;
 
 	forcedStatement?: string;
 }
 
-function isExternalModule(props: IResolverProps): Partial<IResolver> {
+function isExternalModule(props: IResolverProps): IResolver {
 	if (/^https?:/.test(props.target)) {
 		return {
 			isExternal: true,
@@ -80,7 +80,7 @@ function replaceAliases(
 	return { target, forceReplacement };
 }
 
-export function resolveModule(props: IResolverProps): Partial<IResolver> {
+export function resolveModule(props: IResolverProps): IResolver {
 	const external = isExternalModule(props);
 	if (external) {
 		return external;

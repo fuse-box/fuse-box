@@ -1,7 +1,7 @@
 import * as appRoot from "app-root-path";
 import * as path from "path";
 import { ensureDir } from "../../../Utils";
-import "../../test_utils";
+import "../../utils/test_utils";
 import { findTargetFolder, isNodeModule, parseAllModulePaths } from "../nodeModuleLookup";
 
 const PROJECT_NODE_MODULES = path.join(appRoot.path, "node_modules");
