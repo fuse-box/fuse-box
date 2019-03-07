@@ -5,7 +5,7 @@ interface IFastAnalysisProps {
 	input: string;
 }
 export interface IFastAnalysis {
-	imports: {
+	imports?: {
 		requireStatements?: Array<string>;
 		fromStatements?: Array<string>;
 		dynamicImports?: Array<string>;
@@ -34,7 +34,7 @@ export interface IFastAnalysis {
  * @param {IFastAnalysisProps} props
  * @returns {Partial<IFastAnalysis>}
  */
-export function fastAnalysis(props: IFastAnalysisProps): Partial<IFastAnalysis> {
+export function fastAnalysis(props: IFastAnalysisProps): IFastAnalysis {
 	const result: IFastAnalysis = {
 		imports: {
 			requireStatements: [],

@@ -1,5 +1,5 @@
 import * as path from "path";
-import { createRealNodeModule } from "../../test_utils";
+import { createRealNodeModule } from "../../utils/test_utils";
 import { resolveModule } from "../resolver";
 const cases = path.join(__dirname, "cases/");
 const customModules = path.join(cases, "_modules");

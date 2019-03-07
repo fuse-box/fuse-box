@@ -2,7 +2,7 @@ import * as appRoot from "app-root-path";
 import * as fs from "fs";
 import * as path from "path";
 import { DocumentedError } from "../logging/DocumentedError";
-import { fileExists, makeFuseBoxPath } from "../utils";
+import { fileExists, makeFuseBoxPath } from "../utils/utils";
 import { fileLookup } from "./fileLookup";
 import { IPackageMeta, IResolverProps } from "./resolver";
 import { getFolderEntryPointFromPackageJSON } from "./shared";
@@ -78,6 +78,7 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
 }
 export interface INodeModuleLookup {
 	targetAbsPath?: string;
+	targetExtension?: string;
 	targetFuseBoxPath?: string;
 	isEntry?: boolean;
 	forcedStatement?: string;
@@ -134,5 +135,6 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
 		result.targetAbsPath = pkg.entryAbsPath;
 		result.targetFuseBoxPath = pkg.entryFuseBoxPath;
 	}
+	result.targetExtension = path.extname(result.targetAbsPath);
 	return result;
 }
