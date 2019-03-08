@@ -2,10 +2,15 @@ import { createContext } from "../Context";
 import * as path from "path";
 import { assemble } from "../assemble";
 import "../../utils/test_utils";
-function createProjectContext(folder: string) {
+import { IConfig } from "../interfaces";
+function createProjectContext(folder: string, opts?: IConfig) {
+	opts = opts || {};
 	return createContext({
-		modules: [path.resolve(__dirname, "cases/modules/")],
-		homeDir: path.resolve(__dirname, "cases/projects/", folder),
+		...{
+			modules: [path.resolve(__dirname, "cases/modules/")],
+			homeDir: path.resolve(__dirname, "cases/projects/", folder),
+		},
+		...opts,
 	});
 }
 describe("Assemble test", () => {
@@ -120,6 +125,60 @@ describe("Assemble test", () => {
 			expect(moduleA.modules).toHaveLength(2);
 			expect(moduleA.modules[0].props.absPath).toMatchFilePath("module-a/index.js$");
 			expect(moduleA.modules[1].props.absPath).toMatchFilePath("module-a/bar.js$");
+		});
+
+		it("should assemble a  package wihtout an entry (skip entry point just a partial require)", () => {
+			const src5Context = createProjectContext("src5");
+			const packages = assemble(src5Context, "index.ts");
+
+			expect(packages).toHaveLength(2);
+			expect(packages.map(pkg => pkg.props.meta.name)).toEqual(["default", "module-a"]);
+
+			const moduleA = packages.find(item => item.props.meta.name === "module-a");
+			expect(moduleA.modules).toHaveLength(1);
+			expect(moduleA.modules[0].props.absPath).toMatchFilePath("module-a/bar.js$");
+		});
+	});
+
+	describe.only("Respect browser overrides in packages", () => {
+		it("should get the entry right (target unknown)", () => {
+			const ctx = createProjectContext("src4");
+			const packages = assemble(ctx, "index.ts");
+			expect(packages).toHaveLength(3);
+
+			const moduleC = packages.find(item => item.props.meta.name === "module-c");
+			expect(moduleC.modules).toHaveLength(1);
+			expect(moduleC.modules[0].props.absPath).toMatchFilePath("modules/module-c/index.js$");
+		});
+
+		it("should get the entry right (target server)", () => {
+			const ctx = createProjectContext("src4", { target: "server" });
+			const packages = assemble(ctx, "index.ts");
+			expect(packages).toHaveLength(3);
+
+			const moduleC = packages.find(item => item.props.meta.name === "module-c");
+			expect(moduleC.modules).toHaveLength(1);
+			expect(moduleC.modules[0].props.absPath).toMatchFilePath("modules/module-c/index.js$");
+		});
+
+		it("should get the entry right (target electron)", () => {
+			const ctx = createProjectContext("src4", { target: "electron" });
+			const packages = assemble(ctx, "index.ts");
+			expect(packages).toHaveLength(3);
+
+			const moduleC = packages.find(item => item.props.meta.name === "module-c");
+			expect(moduleC.modules).toHaveLength(1);
+			expect(moduleC.modules[0].props.absPath).toMatchFilePath("modules/module-c/index.js$");
+		});
+
+		it.only("should get the entry right (target browser)", () => {
+			const ctx = createProjectContext("src4", { target: "browser" });
+			const packages = assemble(ctx, "index.ts");
+			expect(packages).toHaveLength(3);
+
+			const moduleC = packages.find(item => item.props.meta.name === "module-c");
+			expect(moduleC.modules).toHaveLength(1);
+			expect(moduleC.modules[0].props.absPath).toMatchFilePath("modules/module-c/browser-entry.js$");
 		});
 	});
 });

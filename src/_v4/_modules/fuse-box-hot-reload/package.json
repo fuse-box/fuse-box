@@ -1,0 +1,8 @@
+{
+  "name": "fuse-box-hot-reload",
+  "main": "index.js",
+  "version": "1.0.0",
+  "fuse-box" : {
+    "dev" : true
+  }
+}

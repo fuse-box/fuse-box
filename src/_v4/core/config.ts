@@ -21,8 +21,8 @@ export function createConfig(props: IConfig): IConfig {
 		config.output = props.output;
 	}
 
-	if (props.modules) {
-		config.modules = props.modules;
+	if (props.target) {
+		config.target = props.target;
 	}
 
 	if (props.fuseBoxPolyfillsFolder) {
