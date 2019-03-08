@@ -4,7 +4,7 @@ module.exports = {
   globals: {
     "ts-jest": {
       diagnostics: false,
-      tsConfig: "tests/tsconfig.test.json",
+      tsConfig: "src/tsconfig.json",
     },
   },
   transform: {
@@ -12,17 +12,18 @@ module.exports = {
   },
 
   testRegex: "(/(__tests__|tests)/.*|(\\.|/))\\.test\\.tsx?$",
+  modulePathIgnorePatterns: ["/modules", "/_modules"],
   testPathIgnorePatterns: [
     ".fusebox/",
     "/lib/",
     "node_modules/",
+    "modules",
     "_playground/",
     "dist/",
     ".dev/",
-    "_current_test",
     "website",
   ],
   maxConcurrency: 1,
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node", "json"],
-  //collectCoverage: true,
+  collectCoverage: true,
 };

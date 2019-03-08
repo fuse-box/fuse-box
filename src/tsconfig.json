@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "es2017",
     "module": "commonjs",
     "moduleResolution": "node",
     "isolatedModules": false,
