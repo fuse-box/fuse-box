@@ -1,2 +1,2 @@
-import { Foo } from "./foo";
+import { Foo } from './foo';
 console.log(Foo);

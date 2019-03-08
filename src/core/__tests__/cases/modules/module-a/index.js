@@ -1,1 +1,1 @@
-import "./bar";
+import './bar';

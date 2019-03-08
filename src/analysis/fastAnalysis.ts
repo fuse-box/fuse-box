@@ -1,19 +1,19 @@
-import { tokenize } from "./tokenizer";
+import { tokenize } from './tokenizer';
 //import { AnalysisContext } from "./AnalysisContext";
 
 interface IFastAnalysisProps {
-	input: string;
+  input: string;
 }
 export interface IFastAnalysis {
-	imports?: {
-		requireStatements?: Array<string>;
-		fromStatements?: Array<string>;
-		dynamicImports?: Array<string>;
-	};
-	report?: {
-		importStatements?: boolean;
-		dynamicImports?: boolean;
-	};
+  imports?: {
+    requireStatements?: Array<string>;
+    fromStatements?: Array<string>;
+    dynamicImports?: Array<string>;
+  };
+  report?: {
+    importStatements?: boolean;
+    dynamicImports?: boolean;
+  };
 }
 
 /**
@@ -35,36 +35,36 @@ export interface IFastAnalysis {
  * @returns {Partial<IFastAnalysis>}
  */
 export function fastAnalysis(props: IFastAnalysisProps): IFastAnalysis {
-	const result: IFastAnalysis = {
-		imports: {
-			requireStatements: [],
-			fromStatements: [],
-			dynamicImports: [],
-		},
-	};
-	let skipNext = false;
-	tokenize(props.input, token => {
-		if (token.commentStart || token.singleLineComment) {
-			skipNext = true;
-		} else {
-			if (skipNext || token.commentEnd) {
-				skipNext = false;
-				return;
-			}
-			if (token.requireStatement) {
-				result.imports.requireStatements.push(token.requireStatement);
-			}
-			if (token.importFrom) {
-				result.imports.fromStatements.push(token.importFrom);
-			}
-			if (token.importModule) {
-				result.imports.fromStatements.push(token.importModule);
-			}
-			if (token.dynamicImport) {
-				result.imports.dynamicImports.push(token.dynamicImport);
-			}
-		}
-	});
+  const result: IFastAnalysis = {
+    imports: {
+      requireStatements: [],
+      fromStatements: [],
+      dynamicImports: [],
+    },
+  };
+  let skipNext = false;
+  tokenize(props.input, token => {
+    if (token.commentStart || token.singleLineComment) {
+      skipNext = true;
+    } else {
+      if (skipNext || token.commentEnd) {
+        skipNext = false;
+        return;
+      }
+      if (token.requireStatement) {
+        result.imports.requireStatements.push(token.requireStatement);
+      }
+      if (token.importFrom) {
+        result.imports.fromStatements.push(token.importFrom);
+      }
+      if (token.importModule) {
+        result.imports.fromStatements.push(token.importModule);
+      }
+      if (token.dynamicImport) {
+        result.imports.dynamicImports.push(token.dynamicImport);
+      }
+    }
+  });
 
-	return result;
+  return result;
 }

@@ -1,5 +1,5 @@
-import { fastTransform } from "./fastTransform";
-import * as ts from "typescript";
+import { fastTransform } from './fastTransform';
+import * as ts from 'typescript';
 const name = 1;
 
 const str = `
@@ -18,7 +18,7 @@ export class Some<T> {
 
 `;
 
-const data = ts.createSourceFile("oi.ts", tsString, ts.ScriptTarget.ESNext);
+const data = ts.createSourceFile('oi.ts', tsString, ts.ScriptTarget.ESNext);
 console.log(data);
 // const code = fastTransform({ input: str });
 

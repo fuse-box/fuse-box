@@ -1,4 +1,4 @@
-import { fastAnalysis } from "./fastAnalysis";
+import { fastAnalysis } from './fastAnalysis';
 //require(/*foo*/"ololo")
 const str = `
 
