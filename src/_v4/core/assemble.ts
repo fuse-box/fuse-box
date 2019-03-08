@@ -67,9 +67,11 @@ function resolveStatement(
 	package?: Package;
 } {
 	const collection = props.ctx.assembleContext.collection;
+
 	const resolved = resolveModule({
 		filePath: props.module.props.absPath,
 		homeDir: props.ctx.config.homeDir,
+		packageMeta: !props.pkg.isDefaultPackage && props.pkg.props.meta,
 		buildTarget: props.ctx.config.target,
 		modules: props.ctx.config.modules,
 		target: statement,
@@ -143,7 +145,11 @@ function parseDefaultPackage(ctx: Context, pkg: Package) {
 
 function assemblePackage(pkg: Package, ctx: Context) {
 	pkg.externalPackages.forEach(pkg => {
-		[...pkg.userEntries, pkg.entry].map(item => {
+		let modules = [...pkg.userEntries];
+		if (pkg.entry) {
+			modules.push(pkg.entry);
+		}
+		modules.map(item => {
 			processModule({
 				assemble: true,
 				module: item,

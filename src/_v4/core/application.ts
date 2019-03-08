@@ -28,5 +28,7 @@ export function createDefaultPackage(ctx: Context): Package {
 			name: ctx.config.defaultCollectionName,
 		},
 	};
-	return new Package(props);
+	const pkg = new Package(props);
+	pkg.isDefaultPackage = true;
+	return pkg;
 }

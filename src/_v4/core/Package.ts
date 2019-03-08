@@ -9,6 +9,7 @@ export interface IPackageProps {
 export class Package {
 	// can be empty
 	public entry?: Module;
+	public isDefaultPackage: boolean;
 	// custom entry collection e.g
 	// import "loadash/something" or "import "packages/dist/something"
 	public userEntries: Array<Module>;
