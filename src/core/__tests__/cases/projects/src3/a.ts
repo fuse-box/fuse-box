@@ -1,1 +1,1 @@
-import "module-a";
+import 'module-a';

@@ -1,1 +1,1 @@
-import "module-a/bar";
+import 'module-a/bar';

@@ -2,7 +2,7 @@ language: node_js
 cache: npm
 script: npm test
 node_js:
-  - "10"
+  - '10'
 install:
   - npm install
   - gulp dist

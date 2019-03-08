@@ -1,4 +1,4 @@
-import "./Foo";
+import './Foo';
 export class Bar {
-	constructor() {}
+  constructor() {}
 }

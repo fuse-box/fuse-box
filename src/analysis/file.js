@@ -8,21 +8,21 @@
  * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  */
 
-require("re1");
-require("re2");
-require("re3");
-require("re4");
+require('re1');
+require('re2');
+require('re3');
+require('re4');
 
 /*
   require("should not take");
 
 */
 
-require("i am good too");
+require('i am good too');
 
 /*  require("this one either ") */
 
-require("should take");
+require('should take');
 
 // require("should not take")
 (function() {
@@ -30,10 +30,10 @@ require("should take");
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = "4.17.11";
+  var VERSION = '4.17.11';
 
   /** Error message constants. */
-  var FUNC_ERROR_TEXT = "Expected a function";
+  var FUNC_ERROR_TEXT = 'Expected a function';
 
   /** Used to compose bitmasks for value comparisons. */
   var COMPARE_PARTIAL_FLAG = 1,
@@ -48,19 +48,19 @@ require("should take");
     MAX_SAFE_INTEGER = 9007199254740991;
 
   /** `Object#toString` result references. */
-  var argsTag = "[object Arguments]",
-    arrayTag = "[object Array]",
-    asyncTag = "[object AsyncFunction]",
-    boolTag = "[object Boolean]",
-    dateTag = "[object Date]",
-    errorTag = "[object Error]",
-    funcTag = "[object Function]",
-    genTag = "[object GeneratorFunction]",
-    numberTag = "[object Number]",
-    objectTag = "[object Object]",
-    proxyTag = "[object Proxy]",
-    regexpTag = "[object RegExp]",
-    stringTag = "[object String]";
+  var argsTag = '[object Arguments]',
+    arrayTag = '[object Array]',
+    asyncTag = '[object AsyncFunction]',
+    boolTag = '[object Boolean]',
+    dateTag = '[object Date]',
+    errorTag = '[object Error]',
+    funcTag = '[object Function]',
+    genTag = '[object GeneratorFunction]',
+    numberTag = '[object Number]',
+    objectTag = '[object Object]',
+    proxyTag = '[object Proxy]',
+    regexpTag = '[object RegExp]',
+    stringTag = '[object String]';
 
   /** Used to match HTML entities and HTML characters. */
   var reUnescapedHtml = /[&<>"']/g,
@@ -71,35 +71,27 @@ require("should take");
 
   /** Used to map characters to HTML entities. */
   var htmlEscapes = {
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;",
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
   };
 
   /** Detect free variable `global` from Node.js. */
-  var freeGlobal =
-    typeof global == "object" && global && global.Object === Object && global;
+  var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
 
   /** Detect free variable `self`. */
-  var freeSelf =
-    typeof self == "object" && self && self.Object === Object && self;
+  var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
 
   /** Used as a reference to the global object. */
-  var root = freeGlobal || freeSelf || Function("return this")();
+  var root = freeGlobal || freeSelf || Function('return this')();
 
   /** Detect free variable `exports`. */
-  var freeExports =
-    typeof exports == "object" && exports && !exports.nodeType && exports;
+  var freeExports = typeof exports == 'object' && exports && !exports.nodeType && exports;
 
   /** Detect free variable `module`. */
-  var freeModule =
-    freeExports &&
-    typeof module == "object" &&
-    module &&
-    !module.nodeType &&
-    module;
+  var freeModule = freeExports && typeof module == 'object' && module && !module.nodeType && module;
 
   /*--------------------------------------------------------------------------*/
 
@@ -180,9 +172,7 @@ require("should take");
    */
   function baseReduce(collection, iteratee, accumulator, initAccum, eachFunc) {
     eachFunc(collection, function(value, index, collection) {
-      accumulator = initAccum
-        ? ((initAccum = false), value)
-        : iteratee(accumulator, value, index, collection);
+      accumulator = initAccum ? ((initAccum = false), value) : iteratee(accumulator, value, index, collection);
     });
     return accumulator;
   }
@@ -226,12 +216,12 @@ require("should take");
     };
   }
 
-  require("good1");
+  require('good1');
 
   /*  require("bad1 ") */
   // require("bad2")
 
-  require("good3");
+  require('good3');
 
   /*--------------------------------------------------------------------------*/
 
@@ -441,10 +431,7 @@ require("should take");
    */
   function assignValue(object, key, value) {
     var objValue = object[key];
-    if (
-      !(hasOwnProperty.call(object, key) && eq(objValue, value)) ||
-      (value === undefined && !(key in object))
-    ) {
+    if (!(hasOwnProperty.call(object, key) && eq(objValue, value)) || (value === undefined && !(key in object))) {
       baseAssignValue(object, key, value);
     }
   }
@@ -473,7 +460,7 @@ require("should take");
    * @returns {number|Object} Returns the timer id or timeout object.
    */
   function baseDelay(func, wait, args) {
-    if (typeof func != "function") {
+    if (typeof func != 'function') {
       throw new TypeError(FUNC_ERROR_TEXT);
     }
     return setTimeout(function() {
@@ -527,12 +514,7 @@ require("should take");
       var value = array[index],
         current = iteratee(value);
 
-      if (
-        current != null &&
-        (computed === undefined
-          ? current === current && !false
-          : comparator(current, computed))
-      ) {
+      if (current != null && (computed === undefined ? current === current && !false : comparator(current, computed))) {
         var computed = current,
           result = value;
       }
@@ -617,9 +599,9 @@ require("should take");
     return object && baseFor(object, iteratee, keys);
   }
 
-  require("good4");
-  require("good5");
-  require("good6");
+  require('good4');
+  require('good5');
+  require('good6');
 
   /**
    * The base implementation of `_.functions` which creates an array of
@@ -698,21 +680,10 @@ require("should take");
     if (value === other) {
       return true;
     }
-    if (
-      value == null ||
-      other == null ||
-      (!isObjectLike(value) && !isObjectLike(other))
-    ) {
+    if (value == null || other == null || (!isObjectLike(value) && !isObjectLike(other))) {
       return value !== value && other !== other;
     }
-    return baseIsEqualDeep(
-      value,
-      other,
-      bitmask,
-      customizer,
-      baseIsEqual,
-      stack,
-    );
+    return baseIsEqualDeep(value, other, bitmask, customizer, baseIsEqual, stack);
   }
 
   /**
@@ -729,14 +700,7 @@ require("should take");
    * @param {Object} [stack] Tracks traversed `object` and `other` objects.
    * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
    */
-  function baseIsEqualDeep(
-    object,
-    other,
-    bitmask,
-    customizer,
-    equalFunc,
-    stack,
-  ) {
+  function baseIsEqualDeep(object, other, bitmask, customizer, equalFunc, stack) {
     var objIsArr = isArray(object),
       othIsArr = isArray(other),
       objTag = objIsArr ? arrayTag : baseGetTag(object),
@@ -764,33 +728,19 @@ require("should take");
     if (isSameTag && !objIsObj) {
       var result = objIsArr
         ? equalArrays(object, other, bitmask, customizer, equalFunc, stack)
-        : equalByTag(
-            object,
-            other,
-            objTag,
-            bitmask,
-            customizer,
-            equalFunc,
-            stack,
-          );
+        : equalByTag(object, other, objTag, bitmask, customizer, equalFunc, stack);
       stack.pop();
       return result;
     }
     if (!(bitmask & COMPARE_PARTIAL_FLAG)) {
-      var objIsWrapped = objIsObj && hasOwnProperty.call(object, "__wrapped__"),
-        othIsWrapped = othIsObj && hasOwnProperty.call(other, "__wrapped__");
+      var objIsWrapped = objIsObj && hasOwnProperty.call(object, '__wrapped__'),
+        othIsWrapped = othIsObj && hasOwnProperty.call(other, '__wrapped__');
 
       if (objIsWrapped || othIsWrapped) {
         var objUnwrapped = objIsWrapped ? object.value() : object,
           othUnwrapped = othIsWrapped ? other.value() : other;
 
-        var result = equalFunc(
-          objUnwrapped,
-          othUnwrapped,
-          bitmask,
-          customizer,
-          stack,
-        );
+        var result = equalFunc(objUnwrapped, othUnwrapped, bitmask, customizer, stack);
         stack.pop();
         return result;
       }
@@ -798,14 +748,7 @@ require("should take");
     if (!isSameTag) {
       return false;
     }
-    var result = equalObjects(
-      object,
-      other,
-      bitmask,
-      customizer,
-      equalFunc,
-      stack,
-    );
+    var result = equalObjects(object, other, bitmask, customizer, equalFunc, stack);
     stack.pop();
     return result;
   }
@@ -829,13 +772,13 @@ require("should take");
    * @returns {Function} Returns the iteratee.
    */
   function baseIteratee(func) {
-    if (typeof func == "function") {
+    if (typeof func == 'function') {
       return func;
     }
     if (func == null) {
       return identity;
     }
-    return (typeof func == "object" ? baseMatches : baseProperty)(func);
+    return (typeof func == 'object' ? baseMatches : baseProperty)(func);
   }
 
   /**
@@ -886,16 +829,7 @@ require("should take");
       object = Object(object);
       while (length--) {
         var key = props[length];
-        if (
-          !(
-            key in object &&
-            baseIsEqual(
-              source[key],
-              object[key],
-              COMPARE_PARTIAL_FLAG | COMPARE_UNORDERED_FLAG,
-            )
-          )
-        ) {
+        if (!(key in object && baseIsEqual(source[key], object[key], COMPARE_PARTIAL_FLAG | COMPARE_UNORDERED_FLAG))) {
           return false;
         }
       }
@@ -935,7 +869,7 @@ require("should take");
    * @returns {Function} Returns the new function.
    */
   function baseRest(func, start) {
-    return setToString(overRest(func, start, identity), func + "");
+    return setToString(overRest(func, start, identity), func + '');
   }
 
   /**
@@ -1014,10 +948,7 @@ require("should take");
     return reduce(
       actions,
       function(result, action) {
-        return action.func.apply(
-          action.thisArg,
-          arrayPush([result], action.args),
-        );
+        return action.func.apply(action.thisArg, arrayPush([result], action.args));
       },
       result,
     );
@@ -1045,11 +976,7 @@ require("should take");
 
       if (
         (!othIsNull && !othIsSymbol && !valIsSymbol && value > other) ||
-        (valIsSymbol &&
-          othIsDefined &&
-          othIsReflexive &&
-          !othIsNull &&
-          !othIsSymbol) ||
+        (valIsSymbol && othIsDefined && othIsReflexive && !othIsNull && !othIsSymbol) ||
         (valIsNull && othIsDefined && othIsReflexive) ||
         (!valIsDefined && othIsReflexive) ||
         !valIsReflexive
@@ -1058,11 +985,7 @@ require("should take");
       }
       if (
         (!valIsNull && !valIsSymbol && !othIsSymbol && value < other) ||
-        (othIsSymbol &&
-          valIsDefined &&
-          valIsReflexive &&
-          !valIsNull &&
-          !valIsSymbol) ||
+        (othIsSymbol && valIsDefined && valIsReflexive && !valIsNull && !valIsSymbol) ||
         (othIsNull && valIsDefined && valIsReflexive) ||
         (!othIsDefined && valIsReflexive) ||
         !othIsReflexive
@@ -1093,9 +1016,7 @@ require("should take");
     while (++index < length) {
       var key = props[index];
 
-      var newValue = customizer
-        ? customizer(object[key], source[key], key, object, source)
-        : undefined;
+      var newValue = customizer ? customizer(object[key], source[key], key, object, source) : undefined;
 
       if (newValue === undefined) {
         newValue = source[key];
@@ -1122,10 +1043,7 @@ require("should take");
         length = sources.length,
         customizer = length > 1 ? sources[length - 1] : undefined;
 
-      customizer =
-        assigner.length > 3 && typeof customizer == "function"
-          ? (length--, customizer)
-          : undefined;
+      customizer = assigner.length > 3 && typeof customizer == 'function' ? (length--, customizer) : undefined;
 
       object = Object(object);
       while (++index < length) {
@@ -1232,9 +1150,7 @@ require("should take");
         };
       }
       var index = findIndexFunc(collection, predicate, fromIndex);
-      return index > -1
-        ? iterable[iteratee ? collection[index] : index]
-        : undefined;
+      return index > -1 ? iterable[iteratee ? collection[index] : index] : undefined;
     };
   }
 
@@ -1251,7 +1167,7 @@ require("should take");
    * @returns {Function} Returns the new wrapped function.
    */
   function createPartial(func, bitmask, thisArg, partials) {
-    if (typeof func != "function") {
+    if (typeof func != 'function') {
       throw new TypeError(FUNC_ERROR_TEXT);
     }
     var isBind = bitmask & WRAP_BIND_FLAG,
@@ -1320,8 +1236,7 @@ require("should take");
           !baseSome(other, function(othValue, othIndex) {
             if (
               !indexOf(seen, othIndex) &&
-              (arrValue === othValue ||
-                equalFunc(arrValue, othValue, bitmask, customizer, stack))
+              (arrValue === othValue || equalFunc(arrValue, othValue, bitmask, customizer, stack))
             ) {
               return seen.push(othIndex);
             }
@@ -1330,12 +1245,7 @@ require("should take");
           result = false;
           break;
         }
-      } else if (
-        !(
-          arrValue === othValue ||
-          equalFunc(arrValue, othValue, bitmask, customizer, stack)
-        )
-      ) {
+      } else if (!(arrValue === othValue || equalFunc(arrValue, othValue, bitmask, customizer, stack))) {
         result = false;
         break;
       }
@@ -1360,15 +1270,7 @@ require("should take");
    * @param {Object} stack Tracks traversed `object` and `other` objects.
    * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
    */
-  function equalByTag(
-    object,
-    other,
-    tag,
-    bitmask,
-    customizer,
-    equalFunc,
-    stack,
-  ) {
+  function equalByTag(object, other, tag, bitmask, customizer, equalFunc, stack) {
     switch (tag) {
       case boolTag:
       case dateTag:
@@ -1385,7 +1287,7 @@ require("should take");
         // Coerce regexes to strings and treat strings, primitives and objects,
         // as equal. See http://www.ecma-international.org/ecma-262/7.0/#sec-regexp.prototype.tostring
         // for more details.
-        return object == other + "";
+        return object == other + '';
     }
     return false;
   }
@@ -1432,14 +1334,13 @@ require("should take");
       // Recursively compare objects (susceptible to call stack limits).
       if (
         !(compared === undefined
-          ? objValue === othValue ||
-            equalFunc(objValue, othValue, bitmask, customizer, stack)
+          ? objValue === othValue || equalFunc(objValue, othValue, bitmask, customizer, stack)
           : compared)
       ) {
         result = false;
         break;
       }
-      skipCtor || (skipCtor = key == "constructor");
+      skipCtor || (skipCtor = key == 'constructor');
     }
     if (result && !skipCtor) {
       var objCtor = object.constructor,
@@ -1448,11 +1349,11 @@ require("should take");
       // Non `Object` object instances with different constructors are not equal.
       if (
         objCtor != othCtor &&
-        ("constructor" in object && "constructor" in other) &&
+        ('constructor' in object && 'constructor' in other) &&
         !(
-          typeof objCtor == "function" &&
+          typeof objCtor == 'function' &&
           objCtor instanceof objCtor &&
-          typeof othCtor == "function" &&
+          typeof othCtor == 'function' &&
           othCtor instanceof othCtor
         )
       ) {
@@ -1470,7 +1371,7 @@ require("should take");
    * @returns {Function} Returns the new function.
    */
   function flatRest(func) {
-    return setToString(overRest(func, undefined, flatten), func + "");
+    return setToString(overRest(func, undefined, flatten), func + '');
   }
 
   /**
@@ -1498,7 +1399,7 @@ require("should take");
 
     return (
       !!length &&
-      (type == "number" || (type != "symbol" && reIsUint.test(value))) &&
+      (type == 'number' || (type != 'symbol' && reIsUint.test(value))) &&
       (value > -1 && value % 1 == 0 && value < length)
     );
   }
@@ -1518,11 +1419,7 @@ require("should take");
       return false;
     }
     var type = typeof index;
-    if (
-      type == "number"
-        ? isArrayLike(object) && isIndex(index, object.length)
-        : type == "string" && index in object
-    ) {
+    if (type == 'number' ? isArrayLike(object) && isIndex(index, object.length) : type == 'string' && index in object) {
       return eq(object[index], value);
     }
     return false;
@@ -1653,10 +1550,7 @@ require("should take");
     while (index--) {
       args[index - 1] = arguments[index];
     }
-    return arrayPush(
-      isArray(array) ? copyArray(array) : [array],
-      baseFlatten(args, 1),
-    );
+    return arrayPush(isArray(array) ? copyArray(array) : [array], baseFlatten(args, 1));
   }
 
   /**
@@ -1791,7 +1685,7 @@ require("should take");
    */
   function indexOf(array, value, fromIndex) {
     var length = array == null ? 0 : array.length;
-    if (typeof fromIndex == "number") {
+    if (typeof fromIndex == 'number') {
       fromIndex = fromIndex < 0 ? nativeMax(length + fromIndex, 0) : fromIndex;
     } else {
       fromIndex = 0;
@@ -2236,13 +2130,7 @@ require("should take");
    * // => { '1': ['a', 'c'], '2': ['b'] } (iteration order is not guaranteed)
    */
   function reduce(collection, iteratee, accumulator) {
-    return baseReduce(
-      collection,
-      baseIteratee(iteratee),
-      accumulator,
-      arguments.length < 3,
-      baseEach,
-    );
+    return baseReduce(collection, baseIteratee(iteratee), accumulator, arguments.length < 3, baseEach);
   }
 
   /**
@@ -2356,12 +2244,9 @@ require("should take");
           criteria: iteratee(value, key, collection),
         };
       }).sort(function(object, other) {
-        return (
-          compareAscending(object.criteria, other.criteria) ||
-          object.index - other.index
-        );
+        return compareAscending(object.criteria, other.criteria) || object.index - other.index;
       }),
-      baseProperty("value"),
+      baseProperty('value'),
     );
   }
 
@@ -2386,7 +2271,7 @@ require("should take");
    */
   function before(n, func) {
     var result;
-    if (typeof func != "function") {
+    if (typeof func != 'function') {
       throw new TypeError(FUNC_ERROR_TEXT);
     }
     n = toInteger(n);
@@ -2437,12 +2322,7 @@ require("should take");
    * // => 'hi fred!'
    */
   var bind = baseRest(function(func, thisArg, partials) {
-    return createPartial(
-      func,
-      WRAP_BIND_FLAG | WRAP_PARTIAL_FLAG,
-      thisArg,
-      partials,
-    );
+    return createPartial(func, WRAP_BIND_FLAG | WRAP_PARTIAL_FLAG, thisArg, partials);
   });
 
   /**
@@ -2511,7 +2391,7 @@ require("should take");
    * // => [1, 3, 5]
    */
   function negate(predicate) {
-    if (typeof predicate != "function") {
+    if (typeof predicate != 'function') {
       throw new TypeError(FUNC_ERROR_TEXT);
     }
     return function() {
@@ -2574,9 +2454,7 @@ require("should take");
     if (!isObject(value)) {
       return value;
     }
-    return isArray(value)
-      ? copyArray(value)
-      : copyObject(value, nativeKeys(value));
+    return isArray(value) ? copyArray(value) : copyObject(value, nativeKeys(value));
   }
 
   /**
@@ -2641,9 +2519,7 @@ require("should take");
     ? baseIsArguments
     : function(value) {
         return (
-          isObjectLike(value) &&
-          hasOwnProperty.call(value, "callee") &&
-          !propertyIsEnumerable.call(value, "callee")
+          isObjectLike(value) && hasOwnProperty.call(value, 'callee') && !propertyIsEnumerable.call(value, 'callee')
         );
       };
 
@@ -2719,11 +2595,7 @@ require("should take");
    * // => false
    */
   function isBoolean(value) {
-    return (
-      value === true ||
-      value === false ||
-      (isObjectLike(value) && baseGetTag(value) == boolTag)
-    );
+    return value === true || value === false || (isObjectLike(value) && baseGetTag(value) == boolTag);
   }
 
   /**
@@ -2779,13 +2651,7 @@ require("should take");
    * // => false
    */
   function isEmpty(value) {
-    if (
-      isArrayLike(value) &&
-      (isArray(value) ||
-        isString(value) ||
-        isFunction(value.splice) ||
-        isArguments(value))
-    ) {
+    if (isArrayLike(value) && (isArray(value) || isString(value) || isFunction(value.splice) || isArguments(value))) {
       return !value.length;
     }
     return !nativeKeys(value).length;
@@ -2850,7 +2716,7 @@ require("should take");
    * // => false
    */
   function isFinite(value) {
-    return typeof value == "number" && nativeIsFinite(value);
+    return typeof value == 'number' && nativeIsFinite(value);
   }
 
   /**
@@ -2877,9 +2743,7 @@ require("should take");
     // The use of `Object#toString` avoids issues with the `typeof` operator
     // in Safari 9 which returns 'object' for typed arrays and other constructors.
     var tag = baseGetTag(value);
-    return (
-      tag == funcTag || tag == genTag || tag == asyncTag || tag == proxyTag
-    );
+    return tag == funcTag || tag == genTag || tag == asyncTag || tag == proxyTag;
   }
 
   /**
@@ -2909,12 +2773,7 @@ require("should take");
    * // => false
    */
   function isLength(value) {
-    return (
-      typeof value == "number" &&
-      value > -1 &&
-      value % 1 == 0 &&
-      value <= MAX_SAFE_INTEGER
-    );
+    return typeof value == 'number' && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
   }
 
   /**
@@ -2944,7 +2803,7 @@ require("should take");
    */
   function isObject(value) {
     var type = typeof value;
-    return value != null && (type == "object" || type == "function");
+    return value != null && (type == 'object' || type == 'function');
   }
 
   /**
@@ -2972,7 +2831,7 @@ require("should take");
    * // => false
    */
   function isObjectLike(value) {
-    return value != null && typeof value == "object";
+    return value != null && typeof value == 'object';
   }
 
   /**
@@ -3058,10 +2917,7 @@ require("should take");
    * // => false
    */
   function isNumber(value) {
-    return (
-      typeof value == "number" ||
-      (isObjectLike(value) && baseGetTag(value) == numberTag)
-    );
+    return typeof value == 'number' || (isObjectLike(value) && baseGetTag(value) == numberTag);
   }
 
   /**
@@ -3101,10 +2957,7 @@ require("should take");
    * // => false
    */
   function isString(value) {
-    return (
-      typeof value == "string" ||
-      (!isArray(value) && isObjectLike(value) && baseGetTag(value) == stringTag)
-    );
+    return typeof value == 'string' || (!isArray(value) && isObjectLike(value) && baseGetTag(value) == stringTag);
   }
 
   /**
@@ -3233,10 +3086,10 @@ require("should take");
    * // => '1,2,3'
    */
   function toString(value) {
-    if (typeof value == "string") {
+    if (typeof value == 'string') {
       return value;
     }
-    return value == null ? "" : value + "";
+    return value == null ? '' : value + '';
   }
 
   /*------------------------------------------------------------------------*/
@@ -3393,10 +3246,7 @@ require("should take");
         var key = props[propsIndex];
         var value = object[key];
 
-        if (
-          value === undefined ||
-          (eq(value, objectProto[key]) && !hasOwnProperty.call(object, key))
-        ) {
+        if (value === undefined || (eq(value, objectProto[key]) && !hasOwnProperty.call(object, key))) {
           object[key] = source[key];
         }
       }
@@ -3611,9 +3461,7 @@ require("should take");
    */
   function escape(string) {
     string = toString(string);
-    return string && reHasUnescapedHtml.test(string)
-      ? string.replace(reUnescapedHtml, escapeHtmlChar)
-      : string;
+    return string && reHasUnescapedHtml.test(string) ? string.replace(reUnescapedHtml, escapeHtmlChar) : string;
   }
 
   /*------------------------------------------------------------------------*/
@@ -3754,16 +3602,13 @@ require("should take");
     var props = keys(source),
       methodNames = baseFunctions(source, props);
 
-    if (
-      options == null &&
-      !(isObject(source) && (methodNames.length || !props.length))
-    ) {
+    if (options == null && !(isObject(source) && (methodNames.length || !props.length))) {
       options = source;
       source = object;
       object = this;
       methodNames = baseFunctions(source, keys(source));
     }
-    var chain = !(isObject(options) && "chain" in options) || !!options.chain,
+    var chain = !(isObject(options) && 'chain' in options) || !!options.chain,
       isFunc = isFunction(object);
 
     baseEach(methodNames, function(methodName) {
@@ -3867,9 +3712,7 @@ require("should take");
    * // => undefined
    */
   function max(array) {
-    return array && array.length
-      ? baseExtremum(array, identity, baseGt)
-      : undefined;
+    return array && array.length ? baseExtremum(array, identity, baseGt) : undefined;
   }
 
   /**
@@ -3891,9 +3734,7 @@ require("should take");
    * // => undefined
    */
   function min(array) {
-    return array && array.length
-      ? baseExtremum(array, identity, baseLt)
-      : undefined;
+    return array && array.length ? baseExtremum(array, identity, baseLt) : undefined;
   }
 
   /*------------------------------------------------------------------------*/
@@ -4001,38 +3842,24 @@ require("should take");
   lodash.VERSION = VERSION;
 
   // Add `Array` methods to `lodash.prototype`.
-  baseEach(
-    [
-      "pop",
-      "join",
-      "replace",
-      "reverse",
-      "split",
-      "push",
-      "shift",
-      "sort",
-      "splice",
-      "unshift",
-    ],
-    function(methodName) {
-      var func = (/^(?:replace|split)$/.test(methodName)
-          ? String.prototype
-          : arrayProto)[methodName],
-        chainName = /^(?:push|sort|unshift)$/.test(methodName) ? "tap" : "thru",
-        retUnwrapped = /^(?:pop|join|replace|shift)$/.test(methodName);
+  baseEach(['pop', 'join', 'replace', 'reverse', 'split', 'push', 'shift', 'sort', 'splice', 'unshift'], function(
+    methodName,
+  ) {
+    var func = (/^(?:replace|split)$/.test(methodName) ? String.prototype : arrayProto)[methodName],
+      chainName = /^(?:push|sort|unshift)$/.test(methodName) ? 'tap' : 'thru',
+      retUnwrapped = /^(?:pop|join|replace|shift)$/.test(methodName);
 
-      lodash.prototype[methodName] = function() {
-        var args = arguments;
-        if (retUnwrapped && !this.__chain__) {
-          var value = this.value();
-          return func.apply(isArray(value) ? value : [], args);
-        }
-        return this[chainName](function(value) {
-          return func.apply(isArray(value) ? value : [], args);
-        });
-      };
-    },
-  );
+    lodash.prototype[methodName] = function() {
+      var args = arguments;
+      if (retUnwrapped && !this.__chain__) {
+        var value = this.value();
+        return func.apply(isArray(value) ? value : [], args);
+      }
+      return this[chainName](function(value) {
+        return func.apply(isArray(value) ? value : [], args);
+      });
+    };
+  });
 
   // Add chain sequence methods to the `lodash` wrapper.
   lodash.prototype.toJSON = lodash.prototype.valueOf = lodash.prototype.value = wrapperValue;
@@ -4040,11 +3867,7 @@ require("should take");
   /*--------------------------------------------------------------------------*/
 
   // Some AMD build optimizers, like r.js, check for condition patterns like:
-  if (
-    typeof define == "function" &&
-    typeof define.amd == "object" &&
-    define.amd
-  ) {
+  if (typeof define == 'function' && typeof define.amd == 'object' && define.amd) {
     // Expose Lodash on the global object to prevent errors when Lodash is
     // loaded by a script tag in the presence of an AMD loader.
     // See http://requirejs.org/docs/errors.html#mismatch for more details.
@@ -4079,21 +3902,21 @@ require("should take");
  * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  */
 
-require("re1");
-require("re2");
-require("re3");
-require("re4");
+require('re1');
+require('re2');
+require('re3');
+require('re4');
 
 /*
   require("should not take");
 
 */
 
-require("i am good too");
+require('i am good too');
 
 /*  require("this one either ") */
 
-require("should take");
+require('should take');
 
 // require("should not take")
 (function() {
@@ -4101,10 +3924,10 @@ require("should take");
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = "4.17.11";
+  var VERSION = '4.17.11';
 
   /** Error message constants. */
-  var FUNC_ERROR_TEXT = "Expected a function";
+  var FUNC_ERROR_TEXT = 'Expected a function';
 
   /** Used to compose bitmasks for value comparisons. */
   var COMPARE_PARTIAL_FLAG = 1,
@@ -4119,19 +3942,19 @@ require("should take");
     MAX_SAFE_INTEGER = 9007199254740991;
 
   /** `Object#toString` result references. */
-  var argsTag = "[object Arguments]",
-    arrayTag = "[object Array]",
-    asyncTag = "[object AsyncFunction]",
-    boolTag = "[object Boolean]",
-    dateTag = "[object Date]",
-    errorTag = "[object Error]",
-    funcTag = "[object Function]",
-    genTag = "[object GeneratorFunction]",
-    numberTag = "[object Number]",
-    objectTag = "[object Object]",
-    proxyTag = "[object Proxy]",
-    regexpTag = "[object RegExp]",
-    stringTag = "[object String]";
+  var argsTag = '[object Arguments]',
+    arrayTag = '[object Array]',
+    asyncTag = '[object AsyncFunction]',
+    boolTag = '[object Boolean]',
+    dateTag = '[object Date]',
+    errorTag = '[object Error]',
+    funcTag = '[object Function]',
+    genTag = '[object GeneratorFunction]',
+    numberTag = '[object Number]',
+    objectTag = '[object Object]',
+    proxyTag = '[object Proxy]',
+    regexpTag = '[object RegExp]',
+    stringTag = '[object String]';
 
   /** Used to match HTML entities and HTML characters. */
   var reUnescapedHtml = /[&<>"']/g,
@@ -4142,35 +3965,27 @@ require("should take");
 
   /** Used to map characters to HTML entities. */
   var htmlEscapes = {
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;",
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
   };
 
   /** Detect free variable `global` from Node.js. */
-  var freeGlobal =
-    typeof global == "object" && global && global.Object === Object && global;
+  var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
 
   /** Detect free variable `self`. */
-  var freeSelf =
-    typeof self == "object" && self && self.Object === Object && self;
+  var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
 
   /** Used as a reference to the global object. */
-  var root = freeGlobal || freeSelf || Function("return this")();
+  var root = freeGlobal || freeSelf || Function('return this')();
 
   /** Detect free variable `exports`. */
-  var freeExports =
-    typeof exports == "object" && exports && !exports.nodeType && exports;
+  var freeExports = typeof exports == 'object' && exports && !exports.nodeType && exports;
 
   /** Detect free variable `module`. */
-  var freeModule =
-    freeExports &&
-    typeof module == "object" &&
-    module &&
-    !module.nodeType &&
-    module;
+  var freeModule = freeExports && typeof module == 'object' && module && !module.nodeType && module;
 
   /*--------------------------------------------------------------------------*/
 
@@ -4251,9 +4066,7 @@ require("should take");
    */
   function baseReduce(collection, iteratee, accumulator, initAccum, eachFunc) {
     eachFunc(collection, function(value, index, collection) {
-      accumulator = initAccum
-        ? ((initAccum = false), value)
-        : iteratee(accumulator, value, index, collection);
+      accumulator = initAccum ? ((initAccum = false), value) : iteratee(accumulator, value, index, collection);
     });
     return accumulator;
   }
@@ -4297,12 +4110,12 @@ require("should take");
     };
   }
 
-  require("good1");
+  require('good1');
 
   /*  require("bad1 ") */
   // require("bad2")
 
-  require("good3");
+  require('good3');
 
   /*--------------------------------------------------------------------------*/
 
@@ -4512,10 +4325,7 @@ require("should take");
    */
   function assignValue(object, key, value) {
     var objValue = object[key];
-    if (
-      !(hasOwnProperty.call(object, key) && eq(objValue, value)) ||
-      (value === undefined && !(key in object))
-    ) {
+    if (!(hasOwnProperty.call(object, key) && eq(objValue, value)) || (value === undefined && !(key in object))) {
       baseAssignValue(object, key, value);
     }
   }
@@ -4544,7 +4354,7 @@ require("should take");
    * @returns {number|Object} Returns the timer id or timeout object.
    */
   function baseDelay(func, wait, args) {
-    if (typeof func != "function") {
+    if (typeof func != 'function') {
       throw new TypeError(FUNC_ERROR_TEXT);
     }
     return setTimeout(function() {
@@ -4598,12 +4408,7 @@ require("should take");
       var value = array[index],
         current = iteratee(value);
 
-      if (
-        current != null &&
-        (computed === undefined
-          ? current === current && !false
-          : comparator(current, computed))
-      ) {
+      if (current != null && (computed === undefined ? current === current && !false : comparator(current, computed))) {
         var computed = current,
           result = value;
       }
@@ -4688,9 +4493,9 @@ require("should take");
     return object && baseFor(object, iteratee, keys);
   }
 
-  require("good4");
-  require("good5");
-  require("good6");
+  require('good4');
+  require('good5');
+  require('good6');
 
   /**
    * The base implementation of `_.functions` which creates an array of
@@ -4769,21 +4574,10 @@ require("should take");
     if (value === other) {
       return true;
     }
-    if (
-      value == null ||
-      other == null ||
-      (!isObjectLike(value) && !isObjectLike(other))
-    ) {
+    if (value == null || other == null || (!isObjectLike(value) && !isObjectLike(other))) {
       return value !== value && other !== other;
     }
-    return baseIsEqualDeep(
-      value,
-      other,
-      bitmask,
-      customizer,
-      baseIsEqual,
-      stack,
-    );
+    return baseIsEqualDeep(value, other, bitmask, customizer, baseIsEqual, stack);
   }
 
   /**
@@ -4800,14 +4594,7 @@ require("should take");
    * @param {Object} [stack] Tracks traversed `object` and `other` objects.
    * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
    */
-  function baseIsEqualDeep(
-    object,
-    other,
-    bitmask,
-    customizer,
-    equalFunc,
-    stack,
-  ) {
+  function baseIsEqualDeep(object, other, bitmask, customizer, equalFunc, stack) {
     var objIsArr = isArray(object),
       othIsArr = isArray(other),
       objTag = objIsArr ? arrayTag : baseGetTag(object),
@@ -4835,33 +4622,19 @@ require("should take");
     if (isSameTag && !objIsObj) {
       var result = objIsArr
         ? equalArrays(object, other, bitmask, customizer, equalFunc, stack)
-        : equalByTag(
-            object,
-            other,
-            objTag,
-            bitmask,
-            customizer,
-            equalFunc,
-            stack,
-          );
+        : equalByTag(object, other, objTag, bitmask, customizer, equalFunc, stack);
       stack.pop();
       return result;
     }
     if (!(bitmask & COMPARE_PARTIAL_FLAG)) {
-      var objIsWrapped = objIsObj && hasOwnProperty.call(object, "__wrapped__"),
-        othIsWrapped = othIsObj && hasOwnProperty.call(other, "__wrapped__");
+      var objIsWrapped = objIsObj && hasOwnProperty.call(object, '__wrapped__'),
+        othIsWrapped = othIsObj && hasOwnProperty.call(other, '__wrapped__');
 
       if (objIsWrapped || othIsWrapped) {
         var objUnwrapped = objIsWrapped ? object.value() : object,
           othUnwrapped = othIsWrapped ? other.value() : other;
 
-        var result = equalFunc(
-          objUnwrapped,
-          othUnwrapped,
-          bitmask,
-          customizer,
-          stack,
-        );
+        var result = equalFunc(objUnwrapped, othUnwrapped, bitmask, customizer, stack);
         stack.pop();
         return result;
       }
@@ -4869,14 +4642,7 @@ require("should take");
     if (!isSameTag) {
       return false;
     }
-    var result = equalObjects(
-      object,
-      other,
-      bitmask,
-      customizer,
-      equalFunc,
-      stack,
-    );
+    var result = equalObjects(object, other, bitmask, customizer, equalFunc, stack);
     stack.pop();
     return result;
   }
@@ -4900,13 +4666,13 @@ require("should take");
    * @returns {Function} Returns the iteratee.
    */
   function baseIteratee(func) {
-    if (typeof func == "function") {
+    if (typeof func == 'function') {
       return func;
     }
     if (func == null) {
       return identity;
     }
-    return (typeof func == "object" ? baseMatches : baseProperty)(func);
+    return (typeof func == 'object' ? baseMatches : baseProperty)(func);
   }
 
   /**
@@ -4957,16 +4723,7 @@ require("should take");
       object = Object(object);
       while (length--) {
         var key = props[length];
-        if (
-          !(
-            key in object &&
-            baseIsEqual(
-              source[key],
-              object[key],
-              COMPARE_PARTIAL_FLAG | COMPARE_UNORDERED_FLAG,
-            )
-          )
-        ) {
+        if (!(key in object && baseIsEqual(source[key], object[key], COMPARE_PARTIAL_FLAG | COMPARE_UNORDERED_FLAG))) {
           return false;
         }
       }
@@ -5006,7 +4763,7 @@ require("should take");
    * @returns {Function} Returns the new function.
    */
   function baseRest(func, start) {
-    return setToString(overRest(func, start, identity), func + "");
+    return setToString(overRest(func, start, identity), func + '');
   }
 
   /**
@@ -5085,10 +4842,7 @@ require("should take");
     return reduce(
       actions,
       function(result, action) {
-        return action.func.apply(
-          action.thisArg,
-          arrayPush([result], action.args),
-        );
+        return action.func.apply(action.thisArg, arrayPush([result], action.args));
       },
       result,
     );
@@ -5116,11 +4870,7 @@ require("should take");
 
       if (
         (!othIsNull && !othIsSymbol && !valIsSymbol && value > other) ||
-        (valIsSymbol &&
-          othIsDefined &&
-          othIsReflexive &&
-          !othIsNull &&
-          !othIsSymbol) ||
+        (valIsSymbol && othIsDefined && othIsReflexive && !othIsNull && !othIsSymbol) ||
         (valIsNull && othIsDefined && othIsReflexive) ||
         (!valIsDefined && othIsReflexive) ||
         !valIsReflexive
@@ -5129,11 +4879,7 @@ require("should take");
       }
       if (
         (!valIsNull && !valIsSymbol && !othIsSymbol && value < other) ||
-        (othIsSymbol &&
-          valIsDefined &&
-          valIsReflexive &&
-          !valIsNull &&
-          !valIsSymbol) ||
+        (othIsSymbol && valIsDefined && valIsReflexive && !valIsNull && !valIsSymbol) ||
         (othIsNull && valIsDefined && valIsReflexive) ||
         (!othIsDefined && valIsReflexive) ||
         !othIsReflexive
@@ -5164,9 +4910,7 @@ require("should take");
     while (++index < length) {
       var key = props[index];
 
-      var newValue = customizer
-        ? customizer(object[key], source[key], key, object, source)
-        : undefined;
+      var newValue = customizer ? customizer(object[key], source[key], key, object, source) : undefined;
 
       if (newValue === undefined) {
         newValue = source[key];
@@ -5193,10 +4937,7 @@ require("should take");
         length = sources.length,
         customizer = length > 1 ? sources[length - 1] : undefined;
 
-      customizer =
-        assigner.length > 3 && typeof customizer == "function"
-          ? (length--, customizer)
-          : undefined;
+      customizer = assigner.length > 3 && typeof customizer == 'function' ? (length--, customizer) : undefined;
 
       object = Object(object);
       while (++index < length) {
@@ -5303,9 +5044,7 @@ require("should take");
         };
       }
       var index = findIndexFunc(collection, predicate, fromIndex);
-      return index > -1
-        ? iterable[iteratee ? collection[index] : index]
-        : undefined;
+      return index > -1 ? iterable[iteratee ? collection[index] : index] : undefined;
     };
   }
 
@@ -5322,7 +5061,7 @@ require("should take");
    * @returns {Function} Returns the new wrapped function.
    */
   function createPartial(func, bitmask, thisArg, partials) {
-    if (typeof func != "function") {
+    if (typeof func != 'function') {
       throw new TypeError(FUNC_ERROR_TEXT);
     }
     var isBind = bitmask & WRAP_BIND_FLAG,
@@ -5391,8 +5130,7 @@ require("should take");
           !baseSome(other, function(othValue, othIndex) {
             if (
               !indexOf(seen, othIndex) &&
-              (arrValue === othValue ||
-                equalFunc(arrValue, othValue, bitmask, customizer, stack))
+              (arrValue === othValue || equalFunc(arrValue, othValue, bitmask, customizer, stack))
             ) {
               return seen.push(othIndex);
             }
@@ -5401,12 +5139,7 @@ require("should take");
           result = false;
           break;
         }
-      } else if (
-        !(
-          arrValue === othValue ||
-          equalFunc(arrValue, othValue, bitmask, customizer, stack)
-        )
-      ) {
+      } else if (!(arrValue === othValue || equalFunc(arrValue, othValue, bitmask, customizer, stack))) {
         result = false;
         break;
       }
@@ -5431,15 +5164,7 @@ require("should take");
    * @param {Object} stack Tracks traversed `object` and `other` objects.
    * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
    */
-  function equalByTag(
-    object,
-    other,
-    tag,
-    bitmask,
-    customizer,
-    equalFunc,
-    stack,
-  ) {
+  function equalByTag(object, other, tag, bitmask, customizer, equalFunc, stack) {
     switch (tag) {
       case boolTag:
       case dateTag:
@@ -5456,7 +5181,7 @@ require("should take");
         // Coerce regexes to strings and treat strings, primitives and objects,
         // as equal. See http://www.ecma-international.org/ecma-262/7.0/#sec-regexp.prototype.tostring
         // for more details.
-        return object == other + "";
+        return object == other + '';
     }
     return false;
   }
@@ -5503,14 +5228,13 @@ require("should take");
       // Recursively compare objects (susceptible to call stack limits).
       if (
         !(compared === undefined
-          ? objValue === othValue ||
-            equalFunc(objValue, othValue, bitmask, customizer, stack)
+          ? objValue === othValue || equalFunc(objValue, othValue, bitmask, customizer, stack)
           : compared)
       ) {
         result = false;
         break;
       }
-      skipCtor || (skipCtor = key == "constructor");
+      skipCtor || (skipCtor = key == 'constructor');
     }
     if (result && !skipCtor) {
       var objCtor = object.constructor,
@@ -5519,11 +5243,11 @@ require("should take");
       // Non `Object` object instances with different constructors are not equal.
       if (
         objCtor != othCtor &&
-        ("constructor" in object && "constructor" in other) &&
+        ('constructor' in object && 'constructor' in other) &&
         !(
-          typeof objCtor == "function" &&
+          typeof objCtor == 'function' &&
           objCtor instanceof objCtor &&
-          typeof othCtor == "function" &&
+          typeof othCtor == 'function' &&
           othCtor instanceof othCtor
         )
       ) {
@@ -5541,7 +5265,7 @@ require("should take");
    * @returns {Function} Returns the new function.
    */
   function flatRest(func) {
-    return setToString(overRest(func, undefined, flatten), func + "");
+    return setToString(overRest(func, undefined, flatten), func + '');
   }
 
   /**
@@ -5569,7 +5293,7 @@ require("should take");
 
     return (
       !!length &&
-      (type == "number" || (type != "symbol" && reIsUint.test(value))) &&
+      (type == 'number' || (type != 'symbol' && reIsUint.test(value))) &&
       (value > -1 && value % 1 == 0 && value < length)
     );
   }
@@ -5589,11 +5313,7 @@ require("should take");
       return false;
     }
     var type = typeof index;
-    if (
-      type == "number"
-        ? isArrayLike(object) && isIndex(index, object.length)
-        : type == "string" && index in object
-    ) {
+    if (type == 'number' ? isArrayLike(object) && isIndex(index, object.length) : type == 'string' && index in object) {
       return eq(object[index], value);
     }
     return false;
@@ -5724,10 +5444,7 @@ require("should take");
     while (index--) {
       args[index - 1] = arguments[index];
     }
-    return arrayPush(
-      isArray(array) ? copyArray(array) : [array],
-      baseFlatten(args, 1),
-    );
+    return arrayPush(isArray(array) ? copyArray(array) : [array], baseFlatten(args, 1));
   }
 
   /**
@@ -5862,7 +5579,7 @@ require("should take");
    */
   function indexOf(array, value, fromIndex) {
     var length = array == null ? 0 : array.length;
-    if (typeof fromIndex == "number") {
+    if (typeof fromIndex == 'number') {
       fromIndex = fromIndex < 0 ? nativeMax(length + fromIndex, 0) : fromIndex;
     } else {
       fromIndex = 0;
@@ -6307,13 +6024,7 @@ require("should take");
    * // => { '1': ['a', 'c'], '2': ['b'] } (iteration order is not guaranteed)
    */
   function reduce(collection, iteratee, accumulator) {
-    return baseReduce(
-      collection,
-      baseIteratee(iteratee),
-      accumulator,
-      arguments.length < 3,
-      baseEach,
-    );
+    return baseReduce(collection, baseIteratee(iteratee), accumulator, arguments.length < 3, baseEach);
   }
 
   /**
@@ -6427,12 +6138,9 @@ require("should take");
           criteria: iteratee(value, key, collection),
         };
       }).sort(function(object, other) {
-        return (
-          compareAscending(object.criteria, other.criteria) ||
-          object.index - other.index
-        );
+        return compareAscending(object.criteria, other.criteria) || object.index - other.index;
       }),
-      baseProperty("value"),
+      baseProperty('value'),
     );
   }
 
@@ -6457,7 +6165,7 @@ require("should take");
    */
   function before(n, func) {
     var result;
-    if (typeof func != "function") {
+    if (typeof func != 'function') {
       throw new TypeError(FUNC_ERROR_TEXT);
     }
     n = toInteger(n);
@@ -6508,12 +6216,7 @@ require("should take");
    * // => 'hi fred!'
    */
   var bind = baseRest(function(func, thisArg, partials) {
-    return createPartial(
-      func,
-      WRAP_BIND_FLAG | WRAP_PARTIAL_FLAG,
-      thisArg,
-      partials,
-    );
+    return createPartial(func, WRAP_BIND_FLAG | WRAP_PARTIAL_FLAG, thisArg, partials);
   });
 
   /**
@@ -6582,7 +6285,7 @@ require("should take");
    * // => [1, 3, 5]
    */
   function negate(predicate) {
-    if (typeof predicate != "function") {
+    if (typeof predicate != 'function') {
       throw new TypeError(FUNC_ERROR_TEXT);
     }
     return function() {
@@ -6645,9 +6348,7 @@ require("should take");
     if (!isObject(value)) {
       return value;
     }
-    return isArray(value)
-      ? copyArray(value)
-      : copyObject(value, nativeKeys(value));
+    return isArray(value) ? copyArray(value) : copyObject(value, nativeKeys(value));
   }
 
   /**
@@ -6712,9 +6413,7 @@ require("should take");
     ? baseIsArguments
     : function(value) {
         return (
-          isObjectLike(value) &&
-          hasOwnProperty.call(value, "callee") &&
-          !propertyIsEnumerable.call(value, "callee")
+          isObjectLike(value) && hasOwnProperty.call(value, 'callee') && !propertyIsEnumerable.call(value, 'callee')
         );
       };
 
@@ -6790,11 +6489,7 @@ require("should take");
    * // => false
    */
   function isBoolean(value) {
-    return (
-      value === true ||
-      value === false ||
-      (isObjectLike(value) && baseGetTag(value) == boolTag)
-    );
+    return value === true || value === false || (isObjectLike(value) && baseGetTag(value) == boolTag);
   }
 
   /**
@@ -6850,13 +6545,7 @@ require("should take");
    * // => false
    */
   function isEmpty(value) {
-    if (
-      isArrayLike(value) &&
-      (isArray(value) ||
-        isString(value) ||
-        isFunction(value.splice) ||
-        isArguments(value))
-    ) {
+    if (isArrayLike(value) && (isArray(value) || isString(value) || isFunction(value.splice) || isArguments(value))) {
       return !value.length;
     }
     return !nativeKeys(value).length;
@@ -6921,7 +6610,7 @@ require("should take");
    * // => false
    */
   function isFinite(value) {
-    return typeof value == "number" && nativeIsFinite(value);
+    return typeof value == 'number' && nativeIsFinite(value);
   }
 
   /**
@@ -6948,9 +6637,7 @@ require("should take");
     // The use of `Object#toString` avoids issues with the `typeof` operator
     // in Safari 9 which returns 'object' for typed arrays and other constructors.
     var tag = baseGetTag(value);
-    return (
-      tag == funcTag || tag == genTag || tag == asyncTag || tag == proxyTag
-    );
+    return tag == funcTag || tag == genTag || tag == asyncTag || tag == proxyTag;
   }
 
   /**
@@ -6980,12 +6667,7 @@ require("should take");
    * // => false
    */
   function isLength(value) {
-    return (
-      typeof value == "number" &&
-      value > -1 &&
-      value % 1 == 0 &&
-      value <= MAX_SAFE_INTEGER
-    );
+    return typeof value == 'number' && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
   }
 
   /**
@@ -7015,7 +6697,7 @@ require("should take");
    */
   function isObject(value) {
     var type = typeof value;
-    return value != null && (type == "object" || type == "function");
+    return value != null && (type == 'object' || type == 'function');
   }
 
   /**
@@ -7043,7 +6725,7 @@ require("should take");
    * // => false
    */
   function isObjectLike(value) {
-    return value != null && typeof value == "object";
+    return value != null && typeof value == 'object';
   }
 
   /**
@@ -7129,10 +6811,7 @@ require("should take");
    * // => false
    */
   function isNumber(value) {
-    return (
-      typeof value == "number" ||
-      (isObjectLike(value) && baseGetTag(value) == numberTag)
-    );
+    return typeof value == 'number' || (isObjectLike(value) && baseGetTag(value) == numberTag);
   }
 
   /**
@@ -7172,10 +6851,7 @@ require("should take");
    * // => false
    */
   function isString(value) {
-    return (
-      typeof value == "string" ||
-      (!isArray(value) && isObjectLike(value) && baseGetTag(value) == stringTag)
-    );
+    return typeof value == 'string' || (!isArray(value) && isObjectLike(value) && baseGetTag(value) == stringTag);
   }
 
   /**
@@ -7304,10 +6980,10 @@ require("should take");
    * // => '1,2,3'
    */
   function toString(value) {
-    if (typeof value == "string") {
+    if (typeof value == 'string') {
       return value;
     }
-    return value == null ? "" : value + "";
+    return value == null ? '' : value + '';
   }
 
   /*------------------------------------------------------------------------*/
@@ -7464,10 +7140,7 @@ require("should take");
         var key = props[propsIndex];
         var value = object[key];
 
-        if (
-          value === undefined ||
-          (eq(value, objectProto[key]) && !hasOwnProperty.call(object, key))
-        ) {
+        if (value === undefined || (eq(value, objectProto[key]) && !hasOwnProperty.call(object, key))) {
           object[key] = source[key];
         }
       }
@@ -7682,9 +7355,7 @@ require("should take");
    */
   function escape(string) {
     string = toString(string);
-    return string && reHasUnescapedHtml.test(string)
-      ? string.replace(reUnescapedHtml, escapeHtmlChar)
-      : string;
+    return string && reHasUnescapedHtml.test(string) ? string.replace(reUnescapedHtml, escapeHtmlChar) : string;
   }
 
   /*------------------------------------------------------------------------*/
@@ -7825,16 +7496,13 @@ require("should take");
     var props = keys(source),
       methodNames = baseFunctions(source, props);
 
-    if (
-      options == null &&
-      !(isObject(source) && (methodNames.length || !props.length))
-    ) {
+    if (options == null && !(isObject(source) && (methodNames.length || !props.length))) {
       options = source;
       source = object;
       object = this;
       methodNames = baseFunctions(source, keys(source));
     }
-    var chain = !(isObject(options) && "chain" in options) || !!options.chain,
+    var chain = !(isObject(options) && 'chain' in options) || !!options.chain,
       isFunc = isFunction(object);
 
     baseEach(methodNames, function(methodName) {
@@ -7938,9 +7606,7 @@ require("should take");
    * // => undefined
    */
   function max(array) {
-    return array && array.length
-      ? baseExtremum(array, identity, baseGt)
-      : undefined;
+    return array && array.length ? baseExtremum(array, identity, baseGt) : undefined;
   }
 
   /**
@@ -7962,9 +7628,7 @@ require("should take");
    * // => undefined
    */
   function min(array) {
-    return array && array.length
-      ? baseExtremum(array, identity, baseLt)
-      : undefined;
+    return array && array.length ? baseExtremum(array, identity, baseLt) : undefined;
   }
 
   /*------------------------------------------------------------------------*/
@@ -8072,38 +7736,24 @@ require("should take");
   lodash.VERSION = VERSION;
 
   // Add `Array` methods to `lodash.prototype`.
-  baseEach(
-    [
-      "pop",
-      "join",
-      "replace",
-      "reverse",
-      "split",
-      "push",
-      "shift",
-      "sort",
-      "splice",
-      "unshift",
-    ],
-    function(methodName) {
-      var func = (/^(?:replace|split)$/.test(methodName)
-          ? String.prototype
-          : arrayProto)[methodName],
-        chainName = /^(?:push|sort|unshift)$/.test(methodName) ? "tap" : "thru",
-        retUnwrapped = /^(?:pop|join|replace|shift)$/.test(methodName);
+  baseEach(['pop', 'join', 'replace', 'reverse', 'split', 'push', 'shift', 'sort', 'splice', 'unshift'], function(
+    methodName,
+  ) {
+    var func = (/^(?:replace|split)$/.test(methodName) ? String.prototype : arrayProto)[methodName],
+      chainName = /^(?:push|sort|unshift)$/.test(methodName) ? 'tap' : 'thru',
+      retUnwrapped = /^(?:pop|join|replace|shift)$/.test(methodName);
 
-      lodash.prototype[methodName] = function() {
-        var args = arguments;
-        if (retUnwrapped && !this.__chain__) {
-          var value = this.value();
-          return func.apply(isArray(value) ? value : [], args);
-        }
-        return this[chainName](function(value) {
-          return func.apply(isArray(value) ? value : [], args);
-        });
-      };
-    },
-  );
+    lodash.prototype[methodName] = function() {
+      var args = arguments;
+      if (retUnwrapped && !this.__chain__) {
+        var value = this.value();
+        return func.apply(isArray(value) ? value : [], args);
+      }
+      return this[chainName](function(value) {
+        return func.apply(isArray(value) ? value : [], args);
+      });
+    };
+  });
 
   // Add chain sequence methods to the `lodash` wrapper.
   lodash.prototype.toJSON = lodash.prototype.valueOf = lodash.prototype.value = wrapperValue;
@@ -8111,11 +7761,7 @@ require("should take");
   /*--------------------------------------------------------------------------*/
 
   // Some AMD build optimizers, like r.js, check for condition patterns like:
-  if (
-    typeof define == "function" &&
-    typeof define.amd == "object" &&
-    define.amd
-  ) {
+  if (typeof define == 'function' && typeof define.amd == 'object' && define.amd) {
     // Expose Lodash on the global object to prevent errors when Lodash is
     // loaded by a script tag in the presence of an AMD loader.
     // See http://requirejs.org/docs/errors.html#mismatch for more details.
@@ -8150,21 +7796,21 @@ require("should take");
  * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  */
 
-require("re1");
-require("re2");
-require("re3");
-require("re4");
+require('re1');
+require('re2');
+require('re3');
+require('re4');
 
 /*
   require("should not take");
 
 */
 
-require("i am good too");
+require('i am good too');
 
 /*  require("this one either ") */
 
-require("should take");
+require('should take');
 
 // require("should not take")
 (function() {
@@ -8172,10 +7818,10 @@ require("should take");
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = "4.17.11";
+  var VERSION = '4.17.11';
 
   /** Error message constants. */
-  var FUNC_ERROR_TEXT = "Expected a function";
+  var FUNC_ERROR_TEXT = 'Expected a function';
 
   /** Used to compose bitmasks for value comparisons. */
   var COMPARE_PARTIAL_FLAG = 1,
@@ -8190,19 +7836,19 @@ require("should take");
     MAX_SAFE_INTEGER = 9007199254740991;
 
   /** `Object#toString` result references. */
-  var argsTag = "[object Arguments]",
-    arrayTag = "[object Array]",
-    asyncTag = "[object AsyncFunction]",
-    boolTag = "[object Boolean]",
-    dateTag = "[object Date]",
-    errorTag = "[object Error]",
-    funcTag = "[object Function]",
-    genTag = "[object GeneratorFunction]",
-    numberTag = "[object Number]",
-    objectTag = "[object Object]",
-    proxyTag = "[object Proxy]",
-    regexpTag = "[object RegExp]",
-    stringTag = "[object String]";
+  var argsTag = '[object Arguments]',
+    arrayTag = '[object Array]',
+    asyncTag = '[object AsyncFunction]',
+    boolTag = '[object Boolean]',
+    dateTag = '[object Date]',
+    errorTag = '[object Error]',
+    funcTag = '[object Function]',
+    genTag = '[object GeneratorFunction]',
+    numberTag = '[object Number]',
+    objectTag = '[object Object]',
+    proxyTag = '[object Proxy]',
+    regexpTag = '[object RegExp]',
+    stringTag = '[object String]';
 
   /** Used to match HTML entities and HTML characters. */
   var reUnescapedHtml = /[&<>"']/g,
@@ -8213,35 +7859,27 @@ require("should take");
 
   /** Used to map characters to HTML entities. */
   var htmlEscapes = {
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;",
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
   };
 
   /** Detect free variable `global` from Node.js. */
-  var freeGlobal =
-    typeof global == "object" && global && global.Object === Object && global;
+  var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
 
   /** Detect free variable `self`. */
-  var freeSelf =
-    typeof self == "object" && self && self.Object === Object && self;
+  var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
 
   /** Used as a reference to the global object. */
-  var root = freeGlobal || freeSelf || Function("return this")();
+  var root = freeGlobal || freeSelf || Function('return this')();
 
   /** Detect free variable `exports`. */
-  var freeExports =
-    typeof exports == "object" && exports && !exports.nodeType && exports;
+  var freeExports = typeof exports == 'object' && exports && !exports.nodeType && exports;
 
   /** Detect free variable `module`. */
-  var freeModule =
-    freeExports &&
-    typeof module == "object" &&
-    module &&
-    !module.nodeType &&
-    module;
+  var freeModule = freeExports && typeof module == 'object' && module && !module.nodeType && module;
 
   /*--------------------------------------------------------------------------*/
 
@@ -8322,9 +7960,7 @@ require("should take");
    */
   function baseReduce(collection, iteratee, accumulator, initAccum, eachFunc) {
     eachFunc(collection, function(value, index, collection) {
-      accumulator = initAccum
-        ? ((initAccum = false), value)
-        : iteratee(accumulator, value, index, collection);
+      accumulator = initAccum ? ((initAccum = false), value) : iteratee(accumulator, value, index, collection);
     });
     return accumulator;
   }
@@ -8368,12 +8004,12 @@ require("should take");
     };
   }
 
-  require("good1");
+  require('good1');
 
   /*  require("bad1 ") */
   // require("bad2")
 
-  require("good3");
+  require('good3');
 
   /*--------------------------------------------------------------------------*/
 
@@ -8583,10 +8219,7 @@ require("should take");
    */
   function assignValue(object, key, value) {
     var objValue = object[key];
-    if (
-      !(hasOwnProperty.call(object, key) && eq(objValue, value)) ||
-      (value === undefined && !(key in object))
-    ) {
+    if (!(hasOwnProperty.call(object, key) && eq(objValue, value)) || (value === undefined && !(key in object))) {
       baseAssignValue(object, key, value);
     }
   }
@@ -8615,7 +8248,7 @@ require("should take");
    * @returns {number|Object} Returns the timer id or timeout object.
    */
   function baseDelay(func, wait, args) {
-    if (typeof func != "function") {
+    if (typeof func != 'function') {
       throw new TypeError(FUNC_ERROR_TEXT);
     }
     return setTimeout(function() {
@@ -8669,12 +8302,7 @@ require("should take");
       var value = array[index],
         current = iteratee(value);
 
-      if (
-        current != null &&
-        (computed === undefined
-          ? current === current && !false
-          : comparator(current, computed))
-      ) {
+      if (current != null && (computed === undefined ? current === current && !false : comparator(current, computed))) {
         var computed = current,
           result = value;
       }
@@ -8759,9 +8387,9 @@ require("should take");
     return object && baseFor(object, iteratee, keys);
   }
 
-  require("good4");
-  require("good5");
-  require("good6");
+  require('good4');
+  require('good5');
+  require('good6');
 
   /**
    * The base implementation of `_.functions` which creates an array of
@@ -8840,21 +8468,10 @@ require("should take");
     if (value === other) {
       return true;
     }
-    if (
-      value == null ||
-      other == null ||
-      (!isObjectLike(value) && !isObjectLike(other))
-    ) {
+    if (value == null || other == null || (!isObjectLike(value) && !isObjectLike(other))) {
       return value !== value && other !== other;
     }
-    return baseIsEqualDeep(
-      value,
-      other,
-      bitmask,
-      customizer,
-      baseIsEqual,
-      stack,
-    );
+    return baseIsEqualDeep(value, other, bitmask, customizer, baseIsEqual, stack);
   }
 
   /**
@@ -8871,14 +8488,7 @@ require("should take");
    * @param {Object} [stack] Tracks traversed `object` and `other` objects.
    * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
    */
-  function baseIsEqualDeep(
-    object,
-    other,
-    bitmask,
-    customizer,
-    equalFunc,
-    stack,
-  ) {
+  function baseIsEqualDeep(object, other, bitmask, customizer, equalFunc, stack) {
     var objIsArr = isArray(object),
       othIsArr = isArray(other),
       objTag = objIsArr ? arrayTag : baseGetTag(object),
@@ -8906,33 +8516,19 @@ require("should take");
     if (isSameTag && !objIsObj) {
       var result = objIsArr
         ? equalArrays(object, other, bitmask, customizer, equalFunc, stack)
-        : equalByTag(
-            object,
-            other,
-            objTag,
-            bitmask,
-            customizer,
-            equalFunc,
-            stack,
-          );
+        : equalByTag(object, other, objTag, bitmask, customizer, equalFunc, stack);
       stack.pop();
       return result;
     }
     if (!(bitmask & COMPARE_PARTIAL_FLAG)) {
-      var objIsWrapped = objIsObj && hasOwnProperty.call(object, "__wrapped__"),
-        othIsWrapped = othIsObj && hasOwnProperty.call(other, "__wrapped__");
+      var objIsWrapped = objIsObj && hasOwnProperty.call(object, '__wrapped__'),
+        othIsWrapped = othIsObj && hasOwnProperty.call(other, '__wrapped__');
 
       if (objIsWrapped || othIsWrapped) {
         var objUnwrapped = objIsWrapped ? object.value() : object,
           othUnwrapped = othIsWrapped ? other.value() : other;
 
-        var result = equalFunc(
-          objUnwrapped,
-          othUnwrapped,
-          bitmask,
-          customizer,
-          stack,
-        );
+        var result = equalFunc(objUnwrapped, othUnwrapped, bitmask, customizer, stack);
         stack.pop();
         return result;
       }
@@ -8940,14 +8536,7 @@ require("should take");
     if (!isSameTag) {
       return false;
     }
-    var result = equalObjects(
-      object,
-      other,
-      bitmask,
-      customizer,
-      equalFunc,
-      stack,
-    );
+    var result = equalObjects(object, other, bitmask, customizer, equalFunc, stack);
     stack.pop();
     return result;
   }
@@ -8971,13 +8560,13 @@ require("should take");
    * @returns {Function} Returns the iteratee.
    */
   function baseIteratee(func) {
-    if (typeof func == "function") {
+    if (typeof func == 'function') {
       return func;
     }
     if (func == null) {
       return identity;
     }
-    return (typeof func == "object" ? baseMatches : baseProperty)(func);
+    return (typeof func == 'object' ? baseMatches : baseProperty)(func);
   }
 
   /**
@@ -9028,16 +8617,7 @@ require("should take");
       object = Object(object);
       while (length--) {
         var key = props[length];
-        if (
-          !(
-            key in object &&
-            baseIsEqual(
-              source[key],
-              object[key],
-              COMPARE_PARTIAL_FLAG | COMPARE_UNORDERED_FLAG,
-            )
-          )
-        ) {
+        if (!(key in object && baseIsEqual(source[key], object[key], COMPARE_PARTIAL_FLAG | COMPARE_UNORDERED_FLAG))) {
           return false;
         }
       }
@@ -9077,7 +8657,7 @@ require("should take");
    * @returns {Function} Returns the new function.
    */
   function baseRest(func, start) {
-    return setToString(overRest(func, start, identity), func + "");
+    return setToString(overRest(func, start, identity), func + '');
   }
 
   /**
@@ -9156,10 +8736,7 @@ require("should take");
     return reduce(
       actions,
       function(result, action) {
-        return action.func.apply(
-          action.thisArg,
-          arrayPush([result], action.args),
-        );
+        return action.func.apply(action.thisArg, arrayPush([result], action.args));
       },
       result,
     );
@@ -9187,11 +8764,7 @@ require("should take");
 
       if (
         (!othIsNull && !othIsSymbol && !valIsSymbol && value > other) ||
-        (valIsSymbol &&
-          othIsDefined &&
-          othIsReflexive &&
-          !othIsNull &&
-          !othIsSymbol) ||
+        (valIsSymbol && othIsDefined && othIsReflexive && !othIsNull && !othIsSymbol) ||
         (valIsNull && othIsDefined && othIsReflexive) ||
         (!valIsDefined && othIsReflexive) ||
         !valIsReflexive
@@ -9200,11 +8773,7 @@ require("should take");
       }
       if (
         (!valIsNull && !valIsSymbol && !othIsSymbol && value < other) ||
-        (othIsSymbol &&
-          valIsDefined &&
-          valIsReflexive &&
-          !valIsNull &&
-          !valIsSymbol) ||
+        (othIsSymbol && valIsDefined && valIsReflexive && !valIsNull && !valIsSymbol) ||
         (othIsNull && valIsDefined && valIsReflexive) ||
         (!othIsDefined && valIsReflexive) ||
         !othIsReflexive
@@ -9235,9 +8804,7 @@ require("should take");
     while (++index < length) {
       var key = props[index];
 
-      var newValue = customizer
-        ? customizer(object[key], source[key], key, object, source)
-        : undefined;
+      var newValue = customizer ? customizer(object[key], source[key], key, object, source) : undefined;
 
       if (newValue === undefined) {
         newValue = source[key];
@@ -9264,10 +8831,7 @@ require("should take");
         length = sources.length,
         customizer = length > 1 ? sources[length - 1] : undefined;
 
-      customizer =
-        assigner.length > 3 && typeof customizer == "function"
-          ? (length--, customizer)
-          : undefined;
+      customizer = assigner.length > 3 && typeof customizer == 'function' ? (length--, customizer) : undefined;
 
       object = Object(object);
       while (++index < length) {
@@ -9374,9 +8938,7 @@ require("should take");
         };
       }
       var index = findIndexFunc(collection, predicate, fromIndex);
-      return index > -1
-        ? iterable[iteratee ? collection[index] : index]
-        : undefined;
+      return index > -1 ? iterable[iteratee ? collection[index] : index] : undefined;
     };
   }
 
@@ -9393,7 +8955,7 @@ require("should take");
    * @returns {Function} Returns the new wrapped function.
    */
   function createPartial(func, bitmask, thisArg, partials) {
-    if (typeof func != "function") {
+    if (typeof func != 'function') {
       throw new TypeError(FUNC_ERROR_TEXT);
     }
     var isBind = bitmask & WRAP_BIND_FLAG,
@@ -9462,8 +9024,7 @@ require("should take");
           !baseSome(other, function(othValue, othIndex) {
             if (
               !indexOf(seen, othIndex) &&
-              (arrValue === othValue ||
-                equalFunc(arrValue, othValue, bitmask, customizer, stack))
+              (arrValue === othValue || equalFunc(arrValue, othValue, bitmask, customizer, stack))
             ) {
               return seen.push(othIndex);
             }
@@ -9472,12 +9033,7 @@ require("should take");
           result = false;
           break;
         }
-      } else if (
-        !(
-          arrValue === othValue ||
-          equalFunc(arrValue, othValue, bitmask, customizer, stack)
-        )
-      ) {
+      } else if (!(arrValue === othValue || equalFunc(arrValue, othValue, bitmask, customizer, stack))) {
         result = false;
         break;
       }
@@ -9502,15 +9058,7 @@ require("should take");
    * @param {Object} stack Tracks traversed `object` and `other` objects.
    * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
    */
-  function equalByTag(
-    object,
-    other,
-    tag,
-    bitmask,
-    customizer,
-    equalFunc,
-    stack,
-  ) {
+  function equalByTag(object, other, tag, bitmask, customizer, equalFunc, stack) {
     switch (tag) {
       case boolTag:
       case dateTag:
@@ -9527,7 +9075,7 @@ require("should take");
         // Coerce regexes to strings and treat strings, primitives and objects,
         // as equal. See http://www.ecma-international.org/ecma-262/7.0/#sec-regexp.prototype.tostring
         // for more details.
-        return object == other + "";
+        return object == other + '';
     }
     return false;
   }
@@ -9574,14 +9122,13 @@ require("should take");
       // Recursively compare objects (susceptible to call stack limits).
       if (
         !(compared === undefined
-          ? objValue === othValue ||
-            equalFunc(objValue, othValue, bitmask, customizer, stack)
+          ? objValue === othValue || equalFunc(objValue, othValue, bitmask, customizer, stack)
           : compared)
       ) {
         result = false;
         break;
       }
-      skipCtor || (skipCtor = key == "constructor");
+      skipCtor || (skipCtor = key == 'constructor');
     }
     if (result && !skipCtor) {
       var objCtor = object.constructor,
@@ -9590,11 +9137,11 @@ require("should take");
       // Non `Object` object instances with different constructors are not equal.
       if (
         objCtor != othCtor &&
-        ("constructor" in object && "constructor" in other) &&
+        ('constructor' in object && 'constructor' in other) &&
         !(
-          typeof objCtor == "function" &&
+          typeof objCtor == 'function' &&
           objCtor instanceof objCtor &&
-          typeof othCtor == "function" &&
+          typeof othCtor == 'function' &&
           othCtor instanceof othCtor
         )
       ) {
@@ -9612,7 +9159,7 @@ require("should take");
    * @returns {Function} Returns the new function.
    */
   function flatRest(func) {
-    return setToString(overRest(func, undefined, flatten), func + "");
+    return setToString(overRest(func, undefined, flatten), func + '');
   }
 
   /**
@@ -9640,7 +9187,7 @@ require("should take");
 
     return (
       !!length &&
-      (type == "number" || (type != "symbol" && reIsUint.test(value))) &&
+      (type == 'number' || (type != 'symbol' && reIsUint.test(value))) &&
       (value > -1 && value % 1 == 0 && value < length)
     );
   }
@@ -9660,11 +9207,7 @@ require("should take");
       return false;
     }
     var type = typeof index;
-    if (
-      type == "number"
-        ? isArrayLike(object) && isIndex(index, object.length)
-        : type == "string" && index in object
-    ) {
+    if (type == 'number' ? isArrayLike(object) && isIndex(index, object.length) : type == 'string' && index in object) {
       return eq(object[index], value);
     }
     return false;
@@ -9795,10 +9338,7 @@ require("should take");
     while (index--) {
       args[index - 1] = arguments[index];
     }
-    return arrayPush(
-      isArray(array) ? copyArray(array) : [array],
-      baseFlatten(args, 1),
-    );
+    return arrayPush(isArray(array) ? copyArray(array) : [array], baseFlatten(args, 1));
   }
 
   /**
@@ -9933,7 +9473,7 @@ require("should take");
    */
   function indexOf(array, value, fromIndex) {
     var length = array == null ? 0 : array.length;
-    if (typeof fromIndex == "number") {
+    if (typeof fromIndex == 'number') {
       fromIndex = fromIndex < 0 ? nativeMax(length + fromIndex, 0) : fromIndex;
     } else {
       fromIndex = 0;
@@ -10378,13 +9918,7 @@ require("should take");
    * // => { '1': ['a', 'c'], '2': ['b'] } (iteration order is not guaranteed)
    */
   function reduce(collection, iteratee, accumulator) {
-    return baseReduce(
-      collection,
-      baseIteratee(iteratee),
-      accumulator,
-      arguments.length < 3,
-      baseEach,
-    );
+    return baseReduce(collection, baseIteratee(iteratee), accumulator, arguments.length < 3, baseEach);
   }
 
   /**
@@ -10498,12 +10032,9 @@ require("should take");
           criteria: iteratee(value, key, collection),
         };
       }).sort(function(object, other) {
-        return (
-          compareAscending(object.criteria, other.criteria) ||
-          object.index - other.index
-        );
+        return compareAscending(object.criteria, other.criteria) || object.index - other.index;
       }),
-      baseProperty("value"),
+      baseProperty('value'),
     );
   }
 
@@ -10528,7 +10059,7 @@ require("should take");
    */
   function before(n, func) {
     var result;
-    if (typeof func != "function") {
+    if (typeof func != 'function') {
       throw new TypeError(FUNC_ERROR_TEXT);
     }
     n = toInteger(n);
@@ -10579,12 +10110,7 @@ require("should take");
    * // => 'hi fred!'
    */
   var bind = baseRest(function(func, thisArg, partials) {
-    return createPartial(
-      func,
-      WRAP_BIND_FLAG | WRAP_PARTIAL_FLAG,
-      thisArg,
-      partials,
-    );
+    return createPartial(func, WRAP_BIND_FLAG | WRAP_PARTIAL_FLAG, thisArg, partials);
   });
 
   /**
@@ -10653,7 +10179,7 @@ require("should take");
    * // => [1, 3, 5]
    */
   function negate(predicate) {
-    if (typeof predicate != "function") {
+    if (typeof predicate != 'function') {
       throw new TypeError(FUNC_ERROR_TEXT);
     }
     return function() {
@@ -10716,9 +10242,7 @@ require("should take");
     if (!isObject(value)) {
       return value;
     }
-    return isArray(value)
-      ? copyArray(value)
-      : copyObject(value, nativeKeys(value));
+    return isArray(value) ? copyArray(value) : copyObject(value, nativeKeys(value));
   }
 
   /**
@@ -10783,9 +10307,7 @@ require("should take");
     ? baseIsArguments
     : function(value) {
         return (
-          isObjectLike(value) &&
-          hasOwnProperty.call(value, "callee") &&
-          !propertyIsEnumerable.call(value, "callee")
+          isObjectLike(value) && hasOwnProperty.call(value, 'callee') && !propertyIsEnumerable.call(value, 'callee')
         );
       };
 
@@ -10861,11 +10383,7 @@ require("should take");
    * // => false
    */
   function isBoolean(value) {
-    return (
-      value === true ||
-      value === false ||
-      (isObjectLike(value) && baseGetTag(value) == boolTag)
-    );
+    return value === true || value === false || (isObjectLike(value) && baseGetTag(value) == boolTag);
   }
 
   /**
@@ -10921,13 +10439,7 @@ require("should take");
    * // => false
    */
   function isEmpty(value) {
-    if (
-      isArrayLike(value) &&
-      (isArray(value) ||
-        isString(value) ||
-        isFunction(value.splice) ||
-        isArguments(value))
-    ) {
+    if (isArrayLike(value) && (isArray(value) || isString(value) || isFunction(value.splice) || isArguments(value))) {
       return !value.length;
     }
     return !nativeKeys(value).length;
@@ -10992,7 +10504,7 @@ require("should take");
    * // => false
    */
   function isFinite(value) {
-    return typeof value == "number" && nativeIsFinite(value);
+    return typeof value == 'number' && nativeIsFinite(value);
   }
 
   /**
@@ -11019,9 +10531,7 @@ require("should take");
     // The use of `Object#toString` avoids issues with the `typeof` operator
     // in Safari 9 which returns 'object' for typed arrays and other constructors.
     var tag = baseGetTag(value);
-    return (
-      tag == funcTag || tag == genTag || tag == asyncTag || tag == proxyTag
-    );
+    return tag == funcTag || tag == genTag || tag == asyncTag || tag == proxyTag;
   }
 
   /**
@@ -11051,12 +10561,7 @@ require("should take");
    * // => false
    */
   function isLength(value) {
-    return (
-      typeof value == "number" &&
-      value > -1 &&
-      value % 1 == 0 &&
-      value <= MAX_SAFE_INTEGER
-    );
+    return typeof value == 'number' && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
   }
 
   /**
@@ -11086,7 +10591,7 @@ require("should take");
    */
   function isObject(value) {
     var type = typeof value;
-    return value != null && (type == "object" || type == "function");
+    return value != null && (type == 'object' || type == 'function');
   }
 
   /**
@@ -11114,7 +10619,7 @@ require("should take");
    * // => false
    */
   function isObjectLike(value) {
-    return value != null && typeof value == "object";
+    return value != null && typeof value == 'object';
   }
 
   /**
@@ -11200,10 +10705,7 @@ require("should take");
    * // => false
    */
   function isNumber(value) {
-    return (
-      typeof value == "number" ||
-      (isObjectLike(value) && baseGetTag(value) == numberTag)
-    );
+    return typeof value == 'number' || (isObjectLike(value) && baseGetTag(value) == numberTag);
   }
 
   /**
@@ -11243,10 +10745,7 @@ require("should take");
    * // => false
    */
   function isString(value) {
-    return (
-      typeof value == "string" ||
-      (!isArray(value) && isObjectLike(value) && baseGetTag(value) == stringTag)
-    );
+    return typeof value == 'string' || (!isArray(value) && isObjectLike(value) && baseGetTag(value) == stringTag);
   }
 
   /**
@@ -11375,10 +10874,10 @@ require("should take");
    * // => '1,2,3'
    */
   function toString(value) {
-    if (typeof value == "string") {
+    if (typeof value == 'string') {
       return value;
     }
-    return value == null ? "" : value + "";
+    return value == null ? '' : value + '';
   }
 
   /*------------------------------------------------------------------------*/
@@ -11535,10 +11034,7 @@ require("should take");
         var key = props[propsIndex];
         var value = object[key];
 
-        if (
-          value === undefined ||
-          (eq(value, objectProto[key]) && !hasOwnProperty.call(object, key))
-        ) {
+        if (value === undefined || (eq(value, objectProto[key]) && !hasOwnProperty.call(object, key))) {
           object[key] = source[key];
         }
       }
@@ -11753,9 +11249,7 @@ require("should take");
    */
   function escape(string) {
     string = toString(string);
-    return string && reHasUnescapedHtml.test(string)
-      ? string.replace(reUnescapedHtml, escapeHtmlChar)
-      : string;
+    return string && reHasUnescapedHtml.test(string) ? string.replace(reUnescapedHtml, escapeHtmlChar) : string;
   }
 
   /*------------------------------------------------------------------------*/
@@ -11896,16 +11390,13 @@ require("should take");
     var props = keys(source),
       methodNames = baseFunctions(source, props);
 
-    if (
-      options == null &&
-      !(isObject(source) && (methodNames.length || !props.length))
-    ) {
+    if (options == null && !(isObject(source) && (methodNames.length || !props.length))) {
       options = source;
       source = object;
       object = this;
       methodNames = baseFunctions(source, keys(source));
     }
-    var chain = !(isObject(options) && "chain" in options) || !!options.chain,
+    var chain = !(isObject(options) && 'chain' in options) || !!options.chain,
       isFunc = isFunction(object);
 
     baseEach(methodNames, function(methodName) {
@@ -12009,9 +11500,7 @@ require("should take");
    * // => undefined
    */
   function max(array) {
-    return array && array.length
-      ? baseExtremum(array, identity, baseGt)
-      : undefined;
+    return array && array.length ? baseExtremum(array, identity, baseGt) : undefined;
   }
 
   /**
@@ -12033,9 +11522,7 @@ require("should take");
    * // => undefined
    */
   function min(array) {
-    return array && array.length
-      ? baseExtremum(array, identity, baseLt)
-      : undefined;
+    return array && array.length ? baseExtremum(array, identity, baseLt) : undefined;
   }
 
   /*------------------------------------------------------------------------*/
@@ -12143,38 +11630,24 @@ require("should take");
   lodash.VERSION = VERSION;
 
   // Add `Array` methods to `lodash.prototype`.
-  baseEach(
-    [
-      "pop",
-      "join",
-      "replace",
-      "reverse",
-      "split",
-      "push",
-      "shift",
-      "sort",
-      "splice",
-      "unshift",
-    ],
-    function(methodName) {
-      var func = (/^(?:replace|split)$/.test(methodName)
-          ? String.prototype
-          : arrayProto)[methodName],
-        chainName = /^(?:push|sort|unshift)$/.test(methodName) ? "tap" : "thru",
-        retUnwrapped = /^(?:pop|join|replace|shift)$/.test(methodName);
+  baseEach(['pop', 'join', 'replace', 'reverse', 'split', 'push', 'shift', 'sort', 'splice', 'unshift'], function(
+    methodName,
+  ) {
+    var func = (/^(?:replace|split)$/.test(methodName) ? String.prototype : arrayProto)[methodName],
+      chainName = /^(?:push|sort|unshift)$/.test(methodName) ? 'tap' : 'thru',
+      retUnwrapped = /^(?:pop|join|replace|shift)$/.test(methodName);
 
-      lodash.prototype[methodName] = function() {
-        var args = arguments;
-        if (retUnwrapped && !this.__chain__) {
-          var value = this.value();
-          return func.apply(isArray(value) ? value : [], args);
-        }
-        return this[chainName](function(value) {
-          return func.apply(isArray(value) ? value : [], args);
-        });
-      };
-    },
-  );
+    lodash.prototype[methodName] = function() {
+      var args = arguments;
+      if (retUnwrapped && !this.__chain__) {
+        var value = this.value();
+        return func.apply(isArray(value) ? value : [], args);
+      }
+      return this[chainName](function(value) {
+        return func.apply(isArray(value) ? value : [], args);
+      });
+    };
+  });
 
   // Add chain sequence methods to the `lodash` wrapper.
   lodash.prototype.toJSON = lodash.prototype.valueOf = lodash.prototype.value = wrapperValue;
@@ -12182,11 +11655,7 @@ require("should take");
   /*--------------------------------------------------------------------------*/
 
   // Some AMD build optimizers, like r.js, check for condition patterns like:
-  if (
-    typeof define == "function" &&
-    typeof define.amd == "object" &&
-    define.amd
-  ) {
+  if (typeof define == 'function' && typeof define.amd == 'object' && define.amd) {
     // Expose Lodash on the global object to prevent errors when Lodash is
     // loaded by a script tag in the presence of an AMD loader.
     // See http://requirejs.org/docs/errors.html#mismatch for more details.

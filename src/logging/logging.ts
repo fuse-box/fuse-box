@@ -1,28 +1,28 @@
 export enum LogLevel {
-	LOG_ALL,
-	LOG_ERRORS,
-	LOG_WARNINGS,
+  LOG_ALL,
+  LOG_ERRORS,
+  LOG_WARNINGS,
 }
 export interface ILoggerProps {
-	logLevel: LogLevel;
+  logLevel: LogLevel;
 }
 
 function Spinner() {
-	return {
-		setColor: () => {},
-		setText: () => {},
-		start: () => {},
-		stop: () => {},
-	};
+  return {
+    setColor: () => {},
+    setText: () => {},
+    start: () => {},
+    stop: () => {},
+  };
 }
 
 export function getLogger(props: ILoggerProps) {
-	return {
-		info: message => {},
-		warning: message => {},
-		deprecated: message => {},
-		createSpinner: () => {
-			return Spinner();
-		},
-	};
+  return {
+    info: message => {},
+    warning: message => {},
+    deprecated: message => {},
+    createSpinner: () => {
+      return Spinner();
+    },
+  };
 }

@@ -1,2 +1,2 @@
-import "module-a";
+import 'module-a';
 export const bar = 1;

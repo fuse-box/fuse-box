@@ -1,5 +1,5 @@
-import "./Foo.scss";
+import './Foo.scss';
 
 export class Foo {
-	constructor() {}
+  constructor() {}
 }

@@ -1,13 +1,13 @@
-import { createConfig } from "./config";
-import { IConfig } from "./interfaces";
-import { IAssembleContext, assembleContext } from "./assemble_context";
+import { createConfig } from './config';
+import { IConfig } from './interfaces';
+import { IAssembleContext, assembleContext } from './assemble_context';
 export class Context {
-	public assembleContext: IAssembleContext;
-	constructor(public config: IConfig) {
-		this.assembleContext = assembleContext(this);
-	}
+  public assembleContext: IAssembleContext;
+  constructor(public config: IConfig) {
+    this.assembleContext = assembleContext(this);
+  }
 }
 
 export function createContext(cfg?: IConfig) {
-	return new Context(createConfig(cfg));
+  return new Context(createConfig(cfg));
 }
