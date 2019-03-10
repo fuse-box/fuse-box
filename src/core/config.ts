@@ -53,6 +53,11 @@ export function createConfig(props: IConfig): IConfig {
     }
   }
 
+  if (props.logging) {
+    config.logging = props.logging;
+  }
+
+
   if (props.entry) {
     props.options.entries = [].concat(props.entry);
   }
