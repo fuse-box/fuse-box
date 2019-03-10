@@ -97,6 +97,7 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
   if (!folder) {
     throw new DocumentedError('001', `Failed to resolved ${parsed.name}`);
   }
+
   const packageJSONFile = path.join(folder, 'package.json');
   if (!fileExists(packageJSONFile)) {
     throw new DocumentedError('002', `Failed to find package.json in ${folder} when resolving module ${parsed.name}`);
@@ -106,14 +107,22 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
   pkg.browser = json.browser;
   pkg.packageJSONLocation = packageJSONFile;
   pkg.packageRoot = folder;
+  if (json['fuse-box']) {
+    pkg.fusebox = json['fuse-box'];
+  }
 
   // extract entry point
   const entryFile = getFolderEntryPointFromPackageJSON(json, props.buildTarget === 'browser');
 
   const entryLookup = fileLookup({ target: entryFile, fileDir: folder });
+
   if (!entryLookup.fileExists) {
-    throw new DocumentedError('002', `Failed to resolve an entry point in package ${parsed.name}`);
+    throw new DocumentedError(
+      '002',
+      `Failed to resolve an entry point in package ${parsed.name}. File ${entryFile} cannot be resolved.`,
+    );
   }
+
   pkg.entryAbsPath = entryLookup.absPath;
   pkg.entryFuseBoxPath = makeFuseBoxPath(folder, entryLookup.absPath);
   // extract target if required
@@ -136,5 +145,6 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
     result.targetFuseBoxPath = pkg.entryFuseBoxPath;
   }
   result.targetExtension = path.extname(result.targetAbsPath);
+
   return result;
 }

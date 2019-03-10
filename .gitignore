@@ -16,6 +16,7 @@ dist
 node_modules
 npm-debug.log*
 playground
+coverage/
 sourcemaps.js.map
 yarn.lock
 some.sh

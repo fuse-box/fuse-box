@@ -1,4 +1,4 @@
-import { createContext } from '../Context';
+import { createContext } from '../context';
 import * as path from 'path';
 import { assemble } from '../assemble';
 import '../../utils/test_utils';
