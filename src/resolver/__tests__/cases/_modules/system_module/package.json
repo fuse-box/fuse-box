@@ -1,7 +1,7 @@
 {
-  "name": "domain",
-  "main": "index.js",
+  "name": "system-module",
   "version": "1.0.0",
+  "main": "index.js",
   "fuse-box" : {
     "system" : true
   }

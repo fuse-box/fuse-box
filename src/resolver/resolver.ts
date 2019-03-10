@@ -24,6 +24,11 @@ export interface IResolverProps {
 
 export interface IPackageMeta {
   name: string;
+  fusebox?: {
+    system?: boolean;
+    dev?: boolean;
+    polyfill?: boolean;
+  };
   entryAbsPath?: string;
   entryFuseBoxPath?: string;
   version?: string;
@@ -159,6 +164,7 @@ export function resolveModule(props: IResolverProps): IResolver {
   if (!lookupResult.fileExists) {
     return;
   }
+
   if (lookupResult.customIndex) {
     forceReplacement = true;
   }

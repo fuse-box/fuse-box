@@ -150,7 +150,7 @@ describe('Resolver test', () => {
         },
         target: 'react',
       });
-      expect(info.package.targetAbsPath).toMatchFilePath('fuse-box/node_modules/resolver-test_a/index.js');
+      expect(info.package.targetAbsPath).toMatchFilePath('node_modules/resolver-test_a/index.js');
       expect(info.forcedStatement).toEqual('resolver-test_a');
     });
 
@@ -233,12 +233,12 @@ describe('Resolver test', () => {
 
         const meta = info.package.meta;
         expect(meta.name).toEqual('resolver-test_a');
-        expect(meta.packageRoot).toMatchFilePath('fuse-box/node_modules/resolver-test_a$');
+        expect(meta.packageRoot).toMatchFilePath('node_modules/resolver-test_a$');
         expect(meta.version).toEqual('1.0.1');
-        expect(meta.packageJSONLocation).toMatchFilePath('fuse-box/node_modules/resolver-test_a/package.json$');
+        expect(meta.packageJSONLocation).toMatchFilePath('node_modules/resolver-test_a/package.json$');
         expect(meta.entryFuseBoxPath).toEqual('index.js');
         expect(info.package.isEntry).toEqual(true);
-        expect(info.package.targetAbsPath).toMatchFilePath('fuse-box/node_modules/resolver-test_a/index.js$');
+        expect(info.package.targetAbsPath).toMatchFilePath('node_modules/resolver-test_a/index.js$');
         expect(info.package.targetFuseBoxPath).toEqual('index.js');
       });
 
@@ -253,9 +253,7 @@ describe('Resolver test', () => {
         const meta = info.package.meta;
         expect(meta.entryFuseBoxPath).toEqual('something-for-browser.js');
         expect(info.package.isEntry).toEqual(true);
-        expect(info.package.targetAbsPath).toMatchFilePath(
-          'fuse-box/node_modules/resolver-test_a/something-for-browser.js$',
-        );
+        expect(info.package.targetAbsPath).toMatchFilePath('node_modules/resolver-test_a/something-for-browser.js$');
         expect(info.package.targetFuseBoxPath).toEqual('something-for-browser.js');
       });
 
@@ -268,12 +266,12 @@ describe('Resolver test', () => {
 
         const meta = info.package.meta;
         expect(meta.name).toEqual('resolver-test_a');
-        expect(meta.packageRoot).toMatchFilePath('fuse-box/node_modules/resolver-test_a$');
+        expect(meta.packageRoot).toMatchFilePath('node_modules/resolver-test_a$');
         expect(meta.version).toEqual('1.0.1');
-        expect(meta.packageJSONLocation).toMatchFilePath('fuse-box/node_modules/resolver-test_a/package.json$');
+        expect(meta.packageJSONLocation).toMatchFilePath('node_modules/resolver-test_a/package.json$');
         expect(meta.entryFuseBoxPath).toEqual('index.js');
         expect(info.package.isEntry).toEqual(false);
-        expect(info.package.targetAbsPath).toMatchFilePath('fuse-box/node_modules/resolver-test_a/foobar.js');
+        expect(info.package.targetAbsPath).toMatchFilePath('node_modules/resolver-test_a/foobar.js');
         expect(info.package.targetFuseBoxPath).toEqual('foobar.js');
         expect(info.forcedStatement).toBeFalsy();
       });
@@ -287,12 +285,12 @@ describe('Resolver test', () => {
 
         const meta = info.package.meta;
         expect(meta.name).toEqual('resolver-test_a');
-        expect(meta.packageRoot).toMatchFilePath('fuse-box/node_modules/resolver-test_a$');
+        expect(meta.packageRoot).toMatchFilePath('node_modules/resolver-test_a$');
         expect(meta.version).toEqual('1.0.1');
-        expect(meta.packageJSONLocation).toMatchFilePath('fuse-box/node_modules/resolver-test_a/package.json$');
+        expect(meta.packageJSONLocation).toMatchFilePath('node_modules/resolver-test_a/package.json$');
         expect(meta.entryFuseBoxPath).toEqual('index.js');
         expect(info.package.isEntry).toEqual(false);
-        expect(info.package.targetAbsPath).toMatchFilePath('fuse-box/node_modules/resolver-test_a/foobar.js');
+        expect(info.package.targetAbsPath).toMatchFilePath('node_modules/resolver-test_a/foobar.js');
         expect(info.package.targetFuseBoxPath).toEqual('foobar.js');
         expect(info.forcedStatement).toBeFalsy();
       });
@@ -306,12 +304,12 @@ describe('Resolver test', () => {
 
         const meta = info.package.meta;
         expect(meta.name).toEqual('resolver-test_a');
-        expect(meta.packageRoot).toMatchFilePath('fuse-box/node_modules/resolver-test_a$');
+        expect(meta.packageRoot).toMatchFilePath('node_modules/resolver-test_a$');
         expect(meta.version).toEqual('1.0.1');
-        expect(meta.packageJSONLocation).toMatchFilePath('fuse-box/node_modules/resolver-test_a/package.json$');
+        expect(meta.packageJSONLocation).toMatchFilePath('node_modules/resolver-test_a/package.json$');
         expect(meta.entryFuseBoxPath).toEqual('index.js');
         expect(info.package.isEntry).toEqual(false);
-        expect(info.package.targetAbsPath).toMatchFilePath('fuse-box/node_modules/resolver-test_a/sub/subindex.js');
+        expect(info.package.targetAbsPath).toMatchFilePath('node_modules/resolver-test_a/sub/subindex.js');
         expect(info.package.targetFuseBoxPath).toEqual('sub/subindex.js');
         expect(info.forcedStatement).toEqual('resolver-test_a/sub/subindex.js');
       });
@@ -328,12 +326,12 @@ describe('Resolver test', () => {
 
         const meta = info.package.meta;
         expect(meta.name).toEqual('resolver-test_a');
-        expect(meta.packageRoot).toMatchFilePath('fuse-box/node_modules/resolver-test_a$');
+        expect(meta.packageRoot).toMatchFilePath('node_modules/resolver-test_a$');
         expect(meta.version).toEqual('1.0.1');
-        expect(meta.packageJSONLocation).toMatchFilePath('fuse-box/node_modules/resolver-test_a/package.json$');
+        expect(meta.packageJSONLocation).toMatchFilePath('node_modules/resolver-test_a/package.json$');
         expect(meta.entryFuseBoxPath).toEqual('index.js');
         expect(info.package.isEntry).toEqual(false);
-        expect(info.package.targetAbsPath).toMatchFilePath('fuse-box/node_modules/resolver-test_a/sub/subindex.js');
+        expect(info.package.targetAbsPath).toMatchFilePath('node_modules/resolver-test_a/sub/subindex.js');
         expect(info.package.targetFuseBoxPath).toEqual('sub/subindex.js');
         expect(info.forcedStatement).toEqual('resolver-test_a/sub/subindex.js');
       });
@@ -355,7 +353,7 @@ describe('Resolver test', () => {
         });
 
         expect(info.extension).toEqual('.jsx');
-        expect(info.absPath).toMatchFilePath('fuse-box/node_modules/resolver-test_a/components/MyComponent.jsx');
+        expect(info.absPath).toMatchFilePath('node_modules/resolver-test_a/components/MyComponent.jsx');
         expect(info.fuseBoxPath).toEqual('components/MyComponent.jsx');
       });
 
