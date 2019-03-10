@@ -1,4 +1,3 @@
-import console = require('console');
 import { yellow, cyan, red, green, magenta } from './chroma';
 import { Spinner } from './Spinner';
 
