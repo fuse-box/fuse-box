@@ -1,6 +1,15 @@
 import console = require('console');
 import { yellow, cyan, red, green, magenta } from './chroma';
 
+export interface ILogger {
+  debug(msg: String);
+  info(msg: String);
+  warn(msg: String);
+  error(msg: String);
+  deprecated(msg: String);
+  loading();
+}
+
 export enum LogPriority {
   INFO = 'info',
   DEBUG = 'debug',
@@ -17,7 +26,6 @@ export enum LogLevel {
 }
 
 const logPermissions = new Map<LogLevel, LogPriority[]>();
-logPermissions.set(LogLevel.VERBOSE, [LogPriority.DEBUG, LogPriority.INFO, LogPriority.WARNING, LogPriority.ERROR]);
 logPermissions.set(LogLevel.DEBUG, [LogPriority.DEBUG, LogPriority.INFO, LogPriority.WARNING, LogPriority.ERROR]);
 logPermissions.set(LogLevel.INFO, [LogPriority.INFO, LogPriority.WARNING, LogPriority.ERROR]);
 logPermissions.set(LogLevel.WARN, [LogPriority.WARNING, LogPriority.ERROR]);
@@ -51,25 +59,30 @@ function log({ props, logPriority, msg }: { props: ILoggerProps; logPriority: Lo
   }
 }
 
-export function getLogger(props: ILoggerProps) {
+export function getLogger(
+  props: ILoggerProps = {
+    logLevel: LogLevel.INFO,
+    withTimestamp: true,
+  },
+): ILogger {
   return {
     debug: msg => {
-      return log({ props, msg: green(msg), logPriority: LogPriority.DEBUG });
+      log({ props, msg: green(msg), logPriority: LogPriority.DEBUG });
     },
     info: msg => {
-      return log({ props, msg: cyan(msg), logPriority: LogPriority.INFO });
+      log({ props, msg: cyan(msg), logPriority: LogPriority.INFO });
     },
-    warning: msg => {
-      return log({ props, msg: yellow(msg), logPriority: LogPriority.WARNING });
+    warn: msg => {
+      log({ props, msg: yellow(msg), logPriority: LogPriority.WARNING });
     },
     error: msg => {
-      return log({ props, msg: red(msg), logPriority: LogPriority.ERROR });
+      log({ props, msg: red(msg), logPriority: LogPriority.ERROR });
     },
     deprecated: msg => {
-      return log({ props, msg: magenta(msg), logPriority: LogPriority.WARNING });
+      log({ props, msg: magenta(msg), logPriority: LogPriority.WARNING });
     },
-    createSpinner: () => {
-      return Spinner();
+    loading: () => {
+      Spinner();
     },
   };
 }

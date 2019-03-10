@@ -1,3 +1,5 @@
+import { ILoggerProps } from '../logging/logging';
+
 import { IRawCompilerOptions } from '../interfaces/TypescriptInterfaces';
 import { Context } from './Context';
 
@@ -7,6 +9,7 @@ export interface IConfig {
   homeDir?: string;
   output?: string;
   modules?: Array<string>;
+  logging?: ILoggerProps;
   tsConfig?: string | IRawCompilerOptions;
   entry?: string | Array<string>;
   turboMode?:
