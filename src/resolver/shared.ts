@@ -5,8 +5,8 @@ export function getFolderEntryPointFromPackageJSON(json: any, isBrowserBuild?: b
   if (json.module) {
     return json.module;
   }
-  if (json.tsMain) {
-    return json.tsMain;
+  if (json['ts:main']) {
+    return json['ts:main'];
   }
   if (json['jsnext:main']) {
     return json['jsnext:main'];

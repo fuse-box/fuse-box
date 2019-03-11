@@ -26,5 +26,5 @@ module.exports = {
   maxConcurrency: 1,
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node', 'json'],
   //coverageDirectory: 'build/logs/',
-  collectCoverage: true,
+  //collectCoverage: true,
 };

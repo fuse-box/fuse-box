@@ -56,6 +56,7 @@
     "source-map": "^0.7.1",
     "sourcemap-blender": "1.0.5",
     "stream-browserify": "^2.0.1",
+    "strict-event-emitter-types": "^2.0.0",
     "tslib": "^1.8.0",
     "watch": "^1.0.1",
     "ws": "^1.1.1"
@@ -109,7 +110,7 @@
     "url": "git+https://github.com/fuse-box/fuse-box.git"
   },
   "scripts": {
-    "codecov" : "codecov",
+    "codecov": "codecov",
     "changelog": "run-s changelog:generate changelog:format",
     "changelog:format": "prettier --write CHANGELOG.md",
     "changelog:generate": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
@@ -122,7 +123,8 @@
     "start": "gulp watch",
     "dev": "rm -rf ./.fusebox; rm -rf ./.dev; gulp dev",
     "old_test": "node test.js",
-    "test": "jest --verbose"
+    "test": "jest --verbose",
+    "coverage": "jest --verbose --coverage"
   },
   "typings": "index.d.ts",
   "version": "4.0.0-next.7"
