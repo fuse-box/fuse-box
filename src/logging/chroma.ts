@@ -1,71 +1,74 @@
 import { TerminalStyle } from './terminalStyles';
 
-export function reset(message: String): String {
+export function reset(message: string): string {
   return TerminalStyle.RESET + message + TerminalStyle.RESET;
 }
-export function bright(message: String): String {
+export function bright(message: string): string {
   return TerminalStyle.BRIGHT + message + TerminalStyle.RESET;
 }
-export function dim(message: String): String {
+export function dim(message: string): string {
   return TerminalStyle.DIM + message + TerminalStyle.RESET;
 }
-export function underscore(message: String): String {
+export function underscore(message: string): string {
   return TerminalStyle.UNDERSCORE + message + TerminalStyle.RESET;
 }
-export function blink(message: String): String {
+export function blink(message: string): string {
   return TerminalStyle.BLINK + message + TerminalStyle.RESET;
 }
-export function reverse(message: String): String {
+export function reverse(message: string): string {
   return TerminalStyle.REVERSE + message + TerminalStyle.RESET;
 }
-export function hidden(message: String): String {
+export function hidden(message: string): string {
   return TerminalStyle.HIDDEN + message + TerminalStyle.RESET;
 }
-export function black(message: String): String {
+export function black(message: string): string {
   return TerminalStyle.FG_BLACK + message + TerminalStyle.RESET;
 }
-export function red(message: String): String {
+export function red(message: string): string {
   return TerminalStyle.FG_RED + message + TerminalStyle.RESET;
 }
-export function green(message: String): String {
+export function green(message: string): string {
   return TerminalStyle.FG_GREEN + message + TerminalStyle.RESET;
 }
-export function yellow(message: String): String {
+export function yellow(message: string): string {
   return TerminalStyle.FG_YELLOW + message + TerminalStyle.RESET;
 }
-export function blue(message: String): String {
+export function blue(message: string): string {
   return TerminalStyle.FG_BLUE + message + TerminalStyle.RESET;
 }
-export function magenta(message: String): String {
+export function magenta(message: string): string {
   return TerminalStyle.FG_MAGENTA + message + TerminalStyle.RESET;
 }
-export function cyan(message: String): String {
+export function cyan(message: string): string {
   return TerminalStyle.FG_CYAN + message + TerminalStyle.RESET;
 }
-export function white(message: String): String {
+export function white(message: string): string {
   return TerminalStyle.FG_WHITE + message + TerminalStyle.RESET;
 }
-export function bgBlack(message: String): String {
+export function bgBlack(message: string): string {
   return TerminalStyle.BG_BLACK + message + TerminalStyle.RESET;
 }
-export function bgRed(message: String): String {
+export function bgRed(message: string): string {
   return TerminalStyle.BG_RED + message + TerminalStyle.RESET;
 }
-export function bgGreen(message: String): String {
+export function bgGreen(message: string): string {
   return TerminalStyle.BG_GREEN + message + TerminalStyle.RESET;
 }
-export function bgYellow(message: String): String {
+export function bgYellow(message: string): string {
   return TerminalStyle.BG_YELLOW + message + TerminalStyle.RESET;
 }
-export function bgBlue(message: String): String {
+export function bgBlue(message: string): string {
   return TerminalStyle.BG_BLUE + message + TerminalStyle.RESET;
 }
-export function bgMagenta(message: String): String {
+export function bgMagenta(message: string): string {
   return TerminalStyle.BG_MAGENTA + message + TerminalStyle.RESET;
 }
-export function bgCyan(message: String): String {
+export function bgCyan(message: string): string {
   return TerminalStyle.BG_CYAN + message + TerminalStyle.RESET;
 }
-export function bgWhite(message: String): String {
+export function bgWhite(message: string): string {
   return TerminalStyle.BG_WHITE + message + TerminalStyle.RESET;
+}
+export function colorize(message: string, style: TerminalStyle): string {
+  return style + message + TerminalStyle.RESET;
 }
