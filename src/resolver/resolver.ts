@@ -4,6 +4,13 @@ import { isNodeModule, nodeModuleLookup, INodeModuleLookup } from './nodeModuleL
 import { pathsLookup } from './pathsLookup';
 import { isServerPolyfill, isElectronPolyfill } from './polyfills';
 
+export enum ImportType {
+  REQUIRE,
+  FROM,
+  RAW_IMPORT,
+  DYNAMIC,
+}
+
 export interface IResolverProps {
   buildTarget?: 'browser' | 'server' | 'electron' | 'universal';
   // user string
@@ -13,6 +20,7 @@ export interface IResolverProps {
   filePath?: string;
   packageMeta?: IPackageMeta;
   modules?: Array<string>;
+  importType?: ImportType;
   alias?: {
     [key: string]: string;
   };
@@ -166,6 +174,9 @@ export function resolveModule(props: IResolverProps): IResolver {
   }
 
   if (lookupResult.customIndex) {
+    forceReplacement = true;
+  }
+  if (props.importType && props.importType === ImportType.DYNAMIC) {
     forceReplacement = true;
   }
 

@@ -1,21 +1,29 @@
 import { tokenize } from './tokenizer';
+import { ImportType } from '../resolver/resolver';
+
 //import { AnalysisContext } from "./AnalysisContext";
 
 interface IFastAnalysisProps {
   input: string;
 }
 export interface IFastAnalysis {
-  imports?: {
-    requireStatements?: Array<string>;
-    fromStatements?: Array<string>;
-    dynamicImports?: Array<string>;
-  };
+  imports?: Array<{ type: ImportType; statement: string }>;
   report?: {
-    importStatements?: boolean;
+    browserEssentials?: Array<string>;
     dynamicImports?: boolean;
+    es6Syntax?: boolean;
+    statementsReplaced?: boolean;
+    transpiled?: boolean;
   };
+  replaceable?: IStatementReplaceableCollection;
 }
 
+export type IStatementReplaceableCollection = Array<IStatementReplaceAble>;
+export interface IStatementReplaceAble {
+  type: ImportType;
+  fromStatement: string;
+  toStatement: string;
+}
 /**
  * AN extremely simple and reliable module extractor based on one very well
  * optmimised Regular expression
@@ -36,35 +44,52 @@ export interface IFastAnalysis {
  */
 export function fastAnalysis(props: IFastAnalysisProps): IFastAnalysis {
   const result: IFastAnalysis = {
-    imports: {
-      requireStatements: [],
-      fromStatements: [],
-      dynamicImports: [],
-    },
+    imports: [],
+    report: {},
   };
   let skipNext = false;
   tokenize(props.input, token => {
     if (token.commentStart || token.singleLineComment) {
       skipNext = true;
     } else {
+      if (token.exportsKeyword && skipNext) {
+        return;
+      }
       if (skipNext || token.commentEnd) {
         skipNext = false;
         return;
       }
+
+      if (token.exportsKeyword) {
+        result.report.es6Syntax = true;
+        return;
+      }
+
+      if (token.systemVariable) {
+        if (!result.report.browserEssentials) {
+          result.report.browserEssentials = [];
+        }
+        if (!result.report.browserEssentials.includes(token.systemVariable)) {
+          result.report.browserEssentials.push(token.systemVariable);
+        }
+      }
       if (token.requireStatement) {
-        result.imports.requireStatements.push(token.requireStatement);
+        result.imports.push({ type: ImportType.REQUIRE, statement: token.requireStatement });
       }
       if (token.importFrom) {
-        result.imports.fromStatements.push(token.importFrom);
+        result.report.es6Syntax = true;
+        result.imports.push({ type: ImportType.FROM, statement: token.importFrom });
       }
       if (token.importModule) {
-        result.imports.fromStatements.push(token.importModule);
+        result.report.es6Syntax = true;
+        result.imports.push({ type: ImportType.RAW_IMPORT, statement: token.importModule });
       }
       if (token.dynamicImport) {
-        result.imports.dynamicImports.push(token.dynamicImport);
+        result.report.es6Syntax = true;
+        result.report.dynamicImports = true;
+        result.imports.push({ type: ImportType.DYNAMIC, statement: token.dynamicImport });
       }
     }
   });
-
   return result;
 }

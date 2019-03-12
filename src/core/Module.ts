@@ -13,22 +13,34 @@ export interface IModuleProps {
 }
 export class Module {
   public pkg: Package;
+
   public assembled: boolean;
   public isEntryPoint?: boolean;
-  public contents: string;
+
   public fastAnalysis: IFastAnalysis;
   public moduleDependencies: Array<Module>;
   public externalDependencies: Array<Package>;
 
+  /*  Properties that affect bundle result  */
+
+  public header: Array<string>; // extra content on top of the file
+  public contents: string; // primary contents
+  public sourceMap: string; // primary sourcemap
+
   constructor(public props: IModuleProps, pkg: Package) {
     this.pkg = pkg;
     this.assembled = false;
+    this.header = [];
     this.moduleDependencies = [];
     this.externalDependencies = [];
   }
 
   public isEntry() {
     return this.pkg.entry === this;
+  }
+
+  public isTypescriptModule(): boolean {
+    return ['.ts', '.tsx'].includes(this.props.extension);
   }
 
   public read(): string {

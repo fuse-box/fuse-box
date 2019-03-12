@@ -1,4 +1,5 @@
 import { fastAnalysis } from '../fastAnalysis';
+import { ImportType } from '../../resolver/resolver';
 
 describe('Fast analysis test', () => {
   describe('require statements', () => {
@@ -7,7 +8,8 @@ describe('Fast analysis test', () => {
         input: `
 				require('foo.js');`,
       });
-      expect(result.imports.requireStatements).toEqual(['foo.js']);
+
+      expect(result.imports).toEqual([{ type: ImportType.REQUIRE, statement: 'foo.js' }]);
     });
 
     it('two require statements on one line', () => {
@@ -15,7 +17,10 @@ describe('Fast analysis test', () => {
         input: `
 				require('foo.js'); require('moo.js');`,
       });
-      expect(result.imports.requireStatements).toEqual(['foo.js', 'moo.js']);
+      expect(result.imports).toEqual([
+        { type: ImportType.REQUIRE, statement: 'foo.js' },
+        { type: ImportType.REQUIRE, statement: 'moo.js' },
+      ]);
     });
 
     it('should not match somerequire()', () => {
@@ -24,7 +29,7 @@ describe('Fast analysis test', () => {
 					somerequire('foo.js');
 				`,
       });
-      expect(result.imports.requireStatements).toEqual([]);
+      expect(result.imports).toEqual([]);
     });
 
     it('should match in double quotes', () => {
@@ -33,7 +38,7 @@ describe('Fast analysis test', () => {
 				require("foo.js")
 			`,
       });
-      expect(result.imports.requireStatements).toEqual(['foo.js']);
+      expect(result.imports).toEqual([{ type: ImportType.REQUIRE, statement: 'foo.js' }]);
     });
 
     it('should not match due a single line comment', () => {
@@ -42,7 +47,7 @@ describe('Fast analysis test', () => {
 				 // require("foo.js")
 			`,
       });
-      expect(result.imports.requireStatements).toEqual([]);
+      expect(result.imports).toEqual([]);
     });
 
     it('should not match due to multi line comment', () => {
@@ -51,7 +56,7 @@ describe('Fast analysis test', () => {
 				 /* require("foo.js") */
 			`,
       });
-      expect(result.imports.requireStatements).toEqual([]);
+      expect(result.imports).toEqual([]);
     });
 
     it('should match after a multi line comment', () => {
@@ -61,7 +66,7 @@ describe('Fast analysis test', () => {
 				 require("bar.js")
 			`,
       });
-      expect(result.imports.requireStatements).toEqual(['bar.js']);
+      expect(result.imports).toEqual([{ type: ImportType.REQUIRE, statement: 'bar.js' }]);
     });
 
     it('Should not match a require within a multiline block comment', () => {
@@ -72,7 +77,7 @@ describe('Fast analysis test', () => {
 				 */
 			`,
       });
-      expect(result.imports.requireStatements).toEqual([]);
+      expect(result.imports).toEqual([]);
     });
 
     describe('Comments inside require statement', () => {
@@ -82,7 +87,7 @@ describe('Fast analysis test', () => {
 						 require(/* comment */ "foo.js")
 				`,
         });
-        expect(result.imports.requireStatements).toEqual(['foo.js']);
+        expect(result.imports).toEqual([{ type: ImportType.REQUIRE, statement: 'foo.js' }]);
       });
       it('left comment without space', () => {
         const result = fastAnalysis({
@@ -90,7 +95,7 @@ describe('Fast analysis test', () => {
 						 require(/* comment */"foo.js")
 				`,
         });
-        expect(result.imports.requireStatements).toEqual(['foo.js']);
+        expect(result.imports).toEqual([{ type: ImportType.REQUIRE, statement: 'foo.js' }]);
       });
       it('right comment with space', () => {
         const result = fastAnalysis({
@@ -98,7 +103,7 @@ describe('Fast analysis test', () => {
 						 require("foo.js" /* comment */)
 				`,
         });
-        expect(result.imports.requireStatements).toEqual(['foo.js']);
+        expect(result.imports).toEqual([{ type: ImportType.REQUIRE, statement: 'foo.js' }]);
       });
       it('right comment without space', () => {
         const result = fastAnalysis({
@@ -106,7 +111,7 @@ describe('Fast analysis test', () => {
 						 require("foo.js"/* comment */)
 				`,
         });
-        expect(result.imports.requireStatements).toEqual(['foo.js']);
+        expect(result.imports).toEqual([{ type: ImportType.REQUIRE, statement: 'foo.js' }]);
       });
     });
 
@@ -116,7 +121,7 @@ describe('Fast analysis test', () => {
 					 bar.require("foo.js")
 			`,
       });
-      expect(result.imports.requireStatements).toEqual([]);
+      expect(result.imports).toEqual([]);
     });
 
     it('Should match in a object', () => {
@@ -125,7 +130,7 @@ describe('Fast analysis test', () => {
 				{some:require("foo.js")}
 			`,
       });
-      expect(result.imports.requireStatements).toEqual(['foo.js']);
+      expect(result.imports).toEqual([{ type: ImportType.REQUIRE, statement: 'foo.js' }]);
     });
 
     it('should match after a variable declaration', () => {
@@ -134,7 +139,7 @@ describe('Fast analysis test', () => {
 				var foo=require("foo.js")
 			`,
       });
-      expect(result.imports.requireStatements).toEqual(['foo.js']);
+      expect(result.imports).toEqual([{ type: ImportType.REQUIRE, statement: 'foo.js' }]);
     });
   });
 
@@ -145,7 +150,7 @@ describe('Fast analysis test', () => {
 					import * as foo from "bar/mor";
 			`,
       });
-      expect(result.imports.fromStatements).toEqual(['bar/mor']);
+      expect(result.imports).toEqual([{ type: ImportType.FROM, statement: 'bar/mor' }]);
     });
 
     it('Should match export from with double quotes', () => {
@@ -154,7 +159,7 @@ describe('Fast analysis test', () => {
 					export { Foo } from "bar/mor";
 			`,
       });
-      expect(result.imports.fromStatements).toEqual(['bar/mor']);
+      expect(result.imports).toEqual([{ type: ImportType.FROM, statement: 'bar/mor' }]);
     });
 
     it('Should match export from with single quotes', () => {
@@ -163,7 +168,7 @@ describe('Fast analysis test', () => {
 					export { Foo } from 'bar/mor';
 			`,
       });
-      expect(result.imports.fromStatements).toEqual(['bar/mor']);
+      expect(result.imports).toEqual([{ type: ImportType.FROM, statement: 'bar/mor' }]);
     });
 
     it('Should not match due to a single line comment', () => {
@@ -172,7 +177,7 @@ describe('Fast analysis test', () => {
 					// export { Foo } from 'bar/mor';
 			`,
       });
-      expect(result.imports.fromStatements).toEqual([]);
+      expect(result.imports).toEqual([]);
     });
 
     it('should not match due to a multiline comment', () => {
@@ -181,7 +186,7 @@ describe('Fast analysis test', () => {
 					/* export { Foo } from 'bar/mor'; */
 			`,
       });
-      expect(result.imports.fromStatements).toEqual([]);
+      expect(result.imports).toEqual([]);
     });
 
     it('should not match due to a multiline comment (within)', () => {
@@ -192,7 +197,7 @@ describe('Fast analysis test', () => {
 					*/
 			`,
       });
-      expect(result.imports.fromStatements).toEqual([]);
+      expect(result.imports).toEqual([]);
     });
   });
 
@@ -202,7 +207,7 @@ describe('Fast analysis test', () => {
         input: `
 				import('foo.js');`,
       });
-      expect(result.imports.dynamicImports).toEqual(['foo.js']);
+      expect(result.imports).toEqual([{ type: ImportType.DYNAMIC, statement: 'foo.js' }]);
     });
 
     it('two import statements on one line', () => {
@@ -210,7 +215,10 @@ describe('Fast analysis test', () => {
         input: `
 				import('foo.js'); import('moo.js');`,
       });
-      expect(result.imports.dynamicImports).toEqual(['foo.js', 'moo.js']);
+      expect(result.imports).toEqual([
+        { type: ImportType.DYNAMIC, statement: 'foo.js' },
+        { type: ImportType.DYNAMIC, statement: 'moo.js' },
+      ]);
     });
 
     it('should not match someimport()', () => {
@@ -219,7 +227,7 @@ describe('Fast analysis test', () => {
 					someimport('foo.js');
 				`,
       });
-      expect(result.imports.dynamicImports).toEqual([]);
+      expect(result.imports).toEqual([]);
     });
 
     it('should match in double quotes', () => {
@@ -228,7 +236,7 @@ describe('Fast analysis test', () => {
 				import("foo.js")
 			`,
       });
-      expect(result.imports.dynamicImports).toEqual(['foo.js']);
+      expect(result.imports).toEqual([{ type: ImportType.DYNAMIC, statement: 'foo.js' }]);
     });
 
     it('should not match due a single line comment', () => {
@@ -237,7 +245,7 @@ describe('Fast analysis test', () => {
 				 // import("foo.js")
 			`,
       });
-      expect(result.imports.dynamicImports).toEqual([]);
+      expect(result.imports).toEqual([]);
     });
 
     it('should not match due to multi line comment', () => {
@@ -246,7 +254,7 @@ describe('Fast analysis test', () => {
 				 /* import("foo.js") */
 			`,
       });
-      expect(result.imports.dynamicImports).toEqual([]);
+      expect(result.imports).toEqual([]);
     });
 
     it('should match after a multi line comment', () => {
@@ -256,7 +264,7 @@ describe('Fast analysis test', () => {
 				 import("bar.js")
 			`,
       });
-      expect(result.imports.dynamicImports).toEqual(['bar.js']);
+      expect(result.imports).toEqual([{ type: ImportType.DYNAMIC, statement: 'bar.js' }]);
     });
 
     it('Should not match a import within a multiline block comment', () => {
@@ -267,7 +275,7 @@ describe('Fast analysis test', () => {
 				 */
 			`,
       });
-      expect(result.imports.dynamicImports).toEqual([]);
+      expect(result.imports).toEqual([]);
     });
 
     describe('Comments inside import statement', () => {
@@ -277,7 +285,7 @@ describe('Fast analysis test', () => {
 						 import(/* comment */ "foo.js")
 				`,
         });
-        expect(result.imports.dynamicImports).toEqual(['foo.js']);
+        expect(result.imports).toEqual([{ type: ImportType.DYNAMIC, statement: 'foo.js' }]);
       });
       it('left comment without space', () => {
         const result = fastAnalysis({
@@ -285,7 +293,7 @@ describe('Fast analysis test', () => {
 						 import(/* comment */"foo.js")
 				`,
         });
-        expect(result.imports.dynamicImports).toEqual(['foo.js']);
+        expect(result.imports).toEqual([{ type: ImportType.DYNAMIC, statement: 'foo.js' }]);
       });
       it('right comment with space', () => {
         const result = fastAnalysis({
@@ -293,7 +301,7 @@ describe('Fast analysis test', () => {
 						 import("foo.js" /* comment */)
 				`,
         });
-        expect(result.imports.dynamicImports).toEqual(['foo.js']);
+        expect(result.imports).toEqual([{ type: ImportType.DYNAMIC, statement: 'foo.js' }]);
       });
       it('right comment without space', () => {
         const result = fastAnalysis({
@@ -301,7 +309,7 @@ describe('Fast analysis test', () => {
 						 import("foo.js"/* comment */)
 				`,
         });
-        expect(result.imports.dynamicImports).toEqual(['foo.js']);
+        expect(result.imports).toEqual([{ type: ImportType.DYNAMIC, statement: 'foo.js' }]);
       });
     });
 
@@ -311,7 +319,7 @@ describe('Fast analysis test', () => {
 					 bar.import("foo.js")
 			`,
       });
-      expect(result.imports.dynamicImports).toEqual([]);
+      expect(result.imports).toEqual([]);
     });
 
     it('Should match in a object', () => {
@@ -320,7 +328,7 @@ describe('Fast analysis test', () => {
 				{some:import("foo.js")}
 			`,
       });
-      expect(result.imports.dynamicImports).toEqual(['foo.js']);
+      expect(result.imports).toEqual([{ type: ImportType.DYNAMIC, statement: 'foo.js' }]);
     });
 
     it('should match after a variable declaration', () => {
@@ -329,7 +337,99 @@ describe('Fast analysis test', () => {
 				var foo=import("foo.js")
 			`,
       });
-      expect(result.imports.dynamicImports).toEqual(['foo.js']);
+      expect(result.imports).toEqual([{ type: ImportType.DYNAMIC, statement: 'foo.js' }]);
+    });
+  });
+
+  describe('Should report correct on es6syntax', () => {
+    it('should give es6Syntax 1', () => {
+      const result = fastAnalysis({
+        input: `
+				 import "foo"
+			`,
+      });
+      expect(result.report.es6Syntax).toEqual(true);
+    });
+
+    it('should give es6Syntax 1', () => {
+      const result = fastAnalysis({
+        input: `export default function(){}`,
+      });
+      expect(result.report.es6Syntax).toEqual(true);
+    });
+  });
+  describe('System variables', () => {
+    it('should match process 1', () => {
+      const result = fastAnalysis({
+        input: `
+				 console.log(process.env.NODE_ENV)
+			`,
+      });
+      expect(result.report.browserEssentials).toEqual(['process']);
+    });
+
+    it('should match process 2', () => {
+      const result = fastAnalysis({
+        input: `
+				 console.log( process.env.NODE_ENV)
+			`,
+      });
+      expect(result.report.browserEssentials).toEqual(['process']);
+    });
+
+    it('should match process 3', () => {
+      const result = fastAnalysis({
+        input: `
+				 const a =process.env.NODE_ENV
+			`,
+      });
+      expect(result.report.browserEssentials).toEqual(['process']);
+    });
+
+    it('should not match process 3', () => {
+      const result = fastAnalysis({
+        input: `
+				 foo.process;
+			`,
+      });
+      expect(result.report.browserEssentials).toEqual(undefined);
+    });
+
+    it('should not add 2 times', () => {
+      const result = fastAnalysis({
+        input: `
+         process.env;
+         process.version;
+			`,
+      });
+      expect(result.report.browserEssentials).toEqual(['process']);
+    });
+
+    it('should match stream', () => {
+      const result = fastAnalysis({
+        input: `
+				 console.log(stream)
+			`,
+      });
+      expect(result.report.browserEssentials).toEqual(['stream']);
+    });
+
+    it('should match http', () => {
+      const result = fastAnalysis({
+        input: `
+				 console.log(http)
+			`,
+      });
+      expect(result.report.browserEssentials).toEqual(['http']);
+    });
+
+    it('should match http', () => {
+      const result = fastAnalysis({
+        input: `
+				 console.log(Buffer)
+			`,
+      });
+      expect(result.report.browserEssentials).toEqual(['Buffer']);
     });
   });
 });

@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { createRealNodeModule } from '../../utils/test_utils';
-import { resolveModule } from '../resolver';
+import { resolveModule, ImportType } from '../resolver';
 const cases = path.join(__dirname, 'cases/');
 const customModules = path.join(cases, '_modules');
 createRealNodeModule(
@@ -93,6 +93,19 @@ describe('Resolver test', () => {
         filePath: filePath,
         target: './some4',
       });
+      expect(info.extension).toEqual('.tsx');
+      expect(info.fuseBoxPath).toEqual('some4/index.jsx');
+      expect(info.absPath).toContain('cases/src1/some4/index.tsx');
+    });
+
+    it('Should resolve with importType DYNAMIC', () => {
+      const info = resolveModule({
+        homeDir: homeDir,
+        filePath: filePath,
+        importType: ImportType.DYNAMIC,
+        target: './some4',
+      });
+      expect(info.forcedStatement).toEqual('~/some4/index.jsx');
       expect(info.extension).toEqual('.tsx');
       expect(info.fuseBoxPath).toEqual('some4/index.jsx');
       expect(info.absPath).toContain('cases/src1/some4/index.tsx');
@@ -251,6 +264,7 @@ describe('Resolver test', () => {
         });
 
         const meta = info.package.meta;
+        expect(info.forcedStatement).toEqual('resolver-test_a/something-for-browser.js');
         expect(meta.entryFuseBoxPath).toEqual('something-for-browser.js');
         expect(info.package.isEntry).toEqual(true);
         expect(info.package.targetAbsPath).toMatchFilePath('node_modules/resolver-test_a/something-for-browser.js$');

@@ -3,6 +3,9 @@ import * as path from 'path';
 import { assemble } from '../assemble';
 import '../../utils/test_utils';
 import { IConfig } from '../interfaces';
+import { createRequireConst } from '../../utils/utils';
+import { devImports } from '../../integrity/devPackage';
+import { ImportType } from '../../resolver/resolver';
 function createProjectContext(folder: string, opts?: IConfig) {
   opts = opts || {};
   return createContext({
@@ -175,10 +178,105 @@ describe('Assemble test', () => {
       const ctx = createProjectContext('src4', { target: 'browser' });
       const packages = assemble(ctx, 'index.ts');
       expect(packages).toHaveLength(3);
-
       const moduleC = packages.find(item => item.props.meta.name === 'module-c');
       expect(moduleC.modules).toHaveLength(1);
       expect(moduleC.modules[0].props.absPath).toMatchFilePath('modules/module-c/browser-entry.js$');
+    });
+  });
+
+  describe('Expect browser essentials data to be present', () => {
+    it('Should have process injected', () => {
+      const ctx = createProjectContext('src6', { target: 'browser' });
+      const packages = assemble(ctx, 'index.ts');
+
+      expect(packages).toHaveLength(2);
+
+      const processModule = packages.find(item => item.props.meta.name === 'process');
+      expect(processModule).toBeDefined();
+
+      const defaultModule = packages.find(item => item.props.meta.name === 'default');
+
+      expect(defaultModule.modules[0].header).toEqual([createRequireConst('process')]);
+    });
+
+    it('Should have dev imports', () => {
+      const ctx = createProjectContext('src6', { target: 'browser' });
+      const packages = assemble(ctx, 'index2.ts');
+
+      expect(packages).toHaveLength(2);
+
+      const devImportsModule = packages.find(item => item.props.meta.name === devImports.packageName);
+      expect(devImportsModule).toBeDefined();
+
+      const defaultModule = packages.find(item => item.props.meta.name === 'default');
+      expect(defaultModule.modules).toHaveLength(2);
+
+      const mainModule = defaultModule.modules.find(item => item.props.fuseBoxPath === 'index2.js');
+      expect(mainModule.header).toEqual([createRequireConst(devImports.packageName, devImports.variable)]);
+    });
+
+    it('Should should replace dynamic import statement', () => {
+      const ctx = createProjectContext('src6');
+      const packages = assemble(ctx, 'index2.ts');
+
+      const defaultModule = packages.find(item => item.props.meta.name === 'default');
+
+      const mainModule = defaultModule.modules.find(item => item.props.fuseBoxPath === 'index2.js');
+      expect(mainModule.contents).toContain(`await $fsmp$('./test');`);
+      expect(mainModule.contents).toContain(`a:$fsmp$('./test')`);
+    });
+  });
+
+  describe('Expect modules to have replaceble data for further transformation', () => {
+    it('Should not a replacement on index.ts', () => {
+      const ctx = createProjectContext('src7', { target: 'server' });
+      const packages = assemble(ctx, 'index.ts');
+
+      const defaultModule = packages.find(item => item.props.meta.name === 'default');
+
+      const mainModule = defaultModule.modules.find(item => item.props.fuseBoxPath === 'index.js');
+      expect(mainModule.fastAnalysis.replaceable).toEqual([]);
+    });
+    it('Should have a replacement on index.ts', () => {
+      const ctx = createProjectContext('src7', { target: 'browser' });
+      const packages = assemble(ctx, 'index.ts');
+
+      const defaultModule = packages.find(item => item.props.meta.name === 'default');
+
+      const mainModule = defaultModule.modules.find(item => item.props.fuseBoxPath === 'index.js');
+      expect(mainModule.fastAnalysis.replaceable).toEqual([
+        {
+          type: ImportType.RAW_IMPORT,
+          fromStatement: 'module-c',
+          toStatement: 'module-c/browser-entry.js',
+        },
+      ]);
+    });
+  });
+
+  describe('Expect transpile and replace statements for a node module (not typescript)', () => {
+    it('should assemble process a module package wiht es6 imports', () => {
+      const ctx = createProjectContext('src8');
+      const packages = assemble(ctx, 'index.ts');
+
+      const moduleD = packages.find(item => item.props.meta.name === 'module-d');
+
+      const indexFile = moduleD.modules.find(item => item.props.fuseBoxPath === 'index.js');
+      expect(indexFile.contents).toContain('module.exports.default = SomeThing;');
+      expect(indexFile.fastAnalysis.report.transpiled).toEqual(true);
+    });
+
+    it('expect replacements to have been applied', () => {
+      const ctx = createProjectContext('src8', {
+        alias: {
+          'replace-me': './foo',
+        },
+      });
+      const packages = assemble(ctx, 'index2.ts');
+      const moduleD = packages.find(item => item.props.meta.name === 'module-d');
+      const indexFile = moduleD.modules.find(item => item.props.fuseBoxPath === 'bar.js');
+      expect(indexFile.contents).toContain("require('module-d/foo.js')");
+      expect(indexFile.fastAnalysis.report.statementsReplaced).toEqual(true);
     });
   });
 });

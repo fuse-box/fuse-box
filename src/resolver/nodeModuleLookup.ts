@@ -5,7 +5,7 @@ import { DocumentedError } from '../logging/DocumentedError';
 import { fileExists, makeFuseBoxPath } from '../utils/utils';
 import { fileLookup } from './fileLookup';
 import { IPackageMeta, IResolverProps } from './resolver';
-import { getFolderEntryPointFromPackageJSON } from './shared';
+import { getFolderEntryPointFromPackageJSON, isBrowserEntry } from './shared';
 
 const PROJECT_NODE_MODULES = path.join(appRoot.path, 'node_modules');
 
@@ -111,8 +111,9 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
     pkg.fusebox = json['fuse-box'];
   }
 
+  const isBrowser = props.buildTarget === 'browser';
   // extract entry point
-  const entryFile = getFolderEntryPointFromPackageJSON(json, props.buildTarget === 'browser');
+  const entryFile = getFolderEntryPointFromPackageJSON(json, isBrowser);
 
   const entryLookup = fileLookup({ target: entryFile, fileDir: folder });
 
@@ -143,6 +144,9 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
 
     result.targetAbsPath = pkg.entryAbsPath;
     result.targetFuseBoxPath = pkg.entryFuseBoxPath;
+    if (isBrowserEntry(json, isBrowser)) {
+      result.forcedStatement = `${parsed.name}/${result.targetFuseBoxPath}`;
+    }
   }
   result.targetExtension = path.extname(result.targetAbsPath);
 

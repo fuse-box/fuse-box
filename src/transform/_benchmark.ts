@@ -1,5 +1,4 @@
 const { performance } = require('perf_hooks');
-import * as acorn from 'acorn';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
