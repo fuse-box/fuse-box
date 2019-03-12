@@ -1,5 +1,6 @@
 import console = require('console');
 import { yellow, cyan, red, green, magenta } from './chroma';
+import { Spinner } from './Spinner';
 
 export interface ILogger {
   debug(msg: String);
@@ -31,18 +32,14 @@ logPermissions.set(LogLevel.INFO, [LogPriority.INFO, LogPriority.WARNING, LogPri
 logPermissions.set(LogLevel.WARN, [LogPriority.WARNING, LogPriority.ERROR]);
 logPermissions.set(LogLevel.ERROR, [LogPriority.ERROR]);
 
+const defaultLoggerProps = {
+  logLevel: LogLevel.INFO,
+  withTimestamp: true,
+};
+
 export interface ILoggerProps {
   logLevel: LogLevel;
   withTimestamp: boolean;
-}
-
-function Spinner() {
-  return {
-    setColor: () => {},
-    setText: () => {},
-    start: () => {},
-    stop: () => {},
-  };
 }
 
 function log({ props, logPriority, msg }: { props: ILoggerProps; logPriority: LogPriority; msg: String }): void {
@@ -59,30 +56,38 @@ function log({ props, logPriority, msg }: { props: ILoggerProps; logPriority: Lo
   }
 }
 
-export function getLogger(
-  props: ILoggerProps = {
-    logLevel: LogLevel.INFO,
-    withTimestamp: true,
-  },
-): ILogger {
+export function getLogger(props: ILoggerProps | false): ILogger {
+  if (typeof props === 'object') {
+    const loggerProps = props || defaultLoggerProps;
+    return {
+      debug: msg => {
+        log({ props: loggerProps, msg: green(msg), logPriority: LogPriority.DEBUG });
+      },
+      info: msg => {
+        log({ props: loggerProps, msg: cyan(msg), logPriority: LogPriority.INFO });
+      },
+      warn: msg => {
+        log({ props: loggerProps, msg: yellow(msg), logPriority: LogPriority.WARNING });
+      },
+      error: msg => {
+        log({ props: loggerProps, msg: red(msg), logPriority: LogPriority.ERROR });
+      },
+      deprecated: msg => {
+        log({ props: loggerProps, msg: magenta(msg), logPriority: LogPriority.WARNING });
+      },
+      loading: () => {
+        return new Spinner();
+      },
+    };
+  }
   return {
-    debug: msg => {
-      log({ props, msg: green(msg), logPriority: LogPriority.DEBUG });
-    },
-    info: msg => {
-      log({ props, msg: cyan(msg), logPriority: LogPriority.INFO });
-    },
-    warn: msg => {
-      log({ props, msg: yellow(msg), logPriority: LogPriority.WARNING });
-    },
-    error: msg => {
-      log({ props, msg: red(msg), logPriority: LogPriority.ERROR });
-    },
-    deprecated: msg => {
-      log({ props, msg: magenta(msg), logPriority: LogPriority.WARNING });
-    },
+    debug: msg => {},
+    info: msg => {},
+    warn: msg => {},
+    error: msg => {},
+    deprecated: msg => {},
     loading: () => {
-      Spinner();
+      return new Spinner();
     },
   };
 }
