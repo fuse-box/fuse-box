@@ -1,5 +1,5 @@
 import { fastAnalysis } from '../analysis/fastAnalysis';
-import { IResolver, resolveModule } from '../resolver/resolver';
+import { ImportType, IResolver, resolveModule } from '../resolver/resolver';
 import { createApplicationPackage } from './application';
 import { Context } from './context';
 import { createModule, Module } from './Module';
@@ -31,7 +31,7 @@ function registerPackage(props: { assemble?: boolean; pkg: Package; ctx: Context
         absPath: resolved.package.targetAbsPath,
         ctx: props.ctx,
         extension: resolved.package.targetExtension,
-        fuseBoxPath: resolved.package.targetAbsPath,
+        fuseBoxPath: resolved.package.targetFuseBoxPath,
       },
       pkg,
     );
@@ -44,7 +44,7 @@ function registerPackage(props: { assemble?: boolean; pkg: Package; ctx: Context
           absPath: resolved.package.targetAbsPath,
           ctx: props.ctx,
           extension: resolved.package.targetExtension,
-          fuseBoxPath: resolved.package.targetAbsPath,
+          fuseBoxPath: resolved.package.targetFuseBoxPath,
         },
         pkg,
       );
@@ -59,22 +59,25 @@ function registerPackage(props: { assemble?: boolean; pkg: Package; ctx: Context
 }
 
 function resolveStatement(
-  statement,
+  opts: { statement: string; importType: ImportType },
   props: IDefaultParseProps,
 ): {
   module?: Module;
+  forcedStatement?: string;
   processed?: boolean;
   package?: Package;
 } {
   const collection = props.ctx.assembleContext.collection;
-
+  const config = props.ctx.config;
   const resolved = resolveModule({
     filePath: props.module.props.absPath,
-    homeDir: props.ctx.config.homeDir,
+    homeDir: config.homeDir,
+    alias: config.alias,
     packageMeta: !props.pkg.isDefaultPackage && props.pkg.props.meta,
-    buildTarget: props.ctx.config.target,
-    modules: props.ctx.config.modules,
-    target: statement,
+    buildTarget: config.target,
+    modules: config.modules,
+    importType: opts.importType,
+    target: opts.statement,
   });
 
   if (!resolved || resolved.skip || resolved.isExternal) {
@@ -82,11 +85,16 @@ function resolveStatement(
   }
   if (resolved.package) {
     return {
+      forcedStatement: resolved.forcedStatement,
       package: registerPackage({ assemble: props.assemble, pkg: props.pkg, ctx: props.ctx, resolved: resolved }),
     };
   }
   if (collection.defaultModules.has(resolved.absPath)) {
-    return { processed: true, module: collection.defaultModules.get(resolved.absPath) };
+    return {
+      forcedStatement: resolved.forcedStatement,
+      processed: true,
+      module: collection.defaultModules.get(resolved.absPath),
+    };
   }
   const _module = createModule(
     {
@@ -99,23 +107,44 @@ function resolveStatement(
   );
 
   collection.defaultModules.set(resolved.absPath, _module);
-  return { processed: false, module: _module };
+  return { processed: false, module: _module, forcedStatement: resolved.forcedStatement };
 }
 
 function processModule(props: IDefaultParseProps) {
+  const icp = props.ctx.interceptor;
   const _module = props.module;
   props.pkg.modules.push(props.module);
   if (_module.isExecutable()) {
     _module.read();
     _module.fastAnalysis = fastAnalysis({ input: _module.contents });
+    icp.sync('assemble_fast_analysis', { module: _module });
     _module.assembled = true;
-    const dependencies = _module.fastAnalysis.imports;
-    const statements = [
-      ...dependencies.requireStatements,
-      ...dependencies.fromStatements,
-      ...dependencies.dynamicImports,
-    ];
-    const modules = statements.map(statement => resolveStatement(statement, props));
+
+    // collecting statements for the replacement
+    _module.fastAnalysis.replaceable = [];
+    const modules = [];
+
+    _module.fastAnalysis.imports.forEach(data => {
+      const response = resolveStatement({ statement: data.statement, importType: data.type }, props);
+      if (response) {
+        if (response.forcedStatement) {
+          _module.fastAnalysis.replaceable.push({
+            type: data.type,
+            fromStatement: data.statement,
+            toStatement: response.forcedStatement,
+          });
+        }
+        modules.push(response);
+      }
+    });
+    if (_module.isTypescriptModule()) {
+      icp.sync('assemble_ts_module', { module: _module });
+    }
+    if (_module.pkg.isDefaultPackage) {
+      icp.sync('assemble_pr_module', { module: _module });
+    } else {
+      icp.sync('assemble_nm_module', { module: _module });
+    }
 
     modules.forEach(item => {
       if (!item) {

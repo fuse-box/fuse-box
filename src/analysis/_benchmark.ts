@@ -32,7 +32,6 @@ function measure(name: string, fn: () => void) {
 }
 
 for (let i = 0; i < 100; i++) {
-  const input = `${str} /* ${Math.random()} */ ${str.replace('should take', Math.random().toString())}`;
   const source = createSourceFile('module.tsx', str);
 
   measure('parseWithAcorn', () => parseWithAcorn(str));

@@ -21,6 +21,9 @@ export function createConfig(props: IConfig): IConfig {
   if (props.output) {
     config.output = props.output;
   }
+  if (props.alias) {
+    config.alias = props.alias;
+  }
 
   if (props.target) {
     config.target = props.target;

@@ -4,6 +4,7 @@ export interface IConfig {
   homeDir?: string;
   output?: string;
   modules?: Array<string>;
+  alias?: { [key: string]: string };
   fuseBoxPolyfillsFolder?: string;
 
   // read only

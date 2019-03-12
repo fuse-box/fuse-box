@@ -2,6 +2,9 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as appRoot from 'app-root-path';
 import { ensureFuseBoxPath } from './utils';
+import { Context } from '../core/context';
+import { createDefaultPackage } from '../core/application';
+import { createModule, IModuleProps } from '../core/Module';
 
 declare global {
   namespace jest {
@@ -56,4 +59,13 @@ export function createRealNodeModule(name: string, packageJSON, files: { [key: s
 
   createFiles(path2Module, files);
   return path2Module;
+}
+
+export function mockDefaultModule(ctx: Context, props?: IModuleProps) {
+  const pkg = createDefaultPackage(ctx);
+  let p = { ctx: ctx, absPath: '/', extension: '.js', fuseBoxPath: '/' };
+  if (props) {
+    p = { ...p, ...props };
+  }
+  return createModule(p, pkg);
 }

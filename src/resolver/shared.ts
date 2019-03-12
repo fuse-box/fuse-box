@@ -1,5 +1,5 @@
 export function getFolderEntryPointFromPackageJSON(json: any, isBrowserBuild?: boolean) {
-  if (json.browser && isBrowserBuild === true && typeof json.browser === 'string') {
+  if (isBrowserEntry(json, isBrowserBuild)) {
     return json.browser;
   }
   if (json.module) {
@@ -12,4 +12,8 @@ export function getFolderEntryPointFromPackageJSON(json: any, isBrowserBuild?: b
     return json['jsnext:main'];
   }
   return json.main || 'index.js';
+}
+
+export function isBrowserEntry(json: any, isBrowserBuild?: boolean) {
+  return json.browser && isBrowserBuild === true && typeof json.browser === 'string';
 }
