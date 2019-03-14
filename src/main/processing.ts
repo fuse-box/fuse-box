@@ -1,4 +1,4 @@
-import { Context } from '../core/__Context';
+import { Context } from '../core/Context';
 import { Package } from '../core/Package';
 import { Module } from '../core/Module';
 

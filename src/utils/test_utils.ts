@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as appRoot from 'app-root-path';
 import { ensureFuseBoxPath } from './utils';
-import { Context, createContext } from '../core/__Context';
+import { Context, createContext } from '../core/Context';
 import { createDefaultPackage } from '../core/application';
 import { createModule, IModuleProps, Module } from '../core/Module';
 import { assemble } from '../main/assemble';

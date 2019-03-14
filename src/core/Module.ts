@@ -1,4 +1,4 @@
-import { Context } from './__Context';
+import { Context } from './Context';
 import { Package } from './Package';
 import { readFile } from '../utils/utils';
 import { IFastAnalysis } from '../analysis/fastAnalysis';

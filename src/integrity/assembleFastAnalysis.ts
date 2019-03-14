@@ -1,4 +1,4 @@
-import { Context } from '../core/__Context';
+import { Context } from '../core/Context';
 import { Module } from '../core/Module';
 import { ImportType } from '../resolver/resolver';
 import { createRequireConst } from '../utils/utils';

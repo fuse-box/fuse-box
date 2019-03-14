@@ -1,4 +1,4 @@
-import { createContext } from '../../core/__Context';
+import { createContext } from '../../core/Context';
 import { ImportType } from '../../resolver/resolver';
 import { mockDefaultModule } from '../../utils/test_utils';
 import { devImports } from '../devPackage';

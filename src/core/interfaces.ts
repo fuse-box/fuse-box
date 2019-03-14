@@ -1,4 +1,4 @@
-import { Context } from './__Context';
+import { Context } from './Context';
 
 export interface IConfig {
   root?: string;
