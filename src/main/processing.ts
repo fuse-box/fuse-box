@@ -1,4 +1,4 @@
-import { Context } from '../core/Context';
+import { Context } from '../core/__Context';
 import { Package } from '../core/Package';
 import { Module } from '../core/Module';
 
@@ -27,7 +27,7 @@ export interface IBundleResolveProps {
   packages: Array<Package>;
   plugins?: Array<(ctx: Context) => void>;
 }
-export async function processing(props: IBundleResolveProps) {
+export async function processModules(props: IBundleResolveProps) {
   const ctx = props.ctx;
   const packages = props.packages;
   if (props.plugins) {

@@ -3,8 +3,7 @@ import * as acorn from 'acorn';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fastAnalysis } from './fastAnalysis';
-import { createSourceFile, getImports } from './tsParser';
-
+import * as cherow from 'cherow';
 const str = fs.readFileSync(path.join(__dirname, 'file.js')).toString();
 
 function parseWithAcorn(input) {
@@ -15,6 +14,10 @@ function parseWithAcorn(input) {
     ranges: true,
     ecmaVersion: '2018',
   });
+}
+
+function parseWithCherow(input) {
+  cherow.parse(input);
 }
 
 const result: any = {};
@@ -32,15 +35,14 @@ function measure(name: string, fn: () => void) {
 }
 
 for (let i = 0; i < 100; i++) {
-  const source = createSourceFile('module.tsx', str);
-
   measure('parseWithAcorn', () => parseWithAcorn(str));
+  measure('parseWithCherow', () => parseWithCherow(str));
   measure('fastAnalysis', () => fastAnalysis({ input: str }));
-  measure('tsParser (create source + getImports from AST)', () => {
-    const sourceFile = createSourceFile('module.tsx', str);
-    return getImports(sourceFile);
-  });
-  measure('tsParser (getImports from AST)', () => getImports(source));
+  // measure('tsParser (create source + getImports from AST)', () => {
+  //   const sourceFile = createSourceFile('module.tsx', str);
+  //   return getImports(sourceFile);
+  // });
+  // measure('tsParser (getImports from AST)', () => getImports(source));
 }
 
 for (const item in result) {

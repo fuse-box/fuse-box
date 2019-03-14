@@ -8,6 +8,7 @@ export interface ITokenizerGroup {
   commentEnd?: string;
   systemVariable?: string;
   exportsKeyword?: boolean;
+  jsxToken?: boolean;
 }
 
 /** A list of token with simplified replacable aliases
@@ -24,6 +25,7 @@ const TOKENS = {
   commentEnd: /(\*\/)/,
   systemVariables: /(?:[^\.\w]|^)(stream|process|Buffer|http|https)/,
   exportsKeyword: /(?:[^\.\w]|^)(export)\s/,
+  jsx: /<[^\>]+/,
 };
 
 // Compile a single long RegEx
@@ -48,6 +50,7 @@ export function tokenize(input: string, onToken: (group: ITokenizerGroup) => voi
       commentEnd: matches[14],
       systemVariable: matches[17],
       exportsKeyword: matches[19],
+      jsxToken: matches[20],
     });
   }
 }

@@ -14,6 +14,7 @@ export interface IFastAnalysis {
     es6Syntax?: boolean;
     statementsReplaced?: boolean;
     transpiled?: boolean;
+    containsJSX?: boolean;
   };
   replaceable?: IStatementReplaceableCollection;
 }
@@ -52,7 +53,7 @@ export function fastAnalysis(props: IFastAnalysisProps): IFastAnalysis {
     if (token.commentStart || token.singleLineComment) {
       skipNext = true;
     } else {
-      if (token.exportsKeyword && skipNext) {
+      if ((token.exportsKeyword || token.jsxToken) && skipNext) {
         return;
       }
       if (skipNext || token.commentEnd) {
@@ -64,7 +65,9 @@ export function fastAnalysis(props: IFastAnalysisProps): IFastAnalysis {
         result.report.es6Syntax = true;
         return;
       }
-
+      if (token.jsxToken) {
+        result.report.containsJSX = true;
+      }
       if (token.systemVariable) {
         if (!result.report.browserEssentials) {
           result.report.browserEssentials = [];

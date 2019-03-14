@@ -29,14 +29,11 @@ export function ensurePublicExtension(url: string) {
   return url;
 }
 
-export function replaceExt(npath, ext): string {
-  if (typeof npath !== 'string') {
+export function replaceExt(npath: string, ext): string {
+  if (!npath) {
     return npath;
   }
 
-  if (npath.length === 0) {
-    return npath;
-  }
   if (/\.[a-z0-9]+$/i.test(npath)) {
     return npath.replace(/\.[a-z0-9]+$/i, ext);
   } else {

@@ -1,4 +1,4 @@
-import { Context } from './Context';
+import { Context } from './__Context';
 
 export interface IConfig {
   root?: string;
@@ -8,9 +8,9 @@ export interface IConfig {
   modules?: Array<string>;
   sourceMap?:
     | {
-        vendor: boolean;
-        project: boolean;
-        css: boolean;
+        vendor?: boolean;
+        project?: boolean;
+        css?: boolean;
       }
     | boolean;
   plugins?: Array<(ctx: Context) => void>;

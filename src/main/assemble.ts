@@ -1,7 +1,7 @@
 import { fastAnalysis } from '../analysis/fastAnalysis';
 import { ImportType, IResolver, resolveModule } from '../resolver/resolver';
 import { createApplicationPackage } from '../core/application';
-import { Context } from '../core/Context';
+import { Context } from '../core/__Context';
 import { createModule, Module } from '../core/Module';
 import { createPackage, Package } from '../core/Package';
 

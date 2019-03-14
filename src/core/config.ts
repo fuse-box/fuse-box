@@ -1,19 +1,9 @@
 import * as appRoot from 'app-root-path';
+import * as path from 'path';
 import { ensureAbsolutePath } from '../utils/utils';
 import { IConfig } from './interfaces';
-import * as path from 'path';
-import { pluginTypeScript } from '../plugins/core/plugin_typescript';
 const FUSE_MODULES = path.join(appRoot.path, 'modules');
 
-function setupPlugins(config: IConfig, props: IConfig) {
-  let plugins = [];
-  if (props.plugins) {
-    plugins = props.plugins;
-  }
-
-  plugins.push(pluginTypeScript());
-  config.plugins = plugins;
-}
 export function createConfig(props: IConfig): IConfig {
   const config: IConfig = {
     root: process.env.APP_ROOT || appRoot.path,
@@ -63,6 +53,5 @@ export function createConfig(props: IConfig): IConfig {
     }
   }
 
-  setupPlugins(config, props);
   return config;
 }

@@ -25,6 +25,5 @@ module.exports = {
   ],
   maxConcurrency: 1,
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node', 'json'],
-  //coverageDirectory: 'build/logs/',
-  //collectCoverage: true,
+  coveragePathIgnorePatterns: ['test_utils.ts'],
 };

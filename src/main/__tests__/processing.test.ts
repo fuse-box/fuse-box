@@ -1,9 +1,9 @@
 import * as path from 'path';
-import { createContext, Context } from '../../core/Context';
+import { createContext, Context } from '../../core/__Context';
 import { IConfig } from '../../core/interfaces';
 import { Package } from '../../core/Package';
 import { assemble } from '../assemble';
-import { processing } from '../processing';
+import { processModules } from '../processing';
 
 function createProjectContext(folder: string, opts?: IConfig) {
   opts = opts || {};
@@ -19,11 +19,11 @@ function createProjectContext(folder: string, opts?: IConfig) {
 async function resolve(folder: string, opts: IConfig, entry: string): Promise<Array<Package>> {
   const ctx = createProjectContext(folder, opts);
   const packages = assemble(ctx, entry);
-  await processing({ ctx: ctx, packages: packages, plugins: opts.plugins });
+  await processModules({ ctx: ctx, packages: packages, plugins: opts.plugins });
   return packages;
 }
 
-describe('Bundle resolve test', () => {
+describe('Processing modules', () => {
   it('should trigger bundle_resolve_start', async () => {
     const fn = jest.fn();
     const fn2 = jest.fn();
@@ -150,7 +150,7 @@ describe('Bundle resolve test', () => {
       pkg.isCached = true;
     });
     let shouldBeFalse = false;
-    await processing({
+    await processModules({
       ctx: ctx,
       packages: packages,
       plugins: [
@@ -175,7 +175,7 @@ describe('Bundle resolve test', () => {
       });
     });
     let shouldBeFalse = false;
-    await processing({
+    await processModules({
       ctx: ctx,
       packages: packages,
       plugins: [

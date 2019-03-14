@@ -1,5 +1,5 @@
 import { Module } from '../core/Module';
-import { Context } from '../core/Context';
+import { Context } from '../core/__Context';
 import { Package } from '../core/Package';
 
 export interface InterceptorEvents {
