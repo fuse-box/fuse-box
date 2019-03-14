@@ -1,4 +1,6 @@
 import { Module } from '../core/Module';
+import { Context } from '../core/Context';
+import { Package } from '../core/Package';
 
 export interface InterceptorEvents {
   test?: { foo: string };
@@ -7,4 +9,9 @@ export interface InterceptorEvents {
   assemble_ts_module?: { module: Module };
   assemble_pr_module?: { module: Module };
   assemble_nm_module?: { module: Module };
+  bundle_resolve_start: { ctx: Context; packages: Array<Package> };
+  bundle_resolve_end: { ctx: Context; packages: Array<Package> };
+  bundle_resolve_typescript_module: { module: Module };
+  bundle_resolve_js_module: { module: Module };
+  bundle_resolve_module: { module: Module };
 }

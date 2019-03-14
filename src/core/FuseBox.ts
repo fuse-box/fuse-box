@@ -1,4 +1,4 @@
-import { createContext } from './context';
+import { createContext } from './Context';
 import { IConfig } from './interfaces';
 
 export interface IBundleProps {

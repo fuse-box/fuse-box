@@ -12,6 +12,7 @@ export interface IModuleProps {
   extension: string;
 }
 export class Module {
+  public isCached: boolean;
   public pkg: Package;
 
   public assembled: boolean;

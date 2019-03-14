@@ -2,7 +2,18 @@ import * as appRoot from 'app-root-path';
 import { ensureAbsolutePath } from '../utils/utils';
 import { IConfig } from './interfaces';
 import * as path from 'path';
+import { pluginTypeScript } from '../plugins/core/plugin_typescript';
 const FUSE_MODULES = path.join(appRoot.path, 'modules');
+
+function setupPlugins(config: IConfig, props: IConfig) {
+  let plugins = [];
+  if (props.plugins) {
+    plugins = props.plugins;
+  }
+
+  plugins.push(pluginTypeScript());
+  config.plugins = plugins;
+}
 export function createConfig(props: IConfig): IConfig {
   const config: IConfig = {
     root: process.env.APP_ROOT || appRoot.path,
@@ -29,8 +40,29 @@ export function createConfig(props: IConfig): IConfig {
     config.target = props.target;
   }
 
-  if (props.fuseBoxPolyfillsFolder) {
-    config.fuseBoxPolyfillsFolder = props.fuseBoxPolyfillsFolder;
+  config.options = {
+    vendorSourceMap: false,
+    projectSourceMap: true,
+    cssSourceMap: true,
+  };
+  if (props.sourceMap !== undefined) {
+    if (props.sourceMap === false) {
+      config.options.projectSourceMap = false;
+      config.options.cssSourceMap = false;
+    }
+    if (typeof props.sourceMap === 'object') {
+      if (props.sourceMap.css === false) {
+        config.options.cssSourceMap = false;
+      }
+      if (props.sourceMap.vendor === true) {
+        config.options.vendorSourceMap = true;
+      }
+      if (props.sourceMap.project === false) {
+        config.options.projectSourceMap = false;
+      }
+    }
   }
+
+  setupPlugins(config, props);
   return config;
 }

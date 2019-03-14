@@ -1,9 +1,9 @@
 import { fastAnalysis } from '../analysis/fastAnalysis';
 import { ImportType, IResolver, resolveModule } from '../resolver/resolver';
-import { createApplicationPackage } from './application';
-import { Context } from './context';
-import { createModule, Module } from './Module';
-import { createPackage, Package } from './Package';
+import { createApplicationPackage } from '../core/application';
+import { Context } from '../core/Context';
+import { createModule, Module } from '../core/Module';
+import { createPackage, Package } from '../core/Package';
 
 interface IDefaultParseProps {
   assemble?: boolean;

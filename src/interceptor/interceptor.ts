@@ -1,12 +1,15 @@
 import { InterceptorEvents } from './events';
 
 interface TypedInterceptor<T> {
+  promise: (fn: () => Promise<any>) => void;
+  resolve: () => Promise<any>;
   on<K extends keyof T>(s: K, props: (props: T[K]) => T[K]);
   sync<K extends keyof T>(s: K, props: T[K]): T[K];
 }
 export type MainInterceptor = TypedInterceptor<InterceptorEvents>;
 export function createInterceptor(): MainInterceptor {
   const subscriptions = new Map<string, Array<(props: any) => any>>();
+  let promises = [];
   // adds an interceptor
   function add(key: string, fn: any) {
     let fns: Array<any> = [];
@@ -18,6 +21,14 @@ export function createInterceptor(): MainInterceptor {
     fns.push(fn);
   }
   return {
+    promise: function(fn: () => Promise<any>) {
+      promises.push(fn);
+    },
+    resolve: async function(): Promise<any> {
+      const res = await Promise.all(promises.map(p => p()));
+      promises = [];
+      return res;
+    },
     on: function(key: any, fn: (props: any) => any) {
       add(key, fn);
     },

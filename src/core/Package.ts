@@ -7,6 +7,7 @@ export interface IPackageProps {
   meta: IPackageMeta;
 }
 export class Package {
+  public isCached: boolean;
   // can be empty
   public entry?: Module;
   public isDefaultPackage: boolean;
