@@ -1,0 +1,192 @@
+import * as path from 'path';
+import { createContext, Context } from '../../core/Context';
+import { IConfig } from '../../core/interfaces';
+import { Package } from '../../core/Package';
+import { assemble } from '../assemble';
+import { processing } from '../processing';
+
+function createProjectContext(folder: string, opts?: IConfig) {
+  opts = opts || {};
+  return createContext({
+    ...{
+      modules: [path.resolve(__dirname, 'cases/modules/')],
+      homeDir: path.resolve(__dirname, 'cases/projects/', folder),
+    },
+    ...opts,
+  });
+}
+
+async function resolve(folder: string, opts: IConfig, entry: string): Promise<Array<Package>> {
+  const ctx = createProjectContext(folder, opts);
+  const packages = assemble(ctx, entry);
+  await processing({ ctx: ctx, packages: packages, plugins: opts.plugins });
+  return packages;
+}
+
+describe('Bundle resolve test', () => {
+  it('should trigger bundle_resolve_start', async () => {
+    const fn = jest.fn();
+    const fn2 = jest.fn();
+    await resolve(
+      'resolve_1',
+      {
+        plugins: [
+          (ctx: Context) => {
+            ctx.interceptor.on('bundle_resolve_start', fn);
+            ctx.interceptor.on('bundle_resolve_module', fn2);
+          },
+        ],
+      },
+      'index.ts',
+    );
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(fn2).toHaveBeenCalledTimes(1);
+  });
+
+  it('should trigger resolve typescript module', async () => {
+    const fn = jest.fn();
+    const fn2 = jest.fn();
+    await resolve(
+      'resolve_1',
+      {
+        plugins: [
+          (ctx: Context) => {
+            ctx.interceptor.on('bundle_resolve_typescript_module', fn);
+            ctx.interceptor.on('bundle_resolve_module', fn2);
+          },
+        ],
+      },
+      'index.ts',
+    );
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(fn2).toHaveBeenCalledTimes(1);
+  });
+  it('should trigger resolve typescript module 2 times', async () => {
+    const fn = jest.fn();
+    const fn2 = jest.fn();
+    await resolve(
+      'resolve_1',
+      {
+        plugins: [
+          (ctx: Context) => {
+            ctx.interceptor.on('bundle_resolve_typescript_module', fn);
+            ctx.interceptor.on('bundle_resolve_module', fn2);
+          },
+        ],
+      },
+      'index2.ts',
+    );
+    expect(fn).toHaveBeenCalledTimes(2);
+    expect(fn2).toHaveBeenCalledTimes(2);
+  });
+
+  it('should trigger resolve js module', async () => {
+    const fn = jest.fn();
+    const fn2 = jest.fn();
+    await resolve(
+      'resolve_1',
+      {
+        plugins: [
+          (ctx: Context) => {
+            ctx.interceptor.on('bundle_resolve_js_module', fn);
+            ctx.interceptor.on('bundle_resolve_module', fn2);
+          },
+        ],
+      },
+      'index.js',
+    );
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(fn2).toHaveBeenCalledTimes(1);
+  });
+
+  it('should trigger resolve js module 2 times', async () => {
+    const fn = jest.fn();
+    const fn2 = jest.fn();
+    await resolve(
+      'resolve_1',
+      {
+        plugins: [
+          (ctx: Context) => {
+            ctx.interceptor.on('bundle_resolve_js_module', fn);
+            ctx.interceptor.on('bundle_resolve_module', fn2);
+          },
+        ],
+      },
+      'index2.js',
+    );
+    expect(fn).toHaveBeenCalledTimes(2);
+    expect(fn2).toHaveBeenCalledTimes(2);
+  });
+
+  it('should trigger after a plugin has resolved itself', async () => {
+    let result;
+    await resolve(
+      'resolve_1',
+      {
+        plugins: [
+          (ctx: Context) => {
+            ctx.interceptor.promise(() => {
+              return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                  result = 'done';
+                  return resolve();
+                }, 10);
+              });
+            });
+          },
+        ],
+      },
+      'index.ts',
+    );
+    expect(result).toEqual('done');
+  });
+
+  it('should not process a cached package', async () => {
+    let result;
+    const ctx = createProjectContext('resolve_1', {});
+    const packages = assemble(ctx, 'index.ts');
+
+    packages.map(pkg => {
+      pkg.isCached = true;
+    });
+    let shouldBeFalse = false;
+    await processing({
+      ctx: ctx,
+      packages: packages,
+      plugins: [
+        (ctx: Context) => {
+          ctx.interceptor.on('bundle_resolve_module', props => {
+            shouldBeFalse = true;
+            return props;
+          });
+        },
+      ],
+    });
+    expect(shouldBeFalse).toBe(false);
+  });
+
+  it('should not process a cached module', async () => {
+    const ctx = createProjectContext('resolve_1', {});
+    const packages = assemble(ctx, 'index.ts');
+
+    packages.map(pkg => {
+      pkg.modules.forEach(mod => {
+        mod.isCached = true;
+      });
+    });
+    let shouldBeFalse = false;
+    await processing({
+      ctx: ctx,
+      packages: packages,
+      plugins: [
+        (ctx: Context) => {
+          ctx.interceptor.on('bundle_resolve_module', props => {
+            shouldBeFalse = true;
+            return props;
+          });
+        },
+      ],
+    });
+    expect(shouldBeFalse).toBe(false);
+  });
+});

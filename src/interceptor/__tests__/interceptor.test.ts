@@ -1,6 +1,6 @@
 import { createInterceptor } from '../interceptor';
 import { createModule, Module } from '../../core/Module';
-import { Context, createContext } from '../../core/context';
+import { Context, createContext } from '../../core/Context';
 import { createDefaultPackage } from '../../core/application';
 
 describe('Interceptor', () => {
@@ -46,5 +46,28 @@ describe('Interceptor', () => {
     });
     const response = interceptor.sync('assemble_module', { module: _module });
     expect(response.module.contents).toEqual('bar');
+  });
+
+  it('should promise and resolve', async () => {
+    const icp = createInterceptor();
+    const responses = [];
+    icp.promise(() => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          responses.push(1);
+          return resolve();
+        }, 1);
+      });
+    });
+    icp.promise(() => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          responses.push(2);
+          return resolve();
+        }, 2);
+      });
+    });
+    await icp.resolve();
+    expect(responses).toEqual([1, 2]);
   });
 });

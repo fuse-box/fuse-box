@@ -1,4 +1,4 @@
-import { Context } from '../core/context';
+import { Context } from '../core/Context';
 import { Module } from '../core/Module';
 import { fastTransform } from '../transform/fastTransform';
 

@@ -2,9 +2,12 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as appRoot from 'app-root-path';
 import { ensureFuseBoxPath } from './utils';
-import { Context } from '../core/context';
+import { Context, createContext } from '../core/Context';
 import { createDefaultPackage } from '../core/application';
-import { createModule, IModuleProps } from '../core/Module';
+import { createModule, IModuleProps, Module } from '../core/Module';
+import { assemble } from '../main/assemble';
+import { IConfig } from '../core/interfaces';
+import { Package } from '../core/Package';
 
 declare global {
   namespace jest {
@@ -32,6 +35,41 @@ expect.extend({
     };
   },
 });
+
+export function createAssembleHellper(folder: string) {
+  function createProjectContext(folder: string, opts?: IConfig): Context {
+    opts = opts || {};
+    return createContext({
+      ...{
+        modules: [path.resolve(__dirname, 'cases/modules/')],
+        homeDir: path.resolve(__dirname, 'cases/projects/', folder),
+      },
+      ...opts,
+    });
+  }
+
+  return function withEntry(
+    opts: IConfig,
+    entry: string,
+  ): {
+    ctx: Context;
+    packages : Array<Package>.
+    getDefaultPackage: () => Package;
+    getDefaultModules: () => Array<Module>;
+  } {
+    const ctx = createProjectContext(folder, opts);
+    const packages = assemble(ctx, entry);
+    return {
+      ctx,
+      packages,
+      getDefaultPackage: () => packages.find(p => p.isDefaultPackage),
+      getDefaultModules: () => {
+        const pkg = packages.find(p => p.isDefaultPackage);
+        return pkg.modules;
+      },
+    };
+  };
+}
 
 function createFiles(dir: string, files: any) {
   for (let name in files) {
