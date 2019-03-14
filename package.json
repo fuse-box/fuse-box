@@ -125,7 +125,8 @@
     "dev": "rm -rf ./.fusebox; rm -rf ./.dev; gulp dev",
     "old_test": "node test.js",
     "test": "jest --verbose",
-    "coverage": "jest --verbose --coverage"
+    "coverage": "jest --verbose --coverage",
+    "coverage-ci": "jest --verbose --coverage --runInBand"
   },
   "typings": "index.d.ts",
   "version": "4.0.0-next.7"
