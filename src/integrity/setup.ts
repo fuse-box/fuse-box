@@ -1,4 +1,4 @@
-import { Context } from '../core/Context';
+import { Context } from '../core/__Context';
 import { assembleFastAnalysis } from './assembleFastAnalysis';
 import { assembleNodeModule } from './assembleNodeModule';
 

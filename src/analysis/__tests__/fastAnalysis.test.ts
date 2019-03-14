@@ -341,7 +341,16 @@ describe('Fast analysis test', () => {
     });
   });
 
-  describe('Should report correct on es6syntax', () => {
+  describe('Report', () => {
+    it('should give jsx', () => {
+      const result = fastAnalysis({
+        input: `
+				 function(){ return <div></div>}
+			`,
+      });
+      expect(result.report.containsJSX).toEqual(true);
+    });
+
     it('should give es6Syntax 1', () => {
       const result = fastAnalysis({
         input: `

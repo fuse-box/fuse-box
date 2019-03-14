@@ -1,6 +1,6 @@
 import { createInterceptor } from '../interceptor';
 import { createModule, Module } from '../../core/Module';
-import { Context, createContext } from '../../core/Context';
+import { Context, createContext } from '../../core/__Context';
 import { createDefaultPackage } from '../../core/application';
 
 describe('Interceptor', () => {

@@ -1,5 +1,5 @@
 import { ensureAbsolutePath, getExtension, makeFuseBoxPath } from '../utils/utils';
-import { Context } from './Context';
+import { Context } from './__Context';
 import { Module } from './Module';
 import { IPackageProps, Package } from './Package';
 

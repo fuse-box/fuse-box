@@ -1,4 +1,4 @@
-import { createContext } from '../Context';
+import { createContext } from '../__Context';
 import { createModule } from '../Module';
 import { createPackage } from '../Package';
 

@@ -3,6 +3,16 @@ import { ImportType } from '../../resolver/resolver';
 import { devImports } from '../../integrity/devPackage';
 
 describe('Ts transform test', () => {
+  it('should not replace', () => {
+    const result = tsTransform({
+      input: `
+        require('./bar' + 'foo')
+      `,
+      replacements: [{ type: ImportType.REQUIRE, fromStatement: './bar', toStatement: './oi' }],
+    });
+    expect(result.outputText).toContain(`require('./bar' + 'foo')`);
+  });
+
   it('should replace require', () => {
     const result = tsTransform({
       input: `require('./bar')`,
@@ -11,7 +21,15 @@ describe('Ts transform test', () => {
     expect(result.outputText).toContain('require("./oi")');
   });
 
-  it.only('should replace $fsmp$', () => {
+  it('should replace import', () => {
+    const result = tsTransform({
+      input: `import('./bar')`,
+      replacements: [{ type: ImportType.REQUIRE, fromStatement: './bar', toStatement: './oi' }],
+    });
+    expect(result.outputText).toContain(`require("./oi")`);
+  });
+
+  it('should replace $fsmp$', () => {
     const result = tsTransform({
       input: `${devImports.variable}('./bar')`,
       replacements: [{ type: ImportType.REQUIRE, fromStatement: './bar', toStatement: './oi' }],

@@ -2,12 +2,12 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as appRoot from 'app-root-path';
 import { ensureFuseBoxPath } from './utils';
-import { Context, createContext } from '../core/Context';
+import { Context, createContext } from '../core/__Context';
 import { createDefaultPackage } from '../core/application';
 import { createModule, IModuleProps, Module } from '../core/Module';
 import { assemble } from '../main/assemble';
 import { IConfig } from '../core/interfaces';
-import { Package } from '../core/Package';
+import { Package, createPackage } from '../core/Package';
 
 declare global {
   namespace jest {
@@ -36,6 +36,45 @@ expect.extend({
   },
 });
 
+export function mockModule(props: {
+  config?: IConfig;
+  packageProps?: {
+    name?: string;
+    isDefaultPackage?: boolean;
+  };
+  moduleProps?: {
+    absPath?: string;
+    extension?: string;
+    fuseBoxPath?: string;
+  };
+}) {
+  const ctx = createContext(props.config || {});
+  const moduleProps = props.moduleProps || {};
+  const packageProps = props.packageProps || {};
+  const pkg = createPackage({
+    ctx: ctx,
+    meta: {
+      name: packageProps.name || 'default',
+    },
+  });
+  if (packageProps.isDefaultPackage) {
+    pkg.isDefaultPackage = true;
+  }
+
+  return {
+    module: createModule(
+      {
+        ctx: ctx,
+        absPath: moduleProps.absPath || '/',
+        extension: moduleProps.extension || '.js',
+        fuseBoxPath: moduleProps.fuseBoxPath || '/',
+      },
+      pkg,
+    ),
+    ctx: ctx,
+    pkg: pkg,
+  };
+}
 export function createAssembleHellper(folder: string) {
   function createProjectContext(folder: string, opts?: IConfig): Context {
     opts = opts || {};
@@ -53,7 +92,7 @@ export function createAssembleHellper(folder: string) {
     entry: string,
   ): {
     ctx: Context;
-    packages : Array<Package>.
+    packages: Array<Package>;
     getDefaultPackage: () => Package;
     getDefaultModules: () => Array<Module>;
   } {
