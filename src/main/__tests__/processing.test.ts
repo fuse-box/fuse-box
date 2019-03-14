@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { createContext, Context } from '../../core/__Context';
+import { createContext, Context } from '../../core/Context';
 import { IConfig } from '../../core/interfaces';
 import { Package } from '../../core/Package';
 import { assemble } from '../assemble';

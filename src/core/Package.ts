@@ -1,5 +1,5 @@
 import { IPackageMeta } from '../resolver/resolver';
-import { Context } from './__Context';
+import { Context } from './Context';
 import { Module } from './Module';
 
 export interface IPackageProps {

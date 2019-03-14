@@ -5,7 +5,7 @@ import '../../utils/test_utils';
 import { createRequireConst } from '../../utils/utils';
 import { devImports } from '../../integrity/devPackage';
 import { ImportType } from '../../resolver/resolver';
-import { createContext } from '../../core/__Context';
+import { createContext } from '../../core/Context';
 import { IConfig } from '../../core/interfaces';
 function createProjectContext(folder: string, opts?: IConfig) {
   opts = opts || {};
