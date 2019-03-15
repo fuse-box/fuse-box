@@ -36,7 +36,7 @@ expect.extend({
   },
 });
 
-export function mockModule(props: {
+export interface IMockModuleProps {
   config?: IConfig;
   packageProps?: {
     name?: string;
@@ -47,7 +47,13 @@ export function mockModule(props: {
     extension?: string;
     fuseBoxPath?: string;
   };
-}) {
+}
+export interface IMockModuleResponse {
+  module: Module;
+  ctx: Context;
+  pkg: Package;
+}
+export function mockModule(props: IMockModuleProps): IMockModuleResponse {
   const ctx = createContext(props.config || {});
   const moduleProps = props.moduleProps || {};
   const packageProps = props.packageProps || {};
