@@ -53,5 +53,9 @@ export function createConfig(props: IConfig): IConfig {
     }
   }
 
+  if (props.entry) {
+    props.options.entries = [].concat(props.entry);
+  }
+
   return config;
 }

@@ -58,6 +58,10 @@ export function fileExists(file: string) {
 export function readFile(file: string) {
   return fs.readFileSync(file).toString();
 }
+
+export function pathJoin(...args) {
+  return path.join(...args);
+}
 export function getExtension(file: string) {
   return path.extname(file);
 }
