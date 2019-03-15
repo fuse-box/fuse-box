@@ -1,9 +1,9 @@
+import * as appRoot from 'app-root-path';
 import * as path from 'path';
 import * as ts from 'typescript';
 import { IConfig } from '../core/interfaces';
-import { IRawTypescriptConfig, IRawCompilerOptions, TypescriptConfig } from '../interfaces/TypescriptInterfaces';
+import { IRawCompilerOptions, IRawTypescriptConfig, TypescriptConfig } from '../interfaces/TypescriptInterfaces';
 import { fileExists, pathJoin } from '../utils/utils';
-import * as appRoot from 'app-root-path';
 
 export function resolveTSConfig(props: {
   root: string;
@@ -39,12 +39,7 @@ export function resolveTSConfig(props: {
 export function initTypescriptConfig(
   props: IConfig,
   configScriptPath?: string, // fuse.js or fuse.ts
-): {
-  basePath?: string;
-  diagnostics?: Array<any>; // all errors come here
-  jsonCompilerOptions?: IRawCompilerOptions;
-  compilerOptions?: ts.CompilerOptions;
-} {
+): TypescriptConfig {
   let basePath: string = configScriptPath;
 
   let userOptions: IRawCompilerOptions = {};

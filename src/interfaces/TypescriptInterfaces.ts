@@ -1,7 +1,10 @@
 import { ITypescriptPaths } from '../resolver/pathsLookup';
-
+import * as ts from 'typescript';
 export interface TypescriptConfig {
-  compilerOptions: IRawCompilerOptions;
+  basePath?: string;
+  diagnostics?: Array<any>; // all errors come here
+  jsonCompilerOptions?: IRawCompilerOptions;
+  compilerOptions?: ts.CompilerOptions;
 }
 
 export interface IRawCompilerOptions {
