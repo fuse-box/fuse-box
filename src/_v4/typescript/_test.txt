@@ -1,0 +1,116 @@
+import { something } from 'somewhere'
+// A recursive walk is one where your functions override the default
+// walkers. They can modify and replace the state parameter that's
+// threaded through the walk, and can opt how and whether to walk
+// their child nodes (by calling their third argument on these
+// nodes).
+export function recursive(node, state, funcs, baseVisitor, override) {
+  let visitor = funcs ? make(funcs, baseVisitor || undefined) : baseVisitor
+  ;(function c(node, st, override) {
+    visitor[override || node.type](node, st, c)
+  })(node, state, override)
+}
+
+// Each scope gets a bitset that may contain these flags
+export const
+    SCOPE_TOP = 1,
+    SCOPE_FUNCTION = 2,
+    SCOPE_VAR = SCOPE_TOP | SCOPE_FUNCTION,
+    SCOPE_ASYNC = 4,
+    SCOPE_GENERATOR = 8,
+    SCOPE_ARROW = 16,
+    SCOPE_SIMPLE_CATCH = 32,
+    SCOPE_SUPER = 64,
+    SCOPE_DIRECT_SUPER = 128
+
+export function functionFlags(async, generator) {
+  return SCOPE_FUNCTION | (async ? SCOPE_ASYNC : 0) | (generator ? SCOPE_GENERATOR : 0)
+}
+
+// Used in checkLVal and declareName to determine the type of a binding
+export const
+    BIND_NONE = 0, // Not a binding
+    BIND_VAR = 1, // Var-style binding
+    BIND_LEXICAL = 2, // Let- or const-style binding
+    BIND_FUNCTION = 3, // Function declaration
+    BIND_SIMPLE_CATCH = 4, // Simple (identifier pattern) catch binding
+    BIND_OUTSIDE = 5 // Special case for function names as bound inside the function
+
+
+export function recursive2(node, state, funcs, baseVisitor, override) {
+  let visitor = funcs ? make(funcs, baseVisitor || undefined) : baseVisitor
+  ;(function c(node, st, override) {
+    visitor[override || node.type](node, st, c)
+  })(node, state, override)
+}
+
+export function recursive3(node, state, funcs, baseVisitor, override) {
+  let visitor = funcs ? make(funcs, baseVisitor || undefined) : baseVisitor
+  ;(function c(node, st, override) {
+    visitor[override || node.type](node, st, c)
+  })(node, state, override)
+}
+
+export function recursive4(node, state, funcs, baseVisitor, override) {
+  let visitor = funcs ? make(funcs, baseVisitor || undefined) : baseVisitor
+  ;(function c(node, st, override) {
+    visitor[override || node.type](node, st, c)
+  })(node, state, override)
+}
+
+export function recursive5(node, state, funcs, baseVisitor, override) {
+  let visitor = funcs ? make(funcs, baseVisitor || undefined) : baseVisitor
+  ;(function c(node, st, override) {
+    visitor[override || node.type](node, st, c)
+  })(node, state, override)
+}
+
+
+export function recursive6(node, state, funcs, baseVisitor, override) {
+  let visitor = funcs ? make(funcs, baseVisitor || undefined) : baseVisitor
+  ;(function c(node, st, override) {
+    visitor[override || node.type](node, st, c)
+  })(node, state, override)
+}
+
+export function a(node, state, funcs, baseVisitor, override) {
+  let visitor = funcs ? make(funcs, baseVisitor || undefined) : baseVisitor
+  ;(function c(node, st, override) {
+    visitor[override || node.type](node, st, c)
+  })(node, state, override)
+}
+
+export function b(node, state, funcs, baseVisitor, override) {
+  let visitor = funcs ? make(funcs, baseVisitor || undefined) : baseVisitor
+  ;(function c(node, st, override) {
+    visitor[override || node.type](node, st, c)
+  })(node, state, override)
+}
+
+export function c(node, state, funcs, baseVisitor, override) {
+  let visitor = funcs ? make(funcs, baseVisitor || undefined) : baseVisitor
+  ;(function c(node, st, override) {
+    visitor[override || node.type](node, st, c)
+  })(node, state, override)
+}
+
+export function d(node, state, funcs, baseVisitor, override) {
+  let visitor = funcs ? make(funcs, baseVisitor || undefined) : baseVisitor
+  ;(function c(node, st, override) {
+    visitor[override || node.type](node, st, c)
+  })(node, state, override)
+}
+
+export function f(node, state, funcs, baseVisitor, override) {
+  let visitor = funcs ? make(funcs, baseVisitor || undefined) : baseVisitor
+  ;(function c(node, st, override) {
+    visitor[override || node.type](node, st, c)
+  })(node, state, override)
+}
+
+export function g(node, state, funcs, baseVisitor, override) {
+  let visitor = funcs ? make(funcs, baseVisitor || undefined) : baseVisitor
+  ;(function c(node, st, override) {
+    visitor[override || node.type](node, st, c)
+  })(node, state, override)
+}
