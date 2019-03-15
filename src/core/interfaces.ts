@@ -1,8 +1,6 @@
-import { ILoggerProps } from '../logging/logging';
-
 import { IRawCompilerOptions } from '../interfaces/TypescriptInterfaces';
-import { Context } from './Context';
 import { ILoggerProps } from '../logging/logging';
+import { Context } from './Context';
 
 export interface IConfig {
   root?: string;
