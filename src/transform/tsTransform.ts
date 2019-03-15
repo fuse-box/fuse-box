@@ -1,6 +1,7 @@
 import * as ts from 'typescript';
 import { IStatementReplaceableCollection } from '../analysis/fastAnalysis';
 import { devImports } from '../integrity/devPackage';
+import { IRawCompilerOptions } from '../interfaces/TypescriptInterfaces';
 
 export function isRequireCall(callExpression: ts.Node) {
   if (callExpression.kind !== ts.SyntaxKind.CallExpression) return false;
@@ -20,7 +21,7 @@ export function isRequireCall(callExpression: ts.Node) {
 
 export interface ITypescriptTransformProps {
   input: string;
-  compilerOptions?: ts.CompilerOptions | undefined;
+  compilerOptions?: ts.CompilerOptions;
   replacements?: IStatementReplaceableCollection;
 }
 
@@ -33,17 +34,6 @@ export function visitStatementNode(node, replacer: (input) => any) {
   }
 }
 export function tsTransform(props: ITypescriptTransformProps): ts.TranspileOutput {
-  let compilerOptions: ts.CompilerOptions = props.compilerOptions || {
-    module: ts.ModuleKind.CommonJS,
-    target: ts.ScriptTarget.ESNext,
-    jsx: ts.JsxEmit.React,
-    importHelpers: true,
-    sourceMap: true,
-    inlineSources: true,
-    experimentalDecorators: true,
-    jsxFactory: 'react',
-  };
-
   function moduleTransformer<T extends ts.Node>(): ts.TransformerFactory<T> {
     return context => {
       const visit: ts.Visitor = node => {
@@ -60,7 +50,7 @@ export function tsTransform(props: ITypescriptTransformProps): ts.TranspileOutpu
     };
   }
   return ts.transpileModule(props.input, {
-    compilerOptions: compilerOptions,
+    compilerOptions: props.compilerOptions,
     transformers: { after: [props.replacements && moduleTransformer()] },
   });
 }

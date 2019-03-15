@@ -1,11 +1,12 @@
 import * as fs from 'fs';
 import { fileLookup, ILookupResult } from './fileLookup';
 
+export type ITypescriptPaths = { [key: string]: Array<string> };
 interface IPathsLookupProps {
   homeDir: string;
   baseURL: string;
   cachePaths?: boolean;
-  paths?: { [key: string]: Array<string> };
+  paths?: ITypescriptPaths;
   target: string;
 }
 

@@ -1,3 +1,4 @@
+import { IRawCompilerOptions } from '../interfaces/TypescriptInterfaces';
 import { Context } from './Context';
 
 export interface IConfig {
@@ -6,6 +7,15 @@ export interface IConfig {
   homeDir?: string;
   output?: string;
   modules?: Array<string>;
+  tsConfig?: string | IRawCompilerOptions;
+  entry?: string | Array<string>;
+  turboMode?:
+    | {
+        maxWorkers?: number;
+        workerPortsRange?: { start: number; end: number };
+        workerPorts?: Array<number>;
+      }
+    | boolean;
   sourceMap?:
     | {
         vendor?: boolean;
@@ -19,10 +29,13 @@ export interface IConfig {
   // read only
   defaultCollectionName?: string;
 
+  production?: {};
+
   // normalised options
   options?: {
-    vendorSourceMap: boolean;
-    projectSourceMap: boolean;
-    cssSourceMap: boolean;
+    entries?: Array<string>;
+    vendorSourceMap?: boolean;
+    projectSourceMap?: boolean;
+    cssSourceMap?: boolean;
   };
 }
