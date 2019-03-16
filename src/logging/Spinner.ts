@@ -12,9 +12,12 @@ function sendAction(action: string, args?: Array<any>) {
 export interface ISpinnerInterface {
   start: () => void;
   setText: (str: string) => void;
-  stop: (str: string) => void;
+  stop: () => void;
 }
-export function getSpinner(): ISpinnerInterface {
+export interface ISpinnerProps {
+  onStop: () => void;
+}
+export function getSpinner(props?: ISpinnerProps): ISpinnerInterface {
   var options = {
     stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
   };
@@ -31,6 +34,7 @@ export function getSpinner(): ISpinnerInterface {
       spinner.send(sendAction('text', [str]));
     },
     stop: () => {
+      if (props && props.onStop) props.onStop();
       spinner.send(sendAction('stop'));
     },
   };

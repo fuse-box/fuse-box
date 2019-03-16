@@ -35,8 +35,9 @@ function measure(name: string, fn: () => void) {
   return name;
 }
 
-const logger = getLogger({ logLevel: LogLevel.INFO });
+const logger = getLogger();
 const spinner = logger.getSpinner();
+logger.info('Starting benchmark');
 spinner.start();
 
 const maxIteration = 200;
@@ -56,7 +57,7 @@ for (const item in result) {
     totalTime += time;
   });
   const avgTime = totalTime / totalRuns;
-  console.log(`${item}: ${avgTime}ms (${totalRuns} runs) `);
+  logger.info(`${item}: ${avgTime}ms (${totalRuns} runs)`);
 }
 
 // //const acornTime = ;

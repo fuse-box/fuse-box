@@ -1,74 +1,58 @@
-import { TerminalStyle } from './terminalStyles';
+const fn = (text: string, codes: Array<number>) => `\u001b[${codes[0]}m${text}\u001b[${codes[1]}m`;
+export const codes = {
+  bold: [1, 22],
+  dim: [2, 22],
+  italic: [3, 23],
+  underline: [4, 24],
+  inverse: [7, 27],
+  hidden: [8, 28],
+  strikethrough: [9, 29],
 
-export function reset(message: string): string {
-  return TerminalStyle.RESET + message + TerminalStyle.RESET;
-}
-export function bright(message: string): string {
-  return TerminalStyle.BRIGHT + message + TerminalStyle.RESET;
-}
-export function dim(message: string): string {
-  return TerminalStyle.DIM + message + TerminalStyle.RESET;
-}
-export function underscore(message: string): string {
-  return TerminalStyle.UNDERSCORE + message + TerminalStyle.RESET;
-}
-export function blink(message: string): string {
-  return TerminalStyle.BLINK + message + TerminalStyle.RESET;
-}
-export function reverse(message: string): string {
-  return TerminalStyle.REVERSE + message + TerminalStyle.RESET;
-}
-export function hidden(message: string): string {
-  return TerminalStyle.HIDDEN + message + TerminalStyle.RESET;
-}
-export function black(message: string): string {
-  return TerminalStyle.FG_BLACK + message + TerminalStyle.RESET;
-}
-export function red(message: string): string {
-  return TerminalStyle.FG_RED + message + TerminalStyle.RESET;
-}
-export function green(message: string): string {
-  return TerminalStyle.FG_GREEN + message + TerminalStyle.RESET;
-}
-export function yellow(message: string): string {
-  return TerminalStyle.FG_YELLOW + message + TerminalStyle.RESET;
-}
-export function blue(message: string): string {
-  return TerminalStyle.FG_BLUE + message + TerminalStyle.RESET;
-}
-export function magenta(message: string): string {
-  return TerminalStyle.FG_MAGENTA + message + TerminalStyle.RESET;
-}
-export function cyan(message: string): string {
-  return TerminalStyle.FG_CYAN + message + TerminalStyle.RESET;
-}
-export function white(message: string): string {
-  return TerminalStyle.FG_WHITE + message + TerminalStyle.RESET;
-}
-export function bgBlack(message: string): string {
-  return TerminalStyle.BG_BLACK + message + TerminalStyle.RESET;
-}
-export function bgRed(message: string): string {
-  return TerminalStyle.BG_RED + message + TerminalStyle.RESET;
-}
-export function bgGreen(message: string): string {
-  return TerminalStyle.BG_GREEN + message + TerminalStyle.RESET;
-}
-export function bgYellow(message: string): string {
-  return TerminalStyle.BG_YELLOW + message + TerminalStyle.RESET;
-}
-export function bgBlue(message: string): string {
-  return TerminalStyle.BG_BLUE + message + TerminalStyle.RESET;
-}
-export function bgMagenta(message: string): string {
-  return TerminalStyle.BG_MAGENTA + message + TerminalStyle.RESET;
-}
-export function bgCyan(message: string): string {
-  return TerminalStyle.BG_CYAN + message + TerminalStyle.RESET;
-}
-export function bgWhite(message: string): string {
-  return TerminalStyle.BG_WHITE + message + TerminalStyle.RESET;
-}
-export function colorize(message: string, style: TerminalStyle): string {
-  return style + message + TerminalStyle.RESET;
-}
+  black: [30, 39],
+  red: [31, 39],
+  green: [32, 39],
+  yellow: [33, 39],
+  blue: [34, 39],
+  magenta: [35, 39],
+  cyan: [36, 39],
+  white: [37, 39],
+  gray: [90, 39],
+  grey: [90, 39],
+
+  bgBlack: [40, 49],
+  bgRed: [41, 49],
+  bgGreen: [42, 49],
+  bgYellow: [43, 49],
+  bgBlue: [44, 49],
+  bgMagenta: [45, 49],
+  bgCyan: [46, 49],
+  bgWhite: [47, 49],
+};
+export const colors = {
+  reset: [0, 0],
+  bold: text => fn(text, codes.bold),
+  dim: text => fn(text, codes.dim),
+  italic: text => fn(text, codes.italic),
+  underline: text => fn(text, codes.underline),
+  inverse: text => fn(text, codes.inverse),
+  hidden: text => fn(text, codes.hidden),
+  strikethrough: text => fn(text, codes.strikethrough),
+  black: text => fn(text, codes.black),
+  red: text => fn(text, codes.red),
+  green: text => fn(text, codes.green),
+  yellow: text => fn(text, codes.yellow),
+  blue: text => fn(text, codes.blue),
+  magenta: text => fn(text, codes.magenta),
+  cyan: text => fn(text, codes.cyan),
+  white: text => fn(text, codes.white),
+  gray: text => fn(text, codes.gray),
+  grey: text => fn(text, codes.grey),
+  bgBlack: text => fn(text, codes.bgBlack),
+  bgRed: text => fn(text, codes.bgRed),
+  bgGreen: text => fn(text, codes.bgGreen),
+  bgYellow: text => fn(text, codes.bgYellow),
+  bgBlue: text => fn(text, codes.bgBlue),
+  bgMagenta: text => fn(text, codes.bgMagenta),
+  bgCyan: text => fn(text, codes.bgCyan),
+  bgWhite: text => fn(text, codes.bgWhite),
+};

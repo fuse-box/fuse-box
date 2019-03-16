@@ -8,7 +8,7 @@ process.on('message', msg => {
     mySpinner.start(0);
   }
   if (json.action === 'text') {
-    mySpinner.text = json.args[0];
+    mySpinner.setText(json.args[0]);
   }
   if (json.action === 'stop') {
     mySpinner.stop();

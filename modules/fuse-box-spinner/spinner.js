@@ -60,11 +60,11 @@ module.exports.getSpinner = function() {
       let current = 0;
       function iteration() {
         const spinnerText = colourise(
-          Colours.FG_CYAN,
+          Colours.FG_YELLOW,
           ' ' +
             (userText.indexOf('%s') > -1 ? userText.replace('%s', spinnerChars[current]) : spinnerChars[current] + ' '),
         );
-        onTick(spinnerText + ' ' + colourise(Colours.FG_CYAN, userText));
+        onTick(spinnerText + userText);
         current = ++current % spinnerChars.length;
       }
       iteration();
@@ -74,6 +74,7 @@ module.exports.getSpinner = function() {
     stop: () => {
       clearInterval(interval);
       clearLine();
+      process.exit(0);
     },
   };
 };
