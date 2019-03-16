@@ -1,80 +1,113 @@
-import { yellow, cyan, red, green, magenta } from './chroma';
-import { getSpinner } from './Spinner';
+import { getSpinner, ISpinnerInterface } from './Spinner';
+import { colors } from './chroma';
+export interface ILogger {}
 
-export interface ILogger {
-  debug(msg: String);
-  info(msg: String);
-  warn(msg: String);
-  error(msg: String);
-  deprecated(msg: String);
-  getSpinner();
-}
-
-export enum LogPriority {
-  INFO = 'info',
-  DEBUG = 'debug',
-  ERROR = 'error',
-  WARNING = 'warning',
-}
-
-export enum LogLevel {
-  ERROR = 0,
-  WARN = 1,
-  INFO = 2,
-  VERBOSE = 3,
-  DEBUG = 4,
-}
-
-const logPermissions = new Map<LogLevel, LogPriority[]>();
-logPermissions.set(LogLevel.DEBUG, [LogPriority.DEBUG, LogPriority.INFO, LogPriority.WARNING, LogPriority.ERROR]);
-logPermissions.set(LogLevel.INFO, [LogPriority.INFO, LogPriority.WARNING, LogPriority.ERROR]);
-logPermissions.set(LogLevel.WARN, [LogPriority.WARNING, LogPriority.ERROR]);
-logPermissions.set(LogLevel.ERROR, [LogPriority.ERROR]);
-
-const defaultLoggerProps = {
-  logLevel: LogLevel.INFO,
-  withTimestamp: true,
-};
-
+type ILoggerType = 'verbose' | 'succinct' | 'disabled';
 export interface ILoggerProps {
-  logLevel?: LogLevel;
-  withTimestamp?: boolean;
+  level: ILoggerType;
 }
 
-function log({ props, logPriority, msg }: { props: ILoggerProps; logPriority: LogPriority; msg: String }): void {
-  if (props.logLevel === LogLevel.VERBOSE || logPermissions.get(props.logLevel).includes(logPriority)) {
-    const logDate = new Date();
-    console.log(
-      `${
-        props.withTimestamp
-          ? `${logDate.getFullYear()}-${logDate.getMonth()}-${logDate.getDay()}
-          ${logDate.getHours()}:${logDate.getMinutes()}:${logDate.getSeconds()} - `
-          : ''
-      }${logPriority}: ${msg}`,
-    );
+export function getLogger(props?: ILoggerProps) {
+  const level: ILoggerType = props.level ? props.level : 'succinct';
+
+  const scope: {
+    group?: string;
+    spinner?: ISpinnerInterface;
+  } = {};
+
+  function log(color: string, text: string, variables: { [key: string]: any }) {
+    if (level === 'disabled') {
+      return;
+    }
+    if (variables) {
+      for (const key in variables) {
+        text = text.replace(`$${key}`, variables[key]);
+      }
+    }
+    const output = scope.group
+      ? ` ${colors.bold(colors[color](scope.group))} → ${colors[color](text)}`
+      : ` ${colors[color](text)}`;
+
+    if (level === 'succinct' && scope.spinner) {
+      scope.spinner.setText(output);
+    }
+    if (level === 'verbose') {
+      console.log(output);
+    }
   }
+  const methods = {
+    group: (name: string | boolean) => {
+      if (typeof name == 'boolean') {
+        if (name === false) {
+          delete scope.group;
+        }
+      } else {
+        scope.group = name;
+      }
+    },
+    info: (msg: string, variables?: { [key: string]: any }) => {
+      log('cyan', msg, variables);
+    },
+    warn: (msg: string, variables?: { [key: string]: any }) => {
+      log('yellow', msg, variables);
+    },
+    error: (msg: string, variables?: { [key: string]: any }) => {
+      log('red', msg, variables);
+    },
+    deprecated: (msg: string, variables?: { [key: string]: any }) => {
+      log('red', msg, variables);
+    },
+    withSpinner: () => {
+      const spinner = getSpinner({
+        onStop: () => {
+          delete scope.spinner;
+        },
+      });
+
+      scope.spinner = spinner;
+      return spinner;
+    },
+    stopSpinner: () => {
+      if (scope.spinner) {
+        scope.spinner.stop();
+      }
+    },
+  };
+  if (level === 'succinct') {
+    const spinner = methods.withSpinner();
+    spinner.start();
+    scope.spinner = spinner;
+  }
+  return methods;
 }
 
-export function getLogger(props: ILoggerProps | false): ILogger {
-  if (typeof props === 'object') {
-    const loggerProps = props || defaultLoggerProps;
-    return {
-      debug: (msg: string) => {
-        log({ props: loggerProps, msg: green(msg), logPriority: LogPriority.DEBUG });
-      },
-      info: (msg: string) => {
-        log({ props: loggerProps, msg: cyan(msg), logPriority: LogPriority.INFO });
-      },
-      warn: (msg: string) => {
-        log({ props: loggerProps, msg: yellow(msg), logPriority: LogPriority.WARNING });
-      },
-      error: (msg: string) => {
-        log({ props: loggerProps, msg: red(msg), logPriority: LogPriority.ERROR });
-      },
-      deprecated: (msg: string) => {
-        log({ props: loggerProps, msg: magenta(msg), logPriority: LogPriority.WARNING });
-      },
-      getSpinner: () => getSpinner(),
-    };
-  }
-}
+// const log = getLogger({ level: 'verbose' });
+
+// log.info('Do some thing');
+// log.info('Do it again');
+// log.warn('Should not happen tho');
+
+// setInterval(() => {
+//   i++;
+//   if (i < 10) {
+//     log.info('Info something here $number', { number: i });
+//     return;
+//   }
+
+//   if (i < 20) {
+//     log.warn('warning something here $number', { number: i });
+//     return;
+//   }
+
+//   if (i < 30) {
+//     log.error('Error here $number', { number: i });
+//     return;
+//   }
+
+//   if (i < 40) {
+//     log.error('Deprecated here $number', { number: i });
+//     return;
+//   }
+// }, 100);
+
+//log.stopSpinner();
