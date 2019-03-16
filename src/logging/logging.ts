@@ -1,5 +1,5 @@
 import { yellow, cyan, red, green, magenta } from './chroma';
-import { Spinner } from './Spinner';
+import { getSpinner } from './Spinner';
 
 export interface ILogger {
   debug(msg: String);
@@ -7,7 +7,7 @@ export interface ILogger {
   warn(msg: String);
   error(msg: String);
   deprecated(msg: String);
-  loading();
+  getSpinner();
 }
 
 export enum LogPriority {
@@ -37,8 +37,8 @@ const defaultLoggerProps = {
 };
 
 export interface ILoggerProps {
-  logLevel: LogLevel;
-  withTimestamp: boolean;
+  logLevel?: LogLevel;
+  withTimestamp?: boolean;
 }
 
 function log({ props, logPriority, msg }: { props: ILoggerProps; logPriority: LogPriority; msg: String }): void {
@@ -59,34 +59,22 @@ export function getLogger(props: ILoggerProps | false): ILogger {
   if (typeof props === 'object') {
     const loggerProps = props || defaultLoggerProps;
     return {
-      debug: msg => {
+      debug: (msg: string) => {
         log({ props: loggerProps, msg: green(msg), logPriority: LogPriority.DEBUG });
       },
-      info: msg => {
+      info: (msg: string) => {
         log({ props: loggerProps, msg: cyan(msg), logPriority: LogPriority.INFO });
       },
-      warn: msg => {
+      warn: (msg: string) => {
         log({ props: loggerProps, msg: yellow(msg), logPriority: LogPriority.WARNING });
       },
-      error: msg => {
+      error: (msg: string) => {
         log({ props: loggerProps, msg: red(msg), logPriority: LogPriority.ERROR });
       },
-      deprecated: msg => {
+      deprecated: (msg: string) => {
         log({ props: loggerProps, msg: magenta(msg), logPriority: LogPriority.WARNING });
       },
-      loading: () => {
-        return new Spinner();
-      },
+      getSpinner: () => getSpinner(),
     };
   }
-  return {
-    debug: msg => {},
-    info: msg => {},
-    warn: msg => {},
-    error: msg => {},
-    deprecated: msg => {},
-    loading: () => {
-      return new Spinner();
-    },
-  };
 }

@@ -1,9 +1,10 @@
 const { performance } = require('perf_hooks');
 import * as acorn from 'acorn';
+import * as cherow from 'cherow';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fastAnalysis } from './fastAnalysis';
-import * as cherow from 'cherow';
+import { getLogger, LogLevel } from '../logging/logging';
 const str = fs.readFileSync(path.join(__dirname, 'file.js')).toString();
 
 function parseWithAcorn(input) {
@@ -34,17 +35,20 @@ function measure(name: string, fn: () => void) {
   return name;
 }
 
-for (let i = 0; i < 100; i++) {
-  measure('parseWithAcorn', () => parseWithAcorn(str));
-  measure('parseWithCherow', () => parseWithCherow(str));
-  measure('fastAnalysis', () => fastAnalysis({ input: str }));
-  // measure('tsParser (create source + getImports from AST)', () => {
-  //   const sourceFile = createSourceFile('module.tsx', str);
-  //   return getImports(sourceFile);
-  // });
-  // measure('tsParser (getImports from AST)', () => getImports(source));
-}
+const logger = getLogger({ logLevel: LogLevel.INFO });
+const spinner = logger.getSpinner();
+spinner.start();
 
+const maxIteration = 200;
+for (let i = 0; i <= maxIteration; i++) {
+  spinner.setText(`bench: ${i} / ${maxIteration}`);
+  measure('parseWithAcorn', () => parseWithAcorn(str));
+
+  measure('parseWithCherow', () => parseWithCherow(str));
+
+  measure('fastAnalysis', () => fastAnalysis({ input: str }));
+}
+spinner.stop();
 for (const item in result) {
   const totalRuns = result[item].length;
   let totalTime = 0;
@@ -54,6 +58,7 @@ for (const item in result) {
   const avgTime = totalTime / totalRuns;
   console.log(`${item}: ${avgTime}ms (${totalRuns} runs) `);
 }
+
 // //const acornTime = ;
 
 // function parseWithShit(input) {
