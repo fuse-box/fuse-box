@@ -27,7 +27,7 @@ describe('utils', () => {
   describe('createStringConst', () => {
     it('should create createStringConst', () => {
       const str = createStringConst('foo', 'b\'a"r');
-      expect(str).toEqual(`const foo = "b'a\"r";`);
+      expect(str).toEqual(`const foo = "b'a\\"r";`);
     });
   });
 
