@@ -1,8 +1,9 @@
 import { Context } from '../core/Context';
 import { Module } from '../core/Module';
 import { ImportType } from '../resolver/resolver';
-import { createRequireConst } from '../utils/utils';
+import { createRequireConst, createStringConst, ensureFuseBoxPath } from '../utils/utils';
 import { devImports } from './devPackage';
+import * as path from 'path';
 
 export function assembleFastAnalysis(ctx: Context) {
   const ict = ctx.interceptor;
@@ -20,6 +21,16 @@ export function assembleFastAnalysis(ctx: Context) {
             module.header.push(createRequireConst(item));
           });
       }
+
+      if (ctx.config.target === 'browser') {
+        if (report.contains__filename) {
+          module.header.push(createStringConst('__filename', module.props.fuseBoxPath));
+        }
+        if (report.contains__dirname) {
+          module.header.push(createStringConst('__dirname', ensureFuseBoxPath(path.dirname(module.props.fuseBoxPath))));
+        }
+      }
+
       if (report.dynamicImports) {
         // TODO: make sure it works on server too
         module.fastAnalysis.imports.push({ type: ImportType.REQUIRE, statement: devImports.packageName });

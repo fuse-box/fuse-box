@@ -23,7 +23,7 @@ const TOKENS = {
   singleLineComment: /(\/\/)/,
   commentStart: /(\/\*)/,
   commentEnd: /(\*\/)/,
-  systemVariables: /(?:[^\.\w]|^)(stream|process|Buffer|http|https)/,
+  systemVariables: /(?:[^\.\w]|^)(stream|process|Buffer|http|https|__dirname|__filename)/,
   exportsKeyword: /(?:[^\.\w]|^)(export)\s/,
   jsx: /<[^\>]+/,
 };

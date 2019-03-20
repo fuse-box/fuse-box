@@ -8,6 +8,7 @@ import {
   getExtension,
   ensureFuseBoxPath,
   joinFuseBoxPath,
+  createStringConst,
 } from '../utils';
 
 describe('utils', () => {
@@ -20,6 +21,13 @@ describe('utils', () => {
     it('should be cached', () => {
       const a = path2Regex('foo/bar.js');
       expect(a).toEqual(/foo\/bar.js/);
+    });
+  });
+
+  describe('createStringConst', () => {
+    it('should create createStringConst', () => {
+      const str = createStringConst('foo', 'b\'a"r');
+      expect(str).toEqual(`const foo = "b'a\"r";`);
     });
   });
 

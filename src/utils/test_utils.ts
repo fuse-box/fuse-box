@@ -146,7 +146,7 @@ export function createRealNodeModule(name: string, packageJSON, files: { [key: s
 
 export function mockDefaultModule(ctx: Context, props?: IModuleProps) {
   const pkg = createDefaultPackage(ctx);
-  let p = { ctx: ctx, absPath: '/', extension: '.js', fuseBoxPath: '/' };
+  let p = { ctx: ctx, absPath: '/', extension: '.js', fuseBoxPath: 'index.js' };
   if (props) {
     p = { ...p, ...props };
   }

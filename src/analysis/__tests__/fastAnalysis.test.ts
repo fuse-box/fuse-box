@@ -440,5 +440,23 @@ describe('Fast analysis test', () => {
       });
       expect(result.report.browserEssentials).toEqual(['Buffer']);
     });
+
+    it('should match __dirname', () => {
+      const result = fastAnalysis({
+        input: `
+				 console.log(__dirname)
+			`,
+      });
+      expect(result.report.contains__dirname).toEqual(true);
+    });
+    it('should match __filename', () => {
+      const result = fastAnalysis({
+        input: `
+				 console.log(__filename)
+			`,
+      });
+
+      expect(result.report.contains__filename).toEqual(true);
+    });
   });
 });
