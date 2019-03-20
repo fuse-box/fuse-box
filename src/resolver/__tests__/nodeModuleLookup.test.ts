@@ -3,6 +3,7 @@ import * as path from 'path';
 import '../../utils/test_utils';
 import { findTargetFolder, isNodeModule, parseAllModulePaths, nodeModuleLookup } from '../nodeModuleLookup';
 import { ensureDir } from '../../utils/utils';
+import { createRealNodeModule } from '../../utils/test_utils';
 
 const cases = path.join(__dirname, 'cases');
 
@@ -141,5 +142,62 @@ describe('folder lookup', () => {
     const target = path.join(__dirname, 'nm-lookup-test-b');
     const targetFolder = findTargetFolder({ target: 'a', filePath: target }, { name: 'nm-lookup-test-b' });
     expect(targetFolder).toMatchFilePath('node_modules/nm-lookup-test-b$');
+  });
+
+  describe('Nested lookup', () => {
+    createRealNodeModule(
+      'fuse-box-resolver-parent',
+      {
+        main: 'index.js',
+        version: '1.0.1',
+      },
+      {
+        'index.js': 'import "fuse-box-resolver-conflict"',
+      },
+    );
+
+    createRealNodeModule(
+      'fuse-box-flat-parent/node_modules/fuse-box-resolver-conflict',
+      {
+        main: 'index.js',
+        version: '4.0.0',
+      },
+      {
+        'index.js': 'module.exports = {}',
+      },
+    );
+
+    createRealNodeModule(
+      'fuse-box-resolver-conflict',
+      {
+        main: 'index.js',
+        version: '5.0.0',
+      },
+      {
+        'index.js': 'module.exports = {}',
+      },
+    );
+
+    it('should look up nested with src/index.js', () => {
+      const targetFolder = findTargetFolder(
+        {
+          target: 'fuse-box-resolver-conflict',
+          filePath: path.join(appRoot.path, 'node_modules/fuse-box-flat-parent/src/index.js'),
+        },
+        { name: 'fuse-box-resolver-conflict' },
+      );
+      expect(targetFolder).toMatchFilePath('fuse-box-flat-parent/node_modules/fuse-box-resolver-conflict$');
+    });
+
+    it('should look up nested with index.js (direct)', () => {
+      const targetFolder = findTargetFolder(
+        {
+          target: 'fuse-box-resolver-conflict',
+          filePath: path.join(appRoot.path, 'node_modules/fuse-box-flat-parent/index.js'),
+        },
+        { name: 'fuse-box-resolver-conflict' },
+      );
+      expect(targetFolder).toMatchFilePath('fuse-box-flat-parent/node_modules/fuse-box-resolver-conflict$');
+    });
   });
 });

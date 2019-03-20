@@ -3,7 +3,7 @@ import { createContext, Context } from '../../core/Context';
 import { IConfig } from '../../core/interfaces';
 import { Package } from '../../core/Package';
 import { assemble } from '../assemble';
-import { processModules } from '../processing';
+import { attachPlugins } from '../attach_plugins';
 
 function createProjectContext(folder: string, opts?: IConfig) {
   opts = opts || {};
@@ -19,7 +19,7 @@ function createProjectContext(folder: string, opts?: IConfig) {
 async function resolve(folder: string, opts: IConfig, entry: string): Promise<Array<Package>> {
   const ctx = createProjectContext(folder, opts);
   const packages = assemble(ctx, entry);
-  await processModules({ ctx: ctx, packages: packages, plugins: opts.plugins });
+  await attachPlugins({ ctx: ctx, packages: packages, plugins: opts.plugins });
   return packages;
 }
 
@@ -150,7 +150,7 @@ describe('Processing modules', () => {
       pkg.isCached = true;
     });
     let shouldBeFalse = false;
-    await processModules({
+    await attachPlugins({
       ctx: ctx,
       packages: packages,
       plugins: [
@@ -175,7 +175,7 @@ describe('Processing modules', () => {
       });
     });
     let shouldBeFalse = false;
-    await processModules({
+    await attachPlugins({
       ctx: ctx,
       packages: packages,
       plugins: [

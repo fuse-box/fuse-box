@@ -15,12 +15,17 @@ interface IDefaultParseProps {
 function registerPackage(props: { assemble?: boolean; pkg: Package; ctx: Context; resolved: IResolver }) {
   const collection = props.ctx.assembleContext.collection;
   const resolved = props.resolved;
-  const packageKey = `${resolved.package.meta.name}:${resolved.package.meta.version}`;
-  let pkg: Package = collection.resolvedPackages.get(packageKey);
+  props.ctx.log.info('package $name:$version', {
+    name: resolved.package.meta.name,
+    version: resolved.package.meta.version,
+  });
+
+  let pkg: Package = collection.packages.get(resolved.package.meta.name, resolved.package.meta.version);
   if (!pkg) {
     pkg = createPackage({ ctx: props.ctx, meta: resolved.package.meta });
-    collection.resolvedPackages.set(packageKey, pkg);
+    collection.packages.add(pkg);
   }
+  // if we have a version conflict we need to notity the parent package
   if (!props.pkg.externalPackages.includes(pkg)) {
     props.pkg.externalPackages.push(pkg);
   }
@@ -69,6 +74,7 @@ function resolveStatement(
 } {
   const collection = props.ctx.assembleContext.collection;
   const config = props.ctx.config;
+
   const resolved = resolveModule({
     filePath: props.module.props.absPath,
     homeDir: config.homeDir,
@@ -89,11 +95,11 @@ function resolveStatement(
       package: registerPackage({ assemble: props.assemble, pkg: props.pkg, ctx: props.ctx, resolved: resolved }),
     };
   }
-  if (collection.defaultModules.has(resolved.absPath)) {
+  if (collection.modules.has(resolved.absPath)) {
     return {
       forcedStatement: resolved.forcedStatement,
       processed: true,
-      module: collection.defaultModules.get(resolved.absPath),
+      module: collection.modules.get(resolved.absPath),
     };
   }
   const _module = createModule(
@@ -106,7 +112,7 @@ function resolveStatement(
     props.pkg,
   );
 
-  collection.defaultModules.set(resolved.absPath, _module);
+  collection.modules.set(resolved.absPath, _module);
   return { processed: false, module: _module, forcedStatement: resolved.forcedStatement };
 }
 
@@ -164,7 +170,7 @@ function processModule(props: IDefaultParseProps) {
 }
 
 function parseDefaultPackage(ctx: Context, pkg: Package) {
-  ctx.assembleContext.collection.defaultModules.set(pkg.entry.props.absPath, pkg.entry);
+  ctx.assembleContext.collection.modules.set(pkg.entry.props.absPath, pkg.entry);
   processModule({
     ctx: ctx,
     pkg: pkg,
@@ -190,12 +196,15 @@ function assemblePackage(pkg: Package, ctx: Context) {
 }
 export function assemble(ctx: Context, entryFile: string): Array<Package> {
   // default package. Big Bang starts here/
+  ctx.log.group('assemble');
   const pkg = createApplicationPackage(ctx, entryFile);
   parseDefaultPackage(ctx, pkg);
   assemblePackage(pkg, ctx);
   const result = [pkg];
-  ctx.assembleContext.collection.resolvedPackages.forEach(p => {
-    result.push(p);
+  ctx.assembleContext.collection.packages.getAll(pkg => {
+    result.push(pkg);
   });
+  // reset logging group
+  ctx.log.group(false);
   return result;
 }

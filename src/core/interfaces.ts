@@ -11,6 +11,7 @@ export interface IConfig {
   logging?: ILoggerProps;
   tsConfig?: string | IRawCompilerOptions;
   entry?: string | Array<string>;
+  allowSyntheticDefaultImports?: boolean;
   turboMode?:
     | {
         maxWorkers?: number;

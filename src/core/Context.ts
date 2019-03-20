@@ -23,3 +23,4 @@ export class Context {
 
 export function createContext(cfg?: IConfig) {
   return new Context(createConfig(cfg));
+}
