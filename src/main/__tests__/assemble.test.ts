@@ -302,9 +302,9 @@ describe('Assemble test', () => {
 
       expect(results).toEqual([
         ['default', undefined, true],
-        ['fuse-box-flat-parent', '1.0.1', true],
-        ['fuse-box-flat-conflict', '5.0.0', true],
-        ['fuse-box-flat-conflict', '4.0.0', false],
+        ['fuse-box-flat-assemble-parent', '1.0.1', true],
+        ['fuse-box-flat-assemble-conflict', '5.0.0', true],
+        ['fuse-box-flat-assemble-conflict', '4.0.0', false],
       ]);
     });
   });
