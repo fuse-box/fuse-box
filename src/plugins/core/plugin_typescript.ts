@@ -8,6 +8,10 @@ export function pluginTypescript() {
     const ict = ctx.interceptor;
 
     ict.on('bundle_resolve_module', (props: { module: Module }) => {
+      if (!props.module.isExecutable()) {
+        return;
+      }
+
       const module = props.module;
       const pkg = module.pkg;
       const config = ctx.config;
@@ -16,6 +20,20 @@ export function pluginTypescript() {
         return props;
       }
 
+      /* we should not transpile if:
+       - That's not a typescript module
+       - Doesn't contain JSX
+       - Doesn't contain es6 import syntax
+      */
+      if (!props.module.isTypescriptModule()) {
+        if (
+          (!analysis.replaceable || analysis.replaceable.length === 0) &&
+          !analysis.report.containsJSX &&
+          !analysis.report.es6Syntax
+        ) {
+          return;
+        }
+      }
       let requireSourceMaps = true;
 
       if (pkg.isDefaultPackage) {

@@ -85,6 +85,20 @@ export function ensureUserPath(userPath: string, root?: string) {
   return userPath;
 }
 
+export type Concat = {
+  add(fileName: string | null, content: string | Buffer, sourceMap?: string): void;
+  content: Buffer;
+  sourceMap: string;
+};
+export type ConcatModule = {
+  new (generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
+};
+export const Concat: ConcatModule = require('fuse-concat-with-sourcemaps');
+
+export function createConcat(generateSourceMap: boolean, outputFileName: string, seperator: string): Concat {
+  return new Concat(generateSourceMap, outputFileName, seperator);
+}
+
 export function ensureAbsolutePath(userPath: string, root: string) {
   if (!path.isAbsolute(userPath)) {
     return path.join(root, userPath);
@@ -102,4 +116,29 @@ export function joinFuseBoxPath(...any): string {
     ? path.join(...any)
     : any[0].replace(/([^/])$/, '$1/') + path.join(...any.slice(1));
   return ensureFuseBoxPath(joinedPath);
+}
+
+export async function writeFile(name: string, contents) {
+  return new Promise((resolve, reject) => {
+    ensureDir(path.dirname(name));
+    fs.writeFile(name, contents, err => {
+      if (err) return reject(err);
+      return resolve();
+    });
+  });
+}
+
+export function fastHash(text: string) {
+  let hash = 0;
+  if (text.length == 0) return hash;
+  for (let i = 0; i < text.length; i++) {
+    let char = text.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  let result = hash.toString(16).toString();
+  if (result.charAt(0) === '-') {
+    result = result.replace(/-/, '0');
+  }
+  return result;
 }

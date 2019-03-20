@@ -1,15 +1,25 @@
 import { getSpinner, ISpinnerInterface } from './Spinner';
 import { colors } from './chroma';
-export interface ILogger {}
+export interface ILogger {
+  group: (name: string | boolean) => void;
+  info: (msg: string, variables?: { [key: string]: any }) => void;
+  warn: (msg: string, variables?: { [key: string]: any }) => void;
+  error: (msg: string, variables?: { [key: string]: any }) => void;
+  deprecated: (msg: string, variables?: { [key: string]: any }) => void;
+  withSpinner: () => void;
+  stopSpinner: () => void;
+}
 
 type ILoggerType = 'verbose' | 'succinct' | 'disabled';
 export interface ILoggerProps {
   level: ILoggerType;
 }
 
-export function getLogger(props?: ILoggerProps) {
-  const level: ILoggerType = props.level ? props.level : 'succinct';
-
+export function getLogger(props?: ILoggerProps): ILogger {
+  let level: ILoggerType = props && props.level ? props.level : 'succinct';
+  if (process.env.JEST_TEST) {
+    level = 'disabled';
+  }
   const scope: {
     group?: string;
     spinner?: ISpinnerInterface;
@@ -80,34 +90,3 @@ export function getLogger(props?: ILoggerProps) {
   }
   return methods;
 }
-
-// const log = getLogger({ level: 'verbose' });
-
-// log.info('Do some thing');
-// log.info('Do it again');
-// log.warn('Should not happen tho');
-
-// setInterval(() => {
-//   i++;
-//   if (i < 10) {
-//     log.info('Info something here $number', { number: i });
-//     return;
-//   }
-
-//   if (i < 20) {
-//     log.warn('warning something here $number', { number: i });
-//     return;
-//   }
-
-//   if (i < 30) {
-//     log.error('Error here $number', { number: i });
-//     return;
-//   }
-
-//   if (i < 40) {
-//     log.error('Deprecated here $number', { number: i });
-//     return;
-//   }
-// }, 100);
-
-//log.stopSpinner();

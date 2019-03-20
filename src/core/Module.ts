@@ -1,6 +1,6 @@
 import { Context } from './Context';
 import { Package } from './Package';
-import { readFile } from '../utils/utils';
+import { readFile, createConcat } from '../utils/utils';
 import { IFastAnalysis } from '../analysis/fastAnalysis';
 
 const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx'];
@@ -51,6 +51,22 @@ export class Module {
 
   public isExecutable() {
     return EXECUTABLE_EXTENSIONS.includes(this.props.extension);
+  }
+
+  public generate() {
+    if (this.header) {
+      const concat = createConcat(true, '', '\n');
+      this.header.forEach(h => {
+        concat.add(null, h);
+      });
+      concat.add(null, this.contents, this.sourceMap);
+      this.contents = concat.content.toString();
+      this.sourceMap = concat.sourceMap;
+    }
+    return {
+      contents: this.contents,
+      sourcemMap: this.sourceMap,
+    };
   }
 }
 

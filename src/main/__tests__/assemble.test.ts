@@ -7,6 +7,7 @@ import { devImports } from '../../integrity/devPackage';
 import { ImportType } from '../../resolver/resolver';
 import { createContext } from '../../core/Context';
 import { IConfig } from '../../core/interfaces';
+import { createRealNodeModule } from '../../utils/test_utils';
 function createProjectContext(folder: string, opts?: IConfig) {
   opts = opts || {};
   return createContext({
@@ -255,29 +256,56 @@ describe('Assemble test', () => {
     });
   });
 
-  // describe('Expect transpile and replace statements for a node module (not typescript)', () => {
-  //   it('should assemble process a module package wiht es6 imports', () => {
-  //     const ctx = createProjectContext('src8');
-  //     const packages = assemble(ctx, 'index.ts');
+  describe('Verify flatness', () => {
+    createRealNodeModule(
+      'fuse-box-flat-assemble-parent',
+      {
+        name: 'fuse-box-flat-assemble-parent',
+        main: 'index.js',
+        version: '1.0.1',
+      },
+      {
+        'index.js': 'import "fuse-box-flat-assemble-conflict"',
+      },
+    );
 
-  //     const moduleD = packages.find(item => item.props.meta.name === 'module-d');
+    createRealNodeModule(
+      'fuse-box-flat-assemble-parent/node_modules/fuse-box-flat-assemble-conflict',
+      {
+        name: 'fuse-box-flat-assemble-conflict',
+        main: 'index.js',
+        version: '4.0.0',
+      },
+      {
+        'index.js': 'module.exports = {}',
+      },
+    );
 
-  //     const indexFile = moduleD.modules.find(item => item.props.fuseBoxPath === 'index.js');
-  //     expect(indexFile.contents).toContain('module.exports.default = SomeThing;');
-  //     expect(indexFile.fastAnalysis.report.transpiled).toEqual(true);
-  //   });
+    createRealNodeModule(
+      'fuse-box-flat-assemble-conflict',
+      {
+        name: 'fuse-box-flat-assemble-conflict',
+        main: 'index.js',
+        version: '5.0.0',
+      },
+      {
+        'index.js': 'module.exports = {}',
+      },
+    );
 
-  //   it('expect replacements to have been applied', () => {
-  //     const ctx = createProjectContext('src8', {
-  //       alias: {
-  //         'replace-me': './foo',
-  //       },
-  //     });
-  //     const packages = assemble(ctx, 'index2.ts');
-  //     const moduleD = packages.find(item => item.props.meta.name === 'module-d');
-  //     const indexFile = moduleD.modules.find(item => item.props.fuseBoxPath === 'bar.js');
-  //     expect(indexFile.contents).toContain("require('module-d/foo.js')");
-  //     expect(indexFile.fastAnalysis.report.statementsReplaced).toEqual(true);
-  //   });
-  // });
+    it('Should verify flatness of each package', () => {
+      const ctx = createProjectContext('src9_flatness', { target: 'browser' });
+      const packages = assemble(ctx, 'index.ts');
+      const results = packages.map(pkg => {
+        return [pkg.props.meta.name, pkg.props.meta.version, pkg.isFlat];
+      });
+
+      expect(results).toEqual([
+        ['default', undefined, true],
+        ['fuse-box-flat-parent', '1.0.1', true],
+        ['fuse-box-flat-conflict', '5.0.0', true],
+        ['fuse-box-flat-conflict', '4.0.0', false],
+      ]);
+    });
+  });
 });

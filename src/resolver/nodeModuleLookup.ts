@@ -39,6 +39,7 @@ export function isNodeModule(path: string): IModuleParsed | undefined {
 export function parseAllModulePaths(fileAbsPath: string) {
   const baseDir = path.dirname(fileAbsPath);
   const paths = [];
+
   const snippets = baseDir.split(/node_modules/);
   let current = '';
   if (snippets.length > 1) {
@@ -47,9 +48,11 @@ export function parseAllModulePaths(fileAbsPath: string) {
       current = path.join(current, snippets[i], 'node_modules');
       paths.push(current);
     }
+
     const last = snippets[total];
-    const matchedLast = last.match(/[\/|\\](\w+)/g);
-    if (matchedLast && matchedLast[1]) {
+
+    const matchedLast = last.match(/[\/|\\]([a-z-@0-9_-]+)/gi);
+    if (matchedLast && matchedLast[0]) {
       paths.push(path.join(paths[paths.length - 1], matchedLast[0], 'node_modules'));
     }
     return paths;
@@ -68,7 +71,9 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
       }
     }
   }
+
   const paths = parseAllModulePaths(props.filePath);
+
   for (let i = paths.length - 1; i >= 0; i--) {
     const attempted = path.join(paths[i], parsed.name);
     if (fileExists(attempted)) {
@@ -87,6 +92,7 @@ export interface INodeModuleLookup {
 
 export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): INodeModuleLookup {
   const folder = findTargetFolder(props, parsed);
+
   const result: INodeModuleLookup = {};
   const pkg: IPackageMeta = {
     name: parsed.name,

@@ -1,5 +1,5 @@
 process.env.FUSEBOX_DIST_ROOT = __dirname;
-
+process.env.JEST_TEST = true;
 module.exports = {
   globals: {
     'ts-jest': {

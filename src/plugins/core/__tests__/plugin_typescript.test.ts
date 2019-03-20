@@ -1,5 +1,6 @@
 import { mockModule, IMockModuleProps, IMockModuleResponse } from '../../../utils/test_utils';
 import { pluginTypescript } from '../plugin_typescript';
+import { ImportType } from '../../../resolver/resolver';
 
 type IPluginTest = IMockModuleProps & {
   setup?: (data: IMockModuleResponse) => void;
@@ -69,10 +70,57 @@ describe('Typescript plugin', () => {
     });
   });
 
+  it('should not transpile (not executable)', async () => {
+    await evaluate({
+      setup: props => {
+        props.module.props.extension = '.json';
+        props.module.fastAnalysis = {};
+      },
+      afterPluginInit: props => {
+        expect(props.ctx.interceptor.getPromises()).toHaveLength(0);
+      },
+    });
+  });
+
+  it('should not transpile (not typescript, no jsx to es6 imports)', async () => {
+    await evaluate({
+      setup: props => {
+        props.module.contents = 'function(){}';
+        props.module.props.extension = '.js';
+        props.module.fastAnalysis = {
+          report: {},
+        };
+      },
+      afterPluginInit: props => {
+        expect(props.ctx.interceptor.getPromises()).toHaveLength(0);
+      },
+    });
+  });
+
+  it('should continue since there are replaceable', async () => {
+    await evaluate({
+      setup: props => {
+        props.module.contents = 'require("./foo")';
+        props.module.props.extension = '.js';
+        props.module.fastAnalysis = {
+          report: {},
+          replaceable: [{ type: ImportType.RAW_IMPORT, fromStatement: './foo', toStatement: './bar' }],
+        };
+      },
+      afterPluginInit: props => {
+        expect(props.ctx.interceptor.getPromises()).toHaveLength(1);
+      },
+      afterResolve: props => {
+        expect(props.module.contents).toContain('require("./bar");');
+      },
+    });
+  });
+
   it('should transpile with default config ( on the project )', async () => {
     const data = await evaluate({
       packageProps: { isDefaultPackage: true },
       setup: props => {
+        props.module.props.extension = '.ts';
         props.module.contents = 'export function foo(){}';
         props.module.fastAnalysis = {
           report: {},
@@ -91,6 +139,7 @@ describe('Typescript plugin', () => {
     const data = await evaluate({
       packageProps: { isDefaultPackage: true },
       setup: props => {
+        props.module.props.extension = '.ts';
         props.module.contents = 'export function foo(){}';
         props.module.fastAnalysis = {
           report: {},
@@ -107,6 +156,7 @@ describe('Typescript plugin', () => {
       config: { sourceMap: false },
       packageProps: { isDefaultPackage: true },
       setup: props => {
+        props.module.props.extension = '.ts';
         props.module.contents = 'export function foo(){}';
         props.module.fastAnalysis = {
           report: {},
@@ -126,6 +176,7 @@ describe('Typescript plugin', () => {
       config: { sourceMap: true },
       packageProps: { isDefaultPackage: false },
       setup: props => {
+        props.module.props.extension = '.ts';
         props.module.contents = 'export function foo(){}';
         props.module.fastAnalysis = {
           report: {},
@@ -142,6 +193,7 @@ describe('Typescript plugin', () => {
       config: { sourceMap: { vendor: true } },
       packageProps: { isDefaultPackage: false },
       setup: props => {
+        props.module.props.extension = '.ts';
         props.module.contents = 'export function foo(){}';
         props.module.fastAnalysis = {
           report: {},

@@ -30,6 +30,10 @@ export function createConfig(props: IConfig): IConfig {
     config.target = props.target;
   }
 
+  if (props.allowSyntheticDefaultImports) {
+    config.allowSyntheticDefaultImports = true;
+  }
+
   config.options = {
     vendorSourceMap: false,
     projectSourceMap: true,
@@ -53,10 +57,11 @@ export function createConfig(props: IConfig): IConfig {
     }
   }
 
+  config.plugins = props.plugins ? props.plugins : [];
+
   if (props.logging) {
     config.logging = props.logging;
   }
-
 
   if (props.entry) {
     props.options.entries = [].concat(props.entry);

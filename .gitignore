@@ -20,17 +20,12 @@ coverage/
 sourcemaps.js.map
 yarn.lock
 some.sh
+.temp
 
 # FuseBox Loader API built type definition
 # Which is then exported as a module from `src`
 src/modules/fuse-loader/LoaderAPI.ts
 
-# FuseBox modules built from TS
-modules/fsbx-default-css-plugin
-modules/fuse-hmr
-modules/fuse-loader
-modules/fusebox-hot-reload
-modules/fusebox-websocket
 
 # Website
 website/.firebase

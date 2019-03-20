@@ -27,7 +27,7 @@ export interface IBundleResolveProps {
   packages: Array<Package>;
   plugins?: Array<(ctx: Context) => void>;
 }
-export async function processModules(props: IBundleResolveProps) {
+export async function attachPlugins(props: IBundleResolveProps) {
   const ctx = props.ctx;
   const packages = props.packages;
   if (props.plugins) {

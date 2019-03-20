@@ -3,8 +3,8 @@ import * as acorn from 'acorn';
 import * as cherow from 'cherow';
 import * as fs from 'fs';
 import * as path from 'path';
+import { getLogger } from '../logging/logging';
 import { fastAnalysis } from './fastAnalysis';
-import { getLogger, LogLevel } from '../logging/logging';
 const str = fs.readFileSync(path.join(__dirname, 'file.js')).toString();
 
 function parseWithAcorn(input) {
@@ -35,21 +35,21 @@ function measure(name: string, fn: () => void) {
   return name;
 }
 
-const logger = getLogger();
-const spinner = logger.getSpinner();
+const logger = getLogger({ level: 'succinct' });
+
+//logger.withSpinner();
 logger.info('Starting benchmark');
-spinner.start();
 
 const maxIteration = 200;
 for (let i = 0; i <= maxIteration; i++) {
-  spinner.setText(`bench: ${i} / ${maxIteration}`);
+  logger.info(`bench: ${i} / ${maxIteration}`);
   measure('parseWithAcorn', () => parseWithAcorn(str));
 
   measure('parseWithCherow', () => parseWithCherow(str));
 
   measure('fastAnalysis', () => fastAnalysis({ input: str }));
 }
-spinner.stop();
+
 for (const item in result) {
   const totalRuns = result[item].length;
   let totalTime = 0;

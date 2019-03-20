@@ -29,6 +29,7 @@ export function createDefaultPackage(ctx: Context): Package {
     },
   };
   const pkg = new Package(props);
+  pkg.isFlat = true;
   pkg.isDefaultPackage = true;
   return pkg;
 }
