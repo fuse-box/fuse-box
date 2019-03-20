@@ -1,2 +1,2 @@
-import 'fuse-box-flat-parent';
-import 'fuse-box-flat-conflict';
+import 'fuse-box-flat-assemble-parent';
+import 'fuse-box-flat-assemble-conflict';
