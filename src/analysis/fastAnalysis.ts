@@ -9,6 +9,8 @@ interface IFastAnalysisProps {
 export interface IFastAnalysis {
   imports?: Array<{ type: ImportType; statement: string }>;
   report?: {
+    contains__dirname?: boolean;
+    contains__filename?: boolean;
     browserEssentials?: Array<string>;
     dynamicImports?: boolean;
     es6Syntax?: boolean;
@@ -69,6 +71,14 @@ export function fastAnalysis(props: IFastAnalysisProps): IFastAnalysis {
         result.report.containsJSX = true;
       }
       if (token.systemVariable) {
+        if (token.systemVariable === '__dirname') {
+          result.report.contains__dirname = true;
+          return;
+        }
+        if (token.systemVariable === '__filename') {
+          result.report.contains__filename = true;
+          return;
+        }
         if (!result.report.browserEssentials) {
           result.report.browserEssentials = [];
         }

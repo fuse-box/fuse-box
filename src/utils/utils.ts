@@ -18,6 +18,9 @@ export function path2Regex(path: string) {
 export function createRequireConst(name: string, variable?: string) {
   return `const ${variable ? variable : name} = require("${name}");`;
 }
+export function createStringConst(name: string, value: string) {
+  return `const ${name} = ${JSON.stringify(value)};`;
+}
 export function ensurePublicExtension(url: string) {
   let ext = path.extname(url);
   if (ext === '.ts') {
