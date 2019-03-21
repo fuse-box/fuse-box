@@ -1,8 +1,8 @@
 export const devStrings = {
   allowSyntheticDefaultImports: () => `FuseBox.sdep = true;`,
   target: (name: string) => `FuseBox.target = "${name}";`,
-  importFile: name => `FuseBox.import("${name}');`,
-  setEntry: name => `FuseBox.main("${name}');`,
+  importFile: name => `FuseBox.import("${name}");`,
+  setEntry: name => `FuseBox.main("${name}");`,
   openPackage: (name, conflicting: { [key: string]: string }) => {
     return `FuseBox.pkg("${name}", ${JSON.stringify(conflicting)}, function(___scope___){`;
   },
@@ -21,3 +21,7 @@ export const devStrings = {
     return contents.join('\n');
   },
 };
+
+export function sourceMapsURL(file: string) {
+  return `//# sourceMappingURL=${file}`;
+}

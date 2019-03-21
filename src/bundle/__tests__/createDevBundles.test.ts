@@ -2,7 +2,7 @@ import { createContext } from '../../core/Context';
 import { IConfig } from '../../core/interfaces';
 import * as path from 'path';
 import { assemble } from '../../main/assemble';
-import { createDevBundles, inflateBundles } from '../development/createDevBundles';
+import { createDevBundles, inflateBundles } from '../createDevBundles';
 import { createRealNodeModule } from '../../utils/test_utils';
 function createProjectContext(folder: string, opts?: IConfig) {
   opts = opts || {};
@@ -28,35 +28,35 @@ function mockBundles(folder: string, entry: string, opts?: IConfig) {
 
 describe('Create dev bundles', () => {
   describe('Bundles and order', () => {
-    it('should create dev, system, default', () => {
+    it('should create dev, vendor', () => {
       const data = mockBundles('src1', 'index.ts', { target: 'browser' });
       expect(Object.keys(data.bundles)).toHaveLength(3);
-      expect(data.bundles.dev).toBeTruthy();
-      expect(data.bundles.default).toBeTruthy();
-      expect(data.bundles.system).toBeTruthy();
 
-      expect(data.bundles.default.packages).toHaveLength(1);
-      expect(data.bundles.system.packages).toHaveLength(1);
+      expect(data.bundles.dev).toBeTruthy();
+      expect(data.bundles.app).toBeTruthy();
+      expect(data.bundles.vendor).toBeTruthy();
+
+      expect(data.bundles.app.packages).toHaveLength(1);
+      expect(data.bundles.vendor.packages).toHaveLength(1);
     });
 
     it('should create dev, default', () => {
       const data = mockBundles('src1', 'foo.ts', { target: 'browser' });
       expect(Object.keys(data.bundles)).toHaveLength(2);
       expect(data.bundles.dev).toBeTruthy();
-      expect(data.bundles.default).toBeTruthy();
+      expect(data.bundles.app).toBeTruthy();
 
-      expect(data.bundles.default.packages).toHaveLength(1);
+      expect(data.bundles.app.packages).toHaveLength(1);
     });
 
     it('should contain dev package', () => {
       const data = mockBundles('src3', 'index.ts', { target: 'browser' });
       expect(Object.keys(data.bundles)).toHaveLength(3);
       expect(data.bundles.dev).toBeTruthy();
-      expect(data.bundles.default).toBeTruthy();
+      expect(data.bundles.app).toBeTruthy();
 
-      const systemPackages = data.bundles.system.packages.map(item => item.props.meta.name);
-
-      expect(systemPackages).toEqual(['events', 'http']);
+      const vendorPackages = data.bundles.vendor.packages.map(item => item.props.meta.name);
+      expect(vendorPackages).toEqual(['events', 'http']);
 
       const devPackages = data.bundles.dev.packages.map(item => item.props.meta.name);
       expect(devPackages).toEqual(['fuse-box-hot-reload', 'fuse-box-websocket']);
@@ -113,7 +113,7 @@ describe('Create dev bundles', () => {
         `FuseBox.pkg("fuse-box-inflate-test-conflict@4.0.0", {}, function(___scope___){`,
       );
 
-      const defaultBundle = data.bundles.default;
+      const defaultBundle = data.bundles.app;
       const defaultRes = defaultBundle.generate();
       expect(defaultRes.contents).toContain(`FuseBox.pkg("default", {}, function(___scope___){`);
     });
@@ -124,7 +124,7 @@ describe('Create dev bundles', () => {
       const data = mockBundles('src1', 'index.ts', { target: 'browser' });
       inflateBundles(data.ctx, data.bundles);
 
-      const appBundle = data.bundles.default;
+      const appBundle = data.bundles.app;
       const output = appBundle.generate();
 
       expect(output.contents).toContain('FuseBox.pkg("default"');
@@ -163,10 +163,9 @@ describe('Create dev bundles', () => {
       const data = mockBundles('src1', 'index.ts', { allowSyntheticDefaultImports: true });
       inflateBundles(data.ctx, data.bundles);
 
-      const devBundle = data.bundles.default;
+      const devBundle = data.bundles.app;
       const output = devBundle.generate();
-      expect(output.contents).toContain(`FuseBox.main("index.js');`);
-      expect(output.contents).toContain(`FuseBox.import("index.js');`);
+      expect(output.contents).toContain(`FuseBox.main("index.js");`);
     });
   });
 });

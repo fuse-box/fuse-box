@@ -29,9 +29,16 @@ export function createConfig(props: IConfig): IConfig {
   if (props.target) {
     config.target = props.target;
   }
+  if (props.production) {
+    config.production = props.production;
+  }
 
   if (props.allowSyntheticDefaultImports) {
     config.allowSyntheticDefaultImports = true;
+  }
+
+  if (props.webIndex) {
+    config.webIndex = props.webIndex;
   }
 
   config.options = {
@@ -64,7 +71,7 @@ export function createConfig(props: IConfig): IConfig {
   }
 
   if (props.entry) {
-    props.options.entries = [].concat(props.entry);
+    config.options.entries = [].concat(props.entry);
   }
 
   return config;

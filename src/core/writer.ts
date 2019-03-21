@@ -14,12 +14,13 @@ export interface IWriterResponse {
   localPath: string;
   absPath: string;
   relBrowserPath: string;
-  write: () => void;
+  write: (content?: string) => void;
 }
 
 export interface IWriterActions {
   outputDirectory: string;
   template: string;
+  write: (target: string, content: string) => Promise<{ target: string }>;
   generate: (name: string, contents) => IWriterResponse;
 }
 
@@ -28,7 +29,7 @@ export interface IWriterActions {
  * Fully detached from the context
  * @param props
  */
-export function writer(props: IWriterProps): IWriterActions {
+export function createWriter(props: IWriterProps): IWriterActions {
   const outputString = props.output ? props.output : props.isProduction ? 'dist/$name-$hash' : 'dist/$name';
 
   const outputDirectory = ensureAbsolutePath(path.dirname(outputString), props.root || env.APP_ROOT);
@@ -41,6 +42,15 @@ export function writer(props: IWriterProps): IWriterActions {
     outputDirectory,
     // generated template
     template,
+    write: async (target: string, contents: string) => {
+      if (!path.isAbsolute(target)) {
+        target = path.join(outputDirectory, target);
+      }
+      await writeFile(target, contents);
+      return {
+        target,
+      };
+    },
     // generate first, then write
     // this is done to simplify work when we need to know all the paths before the file is written
     // in case of the sourcemaps for example
@@ -64,7 +74,7 @@ export function writer(props: IWriterProps): IWriterActions {
         localPath,
         absPath,
         relBrowserPath,
-        write: async () => writeFile(absPath, contents),
+        write: async (cnt?: string) => writeFile(absPath, cnt ? cnt : contents),
       };
     },
   };

@@ -1,5 +1,6 @@
 import { IRawCompilerOptions } from '../interfaces/TypescriptInterfaces';
 import { ILoggerProps } from '../logging/logging';
+import { IWebIndexConfig } from '../web-index/webIndex';
 import { Context } from './Context';
 
 export interface IConfig {
@@ -12,6 +13,7 @@ export interface IConfig {
   tsConfig?: string | IRawCompilerOptions;
   entry?: string | Array<string>;
   allowSyntheticDefaultImports?: boolean;
+  webIndex?: IWebIndexConfig | boolean;
   turboMode?:
     | {
         maxWorkers?: number;

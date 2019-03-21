@@ -52,6 +52,10 @@ export function pluginTypescript() {
       };
 
       ict.promise(async () => {
+        ctx.log.info('Typescript on $package/$name', {
+          name: module.props.fuseBoxPath,
+          package: module.pkg.props.meta.name,
+        });
         const data = tsTransform({
           input: module.contents,
           compilerOptions: compilerOptions,
