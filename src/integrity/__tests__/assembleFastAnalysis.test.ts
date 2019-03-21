@@ -77,7 +77,7 @@ describe('assemble fast analysis', () => {
     });
   });
 
-  describe.only('__dirname and __filename', () => {
+  describe('__dirname and __filename', () => {
     it('should contain __dirname', () => {
       const ctx = createContext({
         target: 'browser',

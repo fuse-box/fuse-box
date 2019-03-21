@@ -25,7 +25,7 @@ const TOKENS = {
   commentEnd: /(\*\/)/,
   systemVariables: /(?:[^\.\w]|^)(stream|process|Buffer|http|https|__dirname|__filename)/,
   exportsKeyword: /(?:[^\.\w]|^)(export)\s/,
-  jsx: /<[^\>]+/,
+  jsx: /<[a-zA-Z]+/,
 };
 
 // Compile a single long RegEx

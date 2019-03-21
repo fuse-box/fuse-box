@@ -4,6 +4,7 @@ import { readFile } from '../utils/utils';
 
 export const env = {
   APP_ROOT: appRoot.path,
+  SCRIPT_PATH: path.dirname(require.main.filename),
   FUSE_MODULES: path.join(appRoot.path, 'modules'),
 };
 

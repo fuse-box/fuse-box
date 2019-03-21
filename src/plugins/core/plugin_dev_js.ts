@@ -23,6 +23,10 @@ export function pluginDevJs() {
       }
 
       if (continueWithFastTransform) {
+        ctx.log.info('Apply fastTransform on $package/$name', {
+          name: module.props.fuseBoxPath,
+          package: module.pkg.props.meta.name,
+        });
         module.contents = fastTransform({
           input: module.contents,
           sourceInterceptor: value => {

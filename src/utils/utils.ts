@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as fsExtra from 'fs-extra';
 import * as path from 'path';
+import { env } from '../core/env';
 
 const CACHED_PATHS = new Map<string, RegExp>();
 
@@ -107,6 +108,19 @@ export function ensureAbsolutePath(userPath: string, root: string) {
     return path.join(root, userPath);
   }
   return userPath;
+}
+
+export function getPathRelativeToConfig(props: { fileName?: string; dirName: string; ensureDirExist?: boolean }) {
+  let target = props.fileName ? path.dirname(props.fileName) : props.dirName;
+  const fileName = props.fileName && path.basename(props.fileName);
+  if (!path.isAbsolute(target)) {
+    target = path.join(env.SCRIPT_PATH, target);
+  }
+  if (props.ensureDirExist) {
+    const baseDir = path.dirname(target);
+    ensureDir(baseDir);
+  }
+  return fileName ? path.join(target, fileName) : target;
 }
 
 export function ensureFuseBoxPath(input: string) {

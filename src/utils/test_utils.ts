@@ -8,7 +8,7 @@ import { createModule, IModuleProps, Module } from '../core/Module';
 import { assemble } from '../main/assemble';
 import { IConfig } from '../core/interfaces';
 import { Package, createPackage } from '../core/Package';
-
+const utils = require('./utils');
 declare global {
   namespace jest {
     // tslint:disable-next-line:interface-name
@@ -151,4 +151,25 @@ export function mockDefaultModule(ctx: Context, props?: IModuleProps) {
     p = { ...p, ...props };
   }
   return createModule(p, pkg);
+}
+
+export function mockWriteFile() {
+  const scope = {
+    written: [],
+  };
+  let originalFunction = utils.writeFile;
+
+  utils['writeFile'] = (name, contents) => {
+    scope.written.push({ name: name, contents: contents });
+  };
+
+  return {
+    getFiles: (index?: number) => (index !== undefined ? scope.written[index] : scope.written),
+    unmock: () => {
+      utils['writeFile'] = originalFunction;
+    },
+    flush: () => {
+      scope.written = [];
+    },
+  };
 }
