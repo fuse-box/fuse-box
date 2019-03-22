@@ -40,7 +40,7 @@ const logger = getLogger({ level: 'succinct' });
 //logger.withSpinner();
 logger.info('Starting benchmark');
 
-const maxIteration = 200;
+const maxIteration = 100;
 for (let i = 0; i <= maxIteration; i++) {
   logger.info(`bench: ${i} / ${maxIteration}`);
   measure('parseWithAcorn', () => parseWithAcorn(str));
@@ -50,6 +50,7 @@ for (let i = 0; i <= maxIteration; i++) {
   measure('fastAnalysis', () => fastAnalysis({ input: str }));
 }
 
+logger.stopSpinner();
 for (const item in result) {
   const totalRuns = result[item].length;
   let totalTime = 0;
@@ -57,7 +58,7 @@ for (const item in result) {
     totalTime += time;
   });
   const avgTime = totalTime / totalRuns;
-  logger.info(`${item}: ${avgTime}ms (${totalRuns} runs)`);
+  console.log(`${item}: ${avgTime}ms (${totalRuns} runs)`);
 }
 
 // //const acornTime = ;

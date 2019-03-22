@@ -21,6 +21,7 @@ export function isRequireCall(callExpression: ts.Node) {
 
 export interface ITypescriptTransformProps {
   input: string;
+  fileName?: string;
   compilerOptions?: ts.CompilerOptions;
   replacements?: IStatementReplaceableCollection;
 }
@@ -50,6 +51,7 @@ export function tsTransform(props: ITypescriptTransformProps): ts.TranspileOutpu
     };
   }
   return ts.transpileModule(props.input, {
+    fileName: props.fileName,
     compilerOptions: props.compilerOptions,
     transformers: { after: [props.replacements && moduleTransformer()] },
   });

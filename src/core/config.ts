@@ -1,8 +1,7 @@
 import * as appRoot from 'app-root-path';
-import * as path from 'path';
 import { ensureAbsolutePath } from '../utils/utils';
+import { env } from './env';
 import { IConfig } from './interfaces';
-const FUSE_MODULES = path.join(appRoot.path, 'modules');
 
 export function createConfig(props: IConfig): IConfig {
   const config: IConfig = {
@@ -13,8 +12,11 @@ export function createConfig(props: IConfig): IConfig {
 
   if (props.homeDir) {
     config.homeDir = ensureAbsolutePath(props.homeDir, config.root);
+  } else {
+    config.homeDir = env.APP_ROOT;
   }
-  config.modules = [FUSE_MODULES];
+
+  config.modules = [env.FUSE_MODULES];
 
   if (props.modules) {
     config.modules = config.modules.concat(props.modules);
@@ -45,13 +47,18 @@ export function createConfig(props: IConfig): IConfig {
     vendorSourceMap: false,
     projectSourceMap: true,
     cssSourceMap: true,
+    sourceRoot: '/src',
   };
   if (props.sourceMap !== undefined) {
     if (props.sourceMap === false) {
       config.options.projectSourceMap = false;
       config.options.cssSourceMap = false;
     }
+
     if (typeof props.sourceMap === 'object') {
+      if (props.sourceMap.sourceRoot) {
+        config.options.sourceRoot = props.sourceMap.sourceRoot;
+      }
       if (props.sourceMap.css === false) {
         config.options.cssSourceMap = false;
       }

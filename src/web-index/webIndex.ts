@@ -66,7 +66,7 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
       const scriptTags = [];
       const cssTags = [];
 
-      const sorted = bundles.sort((a, b) => b.bundle.props.priority - a.bundle.props.priority);
+      const sorted = bundles.sort((a, b) => a.bundle.props.priority - b.bundle.props.priority);
       sorted.forEach(item => {
         if (item.bundle.props.webIndexed) {
           if (item.bundle.props.type === BundleType.CSS) {

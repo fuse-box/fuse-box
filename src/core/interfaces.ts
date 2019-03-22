@@ -23,6 +23,7 @@ export interface IConfig {
     | boolean;
   sourceMap?:
     | {
+        sourceRoot?: string;
         vendor?: boolean;
         project?: boolean;
         css?: boolean;
@@ -38,6 +39,7 @@ export interface IConfig {
 
   // normalised options
   options?: {
+    sourceRoot?: string;
     entries?: Array<string>;
     vendorSourceMap?: boolean;
     projectSourceMap?: boolean;

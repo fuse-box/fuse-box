@@ -1,6 +1,6 @@
 import { Context } from './Context';
 import { Package } from './Package';
-import { readFile, createConcat } from '../utils/utils';
+import { readFile, createConcat, extractFuseBoxPath, joinFuseBoxPath } from '../utils/utils';
 import { IFastAnalysis } from '../analysis/fastAnalysis';
 
 const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx'];
@@ -42,6 +42,18 @@ export class Module {
 
   public isTypescriptModule(): boolean {
     return ['.ts', '.tsx'].includes(this.props.extension);
+  }
+
+  public getSourceMapPath() {
+    const config = this.props.ctx.config;
+    if (this.pkg.isDefaultPackage) {
+      return joinFuseBoxPath(
+        config.options.sourceRoot,
+        extractFuseBoxPath(this.props.ctx.config.homeDir, this.props.absPath),
+      );
+    } else {
+      return joinFuseBoxPath('/modules', extractFuseBoxPath(this.pkg.props.meta.packageRoot, this.props.absPath));
+    }
   }
 
   public read(): string {

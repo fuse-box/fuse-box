@@ -9,6 +9,7 @@ import {
   ensureFuseBoxPath,
   joinFuseBoxPath,
   createStringConst,
+  createVarString,
 } from '../utils';
 
 describe('utils', () => {
@@ -31,13 +32,20 @@ describe('utils', () => {
     });
   });
 
+  describe('createVarString', () => {
+    it('should create createVarConst', () => {
+      const str = createVarString('foo', 'b\'a"r');
+      expect(str).toEqual(`var foo = "b'a\\"r";`);
+    });
+  });
+
   describe('createRequireConst', () => {
     it('should create a default statement', () => {
-      expect(createRequireConst('foo')).toEqual('const foo = require("foo");');
+      expect(createRequireConst('foo')).toEqual('var foo = require("foo");');
     });
 
     it('should create a statement', () => {
-      expect(createRequireConst('foo', 'bar')).toEqual('const bar = require("foo");');
+      expect(createRequireConst('foo', 'bar')).toEqual('var bar = require("foo");');
     });
   });
 

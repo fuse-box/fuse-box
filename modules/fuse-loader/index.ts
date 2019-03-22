@@ -1,8 +1,6 @@
 /**
- * This whole file is wrapped in a function by our gulpfile.js
  * The function is injected the global `this` as `__root__`
  **/
-declare var __root__: any;
 declare let __fbx__dnm__: any;
 declare const WorkerGlobalScope: any;
 declare const ServiceWorkerGlobalScope: any;
@@ -61,7 +59,7 @@ if ($isBrowser) {
 // Set root
 // __fbx__dnm__ is a variable that is used in dynamic imports
 // In order for dynamic imports to work, we need to switch window to module.exports
-__root__ = !$isBrowser || typeof __fbx__dnm__ !== 'undefined' ? module.exports : __root__;
+const __root__ = !$isBrowser || typeof __fbx__dnm__ !== 'undefined' ? module.exports : window;
 
 /**
  * A runtime storage for FuseBox
@@ -692,7 +690,9 @@ class FuseBox {
   }
 }
 
-if (!$isBrowser) {
+if ($isBrowser) {
+  window['FuseBox'] = FuseBox;
+} else {
   g['FuseBox'] = FuseBox;
 }
 

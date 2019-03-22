@@ -366,8 +366,55 @@ describe('Fast analysis test', () => {
       });
       expect(result.report.es6Syntax).toEqual(true);
     });
+
+    it('should give es6Syntax 2', () => {
+      const result = fastAnalysis({
+        input: `
+        // some
+        export default initCloneArray;
+  `,
+      });
+      expect(result.report.es6Syntax).toEqual(true);
+    });
   });
   describe('System variables', () => {
+    describe('consistency', () => {
+      const variables = ['stream', 'process', 'buffer', 'http', 'https'];
+      const declarators = ['var', 'const', 'let'];
+      variables.forEach(name => {
+        it(`should match ${name}`, () => {
+          const result = fastAnalysis({
+            input: `
+             console.log(${name})
+          `,
+          });
+          expect(result.report.browserEssentials).toEqual([name]);
+        });
+      });
+
+      variables.forEach(name => {
+        declarators.forEach(declarator => {
+          it(`should not match ${declarator} ${name}`, () => {
+            const result = fastAnalysis({
+              input: `
+               ${declarator} ${name} = {}
+            `,
+            });
+            expect(result.report.browserEssentials).toEqual(undefined);
+          });
+
+          it(`should not match ${declarator} ${name} with further reference`, () => {
+            const result = fastAnalysis({
+              input: `
+               ${declarator} ${name} = {}
+               console.log( ${name} )
+            `,
+            });
+            expect(result.report.browserEssentials).toEqual(undefined);
+          });
+        });
+      });
+    });
     it('should match process 1', () => {
       const result = fastAnalysis({
         input: `
@@ -438,7 +485,7 @@ describe('Fast analysis test', () => {
 				 console.log(Buffer)
 			`,
       });
-      expect(result.report.browserEssentials).toEqual(['Buffer']);
+      expect(result.report.browserEssentials).toEqual(['buffer']);
     });
 
     it('should match __dirname', () => {

@@ -130,5 +130,24 @@ describe('Writer test', () => {
       expect(fileExists(expectedPath)).toEqual(true);
       expect(readFile(expectedPath)).toEqual('somecontents');
     });
+
+    it('should write file with custom contents', async () => {
+      removeFolder(path.join(__dirname, '.temp'));
+      const res = createWriter({ root: __dirname, isProduction: true, output: '.temp/$name-$hash' });
+      const data = res.generate('bar/foo.js', 'somecontents');
+      await data.write('something different');
+
+      const expectedPath = path.join(__dirname, '.temp/bar/foo-646b1c0e.js');
+      expect(fileExists(expectedPath)).toEqual(true);
+      expect(readFile(expectedPath)).toEqual('something different');
+    });
+
+    it('should write directly', async () => {
+      const res = createWriter({ root: __dirname, isProduction: true, output: '.temp/$name-$hash' });
+      await res.write('something.js', 'foo');
+      const expectedPath = path.join(__dirname, '.temp/something.js');
+      expect(fileExists(expectedPath)).toEqual(true);
+      expect(readFile(expectedPath)).toEqual('foo');
+    });
   });
 });

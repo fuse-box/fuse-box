@@ -60,6 +60,7 @@ export function mockModule(props: IMockModuleProps): IMockModuleResponse {
   const pkg = createPackage({
     ctx: ctx,
     meta: {
+      packageRoot: __dirname,
       name: packageProps.name || 'default',
     },
   });

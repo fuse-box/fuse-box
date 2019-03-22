@@ -2,6 +2,7 @@ import { Context } from '../../core/Context';
 import { Module } from '../../core/Module';
 import { tsTransform } from '../../transform/tsTransform';
 import * as ts from 'typescript';
+import { fixModuleSourceMap } from '../../sourcemaps/helpers';
 
 export function pluginTypescript() {
   return (ctx: Context) => {
@@ -27,11 +28,10 @@ export function pluginTypescript() {
       */
       if (!props.module.isTypescriptModule()) {
         if (
-          (!analysis.replaceable || analysis.replaceable.length === 0) &&
-          !analysis.report.containsJSX &&
-          !analysis.report.es6Syntax
+          (!analysis.report.containsJSX && !analysis.report.es6Syntax && !analysis.replaceable) ||
+          analysis.replaceable.length === 0
         ) {
-          return;
+          return props;
         }
       }
       let requireSourceMaps = true;
@@ -48,8 +48,15 @@ export function pluginTypescript() {
 
       const compilerOptions: ts.CompilerOptions = {
         ...ctx.tsConfig.compilerOptions,
-        sourceMap: requireSourceMaps,
       };
+
+      if (requireSourceMaps) {
+        compilerOptions.sourceMap = true;
+        compilerOptions.inlineSources = true;
+      }
+
+      compilerOptions.outDir = undefined;
+      compilerOptions.outFile = undefined;
 
       ict.promise(async () => {
         ctx.log.info('Typescript on $package/$name', {
@@ -57,12 +64,13 @@ export function pluginTypescript() {
           package: module.pkg.props.meta.name,
         });
         const data = tsTransform({
+          fileName: module.props.absPath,
           input: module.contents,
           compilerOptions: compilerOptions,
           replacements: !analysis.report.statementsReplaced && analysis.replaceable,
         });
         module.contents = data.outputText;
-        module.sourceMap = data.sourceMapText;
+        module.sourceMap = requireSourceMaps ? fixModuleSourceMap(module, data.sourceMapText) : undefined;
         analysis.report.statementsReplaced = true;
         analysis.report.transpiled = true;
       });

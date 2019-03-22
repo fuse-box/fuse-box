@@ -56,7 +56,7 @@ describe('Create dev bundles', () => {
       expect(data.bundles.app).toBeTruthy();
 
       const vendorPackages = data.bundles.vendor.packages.map(item => item.props.meta.name);
-      expect(vendorPackages).toEqual(['events', 'http']);
+      expect(vendorPackages).toEqual(['events']);
 
       const devPackages = data.bundles.dev.packages.map(item => item.props.meta.name);
       expect(devPackages).toEqual(['fuse-box-hot-reload', 'fuse-box-websocket']);
@@ -129,7 +129,7 @@ describe('Create dev bundles', () => {
 
       expect(output.contents).toContain('FuseBox.pkg("default"');
       expect(output.contents).toContain('___scope___.file("index.js"');
-      expect(output.contents).toContain('const process = require("process");');
+      expect(output.contents).toContain('var process = require("process");');
     });
 
     it('should have an according target in settings (browser)', () => {
@@ -165,7 +165,7 @@ describe('Create dev bundles', () => {
 
       const devBundle = data.bundles.app;
       const output = devBundle.generate();
-      expect(output.contents).toContain(`FuseBox.main("index.js");`);
+      expect(output.contents).toContain(`FuseBox.main("default/index.js");`);
     });
   });
 });
