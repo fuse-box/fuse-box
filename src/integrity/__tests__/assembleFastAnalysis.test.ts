@@ -56,7 +56,7 @@ describe('assemble fast analysis', () => {
         },
       };
       ctx.interceptor.sync('assemble_fast_analysis', { module });
-      expect(module.header).toEqual(['const process = require("process");']);
+      expect(module.header).toEqual(['var process = require("process");']);
     });
 
     it('should have fusebox default import package', () => {
@@ -72,7 +72,7 @@ describe('assemble fast analysis', () => {
       };
       ctx.interceptor.sync('assemble_fast_analysis', { module });
 
-      expect(module.header).toEqual([`const ${devImports.variable} = require("${devImports.packageName}");`]);
+      expect(module.header).toEqual([`var ${devImports.variable} = require("${devImports.packageName}");`]);
       expect(module.fastAnalysis.imports).toEqual([{ type: ImportType.REQUIRE, statement: devImports.packageName }]);
     });
   });
@@ -91,7 +91,7 @@ describe('assemble fast analysis', () => {
       };
       ctx.interceptor.sync('assemble_fast_analysis', { module });
 
-      expect(module.header).toEqual(['const __dirname = ".";']);
+      expect(module.header).toEqual(['var __dirname = ".";']);
     });
 
     it('should not contain __dirname (server)', () => {
@@ -123,7 +123,7 @@ describe('assemble fast analysis', () => {
       };
       ctx.interceptor.sync('assemble_fast_analysis', { module });
 
-      expect(module.header).toEqual(['const __filename = "index.js";']);
+      expect(module.header).toEqual(['var __filename = "index.js";']);
     });
 
     it('should not contain __dirname (server)', () => {

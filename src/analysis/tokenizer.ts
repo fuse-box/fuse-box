@@ -6,7 +6,7 @@ export interface ITokenizerGroup {
   singleLineComment?: string;
   commentStart?: string;
   commentEnd?: string;
-  systemVariable?: string;
+  systemVariable?: { declaration?: string; name: string };
   exportsKeyword?: boolean;
   jsxToken?: boolean;
 }
@@ -17,15 +17,15 @@ export interface ITokenizerGroup {
  * Compiles down to one RegEx
  */
 const TOKENS = {
-  requireStatement: /(?:[^\.\w]|^)(require|import)\((\s*\/\*.*\*\/\s*)?["']([^"']+)/,
+  requireStatement: /(?:[^\.\w]|^)(require|import)\((\s*\/\*.*\*\/\s*)?["']([^"']+)?/,
   importModule: /import\s+['"]([^"']+)/,
   importFrom: /\s+from\s+['"]([^"']+)/,
-  singleLineComment: /(\/\/)/,
+  singleLineComment: /(\/\/.*$)/,
   commentStart: /(\/\*)/,
   commentEnd: /(\*\/)/,
-  systemVariables: /(?:[^\.\w]|^)(stream|process|Buffer|http|https|__dirname|__filename)/,
-  exportsKeyword: /(?:[^\.\w]|^)(export)\s/,
-  jsx: /<[a-zA-Z]+/,
+  systemVariables: /(?:^|[\s=:\[,\(])((var|const|let)\s*)?(stream|process|Buffer|http|https|__dirname|__filename)(?:$|[\).\s:\],])/,
+  exportsKeyword: /(export)\s/,
+  jsx: /(\/>|<\/)/,
 };
 
 // Compile a single long RegEx
@@ -34,12 +34,17 @@ for (const name in TOKENS) {
   data.push(`(${TOKENS[name].source})`);
 }
 
-const REGEX = new RegExp(`(${data.join(`|`)})`, 'gm');
-//console.log(REGEX);
+const REGEX = new RegExp(`(${data.join(`|`)})`, 'igm');
+// function debugMatchIndex(matches) {
+//   matches.forEach((item, index) => {
+//     console.log(`${index} => ${item}`);
+//   });
+// }
 export function tokenize(input: string, onToken: (group: ITokenizerGroup) => void) {
   let matches;
   while ((matches = REGEX.exec(input))) {
     const kw = matches[3];
+    //debugMatchIndex(matches);
     onToken({
       requireStatement: kw === 'require' && matches[5],
       dynamicImport: kw === 'import' && matches[5],
@@ -48,9 +53,12 @@ export function tokenize(input: string, onToken: (group: ITokenizerGroup) => voi
       singleLineComment: matches[11],
       commentStart: matches[13],
       commentEnd: matches[14],
-      systemVariable: matches[17],
-      exportsKeyword: matches[19],
-      jsxToken: matches[20],
+      systemVariable: matches[19] && {
+        declaration: matches[18],
+        name: matches[19].toLowerCase(),
+      },
+      exportsKeyword: matches[21],
+      jsxToken: matches[23],
     });
   }
 }

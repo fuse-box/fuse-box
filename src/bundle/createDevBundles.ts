@@ -24,7 +24,7 @@ export function injectSettingIntoDevBundle(ctx: Context, bundle: Bundle) {
 export function injectSettingsIntoDefaultBundle(ctx: Context, bundle: Bundle) {
   const defaultPackage = bundle.packages[0];
   if (defaultPackage.entry) {
-    bundle.addContent(devStrings.setEntry(defaultPackage.entry.props.fuseBoxPath));
+    bundle.addContent(devStrings.setEntry(`default/${defaultPackage.entry.props.fuseBoxPath}`));
   }
 }
 

@@ -11,6 +11,8 @@ export interface IRawCompilerOptions {
   target?: string;
   module?: string;
   baseUrl?: string;
+  sourceMap?: boolean;
+  inlineSources?: boolean;
   allowJs?: boolean;
   paths?: ITypescriptPaths;
   jsxFactory?: string;

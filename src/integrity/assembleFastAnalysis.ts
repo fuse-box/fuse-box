@@ -1,9 +1,9 @@
+import * as path from 'path';
 import { Context } from '../core/Context';
 import { Module } from '../core/Module';
 import { ImportType } from '../resolver/resolver';
-import { createRequireConst, createStringConst, ensureFuseBoxPath } from '../utils/utils';
+import { createRequireConst, createVarString, ensureFuseBoxPath } from '../utils/utils';
 import { devImports } from './devPackage';
-import * as path from 'path';
 
 export function assembleFastAnalysis(ctx: Context) {
   const ict = ctx.interceptor;
@@ -24,10 +24,10 @@ export function assembleFastAnalysis(ctx: Context) {
 
       if (ctx.config.target === 'browser') {
         if (report.contains__filename) {
-          module.header.push(createStringConst('__filename', module.props.fuseBoxPath));
+          module.header.push(createVarString('__filename', module.props.fuseBoxPath));
         }
         if (report.contains__dirname) {
-          module.header.push(createStringConst('__dirname', ensureFuseBoxPath(path.dirname(module.props.fuseBoxPath))));
+          module.header.push(createVarString('__dirname', ensureFuseBoxPath(path.dirname(module.props.fuseBoxPath))));
         }
       }
 

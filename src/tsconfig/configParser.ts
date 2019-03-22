@@ -63,7 +63,6 @@ export function initTypescriptConfig(
   if (!basePath) {
     basePath = path.dirname(require.main.filename);
   }
-
   userOptions.module = 'commonjs';
   userOptions.moduleResolution = 'node';
   userOptions.importHelpers = true;
@@ -79,6 +78,7 @@ export function initTypescriptConfig(
       userOptions.target = 'es2017';
     }
   }
+
   delete userOptions.mod;
 
   const config = ts.convertCompilerOptionsFromJson(userOptions, basePath);

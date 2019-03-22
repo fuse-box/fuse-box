@@ -85,9 +85,25 @@ describe('Typescript plugin', () => {
   it('should not transpile (not typescript, no jsx to es6 imports)', async () => {
     await evaluate({
       setup: props => {
-        props.module.contents = 'function(){}';
         props.module.props.extension = '.js';
+        props.module.contents = 'oi';
         props.module.fastAnalysis = {
+          report: {},
+        };
+      },
+      afterPluginInit: props => {
+        expect(props.ctx.interceptor.getPromises()).toHaveLength(0);
+      },
+    });
+  });
+
+  it('should not transpile (not typescript, no jsx to es6 imports) no replacable', async () => {
+    await evaluate({
+      setup: props => {
+        props.module.props.extension = '.js';
+        props.module.contents = 'oi';
+        props.module.fastAnalysis = {
+          replaceable: [],
           report: {},
         };
       },
@@ -101,7 +117,9 @@ describe('Typescript plugin', () => {
     await evaluate({
       setup: props => {
         props.module.contents = 'require("./foo")';
-        props.module.props.extension = '.js';
+        props.module.props.absPath = '/foo';
+        props.module.props.fuseBoxPath = 'foo.ts';
+        props.module.props.extension = '.ts';
         props.module.fastAnalysis = {
           report: {},
           replaceable: [{ type: ImportType.RAW_IMPORT, fromStatement: './foo', toStatement: './bar' }],
@@ -120,6 +138,8 @@ describe('Typescript plugin', () => {
     const data = await evaluate({
       packageProps: { isDefaultPackage: true },
       setup: props => {
+        props.module.props.absPath = '/foo';
+        props.module.props.fuseBoxPath = 'foo.ts';
         props.module.props.extension = '.ts';
         props.module.contents = 'export function foo(){}';
         props.module.fastAnalysis = {
@@ -139,6 +159,8 @@ describe('Typescript plugin', () => {
     const data = await evaluate({
       packageProps: { isDefaultPackage: true },
       setup: props => {
+        props.module.props.absPath = '/foo';
+        props.module.props.fuseBoxPath = 'foo.ts';
         props.module.props.extension = '.ts';
         props.module.contents = 'export function foo(){}';
         props.module.fastAnalysis = {
@@ -156,6 +178,8 @@ describe('Typescript plugin', () => {
       config: { sourceMap: false },
       packageProps: { isDefaultPackage: true },
       setup: props => {
+        props.module.props.absPath = '/foo';
+        props.module.props.fuseBoxPath = 'foo.ts';
         props.module.props.extension = '.ts';
         props.module.contents = 'export function foo(){}';
         props.module.fastAnalysis = {
@@ -176,6 +200,8 @@ describe('Typescript plugin', () => {
       config: { sourceMap: true },
       packageProps: { isDefaultPackage: false },
       setup: props => {
+        props.module.props.absPath = '/foo';
+        props.module.props.fuseBoxPath = 'foo.ts';
         props.module.props.extension = '.ts';
         props.module.contents = 'export function foo(){}';
         props.module.fastAnalysis = {
@@ -193,6 +219,8 @@ describe('Typescript plugin', () => {
       config: { sourceMap: { vendor: true } },
       packageProps: { isDefaultPackage: false },
       setup: props => {
+        props.module.props.absPath = '/foo';
+        props.module.props.fuseBoxPath = 'foo.ts';
         props.module.props.extension = '.ts';
         props.module.contents = 'export function foo(){}';
         props.module.fastAnalysis = {
