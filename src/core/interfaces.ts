@@ -2,6 +2,7 @@ import { IRawCompilerOptions } from '../interfaces/TypescriptInterfaces';
 import { ILoggerProps } from '../logging/logging';
 import { IWebIndexConfig } from '../web-index/webIndex';
 import { Context } from './Context';
+import { IDevServerProps } from '../dev-server/devServerProps';
 
 export interface IConfig {
   root?: string;
@@ -10,6 +11,7 @@ export interface IConfig {
   output?: string;
   modules?: Array<string>;
   logging?: ILoggerProps;
+  cache?: boolean;
   tsConfig?: string | IRawCompilerOptions;
   entry?: string | Array<string>;
   allowSyntheticDefaultImports?: boolean;
@@ -36,6 +38,8 @@ export interface IConfig {
   defaultCollectionName?: string;
 
   production?: {};
+
+  devServer?: IDevServerProps | boolean | undefined;
 
   // normalised options
   options?: {

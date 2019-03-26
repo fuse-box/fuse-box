@@ -3,6 +3,7 @@ import { colors } from './chroma';
 export interface ILogger {
   group: (name: string | boolean) => void;
   info: (msg: string, variables?: { [key: string]: any }) => void;
+  status: (msg: string, variables?: { [key: string]: any }) => void;
   warn: (msg: string, variables?: { [key: string]: any }) => void;
   error: (msg: string, variables?: { [key: string]: any }) => void;
   deprecated: (msg: string, variables?: { [key: string]: any }) => void;
@@ -20,6 +21,10 @@ export function getLogger(props?: ILoggerProps): ILogger {
   if (process.env.JEST_TEST) {
     level = 'disabled';
   }
+
+  if (process.argv.includes('--verbose')) {
+    level = 'verbose';
+  }
   const scope: {
     group?: string;
     spinner?: ISpinnerInterface;
@@ -34,12 +39,17 @@ export function getLogger(props?: ILoggerProps): ILogger {
         text = text.replace(`$${key}`, variables[key]);
       }
     }
-    const output = scope.group
-      ? ` ${colors.bold(colors[color](scope.group))} → ${colors[color](text)}`
-      : ` ${colors[color](text)}`;
 
-    if (level === 'succinct' && scope.spinner) {
-      scope.spinner.setText(output);
+    let colouredText = colors[color](text);
+
+    const output = scope.group ? ` ${colors.bold(colors[color](scope.group))}  ${colouredText}` : ` ${colouredText}`;
+
+    if (level === 'succinct') {
+      if (scope.spinner) {
+        scope.spinner.setText(output);
+      } else {
+        console.log(output);
+      }
     }
     if (level === 'verbose') {
       console.log(output);
@@ -57,6 +67,9 @@ export function getLogger(props?: ILoggerProps): ILogger {
     },
     info: (msg: string, variables?: { [key: string]: any }) => {
       log('cyan', msg, variables);
+    },
+    status: (msg: string, variables?: { [key: string]: any }) => {
+      log('green', msg, variables);
     },
     warn: (msg: string, variables?: { [key: string]: any }) => {
       log('yellow', msg, variables);
@@ -80,6 +93,7 @@ export function getLogger(props?: ILoggerProps): ILogger {
     stopSpinner: () => {
       if (scope.spinner) {
         scope.spinner.stop();
+        delete scope.spinner;
       }
     },
   };

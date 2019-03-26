@@ -3,7 +3,7 @@ import * as ts from 'typescript';
 const name = 1;
 
 const str = `
-require('foo')
+export { version, parse, parseExpressionAt, tokenizer, parse_dammit, LooseParser, pluginsLoose, addLooseExports, Parser, plugins, defaultOptions, Position, SourceLocation, getLineInfo, Node, TokenType, types as tokTypes, keywords$1 as keywordTypes, TokContext, types$1 as tokContexts, isIdentifierChar, isIdentifierStart, Token, isNewLine, lineBreak, lineBreakG, nonASCIIwhitespace };
 `;
 
 const tsString = `
@@ -18,8 +18,7 @@ export class Some<T> {
 
 `;
 
-const data = ts.createSourceFile('oi.ts', tsString, ts.ScriptTarget.ESNext);
-console.log(data);
-// const code = fastTransform({ input: str });
+const code = fastTransform({ input: str });
+console.log(code);
 
 // console.log(code);

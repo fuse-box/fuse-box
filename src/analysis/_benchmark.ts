@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { getLogger } from '../logging/logging';
 import { fastAnalysis } from './fastAnalysis';
+import { fireAst } from '../fire-ast/fireAst';
 const str = fs.readFileSync(path.join(__dirname, 'file.js')).toString();
 
 function parseWithAcorn(input) {

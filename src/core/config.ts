@@ -77,8 +77,16 @@ export function createConfig(props: IConfig): IConfig {
     config.logging = props.logging;
   }
 
+  if (props.devServer) {
+    config.devServer = props.devServer;
+  }
+
   if (props.entry) {
     config.options.entries = [].concat(props.entry);
+  }
+
+  if (props.cache !== undefined) {
+    config.cache = props.cache;
   }
 
   return config;

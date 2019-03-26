@@ -67,6 +67,10 @@ export function readFile(file: string) {
   return fs.readFileSync(file).toString();
 }
 
+export function isObject(obj: any) {
+  return typeof obj === 'object';
+}
+
 export function pathJoin(...args) {
   return path.join(...args);
 }
