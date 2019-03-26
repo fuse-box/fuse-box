@@ -351,6 +351,15 @@ describe('Fast analysis test', () => {
       expect(result.report.containsJSX).toEqual(true);
     });
 
+    it('should give not jsx', () => {
+      const result = fastAnalysis({
+        input: `
+				 function(){ return '<div></div>'}
+			`,
+      });
+      expect(result.report.containsJSX).toBeUndefined();
+    });
+
     it('should give es6Syntax 1', () => {
       const result = fastAnalysis({
         input: `
@@ -376,6 +385,19 @@ describe('Fast analysis test', () => {
       });
       expect(result.report.es6Syntax).toEqual(true);
     });
+
+    it('should give es6Syntax 2', () => {
+      const result = fastAnalysis({
+        input: `
+        const events = require('events');
+        function log(text) {
+          console.info('color: #237abe');
+        }
+        export class SocketClient {
+  `,
+      });
+      expect(result.report.es6Syntax).toEqual(true);
+    });
   });
   describe('System variables', () => {
     describe('consistency', () => {
@@ -389,6 +411,24 @@ describe('Fast analysis test', () => {
           `,
           });
           expect(result.report.browserEssentials).toEqual([name]);
+        });
+
+        it(`should not match ${name} (is in string 1) `, () => {
+          const result = fastAnalysis({
+            input: `
+             console.log('${name}')
+          `,
+          });
+          expect(result.report.browserEssentials).toBeUndefined();
+        });
+
+        it(`should not match ${name} (is in string ") `, () => {
+          const result = fastAnalysis({
+            input: `
+             console.log('${name}')
+          `,
+          });
+          expect(result.report.browserEssentials).toBeUndefined();
         });
       });
 

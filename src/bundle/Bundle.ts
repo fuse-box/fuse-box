@@ -120,14 +120,18 @@ export class Bundle {
    */
   private async write(withSourceMaps: boolean): Promise<IBundleWriteResponse> {
     const ctx = this.props.ctx;
+    const ict = this.props.ctx.interceptor;
+    ict.sync('before_bundle_write', { bundle: this });
     if (withSourceMaps) {
       const smData = ctx.writer.generate(this.generateSourceMapFileName(), this.contents.sourceMap);
       await smData.write();
       const file = path.basename(smData.relBrowserPath);
       this.contents.add(null, sourceMapsURL(file));
     }
+
     const bundleData = ctx.writer.generate(this.generateFileName(), this.contents.content.toString());
     await bundleData.write();
+    ict.sync('after_bundle_write', { bundle: this });
     return { bundle: this, stat: bundleData };
   }
 

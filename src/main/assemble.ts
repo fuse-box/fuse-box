@@ -15,13 +15,13 @@ interface IDefaultParseProps {
 function registerPackage(props: { assemble?: boolean; pkg: Package; ctx: Context; resolved: IResolver }) {
   const collection = props.ctx.assembleContext.collection;
   const resolved = props.resolved;
-  props.ctx.log.info('package $name:$version', {
-    name: resolved.package.meta.name,
-    version: resolved.package.meta.version,
-  });
 
   let pkg: Package = collection.packages.get(resolved.package.meta.name, resolved.package.meta.version);
   if (!pkg) {
+    props.ctx.log.info('package $name:$version', {
+      name: resolved.package.meta.name,
+      version: resolved.package.meta.version,
+    });
     pkg = createPackage({ ctx: props.ctx, meta: resolved.package.meta });
     collection.packages.add(pkg);
   }

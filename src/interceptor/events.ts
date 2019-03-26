@@ -1,6 +1,7 @@
 import { Module } from '../core/Module';
 import { Context } from '../core/Context';
 import { Package } from '../core/Package';
+import { Bundle, IBundleWriteResponse } from '../bundle/Bundle';
 
 export interface InterceptorEvents {
   test?: { foo: string };
@@ -14,4 +15,7 @@ export interface InterceptorEvents {
   bundle_resolve_typescript_module: { module: Module };
   bundle_resolve_js_module: { module: Module };
   bundle_resolve_module: { module: Module };
+  before_bundle_write: { bundle: Bundle };
+  after_bundle_write: { bundle: Bundle };
+  complete: { ctx: Context; bundles: Array<IBundleWriteResponse> };
 }

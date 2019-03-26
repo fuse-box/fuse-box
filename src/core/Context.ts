@@ -1,14 +1,15 @@
+import { createDevServer, IDevServerActions } from '../dev-server/devServer';
 import { attachEssentials } from '../integrity/setup';
 import { createInterceptor, MainInterceptor } from '../interceptor/interceptor';
 import { TypescriptConfig } from '../interfaces/TypescriptInterfaces';
 import { getLogger, ILogger } from '../logging/logging';
 import { initTypescriptConfig } from '../tsconfig/configParser';
+import { createWebIndex, IWebIndexInterface } from '../web-index/webIndex';
 import { assembleContext, IAssembleContext } from './assemble_context';
 import { createConfig } from './config';
 import { env } from './env';
 import { IConfig } from './interfaces';
 import { createWriter, IWriterActions } from './writer';
-import { IWebIndexInterface, createWebIndex } from '../web-index/webIndex';
 
 export class Context {
   public assembleContext: IAssembleContext;
@@ -17,6 +18,7 @@ export class Context {
   public log: ILogger;
   public webIndex: IWebIndexInterface;
   public writer: IWriterActions;
+  public devServer?: IDevServerActions;
   constructor(public config: IConfig) {
     this.tsConfig = initTypescriptConfig(config);
     this.assembleContext = assembleContext(this);
@@ -30,6 +32,9 @@ export class Context {
     });
     this.webIndex = createWebIndex(this);
     attachEssentials(this);
+    this.devServer = createDevServer(this);
+    if (this.config.cache) {
+    }
   }
 }
 
