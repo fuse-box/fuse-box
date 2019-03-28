@@ -1,8 +1,7 @@
 import * as path from 'path';
 import { createRealNodeModule } from '../../utils/test_utils';
-import { resolveModule, ImportType } from '../resolver';
+import { ImportType, resolveModule } from '../resolver';
 const cases = path.join(__dirname, 'cases/');
-import * as appRoot from 'app-root-path';
 const customModules = path.join(cases, '_modules');
 createRealNodeModule(
   'resolver-test_a',

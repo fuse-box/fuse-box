@@ -11,7 +11,12 @@ export interface IConfig {
   output?: string;
   modules?: Array<string>;
   logging?: ILoggerProps;
-  cache?: boolean;
+  cache?:
+    | boolean
+    | {
+        root?: string;
+        enabled?: boolean;
+      };
   tsConfig?: string | IRawCompilerOptions;
   entry?: string | Array<string>;
   allowSyntheticDefaultImports?: boolean;
@@ -48,5 +53,7 @@ export interface IConfig {
     vendorSourceMap?: boolean;
     projectSourceMap?: boolean;
     cssSourceMap?: boolean;
+    cacheEnabled?: boolean;
+    cacheRoot?: string;
   };
 }

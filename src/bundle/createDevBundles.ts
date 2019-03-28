@@ -3,6 +3,7 @@ import { getDevelopmentApi } from '../core/env';
 import { Package } from '../core/Package';
 import { Bundle, BundleCollection, BundleType, createBundleSet } from './Bundle';
 import { devStrings } from './bundleStrings';
+import { createConcat } from '../utils/utils';
 
 /**
  * Adding global settings like allowSyntheticDefaultImports and targets
@@ -30,26 +31,37 @@ export function injectSettingsIntoDefaultBundle(ctx: Context, bundle: Bundle) {
 
 export function inflateBundle(ctx: Context, bundle: Bundle) {
   bundle.packages.forEach(pkg => {
-    let packageName = pkg.props.meta.name;
-    if (!pkg.isFlat) {
-      packageName += `@${pkg.props.meta.version}`;
-    }
-    const customVersions = {};
-    pkg.externalPackages.forEach(extPackage => {
-      if (!extPackage.isFlat) {
-        customVersions[extPackage.props.meta.name] = extPackage.props.meta.version;
+    if (pkg.isCached) {
+      bundle.addContent(pkg.cache.contents, pkg.cache.sourceMap);
+    } else {
+      let packageName = pkg.props.meta.name;
+      if (!pkg.isFlat) {
+        packageName += `@${pkg.props.meta.version}`;
       }
-    });
-    bundle.addContent(devStrings.openPackage(packageName, customVersions));
-    pkg.modules.forEach(_module => {
-      bundle.addContent(devStrings.openFile(_module.props.fuseBoxPath));
-      const data = _module.generate();
-      bundle.addContent(data.contents, data.sourcemMap);
-      bundle.addContent(devStrings.closeFile());
-    });
-    bundle.addContent(devStrings.closePackage(pkg.entry && pkg.entry.props.fuseBoxPath));
-    if (bundle.props.type === BundleType.PROJECT_JS) {
-      injectSettingsIntoDefaultBundle(ctx, bundle);
+      const customVersions = {};
+      pkg.externalPackages.forEach(extPackage => {
+        if (!extPackage.isFlat) {
+          customVersions[extPackage.props.meta.name] = extPackage.props.meta.version;
+        }
+      });
+
+      const concat = createConcat(true, '', '\n');
+      concat.add(null, devStrings.openPackage(packageName, customVersions));
+
+      pkg.modules.forEach(_module => {
+        concat.add(null, devStrings.openFile(_module.props.fuseBoxPath));
+        const data = _module.generate();
+        concat.add(null, data.contents, data.sourcemMap);
+        concat.add(null, devStrings.closeFile());
+      });
+      concat.add(null, devStrings.closePackage(pkg.entry && pkg.entry.props.fuseBoxPath));
+
+      ctx.interceptor.sync('after_dev_package_inflate', { ctx, pkg: pkg, concat: concat });
+      bundle.addContent(concat.content.toString(), concat.sourceMap);
+
+      if (bundle.props.type === BundleType.PROJECT_JS) {
+        injectSettingsIntoDefaultBundle(ctx, bundle);
+      }
     }
   });
 }

@@ -1,95 +1,255 @@
-import {
-  ICacheAdapter,
-  ICacheTreeContents,
-  ICachePackage,
-  ICacheRequest,
-  ICachePackageContent,
-  ICacheResponse,
-} from './Interfaces';
+import * as path from 'path';
+import { Context } from '../core/Context';
+import { env } from '../core/env';
+import { ensureDir, fileExists, readFile, writeFile } from '../utils/utils';
+import { ICacheTreeContents, ICacheDependencies, ICachePackageResponse, ICachePackage } from './Interfaces';
+import { Package, createPackage } from '../core/Package';
 
-export function getPackageCacheKey(name: string, version: string) {
-  return `${name}-${version}.json`;
+export function generateValidKey(key) {
+  return encodeURIComponent(key) + '.cache';
 }
+
+export interface IFileCacheProps {
+  ctx: Context;
+}
+
+export interface IModuleCacheBasics {
+  contents: string;
+  sourceMap: string;
+}
+
+const TREE_FILE_KEY = 'tree.json';
+
 export class Cache {
-  private tree: ICacheTreeContents;
-  constructor(public adapter: ICacheAdapter) {
-    this.tree = getTree(adapter);
+  private rootFolder: string;
+
+  private unsynced = new Map<string, any>();
+  private synced = new Map<string, any>();
+  public ctx: Context;
+  constructor(props: IFileCacheProps) {
+    const config = props.ctx.config;
+    this.ctx = props.ctx;
+    this.rootFolder = config.options.cacheRoot;
   }
 
-  public findPackage(name: string, version: string): ICachePackage {
-    const record = this.tree.packages[name];
-    return record && record[version];
+  public init() {
+    ensureDir(path.join(this.rootFolder, env.CACHE.PACKAGES));
+    ensureDir(path.join(this.rootFolder, env.CACHE.PROJET_FILES));
   }
 
-  public syncPackage(props: ICachePackage, content: ICachePackageContent): { key: string } {
-    const pkg = (this.tree.packages[props.name] = this.tree.packages[name] || {});
-    pkg[props.version] = props;
-    const key = getPackageCacheKey(props.name, props.version);
-    this.adapter.set(getPackageCacheKey(props.name, props.version), content);
-    return { key };
+  public set(key: string, value: any) {
+    key = generateValidKey(key);
+    this.synced.delete(key);
+    this.unsynced.set(key, value);
   }
 
-  public resolve(props: ICacheRequest): ICacheResponse {
-    const response: ICacheResponse = [];
-
-    const pkg = this.findPackage(props.name, props.version);
-    if (!pkg) {
-      // package record wasn't found at all
-      return;
+  public forceSyncOnKey(key: string) {
+    if (this.synced.get(key)) {
+      this.unsynced.set(key, this.synced.get(key));
+      this.synced.delete(key);
     }
-    const packageJson = require(pkg.packageJSONLocation);
-
-    // break if package.json version has changed
-    packageJson.version = packageJson.version || '1.0.0';
-    if (packageJson.version !== props.version) {
-      return;
-    }
-
-    for (const mod in props.forModules) {
-      const name = props.forModules[mod];
-      if (!pkg.modules.includes(name)) {
-        // requested file was not found in the records
-        return;
-      }
-    }
-
-    const dependentPackages: Array<ICachePackage> = [];
-    if (pkg.dependencies) {
-      for (const item in pkg.dependencies) {
-        const dependency = pkg.dependencies[item];
-        const dependentPackage = this.findPackage(dependency.name, dependency.version);
-        if (!dependentPackage) {
-          // requested package wasn't found in the depedencny
-          return;
-        }
-
-        dependentPackages.push(dependentPackage);
-      }
-    }
-    response.push({
-      content: this.adapter.get<ICachePackageContent>(getPackageCacheKey(props.name, props.version)),
-      meta: pkg,
-    });
-
-    dependentPackages.forEach(dep => {
-      response.push({
-        content: this.adapter.get<ICachePackageContent>(getPackageCacheKey(dep.name, dep.version)),
-        meta: dep,
-      });
-    });
-
-    return response;
   }
-}
+  /**
+   * get dependency tree (here we store all information about cached packages)
+   *
+   * @returns
+   * @memberof FileAdapter
+   */
+  public getTree() {
+    let tree: ICacheTreeContents = this.get<ICacheTreeContents>(TREE_FILE_KEY);
+    if (!tree) {
+      tree = {
+        packages: {},
+      };
+      this.set(TREE_FILE_KEY, tree);
+    }
+    return tree;
+  }
 
-export function getTree(adapter: ICacheAdapter): ICacheTreeContents {
-  const tree = adapter.ensure<ICacheTreeContents>('tree.json');
-  if (!tree.packages) {
+  public get<T>(key: string): T {
+    key = generateValidKey(key);
+
+    if (this.synced.has(key)) {
+      return this.synced.get(key);
+    }
+
+    if (this.unsynced.has(key)) {
+      return this.unsynced.get(key);
+    }
+
+    const targetFile = path.join(this.rootFolder, key);
+
+    if (fileExists(targetFile)) {
+      const contents = readFile(targetFile);
+      this.synced.set(key, JSON.parse(contents));
+      return this.synced.get(key);
+    }
+  }
+
+  public clearMemory() {
+    this.unsynced = new Map();
+    this.synced = new Map();
+  }
+
+  public async sync() {
+    const writers: Array<Promise<any>> = [];
+    for (const item of this.unsynced) {
+      const [key, value] = item;
+      writers.push(writeFile(path.join(this.rootFolder, key), JSON.stringify(value)));
+      // it's synced now
+
+      this.synced.set(key, value);
+    }
+    await Promise.all(writers);
+    // reset unsynced
+    this.unsynced = new Map();
+  }
+
+  public clearTree() {
+    const tree = this.getTree();
     tree.packages = {};
   }
-  return tree;
+
+  private getPackageKey(pkg: Package) {
+    return `${pkg.props.meta.name}-${pkg.props.meta.version}`;
+  }
+
+  public getPackage(pkg: Package): ICachePackageResponse {
+    const tree = this.getTree();
+
+    const meta = pkg.props.meta;
+    const response: ICachePackageResponse = {};
+    if (!tree.packages[meta.name]) {
+      response.abort = true;
+
+      // we don't want to retreive anything from cache if even one package is missing
+      this.clearTree();
+      return response;
+    }
+
+    const dest = tree.packages[meta.name][meta.version];
+
+    if (!dest) {
+      // same here, drop everything
+      this.clearTree();
+
+      response.abort = true;
+      return response;
+    }
+
+    // checking here if user entries e.g libary/foo.js, library/boo.js
+    // all present in the cache.
+    // If a new partial require was spotted and/or used a different entry
+    let moduleMismatch = false;
+    pkg.modules.forEach(item => {
+      item.props.fuseBoxPath;
+      if (!dest.modules.includes(item.props.fuseBoxPath)) {
+        moduleMismatch = true;
+      }
+    });
+
+    // retrieve cache for this package
+    if (!moduleMismatch) {
+      const cache = this.get<IModuleCacheBasics>(this.getPackageKey(pkg));
+
+      if (!cache) {
+        response.abort = true;
+      } else {
+        pkg.setCache(cache);
+      }
+    }
+
+    if (response.abort) {
+      return response;
+    }
+
+    // if the package isn't aborted (the cache is valid)
+    // we should collect all the dependencies with its cache
+    const packageCollection = {};
+
+    const collectAllSubDependencies = (list: ICacheDependencies) => {
+      list.map(item => {
+        if (!tree.packages[item.name] || !tree.packages[item.name][item.version]) {
+          response.abort = true;
+
+          this.clearTree();
+          return;
+        }
+        // check if it wasn't added before
+        // to avoid an infinite loop
+        if (!response.abort) {
+          const key = `${item.name}-${item.version}`;
+          const info = tree.packages[item.name][item.version];
+          if (!packageCollection[key]) {
+            const targetPackage = createPackage({
+              ctx: this.ctx,
+              meta: info.meta,
+            });
+            const cacheKey = this.getPackageKey(targetPackage);
+            const cache = this.get<IModuleCacheBasics>(cacheKey);
+            // if one of the cached version is missing - abort
+            // cache should be reset
+            if (!cache) {
+              response.abort = true;
+              this.clearTree();
+              return;
+            }
+            targetPackage.setCache(cache);
+            packageCollection[key] = targetPackage;
+
+            const targetPackagInfo = tree.packages[item.name][item.version];
+            if (targetPackagInfo.dependencies) {
+              collectAllSubDependencies(targetPackagInfo.dependencies);
+            }
+          }
+        }
+      });
+    };
+    collectAllSubDependencies(dest.dependencies);
+    if (response.abort) {
+      return response;
+    }
+
+    const dependants: Array<Package> = [];
+    for (const key in packageCollection) {
+      dependants.push(packageCollection[key]);
+    }
+
+    return {
+      target: {
+        moduleMismatch,
+        pkg,
+      },
+      dependants: dependants,
+    };
+  }
+
+  public savePackage(pkg: Package, basics: IModuleCacheBasics) {
+    const tree = this.getTree();
+    const meta = pkg.props.meta;
+    if (!tree.packages[meta.name]) {
+      tree.packages[meta.name] = {};
+    }
+    const deps = pkg.externalPackages.map(externalPackage => ({
+      name: externalPackage.props.meta.name,
+      version: externalPackage.props.meta.version,
+    }));
+    const modules = pkg.modules.map(mod => mod.props.fuseBoxPath);
+    const obj: ICachePackage = {
+      name: meta.name,
+      version: meta.version,
+      dependencies: deps,
+      meta: meta,
+      modules: modules,
+    };
+    tree.packages[pkg.props.meta.name][meta.version] = obj;
+
+    const cache_key = this.getPackageKey(pkg);
+    this.set(cache_key, basics);
+    this.forceSyncOnKey(TREE_FILE_KEY);
+  }
 }
 
-export function getCache(adapter: ICacheAdapter) {
-  return new Cache(adapter);
+export function createCache(props: IFileCacheProps) {
+  return new Cache(props);
 }

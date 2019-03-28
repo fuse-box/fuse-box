@@ -7,9 +7,12 @@ import { assemble } from './assemble';
 import { attachPlugins } from './attach_plugins';
 import { attachWebIndex } from './attach_webIndex';
 import * as prettyTime from 'pretty-time';
+import { attachCache } from './attach_cache';
 export async function bundleDev(ctx: Context) {
   const ict = ctx.interceptor;
   const startTime = process.hrtime();
+
+  attachCache(ctx);
 
   const packages = assemble(ctx, ctx.config.options.entries[0]);
 

@@ -1,11 +1,27 @@
 import { mockWriteFile } from '../../utils/test_utils';
 const fileMock = mockWriteFile();
 
-import { BundleType, createBundleSet } from '../../bundle/bundle';
+import { BundleType, createBundleSet } from '../../bundle/Bundle';
 import { createContext } from '../../core/Context';
 
 import { IWebIndexConfig, replaceWebIndexStrings, getEssentialWebIndexParams } from '../webIndex';
+import { join } from 'path';
+import * as fs from 'fs';
+import { env } from '../../core/env';
 
+const defaultTemplate = `
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    $css
+  </head>
+  <body>
+    $bundles
+  </body>
+</html>
+
+`;
 describe('WebIndex test', () => {
   describe('replaceWebIndexStrings', () => {
     it('should replace in one line', () => {
@@ -41,15 +57,16 @@ describe('WebIndex test', () => {
   });
 
   describe('webindex', () => {
-    beforeEach(async () => await fileMock.flush());
+    beforeEach(() => {
+      fileMock.flush();
+      fileMock.addFile(join(env.FUSE_MODULES, 'web-index-default-template/template.html'), defaultTemplate);
+    });
     afterAll(() => {
       fileMock.unmock();
     });
 
     function findIndexInMock(filename: string = 'index.html') {
-      return fileMock.getFiles().find(item => {
-        return item.name.indexOf(filename) > -1;
-      });
+      return fileMock.findFile(filename);
     }
 
     async function generateCSSBundle(config?: IWebIndexConfig | boolean) {
@@ -78,6 +95,7 @@ describe('WebIndex test', () => {
     it('should write index to a custom file', async () => {
       await generateCSSBundle({ distFileName: 'foo.html' });
       const data = findIndexInMock('foo.html');
+
       expect(data.name).toMatchFilePath('__tests__/dist/foo.html');
     });
 

@@ -1,137 +1,420 @@
 import * as path from 'path';
-import { getMemoryAdapter } from '../adapters';
-import { getCache, getTree } from '../cache';
-import { ICacheAdapter } from '../Interfaces';
+import { createContext } from '../../core/Context';
+import { env } from '../../core/env';
+import { IConfig } from '../../core/interfaces';
+import { createModule } from '../../core/Module';
+import { Package, createPackage } from '../../core/Package';
+import { mockModule, mockWriteFile, throttle } from '../../utils/test_utils';
+import { createCache } from '../cache';
 
-const CASES = path.join(__dirname, 'cases');
+const fileMock = mockWriteFile();
 
-describe('Cache test', () => {
-  let adapter: ICacheAdapter;
-  const dummyPackage = {
-    '1.0.0': {
-      name: 'foo',
-      version: '1.0.0',
-      packageJSONLocation: './',
-      modules: [],
-    },
-  };
+function mockCache(config?: IConfig) {
+  const ctx = createContext(config);
+  const cache = createCache({ ctx });
+  return { ctx, cache };
+}
 
-  describe('Shared tree object', () => {
-    beforeAll(() => {
-      adapter = getMemoryAdapter();
+const createFakePackage = (props: {
+  name: string;
+  version: string;
+  moduleAmount: number;
+  dependencies?: Array<Package>;
+}) => {
+  const data = mockModule({
+    config: {},
+    moduleProps: {},
+    packageProps: { isDefaultPackage: false, name: props.name },
+  });
+  data.pkg.isDefaultPackage = false;
+  data.pkg.externalPackages = props.dependencies || [];
+  const root = path.join(__dirname, `packages/${props.name}`);
+  const packageJSON = path.join(root, 'package.json');
+  data.pkg.props.meta = { packageJSONLocation: packageJSON, name: props.name, version: props.version };
+  for (let i = 0; i < props.moduleAmount; i++) {
+    const f = `index${i}.js`;
+    data.pkg.modules.push(
+      createModule(
+        {
+          ctx: data.ctx,
+          absPath: path.join(root, f),
+          extension: '.js',
+          fuseBoxPath: f,
+        },
+        data.pkg,
+      ),
+    );
+  }
+  return data.pkg;
+};
+
+describe('FileCache test', () => {
+  beforeEach(() => {
+    fileMock.flush();
+  });
+
+  afterAll(() => {
+    fileMock.unmock();
+  });
+  describe('Getting and saving', () => {
+    it('should init cache in a custom folder', () => {
+      const x = mockCache({ cache: { root: path.join(__dirname, '.cache') } });
+      x.cache.init();
+
+      expect(fileMock.getEnsureDir()[0]).toMatchFilePath(`__tests__/.cache/${env.VERSION}/${env.CACHE.PACKAGES}$`);
+      expect(fileMock.getEnsureDir()[1]).toMatchFilePath(`__tests__/.cache/${env.VERSION}/${env.CACHE.PROJET_FILES}`);
     });
-    it('Should get a default tree', () => {
-      const tree = getTree(adapter);
+
+    it('should init cache in a default folder', () => {
+      const x = mockCache({ cache: true });
+      x.cache.init();
+
+      expect(fileMock.getEnsureDir()[0]).toMatchFilePath(`node_modules/.fusebox/${env.VERSION}/${env.CACHE.PACKAGES}$`);
+      expect(fileMock.getEnsureDir()[1]).toMatchFilePath(
+        `node_modules/.fusebox/${env.VERSION}/${env.CACHE.PROJET_FILES}`,
+      );
+    });
+
+    it('should force sync on key', async () => {
+      const { cache } = mockCache({ cache: true });
+      const obj = { foo: 1 };
+      cache.set('foo', obj);
+      await cache.sync();
+      obj.foo = 2;
+      cache.forceSyncOnKey('foo.cache');
+      expect(cache['synced'].has('foo.cache')).toBe(false);
+    });
+
+    it('should get the tree', () => {
+      const { cache } = mockCache({ cache: true });
+      const tree = cache.getTree();
+      expect(tree).toEqual({ packages: {} });
+      expect(cache['synced'].has('tree.json.cache')).toEqual(false);
+
+      expect(cache['unsynced'].get('tree.json.cache')).toBeTruthy();
+    });
+
+    it('should get the tree', () => {
+      const { cache } = mockCache({ cache: true });
+      const tree = cache.getTree();
       expect(tree).toEqual({ packages: {} });
     });
 
-    it('Should modify the tree', () => {
-      const tree = getTree(adapter);
-      tree.packages['foo'] = dummyPackage;
+    it('should get the tree from the file cache', () => {
+      const x = mockCache({ cache: true });
+      const fakeContent = { packages: { foo: { '1.0.0': {} } } };
+      fileMock.addFile(path.join(env.CACHE.ROOT, 'tree.json.cache'), JSON.stringify(fakeContent));
+      const tree = x.cache.getTree();
+      expect(fileMock.getFileReads()).toHaveLength(1);
+      expect(tree).toEqual(fakeContent);
     });
 
-    it('Should retain the information', () => {
-      const tree = getTree(adapter);
-      expect(tree.packages['foo']).toEqual(dummyPackage);
+    it('should sync the tree', async () => {
+      const x = mockCache({ cache: true });
+      const tree = x.cache.getTree();
+
+      tree.packages.foo = { '1.3.3': { name: 'fop', modules: [], version: '1.3.1' } };
+
+      expect(fileMock.getFileReads()).toEqual([]);
+      await x.cache.sync();
+
+      expect(fileMock.findFile('tree.json.cache$')).toBeTruthy();
+      expect(fileMock.findFile('tree.json.cache$').contents).toContain('fop');
+
+      const sameTree = x.cache.getTree();
+      expect(fileMock.getFileReads()).toEqual([]);
+
+      expect(sameTree).toEqual(tree);
+    });
+
+    it('should sync and store', async () => {
+      const { cache } = mockCache({ cache: true });
+
+      cache.set('foo', { bar: 1 });
+      await cache.sync();
+
+      expect(cache['synced'].get('foo.cache')).toEqual({ bar: 1 });
+    });
+
+    it('should set a few files but write only after sync', async () => {
+      const x = mockCache({ cache: true });
+
+      x.cache.set('foo', { foo: 'foo' });
+      x.cache.set('bar', { bar: 'bar' });
+      expect(fileMock.getFileReads()).toEqual([]);
+      expect(fileMock.getFileAmount()).toEqual(0);
+
+      expect(x.cache.get('foo')).toEqual({ foo: 'foo' });
+      expect(x.cache.get('bar')).toEqual({ bar: 'bar' });
+
+      expect(fileMock.getFileReads()).toEqual([]);
+      expect(fileMock.getFileAmount()).toEqual(0);
+
+      await x.cache.sync();
+      expect(fileMock.getFileAmount()).toEqual(2);
     });
   });
 
-  describe('Cache test', () => {
-    const adapter = getMemoryAdapter();
-    const cache = getCache(adapter);
-    const pkg1Json = path.join(CASES, '/pkg1/package.json');
-    const pkg2Json = path.join(CASES, '/pkg2/package.json');
-    const pkg3Json = path.join(CASES, '/pkg3/package.json');
+  describe('package get and set', () => {
+    it('should sync a mocked package', async () => {
+      const pkg = createFakePackage({ name: 'foo', version: '2.0.0', moduleAmount: 2 });
+      const x = mockCache({ cache: true });
+      const basics = { contents: 'foobar', sourceMap: 'sourcemap' };
+      x.cache.savePackage(pkg, basics);
 
-    beforeAll(() => {
-      cache.syncPackage(
-        {
-          name: 'pkg1',
-          version: require(pkg1Json).version,
-          packageJSONLocation: pkg1Json,
-          modules: ['index.js'],
-        },
-        { compiled: 'foo bar', sourceMap: 'sm' },
-      );
+      await x.cache.sync();
 
-      cache.syncPackage(
-        {
-          name: 'pkg2',
-          version: require(pkg2Json).version,
-          packageJSONLocation: pkg2Json,
-          modules: ['index.js'],
-          dependencies: [{ name: 'pkg3', version: require(pkg3Json).version }],
-        },
-        { compiled: 'pkg2', sourceMap: 'sm' },
-      );
+      const tree = x.cache.getTree();
+      expect(tree.packages.foo).toBeTruthy();
+      expect(tree.packages.foo['2.0.0']).toBeTruthy();
 
-      cache.syncPackage(
-        {
-          name: 'pkg3',
-          version: require(pkg3Json).version,
-          packageJSONLocation: pkg3Json,
-          modules: ['index.js'],
-        },
-        { compiled: 'pkg3', sourceMap: 'sm' },
-      );
+      const data = tree.packages.foo['2.0.0'];
+      expect(data.name).toEqual('foo');
+      expect(data.version).toEqual('2.0.0');
+      expect(data.modules).toEqual(['index0.js', 'index1.js']);
+
+      expect(fileMock.getFileAmount()).toEqual(2);
+      const fooCache = fileMock.findFile('4.0.0/foo-2.0.0.cache$');
+      expect(JSON.parse(fooCache.contents)).toEqual(basics);
     });
 
-    it('Should find a package in cache', () => {
-      const pkg = cache.findPackage('pkg1', require(pkg1Json).version);
-      expect(pkg.name).toEqual('pkg1');
-      expect(pkg.version).toEqual(require(pkg1Json).version);
-      expect(pkg.packageJSONLocation).toContain('pkg1/package.json');
-      expect(pkg.modules).toEqual(['index.js']);
+    it('should sync 2 packages', async () => {
+      const bar = createFakePackage({ name: 'bar', version: '5.0.0', moduleAmount: 1 });
+      const foo = createFakePackage({ name: 'foo', version: '2.0.0', moduleAmount: 2, dependencies: [bar] });
+
+      const basics = { contents: 'foobar', sourceMap: 'sourcemap' };
+      const basics2 = { contents: 'foobar2', sourceMap: 'sourcemap2' };
+
+      const x = mockCache({ cache: true });
+
+      x.cache.savePackage(foo, basics);
+
+      x.cache.savePackage(bar, basics2);
+
+      await x.cache.sync();
+
+      const tree = x.cache.getTree();
+
+      expect(tree.packages.bar).toBeTruthy();
+      expect(tree.packages.foo).toBeTruthy();
+
+      const fooData = tree.packages.foo['2.0.0'];
+      expect(fooData.dependencies).toEqual([{ name: 'bar', version: '5.0.0' }]);
+
+      expect(fileMock.getFileAmount()).toEqual(3);
     });
 
-    it('Should resolve correctly', () => {
-      const result = cache.resolve({
-        name: 'pkg1',
-        version: require(pkg1Json).version,
-        forModules: ['index.js'],
-      });
+    it('should not find a package a clean everything', async () => {
+      const bar = createFakePackage({ name: 'bar', version: '5.0.0', moduleAmount: 1 });
+      const foo = createFakePackage({ name: 'foo', version: '2.0.0', moduleAmount: 2, dependencies: [bar] });
+      const basics = { contents: 'foobar', sourceMap: 'sourcemap' };
+      const { ctx, cache } = mockCache({ cache: true });
 
-      expect(result).toHaveLength(1);
-      expect(result[0].content.compiled).toEqual('foo bar');
-      expect(result[0].content.sourceMap).toEqual('sm');
-      expect(result[0].meta.name).toEqual('pkg1');
+      cache.savePackage(foo, basics);
+      cache.savePackage(bar, basics);
+
+      await cache.sync();
+
+      const tree = cache.getTree();
+
+      expect(Object.keys(tree.packages)).toEqual(['foo', 'bar']);
+
+      const response = cache.getPackage(createPackage({ ctx: ctx, meta: { name: 'oi', version: '1.1.0' } }));
+      expect(response).toEqual({ abort: true });
+
+      expect(Object.keys(tree.packages)).toEqual([]);
     });
 
-    it('Should not be satisfied because of different file requirement', () => {
-      const result = cache.resolve({
-        name: 'pkg1',
-        version: require(pkg1Json).version,
-        forModules: ['someOther.js'],
-      });
+    it('should not find a package version and clean everything', async () => {
+      const bar = createFakePackage({ name: 'bar', version: '5.0.0', moduleAmount: 1 });
+      const foo = createFakePackage({ name: 'foo', version: '2.0.0', moduleAmount: 2, dependencies: [bar] });
+      const basics = { contents: 'foobar', sourceMap: 'sourcemap' };
+      const { ctx, cache } = mockCache({ cache: true });
 
-      expect(result).toEqual(undefined);
+      cache.savePackage(foo, basics);
+      cache.savePackage(bar, basics);
+
+      await cache.sync();
+
+      const tree = cache.getTree();
+
+      expect(Object.keys(tree.packages)).toEqual(['foo', 'bar']);
+
+      const response = cache.getPackage(createPackage({ ctx: ctx, meta: { name: 'bar', version: '5.0.1' } }));
+      expect(response).toEqual({ abort: true });
+
+      expect(Object.keys(tree.packages)).toEqual([]);
     });
 
-    it('Should not be satisfied (version mismatch)', () => {
-      // don't do this at home
-      const directObject = adapter['data']['tree.json'].packages.pkg1['5.0.1'];
-      directObject.packageJSONLocation = path.join(CASES, 'pkg1/other.package.json');
-      const result = cache.resolve({
-        name: 'pkg1',
-        version: require(pkg1Json).version,
-        forModules: ['index.js'],
-      });
+    it('should resolve package correctly', async () => {
+      const bar = createFakePackage({ name: 'bar', version: '5.0.0', moduleAmount: 1 });
+      const foo = createFakePackage({ name: 'foo', version: '2.0.0', moduleAmount: 2, dependencies: [bar] });
+      const basics = { contents: 'foobar', sourceMap: 'sourcemap' };
+      const { ctx, cache } = mockCache({ cache: true });
 
-      expect(result).toEqual(undefined);
-      // restore it back
-      directObject.packageJSONLocation = pkg1Json;
+      cache.savePackage(foo, basics);
+      cache.savePackage(bar, basics);
+
+      await cache.sync();
+
+      const tree = cache.getTree();
+
+      expect(Object.keys(tree.packages)).toEqual(['foo', 'bar']);
+
+      const response = cache.getPackage(createPackage({ ctx: ctx, meta: { name: 'bar', version: '5.0.0' } }));
+      expect(response.target.moduleMismatch).toEqual(false);
+      expect(response.target.pkg.props.meta.name).toEqual('bar');
+      expect(response.target.pkg.props.meta.version).toEqual('5.0.0');
+
+      expect(Object.keys(tree.packages)).toEqual(['foo', 'bar']);
     });
 
-    it('Should resolve package with 2 dependencies', () => {
-      const result = cache.resolve({
-        name: 'pkg2',
-        version: require(pkg2Json).version,
-        forModules: ['index.js'],
-      });
-      expect(result).toHaveLength(2);
+    it('should resolve package correctly with nested deps', async () => {
+      const woo = createFakePackage({ name: 'woo', version: '3.0.0', moduleAmount: 2 });
+      const bar = createFakePackage({ name: 'bar', version: '5.0.0', moduleAmount: 1, dependencies: [woo] });
+      const foo = createFakePackage({ name: 'foo', version: '2.0.0', moduleAmount: 2, dependencies: [bar] });
+      const basics = { contents: 'foobar', sourceMap: 'sourcemap' };
+      const { ctx, cache } = mockCache({ cache: true });
 
-      expect(result[0].meta.name).toEqual('pkg2');
-      expect(result[1].meta.name).toEqual('pkg3');
+      cache.savePackage(foo, basics);
+      cache.savePackage(bar, basics);
+      cache.savePackage(woo, basics);
+
+      await cache.sync();
+
+      const response = cache.getPackage(createPackage({ ctx: ctx, meta: { name: 'foo', version: '2.0.0' } }));
+      expect(response.dependants).toHaveLength(2);
+
+      expect(response.dependants.map(item => item.props.meta.name)).toEqual(['bar', 'woo']);
+    });
+
+    it('should  not resolve package correctly with nested deps (one is not synced)', async () => {
+      const woo = createFakePackage({ name: 'woo', version: '3.0.0', moduleAmount: 2 });
+      const bar = createFakePackage({ name: 'bar', version: '5.0.0', moduleAmount: 1, dependencies: [woo] });
+      const foo = createFakePackage({ name: 'foo', version: '2.0.0', moduleAmount: 2, dependencies: [bar] });
+      const basics = { contents: 'foobar', sourceMap: 'sourcemap' };
+      const { ctx, cache } = mockCache({ cache: true });
+
+      cache.savePackage(foo, basics);
+      cache.savePackage(bar, basics);
+
+      await cache.sync();
+
+      const response = cache.getPackage(createPackage({ ctx: ctx, meta: { name: 'foo', version: '2.0.0' } }));
+      expect(response.abort).toEqual(true);
+    });
+
+    it('should resolve package correctly after a memory clean', async () => {
+      const bar = createFakePackage({ name: 'bar', version: '5.0.0', moduleAmount: 1 });
+      const foo = createFakePackage({ name: 'foo', version: '2.0.0', moduleAmount: 2, dependencies: [bar] });
+      const basics = { contents: 'foobar', sourceMap: 'sourcemap' };
+      const { ctx, cache } = mockCache({ cache: true });
+
+      cache.savePackage(foo, basics);
+      cache.savePackage(bar, basics);
+
+      await cache.sync();
+
+      cache.clearMemory();
+
+      const tree = cache.getTree();
+
+      expect(Object.keys(tree.packages)).toEqual(['foo', 'bar']);
+
+      const response = cache.getPackage(createPackage({ ctx: ctx, meta: { name: 'bar', version: '5.0.0' } }));
+      expect(response.target.moduleMismatch).toEqual(false);
+      expect(response.target.pkg.props.meta.name).toEqual('bar');
+      expect(response.target.pkg.props.meta.version).toEqual('5.0.0');
+
+      expect(Object.keys(tree.packages)).toEqual(['foo', 'bar']);
+    });
+
+    it('should abort because a file not found', async () => {
+      const bar = createFakePackage({ name: 'bar', version: '5.0.0', moduleAmount: 1 });
+      const foo = createFakePackage({ name: 'foo', version: '2.0.0', moduleAmount: 2, dependencies: [bar] });
+      const basics = { contents: 'foobar', sourceMap: 'sourcemap' };
+      const { ctx, cache } = mockCache({ cache: true });
+
+      cache.savePackage(foo, basics);
+      cache.savePackage(bar, basics);
+
+      await cache.sync();
+
+      const tree = cache.getTree();
+
+      expect(Object.keys(tree.packages)).toEqual(['foo', 'bar']);
+
+      cache.clearMemory();
+      // delete all files
+      fileMock.flush();
+
+      const response = cache.getPackage(createPackage({ ctx: ctx, meta: { name: 'bar', version: '5.0.0' } }));
+
+      expect(response).toEqual({ abort: true });
+    });
+
+    it('should not resolve package correctly with nested deps (one is not present)', async () => {
+      const woo = createFakePackage({ name: 'woo', version: '3.0.0', moduleAmount: 2 });
+      const bar = createFakePackage({ name: 'bar', version: '5.0.0', moduleAmount: 1, dependencies: [woo] });
+      const foo = createFakePackage({ name: 'foo', version: '2.0.0', moduleAmount: 2, dependencies: [bar] });
+      const basics = { contents: 'foobar', sourceMap: 'sourcemap' };
+      const { ctx, cache } = mockCache({ cache: true });
+
+      cache.savePackage(foo, basics);
+      cache.savePackage(bar, basics);
+      cache.savePackage(woo, basics);
+
+      await cache.sync();
+
+      cache.clearMemory();
+
+      fileMock.deleteFile('woo-3.0.0.cache');
+
+      const response = cache.getPackage(createPackage({ ctx: ctx, meta: { name: 'foo', version: '2.0.0' } }));
+
+      expect(response.abort).toEqual(true);
+    });
+
+    it('should not resolve package because the parent version doesnt have file cache', async () => {
+      const woo = createFakePackage({ name: 'woo', version: '3.0.0', moduleAmount: 2 });
+      const bar = createFakePackage({ name: 'bar', version: '5.0.0', moduleAmount: 1, dependencies: [woo] });
+      const foo = createFakePackage({ name: 'foo', version: '2.0.0', moduleAmount: 2, dependencies: [bar] });
+      const basics = { contents: 'foobar', sourceMap: 'sourcemap' };
+      const { ctx, cache } = mockCache({ cache: true });
+
+      cache.savePackage(foo, basics);
+      cache.savePackage(bar, basics);
+      cache.savePackage(woo, basics);
+
+      await cache.sync();
+
+      cache.clearMemory();
+
+      fileMock.deleteFile('foo-2.0.0.cache');
+
+      const response = cache.getPackage(createPackage({ ctx: ctx, meta: { name: 'foo', version: '2.0.0' } }));
+
+      expect(response.abort).toEqual(true);
+    });
+
+    it('should abort because a module mismatch', async () => {
+      const bar = createFakePackage({ name: 'bar', version: '5.0.0', moduleAmount: 1 });
+      const foo = createFakePackage({ name: 'foo', version: '2.0.0', moduleAmount: 2, dependencies: [bar] });
+      const basics = { contents: 'foobar', sourceMap: 'sourcemap' };
+      const { ctx, cache } = mockCache({ cache: true });
+
+      cache.savePackage(foo, basics);
+      cache.savePackage(bar, basics);
+
+      await cache.sync();
+
+      const bar2 = createFakePackage({ name: 'bar', version: '5.0.0', moduleAmount: 4 });
+
+      const response = cache.getPackage(bar2);
+
+      expect(response.target.moduleMismatch).toBe(true);
+      expect(response.target.pkg.cache).toBeUndefined();
+      expect(response.target.pkg.isCached).toBeUndefined();
     });
   });
 });

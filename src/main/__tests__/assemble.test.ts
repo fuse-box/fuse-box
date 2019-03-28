@@ -254,6 +254,20 @@ describe('Assemble test', () => {
         },
       ]);
     });
+
+    it('Should not get processed because it"s cached', () => {
+      const ctx = createProjectContext('src7', { target: 'browser' });
+      ctx.interceptor.on('assemble_package_from_project', props => {
+        props.pkg.isCached = true;
+        return props;
+      });
+      const packages = assemble(ctx, 'index.ts');
+      packages.forEach(pkg => {
+        if (!pkg.isDefaultPackage) {
+          expect(pkg.isCached).toBe(true);
+        }
+      });
+    });
   });
 
   describe('Verify flatness', () => {

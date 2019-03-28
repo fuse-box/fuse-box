@@ -120,6 +120,22 @@ describe('Create dev bundles', () => {
   });
 
   describe('inflateBundles', () => {
+    it('should take cached version', () => {
+      const ctx = createProjectContext('src2', {});
+      ctx.interceptor.on('assemble_package_from_project', props => {
+        props.pkg.setCache({
+          contents: 'stuff',
+          sourceMap: '{}',
+        });
+        return props;
+      });
+      const packages = assemble(ctx, 'index.ts');
+
+      const data = createDevBundles(ctx, packages);
+      inflateBundles(ctx, data.bundles);
+      const vendor = data.bundles.vendor;
+      expect(vendor.contents.content.toString()).toContain('stuff');
+    });
     it('should generate code', () => {
       const data = mockBundles('src1', 'index.ts', { target: 'browser' });
       inflateBundles(data.ctx, data.bundles);
