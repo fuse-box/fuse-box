@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { IBundleWriteResponse, BundleType } from '../bundle/bundle';
+import { IBundleWriteResponse, BundleType } from '../bundle/Bundle';
 import { Context } from '../core/Context';
 import { env } from '../core/env';
 import { ensureAbsolutePath, fileExists, readFile, joinFuseBoxPath } from '../utils/utils';
