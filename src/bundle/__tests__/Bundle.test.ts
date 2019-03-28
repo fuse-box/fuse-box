@@ -3,7 +3,7 @@ const fileMock = mockWriteFile();
 
 import { createContext } from '../../core/Context';
 import { IConfig } from '../../core/interfaces';
-import { BundleType, createBundleSet, Bundle } from '../bundle';
+import { BundleType, createBundleSet, Bundle } from '../Bundle';
 
 //jest.mock()
 function mockBundle(props: { config?: IConfig; type: BundleType }) {
