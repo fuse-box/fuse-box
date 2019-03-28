@@ -1,7 +1,7 @@
-import { mockModule } from '../../utils/test_utils';
-import { createDevServer, createExpressApp } from '../devServer';
-import { createBundle, BundleType } from '../../bundle/Bundle';
+import { BundleType, createBundle } from '../../bundle/Bundle';
 import { createContext } from '../../core/Context';
+import { mockModule } from '../../utils/test_utils';
+import { createExpressApp } from '../devServer';
 
 let __mock_expressListen;
 let __mock_expressUse;

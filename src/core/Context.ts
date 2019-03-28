@@ -10,6 +10,8 @@ import { createConfig } from './config';
 import { env } from './env';
 import { IConfig } from './interfaces';
 import { createWriter, IWriterActions } from './writer';
+import { createCache } from '../cache/cache';
+import { Cache } from '../cache/cache';
 
 export class Context {
   public assembleContext: IAssembleContext;
@@ -18,6 +20,7 @@ export class Context {
   public log: ILogger;
   public webIndex: IWebIndexInterface;
   public writer: IWriterActions;
+  public cache: Cache;
   public devServer?: IDevServerActions;
   constructor(public config: IConfig) {
     this.tsConfig = initTypescriptConfig(config);
@@ -34,6 +37,7 @@ export class Context {
     attachEssentials(this);
     this.devServer = createDevServer(this);
     if (this.config.cache) {
+      this.cache = createCache({ ctx: this });
     }
   }
 }

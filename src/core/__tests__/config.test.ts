@@ -93,12 +93,11 @@ describe('Config test', () => {
 
   it('Should setup options case 1', () => {
     const config = createConfig({});
-    expect(config.options).toEqual({
-      vendorSourceMap: false,
-      projectSourceMap: true,
-      cssSourceMap: true,
-      sourceRoot: '/src',
-    });
+
+    expect(config.options.vendorSourceMap).toEqual(false);
+    expect(config.options.projectSourceMap).toEqual(true);
+    expect(config.options.cssSourceMap).toEqual(true);
+    expect(config.options.sourceRoot).toEqual('/src');
   });
 
   it('Should setup options (vendor false)', () => {
@@ -107,12 +106,10 @@ describe('Config test', () => {
         vendor: true,
       },
     });
-    expect(config.options).toEqual({
-      vendorSourceMap: true,
-      projectSourceMap: true,
-      cssSourceMap: true,
-      sourceRoot: '/src',
-    });
+    expect(config.options.vendorSourceMap).toEqual(true);
+    expect(config.options.projectSourceMap).toEqual(true);
+    expect(config.options.cssSourceMap).toEqual(true);
+    expect(config.options.sourceRoot).toEqual('/src');
   });
 
   it('Should setup options (project false)', () => {
@@ -121,12 +118,10 @@ describe('Config test', () => {
         project: false,
       },
     });
-    expect(config.options).toEqual({
-      vendorSourceMap: false,
-      projectSourceMap: false,
-      cssSourceMap: true,
-      sourceRoot: '/src',
-    });
+    expect(config.options.vendorSourceMap).toEqual(false);
+    expect(config.options.projectSourceMap).toEqual(false);
+    expect(config.options.cssSourceMap).toEqual(true);
+    expect(config.options.sourceRoot).toEqual('/src');
   });
 
   it('Should setup options (project false)', () => {
@@ -135,11 +130,31 @@ describe('Config test', () => {
         sourceRoot: '/foo',
       },
     });
-    expect(config.options).toEqual({
-      vendorSourceMap: false,
-      projectSourceMap: true,
-      cssSourceMap: true,
-      sourceRoot: '/foo',
+    expect(config.options.vendorSourceMap).toEqual(false);
+    expect(config.options.projectSourceMap).toEqual(true);
+    expect(config.options.cssSourceMap).toEqual(true);
+    expect(config.options.sourceRoot).toEqual('/foo');
+  });
+
+  it('Shoul have cache boolean', () => {
+    const config = createConfig({
+      cache: true,
     });
+    expect(config.cache).toEqual(true);
+    expect(config.options.cacheEnabled).toEqual(true);
+  });
+
+  it('Shoul  have cache 1', () => {
+    const config = createConfig({
+      cache: { enabled: true },
+    });
+    expect(config.options.cacheEnabled).toEqual(true);
+  });
+
+  it('Should have cache root', () => {
+    const config = createConfig({
+      cache: { root: '/' },
+    });
+    expect(config.options.cacheRoot).toEqual(`/${env.VERSION}`);
   });
 });

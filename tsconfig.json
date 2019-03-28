@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "esnext",
+    "sourceMap": true,
+    "inlineSources": true,
+    "jsx": "react",
+    "importHelpers": true,
+    "lib": ["es2015"],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
+  }
+}

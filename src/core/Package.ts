@@ -1,14 +1,22 @@
 import { IPackageMeta } from '../resolver/resolver';
 import { Context } from './Context';
 import { Module } from './Module';
+import { IModuleCacheBasics } from '../cache/cache';
 
 export interface IPackageProps {
   ctx: Context;
   meta: IPackageMeta;
 }
+
+export interface IPackageCacheContents {
+  basics: IModuleCacheBasics;
+  meta: IPackageMeta;
+}
+
 export class Package {
   public isFlat: boolean;
   public isCached: boolean;
+  public cache: IModuleCacheBasics;
   // can be empty
   public entry?: Module;
   public isDefaultPackage: boolean;
@@ -25,6 +33,11 @@ export class Package {
 
   public setEntry(module: Module) {
     this.entry = module;
+  }
+
+  public setCache(basics: IModuleCacheBasics) {
+    this.isCached = true;
+    this.cache = basics;
   }
 }
 

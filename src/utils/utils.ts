@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as fsExtra from 'fs-extra';
 import * as path from 'path';
 import { env } from '../core/env';
-
+import * as prettyTime from 'pretty-time';
 const CACHED_PATHS = new Map<string, RegExp>();
 
 export function path2Regex(path: string) {
@@ -84,6 +84,25 @@ export function ensureDir(dir: string) {
 }
 export function makeFuseBoxPath(homeDir: string, absPath: string) {
   return homeDir && ensurePublicExtension(extractFuseBoxPath(homeDir, absPath));
+}
+
+export function measureTime(group?: string) {
+  let startTime = process.hrtime();
+  return {
+    end: () => {
+      const took = prettyTime(process.hrtime(startTime));
+      console.log(`${group ? group : ''} ${took}`);
+    },
+  };
+}
+
+export function path2RegexPattern(path: string) {
+  path = path
+    .split('.')
+    .join('\\.')
+    .split('/')
+    .join('\\/');
+  return new RegExp(path);
 }
 
 export function ensureUserPath(userPath: string, root?: string) {

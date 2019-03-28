@@ -2,7 +2,7 @@ import * as appRoot from 'app-root-path';
 import { ensureAbsolutePath } from '../utils/utils';
 import { env } from './env';
 import { IConfig } from './interfaces';
-
+import * as path from 'path';
 export function createConfig(props: IConfig): IConfig {
   const config: IConfig = {
     root: process.env.APP_ROOT || appRoot.path,
@@ -47,6 +47,8 @@ export function createConfig(props: IConfig): IConfig {
     vendorSourceMap: false,
     projectSourceMap: true,
     cssSourceMap: true,
+    cacheEnabled: false,
+    cacheRoot: env.CACHE.ROOT,
     sourceRoot: '/src',
   };
   if (props.sourceMap !== undefined) {
@@ -85,7 +87,18 @@ export function createConfig(props: IConfig): IConfig {
     config.options.entries = [].concat(props.entry);
   }
 
-  if (props.cache !== undefined) {
+  if (typeof props.cache === 'boolean') {
+    config.options.cacheEnabled = props.cache;
+  } else if (typeof props.cache === 'object') {
+    if (props.cache.enabled !== undefined) {
+      config.options.cacheEnabled = props.cache.enabled;
+    }
+    if (props.cache.root !== undefined) {
+      config.options.cacheRoot = path.join(props.cache.root, env.VERSION);
+    }
+  }
+
+  if (props.cache) {
     config.cache = props.cache;
   }
 

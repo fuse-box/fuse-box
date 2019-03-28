@@ -4,6 +4,7 @@ import { createApplicationPackage } from '../core/application';
 import { Context } from '../core/Context';
 import { createModule, Module } from '../core/Module';
 import { createPackage, Package } from '../core/Package';
+import { measureTime } from '../utils/utils';
 
 interface IDefaultParseProps {
   assemble?: boolean;
@@ -184,14 +185,17 @@ function assemblePackage(pkg: Package, ctx: Context) {
     if (pkg.entry) {
       modules.push(pkg.entry);
     }
-    modules.map(item => {
-      processModule({
-        assemble: true,
-        module: item,
-        pkg: pkg,
-        ctx: ctx,
+    ctx.interceptor.sync('assemble_package_from_project', { pkg, assembleContext: ctx.assembleContext });
+    if (!pkg.isCached) {
+      modules.map(item => {
+        processModule({
+          assemble: true,
+          module: item,
+          pkg: pkg,
+          ctx: ctx,
+        });
       });
-    });
+    }
   });
 }
 export function assemble(ctx: Context, entryFile: string): Array<Package> {

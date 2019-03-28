@@ -24,7 +24,7 @@ export function replaceWebIndexStrings(str: string, keys: { [key: string]: any }
 }
 
 export function getEssentialWebIndexParams(config: IWebIndexConfig | boolean) {
-  let templatePath = join(__dirname, 'template.html');
+  let templatePath = join(env.FUSE_MODULES, 'web-index-default-template/template.html');
   let publicPath = '/';
   let distFileName = 'index.html';
   if (typeof config === 'object') {

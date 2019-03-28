@@ -1,4 +1,8 @@
+import { Package } from '../core/Package';
+import { IPackageMeta } from '../resolver/resolver';
+
 export interface ICacheAdapter {
+  init();
   set(key: string, value: any);
   get<T>(key: string): T;
   ensure<T>(key: string): T;
@@ -21,16 +25,26 @@ export interface ICachePackageContent {
   sourceMap: string;
 }
 
+export type ICacheDependencies = Array<{ name: string; version: string }>;
 export interface ICachePackage {
   name: string;
   version: string;
-  packageJSONLocation: string;
   modules: Array<string>;
-  dependencies?: Array<{ name: string; version: string }>;
+  meta?: IPackageMeta;
+  dependencies?: ICacheDependencies;
 }
 
 export type ICachePackages = { [version: string]: ICachePackage };
 
 export interface ICacheTreeContents {
   packages: { [name: string]: ICachePackages };
+}
+
+export interface ICachePackageResponse {
+  abort?: boolean;
+  target?: {
+    moduleMismatch?: boolean;
+    pkg: Package;
+  };
+  dependants?: Array<Package>;
 }

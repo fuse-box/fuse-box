@@ -27,7 +27,7 @@ describe('Bundle test', () => {
     });
     const generated = data.bundle.generate();
     await generated.write();
-    expect(fileMock.getFiles()).toHaveLength(2);
+    expect(fileMock.getFileAmount()).toBe(2);
   });
 
   it('should not write maps (css)', async () => {
@@ -40,7 +40,7 @@ describe('Bundle test', () => {
     const generated = data.bundle.generate();
     await generated.write();
 
-    expect(fileMock.getFiles()).toHaveLength(1);
+    expect(fileMock.getFileAmount()).toBe(1);
   });
 
   it('should write project with sm', async () => {
@@ -52,7 +52,7 @@ describe('Bundle test', () => {
     });
     const generated = data.bundle.generate();
     await generated.write();
-    expect(fileMock.getFiles()).toHaveLength(2);
+    expect(fileMock.getFileAmount()).toBe(2);
   });
 
   it('should write project without sm', async () => {
@@ -64,7 +64,7 @@ describe('Bundle test', () => {
     });
     const generated = data.bundle.generate();
     await generated.write();
-    expect(fileMock.getFiles()).toHaveLength(1);
+    expect(fileMock.getFileAmount()).toBe(1);
   });
 
   it('should write vendor with sm', async () => {
@@ -76,7 +76,7 @@ describe('Bundle test', () => {
     });
     const generated = data.bundle.generate();
     await generated.write();
-    expect(fileMock.getFiles()).toHaveLength(2);
+    expect(fileMock.getFileAmount()).toBe(2);
   });
 
   it('should write project vendor sm', async () => {
@@ -88,7 +88,7 @@ describe('Bundle test', () => {
     });
     const generated = data.bundle.generate();
     await generated.write();
-    expect(fileMock.getFiles()).toHaveLength(1);
+    expect(fileMock.getFileAmount()).toBe(1);
   });
 
   it('should not write dev packages', async () => {
@@ -100,6 +100,6 @@ describe('Bundle test', () => {
     });
     const generated = data.bundle.generate();
     await generated.write();
-    expect(fileMock.getFiles()).toHaveLength(1);
+    expect(fileMock.getFileAmount()).toBe(1);
   });
 });

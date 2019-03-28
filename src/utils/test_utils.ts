@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as appRoot from 'app-root-path';
-import { ensureFuseBoxPath } from './utils';
+import { ensureFuseBoxPath, path2RegexPattern } from './utils';
 import { Context, createContext } from '../core/Context';
 import { createDefaultPackage } from '../core/application';
 import { createModule, IModuleProps, Module } from '../core/Module';
@@ -82,6 +82,14 @@ export function mockModule(props: IMockModuleProps): IMockModuleResponse {
     pkg: pkg,
   };
 }
+
+export function throttle(ms: number) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      return resolve(ms);
+    }, ms);
+  });
+}
 export function createAssembleHellper(folder: string) {
   function createProjectContext(folder: string, opts?: IConfig): Context {
     opts = opts || {};
@@ -157,20 +165,72 @@ export function mockDefaultModule(ctx: Context, props?: IModuleProps) {
 export function mockWriteFile() {
   const scope = {
     written: [],
+    files: {},
+    ensureDir: [],
+    fileReads: [],
   };
+  const originalReadFile = utils.readFile;
   let originalFunction = utils.writeFile;
+  let originalEnsureDir = utils.ensureDir;
+  const originalFileExists = utils.fileExists;
 
   utils['writeFile'] = (name, contents) => {
+    scope.files[name] = contents;
     scope.written.push({ name: name, contents: contents });
   };
 
+  utils['ensureDir'] = userPath => {
+    scope.ensureDir.push(userPath);
+  };
+
+  utils['fileExists'] = path => {
+    return scope.files[path];
+  };
+
+  utils['readFile'] = path => {
+    scope.fileReads.push(path);
+    return scope.files[path];
+  };
+
   return {
-    getFiles: (index?: number) => (index !== undefined ? scope.written[index] : scope.written),
+    findFile: (pattern): { name: string; contents: string } => {
+      const re = path2RegexPattern(pattern);
+      for (const key in scope.files) {
+        if (re.test(key)) {
+          return { name: key, contents: scope.files[key] };
+        }
+      }
+    },
+    getFileReads() {
+      return scope.fileReads;
+    },
+    getEnsureDir() {
+      return scope.ensureDir;
+    },
+    getFileAmount: () => Object.keys(scope.files).length,
+    getWrittenFiles: (index?: number) => (index !== undefined ? scope.written[index] : scope.written),
+    getFiles: () => scope.files,
+    deleteFile: (path: string) => {
+      Object.keys(scope.files).forEach(key => {
+        if (key.indexOf(path) > -1) {
+          delete scope.files[key];
+        }
+      });
+    },
+    addFile(path: string, contents) {
+      scope.files[path] = contents;
+    },
     unmock: () => {
       utils['writeFile'] = originalFunction;
+      utils['ensureDir'] = originalEnsureDir;
+      utils['fileExists'] = originalFileExists;
+      utils['readFile'] = originalReadFile;
     },
     flush: () => {
+      scope.fileReads = [];
       scope.written = [];
+      scope.files = {};
+      scope.ensureDir = [];
     },
   };
 }
