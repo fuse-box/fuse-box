@@ -22,10 +22,24 @@ async function processPackage(pkg: Package) {
     }
   }
 }
+
 export interface IBundleResolveProps {
   ctx: Context;
   packages: Array<Package>;
   plugins?: Array<(ctx: Context) => void>;
+}
+
+export async function pluginProcessPackages(props: { ctx: Context; packages: Array<Package> }) {
+  const ctx = props.ctx;
+  const ict = ctx.interceptor;
+  ict.sync('bundle_resolve_start', { ctx, packages: props.packages });
+  for (const pkg of props.packages) {
+    if (!pkg.isCached) {
+      await processPackage(pkg);
+    }
+  }
+  await ict.resolve();
+  ict.sync('bundle_resolve_end', { ctx, packages: props.packages });
 }
 export async function attachPlugins(props: IBundleResolveProps) {
   const ctx = props.ctx;
@@ -33,13 +47,5 @@ export async function attachPlugins(props: IBundleResolveProps) {
   if (props.plugins) {
     props.plugins.forEach(plugin => plugin(ctx));
   }
-  const ict = ctx.interceptor;
-  ict.sync('bundle_resolve_start', { ctx, packages });
-  for (const pkg of props.packages) {
-    if (!pkg.isCached) {
-      await processPackage(pkg);
-    }
-  }
-  await ict.resolve();
-  ict.sync('bundle_resolve_end', { ctx, packages });
+  await pluginProcessPackages({ ctx, packages });
 }

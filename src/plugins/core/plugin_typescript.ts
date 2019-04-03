@@ -17,6 +17,7 @@ export function pluginTypescript() {
       const pkg = module.pkg;
       const config = ctx.config;
       const analysis = module.fastAnalysis;
+
       if (!analysis || !analysis.report || analysis.report.transpiled || !module.contents) {
         return props;
       }

@@ -18,7 +18,9 @@ export function createExpressApp(ctx: Context, props: IHTTPServerProps) {
   });
 
   return app.listen(props.port, () => {
-    ctx.log.status(`Development server is running at http://localhost:${props.port}`);
+    ctx.log.print(`<dim>Development server is running at <bold>http://localhost:$port</bold></dim>`, {
+      port: props.port,
+    });
   });
 }
 

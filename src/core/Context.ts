@@ -12,9 +12,11 @@ import { IConfig } from './interfaces';
 import { createWriter, IWriterActions } from './writer';
 import { createCache } from '../cache/cache';
 import { Cache } from '../cache/cache';
+import { Package } from './Package';
 
 export class Context {
   public assembleContext: IAssembleContext;
+  public packages: Array<Package>;
   public interceptor: MainInterceptor;
   public tsConfig: TypescriptConfig;
   public log: ILogger;

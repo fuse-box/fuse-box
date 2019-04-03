@@ -3,6 +3,7 @@ import { Module } from './Module';
 import { Package } from './Package';
 
 export interface IAssembleContext {
+  flush: () => void;
   collection: {
     modules: Map<string, Module>;
     packages: {
@@ -13,10 +14,15 @@ export interface IAssembleContext {
   };
 }
 export function assembleContext(ctx: Context): IAssembleContext {
-  const packages = new Map<string, Map<string, Package>>();
-  return {
+  let packages = new Map<string, Map<string, Package>>();
+  const obj = {
+    flush: () => {
+      packages = new Map();
+      obj.collection.modules = new Map();
+    },
     collection: {
       modules: new Map<string, Module>(),
+
       packages: {
         getAll: (fn: (pkg: Package) => void) => {
           packages.forEach(items => {
@@ -43,4 +49,5 @@ export function assembleContext(ctx: Context): IAssembleContext {
       },
     },
   };
+  return obj;
 }

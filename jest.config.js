@@ -25,5 +25,5 @@ module.exports = {
   ],
   maxConcurrency: 1,
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node', 'json'],
-  coveragePathIgnorePatterns: ['test_utils.ts'],
+  coveragePathIgnorePatterns: ['test_utils.ts', 'logging/logging.ts', 'logging/spinner.ts'],
 };

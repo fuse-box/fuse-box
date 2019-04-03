@@ -49,10 +49,17 @@ export function inflateBundle(ctx: Context, bundle: Bundle) {
       concat.add(null, devStrings.openPackage(packageName, customVersions));
 
       pkg.modules.forEach(_module => {
-        concat.add(null, devStrings.openFile(_module.props.fuseBoxPath));
-        const data = _module.generate();
-        concat.add(null, data.contents, data.sourcemMap);
-        concat.add(null, devStrings.closeFile());
+        if (_module.isCached) {
+          concat.add(null, _module.cache.contents, _module.cache.sourceMap);
+        } else {
+          const fileConcat = createConcat(true, '', '\n');
+          fileConcat.add(null, devStrings.openFile(_module.props.fuseBoxPath));
+          const data = _module.generate();
+          fileConcat.add(null, data.contents, data.sourceMap);
+          fileConcat.add(null, devStrings.closeFile());
+          concat.add(null, fileConcat.content, fileConcat.sourceMap);
+          ctx.interceptor.sync('after_dev_module_inflate', { concat: fileConcat, ctx: ctx, module: _module });
+        }
       });
       concat.add(null, devStrings.closePackage(pkg.entry && pkg.entry.props.fuseBoxPath));
 

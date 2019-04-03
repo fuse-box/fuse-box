@@ -97,6 +97,16 @@ export function createConfig(props: IConfig): IConfig {
       config.options.cacheRoot = path.join(props.cache.root, env.VERSION);
     }
   }
+  config.options.watcherEnabled = false;
+  if (props.watch !== undefined) {
+    if (typeof props.watch === 'boolean') {
+      config.options.watcherEnabled = props.watch;
+    }
+    if (typeof props.watch === 'object') {
+      config.options.watcherEnabled = true;
+      config.options.watcherProps = props.watch;
+    }
+  }
 
   if (props.cache) {
     config.cache = props.cache;

@@ -12,6 +12,7 @@ export const env = {
     PROJET_FILES: 'project-files',
   },
   SCRIPT_PATH: path.dirname(require.main.filename),
+  SCRIPT_FILE: require.main.filename,
   FUSE_MODULES: path.join(appRoot.path, 'modules'),
 };
 

@@ -7,6 +7,7 @@ import { IAssembleContext } from '../core/assemble_context';
 
 export interface InterceptorEvents {
   test?: { foo: string };
+  assemble_module_init?: { module: Module };
   assemble_module?: { module: Module };
   assemble_fast_analysis?: { module: Module };
   assemble_ts_module?: { module: Module };
@@ -25,5 +26,6 @@ export interface InterceptorEvents {
   // after we've done creating a full package string
   // Concat will have content and sourceMap
   after_dev_package_inflate: { ctx: Context; pkg: Package; concat: Concat };
+  after_dev_module_inflate: { ctx: Context; module: Module; concat: Concat };
   complete: { ctx: Context; bundles: Array<IBundleWriteResponse> };
 }

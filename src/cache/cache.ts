@@ -1,9 +1,11 @@
 import * as path from 'path';
 import { Context } from '../core/Context';
 import { env } from '../core/env';
-import { ensureDir, fileExists, readFile, writeFile } from '../utils/utils';
+import { ensureDir, fileExists, readFile, writeFile, fileStat, removeFolder } from '../utils/utils';
 import { ICacheTreeContents, ICacheDependencies, ICachePackageResponse, ICachePackage } from './Interfaces';
 import { Package, createPackage } from '../core/Package';
+import { Module, createModule } from '../core/Module';
+import { IFastAnalysis } from '../analysis/fastAnalysis';
 
 export function generateValidKey(key) {
   return encodeURIComponent(key) + '.cache';
@@ -18,6 +20,16 @@ export interface IModuleCacheBasics {
   sourceMap: string;
 }
 
+export interface IModuleCache {
+  mtime: number;
+  absPath: string;
+  extension: string;
+  fuseBoxPath: string;
+  fastAnalysis: IFastAnalysis;
+  contents: string;
+  sourceMap: string;
+}
+
 const TREE_FILE_KEY = 'tree.json';
 
 export class Cache {
@@ -26,21 +38,50 @@ export class Cache {
   private unsynced = new Map<string, any>();
   private synced = new Map<string, any>();
   public ctx: Context;
+
+  private packageCacheFolder: string;
+  private projectCacheFolder: string;
   constructor(props: IFileCacheProps) {
     const config = props.ctx.config;
     this.ctx = props.ctx;
     this.rootFolder = config.options.cacheRoot;
+    this.packageCacheFolder = path.join(this.rootFolder, env.CACHE.PACKAGES);
+    this.projectCacheFolder = path.join(this.rootFolder, env.CACHE.PROJET_FILES);
   }
 
   public init() {
-    ensureDir(path.join(this.rootFolder, env.CACHE.PACKAGES));
-    ensureDir(path.join(this.rootFolder, env.CACHE.PROJET_FILES));
+    ensureDir(this.packageCacheFolder);
+    ensureDir(this.projectCacheFolder);
+  }
+
+  public nukeAll() {
+    this.clearMemory();
+    this.clearTree();
+    removeFolder(this.rootFolder);
+  }
+
+  public nukeProjectCache() {
+    this.clearMemory();
+    this.clearTree();
+    removeFolder(this.projectCacheFolder);
+  }
+
+  public nukePackageCache() {
+    this.clearMemory();
+    this.clearTree();
+    removeFolder(this.packageCacheFolder);
   }
 
   public set(key: string, value: any) {
     key = generateValidKey(key);
     this.synced.delete(key);
     this.unsynced.set(key, value);
+  }
+
+  public unset(key: string) {
+    key = generateValidKey(key);
+    this.synced.delete(key);
+    this.unsynced.delete(key);
   }
 
   public forceSyncOnKey(key: string) {
@@ -66,7 +107,7 @@ export class Cache {
     return tree;
   }
 
-  public get<T>(key: string): T {
+  public get<T>(key: string, folder?: string): T {
     key = generateValidKey(key);
 
     if (this.synced.has(key)) {
@@ -76,8 +117,12 @@ export class Cache {
     if (this.unsynced.has(key)) {
       return this.unsynced.get(key);
     }
-
-    const targetFile = path.join(this.rootFolder, key);
+    let targetFile;
+    if (folder) {
+      targetFile = path.join(folder, key);
+    } else {
+      targetFile = path.join(this.rootFolder, key);
+    }
 
     if (fileExists(targetFile)) {
       const contents = readFile(targetFile);
@@ -95,7 +140,13 @@ export class Cache {
     const writers: Array<Promise<any>> = [];
     for (const item of this.unsynced) {
       const [key, value] = item;
-      writers.push(writeFile(path.join(this.rootFolder, key), JSON.stringify(value)));
+      if (/^pkg_/.test(key)) {
+        writers.push(writeFile(path.join(this.packageCacheFolder, key), JSON.stringify(value)));
+      } else if (/^prj_/.test(key)) {
+        writers.push(writeFile(path.join(this.projectCacheFolder, key), JSON.stringify(value)));
+      } else {
+        writers.push(writeFile(path.join(this.rootFolder, key), JSON.stringify(value)));
+      }
       // it's synced now
 
       this.synced.set(key, value);
@@ -111,7 +162,7 @@ export class Cache {
   }
 
   private getPackageKey(pkg: Package) {
-    return `${pkg.props.meta.name}-${pkg.props.meta.version}`;
+    return `pkg_${pkg.props.meta.name}-${pkg.props.meta.version}`;
   }
 
   public getPackage(pkg: Package): ICachePackageResponse {
@@ -150,7 +201,7 @@ export class Cache {
 
     // retrieve cache for this package
     if (!moduleMismatch) {
-      const cache = this.get<IModuleCacheBasics>(this.getPackageKey(pkg));
+      const cache = this.get<IModuleCacheBasics>(this.getPackageKey(pkg), this.packageCacheFolder);
 
       if (!cache) {
         response.abort = true;
@@ -186,7 +237,7 @@ export class Cache {
               meta: info.meta,
             });
             const cacheKey = this.getPackageKey(targetPackage);
-            const cache = this.get<IModuleCacheBasics>(cacheKey);
+            const cache = this.get<IModuleCacheBasics>(cacheKey, this.packageCacheFolder);
             // if one of the cached version is missing - abort
             // cache should be reset
             if (!cache) {
@@ -222,6 +273,43 @@ export class Cache {
       },
       dependants: dependants,
     };
+  }
+
+  public getModuleCacheKey(module: Module) {
+    return `prj_${module.props.fuseBoxPath}`;
+  }
+  public saveModule(module: Module, basics: IModuleCacheBasics) {
+    const stat = fileStat(module.props.absPath);
+    const mtime = stat.mtime.getTime();
+
+    this.set(this.getModuleCacheKey(module), {
+      mtime,
+      fastAnalysis: module.fastAnalysis,
+      contents: basics.contents,
+      sourceMap: basics.sourceMap,
+      absPath: module.props.absPath,
+      extension: module.props.extension,
+      fuseBoxPath: module.props.fuseBoxPath,
+    });
+  }
+
+  public restoreModule(module: Module): Module {
+    const fpath = module.props.absPath;
+    const cached = this.get<IModuleCache>(this.getModuleCacheKey(module), this.projectCacheFolder);
+
+    if (cached) {
+      const stat = fileStat(fpath);
+      if (stat.mtime.getTime() !== cached.mtime) {
+        this.unset(fpath);
+        return;
+      }
+
+      module.props.extension = cached.extension;
+      module.props.fuseBoxPath = cached.fuseBoxPath;
+      module.fastAnalysis = cached.fastAnalysis;
+      module.setCache({ contents: cached.contents, sourceMap: cached.sourceMap });
+      return module;
+    }
   }
 
   public savePackage(pkg: Package, basics: IModuleCacheBasics) {
