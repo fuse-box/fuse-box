@@ -3,6 +3,7 @@ import { ILoggerProps } from '../logging/logging';
 import { IWebIndexConfig } from '../web-index/webIndex';
 import { Context } from './Context';
 import { IDevServerProps } from '../dev-server/devServerProps';
+import { IWatcherExternalProps } from '../watcher/watcher';
 
 export interface IConfig {
   root?: string;
@@ -11,6 +12,7 @@ export interface IConfig {
   output?: string;
   modules?: Array<string>;
   logging?: ILoggerProps;
+  watch?: boolean | IWatcherExternalProps;
   cache?:
     | boolean
     | {
@@ -48,6 +50,8 @@ export interface IConfig {
 
   // normalised options
   options?: {
+    watcherEnabled?: boolean;
+    watcherProps?: IWatcherExternalProps;
     sourceRoot?: string;
     entries?: Array<string>;
     vendorSourceMap?: boolean;

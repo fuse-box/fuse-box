@@ -1,3 +1,4 @@
-export class Foo {
+export class FooClass {
   constructor() {}
 }
+console.log('!!');

@@ -16,6 +16,10 @@ export function path2Regex(path: string) {
   return re;
 }
 
+export function removeFolder(userPath) {
+  fsExtra.removeSync(userPath);
+}
+
 export function createRequireConst(name: string, variable?: string) {
   return `var ${variable ? variable : name} = require("${name}");`;
 }
@@ -82,6 +86,10 @@ export function ensureDir(dir: string) {
   fsExtra.ensureDirSync(dir);
   return dir;
 }
+
+export function fileStat(file: string) {
+  return fs.statSync(file);
+}
 export function makeFuseBoxPath(homeDir: string, absPath: string) {
   return homeDir && ensurePublicExtension(extractFuseBoxPath(homeDir, absPath));
 }
@@ -96,6 +104,11 @@ export function measureTime(group?: string) {
   };
 }
 
+export function findReplace(str: string, re: RegExp, fn: (args) => string) {
+  return str.replace(re, (...args) => {
+    return fn(args);
+  });
+}
 export function path2RegexPattern(path: string) {
   path = path
     .split('.')

@@ -445,6 +445,17 @@ describe('Resolver test', () => {
         expect(info.skip).toEqual(true);
       });
 
+      it('Should not skip fs (universal)', () => {
+        const info = resolveModule({
+          homeDir: homeDir,
+          filePath: filePath,
+          target: 'fs',
+          buildTarget: 'universal',
+          modules: [customModules],
+        });
+        expect(info.package.meta.name).toEqual('fs');
+      });
+
       it('Should skip fs (electron)', () => {
         const info = resolveModule({
           homeDir: homeDir,

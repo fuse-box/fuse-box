@@ -35,7 +35,7 @@ export function createHMRServer(props: ICreateHMRServerProps): HMRServerMethods 
   const scope = {
     listeners: [],
   };
-  ctx.log.status('HMR server is running on port $port', { port: props.opts.port });
+  ctx.log.print('<dim>HMR server is running on port $port</dim>', { port: props.opts.port });
   wss.on('connection', function connection(ws) {
     const client = createClient(ws);
     clients.add(client);

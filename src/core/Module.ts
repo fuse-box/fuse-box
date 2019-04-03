@@ -2,8 +2,13 @@ import { Context } from './Context';
 import { Package } from './Package';
 import { readFile, createConcat, extractFuseBoxPath, joinFuseBoxPath } from '../utils/utils';
 import { IFastAnalysis } from '../analysis/fastAnalysis';
-
+import * as path from 'path';
+import { IModuleCacheBasics } from '../cache/cache';
 const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx'];
+
+export function isFileExecutable(file) {
+  return EXECUTABLE_EXTENSIONS.includes(path.extname(file));
+}
 
 export interface IModuleProps {
   ctx: Context;
@@ -13,6 +18,7 @@ export interface IModuleProps {
 }
 export class Module {
   public isCached: boolean;
+  public cache: IModuleCacheBasics;
   public pkg: Package;
 
   public assembled: boolean;
@@ -42,6 +48,11 @@ export class Module {
 
   public isTypescriptModule(): boolean {
     return ['.ts', '.tsx'].includes(this.props.extension);
+  }
+
+  public setCache(basics: IModuleCacheBasics) {
+    this.isCached = true;
+    this.cache = basics;
   }
 
   public getSourceMapPath() {
@@ -77,7 +88,7 @@ export class Module {
     }
     return {
       contents: this.contents,
-      sourcemMap: this.sourceMap,
+      sourceMap: this.sourceMap,
     };
   }
 }

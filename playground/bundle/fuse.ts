@@ -7,6 +7,7 @@ const ctx = createContext({
   logging: {
     level: 'succinct',
   },
+  watch: true,
   devServer: {
     httpServer: {
       port: 9999,

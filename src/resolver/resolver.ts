@@ -101,6 +101,7 @@ export function resolveModule(props: IResolverProps): IResolver {
   const isBrowserBuild = props.buildTarget === 'browser';
   const isServerBuild = props.buildTarget === 'server';
   const isElectronBuild = props.buildTarget === 'electron';
+  const isUniversalBuild = props.buildTarget === 'universal';
   let target = props.target;
   let forcedStatement: string;
   let forceReplacement = false;
@@ -152,10 +153,10 @@ export function resolveModule(props: IResolverProps): IResolver {
     const moduleParsed = isNodeModule(target);
     if (moduleParsed) {
       // first check if we need to bundle it at all;
-      if (isServerBuild && isServerPolyfill(moduleParsed.name)) {
+      if (!isUniversalBuild && isServerBuild && isServerPolyfill(moduleParsed.name)) {
         return { skip: true };
       }
-      if (isElectronBuild && isElectronPolyfill(moduleParsed.name)) {
+      if (!isUniversalBuild && isElectronBuild && isElectronPolyfill(moduleParsed.name)) {
         return { skip: true };
       }
       const pkg = nodeModuleLookup(props, moduleParsed);

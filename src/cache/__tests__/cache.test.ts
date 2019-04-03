@@ -6,6 +6,7 @@ import { createModule } from '../../core/Module';
 import { Package, createPackage } from '../../core/Package';
 import { mockModule, mockWriteFile, throttle } from '../../utils/test_utils';
 import { createCache } from '../cache';
+import { fastAnalysis } from '../../analysis/fastAnalysis';
 
 const fileMock = mockWriteFile();
 
@@ -56,7 +57,35 @@ describe('FileCache test', () => {
   afterAll(() => {
     fileMock.unmock();
   });
-  describe('Getting and saving', () => {
+
+  describe('Getting and saving modules', () => {
+    it('should save file', async () => {
+      const { cache } = mockCache({ cache: { root: path.join(__dirname, '.cache') } });
+      const { module } = mockModule({ config: {} });
+      module.props.absPath = path.join(__dirname, 'cases/module-a/file1.ts');
+      cache.saveModule(module, { contents: 'aa', sourceMap: 'a' });
+      await cache.sync();
+
+      expect(fileMock.findFile('file1.ts.cache')).toBeTruthy();
+    });
+
+    it('Should get module', async () => {
+      const { cache } = mockCache({ cache: { root: path.join(__dirname, '.cache') } });
+      const { module } = mockModule({ config: {} });
+      module.props.absPath = path.join(__dirname, 'cases/module-a/file1.ts');
+      fileMock.addFile(module.props.absPath, 'require("./foo")');
+      module.props.extension = '.ts';
+      module.read();
+
+      module.fastAnalysis = fastAnalysis({ input: module.contents });
+      cache.saveModule(module, { contents: 'aa', sourceMap: 'a' });
+      await cache.sync();
+
+      const cachedModule = cache.restoreModule(module);
+      expect(cachedModule.fastAnalysis).toBeTruthy();
+    });
+  });
+  describe('Getting and saving packages', () => {
     it('should init cache in a custom folder', () => {
       const x = mockCache({ cache: { root: path.join(__dirname, '.cache') } });
       x.cache.init();
@@ -134,6 +163,16 @@ describe('FileCache test', () => {
       await cache.sync();
 
       expect(cache['synced'].get('foo.cache')).toEqual({ bar: 1 });
+    });
+
+    it('should unset', async () => {
+      const { cache } = mockCache({ cache: true });
+
+      cache.set('foo', { bar: 1 });
+      cache.unset('foo');
+
+      expect(cache['synced'].get('foo.cache')).toBe(undefined);
+      expect(cache['unsynced'].get('foo.cache')).toBe(undefined);
     });
 
     it('should set a few files but write only after sync', async () => {

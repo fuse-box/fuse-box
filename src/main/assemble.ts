@@ -1,10 +1,9 @@
 import { fastAnalysis } from '../analysis/fastAnalysis';
-import { ImportType, IResolver, resolveModule } from '../resolver/resolver';
 import { createApplicationPackage } from '../core/application';
 import { Context } from '../core/Context';
 import { createModule, Module } from '../core/Module';
 import { createPackage, Package } from '../core/Package';
-import { measureTime } from '../utils/utils';
+import { ImportType, IResolver, resolveModule } from '../resolver/resolver';
 
 interface IDefaultParseProps {
   assemble?: boolean;
@@ -120,15 +119,18 @@ function resolveStatement(
 function processModule(props: IDefaultParseProps) {
   const icp = props.ctx.interceptor;
   const _module = props.module;
+  icp.sync('assemble_module_init', { module: _module });
   props.pkg.modules.push(props.module);
   if (_module.isExecutable()) {
-    _module.read();
-    _module.fastAnalysis = fastAnalysis({ input: _module.contents });
-    icp.sync('assemble_fast_analysis', { module: _module });
+    if (!_module.isCached) {
+      _module.read();
+      _module.fastAnalysis = fastAnalysis({ input: _module.contents });
+
+      _module.fastAnalysis.replaceable = [];
+      icp.sync('assemble_fast_analysis', { module: _module });
+    }
     _module.assembled = true;
 
-    // collecting statements for the replacement
-    _module.fastAnalysis.replaceable = [];
     const modules = [];
 
     _module.fastAnalysis.imports.forEach(data => {
@@ -198,16 +200,18 @@ function assemblePackage(pkg: Package, ctx: Context) {
     }
   });
 }
+
 export function assemble(ctx: Context, entryFile: string): Array<Package> {
   // default package. Big Bang starts here/
   ctx.log.group('assemble');
   const pkg = createApplicationPackage(ctx, entryFile);
   parseDefaultPackage(ctx, pkg);
   assemblePackage(pkg, ctx);
-  const result = [pkg];
+  const result: Array<Package> = [pkg];
   ctx.assembleContext.collection.packages.getAll(pkg => {
     result.push(pkg);
   });
+  ctx.packages = result;
   // reset logging group
   ctx.log.group(false);
   return result;

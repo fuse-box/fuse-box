@@ -1,14 +1,22 @@
 import { getSpinner, ISpinnerInterface } from './Spinner';
 import { colors } from './chroma';
+import { codeLog } from './codeLog';
 export interface ILogger {
   group: (name: string | boolean) => void;
   info: (msg: string, variables?: { [key: string]: any }) => void;
-  status: (msg: string, variables?: { [key: string]: any }) => void;
   warn: (msg: string, variables?: { [key: string]: any }) => void;
+  printWarnings: () => void;
+  printErrors: () => void;
   error: (msg: string, variables?: { [key: string]: any }) => void;
   deprecated: (msg: string, variables?: { [key: string]: any }) => void;
-  withSpinner: () => void;
+  withSpinner: () => ISpinnerInterface;
   stopSpinner: () => void;
+  print: (msg: string, variables?: { [key: string]: any }) => void;
+  hasErrors: () => BooleanConstructor;
+  hasWarnings: () => BooleanConstructor;
+  getErrors: () => Array<{ str: string; vars: any }>;
+  getWarnings: () => Array<{ str: string; vars: any }>;
+  printNewLine: () => void;
 }
 
 type ILoggerType = 'verbose' | 'succinct' | 'disabled';
@@ -16,6 +24,18 @@ export interface ILoggerProps {
   level: ILoggerType;
 }
 
+export const EMOJIS = {
+  warning: '⚠️ ',
+};
+
+function replaceVars(str, vars) {
+  if (vars) {
+    for (const key in vars) {
+      str = str.replace(`$${key}`, vars[key]);
+    }
+  }
+  return str;
+}
 export function getLogger(props?: ILoggerProps): ILogger {
   let level: ILoggerType = props && props.level ? props.level : 'succinct';
   if (process.env.JEST_TEST) {
@@ -27,8 +47,13 @@ export function getLogger(props?: ILoggerProps): ILogger {
   }
   const scope: {
     group?: string;
+    warnings: Array<{ str: string; vars: any }>;
+    errors: Array<{ str: string; vars: any }>;
     spinner?: ISpinnerInterface;
-  } = {};
+  } = {
+    warnings: [],
+    errors: [],
+  };
 
   function log(color: string, text: string, variables: { [key: string]: any }) {
     if (level === 'disabled') {
@@ -55,6 +80,7 @@ export function getLogger(props?: ILoggerProps): ILogger {
       console.log(output);
     }
   }
+
   const methods = {
     group: (name: string | boolean) => {
       if (typeof name == 'boolean') {
@@ -65,18 +91,58 @@ export function getLogger(props?: ILoggerProps): ILogger {
         scope.group = name;
       }
     },
+    printNewLine() {
+      if (level === 'disabled') {
+        return;
+      }
+      console.log('');
+    },
     info: (msg: string, variables?: { [key: string]: any }) => {
       log('cyan', msg, variables);
     },
-    status: (msg: string, variables?: { [key: string]: any }) => {
-      log('green', msg, variables);
+    print: (msg: string, vars?: { [key: string]: any }) => {
+      if (level === 'disabled') {
+        return;
+      }
+      console.log(codeLog(` ${replaceVars(msg, vars)}`));
     },
-    warn: (msg: string, variables?: { [key: string]: any }) => {
-      log('yellow', msg, variables);
+    warn: (msg: string, vars?: { [key: string]: any }) => {
+      if (level === 'disabled') {
+        return;
+      }
+      scope.warnings.push({ str: msg, vars: vars });
     },
-    error: (msg: string, variables?: { [key: string]: any }) => {
-      log('red', msg, variables);
+    error: (msg: string, vars?: { [key: string]: any }) => {
+      if (level === 'disabled') {
+        return;
+      }
+      scope.errors.push({ str: msg, vars: vars });
     },
+    hasWarnings: () => {
+      return scope.warnings.length > 0;
+    },
+    getErrors: () => {
+      return scope.errors;
+    },
+    getWarnings: () => {
+      return scope.warnings;
+    },
+    hasErrors: () => {
+      return scope.errors.length > 0;
+    },
+    printWarnings: () => {
+      scope.warnings.forEach(item => {
+        console.log(codeLog(` ⚠️  <yellow>${replaceVars(item.str, item.vars)}<yellow>`));
+      });
+      scope.warnings = [];
+    },
+    printErrors: () => {
+      scope.errors.forEach(item => {
+        console.log(codeLog(` ❌ <bold><red>${replaceVars(item.str, item.vars)}<red></bold>`));
+      });
+      scope.errors = [];
+    },
+
     deprecated: (msg: string, variables?: { [key: string]: any }) => {
       log('red', msg, variables);
     },

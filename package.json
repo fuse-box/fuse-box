@@ -37,7 +37,7 @@
     "base64-js": "^1.2.0",
     "bowser": "^2.0.0-beta.3",
     "cherow": "^1.6.8-dev.20190326",
-    "chokidar": "^1.6.1",
+    "chokidar": "^2.1.5",
     "clean-css": "^4.1.9",
     "convert-source-map": "^1.6.0",
     "escodegen": "^1.11.1",
