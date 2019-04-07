@@ -13,9 +13,9 @@ async function evaluate(props: IPluginTest) {
     props.setup(data);
   }
   pluginTypescript()(data.ctx);
-  data.ctx.interceptor.sync('bundle_resolve_module', { module: data.module });
+  data.ctx.ict.sync('bundle_resolve_module', { module: data.module });
   if (props.afterPluginInit) props.afterPluginInit(data);
-  await data.ctx.interceptor.resolve();
+  await data.ctx.ict.resolve();
   if (props.afterResolve) props.afterResolve(data);
   return data;
 }
@@ -24,7 +24,7 @@ describe('Typescript plugin', () => {
   it('should not transpile 1', async () => {
     await evaluate({
       afterPluginInit: props => {
-        expect(props.ctx.interceptor.getPromises()).toHaveLength(0);
+        expect(props.ctx.ict.getPromises()).toHaveLength(0);
       },
     });
   });
@@ -35,7 +35,7 @@ describe('Typescript plugin', () => {
         props.module.fastAnalysis = {};
       },
       afterPluginInit: props => {
-        expect(props.ctx.interceptor.getPromises()).toHaveLength(0);
+        expect(props.ctx.ict.getPromises()).toHaveLength(0);
       },
     });
   });
@@ -50,7 +50,7 @@ describe('Typescript plugin', () => {
         };
       },
       afterPluginInit: props => {
-        expect(props.ctx.interceptor.getPromises()).toHaveLength(0);
+        expect(props.ctx.ict.getPromises()).toHaveLength(0);
       },
     });
   });
@@ -65,7 +65,7 @@ describe('Typescript plugin', () => {
         };
       },
       afterPluginInit: data => {
-        expect(data.ctx.interceptor.getPromises()).toHaveLength(0);
+        expect(data.ctx.ict.getPromises()).toHaveLength(0);
       },
     });
   });
@@ -77,7 +77,7 @@ describe('Typescript plugin', () => {
         props.module.fastAnalysis = {};
       },
       afterPluginInit: props => {
-        expect(props.ctx.interceptor.getPromises()).toHaveLength(0);
+        expect(props.ctx.ict.getPromises()).toHaveLength(0);
       },
     });
   });
@@ -92,7 +92,7 @@ describe('Typescript plugin', () => {
         };
       },
       afterPluginInit: props => {
-        expect(props.ctx.interceptor.getPromises()).toHaveLength(0);
+        expect(props.ctx.ict.getPromises()).toHaveLength(0);
       },
     });
   });
@@ -108,7 +108,7 @@ describe('Typescript plugin', () => {
         };
       },
       afterPluginInit: props => {
-        expect(props.ctx.interceptor.getPromises()).toHaveLength(0);
+        expect(props.ctx.ict.getPromises()).toHaveLength(0);
       },
     });
   });
@@ -126,7 +126,7 @@ describe('Typescript plugin', () => {
         };
       },
       afterPluginInit: props => {
-        expect(props.ctx.interceptor.getPromises()).toHaveLength(1);
+        expect(props.ctx.ict.getPromises()).toHaveLength(1);
       },
       afterResolve: props => {
         expect(props.module.contents).toContain('require("./bar");');
@@ -147,7 +147,7 @@ describe('Typescript plugin', () => {
         };
       },
       afterPluginInit: props => {
-        expect(props.ctx.interceptor.getPromises()).toHaveLength(1);
+        expect(props.ctx.ict.getPromises()).toHaveLength(1);
       },
     });
 
@@ -187,7 +187,7 @@ describe('Typescript plugin', () => {
         };
       },
       afterPluginInit: props => {
-        expect(props.ctx.interceptor.getPromises()).toHaveLength(1);
+        expect(props.ctx.ict.getPromises()).toHaveLength(1);
       },
     });
 

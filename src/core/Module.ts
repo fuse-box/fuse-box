@@ -1,14 +1,9 @@
+import { IFastAnalysis } from '../analysis/fastAnalysis';
+import { IModuleCacheBasics } from '../cache/cache';
+import { createConcat, extractFuseBoxPath, joinFuseBoxPath, readFile } from '../utils/utils';
 import { Context } from './Context';
 import { Package } from './Package';
-import { readFile, createConcat, extractFuseBoxPath, joinFuseBoxPath } from '../utils/utils';
-import { IFastAnalysis } from '../analysis/fastAnalysis';
-import * as path from 'path';
-import { IModuleCacheBasics } from '../cache/cache';
 const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx'];
-
-export function isFileExecutable(file) {
-  return EXECUTABLE_EXTENSIONS.includes(path.extname(file));
-}
 
 export interface IModuleProps {
   ctx: Context;
@@ -63,7 +58,11 @@ export class Module {
         extractFuseBoxPath(this.props.ctx.config.homeDir, this.props.absPath),
       );
     } else {
-      return joinFuseBoxPath('/modules', extractFuseBoxPath(this.pkg.props.meta.packageRoot, this.props.absPath));
+      return joinFuseBoxPath(
+        '/modules',
+        this.pkg.getPublicName(),
+        extractFuseBoxPath(this.pkg.props.meta.packageRoot, this.props.absPath),
+      );
     }
   }
 

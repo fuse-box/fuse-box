@@ -1,7 +1,7 @@
 import { Module } from '../core/Module';
 
-export function fixModuleSourceMap(module: Module, sourceMapText: string): string {
-  let jsonSourceMaps = JSON.parse(sourceMapText);
+export function fixModuleSourceMap(module: Module, sourceMapText): string {
+  let jsonSourceMaps = typeof sourceMapText === 'string' ? JSON.parse(sourceMapText) : sourceMapText;
   jsonSourceMaps.sources = [module.getSourceMapPath()];
   if (module.fastAnalysis.report.dynamicImports) {
     // fixing the replaces import statements

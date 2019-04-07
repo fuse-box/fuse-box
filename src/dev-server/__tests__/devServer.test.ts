@@ -48,7 +48,7 @@ describe('Dev server test', () => {
     data.pkg.entry = data.module;
     data.module.fastAnalysis = { imports: [] };
 
-    data.ctx.interceptor.sync('assemble_fast_analysis', { module: data.module });
+    data.ctx.ict.sync('assemble_fast_analysis', { module: data.module });
     expect(data.module.fastAnalysis.imports).toHaveLength(1);
     expect(data.module.fastAnalysis.imports[0].statement).toEqual('fuse-box-hot-reload');
   });
@@ -64,7 +64,7 @@ describe('Dev server test', () => {
     data.pkg.entry = data.module;
     data.module.fastAnalysis = { imports: [] };
 
-    data.ctx.interceptor.sync('assemble_fast_analysis', { module: data.module });
+    data.ctx.ict.sync('assemble_fast_analysis', { module: data.module });
     expect(data.module.fastAnalysis.imports).toHaveLength(0);
   });
 
@@ -77,7 +77,7 @@ describe('Dev server test', () => {
       packageProps: { isDefaultPackage: true },
     });
     const bundle = createBundle({ ctx: data.ctx, name: 's', type: BundleType.PROJECT_JS });
-    data.ctx.interceptor.sync('before_bundle_write', { bundle });
+    data.ctx.ict.sync('before_bundle_write', { bundle });
     expect(bundle.generate().contents).toEqual(`FuseBox.import("fuse-box-hot-reload").connect({"port":4444})`);
   });
 
@@ -90,7 +90,7 @@ describe('Dev server test', () => {
       packageProps: { isDefaultPackage: true },
     });
     const bundle = createBundle({ ctx: data.ctx, name: 's', type: BundleType.VENDOR_JS });
-    data.ctx.interceptor.sync('before_bundle_write', { bundle });
+    data.ctx.ict.sync('before_bundle_write', { bundle });
     expect(bundle.generate().contents).not.toContain('fuse-box-hot-reload');
   });
 
@@ -104,7 +104,7 @@ describe('Dev server test', () => {
       moduleProps: {},
       packageProps: { isDefaultPackage: false },
     });
-    data.ctx.interceptor.sync('complete', { ctx: data.ctx, bundles: [] });
+    data.ctx.ict.sync('complete', { ctx: data.ctx, bundles: [] });
     expect(__mock_expressListen).toHaveBeenCalled();
   });
 
@@ -119,7 +119,7 @@ describe('Dev server test', () => {
       moduleProps: {},
       packageProps: { isDefaultPackage: false },
     });
-    data.ctx.interceptor.sync('complete', { ctx: data.ctx, bundles: [] });
+    data.ctx.ict.sync('complete', { ctx: data.ctx, bundles: [] });
   });
 
   it('Should call onClientMessage', () => {
@@ -133,7 +133,7 @@ describe('Dev server test', () => {
       moduleProps: {},
       packageProps: { isDefaultPackage: true },
     });
-    data.ctx.interceptor.sync('complete', { ctx: data.ctx, bundles: [] });
+    data.ctx.ict.sync('complete', { ctx: data.ctx, bundles: [] });
     data.ctx.devServer.clientSend('foo', {});
   });
 
@@ -148,7 +148,7 @@ describe('Dev server test', () => {
       moduleProps: {},
       packageProps: { isDefaultPackage: true },
     });
-    data.ctx.interceptor.sync('complete', { ctx: data.ctx, bundles: [] });
+    data.ctx.ict.sync('complete', { ctx: data.ctx, bundles: [] });
     data.ctx.devServer.onClientMessage((name, data) => {});
   });
 

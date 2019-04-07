@@ -17,7 +17,7 @@ describe('assemble fast analysis', () => {
         },
       };
 
-      ctx.interceptor.sync('assemble_fast_analysis', { module });
+      ctx.ict.sync('assemble_fast_analysis', { module });
       expect(module.fastAnalysis.imports).toEqual([]);
     });
 
@@ -32,7 +32,7 @@ describe('assemble fast analysis', () => {
           browserEssentials: ['process'],
         },
       };
-      ctx.interceptor.sync('assemble_fast_analysis', { module });
+      ctx.ict.sync('assemble_fast_analysis', { module });
       expect(module.fastAnalysis.imports).toEqual([{ type: ImportType.REQUIRE, statement: 'process' }]);
     });
 
@@ -41,7 +41,7 @@ describe('assemble fast analysis', () => {
         target: 'browser',
       });
       const module = mockDefaultModule(ctx);
-      ctx.interceptor.sync('assemble_fast_analysis', { module });
+      ctx.ict.sync('assemble_fast_analysis', { module });
     });
 
     it('should have process require statement', () => {
@@ -55,7 +55,7 @@ describe('assemble fast analysis', () => {
           browserEssentials: ['process'],
         },
       };
-      ctx.interceptor.sync('assemble_fast_analysis', { module });
+      ctx.ict.sync('assemble_fast_analysis', { module });
       expect(module.header).toEqual(['var process = require("process");']);
     });
 
@@ -70,7 +70,7 @@ describe('assemble fast analysis', () => {
           dynamicImports: true,
         },
       };
-      ctx.interceptor.sync('assemble_fast_analysis', { module });
+      ctx.ict.sync('assemble_fast_analysis', { module });
 
       expect(module.header).toEqual([`var ${devImports.variable} = require("${devImports.packageName}");`]);
       expect(module.fastAnalysis.imports).toEqual([{ type: ImportType.REQUIRE, statement: devImports.packageName }]);
@@ -89,7 +89,7 @@ describe('assemble fast analysis', () => {
           contains__dirname: true,
         },
       };
-      ctx.interceptor.sync('assemble_fast_analysis', { module });
+      ctx.ict.sync('assemble_fast_analysis', { module });
 
       expect(module.header).toEqual(['var __dirname = ".";']);
     });
@@ -105,7 +105,7 @@ describe('assemble fast analysis', () => {
           contains__dirname: true,
         },
       };
-      ctx.interceptor.sync('assemble_fast_analysis', { module });
+      ctx.ict.sync('assemble_fast_analysis', { module });
 
       expect(module.header).toEqual([]);
     });
@@ -121,7 +121,7 @@ describe('assemble fast analysis', () => {
           contains__filename: true,
         },
       };
-      ctx.interceptor.sync('assemble_fast_analysis', { module });
+      ctx.ict.sync('assemble_fast_analysis', { module });
 
       expect(module.header).toEqual(['var __filename = "index.js";']);
     });
@@ -137,7 +137,7 @@ describe('assemble fast analysis', () => {
           contains__filename: true,
         },
       };
-      ctx.interceptor.sync('assemble_fast_analysis', { module });
+      ctx.ict.sync('assemble_fast_analysis', { module });
 
       expect(module.header).toEqual([]);
     });

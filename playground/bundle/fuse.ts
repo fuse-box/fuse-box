@@ -13,9 +13,13 @@ const ctx = createContext({
       port: 9999,
     },
   },
-  cache: {
-    root: path.join(__dirname, '.cache'),
-  },
+  sourceMap: true,
+
+  // cache: {
+  //   enabled: false,
+  //   root: path.join(__dirname, '.cache'),
+  // },
+  cache: false,
   webIndex: {
     publicPath: '.',
   },

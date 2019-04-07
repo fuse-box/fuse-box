@@ -3,6 +3,7 @@ import * as fsExtra from 'fs-extra';
 import * as path from 'path';
 import { env } from '../core/env';
 import * as prettyTime from 'pretty-time';
+import * as offsetLinesModule from 'offset-sourcemap-lines';
 const CACHED_PATHS = new Map<string, RegExp>();
 
 export function path2Regex(path: string) {
@@ -18,6 +19,10 @@ export function path2Regex(path: string) {
 
 export function removeFolder(userPath) {
   fsExtra.removeSync(userPath);
+}
+
+export function offsetLines(obj: any, amount: number) {
+  return offsetLinesModule(obj, amount);
 }
 
 export function createRequireConst(name: string, variable?: string) {
@@ -98,8 +103,7 @@ export function measureTime(group?: string) {
   let startTime = process.hrtime();
   return {
     end: () => {
-      const took = prettyTime(process.hrtime(startTime));
-      console.log(`${group ? group : ''} ${took}`);
+      return prettyTime(process.hrtime(startTime));
     },
   };
 }

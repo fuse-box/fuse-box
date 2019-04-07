@@ -37,7 +37,7 @@ export class SocketClient {
   }
   send(eventName, data) {
     if (this.client.readyState === 1) {
-      this.client.send(JSON.stringify({ event: eventName, data: data || {} }));
+      this.client.send(JSON.stringify({ name: eventName, payload: data || {} }));
     }
   }
   error(data) {

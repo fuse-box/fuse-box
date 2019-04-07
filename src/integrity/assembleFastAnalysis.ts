@@ -6,7 +6,7 @@ import { createRequireConst, createVarString, ensureFuseBoxPath } from '../utils
 import { devImports } from './devPackage';
 
 export function assembleFastAnalysis(ctx: Context) {
-  const ict = ctx.interceptor;
+  const ict = ctx.ict;
 
   ict.on('assemble_fast_analysis', (props: { module: Module }) => {
     const module = props.module;

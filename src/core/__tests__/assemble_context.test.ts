@@ -36,4 +36,16 @@ describe('assemble context test', () => {
     expect(pkg1.isFlat).toEqual(true);
     expect(pkg2.isFlat).toEqual(false);
   });
+
+  it('should flush context', () => {
+    const data = mockAssembleContext();
+    const pkg1 = createPackage({ ctx: data.ctx, meta: { name: 'foo', version: '1.0.0' } });
+    const pkg2 = createPackage({ ctx: data.ctx, meta: { name: 'foo', version: '2.0.0' } });
+    data.packages.add(pkg1);
+    data.packages.add(pkg2);
+
+    data.ctx.assembleContext.flush();
+
+    expect(data.ctx.assembleContext.getPackageCollection().size).toEqual(0);
+  });
 });

@@ -4,7 +4,7 @@ import { Module } from '../core/Module';
 
 async function processModule(module: Module) {
   const ctx = module.props.ctx;
-  const ict = ctx.interceptor;
+  const ict = ctx.ict;
 
   if (module.isExecutable()) {
     if (module.isTypescriptModule()) {
@@ -31,7 +31,7 @@ export interface IBundleResolveProps {
 
 export async function pluginProcessPackages(props: { ctx: Context; packages: Array<Package> }) {
   const ctx = props.ctx;
-  const ict = ctx.interceptor;
+  const ict = ctx.ict;
   ict.sync('bundle_resolve_start', { ctx, packages: props.packages });
   for (const pkg of props.packages) {
     if (!pkg.isCached) {

@@ -1,4 +1,6 @@
 export class FooClass {
-  constructor() {}
+  constructor() {
+    console.log('constructed');
+  }
 }
-console.log('!!');
+console.log('1');

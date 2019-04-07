@@ -6,7 +6,7 @@ import { fixModuleSourceMap } from '../../sourcemaps/helpers';
 
 export function pluginTypescript() {
   return (ctx: Context) => {
-    const ict = ctx.interceptor;
+    const ict = ctx.ict;
 
     ict.on('bundle_resolve_module', (props: { module: Module }) => {
       if (!props.module.isExecutable()) {
@@ -29,12 +29,14 @@ export function pluginTypescript() {
       */
       if (!props.module.isTypescriptModule()) {
         if (
-          (!analysis.report.containsJSX && !analysis.report.es6Syntax && !analysis.replaceable) ||
-          analysis.replaceable.length === 0
+          !analysis.report.containsJSX &&
+          !analysis.report.es6Syntax &&
+          (!analysis.replaceable || analysis.replaceable.length === 0)
         ) {
           return props;
         }
       }
+
       let requireSourceMaps = true;
 
       if (pkg.isDefaultPackage) {

@@ -120,7 +120,7 @@ export class Bundle {
    */
   private async write(withSourceMaps: boolean): Promise<IBundleWriteResponse> {
     const ctx = this.props.ctx;
-    const ict = this.props.ctx.interceptor;
+    const ict = this.props.ctx.ict;
     ict.sync('before_bundle_write', { bundle: this });
     if (withSourceMaps) {
       const smData = ctx.writer.generate(this.generateSourceMapFileName(), this.contents.sourceMap);

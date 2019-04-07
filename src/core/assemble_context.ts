@@ -4,6 +4,7 @@ import { Package } from './Package';
 
 export interface IAssembleContext {
   flush: () => void;
+  getPackageCollection: () => Map<string, Map<string, Package>>;
   collection: {
     modules: Map<string, Module>;
     packages: {
@@ -13,12 +14,20 @@ export interface IAssembleContext {
     };
   };
 }
+
+export enum AssembleState {
+  VENDOR_REQUIRED,
+}
 export function assembleContext(ctx: Context): IAssembleContext {
   let packages = new Map<string, Map<string, Package>>();
+
   const obj = {
     flush: () => {
       packages = new Map();
       obj.collection.modules = new Map();
+    },
+    getPackageCollection() {
+      return packages;
     },
     collection: {
       modules: new Map<string, Module>(),
