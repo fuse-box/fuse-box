@@ -32,8 +32,8 @@ describe('Processing modules', () => {
       {
         plugins: [
           (ctx: Context) => {
-            ctx.interceptor.on('bundle_resolve_start', fn);
-            ctx.interceptor.on('bundle_resolve_module', fn2);
+            ctx.ict.on('bundle_resolve_start', fn);
+            ctx.ict.on('bundle_resolve_module', fn2);
           },
         ],
       },
@@ -51,8 +51,8 @@ describe('Processing modules', () => {
       {
         plugins: [
           (ctx: Context) => {
-            ctx.interceptor.on('bundle_resolve_typescript_module', fn);
-            ctx.interceptor.on('bundle_resolve_module', fn2);
+            ctx.ict.on('bundle_resolve_typescript_module', fn);
+            ctx.ict.on('bundle_resolve_module', fn2);
           },
         ],
       },
@@ -69,8 +69,8 @@ describe('Processing modules', () => {
       {
         plugins: [
           (ctx: Context) => {
-            ctx.interceptor.on('bundle_resolve_typescript_module', fn);
-            ctx.interceptor.on('bundle_resolve_module', fn2);
+            ctx.ict.on('bundle_resolve_typescript_module', fn);
+            ctx.ict.on('bundle_resolve_module', fn2);
           },
         ],
       },
@@ -88,8 +88,8 @@ describe('Processing modules', () => {
       {
         plugins: [
           (ctx: Context) => {
-            ctx.interceptor.on('bundle_resolve_js_module', fn);
-            ctx.interceptor.on('bundle_resolve_module', fn2);
+            ctx.ict.on('bundle_resolve_js_module', fn);
+            ctx.ict.on('bundle_resolve_module', fn2);
           },
         ],
       },
@@ -107,8 +107,8 @@ describe('Processing modules', () => {
       {
         plugins: [
           (ctx: Context) => {
-            ctx.interceptor.on('bundle_resolve_js_module', fn);
-            ctx.interceptor.on('bundle_resolve_module', fn2);
+            ctx.ict.on('bundle_resolve_js_module', fn);
+            ctx.ict.on('bundle_resolve_module', fn2);
           },
         ],
       },
@@ -125,7 +125,7 @@ describe('Processing modules', () => {
       {
         plugins: [
           (ctx: Context) => {
-            ctx.interceptor.promise(() => {
+            ctx.ict.promise(() => {
               return new Promise((resolve, reject) => {
                 setTimeout(() => {
                   result = 'done';
@@ -155,7 +155,7 @@ describe('Processing modules', () => {
       packages: packages,
       plugins: [
         (ctx: Context) => {
-          ctx.interceptor.on('bundle_resolve_module', props => {
+          ctx.ict.on('bundle_resolve_module', props => {
             shouldBeFalse = true;
             return props;
           });
@@ -180,7 +180,7 @@ describe('Processing modules', () => {
       packages: packages,
       plugins: [
         (ctx: Context) => {
-          ctx.interceptor.on('bundle_resolve_module', props => {
+          ctx.ict.on('bundle_resolve_module', props => {
             shouldBeFalse = true;
             return props;
           });

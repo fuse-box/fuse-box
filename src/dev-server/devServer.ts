@@ -25,7 +25,7 @@ export function createExpressApp(ctx: Context, props: IHTTPServerProps) {
 }
 
 export function createDevServer(ctx: Context): IDevServerActions {
-  const ict = ctx.interceptor;
+  const ict = ctx.ict;
 
   const props = createDevServerConfig(ctx);
 
@@ -60,6 +60,7 @@ export function createDevServer(ctx: Context): IDevServerActions {
   }
 
   let hmrServerMethods: HMRServerMethods;
+  let onMessageCallbacks: Array<(name: string, payload) => void> = [];
 
   ict.on('complete', props => {
     if (httpServerProps.enabled) {
@@ -73,6 +74,11 @@ export function createDevServer(ctx: Context): IDevServerActions {
       // which means that we require a separate HMR server on a different port
       hmrServerMethods = createHMRServer({ ctx, opts: hmrServerProps });
     }
+    if (onMessageCallbacks.length && hmrServerMethods) {
+      onMessageCallbacks.map(cb => hmrServerMethods.onMessage(cb));
+      onMessageCallbacks = [];
+    }
+
     return props;
   });
 
@@ -80,6 +86,9 @@ export function createDevServer(ctx: Context): IDevServerActions {
     onClientMessage: (fn: (name: string, payload) => void) => {
       if (hmrServerMethods) {
         hmrServerMethods.onMessage(fn);
+      } else {
+        // if the server isn't ready store it here
+        onMessageCallbacks.push(fn);
       }
     },
     clientSend: (name: string, payload) => {

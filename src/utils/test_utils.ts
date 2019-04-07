@@ -166,6 +166,7 @@ export function mockWriteFile() {
   const scope = {
     written: [],
     files: {},
+    removedFolders: [],
     ensureDir: [],
     fileReads: [],
   };
@@ -173,9 +174,11 @@ export function mockWriteFile() {
   let originalFunction = utils.writeFile;
   let originalEnsureDir = utils.ensureDir;
   const originalFileExists = utils.fileExists;
+  const originalFileStat = utils.fileStat;
+  const originalRemoveFolder = utils.removeFolder;
 
   utils['writeFile'] = (name, contents) => {
-    scope.files[name] = contents;
+    scope.files[name] = { contents, stat: { mtime: new Date() } };
     scope.written.push({ name: name, contents: contents });
   };
 
@@ -187,17 +190,28 @@ export function mockWriteFile() {
     return scope.files[path];
   };
 
+  utils['fileStat'] = path => {
+    if (scope.files[path]) {
+      return scope.files[path].stat || {};
+    }
+  };
+
+  utils['removeFolder'] = path => {
+    scope.removedFolders.push(path);
+  };
+
   utils['readFile'] = path => {
     scope.fileReads.push(path);
-    return scope.files[path];
+    return scope.files[path].contents;
   };
 
   return {
-    findFile: (pattern): { name: string; contents: string } => {
+    findFile: (pattern): { name: string; contents: string; stat: any } => {
       const re = path2RegexPattern(pattern);
       for (const key in scope.files) {
+        const item = scope.files[key];
         if (re.test(key)) {
-          return { name: key, contents: scope.files[key] };
+          return { name: key, contents: item.contents, stat: item.stat };
         }
       }
     },
@@ -206,6 +220,18 @@ export function mockWriteFile() {
     },
     getEnsureDir() {
       return scope.ensureDir;
+    },
+    findRemovedFolder: pattern => {
+      const re = path2RegexPattern(pattern);
+      for (const key in scope.removedFolders) {
+        const f = scope.removedFolders[key];
+        if (re.test(f)) {
+          return true;
+        }
+      }
+    },
+    getRemovedFolders: () => {
+      return scope.removedFolders;
     },
     getFileAmount: () => Object.keys(scope.files).length,
     getWrittenFiles: (index?: number) => (index !== undefined ? scope.written[index] : scope.written),
@@ -218,16 +244,19 @@ export function mockWriteFile() {
       });
     },
     addFile(path: string, contents) {
-      scope.files[path] = contents;
+      scope.files[path] = { contents, stat: { mtime: new Date() } };
     },
     unmock: () => {
+      utils['filesStat'] = originalFileStat;
       utils['writeFile'] = originalFunction;
       utils['ensureDir'] = originalEnsureDir;
       utils['fileExists'] = originalFileExists;
       utils['readFile'] = originalReadFile;
+      utils['removeFolder'] = originalRemoveFolder;
     },
     flush: () => {
       scope.fileReads = [];
+      scope.removedFolders = [];
       scope.written = [];
       scope.files = {};
       scope.ensureDir = [];

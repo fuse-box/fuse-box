@@ -117,7 +117,7 @@ function resolveStatement(
 }
 
 function processModule(props: IDefaultParseProps) {
-  const icp = props.ctx.interceptor;
+  const icp = props.ctx.ict;
   const _module = props.module;
   icp.sync('assemble_module_init', { module: _module });
   props.pkg.modules.push(props.module);
@@ -146,27 +146,17 @@ function processModule(props: IDefaultParseProps) {
         modules.push(response);
       }
     });
-    if (_module.isTypescriptModule()) {
-      icp.sync('assemble_ts_module', { module: _module });
-    }
-    if (_module.pkg.isDefaultPackage) {
-      icp.sync('assemble_pr_module', { module: _module });
-    } else {
-      icp.sync('assemble_nm_module', { module: _module });
-    }
-
     modules.forEach(item => {
-      if (!item) {
-        return;
-      }
-      if (item.module) {
-        props.module.moduleDependencies.push(item.module);
-      }
-      if (item.package) {
-        props.module.externalDependencies.push(item.package);
-      }
-      if (item && !item.processed && item.module) {
-        processModule({ ...props, module: item.module });
+      if (item) {
+        if (item.module) {
+          props.module.moduleDependencies.push(item.module);
+        }
+        if (item.package) {
+          props.module.externalDependencies.push(item.package);
+        }
+        if (item && !item.processed && item.module) {
+          processModule({ ...props, module: item.module });
+        }
       }
     });
   }
@@ -187,7 +177,12 @@ function assemblePackage(pkg: Package, ctx: Context) {
     if (pkg.entry) {
       modules.push(pkg.entry);
     }
-    ctx.interceptor.sync('assemble_package_from_project', { pkg, assembleContext: ctx.assembleContext });
+
+    ctx.ict.sync('assemble_package_from_project', {
+      pkg,
+      userModules: modules,
+      assembleContext: ctx.assembleContext,
+    });
     if (!pkg.isCached) {
       modules.map(item => {
         processModule({
@@ -203,6 +198,7 @@ function assemblePackage(pkg: Package, ctx: Context) {
 
 export function assemble(ctx: Context, entryFile: string): Array<Package> {
   // default package. Big Bang starts here/
+
   ctx.log.group('assemble');
   const pkg = createApplicationPackage(ctx, entryFile);
   parseDefaultPackage(ctx, pkg);

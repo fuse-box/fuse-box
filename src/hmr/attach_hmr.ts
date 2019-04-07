@@ -1,0 +1,108 @@
+import { Context } from '../core/Context';
+import { fastHash, measureTime } from '../utils/utils';
+import { Module } from '../core/Module';
+import { WatcherAction } from '../watcher/watcher';
+import { Package } from '../core/Package';
+import { generateHMRContent } from './hmr_content';
+import { inflatePackage } from '../bundle/createDevBundles';
+
+function generateUpdateId() {
+  return fastHash(new Date().getTime().toString() + Math.random().toString());
+}
+export interface IHMRExternalProps {}
+
+interface IHMRTask {
+  action: WatcherAction;
+  packages: Array<Package>;
+  modulesForUpdate: Array<Module>;
+}
+
+interface IClientSummary {
+  id: string;
+  summary: { [key: string]: Array<string> };
+}
+export function attachHMR(ctx: Context) {
+  const config = ctx.config;
+
+  if (!config.options.hmrEnabled) {
+    return;
+  }
+
+  const devServer = ctx.devServer;
+  if (!devServer) {
+    return;
+  }
+
+  const tasks: { [key: string]: IHMRTask } = {};
+
+  function sortProjectUpdate(task: IHMRTask, payload: IClientSummary) {
+    // verity project files first
+
+    const time = measureTime('hmr');
+    const clientProjectFiles = payload.summary['default'];
+    const { packages, modulesForUpdate } = task;
+    const projectPackage = packages.find(pkg => pkg.isDefaultPackage);
+    projectPackage.modules.forEach(module => {
+      // if client doesn't the compiled module
+      if (!clientProjectFiles.includes(module.props.fuseBoxPath)) {
+        modulesForUpdate.push(module);
+      }
+    });
+    const packagesForUpdate: Array<{ content: string; name: string }> = [];
+    // check vendor consistency
+    packages.forEach(pkg => {
+      if (pkg.isDefaultPackage) return;
+
+      const name = pkg.getPublicName();
+      if (!payload.summary[name]) {
+        // here we need the entire package update
+        const inflated = inflatePackage(ctx, pkg);
+        packagesForUpdate.push({
+          name,
+          content: inflated.content.toString(),
+        });
+        return;
+      }
+      // check if some files are missing in the package
+      const packageFiles = payload.summary[name];
+      for (const i in pkg.modules) {
+        const module = pkg.modules[i];
+        if (!packageFiles.includes(module.props.fuseBoxPath)) {
+          // making a partial update
+          modulesForUpdate.push(module);
+        }
+      }
+    });
+
+    const generated = generateHMRContent({ modules: modulesForUpdate, ctx: ctx });
+    ctx.log.print('<dim><bold>HMR content generated in $time</dim></bold>', { time: time.end() });
+    devServer.clientSend('hmr', { packages: packagesForUpdate, modules: generated.modules });
+  }
+
+  // here we recieve an update from client - the entire tree of its modules
+  devServer.onClientMessage((event, payload: IClientSummary) => {
+    if (event === 'summary' && payload.id && tasks[payload.id]) {
+      sortProjectUpdate(tasks[payload.id], payload);
+    }
+  });
+
+  ctx.ict.on('rebundle_complete', props => {
+    const { packages, file } = props;
+    if (file) {
+      const project = packages.find(pkg => pkg.isDefaultPackage);
+      const target = project.modules.find(module => module.props.absPath === file);
+      if (target) {
+        const task: IHMRTask = {
+          packages: packages,
+          action: props.watcherAction,
+          modulesForUpdate: [target],
+        };
+        const id = generateUpdateId();
+        tasks[id] = task;
+
+        devServer.clientSend('get-summary', { id });
+      }
+    }
+    return props;
+  });
+}

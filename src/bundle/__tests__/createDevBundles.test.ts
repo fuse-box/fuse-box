@@ -120,13 +120,14 @@ describe('Create dev bundles', () => {
   });
 
   describe('inflateBundles', () => {
-    it('should take cached version', () => {
+    it('should take package cached version', () => {
       const ctx = createProjectContext('src2', {});
-      ctx.interceptor.on('assemble_package_from_project', props => {
+      ctx.ict.on('assemble_package_from_project', props => {
         props.pkg.setCache({
           contents: 'stuff',
           sourceMap: '{}',
         });
+
         return props;
       });
       const packages = assemble(ctx, 'index.ts');
@@ -136,6 +137,23 @@ describe('Create dev bundles', () => {
       const vendor = data.bundles.vendor;
       expect(vendor.contents.content.toString()).toContain('stuff');
     });
+
+    it("should take modules' cached version", () => {
+      const ctx = createProjectContext('src2', {});
+      ctx.ict.on('assemble_module_init', props => {
+        props.module.fastAnalysis = { imports: [] };
+        props.module.setCache({ contents: 'cached module', sourceMap: '{}' });
+        return props;
+      });
+      const packages = assemble(ctx, 'index.ts');
+
+      const data = createDevBundles(ctx, packages);
+      inflateBundles(ctx, data.bundles);
+      const app = data.bundles.app;
+
+      expect(app.contents.content.toString()).toContain('cached module');
+    });
+
     it('should generate code', () => {
       const data = mockBundles('src1', 'index.ts', { target: 'browser' });
       inflateBundles(data.ctx, data.bundles);

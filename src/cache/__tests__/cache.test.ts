@@ -7,6 +7,7 @@ import { Package, createPackage } from '../../core/Package';
 import { mockModule, mockWriteFile, throttle } from '../../utils/test_utils';
 import { createCache } from '../cache';
 import { fastAnalysis } from '../../analysis/fastAnalysis';
+import { ImportType } from '../../resolver/resolver';
 
 const fileMock = mockWriteFile();
 
@@ -58,14 +59,40 @@ describe('FileCache test', () => {
     fileMock.unmock();
   });
 
+  describe('clearing cache', () => {
+    it('should nuke all', () => {
+      const { cache } = mockCache({ cache: { root: path.join(__dirname, '.cache') } });
+      cache.nukeAll();
+      expect(fileMock.findRemovedFolder(`.cache/${env.VERSION}`)).toBe(true);
+    });
+    it('should nukeProjectCache', () => {
+      const { cache } = mockCache({ cache: { root: path.join(__dirname, '.cache') } });
+      cache.nukeProjectCache();
+      expect(fileMock.findRemovedFolder(`.cache/${env.VERSION}/${env.CACHE.PROJET_FILES}`)).toBe(true);
+    });
+    it('should nukePackageCache', () => {
+      const { cache } = mockCache({ cache: { root: path.join(__dirname, '.cache') } });
+      cache.nukePackageCache();
+      expect(fileMock.findRemovedFolder(`.cache/${env.VERSION}/${env.CACHE.PACKAGES}`)).toBe(true);
+    });
+  });
+
   describe('Getting and saving modules', () => {
     it('should save file', async () => {
+      const rootFile = path.join(__dirname, 'cases/module-a/file1.ts');
+      fileMock.addFile(
+        rootFile,
+        `
+      import './foo';
+      console.log(process);
+      `,
+      );
       const { cache } = mockCache({ cache: { root: path.join(__dirname, '.cache') } });
       const { module } = mockModule({ config: {} });
-      module.props.absPath = path.join(__dirname, 'cases/module-a/file1.ts');
+      module.props.fuseBoxPath = 'file1.ts';
+      module.props.absPath = rootFile;
       cache.saveModule(module, { contents: 'aa', sourceMap: 'a' });
       await cache.sync();
-
       expect(fileMock.findFile('file1.ts.cache')).toBeTruthy();
     });
 
@@ -79,10 +106,42 @@ describe('FileCache test', () => {
 
       module.fastAnalysis = fastAnalysis({ input: module.contents });
       cache.saveModule(module, { contents: 'aa', sourceMap: 'a' });
+
+      expect(module.props.fuseBoxPath).toBeTruthy();
+      expect(module.props.extension).toBe('.ts');
+      expect(module.fastAnalysis).toEqual({
+        imports: [{ type: ImportType.REQUIRE, statement: './foo' }],
+        report: {},
+      });
+
       await cache.sync();
 
       const cachedModule = cache.restoreModule(module);
-      expect(cachedModule.fastAnalysis).toBeTruthy();
+      expect(cachedModule.props.fuseBoxPath).toBeTruthy();
+      expect(cachedModule.props.extension).toBe('.ts');
+      expect(cachedModule.fastAnalysis).toEqual({
+        imports: [{ type: ImportType.REQUIRE, statement: './foo' }],
+        report: {},
+      });
+    });
+
+    it('Should not restore module (timestamp mismatch)', async () => {
+      const { cache } = mockCache({ cache: { root: path.join(__dirname, '.cache') } });
+      const { module } = mockModule({ config: {} });
+      module.props.absPath = path.join(__dirname, 'cases/module-a/file1.ts');
+      fileMock.addFile(module.props.absPath, 'require("./foo")');
+      module.props.extension = '.ts';
+      module.read();
+
+      module.fastAnalysis = fastAnalysis({ input: module.contents });
+      cache.saveModule(module, { contents: 'aa', sourceMap: 'a' });
+      await cache.sync();
+
+      const thatFile = fileMock.findFile('file1.ts');
+      // modify stat time
+      thatFile.stat.mtime = new Date(1);
+      const cachedModule = cache.restoreModule(module);
+      expect(cachedModule).toBeUndefined();
     });
   });
   describe('Getting and saving packages', () => {
@@ -110,7 +169,8 @@ describe('FileCache test', () => {
       cache.set('foo', obj);
       await cache.sync();
       obj.foo = 2;
-      cache.forceSyncOnKey('foo.cache');
+      cache.forceSyncOnKey('foo');
+
       expect(cache['synced'].has('foo.cache')).toBe(false);
     });
 
@@ -201,6 +261,8 @@ describe('FileCache test', () => {
       const basics = { contents: 'foobar', sourceMap: 'sourcemap' };
       x.cache.savePackage(pkg, basics);
 
+      expect(x.cache['unsynced'].get('pkg_foo-2.0.0.cache')).toBeTruthy();
+
       await x.cache.sync();
 
       const tree = x.cache.getTree();
@@ -213,7 +275,8 @@ describe('FileCache test', () => {
       expect(data.modules).toEqual(['index0.js', 'index1.js']);
 
       expect(fileMock.getFileAmount()).toEqual(2);
-      const fooCache = fileMock.findFile('4.0.0/foo-2.0.0.cache$');
+
+      const fooCache = fileMock.findFile('pkg_foo-2.0.0.cache$');
       expect(JSON.parse(fooCache.contents)).toEqual(basics);
     });
 
@@ -300,7 +363,9 @@ describe('FileCache test', () => {
 
       expect(Object.keys(tree.packages)).toEqual(['foo', 'bar']);
 
-      const response = cache.getPackage(createPackage({ ctx: ctx, meta: { name: 'bar', version: '5.0.0' } }));
+      const thatPackage = createPackage({ ctx: ctx, meta: { name: 'bar', version: '5.0.0' } });
+
+      const response = cache.getPackage(thatPackage, thatPackage.modules);
       expect(response.target.moduleMismatch).toEqual(false);
       expect(response.target.pkg.props.meta.name).toEqual('bar');
       expect(response.target.pkg.props.meta.version).toEqual('5.0.0');
@@ -451,9 +516,7 @@ describe('FileCache test', () => {
 
       const response = cache.getPackage(bar2);
 
-      expect(response.target.moduleMismatch).toBe(true);
-      expect(response.target.pkg.cache).toBeUndefined();
-      expect(response.target.pkg.isCached).toBeUndefined();
+      expect(response.abort).toEqual(true);
     });
   });
 });

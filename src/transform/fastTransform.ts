@@ -1,6 +1,8 @@
 import * as acorn from 'acorn';
-import * as escodegen from 'escodegen';
+import { generate } from 'astring';
 import { walkAST } from '../utils/ast';
+import * as sourceMapModule from 'source-map';
+
 import {
   createLocalVariable,
   createMemberExpression,
@@ -10,15 +12,26 @@ import {
   isExportDefaultDeclaration,
   isExportNamedDeclaration,
 } from './acornUtils';
+import { fixModuleSourceMap } from '../sourcemaps/helpers';
 
 export function acornParse(contents, options?: any): any {
   options = options || {};
   return acorn.parse(contents, {
+    ...options,
     sourceType: 'module',
     tolerant: true,
     ecmaVersion: '2018',
     jsx: { allowNamespacedObjects: true },
   });
+}
+
+export function parseAst(contents: string, options?: any) {
+  return acornParse(contents, options);
+  // return cherow.parseScript(contents, {
+  //   module: true,
+  //   next: true,
+  //   experimental: true,
+  // });
 }
 
 interface Ctx {
@@ -132,8 +145,12 @@ function onImportDeclaration(ctx: Ctx, node, parent, prop, idx) {
   });
   //ctx.toRemove(parent[prop], node);
 }
-export function fastTransform(opts: { input: string; sourceInterceptor?: (source: string) => string }) {
-  const ast = acornParse(opts.input);
+export function fastTransform(opts: {
+  sourceMaps?: boolean;
+  input: string;
+  sourceInterceptor?: (source: string) => string;
+}): { code: string; sourceMap: any } {
+  const ast = parseAst(opts.input, { locations: opts.sourceMaps });
 
   let nameIndex = 0;
   const toBeRemoved: Array<{ arr: any; node: any }> = [];
@@ -221,6 +238,22 @@ export function fastTransform(opts: { input: string; sourceInterceptor?: (source
     }
   });
 
-  const code = escodegen.generate(ast);
-  return code;
+  let map;
+  if (opts.sourceMaps) {
+    map = new sourceMapModule.SourceMapGenerator({
+      file: 'script.js',
+    });
+  }
+  const code = generate(ast, { ecmaVersion: 7, sourceMap: map });
+  let jsonSourceMaps;
+
+  if (opts.sourceMaps) {
+    jsonSourceMaps = map.toJSON();
+    if (!jsonSourceMaps.sourcesContent) {
+      delete jsonSourceMaps.file;
+      jsonSourceMaps.sourcesContent = [opts.input];
+    }
+  }
+
+  return { code, sourceMap: jsonSourceMaps };
 }

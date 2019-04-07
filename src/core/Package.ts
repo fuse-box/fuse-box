@@ -35,6 +35,13 @@ export class Package {
     this.entry = module;
   }
 
+  public getPublicName() {
+    if (!this.isFlat) {
+      return `${this.props.meta.name}@${this.props.meta.version}`;
+    }
+    return this.props.meta.name;
+  }
+
   public setCache(basics: IModuleCacheBasics) {
     this.isCached = true;
     this.cache = basics;

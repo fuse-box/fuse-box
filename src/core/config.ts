@@ -97,6 +97,7 @@ export function createConfig(props: IConfig): IConfig {
       config.options.cacheRoot = path.join(props.cache.root, env.VERSION);
     }
   }
+  config.options.hmrEnabled = false;
   config.options.watcherEnabled = false;
   if (props.watch !== undefined) {
     if (typeof props.watch === 'boolean') {
@@ -105,6 +106,18 @@ export function createConfig(props: IConfig): IConfig {
     if (typeof props.watch === 'object') {
       config.options.watcherEnabled = true;
       config.options.watcherProps = props.watch;
+    }
+    if (config.options.watcherEnabled) {
+      config.options.hmrEnabled = true;
+    }
+  }
+
+  if (config.options.watcherEnabled) {
+    if (typeof props.hmr === 'boolean') {
+      config.options.hmrEnabled = props.hmr;
+    }
+    if (typeof props.hmr === 'object') {
+      config.options.hmrProps = props.hmr;
     }
   }
 

@@ -2,7 +2,7 @@ import { Context } from '../core/Context';
 
 export function attachCache(ctx: Context) {
   const config = ctx.config;
-  const ict = ctx.interceptor;
+  const ict = ctx.ict;
 
   if (!config.cache) {
     return;
@@ -24,6 +24,7 @@ export function attachCache(ctx: Context) {
     const module = props.module;
     const pkg = props.module.pkg;
     const ctx = module.props.ctx;
+
     if (ctx.cache && pkg.isDefaultPackage && module.isExecutable()) {
       cache.saveModule(module, { contents: props.concat.content.toString(), sourceMap: props.concat.sourceMap });
     }
@@ -33,6 +34,7 @@ export function attachCache(ctx: Context) {
   ict.on('after_dev_package_inflate', props => {
     const pkg = props.pkg;
     const ctx = pkg.props.ctx;
+
     if (!pkg.isDefaultPackage && ctx.cache) {
       cache.savePackage(pkg, { sourceMap: props.concat.sourceMap, contents: props.concat.content.toString() });
     }
@@ -41,7 +43,7 @@ export function attachCache(ctx: Context) {
 
   ict.on('assemble_package_from_project', props => {
     const assembleContext = props.assembleContext;
-    const response = cache.getPackage(props.pkg);
+    const response = cache.getPackage(props.pkg, props.userModules);
     if (!response.abort) {
       ctx.log.info('Cached $name:$version', {
         name: props.pkg.props.meta.name,
@@ -55,10 +57,13 @@ export function attachCache(ctx: Context) {
         });
       }
     }
-
     return props;
   });
 
+  ict.on('rebundle_complete', props => {
+    cache.sync();
+    return props;
+  });
   ict.on('complete', props => {
     cache.sync();
     return props;

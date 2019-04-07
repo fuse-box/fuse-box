@@ -4,6 +4,7 @@ import { IWebIndexConfig } from '../web-index/webIndex';
 import { Context } from './Context';
 import { IDevServerProps } from '../dev-server/devServerProps';
 import { IWatcherExternalProps } from '../watcher/watcher';
+import { IHMRExternalProps } from '../hmr/attach_hmr';
 
 export interface IConfig {
   root?: string;
@@ -13,6 +14,7 @@ export interface IConfig {
   modules?: Array<string>;
   logging?: ILoggerProps;
   watch?: boolean | IWatcherExternalProps;
+  hmr?: boolean | IHMRExternalProps;
   cache?:
     | boolean
     | {
@@ -50,6 +52,8 @@ export interface IConfig {
 
   // normalised options
   options?: {
+    hmrEnabled?: boolean;
+    hmrProps?: IHMRExternalProps;
     watcherEnabled?: boolean;
     watcherProps?: IWatcherExternalProps;
     sourceRoot?: string;

@@ -157,4 +157,24 @@ describe('Config test', () => {
     });
     expect(config.options.cacheRoot).toEqual(`/${env.VERSION}`);
   });
+
+  it('Should have watcher disabled', () => {
+    const config = createConfig({});
+    expect(config.options.watcherEnabled).toEqual(false);
+  });
+
+  it('Should have watcher enabled', () => {
+    const config = createConfig({
+      watch: true,
+    });
+    expect(config.options.watcherEnabled).toEqual(true);
+  });
+
+  it('Should have watcher enabled', () => {
+    const config = createConfig({
+      watch: { ignored: [] },
+    });
+    expect(config.options.watcherEnabled).toEqual(true);
+    expect(config.options.watcherProps).toEqual({ ignored: [] });
+  });
 });

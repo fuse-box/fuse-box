@@ -1,10 +1,11 @@
 import { Context } from '../../core/Context';
 import { Module } from '../../core/Module';
 import { fastTransform } from '../../transform/fastTransform';
+import { fixModuleSourceMap } from '../../sourcemaps/helpers';
 
 export function pluginDevJs() {
   return (ctx: Context) => {
-    const ict = ctx.interceptor;
+    const ict = ctx.ict;
     ict.on('bundle_resolve_js_module', (props: { module: Module }) => {
       const module = props.module;
       const config = ctx.config;
@@ -14,12 +15,13 @@ export function pluginDevJs() {
       let continueWithFastTransform =
         analysis && !!analysis.report && analysis.report.es6Syntax && !analysis.report.containsJSX;
 
+      let withSourceMaps = false;
       if (module.pkg.isDefaultPackage && config.options.projectSourceMap) {
-        continueWithFastTransform = false;
+        withSourceMaps = true;
       }
 
       if (!module.pkg.isDefaultPackage && config.options.vendorSourceMap) {
-        continueWithFastTransform = false;
+        withSourceMaps = true;
       }
 
       if (continueWithFastTransform) {
@@ -27,7 +29,8 @@ export function pluginDevJs() {
           name: module.props.fuseBoxPath,
           package: module.pkg.props.meta.name,
         });
-        module.contents = fastTransform({
+        const transformation = fastTransform({
+          sourceMaps: withSourceMaps,
           input: module.contents,
           sourceInterceptor: value => {
             if (analysis.replaceable) {
@@ -40,6 +43,10 @@ export function pluginDevJs() {
             return value;
           },
         });
+        module.contents = transformation.code;
+        if (withSourceMaps) {
+          module.sourceMap = fixModuleSourceMap(module, transformation.sourceMap);
+        }
         analysis.report.statementsReplaced = true;
         analysis.report.transpiled = true;
       } else {

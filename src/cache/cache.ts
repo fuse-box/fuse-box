@@ -1,11 +1,11 @@
 import * as path from 'path';
+import { IFastAnalysis } from '../analysis/fastAnalysis';
 import { Context } from '../core/Context';
 import { env } from '../core/env';
-import { ensureDir, fileExists, readFile, writeFile, fileStat, removeFolder } from '../utils/utils';
-import { ICacheTreeContents, ICacheDependencies, ICachePackageResponse, ICachePackage } from './Interfaces';
-import { Package, createPackage } from '../core/Package';
-import { Module, createModule } from '../core/Module';
-import { IFastAnalysis } from '../analysis/fastAnalysis';
+import { Module } from '../core/Module';
+import { createPackage, Package } from '../core/Package';
+import { ensureDir, fileExists, fileStat, readFile, removeFolder, writeFile } from '../utils/utils';
+import { ICacheDependencies, ICachePackage, ICachePackageResponse, ICacheTreeContents } from './Interfaces';
 
 export function generateValidKey(key) {
   return encodeURIComponent(key) + '.cache';
@@ -85,6 +85,7 @@ export class Cache {
   }
 
   public forceSyncOnKey(key: string) {
+    key = generateValidKey(key);
     if (this.synced.get(key)) {
       this.unsynced.set(key, this.synced.get(key));
       this.synced.delete(key);
@@ -138,8 +139,8 @@ export class Cache {
 
   public async sync() {
     const writers: Array<Promise<any>> = [];
-    for (const item of this.unsynced) {
-      const [key, value] = item;
+
+    this.unsynced.forEach((value, key) => {
       if (/^pkg_/.test(key)) {
         writers.push(writeFile(path.join(this.packageCacheFolder, key), JSON.stringify(value)));
       } else if (/^prj_/.test(key)) {
@@ -148,9 +149,9 @@ export class Cache {
         writers.push(writeFile(path.join(this.rootFolder, key), JSON.stringify(value)));
       }
       // it's synced now
-
       this.synced.set(key, value);
-    }
+    });
+
     await Promise.all(writers);
     // reset unsynced
     this.unsynced = new Map();
@@ -165,7 +166,7 @@ export class Cache {
     return `pkg_${pkg.props.meta.name}-${pkg.props.meta.version}`;
   }
 
-  public getPackage(pkg: Package): ICachePackageResponse {
+  public getPackage(pkg: Package, userModules?: Array<Module>): ICachePackageResponse {
     const tree = this.getTree();
 
     const meta = pkg.props.meta;
@@ -191,27 +192,22 @@ export class Cache {
     // checking here if user entries e.g libary/foo.js, library/boo.js
     // all present in the cache.
     // If a new partial require was spotted and/or used a different entry
+
     let moduleMismatch = false;
-    pkg.modules.forEach(item => {
-      item.props.fuseBoxPath;
+
+    let modules = [...pkg.modules];
+    if (userModules) {
+      modules = modules.concat(userModules);
+    }
+    modules.forEach(item => {
       if (!dest.modules.includes(item.props.fuseBoxPath)) {
         moduleMismatch = true;
       }
     });
 
     // retrieve cache for this package
-    if (!moduleMismatch) {
-      const cache = this.get<IModuleCacheBasics>(this.getPackageKey(pkg), this.packageCacheFolder);
-
-      if (!cache) {
-        response.abort = true;
-      } else {
-        pkg.setCache(cache);
-      }
-    }
-
-    if (response.abort) {
-      return response;
+    if (moduleMismatch) {
+      return { abort: true };
     }
 
     // if the package isn't aborted (the cache is valid)
@@ -261,6 +257,13 @@ export class Cache {
       return response;
     }
 
+    const cache = this.get<IModuleCacheBasics>(this.getPackageKey(pkg), this.packageCacheFolder);
+
+    if (!cache) {
+      return { abort: true };
+    }
+    pkg.setCache(cache);
+
     const dependants: Array<Package> = [];
     for (const key in packageCollection) {
       dependants.push(packageCollection[key]);
@@ -299,6 +302,7 @@ export class Cache {
 
     if (cached) {
       const stat = fileStat(fpath);
+
       if (stat.mtime.getTime() !== cached.mtime) {
         this.unset(fpath);
         return;
@@ -307,6 +311,7 @@ export class Cache {
       module.props.extension = cached.extension;
       module.props.fuseBoxPath = cached.fuseBoxPath;
       module.fastAnalysis = cached.fastAnalysis;
+
       module.setCache({ contents: cached.contents, sourceMap: cached.sourceMap });
       return module;
     }
@@ -323,6 +328,7 @@ export class Cache {
       version: externalPackage.props.meta.version,
     }));
     const modules = pkg.modules.map(mod => mod.props.fuseBoxPath);
+
     const obj: ICachePackage = {
       name: meta.name,
       version: meta.version,
@@ -334,6 +340,7 @@ export class Cache {
 
     const cache_key = this.getPackageKey(pkg);
     this.set(cache_key, basics);
+
     this.forceSyncOnKey(TREE_FILE_KEY);
   }
 }

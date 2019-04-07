@@ -1,15 +1,16 @@
 import * as prettyTime from 'pretty-time';
+import { BundleType, Bundle, IBundleWriteResponse } from '../bundle/Bundle';
 import { createDevBundles, inflateBundles } from '../bundle/createDevBundles';
 import { Context } from '../core/Context';
 import { env } from '../core/env';
+import { EMOJIS } from '../logging/logging';
 import { extractFuseBoxPath } from '../utils/utils';
 import { createWatcher, WatcherAction } from '../watcher/watcher';
 import { assemble } from './assemble';
 import { pluginProcessPackages } from './attach_plugins';
 import { statLog } from './stat_log';
-import { BundleType } from '../bundle/Bundle';
-import { spawn } from 'child_process';
-import { EMOJIS } from '../logging/logging';
+import { AssembleState } from '../core/assemble_context';
+import { Package } from '../core/Package';
 export interface IWatcherAttachProps {
   ctx: Context;
 }
@@ -28,11 +29,14 @@ interface IAppReloadProps {
   writeOnlyVendor?: boolean;
   watcherProps: OnWatcherProps;
 }
+interface IAppReloadResponse {
+  bundles: Array<IBundleWriteResponse>;
+  packages: Array<Package>;
+}
 
-async function appReload(props: IAppReloadProps) {
+async function appReload(props: IAppReloadProps): Promise<IAppReloadResponse> {
   const watcher = props.watcherProps;
   const ctx = watcher.ctx;
-  const file = watcher.file;
 
   // remove objects from assemble context
   // in order to start over
@@ -43,11 +47,15 @@ async function appReload(props: IAppReloadProps) {
   } else if (props.nukePackageCache) {
     ctx.cache.nukePackageCache();
   } else if (props.nukeProjectCache) {
-    ctx.cache.nukePackageCache();
+    ctx.cache.nukeProjectCache();
   }
 
   const spinner = ctx.log.withSpinner();
   spinner.start();
+
+  // TODO: write only project doesn't work very well
+  // in case if everything was cached, then one modules is commented out, and then ucommented again.
+  // we need to find a solution here, writing large vendors all over again makes an impact on the peformance
 
   const startTime = process.hrtime();
 
@@ -73,21 +81,23 @@ async function appReload(props: IAppReloadProps) {
       writers.push(() => bundle.generate().write());
     }
   }
-  await Promise.all(writers.map(i => i()));
   spinner.stop();
+  const bundleResponse = await Promise.all(writers.map(i => i()));
 
   statLog({
     ctx: ctx,
     packages: packages,
     time: prettyTime(process.hrtime(startTime)),
   });
+
+  return { bundles: bundleResponse, packages };
 }
-async function reload_SoftFromEntry(props: OnWatcherProps) {
-  await appReload({ watcherProps: props, writeOnlyProject: true });
+async function reload_SoftFromEntry(props: OnWatcherProps): Promise<IAppReloadResponse> {
+  return await appReload({ watcherProps: props, writeOnlyProject: false });
 }
 
-async function reload_HardModules(props: OnWatcherProps) {
-  await appReload({ watcherProps: props, nukePackageCache: false, writeOnlyVendor: true });
+async function reload_HardModules(props: OnWatcherProps): Promise<IAppReloadResponse> {
+  return await appReload({ watcherProps: props, nukePackageCache: false, writeOnlyVendor: true });
 }
 
 async function reload_Process(props: OnWatcherProps) {
@@ -102,18 +112,27 @@ async function reload_Process(props: OnWatcherProps) {
   process.exit();
 }
 
-async function reload_hardAll(props: OnWatcherProps) {}
-
 async function onWatcherEvent(props: OnWatcherProps) {
   const log = props.ctx.log;
   const shortPath = props.file && extractFuseBoxPath(env.APP_ROOT, props.file);
+  let response: IAppReloadResponse;
   if (props.action == WatcherAction.RELOAD_ONE_FILE) {
     log.print('<bold><dim>Soft Reload: $file</dim></bold>', { file: shortPath });
-    await reload_SoftFromEntry(props);
+    response = await reload_SoftFromEntry(props);
   } else if (props.action === WatcherAction.HARD_RELOAD_MODULES) {
-    await reload_HardModules(props);
+    log.print('<bold><dim>Hard reload modules: $file</dim></bold>', { file: shortPath });
+    response = await reload_HardModules(props);
   } else if (props.action == WatcherAction.RESTART_PROCESS) {
     reload_Process(props);
+  }
+  if (response) {
+    props.ctx.ict.sync('rebundle_complete', {
+      ctx: props.ctx,
+      watcherAction: props.action,
+      bundles: response.bundles,
+      packages: response.packages,
+      file: props.file,
+    });
   }
 }
 
@@ -124,11 +143,18 @@ export function attachWatcher(props: IWatcherAttachProps) {
     return;
   }
 
+  let inProgress = false;
   createWatcher(
     {
       ctx: ctx,
       onEvent: async (a, f) => {
-        onWatcherEvent({ action: a, file: f, ctx });
+        if (inProgress) {
+          // do not allow another process to kick in
+          return;
+        }
+        inProgress = true;
+        await onWatcherEvent({ action: a, file: f, ctx });
+        inProgress = false;
       },
     },
     config.options.watcherProps,

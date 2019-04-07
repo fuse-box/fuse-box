@@ -3,7 +3,7 @@ import { getDevelopmentApi } from '../core/env';
 import { Package } from '../core/Package';
 import { Bundle, BundleCollection, BundleType, createBundleSet } from './Bundle';
 import { devStrings } from './bundleStrings';
-import { createConcat } from '../utils/utils';
+import { createConcat, Concat } from '../utils/utils';
 
 /**
  * Adding global settings like allowSyntheticDefaultImports and targets
@@ -29,42 +29,43 @@ export function injectSettingsIntoDefaultBundle(ctx: Context, bundle: Bundle) {
   }
 }
 
+export function inflatePackage(ctx: Context, pkg: Package): Concat {
+  let packageName = pkg.getPublicName();
+  const customVersions = {};
+  pkg.externalPackages.forEach(extPackage => {
+    if (!extPackage.isFlat) {
+      customVersions[extPackage.props.meta.name] = extPackage.props.meta.version;
+    }
+  });
+
+  const concat = createConcat(true, '', '\n');
+  concat.add(null, devStrings.openPackage(packageName, customVersions));
+
+  pkg.modules.forEach(_module => {
+    if (_module.isCached) {
+      concat.add(null, _module.cache.contents, _module.cache.sourceMap);
+    } else {
+      const fileConcat = createConcat(true, '', '\n');
+      fileConcat.add(null, devStrings.openFile(_module.props.fuseBoxPath));
+      const data = _module.generate();
+      fileConcat.add(null, data.contents, data.sourceMap);
+      fileConcat.add(null, devStrings.closeFile());
+      concat.add(null, fileConcat.content, fileConcat.sourceMap);
+      ctx.ict.sync('after_dev_module_inflate', { concat: fileConcat, ctx, module: _module });
+    }
+  });
+  concat.add(null, devStrings.closePackage(pkg.entry && pkg.entry.props.fuseBoxPath));
+  return concat;
+}
+
 export function inflateBundle(ctx: Context, bundle: Bundle) {
   bundle.packages.forEach(pkg => {
     if (pkg.isCached) {
       bundle.addContent(pkg.cache.contents, pkg.cache.sourceMap);
     } else {
-      let packageName = pkg.props.meta.name;
-      if (!pkg.isFlat) {
-        packageName += `@${pkg.props.meta.version}`;
-      }
-      const customVersions = {};
-      pkg.externalPackages.forEach(extPackage => {
-        if (!extPackage.isFlat) {
-          customVersions[extPackage.props.meta.name] = extPackage.props.meta.version;
-        }
-      });
-
-      const concat = createConcat(true, '', '\n');
-      concat.add(null, devStrings.openPackage(packageName, customVersions));
-
-      pkg.modules.forEach(_module => {
-        if (_module.isCached) {
-          concat.add(null, _module.cache.contents, _module.cache.sourceMap);
-        } else {
-          const fileConcat = createConcat(true, '', '\n');
-          fileConcat.add(null, devStrings.openFile(_module.props.fuseBoxPath));
-          const data = _module.generate();
-          fileConcat.add(null, data.contents, data.sourceMap);
-          fileConcat.add(null, devStrings.closeFile());
-          concat.add(null, fileConcat.content, fileConcat.sourceMap);
-          ctx.interceptor.sync('after_dev_module_inflate', { concat: fileConcat, ctx: ctx, module: _module });
-        }
-      });
-      concat.add(null, devStrings.closePackage(pkg.entry && pkg.entry.props.fuseBoxPath));
-
-      ctx.interceptor.sync('after_dev_package_inflate', { ctx, pkg: pkg, concat: concat });
+      const concat = inflatePackage(ctx, pkg);
       bundle.addContent(concat.content.toString(), concat.sourceMap);
+      ctx.ict.sync('after_dev_package_inflate', { ctx, concat, pkg: pkg });
 
       if (bundle.props.type === BundleType.PROJECT_JS) {
         injectSettingsIntoDefaultBundle(ctx, bundle);

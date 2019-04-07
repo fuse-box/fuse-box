@@ -2,7 +2,6 @@
   "compilerOptions": {
     "target": "es2017",
     "module": "commonjs",
-    "allowJs": true,
     "moduleResolution": "node",
     "isolatedModules": false,
     "jsx": "react",
@@ -19,7 +18,5 @@
     "outDir": "build/",
     "preserveConstEnums": true,
     "suppressImplicitAnyIndexErrors": true
-  },
-  "include": ["**/*.ts"],
-  "exclude": ["**/*.d.ts", "loader/**/*", "modules/**/*"]
+  }
 }

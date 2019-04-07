@@ -53,7 +53,7 @@ export function detectAction(file: string, homeDir: string): WatcherAction {
   if (path.basename(file) === 'tsconfig.json') {
     return WatcherAction.RELOAD_TS_CONFIG;
   }
-  if (/(package.json|package.lock.json|yarn.lock)$/.test(file)) {
+  if (/(package.lock.json|yarn.lock)$/.test(file)) {
     return WatcherAction.HARD_RELOAD_MODULES;
   }
   if (!isInsideHomeDir) {
@@ -103,7 +103,7 @@ export function getRelevantEvent(actions: Array<WatcherAction>) {
 export interface Watcher {}
 export function createWatcher(props: IWatcherProps, externalProps?: IWatcherExternalProps) {
   const ctx = props.ctx;
-  const ict = ctx.interceptor;
+  const ict = ctx.ict;
   externalProps = externalProps || {};
   const ignored = externalProps.ignored ? externalProps.ignored : [];
   ignored.push('/node_modules/', '/\\.');

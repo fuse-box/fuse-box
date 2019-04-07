@@ -257,7 +257,7 @@ describe('Assemble test', () => {
 
     it('Should not get processed because it"s cached', () => {
       const ctx = createProjectContext('src7', { target: 'browser' });
-      ctx.interceptor.on('assemble_package_from_project', props => {
+      ctx.ict.on('assemble_package_from_project', props => {
         props.pkg.isCached = true;
         return props;
       });

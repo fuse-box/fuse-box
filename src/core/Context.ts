@@ -18,6 +18,7 @@ export class Context {
   public assembleContext: IAssembleContext;
   public packages: Array<Package>;
   public interceptor: MainInterceptor;
+  public ict: MainInterceptor;
   public tsConfig: TypescriptConfig;
   public log: ILogger;
   public webIndex: IWebIndexInterface;
@@ -27,7 +28,7 @@ export class Context {
   constructor(public config: IConfig) {
     this.tsConfig = initTypescriptConfig(config);
     this.assembleContext = assembleContext(this);
-    this.interceptor = createInterceptor();
+    this.ict = createInterceptor();
     this.log = getLogger(config.logging);
 
     this.writer = createWriter({
