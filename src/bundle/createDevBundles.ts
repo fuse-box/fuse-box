@@ -51,7 +51,11 @@ export function inflatePackage(ctx: Context, pkg: Package): Concat {
       fileConcat.add(null, data.contents, data.sourceMap);
       fileConcat.add(null, devStrings.closeFile());
       concat.add(null, fileConcat.content, fileConcat.sourceMap);
-      ctx.ict.sync('after_dev_module_inflate', { concat: fileConcat, ctx, module: _module });
+      ctx.ict.sync('after_dev_module_inflate', {
+        concat: fileConcat,
+        ctx,
+        module: _module,
+      });
     }
   });
   concat.add(null, devStrings.closePackage(pkg.entry && pkg.entry.props.fuseBoxPath));

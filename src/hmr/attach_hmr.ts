@@ -37,6 +37,7 @@ export function attachHMR(ctx: Context) {
 
   function sortProjectUpdate(task: IHMRTask, payload: IClientSummary) {
     // verity project files first
+    const log_pkg = '<bold><yellow>$pkg</yellow></bold>';
 
     const time = measureTime('hmr');
     const clientProjectFiles = payload.summary['default'];
@@ -45,10 +46,14 @@ export function attachHMR(ctx: Context) {
     projectPackage.modules.forEach(module => {
       // if client doesn't the compiled module
       if (!clientProjectFiles.includes(module.props.fuseBoxPath)) {
+        ctx.log.print(`<bold><dim>HMR module</dim></bold> $name from ${log_pkg}`, {
+          name: module.props.fuseBoxPath,
+          pkg: 'default',
+        });
         modulesForUpdate.push(module);
       }
     });
-    const packagesForUpdate: Array<{ content: string; name: string }> = [];
+    const packagesForUpdate: Array<Package> = [];
     // check vendor consistency
     packages.forEach(pkg => {
       if (pkg.isDefaultPackage) return;
@@ -56,11 +61,8 @@ export function attachHMR(ctx: Context) {
       const name = pkg.getPublicName();
       if (!payload.summary[name]) {
         // here we need the entire package update
-        const inflated = inflatePackage(ctx, pkg);
-        packagesForUpdate.push({
-          name,
-          content: inflated.content.toString(),
-        });
+        ctx.log.print(`<bold><dim>HMR module</dim></bold> ${log_pkg}`, { pkg: name });
+        packagesForUpdate.push(pkg);
         return;
       }
       // check if some files are missing in the package
@@ -69,14 +71,18 @@ export function attachHMR(ctx: Context) {
         const module = pkg.modules[i];
         if (!packageFiles.includes(module.props.fuseBoxPath)) {
           // making a partial update
+          ctx.log.print(`<bold><dim>HMR module</dim></bold> $name ${log_pkg}`, {
+            name: module.props.fuseBoxPath,
+            pkg: name,
+          });
           modulesForUpdate.push(module);
         }
       }
     });
 
-    const generated = generateHMRContent({ modules: modulesForUpdate, ctx: ctx });
+    const generated = generateHMRContent({ packages: packagesForUpdate, modules: modulesForUpdate, ctx: ctx });
     ctx.log.print('<dim><bold>HMR content generated in $time</dim></bold>', { time: time.end() });
-    devServer.clientSend('hmr', { packages: packagesForUpdate, modules: generated.modules });
+    devServer.clientSend('hmr', { packages: generated.packages, modules: generated.modules });
   }
 
   // here we recieve an update from client - the entire tree of its modules

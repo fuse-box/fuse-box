@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { getLogger } from '../logging/logging';
 import { fastAnalysis } from './fastAnalysis';
-import { fireAst } from '../fire-ast/fireAst';
+import { scanner } from './scanner';
 const str = fs.readFileSync(path.join(__dirname, 'file.js')).toString();
 
 function parseWithAcorn(input) {
@@ -41,6 +41,10 @@ const logger = getLogger({ level: 'succinct' });
 //logger.withSpinner();
 logger.info('Starting benchmark');
 
+function parseWithScanner(str) {
+  scanner(str);
+}
+
 const maxIteration = 100;
 for (let i = 0; i <= maxIteration; i++) {
   logger.info(`bench: ${i} / ${maxIteration}`);
@@ -49,6 +53,8 @@ for (let i = 0; i <= maxIteration; i++) {
   measure('parseWithCherow', () => parseWithCherow(str));
 
   measure('fastAnalysis', () => fastAnalysis({ input: str }));
+
+  measure('parseWithScanner', () => parseWithScanner(str));
 }
 
 logger.stopSpinner();
