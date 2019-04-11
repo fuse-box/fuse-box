@@ -1,11 +1,14 @@
 import { Module } from '../core/Module';
-import { createConcat, offsetLines } from '../utils/utils';
+import { createConcat, offsetLines, Concat } from '../utils/utils';
 import { Context } from '../core/Context';
 import { devStrings } from '../bundle/bundleStrings';
 import * as convertSourceMap from 'convert-source-map';
+import { Package } from '../core/Package';
+import { inflatePackage } from '../bundle/createDevBundles';
 
 export interface IGenerateHMRContentProps {
   modules: Array<Module>;
+  packages?: Array<Package>;
   ctx: Context;
 }
 
@@ -16,10 +19,25 @@ export interface IHMRModuleUpdate {
 
 export interface IHMRUpdate {
   modules: Array<IHMRModuleUpdate>;
+  packages: Array<{ name: string; content: string }>;
 }
 export function generateHMRContent(props: IGenerateHMRContentProps): IHMRUpdate {
   const { ctx } = props;
   const config = ctx.config;
+
+  let packageUpdate: Array<{ name: string; content: string }> = [];
+  if (props.packages) {
+    packageUpdate = props.packages.map(pkg => {
+      const name = pkg.getPublicName();
+      if (pkg.isCached) {
+        return { name, content: pkg.cache.contents };
+      } else {
+        const inflated = inflatePackage(ctx, pkg);
+
+        return { name, content: inflated.content.toString() };
+      }
+    });
+  }
 
   const response: Array<IHMRModuleUpdate> = [];
   props.modules.forEach(module => {
@@ -33,15 +51,22 @@ export function generateHMRContent(props: IGenerateHMRContentProps): IHMRUpdate 
       requireSourceMaps = true;
     }
 
-    if (module.contents) {
-      const concat = createConcat(requireSourceMaps, '', '\n');
-      concat.add(null, devStrings.openPackage(packageName, {}));
-      concat.add(null, devStrings.openFile(module.props.fuseBoxPath));
-      module.header.forEach(h => concat.add(null, h));
-      concat.add(null, module.contents, requireSourceMaps ? module.sourceMap : undefined);
-      concat.add(null, devStrings.closeFile());
-      concat.add(null, devStrings.closePackage());
-
+    if (module.isExecutable()) {
+      let concat: Concat;
+      if (module.isCached) {
+        concat = createConcat(requireSourceMaps, '', '\n');
+        concat.add(null, devStrings.openPackage(packageName, {}));
+        concat.add(null, module.cache.contents, requireSourceMaps ? module.cache.sourceMap : undefined);
+        concat.add(null, devStrings.closePackage());
+      } else {
+        const data = module.generate();
+        concat = createConcat(requireSourceMaps, '', '\n');
+        concat.add(null, devStrings.openPackage(packageName, {}));
+        concat.add(null, devStrings.openFile(module.props.fuseBoxPath));
+        concat.add(null, data.contents, requireSourceMaps ? data.sourceMap : undefined);
+        concat.add(null, devStrings.closeFile());
+        concat.add(null, devStrings.closePackage());
+      }
       let stringContent = concat.content.toString();
       const rawSourceMap = concat.sourceMap;
       if (rawSourceMap && requireSourceMaps) {
@@ -55,6 +80,7 @@ export function generateHMRContent(props: IGenerateHMRContentProps): IHMRUpdate 
     }
   });
   return {
+    packages: packageUpdate,
     modules: response,
   };
 }

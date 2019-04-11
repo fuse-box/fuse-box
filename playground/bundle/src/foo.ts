@@ -4,3 +4,5 @@ export class FooClass {
   }
 }
 console.log('1');
+
+console.log(process);
