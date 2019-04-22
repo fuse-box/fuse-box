@@ -1,6 +1,6 @@
 import { Context } from '../core/Context';
-import { Package } from '../core/Package';
 import { env } from '../core/env';
+import { Package } from '../core/Package';
 
 export interface IStatLogProps {
   ctx: Context;

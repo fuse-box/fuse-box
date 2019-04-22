@@ -76,6 +76,9 @@ export function readFile(file: string) {
   return fs.readFileSync(file).toString();
 }
 
+export async function copyFile(file: string, target: string) {
+  return fsExtra.copy(file, target);
+}
 export function isObject(obj: any) {
   return typeof obj === 'object';
 }
@@ -189,9 +192,9 @@ export async function writeFile(name: string, contents) {
   });
 }
 
-export function fastHash(text: string) {
+export function fastHash(text: string): string {
   let hash = 0;
-  if (text.length == 0) return hash;
+  if (text.length == 0) return '';
   for (let i = 0; i < text.length; i++) {
     let char = text.charCodeAt(i);
     hash = (hash << 5) - hash + char;

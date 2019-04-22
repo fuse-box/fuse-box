@@ -6,7 +6,7 @@ import { Context, createContext } from '../core/Context';
 import { createDefaultPackage } from '../core/application';
 import { createModule, IModuleProps, Module } from '../core/Module';
 import { assemble } from '../main/assemble';
-import { IConfig } from '../core/interfaces';
+import { IConfig } from '../config/IPublicConfig';
 import { Package, createPackage } from '../core/Package';
 const utils = require('./utils');
 declare global {
@@ -187,7 +187,7 @@ export function mockWriteFile() {
   };
 
   utils['fileExists'] = path => {
-    return scope.files[path];
+    return scope.files[path] !== undefined;
   };
 
   utils['fileStat'] = path => {

@@ -1,3 +1,7 @@
+import { Cache, createCache } from '../cache/cache';
+import { createConfig } from '../config/config';
+import { IPrivateConfig } from '../config/IPrivateConfig';
+import { IPublicConfig } from '../config/IPublicConfig';
 import { createDevServer, IDevServerActions } from '../dev-server/devServer';
 import { attachEssentials } from '../integrity/setup';
 import { createInterceptor, MainInterceptor } from '../interceptor/interceptor';
@@ -6,13 +10,10 @@ import { getLogger, ILogger } from '../logging/logging';
 import { initTypescriptConfig } from '../tsconfig/configParser';
 import { createWebIndex, IWebIndexInterface } from '../web-index/webIndex';
 import { assembleContext, IAssembleContext } from './assemble_context';
-import { createConfig } from './config';
+import { ContextTaskManager, createContextTaskManager } from './ContextTaskManager';
 import { env } from './env';
-import { IConfig } from './interfaces';
-import { createWriter, IWriterActions } from './writer';
-import { createCache } from '../cache/cache';
-import { Cache } from '../cache/cache';
 import { Package } from './Package';
+import { createWriter, IWriterActions } from './writer';
 
 export class Context {
   public assembleContext: IAssembleContext;
@@ -22,13 +23,16 @@ export class Context {
   public tsConfig: TypescriptConfig;
   public log: ILogger;
   public webIndex: IWebIndexInterface;
+  public taskManager: ContextTaskManager;
   public writer: IWriterActions;
   public cache: Cache;
   public devServer?: IDevServerActions;
-  constructor(public config: IConfig) {
+
+  constructor(public config: IPrivateConfig) {
     this.tsConfig = initTypescriptConfig(config);
     this.assembleContext = assembleContext(this);
     this.ict = createInterceptor();
+
     this.log = getLogger(config.logging);
 
     this.writer = createWriter({
@@ -42,9 +46,18 @@ export class Context {
     if (this.config.cache) {
       this.cache = createCache({ ctx: this });
     }
+    this.taskManager = createContextTaskManager(this);
+  }
+
+  public requireModule(name: string) {
+    try {
+      return require(name);
+    } catch (error) {
+      this.log.error('Cannot import $name. Forgot to insall? ', { name: name });
+    }
   }
 }
 
-export function createContext(cfg?: IConfig) {
+export function createContext(cfg?: IPublicConfig) {
   return new Context(createConfig(cfg));
 }

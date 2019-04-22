@@ -1,17 +1,17 @@
 import * as path from 'path';
+import { fastAnalysis } from '../../analysis/fastAnalysis';
+import { IPublicConfig } from '../../config/IPublicConfig';
 import { createContext } from '../../core/Context';
 import { env } from '../../core/env';
-import { IConfig } from '../../core/interfaces';
 import { createModule } from '../../core/Module';
-import { Package, createPackage } from '../../core/Package';
-import { mockModule, mockWriteFile, throttle } from '../../utils/test_utils';
-import { createCache } from '../cache';
-import { fastAnalysis } from '../../analysis/fastAnalysis';
+import { createPackage, Package } from '../../core/Package';
 import { ImportType } from '../../resolver/resolver';
+import { mockModule, mockWriteFile } from '../../utils/test_utils';
+import { createCache } from '../cache';
 
 const fileMock = mockWriteFile();
 
-function mockCache(config?: IConfig) {
+function mockCache(config?: IPublicConfig) {
   const ctx = createContext(config);
   const cache = createCache({ ctx });
   return { ctx, cache };

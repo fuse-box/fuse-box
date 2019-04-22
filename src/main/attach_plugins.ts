@@ -1,6 +1,6 @@
 import { Context } from '../core/Context';
-import { Package } from '../core/Package';
 import { Module } from '../core/Module';
+import { Package } from '../core/Package';
 
 async function processModule(module: Module) {
   const ctx = module.props.ctx;

@@ -12,8 +12,9 @@ export interface ILogger {
   withSpinner: () => ISpinnerInterface;
   stopSpinner: () => void;
   print: (msg: string, variables?: { [key: string]: any }) => void;
-  hasErrors: () => BooleanConstructor;
-  hasWarnings: () => BooleanConstructor;
+  verbose: (msg: string, variables?: { [key: string]: any }) => void;
+  hasErrors: () => boolean;
+  hasWarnings: () => boolean;
   getErrors: () => Array<{ str: string; vars: any }>;
   getWarnings: () => Array<{ str: string; vars: any }>;
   printNewLine: () => void;
@@ -99,6 +100,11 @@ export function getLogger(props?: ILoggerProps): ILogger {
     },
     info: (msg: string, variables?: { [key: string]: any }) => {
       log('cyan', msg, variables);
+    },
+    verbose: (msg: string, vars?: { [key: string]: any }) => {
+      if (level === 'verbose') {
+        methods.print(msg, vars);
+      }
     },
     print: (msg: string, vars?: { [key: string]: any }) => {
       if (level === 'disabled') {

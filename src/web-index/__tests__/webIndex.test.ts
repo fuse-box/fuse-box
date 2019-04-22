@@ -1,13 +1,10 @@
-import { mockWriteFile } from '../../utils/test_utils';
-const fileMock = mockWriteFile();
-
+import { join } from 'path';
 import { BundleType, createBundleSet } from '../../bundle/Bundle';
 import { createContext } from '../../core/Context';
-
-import { IWebIndexConfig, replaceWebIndexStrings, getEssentialWebIndexParams } from '../webIndex';
-import { join } from 'path';
-import * as fs from 'fs';
 import { env } from '../../core/env';
+import { mockWriteFile } from '../../utils/test_utils';
+import { getEssentialWebIndexParams, IWebIndexConfig, replaceWebIndexStrings } from '../webIndex';
+const fileMock = mockWriteFile();
 
 const defaultTemplate = `
 <!DOCTYPE html>

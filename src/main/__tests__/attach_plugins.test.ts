@@ -1,11 +1,11 @@
 import * as path from 'path';
-import { createContext, Context } from '../../core/Context';
-import { IConfig } from '../../core/interfaces';
+import { IPublicConfig } from '../../config/IPublicConfig';
+import { Context, createContext } from '../../core/Context';
 import { Package } from '../../core/Package';
 import { assemble } from '../assemble';
 import { attachPlugins } from '../attach_plugins';
 
-function createProjectContext(folder: string, opts?: IConfig) {
+function createProjectContext(folder: string, opts?: IPublicConfig) {
   opts = opts || {};
   return createContext({
     ...{
@@ -16,7 +16,7 @@ function createProjectContext(folder: string, opts?: IConfig) {
   });
 }
 
-async function resolve(folder: string, opts: IConfig, entry: string): Promise<Array<Package>> {
+async function resolve(folder: string, opts: IPublicConfig, entry: string): Promise<Array<Package>> {
   const ctx = createProjectContext(folder, opts);
   const packages = assemble(ctx, entry);
   await attachPlugins({ ctx: ctx, packages: packages, plugins: opts.plugins });

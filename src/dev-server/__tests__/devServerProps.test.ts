@@ -1,22 +1,21 @@
-import { IConfig } from '../../core/interfaces';
-import { createConfig } from '../../core/config';
-import { createDevServerConfig } from '../devServerProps';
+import { IPublicConfig } from '../../config/IPublicConfig';
 import { createContext } from '../../core/Context';
 import '../../utils/test_utils';
-function configure(config?: IConfig) {
-  const ctx = createContext(createConfig(config));
+import { createDevServerConfig } from '../devServerProps';
+function configure(config?: IPublicConfig) {
+  const ctx = createContext(config);
   return createDevServerConfig(ctx);
 }
 
 describe('devServerProps test', () => {
   it('should be disabled 1', () => {
     const data = configure({});
-    expect(data).toEqual({ enabled: false });
+    expect(data.enabled).toEqual(false);
   });
 
   it('should be disabled 2', () => {
     const data = configure({ devServer: false });
-    expect(data).toEqual({ enabled: false });
+    expect(data.enabled).toEqual(false);
   });
 
   function defaultCheck(data) {

@@ -1,7 +1,7 @@
 import { Context } from '../../core/Context';
 import { Module } from '../../core/Module';
-import { fastTransform } from '../../transform/fastTransform';
 import { fixModuleSourceMap } from '../../sourcemaps/helpers';
+import { fastTransform } from '../../transform/fastTransform';
 
 export function pluginDevJs() {
   return (ctx: Context) => {
@@ -16,11 +16,12 @@ export function pluginDevJs() {
         analysis && !!analysis.report && analysis.report.es6Syntax && !analysis.report.containsJSX;
 
       let withSourceMaps = false;
-      if (module.pkg.isDefaultPackage && config.options.projectSourceMap) {
+
+      if (module.pkg.isDefaultPackage && config.sourceMap.project) {
         withSourceMaps = true;
       }
 
-      if (!module.pkg.isDefaultPackage && config.options.vendorSourceMap) {
+      if (!module.pkg.isDefaultPackage && config.sourceMap.vendor) {
         withSourceMaps = true;
       }
 

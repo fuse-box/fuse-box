@@ -1,5 +1,5 @@
+import { IPublicConfig } from '../config/IPublicConfig';
 import { createContext } from './Context';
-import { IConfig } from './interfaces';
 
 export interface IBundleProps {
   entry: string;
@@ -23,7 +23,7 @@ export interface IDevelopmentProps {
 }
 export interface IProductionProps {}
 
-export function fusebox(config: IConfig) {
+export function fusebox(config: IPublicConfig) {
   const ctx = createContext(config);
   return {
     bundle: (name: string, props: IBundleProps) => {},

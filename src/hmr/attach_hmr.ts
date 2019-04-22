@@ -1,10 +1,9 @@
 import { Context } from '../core/Context';
-import { fastHash, measureTime } from '../utils/utils';
 import { Module } from '../core/Module';
-import { WatcherAction } from '../watcher/watcher';
 import { Package } from '../core/Package';
+import { fastHash, measureTime } from '../utils/utils';
+import { WatcherAction } from '../watcher/watcher';
 import { generateHMRContent } from './hmr_content';
-import { inflatePackage } from '../bundle/createDevBundles';
 
 function generateUpdateId() {
   return fastHash(new Date().getTime().toString() + Math.random().toString());
@@ -24,7 +23,7 @@ interface IClientSummary {
 export function attachHMR(ctx: Context) {
   const config = ctx.config;
 
-  if (!config.options.hmrEnabled) {
+  if (!config.hmr.enabled) {
     return;
   }
 

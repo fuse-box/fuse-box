@@ -15,6 +15,12 @@ const ctx = createContext({
   },
   sourceMap: { vendor: false },
 
+  stylesheet: {
+    macros: {
+      $root: __dirname,
+    },
+  },
+
   cache: {
     enabled: false,
     root: path.join(__dirname, '.cache'),
