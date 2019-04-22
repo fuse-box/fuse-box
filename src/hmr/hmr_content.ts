@@ -1,10 +1,10 @@
-import { Module } from '../core/Module';
-import { createConcat, offsetLines, Concat } from '../utils/utils';
-import { Context } from '../core/Context';
-import { devStrings } from '../bundle/bundleStrings';
 import * as convertSourceMap from 'convert-source-map';
-import { Package } from '../core/Package';
+import { devStrings } from '../bundle/bundleStrings';
 import { inflatePackage } from '../bundle/createDevBundles';
+import { Context } from '../core/Context';
+import { Module } from '../core/Module';
+import { Package } from '../core/Package';
+import { Concat, createConcat, offsetLines } from '../utils/utils';
 
 export interface IGenerateHMRContentProps {
   modules: Array<Module>;
@@ -44,10 +44,10 @@ export function generateHMRContent(props: IGenerateHMRContentProps): IHMRUpdate 
     let requireSourceMaps = false;
     const pkg = module.pkg;
     const packageName = module.pkg.getPublicName();
-    if (pkg.isDefaultPackage && config.options.projectSourceMap) {
+    if (pkg.isDefaultPackage && config.sourceMap.project) {
       requireSourceMaps = true;
     }
-    if (!pkg.isDefaultPackage && config.options.vendorSourceMap) {
+    if (!pkg.isDefaultPackage && config.sourceMap.vendor) {
       requireSourceMaps = true;
     }
 

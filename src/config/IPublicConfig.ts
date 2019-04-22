@@ -1,12 +1,13 @@
+import { Context } from '../core/Context';
+import { IDevServerProps } from '../dev-server/devServerProps';
+import { IHMRExternalProps } from '../hmr/attach_hmr';
 import { IRawCompilerOptions } from '../interfaces/TypescriptInterfaces';
 import { ILoggerProps } from '../logging/logging';
-import { IWebIndexConfig } from '../web-index/webIndex';
-import { Context } from './Context';
-import { IDevServerProps } from '../dev-server/devServerProps';
 import { IWatcherExternalProps } from '../watcher/watcher';
-import { IHMRExternalProps } from '../hmr/attach_hmr';
+import { IWebIndexConfig } from '../web-index/webIndex';
+import { IStyleSheetProps } from './IStylesheetProps';
 
-export interface IConfig {
+export interface IPublicConfig {
   root?: string;
   target?: 'browser' | 'server' | 'electron' | 'universal';
   homeDir?: string;
@@ -15,6 +16,7 @@ export interface IConfig {
   logging?: ILoggerProps;
   watch?: boolean | IWatcherExternalProps;
   hmr?: boolean | IHMRExternalProps;
+  stylesheet?: IStyleSheetProps;
   cache?:
     | boolean
     | {

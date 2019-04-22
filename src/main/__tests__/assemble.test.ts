@@ -1,14 +1,14 @@
 import * as path from 'path';
-import { assemble } from '../assemble';
-import '../../utils/test_utils';
-
-import { createRequireConst } from '../../utils/utils';
+import { IPublicConfig } from '../../config/IPublicConfig';
+import { createContext } from '../../core/Context';
 import { devImports } from '../../integrity/devPackage';
 import { ImportType } from '../../resolver/resolver';
-import { createContext } from '../../core/Context';
-import { IConfig } from '../../core/interfaces';
+import '../../utils/test_utils';
 import { createRealNodeModule } from '../../utils/test_utils';
-function createProjectContext(folder: string, opts?: IConfig) {
+import { createRequireConst } from '../../utils/utils';
+import { assemble } from '../assemble';
+
+function createProjectContext(folder: string, opts?: IPublicConfig) {
   opts = opts || {};
   return createContext({
     ...{

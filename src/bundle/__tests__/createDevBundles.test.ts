@@ -1,10 +1,11 @@
-import { createContext } from '../../core/Context';
-import { IConfig } from '../../core/interfaces';
 import * as path from 'path';
+import { IPublicConfig } from '../../config/IPublicConfig';
+import { createContext } from '../../core/Context';
 import { assemble } from '../../main/assemble';
-import { createDevBundles, inflateBundles } from '../createDevBundles';
 import { createRealNodeModule } from '../../utils/test_utils';
-function createProjectContext(folder: string, opts?: IConfig) {
+import { createDevBundles, inflateBundles } from '../createDevBundles';
+
+function createProjectContext(folder: string, opts?: IPublicConfig) {
   opts = opts || {};
   return createContext({
     ...{
@@ -15,7 +16,7 @@ function createProjectContext(folder: string, opts?: IConfig) {
   });
 }
 
-function mockBundles(folder: string, entry: string, opts?: IConfig) {
+function mockBundles(folder: string, entry: string, opts?: IPublicConfig) {
   const ctx = createProjectContext(folder, opts);
   const packages = assemble(ctx, entry);
   const data = createDevBundles(ctx, packages);

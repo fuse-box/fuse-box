@@ -1,12 +1,11 @@
+import { IPublicConfig } from '../../config/IPublicConfig';
+import { createContext } from '../../core/Context';
 import { mockWriteFile } from '../../utils/test_utils';
+import { BundleType, createBundleSet } from '../Bundle';
 const fileMock = mockWriteFile();
 
-import { createContext } from '../../core/Context';
-import { IConfig } from '../../core/interfaces';
-import { BundleType, createBundleSet, Bundle } from '../Bundle';
-
 //jest.mock()
-function mockBundle(props: { config?: IConfig; type: BundleType }) {
+function mockBundle(props: { config?: IPublicConfig; type: BundleType }) {
   const ctx = createContext(props.config);
   const bundleSet = createBundleSet(ctx);
   const bundle = bundleSet.getBundle(props.type);

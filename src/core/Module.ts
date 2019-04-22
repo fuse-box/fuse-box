@@ -23,6 +23,10 @@ export class Module {
   public moduleDependencies: Array<Module>;
   public externalDependencies: Array<Package>;
 
+  // this flag can be toggled in order to prevent multiple plugins from capturing it
+
+  public captured: boolean;
+
   /*  Properties that affect bundle result  */
 
   public header: Array<string>; // extra content on top of the file
@@ -54,7 +58,7 @@ export class Module {
     const config = this.props.ctx.config;
     if (this.pkg.isDefaultPackage) {
       return joinFuseBoxPath(
-        config.options.sourceRoot,
+        config.sourceMap.sourceRoot,
         extractFuseBoxPath(this.props.ctx.config.homeDir, this.props.absPath),
       );
     } else {
@@ -73,6 +77,10 @@ export class Module {
 
   public isExecutable() {
     return EXECUTABLE_EXTENSIONS.includes(this.props.extension);
+  }
+
+  public isStylesheet() {
+    return ['.scss', '.sass', 'less', 'styl'].indexOf(this.props.extension) > -1;
   }
 
   public generate() {

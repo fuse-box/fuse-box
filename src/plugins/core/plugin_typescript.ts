@@ -1,8 +1,8 @@
+import * as ts from 'typescript';
 import { Context } from '../../core/Context';
 import { Module } from '../../core/Module';
-import { tsTransform } from '../../transform/tsTransform';
-import * as ts from 'typescript';
 import { fixModuleSourceMap } from '../../sourcemaps/helpers';
+import { tsTransform } from '../../transform/tsTransform';
 
 export function pluginTypescript() {
   return (ctx: Context) => {
@@ -40,11 +40,11 @@ export function pluginTypescript() {
       let requireSourceMaps = true;
 
       if (pkg.isDefaultPackage) {
-        if (!config.options.projectSourceMap) {
+        if (!config.sourceMap.project) {
           requireSourceMaps = false;
         }
       } else {
-        if (!config.options.vendorSourceMap) {
+        if (!config.sourceMap.vendor) {
           requireSourceMaps = false;
         }
       }

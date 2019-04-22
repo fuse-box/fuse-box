@@ -44,7 +44,7 @@ export class Cache {
   constructor(props: IFileCacheProps) {
     const config = props.ctx.config;
     this.ctx = props.ctx;
-    this.rootFolder = config.options.cacheRoot;
+    this.rootFolder = config.cache.root;
     this.packageCacheFolder = path.join(this.rootFolder, env.CACHE.PACKAGES);
     this.projectCacheFolder = path.join(this.rootFolder, env.CACHE.PROJET_FILES);
   }

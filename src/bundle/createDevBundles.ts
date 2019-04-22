@@ -45,9 +45,17 @@ export function inflatePackage(ctx: Context, pkg: Package): Concat {
     if (_module.isCached) {
       concat.add(null, _module.cache.contents, _module.cache.sourceMap);
     } else {
+      if (!_module.contents) {
+        ctx.log.error('$pkg/$path has not been processed by any plugins', {
+          pkg: _module.pkg.getPublicName(),
+          path: _module.props.fuseBoxPath,
+        });
+        return;
+      }
       const fileConcat = createConcat(true, '', '\n');
       fileConcat.add(null, devStrings.openFile(_module.props.fuseBoxPath));
       const data = _module.generate();
+
       fileConcat.add(null, data.contents, data.sourceMap);
       fileConcat.add(null, devStrings.closeFile());
       concat.add(null, fileConcat.content, fileConcat.sourceMap);

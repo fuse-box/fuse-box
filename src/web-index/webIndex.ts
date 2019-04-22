@@ -6,6 +6,7 @@ import { ensureAbsolutePath, fileExists, readFile, joinFuseBoxPath } from '../ut
 import { htmlStrings } from './htmlStrings';
 
 export interface IWebIndexConfig {
+  enabled?: boolean;
   target?: string;
   template?: string;
   distFileName?: string;
@@ -51,7 +52,7 @@ export function getEssentialWebIndexParams(config: IWebIndexConfig | boolean) {
 
 export function createWebIndex(ctx: Context): IWebIndexInterface {
   const config = ctx.config.webIndex;
-  const isDisabled = config === false || config === undefined;
+  const isDisabled = config.enabled === false;
   const logger = ctx.log;
   if (isDisabled) {
     return { isDisabled };

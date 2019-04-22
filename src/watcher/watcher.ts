@@ -1,7 +1,7 @@
-import { Context, createContext } from '../core/Context';
 import * as chokidar from 'chokidar';
-import { env } from '../core/env';
 import * as path from 'path';
+import { Context } from '../core/Context';
+import { env } from '../core/env';
 
 type IChokidarEventType = 'add' | 'change' | 'unlink' | 'addDir' | 'unlinkDir' | 'error' | 'ready';
 

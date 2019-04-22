@@ -199,9 +199,7 @@ describe('tsconfig', () => {
     it('Should find config automatically', () => {
       const result = initTypescriptConfig({
         homeDir: cases,
-        options: {
-          entries: ['case1/src/index.js'],
-        },
+        entries: ['case1/src/index.js'],
       });
       expect(result.jsonCompilerOptions).toEqual({
         allowJs: true,
@@ -218,9 +216,7 @@ describe('tsconfig', () => {
     it('Should find config and give it a base path', () => {
       const result = initTypescriptConfig({
         homeDir: cases,
-        options: {
-          entries: ['case1/src/index.js'],
-        },
+        entries: ['case1/src/index.js'],
       });
 
       expect(result.basePath).toMatchFilePath('src/tsconfig/__tests__/cases/case1$');

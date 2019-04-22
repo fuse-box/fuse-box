@@ -1,9 +1,9 @@
 import * as path from 'path';
+import { IPrivateConfig } from '../config/IPrivateConfig';
 import { Context } from '../core/Context';
 import { Package } from '../core/Package';
-import { IWriterResponse, IWriter, IWriterActions } from '../core/writer';
+import { IWriterResponse } from '../core/writer';
 import { Concat, createConcat } from '../utils/utils';
-import { IConfig } from '../core/interfaces';
 import { sourceMapsURL } from './bundleStrings';
 
 /**
@@ -75,12 +75,11 @@ export function createBundleSet(ctx: Context) {
  * @param type
  * @param config
  */
-function shouldAddSourcemaps(type: BundleType, config: IConfig): boolean {
-  const opts = config.options;
+function shouldAddSourcemaps(type: BundleType, config: IPrivateConfig): boolean {
   const shouldWrite =
-    (opts.cssSourceMap && type == BundleType.CSS) ||
-    (opts.projectSourceMap && type === BundleType.PROJECT_JS) ||
-    (opts.vendorSourceMap && BundleType.VENDOR_JS);
+    (config.sourceMap.css && type == BundleType.CSS) ||
+    (config.sourceMap.project && type === BundleType.PROJECT_JS) ||
+    (config.sourceMap.vendor && BundleType.VENDOR_JS);
   return !!shouldWrite;
 }
 

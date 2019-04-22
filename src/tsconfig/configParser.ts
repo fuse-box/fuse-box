@@ -1,7 +1,7 @@
 import * as appRoot from 'app-root-path';
 import * as path from 'path';
 import * as ts from 'typescript';
-import { IConfig } from '../core/interfaces';
+import { IPrivateConfig } from '../config/IPrivateConfig';
 import { IRawCompilerOptions, IRawTypescriptConfig, TypescriptConfig } from '../interfaces/TypescriptInterfaces';
 import { fileExists, pathJoin } from '../utils/utils';
 
@@ -37,7 +37,7 @@ export function resolveTSConfig(props: {
 }
 
 export function initTypescriptConfig(
-  props: IConfig,
+  props: IPrivateConfig,
   configScriptPath?: string, // fuse.js or fuse.ts
 ): TypescriptConfig {
   let basePath: string = configScriptPath;
@@ -49,9 +49,9 @@ export function initTypescriptConfig(
     userOptions = data.config.compilerOptions;
   } else if (typeof props.tsConfig === 'object') {
     userOptions = props.tsConfig;
-  } else if (!props.tsConfig && props.options && props.options.entries && props.homeDir) {
+  } else if (!props.tsConfig && props.entries && props.homeDir) {
     const root = appRoot.path;
-    const fileName = pathJoin(props.homeDir, props.options.entries[0]);
+    const fileName = pathJoin(props.homeDir, props.entries[0]);
     const result = resolveTSConfig({ root: root, fileName: fileName });
     if (result.filePath) {
       basePath = path.dirname(result.filePath);

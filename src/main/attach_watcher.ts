@@ -1,16 +1,15 @@
 import * as prettyTime from 'pretty-time';
-import { BundleType, Bundle, IBundleWriteResponse } from '../bundle/Bundle';
+import { BundleType, IBundleWriteResponse } from '../bundle/Bundle';
 import { createDevBundles, inflateBundles } from '../bundle/createDevBundles';
 import { Context } from '../core/Context';
 import { env } from '../core/env';
+import { Package } from '../core/Package';
 import { EMOJIS } from '../logging/logging';
 import { extractFuseBoxPath } from '../utils/utils';
 import { createWatcher, WatcherAction } from '../watcher/watcher';
 import { assemble } from './assemble';
 import { pluginProcessPackages } from './attach_plugins';
 import { statLog } from './stat_log';
-import { AssembleState } from '../core/assemble_context';
-import { Package } from '../core/Package';
 export interface IWatcherAttachProps {
   ctx: Context;
 }
@@ -59,7 +58,7 @@ async function appReload(props: IAppReloadProps): Promise<IAppReloadResponse> {
 
   const startTime = process.hrtime();
 
-  const packages = assemble(ctx, ctx.config.options.entries[0]);
+  const packages = assemble(ctx, ctx.config.entries[0]);
   await pluginProcessPackages({ ctx, packages });
   // sorting bundles with dev, system, default, vendor
   const data = createDevBundles(ctx, packages);
@@ -139,7 +138,7 @@ async function onWatcherEvent(props: OnWatcherProps) {
 export function attachWatcher(props: IWatcherAttachProps) {
   const ctx = props.ctx;
   const config = ctx.config;
-  if (!config.options.watcherEnabled) {
+  if (!config.watch.enabled) {
     return;
   }
 
@@ -157,6 +156,6 @@ export function attachWatcher(props: IWatcherAttachProps) {
         inProgress = false;
       },
     },
-    config.options.watcherProps,
+    config.watch.watcherProps,
   );
 }
