@@ -183,14 +183,14 @@ export class WebIndexPluginClass implements Plugin {
 			html = html.replace("$" + key, macro[key]);
 		}
 
-		producer.fuse.context.output.writeToOutputFolder(this.opts.target || "index.html", html);
+		await producer.fuse.context.output.writeToOutputFolder(this.opts.target || "index.html", html);
 	}
 
 	producerEnd(producer: BundleProducer) {
-		this.generate(producer);
 		producer.sharedEvents.on("file-changed", () => {
 			this.generate(producer);
 		});
+		return this.generate(producer);
 	}
 }
 
