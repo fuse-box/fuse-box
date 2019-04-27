@@ -16,13 +16,13 @@ const ctx = createContext({
   sourceMap: { vendor: false },
 
   stylesheet: {
+    breakDepednantsCache: true,
     macros: {
       $root: __dirname,
     },
   },
-
   cache: {
-    enabled: false,
+    enabled: true,
     root: path.join(__dirname, '.cache'),
   },
   webIndex: {
@@ -33,4 +33,6 @@ const ctx = createContext({
   entry: 'index.ts',
 });
 
-bundleDev(ctx);
+bundleDev(ctx).catch(e => {
+  console.error(e);
+});

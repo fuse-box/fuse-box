@@ -129,13 +129,20 @@ function processModule(props: IDefaultParseProps) {
       _module.fastAnalysis.replaceable = [];
       icp.sync('assemble_fast_analysis', { module: _module });
     }
-    _module.assembled = true;
+  }
 
+  _module.assembled = true;
+  if (_module.fastAnalysis && _module.fastAnalysis.imports) {
     const modules = [];
-
     _module.fastAnalysis.imports.forEach(data => {
       const response = resolveStatement({ statement: data.statement, importType: data.type }, props);
       if (response) {
+        // if (response.module) {
+        //   if (!response.module.moduleDependants) response.module.moduleDependants = [];
+        //   if (response.module.moduleDependants.indexOf(_module) === -1) {
+        //     response.module.moduleDependants.push(_module);
+        //   }
+        // }
         if (response.forcedStatement) {
           _module.fastAnalysis.replaceable.push({
             type: data.type,

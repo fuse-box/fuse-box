@@ -14,6 +14,10 @@ export function injectSettingIntoDevBundle(ctx: Context, bundle: Bundle) {
   if (ctx.config.allowSyntheticDefaultImports) {
     bundle.addContent(devStrings.allowSyntheticDefaultImports());
   }
+
+  if (ctx.config.hmr.enabled && ctx.config.hmr.hmrProps.reloadEntryOnStylesheet) {
+    bundle.addContent(devStrings.reloadEntryOnStylesheet(true));
+  }
   bundle.addContent(devStrings.target(ctx.config.target || 'server'));
 }
 
@@ -43,7 +47,7 @@ export function inflatePackage(ctx: Context, pkg: Package): Concat {
 
   pkg.modules.forEach(_module => {
     if (_module.isCached) {
-      concat.add(null, _module.cache.contents, _module.cache.sourceMap);
+      concat.add(null, _module.cache.contents, _module.isExecutable() ? _module.cache.sourceMap : undefined);
     } else {
       if (!_module.contents) {
         ctx.log.error('$pkg/$path has not been processed by any plugins', {
@@ -56,7 +60,7 @@ export function inflatePackage(ctx: Context, pkg: Package): Concat {
       fileConcat.add(null, devStrings.openFile(_module.props.fuseBoxPath));
       const data = _module.generate();
 
-      fileConcat.add(null, data.contents, data.sourceMap);
+      fileConcat.add(null, data.contents, _module.isExecutable() ? data.sourceMap : undefined);
       fileConcat.add(null, devStrings.closeFile());
       concat.add(null, fileConcat.content, fileConcat.sourceMap);
       ctx.ict.sync('after_dev_module_inflate', {

@@ -28,7 +28,11 @@ export const connect = opts => {
     client.send('summary', { id, summary });
   });
 
+  let styleSheetUpdate;
   client.on('hmr', payload => {
+    if (FuseBox.reloadEntryOnStylesheet && payload.modules.length === 1 && payload.modules[0].isStylesheet) {
+      styleSheetUpdate = payload.modules[0];
+    }
     payload.modules.forEach(item => {
       // execute in the scope
       new Function(item.content)();
@@ -38,7 +42,16 @@ export const connect = opts => {
       new Function(item.content)();
       log(`✔ package hmr: ${item.name}`);
     });
-    FuseBox.flush();
-    FuseBox.import(FuseBox.mainFile);
+
+    if (styleSheetUpdate) {
+      log(`✔ css reload of: ${styleSheetUpdate.fuseBoxPath}`);
+      FuseBox.flush(file => `default/${file}` === styleSheetUpdate.fuseBoxPath);
+      // import only css
+      FuseBox.import(styleSheetUpdate.fuseBoxPath);
+    } else {
+      log(`✔ entry reload of: ${FuseBox.mainFile}`);
+      FuseBox.flush();
+      FuseBox.import(FuseBox.mainFile);
+    }
   });
 };

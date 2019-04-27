@@ -41,11 +41,9 @@ export async function pluginProcessPackages(props: { ctx: Context; packages: Arr
   await ict.resolve();
   ict.sync('bundle_resolve_end', { ctx, packages: props.packages });
 }
-export async function attachPlugins(props: IBundleResolveProps) {
+export async function processPlugins(props: IBundleResolveProps) {
   const ctx = props.ctx;
   const packages = props.packages;
-  if (props.plugins) {
-    props.plugins.forEach(plugin => plugin(ctx));
-  }
+
   await pluginProcessPackages({ ctx, packages });
 }

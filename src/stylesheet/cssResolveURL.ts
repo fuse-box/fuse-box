@@ -1,8 +1,8 @@
 import * as path from 'path';
 import { IStyleSheetProps } from '../config/IStylesheetProps';
 import { Context } from '../core/Context';
-import { fastHash, fileExists, ensureAbsolutePath, joinFuseBoxPath } from '../utils/utils';
-import { replaceCSSMacros } from './cssUtils';
+import { ensureAbsolutePath, fastHash, fileExists, joinFuseBoxPath } from '../utils/utils';
+import { replaceCSSMacros } from './cssResolveModule';
 
 export interface ICSSResolveURLProps {
   filePath: string;
@@ -72,14 +72,10 @@ export function resolveCSSResource(target, props: ICSSResolveURLProps): IURLRepl
     if (fileGroup) {
       name = fileGroup + '/' + name;
     }
-    const resourcePublicRoot = config.stylesheet.resourcePublicRoot || '/resources';
+    const resourcePublicRoot = config.getResourcePublicRoot();
     const publicPath = joinFuseBoxPath(resourcePublicRoot, name);
-    let resourceFolder;
-    if (config.stylesheet.resourceFolder) {
-      resourceFolder = ensureAbsolutePath(config.stylesheet.resourceFolder, props.ctx.writer.outputDirectory);
-    } else {
-      resourceFolder = path.join(props.ctx.writer.outputDirectory, 'resources');
-    }
+    let resourceFolder = props.ctx.config.getResourceFolder(props.ctx);
+
     const destination = path.join(resourceFolder, name);
 
     // we don't want to copy a file if that was copied before

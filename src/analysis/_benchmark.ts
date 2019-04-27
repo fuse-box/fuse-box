@@ -6,6 +6,7 @@ import * as path from 'path';
 import { getLogger } from '../logging/logging';
 import { fastAnalysis } from './fastAnalysis';
 import { scanner } from './scanner';
+import * as meriyah from 'meriyah';
 const str = fs.readFileSync(path.join(__dirname, 'file.js')).toString();
 
 function parseWithAcorn(input) {
@@ -45,12 +46,18 @@ function parseWithScanner(str) {
   scanner(str);
 }
 
+function parsemeriyah(str) {
+  return meriyah.parseModule(str);
+}
+
 const maxIteration = 100;
 for (let i = 0; i <= maxIteration; i++) {
   logger.info(`bench: ${i} / ${maxIteration}`);
   measure('parseWithAcorn', () => parseWithAcorn(str));
 
   measure('parseWithCherow', () => parseWithCherow(str));
+
+  measure('meriyah', () => parsemeriyah(str));
 
   measure('fastAnalysis', () => fastAnalysis({ input: str }));
 

@@ -1,6 +1,7 @@
 export const devStrings = {
   allowSyntheticDefaultImports: () => `FuseBox.sdep = true;`,
   target: (name: string) => `FuseBox.target = "${name}";`,
+  reloadEntryOnStylesheet: (value: boolean) => `FuseBox.reloadEntryOnStylesheet = ${value};`,
   importFile: name => `FuseBox.import("${name}");`,
   setEntry: name => `FuseBox.main("${name}");`,
   openPackage: (name, conflicting: { [key: string]: string }) => {

@@ -1,21 +1,16 @@
 import { Context } from '../../core/Context';
-import { ISassProps, sassHandler } from '../../stylesheet/sassHandler';
+import { ImportType } from '../../resolver/resolver';
 
 export function pluginCSS() {
   return (ctx: Context) => {
-    ctx.ict.on('bundle_resolve_module', props => {
-      const { module } = props;
-
-      // filter out non stylesheet and prevent a double capture
-      if (!module.isStylesheet() || module.captured) {
-        return;
-      }
-
-      if (module.props.extension === '.scss') {
-        sassHandler({ ctx: ctx, module, options: ctx.config.stylesheet });
-      }
-
-      return props;
-    });
+    if (!ctx.config.production) {
+      ctx.ict.on('assemble_module_init', props => {
+        if (props.module.isStylesheet()) {
+          props.module.fastAnalysis = { imports: [] };
+          props.module.fastAnalysis.imports.push({ type: ImportType.REQUIRE, statement: 'fuse-box-css' });
+        }
+        return props;
+      });
+    }
   };
 }

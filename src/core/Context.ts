@@ -1,6 +1,6 @@
 import { Cache, createCache } from '../cache/cache';
 import { createConfig } from '../config/config';
-import { IPrivateConfig } from '../config/IPrivateConfig';
+import { PrivateConfig } from '../config/PrivateConfig';
 import { IPublicConfig } from '../config/IPublicConfig';
 import { createDevServer, IDevServerActions } from '../dev-server/devServer';
 import { attachEssentials } from '../integrity/setup';
@@ -14,6 +14,7 @@ import { ContextTaskManager, createContextTaskManager } from './ContextTaskManag
 import { env } from './env';
 import { Package } from './Package';
 import { createWriter, IWriterActions } from './writer';
+import { WeakModuleReferences, createWeakModuleReferences } from './WeakModuleReferences';
 
 export class Context {
   public assembleContext: IAssembleContext;
@@ -27,9 +28,11 @@ export class Context {
   public writer: IWriterActions;
   public cache: Cache;
   public devServer?: IDevServerActions;
+  public weakReferences: WeakModuleReferences;
 
-  constructor(public config: IPrivateConfig) {
+  constructor(public config: PrivateConfig) {
     this.tsConfig = initTypescriptConfig(config);
+    this.weakReferences = createWeakModuleReferences(this);
     this.assembleContext = assembleContext(this);
     this.ict = createInterceptor();
 

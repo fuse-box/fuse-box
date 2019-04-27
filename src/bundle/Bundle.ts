@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { IPrivateConfig } from '../config/IPrivateConfig';
+import { PrivateConfig } from '../config/PrivateConfig';
 import { Context } from '../core/Context';
 import { Package } from '../core/Package';
 import { IWriterResponse } from '../core/writer';
@@ -75,7 +75,7 @@ export function createBundleSet(ctx: Context) {
  * @param type
  * @param config
  */
-function shouldAddSourcemaps(type: BundleType, config: IPrivateConfig): boolean {
+function shouldAddSourcemaps(type: BundleType, config: PrivateConfig): boolean {
   const shouldWrite =
     (config.sourceMap.css && type == BundleType.CSS) ||
     (config.sourceMap.project && type === BundleType.PROJECT_JS) ||

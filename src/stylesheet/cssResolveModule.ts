@@ -35,7 +35,7 @@ export interface IResolveCSSModuleResult {
   path?: string;
 }
 
-export function resolveCSSModule(props: IResolveCSSModuleProps): IResolveCSSModuleResult {
+export function cssResolveModule(props: IResolveCSSModuleProps): IResolveCSSModuleResult {
   let target = props.target;
   if (props.options.macros) {
     target = replaceCSSMacros(target, props.options.macros);

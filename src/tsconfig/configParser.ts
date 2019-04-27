@@ -1,7 +1,7 @@
 import * as appRoot from 'app-root-path';
 import * as path from 'path';
 import * as ts from 'typescript';
-import { IPrivateConfig } from '../config/IPrivateConfig';
+import { PrivateConfig } from '../config/PrivateConfig';
 import { IRawCompilerOptions, IRawTypescriptConfig, TypescriptConfig } from '../interfaces/TypescriptInterfaces';
 import { fileExists, pathJoin } from '../utils/utils';
 
@@ -37,7 +37,7 @@ export function resolveTSConfig(props: {
 }
 
 export function initTypescriptConfig(
-  props: IPrivateConfig,
+  props: PrivateConfig,
   configScriptPath?: string, // fuse.js or fuse.ts
 ): TypescriptConfig {
   let basePath: string = configScriptPath;

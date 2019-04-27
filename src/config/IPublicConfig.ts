@@ -1,11 +1,11 @@
 import { Context } from '../core/Context';
 import { IDevServerProps } from '../dev-server/devServerProps';
-import { IHMRExternalProps } from '../hmr/attach_hmr';
 import { IRawCompilerOptions } from '../interfaces/TypescriptInterfaces';
 import { ILoggerProps } from '../logging/logging';
 import { IWatcherExternalProps } from '../watcher/watcher';
 import { IWebIndexConfig } from '../web-index/webIndex';
 import { IStyleSheetProps } from './IStylesheetProps';
+import { IHMRExternalProps } from './PrivateConfig';
 
 export interface IPublicConfig {
   root?: string;
@@ -51,19 +51,4 @@ export interface IPublicConfig {
   production?: {};
 
   devServer?: IDevServerProps | boolean | undefined;
-
-  // normalised options
-  options?: {
-    hmrEnabled?: boolean;
-    hmrProps?: IHMRExternalProps;
-    watcherEnabled?: boolean;
-    watcherProps?: IWatcherExternalProps;
-    sourceRoot?: string;
-    entries?: Array<string>;
-    vendorSourceMap?: boolean;
-    projectSourceMap?: boolean;
-    cssSourceMap?: boolean;
-    cacheEnabled?: boolean;
-    cacheRoot?: string;
-  };
 }

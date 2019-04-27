@@ -29,6 +29,14 @@ export interface IStyleSheetProps {
   ignoreChecksForCopiedResources?: boolean;
 
   /**
+   * If toggled all stylesheet module will break its dependants cache and will be forced to be reloaded
+   *
+   * @type {boolean}
+   * @memberof IStyleSheetProps
+   */
+  breakDepednantsCache?: boolean;
+
+  /**
    * Files will be grouped in folder by type
    * e.g images.jpg will go into "resources/images/image.jpg"
    * font.ogg will go into "resources/fonts/font.ogg"

@@ -18,12 +18,18 @@ export interface IFileCacheProps {
 export interface IModuleCacheBasics {
   contents: string;
   sourceMap: string;
+  weakReferences?: Array<string>;
+  breakDependantsCache?: boolean;
+  dependants?: Array<string>;
 }
 
 export interface IModuleCache {
   mtime: number;
   absPath: string;
   extension: string;
+  breakDependantsCache?: boolean;
+  dependants?: Array<string>;
+  weakReferences?: { [key: string]: number };
   fuseBoxPath: string;
   fastAnalysis: IFastAnalysis;
   contents: string;
@@ -281,11 +287,11 @@ export class Cache {
   public getModuleCacheKey(module: Module) {
     return `prj_${module.props.fuseBoxPath}`;
   }
+
   public saveModule(module: Module, basics: IModuleCacheBasics) {
     const stat = fileStat(module.props.absPath);
     const mtime = stat.mtime.getTime();
-
-    this.set(this.getModuleCacheKey(module), {
+    const obj: any = {
       mtime,
       fastAnalysis: module.fastAnalysis,
       contents: basics.contents,
@@ -293,7 +299,20 @@ export class Cache {
       absPath: module.props.absPath,
       extension: module.props.extension,
       fuseBoxPath: module.props.fuseBoxPath,
-    });
+    };
+    if (module.weakReferences) {
+      obj.weakReferences = {};
+      for (const absPath of module.weakReferences) {
+        const refStat = fileStat(absPath);
+        obj.weakReferences[absPath] = refStat.mtime.getTime();
+      }
+    }
+    // if (module.breakDependantsCache) {
+    //   obj.breakDependantsCache = true;
+    //   obj.dependants = module.moduleDependants.map(item => item.props.absPath);
+    // }
+
+    this.set(this.getModuleCacheKey(module), obj);
   }
 
   public restoreModule(module: Module): Module {
@@ -311,8 +330,25 @@ export class Cache {
       module.props.extension = cached.extension;
       module.props.fuseBoxPath = cached.fuseBoxPath;
       module.fastAnalysis = cached.fastAnalysis;
+      //module.weakReferences = cached.weakReferences;
 
-      module.setCache({ contents: cached.contents, sourceMap: cached.sourceMap });
+      if (cached.weakReferences) {
+        // check if weakReferences did't change (usually it's the internal imports in CSS modules)
+        for (const absPath in cached.weakReferences) {
+          const refStat = fileStat(absPath);
+          if (refStat.mtime.getTime() !== cached.weakReferences[absPath]) {
+            return;
+          }
+
+          module.props.ctx.weakReferences.add(absPath, module.props.absPath);
+        }
+      }
+      module.setCache({
+        //breakDependantsCache: cached.breakDependantsCache,
+        //dependants: cached.dependants,
+        contents: cached.contents,
+        sourceMap: cached.sourceMap,
+      });
       return module;
     }
   }

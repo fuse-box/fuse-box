@@ -13,6 +13,7 @@ export interface IGenerateHMRContentProps {
 }
 
 export interface IHMRModuleUpdate {
+  isStylesheet: boolean;
   content: string;
   fuseBoxPath: string;
 }
@@ -51,24 +52,24 @@ export function generateHMRContent(props: IGenerateHMRContentProps): IHMRUpdate 
       requireSourceMaps = true;
     }
 
+    let concat: Concat;
+    if (module.isCached) {
+      concat = createConcat(requireSourceMaps, '', '\n');
+      concat.add(null, devStrings.openPackage(packageName, {}));
+      concat.add(null, module.cache.contents, requireSourceMaps ? module.cache.sourceMap : undefined);
+      concat.add(null, devStrings.closePackage());
+    } else {
+      const data = module.generate();
+      concat = createConcat(requireSourceMaps, '', '\n');
+      concat.add(null, devStrings.openPackage(packageName, {}));
+      concat.add(null, devStrings.openFile(module.props.fuseBoxPath));
+      concat.add(null, data.contents, requireSourceMaps ? data.sourceMap : undefined);
+      concat.add(null, devStrings.closeFile());
+      concat.add(null, devStrings.closePackage());
+    }
+    let stringContent = concat.content.toString();
+    const rawSourceMap = concat.sourceMap;
     if (module.isExecutable()) {
-      let concat: Concat;
-      if (module.isCached) {
-        concat = createConcat(requireSourceMaps, '', '\n');
-        concat.add(null, devStrings.openPackage(packageName, {}));
-        concat.add(null, module.cache.contents, requireSourceMaps ? module.cache.sourceMap : undefined);
-        concat.add(null, devStrings.closePackage());
-      } else {
-        const data = module.generate();
-        concat = createConcat(requireSourceMaps, '', '\n');
-        concat.add(null, devStrings.openPackage(packageName, {}));
-        concat.add(null, devStrings.openFile(module.props.fuseBoxPath));
-        concat.add(null, data.contents, requireSourceMaps ? data.sourceMap : undefined);
-        concat.add(null, devStrings.closeFile());
-        concat.add(null, devStrings.closePackage());
-      }
-      let stringContent = concat.content.toString();
-      const rawSourceMap = concat.sourceMap;
       if (rawSourceMap && requireSourceMaps) {
         let json = JSON.parse(rawSourceMap);
         // since new Function wrapoer adds extra 2 lines we need to shift sourcemaps
@@ -76,8 +77,13 @@ export function generateHMRContent(props: IGenerateHMRContentProps): IHMRUpdate 
         const sm = convertSourceMap.fromObject(json).toComment();
         stringContent += '\n' + sm;
       }
-      response.push({ content: stringContent, fuseBoxPath: `${pkg.getPublicName()}/${module.props.fuseBoxPath}` });
     }
+
+    response.push({
+      content: stringContent,
+      isStylesheet: module.isStylesheet(),
+      fuseBoxPath: `${pkg.getPublicName()}/${module.props.fuseBoxPath}`,
+    });
   });
   return {
     packages: packageUpdate,
