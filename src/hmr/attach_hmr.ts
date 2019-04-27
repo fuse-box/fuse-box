@@ -8,7 +8,6 @@ import { generateHMRContent } from './hmr_content';
 function generateUpdateId() {
   return fastHash(new Date().getTime().toString() + Math.random().toString());
 }
-export interface IHMRExternalProps {}
 
 interface IHMRTask {
   action: WatcherAction;
@@ -95,7 +94,18 @@ export function attachHMR(ctx: Context) {
     const { packages, file } = props;
     if (file) {
       const project = packages.find(pkg => pkg.isDefaultPackage);
-      const target = project.modules.find(module => module.props.absPath === file);
+      let target = project.modules.find(module => module.props.absPath === file);
+      if (!target) {
+        // trying weak references
+        if (props.ctx.weakReferences.collection[file]) {
+          target = project.modules.find(
+            module => module.props.absPath === props.ctx.weakReferences.collection[file][0],
+          );
+          if (target) {
+            props.ctx.log.print('<bold><dim>HMR reference mapped: $file</dim></bold>', { file: target.props.absPath });
+          }
+        }
+      }
       if (target) {
         const task: IHMRTask = {
           packages: packages,

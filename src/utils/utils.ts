@@ -111,6 +111,10 @@ export function measureTime(group?: string) {
   };
 }
 
+export function cleanExistingSourceMappingURL(contents: string) {
+  return contents.replace(/\/*#\s*sourceMappingURL=\s*([^\s]+)\s*\*\//, '');
+}
+
 export function findReplace(str: string, re: RegExp, fn: (args) => string) {
   return str.replace(re, (...args) => {
     return fn(args);

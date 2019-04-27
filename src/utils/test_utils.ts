@@ -1,13 +1,14 @@
+import * as appRoot from 'app-root-path';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as appRoot from 'app-root-path';
-import { ensureFuseBoxPath, path2RegexPattern } from './utils';
-import { Context, createContext } from '../core/Context';
+import { IPublicConfig } from '../config/IPublicConfig';
 import { createDefaultPackage } from '../core/application';
+import { Context, createContext } from '../core/Context';
 import { createModule, IModuleProps, Module } from '../core/Module';
+import { createPackage, Package } from '../core/Package';
 import { assemble } from '../main/assemble';
-import { IConfig } from '../config/IPublicConfig';
-import { Package, createPackage } from '../core/Package';
+import { ensureFuseBoxPath, path2RegexPattern } from './utils';
+
 const utils = require('./utils');
 declare global {
   namespace jest {
@@ -37,7 +38,7 @@ expect.extend({
 });
 
 export interface IMockModuleProps {
-  config?: IConfig;
+  config?: IPublicConfig;
   packageProps?: {
     name?: string;
     isDefaultPackage?: boolean;

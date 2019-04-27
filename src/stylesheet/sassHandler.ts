@@ -3,8 +3,10 @@ import { IStyleSheetProps } from '../config/IStylesheetProps';
 import { Context } from '../core/Context';
 import { Module } from '../core/Module';
 import { readFile } from '../utils/utils';
+import { cssResolveModule } from './cssResolveModule';
 import { cssResolveURL } from './cssResolveURL';
-import { resolveCSSModule } from './cssUtils';
+import { IStylesheetModuleResponse, IStyleSheetProcessor } from './interfaces';
+import { alignCSSSourceMap } from './cssSourceMap';
 
 export interface ISassProps {
   macros?: { [key: string]: string };
@@ -30,7 +32,7 @@ interface IRenderModuleProps {
   nodeSass: any;
 }
 
-function evaluateSass(sassModule, options): Promise<{ css: Buffer }> {
+function evaluateSass(sassModule, options): Promise<{ css: Buffer; map: Buffer }> {
   return new Promise((resolve, reject) => {
     sassModule.render(options, (err, result) => {
       if (err) return reject(err);
@@ -44,7 +46,7 @@ export function sassImporter(props: ISassImporterProps) {
   const root = path.dirname(props.fileRoot);
   const paths = [root].concat(userPaths);
 
-  const resolved = resolveCSSModule({
+  const resolved = cssResolveModule({
     extensions: ['.scss', '.sass', '.css'],
     paths,
     target: props.url,
@@ -65,42 +67,52 @@ export function sassImporter(props: ISassImporterProps) {
   }
 }
 
-export async function renderModule(props: IRenderModuleProps) {
+export async function renderModule(props: IRenderModuleProps): Promise<IStylesheetModuleResponse> {
   const { ctx, module, nodeSass } = props;
+  let requireSourceMap = true;
+  if (ctx.config.sourceMap.css === false) {
+    requireSourceMap = false;
+  }
+  if (!module.pkg.isDefaultPackage && !ctx.config.sourceMap.vendor) {
+    requireSourceMap = false;
+  }
+
   const data = await evaluateSass(nodeSass, {
     data: module.contents,
     file: module.props.absPath,
-    sourceMap: props.ctx.config.sourceMap.css,
+    sourceMap: requireSourceMap,
     includePaths: [path.dirname(module.props.absPath)],
     outFile: module.props.absPath,
-    sourceMapContents: true,
+    sourceMapContents: requireSourceMap,
     importer: function(url, prev) {
+      // gathering imported dependencies in order to let the watcher pickup the right module
+
       const result = sassImporter({ options: props.options, ctx, module, url, fileRoot: prev });
+
+      if (props.options.breakDepednantsCache) {
+        module.breakDependantsCache = true;
+      }
+
+      module.addWeakReference(result.file);
       if (result) return result;
       return url;
     },
   });
-  console.log(data.css.toString());
+  let sourceMap: string;
+  if (data.map) {
+    sourceMap = alignCSSSourceMap({ module: props.module, sourceMap: data.map, ctx: props.ctx });
+  }
+  return { map: sourceMap, css: data.css && data.css.toString() };
 }
 
-export function sassHandler(props: ISassHandlerProps) {
+export function sassHandler(props: ISassHandlerProps): IStyleSheetProcessor {
   const { ctx, module } = props;
   const nodeSass = ctx.requireModule('node-sass');
   if (!nodeSass) {
     return;
   }
 
-  module.read();
-
-  // push to the bottom to not block the rest of the process
-  ctx.ict.promise(async () => {
-    try {
-      await renderModule({ ctx, module, nodeSass, options: props.options });
-    } catch (e) {
-      ctx.log.error('$error in $file', {
-        error: e.message,
-        file: module.props.absPath,
-      });
-    }
-  });
+  return {
+    render: async () => renderModule({ ctx, module, nodeSass, options: props.options }),
+  };
 }

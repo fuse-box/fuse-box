@@ -8,24 +8,27 @@ import { pluginDevJs } from '../plugins/core/plugin_dev_js';
 import { pluginTypescript } from '../plugins/core/plugin_typescript';
 import { assemble } from './assemble';
 import { attachCache } from './attach_cache';
-import { attachPlugins } from './attach_plugins';
+import { processPlugins } from './process_plugins';
 import { attachWatcher } from './attach_watcher';
 import { attachWebIndex } from './attach_webIndex';
 import { statLog } from './stat_log';
+import { pluginSass } from '../plugins/core/plugin_sass';
 
 export async function bundleDev(ctx: Context) {
   const ict = ctx.ict;
   const startTime = process.hrtime();
+
+  const plugins = [...ctx.config.plugins, pluginCSS(), pluginSass(), pluginDevJs(), pluginTypescript()];
+  plugins.forEach(plugin => plugin(ctx));
 
   attachCache(ctx);
   attachHMR(ctx);
 
   const packages = assemble(ctx, ctx.config.entries[0]);
 
-  await attachPlugins({
+  await processPlugins({
     ctx: ctx,
     packages: packages,
-    plugins: [...ctx.config.plugins, pluginCSS(), pluginDevJs(), pluginTypescript()],
   });
   // sorting bundles with dev, system, default, vendor
   const data = createDevBundles(ctx, packages);

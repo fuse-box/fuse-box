@@ -106,7 +106,7 @@ export function createWatcher(props: IWatcherProps, externalProps?: IWatcherExte
   const ict = ctx.ict;
   externalProps = externalProps || {};
   const ignored = externalProps.ignored ? externalProps.ignored : [];
-  ignored.push('/node_modules/', '/\\.');
+  ignored.push('/node_modules/', '/\\.', props.ctx.writer.outputDirectory);
   const ignoredRegEx: Array<RegExp> = ignored.map(str => ignoredPath2Regex(str));
 
   let events: Array<WatcherAction> = [];

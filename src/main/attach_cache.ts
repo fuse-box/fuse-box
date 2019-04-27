@@ -4,7 +4,7 @@ export function attachCache(ctx: Context) {
   const config = ctx.config;
   const ict = ctx.ict;
 
-  if (!config.cache) {
+  if (!config.cache.enabled) {
     return;
   }
   const cache = ctx.cache;
@@ -13,7 +13,7 @@ export function attachCache(ctx: Context) {
     const module = props.module;
     const pkg = props.module.pkg;
     const ctx = module.props.ctx;
-    if (ctx.cache && pkg.isDefaultPackage && module.isExecutable()) {
+    if (ctx.cache && pkg.isDefaultPackage) {
       // restores module from cache
       cache.restoreModule(module);
     }
@@ -25,7 +25,7 @@ export function attachCache(ctx: Context) {
     const pkg = props.module.pkg;
     const ctx = module.props.ctx;
 
-    if (ctx.cache && pkg.isDefaultPackage && module.isExecutable()) {
+    if (ctx.cache && pkg.isDefaultPackage) {
       cache.saveModule(module, { contents: props.concat.content.toString(), sourceMap: props.concat.sourceMap });
     }
     return props;

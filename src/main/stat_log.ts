@@ -61,7 +61,7 @@ export function statLog(props: IStatLogProps) {
   }
 
   setTimeout(() => {
-    ctx.log.printNewLine();
+    //ctx.log.printNewLine();
     ctx.log.printWarnings();
     ctx.log.printErrors();
   }, 0);

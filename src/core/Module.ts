@@ -14,17 +14,60 @@ export interface IModuleProps {
 export class Module {
   public isCached: boolean;
   public cache: IModuleCacheBasics;
-  public pkg: Package;
 
   public assembled: boolean;
   public isEntryPoint?: boolean;
 
   public fastAnalysis: IFastAnalysis;
+
+  /**
+   * A package that holds this module
+   *
+   * @type {Package}
+   * @memberof Module
+   */
+
+  public pkg: Package;
+  /**
+   * A list of modules that imported this moudle
+   *
+   * @type {Array<Module>}
+   * @memberof Module
+   */
+  public moduleDependants: Array<Module>;
+
+  /**
+   * Toggle this from plugins in order to let the watchers to break
+   * all modules cache which imported this module
+   *
+   * @type {boolean}
+   * @memberof Module
+   */
+  public breakDependantsCache: boolean;
+
+  /**
+   * Current dependency tree
+   *
+   * @type {Array<Module>}
+   * @memberof Module
+   */
   public moduleDependencies: Array<Module>;
+
+  /**
+   * Node Modules dependencies of this module
+   *
+   * @type {Array<Package>}
+   * @memberof Module
+   */
   public externalDependencies: Array<Package>;
 
-  // this flag can be toggled in order to prevent multiple plugins from capturing it
-
+  /**
+   * Used by plugins to identify whether this module has been captured
+   * And prevent other plugins from capturing it
+   *
+   * @type {boolean}
+   * @memberof Module
+   */
   public captured: boolean;
 
   /*  Properties that affect bundle result  */
@@ -32,7 +75,11 @@ export class Module {
   public header: Array<string>; // extra content on top of the file
   public contents: string; // primary contents
   public sourceMap: string; // primary sourcemap
+  public cssSourceMap: string; // css sourcemap
+  public weakReferences: Array<string>;
 
+  private _isStylesheet: boolean;
+  private _isExecutable: boolean;
   constructor(public props: IModuleProps, pkg: Package) {
     this.pkg = pkg;
     this.assembled = false;
@@ -49,6 +96,15 @@ export class Module {
     return ['.ts', '.tsx'].includes(this.props.extension);
   }
 
+  public addWeakReference(url: string) {
+    if (url === this.props.absPath) return;
+    if (!this.weakReferences) this.weakReferences = [];
+    if (!this.weakReferences.includes(url)) {
+      this.weakReferences.push(url);
+      this.props.ctx.weakReferences.add(url, this.props.absPath);
+    }
+  }
+
   public setCache(basics: IModuleCacheBasics) {
     this.isCached = true;
     this.cache = basics;
@@ -63,7 +119,7 @@ export class Module {
       );
     } else {
       return joinFuseBoxPath(
-        '/modules',
+        config.defaultSourceMapModulesRoot,
         this.pkg.getPublicName(),
         extractFuseBoxPath(this.pkg.props.meta.packageRoot, this.props.absPath),
       );
@@ -76,11 +132,17 @@ export class Module {
   }
 
   public isExecutable() {
-    return EXECUTABLE_EXTENSIONS.includes(this.props.extension);
+    if (this._isExecutable === undefined) {
+      this._isExecutable = EXECUTABLE_EXTENSIONS.includes(this.props.extension);
+    }
+    return this._isExecutable;
   }
 
   public isStylesheet() {
-    return ['.scss', '.sass', 'less', 'styl'].indexOf(this.props.extension) > -1;
+    if (this._isStylesheet === undefined) {
+      this._isStylesheet = ['.css', '.scss', '.sass', '.less', '.styl'].indexOf(this.props.extension) > -1;
+    }
+    return this._isStylesheet;
   }
 
   public generate() {

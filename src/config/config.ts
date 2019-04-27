@@ -4,12 +4,11 @@ import { env } from '../core/env';
 
 import * as path from 'path';
 import { IPublicConfig } from './IPublicConfig';
-import { IPrivateConfig } from './IPrivateConfig';
-export function createConfig(props: IPublicConfig): IPrivateConfig {
-  const config: IPrivateConfig = {
-    root: process.env.APP_ROOT || appRoot.path,
-  };
+import { PrivateConfig } from './PrivateConfig';
+export function createConfig(props: IPublicConfig): PrivateConfig {
+  const config = new PrivateConfig();
 
+  config.root = process.env.APP_ROOT || appRoot.path;
   config.defaultCollectionName = 'default';
 
   if (props.homeDir) {
@@ -108,7 +107,7 @@ export function createConfig(props: IPublicConfig): IPrivateConfig {
   if (typeof props.cache === 'boolean') {
     config.cache.enabled = props.cache;
   } else if (typeof props.cache === 'object') {
-    config.cache.enabled = typeof props.cache.enabled === 'boolean' ? props.cache.enabled : true;
+    config.cache.enabled = typeof props.cache.enabled === 'boolean' ? props.cache.enabled : false;
     if (props.cache.root !== undefined) {
       config.cache.root = path.join(props.cache.root, env.VERSION);
     }
@@ -116,7 +115,9 @@ export function createConfig(props: IPublicConfig): IPrivateConfig {
 
   // hmr ************************************************************************************************
   config.hmr = {
-    enabled: false,
+    hmrProps: {
+      reloadEntryOnStylesheet: true,
+    },
   };
 
   config.watch = {
@@ -131,14 +132,19 @@ export function createConfig(props: IPublicConfig): IPrivateConfig {
       config.watch.enabled = typeof props.watch === 'boolean' ? props.watch : true;
       config.watch.watcherProps = props.watch;
     }
+
     if (config.watch.enabled && config.hmr.enabled !== false) {
       config.hmr.enabled = true;
     }
   }
 
-  if (props.hmr) {
+  if (props.hmr && config.watch.enabled) {
     if (typeof props.hmr === 'boolean') {
       config.hmr.enabled = props.hmr;
+    }
+    if (typeof props.hmr === 'object') {
+      config.hmr.enabled = true;
+      config.hmr.hmrProps = { ...config.hmr.hmrProps, ...props.hmr };
     }
   }
 

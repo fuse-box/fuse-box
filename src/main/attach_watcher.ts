@@ -8,7 +8,7 @@ import { EMOJIS } from '../logging/logging';
 import { extractFuseBoxPath } from '../utils/utils';
 import { createWatcher, WatcherAction } from '../watcher/watcher';
 import { assemble } from './assemble';
-import { pluginProcessPackages } from './attach_plugins';
+import { pluginProcessPackages } from './process_plugins';
 import { statLog } from './stat_log';
 export interface IWatcherAttachProps {
   ctx: Context;
@@ -40,6 +40,7 @@ async function appReload(props: IAppReloadProps): Promise<IAppReloadResponse> {
   // remove objects from assemble context
   // in order to start over
   ctx.assembleContext.flush();
+  //  ctx.weakReferences.flush();
   // nuke all files, all objects in memory
   if (props.nukeAllCache) {
     ctx.cache.nukeAll();
@@ -113,7 +114,9 @@ async function reload_Process(props: OnWatcherProps) {
 
 async function onWatcherEvent(props: OnWatcherProps) {
   const log = props.ctx.log;
+  const fuseBoxPath = props.file && extractFuseBoxPath(props.ctx.config.homeDir, props.file);
   const shortPath = props.file && extractFuseBoxPath(env.APP_ROOT, props.file);
+
   let response: IAppReloadResponse;
   if (props.action == WatcherAction.RELOAD_ONE_FILE) {
     log.print('<bold><dim>Soft Reload: $file</dim></bold>', { file: shortPath });

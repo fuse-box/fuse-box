@@ -1,6 +1,7 @@
 import * as acorn from 'acorn';
 import { generate } from 'astring';
 import { walkAST } from '../utils/ast';
+import * as meriyah from 'meriyah';
 import * as sourceMapModule from 'source-map';
 
 import {
@@ -24,8 +25,10 @@ export function acornParse(contents, options?: any): any {
     jsx: { allowNamespacedObjects: true },
   });
 }
-
+// meriyah 445ms
+// acorn 544ms
 export function parseAst(contents: string, options?: any) {
+  //return meriyah.parseModule(contents, options);
   return acornParse(contents, options);
   // return cherow.parseScript(contents, {
   //   module: true,
