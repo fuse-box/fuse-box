@@ -15,6 +15,16 @@ export interface IPublicConfig {
   modules?: Array<string>;
   logging?: ILoggerProps;
   watch?: boolean | IWatcherExternalProps;
+
+  /**
+   * Environment variables. Values can be strings only
+   * Default values for development and production:
+   * NODE_ENV=development|production
+   * @type {{ [key: string]: string }}
+   * @memberof IPublicConfig
+   */
+  env?: { [key: string]: string };
+
   hmr?: boolean | IHMRExternalProps;
   stylesheet?: IStyleSheetProps;
   cache?:

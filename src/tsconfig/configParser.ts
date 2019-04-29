@@ -4,6 +4,7 @@ import * as ts from 'typescript';
 import { PrivateConfig } from '../config/PrivateConfig';
 import { IRawCompilerOptions, IRawTypescriptConfig, TypescriptConfig } from '../interfaces/TypescriptInterfaces';
 import { fileExists, pathJoin } from '../utils/utils';
+import { ITypescriptPathsConfig } from '../resolver/resolver';
 
 export function resolveTSConfig(props: {
   root: string;
@@ -81,7 +82,20 @@ export function initTypescriptConfig(
 
   delete userOptions.mod;
 
+  let typescriptPaths: ITypescriptPathsConfig;
+  if (userOptions.baseUrl) {
+    typescriptPaths = {
+      baseURL: path.resolve(basePath, userOptions.baseUrl),
+      paths: userOptions.paths,
+    };
+  }
+
   const config = ts.convertCompilerOptionsFromJson(userOptions, basePath);
 
-  return { basePath, jsonCompilerOptions: userOptions, compilerOptions: config.options };
+  return {
+    typescriptPaths: typescriptPaths,
+    basePath,
+    jsonCompilerOptions: userOptions,
+    compilerOptions: config.options,
+  };
 }

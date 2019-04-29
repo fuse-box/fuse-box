@@ -1,6 +1,8 @@
 import { ITypescriptPaths } from '../resolver/pathsLookup';
 import * as ts from 'typescript';
+import { ITypescriptPathsConfig } from '../resolver/resolver';
 export interface TypescriptConfig {
+  typescriptPaths?: ITypescriptPathsConfig;
   basePath?: string;
   diagnostics?: Array<any>; // all errors come here
   jsonCompilerOptions?: IRawCompilerOptions;

@@ -8,6 +8,7 @@ import { IStyleSheetProps } from './IStylesheetProps';
 import { ensureAbsolutePath } from '../utils/utils';
 import { Context } from '../core/Context';
 import * as path from 'path';
+import { IPublicConfig } from './IPublicConfig';
 
 export interface IHMRExternalProps {
   reloadEntryOnStylesheet?: boolean;
@@ -38,6 +39,7 @@ export class PrivateConfig {
   watch?: IWatcherProps;
   hmr?: IHMRProps;
   stylesheet?: IStyleSheetProps;
+  env?: { [key: string]: string };
   cache?: ICacheProps;
   tsConfig?: string | IRawCompilerOptions;
   entries?: Array<string>;
@@ -66,9 +68,11 @@ export class PrivateConfig {
 
   private _resourceFolder: string;
 
-  constructor() {
+  constructor(props: IPublicConfig) {
     this.defaultResourcePublicRoot = '/resources';
     this.defaultSourceMapModulesRoot = '/modules';
+
+    this.env = props.env === undefined ? { NODE_ENV: this.production ? 'production' : 'development' } : props.env;
   }
 
   public getResourcePublicRoot() {

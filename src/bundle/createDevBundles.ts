@@ -18,6 +18,8 @@ export function injectSettingIntoDevBundle(ctx: Context, bundle: Bundle) {
   if (ctx.config.hmr.enabled && ctx.config.hmr.hmrProps.reloadEntryOnStylesheet) {
     bundle.addContent(devStrings.reloadEntryOnStylesheet(true));
   }
+
+  bundle.addContent(devStrings.processEnv(ctx.config.env));
   bundle.addContent(devStrings.target(ctx.config.target || 'server'));
 }
 
