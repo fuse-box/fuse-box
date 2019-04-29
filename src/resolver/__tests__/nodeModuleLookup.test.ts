@@ -57,18 +57,17 @@ describe('NodeModule lookup', () => {
   const modules = path.join(__dirname, 'cases/_modules');
   const filePath = path.join(cases, 'src2/index.ts');
   it('should fail to look up a module', () => {
-    expect(() => {
-      nodeModuleLookup({ filePath: filePath, target: '__foo' }, { name: '__foo' });
-    }).toThrowError();
+    const res = nodeModuleLookup({ filePath: filePath, target: '__foo' }, { name: '__foo' });
+    expect(res).toEqual({ error: 'Cannot resolve __foo' });
   });
 
   it('should fail to look up a module without package.json', () => {
-    expect(() => {
-      nodeModuleLookup(
-        { modules: [modules], filePath: filePath, target: 'incomplete_module' },
-        { name: 'incomplete_module' },
-      );
-    }).toThrowError();
+    const res = nodeModuleLookup(
+      { modules: [modules], filePath: filePath, target: 'incomplete_module' },
+      { name: 'incomplete_module' },
+    );
+
+    expect(res.error).toContain('Failed to find package.json');
   });
 
   it('should extract fuse-box info from package.json', () => {
@@ -80,9 +79,12 @@ describe('NodeModule lookup', () => {
   });
 
   it('should throw an error if an entry point is not found', () => {
-    expect(() => {
-      nodeModuleLookup({ modules: [modules], filePath: filePath, target: 'wrong_entry' }, { name: 'wrong_entry' });
-    }).toThrowError();
+    //expect(() => {
+    const res = nodeModuleLookup(
+      { modules: [modules], filePath: filePath, target: 'wrong_entry' },
+      { name: 'wrong_entry' },
+    );
+    expect(res.error).toContain('Failed to resolve an entry point in package');
   });
 });
 

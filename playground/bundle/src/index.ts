@@ -7,6 +7,7 @@ import { Other } from 'other/Other';
 console.log(20);
 
 console.log(process.env);
+import 'fooshit';
 
 console.log('other', Other);
 

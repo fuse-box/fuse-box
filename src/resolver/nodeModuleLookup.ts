@@ -82,6 +82,7 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
   }
 }
 export interface INodeModuleLookup {
+  error?: string;
   targetAbsPath?: string;
   targetExtension?: string;
   targetFuseBoxPath?: string;
@@ -101,12 +102,12 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
   result.meta = pkg;
 
   if (!folder) {
-    throw new DocumentedError('001', `Failed to resolved ${parsed.name}`);
+    return { error: `Cannot resolve ${parsed.name}` };
   }
 
   const packageJSONFile = path.join(folder, 'package.json');
   if (!fileExists(packageJSONFile)) {
-    throw new DocumentedError('002', `Failed to find package.json in ${folder} when resolving module ${parsed.name}`);
+    return { error: `Failed to find package.json in ${folder} when resolving module ${parsed.name}` };
   }
   const json = require(packageJSONFile);
   pkg.version = json.version || '0.0.0';
@@ -124,10 +125,9 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
   const entryLookup = fileLookup({ target: entryFile, fileDir: folder });
 
   if (!entryLookup.fileExists) {
-    throw new DocumentedError(
-      '002',
-      `Failed to resolve an entry point in package ${parsed.name}. File ${entryFile} cannot be resolved.`,
-    );
+    return {
+      error: `Failed to resolve an entry point in package ${parsed.name}. File ${entryFile} cannot be resolved.`,
+    };
   }
 
   pkg.entryAbsPath = entryLookup.absPath;
@@ -136,7 +136,7 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
   if (parsed.target) {
     const parsedLookup = fileLookup({ target: parsed.target, fileDir: folder });
     if (!parsedLookup) {
-      throw new DocumentedError('003', `Failed to resolve ${props.target} in ${parsed.name}`);
+      return { error: `Failed to resolve ${props.target} in ${parsed.name}` };
     }
     result.targetAbsPath = parsedLookup.absPath;
 
