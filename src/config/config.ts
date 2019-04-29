@@ -6,7 +6,7 @@ import * as path from 'path';
 import { IPublicConfig } from './IPublicConfig';
 import { PrivateConfig } from './PrivateConfig';
 export function createConfig(props: IPublicConfig): PrivateConfig {
-  const config = new PrivateConfig();
+  const config = new PrivateConfig(props);
 
   config.root = process.env.APP_ROOT || appRoot.path;
   config.defaultCollectionName = 'default';

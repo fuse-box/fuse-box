@@ -11,6 +11,10 @@ export enum ImportType {
   DYNAMIC,
 }
 
+export interface ITypescriptPathsConfig {
+  baseURL: string;
+  paths?: { [key: string]: Array<string> };
+}
 export interface IResolverProps {
   buildTarget?: 'browser' | 'server' | 'electron' | 'universal';
   // user string
@@ -24,10 +28,7 @@ export interface IResolverProps {
   alias?: {
     [key: string]: string;
   };
-  typescriptPaths?: {
-    baseURL: string;
-    paths?: { [key: string]: Array<string> };
-  };
+  typescriptPaths?: ITypescriptPathsConfig;
 }
 
 export interface IPackageMeta {

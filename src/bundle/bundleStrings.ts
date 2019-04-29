@@ -3,6 +3,7 @@ export const devStrings = {
   target: (name: string) => `FuseBox.target = "${name}";`,
   reloadEntryOnStylesheet: (value: boolean) => `FuseBox.reloadEntryOnStylesheet = ${value};`,
   importFile: name => `FuseBox.import("${name}");`,
+  processEnv: (vars: { [key: string]: string }) => `FuseBox.processEnv = ${JSON.stringify(vars)};`,
   setEntry: name => `FuseBox.main("${name}");`,
   openPackage: (name, conflicting: { [key: string]: string }) => {
     return `FuseBox.pkg("${name}", ${JSON.stringify(conflicting)}, function(___scope___){`;

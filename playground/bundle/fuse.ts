@@ -15,6 +15,7 @@ const ctx = createContext({
   },
   sourceMap: { vendor: false },
 
+  env: { NODE_ENV: 'stage', foo: 'bar' },
   stylesheet: {
     breakDepednantsCache: true,
     macros: {

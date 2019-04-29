@@ -86,6 +86,7 @@ export function pathsLookup(props: IPathsLookupProps): ILookupResult {
   if (indexFiles) {
     for (const i in indexFiles) {
       const item = indexFiles[i];
+
       // check if starts with it only
       const regex = new RegExp(`^${item.nameWithoutExtension}($|\\.|\\/)`);
       if (regex.test(props.target)) {
