@@ -48,6 +48,7 @@ export interface IPackageMeta {
 }
 
 export interface IResolver {
+  error?: string;
   // skip bundling
   skip?: boolean;
   // external e.g. http://something.com/main.css
@@ -161,6 +162,9 @@ export function resolveModule(props: IResolverProps): IResolver {
         return { skip: true };
       }
       const pkg = nodeModuleLookup(props, moduleParsed);
+      if (pkg.error) {
+        return { error: pkg.error };
+      }
       const aliasForced = forceReplacement && target;
       return {
         forcedStatement: pkg.forcedStatement ? pkg.forcedStatement : aliasForced,

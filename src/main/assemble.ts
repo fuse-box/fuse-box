@@ -86,8 +86,19 @@ function resolveStatement(
     importType: opts.importType,
     target: opts.statement,
   });
+  if (!resolved) {
+    props.ctx.log.warn('Cannot resolve $statement in $file', {
+      statement: opts.statement,
+      file: props.module.props.absPath,
+    });
+    return;
+  }
 
-  if (!resolved || resolved.skip || resolved.isExternal) {
+  if (resolved.error) {
+    props.ctx.log.error(`$error in $file`, { error: resolved.error, file: props.module.props.absPath });
+    return;
+  }
+  if (resolved.skip || resolved.isExternal) {
     return;
   }
   if (resolved.package) {
