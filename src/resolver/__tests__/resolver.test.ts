@@ -62,7 +62,7 @@ describe('Resolver test', () => {
 
       expect(info.extension).toEqual('.js');
       expect(info.fuseBoxPath).toEqual('some1/index.js');
-      expect(info.absPath).toContain('cases/src1/some1/index.js');
+      expect(info.absPath).toMatchFilePath('cases/src1/some1/index.js');
     });
 
     it('Should resolve index.jsx', () => {

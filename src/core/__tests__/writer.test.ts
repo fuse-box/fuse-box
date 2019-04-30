@@ -84,7 +84,7 @@ describe('Writer test', () => {
     it('should generate for prod with directory', () => {
       const res = createWriter({ root: __dirname, isProduction: true, output: '$name-$hash' });
       const data = res.generate('bar/foo.js', 'somecontents');
-      expect(data.localPath).toEqual('bar/foo-646b1c0e.js');
+      expect(data.localPath).toMatchFilePath('bar/foo-646b1c0e.js$');
     });
 
     it('should give correct absPath 1', () => {

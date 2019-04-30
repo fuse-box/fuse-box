@@ -92,12 +92,10 @@ describe('parseAllModulePaths', () => {
   it('Should parse 1', () => {
     const path = 'a/node_modules/@angular/core/node_modules/foo/node_modules/bar/far/woo/index.js';
     const paths = parseAllModulePaths(path);
-    expect(paths).toEqual([
-      'a/node_modules',
-      'a/node_modules/@angular/core/node_modules',
-      'a/node_modules/@angular/core/node_modules/foo/node_modules',
-      'a/node_modules/@angular/core/node_modules/foo/node_modules/bar/node_modules',
-    ]);
+    expect(paths[0]).toMatchFilePath(`a/node_modules$`);
+    expect(paths[1]).toMatchFilePath(`a/node_modules/@angular/core/node_modules$`);
+    expect(paths[2]).toMatchFilePath(`a/node_modules/@angular/core/node_modules/foo/node_modules$`);
+    expect(paths[3]).toMatchFilePath(`a/node_modules/@angular/core/node_modules/foo/node_modules/bar/node_modules$`);
   });
 
   it('Should give a primary path ', () => {
