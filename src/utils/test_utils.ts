@@ -8,6 +8,7 @@ import { createModule, IModuleProps, Module } from '../core/Module';
 import { createPackage, Package } from '../core/Package';
 import { assemble } from '../main/assemble';
 import { ensureFuseBoxPath, path2RegexPattern } from './utils';
+import { simplifiedRegExp } from '../plugins/pluginUtils';
 
 const utils = require('./utils');
 declare global {
@@ -208,7 +209,7 @@ export function mockWriteFile() {
 
   return {
     findFile: (pattern): { name: string; contents: string; stat: any } => {
-      const re = path2RegexPattern(pattern);
+      const re = simplifiedRegExp(pattern);
       for (const key in scope.files) {
         const item = scope.files[key];
         if (re.test(key)) {
