@@ -56,6 +56,7 @@ export class Context {
     try {
       return require(name);
     } catch (error) {
+      console.log(error);
       this.log.error('Cannot import $name. Forgot to insall? ', { name: name });
     }
   }

@@ -25,6 +25,10 @@ export function offsetLines(obj: any, amount: number) {
   return offsetLinesModule(obj, amount);
 }
 
+export function isRegExp(input: any): boolean {
+  return !!(input && typeof input.test === 'function');
+}
+
 export function createRequireConst(name: string, variable?: string) {
   return `var ${variable ? variable : name} = require("${name}");`;
 }

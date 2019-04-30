@@ -1,15 +1,18 @@
 import * as lodash from 'lodash-es';
 console.log(lodash);
 import './styles/main.scss';
-import 'abab/styles/index.scss';
-import 'abbrev/index.scss';
+// import 'abab/styles/index.scss';
+// import 'abbrev/index.scss';
 import { Other } from 'other/Other';
 console.log(20);
+import './styles/raw.css';
 
 console.log(process.env);
-import 'fooshit';
+//import 'fooshit';
 
 console.log('other', Other);
+console.log(require('./some.json'));
+console.log(require('./configs/myconfig.json'));
 
 // console.log(lodash);
 // import { FooClass } from './foo';

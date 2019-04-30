@@ -1,8 +1,9 @@
 import { IFastAnalysis } from '../analysis/fastAnalysis';
 import { IModuleCacheBasics } from '../cache/cache';
-import { createConcat, extractFuseBoxPath, joinFuseBoxPath, readFile } from '../utils/utils';
+import { createConcat, extractFuseBoxPath, joinFuseBoxPath, readFile, ensureFuseBoxPath } from '../utils/utils';
 import { Context } from './Context';
 import { Package } from './Package';
+import { testPath } from '../plugins/pluginUtils';
 const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx'];
 
 export interface IModuleProps {
@@ -80,6 +81,7 @@ export class Module {
 
   private _isStylesheet: boolean;
   private _isExecutable: boolean;
+
   constructor(public props: IModuleProps, pkg: Package) {
     this.pkg = pkg;
     this.assembled = false;
@@ -103,6 +105,10 @@ export class Module {
       this.weakReferences.push(url);
       this.props.ctx.weakReferences.add(url, this.props.absPath);
     }
+  }
+
+  public testPath(path: string | RegExp) {
+    return testPath(this.props.absPath, path);
   }
 
   public setCache(basics: IModuleCacheBasics) {

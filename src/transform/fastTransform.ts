@@ -1,9 +1,8 @@
 import * as acorn from 'acorn';
 import { generate } from 'astring';
-import { walkAST } from '../utils/ast';
 import * as meriyah from 'meriyah';
 import * as sourceMapModule from 'source-map';
-
+import { walkAST } from '../utils/ast';
 import {
   createLocalVariable,
   createMemberExpression,
@@ -13,7 +12,6 @@ import {
   isExportDefaultDeclaration,
   isExportNamedDeclaration,
 } from './acornUtils';
-import { fixModuleSourceMap } from '../sourcemaps/helpers';
 
 export function acornParse(contents, options?: any): any {
   options = options || {};
@@ -28,8 +26,8 @@ export function acornParse(contents, options?: any): any {
 // meriyah 445ms
 // acorn 544ms
 export function parseAst(contents: string, options?: any) {
-  //return meriyah.parseModule(contents, options);
-  return acornParse(contents, options);
+  return meriyah.parseModule(contents, options);
+  //return acornParse(contents, options);
   // return cherow.parseScript(contents, {
   //   module: true,
   //   next: true,

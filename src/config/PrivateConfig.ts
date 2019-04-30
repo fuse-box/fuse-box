@@ -9,6 +9,7 @@ import { ensureAbsolutePath } from '../utils/utils';
 import { Context } from '../core/Context';
 import * as path from 'path';
 import { IPublicConfig } from './IPublicConfig';
+import { IJSONPluginProps } from '../plugins/core/plugin_json';
 
 export interface IHMRExternalProps {
   reloadEntryOnStylesheet?: boolean;
@@ -39,6 +40,7 @@ export class PrivateConfig {
   watch?: IWatcherProps;
   hmr?: IHMRProps;
   stylesheet?: IStyleSheetProps;
+  json?: IJSONPluginProps;
   env?: { [key: string]: string };
   cache?: ICacheProps;
   tsConfig?: string | IRawCompilerOptions;
@@ -73,6 +75,8 @@ export class PrivateConfig {
     this.defaultSourceMapModulesRoot = '/modules';
 
     this.env = props.env === undefined ? { NODE_ENV: this.production ? 'production' : 'development' } : props.env;
+
+    this.json = props.json === undefined ? { useDefault: false } : props.json;
   }
 
   public getResourcePublicRoot() {

@@ -1,5 +1,5 @@
 export interface IStylesheetModuleResponse {
-  map: string;
+  map?: string;
   css: string;
 }
 

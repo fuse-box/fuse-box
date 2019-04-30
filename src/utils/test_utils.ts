@@ -92,7 +92,7 @@ export function throttle(ms: number) {
   });
 }
 export function createAssembleHellper(folder: string) {
-  function createProjectContext(folder: string, opts?: IConfig): Context {
+  function createProjectContext(folder: string, opts?: IPublicConfig): Context {
     opts = opts || {};
     return createContext({
       ...{
@@ -104,7 +104,7 @@ export function createAssembleHellper(folder: string) {
   }
 
   return function withEntry(
-    opts: IConfig,
+    opts: IPublicConfig,
     entry: string,
   ): {
     ctx: Context;
