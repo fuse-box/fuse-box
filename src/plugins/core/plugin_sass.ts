@@ -11,17 +11,21 @@ export function pluginSass() {
       }
 
       if (['.scss', '.sass'].includes(module.props.extension)) {
+        ctx.log.verbose('<cyan><bold>SASS:</bold> Captured $file with <bold>sassPlugin</bold> plugin</cyan>', {
+          file: module.props.absPath,
+        });
         props.module.read();
         props.module.captured = true;
 
-        const { render } = sassHandler({ ctx: ctx, module, options: ctx.config.stylesheet });
+        const sass = sassHandler({ ctx: ctx, module, options: ctx.config.stylesheet });
+        if (!sass) return;
 
         // development mode
         // render without blocking and creating a special content
         if (!ctx.config.production) {
           ctx.ict.promise(async () => {
             try {
-              const data = await render();
+              const data = await sass.render();
 
               cssDevModuleRender({ data, ctx, options: ctx.config.stylesheet, module });
             } catch (e) {

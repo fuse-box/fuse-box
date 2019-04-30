@@ -67,7 +67,7 @@ describe('NodeModule lookup', () => {
       { name: 'incomplete_module' },
     );
 
-    expect(res.error).toContain('Failed to find package.json');
+    expect(res.error).toBeTruthy();
   });
 
   it('should extract fuse-box info from package.json', () => {

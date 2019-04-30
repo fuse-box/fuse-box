@@ -13,12 +13,13 @@ import { attachWatcher } from './attach_watcher';
 import { attachWebIndex } from './attach_webIndex';
 import { statLog } from './stat_log';
 import { pluginSass } from '../plugins/core/plugin_sass';
+import { pluginJSON } from '../plugins/core/plugin_json';
 
 export async function bundleDev(ctx: Context) {
   const ict = ctx.ict;
   const startTime = process.hrtime();
 
-  const plugins = [...ctx.config.plugins, pluginCSS(), pluginSass(), pluginDevJs(), pluginTypescript()];
+  const plugins = [...ctx.config.plugins, pluginJSON(), pluginCSS(), pluginSass(), pluginDevJs(), pluginTypescript()];
   plugins.forEach(plugin => plugin(ctx));
 
   attachCache(ctx);

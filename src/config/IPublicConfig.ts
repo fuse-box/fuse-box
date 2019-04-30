@@ -6,6 +6,7 @@ import { IWatcherExternalProps } from '../watcher/watcher';
 import { IWebIndexConfig } from '../web-index/webIndex';
 import { IStyleSheetProps } from './IStylesheetProps';
 import { IHMRExternalProps } from './PrivateConfig';
+import { IJSONPluginProps } from '../plugins/core/plugin_json';
 
 export interface IPublicConfig {
   root?: string;
@@ -15,6 +16,8 @@ export interface IPublicConfig {
   modules?: Array<string>;
   logging?: ILoggerProps;
   watch?: boolean | IWatcherExternalProps;
+
+  json?: IJSONPluginProps;
 
   /**
    * Environment variables. Values can be strings only
