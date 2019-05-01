@@ -73,7 +73,7 @@ describe('Resolver test', () => {
       });
       expect(info.extension).toEqual('.jsx');
       expect(info.fuseBoxPath).toEqual('some2/index.jsx');
-      expect(info.absPath).toContain('cases/src1/some2/index.jsx');
+      expect(info.absPath).toMatchFilePath('cases/src1/some2/index.jsx');
     });
 
     it('Should resolve index.ts', () => {
@@ -84,7 +84,7 @@ describe('Resolver test', () => {
       });
       expect(info.extension).toEqual('.ts');
       expect(info.fuseBoxPath).toEqual('some3/index.js');
-      expect(info.absPath).toContain('cases/src1/some3/index.ts');
+      expect(info.absPath).toMatchFilePath('cases/src1/some3/index.ts');
     });
 
     it('Should resolve index.tsx', () => {
@@ -95,7 +95,7 @@ describe('Resolver test', () => {
       });
       expect(info.extension).toEqual('.tsx');
       expect(info.fuseBoxPath).toEqual('some4/index.jsx');
-      expect(info.absPath).toContain('cases/src1/some4/index.tsx');
+      expect(info.absPath).toMatchFilePath('cases/src1/some4/index.tsx');
     });
 
     it('Should resolve with importType DYNAMIC', () => {
@@ -108,7 +108,7 @@ describe('Resolver test', () => {
       expect(info.forcedStatement).toEqual('~/some4/index.jsx');
       expect(info.extension).toEqual('.tsx');
       expect(info.fuseBoxPath).toEqual('some4/index.jsx');
-      expect(info.absPath).toContain('cases/src1/some4/index.tsx');
+      expect(info.absPath).toMatchFilePath('cases/src1/some4/index.tsx');
     });
 
     it('Should resolve with package override', () => {
@@ -153,6 +153,7 @@ describe('Resolver test', () => {
       expect(info.absPath).toMatchFilePath('some1/index.js$');
       expect(info.forcedStatement).toEqual('~/some1/index.js');
     });
+    
 
     it('Should replace alias 3', () => {
       const info = resolveModule({
