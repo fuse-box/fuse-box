@@ -48,7 +48,7 @@
     "fs-extra": "^7.0.1",
     "fuse-concat-with-sourcemaps": "^1.0.5",
     "getopts": "^2.1.1",
-    "glob": "^7.1.1",
+    "glob": "^7.1.4",
     "ieee754": "^1.1.8",
     "lego-api": "^1.0.7",
     "meriyah": "0.0.10",

@@ -24,6 +24,7 @@ export interface IRawCompilerOptions {
   importHelpers?: boolean;
   experimentalDecorators?: boolean;
   emitDecoratorMetadata?: boolean;
+  declaration?: boolean;
 }
 export interface IRawTypescriptConfig {
   error?: any;
