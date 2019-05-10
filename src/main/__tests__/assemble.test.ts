@@ -322,4 +322,69 @@ describe('Assemble test', () => {
       ]);
     });
   });
+
+  describe('Case with same versions in different submodules', () => {
+    createRealNodeModule(
+      'fuse-box-conflict-same-a',
+      {
+        name: 'fuse-box-conflict-same-a',
+        main: 'index.js',
+        version: '1.0.1',
+      },
+      {
+        'index.js': `import "fuse-box-conflict-same-dep/foo";`,
+      },
+    );
+
+    createRealNodeModule(
+      'fuse-box-conflict-same-a/node_modules/fuse-box-conflict-same-dep',
+      {
+        name: 'fuse-box-conflict-same-dep',
+        main: 'index.js',
+        version: '2.0.0',
+      },
+      {
+        'index.js': '',
+        'foo.js': `
+          exports.foo = 1
+        `,
+      },
+    );
+
+    createRealNodeModule(
+      'fuse-box-conflict-same-b',
+      {
+        name: 'fuse-box-conflict-same-b',
+        main: 'index.js',
+        version: '1.0.1',
+      },
+      {
+        'index.js': 'import "fuse-box-conflict-same-dep/bar"',
+      },
+    );
+
+    createRealNodeModule(
+      'fuse-box-conflict-same-b/node_modules/fuse-box-conflict-same-dep',
+      {
+        name: 'fuse-box-conflict-same-dep',
+        main: 'index.js',
+        version: '2.0.0',
+      },
+      {
+        'index.js': '',
+        'bar.js': 'require("./oi")',
+        'oi.js': '',
+      },
+    );
+
+    it('Should handle fusebox path gracefully', () => {
+      const ctx = createProjectContext('src10', { target: 'browser' });
+      const packages = assemble(ctx, 'index.ts');
+
+      const same = packages.find(pkg => pkg.props.meta.name === 'fuse-box-conflict-same-dep');
+      const paths = same.modules.map(mod => mod.props.fuseBoxPath);
+
+      expect(paths).toEqual(['foo.js', 'bar.js', 'oi.js']);
+    });
+  });
 });

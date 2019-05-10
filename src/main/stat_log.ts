@@ -1,5 +1,5 @@
 import { Context } from '../core/Context';
-import { env } from '../core/env';
+import { env } from '../env';
 import { Package } from '../core/Package';
 
 export interface IStatLogProps {

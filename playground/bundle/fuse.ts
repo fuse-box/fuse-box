@@ -1,9 +1,8 @@
 import * as path from 'path';
-import { createContext } from '../../src/core/Context';
-import { bundleDev } from '../../src/main/bundle_dev';
+import { fusebox } from '../../src/core/fusebox';
 import { pluginJSON } from '../../src/plugins/core/plugin_json';
 
-const ctx = createContext({
+const fuse = fusebox({
   target: 'browser',
   logging: {
     level: 'succinct',
@@ -23,7 +22,7 @@ const ctx = createContext({
       $root: __dirname,
     },
   },
-  cache: false,
+  cache: true,
   // {
   //   enabled: true,
   //   root: path.join(__dirname, '.cache'),
@@ -38,6 +37,4 @@ const ctx = createContext({
   plugins: [pluginJSON('configs/.*', { useDefault: true })],
 });
 
-bundleDev(ctx).catch(e => {
-  console.error(e);
-});
+fuse.runDev();

@@ -2,7 +2,7 @@ import * as path from 'path';
 import { fastAnalysis } from '../../analysis/fastAnalysis';
 import { IPublicConfig } from '../../config/IPublicConfig';
 import { createContext } from '../../core/Context';
-import { env } from '../../core/env';
+import { env } from '../../env';
 import { createModule } from '../../core/Module';
 import { createPackage, Package } from '../../core/Package';
 import { ImportType } from '../../resolver/resolver';

@@ -1,6 +1,5 @@
-import { sparky } from '../sparky';
 import '../../utils/test_utils';
-import * as path from 'path';
+import { sparky } from '../sparky';
 
 function mockSparkySrc(glob: string) {
   class SparkyContext {}

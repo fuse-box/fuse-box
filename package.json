@@ -1,8 +1,5 @@
 {
-  "author": "",
-  "bin": {
-    "fuse": "./cli/entry.js"
-  },
+  "author": "Ivan Orlov",
   "bugs": {
     "url": "https://github.com/fuse-box/fuse-box/issues"
   },
@@ -34,7 +31,6 @@
     "ansi": "^0.3.1",
     "app-root-path": "^2.0.1",
     "astring": "^1.4.0",
-    "babel-generator": "^6.26.1",
     "base64-img": "^1.0.3",
     "base64-js": "^1.2.0",
     "bowser": "^2.0.0-beta.3",
@@ -100,6 +96,7 @@
     "stylus": "^0.54.5",
     "terser": "^3.10.11",
     "ts-jest": "^23.10.5",
+    "ts-node": "^8.1.0",
     "typescript": "^3.1.0",
     "typescript-plugin-styled-components": "^1.0.0",
     "validate-commit-msg": "^2.14.0"
@@ -124,16 +121,14 @@
     "commit": "git-cz",
     "commitmsg": "validate-commit-msg",
     "devDeps": "gulp installDevDeps",
-    "dist": "gulp dist",
+    "alpha": "ts-node -T fuse publish-alpha",
+    "dist": "ts-node -T fuse dist",
     "format": "prettier --list-different \"src/**/*.{js,json,md,ts,yml}\"",
     "format:fix": "prettier --write \"src/**/*.{js,json,md,ts,yml}\"",
-    "start": "gulp watch",
-    "dev": "rm -rf ./.fusebox; rm -rf ./.dev; gulp dev",
-    "old_test": "node test.js",
     "test": "jest --verbose",
     "coverage": "jest --verbose --coverage",
     "coverage-ci": "jest --verbose --coverage --runInBand"
   },
   "typings": "index.d.ts",
-  "version": "4.0.0-next.7"
+  "version": "4.0.0-alpha.10"
 }

@@ -1,7 +1,7 @@
 import { mockModule } from '../../utils/test_utils';
 import { alignCSSSourceMap } from '../cssSourceMap';
 import * as path from 'path';
-import { env } from '../../core/env';
+import { env } from '../../env';
 describe('css source map test', () => {
   function mockSources(list: Array<string>) {
     const json = { sources: list };

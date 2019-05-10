@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { IFastAnalysis } from '../analysis/fastAnalysis';
 import { Context } from '../core/Context';
-import { env } from '../core/env';
+import { env } from '../env';
 import { Module } from '../core/Module';
 import { createPackage, Package } from '../core/Package';
 import { ensureDir, fileExists, fileStat, readFile, removeFolder, writeFile } from '../utils/utils';

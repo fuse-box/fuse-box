@@ -1,5 +1,5 @@
 import { Context } from '../core/Context';
-import { getDevelopmentApi } from '../core/env';
+import { getDevelopmentApi } from '../env';
 import { Package } from '../core/Package';
 import { Bundle, BundleCollection, BundleType, createBundleSet } from './Bundle';
 import { devStrings } from './bundleStrings';

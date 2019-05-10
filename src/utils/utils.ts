@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as fsExtra from 'fs-extra';
 import * as path from 'path';
-import { env } from '../core/env';
+import { env } from '../env';
 import * as prettyTime from 'pretty-time';
 import * as offsetLinesModule from 'offset-sourcemap-lines';
 const CACHED_PATHS = new Map<string, RegExp>();
@@ -80,6 +80,9 @@ export function readFile(file: string) {
   return fs.readFileSync(file).toString();
 }
 
+export function removeFile(file: string) {
+  return fs.unlinkSync(file);
+}
 export async function copyFile(file: string, target: string) {
   return fsExtra.copy(file, target);
 }

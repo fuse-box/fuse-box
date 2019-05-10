@@ -1,6 +1,6 @@
 import { spawn } from 'child_process';
 import { ensureAbsolutePath } from '../utils/utils';
-import { env } from '../core/env';
+import { env } from '../env';
 import * as path from 'path';
 
 export type Libs =
@@ -114,6 +114,10 @@ export async function tsc(opts?: TscOptions) {
   if (opts.files) {
     tscOptions = tscOptions.concat(opts.files);
     delete opts.files;
+  }
+
+  if (opts.outDir) {
+    opts.outDir = ensureAbsolutePath(opts.outDir, path.dirname(env.SCRIPT_FILE));
   }
   for (const key in opts) {
     if (opts[key] !== undefined) {

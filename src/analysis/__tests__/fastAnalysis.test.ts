@@ -464,6 +464,17 @@ describe('Fast analysis test', () => {
       expect(result.report.browserEssentials).toEqual(['process']);
     });
 
+    it('should match process in ()', () => {
+      const result = fastAnalysis({
+        input: `
+        if (process.env.NODE_ENV === 'production') {
+
+        }
+			`,
+      });
+      expect(result.report.browserEssentials).toEqual(['process']);
+    });
+
     it('should match process 2', () => {
       const result = fastAnalysis({
         input: `

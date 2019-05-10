@@ -1,7 +1,7 @@
 import { join } from 'path';
 import { BundleType, createBundleSet } from '../../bundle/Bundle';
 import { createContext } from '../../core/Context';
-import { env } from '../../core/env';
+import { env } from '../../env';
 import { mockWriteFile } from '../../utils/test_utils';
 import { getEssentialWebIndexParams, IWebIndexConfig, replaceWebIndexStrings } from '../webIndex';
 const fileMock = mockWriteFile();

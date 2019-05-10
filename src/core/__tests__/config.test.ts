@@ -1,5 +1,5 @@
 import { createConfig } from '../../config/config';
-import { env } from '../env';
+import { env } from '../../env';
 
 describe('Config test', () => {
   it('should', () => {});

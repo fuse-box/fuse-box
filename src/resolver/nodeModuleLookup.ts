@@ -1,7 +1,6 @@
 import * as appRoot from 'app-root-path';
 import * as fs from 'fs';
 import * as path from 'path';
-import { DocumentedError } from '../logging/DocumentedError';
 import { fileExists, makeFuseBoxPath } from '../utils/utils';
 import { fileLookup } from './fileLookup';
 import { IPackageMeta, IResolverProps } from './resolver';
@@ -142,6 +141,7 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
 
     result.isEntry = false;
     result.targetFuseBoxPath = makeFuseBoxPath(folder, parsedLookup.absPath);
+
     if (parsedLookup.customIndex) {
       result.forcedStatement = `${parsed.name}/${result.targetFuseBoxPath}`;
     }
