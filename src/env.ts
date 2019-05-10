@@ -1,9 +1,11 @@
-import * as path from 'path';
 import * as appRoot from 'app-root-path';
-import { readFile } from '../utils/utils';
+import * as path from 'path';
+import { readFile } from './utils/utils';
 
-const VERSION = '4.0.0';
+const VERSION = require('./../package.json').version;
+const FUSE_ROOT = appRoot.path;
 export const env = {
+  FUSE_ROOT: FUSE_ROOT,
   APP_ROOT: appRoot.path,
   VERSION: VERSION,
   CACHE: {
@@ -13,7 +15,7 @@ export const env = {
   },
   SCRIPT_PATH: path.dirname(require.main.filename),
   SCRIPT_FILE: require.main.filename,
-  FUSE_MODULES: path.join(appRoot.path, 'modules'),
+  FUSE_MODULES: path.join(FUSE_ROOT, 'modules'),
 };
 
 export function getDevelopmentApi() {

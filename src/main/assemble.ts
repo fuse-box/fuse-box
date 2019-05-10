@@ -24,6 +24,14 @@ function registerPackage(props: { assemble?: boolean; pkg: Package; ctx: Context
     });
     pkg = createPackage({ ctx: props.ctx, meta: resolved.package.meta });
     collection.packages.add(pkg);
+  } else {
+    // handle a very rare case where a package that has the same version is located
+    // in multiple sub_modules
+    if (resolved.package.meta.packageRoot !== pkg.props.meta.packageRoot) {
+      if (!pkg.props.meta.packageAltRoots) pkg.props.meta.packageAltRoots = [];
+      // this will be used in order to make a fuseBoxPath
+      pkg.props.meta.packageAltRoots.push(resolved.package.meta.packageRoot);
+    }
   }
   // if we have a version conflict we need to notity the parent package
   if (!props.pkg.externalPackages.includes(pkg)) {
@@ -86,6 +94,7 @@ function resolveStatement(
     importType: opts.importType,
     target: opts.statement,
   });
+
   if (!resolved) {
     props.ctx.log.warn('Cannot resolve $statement in $file', {
       statement: opts.statement,
@@ -131,6 +140,7 @@ function resolveStatement(
 function processModule(props: IDefaultParseProps) {
   const icp = props.ctx.ict;
   const _module = props.module;
+
   icp.sync('assemble_module_init', { module: _module });
   props.pkg.modules.push(props.module);
   if (_module.isExecutable()) {
@@ -227,6 +237,7 @@ export function assemble(ctx: Context, entryFile: string): Array<Package> {
     result.push(pkg);
   });
   ctx.packages = result;
+
   // reset logging group
   ctx.log.group(false);
   return result;

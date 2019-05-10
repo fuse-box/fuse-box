@@ -2,7 +2,7 @@ import * as prettyTime from 'pretty-time';
 import { BundleType, IBundleWriteResponse } from '../bundle/Bundle';
 import { createDevBundles, inflateBundles } from '../bundle/createDevBundles';
 import { Context } from '../core/Context';
-import { env } from '../core/env';
+import { env } from '../env';
 import { Package } from '../core/Package';
 import { EMOJIS } from '../logging/logging';
 import { extractFuseBoxPath } from '../utils/utils';

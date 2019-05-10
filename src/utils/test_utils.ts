@@ -7,8 +7,8 @@ import { Context, createContext } from '../core/Context';
 import { createModule, IModuleProps, Module } from '../core/Module';
 import { createPackage, Package } from '../core/Package';
 import { assemble } from '../main/assemble';
-import { ensureFuseBoxPath, path2RegexPattern } from './utils';
 import { simplifiedRegExp } from '../plugins/pluginUtils';
+import { ensureFuseBoxPath, path2RegexPattern } from './utils';
 
 const utils = require('./utils');
 declare global {

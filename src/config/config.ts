@@ -1,6 +1,6 @@
 import * as appRoot from 'app-root-path';
 import { ensureAbsolutePath } from '../utils/utils';
-import { env } from '../core/env';
+import { env } from '../env';
 
 import * as path from 'path';
 import { IPublicConfig } from './IPublicConfig';
@@ -12,9 +12,9 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
   config.defaultCollectionName = 'default';
 
   if (props.homeDir) {
-    config.homeDir = ensureAbsolutePath(props.homeDir, config.root);
+    config.homeDir = ensureAbsolutePath(props.homeDir, env.SCRIPT_PATH);
   } else {
-    config.homeDir = env.APP_ROOT;
+    config.homeDir = env.SCRIPT_PATH;
   }
 
   config.modules = [env.FUSE_MODULES];

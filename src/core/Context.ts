@@ -11,7 +11,7 @@ import { initTypescriptConfig } from '../tsconfig/configParser';
 import { createWebIndex, IWebIndexInterface } from '../web-index/webIndex';
 import { assembleContext, IAssembleContext } from './assemble_context';
 import { ContextTaskManager, createContextTaskManager } from './ContextTaskManager';
-import { env } from './env';
+import { env } from '../env';
 import { Package } from './Package';
 import { createWriter, IWriterActions } from './writer';
 import { WeakModuleReferences, createWeakModuleReferences } from './WeakModuleReferences';

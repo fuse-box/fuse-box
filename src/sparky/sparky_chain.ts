@@ -1,28 +1,58 @@
 import { simplifiedRegExp } from '../plugins/pluginUtils';
-import { readFile } from '../utils/utils';
+import {
+  readFile,
+  writeFile,
+  ensureFuseBoxPath,
+  ensureAbsolutePath,
+  copyFile,
+  ensureDir,
+  removeFile,
+} from '../utils/utils';
 import { sparky_src } from './sparky_src';
 import { tsc, TscOptions } from './tsc';
-import { initTypescriptConfig } from '../tsconfig/configParser';
-import { IRawCompilerOptions } from '../interfaces/TypescriptInterfaces';
-import { createConfig } from '../config/config';
-import { env } from '../core/env';
-import { tsTransform } from '../transform/tsTransform';
+import { ILogger } from '../logging/logging';
+import { env } from '../env';
+import * as path from 'path';
+import { IBumpVersion, bumpVersion } from './bumpVersion';
 export interface ISparkyChain {
   src: (glob: string) => ISparkyChain;
   tsc: (opts: TscOptions) => ISparkyChain;
+  clean: () => ISparkyChain;
   filter: (a: RegExp | ((file: string) => any)) => ISparkyChain;
   exec: () => Promise<Array<string>>;
+  write: () => ISparkyChain;
+  bumpVersion: (mask: string | RegExp, opts: IBumpVersion) => ISparkyChain;
   contentsOf: (mask: string | RegExp, fn: (contents: string) => string) => ISparkyChain;
-  dest: (target: string) => Promise<any>;
+  dest: (target: string, base: string) => ISparkyChain;
 }
-export function sparkyChain(): ISparkyChain {
+export function sparkyChain(log: ILogger): ISparkyChain {
   const activities = [];
   const readFiles = {};
+  let newLocation, newLocationBase;
 
   const runActivities = async () => {
     let latest: any;
     for (const fn of activities) {
       latest = await fn(latest);
+    }
+
+    if (newLocation && newLocationBase) {
+      const root = ensureAbsolutePath(newLocation, env.APP_ROOT);
+      for (const i in latest) {
+        const file = latest[i];
+
+        readFiles[file] = readFiles[file] || readFile(file);
+
+        const s = ensureFuseBoxPath(file).split(newLocationBase);
+        if (!s[1]) {
+          log.error(`Can't find base of ${newLocationBase} of ${file}`);
+          return;
+        } else {
+          const newFileLocation = path.join(root, s[1]);
+          ensureDir(path.dirname(newFileLocation));
+          writeFile(newFileLocation, readFiles[file]);
+        }
+      }
     }
     return latest;
   };
@@ -53,6 +83,27 @@ export function sparkyChain(): ISparkyChain {
       });
       return chain;
     },
+    clean: () => {
+      activities.push(async (files: Array<string>) => {
+        files.forEach(file => {
+          removeFile(file);
+        });
+        return files;
+      });
+      return chain;
+    },
+    bumpVersion: (mask: string | RegExp, opts: IBumpVersion) => {
+      const re: RegExp = typeof mask === 'string' ? simplifiedRegExp(mask) : mask;
+      activities.push(async (files: Array<string>) => {
+        const target = files.find(file => re.test(file));
+        if (target) {
+          readFiles[target] = readFiles[target] || readFile(target);
+          readFiles[target] = bumpVersion(readFiles[target], opts);
+        }
+        return files;
+      });
+      return chain;
+    },
     // can be used to replace the contents of a file
     contentsOf: (mask: string | RegExp, fn: (contents: string) => string) => {
       const re: RegExp = typeof mask === 'string' ? simplifiedRegExp(mask) : mask;
@@ -66,31 +117,30 @@ export function sparkyChain(): ISparkyChain {
       });
       return chain;
     },
-    tsc: (options?: IRawCompilerOptions) => {
-      // const config = initTypescriptConfig(createConfig({ tsConfig: options }), env.SCRIPT_PATH);
-      // config.compilerOptions;
-
+    write: () => {
       activities.push(async (files: Array<string>) => {
-        await tsc({ files: files, target: 'ES2017' });
-        // for (const file of files) {
-        //   readFiles[file] = readFiles[file] || readFile(file);
-        //   const response = await tsTransform({
-        //     compilerOptions: config.compilerOptions,
-        //     input: readFiles[file],
-        //     fileName: file,
-        //   });
-        //   console.log(response);
-        // }
+        const _ = [];
+        for (const file in readFiles) {
+          _.push(writeFile(file, readFiles[file]));
+        }
+        return Promise.all(_).then(() => {
+          return files;
+        });
+      });
+      return chain;
+    },
+    tsc: (options?: TscOptions) => {
+      activities.push(async (files: Array<string>) => {
+        await tsc({ files: files, ...options });
       });
       return chain;
     },
     // runs all the activities (used mainly for testing)
     exec: async () => runActivities(),
-    dest: async (target: string) => {
-      let latest: any;
-      for (const fn of activities) {
-        latest = await fn(latest);
-      }
+    dest: (target: string, base: string) => {
+      newLocation = target;
+      newLocationBase = base;
+      return chain;
     },
   };
   return chain;

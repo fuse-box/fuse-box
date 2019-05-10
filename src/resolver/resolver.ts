@@ -42,6 +42,8 @@ export interface IPackageMeta {
   entryFuseBoxPath?: string;
   version?: string;
   packageRoot?: string;
+  // rare case where a package with the same version is located in multiple sub modules
+  packageAltRoots?: Array<string>;
   packageJSONLocation?: string;
   // https://github.com/defunctzombie/package-browser-field-spec
   browser?: { [key: string]: string | boolean } | string;
@@ -188,8 +190,26 @@ export function resolveModule(props: IResolverProps): IResolver {
 
   const extension = lookupResult.extension;
   const absPath = lookupResult.absPath;
-  const packageRoot = props.packageMeta ? props.packageMeta.packageRoot : props.homeDir;
-  const fuseBoxPath = makeFuseBoxPath(packageRoot, absPath);
+
+  let fuseBoxPath: string;
+  if (props.packageMeta) {
+    if (props.packageMeta.packageAltRoots) {
+      if (absPath.includes(props.packageMeta.packageRoot)) {
+        fuseBoxPath = makeFuseBoxPath(props.packageMeta.packageRoot, absPath);
+      } else {
+        for (const root of props.packageMeta.packageAltRoots) {
+          if (absPath.includes(root)) {
+            fuseBoxPath = makeFuseBoxPath(root, absPath);
+            break;
+          }
+        }
+      }
+    } else {
+      fuseBoxPath = makeFuseBoxPath(props.packageMeta.packageRoot, absPath);
+    }
+  } else {
+    fuseBoxPath = makeFuseBoxPath(props.homeDir, absPath);
+  }
 
   if (forceReplacement) {
     if (props.packageMeta) {

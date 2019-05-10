@@ -1,6 +1,6 @@
 import { spawn } from 'child_process';
-import * as appRoot from 'app-root-path';
 import * as path from 'path';
+import { env } from '../env';
 
 function sendAction(action: string, args?: Array<any>) {
   const obj: any = { action };
@@ -22,7 +22,7 @@ export function getSpinner(props?: ISpinnerProps): ISpinnerInterface {
     stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
   };
 
-  const pathToSpinner = path.join(appRoot.path, 'modules/fuse-box-spinner/launch.js');
+  const pathToSpinner = path.join(env.FUSE_MODULES, 'fuse-box-spinner/launch.js');
   var args = [pathToSpinner];
   const spinner = spawn('node', args, options);
 
