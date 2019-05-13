@@ -1,9 +1,9 @@
 import { Context } from '../../core/Context';
 import { parsePluginOptions } from '../pluginUtils';
 
-export type IJSONPluginProps = { [key: string]: any };
-export function pluginReplace(a?: IJSONPluginProps | string | RegExp, b?: IJSONPluginProps) {
-  const [opts, matcher] = parsePluginOptions<IJSONPluginProps>(a, b, {});
+export type IPluginReplaceProps = { [key: string]: any };
+export function pluginReplace(a?: IPluginReplaceProps | string | RegExp, b?: IPluginReplaceProps) {
+  const [opts, matcher] = parsePluginOptions<IPluginReplaceProps>(a, b, {});
   return (ctx: Context) => {
     ctx.ict.on('assemble_fast_analysis', props => {
       // filter out options
