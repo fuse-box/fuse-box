@@ -20,7 +20,9 @@ export async function bundleDev(ctx: Context) {
   const startTime = process.hrtime();
 
   const plugins = [...ctx.config.plugins, pluginJSON(), pluginCSS(), pluginSass(), pluginDevJs(), pluginTypescript()];
-  plugins.forEach(plugin => plugin(ctx));
+  plugins.forEach(plugin => () => {
+    if(plugin) plugin(ctx);
+  });
 
   attachCache(ctx);
   attachHMR(ctx);
