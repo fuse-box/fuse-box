@@ -147,6 +147,7 @@ export function resolveModule(props: IResolverProps): IResolver {
       paths: props.typescriptPaths.paths,
       target: target,
     });
+
     if (lookupResult) {
       forceReplacement = true;
     }
