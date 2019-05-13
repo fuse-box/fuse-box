@@ -23,6 +23,14 @@ It's cheaper, however, to target a specific file:
 
 ```ts
 fusebox({
-  plugins: [pluginReplace('compoents/Other.ts', { $version: '1.1.0' })],
+  plugins: [pluginReplace('components/.*', { $version: '1.1.0' })],
+});
+```
+
+Alternatively RegExp is also accepted
+
+```ts
+fusebox({
+  plugins: [pluginReplace(/components\/.*/, { $version: '1.1.0' })],
 });
 ```
