@@ -18,6 +18,7 @@ export function pluginCSS() {
 
     ctx.ict.on('bundle_resolve_module', props => {
       const { module } = props;
+
       if (!module.captured && module.props.extension === '.css') {
         ctx.log.verbose('<cyan><bold>CSS:</bold> Captured $file with default css plugin</cyan>', {
           file: module.props.absPath,

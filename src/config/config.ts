@@ -20,7 +20,7 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
   config.modules = [env.FUSE_MODULES];
 
   if (props.modules) {
-    config.modules = config.modules.concat(props.modules);
+    config.modules = config.modules.concat(props.modules).map(item => ensureAbsolutePath(item, env.SCRIPT_PATH));
   }
   if (props.output) {
     config.output = props.output;

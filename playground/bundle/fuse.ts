@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { fusebox } from '../../src/core/fusebox';
 import { pluginJSON } from '../../src/plugins/core/plugin_json';
 import { pluginReplace } from '../../src/plugins/core/plugin_replace';
@@ -14,6 +13,7 @@ const fuse = fusebox({
       port: 9999,
     },
   },
+  //modules: ['./oi'],
   sourceMap: { vendor: false },
 
   env: { NODE_ENV: 'stage', foo: 'bar' },
@@ -32,8 +32,8 @@ const fuse = fusebox({
     publicPath: '.',
   },
   //production: {},
-  homeDir: path.join(__dirname, 'src'),
-  entry: 'index.ts',
+  homeDir: __dirname,
+  entry: 'src/index.ts',
 
   plugins: [pluginJSON('configs/.*', { useDefault: true }), pluginReplace('other/Other.ts', { $version: '1.1.0' })],
 });

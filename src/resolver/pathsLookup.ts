@@ -58,9 +58,9 @@ function getPathsData(props: IPathsLookupProps): TypescriptPaths {
  */
 function getIndexFiles(props: IPathsLookupProps): DirectoryListing | undefined {
   let indexFiles: Array<{ nameWithoutExtension: string; name: string }>;
-  if (props.baseURL === props.homeDir) {
-    if (CACHED_LISTING[props.homeDir]) {
-      indexFiles = CACHED_LISTING[props.homeDir];
+  if (props.baseURL) {
+    if (CACHED_LISTING[props.baseURL]) {
+      indexFiles = CACHED_LISTING[props.baseURL];
     } else {
       const files = [];
       fs.readdirSync(props.baseURL).forEach(file => {
@@ -72,7 +72,7 @@ function getIndexFiles(props: IPathsLookupProps): DirectoryListing | undefined {
           });
         }
       });
-      indexFiles = CACHED_LISTING[props.homeDir] = files;
+      indexFiles = CACHED_LISTING[props.baseURL] = files;
     }
   }
   return indexFiles;
