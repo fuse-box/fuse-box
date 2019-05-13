@@ -133,7 +133,9 @@ export class Module {
   }
 
   public read(): string {
-    this.contents = readFile(this.props.absPath);
+    if (!this.contents) {
+      this.contents = readFile(this.props.absPath);
+    }
     return this.contents;
   }
 

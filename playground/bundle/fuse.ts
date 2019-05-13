@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { fusebox } from '../../src/core/fusebox';
 import { pluginJSON } from '../../src/plugins/core/plugin_json';
+import { pluginReplace } from '../../src/plugins/core/plugin_replace';
 
 const fuse = fusebox({
   target: 'browser',
@@ -22,7 +23,7 @@ const fuse = fusebox({
       $root: __dirname,
     },
   },
-  cache: true,
+  cache: false,
   // {
   //   enabled: true,
   //   root: path.join(__dirname, '.cache'),
@@ -34,7 +35,7 @@ const fuse = fusebox({
   homeDir: path.join(__dirname, 'src'),
   entry: 'index.ts',
 
-  plugins: [pluginJSON('configs/.*', { useDefault: true })],
+  plugins: [pluginJSON('configs/.*', { useDefault: true }), pluginReplace('other/Other.ts', { $version: '1.1.0' })],
 });
 
 fuse.runDev();
