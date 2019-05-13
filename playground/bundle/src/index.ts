@@ -7,6 +7,9 @@ import { Other } from 'other/Other';
 console.log(20);
 import './styles/raw.css';
 
+import { FooBarComponent } from '@client/FooBarComponent';
+console.log(FooBarComponent);
+
 console.log(process.env);
 //import 'fooshit';
 

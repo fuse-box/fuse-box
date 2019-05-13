@@ -108,7 +108,7 @@ export function pathsLookup(props: IPathsLookupProps): ILookupResult {
     if (directories) {
       for (const j in directories) {
         const directory = directories[j];
-        const result = fileLookup({ fileDir: props.homeDir, target: directory });
+        const result = fileLookup({ fileDir: props.baseURL, target: directory });
         if (result && result.fileExists) {
           return result;
         }
