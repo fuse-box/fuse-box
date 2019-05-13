@@ -88,4 +88,12 @@ describe('lookup test', () => {
     expect(response.fileExists).toBe(true);
     expect(response.extension).toBe('.json');
   });
+
+  it('Should resolve a js file while .min is specified', () => {
+    const response = fileLookup({ fileDir: cases, target: 'min_lookup/file.min' });
+
+    expect(response.absPath).toMatchFilePath('min_lookup/file.min.js$');
+    expect(response.fileExists).toBe(true);
+    expect(response.extension).toBe('.js');
+  });
 });
