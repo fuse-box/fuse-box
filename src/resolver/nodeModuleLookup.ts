@@ -8,7 +8,7 @@ import { getFolderEntryPointFromPackageJSON, isBrowserEntry } from './shared';
 
 const PROJECT_NODE_MODULES = path.join(appRoot.path, 'node_modules');
 
-const NODE_MODULE_REGEX = /^(([a-z0-9@\-_]+)(\/)?([a-z0-0.@-_]+)?(\/)?(.*))$/;
+const NODE_MODULE_REGEX = /^(([a-z0-9@\-_]+)(\/)?([_a-z0-9.@-]+)?(\/)?(.*))$/i;
 
 export interface IModuleParsed {
   name: string;
@@ -21,6 +21,7 @@ export function isNodeModule(path: string): IModuleParsed | undefined {
     return;
   }
   let [name, b, c] = [matched[2], matched[4], matched[6]];
+
   const result: IModuleParsed = { name };
   if (name[0] === '@') {
     result.name = name + '/' + b;
