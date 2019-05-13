@@ -51,6 +51,16 @@ describe('isNodeModule', () => {
     const res = isNodeModule('some-stuff_here');
     expect(res).toEqual({ name: 'some-stuff_here' });
   });
+
+  it('case 11', () => {
+    const res = isNodeModule('@angular/platform-browser-dynamic');
+    expect(res).toEqual({ name: '@angular/platform-browser-dynamic' });
+  });
+
+  it('case 12', () => {
+    const res = isNodeModule('@angular/platform-browser-dynamic/bar');
+    expect(res).toEqual({ name: '@angular/platform-browser-dynamic', target: 'bar' });
+  });
 });
 
 describe('NodeModule lookup', () => {
