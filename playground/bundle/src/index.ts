@@ -13,6 +13,11 @@ console.log(FooBarComponent);
 console.log(process.env);
 //import 'fooshit';
 
+require('./medium-zoom.esm.js');
+
+import * as shit from '@angular/platform-browser-dynamic';
+console.log(shit);
+
 console.log('other', Other);
 console.log(require('./some.json'));
 console.log(require('./configs/myconfig.json'));

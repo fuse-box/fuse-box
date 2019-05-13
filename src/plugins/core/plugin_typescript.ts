@@ -37,6 +37,7 @@ export function pluginTypescript() {
         }
       }
 
+      //console.log(analysis.report);
       let requireSourceMaps = true;
 
       if (pkg.isDefaultPackage) {

@@ -146,7 +146,13 @@ function processModule(props: IDefaultParseProps) {
   if (_module.isExecutable()) {
     if (!_module.isCached) {
       _module.read();
-      _module.fastAnalysis = fastAnalysis({ input: _module.contents });
+      // if (_module.testPath('compiler/fesm5/compiler')) {
+      //   console.log(_module.fastAnalysis);
+      // }
+      _module.fastAnalysis = fastAnalysis({
+        input: _module.contents,
+        debug: _module.testPath('compiler/fesm5/compiler'),
+      });
 
       _module.fastAnalysis.replaceable = [];
       icp.sync('assemble_fast_analysis', { module: _module });
