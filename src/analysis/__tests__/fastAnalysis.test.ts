@@ -171,6 +171,13 @@ describe('Fast analysis test', () => {
       expect(result.imports).toEqual([{ type: ImportType.FROM, statement: 'bar/mor' }]);
     });
 
+    it('Should match export on one line', () => {
+      const result = fastAnalysis({
+        input: `/* http://foo */ var process = {}; export default mediumZoom;`,
+      });
+      expect(result).toEqual({ imports: [], report: { es6Syntax: true } });
+    });
+
     it('Should not match due to a single line comment', () => {
       const result = fastAnalysis({
         input: `
@@ -355,6 +362,31 @@ describe('Fast analysis test', () => {
       const result = fastAnalysis({
         input: `
 				 function(){ return '<div></div>'}
+			`,
+      });
+      expect(result.report.containsJSX).toBeUndefined();
+    });
+
+    it('should give not jsx 2', () => {
+      const result = fastAnalysis({
+        input: `
+        var _ESCAPED_CHARS = [
+          [/&/g, '&amp;'],
+          [/"/g, '&quot;'],
+          [/'/g, '&apos;'],
+          [/</g, '&lt;'],
+          [/>/g, '&gt;'],
+      ];
+
+			`,
+      });
+      expect(result.report.containsJSX).toBeUndefined();
+    });
+
+    it.only('should give not jsx 3', () => {
+      const result = fastAnalysis({
+        input: `
+        "Plural cases should be \"=<number>\" or one of "
 			`,
       });
       expect(result.report.containsJSX).toBeUndefined();

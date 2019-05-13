@@ -95,7 +95,12 @@ function exportNamedDeclaration(ctx: Ctx, node, parent, prop, idx) {
         const name = node.declaration.id.name;
         if (prop && idx !== undefined) {
           if (Array.isArray(parent[prop])) {
-            parent[prop][idx] = createModuleExports(name, node.declaration);
+            parent[prop][idx] = node.declaration; //1
+
+            ctx.exported.push({
+              exported: name,
+              local: name,
+            });
           }
         }
       }
@@ -185,7 +190,16 @@ export function fastTransform(opts: {
       if (isExportDefaultDeclaration(node)) {
         if (prop && idx !== undefined) {
           if (Array.isArray(parent[prop])) {
-            parent[prop][idx] = createModuleExports('default', node.declaration);
+            if (node.declaration && node.declaration.id && node.declaration.id.name) {
+              const name = node.declaration.id.name;
+              parent[prop][idx] = node.declaration; //2
+              ctx.exported.push({
+                exported: 'default',
+                local: name,
+              });
+            } else {
+              parent[prop][idx] = createModuleExports('default', node.declaration);
+            }
           }
         }
       }

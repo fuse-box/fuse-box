@@ -37,43 +37,40 @@ module.exports.bar = name2;
     });
 
     it('Should export a function', () => {
-      const result = fastTransform({ input: `export function bar(){}` });
-      expect(result.code).toMatchInlineSnapshot(`
-"module.exports.bar = function bar() {};
-"
-`);
+      const result = fastTransform({
+        input: `
+        export function bar(){}
+      `,
+      });
+      expect(result.code).toContain('module.exports.bar = bar;');
+      expect(result.code).toContain('function bar() {}');
     });
 
     it('Should export a default function', () => {
       const result = fastTransform({ input: `export default function bar(){}` });
-      expect(result.code).toMatchInlineSnapshot(`
-"module.exports.default = function bar() {};
-"
-`);
+
+      expect(result.code).toContain('function bar() {}');
+      expect(result.code).toContain('module.exports.default = bar;');
     });
 
     it('Should export a class', () => {
       const result = fastTransform({ input: `export class Bar{}` });
-      expect(result.code).toMatchInlineSnapshot(`
-"module.exports.Bar = class Bar {};
-"
-`);
+      expect(result.code).toContain('class Bar {}');
+      expect(result.code).toContain('module.exports.Bar = Bar;');
     });
 
     it('Should export a default class', () => {
       const result = fastTransform({ input: `export default class Bar{}` });
       expect(result.code).toMatchInlineSnapshot(`
-"module.exports.default = class Bar {};
+"class Bar {}
+module.exports.default = Bar;
 "
 `);
     });
 
     it('Should export default expression', () => {
       const result = fastTransform({ input: `export default 1` });
-      expect(result.code).toMatchInlineSnapshot(`
-"module.exports.default = 1;
-"
-`);
+      expect(result.code).toContain('module.exports.default = 1');
     });
 
     it('Should export default expression 2', () => {
