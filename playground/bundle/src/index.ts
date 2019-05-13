@@ -1,5 +1,5 @@
-import * as lodash from 'lodash-es';
-console.log(lodash);
+// import * as lodash from 'lodash-es';
+// console.log(lodash);
 import './styles/main.scss';
 // import 'abab/styles/index.scss';
 // import 'abbrev/index.scss';
