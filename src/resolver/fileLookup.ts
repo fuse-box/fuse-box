@@ -56,7 +56,7 @@ export function fileLookup(props: ILookupProps): ILookupResult {
   let resolved = path.join(props.filePath ? path.dirname(props.filePath) : props.fileDir, props.target);
   const extension = path.extname(resolved);
 
-  if (extension) {
+  if (extension && fs.existsSync(resolved)) {
     return {
       extension: path.extname(resolved),
       absPath: resolved,
