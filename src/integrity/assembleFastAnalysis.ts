@@ -17,7 +17,7 @@ export function assembleFastAnalysis(ctx: Context) {
         report.browserEssentials &&
           report.browserEssentials.forEach(item => {
             // adding it to analysis to be picked up and created accordingly
-            module.fastAnalysis.imports.push({ type: ImportType.REQUIRE, statement: item.variable });
+            module.fastAnalysis.imports.push({ type: ImportType.REQUIRE, statement: item.moduleName });
             module.header.push(createRequireConst(item.moduleName, item.variable));
           });
       }
