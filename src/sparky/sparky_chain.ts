@@ -50,7 +50,7 @@ export function sparkyChain(log: ILogger): ISparkyChain {
         } else {
           const newFileLocation = path.join(root, s[1]);
           ensureDir(path.dirname(newFileLocation));
-          writeFile(newFileLocation, readFiles[file]);
+          await writeFile(newFileLocation, readFiles[file]);
         }
       }
     }

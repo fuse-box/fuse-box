@@ -28,9 +28,9 @@ const TOKENS = {
   singeLineMultiComment: /\/\*.*?\*\//,
   commentStart: /(\/\*)/,
   commentEnd: /(\*\/)/,
-  systemVariables: /(?:^|[\s=:\[,\(])((var|const|let)\s*)?(stream|process|Buffer|http|https|__dirname|__filename)(?:$|[\).\s:\],])/,
+  systemVariables: /(?:^|[\s=:\[,\(])((var|const|let)\s*)?(stream|process|buffer|Buffer|http|https|__dirname|__filename)(?:$|[\).\s:\],])/,
   exportsKeyword: /(export)\s/,
-  jsx: /<[a-zA-Z0-9_\/]+(\/>|>|\s)/,
+
   str: /".*?"|'.*?'/,
 };
 
@@ -40,7 +40,7 @@ for (const name in TOKENS) {
   data.push(`(${TOKENS[name].source})`);
 }
 
-const REGEX = new RegExp(`(${data.join(`|`)})`, 'igm');
+const REGEX = new RegExp(`(${data.join(`|`)})`, 'gm');
 
 export function tokenize(input: string, onToken: (group: ITokenizerGroup) => void, debug?) {
   let matches;
@@ -63,11 +63,9 @@ export function tokenize(input: string, onToken: (group: ITokenizerGroup) => voi
       commentEnd: matches[15],
       systemVariable: matches[20] && {
         declaration: matches[19],
-        name: matches[20].toLowerCase(),
+        name: matches[20],
       },
       exportsKeyword: matches[22],
-      jsxToken: matches[24],
-      //mappedLine: debug && mapErrorLine(input, matches.index),
     };
 
     onToken(data);

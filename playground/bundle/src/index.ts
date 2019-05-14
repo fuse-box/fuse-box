@@ -6,6 +6,8 @@ import './styles/main.scss';
 import { Other } from 'other/Other';
 console.log(20);
 import './styles/raw.css';
+import * as hammer from 'hammerjs';
+console.log(hammer);
 
 import { FooBarComponent } from '@client/FooBarComponent';
 console.log(FooBarComponent);

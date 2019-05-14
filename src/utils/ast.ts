@@ -1,3 +1,24 @@
+export function fastWalk(ast, fn: (node, parent, prop, idx) => any) {
+  function visit(node, parent?, prop?, idx?) {
+    if (!node || typeof node.type !== 'string') {
+      return;
+    }
+    const res = fn(node, parent, prop, idx);
+    if (res === false) true;
+    for (let prop in node) {
+      if (prop[0] === '$') {
+        continue;
+      }
+      let child = node[prop];
+      if (Array.isArray(child)) {
+        for (let i = 0; i < child.length; i++) {
+          visit(child[i], node, prop, i);
+        }
+      } else visit(child, node, prop);
+    }
+  }
+  visit(ast);
+}
 export function walkAST(
   root,
   options: { onNode?: (node, parent, prop, idx) => any; skipProperty?: (prop, node) => boolean },
@@ -44,4 +65,8 @@ export function walkAST(
     }
   };
   visit(root, null);
+}
+
+export function nodeIsString(node) {
+  return node.type === 'Literal' || node.type === 'StringLiteral';
 }

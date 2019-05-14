@@ -1,8 +1,8 @@
-import * as acorn from 'acorn';
 import { generate } from 'astring';
-import * as meriyah from 'meriyah';
+//import * as meriyah from 'meriyah';
 import * as sourceMapModule from 'source-map';
 import { walkAST } from '../utils/ast';
+import * as cherow from 'cherow';
 import {
   createLocalVariable,
   createMemberExpression,
@@ -13,25 +13,21 @@ import {
   isExportNamedDeclaration,
 } from './acornUtils';
 
-export function acornParse(contents, options?: any): any {
-  options = options || {};
-  return acorn.parse(contents, {
-    ...options,
-    sourceType: 'module',
-    tolerant: true,
-    ecmaVersion: '2018',
-    jsx: { allowNamespacedObjects: true },
-  });
-}
-// meriyah 445ms
-// acorn 544ms
+const meriyah = require('./meriyah.js');
+
 export function parseAst(contents: string, options?: any) {
-  return meriyah.parseModule(contents, options);
-  //return acornParse(contents, options);
-  // return cherow.parseScript(contents, {
-  //   module: true,
+  return meriyah.parse(contents, {
+    next: false,
+    globalAwait: true,
+    webCompat: true,
+    module: true,
+  });
+
+  // return cherow.parseModule(contents, {
   //   next: true,
-  //   experimental: true,
+  //   globalAwait: true,
+  //   webCompat: true,
+  //   module: true,
   // });
 }
 
@@ -76,6 +72,7 @@ function exportNamedDeclaration(ctx: Ctx, node, parent, prop, idx) {
   if (node.declaration) {
     const type = node.declaration.type;
     // export const foobar = 1, foo = 3, some = class {}
+
     if (type === 'VariableDeclaration') {
       const declarations = node.declaration.declarations;
       declarations.map(declaration => {
@@ -154,10 +151,11 @@ function onImportDeclaration(ctx: Ctx, node, parent, prop, idx) {
 export function fastTransform(opts: {
   sourceMaps?: boolean;
   input: string;
+  absPath?: string;
+  ast?: any;
   sourceInterceptor?: (source: string) => string;
 }): { code: string; sourceMap: any } {
-  const ast = parseAst(opts.input, { locations: opts.sourceMaps });
-
+  const ast = opts.ast ? opts.ast : parseAst(opts.input, { locations: opts.sourceMaps });
   let nameIndex = 0;
   const toBeRemoved: Array<{ arr: any; node: any }> = [];
   const ctx: Ctx = {
@@ -177,7 +175,7 @@ export function fastTransform(opts: {
       return `__req${nameIndex}__`;
     },
   };
-
+  //console.log(JSON.stringify(ast, null, 2));
   //console.log(JSON.stringify(ast.body, null, 2));
   walkAST(ast, {
     onNode: (node, parent, prop, idx) => {

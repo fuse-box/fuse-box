@@ -146,14 +146,15 @@ function processModule(props: IDefaultParseProps) {
   if (_module.isExecutable()) {
     if (!_module.isCached) {
       _module.read();
-      // if (_module.testPath('compiler/fesm5/compiler')) {
-      //   console.log(_module.fastAnalysis);
-      // }
+
       _module.fastAnalysis = fastAnalysis({
         input: _module.contents,
-        debug: _module.testPath('compiler/fesm5/compiler'),
+        parseUsingAst: _module.props.extension === '.js',
       });
-
+      // temp hack to set jsx analysis based on extension
+      if (_module.props.extension === '.jsx') {
+        _module.fastAnalysis.report.containsJSX = true;
+      }
       _module.fastAnalysis.replaceable = [];
       icp.sync('assemble_fast_analysis', { module: _module });
     }
@@ -243,7 +244,7 @@ export function assemble(ctx: Context, entryFile: string): Array<Package> {
     result.push(pkg);
   });
   ctx.packages = result;
-
+  ctx.log.info('Assemble completed');
   // reset logging group
   ctx.log.group(false);
   return result;

@@ -13,7 +13,7 @@ describe('assemble fast analysis', () => {
       module.fastAnalysis = {
         imports: [],
         report: {
-          browserEssentials: ['process'],
+          browserEssentials: [{ moduleName: 'process', variable: 'process' }],
         },
       };
 
@@ -29,7 +29,7 @@ describe('assemble fast analysis', () => {
       module.fastAnalysis = {
         imports: [],
         report: {
-          browserEssentials: ['process'],
+          browserEssentials: [{ moduleName: 'process', variable: 'process' }],
         },
       };
       ctx.ict.sync('assemble_fast_analysis', { module });
@@ -52,11 +52,26 @@ describe('assemble fast analysis', () => {
       module.fastAnalysis = {
         imports: [],
         report: {
-          browserEssentials: ['process'],
+          browserEssentials: [{ moduleName: 'process', variable: 'process' }],
         },
       };
       ctx.ict.sync('assemble_fast_analysis', { module });
       expect(module.header).toEqual(['var process = require("process");']);
+    });
+
+    it('should have buffer require statement', () => {
+      const ctx = createContext({
+        target: 'browser',
+      });
+      const module = mockDefaultModule(ctx);
+      module.fastAnalysis = {
+        imports: [],
+        report: {
+          browserEssentials: [{ moduleName: 'buffer', variable: 'Buffer' }],
+        },
+      };
+      ctx.ict.sync('assemble_fast_analysis', { module });
+      expect(module.header).toEqual(['var Buffer = require("buffer");']);
     });
 
     it('should have fusebox default import package', () => {

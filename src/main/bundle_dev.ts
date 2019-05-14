@@ -4,7 +4,7 @@ import { createDevBundles, inflateBundles } from '../bundle/createDevBundles';
 import { Context } from '../core/Context';
 import { attachHMR } from '../hmr/attach_hmr';
 import { pluginCSS } from '../plugins/core/plugin_css';
-import { pluginDevJs } from '../plugins/core/plugin_dev_js';
+import { pluginJS } from '../plugins/core/plugin_js';
 import { pluginTypescript } from '../plugins/core/plugin_typescript';
 import { assemble } from './assemble';
 import { attachCache } from './attach_cache';
@@ -19,7 +19,7 @@ export async function bundleDev(ctx: Context) {
   const ict = ctx.ict;
   const startTime = process.hrtime();
 
-  const plugins = [...ctx.config.plugins, pluginJSON(), pluginCSS(), pluginSass(), pluginDevJs(), pluginTypescript()];
+  const plugins = [...ctx.config.plugins, pluginJSON(), pluginCSS(), pluginSass(), pluginJS(), pluginTypescript()];
 
   plugins.forEach(plugin => plugin && plugin(ctx));
 
@@ -55,7 +55,7 @@ export async function bundleDev(ctx: Context) {
     printPackageStat: true,
     ctx: ctx,
     packages: packages,
-    time: prettyTime(process.hrtime(startTime)),
+    time: prettyTime(process.hrtime(startTime), 'ms'),
   });
 
   ict.sync('complete', { ctx: ctx, bundles: bundles });

@@ -349,49 +349,6 @@ describe('Fast analysis test', () => {
   });
 
   describe('Report', () => {
-    it('should give jsx', () => {
-      const result = fastAnalysis({
-        input: `
-				 function(){ return <div></div>}
-			`,
-      });
-      expect(result.report.containsJSX).toEqual(true);
-    });
-
-    it('should give not jsx', () => {
-      const result = fastAnalysis({
-        input: `
-				 function(){ return '<div></div>'}
-			`,
-      });
-      expect(result.report.containsJSX).toBeUndefined();
-    });
-
-    it('should give not jsx 2', () => {
-      const result = fastAnalysis({
-        input: `
-        var _ESCAPED_CHARS = [
-          [/&/g, '&amp;'],
-          [/"/g, '&quot;'],
-          [/'/g, '&apos;'],
-          [/</g, '&lt;'],
-          [/>/g, '&gt;'],
-      ];
-
-			`,
-      });
-      expect(result.report.containsJSX).toBeUndefined();
-    });
-
-    it.only('should give not jsx 3', () => {
-      const result = fastAnalysis({
-        input: `
-        "Plural cases should be \"=<number>\" or one of "
-			`,
-      });
-      expect(result.report.containsJSX).toBeUndefined();
-    });
-
     it('should give es6Syntax 1', () => {
       const result = fastAnalysis({
         input: `
@@ -433,7 +390,7 @@ describe('Fast analysis test', () => {
   });
   describe('System variables', () => {
     describe('consistency', () => {
-      const variables = ['stream', 'process', 'buffer', 'http', 'https'];
+      const variables = ['process', 'buffer', 'http', 'https'];
       const declarators = ['var', 'const', 'let'];
       variables.forEach(name => {
         it(`should match ${name}`, () => {
@@ -442,7 +399,8 @@ describe('Fast analysis test', () => {
              console.log(${name})
           `,
           });
-          expect(result.report.browserEssentials).toEqual([name]);
+
+          expect(result.report.browserEssentials).toEqual([{ moduleName: name, variable: name }]);
         });
 
         it(`should not match ${name} (is in string 1) `, () => {
@@ -493,7 +451,7 @@ describe('Fast analysis test', () => {
 				 console.log(process.env.NODE_ENV)
 			`,
       });
-      expect(result.report.browserEssentials).toEqual(['process']);
+      expect(result.report.browserEssentials).toEqual([{ moduleName: 'process', variable: 'process' }]);
     });
 
     it('should match process in ()', () => {
@@ -504,7 +462,7 @@ describe('Fast analysis test', () => {
         }
 			`,
       });
-      expect(result.report.browserEssentials).toEqual(['process']);
+      expect(result.report.browserEssentials).toEqual([{ moduleName: 'process', variable: 'process' }]);
     });
 
     it('should match process 2', () => {
@@ -513,7 +471,7 @@ describe('Fast analysis test', () => {
 				 console.log( process.env.NODE_ENV)
 			`,
       });
-      expect(result.report.browserEssentials).toEqual(['process']);
+      expect(result.report.browserEssentials).toEqual([{ moduleName: 'process', variable: 'process' }]);
     });
 
     it('should match process 3', () => {
@@ -522,7 +480,7 @@ describe('Fast analysis test', () => {
 				 const a =process.env.NODE_ENV
 			`,
       });
-      expect(result.report.browserEssentials).toEqual(['process']);
+      expect(result.report.browserEssentials).toEqual([{ moduleName: 'process', variable: 'process' }]);
     });
 
     it('should not match process 3', () => {
@@ -541,7 +499,7 @@ describe('Fast analysis test', () => {
          process.version;
 			`,
       });
-      expect(result.report.browserEssentials).toEqual(['process']);
+      expect(result.report.browserEssentials).toEqual([{ moduleName: 'process', variable: 'process' }]);
     });
 
     it('should match stream', () => {
@@ -550,7 +508,7 @@ describe('Fast analysis test', () => {
 				 console.log(stream)
 			`,
       });
-      expect(result.report.browserEssentials).toEqual(['stream']);
+      expect(result.report.browserEssentials).toEqual([{ moduleName: 'stream', variable: 'stream' }]);
     });
 
     it('should match http', () => {
@@ -559,16 +517,16 @@ describe('Fast analysis test', () => {
 				 console.log(http)
 			`,
       });
-      expect(result.report.browserEssentials).toEqual(['http']);
+      expect(result.report.browserEssentials).toEqual([{ moduleName: 'http', variable: 'http' }]);
     });
 
-    it('should match http', () => {
+    it('should match Buffer', () => {
       const result = fastAnalysis({
         input: `
 				 console.log(Buffer)
 			`,
       });
-      expect(result.report.browserEssentials).toEqual(['buffer']);
+      expect(result.report.browserEssentials).toEqual([{ moduleName: 'buffer', variable: 'Buffer' }]);
     });
 
     it('should match __dirname', () => {
