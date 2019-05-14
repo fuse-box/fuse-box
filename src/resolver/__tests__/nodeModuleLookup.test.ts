@@ -61,6 +61,21 @@ describe('isNodeModule', () => {
     const res = isNodeModule('@angular/platform-browser-dynamic/bar');
     expect(res).toEqual({ name: '@angular/platform-browser-dynamic', target: 'bar' });
   });
+
+  it('case 13', () => {
+    const res = isNodeModule('lodash.isNull');
+    expect(res).toEqual({ name: 'lodash.isNull' });
+  });
+
+  it('case 14', () => {
+    const res = isNodeModule('chart.js');
+    expect(res).toEqual({ name: 'chart.js' });
+  });
+  
+  it('case 15', () => {
+    const res = isNodeModule('validate.io-undefined');
+    expect(res).toEqual({ name: 'validate.io-undefined' });
+  });
 });
 
 describe('NodeModule lookup', () => {
