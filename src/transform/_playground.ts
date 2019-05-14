@@ -1,4 +1,4 @@
-import { fastTransform } from './fastTransform';
+import { fastTransform, parseAst } from './fastTransform';
 import * as ts from 'typescript';
 const name = 1;
 
@@ -7,18 +7,14 @@ export { version, parse, parseExpressionAt, tokenizer, parse_dammit, LooseParser
 `;
 
 const tsString = `
-import * as a from "a";
-const shit = 1;
-export class Some<T> {
-	constructor() {}
-	public start() : boolean{
-		return true;
-	}
+
+async function foo(){
+  await import("./sdf")
 }
 
 `;
 
-const code = fastTransform({ input: str });
-console.log(code);
+const o = parseAst(tsString);
+console.log(o);
 
 // console.log(code);

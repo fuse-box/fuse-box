@@ -1,18 +1,27 @@
 import { tokenize } from './tokenizer';
 import { ImportType } from '../resolver/resolver';
+import { fastAstAnalysis } from './fastAstAnalysis';
 
 //import { AnalysisContext } from "./AnalysisContext";
 
 interface IFastAnalysisProps {
   debug?: boolean;
   input: string;
+  parseUsingAst?: boolean;
+  locations?: boolean;
+}
+
+interface IBrowserEssential {
+  variable: string;
+  moduleName: string;
 }
 export interface IFastAnalysis {
+  ast?: any;
   imports?: Array<{ type: ImportType; statement: string }>;
   report?: {
     contains__dirname?: boolean;
     contains__filename?: boolean;
-    browserEssentials?: Array<string>;
+    browserEssentials?: Array<IBrowserEssential>;
     dynamicImports?: boolean;
     es6Syntax?: boolean;
     statementsReplaced?: boolean;
@@ -46,11 +55,19 @@ export interface IStatementReplaceAble {
  * @param {IFastAnalysisProps} props
  * @returns {Partial<IFastAnalysis>}
  */
+
+const MODULE_VARS = {
+  Buffer: 'buffer',
+};
 export function fastAnalysis(props: IFastAnalysisProps): IFastAnalysis {
+  if (props.parseUsingAst) {
+    return fastAstAnalysis({ input: props.input, locations: props.locations });
+  }
   const result: IFastAnalysis = {
     imports: [],
     report: {},
   };
+
   let skip = false;
   const bannedSystemVariables = [];
   tokenize(
@@ -70,30 +87,31 @@ export function fastAnalysis(props: IFastAnalysisProps): IFastAnalysis {
         result.report.es6Syntax = true;
         return;
       }
-      if (token.jsxToken) {
-        result.report.containsJSX = true;
-      }
       if (token.systemVariable) {
+        const name = token.systemVariable.name;
         if (token.systemVariable.declaration) {
-          bannedSystemVariables.push(token.systemVariable.name);
+          bannedSystemVariables.push(name);
           return;
         }
-        if (bannedSystemVariables.includes(token.systemVariable.name)) {
+        if (bannedSystemVariables.includes(name)) {
           return;
         }
-        if (token.systemVariable.name === '__dirname') {
+        if (name === '__dirname') {
           result.report.contains__dirname = true;
           return;
         }
-        if (token.systemVariable.name === '__filename') {
+        if (name === '__filename') {
           result.report.contains__filename = true;
           return;
         }
         if (!result.report.browserEssentials) {
           result.report.browserEssentials = [];
         }
-        if (!result.report.browserEssentials.includes(token.systemVariable.name)) {
-          result.report.browserEssentials.push(token.systemVariable.name);
+        if (!result.report.browserEssentials.find(i => i.variable === name)) {
+          result.report.browserEssentials.push({
+            moduleName: MODULE_VARS[name] ? MODULE_VARS[name] : name,
+            variable: name,
+          });
         }
       }
       if (token.requireStatement) {

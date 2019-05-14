@@ -138,6 +138,7 @@ module.exports.b = __req1__.b;
 
     it('Should export all from source', () => {
       const result = fastTransform({ input: `export * from "a"` });
+
       expect(result.code).toMatchInlineSnapshot(`
 "module.exports = {
   ...module.exports,

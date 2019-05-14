@@ -3,7 +3,7 @@ import { Module } from '../../core/Module';
 import { fixModuleSourceMap } from '../../sourcemaps/helpers';
 import { fastTransform } from '../../transform/fastTransform';
 
-export function pluginDevJs() {
+export function pluginJS() {
   return (ctx: Context) => {
     const ict = ctx.ict;
     ict.on('bundle_resolve_js_module', (props: { module: Module }) => {
@@ -31,8 +31,10 @@ export function pluginDevJs() {
           package: module.pkg.props.meta.name,
         });
         const transformation = fastTransform({
+          absPath: module.props.absPath,
           sourceMaps: withSourceMaps,
           input: module.contents,
+          ast: module.fastAnalysis.ast,
           sourceInterceptor: value => {
             if (analysis.replaceable) {
               const replacement =

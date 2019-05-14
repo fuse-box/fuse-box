@@ -25,15 +25,13 @@
     }
   },
   "dependencies": {
-    "acorn": "^5.7.3",
-    "acorn-jsx": "^4.0.1",
     "ansi": "^0.3.1",
     "app-root-path": "^2.0.1",
     "astring": "^1.4.0",
     "base64-img": "^1.0.3",
     "base64-js": "^1.2.0",
     "bowser": "^2.0.0-beta.3",
-    "cherow": "^1.6.9",
+    "cherow": "^1.6.8-dev.20190514",
     "chokidar": "^2.1.5",
     "clean-css": "^4.1.9",
     "convert-source-map": "^1.6.0",
@@ -44,10 +42,12 @@
     "fuse-concat-with-sourcemaps": "^1.0.5",
     "getopts": "^2.1.1",
     "glob": "^7.1.4",
+    "i": "^0.3.6",
     "ieee754": "^1.1.8",
     "lego-api": "^1.0.7",
-    "meriyah": "0.0.10",
+    "meriyah": "0.1.5",
     "mustache": "^2.3.0",
+    "npm": "^6.9.0",
     "offset-sourcemap-lines": "^1.0.1",
     "postcss": "^6.0.1",
     "pretty-time": "^1.1.0",
@@ -79,6 +79,7 @@
     "cross-env": "^5.1.3",
     "cz-conventional-changelog": "^2.0.0",
     "fuse-box": "^3.4.0",
+    "hammerjs": "^2.0.8",
     "homedir": "^0.6.0",
     "husky": "^0.14.3",
     "jest": "^24.1.0",
@@ -135,5 +136,5 @@
     "coverage-ci": "jest --verbose --coverage --runInBand"
   },
   "typings": "index.d.ts",
-  "version": "4.0.0-alpha.20"
+  "version": "4.0.0-alpha.22"
 }

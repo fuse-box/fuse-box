@@ -78,6 +78,7 @@ export class Module {
   public sourceMap: string; // primary sourcemap
   public cssSourceMap: string; // css sourcemap
   public weakReferences: Array<string>;
+  public ast?: any;
 
   private _isStylesheet: boolean;
   private _isExecutable: boolean;

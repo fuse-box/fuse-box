@@ -23,7 +23,7 @@ task('clean', async () => {
 
 // replacing the path (since we copy everything to dist)
 task('fix-env', async () => {
-  const package_json = require('./package.json');
+  const package_json = require('./dist/package.json');
   await src('dist/env.js')
     .contentsOf('env.js', str => {
       str = str.replace(/FUSE_ROOT\s*=\s*(appRoot.path)/, 'FUSE_ROOT = __dirname;');

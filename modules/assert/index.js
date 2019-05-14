@@ -27,7 +27,7 @@
 // when used in node, this will actually load the util module we depend on
 // versus loading the builtin util module as happens otherwise
 // this is a bug in node module loading as far as I am concerned
-var util = require("util");
+var util = require('util');
 
 var pSlice = Array.prototype.slice;
 var hasOwn = Object.prototype.hasOwnProperty;
@@ -44,7 +44,7 @@ var assert = (module.exports = ok);
 //                             expected: expected })
 
 assert.AssertionError = function AssertionError(options) {
-  this.name = "AssertionError";
+  this.name = 'AssertionError';
   this.actual = options.actual;
   this.expected = options.expected;
   this.operator = options.operator;
@@ -67,11 +67,11 @@ assert.AssertionError = function AssertionError(options) {
 
       // try to strip useless frames
       var fn_name = stackStartFunction.name;
-      var idx = out.indexOf("\n" + fn_name);
+      var idx = out.indexOf('\n' + fn_name);
       if (idx >= 0) {
         // once we have located the function frame
         // we need to strip out everything before it (and its line)
-        var next_line = out.indexOf("\n", idx + 1);
+        var next_line = out.indexOf('\n', idx + 1);
         out = out.substring(next_line + 1);
       }
 
@@ -85,7 +85,7 @@ util.inherits(assert.AssertionError, Error);
 
 function replacer(key, value) {
   if (util.isUndefined(value)) {
-    return "" + value;
+    return '' + value;
   }
   if (util.isNumber(value) && !isFinite(value)) {
     return value.toString();
@@ -107,9 +107,9 @@ function truncate(s, n) {
 function getMessage(self) {
   return (
     truncate(JSON.stringify(self.actual, replacer), 128) +
-    " " +
+    ' ' +
     self.operator +
-    " " +
+    ' ' +
     truncate(JSON.stringify(self.expected, replacer), 128)
   );
 }
@@ -125,7 +125,7 @@ function getMessage(self) {
 // both the actual and expected values to the assertion error for
 // display purposes.
 
-function fail(actual, expected?, message?, operator?, stackStartFunction?) {
+function fail(actual, expected, message, operator, stackStartFunction) {
   throw new assert.AssertionError({
     message: message,
     actual: actual,
@@ -146,7 +146,7 @@ assert.fail = fail;
 // assert.strictEqual(true, guard, message_opt);.
 
 function ok(value, message) {
-  if (!value) fail(value, true, message, "==", assert.ok);
+  if (!value) fail(value, true, message, '==', assert.ok);
 }
 assert.ok = ok;
 
@@ -155,7 +155,7 @@ assert.ok = ok;
 // assert.equal(actual, expected, message_opt);
 
 assert.equal = function equal(actual, expected, message) {
-  if (actual != expected) fail(actual, expected, message, "==", assert.equal);
+  if (actual != expected) fail(actual, expected, message, '==', assert.equal);
 };
 
 // 6. The non-equality assertion tests for whether two objects are not equal
@@ -163,7 +163,7 @@ assert.equal = function equal(actual, expected, message) {
 
 assert.notEqual = function notEqual(actual, expected, message) {
   if (actual == expected) {
-    fail(actual, expected, message, "!=", assert.notEqual);
+    fail(actual, expected, message, '!=', assert.notEqual);
   }
 };
 
@@ -172,7 +172,7 @@ assert.notEqual = function notEqual(actual, expected, message) {
 
 assert.deepEqual = function deepEqual(actual, expected, message) {
   if (!_deepEqual(actual, expected)) {
-    fail(actual, expected, message, "deepEqual", assert.deepEqual);
+    fail(actual, expected, message, 'deepEqual', assert.deepEqual);
   }
 };
 
@@ -223,7 +223,7 @@ function _deepEqual(actual, expected) {
 }
 
 function isArguments(object) {
-  return Object.prototype.toString.call(object) == "[object Arguments]";
+  return Object.prototype.toString.call(object) == '[object Arguments]';
 }
 
 function objEquiv(a, b) {
@@ -270,7 +270,7 @@ function objEquiv(a, b) {
 
 assert.notDeepEqual = function notDeepEqual(actual, expected, message) {
   if (_deepEqual(actual, expected)) {
-    fail(actual, expected, message, "notDeepEqual", assert.notDeepEqual);
+    fail(actual, expected, message, 'notDeepEqual', assert.notDeepEqual);
   }
 };
 
@@ -279,7 +279,7 @@ assert.notDeepEqual = function notDeepEqual(actual, expected, message) {
 
 assert.strictEqual = function strictEqual(actual, expected, message) {
   if (actual !== expected) {
-    fail(actual, expected, message, "===", assert.strictEqual);
+    fail(actual, expected, message, '===', assert.strictEqual);
   }
 };
 
@@ -288,7 +288,7 @@ assert.strictEqual = function strictEqual(actual, expected, message) {
 
 assert.notStrictEqual = function notStrictEqual(actual, expected, message) {
   if (actual === expected) {
-    fail(actual, expected, message, "!==", assert.notStrictEqual);
+    fail(actual, expected, message, '!==', assert.notStrictEqual);
   }
 };
 
@@ -297,7 +297,7 @@ function expectedException(actual, expected) {
     return false;
   }
 
-  if (Object.prototype.toString.call(expected) == "[object RegExp]") {
+  if (Object.prototype.toString.call(expected) == '[object RegExp]') {
     return expected.test(actual);
   } else if (actual instanceof expected) {
     return true;
@@ -322,25 +322,17 @@ function _throws(shouldThrow, block, expected, message) {
     actual = e;
   }
 
-  message =
-    (expected && expected.name ? " (" + expected.name + ")." : ".") +
-    (message ? " " + message : ".");
+  message = (expected && expected.name ? ' (' + expected.name + ').' : '.') + (message ? ' ' + message : '.');
 
   if (shouldThrow && !actual) {
-    fail(actual, expected, "Missing expected exception" + message);
+    fail(actual, expected, 'Missing expected exception' + message);
   }
 
   if (!shouldThrow && expectedException(actual, expected)) {
-    fail(actual, expected, "Got unwanted exception" + message);
+    fail(actual, expected, 'Got unwanted exception' + message);
   }
 
-  if (
-    (shouldThrow &&
-      actual &&
-      expected &&
-      !expectedException(actual, expected)) ||
-    (!shouldThrow && actual)
-  ) {
+  if ((shouldThrow && actual && expected && !expectedException(actual, expected)) || (!shouldThrow && actual)) {
     throw actual;
   }
 }
