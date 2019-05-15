@@ -238,6 +238,7 @@ export function assemble(ctx: Context, entryFile: string): Array<Package> {
 
   ctx.log.group('assemble');
   const pkg = createApplicationPackage(ctx, entryFile);
+  if (!pkg) return;
   parseDefaultPackage(ctx, pkg);
   assemblePackage(pkg, ctx);
   const result: Array<Package> = [pkg];

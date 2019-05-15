@@ -49,7 +49,7 @@ export function statLog(props: IStatLogProps) {
       });
     }
   }
-  if (props.printPackageStat) {
+  if (props.printPackageStat && props.packages) {
     let totalFiles = 0;
     props.packages.forEach(pkg => {
       totalFiles += pkg.modules.length;

@@ -27,26 +27,27 @@ export async function bundleDev(ctx: Context) {
   attachHMR(ctx);
 
   const packages = assemble(ctx, ctx.config.entries[0]);
+  if (packages) {
+    await processPlugins({
+      ctx: ctx,
+      packages: packages,
+    });
+    // sorting bundles with dev, system, default, vendor
+    const data = createDevBundles(ctx, packages);
+    // inflation (populating the contents)
+    inflateBundles(ctx, data.bundles);
 
-  await processPlugins({
-    ctx: ctx,
-    packages: packages,
-  });
-  // sorting bundles with dev, system, default, vendor
-  const data = createDevBundles(ctx, packages);
-  // inflation (populating the contents)
-  inflateBundles(ctx, data.bundles);
+    const writers = [];
+    for (const key in data.bundles) {
+      const bundle = data.bundles[key];
+      writers.push(() => bundle.generate().write());
+    }
+    const bundles: Array<IBundleWriteResponse> = await Promise.all(writers.map(i => i()));
 
-  const writers = [];
-  for (const key in data.bundles) {
-    const bundle = data.bundles[key];
-    writers.push(() => bundle.generate().write());
+    await attachWebIndex(ctx, bundles);
+
+    attachWatcher({ ctx });
   }
-  const bundles: Array<IBundleWriteResponse> = await Promise.all(writers.map(i => i()));
-
-  await attachWebIndex(ctx, bundles);
-
-  attachWatcher({ ctx });
 
   ctx.log.stopSpinner();
 

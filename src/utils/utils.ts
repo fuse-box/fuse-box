@@ -50,6 +50,16 @@ export function ensurePublicExtension(url: string) {
   return url;
 }
 
+export function parseVersion(version: string) {
+  const re = /v?(\d+)/g;
+  let matcher;
+  const versions = [];
+  while ((matcher = re.exec(version))) {
+    versions.push(parseInt(matcher[1]));
+  }
+  return versions;
+}
+
 export function replaceExt(npath: string, ext): string {
   if (!npath) {
     return npath;

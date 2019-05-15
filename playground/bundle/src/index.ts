@@ -5,9 +5,9 @@ console.log(lodash);
 
 // import { Other } from 'other/Other';
 
-// import './styles/raw.css';
-// import * as hammer from 'hammerjs';
-// console.log(hammer);
+import './styles/raw.css';
+import * as hammer from 'hammerjs';
+console.log(hammer);
 
 // import { FooBarComponent } from '@client/FooBarComponent';
 // console.log(FooBarComponent);
@@ -15,8 +15,8 @@ console.log(lodash);
 // console.log(process.env);
 // //import 'fooshit';
 
-// import * as shit from '@angular/platform-browser-dynamic';
-// console.log(shit);
+import * as shit from '@angular/platform-browser-dynamic';
+console.log(shit);
 
 // console.log(lodash);
 // import { FooClass } from './foo';

@@ -14,12 +14,13 @@ export function assembleFastAnalysis(ctx: Context) {
     if (module.fastAnalysis && module.fastAnalysis.report) {
       const report = module.fastAnalysis.report;
       if (ctx.config.target === 'browser') {
-        report.browserEssentials &&
-          report.browserEssentials.forEach(item => {
+        if (report.browserEssentials) {
+          for (const item of report.browserEssentials) {
             // adding it to analysis to be picked up and created accordingly
             module.fastAnalysis.imports.push({ type: ImportType.REQUIRE, statement: item.moduleName });
             module.header.push(createRequireConst(item.moduleName, item.variable));
-          });
+          }
+        }
       }
 
       if (ctx.config.target === 'browser') {
