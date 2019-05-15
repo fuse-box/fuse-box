@@ -327,6 +327,10 @@ function $getRef(name: string, o: RefOpts): IReference {
       validPath = filePath + '/index.jsx';
       file = pkg.f[validPath];
     }
+    if (!file) {
+      // try for JSX one last time
+      file = pkg.f[filePath + '.mjs'];
+    }
   }
 
   return {

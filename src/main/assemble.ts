@@ -87,6 +87,7 @@ function resolveStatement(
     filePath: props.module.props.absPath,
     homeDir: config.homeDir,
     alias: config.alias,
+    javascriptFirst: props.module.isJavascriptModule(),
     typescriptPaths: props.pkg.isDefaultPackage && props.ctx.tsConfig.typescriptPaths,
     packageMeta: !props.pkg.isDefaultPackage && props.pkg.props.meta,
     buildTarget: config.target,

@@ -1,28 +1,23 @@
 // import * as lodash from 'lodash-es';
 // console.log(lodash);
-import './styles/main.scss';
-// import 'abab/styles/index.scss';
-// import 'abbrev/index.scss';
-import { Other } from 'other/Other';
-console.log(20);
-import './styles/raw.css';
-import * as hammer from 'hammerjs';
-console.log(hammer);
+import * as hoh from './hoh';
+hoh.bar();
+// import './styles/main.scss';
 
-import { FooBarComponent } from '@client/FooBarComponent';
-console.log(FooBarComponent);
+// import { Other } from 'other/Other';
 
-console.log(process.env);
-//import 'fooshit';
+// import './styles/raw.css';
+// import * as hammer from 'hammerjs';
+// console.log(hammer);
 
-require('./medium-zoom.esm.js');
+// import { FooBarComponent } from '@client/FooBarComponent';
+// console.log(FooBarComponent);
 
-import * as shit from '@angular/platform-browser-dynamic';
-console.log(shit);
+// console.log(process.env);
+// //import 'fooshit';
 
-console.log('other', Other);
-console.log(require('./some.json'));
-console.log(require('./configs/myconfig.json'));
+// import * as shit from '@angular/platform-browser-dynamic';
+// console.log(shit);
 
 // console.log(lodash);
 // import { FooClass } from './foo';

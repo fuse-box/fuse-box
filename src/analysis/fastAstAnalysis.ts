@@ -52,11 +52,12 @@ export function fastAstAnalysis(props: IASTAnalysisProps): IFastAnalysis {
       }
     } else {
       if (node.type === 'Identifier') {
-        if (parent && parent.type === 'MemberExpression') {
-          return;
-        }
         const name = node.name;
         if (TRACED_VARIABLES.indexOf(node.name) > -1 && bannedVariables.indexOf(node.name) === -1) {
+          if (parent && parent.property === node) {
+            return;
+          }
+
           if (name === '__dirname') {
             ctx.report.contains__dirname = true;
           } else if (name === '__filename') {

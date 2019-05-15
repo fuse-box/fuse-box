@@ -15,52 +15,30 @@ function measure(name: string, fn: () => void) {
   return name;
 }
 
-export class SuperClass {
-  private bar: number;
-  constructor() {
-    this.bar = Math.random();
-  }
-
-  public getSomething() {
-    return Math.random() + this.bar;
-  }
-
-  public doSomething() {
-    return Math.random() + this.bar;
-  }
-
-  public read() {
-    return this.bar;
-  }
-}
-
-function createSuperClass2(): any {
-  let _bar = Math.random();
-  return {
-    read: () => _bar,
-    getSomething: () => Math.random() + _bar,
-    doSomething: () => Math.random() + _bar,
-  };
-}
-//methods: { [key: string]: any }
-
-function createImmutableScope<S, R>(fn: (scope: S) => { [key: string]: any }): R {
-  return fn({} as S) as R;
-}
-
+const arr = [];
 const maxIteration = 2000;
+
+function isArray1(obj) {
+  return Array.isArray(arr);
+}
+
+function isArray2(obj) {
+  return typeof obj !== 'undefined' && obj && obj.constructor === Array;
+}
+function isArray3(obj) {
+  return obj instanceof Array;
+}
+
+console.log(arr instanceof Array);
 for (let i = 0; i <= maxIteration; i++) {
-  measure('using classes', () => {
-    const a = new SuperClass();
-    a.doSomething();
-    a.getSomething();
-    a.read();
+  measure('isArray1', () => {
+    isArray1(arr);
   });
-  measure('using fn', () => {
-    const a = createSuperClass2();
-    a.doSomething();
-    a.getSomething();
-    a.read();
+  measure('isArray2', () => {
+    isArray2(arr);
+  });
+  measure('isArray3', () => {
+    isArray3(arr);
   });
 }
 

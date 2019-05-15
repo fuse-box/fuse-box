@@ -8,17 +8,17 @@ describe('Plugin dev js test', () => {
     const module = mock.module;
     pluginJS()(mock.ctx);
 
-    mock.ctx.ict.sync('bundle_resolve_js_module', { module });
+    mock.ctx.ict.sync('bundle_resolve_module', { module });
     expect(module.fastAnalysis).toEqual(undefined);
   });
 
   it('should skip transfrom 2', () => {
-    const mock = mockModule({});
+    const mock = mockModule({ moduleProps: { extension: '.js' } });
     const module = mock.module;
     module.fastAnalysis = { report: {} };
     pluginJS()(mock.ctx);
 
-    mock.ctx.ict.sync('bundle_resolve_js_module', { module });
+    mock.ctx.ict.sync('bundle_resolve_module', { module });
     expect(module.fastAnalysis).toEqual({
       report: {
         statementsReplaced: false,
@@ -28,12 +28,12 @@ describe('Plugin dev js test', () => {
   });
 
   it('should skip transfrom 3', () => {
-    const mock = mockModule({});
+    const mock = mockModule({ moduleProps: { extension: '.js' } });
     const module = mock.module;
     module.fastAnalysis = { report: { es6Syntax: false } };
     pluginJS()(mock.ctx);
 
-    mock.ctx.ict.sync('bundle_resolve_js_module', { module });
+    mock.ctx.ict.sync('bundle_resolve_module', { module });
     expect(module.fastAnalysis).toEqual({
       report: {
         es6Syntax: false,
@@ -48,6 +48,7 @@ describe('Plugin dev js test', () => {
       config: {
         sourceMap: false,
       },
+      moduleProps: { extension: '.js' },
       packageProps: {
         isDefaultPackage: true,
       },
@@ -56,7 +57,7 @@ describe('Plugin dev js test', () => {
     module.contents = 'export function foo(){}';
     module.fastAnalysis = { report: { es6Syntax: true } };
     pluginJS()(mock.ctx);
-    mock.ctx.ict.sync('bundle_resolve_js_module', { module });
+    mock.ctx.ict.sync('bundle_resolve_module', { module });
     expect(module.contents).toContain('module.exports.foo');
   });
 
@@ -65,6 +66,7 @@ describe('Plugin dev js test', () => {
       config: {
         sourceMap: { project: false },
       },
+      moduleProps: { extension: '.js' },
       packageProps: {
         isDefaultPackage: true,
       },
@@ -73,7 +75,7 @@ describe('Plugin dev js test', () => {
     module.contents = 'export function foo(){}';
     module.fastAnalysis = { report: { es6Syntax: true } };
     pluginJS()(mock.ctx);
-    mock.ctx.ict.sync('bundle_resolve_js_module', { module });
+    mock.ctx.ict.sync('bundle_resolve_module', { module });
     expect(module.contents).toContain('module.exports.foo');
     expect(module.fastAnalysis).toEqual({
       report: {
@@ -89,6 +91,7 @@ describe('Plugin dev js test', () => {
       config: {
         sourceMap: true,
       },
+      moduleProps: { extension: '.js' },
       packageProps: {
         isDefaultPackage: true,
       },
@@ -97,7 +100,7 @@ describe('Plugin dev js test', () => {
     module.contents = 'export function foo(){}';
     module.fastAnalysis = { report: { es6Syntax: true } };
     pluginJS()(mock.ctx);
-    mock.ctx.ict.sync('bundle_resolve_js_module', { module });
+    mock.ctx.ict.sync('bundle_resolve_module', { module });
 
     expect(module.contents).toContain('module.exports.foo = foo;');
     expect(module.sourceMap).toBeTruthy();
@@ -108,6 +111,7 @@ describe('Plugin dev js test', () => {
       config: {
         sourceMap: true,
       },
+      moduleProps: { extension: '.js' },
       packageProps: {
         isDefaultPackage: false,
       },
@@ -116,7 +120,7 @@ describe('Plugin dev js test', () => {
     module.contents = 'export function foo(){}';
     module.fastAnalysis = { report: { es6Syntax: true } };
     pluginJS()(mock.ctx);
-    mock.ctx.ict.sync('bundle_resolve_js_module', { module });
+    mock.ctx.ict.sync('bundle_resolve_module', { module });
 
     expect(module.contents).toContain('module.exports.foo');
     expect(module.fastAnalysis).toEqual({
@@ -133,6 +137,7 @@ describe('Plugin dev js test', () => {
       config: {
         sourceMap: { vendor: true },
       },
+      moduleProps: { extension: '.js' },
       packageProps: {
         isDefaultPackage: false,
       },
@@ -141,13 +146,14 @@ describe('Plugin dev js test', () => {
     module.contents = 'export function foo(){}';
     module.fastAnalysis = { report: { es6Syntax: true } };
     pluginJS()(mock.ctx);
-    mock.ctx.ict.sync('bundle_resolve_js_module', { module });
+    mock.ctx.ict.sync('bundle_resolve_module', { module });
     expect(module.contents).toContain('module.exports.foo = foo;');
     expect(module.sourceMap).toBeTruthy();
   });
 
   it('should not continue contains jsx', () => {
     const mock = mockModule({
+      moduleProps: { extension: '.js' },
       packageProps: {
         isDefaultPackage: false,
       },
@@ -156,7 +162,7 @@ describe('Plugin dev js test', () => {
     module.contents = 'export function foo(){}';
     module.fastAnalysis = { report: { containsJSX: true } };
     pluginJS()(mock.ctx);
-    mock.ctx.ict.sync('bundle_resolve_js_module', { module });
+    mock.ctx.ict.sync('bundle_resolve_module', { module });
     expect(module.contents).toContain('export function foo');
   });
 
@@ -165,6 +171,7 @@ describe('Plugin dev js test', () => {
       config: {
         sourceMap: true,
       },
+      moduleProps: { extension: '.js' },
       packageProps: {
         isDefaultPackage: false,
       },
@@ -176,7 +183,7 @@ describe('Plugin dev js test', () => {
       replaceable: [{ type: ImportType.RAW_IMPORT, fromStatement: './foo', toStatement: './bar' }],
     };
     pluginJS()(mock.ctx);
-    mock.ctx.ict.sync('bundle_resolve_js_module', { module });
+    mock.ctx.ict.sync('bundle_resolve_module', { module });
     expect(module.contents).toContain(`require("./bar");`);
   });
 
@@ -185,6 +192,7 @@ describe('Plugin dev js test', () => {
       config: {
         sourceMap: true,
       },
+      moduleProps: { extension: '.js' },
       packageProps: {
         isDefaultPackage: false,
       },
@@ -196,7 +204,7 @@ describe('Plugin dev js test', () => {
       replaceable: [],
     };
     pluginJS()(mock.ctx);
-    mock.ctx.ict.sync('bundle_resolve_js_module', { module });
+    mock.ctx.ict.sync('bundle_resolve_module', { module });
     expect(module.contents).toContain(`require("./foo");`);
   });
 });

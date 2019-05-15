@@ -63,7 +63,8 @@ function getIndexFiles(props: IPathsLookupProps): DirectoryListing | undefined {
       indexFiles = CACHED_LISTING[props.baseURL];
     } else {
       const files = [];
-      fs.readdirSync(props.baseURL).forEach(file => {
+      const listed = fs.readdirSync(props.baseURL);
+      for (const file of listed) {
         if (file[0] !== '.') {
           const [nameWithoutExtension] = file.split('.');
           files.push({
@@ -71,7 +72,8 @@ function getIndexFiles(props: IPathsLookupProps): DirectoryListing | undefined {
             name: file,
           });
         }
-      });
+      }
+
       indexFiles = CACHED_LISTING[props.baseURL] = files;
     }
   }

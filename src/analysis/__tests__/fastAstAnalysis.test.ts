@@ -159,5 +159,29 @@ describe('Fast ast analysis', () => {
 
       expect(res.report.browserEssentials).toEqual([{ moduleName: 'http', variable: 'http' }]);
     });
+
+    it('should detect process', () => {
+      const res = fastAstAnalysis({
+        input: `
+        if (process.browser) {
+
+        }
+      `,
+      });
+
+      expect(res.report.browserEssentials).toEqual([{ moduleName: 'process', variable: 'process' }]);
+    });
+
+    it('should not detect process', () => {
+      const res = fastAstAnalysis({
+        input: `
+        if (foo.process.browser) {
+
+        }
+      `,
+      });
+
+      expect(res.report.browserEssentials).toBeUndefined();
+    });
   });
 });

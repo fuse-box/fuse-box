@@ -89,6 +89,13 @@ describe('lookup test', () => {
     expect(response.extension).toBe('.json');
   });
 
+  it('Should resolve mjs file', () => {
+    const response = fileLookup({ fileDir: cases, target: 'k/foo' });
+    expect(response.absPath).toMatchFilePath('k/foo.mjs$');
+    expect(response.fileExists).toBe(true);
+    expect(response.extension).toBe('.mjs');
+  });
+
   it('Should resolve a js file while .min is specified', () => {
     const response = fileLookup({ fileDir: cases, target: 'min_lookup/file.min' });
 
