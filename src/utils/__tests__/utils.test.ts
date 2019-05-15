@@ -10,9 +10,22 @@ import {
   joinFuseBoxPath,
   createStringConst,
   createVarString,
+  parseVersion,
 } from '../utils';
 
 describe('utils', () => {
+  describe('parseVersion', () => {
+    it('should parse with v', () => {
+      const res = parseVersion('v11.13.0');
+
+      expect(res).toEqual([11, 13, 0]);
+    });
+
+    it('should parse without v', () => {
+      const res = parseVersion('11.13.0');
+      expect(res).toEqual([11, 13, 0]);
+    });
+  });
   describe('path2Regex', () => {
     it('should convert', () => {
       const a = path2Regex('foo/bar.js');

@@ -100,6 +100,7 @@
     "should": "^11.1.0",
     "styled-components": "^4.1.2",
     "stylus": "^0.54.5",
+    "sucrase": "^3.10.1",
     "terser": "^3.10.11",
     "ts-jest": "^23.10.5",
     "ts-node": "^8.1.0",
