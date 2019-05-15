@@ -30,6 +30,7 @@ const fuse = fusebox({
   // },
   webIndex: {
     publicPath: '.',
+    template: 'src/index.html',
   },
   //production: {},
   homeDir: __dirname,

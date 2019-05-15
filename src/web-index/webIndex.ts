@@ -70,10 +70,10 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
       const sorted = bundles.sort((a, b) => a.bundle.props.priority - b.bundle.props.priority);
       sorted.forEach(item => {
         if (item.bundle.props.webIndexed) {
-          if (item.bundle.props.type === BundleType.CSS) {
-            scriptTags.push(htmlStrings.cssTag(joinFuseBoxPath(opts.publicPath, item.stat.relBrowserPath)));
+          if (item.bundle.props.type !== BundleType.CSS) {
+            scriptTags.push(htmlStrings.scriptTag(joinFuseBoxPath(opts.publicPath, item.stat.relBrowserPath)));
           } else {
-            cssTags.push(htmlStrings.scriptTag(joinFuseBoxPath(opts.publicPath, item.stat.relBrowserPath)));
+            cssTags.push(htmlStrings.cssTag(joinFuseBoxPath(opts.publicPath, item.stat.relBrowserPath)));
           }
         }
       });

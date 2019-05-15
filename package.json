@@ -120,6 +120,7 @@
     "url": "git+https://github.com/fuse-box/fuse-box.git"
   },
   "scripts": {
+    "alpha": "ts-node -T fuse publish-alpha",
     "codecov": "codecov",
     "changelog": "run-s changelog:generate changelog:format",
     "changelog:format": "prettier --write CHANGELOG.md",
@@ -127,7 +128,6 @@
     "commit": "git-cz",
     "commitmsg": "validate-commit-msg",
     "devDeps": "gulp installDevDeps",
-    "alpha": "ts-node -T fuse publish-alpha",
     "dist": "ts-node -T fuse dist",
     "format": "prettier --list-different \"src/**/*.{js,json,md,ts,yml}\"",
     "format:fix": "prettier --write \"src/**/*.{js,json,md,ts,yml}\"",
@@ -136,5 +136,5 @@
     "coverage-ci": "jest --verbose --coverage --runInBand"
   },
   "typings": "index.d.ts",
-  "version": "4.0.0-alpha.23"
+  "version": "4.0.0-alpha.24"
 }
