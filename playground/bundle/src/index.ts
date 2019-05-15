@@ -1,7 +1,6 @@
-// import * as lodash from 'lodash-es';
-// console.log(lodash);
-import * as hoh from './hoh';
-hoh.bar();
+import * as lodash from 'lodash-es';
+console.log(lodash);
+
 // import './styles/main.scss';
 
 // import { Other } from 'other/Other';
