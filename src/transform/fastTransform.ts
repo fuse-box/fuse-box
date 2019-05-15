@@ -1,8 +1,7 @@
 import { generate } from 'astring';
 //import * as meriyah from 'meriyah';
 import * as sourceMapModule from 'source-map';
-import { walkAST } from '../utils/ast';
-import * as cherow from 'cherow';
+import { fastWalk } from '../utils/ast';
 import {
   createLocalVariable,
   createMemberExpression,
@@ -13,7 +12,7 @@ import {
   isExportNamedDeclaration,
 } from './acornUtils';
 
-const meriyah = require('./meriyah.js');
+const meriyah = require('./meriyah');
 
 export function parseAst(contents: string, options?: any) {
   return meriyah.parse(contents, {
@@ -175,42 +174,40 @@ export function fastTransform(opts: {
       return `__req${nameIndex}__`;
     },
   };
-  //console.log(JSON.stringify(ast, null, 2));
-  //console.log(JSON.stringify(ast.body, null, 2));
-  walkAST(ast, {
-    onNode: (node, parent, prop, idx) => {
-      if (node.type === 'ExportAllDeclaration') {
-        const { type, expression } = createModuleExportsAssign(node.source.value);
-        node.type = type;
-        node.expression = expression;
-        delete node.source;
-      }
-      if (isExportDefaultDeclaration(node)) {
-        if (prop && idx !== undefined) {
-          if (Array.isArray(parent[prop])) {
-            if (node.declaration && node.declaration.id && node.declaration.id.name) {
-              const name = node.declaration.id.name;
-              parent[prop][idx] = node.declaration; //2
-              ctx.exported.push({
-                exported: 'default',
-                local: name,
-              });
-            } else {
-              parent[prop][idx] = createModuleExports('default', node.declaration);
-            }
+
+  fastWalk(ast, (node, parent, prop, idx) => {
+    if (node.type === 'ExportAllDeclaration') {
+      const { type, expression } = createModuleExportsAssign(node.source.value);
+      node.type = type;
+      node.expression = expression;
+      delete node.source;
+    }
+    if (isExportDefaultDeclaration(node)) {
+      if (prop && idx !== undefined) {
+        if (Array.isArray(parent[prop])) {
+          if (node.declaration && node.declaration.id && node.declaration.id.name) {
+            const name = node.declaration.id.name;
+            parent[prop][idx] = node.declaration; //2
+            ctx.exported.push({
+              exported: 'default',
+              local: name,
+            });
+          } else {
+            parent[prop][idx] = createModuleExports('default', node.declaration);
           }
         }
       }
-      if (isExportNamedDeclaration(node)) {
-        if (exportNamedDeclaration(ctx, node, parent, prop, idx) === false) {
-          return false;
-        }
+    }
+    if (isExportNamedDeclaration(node)) {
+      if (exportNamedDeclaration(ctx, node, parent, prop, idx) === false) {
+        return false;
       }
-      if (node.type === 'ImportDeclaration') {
-        onImportDeclaration(ctx, node, parent, prop, idx);
-      }
-    },
+    }
+    if (node.type === 'ImportDeclaration') {
+      onImportDeclaration(ctx, node, parent, prop, idx);
+    }
   });
+
   ctx.reqStatements.forEach(item => {
     if (item.replaceNode) {
       const tree = item.replaceNode.array;

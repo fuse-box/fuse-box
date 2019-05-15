@@ -6,8 +6,11 @@ import { fastTransform } from '../../transform/fastTransform';
 export function pluginJS() {
   return (ctx: Context) => {
     const ict = ctx.ict;
-    ict.on('bundle_resolve_js_module', (props: { module: Module }) => {
+    ict.on('bundle_resolve_module', (props: { module: Module }) => {
       const module = props.module;
+
+      if (!module.isJavascriptModule()) return;
+
       const config = ctx.config;
 
       const analysis = module.fastAnalysis;

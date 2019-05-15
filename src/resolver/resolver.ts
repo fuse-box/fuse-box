@@ -25,6 +25,7 @@ export interface IResolverProps {
   packageMeta?: IPackageMeta;
   modules?: Array<string>;
   importType?: ImportType;
+  javascriptFirst?: boolean;
   alias?: {
     [key: string]: string;
   };
@@ -174,7 +175,7 @@ export function resolveModule(props: IResolverProps): IResolver {
         package: pkg,
       };
     } else {
-      lookupResult = fileLookup({ filePath: props.filePath, target: target });
+      lookupResult = fileLookup({ filePath: props.filePath, target: target, javascriptFirst: props.javascriptFirst });
     }
   }
 

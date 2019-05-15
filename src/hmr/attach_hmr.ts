@@ -60,7 +60,6 @@ export function attachHMR(ctx: Context) {
       const name = pkg.getPublicName();
 
       if (!payload.summary[name]) {
-        console.log(pkg.props.meta);
         // here we need the entire package update
         ctx.log.print(`<bold><dim>HMR module</dim></bold> ${log_pkg}`, { pkg: name });
         packagesForUpdate.push(pkg);

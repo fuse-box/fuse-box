@@ -24,7 +24,7 @@ const TS_INDEXES = ['index.ts', 'index.tsx'];
 const TS_INDEXES_FIRST = [...TS_INDEXES, ...JS_INDEXES];
 const JS_INDEXES_FIRST = [...JS_INDEXES, ...TS_INDEXES];
 
-const JS_EXTENSIONS = ['.js', '.jsx'];
+const JS_EXTENSIONS = ['.js', '.jsx', '.mjs'];
 const TS_EXTENSIONS = ['.ts', '.tsx'];
 
 const TS_EXTENSIONS_FIRST = [...TS_EXTENSIONS, ...JS_EXTENSIONS];

@@ -23,7 +23,7 @@ const fuse = fusebox({
       $root: __dirname,
     },
   },
-  cache: true,
+  cache: false,
   // {
   //   enabled: true,
   //   root: path.join(__dirname, '.cache'),

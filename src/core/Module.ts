@@ -4,7 +4,7 @@ import { createConcat, extractFuseBoxPath, joinFuseBoxPath, readFile, ensureFuse
 import { Context } from './Context';
 import { Package } from './Package';
 import { testPath } from '../plugins/pluginUtils';
-const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx'];
+const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.mjs'];
 
 export interface IModuleProps {
   ctx: Context;
@@ -82,6 +82,7 @@ export class Module {
 
   private _isStylesheet: boolean;
   private _isExecutable: boolean;
+  private _isJavascriptModule: boolean;
 
   constructor(public props: IModuleProps, pkg: Package) {
     this.pkg = pkg;
@@ -97,6 +98,12 @@ export class Module {
 
   public isTypescriptModule(): boolean {
     return ['.ts', '.tsx'].includes(this.props.extension);
+  }
+
+  public isJavascriptModule() {
+    if (this._isJavascriptModule !== undefined) return this._isJavascriptModule;
+    this._isJavascriptModule = ['.js', '.jsx', '.mjs'].indexOf(this.props.extension) > -1;
+    return this._isJavascriptModule;
   }
 
   public addWeakReference(url: string) {
@@ -134,7 +141,7 @@ export class Module {
   }
 
   public read(): string {
-    if (!this.contents) {
+    if (this.contents === undefined) {
       this.contents = readFile(this.props.absPath);
     }
     return this.contents;

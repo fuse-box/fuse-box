@@ -51,7 +51,7 @@ export function inflatePackage(ctx: Context, pkg: Package): Concat {
     if (_module.isCached) {
       concat.add(null, _module.cache.contents, _module.isExecutable() ? _module.cache.sourceMap : undefined);
     } else {
-      if (!_module.contents) {
+      if (_module.contents === undefined) {
         ctx.log.error('$pkg/$path has not been processed by any plugins', {
           pkg: _module.pkg.getPublicName(),
           path: _module.props.fuseBoxPath,

@@ -5,14 +5,6 @@ import { Package } from '../core/Package';
 async function processModule(module: Module) {
   const ctx = module.props.ctx;
   const ict = ctx.ict;
-
-  if (module.isExecutable()) {
-    if (module.isTypescriptModule()) {
-      ict.sync('bundle_resolve_typescript_module', { module: module });
-    } else {
-      ict.sync('bundle_resolve_js_module', { module: module });
-    }
-  }
   ict.sync('bundle_resolve_module', { module: module });
 }
 async function processPackage(pkg: Package) {
