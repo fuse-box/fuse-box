@@ -21,10 +21,6 @@ describe('shared functions', () => {
       const res = getFolderEntryPointFromPackageJSON({ 'ts:main': 'mod.ts' });
       expect(res).toEqual('mod.ts');
     });
-    it('Should return jsnext:main', () => {
-      const res = getFolderEntryPointFromPackageJSON({ 'jsnext:main': 'oi.js' });
-      expect(res).toEqual('oi.js');
-    });
 
     it('Should return main', () => {
       const res = getFolderEntryPointFromPackageJSON({ main: 'oi.js' });

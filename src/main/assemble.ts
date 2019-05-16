@@ -152,6 +152,7 @@ function processModule(props: IDefaultParseProps) {
         input: _module.contents,
         parseUsingAst: _module.props.extension === '.js',
       });
+
       // temp hack to set jsx analysis based on extension
       if (_module.props.extension === '.jsx') {
         _module.fastAnalysis.report.containsJSX = true;
