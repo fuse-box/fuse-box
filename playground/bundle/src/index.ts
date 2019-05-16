@@ -1,13 +1,15 @@
-import * as lodash from 'lodash-es';
-console.log(lodash);
+// import * as lodash from 'lodash-es';
+// console.log(lodash);
 
 // import './styles/main.scss';
+import { Button } from '@material-ui/core';
+console.log(Button);
 
 // import { Other } from 'other/Other';
 
-import './styles/raw.css';
-import * as hammer from 'hammerjs';
-console.log(hammer);
+// import './styles/raw.css';
+// import * as hammer from 'hammerjs';
+// console.log(hammer);
 
 // import { FooBarComponent } from '@client/FooBarComponent';
 // console.log(FooBarComponent);
@@ -15,6 +17,8 @@ console.log(hammer);
 // console.log(process.env);
 // //import 'fooshit';
 
+import * as moment from 'moment';
+console.log(moment);
 import * as shit from '@angular/platform-browser-dynamic';
 console.log(shit);
 

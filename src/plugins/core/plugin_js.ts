@@ -16,7 +16,10 @@ export function pluginJS() {
       const analysis = module.fastAnalysis;
 
       let continueWithFastTransform =
-        analysis && !!analysis.report && analysis.report.es6Syntax && !analysis.report.containsJSX;
+        analysis &&
+        !!analysis.report &&
+        (analysis.report.es6Syntax || analysis.replaceable) &&
+        !analysis.report.containsJSX;
 
       let withSourceMaps = false;
 
@@ -29,10 +32,7 @@ export function pluginJS() {
       }
 
       if (continueWithFastTransform) {
-        ctx.log.info('Apply fastTransform on $package/$name', {
-          name: module.props.fuseBoxPath,
-          package: module.pkg.props.meta.name,
-        });
+        ctx.log.measureTimeStart('fast');
         const transformation = fastTransform({
           absPath: module.props.absPath,
           sourceMaps: withSourceMaps,
@@ -55,6 +55,19 @@ export function pluginJS() {
         }
         analysis.report.statementsReplaced = true;
         analysis.report.transpiled = true;
+
+        if (ctx.log.level === 'verbose') {
+          ctx.log.info('fastTransform on $package/$name in $ms', {
+            name: module.props.fuseBoxPath,
+            package: module.pkg.props.meta.name,
+            ms: ctx.log.measureTimeEnd('fast'),
+          });
+        } else {
+          ctx.log.info('fastTransform on $package/$name', {
+            name: module.props.fuseBoxPath,
+            package: module.pkg.props.meta.name,
+          });
+        }
       } else {
         if (analysis && analysis.report) {
           analysis.report.statementsReplaced = false;

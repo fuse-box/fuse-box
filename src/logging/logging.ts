@@ -1,7 +1,10 @@
 import { getSpinner, ISpinnerInterface } from './Spinner';
 import { colors } from './chroma';
+import * as prettyTime from 'pretty-time';
 import { codeLog } from './codeLog';
+type ILoggerType = 'verbose' | 'succinct' | 'disabled';
 export interface ILogger {
+  level: ILoggerType;
   group: (name: string | boolean) => void;
   info: (msg: string, variables?: { [key: string]: any }) => void;
   warn: (msg: string, variables?: { [key: string]: any }) => void;
@@ -18,9 +21,10 @@ export interface ILogger {
   getErrors: () => Array<{ str: string; vars: any }>;
   getWarnings: () => Array<{ str: string; vars: any }>;
   printNewLine: () => void;
+  measureTimeStart: (group: string) => void;
+  measureTimeEnd: (group: string) => string;
 }
 
-type ILoggerType = 'verbose' | 'succinct' | 'disabled';
 export interface ILoggerProps {
   level: ILoggerType;
 }
@@ -82,6 +86,8 @@ export function getLogger(props?: ILoggerProps): ILogger {
     }
   }
 
+  const measures: any = {};
+
   const methods = {
     group: (name: string | boolean) => {
       if (typeof name == 'boolean') {
@@ -98,6 +104,7 @@ export function getLogger(props?: ILoggerProps): ILogger {
       }
       console.log('');
     },
+
     info: (msg: string, variables?: { [key: string]: any }) => {
       log('cyan', msg, variables);
     },
@@ -162,12 +169,21 @@ export function getLogger(props?: ILoggerProps): ILogger {
       scope.spinner = spinner;
       return spinner;
     },
+    measureTimeEnd: group => {
+      return level === 'verbose' ? prettyTime(process.hrtime(measures[group])) : undefined;
+    },
+    measureTimeStart: group => {
+      if (level === 'verbose') {
+        measures[group] = process.hrtime();
+      }
+    },
     stopSpinner: () => {
       if (scope.spinner) {
         scope.spinner.stop();
         delete scope.spinner;
       }
     },
+    level: level,
   };
   if (level === 'succinct') {
     const spinner = methods.withSpinner();

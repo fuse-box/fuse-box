@@ -26,6 +26,7 @@ export async function bundleDev(ctx: Context) {
   attachCache(ctx);
   attachHMR(ctx);
 
+  let bundles: Array<IBundleWriteResponse>;
   const packages = assemble(ctx, ctx.config.entries[0]);
   if (packages) {
     await processPlugins({
@@ -42,7 +43,7 @@ export async function bundleDev(ctx: Context) {
       const bundle = data.bundles[key];
       writers.push(() => bundle.generate().write());
     }
-    const bundles: Array<IBundleWriteResponse> = await Promise.all(writers.map(i => i()));
+    bundles = await Promise.all(writers.map(i => i()));
 
     await attachWebIndex(ctx, bundles);
 
@@ -58,6 +59,7 @@ export async function bundleDev(ctx: Context) {
     packages: packages,
     time: prettyTime(process.hrtime(startTime), 'ms'),
   });
-
-  ict.sync('complete', { ctx: ctx, bundles: bundles });
+  if (bundles) {
+    ict.sync('complete', { ctx: ctx, bundles: bundles });
+  }
 }

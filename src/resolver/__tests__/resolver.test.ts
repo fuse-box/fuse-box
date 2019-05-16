@@ -153,7 +153,6 @@ describe('Resolver test', () => {
       expect(info.absPath).toMatchFilePath('some1/index.js$');
       expect(info.forcedStatement).toEqual('~/some1/index.js');
     });
-    
 
     it('Should replace alias 3', () => {
       const info = resolveModule({
@@ -284,7 +283,7 @@ describe('Resolver test', () => {
         expect(meta.packageRoot).toMatchFilePath('node_modules/resolver-test_a$');
         expect(meta.version).toEqual('1.0.1');
         expect(meta.packageJSONLocation).toMatchFilePath('node_modules/resolver-test_a/package.json$');
-        expect(meta.entryFuseBoxPath).toEqual('index.js');
+
         expect(info.package.isEntry).toEqual(false);
         expect(info.package.targetAbsPath).toMatchFilePath('node_modules/resolver-test_a/foobar.js');
         expect(info.package.targetFuseBoxPath).toEqual('foobar.js');
@@ -303,7 +302,6 @@ describe('Resolver test', () => {
         expect(meta.packageRoot).toMatchFilePath('node_modules/resolver-test_a$');
         expect(meta.version).toEqual('1.0.1');
         expect(meta.packageJSONLocation).toMatchFilePath('node_modules/resolver-test_a/package.json$');
-        expect(meta.entryFuseBoxPath).toEqual('index.js');
         expect(info.package.isEntry).toEqual(false);
         expect(info.package.targetAbsPath).toMatchFilePath('node_modules/resolver-test_a/foobar.js');
         expect(info.package.targetFuseBoxPath).toEqual('foobar.js');
@@ -322,7 +320,7 @@ describe('Resolver test', () => {
         expect(meta.packageRoot).toMatchFilePath('node_modules/resolver-test_a$');
         expect(meta.version).toEqual('1.0.1');
         expect(meta.packageJSONLocation).toMatchFilePath('node_modules/resolver-test_a/package.json$');
-        expect(meta.entryFuseBoxPath).toEqual('index.js');
+
         expect(info.package.isEntry).toEqual(false);
         expect(info.package.targetAbsPath).toMatchFilePath('node_modules/resolver-test_a/sub/subindex.js');
         expect(info.package.targetFuseBoxPath).toEqual('sub/subindex.js');
@@ -344,7 +342,7 @@ describe('Resolver test', () => {
         expect(meta.packageRoot).toMatchFilePath('node_modules/resolver-test_a$');
         expect(meta.version).toEqual('1.0.1');
         expect(meta.packageJSONLocation).toMatchFilePath('node_modules/resolver-test_a/package.json$');
-        expect(meta.entryFuseBoxPath).toEqual('index.js');
+
         expect(info.package.isEntry).toEqual(false);
         expect(info.package.targetAbsPath).toMatchFilePath('node_modules/resolver-test_a/sub/subindex.js');
         expect(info.package.targetFuseBoxPath).toEqual('sub/subindex.js');

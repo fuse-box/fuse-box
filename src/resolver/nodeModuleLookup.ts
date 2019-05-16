@@ -120,18 +120,7 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
 
   const isBrowser = props.buildTarget === 'browser';
   // extract entry point
-  const entryFile = getFolderEntryPointFromPackageJSON(json, isBrowser);
 
-  const entryLookup = fileLookup({ target: entryFile, fileDir: folder });
-
-  if (!entryLookup.fileExists) {
-    return {
-      error: `Failed to resolve an entry point in package ${parsed.name}. File ${entryFile} cannot be resolved.`,
-    };
-  }
-
-  pkg.entryAbsPath = entryLookup.absPath;
-  pkg.entryFuseBoxPath = makeFuseBoxPath(folder, entryLookup.absPath);
   // extract target if required
   if (parsed.target) {
     const parsedLookup = fileLookup({ target: parsed.target, fileDir: folder });
@@ -147,6 +136,18 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
       result.forcedStatement = `${parsed.name}/${result.targetFuseBoxPath}`;
     }
   } else {
+    const entryFile = getFolderEntryPointFromPackageJSON(json, isBrowser);
+    const entryLookup = fileLookup({ target: entryFile, fileDir: folder });
+
+    if (!entryLookup.fileExists) {
+      return {
+        error: `Failed to resolve an entry point in package ${parsed.name}. File ${entryFile} cannot be resolved.`,
+      };
+    }
+
+    pkg.entryAbsPath = entryLookup.absPath;
+    pkg.entryFuseBoxPath = makeFuseBoxPath(folder, entryLookup.absPath);
+
     result.isEntry = true;
 
     result.targetAbsPath = pkg.entryAbsPath;
