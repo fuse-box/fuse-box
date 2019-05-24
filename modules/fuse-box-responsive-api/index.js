@@ -9,26 +9,30 @@
 	/* @if allowSyntheticDefaultImports */
 	// NOTE: Should match syntheticDefaultExportPolyfill in LoaderAPI.ts
 	function syntheticDefaultExportPolyfill(input) {
-		if (
-			input === null ||
-			["function", "object", "array"].indexOf(typeof input) === -1 ||
-			input.hasOwnProperty("default") // use hasOwnProperty to avoid triggering usage warnings from libraries like mobx
-		) {
+		if (input === null || ['function', 'object', 'array'].indexOf(typeof input) === -1) {
 			return;
 		}
 
-		// to get around frozen input
+		var hasDefaultProperty = input.hasOwnProperty('default');
+		var hasModuleProperty = input.hasOwnProperty('__esModule');
 		if (Object.isFrozen(input)) {
-			input.default = input;
+			if (!hasDefaultProperty) {
+				input['default'] = input;
+			}
+
+			if (!hasModuleProperty) {
+				input['__esModule'] = true;
+			}
 			return;
 		}
 
-		// free to define properties
-		Object.defineProperty(input, "default", {
-			value: input,
-			writable: true,
-			enumerable: false
-		});
+		if (!hasDefaultProperty) {
+			Object.defineProperty(input, 'default', { value: input, writable: true, enumerable: false });
+		}
+
+		if (!hasModuleProperty) {
+			Object.defineProperty(input, '__esModule', { value: true });
+		}
 	}
 	/* @end */
 
