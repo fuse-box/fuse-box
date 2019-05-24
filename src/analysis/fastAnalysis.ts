@@ -6,6 +6,7 @@ import { fastAstAnalysis } from './fastAstAnalysis';
 
 interface IFastAnalysisProps {
   debug?: boolean;
+  packageName?: string;
   input: string;
   parseUsingAst?: boolean;
   locations?: boolean;
@@ -61,7 +62,7 @@ const MODULE_VARS = {
 };
 export function fastAnalysis(props: IFastAnalysisProps): IFastAnalysis {
   if (props.parseUsingAst) {
-    return fastAstAnalysis({ input: props.input, locations: props.locations });
+    return fastAstAnalysis({ packageName: props.packageName, input: props.input, locations: props.locations });
   }
   const result: IFastAnalysis = {
     imports: [],

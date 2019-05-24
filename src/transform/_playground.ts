@@ -1,5 +1,6 @@
-import { fastTransform, parseAst } from './fastTransform';
+import { fastTransform, parseAst } from './fastTransform/fastTransform';
 import * as ts from 'typescript';
+import { fastWalk } from '../utils/ast';
 const name = 1;
 
 const str = `
@@ -7,14 +8,56 @@ export { version, parse, parseExpressionAt, tokenizer, parse_dammit, LooseParser
 `;
 
 const tsString = `
-
-async function foo(){
-  await import("./sdf")
-}
-
+var mixin = (function(func) {
+  return function(object) {
+    func(object, source, options);
+  };
+}(_mixin));
+console.log(func)
 `;
 
 const o = parseAst(tsString);
-console.log(o);
+
+fastWalk(o, {
+  withScope: true,
+  visit: (node, props, context) => {
+    if (node.type === 'Identifier') {
+      console.log(node, context);
+    }
+  },
+});
+//console.log(JSON.stringify(o, null, 2));
 
 // console.log(code);
+
+// {
+//   "type": "ExpressionStatement",
+//   "expression": {
+//     "type": "NewExpression",
+//     "callee": {
+//       "type": "Identifier",
+//       "name": "foobar"
+//     },
+//     "arguments": []
+//   }
+// }
+
+// {
+//   "type": "ExpressionStatement",
+//   "expression": {
+//     "type": "NewExpression",
+//     "callee": {
+//       "type": "MemberExpression",
+//       "object": {
+//         "type": "Identifier",
+//         "name": "o"
+//       },
+//       "computed": false,
+//       "property": {
+//         "type": "Identifier",
+//         "name": "foobar"
+//       }
+//     },
+//     "arguments": []
+//   }
+// }

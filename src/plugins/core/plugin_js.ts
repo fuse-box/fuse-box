@@ -1,7 +1,7 @@
 import { Context } from '../../core/Context';
 import { Module } from '../../core/Module';
 import { fixModuleSourceMap } from '../../sourcemaps/helpers';
-import { fastTransform } from '../../transform/fastTransform';
+import { fastTransform } from '../../transform/fastTransform/fastTransform';
 
 export function pluginJS() {
   return (ctx: Context) => {
@@ -30,6 +30,7 @@ export function pluginJS() {
       if (!module.pkg.isDefaultPackage && config.sourceMap.vendor) {
         withSourceMaps = true;
       }
+      const debug = module.testPath('lib/_stream_readable.js');
 
       if (continueWithFastTransform) {
         ctx.log.measureTimeStart('fast');

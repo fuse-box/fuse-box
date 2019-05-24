@@ -1,3 +1,5 @@
+import { nodeIsString } from '../utils/ast';
+
 export function getVariableDeclarations(node) {
   if (node.declaration && node.declaration.type === 'VariableDeclaration') {
     if (node.declaration.declarations) {
@@ -27,6 +29,40 @@ export function isFunctionDeclaration(node) {
 }
 export function isClassDeclaration(node) {
   return node.type === 'ClassDeclaration';
+}
+
+export function isRequireStatement(node) {
+  if (node.type === 'CallExpression' && node.callee) {
+    if (node.callee.type === 'Identifier' && node.callee.name === 'require') {
+      let arg1 = node.arguments[0];
+      if (node.arguments.length === 1 && nodeIsString(arg1)) {
+        return arg1.value;
+      }
+    }
+  }
+}
+
+export function isLocalIdentifier(node, parent) {
+  return (
+    node.type === 'Identifier' &&
+    parent &&
+    (parent.computed === true || (parent.property !== node && !parent.computed)) &&
+    parent.key !== node &&
+    parent.type !== 'FunctionDeclaration' &&
+    parent.type !== 'FunctionExpression'
+  );
+}
+
+export function createTracedExpression(local: string, property) {
+  return {
+    type: 'MemberExpression',
+    object: {
+      type: 'Identifier',
+      name: local,
+    },
+    computed: false,
+    property: property,
+  };
 }
 export function createRequireStatement(local: string, source: string) {
   const reqStatement = {
@@ -135,58 +171,46 @@ export function createModuleExportsAssign(fromSource: string) {
   return {
     type: 'ExpressionStatement',
     expression: {
-      type: 'AssignmentExpression',
-      operator: '=',
-      left: {
+      type: 'CallExpression',
+      callee: {
         type: 'MemberExpression',
-
         object: {
           type: 'Identifier',
-
-          name: 'module',
-        },
-        property: {
-          type: 'Identifier',
-          name: 'exports',
+          name: 'Object',
         },
         computed: false,
+        property: {
+          type: 'Identifier',
+          name: 'assign',
+        },
       },
-      right: {
-        type: 'ObjectExpression',
-        properties: [
-          {
-            type: 'SpreadElement',
-            argument: {
-              type: 'MemberExpression',
-              object: {
-                type: 'Identifier',
-                name: 'module',
-              },
-              property: {
-                type: 'Identifier',
-                name: 'exports',
-              },
-              computed: false,
-            },
+      arguments: [
+        {
+          type: 'MemberExpression',
+          object: {
+            type: 'Identifier',
+            name: 'module',
           },
-          {
-            type: 'SpreadElement',
-            argument: {
-              type: 'CallExpression',
-              callee: {
-                type: 'Identifier',
-                name: 'require',
-              },
-              arguments: [
-                {
-                  type: 'Literal',
-                  value: fromSource,
-                },
-              ],
-            },
+          computed: false,
+          property: {
+            type: 'Identifier',
+            name: 'exports',
           },
-        ],
-      },
+        },
+        {
+          type: 'CallExpression',
+          callee: {
+            type: 'Identifier',
+            name: 'require',
+          },
+          arguments: [
+            {
+              type: 'Literal',
+              value: fromSource,
+            },
+          ],
+        },
+      ],
     },
   };
 }

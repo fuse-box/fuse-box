@@ -28,8 +28,8 @@ export const connect = opts => {
     client.send('summary', { id, summary });
   });
 
-  let styleSheetUpdate;
   client.on('hmr', payload => {
+    let styleSheetUpdate = false;
     if (FuseBox.reloadEntryOnStylesheet && payload.modules.length === 1 && payload.modules[0].isStylesheet) {
       styleSheetUpdate = payload.modules[0];
     }
