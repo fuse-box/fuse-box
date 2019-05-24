@@ -307,8 +307,11 @@ function syntheticDefaultExportPolyfill(input) {
     return;
   }
 
+  // use hasOwnProperty to avoid triggering usage warnings from libraries like mobx
   var hasDefaultProperty = input.hasOwnProperty('default');
   var hasModuleProperty = input.hasOwnProperty('__esModule');
+
+  // to get around frozen input
   if (Object.isFrozen(input)) {
     if (!hasDefaultProperty) {
       input['default'] = input;
@@ -320,6 +323,7 @@ function syntheticDefaultExportPolyfill(input) {
     return;
   }
 
+  // free to define properties
   if (!hasDefaultProperty) {
     Object.defineProperty(input, 'default', { value: input, writable: true, enumerable: false });
   }
