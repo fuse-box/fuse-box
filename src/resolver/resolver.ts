@@ -1,9 +1,10 @@
-import { makeFuseBoxPath, path2Regex } from '../utils/utils';
+import * as path from 'path';
+import { fileExists, makeFuseBoxPath, path2Regex } from '../utils/utils';
 import { fileLookup, ILookupResult } from './fileLookup';
-import { isNodeModule, nodeModuleLookup, INodeModuleLookup } from './nodeModuleLookup';
+import { INodeModuleLookup, isNodeModule, nodeModuleLookup } from './nodeModuleLookup';
 import { pathsLookup } from './pathsLookup';
-import { isServerPolyfill, isElectronPolyfill } from './polyfills';
-
+import { isElectronPolyfill, isServerPolyfill } from './polyfills';
+import { handleBrowserField } from './browserField';
 export enum ImportType {
   REQUIRE,
   FROM,
@@ -121,23 +122,6 @@ export function resolveModule(props: IResolverProps): IResolver {
     target = res.target;
   }
 
-  if (props.packageMeta) {
-    if (isBrowserBuild && props.packageMeta.browser && typeof props.packageMeta.browser === 'object') {
-      // a match should direct according to the specs
-      const browserReplacement = props.packageMeta.browser[props.target];
-      if (browserReplacement !== undefined) {
-        if (typeof browserReplacement === 'string') {
-          forcedStatement = target;
-          target = browserReplacement;
-        } else if (browserReplacement === false) {
-          // library should be ignored
-          target = 'fuse-empty-package';
-          forceReplacement = true;
-        }
-      }
-    }
-  }
-
   // handle typescript paths
   // in this cases it should always send a forceStatement
   if (props.typescriptPaths) {
@@ -154,9 +138,11 @@ export function resolveModule(props: IResolverProps): IResolver {
     }
   }
 
+  const browserFieldLookup =
+    props.packageMeta && isBrowserBuild && props.packageMeta.browser && typeof props.packageMeta.browser === 'object';
   // continue looking for the file
   if (!lookupResult) {
-    const moduleParsed = isNodeModule(target);
+    let moduleParsed = isNodeModule(target);
     if (moduleParsed) {
       // first check if we need to bundle it at all;
       if (!isUniversalBuild && isServerBuild && isServerPolyfill(moduleParsed.name)) {
@@ -165,13 +151,21 @@ export function resolveModule(props: IResolverProps): IResolver {
       if (!isUniversalBuild && isElectronBuild && isElectronPolyfill(moduleParsed.name)) {
         return { skip: true };
       }
+      if (browserFieldLookup) {
+        if (props.packageMeta.browser[moduleParsed.name] === false) {
+          forcedStatement = 'fuse-empty-package';
+          moduleParsed = { name: forcedStatement };
+          forceReplacement = true;
+        }
+      }
       const pkg = nodeModuleLookup(props, moduleParsed);
+
       if (pkg.error) {
         return { error: pkg.error };
       }
       const aliasForced = forceReplacement && target;
       return {
-        forcedStatement: pkg.forcedStatement ? pkg.forcedStatement : aliasForced,
+        forcedStatement: forcedStatement ? forcedStatement : pkg.forcedStatement ? pkg.forcedStatement : aliasForced,
         package: pkg,
       };
     } else {
@@ -181,6 +175,17 @@ export function resolveModule(props: IResolverProps): IResolver {
 
   if (!lookupResult.fileExists) {
     return;
+  }
+
+  if (props.packageMeta) {
+    if (isBrowserBuild && props.packageMeta.browser && typeof props.packageMeta.browser === 'object') {
+      // a match should direct according to the specs
+      const override = handleBrowserField(props.packageMeta, lookupResult.absPath);
+      if (override) {
+        forceReplacement = true;
+        lookupResult.absPath = override;
+      }
+    }
   }
 
   if (lookupResult.customIndex) {

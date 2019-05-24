@@ -1,26 +1,38 @@
+//import 'tslib';
 // import * as lodash from 'lodash-es';
 // console.log(lodash);
 
 // import './styles/main.scss';
-import { Button } from '@material-ui/core';
-console.log(Button);
+// import { Button } from '@material-ui/core';
+// console.log(Button);
 
-// import { Other } from 'other/Other';
+import 'tinymce';
+import 'tinymce/themes/silver/theme';
 
-// import './styles/raw.css';
+// import * as angular from 'angular';
+
+// import '@uirouter/angular-hybrid/';
+// angular.module('myApp', ['ui.router', 'ui.router.upgrade']);
+// angular.bootstrap(document, ['myApp']);
+
+// // //import './circular';
+
+// // // import { Other } from 'other/Other';
+
+// // import './styles/raw.css';
 // import * as hammer from 'hammerjs';
 // console.log(hammer);
 
-// import { FooBarComponent } from '@client/FooBarComponent';
-// console.log(FooBarComponent);
+// // import { FooBarComponent } from '@client/FooBarComponent';
+// // console.log(FooBarComponent);
 
-// console.log(process.env);
-// //import 'fooshit';
+// // console.log(process.env);
+// // //import 'fooshit';
 
-import * as moment from 'moment';
-console.log(moment);
-import * as shit from '@angular/platform-browser-dynamic';
-console.log(shit);
+// import * as moment from 'moment';
+// console.log(moment);
+// import * as shit from '@angular/platform-browser-dynamic';
+// console.log(shit);
 
 // console.log(lodash);
 // import { FooClass } from './foo';

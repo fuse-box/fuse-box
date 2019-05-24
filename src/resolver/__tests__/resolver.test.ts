@@ -27,11 +27,12 @@ createRealNodeModule(
   {
     main: 'index.js',
     version: '1.0.1',
-    browser: { './foobar': './sub', oops: false },
+    browser: { './foobar.js': './sub/subindex.js', oops: false },
   },
   {
     'index.js': 'module.exports = {}',
     'foobar.js': 'module.exports = {}',
+    'deepa/index.js': `require('../foobar')`,
     'components/MyComponent.jsx': '',
     'sub/package.json': JSON.stringify({
       main: 'subindex.js',
@@ -414,6 +415,36 @@ describe('Resolver test', () => {
         expect(info.absPath).toMatchFilePath('node_modules/resolver-test_b/sub/subindex.js$');
         expect(info.forcedStatement).toEqual('resolver-test_b/sub/subindex.js');
         expect(info.fuseBoxPath).toEqual('sub/subindex.js');
+      });
+
+      it('should resolve a file being in a package with browser fields 2', () => {
+        const filePath = path.join(path.dirname(packageInfoB.package.targetAbsPath), 'deepa/index.js');
+
+        const info = resolveModule({
+          homeDir: homeDir,
+          filePath: filePath,
+          packageMeta: packageInfoB.package.meta,
+          target: '../foobar',
+          buildTarget: 'browser',
+        });
+
+        expect(info.absPath).toMatchFilePath('resolver-test_b/sub/subindex.js$');
+        expect(info.forcedStatement).toEqual('resolver-test_b/sub/subindex.js');
+        expect(info.fuseBoxPath).toEqual('sub/subindex.js');
+      });
+
+      it('should resolve a file being in a package with browser fields 3', () => {
+        const info = resolveModule({
+          homeDir: homeDir,
+          filePath: __filename,
+          packageMeta: packageInfoB.package.meta,
+          target: 'resolver-test_b/foobar',
+          buildTarget: 'browser',
+        });
+
+        expect(info.package.targetAbsPath).toMatchFilePath('resolver-test_b/sub/subindex.js$');
+        expect(info.forcedStatement).toEqual('resolver-test_b/sub/subindex.js');
+        expect(info.package.targetFuseBoxPath).toEqual('sub/subindex.js');
       });
 
       it('should replace the file with an empty package', () => {

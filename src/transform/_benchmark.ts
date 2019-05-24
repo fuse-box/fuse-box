@@ -2,7 +2,7 @@ const { performance } = require('perf_hooks');
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
-import { fastTransform } from './fastTransform';
+import { fastTransform } from './fastTransform/fastTransform';
 
 const str = fs.readFileSync(path.join(__dirname, '_test.txt')).toString();
 

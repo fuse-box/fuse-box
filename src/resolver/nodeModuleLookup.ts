@@ -5,6 +5,7 @@ import { fileExists, makeFuseBoxPath } from '../utils/utils';
 import { fileLookup } from './fileLookup';
 import { IPackageMeta, IResolverProps } from './resolver';
 import { getFolderEntryPointFromPackageJSON, isBrowserEntry } from './shared';
+import { handleBrowserField } from './browserField';
 
 const PROJECT_NODE_MODULES = path.join(appRoot.path, 'node_modules');
 
@@ -127,10 +128,19 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
     if (!parsedLookup) {
       return { error: `Failed to resolve ${props.target} in ${parsed.name}` };
     }
+
     result.targetAbsPath = parsedLookup.absPath;
 
+    if (json.browser && typeof json.browser === 'object') {
+      const override = handleBrowserField(pkg, parsedLookup.absPath);
+      if (override) {
+        result.targetAbsPath = override;
+        parsedLookup.customIndex = true;
+      }
+    }
+
     result.isEntry = false;
-    result.targetFuseBoxPath = makeFuseBoxPath(folder, parsedLookup.absPath);
+    result.targetFuseBoxPath = makeFuseBoxPath(folder, result.targetAbsPath);
 
     if (parsedLookup.customIndex) {
       result.forcedStatement = `${parsed.name}/${result.targetFuseBoxPath}`;

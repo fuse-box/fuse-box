@@ -19,12 +19,13 @@ export async function bundleDev(ctx: Context) {
   const ict = ctx.ict;
   const startTime = process.hrtime();
 
-  const plugins = [...ctx.config.plugins, pluginJSON(), pluginCSS(), pluginSass(), pluginJS(), pluginTypescript()];
+  const plugins = [...ctx.config.plugins, pluginJSON(), pluginCSS(), pluginJS(), pluginSass(), pluginTypescript()];
 
   plugins.forEach(plugin => plugin && plugin(ctx));
 
   attachCache(ctx);
   attachHMR(ctx);
+  // lib-esm/params/paramTypes.js"
 
   let bundles: Array<IBundleWriteResponse>;
   const packages = assemble(ctx, ctx.config.entries[0]);

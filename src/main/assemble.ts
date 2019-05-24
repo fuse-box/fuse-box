@@ -149,6 +149,7 @@ function processModule(props: IDefaultParseProps) {
       _module.read();
 
       _module.fastAnalysis = fastAnalysis({
+        packageName: props.pkg.props.meta.name,
         input: _module.contents,
         parseUsingAst: _module.props.extension === '.js',
       });
@@ -167,6 +168,7 @@ function processModule(props: IDefaultParseProps) {
     const modules = [];
     _module.fastAnalysis.imports.forEach(data => {
       const response = resolveStatement({ statement: data.statement, importType: data.type }, props);
+
       if (response) {
         // if (response.module) {
         //   if (!response.module.moduleDependants) response.module.moduleDependants = [];
