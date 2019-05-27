@@ -97,9 +97,10 @@
     "node-sass": "^4.11.0",
     "npm-run-all": "^4.1.3",
     "postcss-selector-parser": "^5.0.0-rc.3",
-    "prettier": "^1.14.2",
+    "prettier": "^1.17.1",
     "pug": "^2.0.3",
     "react": "^16.2.0",
+    "react-apollo": "^2.5.6",
     "react-dom": "^16.2.0",
     "reflect-metadata": "^0.1.8",
     "run-sequence": "^1.2.2",
@@ -110,7 +111,7 @@
     "sucrase": "^3.10.1",
     "terser": "^3.10.11",
     "tinymce": "^5.0.6",
-    "ts-jest": "^23.10.5",
+    "ts-jest": "^24.0.2",
     "ts-node": "^8.1.0",
     "typescript": "^3.1.0",
     "typescript-plugin-styled-components": "^1.0.0",
@@ -145,5 +146,5 @@
     "coverage-ci": "jest --verbose --coverage --runInBand"
   },
   "typings": "index.d.ts",
-  "version": "4.0.0-alpha.30"
+  "version": "4.0.0-alpha.31"
 }

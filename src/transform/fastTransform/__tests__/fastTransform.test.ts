@@ -298,9 +298,18 @@ __req1__.ng.module();
     export { core };
       `,
       });
-      expect(result.code).toContain('module.exports.core = __req1__.core');
+      expect(result.code).toContain('module.exports.core = __req1__');
     });
 
+    it('should export all correctly', () => {
+      const result = fastTransform({
+        input: `
+        import * as colors from './colors';
+        export { colors };
+      `,
+      });
+      expect(result.code).toContain('module.exports.colors = __req1__;');
+    });
     it('should import and export 2', () => {
       const result = fastTransform({
         input: `
@@ -383,6 +392,65 @@ console.log(2);
   });
 
   describe('scope test', () => {
+    it('Should track down an undefined exports', () => {
+      const result = fastTransform({
+        input: `
+
+        export var FooBar;
+        (function (LogLevel) {
+        })(FooBar || (FooBar = {}));
+        `,
+      });
+      expect(result.code).toContain('exports.FooBar || (exports.FooBar = {}');
+    });
+
+    it('Should track down an undefined exports 2', () => {
+      const result = fastTransform({
+        input: `
+
+        export var FooBar;
+        (function (FooBar) {
+        })(FooBar || (FooBar = {}));
+        `,
+      });
+      expect(result.code).toContain('function (FooBar)');
+    });
+
+    it('Should track down an undefined exports 3', () => {
+      const result = fastTransform({
+        input: `
+        export var HubConnectionState;
+        (function(HubConnectionState) {
+        })(HubConnectionState || (HubConnectionState = {}));
+        var HubConnection = function() {
+          function HubConnection(connection, logger, protocol) {
+            this.connectionState = HubConnectionState.Disconnected;
+          }
+        };
+        `,
+      });
+      expect(result.code).toEqual(
+        '(function (HubConnectionState) {})(exports.HubConnectionState || (exports.HubConnectionState = {}));\nvar HubConnection = function () {\n  function HubConnection(connection, logger, protocol) {\n    this.connectionState = exports.HubConnectionState.Disconnected;\n  }\n};\n',
+      );
+    });
+
+    it('Should track down an undefined exports 4', () => {
+      const result = fastTransform({
+        input: `
+        export var HubConnectionState;
+        (function(HubConnectionState) {
+        })(HubConnectionState || (HubConnectionState = {}));
+        var HubConnection = function() {
+          var HubConnectionState = {};
+          function HubConnection(connection, logger, protocol) {
+            this.connectionState = HubConnectionState.Disconnected;
+          }
+        };
+        `,
+      });
+      expect(result.code).toContain('connectionState = HubConnectionState.Disconnected');
+    });
+
     it('should not mess with the scope 1', () => {
       const result = fastTransform({
         input: `

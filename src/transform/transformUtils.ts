@@ -31,7 +31,7 @@ export function isClassDeclaration(node) {
   return node.type === 'ClassDeclaration';
 }
 
-export function isRequireStatement(node) {
+export function isRequireStatement(node, parent) {
   if (node.type === 'CallExpression' && node.callee) {
     if (node.callee.type === 'Identifier' && node.callee.name === 'require') {
       let arg1 = node.arguments[0];
@@ -134,6 +134,20 @@ export function createMemberExpression(obj: string, target: string) {
       name: target,
     },
     computed: false,
+  };
+}
+export function createExportsExpression(name: string) {
+  return {
+    type: 'MemberExpression',
+    object: {
+      type: 'Identifier',
+      name: 'exports',
+    },
+    computed: false,
+    property: {
+      type: 'Identifier',
+      name: name,
+    },
   };
 }
 export function createModuleExports(exportsVariableName, property) {

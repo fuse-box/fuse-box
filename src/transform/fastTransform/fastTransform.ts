@@ -2,7 +2,12 @@ import { generate } from 'astring';
 //import * as meriyah from 'meriyah';
 import * as sourceMapModule from 'source-map';
 import { fastWalk } from '../../utils/ast';
-import { createModuleExportsAssign, isLocalIdentifier, isRequireStatement } from '../transformUtils';
+import {
+  createModuleExportsAssign,
+  isLocalIdentifier,
+  isRequireStatement,
+  createExportsExpression,
+} from '../transformUtils';
 import { handleExportDefaultDeclaration } from './exportDefaultDeclaration';
 import { onImportDeclaration } from './importDeclaration';
 import { exportNamedDeclaration } from './namedDeclaration';
@@ -50,11 +55,13 @@ export function fastTransform(opts: IFastTransformProps): { code: string; source
           break;
         case 'ImportDeclaration':
           onImportDeclaration(ctx, node, parent, prop, idx);
+          break;
         default:
           const reqStatement = isRequireStatement(node, parent);
           if (reqStatement) {
             node.arguments[0].value = ctx.interceptSource(node.arguments[0].value);
           }
+
           if (isLocalIdentifier(node, parent)) {
             if (ctx.tracedImportSpecifiers[node.name]) {
               // if it belongs to a function "someFunc(foo){}"
@@ -63,6 +70,16 @@ export function fastTransform(opts: IFastTransformProps): { code: string; source
                   return;
                 }
                 ctx.tracedImportSpecifiers[node.name].nodes.push({ node, parent, prop, idx });
+              }
+            } else {
+              if (parent.type !== 'VariableDeclarator' && ctx.undefinedExports.indexOf(node.name) > -1) {
+                if (context && context.locals.indexOf(node.name) > -1) {
+                  break;
+                }
+                if (parent && prop) {
+                  ctx.toReplace(parent, prop, idx, createExportsExpression(node.name));
+                  return;
+                }
               }
             }
           }

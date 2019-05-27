@@ -1,32 +1,26 @@
-import { fastTransform, parseAst } from './fastTransform/fastTransform';
-import * as ts from 'typescript';
-import { fastWalk } from '../utils/ast';
-const name = 1;
+import { parseAst } from './fastTransform/fastTransform';
 
 const str = `
 export { version, parse, parseExpressionAt, tokenizer, parse_dammit, LooseParser, pluginsLoose, addLooseExports, Parser, plugins, defaultOptions, Position, SourceLocation, getLineInfo, Node, TokenType, types as tokTypes, keywords$1 as keywordTypes, TokContext, types$1 as tokContexts, isIdentifierChar, isIdentifierStart, Token, isNewLine, lineBreak, lineBreakG, nonASCIIwhitespace };
 `;
 
 const tsString = `
-var mixin = (function(func) {
-  return function(object) {
-    func(object, source, options);
-  };
-}(_mixin));
-console.log(func)
+
+(function (LogLevel) {
+})(exports.FooBar || (exports.FooBar = {}));
 `;
 
 const o = parseAst(tsString);
 
-fastWalk(o, {
-  withScope: true,
-  visit: (node, props, context) => {
-    if (node.type === 'Identifier') {
-      console.log(node, context);
-    }
-  },
-});
-//console.log(JSON.stringify(o, null, 2));
+// fastWalk(o, {
+//   withScope: true,
+//   visit: (node, props, context) => {
+//     if (node.type === 'Identifier') {
+//       console.log(node, context);
+//     }
+//   },
+// });
+console.log(JSON.stringify(o, null, 2));
 
 // console.log(code);
 
