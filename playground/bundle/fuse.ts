@@ -13,6 +13,7 @@ const fuse = fusebox({
       port: 9999,
     },
   },
+  allowSyntheticDefaultImports: true,
   //modules: ['./oi'],
   sourceMap: { vendor: false },
 

@@ -20,7 +20,11 @@ export function handleExportSpecifiers(ctx: ITransformContext, node, parent, pro
       if (ctx.tracedImportSpecifiers[specifier.local.name]) {
         const traced = ctx.tracedImportSpecifiers[specifier.local.name];
 
-        replacement = createMemberExpression(traced.local, traced.alias ? traced.alias : specifier.local.name);
+        if (traced.replaceWithLocal) {
+          replacement = { type: 'Identifier', name: traced.local };
+        } else {
+          replacement = createMemberExpression(traced.local, traced.alias ? traced.alias : specifier.local.name);
+        }
       }
       ctx.exported.push({ local: replacement, exported: specifier.exported.name });
     });

@@ -3,6 +3,8 @@ import { IFastTransformProps } from './fastTransform';
 import { handleTracedImportSpecifiers } from './tracedVariable';
 
 export interface ITransformContext {
+  undefinedExports: Array<string>;
+  toReplace: (parent, prop, idx, replacement) => void;
   toBeRemoved: Array<{ arr: any; node: any }>;
   tracedImportSpecifiers: {
     [key: string]: { alias?: string; replaceWithLocal?: boolean; local: string; nodes: Array<any> };
@@ -77,14 +79,30 @@ function _handleRequireStatements(ast, ctx: ITransformContext) {
     }
   });
 }
+
+function _replaceNodes(obj) {
+  for (const item of obj.toBeReplaced) {
+    const { parent, prop, idx, replacement } = item;
+    if (idx) {
+      parent[prop][idx] = replacement;
+    } else {
+      parent[prop] = replacement;
+    }
+  }
+}
 export function createTransformContext(props: IFastTransformProps) {
   let nameIndex = 0;
   const obj = {
+    toBeReplaced: [],
     toBeRemoved: [],
+    undefinedExports: [],
     tracedImportSpecifiers: {},
     exported: [],
     slicedExports: [],
     reqStatements: [],
+    toReplace: (parent, prop, idx, replacement) => {
+      obj.toBeReplaced.push({ parent, prop, idx, replacement });
+    },
     interceptSource: source => {
       if (!props.sourceInterceptor) {
         return source;
@@ -104,6 +122,7 @@ export function createTransformContext(props: IFastTransformProps) {
       _sliceExports(obj);
       _addExports(ast, obj);
       _removeNodes(obj);
+      _replaceNodes(obj);
     },
   };
   return obj;

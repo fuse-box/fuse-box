@@ -6,8 +6,8 @@
 // import { Button } from '@material-ui/core';
 // console.log(Button);
 
-import 'tinymce';
-import 'tinymce/themes/silver/theme';
+// import 'tinymce';
+// import 'tinymce/themes/silver/theme';
 
 // import * as angular from 'angular';
 
@@ -47,3 +47,16 @@ import 'tinymce/themes/silver/theme';
 // });
 
 // console.log(222);
+
+// import { HubConnectionBuilder } from '@aspnet/signalr';
+
+// export const hub = new HubConnectionBuilder().withUrl('https:/localhost:4444').build();
+
+// import { colors } from '@material-ui/core';
+// console.log(colors);
+//export const red = colors.red[500];
+
+import ApolloClient from 'apollo-boost';
+import { ApolloProvider } from 'react-apollo';
+
+console.log(ApolloClient, ApolloProvider);

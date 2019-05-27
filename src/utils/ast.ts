@@ -10,6 +10,7 @@ interface IVisitProps {
 }
 interface IASTContext {
   locals?: Array<string>;
+  exports?: Array<string>;
 }
 interface IASTWalkProps {
   withScope?: boolean;
@@ -38,6 +39,12 @@ export function fastWalk(ast: any, walker: IASTWalkProps) {
         }
       }
 
+      if (node.type === 'ExpressionStatement') {
+        if (node.expression && node.expression.arguments) {
+          node.expression.arguments.context = context;
+        }
+      }
+
       if (node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression') {
         if (node.params) {
           for (const item of node.params) {
@@ -45,6 +52,7 @@ export function fastWalk(ast: any, walker: IASTWalkProps) {
               if (node.body.context === undefined) {
                 // create context
                 node.body.context = {
+                  exports: context && context.exports ? context.exports.concat([]) : [],
                   // here we need to make a copy of the locals
                   locals: context ? context.locals.concat([]) : [],
                 };

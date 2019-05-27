@@ -24,6 +24,7 @@ export function handleTracedImportSpecifiers(ctx: ITransformContext) {
       if (item.alias) {
         node.node.name = item.alias;
       }
+
       if (item.replaceWithLocal) {
         node.node.name = item.local;
       } else {
