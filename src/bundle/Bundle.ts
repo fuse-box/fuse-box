@@ -15,6 +15,7 @@ export enum BundleType {
   DEV = 2,
   VENDOR_JS = 3,
   PROJECT_JS = 4,
+  SERVER_ENTRY = 5,
 }
 
 /**

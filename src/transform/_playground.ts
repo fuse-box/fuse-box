@@ -55,3 +55,12 @@ console.log(JSON.stringify(o, null, 2));
 //     "arguments": []
 //   }
 // }
+
+export var HubConnectionState;
+(function(HubConnectionState) {
+})(HubConnectionState || (HubConnectionState = {}));
+var HubConnection = /** @class */ function() {
+  function HubConnection(connection, logger, protocol) {
+    this.connectionState = HubConnectionState.Disconnected;
+  }
+};

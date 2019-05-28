@@ -126,7 +126,7 @@ describe('Fast ast analysis', () => {
       `,
       });
 
-      expect(res.report.browserEssentials).toEqual([{ moduleName: 'buffer', variable: 'buffer' }]);
+      expect(res.report.browserEssentials).toEqual([{ moduleName: 'buffer', obj: 'Buffer', variable: 'buffer' }]);
     });
 
     it('should give Buffer', () => {
@@ -136,7 +136,7 @@ describe('Fast ast analysis', () => {
       `,
       });
 
-      expect(res.report.browserEssentials).toEqual([{ moduleName: 'buffer', variable: 'Buffer' }]);
+      expect(res.report.browserEssentials).toEqual([{ moduleName: 'buffer', obj: 'Buffer', variable: 'Buffer' }]);
     });
 
     it('should not give Buffer', () => {

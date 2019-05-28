@@ -154,5 +154,6 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
     config.stylesheet = { ...config.stylesheet, ...props.stylesheet };
   }
 
+  config.init(props);
   return config;
 }

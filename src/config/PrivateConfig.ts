@@ -33,6 +33,12 @@ export interface ICacheProps {
 export class PrivateConfig {
   root?: string;
   target?: 'browser' | 'server' | 'electron' | 'universal';
+  autoStartServerEntry?: boolean;
+  dependencies?: {
+    include?: Array<string>;
+    ignore?: Array<string>;
+    ignoreAllExternal?: boolean;
+  };
   homeDir?: string;
   output?: string;
   modules?: Array<string>;
@@ -79,8 +85,24 @@ export class PrivateConfig {
     this.json = props.json === undefined ? { useDefault: false } : props.json;
   }
 
+  public init(props: IPublicConfig) {
+    this.dependencies = props.dependencies ? props.dependencies : {};
+    if (this.isServer()) {
+      if (props.autoStartServerEntry === undefined) {
+        this.autoStartServerEntry = true;
+      }
+      if (this.dependencies.ignoreAllExternal === undefined) {
+        this.dependencies.ignoreAllExternal = true;
+      }
+    }
+  }
+
   public getResourcePublicRoot() {
     return this.stylesheet.resourcePublicRoot || this.defaultResourcePublicRoot;
+  }
+
+  public isServer() {
+    return this.target === 'server' || this.target === 'universal';
   }
 
   public getResourceFolder(ctx: Context) {

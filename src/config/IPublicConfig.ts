@@ -11,6 +11,12 @@ import { IJSONPluginProps } from '../plugins/core/plugin_json';
 export interface IPublicConfig {
   root?: string;
   target?: 'browser' | 'server' | 'electron' | 'universal';
+  autoStartServerEntry?: boolean;
+  dependencies?: {
+    include?: Array<string>;
+    ignore?: Array<string>;
+    ignoreAllExternal?: boolean;
+  };
   homeDir?: string;
   output?: string;
   modules?: Array<string>;

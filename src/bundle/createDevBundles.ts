@@ -131,6 +131,7 @@ export function createDevBundles(
       }
     }
   });
+
   return {
     bundles: bundleSet.collection,
   };

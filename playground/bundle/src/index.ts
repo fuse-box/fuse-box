@@ -56,7 +56,10 @@
 // console.log(colors);
 //export const red = colors.red[500];
 
-import ApolloClient from 'apollo-boost';
-import { ApolloProvider } from 'react-apollo';
+// import ApolloClient from 'apollo-boost';
+// import { ApolloProvider } from 'react-apollo';
 
-console.log(ApolloClient, ApolloProvider);
+// console.log(ApolloClient, ApolloProvider);
+
+const a = {};
+console.log(a instanceof Buffer);
