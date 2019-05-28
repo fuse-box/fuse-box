@@ -36,7 +36,7 @@ require('./app.js');
 
 ## Starting the process
 
-During the development FuseBox automatically launch and restart your process. So you can sit and enjoy developing
+During the development FuseBox will automatically launch and restart your process. So you can sit and enjoy developing
 instead of configuring. However, if you wish to launch the process yourself, you should tell FuseBox to stop the
 auto-start/restart:
 
