@@ -390,7 +390,7 @@ describe('Fast analysis test', () => {
   });
   describe('System variables', () => {
     describe('consistency', () => {
-      const variables = ['process', 'buffer', 'http', 'https'];
+      const variables = ['process', 'http', 'https'];
       const declarators = ['var', 'const', 'let'];
       variables.forEach(name => {
         it(`should match ${name}`, () => {
@@ -526,7 +526,16 @@ describe('Fast analysis test', () => {
 				 console.log(Buffer)
 			`,
       });
-      expect(result.report.browserEssentials).toEqual([{ moduleName: 'buffer', variable: 'Buffer' }]);
+      expect(result.report.browserEssentials).toEqual([{ moduleName: 'buffer', variable: 'Buffer', obj: 'Buffer' }]);
+    });
+
+    it('should match Buffer lowercase', () => {
+      const result = fastAnalysis({
+        input: `
+				 console.log(buffer)
+			`,
+      });
+      expect(result.report.browserEssentials).toEqual([{ moduleName: 'buffer', variable: 'buffer', obj: 'Buffer' }]);
     });
 
     it('should match __dirname', () => {

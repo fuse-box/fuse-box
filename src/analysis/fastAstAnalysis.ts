@@ -11,7 +11,10 @@ export interface IASTAnalysisProps {
 
 const TRACED_VARIABLES = ['__dirname', '__filename', 'stream', 'process', 'buffer', 'Buffer', 'http', 'https'];
 const MODULE_VARS = {
-  Buffer: 'buffer',
+  buffer: 'buffer',
+};
+const MODULE_OBJECTS = {
+  buffer: 'Buffer',
 };
 export function fastAstAnalysis(props: IASTAnalysisProps): IFastAnalysis {
   const ctx: IFastAnalysis = {
@@ -68,8 +71,10 @@ export function fastAstAnalysis(props: IASTAnalysisProps): IFastAnalysis {
             } else {
               if (!ctx.report.browserEssentials) ctx.report.browserEssentials = [];
               if (!ctx.report.browserEssentials.find(i => i.variable === name)) {
+                const lowcase = name.toLowerCase();
                 ctx.report.browserEssentials.push({
-                  moduleName: MODULE_VARS[name] ? MODULE_VARS[name] : name,
+                  obj: MODULE_OBJECTS[lowcase],
+                  moduleName: MODULE_VARS[lowcase] ? MODULE_VARS[lowcase] : name,
                   variable: name,
                 });
               }

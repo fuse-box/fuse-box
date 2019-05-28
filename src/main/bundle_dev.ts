@@ -1,5 +1,5 @@
 import * as prettyTime from 'pretty-time';
-import { IBundleWriteResponse } from '../bundle/Bundle';
+import { IBundleWriteResponse, Bundle, BundleType } from '../bundle/Bundle';
 import { createDevBundles, inflateBundles } from '../bundle/createDevBundles';
 import { Context } from '../core/Context';
 import { attachHMR } from '../hmr/attach_hmr';
@@ -14,6 +14,7 @@ import { attachWebIndex } from './attach_webIndex';
 import { statLog } from './stat_log';
 import { pluginSass } from '../plugins/core/plugin_sass';
 import { pluginJSON } from '../plugins/core/plugin_json';
+import { devServerEntry, attachServerEntry } from './server_entry';
 
 export async function bundleDev(ctx: Context) {
   const ict = ctx.ict;
@@ -34,6 +35,11 @@ export async function bundleDev(ctx: Context) {
       ctx: ctx,
       packages: packages,
     });
+    // server entry reload
+    if (ctx.config.isServer()) {
+      attachServerEntry(ctx);
+    }
+
     // sorting bundles with dev, system, default, vendor
     const data = createDevBundles(ctx, packages);
     // inflation (populating the contents)

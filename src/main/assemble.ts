@@ -112,6 +112,10 @@ function resolveStatement(
     return;
   }
   if (resolved.package) {
+    // ignoring all dependencies if required
+    if (props.ctx.config.dependencies.ignoreAllExternal) {
+      return;
+    }
     return {
       forcedStatement: resolved.forcedStatement,
       package: registerPackage({ assemble: props.assemble, pkg: props.pkg, ctx: props.ctx, resolved: resolved }),
@@ -191,6 +195,7 @@ function processModule(props: IDefaultParseProps) {
         if (item.module) {
           props.module.moduleDependencies.push(item.module);
         }
+
         if (item.package) {
           props.module.externalDependencies.push(item.package);
         }

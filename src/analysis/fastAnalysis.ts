@@ -15,6 +15,7 @@ interface IFastAnalysisProps {
 interface IBrowserEssential {
   variable: string;
   moduleName: string;
+  obj?: string;
 }
 export interface IFastAnalysis {
   ast?: any;
@@ -58,7 +59,10 @@ export interface IStatementReplaceAble {
  */
 
 const MODULE_VARS = {
-  Buffer: 'buffer',
+  buffer: 'buffer',
+};
+const MODULE_OBJECTS = {
+  buffer: 'Buffer',
 };
 export function fastAnalysis(props: IFastAnalysisProps): IFastAnalysis {
   if (props.parseUsingAst) {
@@ -109,8 +113,10 @@ export function fastAnalysis(props: IFastAnalysisProps): IFastAnalysis {
           result.report.browserEssentials = [];
         }
         if (!result.report.browserEssentials.find(i => i.variable === name)) {
+          const lowcase = name.toLowerCase();
           result.report.browserEssentials.push({
-            moduleName: MODULE_VARS[name] ? MODULE_VARS[name] : name,
+            obj: MODULE_OBJECTS[lowcase],
+            moduleName: MODULE_VARS[lowcase] ? MODULE_VARS[lowcase] : name,
             variable: name,
           });
         }

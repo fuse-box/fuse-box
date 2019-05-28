@@ -32,6 +32,9 @@ export function isRegExp(input: any): boolean {
 export function createRequireConst(name: string, variable?: string) {
   return `var ${variable ? variable : name} = require("${name}");`;
 }
+export function createRequireConstWithObject(name: string, variable: string, obj?: string) {
+  return `var ${variable ? variable : name} = require("${name}").${obj};`;
+}
 export function createStringConst(name: string, value: string) {
   return `const ${name} = ${JSON.stringify(value)};`;
 }
