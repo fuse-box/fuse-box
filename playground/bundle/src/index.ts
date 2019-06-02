@@ -61,5 +61,9 @@
 
 // console.log(ApolloClient, ApolloProvider);
 
-const a = {};
-console.log(a instanceof Buffer);
+// const a = {};
+// console.log(a instanceof Buffer);
+
+import * as auth from 'auth0-js';
+console.log(auth);
+console.log(process.browser);

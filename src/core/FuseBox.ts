@@ -2,6 +2,7 @@ import { IPublicConfig } from '../config/IPublicConfig';
 import { createContext } from './Context';
 import { bundleDev } from '../main/bundle_dev';
 import { parseVersion } from '../utils/utils';
+import { bundleProd } from '../production/main/bundle_prod';
 
 export interface IBundleProps {}
 
@@ -23,6 +24,10 @@ export function fusebox(config: IPublicConfig) {
         console.error(e);
       });
     },
-    runProd: (props: IProductionProps) => {},
+    runProd: (props?: IProductionProps) => {
+      return bundleProd(ctx).catch(e => {
+        console.log(e);
+      });
+    },
   };
 }
