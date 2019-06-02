@@ -38,10 +38,12 @@ export function fastAstAnalysis(props: IASTAnalysisProps): IFastAnalysis {
           ctx.imports.push({ type: ImportType.RAW_IMPORT, statement: node.source.value });
         }
       } else if (node.callee && node.callee.type === 'Import' && node.type === 'CallExpression') {
-        if (node.arguments && node.arguments[0] && node.arguments[0].type === 'Literal') {
+        if (node.arguments[0] && node.arguments[0].type === 'Literal') {
           ctx.report.es6Syntax = true;
           ctx.report.dynamicImports = true;
           ctx.imports.push({ type: ImportType.DYNAMIC, statement: node.arguments[0].value });
+        } else {
+          throw new Error('Dynamic imports are only supported with static Literals. Please avoid variables to it');
         }
       } else if (node.type === 'ExportDefaultDeclaration') {
         ctx.report.es6Syntax = true;
@@ -55,6 +57,18 @@ export function fastAstAnalysis(props: IASTAnalysisProps): IFastAnalysis {
       } else if (node.type === 'VariableDeclarator' && node.id && node.id.type === 'Identifier') {
         if (TRACED_VARIABLES.indexOf(node.id.name) > -1) {
           bannedVariables.push(node.id.name);
+        }
+      } else if (node.type === 'FunctionDeclaration' && node.id && node.id.type === 'Identifier') {
+        if (TRACED_VARIABLES.indexOf(node.id.name) > -1) {
+          bannedVariables.push(node.id.name);
+          // hoisted function
+          // we need to remove all existing browser essentials with the same name;
+          if (ctx.report.browserEssentials) {
+            const foundIndex = ctx.report.browserEssentials.findIndex(i => i.variable === node.id.name);
+            if (foundIndex > -1) {
+              ctx.report.browserEssentials.splice(foundIndex, 1);
+            }
+          }
         }
       } else {
         if (node.type === 'Identifier') {

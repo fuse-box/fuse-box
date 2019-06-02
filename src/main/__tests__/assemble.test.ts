@@ -156,14 +156,20 @@ describe('Assemble test', () => {
       expect(moduleC.modules[0].props.absPath).toMatchFilePath('modules/module-c/index.js$');
     });
 
-    it('should get the entry right (target server)', () => {
-      const ctx = createProjectContext('src4', { target: 'server' });
+    it('should get the entry right (target server) with ignoreAllExternal false', () => {
+      const ctx = createProjectContext('src4', { target: 'server', dependencies: { ignoreAllExternal: false } });
       const packages = assemble(ctx, 'index.ts');
       expect(packages).toHaveLength(3);
 
       const moduleC = packages.find(item => item.props.meta.name === 'module-c');
       expect(moduleC.modules).toHaveLength(1);
       expect(moduleC.modules[0].props.absPath).toMatchFilePath('modules/module-c/index.js$');
+    });
+
+    it('should get the entry right (target server) with ignoreAllExternal true', () => {
+      const ctx = createProjectContext('src4', { target: 'server', dependencies: { ignoreAllExternal: true } });
+      const packages = assemble(ctx, 'index.ts');
+      expect(packages).toHaveLength(1);
     });
 
     it('should get the entry right (target electron)', () => {

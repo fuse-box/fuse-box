@@ -1,19 +1,18 @@
 import { generate } from 'astring';
-//import * as meriyah from 'meriyah';
+import * as meriyah from 'meriyah';
+
 import * as sourceMapModule from 'source-map';
 import { fastWalk } from '../../utils/ast';
 import {
+  createExportsExpression,
   createModuleExportsAssign,
   isLocalIdentifier,
   isRequireStatement,
-  createExportsExpression,
 } from '../transformUtils';
 import { handleExportDefaultDeclaration } from './exportDefaultDeclaration';
 import { onImportDeclaration } from './importDeclaration';
 import { exportNamedDeclaration } from './namedDeclaration';
 import { createTransformContext } from './TrasnformContext';
-
-const meriyah = require('./../meriyah');
 
 export function parseAst(contents: string, options?: any) {
   return meriyah.parse(contents, {

@@ -13,6 +13,16 @@ describe('Fast ast analysis', () => {
       expect(res.report.es6Syntax).toEqual(true);
     });
 
+    it('should not give raw import', () => {
+      const res = fastAstAnalysis({
+        input: `
+        import "foo"
+      `,
+      });
+      expect(res.imports[0].statement).toEqual('foo');
+      expect(res.report.es6Syntax).toEqual(true);
+    });
+
     it('should give import from', () => {
       const res = fastAstAnalysis({
         input: `
@@ -44,6 +54,18 @@ describe('Fast ast analysis', () => {
       expect(res.imports).toEqual([{ type: ImportType.DYNAMIC, statement: './oi' }]);
       expect(res.report.es6Syntax).toEqual(true);
       expect(res.report.dynamicImports).toEqual(true);
+    });
+
+    it('should not give dynamic import', () => {
+      expect(() => {
+        fastAstAnalysis({
+          input: `
+          async function bar(){
+            await import(foo)
+          }
+        `,
+        });
+      }).toThrowError();
     });
 
     // it('should give export * from', () => {
@@ -84,6 +106,15 @@ describe('Fast ast analysis', () => {
       `,
       });
       expect(res.imports).toEqual([{ type: ImportType.REQUIRE, statement: './foo' }]);
+    });
+
+    it('should not give require statement', () => {
+      const res = fastAstAnalysis({
+        input: `
+        require(foo)
+      `,
+      });
+      expect(res.imports).toEqual([]);
     });
   });
 
@@ -182,6 +213,27 @@ describe('Fast ast analysis', () => {
       });
 
       expect(res.report.browserEssentials).toBeUndefined();
+    });
+
+    it('should not detect process (hoisted function) 1', () => {
+      const res = fastAstAnalysis({
+        input: `
+        function process(){}
+        console.log(process)
+      `,
+      });
+
+      expect(res.report.browserEssentials).toBeUndefined();
+    });
+
+    it('should not detect process (hoisted function) 1', () => {
+      const res = fastAstAnalysis({
+        input: `
+        console.log(process)
+        function process(){}
+      `,
+      });
+      expect(res.report.browserEssentials).toEqual([]);
     });
   });
 });
