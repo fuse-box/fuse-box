@@ -81,7 +81,7 @@ export async function renderModule(props: IRenderModuleProps): Promise<IStyleshe
     data: module.contents,
     file: module.props.absPath,
     sourceMap: requireSourceMap,
-    includePaths: [path.dirname(module.props.absPath)],
+    includePaths: [path.dirname(module.props.absPath), ctx.config.homeDir],
     outFile: module.props.absPath,
     sourceMapContents: requireSourceMap,
     importer: function(url, prev) {
