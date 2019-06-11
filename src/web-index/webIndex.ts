@@ -58,8 +58,6 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
     return { isDisabled };
   }
 
-  logger.info('WebIndex enabled, processing ...');
-
   return {
     generate: async (bundles: Array<IBundleWriteResponse>) => {
       const opts = getEssentialWebIndexParams(config);
@@ -82,7 +80,9 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
         css: cssTags.join('\n'),
       });
 
-      logger.info('Writing WebIndex to $name', { name: opts.distFileName });
+      logger.verbose('<dim><bold><yellow> WebIndex: writing to $name</yellow></bold></dim>', {
+        name: opts.distFileName,
+      });
       await ctx.writer.write(opts.distFileName, contents);
     },
   };

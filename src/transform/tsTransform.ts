@@ -1,7 +1,6 @@
 import * as ts from 'typescript';
 import { IStatementReplaceableCollection } from '../analysis/fastAnalysis';
 import { devImports } from '../integrity/devPackage';
-import { IRawCompilerOptions } from '../interfaces/TypescriptInterfaces';
 
 export function isRequireCall(callExpression: ts.Node) {
   if (callExpression.kind !== ts.SyntaxKind.CallExpression) return false;

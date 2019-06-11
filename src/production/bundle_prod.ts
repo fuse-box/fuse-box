@@ -1,14 +1,13 @@
-import { pluginCSS, pluginJSON, pluginSass } from '../..';
-import { IBundleWriteResponse } from '../../bundle/Bundle';
-import { Context } from '../../core/Context';
-import { assemble } from '../../main/assemble';
-import { processPlugins } from '../../main/process_plugins';
-import { attachServerEntry } from '../../main/server_entry';
-import { createProductionContext } from '../ProductionContext';
+import { pluginCSS, pluginJSON, pluginSass } from '..';
+import { IBundleWriteResponse } from '../bundle/Bundle';
+import { Context } from '../core/Context';
+import { assemble } from '../main/assemble';
+import { processPlugins } from '../main/process_plugins';
+import { productionMain } from './main';
 
 export async function bundleProd(ctx: Context) {
-  const ict = ctx.ict;
-  const startTime = process.hrtime();
+  ctx.log.print('<yellow><bold>Initiating production build</bold></yellow>');
+  ctx.log.printNewLine();
 
   const plugins = [...ctx.config.plugins, pluginJSON(), pluginCSS(), pluginSass()];
 
@@ -16,6 +15,7 @@ export async function bundleProd(ctx: Context) {
 
   let bundles: Array<IBundleWriteResponse>;
   const packages = assemble(ctx, ctx.config.entries[0]);
+
   if (packages) {
     await processPlugins({
       ctx: ctx,
@@ -26,7 +26,8 @@ export async function bundleProd(ctx: Context) {
     //   attachServerEntry(ctx);
     // }
 
-    createProductionContext({ packages, ctx });
+    productionMain({ packages, ctx });
+
     //console.log(packages);
 
     //await attachWebIndex(ctx, bundles);

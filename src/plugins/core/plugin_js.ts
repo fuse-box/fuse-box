@@ -58,17 +58,11 @@ export function pluginJS() {
         analysis.report.transpiled = true;
 
         if (ctx.log.level === 'verbose') {
-          ctx.log.info('fastTransform on $package/$name in $ms', {
-            name: module.props.fuseBoxPath,
-            package: module.pkg.props.meta.name,
-            ms: ctx.log.measureTimeEnd('fast'),
-          });
+          ctx.log.progressFormat('fastTransform', module.getShortPath() + ' in ' + ctx.log.measureTimeEnd('fast'));
         } else {
-          ctx.log.info('fastTransform on $package/$name', {
-            name: module.props.fuseBoxPath,
-            package: module.pkg.props.meta.name,
-          });
+          ctx.log.progressFormat('fastTransform', module.getShortPath());
         }
+        ctx.log.progressEnd();
       } else {
         if (analysis && analysis.report) {
           analysis.report.statementsReplaced = false;

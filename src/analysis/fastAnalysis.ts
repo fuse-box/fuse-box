@@ -1,6 +1,9 @@
-import { tokenize } from './tokenizer';
-import { ImportType } from '../resolver/resolver';
+import { Module } from '../core/Module';
+import { Package } from '../core/Package';
+import { ImportType, IResolver } from '../resolver/resolver';
 import { fastAstAnalysis } from './fastAstAnalysis';
+import { tokenize } from './tokenizer';
+import { IAssembleResolveResult } from '../main/assemble';
 
 //import { AnalysisContext } from "./AnalysisContext";
 
@@ -19,7 +22,7 @@ interface IBrowserEssential {
 }
 export interface IFastAnalysis {
   ast?: any;
-  imports?: Array<{ type: ImportType; statement: string }>;
+  imports?: Array<{ type: ImportType; statement: string; link?: IAssembleResolveResult; resolver?: IResolver }>;
   report?: {
     contains__dirname?: boolean;
     contains__filename?: boolean;

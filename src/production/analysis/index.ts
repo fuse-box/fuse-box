@@ -1,70 +1,66 @@
+import { Project, ExportDeclaration } from 'ts-morph';
 import * as ts from 'typescript';
-import * as fs from 'fs';
-import { Project } from 'ts-morph';
-
-const contents = fs.readFileSync(__dirname + '/sample.ts').toString();
-
 const project = new Project();
+const testFile = project.createSourceFile(
+  'src/MyClass.ts',
+  `
+  export { Button } from './Button';
+  export { Header } from './Header';
+  export { default as Layout } from './Layout/Layout';
+  export function bar(){}
+  export function satana(){}
+  export class Oi {
 
-const testFile = project.createSourceFile('src/MyClass.ts', contents);
-
-function handle() {
-  const processDeclared = testFile.getVariableDeclaration('process');
-
-  function isDeclared(names: Array<string>) {
-    const ids = testFile.getDescendantsOfKind(ts.SyntaxKind.Identifier);
-    ids.forEach(item => {
-      if (names.includes(item.getText())) {
-        const refs = item.findReferencesAsNodes();
-      }
-    });
   }
+  export const a = 1;
+`,
+);
+const start = new Date().getTime();
+//testFile.getExportedDeclarations();
+// testFile.getExportAssignments();
 
-  const Identifiers = testFile.getDescendantsOfKind(ts.SyntaxKind.Identifier);
-  Identifiers.forEach(id => {
-    if (!id.wasForgotten()) {
-      if (id.getText() === 'process') {
-        const parent = id.getParent();
-        if (ts.isPropertyAccessExpression(parent.compilerNode)) {
-          const secondProperty = parent.compilerNode.name.getText();
-          const main = parent.getParent().compilerNode;
-          if (ts.isPropertyAccessExpression(main)) {
-            const third = main.name.getText();
-            if (id.findReferences().length === 0) {
-              parent.getParent().replaceWithText("'development'");
-            }
-          }
+// testFile.getImportDeclarations();
+
+const decls = testFile.getDescendantsOfKind(ts.SyntaxKind.ExportKeyword);
+decls.forEach(exportsKeyWord => {
+  const parent = exportsKeyWord.getParent();
+  if (parent) {
+    switch (parent.getKind()) {
+      case ts.SyntaxKind.FunctionDeclaration:
+      case ts.SyntaxKind.ClassDeclaration:
+        let name = parent.compilerNode['name'];
+        if (name) {
+          //console.log(name.getText());
         }
-      }
-    }
-  });
+        break;
+      case ts.SyntaxKind.ExportDeclaration:
+        const exportDecl = parent as ExportDeclaration;
 
-  const ifs = testFile.getDescendantsOfKind(ts.SyntaxKind.IfStatement);
-  ifs.forEach(item => {
-    const oi = item.compilerNode;
-    if (ts.isExpressionStatement(oi)) {
-    }
-    console.log(item.compilerNode.expression);
-  });
+        let fromModule;
+        if (exportDecl.getModuleSpecifier()) {
+          fromModule = exportDecl.getModuleSpecifier().getText();
+        }
 
-  // const ids = testFile.getDescendantsOfKind(ts.SyntaxKind.Identifier);
-  // ids.forEach(id => {
-  //   if (id.getText() === 'bar') {
-  //     //console.log('parent', id.getParent().getText());
-  //     id.findReferences().forEach(ref => {
-  //       console.log(
-  //         ref
-  //           .getDefinition()
-  //           .getNode()
-  //           .getParent()
-  //           .getParent()
-  //           .getParent()
-  //           .getText(),
-  //       );
-  //     });
-  //   }
-  // });
-}
-handle();
-console.log('>>>>>>>>');
-console.log(testFile.getText());
+        exportDecl.getNamedExports().forEach(en => {
+          let exportedName, importedName;
+          if (en.getAliasNode()) {
+            exportedName = en.getAliasNode().getText();
+          } else if (en.getNameNode()) {
+            exportedName = en.getNameNode().getText();
+          }
+          if (en.getNameNode()) {
+            importedName = en.getNameNode().getText();
+          }
+
+          console.log(fromModule, exportedName, importedName);
+        });
+
+        //console.log(parent.getText());
+        break;
+      default:
+        break;
+    }
+  }
+});
+
+console.log(`took: ${new Date().getTime() - start}`);

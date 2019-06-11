@@ -1,7 +1,8 @@
 import { SourceFile } from 'ts-morph';
 import { Context } from '../../core/Context';
-import { processProductionTransformation } from './processTransformation';
 import { browserProductionPolyfillTransformation } from './browserPolyfillTransformation';
+import { processProductionTransformation } from './processTransformation';
+import { conditionUnwrapperProduction } from './conditionUnwrapper';
 import { fuseBoxEnvProductionTransformation } from './fuseBoxEnvTransformation';
 
 export interface IPerformStaticTransformations {
@@ -13,4 +14,5 @@ export function performStaticTransformations(props: IPerformStaticTransformation
   processProductionTransformation(props);
   browserProductionPolyfillTransformation(props);
   fuseBoxEnvProductionTransformation(props);
+  conditionUnwrapperProduction(props);
 }

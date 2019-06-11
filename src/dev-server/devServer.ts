@@ -32,31 +32,35 @@ export function createDevServer(ctx: Context): IDevServerActions {
   if (!props.enabled) {
     return;
   }
-  ctx.log.group('dev');
+
   const httpServerProps: IHTTPServerProps = props.httpServer as IHTTPServerProps;
   const hmrServerProps: IHMRServerProps = props.hmrServer as IHMRServerProps;
+
+  const isProduction = !!ctx.config.production;
 
   // injecting some settings into the dev bundle
   if (hmrServerProps.enabled) {
     // injecting hmr dependency
-    ict.on('assemble_fast_analysis', props => {
-      const module = props.module;
-      const pkg = module.pkg;
-      if (pkg.isDefaultPackage && pkg.entry === module) {
-        module.fastAnalysis.imports.push({ type: ImportType.REQUIRE, statement: 'fuse-box-hot-reload' });
-      }
-      return props;
-    });
+    if (!isProduction) {
+      ict.on('assemble_fast_analysis', props => {
+        const module = props.module;
+        const pkg = module.pkg;
 
-    ict.on('before_bundle_write', props => {
-      const bundle = props.bundle;
+        if (pkg.isDefaultPackage && pkg.entry === module) {
+          module.fastAnalysis.imports.push({ type: ImportType.REQUIRE, statement: 'fuse-box-hot-reload' });
+        }
+        return props;
+      });
+      ict.on('before_bundle_write', props => {
+        const bundle = props.bundle;
 
-      if (bundle.props.type === BundleType.PROJECT_JS) {
-        const opts = { port: hmrServerProps.port };
-        bundle.addContent(`FuseBox.import("fuse-box-hot-reload").connect(${JSON.stringify(opts)})`);
-      }
-      return props;
-    });
+        if (bundle.props.type === BundleType.PROJECT_JS) {
+          const opts = { port: hmrServerProps.port };
+          bundle.addContent(`FuseBox.import("fuse-box-hot-reload").connect(${JSON.stringify(opts)})`);
+        }
+        return props;
+      });
+    }
   }
 
   let hmrServerMethods: HMRServerMethods;
@@ -65,12 +69,13 @@ export function createDevServer(ctx: Context): IDevServerActions {
   ict.on('complete', props => {
     if (httpServerProps.enabled) {
       const internalServer = createExpressApp(ctx, httpServerProps);
+
       // if the ports are the same, we mount HMR on the same server
-      if (hmrServerProps.enabled && hmrServerProps.port === httpServerProps.port) {
+      if (hmrServerProps.enabled && hmrServerProps.port === httpServerProps.port && !isProduction) {
         hmrServerMethods = createHMRServer({ internalServer, ctx, opts: hmrServerProps });
       }
     }
-    if (hmrServerProps.enabled && !hmrServerMethods) {
+    if (hmrServerProps.enabled && !hmrServerMethods && !isProduction) {
       // which means that we require a separate HMR server on a different port
       hmrServerMethods = createHMRServer({ ctx, opts: hmrServerProps });
     }

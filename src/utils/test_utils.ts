@@ -8,7 +8,7 @@ import { createModule, IModuleProps, Module } from '../core/Module';
 import { createPackage, Package } from '../core/Package';
 import { assemble } from '../main/assemble';
 import { simplifiedRegExp } from '../plugins/pluginUtils';
-import { ensureFuseBoxPath, path2RegexPattern } from './utils';
+import { ensureFuseBoxPath, path2RegexPattern, fastHash } from './utils';
 
 const utils = require('./utils');
 declare global {
@@ -16,6 +16,7 @@ declare global {
     // tslint:disable-next-line:interface-name
     interface Matchers<R> {
       toMatchFilePath(path: string): R;
+      toMatchJSONSnapshot(): R;
     }
   }
 }
@@ -265,3 +266,42 @@ export function mockWriteFile() {
     },
   };
 }
+export function testUtils() {}
+
+expect.extend({
+  toMatchJSONSnapshot(str: string) {
+    const testName = this['currentTestName'];
+    const testPath = this['testPath'];
+
+    const root = path.dirname(testPath);
+
+    const snapshotFolder = path.join(root, '__snapshots__');
+    if (!fs.existsSync(snapshotFolder)) {
+      fs.mkdirSync(snapshotFolder);
+    }
+
+    const testId = fastHash(testPath + testName);
+
+    const filePath = path.join(snapshotFolder, path.basename(testPath) + '.shapshot.json');
+    let json = {};
+    if (fs.existsSync(filePath)) {
+      json = require(filePath);
+    }
+
+    if (json[testId]) {
+      expect(json[testId]).toEqual(str);
+
+      return {
+        pass: true,
+        message: () => '',
+      };
+    } else {
+      json[testId] = str;
+      fs.writeFileSync(filePath, JSON.stringify(json, null, 2));
+    }
+    return {
+      pass: true,
+      message: () => '',
+    };
+  },
+});

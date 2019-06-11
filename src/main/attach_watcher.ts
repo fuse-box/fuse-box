@@ -50,9 +50,6 @@ async function appReload(props: IAppReloadProps): Promise<IAppReloadResponse> {
     ctx.cache.nukeProjectCache();
   }
 
-  const spinner = ctx.log.withSpinner();
-  spinner.start();
-
   // TODO: write only project doesn't work very well
   // in case if everything was cached, then one modules is commented out, and then ucommented again.
   // we need to find a solution here, writing large vendors all over again makes an impact on the peformance
@@ -81,7 +78,7 @@ async function appReload(props: IAppReloadProps): Promise<IAppReloadResponse> {
       writers.push(() => bundle.generate().write());
     }
   }
-  spinner.stop();
+
   const bundleResponse = await Promise.all(writers.map(i => i()));
 
   statLog({
