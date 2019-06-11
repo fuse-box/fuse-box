@@ -31,7 +31,6 @@ export class Context {
   public weakReferences: WeakModuleReferences;
 
   constructor(public config: PrivateConfig) {
-    this.tsConfig = initTypescriptConfig(config);
     this.weakReferences = createWeakModuleReferences(this);
     this.assembleContext = assembleContext(this);
     this.ict = createInterceptor();
@@ -45,11 +44,22 @@ export class Context {
     });
     this.webIndex = createWebIndex(this);
     attachEssentials(this);
+
+    this.taskManager = createContextTaskManager(this);
+  }
+
+  public setDevelopment() {
+    this.tsConfig = initTypescriptConfig(this.config);
     this.devServer = createDevServer(this);
     if (this.config.cache) {
       this.cache = createCache({ ctx: this });
     }
-    this.taskManager = createContextTaskManager(this);
+  }
+
+  public setProduction() {
+    this.config.production = {};
+    this.tsConfig = initTypescriptConfig(this.config);
+    this.devServer = createDevServer(this);
   }
 
   public requireModule(name: string) {
@@ -63,5 +73,13 @@ export class Context {
 }
 
 export function createContext(cfg?: IPublicConfig) {
-  return new Context(createConfig(cfg));
+  const context = new Context(createConfig(cfg));
+  context.setDevelopment();
+  return context;
+}
+
+export function createProdContext(cfg?: IPublicConfig) {
+  const context = new Context(createConfig(cfg));
+  context.setProduction();
+  return context;
 }

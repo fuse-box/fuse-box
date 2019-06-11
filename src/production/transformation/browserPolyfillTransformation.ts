@@ -11,35 +11,31 @@ export interface IProcessTransformProps {
 //const TRACED_VARIABLES = ['__dirname', '__filename', 'stream', 'process', 'buffer', 'Buffer', 'http', 'https'];
 function onItem(node: Identifier, props: LocalContext) {
   const parent = node.getParent();
-  const isDefinedLocally = node.findReferences().length > 0;
 
-  if (isDefinedLocally) {
-    return;
-  }
   if (ts.isPropertyAccessExpression(parent.compilerNode)) {
     return;
   }
   switch (node.getText()) {
     case '__dirname':
-      node.replaceWithText(`"${path.dirname(props.fuseBoxPath)}"`);
+      if (node.findReferences().length === 0) node.replaceWithText(`"${path.dirname(props.fuseBoxPath)}"`);
       break;
     case '__filename':
-      node.replaceWithText(`"${props.fuseBoxPath}"`);
+      if (node.findReferences().length === 0) node.replaceWithText(`"${props.fuseBoxPath}"`);
       break;
     case 'stream':
-      props.insertions.push('import * as stream from "stream";\n');
+      if (node.findReferences().length === 0) props.insertions.push('import * as stream from "stream";\n');
       break;
     case 'buffer':
-      props.insertions.push('import { Buffer as buffer } from "buffer";\n');
+      if (node.findReferences().length === 0) props.insertions.push('import { Buffer as buffer } from "buffer";\n');
       break;
     case 'Buffer':
-      props.insertions.push('import { Buffer } from "buffer";\n');
+      if (node.findReferences().length === 0) props.insertions.push('import { Buffer } from "buffer";\n');
       break;
     case 'http':
-      props.insertions.push('import * as http from "http";\n');
+      if (node.findReferences().length === 0) props.insertions.push('import * as http from "http";\n');
       break;
     case 'https':
-      props.insertions.push('import * as https from "https";\n');
+      if (node.findReferences().length === 0) props.insertions.push('import * as https from "https";\n');
       break;
     default:
       break;

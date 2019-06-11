@@ -4,6 +4,7 @@ import { createConcat, extractFuseBoxPath, joinFuseBoxPath, readFile, ensureFuse
 import { Context } from './Context';
 import { Package } from './Package';
 import { testPath } from '../plugins/pluginUtils';
+import { ProductionModule } from '../production/ProductionModule';
 const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.mjs'];
 
 export interface IModuleProps {
@@ -84,6 +85,8 @@ export class Module {
   private _isExecutable: boolean;
   private _isJavascriptModule: boolean;
 
+  public productionModule: ProductionModule;
+
   constructor(public props: IModuleProps, pkg: Package) {
     this.pkg = pkg;
     this.assembled = false;
@@ -160,7 +163,9 @@ export class Module {
     }
     return this._isStylesheet;
   }
-
+  public getShortPath() {
+    return `${this.pkg.getPublicName()}/${this.props.fuseBoxPath}`;
+  }
   public generate() {
     if (this.header) {
       const concat = createConcat(true, '', '\n');

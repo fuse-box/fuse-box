@@ -1,7 +1,8 @@
 import { getSpinner, ISpinnerInterface } from './Spinner';
-import { colors } from './chroma';
+import { colors, codes } from './chroma';
 import * as prettyTime from 'pretty-time';
-import { codeLog } from './codeLog';
+import { codeLog, wrapCodeString } from './codeLog';
+const readline = require('readline');
 type ILoggerType = 'verbose' | 'succinct' | 'disabled';
 export interface ILogger {
   level: ILoggerType;
@@ -15,6 +16,9 @@ export interface ILogger {
   withSpinner: () => ISpinnerInterface;
   stopSpinner: () => void;
   print: (msg: string, variables?: { [key: string]: any }) => void;
+  progressFormat: (name: string, file: string) => void;
+  progress: (msg: string, variables?: { [key: string]: any }) => void;
+  progressEnd: (msg?: string, vars?: { [key: string]: any }) => void;
   verbose: (msg: string, variables?: { [key: string]: any }) => void;
   hasErrors: () => boolean;
   hasWarnings: () => boolean;
@@ -33,7 +37,17 @@ export const EMOJIS = {
   warning: '⚠️ ',
 };
 
+const signs = {
+  warning: '⚠️ ',
+  checkmark: `✔`,
+  clock: `⏲`,
+  success: `${wrapCodeString('✔', codes.green)} `,
+};
+
 function replaceVars(str, vars) {
+  vars = vars || {};
+  vars = { ...vars, ...signs };
+
   if (vars) {
     for (const key in vars) {
       str = str.replace(`$${key}`, vars[key]);
@@ -98,6 +112,32 @@ export function getLogger(props?: ILoggerProps): ILogger {
         scope.group = name;
       }
     },
+    progressFormat: (name: string, file: string) => {
+      methods.progress('<bold><dim> <yellow>$name</yellow> <cyan>$file</cyan></dim></bold>', {
+        name: name,
+        file: file,
+      });
+    },
+    progress: (msg?: string, vars?: { [key: string]: any }) => {
+      if (level === 'disabled' || !msg) {
+        return;
+      }
+      if (level === 'verbose') {
+        methods.print(msg, vars);
+      } else {
+        readline.clearLine(process.stdout, 0);
+        readline.cursorTo(process.stdout, 0);
+        process.stdout.write(codeLog(` ${replaceVars(msg, vars)}`));
+      }
+    },
+    progressEnd(msg?: string, vars?: { [key: string]: any }) {
+      readline.cursorTo(process.stdout, 0);
+      readline.clearLine(process.stdout, 0);
+      if (msg) {
+        methods.print(msg, vars);
+      }
+    },
+
     printNewLine() {
       if (level === 'disabled') {
         return;
@@ -145,13 +185,13 @@ export function getLogger(props?: ILoggerProps): ILogger {
     },
     printWarnings: () => {
       scope.warnings.forEach(item => {
-        console.log(codeLog(` ⚠️  <yellow>${replaceVars(item.str, item.vars)}<yellow>`));
+        console.log(codeLog(` ⚠️  <yellow>${replaceVars(item.str, item.vars)}</yellow>`));
       });
       scope.warnings = [];
     },
     printErrors: () => {
       scope.errors.forEach(item => {
-        console.log(codeLog(` ❌ <bold><red>${replaceVars(item.str, item.vars)}<red></bold>`));
+        console.log(codeLog(` ❌ <bold><red>${replaceVars(item.str, item.vars)}</red></bold>`));
       });
       scope.errors = [];
     },
@@ -185,10 +225,6 @@ export function getLogger(props?: ILoggerProps): ILogger {
     },
     level: level,
   };
-  if (level === 'succinct') {
-    const spinner = methods.withSpinner();
-    spinner.start();
-    scope.spinner = spinner;
-  }
+
   return methods;
 }

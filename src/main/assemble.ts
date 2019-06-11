@@ -18,10 +18,7 @@ function registerPackage(props: { assemble?: boolean; pkg: Package; ctx: Context
 
   let pkg: Package = collection.packages.get(resolved.package.meta.name, resolved.package.meta.version);
   if (!pkg) {
-    props.ctx.log.info('package $name:$version', {
-      name: resolved.package.meta.name,
-      version: resolved.package.meta.version,
-    });
+    props.ctx.log.progressFormat('assemble package', resolved.package.meta.name + ':' + resolved.package.meta.version);
     pkg = createPackage({ ctx: props.ctx, meta: resolved.package.meta });
     collection.packages.add(pkg);
   } else {
@@ -71,15 +68,17 @@ function registerPackage(props: { assemble?: boolean; pkg: Package; ctx: Context
   return pkg;
 }
 
-function resolveStatement(
-  opts: { statement: string; importType: ImportType },
-  props: IDefaultParseProps,
-): {
+export interface IAssembleResolveResult {
+  resolver?: IResolver;
   module?: Module;
   forcedStatement?: string;
   processed?: boolean;
   package?: Package;
-} {
+}
+function resolveStatement(
+  opts: { statement: string; importType: ImportType },
+  props: IDefaultParseProps,
+): IAssembleResolveResult {
   const collection = props.ctx.assembleContext.collection;
   const config = props.ctx.config;
 
@@ -117,6 +116,7 @@ function resolveStatement(
       return;
     }
     return {
+      resolver: resolved,
       forcedStatement: resolved.forcedStatement,
       package: registerPackage({ assemble: props.assemble, pkg: props.pkg, ctx: props.ctx, resolved: resolved }),
     };
@@ -174,6 +174,9 @@ function processModule(props: IDefaultParseProps) {
       const response = resolveStatement({ statement: data.statement, importType: data.type }, props);
 
       if (response) {
+        if (props.ctx.config.production) {
+          data.link = response;
+        }
         // if (response.module) {
         //   if (!response.module.moduleDependants) response.module.moduleDependants = [];
         //   if (response.module.moduleDependants.indexOf(_module) === -1) {
@@ -244,7 +247,6 @@ function assemblePackage(pkg: Package, ctx: Context) {
 export function assemble(ctx: Context, entryFile: string): Array<Package> {
   // default package. Big Bang starts here/
 
-  ctx.log.group('assemble');
   const pkg = createApplicationPackage(ctx, entryFile);
   if (!pkg) return;
   parseDefaultPackage(ctx, pkg);
@@ -254,8 +256,7 @@ export function assemble(ctx: Context, entryFile: string): Array<Package> {
     result.push(pkg);
   });
   ctx.packages = result;
-  ctx.log.info('Assemble completed');
-  // reset logging group
-  ctx.log.group(false);
+  ctx.log.progressEnd('<green><bold>$checkmark Assemble completed</bold></green>');
+
   return result;
 }

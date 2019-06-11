@@ -1,6 +1,6 @@
 //import 'tslib';
-// import * as lodash from 'lodash-es';
-// console.log(lodash);
+import delay from 'lodash-es/delay';
+console.log(delay);
 
 // import './styles/main.scss';
 // import { Button } from '@material-ui/core';
@@ -64,6 +64,14 @@
 // const a = {};
 // console.log(a instanceof Buffer);
 
-import * as auth from 'auth0-js';
-console.log(auth);
-console.log(process.browser);
+// import * as auth from 'auth0-js';
+// console.log(auth);
+// console.log(process.browser);
+console.log('-----');
+async function getArticles() {
+  const result = await fetch('./fuck.json');
+  console.log(result.status);
+  console.log(await result.text());
+}
+
+getArticles();

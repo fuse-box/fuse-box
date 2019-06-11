@@ -1,5 +1,5 @@
 import { IPublicConfig } from '../../../config/IPublicConfig';
-import Project from 'ts-morph';
+import { Project } from 'ts-morph';
 import { createContext } from '../../../core/Context';
 import { browserProductionPolyfillTransformation } from '../browserPolyfillTransformation';
 

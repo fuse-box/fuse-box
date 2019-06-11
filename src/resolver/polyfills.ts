@@ -20,6 +20,8 @@ const SERVER_POLYFILL = new Set<string>([
   'url',
   'util',
   'zlib',
+  'constants',
+  'worker_threads',
 ]);
 
 const ELECTRON_POLYFILL = new Set<string>([
@@ -44,6 +46,7 @@ const ELECTRON_POLYFILL = new Set<string>([
   'url',
   'util',
   'zlib',
+  'constants',
 ]);
 export function isServerPolyfill(name: string) {
   return SERVER_POLYFILL.has(name);

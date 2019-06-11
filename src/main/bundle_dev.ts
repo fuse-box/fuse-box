@@ -1,24 +1,29 @@
 import * as prettyTime from 'pretty-time';
-import { IBundleWriteResponse, Bundle, BundleType } from '../bundle/Bundle';
+import { IBundleWriteResponse } from '../bundle/Bundle';
 import { createDevBundles, inflateBundles } from '../bundle/createDevBundles';
 import { Context } from '../core/Context';
 import { attachHMR } from '../hmr/attach_hmr';
 import { pluginCSS } from '../plugins/core/plugin_css';
 import { pluginJS } from '../plugins/core/plugin_js';
+import { pluginJSON } from '../plugins/core/plugin_json';
+import { pluginSass } from '../plugins/core/plugin_sass';
 import { pluginTypescript } from '../plugins/core/plugin_typescript';
 import { assemble } from './assemble';
 import { attachCache } from './attach_cache';
-import { processPlugins } from './process_plugins';
 import { attachWatcher } from './attach_watcher';
 import { attachWebIndex } from './attach_webIndex';
+import { processPlugins } from './process_plugins';
+import { attachServerEntry } from './server_entry';
 import { statLog } from './stat_log';
-import { pluginSass } from '../plugins/core/plugin_sass';
-import { pluginJSON } from '../plugins/core/plugin_json';
-import { devServerEntry, attachServerEntry } from './server_entry';
 
 export async function bundleDev(ctx: Context) {
   const ict = ctx.ict;
   const startTime = process.hrtime();
+
+  // enabled verbose mode by default:
+  if (ctx.config.logging.level !== 'disabled') {
+    ctx.config.logging.level = 'verbose';
+  }
 
   const plugins = [...ctx.config.plugins, pluginJSON(), pluginCSS(), pluginJS(), pluginSass(), pluginTypescript()];
 
@@ -56,8 +61,6 @@ export async function bundleDev(ctx: Context) {
 
     attachWatcher({ ctx });
   }
-
-  ctx.log.stopSpinner();
 
   statLog({
     printFuseBoxVersion: true,

@@ -1,4 +1,4 @@
-import Project from 'ts-morph';
+import { Project } from 'ts-morph';
 import { processProductionTransformation } from '../processTransformation';
 import { createContext } from '../../../core/Context';
 import { IPublicConfig } from '../../../config/IPublicConfig';

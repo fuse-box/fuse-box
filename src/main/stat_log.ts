@@ -23,7 +23,7 @@ export function statLog(props: IStatLogProps) {
   }
 
   if (!log.hasErrors() && !log.hasWarnings()) {
-    log.print(`<green>✔</green> <green> Completed without issues in <bold>$time</bold></green>`, {
+    log.print(`<green>✔</green> <green><bold> Completed without issues in $time</bold></green>`, {
       time: props.time,
     });
   }
@@ -32,13 +32,13 @@ export function statLog(props: IStatLogProps) {
     const warns = log.getWarnings().length;
 
     if (log.hasErrors() && log.hasWarnings()) {
-      log.print(`❌<red> Completed with $err and $warn in <bold>$time</bold></red>`, {
+      log.print(`❌<red><bold> Completed with $err and $warn in $time</bold></red>`, {
         err: conj('error', errs),
         warn: conj('warning', warns),
         time: props.time,
       });
     } else if (log.hasErrors()) {
-      log.print(`❌<red> Completed with $err in <bold>$time</bold></red>`, {
+      log.print(`❌<red><bold> Completed with $err in <bold>$time</bold></red>`, {
         time: props.time,
         err: conj('error', errs),
       });
