@@ -69,6 +69,7 @@ export function createWriter(props: IWriterProps): IWriterActions {
       const absPath = path.join(outputDirectory, localPath);
       const relBrowserPath = ensureFuseBoxPath(path.relative(outputDirectory, absPath));
       const size = Buffer.byteLength(contents, 'utf8');
+
       return {
         size,
         localPath,

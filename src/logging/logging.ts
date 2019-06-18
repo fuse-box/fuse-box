@@ -16,7 +16,7 @@ export interface ILogger {
   withSpinner: () => ISpinnerInterface;
   stopSpinner: () => void;
   print: (msg: string, variables?: { [key: string]: any }) => void;
-  progressFormat: (name: string, file: string) => void;
+  progressFormat: (name: string, file: string, vars?) => void;
   progress: (msg: string, variables?: { [key: string]: any }) => void;
   progressEnd: (msg?: string, vars?: { [key: string]: any }) => void;
   verbose: (msg: string, variables?: { [key: string]: any }) => void;
@@ -112,10 +112,10 @@ export function getLogger(props?: ILoggerProps): ILogger {
         scope.group = name;
       }
     },
-    progressFormat: (name: string, file: string) => {
-      methods.progress('<bold><dim> <yellow>$name</yellow> <cyan>$file</cyan></dim></bold>', {
+    progressFormat: (name: string, contents: string, vars?) => {
+      methods.progress('<bold><dim> <yellow>  $name</yellow> <cyan>$contents</cyan></dim></bold>', {
         name: name,
-        file: file,
+        contents: replaceVars(contents, vars),
       });
     },
     progress: (msg?: string, vars?: { [key: string]: any }) => {

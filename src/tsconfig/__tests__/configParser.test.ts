@@ -92,7 +92,7 @@ describe('tsconfig', () => {
         moduleResolution: 'node',
         importHelpers: true,
         experimentalDecorators: true,
-        target: 'esnext',
+        target: 'ESNext',
       });
     });
 
@@ -109,7 +109,7 @@ describe('tsconfig', () => {
         moduleResolution: 'node',
         importHelpers: true,
         experimentalDecorators: true,
-        target: 'esnext',
+        target: 'ESNext',
       });
     });
 
@@ -125,7 +125,7 @@ describe('tsconfig', () => {
         moduleResolution: 'node',
         importHelpers: true,
         experimentalDecorators: true,
-        target: 'esnext',
+        target: 'ESNext',
       });
     });
 
@@ -159,7 +159,7 @@ describe('tsconfig', () => {
         moduleResolution: 'node',
         importHelpers: true,
         experimentalDecorators: true,
-        target: 'es2017',
+        target: 'ES2017',
       });
     });
 
@@ -177,7 +177,7 @@ describe('tsconfig', () => {
         moduleResolution: 'node',
         importHelpers: true,
         experimentalDecorators: true,
-        target: 'esnext',
+        target: 'ESNext',
       });
     });
 
@@ -192,7 +192,7 @@ describe('tsconfig', () => {
         moduleResolution: 'node',
         importHelpers: true,
         experimentalDecorators: true,
-        target: 'esnext',
+        target: 'ESNext',
       });
     });
 
@@ -209,7 +209,7 @@ describe('tsconfig', () => {
         moduleResolution: 'node',
         importHelpers: true,
         experimentalDecorators: true,
-        target: 'esnext',
+        target: 'ESNext',
       });
     });
 
@@ -228,7 +228,7 @@ describe('tsconfig', () => {
         moduleResolution: 'node',
         importHelpers: true,
         experimentalDecorators: true,
-        target: 'esnext',
+        target: 'ESNext',
       });
     });
   });

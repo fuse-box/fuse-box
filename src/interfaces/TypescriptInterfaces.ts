@@ -9,8 +9,10 @@ export interface TypescriptConfig {
   compilerOptions?: ts.CompilerOptions;
 }
 
+export type ITypescriptTarget = 'ES3' | 'ES5' | 'ES6' | 'ES2015' | 'ES2016' | 'ES2017' | 'ESNext';
+
 export interface IRawCompilerOptions {
-  target?: string;
+  target?: ITypescriptTarget;
   module?: string;
   baseUrl?: string;
   sourceMap?: boolean;

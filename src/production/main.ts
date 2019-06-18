@@ -6,6 +6,9 @@ import { preparationStage } from './stages/preparationStage';
 import { referenceLinkStage } from './stages/referenceLinkStage';
 import { treeShakingStage } from './stages/treeShakingStage';
 import { transpileStage } from './stages/transpileStage';
+import { generationStage } from './stages/generationStage';
+import { finalStage } from './stages/finalStage';
+import { IBundleWriteResponse } from '../bundle/Bundle';
 
 export interface IProductionMain {
   packages: Array<Package>;
@@ -18,7 +21,7 @@ export interface IProductionFlow {
   ctx: Context;
 }
 
-export function productionMain(props: IProductionMain) {
+export async function productionMain(props: IProductionMain): Promise<Array<IBundleWriteResponse>> {
   const productionContext = createProductionContext(props);
   const flow: IProductionFlow = { productionContext, ctx: props.ctx, packages: props.packages };
 
@@ -47,5 +50,10 @@ export function productionMain(props: IProductionMain) {
 
   transpileStage(flow);
 
-  props.ctx.ict.sync('complete', { bundles: [], ctx: props.ctx });
+  generationStage(flow);
+
+  // writing bundles and such
+  const bundles = await finalStage(flow);
+  props.ctx.ict.sync('complete', { bundles: bundles, ctx: props.ctx });
+  return bundles;
 }

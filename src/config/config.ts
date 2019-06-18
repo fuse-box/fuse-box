@@ -1,10 +1,10 @@
 import * as appRoot from 'app-root-path';
-import { ensureAbsolutePath } from '../utils/utils';
-import { env } from '../env';
-
 import * as path from 'path';
+import { env } from '../env';
+import { ensureAbsolutePath } from '../utils/utils';
 import { IPublicConfig } from './IPublicConfig';
 import { PrivateConfig } from './PrivateConfig';
+
 export function createConfig(props: IPublicConfig): PrivateConfig {
   const config = new PrivateConfig(props);
 
@@ -32,10 +32,6 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
   if (props.target) {
     config.target = props.target;
   }
-  if (props.production) {
-    config.production = props.production;
-  }
-
   if (props.allowSyntheticDefaultImports) {
     config.allowSyntheticDefaultImports = true;
   }

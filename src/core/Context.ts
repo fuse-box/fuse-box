@@ -1,8 +1,9 @@
 import { Cache, createCache } from '../cache/cache';
 import { createConfig } from '../config/config';
-import { PrivateConfig } from '../config/PrivateConfig';
 import { IPublicConfig } from '../config/IPublicConfig';
+import { PrivateConfig } from '../config/PrivateConfig';
 import { createDevServer, IDevServerActions } from '../dev-server/devServer';
+import { env } from '../env';
 import { attachEssentials } from '../integrity/setup';
 import { createInterceptor, MainInterceptor } from '../interceptor/interceptor';
 import { TypescriptConfig } from '../interfaces/TypescriptInterfaces';
@@ -11,10 +12,11 @@ import { initTypescriptConfig } from '../tsconfig/configParser';
 import { createWebIndex, IWebIndexInterface } from '../web-index/webIndex';
 import { assembleContext, IAssembleContext } from './assemble_context';
 import { ContextTaskManager, createContextTaskManager } from './ContextTaskManager';
-import { env } from '../env';
 import { Package } from './Package';
+import { createWeakModuleReferences, WeakModuleReferences } from './WeakModuleReferences';
 import { createWriter, IWriterActions } from './writer';
-import { WeakModuleReferences, createWeakModuleReferences } from './WeakModuleReferences';
+import { IProductionProps } from '../config/IProductionProps';
+import { ProductionAPIWrapper } from '../production/api/ProductionApiWrapper';
 
 export class Context {
   public assembleContext: IAssembleContext;
@@ -30,7 +32,10 @@ export class Context {
   public devServer?: IDevServerActions;
   public weakReferences: WeakModuleReferences;
 
+  public productionApiWrapper: ProductionAPIWrapper;
+
   constructor(public config: PrivateConfig) {
+    this.config.ctx = this;
     this.weakReferences = createWeakModuleReferences(this);
     this.assembleContext = assembleContext(this);
     this.ict = createInterceptor();
@@ -54,19 +59,29 @@ export class Context {
     if (this.config.cache) {
       this.cache = createCache({ ctx: this });
     }
+    this.config.setupEnv();
   }
 
-  public setProduction() {
-    this.config.production = {};
+  public setProduction(prodProps: IProductionProps) {
+    prodProps = prodProps || {};
+    if (prodProps.screwIE === undefined) prodProps.screwIE = true;
+
+    if (prodProps.uglify === undefined) {
+      prodProps.uglify = true;
+    }
+
+    this.config.production = prodProps;
     this.tsConfig = initTypescriptConfig(this.config);
+
     this.devServer = createDevServer(this);
+    this.config.setupEnv();
+    this.productionApiWrapper = new ProductionAPIWrapper(this);
   }
 
   public requireModule(name: string) {
     try {
       return require(name);
     } catch (error) {
-      console.log(error);
       this.log.error('Cannot import $name. Forgot to insall? ', { name: name });
     }
   }
@@ -78,8 +93,8 @@ export function createContext(cfg?: IPublicConfig) {
   return context;
 }
 
-export function createProdContext(cfg?: IPublicConfig) {
+export function createProdContext(cfg: IPublicConfig, prodProps: IProductionProps) {
   const context = new Context(createConfig(cfg));
-  context.setProduction();
+  context.setProduction(prodProps);
   return context;
 }

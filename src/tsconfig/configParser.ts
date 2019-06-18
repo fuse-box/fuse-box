@@ -73,10 +73,14 @@ export function initTypescriptConfig(
     userOptions.jsx = 'react';
   }
   if (!props.production) {
-    userOptions.target = 'esnext';
+    userOptions.target = 'ESNext';
   } else {
     if (!userOptions.target) {
-      userOptions.target = 'es2017';
+      userOptions.target = 'ES2017';
+    }
+
+    if (props.production.target) {
+      userOptions.target = props.production.target;
     }
   }
 

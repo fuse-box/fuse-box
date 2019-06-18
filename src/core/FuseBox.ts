@@ -1,14 +1,14 @@
 import { IPublicConfig } from '../config/IPublicConfig';
-import { createContext, createProductionContext, createProdContext } from './Context';
-import { bundleDev } from '../main/bundle_dev';
-import { parseVersion } from '../utils/utils';
-import { bundleProd } from '../production/bundle_prod';
 import { ILogger } from '../logging/logging';
+import { bundleDev } from '../main/bundle_dev';
+import { bundleProd } from '../production/bundle_prod';
+import { parseVersion } from '../utils/utils';
+import { createContext, createProdContext } from './Context';
+import { IProductionProps } from '../config/IProductionProps';
 
 export interface IBundleProps {}
 
 export interface IDevelopmentProps {}
-export interface IProductionProps {}
 
 export function fusebox(config: IPublicConfig) {
   function checkVersion(log: ILogger) {
@@ -29,7 +29,7 @@ export function fusebox(config: IPublicConfig) {
       });
     },
     runProd: (props?: IProductionProps) => {
-      const ctx = createProdContext(config);
+      const ctx = createProdContext(config, props);
       return bundleProd(ctx).catch(e => {
         console.log(e);
       });

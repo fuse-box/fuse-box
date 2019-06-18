@@ -1,6 +1,7 @@
 import * as LegoAPI from 'lego-api';
 import * as path from 'path';
-import { readFile } from '../../utils/utils';
+import { readFile, createConcat, Concat } from '../../utils/utils';
+import { ProductionModule } from '../ProductionModule';
 
 export interface IProductionAPIOptions {
   browser?: boolean;

@@ -10,6 +10,7 @@ interface IDefaultParseProps {
   module: Module;
   pkg: Package;
   ctx: Context;
+  extraDependencies?: Array<string>;
 }
 
 function registerPackage(props: { assemble?: boolean; pkg: Package; ctx: Context; resolved: IResolver }) {
@@ -164,6 +165,13 @@ function processModule(props: IDefaultParseProps) {
       }
       _module.fastAnalysis.replaceable = [];
       icp.sync('assemble_fast_analysis', { module: _module });
+
+      // adding extra dependencies
+      if (props.extraDependencies) {
+        for (const dep of props.extraDependencies) {
+          _module.fastAnalysis.imports.push({ type: ImportType.RAW_IMPORT, statement: dep });
+        }
+      }
     }
   }
 
@@ -212,10 +220,19 @@ function processModule(props: IDefaultParseProps) {
 
 function parseDefaultPackage(ctx: Context, pkg: Package) {
   ctx.assembleContext.collection.modules.set(pkg.entry.props.absPath, pkg.entry);
+
+  // Production might require tslib so we need to add it here
+  if (ctx.config.production) {
+    if (!ctx.config.dependencies.include) ctx.config.dependencies.include = [];
+    if (!ctx.config.dependencies.include.includes('tslib')) {
+      ctx.config.dependencies.include.push('tslib');
+    }
+  }
   processModule({
     ctx: ctx,
     pkg: pkg,
     module: pkg.entry,
+    extraDependencies: ctx.config.dependencies.include,
   });
 }
 

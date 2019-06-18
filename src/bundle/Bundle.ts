@@ -4,7 +4,7 @@ import { Context } from '../core/Context';
 import { Package } from '../core/Package';
 import { IWriterResponse } from '../core/writer';
 import { Concat, createConcat } from '../utils/utils';
-import { sourceMapsURL } from './bundleStrings';
+import { sourceMapsURL, sourceMapsCSSURL } from './bundleStrings';
 
 /**
  * Bundle types with priorities
@@ -93,12 +93,45 @@ export class Bundle {
     this.contents = createConcat(true, this.props.name, '\n');
   }
 
+  public prependContent(contents: string, sm?: string) {
+    const prev = this.contents;
+    this.contents = createConcat(true, this.props.name, '\n');
+    this.contents.add(null, contents, sm);
+    this.contents.add(null, prev.content, prev.sourceMap);
+  }
+
   public addContent(contents: string, sm?) {
+    this.contents.add(null, contents, sm);
+  }
+
+  public addConcat(concat: Concat) {
+    this.contents.add(null, concat.content, concat.sourceMap);
+  }
+
+  public override(contents: string, sm) {
+    this.contents = createConcat(true, this.props.name, '\n');
     this.contents.add(null, contents, sm);
   }
 
   public addPackage(pkg: Package) {
     this.packages.push(pkg);
+  }
+
+  public isJavascriptType() {
+    return this.props.type === BundleType.PROJECT_JS || this.props.type === BundleType.VENDOR_JS;
+  }
+
+  public needsSourceMaps() {
+    if (this.props.type === BundleType.PROJECT_JS) {
+      return this.props.ctx.config.sourceMap.project;
+    }
+    if (this.props.type === BundleType.VENDOR_JS) {
+      return this.props.ctx.config.sourceMap.vendor;
+    }
+    if (this.props.type === BundleType.CSS) {
+      return this.props.ctx.config.sourceMap.css;
+    }
+    return true;
   }
 
   private generateSourceMapFileName() {
@@ -122,11 +155,12 @@ export class Bundle {
     const ctx = this.props.ctx;
     const ict = this.props.ctx.ict;
     ict.sync('before_bundle_write', { bundle: this });
-    if (withSourceMaps) {
+
+    if (withSourceMaps && this.contents.sourceMap) {
       const smData = ctx.writer.generate(this.generateSourceMapFileName(), this.contents.sourceMap);
       await smData.write();
       const file = path.basename(smData.relBrowserPath);
-      this.contents.add(null, sourceMapsURL(file));
+      this.contents.add(null, this.props.type === BundleType.CSS ? sourceMapsCSSURL(file) : sourceMapsURL(file));
     }
 
     const bundleData = ctx.writer.generate(this.generateFileName(), this.contents.content.toString());

@@ -15,6 +15,8 @@ function onItem(node: PropertyAccessExpression, props: LocalContext) {
     node.replaceWithText(isServer ? 'true' : 'false');
   } else if (node.getText() === 'FuseBox.isBrowser') {
     node.replaceWithText(isBrowser ? 'true' : 'false');
+  } else if (node.getText() === 'FuseBox.processEnv') {
+    node.replaceWithText(JSON.stringify(props.ctx.config.env));
   }
 }
 

@@ -1,10 +1,11 @@
 import { IFastAnalysis } from '../analysis/fastAnalysis';
 import { IModuleCacheBasics } from '../cache/cache';
-import { createConcat, extractFuseBoxPath, joinFuseBoxPath, readFile, ensureFuseBoxPath } from '../utils/utils';
-import { Context } from './Context';
-import { Package } from './Package';
 import { testPath } from '../plugins/pluginUtils';
 import { ProductionModule } from '../production/ProductionModule';
+import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
+import { createConcat, extractFuseBoxPath, joinFuseBoxPath, readFile } from '../utils/utils';
+import { Context } from './Context';
+import { Package } from './Package';
 const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.mjs'];
 
 export interface IModuleProps {
@@ -21,6 +22,8 @@ export class Module {
   public isEntryPoint?: boolean;
 
   public fastAnalysis: IFastAnalysis;
+
+  public css: IStylesheetModuleResponse;
 
   /**
    * A package that holds this module
@@ -163,9 +166,30 @@ export class Module {
     }
     return this._isStylesheet;
   }
+
+  public notStylesheet() {
+    this._isStylesheet = false;
+  }
+
   public getShortPath() {
     return `${this.pkg.getPublicName()}/${this.props.fuseBoxPath}`;
   }
+
+  public isSourceMapRequired() {
+    let requireSourceMaps = true;
+    const config = this.props.ctx.config;
+    if (this.pkg.isDefaultPackage) {
+      if (!config.sourceMap.project) {
+        requireSourceMaps = false;
+      }
+    } else {
+      if (!config.sourceMap.vendor) {
+        requireSourceMaps = false;
+      }
+    }
+    return requireSourceMaps;
+  }
+
   public generate() {
     if (this.header) {
       const concat = createConcat(true, '', '\n');

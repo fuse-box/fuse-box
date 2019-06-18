@@ -1,6 +1,7 @@
 import { Context } from '../core/Context';
 import { env } from '../env';
 import { Package } from '../core/Package';
+import { ILogger } from '../logging/logging';
 
 export interface IStatLogProps {
   ctx: Context;
@@ -13,15 +14,9 @@ export interface IStatLogProps {
 function conj(word, amount?: number) {
   return amount === 1 ? `1 ${word}` : `${amount} ${word}s`;
 }
-export function statLog(props: IStatLogProps) {
-  const ctx = props.ctx;
-  const log = ctx.log;
-  if (props.printFuseBoxVersion) {
-    log.print('⚙  FuseBox <bold>$version</bold>', {
-      version: env.VERSION,
-    });
-  }
 
+export function printStatFinal(props: { log: ILogger; time: string }) {
+  const log = props.log;
   if (!log.hasErrors() && !log.hasWarnings()) {
     log.print(`<green>✔</green> <green><bold> Completed without issues in $time</bold></green>`, {
       time: props.time,
@@ -49,6 +44,17 @@ export function statLog(props: IStatLogProps) {
       });
     }
   }
+}
+export function statLog(props: IStatLogProps) {
+  const ctx = props.ctx;
+  const log = ctx.log;
+  if (props.printFuseBoxVersion) {
+    log.print('⚙  FuseBox <bold>$version</bold>', {
+      version: env.VERSION,
+    });
+  }
+
+  printStatFinal({ log, time: props.time });
   if (props.printPackageStat && props.packages) {
     let totalFiles = 0;
     props.packages.forEach(pkg => {

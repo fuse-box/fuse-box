@@ -1,9 +1,14 @@
 import { IPublicConfig } from '../../config/IPublicConfig';
-import { createContext } from '../../core/Context';
+import { createContext, createProdContext } from '../../core/Context';
 import '../../utils/test_utils';
 import { createDevServerConfig } from '../devServerProps';
+import { IProductionProps } from '../../config/IProductionProps';
 function configure(config?: IPublicConfig) {
   const ctx = createContext(config);
+  return createDevServerConfig(ctx);
+}
+function configureProd(config: IPublicConfig, prodProps?: IProductionProps) {
+  const ctx = createProdContext(config, prodProps);
   return createDevServerConfig(ctx);
 }
 
@@ -106,7 +111,7 @@ describe('devServerProps test', () => {
   });
 
   it('should have it disabled when production', () => {
-    const data = configure({ production: {}, devServer: true });
+    const data = configureProd({ devServer: false }, {});
     expect(data.hmrServer['enabled']).toEqual(false);
   });
 });

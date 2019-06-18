@@ -2,25 +2,59 @@ import { IProductionFlow } from '../main';
 import { ProductionModule } from '../ProductionModule';
 import * as ts from 'typescript';
 import { isRequireCall } from '../../transform/tsTransform';
+import { fixModuleSourceMap } from '../../sourcemaps/helpers';
 
-export function visitStatementNode(node, replacer: (input) => any) {
-  if (isRequireCall(node)) {
-    const replacement = replacer(node.arguments[0].text);
-    if (replacement) {
-      node.arguments[0] = ts.createStringLiteral(replacement);
-    }
+interface ITranspileStageProps {
+  flow: IProductionFlow;
+  amount: number;
+}
+
+function addModule2ProductionSchema(props: ITranspileStageProps, pm: ProductionModule) {
+  const schema = props.flow.productionContext.schema;
+  if (schema.indexOf(pm) > -1) {
+    return;
+  }
+  schema.push(pm);
+  if (pm.module.isExecutable()) {
+    props.amount++;
+    transpileProductionModule(props, pm);
   }
 }
 
-function moduleTransformer<T extends ts.Node>(): ts.TransformerFactory<T> {
+function moduleTransformer<T extends ts.Node>(
+  props: ITranspileStageProps,
+  pm: ProductionModule,
+): ts.TransformerFactory<T> {
+  const log = props.flow.ctx.log;
   return context => {
     const visit: ts.Visitor = node => {
+      // if (ts.isExpressionStatement(node)) {
+      //   if (node.expression.kind == ts.SyntaxKind.CallExpression) {
+      //     console.log(node.expression.getText());
+      //   }
+      // }
       if (isRequireCall(node)) {
-        return ts.createExpressionStatement(
-          ts.createCall(ts.createPropertyAccess(ts.createIdentifier('$fsx'), ts.createIdentifier('r')), undefined, [
-            ts.createNumericLiteral('0'),
-          ]),
-        );
+        const text = node['arguments'][0].text;
+
+        const target = pm.findDependantModule(text);
+        if (!target) {
+          log.error('Problem when resolving require "$text" in $file', {
+            text: text,
+            file: pm.module.getShortPath(),
+          });
+        } else {
+          log.progressFormat(
+            target.module.isExecutable() ? 'Transpile' : 'Register',
+            `"${text}" from ${pm.module.getShortPath()} to ${target.module.getShortPath()}`,
+          );
+
+          addModule2ProductionSchema(props, target);
+          return ts.createCall(
+            ts.createPropertyAccess(ts.createIdentifier('$fsx'), ts.createIdentifier('r')),
+            undefined,
+            [ts.createNumericLiteral(target.getId().toString())],
+          );
+        }
       }
       return ts.visitEachChild(node, child => visit(child), context);
     };
@@ -29,32 +63,47 @@ function moduleTransformer<T extends ts.Node>(): ts.TransformerFactory<T> {
   };
 }
 
-function transpileProductionModule(props: IProductionFlow, module: ProductionModule) {
-  const text = module.getSourceText();
-  ts.transpileModule(text, {
-    fileName: module.module.props.absPath,
-    compilerOptions: props.ctx.tsConfig.compilerOptions,
-    transformers: { after: [moduleTransformer()] },
+function transpileProductionModule(props: ITranspileStageProps, prodModule: ProductionModule) {
+  const text = prodModule.getSourceText();
+  const ctx = props.flow.ctx;
+  const compilerOptions: ts.CompilerOptions = {
+    ...ctx.tsConfig.compilerOptions,
+  };
+  const requireSourceMaps = prodModule.module.isSourceMapRequired();
+  if (requireSourceMaps) {
+    compilerOptions.sourceMap = true;
+    compilerOptions.inlineSources = true;
+  }
+
+  const result = ts.transpileModule(text, {
+    fileName: prodModule.module.props.absPath,
+    compilerOptions: compilerOptions,
+    transformers: { after: [moduleTransformer(props, prodModule)] },
   });
+
+  prodModule.transpiledSourceMap = requireSourceMaps
+    ? fixModuleSourceMap(prodModule.module, result.sourceMapText)
+    : undefined;
+
+  prodModule.transpiledContent = result.outputText;
 }
+
 export function transpileStage(props: IProductionFlow) {
   const { productionContext, ctx, packages } = props;
 
   const log = props.ctx.log;
 
   log.progress('<yellow><bold>- Transpile stage</bold></yellow>');
-  let amount = 0;
-  productionContext.productionPackages.forEach(pp => {
-    pp.productionModules.forEach(pm => {
-      amount++;
-      if (pm.module.isExecutable()) {
-        log.progress('<yellow><bold>- Transpile module $name</bold></yellow>', { name: pm.module.getShortPath() });
-        transpileProductionModule(props, pm);
-      }
-    });
-  });
+  const opts: ITranspileStageProps = {
+    flow: props,
+    amount: 0,
+  };
+
+  const modules = productionContext.getProjectEntries();
+
+  modules.forEach(mod => addModule2ProductionSchema(opts, mod.productionModule));
 
   log.progressEnd('<green><bold>$checkmark $amount Modules have been transpiled</bold></green>', {
-    amount,
+    amount: opts.amount,
   });
 }
