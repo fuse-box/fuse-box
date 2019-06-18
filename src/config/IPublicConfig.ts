@@ -7,6 +7,7 @@ import { IWebIndexConfig } from '../web-index/webIndex';
 import { IStyleSheetProps } from './IStylesheetProps';
 import { IHMRExternalProps } from './PrivateConfig';
 import { IJSONPluginProps } from '../plugins/core/plugin_json';
+import { IResourceConfig } from './IResourceConfig';
 
 export interface IPublicConfig {
   root?: string;
@@ -22,6 +23,8 @@ export interface IPublicConfig {
   modules?: Array<string>;
   logging?: ILoggerProps;
   watch?: boolean | IWatcherExternalProps;
+
+  resources?: IResourceConfig;
 
   json?: IJSONPluginProps;
 
@@ -66,8 +69,6 @@ export interface IPublicConfig {
 
   // read only
   defaultCollectionName?: string;
-
-  production?: {};
 
   devServer?: IDevServerProps | boolean | undefined;
 }

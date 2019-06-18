@@ -1,24 +1,7 @@
 import { ISassProps } from '../stylesheet/sassHandler';
+import { IResourceConfig } from './IResourceConfig';
 
-export interface IStyleSheetProps {
-  /**
-   * e.g /public will re-write all URLS to have have /public/image.jpg instead of /image.jpg
-   * Default value is "/resources"
-   * @type {string}
-   * @memberof IStyleSheetProps
-   */
-  resourcePublicRoot?: string;
-
-  /**
-   * A folder in the file system where the sources are copied
-   * By providing a relative path e.g "public" FuseBox will join it with the current output Directory
-   * it's possible to complelely override it by providing an absolute path;
-   * Default value is : "{YOUR_DIST_FOLDER}/resources"
-   * @type {string}
-   * @memberof IStyleSheetProps
-   */
-  resourceFolder?: string;
-
+export interface IStyleSheetProps extends IResourceConfig {
   /**
    * By default, FuseBox checks if a file has been copied over and exists in the dest file.
    * That saves some time on bunlding, but also ignores a modified resource (for example an image with the same name)

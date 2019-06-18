@@ -61,10 +61,10 @@ export function resolveCSSResource(target, props: ICSSResolveURLProps): IURLRepl
   }
   if (fileExists(target)) {
     let fileGroup: string;
-    const shouldGroupByType =
-      config.stylesheet.groupResourcesFilesByType === undefined ? true : config.stylesheet.groupResourcesFilesByType;
+
     // setting file group
-    if (shouldGroupByType) {
+
+    if (props.options.groupResourcesFilesByType) {
       fileGroup = defineResourceGroup(path.extname(target).toLowerCase());
     }
 
@@ -72,14 +72,14 @@ export function resolveCSSResource(target, props: ICSSResolveURLProps): IURLRepl
     if (fileGroup) {
       name = fileGroup + '/' + name;
     }
-    const resourcePublicRoot = config.getResourcePublicRoot();
-    const publicPath = joinFuseBoxPath(resourcePublicRoot, name);
-    let resourceFolder = props.ctx.config.getResourceFolder(props.ctx);
+    const resourceConfig = props.ctx.config.getResourceConfig(props.options);
 
-    const destination = path.join(resourceFolder, name);
+    const resourcePublicRoot = resourceConfig.resourcePublicRoot;
+    const publicPath = joinFuseBoxPath(resourcePublicRoot, name);
+    const destination = path.join(resourceConfig.resourceFolder, name);
 
     // we don't want to copy a file if that was copied before
-    if (config.stylesheet.ignoreChecksForCopiedResources) {
+    if (props.options.ignoreChecksForCopiedResources) {
       props.ctx.taskManager.copyFile(target, destination);
     } else {
       if (!fileExists(destination)) {

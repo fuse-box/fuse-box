@@ -10,14 +10,20 @@ const fuse = fusebox({
   webIndex: {
     template: 'src/index.html',
   },
+  sourceMap: true,
 
   devServer: true,
   watch: true,
   cache: false,
 });
 
+const isProd = process.argv.indexOf('--prod') > -1;
+if (isProd) {
+  fuse.runProd({
+    screwIE: true,
+  });
+} else {
+  fuse.runDev();
+}
 // if (process.argv[2] === 'dev') {
-//fuse.runDev();
 // } else {
-fuse.runProd();
-//}

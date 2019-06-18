@@ -15,7 +15,7 @@ const fuse = fusebox({
   },
   allowSyntheticDefaultImports: true,
   //modules: ['./oi'],
-  sourceMap: { vendor: false },
+  sourceMap: { vendor: true },
 
   env: { NODE_ENV: 'stage', foo: 'bar' },
   stylesheet: {

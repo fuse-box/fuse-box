@@ -10,6 +10,8 @@ import { Context } from '../core/Context';
 import * as path from 'path';
 import { IPublicConfig } from './IPublicConfig';
 import { IJSONPluginProps } from '../plugins/core/plugin_json';
+import { IProductionProps } from './IProductionProps';
+import { IResourceConfig } from './IResourceConfig';
 
 export interface IHMRExternalProps {
   reloadEntryOnStylesheet?: boolean;
@@ -40,6 +42,7 @@ export class PrivateConfig {
     ignoreAllExternal?: boolean;
   };
   homeDir?: string;
+  resources?: IResourceConfig;
   output?: string;
   modules?: Array<string>;
   logging?: ILoggerProps;
@@ -65,24 +68,25 @@ export class PrivateConfig {
 
   defaultCollectionName?: string;
 
-  production?: {};
+  production?: IProductionProps;
 
   devServer?: IDevServerProps;
 
   // internal
 
-  defaultResourcePublicRoot: string;
-  defaultSourceMapModulesRoot: string;
+  defaultSourceMapModulesRoot?: string;
 
-  private _resourceFolder: string;
+  public ctx?: Context;
 
-  constructor(props: IPublicConfig) {
-    this.defaultResourcePublicRoot = '/resources';
+  constructor(public props: IPublicConfig) {
     this.defaultSourceMapModulesRoot = '/modules';
 
-    this.env = props.env === undefined ? { NODE_ENV: this.production ? 'production' : 'development' } : props.env;
-
     this.json = props.json === undefined ? { useDefault: false } : props.json;
+
+    this.resources = props.resources || {};
+    if (!this.resources.resourcePublicRoot) {
+      this.resources.resourcePublicRoot = '/resources';
+    }
   }
 
   public init(props: IPublicConfig) {
@@ -97,23 +101,31 @@ export class PrivateConfig {
     }
   }
 
-  public getResourcePublicRoot() {
-    return this.stylesheet.resourcePublicRoot || this.defaultResourcePublicRoot;
+  public setupEnv() {
+    this.env =
+      this.props.env === undefined ? { NODE_ENV: this.production ? 'production' : 'development' } : this.props.env;
   }
 
   public isServer() {
     return this.target === 'server' || this.target === 'universal';
   }
 
-  public getResourceFolder(ctx: Context) {
-    if (this._resourceFolder) {
-      return this._resourceFolder;
-    }
-    if (this.stylesheet.resourceFolder) {
-      this._resourceFolder = ensureAbsolutePath(this.stylesheet.resourceFolder, ctx.writer.outputDirectory);
+  public getResourceConfig(stylesheet?: IStyleSheetProps): IResourceConfig {
+    let resources: IResourceConfig = {};
+    if (stylesheet) {
+      resources.resourceFolder = stylesheet.resourceFolder || this.resources.resourceFolder;
+      resources.resourcePublicRoot = stylesheet.resourcePublicRoot || this.resources.resourcePublicRoot;
     } else {
-      this._resourceFolder = path.join(ctx.writer.outputDirectory, this.defaultResourcePublicRoot);
+      resources.resourceFolder = this.resources.resourceFolder;
+      resources.resourcePublicRoot = this.resources.resourcePublicRoot;
     }
-    return this._resourceFolder;
+    if (!resources.resourcePublicRoot) resources.resourcePublicRoot = '/resources';
+
+    if (resources.resourceFolder) {
+      resources.resourceFolder = ensureAbsolutePath(resources.resourceFolder, this.ctx.writer.outputDirectory);
+    } else {
+      resources.resourceFolder = path.join(this.ctx.writer.outputDirectory, resources.resourcePublicRoot);
+    }
+    return resources;
   }
 }

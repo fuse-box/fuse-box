@@ -1,42 +1,50 @@
+import { IStyleSheetProps } from '../../config/IStylesheetProps';
 import { Context } from '../../core/Context';
-import { cssDevModuleRender } from '../../stylesheet/cssDevModuleRender';
+import { parsePluginOptions } from '../pluginUtils';
 import { sassHandler } from '../../stylesheet/sassHandler';
+import { cssDevModuleRender } from '../../stylesheet/cssDevModuleRender';
+import { cssAsTextRender } from '../../stylesheet/cssAsTextRender';
+import { createStylesheetProps } from '../../config/createStylesheetProps';
+import { cssContextHandler } from './shared';
 
-export function pluginSass() {
+export interface ISassPluginProps {
+  stylesheet?: IStyleSheetProps;
+  asText?: boolean;
+}
+export function pluginSass(a?: ISassPluginProps | string | RegExp, b?: ISassPluginProps) {
   return (ctx: Context) => {
+    let [opts, matcher] = parsePluginOptions<ISassPluginProps>(a, b, {});
+
+    opts.stylesheet = createStylesheetProps({ ctx, stylesheet: opts.stylesheet || {} });
+
     ctx.ict.on('bundle_resolve_module', props => {
       const { module } = props;
       if (props.module.captured) {
         return;
       }
 
-      if (['.scss', '.sass'].includes(module.props.extension)) {
+      if (!matcher) matcher = /\.(scss|sass)$/;
+
+      if (matcher.test(module.props.absPath)) {
         ctx.log.verbose('<cyan><bold>SASS:</bold> Captured $file with <bold>sassPlugin</bold> plugin</cyan>', {
           file: module.props.absPath,
         });
         props.module.read();
         props.module.captured = true;
-
-        const sass = sassHandler({ ctx: ctx, module, options: ctx.config.stylesheet });
+        const sass = sassHandler({ ctx: ctx, module, options: opts.stylesheet });
         if (!sass) return;
 
-        // development mode
-        // render without blocking and creating a special content
-        if (!ctx.config.production) {
-          ctx.ict.promise(async () => {
-            try {
-              const data = await sass.render();
-
-              cssDevModuleRender({ data, ctx, options: ctx.config.stylesheet, module });
-            } catch (e) {
-              console.log(e.stack);
-              ctx.log.error('$error in $file', {
-                error: e.message,
-                file: module.props.absPath,
-              });
-            }
-          });
-        }
+        // A shared handler that takes care of development/production render
+        // as well as setting according flags
+        // It also accepts extra properties (like asText) to handle text rendering
+        // Accepts postCSS Processor as well
+        cssContextHandler({
+          ctx,
+          module: module,
+          options: opts.stylesheet,
+          processor: sass,
+          shared: { asText: opts.asText },
+        });
       }
       return props;
     });

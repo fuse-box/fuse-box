@@ -1,13 +1,17 @@
+import * as prettyTime from 'pretty-time';
 import { pluginCSS, pluginJSON, pluginSass } from '..';
 import { IBundleWriteResponse } from '../bundle/Bundle';
 import { Context } from '../core/Context';
 import { assemble } from '../main/assemble';
 import { processPlugins } from '../main/process_plugins';
 import { productionMain } from './main';
+import { attachWebIndex } from '../main/attach_webIndex';
+import { printStatFinal } from '../main/stat_log';
 
 export async function bundleProd(ctx: Context) {
   ctx.log.print('<yellow><bold>Initiating production build</bold></yellow>');
   ctx.log.printNewLine();
+  const startTime = process.hrtime();
 
   const plugins = [...ctx.config.plugins, pluginJSON(), pluginCSS(), pluginSass()];
 
@@ -26,23 +30,15 @@ export async function bundleProd(ctx: Context) {
     //   attachServerEntry(ctx);
     // }
 
-    productionMain({ packages, ctx });
+    const bundles = await productionMain({ packages, ctx });
 
-    //console.log(packages);
-
-    //await attachWebIndex(ctx, bundles);
+    await attachWebIndex(ctx, bundles);
   }
 
-  ctx.log.stopSpinner();
-
-  // statLog({
-  //   printFuseBoxVersion: true,
-  //   printPackageStat: true,
-  //   ctx: ctx,
-  //   packages: packages,
-  //   time: prettyTime(process.hrtime(startTime), 'ms'),
-  // });
-  // if (bundles) {
-  //   ict.sync('complete', { ctx: ctx, bundles: bundles });
-  // }
+  printStatFinal({ log: ctx.log, time: prettyTime(process.hrtime(startTime), 'ms') });
+  setTimeout(() => {
+    //ctx.log.printNewLine();
+    ctx.log.printWarnings();
+    ctx.log.printErrors();
+  }, 0);
 }

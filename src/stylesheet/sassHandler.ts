@@ -21,8 +21,8 @@ interface ISassImporterProps {
   options: IStyleSheetProps;
   ctx: Context;
   module: Module;
-  url: string;
-  fileRoot: string;
+  url?: string;
+  fileRoot?: string;
 }
 
 interface IRenderModuleProps {
@@ -55,16 +55,22 @@ export function sassImporter(props: ISassImporterProps) {
   });
 
   if (resolved.success) {
-    const contents = readFile(resolved.path);
-    const urlResolver = cssResolveURL({
-      filePath: resolved.path,
-      ctx: props.ctx,
-      contents,
-      options: props.options,
-    });
-
-    return { file: resolved.path, contents: urlResolver.contents };
+    return handleResources({ path: resolved.path, contents: readFile(resolved.path) }, props);
   }
+}
+
+function handleResources(
+  opts: { path: string; contents: string },
+  props: ISassImporterProps,
+): { file: string; contents: string } {
+  const urlResolver = cssResolveURL({
+    filePath: opts.path,
+    ctx: props.ctx,
+    contents: opts.contents,
+    options: props.options,
+  });
+
+  return { file: opts.path, contents: urlResolver.contents };
 }
 
 export async function renderModule(props: IRenderModuleProps): Promise<IStylesheetModuleResponse> {
@@ -77,9 +83,16 @@ export async function renderModule(props: IRenderModuleProps): Promise<IStyleshe
     requireSourceMap = false;
   }
 
+  // handle root resources
+  const processed = handleResources(
+    { path: module.props.absPath, contents: module.contents },
+    { options: props.options, ctx: props.ctx, module: module },
+  );
+
+  //const processed = { contents: module.contents, file: module.props.absPath };
   const data = await evaluateSass(nodeSass, {
-    data: module.contents,
-    file: module.props.absPath,
+    data: processed.contents,
+    file: processed.file,
     sourceMap: requireSourceMap,
     includePaths: [path.dirname(module.props.absPath)],
     outFile: module.props.absPath,
