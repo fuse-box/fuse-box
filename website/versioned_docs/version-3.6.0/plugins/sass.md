@@ -40,7 +40,10 @@ Or add it to the main config plugins list to make it available across bundles.
 
 ```js
 FuseBox.init({
-  plugins: [[SassPlugin(), CSSPlugin()]],
+  plugins: [
+    [SassPlugin(), CSSPlugin()],  // chain sass to css
+    // other plugins...
+  ],
 });
 ```
 
