@@ -2,6 +2,7 @@ import { Project } from 'ts-morph';
 import { processProductionTransformation } from '../processTransformation';
 import { createContext } from '../../../core/Context';
 import { IPublicConfig } from '../../../config/IPublicConfig';
+import '../../../utils/test_utils';
 
 function createFile(config: IPublicConfig, contents: string) {
   const project = new Project();
@@ -11,6 +12,41 @@ function createFile(config: IPublicConfig, contents: string) {
   return { ctx, file };
 }
 describe('Production / Process transform', () => {
+  describe('global replacement', () => {
+    it('should add global 1', () => {
+      const props = createFile(
+        {},
+        `
+      console.log(global.Symbol)
+    `,
+      );
+      processProductionTransformation(props);
+      expect(props.file.getText()).toMatchJSONSnapshot();
+    });
+
+    it('should add global 2', () => {
+      const props = createFile(
+        {},
+        `
+      console.log(global.Symbol)
+      console.log(global.Symbol)
+    `,
+      );
+      processProductionTransformation(props);
+      expect(props.file.getText()).toMatchJSONSnapshot();
+    });
+
+    it('should not add global', () => {
+      const props = createFile(
+        { target: 'server' },
+        `
+      console.log(global.Symbol)
+    `,
+      );
+      processProductionTransformation(props);
+      expect(props.file.getText()).toMatchJSONSnapshot();
+    });
+  });
   describe('process.* (1 member)', () => {
     it('should not touch process (server)', () => {
       const props = createFile(
@@ -87,8 +123,20 @@ describe('Production / Process transform', () => {
       );
       processProductionTransformation(props);
       const text = props.file.getText();
-      expect(text).toContain('const __env =');
-      expect(text).toContain('console.log(__env)');
+      expect(text).toMatchJSONSnapshot();
+    });
+
+    it('should replace whole process mentioned 2 times', () => {
+      const props = createFile(
+        {},
+        `
+      console.log(process.env)
+      console.log(process.env)
+    `,
+      );
+      processProductionTransformation(props);
+      const text = props.file.getText();
+      expect(text).toMatchJSONSnapshot();
     });
 
     it('should replace cwd call', () => {

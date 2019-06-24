@@ -50,6 +50,12 @@ task('copy-modules', async () => {
     .exec();
 });
 
+task('copy-various', async () => {
+  await src('./src/production/api/production.api.js')
+    .dest('dist/', 'src')
+    .exec();
+});
+
 task('publish', async ctx => {
   await exec('dist');
   await npmPublish({ path: 'dist/', tag: ctx.npmTag || 'next' });
@@ -66,6 +72,7 @@ task('dist', async ctx => {
   await exec('clean');
   await exec('transpile');
   await exec('copy-modules');
+  await exec('copy-various');
   await exec('bump-version');
   await exec('fix-env');
 });

@@ -2,7 +2,7 @@ import { fastAnalysis } from './fastAnalysis';
 import { parseAst } from '../transform/fastTransform/fastTransform';
 //require(/*foo*/"ololo")
 const str = `
-foo.process
+new Worker('./worker/worker.ts')
 `;
 
 const res = parseAst(str);

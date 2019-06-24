@@ -100,6 +100,7 @@ describe('WebIndex test', () => {
       await generateCSSBundle(true);
       const data = findIndexInMock();
       expect(data.name).toMatchFilePath('__tests__/dist/index.html$');
+
       expect(data.contents).toContain(`href="/styles.css"`);
     });
 

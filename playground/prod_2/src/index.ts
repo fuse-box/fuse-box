@@ -2,15 +2,14 @@
 import * as some from './text/some.scss';
 console.log('some', some);
 
+import './hello.css';
 import * as components from './components';
 
-import * as angular from 'angular';
+// import '@uirouter/angular-hybrid/';
+// angular.module('myApp', ['ui.router', 'ui.router.upgrade']);
+// angular.bootstrap(document, ['myApp']);
 
-import '@uirouter/angular-hybrid/';
-angular.module('myApp', ['ui.router', 'ui.router.upgrade']);
-angular.bootstrap(document, ['myApp']);
-
-console.log(components);
+// console.log(components);
 function hello() {}
 
 class FooBarka {
@@ -28,3 +27,9 @@ console.log(1);
 document.querySelector('#root').addEventListener('click', () => {
   bar.oi();
 });
+console.log('yes');
+
+const myWorker = new Worker('./worker/worker.ts');
+myWorker.onmessage = function(e) {
+  console.log('Message received from worker');
+};

@@ -2,6 +2,7 @@ import { getSpinner, ISpinnerInterface } from './Spinner';
 import { colors, codes } from './chroma';
 import * as prettyTime from 'pretty-time';
 import { codeLog, wrapCodeString } from './codeLog';
+import { env } from '../env';
 const readline = require('readline');
 type ILoggerType = 'verbose' | 'succinct' | 'disabled';
 export interface ILogger {
@@ -57,9 +58,6 @@ function replaceVars(str, vars) {
 }
 export function getLogger(props?: ILoggerProps): ILogger {
   let level: ILoggerType = props && props.level ? props.level : 'succinct';
-  if (process.env.JEST_TEST) {
-    level = 'disabled';
-  }
 
   if (process.argv.includes('--verbose')) {
     level = 'verbose';
@@ -73,6 +71,9 @@ export function getLogger(props?: ILoggerProps): ILogger {
     warnings: [],
     errors: [],
   };
+  if (env.isTest) {
+    level = 'disabled';
+  }
 
   function log(color: string, text: string, variables: { [key: string]: any }) {
     if (level === 'disabled') {

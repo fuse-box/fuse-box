@@ -97,7 +97,7 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
   // cache ************************************************************************************************
   config.cache = {
     enabled: false,
-    root: path.join(env.APP_ROOT, 'node_modules/.fusebox', env.VERSION),
+    root: path.join(env.APP_ROOT, 'node_modules/.fusebox'),
   };
 
   if (typeof props.cache === 'boolean') {
@@ -105,7 +105,7 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
   } else if (typeof props.cache === 'object') {
     config.cache.enabled = typeof props.cache.enabled === 'boolean' ? props.cache.enabled : false;
     if (props.cache.root !== undefined) {
-      config.cache.root = path.join(props.cache.root, env.VERSION);
+      config.cache.root = ensureAbsolutePath(props.cache.root, env.SCRIPT_PATH);
     }
   }
 

@@ -6,6 +6,26 @@ export interface IProcessTransformProps {
   ctx: Context;
   file: SourceFile;
 }
+
+function onGlobal(node: Identifier, props: LocalContext) {
+  if (props.ctx.config.isServer()) return;
+  const parent = node.getParent();
+  const isDefinedLocally = node.findReferences().length > 0;
+
+  if (isDefinedLocally) {
+    return;
+  }
+  if (ts.isPropertyAccessExpression(parent.compilerNode)) {
+    if (parent.compilerNode.expression.getText() !== 'global') {
+      return;
+    }
+    if (!props.globalInserted) {
+      props.globalInserted = true;
+      props.insertions.push(`const global = {}`);
+    }
+  }
+}
+
 function onProcess(node: Identifier, props: LocalContext) {
   const parent = node.getParent();
   const isDefinedLocally = node.findReferences().length > 0;
@@ -50,7 +70,10 @@ function onProcess(node: Identifier, props: LocalContext) {
           parent.getParent().replaceWithText("'/'");
         } else if (secondProperty === 'env') {
           parent.replaceWithText('__env');
-          props.insertions.push(`const __env = ${JSON.stringify(props.ctx.config.env)};`);
+          if (!props.entireProcessInserted) {
+            props.entireProcessInserted = true;
+            props.insertions.push(`const __env = ${JSON.stringify(props.ctx.config.env)};`);
+          }
         } else {
           // otherwise add process to the dependenices
           props.insertions.push(`const process = require("process");`);
@@ -62,6 +85,8 @@ function onProcess(node: Identifier, props: LocalContext) {
 
 interface LocalContext {
   ctx: Context;
+  entireProcessInserted?: boolean;
+  globalInserted?: boolean;
   file: SourceFile;
   insertions: Array<string>;
 }
@@ -75,6 +100,8 @@ export function processProductionTransformation(props: IProcessTransformProps) {
     if (!id.wasForgotten()) {
       if (id.getText() === 'process') {
         onProcess(id, local);
+      } else if (id.getText() === 'global') {
+        onGlobal(id, local);
       }
     }
   });

@@ -1,0 +1,7 @@
+{
+  "59436dd8": "const __env = {\"NODE_ENV\":\"development\"};\n      console.log(__env)\n    ",
+  "4f165ffb": "const __env = {\"NODE_ENV\":\"development\"};\n      console.log(__env)\n      console.log(__env)\n    ",
+  "6fca3d5b": "const global = {}\n      console.log(global.Symbol)\n    ",
+  "6fca3d5c": "const global = {}\n      console.log(global.Symbol)\n      console.log(global.Symbol)\n    ",
+  "6dac9b37": "console.log(global.Symbol)\n    "
+}

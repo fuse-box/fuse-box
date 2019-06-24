@@ -1,9 +1,7 @@
-import { Module } from '../core/Module';
-import { Package } from '../core/Package';
+import { IAssembleResolveResult } from '../main/assemble';
 import { ImportType, IResolver } from '../resolver/resolver';
 import { fastAstAnalysis } from './fastAstAnalysis';
 import { tokenize } from './tokenizer';
-import { IAssembleResolveResult } from '../main/assemble';
 
 //import { AnalysisContext } from "./AnalysisContext";
 
@@ -22,6 +20,7 @@ interface IBrowserEssential {
 }
 export interface IFastAnalysis {
   ast?: any;
+  workers?: Array<string>;
   imports?: Array<{ type: ImportType; statement: string; link?: IAssembleResolveResult; resolver?: IResolver }>;
   report?: {
     contains__dirname?: boolean;
@@ -126,6 +125,11 @@ export function fastAnalysis(props: IFastAnalysisProps): IFastAnalysis {
       }
       if (token.requireStatement) {
         result.imports.push({ type: ImportType.REQUIRE, statement: token.requireStatement });
+      }
+
+      if (token.workerImport) {
+        if (!result.workers) result.workers = [];
+        result.workers.push(token.workerImport);
       }
       if (token.importFrom) {
         result.report.es6Syntax = true;

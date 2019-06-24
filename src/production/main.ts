@@ -46,7 +46,7 @@ export async function productionMain(props: IProductionMain): Promise<Array<IBun
   // to count references
   referenceLinkStage(flow);
 
-  treeShakingStage(flow);
+  //treeShakingStage(flow);
 
   transpileStage(flow);
 

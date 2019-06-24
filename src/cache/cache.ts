@@ -4,11 +4,15 @@ import { Context } from '../core/Context';
 import { env } from '../env';
 import { Module } from '../core/Module';
 import { createPackage, Package } from '../core/Package';
-import { ensureDir, fileExists, fileStat, readFile, removeFolder, writeFile } from '../utils/utils';
+import { ensureDir, fileExists, fileStat, readFile, removeFolder, writeFile, fastHash } from '../utils/utils';
 import { ICacheDependencies, ICachePackage, ICachePackageResponse, ICacheTreeContents } from './Interfaces';
 
-export function generateValidKey(key) {
-  return encodeURIComponent(key) + '.cache';
+const isTest = !!process.env.JEST_TEST;
+let generatorFn: any = fastHash;
+if (isTest) generatorFn = encodeURIComponent;
+
+function generateValidKey(key) {
+  return generatorFn(key) + '.cache';
 }
 
 export interface IFileCacheProps {
@@ -50,7 +54,10 @@ export class Cache {
   constructor(props: IFileCacheProps) {
     const config = props.ctx.config;
     this.ctx = props.ctx;
-    this.rootFolder = config.cache.root;
+
+    this.rootFolder = path.join(config.cache.root, env.VERSION, isTest ? '' : fastHash(config.homeDir));
+    this.ctx.log.verbose('<dim>   Cache folder: $root </dim>', { root: this.rootFolder });
+
     this.packageCacheFolder = path.join(this.rootFolder, env.CACHE.PACKAGES);
     this.projectCacheFolder = path.join(this.rootFolder, env.CACHE.PROJET_FILES);
   }

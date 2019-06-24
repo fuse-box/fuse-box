@@ -1,5 +1,6 @@
 var $isServiceWorker = typeof ServiceWorkerGlobalScope !== 'undefined';
 var $isWebWorker = typeof WorkerGlobalScope !== 'undefined';
+var $hasWindow = typeof window !== 'undefined';
 var $isBrowser =
   (typeof window !== 'undefined' && typeof window.navigator !== 'undefined') || $isWebWorker || $isServiceWorker;
 var g = $isBrowser ? ($isWebWorker || $isServiceWorker ? {} : window) : global;
@@ -10,7 +11,7 @@ if ($isBrowser) {
 // Set root
 // __fbx__dnm__ is a variable that is used in dynamic imports
 // In order for dynamic imports to work, we need to switch window to module.exports
-var __root__ = !$isBrowser || typeof __fbx__dnm__ !== 'undefined' ? module.exports : window;
+var __root__ = !$isBrowser || typeof __fbx__dnm__ !== 'undefined' ? module.exports : $hasWindow ? window : {};
 /**
  * A runtime storage for FuseBox
  */
@@ -569,7 +570,7 @@ var FuseBox = /** @class */ (function() {
   FuseBox.plugins = [];
   return FuseBox;
 })();
-if ($isBrowser) {
+if ($isBrowser && $hasWindow) {
   window['FuseBox'] = FuseBox;
 } else {
   g['FuseBox'] = FuseBox;

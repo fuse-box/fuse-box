@@ -3,7 +3,7 @@ import { PrivateConfig } from '../config/PrivateConfig';
 import { Context } from '../core/Context';
 import { Package } from '../core/Package';
 import { IWriterResponse } from '../core/writer';
-import { Concat, createConcat } from '../utils/utils';
+import { Concat, createConcat, fastHash } from '../utils/utils';
 import { sourceMapsURL, sourceMapsCSSURL } from './bundleStrings';
 
 /**
@@ -51,7 +51,8 @@ export type BundleCollection = { [key: string]: Bundle };
  * @param type
  */
 export function getBundleByType(collection: BundleCollection, ctx: Context, type: BundleType, webIndexed?: boolean) {
-  const bundleName = BundleNames[type];
+  const bundleName = `${ctx.getUniqueEntryHash()}${BundleNames[type]}`;
+
   collection[bundleName] = collection[bundleName]
     ? collection[bundleName]
     : createBundle({ ctx: ctx, name: bundleName, type: type, priority: type, webIndexed: webIndexed });
@@ -86,7 +87,8 @@ function shouldAddSourcemaps(type: BundleType, config: PrivateConfig): boolean {
 
 export class Bundle {
   public packages: Array<Package>;
-
+  // the only bundle in the project
+  public isolated?: boolean;
   public contents: Concat;
   constructor(public props: IBundleProps) {
     this.packages = [];

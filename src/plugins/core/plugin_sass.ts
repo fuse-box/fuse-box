@@ -26,9 +26,8 @@ export function pluginSass(a?: ISassPluginProps | string | RegExp, b?: ISassPlug
       if (!matcher) matcher = /\.(scss|sass)$/;
 
       if (matcher.test(module.props.absPath)) {
-        ctx.log.verbose('<cyan><bold>SASS:</bold> Captured $file with <bold>sassPlugin</bold> plugin</cyan>', {
-          file: module.props.absPath,
-        });
+        ctx.log.progressFormat('pluginSass', module.props.absPath);
+
         props.module.read();
         props.module.captured = true;
         const sass = sassHandler({ ctx: ctx, module, options: opts.stylesheet });

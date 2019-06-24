@@ -1,10 +1,20 @@
+import { createStylesheetProps } from '../../config/createStylesheetProps';
+import { IStyleSheetProps } from '../../config/IStylesheetProps';
 import { Context } from '../../core/Context';
 import { ImportType } from '../../resolver/resolver';
 import { cssResolveURL } from '../../stylesheet/cssResolveURL';
-import { cssDevModuleRender } from '../../stylesheet/cssDevModuleRender';
+import { parsePluginOptions } from '../pluginUtils';
+import { cssContextHandler } from './shared';
 
-export function pluginCSS() {
+export interface ICSSPluginProps {
+  stylesheet?: IStyleSheetProps;
+  asText?: boolean;
+}
+export function pluginCSS(a?: ICSSPluginProps | string | RegExp, b?: ICSSPluginProps) {
+  let [opts, matcher] = parsePluginOptions<ICSSPluginProps>(a, b, {});
+  if (!matcher) matcher = /\.(css)$/;
   return (ctx: Context) => {
+    opts.stylesheet = createStylesheetProps({ ctx, stylesheet: opts.stylesheet || {} });
     if (!ctx.config.production) {
       ctx.ict.on('assemble_module_init', props => {
         const { module } = props;
@@ -18,22 +28,28 @@ export function pluginCSS() {
 
     ctx.ict.on('bundle_resolve_module', props => {
       const { module } = props;
+      if (!matcher.test(module.props.absPath)) return;
+      ctx.log.progressFormat('pluginCss', module.props.absPath);
+      module.read();
 
-      if (!module.captured && module.props.extension === '.css') {
-        ctx.log.verbose('<cyan><bold>CSS:</bold> Captured $file with default css plugin</cyan>', {
-          file: module.props.absPath,
-        });
-        module.read();
-        const urlResolver = cssResolveURL({
-          filePath: module.props.absPath,
-          ctx: ctx,
-          contents: module.contents,
-          options: ctx.config.stylesheet,
-        });
-        if (!ctx.config.production) {
-          cssDevModuleRender({ data: { css: urlResolver.contents }, ctx, options: ctx.config.stylesheet, module });
-        }
-      }
+      cssContextHandler({
+        ctx,
+        module: module,
+        options: opts.stylesheet,
+        processor: {
+          render: async () => {
+            const urlResolver = cssResolveURL({
+              filePath: module.props.absPath,
+              ctx: ctx,
+              contents: module.contents,
+              options: ctx.config.stylesheet,
+            });
+            return { css: urlResolver.contents };
+          },
+        },
+        shared: { asText: opts.asText },
+      });
+
       return props;
     });
   };

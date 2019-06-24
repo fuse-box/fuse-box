@@ -8,6 +8,7 @@ export const env = {
   FUSE_ROOT: FUSE_ROOT,
   APP_ROOT: appRoot.path,
   VERSION: VERSION,
+  isTest: !!process.env.JEST_TEST,
   CACHE: {
     ROOT: path.join(appRoot.path, 'node_modules/.fusebox', VERSION),
     PACKAGES: 'packages',
@@ -23,4 +24,18 @@ export function getDevelopmentApi() {
   return `(function(){
     ${contents}
 })();`;
+}
+
+export function openDevelopmentApi() {
+  const contents = readFile(path.join(env.FUSE_MODULES, 'fuse-loader/index.js'));
+  return `(function(){
+    var FuseBox = (function(){
+      ${contents}
+      return FuseBox;
+    })()
+`;
+}
+
+export function closeDevelopmentApi() {
+  return `\n})();`;
 }

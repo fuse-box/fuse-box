@@ -156,7 +156,6 @@ describe('FileCache test', () => {
     it('should init cache in a default folder', () => {
       const x = mockCache({ cache: true });
       x.cache.init();
-
       expect(fileMock.getEnsureDir()[0]).toMatchFilePath(`node_modules/.fusebox/${env.VERSION}/${env.CACHE.PACKAGES}$`);
       expect(fileMock.getEnsureDir()[1]).toMatchFilePath(
         `node_modules/.fusebox/${env.VERSION}/${env.CACHE.PROJET_FILES}`,

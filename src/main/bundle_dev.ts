@@ -15,6 +15,7 @@ import { attachWebIndex } from './attach_webIndex';
 import { processPlugins } from './process_plugins';
 import { attachServerEntry } from './server_entry';
 import { statLog } from './stat_log';
+import { devWorkers } from '../web-workers/devWorkers';
 
 export async function bundleDev(ctx: Context) {
   const ict = ctx.ict;
@@ -31,6 +32,7 @@ export async function bundleDev(ctx: Context) {
 
   attachCache(ctx);
   attachHMR(ctx);
+  devWorkers(ctx);
   // lib-esm/params/paramTypes.js"
 
   let bundles: Array<IBundleWriteResponse>;
