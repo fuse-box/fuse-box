@@ -1,6 +1,5 @@
-import { fusebox } from '../../src/core/fusebox';
 import { pluginSass } from '../../src';
-import * as path from 'path';
+import { fusebox } from '../../src/core/fusebox';
 const fuse = fusebox({
   target: 'browser',
   entry: 'src/index.ts',
@@ -33,17 +32,15 @@ const fuse = fusebox({
 
   devServer: true,
   watch: true,
-  cache: false,
+  cache: true,
 });
 
-console.log(process.argv);
 const isProd = process.argv.indexOf('--prod') > -1;
 if (isProd) {
-  console.log('run prod');
   fuse.runProd({
     target: 'ES5',
     screwIE: true,
-    uglify: true,
+    uglify: false,
   });
 } else {
   fuse.runDev();

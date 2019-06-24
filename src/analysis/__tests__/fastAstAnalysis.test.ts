@@ -2,6 +2,26 @@ import { fastAstAnalysis } from '../fastAstAnalysis';
 import { ImportType } from '../../resolver/resolver';
 
 describe('Fast ast analysis', () => {
+  describe('Web workers', () => {
+    it('should give a worker', () => {
+      const res = fastAstAnalysis({
+        input: `
+        new Worker('./worker/worker.ts')
+      `,
+      });
+      expect(res.workers).toEqual(['./worker/worker.ts']);
+    });
+
+    it('should give 2 workers', () => {
+      const res = fastAstAnalysis({
+        input: `
+        new Worker('./worker/worker.ts')
+        new Worker('./worker/worker2.ts')
+      `,
+      });
+      expect(res.workers).toEqual(['./worker/worker.ts', './worker/worker2.ts']);
+    });
+  });
   describe('Imports', () => {
     it('should give raw import', () => {
       const res = fastAstAnalysis({

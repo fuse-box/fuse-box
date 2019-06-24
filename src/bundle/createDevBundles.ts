@@ -1,5 +1,5 @@
 import { Context } from '../core/Context';
-import { getDevelopmentApi } from '../env';
+import { getDevelopmentApi, openDevelopmentApi, closeDevelopmentApi } from '../env';
 import { Package } from '../core/Package';
 import { Bundle, BundleCollection, BundleType, createBundleSet } from './Bundle';
 import { devStrings } from './bundleStrings';
@@ -90,11 +90,17 @@ export function inflateBundle(ctx: Context, bundle: Bundle) {
       }
     }
   });
+  // close developmentAPI for isolated bundles
+  if (bundle.isolated) {
+    bundle.addContent(closeDevelopmentApi());
+  }
 }
 
 export function inflateBundles(ctx: Context, bundles: { [key: string]: Bundle }) {
+  const useOneBundle = ctx.config.target === 'web-worker';
   for (const key in bundles) {
-    inflateBundle(ctx, bundles[key]);
+    const bundle = bundles[key];
+    inflateBundle(ctx, bundle);
   }
 }
 
@@ -104,34 +110,46 @@ export function createDevBundles(
 ): {
   bundles: BundleCollection;
 } {
+  const useOneBundle = ctx.config.target === 'web-worker';
   const bundleSet = createBundleSet(ctx);
-  const devBundle = bundleSet.getBundle(BundleType.DEV);
+  let devBundle: Bundle;
 
-  // add dev api
-  devBundle.addContent(getDevelopmentApi());
-  injectSettingIntoDevBundle(ctx, devBundle);
+  if (!useOneBundle) {
+    devBundle = bundleSet.getBundle(BundleType.DEV);
+    // add dev api
+    devBundle.addContent(getDevelopmentApi());
+    injectSettingIntoDevBundle(ctx, devBundle);
+  } else {
+    const defaultBundle = bundleSet.getBundle(BundleType.PROJECT_JS);
+    defaultBundle.isolated = true;
+    defaultBundle.addContent(openDevelopmentApi());
+  }
 
   packages.forEach(pkg => {
-    if (pkg.isDefaultPackage) {
+    if (useOneBundle) {
       let defaultBundle = bundleSet.getBundle(BundleType.PROJECT_JS);
       defaultBundle.addPackage(pkg);
     } else {
-      // dev packages here
-      if (pkg.props.meta.fusebox) {
-        if (pkg.props.meta.fusebox.dev) {
-          devBundle.addPackage(pkg);
-        }
-        if (pkg.props.meta.fusebox.system || pkg.props.meta.fusebox.polyfill) {
+      if (pkg.isDefaultPackage) {
+        let defaultBundle = bundleSet.getBundle(BundleType.PROJECT_JS);
+        defaultBundle.addPackage(pkg);
+      } else {
+        // dev packages here
+        if (pkg.props.meta.fusebox) {
+          if (pkg.props.meta.fusebox.dev) {
+            devBundle.addPackage(pkg);
+          }
+          if (pkg.props.meta.fusebox.system || pkg.props.meta.fusebox.polyfill) {
+            const bundle = bundleSet.getBundle(BundleType.VENDOR_JS);
+            bundle.addPackage(pkg);
+          }
+        } else {
           const bundle = bundleSet.getBundle(BundleType.VENDOR_JS);
           bundle.addPackage(pkg);
         }
-      } else {
-        const bundle = bundleSet.getBundle(BundleType.VENDOR_JS);
-        bundle.addPackage(pkg);
       }
     }
   });
-
   return {
     bundles: bundleSet.collection,
   };

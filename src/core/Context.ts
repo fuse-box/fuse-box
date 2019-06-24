@@ -17,6 +17,8 @@ import { createWeakModuleReferences, WeakModuleReferences } from './WeakModuleRe
 import { createWriter, IWriterActions } from './writer';
 import { IProductionProps } from '../config/IProductionProps';
 import { ProductionAPIWrapper } from '../production/api/ProductionApiWrapper';
+import { WebWorkerProcess } from '../web-workers/WebWorkerProcess';
+import { fastHash } from '../utils/utils';
 
 export class Context {
   public assembleContext: IAssembleContext;
@@ -31,9 +33,11 @@ export class Context {
   public cache: Cache;
   public devServer?: IDevServerActions;
   public weakReferences: WeakModuleReferences;
+  public webWorkers: Array<WebWorkerProcess>;
 
   public productionApiWrapper: ProductionAPIWrapper;
 
+  private _uniqueEntryHash: string;
   constructor(public config: PrivateConfig) {
     this.config.ctx = this;
     this.weakReferences = createWeakModuleReferences(this);
@@ -53,12 +57,29 @@ export class Context {
     this.taskManager = createContextTaskManager(this);
   }
 
+  public registerWebWorker(webWorkerProcess: WebWorkerProcess) {
+    if (!this.webWorkers) this.webWorkers = [];
+    this.webWorkers.push(webWorkerProcess);
+  }
+
+  public getUniqueEntryHash() {
+    if (this._uniqueEntryHash) return this._uniqueEntryHash;
+    if (!this.config.entries) return '';
+
+    this._uniqueEntryHash = fastHash(this.config.entries.join('')) + '_';
+    return this._uniqueEntryHash;
+  }
+
   public setDevelopment() {
     this.tsConfig = initTypescriptConfig(this.config);
     this.devServer = createDevServer(this);
+    if (!env.isTest && this.config.cache === undefined) {
+      this.config.cache = { enabled: true };
+    }
     if (this.config.cache) {
       this.cache = createCache({ ctx: this });
     }
+
     this.config.setupEnv();
   }
 
@@ -71,6 +92,7 @@ export class Context {
     }
 
     this.config.production = prodProps;
+
     this.tsConfig = initTypescriptConfig(this.config);
 
     this.devServer = createDevServer(this);

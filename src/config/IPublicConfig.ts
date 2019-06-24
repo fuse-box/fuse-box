@@ -5,13 +5,13 @@ import { ILoggerProps } from '../logging/logging';
 import { IWatcherExternalProps } from '../watcher/watcher';
 import { IWebIndexConfig } from '../web-index/webIndex';
 import { IStyleSheetProps } from './IStylesheetProps';
-import { IHMRExternalProps } from './PrivateConfig';
+import { IHMRExternalProps, ITarget } from './PrivateConfig';
 import { IJSONPluginProps } from '../plugins/core/plugin_json';
 import { IResourceConfig } from './IResourceConfig';
 
 export interface IPublicConfig {
   root?: string;
-  target?: 'browser' | 'server' | 'electron' | 'universal';
+  target?: ITarget;
   autoStartServerEntry?: boolean;
   dependencies?: {
     include?: Array<string>;

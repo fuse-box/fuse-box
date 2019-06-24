@@ -17,6 +17,8 @@ export interface IHMRExternalProps {
   reloadEntryOnStylesheet?: boolean;
 }
 
+export type ITarget = 'browser' | 'server' | 'electron' | 'universal' | 'web-worker';
+
 export interface IHMRProps {
   enabled?: boolean;
   hmrProps?: IHMRExternalProps;
@@ -34,7 +36,7 @@ export interface ICacheProps {
 
 export class PrivateConfig {
   root?: string;
-  target?: 'browser' | 'server' | 'electron' | 'universal';
+  target?: ITarget;
   autoStartServerEntry?: boolean;
   dependencies?: {
     include?: Array<string>;

@@ -9,7 +9,17 @@ export interface IASTAnalysisProps {
   locations?: boolean;
 }
 
-const TRACED_VARIABLES = ['__dirname', '__filename', 'stream', 'process', 'buffer', 'Buffer', 'http', 'https'];
+const TRACED_VARIABLES = [
+  '__dirname',
+  '__filename',
+  'stream',
+  'process',
+  'buffer',
+  'Buffer',
+  'http',
+  'https',
+  'Worker',
+];
 const MODULE_VARS = {
   buffer: 'buffer',
 };
@@ -37,11 +47,11 @@ export function fastAstAnalysis(props: IASTAnalysisProps): IFastAnalysis {
         if (node.source) {
           ctx.imports.push({ type: ImportType.RAW_IMPORT, statement: node.source.value });
         }
-      } else if (node.callee && node.callee.type === 'Import' && node.type === 'CallExpression') {
-        if (node.arguments[0] && node.arguments[0].type === 'Literal') {
+      } else if (node.type === 'ImportExpression') {
+        if (node.source && node.source.type === 'Literal') {
           ctx.report.es6Syntax = true;
           ctx.report.dynamicImports = true;
-          ctx.imports.push({ type: ImportType.DYNAMIC, statement: node.arguments[0].value });
+          ctx.imports.push({ type: ImportType.DYNAMIC, statement: node.source.value });
         } else {
           throw new Error('Dynamic imports are only supported with static Literals. Please avoid variables to it');
         }
@@ -73,12 +83,23 @@ export function fastAstAnalysis(props: IASTAnalysisProps): IFastAnalysis {
       } else {
         if (node.type === 'Identifier') {
           const name = node.name;
+
           if (TRACED_VARIABLES.indexOf(node.name) > -1 && bannedVariables.indexOf(node.name) === -1) {
             if (parent && parent.property === node) {
               return;
             }
-
-            if (name === '__dirname') {
+            if (name === 'Worker') {
+              if (parent.type === 'NewExpression' && parent.callee === node) {
+                if (parent.arguments[0] && parent.arguments[0].type === 'Literal') {
+                  if (!ctx.workers) ctx.workers = [];
+                  ctx.workers.push(parent.arguments[0].value);
+                } else {
+                  throw new Error(
+                    'Workers are only supported with static Literals. Please avoid the use variable, Since a Webworker will start a new process with its entry point',
+                  );
+                }
+              }
+            } else if (name === '__dirname') {
               ctx.report.contains__dirname = true;
             } else if (name === '__filename') {
               ctx.report.contains__filename = true;

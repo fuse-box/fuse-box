@@ -5,9 +5,9 @@ export { version, parse, parseExpressionAt, tokenizer, parse_dammit, LooseParser
 `;
 
 const tsString = `
-
-(function (LogLevel) {
-})(exports.FooBar || (exports.FooBar = {}));
+async function bar(){
+  await import("./oi")
+}
 `;
 
 const o = parseAst(tsString);
@@ -57,8 +57,7 @@ console.log(JSON.stringify(o, null, 2));
 // }
 
 export var HubConnectionState;
-(function(HubConnectionState) {
-})(HubConnectionState || (HubConnectionState = {}));
+(function(HubConnectionState) {})(HubConnectionState || (HubConnectionState = {}));
 var HubConnection = /** @class */ function() {
   function HubConnection(connection, logger, protocol) {
     this.connectionState = HubConnectionState.Disconnected;

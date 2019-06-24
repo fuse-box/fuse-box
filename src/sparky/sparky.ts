@@ -14,7 +14,9 @@ export function sparky<T>(Ctx: new () => T) {
     if (!execScheduled) {
       const argv = process.argv;
       argv.splice(0, 2);
-      const taskName = argv[0] || 'default';
+      let taskName = argv[0] || 'default';
+
+      taskName = /^--/.test(taskName) ? 'default' : taskName;
 
       setTimeout(async () => {
         await scope.exec(taskName);

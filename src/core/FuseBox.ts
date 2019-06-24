@@ -5,7 +5,7 @@ import { bundleProd } from '../production/bundle_prod';
 import { parseVersion } from '../utils/utils';
 import { createContext, createProdContext } from './Context';
 import { IProductionProps } from '../config/IProductionProps';
-
+import * as ts from 'typescript';
 export interface IBundleProps {}
 
 export interface IDevelopmentProps {}
@@ -18,6 +18,12 @@ export function fusebox(config: IPublicConfig) {
         'You are using an older version of Node.js $version. Upgrade to at least Node.js v11 to get the maximium speed out of FuseBox',
         { version: process.version },
       );
+    }
+    const tsVersion = parseVersion(ts.version);
+    if (tsVersion[0] < 3) {
+      log.warn('You are using an older version of TypeScript $version. FuseBox builds might not work properly', {
+        version: tsVersion,
+      });
     }
   }
   return {

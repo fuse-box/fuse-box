@@ -2,6 +2,17 @@ import { fastAnalysis } from '../fastAnalysis';
 import { ImportType } from '../../resolver/resolver';
 
 describe('Fast analysis test', () => {
+  describe('Web workers', () => {
+    it('should give a worker', () => {
+      const res = fastAnalysis({
+        input: `
+        new Worker('./worker/worker.ts')
+      `,
+      });
+      expect(res).toEqual({ imports: [], report: {}, workers: ['./worker/worker.ts'] });
+    });
+  });
+
   describe('require statements', () => {
     it('normal require statement', () => {
       const result = fastAnalysis({

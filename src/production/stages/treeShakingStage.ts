@@ -22,8 +22,8 @@ export function treeShakingStage(props: IProductionFlow) {
     if (!pkg.pkg.isDefaultPackage) {
       log.progress('<yellow><bold>- Tree shaking module $name </bold></yellow>', { name: pkg.pkg.getPublicName() });
 
-      const entries = pkg.pkg.getAllEntries();
-      entries.forEach(entry => treeShakeEntry(entry));
+      //const entries = pkg.pkg.getAllEntries();
+      //entries.forEach(entry => treeShakeEntry(entry));
     }
   });
 

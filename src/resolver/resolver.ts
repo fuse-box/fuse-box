@@ -5,6 +5,7 @@ import { INodeModuleLookup, isNodeModule, nodeModuleLookup } from './nodeModuleL
 import { pathsLookup } from './pathsLookup';
 import { isElectronPolyfill, isServerPolyfill } from './polyfills';
 import { handleBrowserField } from './browserField';
+import { ITarget } from '../config/PrivateConfig';
 export enum ImportType {
   REQUIRE,
   FROM,
@@ -17,7 +18,7 @@ export interface ITypescriptPathsConfig {
   paths?: { [key: string]: Array<string> };
 }
 export interface IResolverProps {
-  buildTarget?: 'browser' | 'server' | 'electron' | 'universal';
+  buildTarget?: ITarget;
   // user string
   target: string;
   cache?: boolean;
