@@ -6,9 +6,9 @@ FuseBox v4 features and a very simple and intutive way of working with `Worker` 
 actual problem and why does it need special treatments? To answer this question let's define requirements first;
 
 - Worker doesn't have access to `window` object hence needs a special treatment
-- Worker needs to be in seperate bundle
+- Worker needs to be in a seperate bundle
 - Worker might require transpilation (bundling)
-- Path to workers need to overridden
+- Path to workers need to be overridden
 
 For example:
 
@@ -25,7 +25,7 @@ down and try an example.
 Worker support doesn't require any configuration whatsoever (like the most features in FuseBox v4). So instead of trying
 to configure it, let's enjoy and pass a relative path to the `Worker` init
 
-First thing, let's create a folder `worker` (it will be explained later why it's better to have a seperate folder)
+First thing, let's create a folder `worker` (it will be explained later why it's better to have a separate folder)
 
 ```ts
 const myWorker = new Worker('./worker');
@@ -37,7 +37,7 @@ myWorker.onmessage = function(e) {
 
 **IMPORTANT** FuseBox requires a static variable passed to the `Worker` or `SharedWorker` object
 
-If you want to add some conditions to it, do it this described below:
+If you want to add some conditions to it, do it as described below:
 
 ```ts
 if (process.env.NODE_ENV === 'development') {
@@ -61,8 +61,8 @@ self.addEventListener(
 );
 ```
 
-You're all setup. FuseBox will automatically create a seperate bundle for development and production accordingly. If you
-open the source of your application, you will notice that the path has been automatically re-written:
+You're all set up. FuseBox will automatically create a seperate bundle for development and production accordingly. If
+you open the source of your application, you will notice that the path has been automatically re-written:
 
 It looks like this:
 
@@ -94,7 +94,7 @@ ignore those folders in order to prevent an excessive reload.
 
 ## Configuring
 
-As said earlier, it's best to leave the configuration as it by default. However, if you want to add plugins and toggle
+As said earlier, it's best to leave the configuration as is by default. However, if you want to add plugins and toggle
 some flags, here is what you can do:
 
 ```ts
