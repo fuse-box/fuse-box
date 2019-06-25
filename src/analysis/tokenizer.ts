@@ -1,4 +1,5 @@
 export interface ITokenizerGroup {
+  sharedWorkerImport?: string;
   workerImport?: string;
   requireStatement?: string;
   importModule?: string;
@@ -20,7 +21,7 @@ export interface ITokenizerGroup {
  */
 
 const TOKENS = {
-  requireStatement: /(?:[^\.\w]|^)(require|import|Worker)\((\s*\/\*.*\*\/\s*)?("(?:\\["\\]|[^\n"\\])*"|'(?:\\['\\]|[^\n'\\])*')/,
+  requireStatement: /(?:[^\.\w]|^)(require|import|Worker|SharedWorker)\((\s*\/\*.*\*\/\s*)?("(?:\\["\\]|[^\n"\\])*"|'(?:\\['\\]|[^\n'\\])*')/,
   importModule: /import\s+['"]([^"']+)/,
   importFrom: /\s+from\s+['"]([^"']+)/,
   singleLineComment: /(\/\/.*$)/,
@@ -52,6 +53,7 @@ export function tokenize(input: string, onToken: (group: ITokenizerGroup) => voi
     }
 
     const data = {
+      sharedWorkerImport: kw === 'SharedWorker' && statementMatch,
       workerImport: kw === 'Worker' && statementMatch,
       requireStatement: kw === 'require' && statementMatch,
       dynamicImport: kw === 'import' && statementMatch,

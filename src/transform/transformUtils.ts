@@ -1,4 +1,5 @@
 import { nodeIsString } from '../utils/ast';
+import { IWebWorkerType } from '../analysis/fastAnalysis';
 
 export function getVariableDeclarations(node) {
   if (node.declaration && node.declaration.type === 'VariableDeclaration') {
@@ -31,6 +32,17 @@ export function isClassDeclaration(node) {
   return node.type === 'ClassDeclaration';
 }
 
+export function isWorkerStatement(node): { value: string; type: IWebWorkerType } {
+  if (node.type === 'NewExpression' && node.callee) {
+    if (node.callee.type === 'Identifier' && (node.callee.name === 'Worker' || node.callee.name === 'SharedWorker')) {
+      if (node.arguments && node.arguments.length === 1) {
+        if (node.arguments[0].type === 'Literal') {
+          return { value: node.arguments[0].value, type: node.callee.name };
+        }
+      }
+    }
+  }
+}
 export function isRequireStatement(node, parent) {
   if (node.type === 'CallExpression' && node.callee) {
     if (node.callee.type === 'Identifier' && node.callee.name === 'require') {

@@ -79,7 +79,7 @@ export async function finalStage(props: IProductionFlow) {
     flow: props,
   };
 
-  log.progress('<yellow><bold>- Entering final stage </bold></yellow>');
+  log.progress('<dim><bold>- Entering final stage </bold></dim>');
 
   // get all webindexed js bundles
   const webIndexJSBundles = productionContext.bundles.filter(
@@ -93,14 +93,21 @@ export async function finalStage(props: IProductionFlow) {
 
   // render production api ***************
   const api = renderProductionAPI({
-    browser: true,
+    browser: ctx.config.target === 'browser',
+    webworker: ctx.config.target === 'web-worker',
+    server: ctx.config.target === 'server',
     allowSyntheticDefaultImports: config.allowSyntheticDefaultImports,
   });
-  log.progressFormat('API', `Injecting production api into <magenta>${fistBundle.props.name}</magenta> bundle`);
+  log.progressFormat('API', `Injecting production api into <magenta>${fistBundle.name}</magenta> bundle`);
   fistBundle.prependContent(api);
 
   // add entry points *********************
   wrapper.addEntries(findEntryIds(props), lastBundle);
+
+  if (props.ctx.config.target === 'web-worker') {
+    fistBundle.prependContent('(function(){');
+    fistBundle.addContent('})()');
+  }
 
   // minifyCSS
   minifyCSS(props);

@@ -9,6 +9,7 @@ describe('Ts transform test', () => {
     const config = initTypescriptConfig({});
     compilerOptions = config.compilerOptions;
   });
+
   it('should not replace', () => {
     const result = tsTransform({
       compilerOptions,
@@ -36,6 +37,24 @@ describe('Ts transform test', () => {
       replacements: [{ type: ImportType.REQUIRE, fromStatement: './bar', toStatement: './oi' }],
     });
     expect(result.outputText).toContain(`require("./oi")`);
+  });
+
+  it('should replace WebWorker', () => {
+    const result = tsTransform({
+      compilerOptions,
+      input: `new Worker("./oi")`,
+      webWorkers: [{ bundlePath: '/foo.js', path: './oi', type: 'Worker' }],
+    });
+    expect(result.outputText).toContain('new Worker("/foo.js");');
+  });
+
+  it('should replace SharedWorker', () => {
+    const result = tsTransform({
+      compilerOptions,
+      input: `new SharedWorker("./oi")`,
+      webWorkers: [{ bundlePath: '/foo.js', path: './oi', type: 'SharedWorker' }],
+    });
+    expect(result.outputText).toContain('new SharedWorker("/foo.js");');
   });
 
   it('should replace $fsmp$', () => {

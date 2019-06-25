@@ -27,12 +27,24 @@ function moduleTransformer<T extends ts.Node>(
 ): ts.TransformerFactory<T> {
   const log = props.flow.ctx.log;
   return context => {
+    const webWorkers = pm.module.fastAnalysis && pm.module.fastAnalysis.workers;
     const visit: ts.Visitor = node => {
-      // if (ts.isExpressionStatement(node)) {
-      //   if (node.expression.kind == ts.SyntaxKind.CallExpression) {
-      //     console.log(node.expression.getText());
-      //   }
-      // }
+      if (webWorkers && ts.isNewExpression(node)) {
+        const newText = node.expression.getText();
+        if (newText === 'Worker' || newText === 'SharedWorker') {
+          if (node.arguments.length === 1) {
+            const firstArg = node.arguments[0];
+            const statement = firstArg['text'];
+            // map item
+            const item = webWorkers.find(item => {
+              return item.path === statement && item.type === newText;
+            });
+            if (item) {
+              return ts.createNew(ts.createIdentifier(newText), undefined, [ts.createStringLiteral(item.bundlePath)]);
+            }
+          }
+        }
+      }
       if (isRequireCall(node)) {
         const text = node['arguments'][0].text;
 
@@ -93,7 +105,7 @@ export function transpileStage(props: IProductionFlow) {
 
   const log = props.ctx.log;
 
-  log.progress('<yellow><bold>- Transpile stage</bold></yellow>');
+  log.progress('<dim><bold>- Transpile stage</bold></dim>');
   const opts: ITranspileStageProps = {
     flow: props,
     amount: 0,

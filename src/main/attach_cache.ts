@@ -44,8 +44,9 @@ export function attachCache(ctx: Context) {
   ict.on('assemble_package_from_project', props => {
     const assembleContext = props.assembleContext;
     const response = cache.getPackage(props.pkg, props.userModules);
+
     if (!response.abort) {
-      ctx.log.info('Cached $name:$version', {
+      ctx.log.progressFormat('From Cache', '$success $name:$version', {
         name: props.pkg.props.meta.name,
         version: props.pkg.props.meta.version,
       });

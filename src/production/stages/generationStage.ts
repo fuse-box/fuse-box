@@ -9,6 +9,20 @@ interface IBundleGenerationStageProps {
 function getCorrespondingBundle(props: IBundleGenerationStageProps, pm: ProductionModule) {
   let bundle: Bundle;
   const bundles = props.flow.productionContext.bundles;
+  if (props.flow.ctx.config.target === 'web-worker') {
+    bundle = bundles.find(bundle => bundle.props.type === BundleType.PROJECT_JS);
+    if (!bundle) {
+      bundle = createBundle({
+        ctx: props.flow.ctx,
+        name: 'app',
+        priority: 10,
+        webIndexed: true,
+        type: BundleType.PROJECT_JS,
+      });
+      bundles.push(bundle);
+    }
+    return bundle;
+  }
   if (pm.module.isStylesheet()) {
     bundle = bundles.find(bundle => bundle.props.type === BundleType.CSS);
     if (!bundle) {
@@ -94,7 +108,7 @@ export function generationStage(props: IProductionFlow) {
     flow: props,
   };
 
-  log.progress('<yellow><bold>- Bundle generation stage </bold></yellow>');
+  log.progress('<dim><bold>- Bundle generation stage </bold></dim>');
   productionContext.schema.forEach(pm => acceptModule(opts, pm));
 
   log.progressEnd('<green><bold>$checkmark Bundles are ready</bold></green>');

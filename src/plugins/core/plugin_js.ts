@@ -36,6 +36,7 @@ export function pluginJS() {
         ctx.log.measureTimeStart('fast');
         const transformation = fastTransform({
           absPath: module.props.absPath,
+          webWorkers: analysis && analysis.workers,
           sourceMaps: withSourceMaps,
           input: module.contents,
           ast: module.fastAnalysis.ast,

@@ -93,7 +93,7 @@ describe('FileCache test', () => {
       module.props.absPath = rootFile;
       cache.saveModule(module, { contents: 'aa', sourceMap: 'a' });
       await cache.sync();
-      expect(fileMock.findFile('file1.ts.cache')).toBeTruthy();
+      expect(fileMock.findFile('prj_02be82728.cache')).toBeTruthy();
     });
 
     it('Should get module', async () => {

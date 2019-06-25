@@ -58,7 +58,7 @@ export function moduleLinkStage(props: IProductionFlow) {
   const { productionContext } = props;
 
   const log = props.ctx.log;
-  log.progress('<yellow><bold>- Module Link stage - linking modules and packages</bold></yellow>');
+  log.progress('<dim><bold>- Module Link stage - linking modules and packages</bold></dim>');
 
   productionContext.productionPackages.forEach(pkg => {
     pkg.productionModules.forEach(mod => {

@@ -67,9 +67,11 @@ export function pluginTypescript() {
           name: module.props.fuseBoxPath,
           package: module.pkg.props.meta.name,
         });
+
         const data = tsTransform({
           fileName: module.props.absPath,
           input: module.contents,
+          webWorkers: analysis.workers,
           compilerOptions: compilerOptions,
           replacements: !analysis.report.statementsReplaced && analysis.replaceable,
         });

@@ -57,7 +57,7 @@ export function referenceLinkStage(props: IProductionFlow) {
   const { productionContext } = props;
 
   const log = props.ctx.log;
-  log.progress('<yellow><bold>- Reference Link stage - linking exports/imports</bold></yellow>');
+  log.progress('<dim><bold>- Reference Link stage - linking exports/imports</bold></dim>');
 
   productionContext.productionPackages.forEach(pkg => {
     pkg.productionModules.forEach(mod => referenceLink(mod, props));

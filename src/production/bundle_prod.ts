@@ -7,6 +7,7 @@ import { processPlugins } from '../main/process_plugins';
 import { productionMain } from './main';
 import { attachWebIndex } from '../main/attach_webIndex';
 import { printStatFinal } from '../main/stat_log';
+import { attachWebWorkers } from '../web-workers/attachWebWorkers';
 
 export async function bundleProd(ctx: Context) {
   ctx.log.print('<yellow><bold>Initiating production build</bold></yellow>');
@@ -18,6 +19,7 @@ export async function bundleProd(ctx: Context) {
   plugins.forEach(plugin => plugin && plugin(ctx));
 
   let bundles: Array<IBundleWriteResponse>;
+  attachWebWorkers(ctx);
   const packages = assemble(ctx, ctx.config.entries[0]);
 
   if (packages) {
@@ -25,6 +27,7 @@ export async function bundleProd(ctx: Context) {
       ctx: ctx,
       packages: packages,
     });
+
     // server entry reload
     // if (ctx.config.isServer()) {
     //   attachServerEntry(ctx);

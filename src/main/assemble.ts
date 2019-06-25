@@ -158,12 +158,12 @@ function processModule(props: IDefaultParseProps) {
         input: _module.contents,
         parseUsingAst: _module.props.extension === '.js',
       });
-
       // temp hack to set jsx analysis based on extension
       if (_module.props.extension === '.jsx') {
         _module.fastAnalysis.report.containsJSX = true;
       }
       _module.fastAnalysis.replaceable = [];
+
       icp.sync('assemble_fast_analysis', { module: _module });
 
       // adding extra dependencies
@@ -273,7 +273,7 @@ export function assemble(ctx: Context, entryFile: string): Array<Package> {
     result.push(pkg);
   });
   ctx.packages = result;
-  ctx.log.progressEnd('<green><bold>$checkmark Assemble completed</bold></green>');
+  ctx.log.progressEnd('<green><bold>$checkmark  Assemble completed</bold></green>');
 
   return result;
 }

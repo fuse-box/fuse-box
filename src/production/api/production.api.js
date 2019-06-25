@@ -57,6 +57,10 @@
 
   /* @end */
 
+  /* @if webworker */
+  var $fsx = {};
+  /* @end */
+
   /* @if browser */
   /* @if !isContained */
   if (window.$fsx) {
@@ -444,6 +448,10 @@
     /* @end */
     return cached.m.exports;
   };
+
+  /* @if webworker */
+  return $fsx;
+  /* @end */
 
   /* @if !isContained */
 })();

@@ -80,6 +80,14 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
     config.logging = props.logging;
   }
 
+  config.webWorkers = { enabled: true };
+  if (props.webWorkers) {
+    if (typeof props.webWorkers === 'boolean') config.webWorkers.enabled = props.webWorkers;
+    if (typeof props.webWorkers === 'object') {
+      config.webWorkers = props.webWorkers;
+      config.webWorkers.enabled = props.webWorkers.enabled !== undefined ? props.webWorkers.enabled : true;
+    }
+  }
   // dev server *********************************************************************************************
   config.devServer = { enabled: false };
   if (typeof props.devServer === 'boolean') {
@@ -103,10 +111,12 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
   if (typeof props.cache === 'boolean') {
     config.cache.enabled = props.cache;
   } else if (typeof props.cache === 'object') {
-    config.cache.enabled = typeof props.cache.enabled === 'boolean' ? props.cache.enabled : false;
+    config.cache.enabled = typeof props.cache.enabled === 'boolean' ? props.cache.enabled : env.isTest ? false : true;
     if (props.cache.root !== undefined) {
       config.cache.root = ensureAbsolutePath(props.cache.root, env.SCRIPT_PATH);
     }
+  } else if (props.cache === undefined && !env.isTest) {
+    config.cache.enabled = true;
   }
 
   // hmr ************************************************************************************************

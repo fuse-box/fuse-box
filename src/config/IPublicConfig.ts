@@ -1,14 +1,15 @@
+import { Cache } from '../cache/cache';
 import { Context } from '../core/Context';
 import { IDevServerProps } from '../dev-server/devServerProps';
 import { IRawCompilerOptions } from '../interfaces/TypescriptInterfaces';
 import { ILoggerProps } from '../logging/logging';
+import { IJSONPluginProps } from '../plugins/core/plugin_json';
 import { IWatcherExternalProps } from '../watcher/watcher';
 import { IWebIndexConfig } from '../web-index/webIndex';
-import { IStyleSheetProps } from './IStylesheetProps';
-import { IHMRExternalProps, ITarget } from './PrivateConfig';
-import { IJSONPluginProps } from '../plugins/core/plugin_json';
 import { IResourceConfig } from './IResourceConfig';
-
+import { IStyleSheetProps } from './IStylesheetProps';
+import { IWebWorkerConfig } from './IWebWorkerConfig';
+import { IHMRExternalProps, ITarget } from './PrivateConfig';
 export interface IPublicConfig {
   root?: string;
   target?: ITarget;
@@ -22,6 +23,8 @@ export interface IPublicConfig {
   output?: string;
   modules?: Array<string>;
   logging?: ILoggerProps;
+  webWorkers?: IWebWorkerConfig;
+
   watch?: boolean | IWatcherExternalProps;
 
   resources?: IResourceConfig;
@@ -71,4 +74,6 @@ export interface IPublicConfig {
   defaultCollectionName?: string;
 
   devServer?: IDevServerProps | boolean | undefined;
+
+  cacheObject?: Cache;
 }
