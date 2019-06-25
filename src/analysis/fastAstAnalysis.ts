@@ -19,6 +19,7 @@ const TRACED_VARIABLES = [
   'http',
   'https',
   'Worker',
+  'SharedWorker',
 ];
 const MODULE_VARS = {
   buffer: 'buffer',
@@ -88,11 +89,12 @@ export function fastAstAnalysis(props: IASTAnalysisProps): IFastAnalysis {
             if (parent && parent.property === node) {
               return;
             }
-            if (name === 'Worker') {
+
+            if (name === 'Worker' || name === 'SharedWorker') {
               if (parent.type === 'NewExpression' && parent.callee === node) {
                 if (parent.arguments[0] && parent.arguments[0].type === 'Literal') {
                   if (!ctx.workers) ctx.workers = [];
-                  ctx.workers.push(parent.arguments[0].value);
+                  ctx.workers.push({ path: parent.arguments[0].value, type: name });
                 } else {
                   throw new Error(
                     'Workers are only supported with static Literals. Please avoid the use variable, Since a Webworker will start a new process with its entry point',

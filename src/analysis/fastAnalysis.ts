@@ -2,6 +2,7 @@ import { IAssembleResolveResult } from '../main/assemble';
 import { ImportType, IResolver } from '../resolver/resolver';
 import { fastAstAnalysis } from './fastAstAnalysis';
 import { tokenize } from './tokenizer';
+import { WebWorkerProcess } from '../web-workers/WebWorkerProcess';
 
 //import { AnalysisContext } from "./AnalysisContext";
 
@@ -18,9 +19,18 @@ interface IBrowserEssential {
   moduleName: string;
   obj?: string;
 }
+
+export type IWebWorkerType = 'Worker' | 'SharedWorker';
+
+export interface IWebWorkerItem {
+  type?: IWebWorkerType;
+  path: string;
+  absPath?: string;
+  bundlePath?: string;
+}
 export interface IFastAnalysis {
   ast?: any;
-  workers?: Array<string>;
+  workers?: Array<IWebWorkerItem>;
   imports?: Array<{ type: ImportType; statement: string; link?: IAssembleResolveResult; resolver?: IResolver }>;
   report?: {
     contains__dirname?: boolean;
@@ -129,7 +139,11 @@ export function fastAnalysis(props: IFastAnalysisProps): IFastAnalysis {
 
       if (token.workerImport) {
         if (!result.workers) result.workers = [];
-        result.workers.push(token.workerImport);
+        result.workers.push({ path: token.workerImport, type: 'Worker' });
+      }
+      if (token.sharedWorkerImport) {
+        if (!result.workers) result.workers = [];
+        result.workers.push({ path: token.sharedWorkerImport, type: 'SharedWorker' });
       }
       if (token.importFrom) {
         result.report.es6Syntax = true;

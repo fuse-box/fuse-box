@@ -2,7 +2,7 @@ import { pluginSass } from '../../src';
 import { fusebox } from '../../src/core/fusebox';
 const fuse = fusebox({
   target: 'browser',
-  entry: 'src/index.ts',
+  entry: 'src/entry.js',
   modules: ['modules'],
   logging: {
     level: 'succinct',
@@ -10,9 +10,12 @@ const fuse = fusebox({
   dependencies: {
     include: ['tslib'],
   },
+  webWorkers: {},
   webIndex: {
     template: 'src/index.html',
   },
+
+  cache: { root: '.cache', enabled: false },
   resources: {
     resourcePublicRoot: '/test',
   },
@@ -31,8 +34,7 @@ const fuse = fusebox({
   sourceMap: true,
 
   devServer: true,
-  watch: true,
-  cache: true,
+  watch: { ignored: ['worker/*'] },
 });
 
 const isProd = process.argv.indexOf('--prod') > -1;

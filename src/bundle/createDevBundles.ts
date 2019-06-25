@@ -97,7 +97,6 @@ export function inflateBundle(ctx: Context, bundle: Bundle) {
 }
 
 export function inflateBundles(ctx: Context, bundles: { [key: string]: Bundle }) {
-  const useOneBundle = ctx.config.target === 'web-worker';
   for (const key in bundles) {
     const bundle = bundles[key];
     inflateBundle(ctx, bundle);

@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { IStatementReplaceableCollection } from '../analysis/fastAnalysis';
+import { IStatementReplaceableCollection, IWebWorkerItem } from '../analysis/fastAnalysis';
 import { devImports } from '../integrity/devPackage';
 
 export function isRequireCall(callExpression: ts.Node) {
@@ -22,6 +22,8 @@ export interface ITypescriptTransformProps {
   input: string;
   fileName?: string;
   compilerOptions?: ts.CompilerOptions;
+
+  webWorkers?: Array<IWebWorkerItem>;
   replacements?: IStatementReplaceableCollection;
 }
 
@@ -37,12 +39,34 @@ export function tsTransform(props: ITypescriptTransformProps): ts.TranspileOutpu
   function moduleTransformer<T extends ts.Node>(): ts.TransformerFactory<T> {
     return context => {
       const visit: ts.Visitor = node => {
-        visitStatementNode(node, statement => {
-          const replacement = props.replacements.find(item => item.fromStatement === statement);
-          if (replacement) {
-            return replacement.toStatement;
+        if (props.webWorkers) {
+          if (ts.isNewExpression(node)) {
+            const newText = node.expression.getText();
+            if (newText === 'Worker' || newText === 'SharedWorker') {
+              if (node.arguments.length === 1) {
+                const firstArg = node.arguments[0];
+                const statement = firstArg['text'];
+                // map item
+                const item = props.webWorkers.find(item => {
+                  return item.path === statement && item.type === newText;
+                });
+                if (item) {
+                  return ts.createNew(ts.createIdentifier(newText), undefined, [
+                    ts.createStringLiteral(item.bundlePath),
+                  ]);
+                }
+              }
+            }
           }
-        });
+        } else {
+          visitStatementNode(node, statement => {
+            const replacement = props.replacements.find(item => item.fromStatement === statement);
+            if (replacement) {
+              return replacement.toStatement;
+            }
+          });
+        }
+
         return ts.visitEachChild(node, child => visit(child), context);
       };
 
@@ -52,6 +76,6 @@ export function tsTransform(props: ITypescriptTransformProps): ts.TranspileOutpu
   return ts.transpileModule(props.input, {
     fileName: props.fileName,
     compilerOptions: props.compilerOptions,
-    transformers: { after: [props.replacements && moduleTransformer()] },
+    transformers: { after: [(props.replacements || props.webWorkers) && moduleTransformer()] },
   });
 }

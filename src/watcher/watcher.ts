@@ -7,6 +7,7 @@ type IChokidarEventType = 'add' | 'change' | 'unlink' | 'addDir' | 'unlinkDir' |
 
 export interface IWatcherExternalProps {
   ignored?: Array<string>;
+  banned?: Array<string>;
 }
 
 export function attachChokidar(props: {

@@ -33,7 +33,7 @@ export class Context {
   public cache: Cache;
   public devServer?: IDevServerActions;
   public weakReferences: WeakModuleReferences;
-  public webWorkers: Array<WebWorkerProcess>;
+  public webWorkers: { [key: string]: WebWorkerProcess };
 
   public productionApiWrapper: ProductionAPIWrapper;
 
@@ -43,6 +43,7 @@ export class Context {
     this.weakReferences = createWeakModuleReferences(this);
     this.assembleContext = assembleContext(this);
     this.ict = createInterceptor();
+    this.webWorkers = {};
 
     this.log = getLogger(config.logging);
 
@@ -57,11 +58,6 @@ export class Context {
     this.taskManager = createContextTaskManager(this);
   }
 
-  public registerWebWorker(webWorkerProcess: WebWorkerProcess) {
-    if (!this.webWorkers) this.webWorkers = [];
-    this.webWorkers.push(webWorkerProcess);
-  }
-
   public getUniqueEntryHash() {
     if (this._uniqueEntryHash) return this._uniqueEntryHash;
     if (!this.config.entries) return '';
@@ -73,13 +69,10 @@ export class Context {
   public setDevelopment() {
     this.tsConfig = initTypescriptConfig(this.config);
     this.devServer = createDevServer(this);
-    if (!env.isTest && this.config.cache === undefined) {
-      this.config.cache = { enabled: true };
-    }
     if (this.config.cache) {
-      this.cache = createCache({ ctx: this });
+      if (this.config.cacheObject) this.cache = this.config.cacheObject;
+      else this.cache = createCache({ ctx: this });
     }
-
     this.config.setupEnv();
   }
 
@@ -90,11 +83,8 @@ export class Context {
     if (prodProps.uglify === undefined) {
       prodProps.uglify = true;
     }
-
     this.config.production = prodProps;
-
     this.tsConfig = initTypescriptConfig(this.config);
-
     this.devServer = createDevServer(this);
     this.config.setupEnv();
     this.productionApiWrapper = new ProductionAPIWrapper(this);

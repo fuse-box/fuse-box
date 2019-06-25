@@ -8,16 +8,17 @@ import {
   createModuleExportsAssign,
   isLocalIdentifier,
   isRequireStatement,
+  isWorkerStatement,
 } from '../transformUtils';
 import { handleExportDefaultDeclaration } from './exportDefaultDeclaration';
 import { onImportDeclaration } from './importDeclaration';
 import { exportNamedDeclaration } from './namedDeclaration';
 import { createTransformContext } from './TrasnformContext';
+import { IWebWorkerItem } from '../../analysis/fastAnalysis';
 
 export function parseAst(contents: string, options?: any) {
   return meriyah.parse(contents, {
     next: false,
-    globalAwait: true,
     webCompat: true,
     module: true,
   });
@@ -28,6 +29,7 @@ export interface IFastTransformProps {
   input: string;
   absPath?: string;
   ast?: any;
+  webWorkers?: Array<IWebWorkerItem>;
   sourceInterceptor?: (source: string) => string;
 }
 export function fastTransform(opts: IFastTransformProps): { code: string; sourceMap: any } {
@@ -59,6 +61,17 @@ export function fastTransform(opts: IFastTransformProps): { code: string; source
           const reqStatement = isRequireStatement(node, parent);
           if (reqStatement) {
             node.arguments[0].value = ctx.interceptSource(node.arguments[0].value);
+          }
+          if (opts.webWorkers) {
+            const webWorkerStatement = isWorkerStatement(node);
+            if (webWorkerStatement) {
+              const item = opts.webWorkers.find(
+                item => item.path === webWorkerStatement.value && item.type === webWorkerStatement.type,
+              );
+              if (item) {
+                node.arguments[0].value = item.bundlePath;
+              }
+            }
           }
 
           if (isLocalIdentifier(node, parent)) {

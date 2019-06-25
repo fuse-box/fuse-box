@@ -4,6 +4,7 @@ import { readFile, createConcat, Concat } from '../../utils/utils';
 import { ProductionModule } from '../ProductionModule';
 
 export interface IProductionAPIOptions {
+  webworker?: boolean;
   browser?: boolean;
   universal?: boolean;
   server?: boolean;
@@ -29,6 +30,7 @@ export interface IProductionAPIOptions {
 const keys = [
   'browser',
   'universal',
+  'webworker',
   'server',
   'globalRequire',
   'isServerFunction',
@@ -61,6 +63,9 @@ export function renderProductionAPI(conditions?: IProductionAPIOptions, variable
     for (let varName in variables) {
       data = data.replace(`$${varName}$`, variables[varName]);
     }
+  }
+  if (conditions.webworker) {
+    data = `var $fsx = ${data}`;
   }
   return data;
 }

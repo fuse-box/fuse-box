@@ -27,10 +27,10 @@ export class ProductionAPIWrapper {
   public addEntries(ids: Array<number>, bundle: Bundle) {
     if (ids.length === 1) {
       bundle.addContent('// Importing a single entry');
-      bundle.addContent(`$fsx.r(${ids[0]})`);
+      bundle.addContent(`$fsx.r(${ids[0]});`);
     } else {
       bundle.addContent('// Importing multiple entries');
-      bundle.addContent(`${JSON.stringify(ids)}.map(function(n){ $fsx.r(n)})`);
+      bundle.addContent(`${JSON.stringify(ids)}.map(function(n){ $fsx.r(n) })`);
     }
   }
 }

@@ -90,14 +90,16 @@ export class Bundle {
   // the only bundle in the project
   public isolated?: boolean;
   public contents: Concat;
+  public name: string;
   constructor(public props: IBundleProps) {
     this.packages = [];
-    this.contents = createConcat(true, this.props.name, '\n');
+    this.name = props.name;
+    this.contents = createConcat(true, this.name, '\n');
   }
 
   public prependContent(contents: string, sm?: string) {
     const prev = this.contents;
-    this.contents = createConcat(true, this.props.name, '\n');
+    this.contents = createConcat(true, this.name, '\n');
     this.contents.add(null, contents, sm);
     this.contents.add(null, prev.content, prev.sourceMap);
   }
@@ -111,7 +113,7 @@ export class Bundle {
   }
 
   public override(contents: string, sm) {
-    this.contents = createConcat(true, this.props.name, '\n');
+    this.contents = createConcat(true, this.name, '\n');
     this.contents.add(null, contents, sm);
   }
 
@@ -138,16 +140,16 @@ export class Bundle {
 
   private generateSourceMapFileName() {
     if (this.props.type === BundleType.CSS) {
-      return `${this.props.name}.css.map`;
+      return `${this.name}.css.map`;
     }
-    return `${this.props.name}.js.map`;
+    return `${this.name}.js.map`;
   }
 
   private generateFileName() {
     if (this.props.type === BundleType.CSS) {
-      return `${this.props.name}.css`;
+      return `${this.name}.css`;
     }
-    return `${this.props.name}.js`;
+    return `${this.name}.js`;
   }
   /**
    * Write bundle with sourcemaps if needed

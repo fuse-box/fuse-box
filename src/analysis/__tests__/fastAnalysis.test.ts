@@ -9,7 +9,16 @@ describe('Fast analysis test', () => {
         new Worker('./worker/worker.ts')
       `,
       });
-      expect(res).toEqual({ imports: [], report: {}, workers: ['./worker/worker.ts'] });
+
+      expect(res.workers).toEqual([{ path: './worker/worker.ts', type: 'Worker' }]);
+    });
+    it('should give a shared worker', () => {
+      const res = fastAnalysis({
+        input: `
+        new SharedWorker('./worker/worker.ts')
+      `,
+      });
+      expect(res.workers).toEqual([{ path: './worker/worker.ts', type: 'SharedWorker' }]);
     });
   });
 

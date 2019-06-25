@@ -9,7 +9,7 @@ describe('Fast ast analysis', () => {
         new Worker('./worker/worker.ts')
       `,
       });
-      expect(res.workers).toEqual(['./worker/worker.ts']);
+      expect(res.workers).toEqual([{ path: './worker/worker.ts', type: 'Worker' }]);
     });
 
     it('should give 2 workers', () => {
@@ -19,7 +19,21 @@ describe('Fast ast analysis', () => {
         new Worker('./worker/worker2.ts')
       `,
       });
-      expect(res.workers).toEqual(['./worker/worker.ts', './worker/worker2.ts']);
+
+      expect(res.workers).toEqual([
+        { path: './worker/worker.ts', type: 'Worker' },
+        { path: './worker/worker2.ts', type: 'Worker' },
+      ]);
+    });
+
+    it('should give a SharedWorker', () => {
+      const res = fastAstAnalysis({
+        input: `
+        new SharedWorker('./worker/worker.ts')
+      `,
+      });
+
+      expect(res.workers).toEqual([{ path: './worker/worker.ts', type: 'SharedWorker' }]);
     });
   });
   describe('Imports', () => {

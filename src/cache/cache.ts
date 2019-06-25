@@ -7,12 +7,8 @@ import { createPackage, Package } from '../core/Package';
 import { ensureDir, fileExists, fileStat, readFile, removeFolder, writeFile, fastHash } from '../utils/utils';
 import { ICacheDependencies, ICachePackage, ICachePackageResponse, ICacheTreeContents } from './Interfaces';
 
-const isTest = !!process.env.JEST_TEST;
-let generatorFn: any = fastHash;
-if (isTest) generatorFn = encodeURIComponent;
-
 function generateValidKey(key) {
-  return generatorFn(key) + '.cache';
+  return encodeURIComponent(key) + '.cache';
 }
 
 export interface IFileCacheProps {
@@ -55,7 +51,12 @@ export class Cache {
     const config = props.ctx.config;
     this.ctx = props.ctx;
 
-    this.rootFolder = path.join(config.cache.root, env.VERSION, isTest ? '' : fastHash(config.homeDir));
+    this.rootFolder = path.join(
+      config.cache.root,
+      env.VERSION,
+      env.isTest ? '' : fastHash(config.homeDir + config.entries.join('')),
+    );
+    console.log('root folder', this.rootFolder);
     this.ctx.log.verbose('<dim>   Cache folder: $root </dim>', { root: this.rootFolder });
 
     this.packageCacheFolder = path.join(this.rootFolder, env.CACHE.PACKAGES);
@@ -292,7 +293,7 @@ export class Cache {
   }
 
   public getModuleCacheKey(module: Module) {
-    return `prj_${module.props.fuseBoxPath}`;
+    return `prj_${fastHash(module.props.fuseBoxPath)}`;
   }
 
   public saveModule(module: Module, basics: IModuleCacheBasics) {

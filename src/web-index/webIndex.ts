@@ -15,6 +15,7 @@ export interface IWebIndexConfig {
 export interface IWebIndexInterface {
   isDisabled?: boolean;
 
+  resolve?: (userPath: string) => string;
   generate?: (bundles: Array<IBundleWriteResponse>) => void;
 }
 
@@ -57,11 +58,13 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
   if (isDisabled) {
     return { isDisabled };
   }
+  const opts = getEssentialWebIndexParams(config);
 
   return {
+    resolve: (userPath: string) => {
+      return joinFuseBoxPath(opts.publicPath, userPath);
+    },
     generate: async (bundles: Array<IBundleWriteResponse>) => {
-      const opts = getEssentialWebIndexParams(config);
-
       const scriptTags = [];
       const cssTags = [];
 
@@ -80,7 +83,7 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
         css: cssTags.join('\n'),
       });
 
-      logger.verbose('<dim><bold><yellow> WebIndex: writing to $name</yellow></bold></dim>', {
+      logger.progressFormat('WebIndex', 'writing to $name</yellow></bold></dim>', {
         name: opts.distFileName,
       });
       await ctx.writer.write(opts.distFileName, contents);

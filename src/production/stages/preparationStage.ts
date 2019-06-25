@@ -29,7 +29,7 @@ export function preparationStage(props: IProductionFlow) {
   productionContext.productionPackages = [];
   const log = props.ctx.log;
 
-  log.progress('<yellow><bold>- Preparation step - static transform and optimise</bold></yellow>');
+  log.progress('<dim><bold>- Preparation step - static transform and optimise</bold></dim>');
   packages.forEach(pkg => {
     const productionPackage = new ProductionPackage(productionContext, pkg);
     pkg.productionPackage = productionPackage;

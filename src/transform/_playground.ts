@@ -5,9 +5,7 @@ export { version, parse, parseExpressionAt, tokenizer, parse_dammit, LooseParser
 `;
 
 const tsString = `
-async function bar(){
-  await import("./oi")
-}
+new Worker("./worker/worker.ts")
 `;
 
 const o = parseAst(tsString);

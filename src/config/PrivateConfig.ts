@@ -12,6 +12,8 @@ import { IPublicConfig } from './IPublicConfig';
 import { IJSONPluginProps } from '../plugins/core/plugin_json';
 import { IProductionProps } from './IProductionProps';
 import { IResourceConfig } from './IResourceConfig';
+import { Cache } from '../cache/cache';
+import { IWebWorkerConfig } from './IWebWorkerConfig';
 
 export interface IHMRExternalProps {
   reloadEntryOnStylesheet?: boolean;
@@ -43,6 +45,7 @@ export class PrivateConfig {
     ignore?: Array<string>;
     ignoreAllExternal?: boolean;
   };
+  webWorkers?: IWebWorkerConfig;
   homeDir?: string;
   resources?: IResourceConfig;
   output?: string;
@@ -78,12 +81,17 @@ export class PrivateConfig {
 
   defaultSourceMapModulesRoot?: string;
 
+  cacheObject?: Cache;
+
   public ctx?: Context;
 
   constructor(public props: IPublicConfig) {
     this.defaultSourceMapModulesRoot = '/modules';
 
     this.json = props.json === undefined ? { useDefault: false } : props.json;
+    if (props.cacheObject) {
+      this.cacheObject = props.cacheObject;
+    }
 
     this.resources = props.resources || {};
     if (!this.resources.resourcePublicRoot) {
