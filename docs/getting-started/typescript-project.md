@@ -52,7 +52,7 @@ one for you. Here is how it looks like by default:
 
 It will be placed in your
 [home directory](/docs/development/configuration#home-directory) and can be
-moved higher in the hirarchy (for example in your application root)
+moved higher in the hierarchy (for example in your application root)
 
 ## Module requirement
 
