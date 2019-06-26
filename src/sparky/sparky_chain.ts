@@ -4,9 +4,9 @@ import {
   writeFile,
   ensureFuseBoxPath,
   ensureAbsolutePath,
-  copyFile,
   ensureDir,
   removeFile,
+  readFileAsBuffer,
 } from '../utils/utils';
 import { sparky_src } from './sparky_src';
 import { tsc, TscOptions } from './tsc';
@@ -41,7 +41,7 @@ export function sparkyChain(log: ILogger): ISparkyChain {
       for (const i in latest) {
         const file = latest[i];
 
-        readFiles[file] = readFiles[file] || readFile(file);
+        readFiles[file] = readFiles[file] || readFileAsBuffer(file);
 
         const s = ensureFuseBoxPath(file).split(newLocationBase);
         if (!s[1]) {

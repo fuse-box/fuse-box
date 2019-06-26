@@ -93,6 +93,10 @@ export function readFile(file: string) {
   return fs.readFileSync(file).toString();
 }
 
+export function readFileAsBuffer(file: string) {
+  return fs.readFileSync(file);
+}
+
 export function removeFile(file: string) {
   return fs.unlinkSync(file);
 }
