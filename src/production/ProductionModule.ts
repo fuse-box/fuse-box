@@ -39,6 +39,7 @@ export class ProductionModule {
     }
     for (const info of this.module.fastAnalysis.imports) {
       if (name === info.statement) {
+        if (!info.link) return;
         if (info.link.module) {
           return info.link.module.productionModule;
         }
@@ -59,5 +60,5 @@ export class ProductionModule {
     return this.file.getText();
   }
 
-  public treeShake() {}
+  public treeShake() { }
 }
