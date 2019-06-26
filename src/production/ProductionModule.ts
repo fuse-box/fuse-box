@@ -39,7 +39,7 @@ export class ProductionModule {
     }
     for (const info of this.module.fastAnalysis.imports) {
       if (name === info.statement) {
-        if (!info.link) return;
+        if (!info.link) continue;
         if (info.link.module) {
           return info.link.module.productionModule;
         }
