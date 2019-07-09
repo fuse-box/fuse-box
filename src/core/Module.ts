@@ -1,9 +1,9 @@
-import { IFastAnalysis } from '../analysis/fastAnalysis';
+import { IFastAnalysis, fastAnalysis } from '../analysis/fastAnalysis';
 import { IModuleCacheBasics } from '../cache/cache';
 import { testPath } from '../plugins/pluginUtils';
 import { ProductionModule } from '../production/ProductionModule';
 import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
-import { createConcat, extractFuseBoxPath, joinFuseBoxPath, readFile } from '../utils/utils';
+import { createConcat, extractFuseBoxPath, joinFuseBoxPath, readFile, fastHash } from '../utils/utils';
 import { Context } from './Context';
 import { Package } from './Package';
 const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.mjs'];
@@ -112,6 +112,15 @@ export class Module {
     return this._isJavascriptModule;
   }
 
+  public fastAnalyse(): IFastAnalysis {
+    this.fastAnalysis = fastAnalysis({
+      packageName: this.pkg.props.meta.name,
+      input: this.contents,
+      parseUsingAst: this.props.extension === '.js',
+    });
+    return this.fastAnalysis;
+  }
+
   public addWeakReference(url: string) {
     if (url === this.props.absPath) return;
     if (!this.weakReferences) this.weakReferences = [];
@@ -146,8 +155,8 @@ export class Module {
     }
   }
 
-  public read(): string {
-    if (this.contents === undefined) {
+  public read(forceReload?: boolean): string {
+    if (this.contents === undefined || forceReload) {
       this.contents = readFile(this.props.absPath);
     }
     return this.contents;
@@ -173,6 +182,10 @@ export class Module {
 
   public getShortPath() {
     return `${this.pkg.getPublicName()}/${this.props.fuseBoxPath}`;
+  }
+
+  public getHasedPath() {
+    return fastHash(`${this.pkg.getPublicName()}/${this.props.fuseBoxPath}`);
   }
 
   public isSourceMapRequired() {

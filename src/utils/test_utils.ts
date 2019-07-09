@@ -218,6 +218,17 @@ export function mockWriteFile() {
         }
       }
     },
+    findFiles: (pattern): Array<{ name: string; contents: string; stat: any }> => {
+      const re = simplifiedRegExp(pattern);
+      const found = [];
+      for (const key in scope.files) {
+        const item = scope.files[key];
+        if (re.test(key)) {
+          found.push({ name: key, contents: item.contents, stat: item.stat });
+        }
+      }
+      return found;
+    },
     getFileReads() {
       return scope.fileReads;
     },

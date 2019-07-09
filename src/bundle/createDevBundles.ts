@@ -38,16 +38,16 @@ export function injectSettingsIntoDefaultBundle(ctx: Context, bundle: Bundle) {
 export function inflatePackage(ctx: Context, pkg: Package): Concat {
   let packageName = pkg.getPublicName();
   const customVersions = {};
-  pkg.externalPackages.forEach(extPackage => {
+  for (const extPackage of pkg.externalPackages) {
     if (!extPackage.isFlat) {
       customVersions[extPackage.props.meta.name] = extPackage.props.meta.version;
     }
-  });
+  }
 
   const concat = createConcat(true, '', '\n');
   concat.add(null, devStrings.openPackage(packageName, customVersions));
 
-  pkg.modules.forEach(_module => {
+  for (const _module of pkg.modules) {
     if (_module.isCached) {
       concat.add(null, _module.cache.contents, _module.isExecutable() ? _module.cache.sourceMap : undefined);
     } else {
@@ -56,40 +56,41 @@ export function inflatePackage(ctx: Context, pkg: Package): Concat {
           pkg: _module.pkg.getPublicName(),
           path: _module.props.fuseBoxPath,
         });
-        return;
-      }
-      const fileConcat = createConcat(true, '', '\n');
-      fileConcat.add(null, devStrings.openFile(_module.props.fuseBoxPath));
-      const data = _module.generate();
+      } else {
+        const fileConcat = createConcat(true, '', '\n');
+        fileConcat.add(null, devStrings.openFile(_module.props.fuseBoxPath));
+        const data = _module.generate();
 
-      fileConcat.add(null, data.contents, _module.isExecutable() ? data.sourceMap : undefined);
-      fileConcat.add(null, devStrings.closeFile());
-      concat.add(null, fileConcat.content, fileConcat.sourceMap);
-      ctx.ict.sync('after_dev_module_inflate', {
-        concat: fileConcat,
-        ctx,
-        module: _module,
-      });
+        fileConcat.add(null, data.contents, _module.isExecutable() ? data.sourceMap : undefined);
+        fileConcat.add(null, devStrings.closeFile());
+        concat.add(null, fileConcat.content, fileConcat.sourceMap);
+        ctx.ict.sync('after_dev_module_inflate', {
+          concat: fileConcat,
+          ctx,
+          module: _module,
+        });
+      }
     }
-  });
+  }
+
   concat.add(null, devStrings.closePackage(pkg.entry && pkg.entry.props.fuseBoxPath));
   return concat;
 }
 
 export function inflateBundle(ctx: Context, bundle: Bundle) {
-  bundle.packages.forEach(pkg => {
+  for (const pkg of bundle.packages) {
     if (pkg.isCached) {
       bundle.addContent(pkg.cache.contents, pkg.cache.sourceMap);
     } else {
       const concat = inflatePackage(ctx, pkg);
-      bundle.addContent(concat.content.toString(), concat.sourceMap);
+      bundle.addContent(concat.content, concat.sourceMap);
       ctx.ict.sync('after_dev_package_inflate', { ctx, concat, pkg: pkg });
 
-      if (bundle.props.type === BundleType.PROJECT_JS) {
-        injectSettingsIntoDefaultBundle(ctx, bundle);
-      }
+      // if (bundle.props.type === BundleType.PROJECT_JS) {
+      //   //injectSettingsIntoDefaultBundle(ctx, bundle);
+      // }
     }
-  });
+  }
   // close developmentAPI for isolated bundles
   if (bundle.isolated) {
     bundle.addContent(closeDevelopmentApi());
@@ -149,6 +150,13 @@ export function createDevBundles(
       }
     }
   });
+
+  const defaultProject = packages.find(pkg => pkg.isDefaultPackage);
+  if (defaultProject.entry) {
+    const entryBundle = bundleSet.getBundle(BundleType.PROJECT_ENTRY);
+    entryBundle.addContent(devStrings.setEntry(`default/${defaultProject.entry.props.fuseBoxPath}`));
+  }
+
   return {
     bundles: bundleSet.collection,
   };

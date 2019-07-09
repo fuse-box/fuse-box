@@ -1,5 +1,5 @@
 import { sparky, fusebox } from '../../src';
-
+import * as path from 'path';
 class Context {
   isProduction;
   runServer;
@@ -9,7 +9,12 @@ class Context {
       entry: 'src/index.tsx',
       webIndex: {
         template: 'src/index.html',
+        embedIndexedBundles: true,
       },
+      tsConfig: 'src/tsconfig.json',
+
+      stylesheet: { paths: [path.join(__dirname, 'src/config')] },
+      cache: false,
 
       watch: true,
       hmr: true,

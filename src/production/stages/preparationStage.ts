@@ -16,6 +16,7 @@ function staticTransform(props: IStaticTransform) {
     props.ctx.log.progressFormat('Source transform', module.getShortPath());
 
     const project = new Project();
+
     props.productionModule.file = project.createSourceFile('src/foo.ts', module.contents);
     performStaticTransformations({
       ctx: module.props.ctx,
@@ -35,6 +36,7 @@ export function preparationStage(props: IProductionFlow) {
     pkg.productionPackage = productionPackage;
     pkg.modules.forEach(module => {
       const productionModule = new ProductionModule(productionContext, module, productionPackage);
+
       module.productionModule = productionModule;
       productionPackage.productionModules.push(productionModule);
       staticTransform({ productionModule, ctx });

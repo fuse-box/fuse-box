@@ -1,7 +1,7 @@
 import { fusebox } from '../../src/core/fusebox';
 import { pluginJSON } from '../../src/plugins/core/plugin_json';
 import { pluginReplace } from '../../src/plugins/core/plugin_replace';
-
+import * as path from 'path';
 const fuse = fusebox({
   target: 'browser',
   logging: {
@@ -24,11 +24,11 @@ const fuse = fusebox({
       $root: __dirname,
     },
   },
-  cache: false,
-  // {
-  //   enabled: true,
-  //   root: path.join(__dirname, '.cache'),
-  // },
+  cache: {
+    FTL: true,
+    enabled: true,
+    root: path.join(__dirname, '.cache'),
+  },
   webIndex: {
     publicPath: '.',
     template: 'src/index.html',

@@ -6,7 +6,7 @@ import { ILogger } from '../logging/logging';
 export interface IStatLogProps {
   ctx: Context;
   time: string;
-  packages: Array<Package>;
+  packages?: Array<Package>;
   printFuseBoxVersion?: boolean;
   printPackageStat?: boolean;
 }

@@ -1,10 +1,8 @@
+import { createStylesheetProps } from '../../config/createStylesheetProps';
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
 import { Context } from '../../core/Context';
-import { parsePluginOptions } from '../pluginUtils';
 import { sassHandler } from '../../stylesheet/sassHandler';
-import { cssDevModuleRender } from '../../stylesheet/cssDevModuleRender';
-import { cssAsTextRender } from '../../stylesheet/cssAsTextRender';
-import { createStylesheetProps } from '../../config/createStylesheetProps';
+import { parsePluginOptions } from '../pluginUtils';
 import { cssContextHandler } from './shared';
 
 export interface ISassPluginProps {

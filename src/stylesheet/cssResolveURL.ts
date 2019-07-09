@@ -75,6 +75,7 @@ export function resolveCSSResource(target, props: ICSSResolveURLProps): IURLRepl
     const resourceConfig = props.ctx.config.getResourceConfig(props.options);
 
     const resourcePublicRoot = resourceConfig.resourcePublicRoot;
+
     const publicPath = joinFuseBoxPath(resourcePublicRoot, name);
     const destination = path.join(resourceConfig.resourceFolder, name);
 

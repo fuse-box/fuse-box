@@ -26,6 +26,7 @@ some.sh
 # Which is then exported as a module from `src`
 src/modules/fuse-loader/LoaderAPI.ts
 
+playground/bundle/src/lodash
 
 # Website
 website/.firebase

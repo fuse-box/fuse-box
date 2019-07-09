@@ -67,7 +67,6 @@ export function attachWebWorkers(ctx: Context) {
         wk.absPath = resolved.absPath;
         const webWorkerProcess = ensureWorkerExists(wk, module);
         wk.bundlePath = webWorkerProcess.resolveWebWorkerBundlePath();
-        console.log(wk.bundlePath);
       });
     }
     return props;

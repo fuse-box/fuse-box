@@ -6,6 +6,7 @@ import { env } from '../env';
 type IChokidarEventType = 'add' | 'change' | 'unlink' | 'addDir' | 'unlinkDir' | 'error' | 'ready';
 
 export interface IWatcherExternalProps {
+  paths?: any;
   ignored?: Array<string>;
   banned?: Array<string>;
 }
@@ -107,14 +108,16 @@ export function createWatcher(props: IWatcherProps, externalProps?: IWatcherExte
   const ict = ctx.ict;
   externalProps = externalProps || {};
   const ignored = externalProps.ignored ? externalProps.ignored : [];
+  const paths = externalProps.paths ? externalProps.paths : props.ctx.config.homeDir;
   ignored.push('/node_modules/', '/\\.', props.ctx.writer.outputDirectory);
   const ignoredRegEx: Array<RegExp> = ignored.map(str => ignoredPath2Regex(str));
 
   let events: Array<WatcherAction> = [];
   let tm;
+
   ict.on('complete', data => {
     attachChokidar({
-      root: env.APP_ROOT,
+      root: paths,
       ignored: ignoredRegEx,
       cb: (event, path) => {
         clearTimeout(tm);

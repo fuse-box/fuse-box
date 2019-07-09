@@ -7,6 +7,8 @@ import {
   Node,
   ObjectLiteralExpression,
   SourceFile,
+  CallExpression,
+  StringLiteral,
 } from 'ts-morph';
 import * as ts from 'typescript';
 import { ProductionModule } from '../ProductionModule';
@@ -31,6 +33,10 @@ export class ESLink {
    * @memberof ESLink
    */
   public fromSource: string;
+  public fromSourceTarget: ProductionModule;
+  public isDynamicImport: boolean;
+  public dynamicImportTarget: ProductionModule;
+  public dynamicImportCallExpression: CallExpression;
 
   public imports: Array<ImportVariable>;
   public exports: Array<ExportReference>;
@@ -43,6 +49,20 @@ export class ESLink {
   constructor(public productionModule: ProductionModule) {
     this.exports = [];
     this.imports = [];
+  }
+
+  public getDependencies() {
+    const modules: Array<ProductionModule> = [];
+    this.imports.forEach(imp => {
+      modules.push(imp.link.productionModule);
+    });
+    this.exports.forEach(exp => {
+      if (exp.link.fromSource) {
+        modules.push(exp.link.productionModule);
+      }
+    });
+
+    return modules;
   }
 
   /**
@@ -209,6 +229,24 @@ export class ESLink {
     }
   }
 
+  createDynamicImport(node: CallExpression) {
+    const importVariable = new ImportVariable(this);
+    importVariable.isDynamicImport = true;
+    //this.fromSource = node.getArguments()
+    const args = node.getArguments();
+    if (args.length > 1) {
+      throw new Error('Dynamic imports support only string literals!');
+    }
+    this.isDynamicImport = true;
+    const first = node.getArguments()[0];
+    const source = first as StringLiteral;
+    this.fromSource = source.compilerNode.text;
+    this.dynamicImportCallExpression = node;
+
+    // register a dynamic link in the context
+    this.productionModule.context.dynamicLinks.push(this);
+  }
+
   createExportObjectDeclaration(node: FunctionDeclaration) {
     this.exportObjectDeclarationNode = node;
     this.type = ESLinkType.ExportDeclaration;
@@ -240,6 +278,12 @@ export class ESLink {
 export function createImportDeclaration(productionModule: ProductionModule, node: ImportDeclaration): ESLink {
   const link = new ESLink(productionModule);
   link.createImportDeclaration(node);
+  return link;
+}
+
+export function createDynamicImportDeclaration(productionModule: ProductionModule, node: CallExpression): ESLink {
+  const link = new ESLink(productionModule);
+  link.createDynamicImport(node);
   return link;
 }
 export function createExportAssignment(productionModule: ProductionModule, node: ExportAssignment): ESLink {

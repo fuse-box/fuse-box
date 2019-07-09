@@ -38,20 +38,15 @@ export class Context {
   public productionApiWrapper: ProductionAPIWrapper;
 
   private _uniqueEntryHash: string;
+
   constructor(public config: PrivateConfig) {
     this.config.ctx = this;
+    this.log = getLogger(config.logging);
     this.weakReferences = createWeakModuleReferences(this);
     this.assembleContext = assembleContext(this);
     this.ict = createInterceptor();
     this.webWorkers = {};
 
-    this.log = getLogger(config.logging);
-
-    this.writer = createWriter({
-      isProduction: !!this.config.production,
-      root: env.SCRIPT_PATH,
-      output: this.config.output,
-    });
     this.webIndex = createWebIndex(this);
     attachEssentials(this);
 
@@ -67,6 +62,11 @@ export class Context {
   }
 
   public setDevelopment() {
+    this.writer = createWriter({
+      isProduction: false,
+      root: env.SCRIPT_PATH,
+      output: this.config.output,
+    });
     this.tsConfig = initTypescriptConfig(this.config);
     this.devServer = createDevServer(this);
     if (this.config.cache) {
@@ -84,6 +84,11 @@ export class Context {
       prodProps.uglify = true;
     }
     this.config.production = prodProps;
+    this.writer = createWriter({
+      isProduction: true,
+      root: env.SCRIPT_PATH,
+      output: this.config.output,
+    });
     this.tsConfig = initTypescriptConfig(this.config);
     this.devServer = createDevServer(this);
     this.config.setupEnv();

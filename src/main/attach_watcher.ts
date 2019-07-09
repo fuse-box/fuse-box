@@ -7,14 +7,14 @@ import { Package } from '../core/Package';
 import { EMOJIS } from '../logging/logging';
 import { extractFuseBoxPath } from '../utils/utils';
 import { createWatcher, WatcherAction } from '../watcher/watcher';
-import { assemble } from './assemble';
-import { pluginProcessPackages } from './process_plugins';
+import { assemble, processModule } from './assemble';
+import { pluginProcessPackages, bundleResolveModule } from './process_plugins';
 import { statLog } from './stat_log';
 export interface IWatcherAttachProps {
   ctx: Context;
 }
 
-interface OnWatcherProps {
+export interface OnWatcherProps {
   action: WatcherAction;
   file: string;
   ctx: Context;
@@ -37,10 +37,20 @@ async function appReload(props: IAppReloadProps): Promise<IAppReloadResponse> {
   const watcher = props.watcherProps;
   const ctx = watcher.ctx;
 
-  // remove objects from assemble context
-  // in order to start over
-  ctx.assembleContext.flush();
-  //  ctx.weakReferences.flush();
+  if (props.watcherProps.file) {
+    const softReloadContext = {
+      FTL: false,
+      watcherProps: props.watcherProps,
+      filePath: props.watcherProps.file,
+
+      timeStart: process.hrtime(),
+    };
+    ctx.ict.sync('soft_relod', { info: softReloadContext });
+    if (softReloadContext.FTL) {
+      return;
+    }
+  }
+
   // nuke all files, all objects in memory
   if (props.nukeAllCache) {
     ctx.cache.nukeAll();
@@ -49,6 +59,10 @@ async function appReload(props: IAppReloadProps): Promise<IAppReloadResponse> {
   } else if (props.nukeProjectCache) {
     ctx.cache.nukeProjectCache();
   }
+
+  // remove objects from assemble context
+  // in order to start over
+  ctx.assembleContext.flush();
 
   // TODO: write only project doesn't work very well
   // in case if everything was cached, then one modules is commented out, and then ucommented again.

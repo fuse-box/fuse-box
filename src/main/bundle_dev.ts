@@ -16,6 +16,7 @@ import { processPlugins } from './process_plugins';
 import { attachServerEntry } from './server_entry';
 import { statLog } from './stat_log';
 import { attachWebWorkers } from '../web-workers/attachWebWorkers';
+import { attachFTL } from '../FTL/FasterThanLightReload';
 
 export async function bundleDev(ctx: Context) {
   const ict = ctx.ict;
@@ -68,6 +69,6 @@ export async function bundleDev(ctx: Context) {
     time: prettyTime(process.hrtime(startTime), 'ms'),
   });
   if (bundles) {
-    ict.sync('complete', { ctx: ctx, bundles: bundles });
+    ict.sync('complete', { ctx: ctx, bundles: bundles, packages: packages });
   }
 }

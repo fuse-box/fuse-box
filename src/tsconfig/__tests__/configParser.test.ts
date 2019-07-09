@@ -2,6 +2,7 @@ import * as ts from 'typescript';
 import '../../utils/test_utils';
 import { pathJoin } from '../../utils/utils';
 import { initTypescriptConfig, resolveTSConfig } from '../configParser';
+import { createConfig } from '../../config/config';
 const cases = pathJoin(__dirname, 'cases');
 const case1 = pathJoin(cases, 'case1');
 
@@ -51,39 +52,32 @@ describe('tsconfig', () => {
 
   describe('initTypescriptConfig real compiler options', () => {
     it('Target be parsed correctly', () => {
-      const result = initTypescriptConfig({
-        production: {},
-        tsConfig: {
-          target: 'es5',
-        },
-      });
+      const cfg = createConfig({ tsConfig: { target: 'ES5' } });
+      cfg.production = {};
+      const result = initTypescriptConfig(cfg);
       expect(result.compilerOptions.target).toEqual(ts.ScriptTarget.ES5);
     });
 
     it('Module be parsed correctly', () => {
-      const result = initTypescriptConfig({
-        production: {},
-        tsConfig: {},
-      });
+      const cfg = createConfig({ tsConfig: { target: 'ES5' } });
+      cfg.production = {};
+      const result = initTypescriptConfig(cfg);
       expect(result.compilerOptions.module).toEqual(ts.ModuleKind.CommonJS);
     });
 
     it('should resolve baseUrl correctly', () => {
-      const result = initTypescriptConfig({
-        production: {},
-        tsConfig: {
-          baseUrl: '.',
-        },
-      });
+      const cfg = createConfig({ tsConfig: { baseUrl: '.' } });
+      cfg.production = {};
+      const result = initTypescriptConfig(cfg);
       expect(result.compilerOptions.baseUrl).toMatchFilePath('src/tsconfig/__tests__$');
     });
   });
 
   describe('initTypescriptConfig json', () => {
     it('Should read from a set file', () => {
-      const result = initTypescriptConfig({
-        tsConfig: pathJoin(cases, 'case1/tsconfig.json'),
-      });
+      const cfg = createConfig({ tsConfig: pathJoin(cases, 'case1/tsconfig.json') });
+
+      const result = initTypescriptConfig(cfg);
       expect(result.jsonCompilerOptions).toEqual({
         allowJs: true,
         baseUrl: '.',
@@ -97,9 +91,8 @@ describe('tsconfig', () => {
     });
 
     it('Should override module to commonjs', () => {
-      const result = initTypescriptConfig({
-        tsConfig: pathJoin(cases, 'case1/tsconfig2.json'),
-      });
+      const cfg = createConfig({ tsConfig: pathJoin(cases, 'case1/tsconfig2.json') });
+      const result = initTypescriptConfig(cfg);
       expect(result.basePath).toMatchFilePath('tsconfig/__tests__/cases/case1$');
       expect(result.jsonCompilerOptions).toEqual({
         allowJs: true,
@@ -114,9 +107,8 @@ describe('tsconfig', () => {
     });
 
     it('Should respect user jsx', () => {
-      const result = initTypescriptConfig({
-        tsConfig: pathJoin(cases, 'case1/config3.json'),
-      });
+      const cfg = createConfig({ tsConfig: pathJoin(cases, 'case1/config3.json') });
+      const result = initTypescriptConfig(cfg);
       expect(result.jsonCompilerOptions).toEqual({
         allowJs: true,
         baseUrl: '.',
@@ -130,12 +122,9 @@ describe('tsconfig', () => {
     });
 
     it('Should respect production target', () => {
-      const result = initTypescriptConfig({
-        production: {},
-        tsConfig: {
-          target: 'es5',
-        },
-      });
+      const cfg = createConfig({ tsConfig: { target: 'ES5' } });
+      cfg.production = {};
+      const result = initTypescriptConfig(cfg);
       expect(result.jsonCompilerOptions).toEqual({
         allowJs: true,
         module: 'commonjs',
@@ -143,15 +132,14 @@ describe('tsconfig', () => {
         moduleResolution: 'node',
         importHelpers: true,
         experimentalDecorators: true,
-        target: 'es5',
+        target: 'ES5',
       });
     });
 
     it('Should set default production target', () => {
-      const result = initTypescriptConfig({
-        production: {},
-        tsConfig: {},
-      });
+      const cfg = createConfig({ tsConfig: {} });
+      cfg.production = {};
+      const result = initTypescriptConfig(cfg);
       expect(result.jsonCompilerOptions).toEqual({
         allowJs: true,
         module: 'commonjs',
@@ -164,10 +152,9 @@ describe('tsconfig', () => {
     });
 
     it('Should set default dev target', () => {
-      const result = initTypescriptConfig({
-        production: false,
-        tsConfig: {},
-      });
+      const cfg = createConfig({ tsConfig: {} });
+
+      const result = initTypescriptConfig(cfg);
 
       expect(result.basePath).toMatchFilePath('__tests__$');
       expect(result.jsonCompilerOptions).toEqual({
@@ -182,9 +169,10 @@ describe('tsconfig', () => {
     });
 
     it('Should init from object', () => {
-      const result = initTypescriptConfig({
-        tsConfig: {},
-      });
+      const cfg = createConfig({ tsConfig: {} });
+
+      const result = initTypescriptConfig(cfg);
+
       expect(result.jsonCompilerOptions).toEqual({
         allowJs: true,
         module: 'commonjs',
@@ -197,10 +185,10 @@ describe('tsconfig', () => {
     });
 
     it('Should find config automatically', () => {
-      const result = initTypescriptConfig({
-        homeDir: cases,
-        entries: ['case1/src/index.js'],
-      });
+      const cfg = createConfig({ homeDir: cases, entry: ['case1/src/index.js'] });
+
+      const result = initTypescriptConfig(cfg);
+
       expect(result.jsonCompilerOptions).toEqual({
         allowJs: true,
         baseUrl: '.',
@@ -214,10 +202,9 @@ describe('tsconfig', () => {
     });
 
     it('Should find config and give it a base path', () => {
-      const result = initTypescriptConfig({
-        homeDir: cases,
-        entries: ['case1/src/index.js'],
-      });
+      const cfg = createConfig({ homeDir: cases, entry: ['case1/src/index.js'] });
+
+      const result = initTypescriptConfig(cfg);
 
       expect(result.basePath).toMatchFilePath('src/tsconfig/__tests__/cases/case1$');
       expect(result.jsonCompilerOptions).toEqual({

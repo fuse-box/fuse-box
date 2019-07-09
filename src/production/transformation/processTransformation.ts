@@ -21,7 +21,7 @@ function onGlobal(node: Identifier, props: LocalContext) {
     }
     if (!props.globalInserted) {
       props.globalInserted = true;
-      props.insertions.push(`const global = {}`);
+      props.insertions.push(`const global = {};`);
     }
   }
 }

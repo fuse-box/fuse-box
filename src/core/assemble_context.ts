@@ -4,6 +4,8 @@ import { Package } from './Package';
 
 export interface IAssembleContext {
   flush: () => void;
+  addFTL: (path: string, content: string) => void;
+  getFTL: () => Map<string, string>;
   getPackageCollection: () => Map<string, Map<string, Package>>;
   collection: {
     modules: Map<string, Module>;
@@ -20,9 +22,14 @@ export enum AssembleState {
 }
 export function assembleContext(ctx: Context): IAssembleContext {
   let packages = new Map<string, Map<string, Package>>();
-
+  let ftl = new Map<string, string>();
   const obj = {
+    addFTL: (path: string, content: string) => {
+      ftl.set(path, content);
+    },
+    getFTL: () => ftl,
     flush: () => {
+      ftl = new Map();
       packages = new Map();
       obj.collection.modules = new Map();
     },

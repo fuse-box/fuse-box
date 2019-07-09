@@ -11,10 +11,11 @@ export interface IWebIndexConfig {
   template?: string;
   distFileName?: string;
   publicPath?: string;
+  embedIndexedBundles?: boolean;
 }
 export interface IWebIndexInterface {
   isDisabled?: boolean;
-
+  addBundleContent?: (content: string) => void;
   resolve?: (userPath: string) => string;
   generate?: (bundles: Array<IBundleWriteResponse>) => void;
 }
@@ -67,21 +68,36 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
     generate: async (bundles: Array<IBundleWriteResponse>) => {
       const scriptTags = [];
       const cssTags = [];
-
+      let ftlEnabled = false;
+      if (ctx.cache && ctx.config.cache.FTL && ctx.devServer && !ctx.config.production) {
+        ftlEnabled = true;
+      }
       const sorted = bundles.sort((a, b) => a.bundle.props.priority - b.bundle.props.priority);
       sorted.forEach(item => {
         if (item.bundle.props.webIndexed) {
+          if (ftlEnabled && item.bundle.props.type == BundleType.PROJECT_ENTRY) {
+            scriptTags.push(htmlStrings.scriptTag('/__ftl'));
+          }
           if (item.bundle.props.type !== BundleType.CSS) {
-            scriptTags.push(htmlStrings.scriptTag(joinFuseBoxPath(opts.publicPath, item.stat.relBrowserPath)));
+            if (config.embedIndexedBundles && ctx.config.production) {
+              scriptTags.push(htmlStrings.embedScriptTag(item.bundle.contents.content.toString()));
+            } else {
+              scriptTags.push(htmlStrings.scriptTag(joinFuseBoxPath(opts.publicPath, item.stat.relBrowserPath)));
+            }
           } else {
-            cssTags.push(htmlStrings.cssTag(joinFuseBoxPath(opts.publicPath, item.stat.relBrowserPath)));
+            if (config.embedIndexedBundles && ctx.config.production) {
+              cssTags.push(htmlStrings.cssTagScript(item.bundle.contents.content.toString()));
+            } else {
+              cssTags.push(htmlStrings.cssTag(joinFuseBoxPath(opts.publicPath, item.stat.relBrowserPath)));
+            }
           }
         }
       });
-      let contents = replaceWebIndexStrings(readFile(opts.templatePath), {
+      const scriptOpts: any = {
         bundles: scriptTags.join('\n'),
         css: cssTags.join('\n'),
-      });
+      };
+      let contents = replaceWebIndexStrings(readFile(opts.templatePath), scriptOpts);
 
       logger.progressFormat('WebIndex', 'writing to $name</yellow></bold></dim>', {
         name: opts.distFileName,

@@ -1,4 +1,5 @@
 import { Context } from '../core/Context';
+import { attachFTL } from '../FTL/FasterThanLightReload';
 
 export function attachCache(ctx: Context) {
   const config = ctx.config;
@@ -6,6 +7,10 @@ export function attachCache(ctx: Context) {
 
   if (!config.cache.enabled) {
     return;
+  }
+
+  if (config.cache.FTL) {
+    attachFTL(ctx);
   }
   const cache = ctx.cache;
 

@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { ensureAbsolutePath, ensureFuseBoxPath, fastHash, writeFile } from '../utils/utils';
 import { env } from '../env';
+import { Context } from './Context';
 
 export interface IWriter {}
 export interface IWriterProps {
@@ -30,9 +31,19 @@ export interface IWriterActions {
  * @param props
  */
 export function createWriter(props: IWriterProps): IWriterActions {
-  const outputString = props.output ? props.output : props.isProduction ? 'dist/$name-$hash' : 'dist/$name';
+  let outputString = props.output ? props.output : props.isProduction ? 'dist/$hash-$name' : 'dist/$name';
+
+  // make sure it has $name in the template
+  if (!/\$name/.test(outputString)) {
+    if (/\/$/.test(outputString)) {
+      outputString += '$name';
+    } else {
+      outputString += '/$name';
+    }
+  }
 
   const outputDirectory = ensureAbsolutePath(path.dirname(outputString), props.root || env.APP_ROOT);
+
   let template = path.basename(outputString);
   if (!props.isProduction) {
     // we don't allow hashes for development for known reasons
@@ -62,6 +73,7 @@ export function createWriter(props: IWriterProps): IWriterActions {
         hash: props.isProduction ? fastHash(contents) : false,
       };
       let localPath = template.replace('$name', $name);
+
       if (typeof opts.hash === 'string') {
         localPath = localPath.replace('$hash', opts.hash);
       }
@@ -75,7 +87,10 @@ export function createWriter(props: IWriterProps): IWriterActions {
         localPath,
         absPath,
         relBrowserPath,
-        write: async (cnt?: string) => writeFile(absPath, cnt ? cnt : contents),
+        write: async (cnt?: string) => {
+          // piping the contents to webIndex instead
+          writeFile(absPath, cnt ? cnt : contents);
+        },
       };
     },
   };
