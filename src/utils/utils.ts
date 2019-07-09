@@ -17,6 +17,13 @@ export function path2Regex(path: string) {
   return re;
 }
 
+export function matchAll(regex: RegExp, str: string, cb: (matches) => void) {
+  let matches;
+  while ((matches = regex.exec(str))) {
+    cb(matches);
+  }
+}
+
 export function removeFolder(userPath) {
   fsExtra.removeSync(userPath);
 }

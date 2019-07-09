@@ -28,6 +28,13 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
   if (props.alias) {
     config.alias = props.alias;
   }
+  if (props.tsConfig) {
+    if (typeof props.tsConfig === 'string') {
+      config.tsConfig = ensureAbsolutePath(props.tsConfig, env.SCRIPT_PATH);
+    } else {
+      config.tsConfig = props.tsConfig;
+    }
+  }
 
   if (props.target) {
     config.target = props.target;
@@ -105,6 +112,7 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
   // cache ************************************************************************************************
   config.cache = {
     enabled: false,
+    FTL: false,
     root: path.join(env.APP_ROOT, 'node_modules/.fusebox'),
   };
 
@@ -114,6 +122,9 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
     config.cache.enabled = typeof props.cache.enabled === 'boolean' ? props.cache.enabled : env.isTest ? false : true;
     if (props.cache.root !== undefined) {
       config.cache.root = ensureAbsolutePath(props.cache.root, env.SCRIPT_PATH);
+    }
+    if (props.cache.FTL === true) {
+      config.cache.FTL = true;
     }
   } else if (props.cache === undefined && !env.isTest) {
     config.cache.enabled = true;

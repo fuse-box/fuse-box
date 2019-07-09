@@ -15,7 +15,8 @@ export enum BundleType {
   DEV = 2,
   VENDOR_JS = 3,
   PROJECT_JS = 4,
-  SERVER_ENTRY = 5,
+  PROJECT_ENTRY = 5,
+  SERVER_ENTRY = 6,
 }
 
 /**
@@ -26,6 +27,7 @@ export const BundleNames = {
   [BundleType.CSS]: 'styles',
   [BundleType.DEV]: 'dev',
   [BundleType.PROJECT_JS]: 'app',
+  [BundleType.PROJECT_ENTRY]: 'entry',
   [BundleType.VENDOR_JS]: 'vendor',
 };
 
@@ -91,9 +93,15 @@ export class Bundle {
   public isolated?: boolean;
   public contents: Concat;
   public name: string;
+  private useCustomGenerator: boolean;
+
   constructor(public props: IBundleProps) {
     this.packages = [];
     this.name = props.name;
+    this.contents = createConcat(true, this.name, '\n');
+  }
+
+  public flush() {
     this.contents = createConcat(true, this.name, '\n');
   }
 
@@ -104,7 +112,11 @@ export class Bundle {
     this.contents.add(null, prev.content, prev.sourceMap);
   }
 
-  public addContent(contents: string, sm?) {
+  public setCustomName(name: string) {
+    this.name = name;
+    this.useCustomGenerator = true;
+  }
+  public addContent(contents: string | Buffer, sm?) {
     this.contents.add(null, contents, sm);
   }
 
@@ -159,6 +171,13 @@ export class Bundle {
     const ctx = this.props.ctx;
     const ict = this.props.ctx.ict;
     ict.sync('before_bundle_write', { bundle: this });
+    let writeBundles = true;
+    if (!ctx.webIndex.isDisabled) {
+      if (ctx.config.webIndex && ctx.config.webIndex.embedIndexedBundles && ctx.config.production) {
+        withSourceMaps = false;
+        writeBundles = this.props.webIndexed ? false : true;
+      }
+    }
 
     if (withSourceMaps && this.contents.sourceMap) {
       const smData = ctx.writer.generate(this.generateSourceMapFileName(), this.contents.sourceMap);
@@ -168,7 +187,7 @@ export class Bundle {
     }
 
     const bundleData = ctx.writer.generate(this.generateFileName(), this.contents.content.toString());
-    await bundleData.write();
+    if (writeBundles) await bundleData.write();
     ict.sync('after_bundle_write', { bundle: this });
     return { bundle: this, stat: bundleData };
   }

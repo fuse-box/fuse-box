@@ -7,10 +7,14 @@ export interface ICreateStylesheetProps {
 export function createStylesheetProps(props: ICreateStylesheetProps): IStyleSheetProps {
   const ctx = props.ctx;
   const options: IStyleSheetProps = {};
+  if (ctx.config.stylesheet) {
+    options.paths = ctx.config.stylesheet.paths;
+  }
 
   if (props.stylesheet) {
     options.groupResourcesFilesByType = props.stylesheet.groupResourcesFilesByType;
     options.ignoreChecksForCopiedResources = props.stylesheet.ignoreChecksForCopiedResources;
+    if (props.stylesheet.paths) options.paths = props.stylesheet.paths;
   }
 
   if (options.groupResourcesFilesByType === undefined) {

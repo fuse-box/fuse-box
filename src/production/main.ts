@@ -9,6 +9,7 @@ import { transpileStage } from './stages/transpileStage';
 import { generationStage } from './stages/generationStage';
 import { finalStage } from './stages/finalStage';
 import { IBundleWriteResponse } from '../bundle/Bundle';
+import { codeSplittingStage } from './stages/codeSplittingStage';
 
 export interface IProductionMain {
   packages: Array<Package>;
@@ -48,12 +49,14 @@ export async function productionMain(props: IProductionMain): Promise<Array<IBun
 
   //treeShakingStage(flow);
 
+  codeSplittingStage(flow);
+
   transpileStage(flow);
 
   generationStage(flow);
 
   // writing bundles and such
   const bundles = await finalStage(flow);
-  props.ctx.ict.sync('complete', { bundles: bundles, ctx: props.ctx });
+  props.ctx.ict.sync('complete', { bundles: bundles, ctx: props.ctx, packages: props.packages });
   return bundles;
 }

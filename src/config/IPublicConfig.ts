@@ -9,7 +9,7 @@ import { IWebIndexConfig } from '../web-index/webIndex';
 import { IResourceConfig } from './IResourceConfig';
 import { IStyleSheetProps } from './IStylesheetProps';
 import { IWebWorkerConfig } from './IWebWorkerConfig';
-import { IHMRExternalProps, ITarget } from './PrivateConfig';
+import { IHMRExternalProps, ITarget, ICacheProps } from './PrivateConfig';
 export interface IPublicConfig {
   root?: string;
   target?: ITarget;
@@ -42,12 +42,7 @@ export interface IPublicConfig {
 
   hmr?: boolean | IHMRExternalProps;
   stylesheet?: IStyleSheetProps;
-  cache?:
-    | boolean
-    | {
-        root?: string;
-        enabled?: boolean;
-      };
+  cache?: boolean | ICacheProps;
   tsConfig?: string | IRawCompilerOptions;
   entry?: string | Array<string>;
   allowSyntheticDefaultImports?: boolean;

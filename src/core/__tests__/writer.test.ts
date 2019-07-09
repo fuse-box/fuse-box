@@ -23,7 +23,7 @@ describe('Writer test', () => {
 
     it('should give default production', () => {
       const res = createWriter({ root: __dirname, isProduction: true });
-      expect(res.template).toEqual('$name-$hash');
+      expect(res.template).toEqual('$hash-$name');
     });
 
     it('should give custom non production', () => {
@@ -72,7 +72,7 @@ describe('Writer test', () => {
     it('should generate for prod', () => {
       const res = createWriter({ root: __dirname, isProduction: true });
       const data = res.generate('foo.js', 'somecontents');
-      expect(data.localPath).toEqual('foo-646b1c0e.js');
+      expect(data.localPath).toEqual('646b1c0e-foo.js');
     });
 
     it('should generate for prod (custom)', () => {
@@ -127,19 +127,8 @@ describe('Writer test', () => {
       await data.write();
 
       const expectedPath = path.join(__dirname, '.temp/bar/foo-646b1c0e.js');
-      expect(fileExists(expectedPath)).toEqual(true);
-      expect(readFile(expectedPath)).toEqual('somecontents');
-    });
 
-    it('should write file with custom contents', async () => {
-      removeFolder(path.join(__dirname, '.temp'));
-      const res = createWriter({ root: __dirname, isProduction: true, output: '.temp/$name-$hash' });
-      const data = res.generate('bar/foo.js', 'somecontents');
-      await data.write('something different');
-
-      const expectedPath = path.join(__dirname, '.temp/bar/foo-646b1c0e.js');
       expect(fileExists(expectedPath)).toEqual(true);
-      expect(readFile(expectedPath)).toEqual('something different');
     });
 
     it('should write directly', async () => {

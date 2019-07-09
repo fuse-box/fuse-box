@@ -34,6 +34,7 @@ export interface IWatcherProps {
 export interface ICacheProps {
   enabled: boolean;
   root?: string;
+  FTL?: boolean;
 }
 
 export class PrivateConfig {

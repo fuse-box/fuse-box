@@ -7,6 +7,7 @@ export class ImportVariable {
   public local: string;
   public importSpecifierNode: ImportSpecifier;
   public defaultImportDeclarationNode: ImportDeclaration;
+  public isDynamicImport: boolean;
   constructor(public link: ESLink) {}
 
   public getText() {

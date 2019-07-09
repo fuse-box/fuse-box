@@ -5,6 +5,7 @@ import { ILogger } from '../logging/logging';
 import { ProductionModule } from './ProductionModule';
 import { ProductionPackage } from './ProductionPackage';
 import { Bundle } from '../bundle/Bundle';
+import { ESLink } from './structure/ESLink';
 
 export interface IProductionContext {
   packages: Array<Package>;
@@ -15,6 +16,8 @@ export class ProductionContext {
   private moduleIDCounter: number;
   public productionPackages: Array<ProductionPackage>;
 
+  public dynamicLinks: Array<ESLink>;
+
   // schema contains all the modules and packages that the application requires
   // it will be missing all the treeshaken module
   public schema: Array<ProductionModule>;
@@ -23,6 +26,7 @@ export class ProductionContext {
   private log: ILogger;
   constructor(props: IProductionContext) {
     this.moduleIDCounter = 0;
+    this.dynamicLinks = [];
     this.schema = [];
     this.bundles = [];
   }

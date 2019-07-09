@@ -37,7 +37,7 @@ export function assembleFastAnalysis(ctx: Context) {
         }
       }
 
-      if (report.dynamicImports) {
+      if (report.dynamicImports && !ctx.config.production) {
         // TODO: make sure it works on server too
         module.fastAnalysis.imports.push({ type: ImportType.REQUIRE, statement: devImports.packageName });
         module.header.push(createRequireConst(devImports.packageName, devImports.variable));

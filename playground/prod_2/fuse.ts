@@ -2,7 +2,7 @@ import { pluginSass } from '../../src';
 import { fusebox } from '../../src/core/fusebox';
 const fuse = fusebox({
   target: 'browser',
-  entry: 'src/entry.js',
+  entry: 'src/index.ts',
   modules: ['modules'],
   logging: {
     level: 'succinct',

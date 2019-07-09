@@ -43,6 +43,7 @@ function evaluateSass(sassModule, options): Promise<{ css: Buffer; map: Buffer }
 
 export function sassImporter(props: ISassImporterProps) {
   const userPaths = props.options.paths || [];
+
   const root = path.dirname(props.fileRoot);
   const paths = [root].concat(userPaths);
 
@@ -105,9 +106,11 @@ export async function renderModule(props: IRenderModuleProps): Promise<IStyleshe
       if (props.options.breakDepednantsCache) {
         module.breakDependantsCache = true;
       }
+      if (result && result.file) {
+        module.addWeakReference(result.file);
+        return result;
+      }
 
-      module.addWeakReference(result.file);
-      if (result) return result;
       return url;
     },
   });

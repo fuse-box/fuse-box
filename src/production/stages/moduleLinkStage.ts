@@ -9,6 +9,7 @@ function linkModule(productionModule: ProductionModule, props: IProductionFlow) 
 
   const fromLinks = productionModule.structure.findFromLinks();
   const imports = module.fastAnalysis.imports;
+
   fromLinks.forEach(link => {
     const info = imports.find(imp => imp.statement === link.fromSource);
     if (!info) return;
@@ -17,6 +18,9 @@ function linkModule(productionModule: ProductionModule, props: IProductionFlow) 
       const targetProductionPackage = info.link.package.productionPackage;
 
       const targetModule = targetProductionPackage.pkg.modules.find(mod => mod.props.absPath === packageTargetAbsPath);
+      if (targetModule) {
+        link.fromSourceTarget = targetModule.productionModule;
+      }
       if (targetModule && targetModule.isExecutable()) {
         log.progressFormat(
           'Link package',
@@ -37,6 +41,10 @@ function linkModule(productionModule: ProductionModule, props: IProductionFlow) 
 
     if (info.link.module) {
       const target = info.link.module.productionModule;
+      if (link.isDynamicImport) {
+        link.dynamicImportTarget = target;
+      }
+      link.fromSourceTarget = info.link.module.productionModule;
       if (target.module.isExecutable()) {
         log.progressFormat(
           'Link module',

@@ -10,6 +10,7 @@ interface IDefaultParseProps {
   module: Module;
   pkg: Package;
   ctx: Context;
+  FTL?: boolean;
   extraDependencies?: Array<string>;
 }
 
@@ -143,7 +144,7 @@ function resolveStatement(
   return { processed: false, module: _module, forcedStatement: resolved.forcedStatement };
 }
 
-function processModule(props: IDefaultParseProps) {
+export function processModule(props: IDefaultParseProps) {
   const icp = props.ctx.ict;
   const _module = props.module;
 
@@ -152,20 +153,14 @@ function processModule(props: IDefaultParseProps) {
   if (_module.isExecutable()) {
     if (!_module.isCached) {
       _module.read();
-
-      _module.fastAnalysis = fastAnalysis({
-        packageName: props.pkg.props.meta.name,
-        input: _module.contents,
-        parseUsingAst: _module.props.extension === '.js',
-      });
+      _module.fastAnalyse();
       // temp hack to set jsx analysis based on extension
       if (_module.props.extension === '.jsx') {
         _module.fastAnalysis.report.containsJSX = true;
       }
-      _module.fastAnalysis.replaceable = [];
-
       icp.sync('assemble_fast_analysis', { module: _module });
 
+      _module.fastAnalysis.replaceable = [];
       // adding extra dependencies
       if (props.extraDependencies) {
         for (const dep of props.extraDependencies) {

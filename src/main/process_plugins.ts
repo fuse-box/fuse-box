@@ -2,15 +2,16 @@ import { Context } from '../core/Context';
 import { Module } from '../core/Module';
 import { Package } from '../core/Package';
 
-async function processModule(module: Module) {
+export async function bundleResolveModule(module: Module) {
   const ctx = module.props.ctx;
   const ict = ctx.ict;
+
   ict.sync('bundle_resolve_module', { module: module });
 }
-async function processPackage(pkg: Package) {
+export async function processPackage(pkg: Package) {
   for (const module of pkg.modules) {
     if (!module.isCached) {
-      await processModule(module);
+      await bundleResolveModule(module);
     }
   }
 }

@@ -56,7 +56,7 @@ export class Cache {
       env.VERSION,
       env.isTest ? '' : fastHash(config.homeDir + config.entries.join('')),
     );
-    console.log('root folder', this.rootFolder);
+
     this.ctx.log.verbose('<dim>   Cache folder: $root </dim>', { root: this.rootFolder });
 
     this.packageCacheFolder = path.join(this.rootFolder, env.CACHE.PACKAGES);
@@ -321,6 +321,10 @@ export class Cache {
     // }
 
     this.set(this.getModuleCacheKey(module), obj);
+  }
+
+  public getModuleCacheData(module: Module) {
+    return this.get<IModuleCache>(this.getModuleCacheKey(module), this.projectCacheFolder);
   }
 
   public restoreModule(module: Module): Module {

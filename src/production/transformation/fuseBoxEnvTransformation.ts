@@ -29,6 +29,18 @@ interface LocalContext {
 export function fuseBoxEnvProductionTransformation(props: IProcessTransformProps) {
   const local = { ctx: props.ctx, fuseBoxPath: props.fuseBoxPath, file: props.file, insertions: [] };
   const Identifiers = props.file.getDescendantsOfKind(ts.SyntaxKind.PropertyAccessExpression);
+
+  // props.file.getImportStringLiterals().forEach(im => {
+  //   console.log(im.getText());
+  // });
+
+  // const imports = props.file.getDescendantsOfKind(ts.SyntaxKind.ImportKeyword);
+  // imports.forEach(im => {
+  //   const parent = im.getParent();
+  //   if (ts.isCallExpression(parent.compilerNode)) {
+  //     console.log(im.getParent().getText());
+  //   }
+  // });
   Identifiers.forEach(id => {
     if (!id.wasForgotten()) {
       onItem(id, local);

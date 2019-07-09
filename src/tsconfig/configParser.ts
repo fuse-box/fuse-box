@@ -44,9 +44,15 @@ export function initTypescriptConfig(
   let basePath: string = configScriptPath;
 
   let userOptions: IRawCompilerOptions = {};
-  if (typeof props.tsConfig === 'string') {
-    const data: IRawTypescriptConfig = ts.readConfigFile(props.tsConfig, ts.sys.readFile);
-    basePath = path.dirname(props.tsConfig);
+  let customTsConfigPath;
+  if (typeof props.tsConfig === 'string' && !fileExists(props.tsConfig)) {
+    props.ctx && props.ctx.log.error('tsconfig was not found at $path', { path: props.tsConfig });
+  } else customTsConfigPath = props.tsConfig;
+
+  if (typeof customTsConfigPath === 'string') {
+    props.ctx && props.ctx.log.progressFormat('tsconfig', customTsConfigPath);
+    const data: IRawTypescriptConfig = ts.readConfigFile(customTsConfigPath, ts.sys.readFile);
+    basePath = path.dirname(customTsConfigPath);
     userOptions = data.config.compilerOptions;
   } else if (typeof props.tsConfig === 'object') {
     userOptions = props.tsConfig;
@@ -55,13 +61,17 @@ export function initTypescriptConfig(
     const fileName = pathJoin(props.homeDir, props.entries[0]);
     const result = resolveTSConfig({ root: root, fileName: fileName });
     if (result.filePath) {
+      props.ctx && props.ctx.log.progressFormat('tsconfig', result.filePath);
       basePath = path.dirname(result.filePath);
       const data: IRawTypescriptConfig = ts.readConfigFile(result.filePath, ts.sys.readFile);
       userOptions = data.config.compilerOptions;
+    } else {
+      props.ctx && props.ctx.log.warn('tsconfig was not found. Make sure to create one');
     }
   }
 
   if (!basePath) {
+    props.ctx && props.ctx.log.warn('tsconfig was not found. Make sure to create one');
     basePath = path.dirname(require.main.filename);
   }
   userOptions.module = 'commonjs';

@@ -31,7 +31,7 @@ describe('Create dev bundles', () => {
   describe('Bundles and order', () => {
     it('should create dev, vendor', () => {
       const data = mockBundles('src1', 'index.ts', { target: 'browser' });
-      expect(Object.keys(data.bundles)).toHaveLength(3);
+      expect(Object.keys(data.bundles)).toHaveLength(4);
 
       expect(data.bundles.dev).toBeTruthy();
       expect(data.bundles.app).toBeTruthy();
@@ -43,7 +43,7 @@ describe('Create dev bundles', () => {
 
     it('should create dev, default', () => {
       const data = mockBundles('src1', 'foo.ts', { target: 'browser' });
-      expect(Object.keys(data.bundles)).toHaveLength(2);
+      expect(Object.keys(data.bundles)).toHaveLength(3);
       expect(data.bundles.dev).toBeTruthy();
       expect(data.bundles.app).toBeTruthy();
 
@@ -52,7 +52,7 @@ describe('Create dev bundles', () => {
 
     it('should contain dev package', () => {
       const data = mockBundles('src3', 'index.ts', { target: 'browser' });
-      expect(Object.keys(data.bundles)).toHaveLength(3);
+      expect(Object.keys(data.bundles)).toHaveLength(4);
       expect(data.bundles.dev).toBeTruthy();
       expect(data.bundles.app).toBeTruthy();
 
@@ -198,8 +198,9 @@ describe('Create dev bundles', () => {
       const data = mockBundles('src1', 'index.ts', { allowSyntheticDefaultImports: true });
       inflateBundles(data.ctx, data.bundles);
 
-      const devBundle = data.bundles.app;
-      const output = devBundle.generate();
+      const entryBundle = data.bundles.entry;
+
+      const output = entryBundle.generate();
       expect(output.contents).toContain(`FuseBox.main("default/index.js");`);
     });
   });

@@ -13,6 +13,10 @@ export class ProductionModule {
   public structure: ESModuleStructure;
   public dependants: Array<ESLink>;
 
+  // if this is an etry points
+  // it would containwe depednencies
+  public dynamicDependencies: Array<ProductionModule>;
+
   public transpiledSourceMap: string;
   public transpiledContent: string;
   public productionContent: Concat;
@@ -22,6 +26,7 @@ export class ProductionModule {
   constructor(public context: ProductionContext, public module: Module, public productionPackage: ProductionPackage) {
     this.ctx = module.props.ctx;
     this.dependants = [];
+    this.dynamicDependencies = [];
   }
 
   public getId() {
@@ -53,6 +58,10 @@ export class ProductionModule {
         }
       }
     }
+  }
+
+  public getShortPath() {
+    return this.module.getShortPath();
   }
 
   public getSourceText() {

@@ -5,6 +5,7 @@ import {
   FunctionDeclaration,
   ImportDeclaration,
   SourceFile,
+  CallExpression,
 } from 'ts-morph';
 import * as ts from 'typescript';
 import {
@@ -13,6 +14,7 @@ import {
   createExportObjectDeclaration,
   createImportDeclaration,
   ESLink,
+  createDynamicImportDeclaration,
 } from './ESLink';
 import { ProductionModule } from '../ProductionModule';
 
@@ -58,6 +60,15 @@ export class ESModuleStructure {
 export function createESModuleStructure(productionModule: ProductionModule, file: SourceFile) {
   const structure = new ESModuleStructure(productionModule);
 
+  const dynamicImports = file.getDescendantsOfKind(ts.SyntaxKind.ImportKeyword);
+
+  dynamicImports.forEach(dynamicImport => {
+    const parent = dynamicImport.getParent();
+    if (ts.isCallExpression(parent.compilerNode)) {
+      const _link = createDynamicImportDeclaration(productionModule, parent as CallExpression);
+      structure.links.push(_link);
+    }
+  });
   file.getStatements().forEach(statement => {
     const kind = statement.getKind();
     let link: ESLink;
