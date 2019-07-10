@@ -27,9 +27,14 @@ export interface IOpenProps {
   target?: string;
   app?: string | Array<string>;
 }
+export interface IProxyCollection {
+  path: string;
+  options: any;
+}
 export interface IDevServerProps {
   enabled?: boolean;
   open?: boolean | IOpenProps;
+  proxy?: Array<IProxyCollection>;
   httpServer?: IHTTPServerProps | boolean;
   hmrServer?: IHMRServerProps | boolean;
 }

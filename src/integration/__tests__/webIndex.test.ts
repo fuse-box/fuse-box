@@ -84,7 +84,7 @@ describe('WebIndex integration test', () => {
 
       const filesInDist = test.helper.listDistFiles();
 
-      expect(filesInDist).toHaveLength(5);
+      expect(filesInDist).toHaveLength(7);
       test.mock.flush();
     });
 

@@ -2,25 +2,47 @@ import * as express from 'express';
 import { BundleType } from '../bundle/Bundle';
 import { Context } from '../core/Context';
 import { ImportType } from '../resolver/resolver';
-import { createDevServerConfig, IHMRServerProps, IHTTPServerProps, IOpenProps } from './devServerProps';
+import {
+  createDevServerConfig,
+  IHMRServerProps,
+  IHTTPServerProps,
+  IOpenProps,
+  IProxyCollection,
+} from './devServerProps';
 import { createHMRServer, HMRServerMethods } from './hmrServer';
 import * as open from 'open';
+
+import * as proxyMiddleware from 'http-proxy-middleware';
+
 export interface IDevServerActions {
   clientSend: (name: string, payload) => void;
   onClientMessage: (fn: (name: string, payload) => void) => void;
 }
 
-export function createExpressApp(ctx: Context, props: IHTTPServerProps, openProps: IOpenProps) {
+interface ICreateReactAppExtraProps {
+  openProps?: IOpenProps;
+  proxyProps?: Array<IProxyCollection>;
+}
+
+export function createExpressApp(ctx: Context, props: IHTTPServerProps, extra?: ICreateReactAppExtraProps) {
   const app = express();
+
+  if (extra && extra.proxyProps) {
+    for (const item of extra.proxyProps) {
+      app.use(item.path, proxyMiddleware(item.options));
+    }
+  }
+
   app.use('/', express.static(props.root));
+
   app.use('*', (req, res) => {
     res.sendFile(props.fallback);
   });
 
   return app.listen(props.port, () => {
-    if (openProps) {
-      openProps.target = openProps.target || `http://localhost:${props.port}`;
-      open(openProps.target, openProps);
+    if (extra && extra.openProps) {
+      extra.openProps.target = extra.openProps.target || `http://localhost:${props.port}`;
+      open(extra.openProps.target, extra.openProps);
     }
     ctx.log.print(`<dim>Development server is running at <bold>http://localhost:$port</bold></dim>`, {
       port: props.port,
@@ -50,6 +72,11 @@ export function createDevServer(ctx: Context): IDevServerActions {
     if (typeof props.open === 'object') {
       openProps = props.open;
     }
+  }
+
+  let proxyProps: Array<IProxyCollection>;
+  if (props.proxy) {
+    proxyProps = props.proxy;
   }
 
   // injecting some settings into the dev bundle
@@ -82,7 +109,7 @@ export function createDevServer(ctx: Context): IDevServerActions {
 
   ict.on('complete', props => {
     if (httpServerProps.enabled) {
-      const internalServer = createExpressApp(ctx, httpServerProps, openProps);
+      const internalServer = createExpressApp(ctx, httpServerProps, { openProps, proxyProps });
 
       // if the ports are the same, we mount HMR on the same server
       if (hmrServerProps.enabled && hmrServerProps.port === httpServerProps.port && !isProduction) {

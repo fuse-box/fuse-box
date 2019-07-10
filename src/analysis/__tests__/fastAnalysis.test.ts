@@ -474,6 +474,14 @@ describe('Fast analysis test', () => {
       expect(result.report.browserEssentials).toEqual([{ moduleName: 'process', variable: 'process' }]);
     });
 
+    it('should match process 2', () => {
+      const result = fastAnalysis({
+        input: '{process.env.NODE_ENV}',
+      });
+
+      expect(result.report.browserEssentials).toEqual([{ moduleName: 'process', variable: 'process' }]);
+    });
+
     it('should match process in ()', () => {
       const result = fastAnalysis({
         input: `

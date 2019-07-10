@@ -99,6 +99,6 @@ describe('Bundle test', () => {
     });
     const generated = data.bundle.generate();
     await generated.write();
-    expect(fileMock.getFileAmount()).toBe(1);
+    expect(fileMock.getFileAmount()).toBe(2);
   });
 });

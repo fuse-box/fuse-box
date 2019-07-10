@@ -18,11 +18,11 @@ describe('utils', () => {
   describe('beautifyBundleName', () => {
     it('should beautifyBundleName 1', () => {
       const name = beautifyBundleName('foo/bar/oi.js');
-      expect(name).toEqual('bar-oi-c9ceebf');
+      expect(name).toEqual('bar-oi');
     });
     it('should beautifyBundleName 2', () => {
       const name = beautifyBundleName('oi.js');
-      expect(name).toEqual('oi-dda');
+      expect(name).toEqual('oi');
     });
   });
   describe('parseVersion', () => {

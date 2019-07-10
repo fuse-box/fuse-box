@@ -28,7 +28,7 @@ const TOKENS = {
   singeLineMultiComment: /\/\*.*?\*\//,
   commentStart: /(\/\*)/,
   commentEnd: /(\*\/)/,
-  systemVariables: /(?:^|[\s=:\[,\(])((var|const|let)\s*)?(stream|process|buffer|Buffer|http|https|__dirname|__filename)(?:$|[\).\s:\],])/,
+  systemVariables: /(?:^|\{|[\s=:\[,\(])((var|const|let)\s*)?(stream|process|buffer|Buffer|http|https|__dirname|__filename)(?:$|[\).\s:\],])/,
   exportsKeyword: /(export)\s/,
 
   str: /".*?"|'.*?'/,
