@@ -91,6 +91,20 @@ export async function finalStage(props: IProductionFlow) {
   const fistBundle = sorted[0];
   const lastBundle = sorted[sorted.length - 1];
 
+  if (productionContext.dynamicLinks.length) {
+    const splitConfig: any = {
+      entries: {},
+    };
+    // dynamic links contain ESLink that represent a dynamic import (import())
+    // each link has dynamicImportTarget which is in fact an entry to the split bundle
+    productionContext.dynamicLinks.forEach(l => {
+      if (l.dynamicImportTarget && l.dynamicImportTarget.splitBundle) {
+        splitConfig.entries[l.dynamicImportTarget.getId()] = l.dynamicImportTarget.splitBundle.getFileName();
+      }
+    });
+    //console.log(splitConfig);
+  }
+
   // render production api ***************
   const api = renderProductionAPI({
     browser: ctx.config.target === 'browser',

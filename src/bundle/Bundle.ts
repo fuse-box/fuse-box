@@ -17,6 +17,7 @@ export enum BundleType {
   PROJECT_JS = 4,
   PROJECT_ENTRY = 5,
   SERVER_ENTRY = 6,
+  SPLIT_JS = 7,
 }
 
 /**
@@ -74,24 +75,14 @@ export function createBundleSet(ctx: Context) {
     },
   };
 }
-/**
- * Checks if this bundle type requires sourcemaps to be written
- * @param type
- * @param config
- */
-function shouldAddSourcemaps(type: BundleType, config: PrivateConfig): boolean {
-  const shouldWrite =
-    (config.sourceMap.css && type == BundleType.CSS) ||
-    (config.sourceMap.project && type === BundleType.PROJECT_JS) ||
-    (config.sourceMap.vendor && BundleType.VENDOR_JS);
-  return !!shouldWrite;
-}
 
 export class Bundle {
   public packages: Array<Package>;
   // the only bundle in the project
   public isolated?: boolean;
   public contents: Concat;
+
+  public noHash?: boolean;
   public name: string;
   private useCustomGenerator: boolean;
 
@@ -134,11 +125,15 @@ export class Bundle {
   }
 
   public isJavascriptType() {
-    return this.props.type === BundleType.PROJECT_JS || this.props.type === BundleType.VENDOR_JS;
+    return (
+      this.props.type === BundleType.PROJECT_JS ||
+      this.props.type === BundleType.VENDOR_JS ||
+      this.props.type === BundleType.SPLIT_JS
+    );
   }
 
   public needsSourceMaps() {
-    if (this.props.type === BundleType.PROJECT_JS) {
+    if (this.props.type === BundleType.PROJECT_JS || this.props.type === BundleType.SPLIT_JS) {
       return this.props.ctx.config.sourceMap.project;
     }
     if (this.props.type === BundleType.VENDOR_JS) {
@@ -157,7 +152,7 @@ export class Bundle {
     return `${this.name}.js.map`;
   }
 
-  private generateFileName() {
+  public getFileName() {
     if (this.props.type === BundleType.CSS) {
       return `${this.name}.css`;
     }
@@ -186,7 +181,7 @@ export class Bundle {
       this.contents.add(null, this.props.type === BundleType.CSS ? sourceMapsCSSURL(file) : sourceMapsURL(file));
     }
 
-    const bundleData = ctx.writer.generate(this.generateFileName(), this.contents.content.toString());
+    const bundleData = ctx.writer.generate(this.getFileName(), this.contents.content.toString(), this.noHash);
     if (writeBundles) await bundleData.write();
     ict.sync('after_bundle_write', { bundle: this });
     return { bundle: this, stat: bundleData };
@@ -196,10 +191,7 @@ export class Bundle {
    * Generates a function that writes contents with sourcemaps
    */
   public generate() {
-    const ctx = this.props.ctx;
-    const config = ctx.config;
-
-    const addSourceMaps = shouldAddSourcemaps(this.props.type, config);
+    const addSourceMaps = this.needsSourceMaps(); //shouldAddSourcemaps(this.props.type, config);
     const content = this.contents.content.toString();
     return {
       write: (): Promise<IBundleWriteResponse> => this.write(addSourceMaps),

@@ -11,9 +11,20 @@ import {
   createStringConst,
   createVarString,
   parseVersion,
+  beautifyBundleName,
 } from '../utils';
 
 describe('utils', () => {
+  describe('beautifyBundleName', () => {
+    it('should beautifyBundleName 1', () => {
+      const name = beautifyBundleName('foo/bar/oi.js');
+      expect(name).toEqual('bar-oi-c9ceebf');
+    });
+    it('should beautifyBundleName 2', () => {
+      const name = beautifyBundleName('oi.js');
+      expect(name).toEqual('oi-dda');
+    });
+  });
   describe('parseVersion', () => {
     it('should parse with v', () => {
       const res = parseVersion('v11.13.0');

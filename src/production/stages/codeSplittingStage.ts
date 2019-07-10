@@ -1,12 +1,12 @@
+import { BundleType, createBundle } from '../../bundle/Bundle';
+import { beautifyBundleName, fastHash } from '../../utils/utils';
 import { IProductionFlow } from '../main';
 import { ProductionModule } from '../ProductionModule';
-import { truncate } from 'fs';
 import { ESLink } from '../structure/ESLink';
 
 interface ICodeSplittingStageProps {
   flow: IProductionFlow;
 }
-
 
 function trace2entry(props: IProductionFlow, target: ProductionModule, rootLink: ESLink) {
   let traced = false;
@@ -19,39 +19,20 @@ function trace2entry(props: IProductionFlow, target: ProductionModule, rootLink:
       if (!traced) return;
     }
   }
-
-  if (traced) {
-    props.ctx.log.progressFormat('Code splitting', 'entry of <green>$entry</green> added <magenta>$path</magenta>', {
-      entry: root.module.getShortPath(),
-      path: target.module.getShortPath(),
-    });
-    root.dynamicDependencies.push(target);
-    //   const sourceLinks = target.structure.findFromLinks();
-    //   sourceLinks.forEach(dep => {
-    //     trace2entry(props, dep.productionModule, rootLink);
-    //   });
-    // }
-  }
-
+  if (traced) root.dynamicDependencies.push(target);
   return traced;
 }
 
 function traceDependencies(props: IProductionFlow, productionModule: ProductionModule, rootLink: ESLink) {
-  console.log('trace deps of ', productionModule.module.getShortPath());
   productionModule.structure.findFromLinks().forEach(fromLink => {
-    const dependency = fromLink.fromSourceTarget;
-    trace2entry(props, dependency, rootLink);
+    trace2entry(props, fromLink.fromSourceTarget, rootLink);
   });
-  console.log('**********');
 }
 function processEntry(props: IProductionFlow, rootLink: ESLink) {
-  console.log('>>>>', rootLink.productionModule.module.getShortPath());
-
   const entry = rootLink.dynamicImportTarget;
 
+  trace2entry(props, entry, rootLink);
   traceDependencies(props, entry, rootLink);
-
-  //trace2entry(props, productionModule, rootLink);
 }
 export function codeSplittingStage(props: IProductionFlow) {
   const { productionContext } = props;
@@ -71,10 +52,30 @@ export function codeSplittingStage(props: IProductionFlow) {
     const root = link.dynamicImportTarget;
     processEntry(props, link);
 
-    root.dynamicDependencies.forEach(dep => {
-      console.log('>>', dep.module.getShortPath());
-    });
-    console.log('------------');
+    if (root.dynamicDependencies.length > 0) {
+      const bundle = createBundle({
+        ctx: props.ctx,
+        name: fastHash(root.module.props.absPath) + '-' + beautifyBundleName(root.module.props.absPath),
+        webIndexed: false,
+        type: BundleType.SPLIT_JS,
+      });
+      bundle.noHash = true;
+      props.ctx.log.progressFormat(
+        'Code splitting',
+        'Created bundle <magenta>$name</magenta> with entry <green>$entry</green>',
+        {
+          name: bundle.name,
+          entry: root.getShortPath(),
+        },
+      );
+      for (const pm of root.dynamicDependencies) {
+        props.ctx.log.progressFormat('Code splitting', '<magenta>$name</magenta> <- <green>$path</green>', {
+          name: bundle.name,
+          path: pm.getShortPath(),
+        });
+        pm.splitBundle = bundle;
+      }
+    }
   });
 
   log.progressEnd('<green><bold>$checkmark Code splitting stage completed</bold></green>');

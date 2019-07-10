@@ -6,12 +6,16 @@ import { ProductionContext } from './ProductionContext';
 import { ProductionPackage } from './ProductionPackage';
 import { ESLink } from './structure/ESLink';
 import { ESModuleStructure } from './structure/ESModuleStructure';
+import { Bundle } from '../bundle/Bundle';
 
 export class ProductionModule {
   public file: SourceFile;
   public ctx: Context;
   public structure: ESModuleStructure;
   public dependants: Array<ESLink>;
+
+  // can belong to a split bundle
+  public splitBundle: Bundle;
 
   // if this is an etry points
   // it would containwe depednencies
