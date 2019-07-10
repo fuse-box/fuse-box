@@ -49,6 +49,7 @@
     "mustache": "^2.3.0",
     "npm": "^6.10.0",
     "offset-sourcemap-lines": "^1.0.1",
+    "open": "^6.4.0",
     "postcss": "^6.0.1",
     "pretty-time": "^1.1.0",
     "prettysize": "0.0.3",

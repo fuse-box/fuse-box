@@ -2,15 +2,15 @@ import * as express from 'express';
 import { BundleType } from '../bundle/Bundle';
 import { Context } from '../core/Context';
 import { ImportType } from '../resolver/resolver';
-import { createDevServerConfig, IHMRServerProps, IHTTPServerProps } from './devServerProps';
+import { createDevServerConfig, IHMRServerProps, IHTTPServerProps, IOpenProps } from './devServerProps';
 import { createHMRServer, HMRServerMethods } from './hmrServer';
-
+import * as open from 'open';
 export interface IDevServerActions {
   clientSend: (name: string, payload) => void;
   onClientMessage: (fn: (name: string, payload) => void) => void;
 }
 
-export function createExpressApp(ctx: Context, props: IHTTPServerProps) {
+export function createExpressApp(ctx: Context, props: IHTTPServerProps, openProps: IOpenProps) {
   const app = express();
   app.use('/', express.static(props.root));
   app.use('*', (req, res) => {
@@ -18,6 +18,10 @@ export function createExpressApp(ctx: Context, props: IHTTPServerProps) {
   });
 
   return app.listen(props.port, () => {
+    if (openProps) {
+      openProps.target = openProps.target || `http://localhost:${props.port}`;
+      open(openProps.target, openProps);
+    }
     ctx.log.print(`<dim>Development server is running at <bold>http://localhost:$port</bold></dim>`, {
       port: props.port,
     });
@@ -37,6 +41,16 @@ export function createDevServer(ctx: Context): IDevServerActions {
   const hmrServerProps: IHMRServerProps = props.hmrServer as IHMRServerProps;
 
   const isProduction = !!ctx.config.production;
+
+  let openProps: IOpenProps;
+  if (props.open) {
+    if (typeof props.open === 'boolean') {
+      openProps = {};
+    }
+    if (typeof props.open === 'object') {
+      openProps = props.open;
+    }
+  }
 
   // injecting some settings into the dev bundle
   if (hmrServerProps.enabled) {
@@ -68,7 +82,7 @@ export function createDevServer(ctx: Context): IDevServerActions {
 
   ict.on('complete', props => {
     if (httpServerProps.enabled) {
-      const internalServer = createExpressApp(ctx, httpServerProps);
+      const internalServer = createExpressApp(ctx, httpServerProps, openProps);
 
       // if the ports are the same, we mount HMR on the same server
       if (hmrServerProps.enabled && hmrServerProps.port === httpServerProps.port && !isProduction) {
