@@ -28,6 +28,19 @@ export function removeFolder(userPath) {
   fsExtra.removeSync(userPath);
 }
 
+export function beautifyBundleName(absPath: string) {
+  absPath = absPath.replace(/(\.\w+)$/i, '');
+  const items = absPath.split(/(\/|\\)/);
+  const l = items.length;
+  const [a, b] = [items[l - 1], items[l - 3]];
+
+  let suggested = b ? `${b}-${a}` : a;
+  if (suggested.length > 20) {
+    suggested = suggested.slice(suggested.length, 20);
+  }
+  return suggested;
+}
+
 export function offsetLines(obj: any, amount: number) {
   return offsetLinesModule(obj, amount);
 }

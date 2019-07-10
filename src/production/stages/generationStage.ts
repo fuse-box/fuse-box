@@ -36,8 +36,15 @@ function getCorrespondingBundle(props: IBundleGenerationStageProps, pm: Producti
       bundles.push(bundle);
     }
     return bundle;
-  }
-  if (pm.module.pkg.isDefaultPackage) {
+  } else if (pm.splitBundle) {
+    // a module can belond to a split bundle
+    // it is defined ealier at the code splitting stage
+    // in this case we should check if the bundle was added to the list
+    bundle = pm.splitBundle;
+    if (!bundles.find(b => b.name === pm.splitBundle.name)) {
+      bundles.push(bundle);
+    }
+  } else if (pm.module.pkg.isDefaultPackage) {
     bundle = bundles.find(bundle => bundle.props.type === BundleType.PROJECT_JS);
     if (!bundle) {
       bundle = createBundle({

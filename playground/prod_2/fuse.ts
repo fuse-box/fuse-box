@@ -1,5 +1,8 @@
-import { pluginSass } from '../../src';
+import * as path from 'path';
+import { pluginSass, sparky } from '../../src';
 import { fusebox } from '../../src/core/fusebox';
+
+const { rm } = sparky(class {});
 const fuse = fusebox({
   target: 'browser',
   entry: 'src/index.ts',
@@ -38,6 +41,8 @@ const fuse = fusebox({
 });
 
 const isProd = process.argv.indexOf('--prod') > -1;
+
+rm(path.join(__dirname, 'dist'));
 if (isProd) {
   fuse.runProd({
     target: 'ES5',

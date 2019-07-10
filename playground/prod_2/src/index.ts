@@ -1,6 +1,6 @@
 //import './main.scss';
 import './hello.css';
-import './oops/Another';
+//import './oops/Another';
 //import './oops/Oops';
 // import * as some from './text/some.scss';
 // console.log('some', some);

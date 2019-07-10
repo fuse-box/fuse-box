@@ -22,14 +22,18 @@ export interface IWriterActions {
   outputDirectory: string;
   template: string;
   write: (target: string, content: string) => Promise<{ target: string }>;
-  generate: (name: string, contents) => IWriterResponse;
+  generate: (name: string, contents, noHash?: boolean) => IWriterResponse;
 }
 
+function stripHash(template): string {
+  return template.replace(/\$([-_.]+)?hash([-_.]+)?/, '');
+}
 /**
  * Writes data to the file system
  * Fully detached from the context
  * @param props
  */
+
 export function createWriter(props: IWriterProps): IWriterActions {
   let outputString = props.output ? props.output : props.isProduction ? 'dist/$hash-$name' : 'dist/$name';
 
@@ -47,7 +51,7 @@ export function createWriter(props: IWriterProps): IWriterActions {
   let template = path.basename(outputString);
   if (!props.isProduction) {
     // we don't allow hashes for development for known reasons
-    template = template.replace(/\$([-_.]+)?hash([-_.]+)?/, '');
+    template = stripHash(template);
   }
   return {
     outputDirectory,
@@ -65,7 +69,7 @@ export function createWriter(props: IWriterProps): IWriterActions {
     // generate first, then write
     // this is done to simplify work when we need to know all the paths before the file is written
     // in case of the sourcemaps for example
-    generate: (name: string, contents): IWriterResponse => {
+    generate: (name: string, contents, skipHash?): IWriterResponse => {
       const targetFileName = path.basename(name);
       const [$name, $ext] = targetFileName.split(/(\.[a-z-0-9]+)$/);
       const targetBaseDir = path.dirname(name);
@@ -73,8 +77,10 @@ export function createWriter(props: IWriterProps): IWriterActions {
         hash: props.isProduction ? fastHash(contents) : false,
       };
       let localPath = template.replace('$name', $name);
-
-      if (typeof opts.hash === 'string') {
+      if (skipHash) {
+        localPath = stripHash(localPath);
+        console.log('strip hash', template);
+      } else if (typeof opts.hash === 'string') {
         localPath = localPath.replace('$hash', opts.hash);
       }
       localPath = path.join(targetBaseDir, `${localPath}${$ext}`);
