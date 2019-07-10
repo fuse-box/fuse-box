@@ -343,11 +343,11 @@ export class FuseBox {
 			server.start(opts);
 			if (opts.open) {
 				try {
-					const opn = require("opn");
-					opn(typeof opts.open === "string" ? opts.open : `http://localhost:${opts.port}`);
+					const open = require("open");
+					open(typeof opts.open === "string" ? opts.open : `http://localhost:${opts.port}`);
 				} catch (e) {
 					this.context.log.echoRed(
-						'If you want to open the browser, please install "opn" package. "npm install opn --save-dev"',
+						'If you want to open the browser, please install "open" package. "npm install open --save-dev"',
 					);
 				}
 			}
