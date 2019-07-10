@@ -18,7 +18,7 @@ class Context {
 
       watch: true,
       hmr: true,
-      devServer: this.runServer,
+      devServer: this.runServer && { open: true },
     });
   }
 }

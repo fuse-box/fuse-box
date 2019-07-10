@@ -21,8 +21,15 @@ export interface IHTTPServerProps {
   proxy?: IDevServerProxy;
 }
 
+export interface IOpenProps {
+  background?: boolean; // mac os only
+  wait?: boolean;
+  target?: string;
+  app?: string | Array<string>;
+}
 export interface IDevServerProps {
   enabled?: boolean;
+  open?: boolean | IOpenProps;
   httpServer?: IHTTPServerProps | boolean;
   hmrServer?: IHMRServerProps | boolean;
 }
