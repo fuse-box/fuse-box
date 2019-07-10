@@ -18,7 +18,21 @@ class Context {
 
       watch: true,
       hmr: true,
-      devServer: this.runServer && { open: true },
+      devServer: this.runServer && {
+        open: true,
+        proxy: [
+          {
+            path: '/api',
+            options: {
+              target: 'https://jsonplaceholder.typicode.com',
+              changeOrigin: true,
+              pathRewrite: {
+                '^/api': '/',
+              },
+            },
+          },
+        ],
+      },
     });
   }
 }
