@@ -1,0 +1,2092 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>fuse-box</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">fuse-box</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> fuse-box</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<p align="center">
+					<img
+					height="151"
+					width="468"
+					src="https://raw.githubusercontent.com/fuse-box/fuse-box/master/logo.png">
+				</p>
+				<h2 align="center">A bundler that does it right</h2>
+				<p align="center">
+					<a href="https://travis-ci.org/fuse-box/fuse-box">
+						<img
+						alt="Travis CI Build Status"
+						src="https://img.shields.io/travis/fuse-box/fuse-box/master.svg?label=Travis+CI">
+					</a>
+					<a href="https://codecov.io/gh/fuse-box/fuse-box">
+						<img src="https://codecov.io/gh/fuse-box/fuse-box/branch/v4/graph/badge.svg" />
+					</a>
+					<a href="https://www.npmjs.com/package/fuse-box">
+						<img
+						alt="npm version"
+						src="https://img.shields.io/npm/v/fuse-box.svg">
+					</a>
+					<a href="https://www.npmjs.com/package/fuse-box">
+						<img
+						alt="monthly downloads from npm"
+						src="https://img.shields.io/npm/dm/fuse-box.svg">
+					</a>
+					<a href="https://github.com/prettier/prettier">
+						<img
+						alt="code style: prettier"
+						src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg">
+					</a>
+					</br>
+					<a href="#backers">
+						<img
+						alt="Backers on Open Collective"
+						src="https://opencollective.com/fuse-box/backers/badge.svg">
+					</a>
+					<a href="#sponsors">
+						<img
+						alt="Sponsors on Open Collective"
+						src="https://opencollective.com/fuse-box/sponsors/badge.svg">
+					</a>
+					<a href="https://gitter.im/fusebox-bundler/Lobby">
+						<img
+						alt="Chat on Gitter"
+						src="https://img.shields.io/gitter/room/fusebox-bundler/Lobby.svg">
+					</a>
+					<a href="https://twitter.com/FuseBoxJS">
+						<img
+						alt="Follow FuseBox on Twitter"
+						src="https://img.shields.io/twitter/follow/FuseBoxJS.svg?label=follow+FuseBox">
+					</a>
+				</p>
+				<hr>
+				<p>The next version of <strong>FuseBox (4.0)</strong> will feature major improvements to speed and HMR. See the
+				<a href="./FuseBox4.0_changelog.md">changelog</a> here.</p>
+				<p>--</p>
+				<h1 id="introduction">Introduction</h1>
+				<p>FuseBox is a performant bundler/module loader, where you measure you build time in millseconds. It combines the power of
+				<a href="https://webpack.js.org">Webpack</a>, <a href="https://jspm.io">JSPM</a> and <a href="https://github.com/systemjs/systemjs">SystemJS</a>.</p>
+				<h3 id="blazing-fast">Blazing fast</h3>
+				<p>FuseBox is extremely convenient for developers. Incremental build of an entire application takes 50 to 100 milliseconds.
+				It requires no configuration to bundle projects such as <code>babel-core</code>.</p>
+				<h3 id="typescript-first">TypeScript First</h3>
+				<p>FuseBox loves <a href="https://www.typescriptlang.org">TypeScript</a>, and does not require any additional configuration to support
+					it. It will compile and bundle your code within a fraction of a second, yet it offers a comprehensive loader API. It is
+				packed with features and unfolds limitless possibilities of extending.</p>
+				<h3 id="task-runner">Task Runner</h3>
+				<p>FuseBox features a powerfull <a href="https://fuse-box.org/docs/task-runner/getting-started-with-sparky">task runner</a>. It fits
+				perfectly in the modern API of FuseBox while resembling well established concepts behind <a href="https://gulpjs.org">Gulp</a>.</p>
+				<h3 id="plugins">Plugins</h3>
+				<p>We maintain all of the most used plugins. You can just pick what you need and plug it in. If there&#39;s anything missing,
+				<a href="./CONTRIBUTING.md#feature-requests">let us know</a>!</p>
+				<h3 id="highlights">Highlights</h3>
+				<ul>
+					<li>No headache, minimal configuration</li>
+					<li>First class <a href="https://fuse-box.org/docs/getting-started/typescript-project">TypeScript</a> support</li>
+					<li><a href="https://fuse-box.org/docs/production-builds/quantum#tree-shaking">Tree shaking</a></li>
+					<li>Code Splitting</li>
+					<li><a href="https://fuse-box.org/docs/development/dynamic-imports">Dynamic imports</a></li>
+					<li><a href="https://fuse-box.org/docs/getting-started/add-css#production-build">CSS Code splitting</a></li>
+					<li>Blazing fast bundle time</li>
+					<li><a href="https://fuse-box.org/docs/development/development-server">DevServer and HMR</a> integrate with existing HTTP apps in 1
+					second!</li>
+					<li>Works everywhere for easy universal applications</li>
+				</ul>
+				<p>There is so much more... FuseBox pushes bundling to a whole new level!</p>
+				<h1 id="getting-started">Getting Started</h1>
+				<h3 id="installation">Installation</h3>
+				<p>FuseBox has many baked in plugins to help you get started. All you need to do is to install <code>fuse-box</code> using npm or
+				yarn.</p>
+				<pre><code class="language-sh">npm install fuse-box --save-dev
+yarn add fuse-box --dev</code></pre>
+				<h3 id="usage">Usage</h3>
+				<p>To build a TypeScript application, create a file <code>fuse.js</code> in the root directory of your project:</p>
+				<pre><code class="language-js"><span class="hljs-keyword">const</span> { FuseBox } = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fuse-box'</span>);
+
+<span class="hljs-keyword">const</span> fuse = FuseBox.init({
+  <span class="hljs-attr">homeDir</span>: <span class="hljs-string">'src'</span>,
+  <span class="hljs-attr">output</span>: <span class="hljs-string">'dist/$name.js'</span>,
+});
+
+fuse.bundle(<span class="hljs-string">'app'</span>).instructions(<span class="hljs-string">`&gt; index.ts`</span>);
+
+fuse.run();</code></pre>
+				<p>And run it!</p>
+				<pre><code class="language-sh">node fuse</code></pre>
+				<h3 id="documentation">Documentation</h3>
+				<p>You can find a more detailed getting started guide on our <a href="https://fuse-box.org/docs/getting-started/setup">website</a>. It
+				will walk you through the basics and give you a solid foundation to dig deeper.</p>
+				<h3 id="examples-and-seeds">Examples and seeds</h3>
+				<p>You can find many examples and application scaffolds on our <a href="https://github.com/fuse-box/fuse-box-examples">here</a>. Don&#39;t
+					hesitate to reach out to us on <a href="https://gitter.im/fusebox-bundler/Lobby">Gitter</a>. Please consult our
+					<a href="https://fuse-box.org/docs/contributing">Contributing guidelines</a> before creating an issue, we&#39;re trying to keep it nice
+				and tidy.</p>
+				<h4 id="react-example">React Example</h4>
+				<p><a href="https://github.com/fuse-box/fuse-react-demo">React project</a> using React with Code Splitting + CSS Splitting</p>
+				<h1 id="open-collective">Open Collective</h1>
+				<p>FuseBox contributors do this open source work in their free time. If you feel that using FuseBox increases your
+				productivity and you&#39;d like us to invest more time in it, please back us up.</p>
+				<h3 id="backers">Backers</h3>
+				<p>Support us with a monthly donation and help us continue our activities.
+				<a href="https://opencollective.com/fuse-box#backer">Become a backer</a>.</p>
+				<p><a href="https://opencollective.com/fuse-box/backer/0/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/0/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/1/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/1/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/2/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/2/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/3/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/3/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/4/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/4/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/5/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/5/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/6/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/6/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/7/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/7/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/8/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/8/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/9/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/9/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/10/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/10/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/11/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/11/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/12/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/12/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/13/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/13/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/14/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/14/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/15/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/15/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/16/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/16/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/17/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/17/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/18/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/18/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/19/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/19/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/20/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/20/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/21/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/21/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/22/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/22/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/23/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/23/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/24/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/24/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/25/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/25/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/26/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/26/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/27/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/27/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/backer/28/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/28/avatar.svg"></a>
+				<a href="https://opencollective.com/fuse-box/backer/29/website" target="_blank"><img src="https://opencollective.com/fuse-box/backer/29/avatar.svg"></a></p>
+				<h3 id="sponsors">Sponsors</h3>
+				<p>Become a sponsor and get your logo on our README on Github with a link to your site.
+				<a href="https://opencollective.com/fuse-box#sponsor">Become a sponsor</a></p>
+				<p><a href="https://opencollective.com/fuse-box/sponsor/0/website" target="_blank"><img src="https://opencollective.com/fuse-box/sponsor/0/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/sponsor/1/website" target="_blank"><img src="https://opencollective.com/fuse-box/sponsor/1/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/sponsor/2/website" target="_blank"><img src="https://opencollective.com/fuse-box/sponsor/2/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/sponsor/3/website" target="_blank"><img src="https://opencollective.com/fuse-box/sponsor/3/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/sponsor/4/website" target="_blank"><img src="https://opencollective.com/fuse-box/sponsor/4/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/sponsor/5/website" target="_blank"><img src="https://opencollective.com/fuse-box/sponsor/5/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/sponsor/6/website" target="_blank"><img src="https://opencollective.com/fuse-box/sponsor/6/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/sponsor/7/website" target="_blank"><img src="https://opencollective.com/fuse-box/sponsor/7/avatar.svg"></a>
+					<a href="https://opencollective.com/fuse-box/sponsor/8/website" target="_blank"><img src="https://opencollective.com/fuse-box/sponsor/8/avatar.svg"></a>
+				<a href="https://opencollective.com/fuse-box/sponsor/9/website" target="_blank"><img src="https://opencollective.com/fuse-box/sponsor/9/avatar.svg"></a></p>
+				<h1 id="contributing">Contributing</h1>
+				<p>Please consult <a href="https://fuse-box.org/docs/contributing">Contributing Guildelines</a> for details. If you already know it,
+				here&#39;s a fastlane to our communication channels:</p>
+				<ul>
+					<li><a href="http://fuse-box.org/">Official Documentation</a></li>
+					<li><a href="https://github.com/fuse-box/fuse-box/issues/new">Submit an Issue</a></li>
+					<li><a href="https://github.com/fuse-box/fuse-box/tree/master/docs">Make Documentation Better</a></li>
+					<li><a href="https://gitter.im/fusebox-bundler/Lobby">Join Gitter Channel</a></li>
+				</ul>
+				<p>Special thanks to <a href="https://github.com/devmondo">devmondo</a> for incredible ideas, giving inspiration and relentless
+				testing/contributing to the project.</p>
+				<p>If you like the project, don&#39;t forget to star it!</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-module tsd-is-not-exported">
+						<a href="modules/__global.html">__global</a>
+					</li>
+					<li class=" tsd-kind-module tsd-parent-kind-module tsd-is-not-exported">
+						<a href="modules/__global.jest.html">__global.jest</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-enum">
+						<a href="enums/assemblestate.html" class="tsd-kind-icon">Assemble<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/bundletype.html" class="tsd-kind-icon">Bundle<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/charflags.html" class="tsd-kind-icon">Char<wbr>Flags</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/chars.html" class="tsd-kind-icon">Chars</a>
+					</li>
+					<li class=" tsd-kind-enum tsd-is-not-exported">
+						<a href="enums/commenttype.html" class="tsd-kind-icon">Comment<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/eslinktype.html" class="tsd-kind-icon">ESLink<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/exportreferencetype.html" class="tsd-kind-icon">Export<wbr>Reference<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/importtype.html" class="tsd-kind-icon">Import<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/watcheraction.html" class="tsd-kind-icon">Watcher<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/bar.html" class="tsd-kind-icon">Bar</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/bundle.html" class="tsd-kind-icon">Bundle</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/cache.html" class="tsd-kind-icon">Cache</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/context.html" class="tsd-kind-icon">Context</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/contexttaskmanager.html" class="tsd-kind-icon">Context<wbr>Task<wbr>Manager</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/documentederror.html" class="tsd-kind-icon">Documented<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/eslink.html" class="tsd-kind-icon">ESLink</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/esmodulestructure.html" class="tsd-kind-icon">ESModule<wbr>Structure</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/exportreference.html" class="tsd-kind-icon">Export<wbr>Reference</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/foo.html" class="tsd-kind-icon">Foo</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/foobar.html" class="tsd-kind-icon">Foo<wbr>Bar</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/hello.html" class="tsd-kind-icon">Hello</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/importvariable.html" class="tsd-kind-icon">Import<wbr>Variable</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/intergationhelper.html" class="tsd-kind-icon">Intergation<wbr>Helper</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/module.html" class="tsd-kind-icon">Module</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/package.html" class="tsd-kind-icon">Package</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/privateconfig.html" class="tsd-kind-icon">Private<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/productionapiwrapper.html" class="tsd-kind-icon">ProductionAPIWrapper</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/productioncontext.html" class="tsd-kind-icon">Production<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/productionmodule.html" class="tsd-kind-icon">Production<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/productionpackage.html" class="tsd-kind-icon">Production<wbr>Package</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/state.html" class="tsd-kind-icon">State</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/weakmodulereferences.html" class="tsd-kind-icon">Weak<wbr>Module<wbr>References</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/webworkerprocess.html" class="tsd-kind-icon">Web<wbr>Worker<wbr>Process</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ccsextractorcontext.html" class="tsd-kind-icon">CCSExtractor<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iastanalysisprops.html" class="tsd-kind-icon">IASTAnalysis<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/iastcontext.html" class="tsd-kind-icon">IASTContext</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/iastwalkprops.html" class="tsd-kind-icon">IASTWalk<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ialigncsssourcemap.html" class="tsd-kind-icon">IAlignCSSSource<wbr>Map</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/iappreloadprops.html" class="tsd-kind-icon">IApp<wbr>Reload<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/iappreloadresponse.html" class="tsd-kind-icon">IApp<wbr>Reload<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iassemblecontext.html" class="tsd-kind-icon">IAssemble<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iassembleresolveresult.html" class="tsd-kind-icon">IAssemble<wbr>Resolve<wbr>Result</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/ibrowseressential.html" class="tsd-kind-icon">IBrowser<wbr>Essential</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ibumpversion.html" class="tsd-kind-icon">IBump<wbr>Version</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/ibundlegenerationstageprops.html" class="tsd-kind-icon">IBundle<wbr>Generation<wbr>Stage<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/ibundleprops.html" class="tsd-kind-icon">IBundle<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ibundleresolveprops.html" class="tsd-kind-icon">IBundle<wbr>Resolve<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ibundlewriteresponse.html" class="tsd-kind-icon">IBundle<wbr>Write<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/icsscontexthandler.html" class="tsd-kind-icon">ICSSContext<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/icsscontexthandlerextraprops.html" class="tsd-kind-icon">ICSSContext<wbr>Handler<wbr>Extra<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/icssdependencyextractorprops.html" class="tsd-kind-icon">ICSSDependency<wbr>Extractor<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/icssmodulerender.html" class="tsd-kind-icon">ICSSModule<wbr>Render</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/icsspluginprops.html" class="tsd-kind-icon">ICSSPlugin<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/icssresolveurlprops.html" class="tsd-kind-icon">ICSSResolveURLProps</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/icssresolveurlresult.html" class="tsd-kind-icon">ICSSResolveURLResult</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/icacheadapter.html" class="tsd-kind-icon">ICache<wbr>Adapter</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/icachepackage.html" class="tsd-kind-icon">ICache<wbr>Package</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/icachepackagecontent.html" class="tsd-kind-icon">ICache<wbr>Package<wbr>Content</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/icachepackageresponse.html" class="tsd-kind-icon">ICache<wbr>Package<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/icacheprops.html" class="tsd-kind-icon">ICache<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/icacherequest.html" class="tsd-kind-icon">ICache<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/icachetreecontents.html" class="tsd-kind-icon">ICache<wbr>Tree<wbr>Contents</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/iclientsummary.html" class="tsd-kind-icon">IClient<wbr>Summary</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/icodesplittingstageprops.html" class="tsd-kind-icon">ICode<wbr>Splitting<wbr>Stage<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/icreatehmrserverprops.html" class="tsd-kind-icon">ICreateHMRServer<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/icreatereactappextraprops.html" class="tsd-kind-icon">ICreate<wbr>React<wbr>App<wbr>Extra<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/icreatestylesheetprops.html" class="tsd-kind-icon">ICreate<wbr>Stylesheet<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/idefaultparseprops.html" class="tsd-kind-icon">IDefault<wbr>Parse<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/idevserveractions.html" class="tsd-kind-icon">IDev<wbr>Server<wbr>Actions</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/idevserverprops.html" class="tsd-kind-icon">IDev<wbr>Server<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/idevelopmentprops.html" class="tsd-kind-icon">IDevelopment<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ifastanalysis.html" class="tsd-kind-icon">IFast<wbr>Analysis</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/ifastanalysisprops.html" class="tsd-kind-icon">IFast<wbr>Analysis<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ifastcssprops.html" class="tsd-kind-icon">IFastCSSProps</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ifasttransformprops.html" class="tsd-kind-icon">IFast<wbr>Transform<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ifasterthanlightprops.html" class="tsd-kind-icon">IFaster<wbr>Than<wbr>Light<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ifilecacheprops.html" class="tsd-kind-icon">IFile<wbr>Cache<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/ifinalstageprops.html" class="tsd-kind-icon">IFinal<wbr>Stage<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/igeneratehmrcontentprops.html" class="tsd-kind-icon">IGenerateHMRContent<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ihmrexternalprops.html" class="tsd-kind-icon">IHMRExternal<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ihmrmoduleupdate.html" class="tsd-kind-icon">IHMRModule<wbr>Update</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ihmrprops.html" class="tsd-kind-icon">IHMRProps</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ihmrserverprops.html" class="tsd-kind-icon">IHMRServer<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/ihmrtask.html" class="tsd-kind-icon">IHMRTask</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ihmrupdate.html" class="tsd-kind-icon">IHMRUpdate</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ihttpserverprops.html" class="tsd-kind-icon">IHTTPServer<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ijsonpluginprops.html" class="tsd-kind-icon">IJSONPlugin<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ilogger.html" class="tsd-kind-icon">ILogger</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iloggerprops.html" class="tsd-kind-icon">ILogger<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ilookupprops.html" class="tsd-kind-icon">ILookup<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ilookupresult.html" class="tsd-kind-icon">ILookup<wbr>Result</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/imockmoduleprops.html" class="tsd-kind-icon">IMock<wbr>Module<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/imockmoduleresponse.html" class="tsd-kind-icon">IMock<wbr>Module<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/imodulecache.html" class="tsd-kind-icon">IModule<wbr>Cache</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/imodulecachebasics.html" class="tsd-kind-icon">IModule<wbr>Cache<wbr>Basics</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/imoduleparsed.html" class="tsd-kind-icon">IModule<wbr>Parsed</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/imoduleprops.html" class="tsd-kind-icon">IModule<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/inodemodulelookup.html" class="tsd-kind-icon">INode<wbr>Module<wbr>Lookup</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iopenprops.html" class="tsd-kind-icon">IOpen<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ipackagecachecontents.html" class="tsd-kind-icon">IPackage<wbr>Cache<wbr>Contents</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ipackagemeta.html" class="tsd-kind-icon">IPackage<wbr>Meta</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ipackageprops.html" class="tsd-kind-icon">IPackage<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/ipathslookupprops.html" class="tsd-kind-icon">IPaths<wbr>Lookup<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iperformstatictransformations.html" class="tsd-kind-icon">IPerform<wbr>Static<wbr>Transformations</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iprocesstransformprops.html" class="tsd-kind-icon">IProcess<wbr>Transform<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iproductionapioptions.html" class="tsd-kind-icon">IProductionAPIOptions</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iproductioncontext.html" class="tsd-kind-icon">IProduction<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iproductionflow.html" class="tsd-kind-icon">IProduction<wbr>Flow</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iproductionmain.html" class="tsd-kind-icon">IProduction<wbr>Main</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iproductionprops.html" class="tsd-kind-icon">IProduction<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iproxycollection.html" class="tsd-kind-icon">IProxy<wbr>Collection</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ipublicconfig.html" class="tsd-kind-icon">IPublic<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/irawcompileroptions.html" class="tsd-kind-icon">IRaw<wbr>Compiler<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/irawtypescriptconfig.html" class="tsd-kind-icon">IRaw<wbr>Typescript<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/irendermoduleprops.html" class="tsd-kind-icon">IRender<wbr>Module<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iresolvecssmoduleprops.html" class="tsd-kind-icon">IResolveCSSModule<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iresolvecssmoduleresult.html" class="tsd-kind-icon">IResolveCSSModule<wbr>Result</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iresolver.html" class="tsd-kind-icon">IResolver</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iresolverprops.html" class="tsd-kind-icon">IResolver<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iresourceconfig.html" class="tsd-kind-icon">IResource<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/isasshandlerprops.html" class="tsd-kind-icon">ISass<wbr>Handler<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/isassimporterprops.html" class="tsd-kind-icon">ISass<wbr>Importer<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/isasspluginprops.html" class="tsd-kind-icon">ISass<wbr>Plugin<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/isassprops.html" class="tsd-kind-icon">ISass<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iserverprocess.html" class="tsd-kind-icon">IServer<wbr>Process</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iserverprocessprops.html" class="tsd-kind-icon">IServer<wbr>Process<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/isocketclientinterface.html" class="tsd-kind-icon">ISocket<wbr>Client<wbr>Interface</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/isoftreload.html" class="tsd-kind-icon">ISoft<wbr>Reload</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/isparkychain.html" class="tsd-kind-icon">ISparky<wbr>Chain</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ispinnerinterface.html" class="tsd-kind-icon">ISpinner<wbr>Interface</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ispinnerprops.html" class="tsd-kind-icon">ISpinner<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/istatlogprops.html" class="tsd-kind-icon">IStat<wbr>Log<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/istatementreplaceable.html" class="tsd-kind-icon">IStatement<wbr>Replace<wbr>Able</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/istatictransform.html" class="tsd-kind-icon">IStatic<wbr>Transform</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/istylesheetprocessor.html" class="tsd-kind-icon">IStyle<wbr>Sheet<wbr>Processor</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/istylesheetprops.html" class="tsd-kind-icon">IStyle<wbr>Sheet<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/istylesheetmoduleresponse.html" class="tsd-kind-icon">IStylesheet<wbr>Module<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/itokenizergroup.html" class="tsd-kind-icon">ITokenizer<wbr>Group</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/itransformcontext.html" class="tsd-kind-icon">ITransform<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/itranspilestageprops.html" class="tsd-kind-icon">ITranspile<wbr>Stage<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/itypescriptpathsconfig.html" class="tsd-kind-icon">ITypescript<wbr>Paths<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/itypescripttransformprops.html" class="tsd-kind-icon">ITypescript<wbr>Transform<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iurlreplaced.html" class="tsd-kind-icon">IURLReplaced</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/ivisitprops.html" class="tsd-kind-icon">IVisit<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iwatcherattachprops.html" class="tsd-kind-icon">IWatcher<wbr>Attach<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iwatcherexternalprops.html" class="tsd-kind-icon">IWatcher<wbr>External<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iwatcherprops.html" class="tsd-kind-icon">IWatcher<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iwebindexconfig.html" class="tsd-kind-icon">IWeb<wbr>Index<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iwebindexinterface.html" class="tsd-kind-icon">IWeb<wbr>Index<wbr>Interface</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iwebworkerconfig.html" class="tsd-kind-icon">IWeb<wbr>Worker<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iwebworkeritem.html" class="tsd-kind-icon">IWeb<wbr>Worker<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iwebworkerprocessprops.html" class="tsd-kind-icon">IWeb<wbr>Worker<wbr>Process<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iwriter.html" class="tsd-kind-icon">IWriter</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iwriteractions.html" class="tsd-kind-icon">IWriter<wbr>Actions</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iwriterprops.html" class="tsd-kind-icon">IWriter<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/iwriterresponse.html" class="tsd-kind-icon">IWriter<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/interceptorevents.html" class="tsd-kind-icon">Interceptor<wbr>Events</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/localcontext.html" class="tsd-kind-icon">Local<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/onwatcherprops.html" class="tsd-kind-icon">On<wbr>Watcher<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/tscoptions.html" class="tsd-kind-icon">Tsc<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter tsd-is-not-exported">
+						<a href="interfaces/typedinterceptor.html" class="tsd-kind-icon">Typed<wbr>Interceptor</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/typescriptconfig.html" class="tsd-kind-icon">Typescript<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/watcher.html" class="tsd-kind-icon">Watcher</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#bundlecollection" class="tsd-kind-icon">Bundle<wbr>Collection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#concat" class="tsd-kind-icon">Concat</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#concatmodule" class="tsd-kind-icon">Concat<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#directorylisting" class="tsd-kind-icon">Directory<wbr>Listing</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#hmrservermethods" class="tsd-kind-icon">HMRServer<wbr>Methods</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#ibumpversiontype" class="tsd-kind-icon">IBump<wbr>Version<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#icachedependencies" class="tsd-kind-icon">ICache<wbr>Dependencies</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#icachepackages" class="tsd-kind-icon">ICache<wbr>Packages</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#icacheresponse" class="tsd-kind-icon">ICache<wbr>Response</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#ichokidareventtype" class="tsd-kind-icon">IChokidar<wbr>Event<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#idevserverproxy" class="tsd-kind-icon">IDev<wbr>Server<wbr>Proxy</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#iloggertype" class="tsd-kind-icon">ILogger<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#ipluginreplaceprops" class="tsd-kind-icon">IPlugin<wbr>Replace<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#iplugintest" class="tsd-kind-icon">IPlugin<wbr>Test</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#istatementreplaceablecollection" class="tsd-kind-icon">IStatement<wbr>Replaceable<wbr>Collection</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#itarget" class="tsd-kind-icon">ITarget</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#itypescriptpaths" class="tsd-kind-icon">ITypescript<wbr>Paths</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#itypescripttarget" class="tsd-kind-icon">ITypescript<wbr>Target</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#iwebworkertype" class="tsd-kind-icon">IWeb<wbr>Worker<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#libs" class="tsd-kind-icon">Libs</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#maininterceptor" class="tsd-kind-icon">Main<wbr>Interceptor</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#typescriptpaths" class="tsd-kind-icon">Typescript<wbr>Paths</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#cached_listing" class="tsd-kind-icon">CACHED_<wbr>LISTING</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#cached_paths" class="tsd-kind-icon">CACHED_<wbr>PATHS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#case1" class="tsd-kind-icon">CASE1</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#chartypes" class="tsd-kind-icon">Char<wbr>Types</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#electron_polyfill" class="tsd-kind-icon">ELECTRON_<wbr>POLYFILL</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#executable_extensions" class="tsd-kind-icon">EXECUTABLE_<wbr>EXTENSIONS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#expression" class="tsd-kind-icon">Expression</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#font_extensions" class="tsd-kind-icon">FONT_<wbr>EXTENSIONS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#functions" class="tsd-kind-icon">FUNCTIONS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#fuse_root" class="tsd-kind-icon">FUSE_<wbr>ROOT</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#hubconnectionstate" class="tsd-kind-icon">Hub<wbr>Connection<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#image_extensions" class="tsd-kind-icon">IMAGE_<wbr>EXTENSIONS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#import_regex" class="tsd-kind-icon">IMPORT_<wbr>REGEX</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#js_extensions" class="tsd-kind-icon">JS_<wbr>EXTENSIONS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#js_extensions_first" class="tsd-kind-icon">JS_<wbr>EXTENSIONS_<wbr>FIRST</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#js_indexes" class="tsd-kind-icon">JS_<wbr>INDEXES</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#js_indexes_first" class="tsd-kind-icon">JS_<wbr>INDEXES_<wbr>FIRST</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#node_module_regex" class="tsd-kind-icon">NODE_<wbr>MODULE_<wbr>REGEX</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#project_node_modules" class="tsd-kind-icon">PROJECT_<wbr>NODE_<wbr>MODULES</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#regex" class="tsd-kind-icon">REGEX</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#server_polyfill" class="tsd-kind-icon">SERVER_<wbr>POLYFILL</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#traced_variables" class="tsd-kind-icon">TRACED_<wbr>VARIABLES</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#tree_file_key" class="tsd-kind-icon">TREE_<wbr>FILE_<wbr>KEY</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#ts_extensions" class="tsd-kind-icon">TS_<wbr>EXTENSIONS</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#ts_extensions_first" class="tsd-kind-icon">TS_<wbr>EXTENSIONS_<wbr>FIRST</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#ts_indexes" class="tsd-kind-icon">TS_<wbr>INDEXES</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#ts_indexes_first" class="tsd-kind-icon">TS_<wbr>INDEXES_<wbr>FIRST</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#version" class="tsd-kind-icon">VERSION</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#__mock_expresslisten" class="tsd-kind-icon">__mock_<wbr>express<wbr>Listen</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#__mock_expressuse" class="tsd-kind-icon">__mock_<wbr>express<wbr>Use</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#case1" class="tsd-kind-icon">case1</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#cases" class="tsd-kind-icon">cases</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#contents" class="tsd-kind-icon">contents</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#ctx" class="tsd-kind-icon">ctx</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#currentprogram" class="tsd-kind-icon">current<wbr>Program</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#custommodules" class="tsd-kind-icon">custom<wbr>Modules</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#cwd" class="tsd-kind-icon">cwd</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#data" class="tsd-kind-icon">data</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#declarations" class="tsd-kind-icon">declarations</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#decls" class="tsd-kind-icon">decls</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#defaultlibname" class="tsd-kind-icon">default<wbr>Lib<wbr>Name</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#defaultoptions" class="tsd-kind-icon">default<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#defaulttemplate" class="tsd-kind-icon">default<wbr>Template</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#documentregistry" class="tsd-kind-icon">document<wbr>Registry</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#file" class="tsd-kind-icon">file</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#filemock" class="tsd-kind-icon">file<wbr>Mock</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#i" class="tsd-kind-icon">i</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#keys" class="tsd-kind-icon">keys</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#logger" class="tsd-kind-icon">logger</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#maxiteration" class="tsd-kind-icon">max<wbr>Iteration</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#newlinechar" class="tsd-kind-icon">new<wbr>Line<wbr>Char</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#o" class="tsd-kind-icon">o</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#performance" class="tsd-kind-icon">performance</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#printer" class="tsd-kind-icon">printer</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#project" class="tsd-kind-icon">project</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#readline" class="tsd-kind-icon">readline</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#res" class="tsd-kind-icon">res</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#result" class="tsd-kind-icon">result</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#sourcefile" class="tsd-kind-icon">source<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#spinner" class="tsd-kind-icon">spinner</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#start" class="tsd-kind-icon">start</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#str" class="tsd-kind-icon">str</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#structure" class="tsd-kind-icon">structure</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#testfile" class="tsd-kind-icon">test<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#transformedsourcefile" class="tsd-kind-icon">transformed<wbr>Source<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#tsstring" class="tsd-kind-icon">ts<wbr>String</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#utils" class="tsd-kind-icon">utils</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#hubconnection" class="tsd-kind-icon">Hub<wbr>Connection</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#_addexports" class="tsd-kind-icon">_add<wbr>Exports</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#_handlerequirestatements" class="tsd-kind-icon">_handle<wbr>Require<wbr>Statements</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#_removenodes" class="tsd-kind-icon">_remove<wbr>Nodes</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#_replacenodes" class="tsd-kind-icon">_replace<wbr>Nodes</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#_sliceexports" class="tsd-kind-icon">_slice<wbr>Exports</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#acceptmodule" class="tsd-kind-icon">accept<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#acceptstylesheet" class="tsd-kind-icon">accept<wbr>Stylesheet</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#addmodule2productionschema" class="tsd-kind-icon">add<wbr>Module2<wbr>Production<wbr>Schema</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#aligncsssourcemap" class="tsd-kind-icon">alignCSSSource<wbr>Map</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#appreload" class="tsd-kind-icon">app<wbr>Reload</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#assemble" class="tsd-kind-icon">assemble</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#assemblecontext" class="tsd-kind-icon">assemble<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#assemblefastanalysis" class="tsd-kind-icon">assemble<wbr>Fast<wbr>Analysis</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#assemblepackage" class="tsd-kind-icon">assemble<wbr>Package</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#attachcache" class="tsd-kind-icon">attach<wbr>Cache</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#attachchokidar" class="tsd-kind-icon">attach<wbr>Chokidar</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#attachessentials" class="tsd-kind-icon">attach<wbr>Essentials</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#attachftl" class="tsd-kind-icon">attachFTL</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#attachhmr" class="tsd-kind-icon">attachHMR</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#attachserverentry" class="tsd-kind-icon">attach<wbr>Server<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#attachwatcher" class="tsd-kind-icon">attach<wbr>Watcher</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#attachwebindex" class="tsd-kind-icon">attach<wbr>Web<wbr>Index</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#attachwebworkers" class="tsd-kind-icon">attach<wbr>Web<wbr>Workers</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#beautifybundlename" class="tsd-kind-icon">beautify<wbr>Bundle<wbr>Name</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#browserproductionpolyfilltransformation" class="tsd-kind-icon">browser<wbr>Production<wbr>Polyfill<wbr>Transformation</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#bumpversion" class="tsd-kind-icon">bump<wbr>Version</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#bundledev" class="tsd-kind-icon">bundle<wbr>Dev</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#bundleprod" class="tsd-kind-icon">bundle<wbr>Prod</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#bundleresolvemodule" class="tsd-kind-icon">bundle<wbr>Resolve<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#checkfile" class="tsd-kind-icon">check<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#cleanexistingsourcemappingurl" class="tsd-kind-icon">clean<wbr>Existing<wbr>Source<wbr>MappingURL</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#closedevelopmentapi" class="tsd-kind-icon">close<wbr>Development<wbr>Api</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#codelog" class="tsd-kind-icon">code<wbr>Log</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#codesplittingstage" class="tsd-kind-icon">code<wbr>Splitting<wbr>Stage</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#collectcssdependencies" class="tsd-kind-icon">collectCSSDependencies</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#computeleftright" class="tsd-kind-icon">compute<wbr>Left<wbr>Right</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#conditionunwrapperproduction" class="tsd-kind-icon">condition<wbr>Unwrapper<wbr>Production</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#configure" class="tsd-kind-icon">configure</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#configureprod" class="tsd-kind-icon">configure<wbr>Prod</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#conj" class="tsd-kind-icon">conj</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#copyfile" class="tsd-kind-icon">copy<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createapplicationpackage" class="tsd-kind-icon">create<wbr>Application<wbr>Package</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createassemblehellper" class="tsd-kind-icon">create<wbr>Assemble<wbr>Hellper</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createbundle" class="tsd-kind-icon">create<wbr>Bundle</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createbundleset" class="tsd-kind-icon">create<wbr>Bundle<wbr>Set</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createcache" class="tsd-kind-icon">create<wbr>Cache</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createclient" class="tsd-kind-icon">create<wbr>Client</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createconcat" class="tsd-kind-icon">create<wbr>Concat</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createconfig" class="tsd-kind-icon">create<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createcontext" class="tsd-kind-icon">create<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createcontexttaskmanager" class="tsd-kind-icon">create<wbr>Context<wbr>Task<wbr>Manager</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createdefaultpackage" class="tsd-kind-icon">create<wbr>Default<wbr>Package</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createdevbundles" class="tsd-kind-icon">create<wbr>Dev<wbr>Bundles</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createdevserver" class="tsd-kind-icon">create<wbr>Dev<wbr>Server</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createdevserverconfig" class="tsd-kind-icon">create<wbr>Dev<wbr>Server<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createdynamicimportdeclaration" class="tsd-kind-icon">create<wbr>Dynamic<wbr>Import<wbr>Declaration</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createesmodulestructure" class="tsd-kind-icon">createESModule<wbr>Structure</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createexportassignment" class="tsd-kind-icon">create<wbr>Export<wbr>Assignment</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createexportdeclaration" class="tsd-kind-icon">create<wbr>Export<wbr>Declaration</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createexportobjectdeclaration" class="tsd-kind-icon">create<wbr>Export<wbr>Object<wbr>Declaration</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createexportsexpression" class="tsd-kind-icon">create<wbr>Exports<wbr>Expression</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createexpressapp" class="tsd-kind-icon">create<wbr>Express<wbr>App</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#createftlcontent" class="tsd-kind-icon">createFTLContent</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#createfakepackage" class="tsd-kind-icon">create<wbr>Fake<wbr>Package</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#createfile" class="tsd-kind-icon">create<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createfileset" class="tsd-kind-icon">create<wbr>File<wbr>Set</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#createfiles" class="tsd-kind-icon">create<wbr>Files</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createhmrserver" class="tsd-kind-icon">createHMRServer</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createimportdeclaration" class="tsd-kind-icon">create<wbr>Import<wbr>Declaration</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createinterceptor" class="tsd-kind-icon">create<wbr>Interceptor</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createlocalvariable" class="tsd-kind-icon">create<wbr>Local<wbr>Variable</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#creatememberexpression" class="tsd-kind-icon">create<wbr>Member<wbr>Expression</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createmodule" class="tsd-kind-icon">create<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createmoduleexports" class="tsd-kind-icon">create<wbr>Module<wbr>Exports</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createmoduleexportsassign" class="tsd-kind-icon">create<wbr>Module<wbr>Exports<wbr>Assign</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createpackage" class="tsd-kind-icon">create<wbr>Package</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createprodcontext" class="tsd-kind-icon">create<wbr>Prod<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createproductioncontext" class="tsd-kind-icon">create<wbr>Production<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#createprojectcontext" class="tsd-kind-icon">create<wbr>Project<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createrealnodemodule" class="tsd-kind-icon">create<wbr>Real<wbr>Node<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createrequireconst" class="tsd-kind-icon">create<wbr>Require<wbr>Const</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createrequireconstwithobject" class="tsd-kind-icon">create<wbr>Require<wbr>Const<wbr>With<wbr>Object</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createrequirestatement" class="tsd-kind-icon">create<wbr>Require<wbr>Statement</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createserverprocess" class="tsd-kind-icon">create<wbr>Server<wbr>Process</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createsourcefile" class="tsd-kind-icon">create<wbr>Source<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createstate" class="tsd-kind-icon">create<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createstringconst" class="tsd-kind-icon">create<wbr>String<wbr>Const</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#createstructure" class="tsd-kind-icon">create<wbr>Structure</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createstylesheetprops" class="tsd-kind-icon">create<wbr>Stylesheet<wbr>Props</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createtestbundle" class="tsd-kind-icon">create<wbr>Test<wbr>Bundle</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createtracedexpression" class="tsd-kind-icon">create<wbr>Traced<wbr>Expression</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createtransformcontext" class="tsd-kind-icon">create<wbr>Transform<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createvarstring" class="tsd-kind-icon">create<wbr>Var<wbr>String</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createwatcher" class="tsd-kind-icon">create<wbr>Watcher</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createweakmodulereferences" class="tsd-kind-icon">create<wbr>Weak<wbr>Module<wbr>References</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createwebindex" class="tsd-kind-icon">create<wbr>Web<wbr>Index</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createwriter" class="tsd-kind-icon">create<wbr>Writer</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#cssastextrender" class="tsd-kind-icon">css<wbr>AsText<wbr>Render</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#csscontexthandler" class="tsd-kind-icon">css<wbr>Context<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#cssdevmodulerender" class="tsd-kind-icon">css<wbr>Dev<wbr>Module<wbr>Render</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#cssparser" class="tsd-kind-icon">css<wbr>Parser</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#cssresolvemodule" class="tsd-kind-icon">css<wbr>Resolve<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#cssresolveurl" class="tsd-kind-icon">css<wbr>ResolveURL</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#dectohex" class="tsd-kind-icon">dec<wbr>ToHex</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#defineresourcegroup" class="tsd-kind-icon">define<wbr>Resource<wbr>Group</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#detectaction" class="tsd-kind-icon">detect<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#devserverentry" class="tsd-kind-icon">dev<wbr>Server<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#dofastast" class="tsd-kind-icon">do<wbr>Fast<wbr>Ast</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#ensureabsolutepath" class="tsd-kind-icon">ensure<wbr>Absolute<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#ensuredir" class="tsd-kind-icon">ensure<wbr>Dir</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#ensurefuseboxpath" class="tsd-kind-icon">ensure<wbr>Fuse<wbr>Box<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#ensurepublicextension" class="tsd-kind-icon">ensure<wbr>Public<wbr>Extension</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#ensureuserpath" class="tsd-kind-icon">ensure<wbr>User<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#evaluate" class="tsd-kind-icon">evaluate</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#evaluatesass" class="tsd-kind-icon">evaluate<wbr>Sass</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#exportnameddeclaration" class="tsd-kind-icon">export<wbr>Named<wbr>Declaration</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#extractfuseboxpath" class="tsd-kind-icon">extract<wbr>Fuse<wbr>Box<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#extractvalue" class="tsd-kind-icon">extract<wbr>Value</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fastanalysis" class="tsd-kind-icon">fast<wbr>Analysis</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fastastanalysis" class="tsd-kind-icon">fast<wbr>Ast<wbr>Analysis</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fastcss" class="tsd-kind-icon">fast<wbr>Css</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fastcssparser" class="tsd-kind-icon">fast<wbr>Css<wbr>Parser</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fasthash" class="tsd-kind-icon">fast<wbr>Hash</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fasttransform" class="tsd-kind-icon">fast<wbr>Transform</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fastwalk" class="tsd-kind-icon">fast<wbr>Walk</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fasterthanlight" class="tsd-kind-icon">faster<wbr>Than<wbr>Light</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fileexists" class="tsd-kind-icon">file<wbr>Exists</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#filelookup" class="tsd-kind-icon">file<wbr>Lookup</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#filestat" class="tsd-kind-icon">file<wbr>Stat</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#finalstage" class="tsd-kind-icon">final<wbr>Stage</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#findentryids" class="tsd-kind-icon">find<wbr>Entry<wbr>Ids</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#findreplace" class="tsd-kind-icon">find<wbr>Replace</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#findtargetfolder" class="tsd-kind-icon">find<wbr>Target<wbr>Folder</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fixmodulesourcemap" class="tsd-kind-icon">fix<wbr>Module<wbr>Source<wbr>Map</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#fn" class="tsd-kind-icon">fn</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#foo" class="tsd-kind-icon">foo</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fuseboxenvproductiontransformation" class="tsd-kind-icon">fuse<wbr>Box<wbr>Env<wbr>Production<wbr>Transformation</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#fusebox" class="tsd-kind-icon">fusebox</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#generatehmrcontent" class="tsd-kind-icon">generateHMRContent</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#generateupdateid" class="tsd-kind-icon">generate<wbr>Update<wbr>Id</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#generatevalidkey" class="tsd-kind-icon">generate<wbr>Valid<wbr>Key</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#generationstage" class="tsd-kind-icon">generation<wbr>Stage</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getbundlebytype" class="tsd-kind-icon">get<wbr>Bundle<wbr>ByType</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#getcorrespondingbundle" class="tsd-kind-icon">get<wbr>Corresponding<wbr>Bundle</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getdevelopmentapi" class="tsd-kind-icon">get<wbr>Development<wbr>Api</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getessentialwebindexparams" class="tsd-kind-icon">get<wbr>Essential<wbr>Web<wbr>Index<wbr>Params</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#geteventdata" class="tsd-kind-icon">get<wbr>Event<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getextension" class="tsd-kind-icon">get<wbr>Extension</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getfolderentrypointfrompackagejson" class="tsd-kind-icon">get<wbr>Folder<wbr>Entry<wbr>Point<wbr>From<wbr>PackageJSON</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#getindexfiles" class="tsd-kind-icon">get<wbr>Index<wbr>Files</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getlogger" class="tsd-kind-icon">get<wbr>Logger</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getpathrelativetoconfig" class="tsd-kind-icon">get<wbr>Path<wbr>Relative<wbr>ToConfig</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#getpathsdata" class="tsd-kind-icon">get<wbr>Paths<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getrelevantevent" class="tsd-kind-icon">get<wbr>Relevant<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getspecifiers" class="tsd-kind-icon">get<wbr>Specifiers</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getspinner" class="tsd-kind-icon">get<wbr>Spinner</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#getstatementtext" class="tsd-kind-icon">get<wbr>Statement<wbr>Text</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getvariabledeclarations" class="tsd-kind-icon">get<wbr>Variable<wbr>Declarations</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#handlebrowserfield" class="tsd-kind-icon">handle<wbr>Browser<wbr>Field</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#handleexportdefaultdeclaration" class="tsd-kind-icon">handle<wbr>Export<wbr>Default<wbr>Declaration</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#handleexportspecifiers" class="tsd-kind-icon">handle<wbr>Export<wbr>Specifiers</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#handleresources" class="tsd-kind-icon">handle<wbr>Resources</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#handletracedimportspecifiers" class="tsd-kind-icon">handle<wbr>Traced<wbr>Import<wbr>Specifiers</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#ignoredpath2regex" class="tsd-kind-icon">ignored<wbr>Path2<wbr>Regex</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#inflatebundle" class="tsd-kind-icon">inflate<wbr>Bundle</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#inflatebundles" class="tsd-kind-icon">inflate<wbr>Bundles</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#inflatepackage" class="tsd-kind-icon">inflate<wbr>Package</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#inittypescriptconfig" class="tsd-kind-icon">init<wbr>Typescript<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#injectsettingintodevbundle" class="tsd-kind-icon">inject<wbr>Setting<wbr>Into<wbr>Dev<wbr>Bundle</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#injectsettingsintodefaultbundle" class="tsd-kind-icon">inject<wbr>Settings<wbr>Into<wbr>Default<wbr>Bundle</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#isbrowserentry" class="tsd-kind-icon">is<wbr>Browser<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#isclassdeclaration" class="tsd-kind-icon">is<wbr>Class<wbr>Declaration</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#iselectronpolyfill" class="tsd-kind-icon">is<wbr>Electron<wbr>Polyfill</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#isexportdefaultdeclaration" class="tsd-kind-icon">is<wbr>Export<wbr>Default<wbr>Declaration</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#isexportnameddeclaration" class="tsd-kind-icon">is<wbr>Export<wbr>Named<wbr>Declaration</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#isexternalmodule" class="tsd-kind-icon">is<wbr>External<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#isfunctiondeclaration" class="tsd-kind-icon">is<wbr>Function<wbr>Declaration</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#islocalidentifier" class="tsd-kind-icon">is<wbr>Local<wbr>Identifier</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#isnodemodule" class="tsd-kind-icon">is<wbr>Node<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#isobject" class="tsd-kind-icon">is<wbr>Object</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#isregexp" class="tsd-kind-icon">is<wbr>Reg<wbr>Exp</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#isrequirecall" class="tsd-kind-icon">is<wbr>Require<wbr>Call</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#isrequirestatement" class="tsd-kind-icon">is<wbr>Require<wbr>Statement</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#isserverpolyfill" class="tsd-kind-icon">is<wbr>Server<wbr>Polyfill</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#isvariabledeclarator" class="tsd-kind-icon">is<wbr>Variable<wbr>Declarator</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#isworkerstatement" class="tsd-kind-icon">is<wbr>Worker<wbr>Statement</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#joinfuseboxpath" class="tsd-kind-icon">join<wbr>Fuse<wbr>Box<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external tsd-is-not-exported">
+						<a href="globals.html#linkmodule" class="tsd-kind-icon">link<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#makefuseboxpath" class="tsd-kind-icon">make<wbr>Fuse<wbr>Box<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#maperrorline" class="tsd-kind-icon">map<wbr>Error<wbr>Line</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#matchall" class="tsd-kind-icon">match<wbr>All</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#measure" class="tsd-kind-icon">measure</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#measuretime" class="tsd-kind-icon">measure<wbr>Time</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#minifycss" class="tsd-kind-icon">minifyCSS</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#mockassemblecontext" class="tsd-kind-icon">mock<wbr>Assemble<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#mockbundle" class="tsd-kind-icon">mock<wbr>Bundle</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#mockbundles" class="tsd-kind-icon">mock<wbr>Bundles</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#mockcache" class="tsd-kind-icon">mock<wbr>Cache</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#mockdefaultmodule" class="tsd-kind-icon">mock<wbr>Default<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#mockmodule" class="tsd-kind-icon">mock<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#mocksparkysrc" class="tsd-kind-icon">mock<wbr>Sparky<wbr>Src</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#mockwritefile" class="tsd-kind-icon">mock<wbr>Write<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#modulelinkstage" class="tsd-kind-icon">module<wbr>Link<wbr>Stage</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-not-exported">
+						<a href="globals.html#moduletransformer" class="tsd-kind-icon">module<wbr>Transformer</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#nodeisstring" class="tsd-kind-icon">node<wbr>IsString</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#nodemodulelookup" class="tsd-kind-icon">node<wbr>Module<wbr>Lookup</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#npmpublish" class="tsd-kind-icon">npm<wbr>Publish</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-not-exported">
+						<a href="globals.html#numbertransformer" class="tsd-kind-icon">number<wbr>Transformer</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#offsetlines" class="tsd-kind-icon">offset<wbr>Lines</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#onchar" class="tsd-kind-icon">on<wbr>Char</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#onglobal" class="tsd-kind-icon">on<wbr>Global</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#onifstatement" class="tsd-kind-icon">on<wbr>IfStatement</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#onimportdeclaration" class="tsd-kind-icon">on<wbr>Import<wbr>Declaration</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#onitem" class="tsd-kind-icon">on<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#onprocess" class="tsd-kind-icon">on<wbr>Process</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#onstate" class="tsd-kind-icon">on<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#onwatcherevent" class="tsd-kind-icon">on<wbr>Watcher<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#opendevelopmentapi" class="tsd-kind-icon">open<wbr>Development<wbr>Api</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#parseallmodulepaths" class="tsd-kind-icon">parse<wbr>All<wbr>Module<wbr>Paths</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#parseast" class="tsd-kind-icon">parse<wbr>Ast</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#parsedefaultpackage" class="tsd-kind-icon">parse<wbr>Default<wbr>Package</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#parsepluginoptions" class="tsd-kind-icon">parse<wbr>Plugin<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#parseversion" class="tsd-kind-icon">parse<wbr>Version</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#parsewithacorn" class="tsd-kind-icon">parse<wbr>With<wbr>Acorn</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#parsewithcherow" class="tsd-kind-icon">parse<wbr>With<wbr>Cherow</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#parsewithscanner" class="tsd-kind-icon">parse<wbr>With<wbr>Scanner</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#parsemeriyah" class="tsd-kind-icon">parsemeriyah</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#path2regex" class="tsd-kind-icon">path2<wbr>Regex</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#path2regexpattern" class="tsd-kind-icon">path2<wbr>Regex<wbr>Pattern</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#pathjoin" class="tsd-kind-icon">path<wbr>Join</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#pathregex" class="tsd-kind-icon">path<wbr>Regex</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#pathslookup" class="tsd-kind-icon">paths<wbr>Lookup</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#performstatictransformations" class="tsd-kind-icon">perform<wbr>Static<wbr>Transformations</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#plugincss" class="tsd-kind-icon">pluginCSS</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#pluginjs" class="tsd-kind-icon">pluginJS</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#pluginjson" class="tsd-kind-icon">pluginJSON</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#pluginprocesspackages" class="tsd-kind-icon">plugin<wbr>Process<wbr>Packages</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#pluginreplace" class="tsd-kind-icon">plugin<wbr>Replace</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#pluginsass" class="tsd-kind-icon">plugin<wbr>Sass</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#plugintypescript" class="tsd-kind-icon">plugin<wbr>Typescript</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#preparationstage" class="tsd-kind-icon">preparation<wbr>Stage</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#printstatfinal" class="tsd-kind-icon">print<wbr>Stat<wbr>Final</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#processentry" class="tsd-kind-icon">process<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#processmodule" class="tsd-kind-icon">process<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#processpackage" class="tsd-kind-icon">process<wbr>Package</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#processplugins" class="tsd-kind-icon">process<wbr>Plugins</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#processproductiontransformation" class="tsd-kind-icon">process<wbr>Production<wbr>Transformation</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#productionmain" class="tsd-kind-icon">production<wbr>Main</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#readcssimports" class="tsd-kind-icon">readCSSImports</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#readfile" class="tsd-kind-icon">read<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#readfileasbuffer" class="tsd-kind-icon">read<wbr>File<wbr>AsBuffer</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#referencelink" class="tsd-kind-icon">reference<wbr>Link</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#referencelinkstage" class="tsd-kind-icon">reference<wbr>Link<wbr>Stage</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#registerpackage" class="tsd-kind-icon">register<wbr>Package</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#registerwebworkerprocess" class="tsd-kind-icon">register<wbr>Web<wbr>Worker<wbr>Process</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#reload_hardmodules" class="tsd-kind-icon">reload_<wbr><wbr>Hard<wbr>Modules</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#reload_process" class="tsd-kind-icon">reload_<wbr><wbr>Process</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#reload_softfromentry" class="tsd-kind-icon">reload_<wbr><wbr>Soft<wbr>From<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#removefile" class="tsd-kind-icon">remove<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#removefolder" class="tsd-kind-icon">remove<wbr>Folder</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#rendermodule" class="tsd-kind-icon">render<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#renderproductionapi" class="tsd-kind-icon">render<wbr>ProductionAPI</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#replacealiases" class="tsd-kind-icon">replace<wbr>Aliases</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#replacecssmacros" class="tsd-kind-icon">replaceCSSMacros</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#replaceext" class="tsd-kind-icon">replace<wbr>Ext</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#replacevars" class="tsd-kind-icon">replace<wbr>Vars</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#replacewebindexstrings" class="tsd-kind-icon">replace<wbr>Web<wbr>Index<wbr>Strings</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#resolvecssresource" class="tsd-kind-icon">resolveCSSResource</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#resolvemodule" class="tsd-kind-icon">resolve<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#resolvestatement" class="tsd-kind-icon">resolve<wbr>Statement</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#resolvetsconfig" class="tsd-kind-icon">resolveTSConfig</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#resolveworkerpath" class="tsd-kind-icon">resolve<wbr>Worker<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#sasshandler" class="tsd-kind-icon">sass<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#sassimporter" class="tsd-kind-icon">sass<wbr>Importer</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#scanuntil" class="tsd-kind-icon">scan<wbr>Until</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#scanner" class="tsd-kind-icon">scanner</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#sendaction" class="tsd-kind-icon">send<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#setresult" class="tsd-kind-icon">set<wbr>Result</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#simplifiedregexp" class="tsd-kind-icon">simplified<wbr>Reg<wbr>Exp</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#sourcemapscssurl" class="tsd-kind-icon">source<wbr>MapsCSSURL</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#sourcemapsurl" class="tsd-kind-icon">source<wbr>MapsURL</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#sparky" class="tsd-kind-icon">sparky</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#sparkychain" class="tsd-kind-icon">sparky<wbr>Chain</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#sparky_src" class="tsd-kind-icon">sparky_<wbr>src</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#statlog" class="tsd-kind-icon">stat<wbr>Log</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#statictransform" class="tsd-kind-icon">static<wbr>Transform</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#striphash" class="tsd-kind-icon">strip<wbr>Hash</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#synccache" class="tsd-kind-icon">sync<wbr>Cache</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#test" class="tsd-kind-icon">test</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#test2" class="tsd-kind-icon">test2</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#testpath" class="tsd-kind-icon">test<wbr>Path</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#testutils" class="tsd-kind-icon">test<wbr>Utils</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#throttle" class="tsd-kind-icon">throttle</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tokenize" class="tsd-kind-icon">tokenize</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#trace2entry" class="tsd-kind-icon">trace2entry</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#tracedependencies" class="tsd-kind-icon">trace<wbr>Dependencies</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tracedvariable" class="tsd-kind-icon">traced<wbr>Variable</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#transpile" class="tsd-kind-icon">transpile</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#transpilemodules" class="tsd-kind-icon">transpile<wbr>Modules</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#transpileproductionmodule" class="tsd-kind-icon">transpile<wbr>Production<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#transpilestage" class="tsd-kind-icon">transpile<wbr>Stage</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#transpilewithfusebox" class="tsd-kind-icon">transpile<wbr>With<wbr>Fuse<wbr>Box</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#transpilewithtypescript" class="tsd-kind-icon">transpile<wbr>With<wbr>Typescript</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#treeshakeentry" class="tsd-kind-icon">tree<wbr>Shake<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#treeshakingstage" class="tsd-kind-icon">tree<wbr>Shaking<wbr>Stage</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#trycssmodule" class="tsd-kind-icon">tryCSSModule</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#tryextensions" class="tsd-kind-icon">try<wbr>Extensions</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#tryindexes" class="tsd-kind-icon">try<wbr>Indexes</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#trytarget" class="tsd-kind-icon">try<wbr>Target</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tstransform" class="tsd-kind-icon">ts<wbr>Transform</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tsc" class="tsd-kind-icon">tsc</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#uglifybundles" class="tsd-kind-icon">uglify<wbr>Bundles</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#validkeywordtoken" class="tsd-kind-icon">valid<wbr>Keyword<wbr>Token</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#visitstatementnode" class="tsd-kind-icon">visit<wbr>Statement<wbr>Node</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#wrapcodestring" class="tsd-kind-icon">wrap<wbr>Code<wbr>String</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#wrapcontents" class="tsd-kind-icon">wrap<wbr>Contents</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#writefile" class="tsd-kind-icon">write<wbr>File</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#bundlenames" class="tsd-kind-icon">Bundle<wbr>Names</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-not-exported">
+						<a href="globals.html#chatidentifier" class="tsd-kind-icon">Chat<wbr>Identifier</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#emojis" class="tsd-kind-icon">EMOJIS</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-not-exported">
+						<a href="globals.html#module_objects" class="tsd-kind-icon">MODULE_<wbr>OBJECTS</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-not-exported">
+						<a href="globals.html#module_vars" class="tsd-kind-icon">MODULE_<wbr>VARS</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-not-exported">
+						<a href="globals.html#tokens" class="tsd-kind-icon">TOKENS</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#bundlenames" class="tsd-kind-icon">bundle<wbr>Names</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#codes" class="tsd-kind-icon">codes</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#colors" class="tsd-kind-icon">colors</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#devimports" class="tsd-kind-icon">dev<wbr>Imports</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#devstrings" class="tsd-kind-icon">dev<wbr>Strings</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#env" class="tsd-kind-icon">env</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#htmlstrings" class="tsd-kind-icon">html<wbr>Strings</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-not-exported">
+						<a href="globals.html#mock__ws" class="tsd-kind-icon">mock__ws</a>
+					</li>
+					<li class=" tsd-kind-object-literal">
+						<a href="globals.html#options" class="tsd-kind-icon">options</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-is-not-exported">
+						<a href="globals.html#signs" class="tsd-kind-icon">signs</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
