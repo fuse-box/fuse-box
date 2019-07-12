@@ -4,11 +4,13 @@ import { npmPublish } from './src/sparky/npmPublish';
 
 const TypeDoc = require("typedoc")
 const typedocApp = new TypeDoc.Application({
-    experimentalDecorators: true,
-    logger: "console",
-    mode:   "file",
-    module: "CommonJS",
-    target: "ES6",
+  experimentalDecorators: true,
+  logger: "console",
+  mode:   "file",
+  module: "CommonJS",
+  target: "ES6",
+  ignoreCompilerErrors: true,
+  allowJs: false,
 })
 
 const typedocProject = typedocApp.convert(typedocApp.expandInputFiles(["src"]))
@@ -90,13 +92,13 @@ task('dist', async ctx => {
 
 
 task("document", async ctx => {
-    //    const configuration = context.getConfig()
-    //    console.dir(context.getConfig().context.tsConfig)
-    //    process.exit()
-    console.log(typedocProject == null)
-    if (typedocProject) { // Project may not have converted correctly
-        const outputDir = "docs/api"
-        // Rendered docs
-        await typedocApp.generateDocs(typedocProject, outputDir)
-    }
+  //    const configuration = context.getConfig()
+  //    console.dir(context.getConfig().context.tsConfig)
+  //    process.exit()
+  console.log(typedocProject == null)
+  if (typedocProject) { // Project may not have converted correctly
+    const outputDir = "docs/api"
+    // Rendered docs
+    await typedocApp.generateDocs(typedocProject, outputDir)
+  }
 })
