@@ -1,0 +1,3 @@
+{
+  "compilerOptions": { "allowJs": true, "baseUrl": "." }
+}

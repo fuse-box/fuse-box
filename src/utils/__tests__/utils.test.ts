@@ -1,0 +1,129 @@
+import {
+  path2Regex,
+  createRequireConst,
+  replaceExt,
+  extractFuseBoxPath,
+  makeFuseBoxPath,
+  ensurePublicExtension,
+  getExtension,
+  ensureFuseBoxPath,
+  joinFuseBoxPath,
+  createStringConst,
+  createVarString,
+  parseVersion,
+  beautifyBundleName,
+} from '../utils';
+
+describe('utils', () => {
+  describe('beautifyBundleName', () => {
+    it('should beautifyBundleName 1', () => {
+      const name = beautifyBundleName('foo/bar/oi.js');
+      expect(name).toEqual('bar-oi');
+    });
+    it('should beautifyBundleName 2', () => {
+      const name = beautifyBundleName('oi.js');
+      expect(name).toEqual('oi');
+    });
+  });
+  describe('parseVersion', () => {
+    it('should parse with v', () => {
+      const res = parseVersion('v11.13.0');
+
+      expect(res).toEqual([11, 13, 0]);
+    });
+
+    it('should parse without v', () => {
+      const res = parseVersion('11.13.0');
+      expect(res).toEqual([11, 13, 0]);
+    });
+  });
+  describe('path2Regex', () => {
+    it('should convert', () => {
+      const a = path2Regex('foo/bar.js');
+      expect(a).toEqual(/foo\/bar.js/);
+    });
+
+    it('should be cached', () => {
+      const a = path2Regex('foo/bar.js');
+      expect(a).toEqual(/foo\/bar.js/);
+    });
+  });
+
+  describe('createStringConst', () => {
+    it('should create createStringConst', () => {
+      const str = createStringConst('foo', 'b\'a"r');
+      expect(str).toEqual(`const foo = "b'a\\"r";`);
+    });
+  });
+
+  describe('createVarString', () => {
+    it('should create createVarConst', () => {
+      const str = createVarString('foo', 'b\'a"r');
+      expect(str).toEqual(`var foo = "b'a\\"r";`);
+    });
+  });
+
+  describe('createRequireConst', () => {
+    it('should create a default statement', () => {
+      expect(createRequireConst('foo')).toEqual('var foo = require("foo");');
+    });
+
+    it('should create a statement', () => {
+      expect(createRequireConst('foo', 'bar')).toEqual('var bar = require("foo");');
+    });
+  });
+
+  describe('replaceExt', () => {
+    it('should be ok with empty value', () => {
+      expect(replaceExt('', '.js')).toEqual('');
+    });
+
+    it('should replace existing ext', () => {
+      expect(replaceExt('foo.js', '.ts')).toEqual('foo.ts');
+    });
+
+    it('should add ext', () => {
+      expect(replaceExt('foo', '.ts')).toEqual('foo.ts');
+    });
+  });
+
+  describe('extractFuseBoxPath', () => {
+    it('extractFuseBoxPath', () => {
+      expect(extractFuseBoxPath('/home/my/dir', '/home/my/dir/foo/bar.ts')).toEqual('foo/bar.ts');
+    });
+  });
+
+  describe('makeFuseBoxPath', () => {
+    it('makeFuseBoxPath', () => {
+      expect(makeFuseBoxPath('/home/my/dir', '/home/my/dir/foo/bar.ts')).toEqual('foo/bar.js');
+    });
+  });
+
+  describe('ensurePublicExtension', () => {
+    it('ensurePublicExtension', () => {
+      expect(ensurePublicExtension('bar.ts')).toEqual('bar.js');
+      expect(ensurePublicExtension('bar.tsx')).toEqual('bar.jsx');
+    });
+  });
+
+  describe('getExtension', () => {
+    it('getExtension', () => {
+      expect(getExtension('bar.ts')).toEqual('.ts');
+    });
+  });
+
+  describe('ensureFuseBoxPath', () => {
+    it('ensureFuseBoxPath', () => {
+      expect(ensureFuseBoxPath(`windows\\bar.ts`)).toEqual('windows/bar.ts');
+    });
+  });
+
+  describe('joinFuseBoxPath', () => {
+    it('joinFuseBoxPath', () => {
+      expect(joinFuseBoxPath(`windows\\bar`, 'foo/', 'oi')).toEqual('windows/bar/foo/oi');
+      expect(joinFuseBoxPath('http://sdf', 'bar')).toEqual('http://sdf/bar');
+
+      //expect(joinFuseBoxPath(`windows\\bar`, 'foo/', 'oi')).toEqual('windows/bar.ts');
+    });
+  });
+});

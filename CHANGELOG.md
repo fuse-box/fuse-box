@@ -4,82 +4,61 @@
 
 ### Bug Fixes
 
-- cleanup, added favicon. removed unused blocks
-  ([d2b6ba1](https://github.com/fuse-box/fuse-box/commit/d2b6ba1))
-- CSS better styles on landing
-  ([35c55e1](https://github.com/fuse-box/fuse-box/commit/35c55e1))
+- cleanup, added favicon. removed unused blocks ([d2b6ba1](https://github.com/fuse-box/fuse-box/commit/d2b6ba1))
+- CSS better styles on landing ([35c55e1](https://github.com/fuse-box/fuse-box/commit/35c55e1))
 - **Quantum:** Quantum CSS splitting loads sourcemaps on production
   ([3e548cc](https://github.com/fuse-box/fuse-box/commit/3e548cc))
-- don't throw asset reference error on wildcard imports
-  ([d594e65](https://github.com/fuse-box/fuse-box/commit/d594e65))
+- don't throw asset reference error on wildcard imports ([d594e65](https://github.com/fuse-box/fuse-box/commit/d594e65))
 - footer styles ([a0afc35](https://github.com/fuse-box/fuse-box/commit/a0afc35))
-- HMR event and sourcemaps reload
-  ([86d9811](https://github.com/fuse-box/fuse-box/commit/86d9811)), closes
+- HMR event and sourcemaps reload ([86d9811](https://github.com/fuse-box/fuse-box/commit/86d9811)), closes
   [#1324](https://github.com/fuse-box/fuse-box/issues/1324)
 - log.showBundledFiles ignored when log.enabled value missing
   ([b1d1b17](https://github.com/fuse-box/fuse-box/commit/b1d1b17))
-- match against valid npm namespace + package name
-  ([3e2bf8e](https://github.com/fuse-box/fuse-box/commit/3e2bf8e))
+- match against valid npm namespace + package name ([3e2bf8e](https://github.com/fuse-box/fuse-box/commit/3e2bf8e))
 - **Quantum:** Quantum file resolution of conflicting libraries
   ([9cea9e5](https://github.com/fuse-box/fuse-box/commit/9cea9e5))
-- md, css - links, added resources, other small fixes
-  ([2aa7768](https://github.com/fuse-box/fuse-box/commit/2aa7768))
-- minor changes to layout
-  ([c13c6f7](https://github.com/fuse-box/fuse-box/commit/c13c6f7))
+- md, css - links, added resources, other small fixes ([2aa7768](https://github.com/fuse-box/fuse-box/commit/2aa7768))
+- minor changes to layout ([c13c6f7](https://github.com/fuse-box/fuse-box/commit/c13c6f7))
 - more content ([b99f424](https://github.com/fuse-box/fuse-box/commit/b99f424))
-- typescript section
-  ([aa91528](https://github.com/fuse-box/fuse-box/commit/aa91528))
-- Update typescript version to fix a problem with build
-  [#1339](https://github.com/fuse-box/fuse-box/issues/1339)
+- typescript section ([aa91528](https://github.com/fuse-box/fuse-box/commit/aa91528))
+- Update typescript version to fix a problem with build [#1339](https://github.com/fuse-box/fuse-box/issues/1339)
   ([17594a4](https://github.com/fuse-box/fuse-box/commit/17594a4))
-- Upgrade fs-extra to remove fs.promises API warning
-  ([#1341](https://github.com/fuse-box/fuse-box/issues/1341))
+- Upgrade fs-extra to remove fs.promises API warning ([#1341](https://github.com/fuse-box/fuse-box/issues/1341))
   ([e37caef](https://github.com/fuse-box/fuse-box/commit/e37caef))
 - watcher can't resume if queue contains a rejecting promise
   ([84dd0f0](https://github.com/fuse-box/fuse-box/commit/84dd0f0)), closes
   [#1335](https://github.com/fuse-box/fuse-box/issues/1335)
-- **docs:** colors
-  ([96b1d18](https://github.com/fuse-box/fuse-box/commit/96b1d18))
+- **docs:** colors ([96b1d18](https://github.com/fuse-box/fuse-box/commit/96b1d18))
 - **quantum:** Ignoring Dynamic imports when mixed with sync imports
   ([dd664d5](https://github.com/fuse-box/fuse-box/commit/dd664d5))
 - **Quantum:** fix Quantum CSS paths without splitConfig
   ([0ec4058](https://github.com/fuse-box/fuse-box/commit/0ec4058))
 - **Quantum:** Prevent Quantum from creating empty chunks
   ([24f5915](https://github.com/fuse-box/fuse-box/commit/24f5915)), closes
-  [#1297](https://github.com/fuse-box/fuse-box/issues/1297)
-  [#1184](https://github.com/fuse-box/fuse-box/issues/1184)
-- **Quantum:** Quantum CSS splitting respects hashing
-  ([eafee77](https://github.com/fuse-box/fuse-box/commit/eafee77))
-- **Quantum:** VUE modules ignored dynamic imports
-  ([d4be225](https://github.com/fuse-box/fuse-box/commit/d4be225)), closes
-  [#1360](https://github.com/fuse-box/fuse-box/issues/1360)
+  [#1297](https://github.com/fuse-box/fuse-box/issues/1297) [#1184](https://github.com/fuse-box/fuse-box/issues/1184)
+- **Quantum:** Quantum CSS splitting respects hashing ([eafee77](https://github.com/fuse-box/fuse-box/commit/eafee77))
+- **Quantum:** VUE modules ignored dynamic imports ([d4be225](https://github.com/fuse-box/fuse-box/commit/d4be225)),
+  closes [#1360](https://github.com/fuse-box/fuse-box/issues/1360)
 
 ### Features
 
-- add test for scope packages with valid name
-  ([d4f26fd](https://github.com/fuse-box/fuse-box/commit/d4f26fd))
+- add test for scope packages with valid name ([d4f26fd](https://github.com/fuse-box/fuse-box/commit/d4f26fd))
 - Automatic css splitting and lazy load with dynamic imports
   ([e600da7](https://github.com/fuse-box/fuse-box/commit/e600da7))
 - **Quantum:** Loading CSS chunks before split bundles are loaded and executed
   ([#1355](https://github.com/fuse-box/fuse-box/issues/1355))
   ([89800ef](https://github.com/fuse-box/fuse-box/commit/89800ef))
-- **website:** A new website based on Docosaurus
-  ([c4cbea9](https://github.com/fuse-box/fuse-box/commit/c4cbea9))
+- **website:** A new website based on Docosaurus ([c4cbea9](https://github.com/fuse-box/fuse-box/commit/c4cbea9))
 - feature list ([a3c4d08](https://github.com/fuse-box/fuse-box/commit/a3c4d08))
-- Initial docs styles, fonts and logos
-  ([77dadd0](https://github.com/fuse-box/fuse-box/commit/77dadd0))
-- moving to sass
-  ([5990f30](https://github.com/fuse-box/fuse-box/commit/5990f30))
-- New Quantum target - browser/server/universal
-  ([#1323](https://github.com/fuse-box/fuse-box/issues/1323))
+- Initial docs styles, fonts and logos ([77dadd0](https://github.com/fuse-box/fuse-box/commit/77dadd0))
+- moving to sass ([5990f30](https://github.com/fuse-box/fuse-box/commit/5990f30))
+- New Quantum target - browser/server/universal ([#1323](https://github.com/fuse-box/fuse-box/issues/1323))
   ([b77400e](https://github.com/fuse-box/fuse-box/commit/b77400e))
-- TypeScript section
-  ([5dc3814](https://github.com/fuse-box/fuse-box/commit/5dc3814))
+- TypeScript section ([5dc3814](https://github.com/fuse-box/fuse-box/commit/5dc3814))
 
 ### Performance Improvements
 
-- swap minimist for getopts
-  ([eb48f84](https://github.com/fuse-box/fuse-box/commit/eb48f84))
+- swap minimist for getopts ([eb48f84](https://github.com/fuse-box/fuse-box/commit/eb48f84))
 
 <a name="3.4.0"></a>
 
@@ -89,21 +68,17 @@
 
 - add error handling, add backward compatability, update docs.
   ([49ebf45](https://github.com/fuse-box/fuse-box/commit/49ebf45))
-- Global keys order is respected in config, fixes
-  [#1304](https://github.com/fuse-box/fuse-box/issues/1304)
+- Global keys order is respected in config, fixes [#1304](https://github.com/fuse-box/fuse-box/issues/1304)
   ([#1305](https://github.com/fuse-box/fuse-box/issues/1305))
   ([722c501](https://github.com/fuse-box/fuse-box/commit/722c501))
-- move devServer fallback after proxy
-  ([163ef97](https://github.com/fuse-box/fuse-box/commit/163ef97))
-- Quantum CSS now respects tree shaking
-  ([52637a5](https://github.com/fuse-box/fuse-box/commit/52637a5))
-- remove node-sass from deps
-  ([bf305e2](https://github.com/fuse-box/fuse-box/commit/bf305e2))
+- move devServer fallback after proxy ([163ef97](https://github.com/fuse-box/fuse-box/commit/163ef97))
+- Quantum CSS now respects tree shaking ([52637a5](https://github.com/fuse-box/fuse-box/commit/52637a5))
+- remove node-sass from deps ([bf305e2](https://github.com/fuse-box/fuse-box/commit/bf305e2))
 
 ### Features
 
-- adjust `pre` option in webindex to a string instead of an object and update
-  docs. ([8d13bd9](https://github.com/fuse-box/fuse-box/commit/8d13bd9))
+- adjust `pre` option in webindex to a string instead of an object and update docs.
+  ([8d13bd9](https://github.com/fuse-box/fuse-box/commit/8d13bd9))
 
 <a name="3.3.0"></a>
 
@@ -114,70 +89,56 @@
 - ConsolidatePlugin- Template engine takes basedir not baseDir
   ([#1236](https://github.com/fuse-box/fuse-box/issues/1236))
   ([0d3dbc2](https://github.com/fuse-box/fuse-box/commit/0d3dbc2))
-- Copy readme so it's included in npm
-  ([836ff48](https://github.com/fuse-box/fuse-box/commit/836ff48))
+- Copy readme so it's included in npm ([836ff48](https://github.com/fuse-box/fuse-box/commit/836ff48))
 - cssFiles keys now use the {packageName}/{pattern} format
   ([3459180](https://github.com/fuse-box/fuse-box/commit/3459180))
-- **tests:** Remove message from error object to make test compatible with
-  Node 9. ([c36ac01](https://github.com/fuse-box/fuse-box/commit/c36ac01))
-- CSSResource parse error
-  ([#1213](https://github.com/fuse-box/fuse-box/issues/1213))
+- **tests:** Remove message from error object to make test compatible with Node 9.
+  ([c36ac01](https://github.com/fuse-box/fuse-box/commit/c36ac01))
+- CSSResource parse error ([#1213](https://github.com/fuse-box/fuse-box/issues/1213))
   ([cc4d42c](https://github.com/fuse-box/fuse-box/commit/cc4d42c))
-- Error propagation bug.
-  ([#1216](https://github.com/fuse-box/fuse-box/issues/1216))
+- Error propagation bug. ([#1216](https://github.com/fuse-box/fuse-box/issues/1216))
   ([1ad7c71](https://github.com/fuse-box/fuse-box/commit/1ad7c71))
 - Fixed a critical bug with CSSPlugin and path overrides
   ([b129f2d](https://github.com/fuse-box/fuse-box/commit/b129f2d))
 - keep original source file extensions when using useTypeScriptCompiler option.
   ([#1278](https://github.com/fuse-box/fuse-box/issues/1278))
   ([5c39c94](https://github.com/fuse-box/fuse-box/commit/5c39c94))
-- Made error message clearer, and included HTML Template file not found error
-  check. ([#1207](https://github.com/fuse-box/fuse-box/issues/1207))
+- Made error message clearer, and included HTML Template file not found error check.
+  ([#1207](https://github.com/fuse-box/fuse-box/issues/1207))
   ([66f06bb](https://github.com/fuse-box/fuse-box/commit/66f06bb))
-- Quantum breaks on more than one configured globals
-  ([#1223](https://github.com/fuse-box/fuse-box/issues/1223))
+- Quantum breaks on more than one configured globals ([#1223](https://github.com/fuse-box/fuse-box/issues/1223))
   ([f509d19](https://github.com/fuse-box/fuse-box/commit/f509d19))
-- Remove debug console.log
-  ([1d3172c](https://github.com/fuse-box/fuse-box/commit/1d3172c))
+- Remove debug console.log ([1d3172c](https://github.com/fuse-box/fuse-box/commit/1d3172c))
 - renaming generated files to allow several vue files in a folder
   ([fcfbfa0](https://github.com/fuse-box/fuse-box/commit/fcfbfa0))
-- require statements ignored if not 'true' requires. fixes
-  [#1142](https://github.com/fuse-box/fuse-box/issues/1142)
+- require statements ignored if not 'true' requires. fixes [#1142](https://github.com/fuse-box/fuse-box/issues/1142)
   ([#1229](https://github.com/fuse-box/fuse-box/issues/1229))
   ([0b138f2](https://github.com/fuse-box/fuse-box/commit/0b138f2))
-- syntheticDefaultExportPolyfill Check if frozen before attempting to
-  defineProperty. ([#1235](https://github.com/fuse-box/fuse-box/issues/1235))
+- syntheticDefaultExportPolyfill Check if frozen before attempting to defineProperty.
+  ([#1235](https://github.com/fuse-box/fuse-box/issues/1235))
   ([2c971e7](https://github.com/fuse-box/fuse-box/commit/2c971e7))
 
 ### Features
 
-- Add css splitting with cssFiles quantum config
-  ([d3f5491](https://github.com/fuse-box/fuse-box/commit/d3f5491))
-- added support for arrays in modulesFolder
-  ([#1293](https://github.com/fuse-box/fuse-box/issues/1293))
+- Add css splitting with cssFiles quantum config ([d3f5491](https://github.com/fuse-box/fuse-box/commit/d3f5491))
+- added support for arrays in modulesFolder ([#1293](https://github.com/fuse-box/fuse-box/issues/1293))
   ([73e2f73](https://github.com/fuse-box/fuse-box/commit/73e2f73))
 - Automatic alias mapping based on baseDir in tsconfig.json (ts)
   ([8f11040](https://github.com/fuse-box/fuse-box/commit/8f11040))
-- Consolidate Plugin - Pass baseDir & includeDir as options
-  ([#1225](https://github.com/fuse-box/fuse-box/issues/1225))
+- Consolidate Plugin - Pass baseDir & includeDir as options ([#1225](https://github.com/fuse-box/fuse-box/issues/1225))
   ([26e7ebe](https://github.com/fuse-box/fuse-box/commit/26e7ebe))
 - devServer fallback ([#1265](https://github.com/fuse-box/fuse-box/issues/1265))
   ([1f5bbe3](https://github.com/fuse-box/fuse-box/commit/1f5bbe3))
-- filesMapping option to CSSResourcePlugin
-  ([#1281](https://github.com/fuse-box/fuse-box/issues/1281))
+- filesMapping option to CSSResourcePlugin ([#1281](https://github.com/fuse-box/fuse-box/issues/1281))
   ([8cd39db](https://github.com/fuse-box/fuse-box/commit/8cd39db))
-- HTTPS devServer option
-  ([#1255](https://github.com/fuse-box/fuse-box/issues/1255))
+- HTTPS devServer option ([#1255](https://github.com/fuse-box/fuse-box/issues/1255))
   ([0715cc3](https://github.com/fuse-box/fuse-box/commit/0715cc3))
-- Use cssFiles name as key for manifest
-  ([fb107ef](https://github.com/fuse-box/fuse-box/commit/fb107ef))
-- WebIndexPlugin accepts engine option
-  ([e0cba10](https://github.com/fuse-box/fuse-box/commit/e0cba10))
+- Use cssFiles name as key for manifest ([fb107ef](https://github.com/fuse-box/fuse-box/commit/fb107ef))
+- WebIndexPlugin accepts engine option ([e0cba10](https://github.com/fuse-box/fuse-box/commit/e0cba10))
 - WebIndexPlugin additional attributes support in script tags
   ([#1246](https://github.com/fuse-box/fuse-box/issues/1246))
   ([f790bfb](https://github.com/fuse-box/fuse-box/commit/f790bfb))
-- Working CLI (install skeletons)
-  ([87df46a](https://github.com/fuse-box/fuse-box/commit/87df46a))
+- Working CLI (install skeletons) ([87df46a](https://github.com/fuse-box/fuse-box/commit/87df46a))
 
 <a name="3.2.2"></a>
 
@@ -185,15 +146,13 @@
 
 ### Bug Fixes
 
-- CSSResourcePlugin backslashes fixes on Windows 10
-  ([c34c637](https://github.com/fuse-box/fuse-box/commit/c34c637))
+- CSSResourcePlugin backslashes fixes on Windows 10 ([c34c637](https://github.com/fuse-box/fuse-box/commit/c34c637))
 - Update vue plugin to accept 'stylus' and 'sass' lang types by default.
   ([ef7e577](https://github.com/fuse-box/fuse-box/commit/ef7e577))
 
 ### Features
 
-- SassPlugin header option
-  ([e9f8409](https://github.com/fuse-box/fuse-box/commit/e9f8409))
+- SassPlugin header option ([e9f8409](https://github.com/fuse-box/fuse-box/commit/e9f8409))
 
 <a name="3.2.1"></a>
 
@@ -203,10 +162,8 @@
 
 - typescript errors ([#1185](https://github.com/fuse-box/fuse-box/issues/1185))
   ([79e9dc5](https://github.com/fuse-box/fuse-box/commit/79e9dc5))
-- Missing semicolon messed up with UMD init
-  ([9fbbb56](https://github.com/fuse-box/fuse-box/commit/9fbbb56))
-- Replace troublesome uws with standard ws
-  ([0ebfcc2](https://github.com/fuse-box/fuse-box/commit/0ebfcc2)), closes
+- Missing semicolon messed up with UMD init ([9fbbb56](https://github.com/fuse-box/fuse-box/commit/9fbbb56))
+- Replace troublesome uws with standard ws ([0ebfcc2](https://github.com/fuse-box/fuse-box/commit/0ebfcc2)), closes
   [#1189](https://github.com/fuse-box/fuse-box/issues/1189)
 
 <a name="3.2.0"></a>
@@ -215,43 +172,31 @@
 
 ### Bug Fixes
 
-- [#1101](https://github.com/fuse-box/fuse-box/issues/1101) types missing
-  because of using bind
+- [#1101](https://github.com/fuse-box/fuse-box/issues/1101) types missing because of using bind
   ([#1104](https://github.com/fuse-box/fuse-box/issues/1104))
   ([76e6600](https://github.com/fuse-box/fuse-box/commit/76e6600))
-- Add very small memory save
-  ([699979e](https://github.com/fuse-box/fuse-box/commit/699979e))
-- Added react and react-dom to devDependencies
-  ([#1111](https://github.com/fuse-box/fuse-box/issues/1111))
+- Add very small memory save ([699979e](https://github.com/fuse-box/fuse-box/commit/699979e))
+- Added react and react-dom to devDependencies ([#1111](https://github.com/fuse-box/fuse-box/issues/1111))
   ([320522f](https://github.com/fuse-box/fuse-box/commit/320522f))
 - Allow postcss `to` to be overridden by options given to the plugin
   ([8dcbc3d](https://github.com/fuse-box/fuse-box/commit/8dcbc3d))
-- browser nested routes bug with Quantum
-  ([#1168](https://github.com/fuse-box/fuse-box/issues/1168))
+- browser nested routes bug with Quantum ([#1168](https://github.com/fuse-box/fuse-box/issues/1168))
   ([dda92bb](https://github.com/fuse-box/fuse-box/commit/dda92bb))
-- Catching typescript transpilation errors
-  ([#1103](https://github.com/fuse-box/fuse-box/issues/1103))
+- Catching typescript transpilation errors ([#1103](https://github.com/fuse-box/fuse-box/issues/1103))
   ([8c0122a](https://github.com/fuse-box/fuse-box/commit/8c0122a))
-- data URLs handling in CSSResourcePlugin
-  ([#1098](https://github.com/fuse-box/fuse-box/issues/1098))
+- data URLs handling in CSSResourcePlugin ([#1098](https://github.com/fuse-box/fuse-box/issues/1098))
   ([e44448e](https://github.com/fuse-box/fuse-box/commit/e44448e))
-- Fix and optimize component HMR
-  ([adf5223](https://github.com/fuse-box/fuse-box/commit/adf5223))
+- Fix and optimize component HMR ([adf5223](https://github.com/fuse-box/fuse-box/commit/adf5223))
 - Fix bugs when using VueComponentPlugin in development.
   ([b32016d](https://github.com/fuse-box/fuse-box/commit/b32016d))
-- Fix postCSS error "without 'from' option"
-  ([#1118](https://github.com/fuse-box/fuse-box/issues/1118))
+- Fix postCSS error "without 'from' option" ([#1118](https://github.com/fuse-box/fuse-box/issues/1118))
   ([0ee1cc7](https://github.com/fuse-box/fuse-box/commit/0ee1cc7))
-- Fix scoped selector in VuePlugin.
-  ([#1117](https://github.com/fuse-box/fuse-box/issues/1117))
+- Fix scoped selector in VuePlugin. ([#1117](https://github.com/fuse-box/fuse-box/issues/1117))
   ([8d8ef5a](https://github.com/fuse-box/fuse-box/commit/8d8ef5a))
-- LoaderAPI typeof fix
-  ([#1109](https://github.com/fuse-box/fuse-box/issues/1109))
+- LoaderAPI typeof fix ([#1109](https://github.com/fuse-box/fuse-box/issues/1109))
   ([4f5d253](https://github.com/fuse-box/fuse-box/commit/4f5d253))
-- Optimize EnvPlugin when running on electron
-  ([a81448c](https://github.com/fuse-box/fuse-box/commit/a81448c))
-- Optimize VuePlugin when is running on electron
-  ([7a5aa0b](https://github.com/fuse-box/fuse-box/commit/7a5aa0b))
+- Optimize EnvPlugin when running on electron ([a81448c](https://github.com/fuse-box/fuse-box/commit/a81448c))
+- Optimize VuePlugin when is running on electron ([7a5aa0b](https://github.com/fuse-box/fuse-box/commit/7a5aa0b))
 - PathResolver and browser overrides should respect a module override
   ([2ecd663](https://github.com/fuse-box/fuse-box/commit/2ecd663))
 - Quantum typeof require should not be replaced with replaceTypeOf
@@ -259,53 +204,39 @@
   [#1133](https://github.com/fuse-box/fuse-box/issues/1133)
 - Replace arrow functions with function in imports for development
   ([02f2b77](https://github.com/fuse-box/fuse-box/commit/02f2b77))
-- sourcemaps path and windows slashes
-  ([14ea0be](https://github.com/fuse-box/fuse-box/commit/14ea0be)), closes
+- sourcemaps path and windows slashes ([14ea0be](https://github.com/fuse-box/fuse-box/commit/14ea0be)), closes
   [#1143](https://github.com/fuse-box/fuse-box/issues/1143)
-- Stream polyfill returns an empty function
-  ([95868e3](https://github.com/fuse-box/fuse-box/commit/95868e3)), closes
+- Stream polyfill returns an empty function ([95868e3](https://github.com/fuse-box/fuse-box/commit/95868e3)), closes
   [#1162](https://github.com/fuse-box/fuse-box/issues/1162)
 - **tslint:** fixed all auto-fixable errors in core/FuseBox.ts
   ([a16ab51](https://github.com/fuse-box/fuse-box/commit/a16ab51))
-- **tslint:** fixed all auto-fixable errors in Log.ts
-  ([78594b9](https://github.com/fuse-box/fuse-box/commit/78594b9))
-- Support tsconfig.json with comments
-  ([#1129](https://github.com/fuse-box/fuse-box/issues/1129))
+- **tslint:** fixed all auto-fixable errors in Log.ts ([78594b9](https://github.com/fuse-box/fuse-box/commit/78594b9))
+- Support tsconfig.json with comments ([#1129](https://github.com/fuse-box/fuse-box/issues/1129))
   ([d3e9a8a](https://github.com/fuse-box/fuse-box/commit/d3e9a8a))
-- Suppress warnings for electron builds
-  ([1cf3638](https://github.com/fuse-box/fuse-box/commit/1cf3638)), closes
+- Suppress warnings for electron builds ([1cf3638](https://github.com/fuse-box/fuse-box/commit/1cf3638)), closes
   [#1160](https://github.com/fuse-box/fuse-box/issues/1160)
-- Typing error in source map generators
-  ([3331cab](https://github.com/fuse-box/fuse-box/commit/3331cab))
-- typings plugins can consists of strings
-  ([3c13991](https://github.com/fuse-box/fuse-box/commit/3c13991)), closes
+- Typing error in source map generators ([3331cab](https://github.com/fuse-box/fuse-box/commit/3331cab))
+- typings plugins can consists of strings ([3c13991](https://github.com/fuse-box/fuse-box/commit/3c13991)), closes
   [#1169](https://github.com/fuse-box/fuse-box/issues/1169)
-- Update the condition for vue HMR
-  ([#1120](https://github.com/fuse-box/fuse-box/issues/1120))
+- Update the condition for vue HMR ([#1120](https://github.com/fuse-box/fuse-box/issues/1120))
   ([83c44ab](https://github.com/fuse-box/fuse-box/commit/83c44ab))
-- use typescript api to parse tsconfig.json
-  ([4236a32](https://github.com/fuse-box/fuse-box/commit/4236a32))
+- use typescript api to parse tsconfig.json ([4236a32](https://github.com/fuse-box/fuse-box/commit/4236a32))
 
 ### Features
 
 - **languagelevel:** adds template literal as identifier of ES2015
   ([a99e155](https://github.com/fuse-box/fuse-box/commit/a99e155))
-- Added `ServiceWorker` case
-  ([1b77d27](https://github.com/fuse-box/fuse-box/commit/1b77d27)), closes
+- Added `ServiceWorker` case ([1b77d27](https://github.com/fuse-box/fuse-box/commit/1b77d27)), closes
   [#1163](https://github.com/fuse-box/fuse-box/issues/1163)
 - Add a useOriginalFilenames option to CSSResourcePlugin
   ([78d31a9](https://github.com/fuse-box/fuse-box/commit/78d31a9))
-- Add help messages to Sparky tasks
-  ([f68993c](https://github.com/fuse-box/fuse-box/commit/f68993c))
-- log option now takes an object (enabled, showBundledFiles &
-  clearTerminalOnBundle)
+- Add help messages to Sparky tasks ([f68993c](https://github.com/fuse-box/fuse-box/commit/f68993c))
+- log option now takes an object (enabled, showBundledFiles & clearTerminalOnBundle)
   ([#1136](https://github.com/fuse-box/fuse-box/issues/1136))
   ([600b204](https://github.com/fuse-box/fuse-box/commit/600b204))
-- Quantum definedExpressions option
-  ([#1105](https://github.com/fuse-box/fuse-box/issues/1105))
+- Quantum definedExpressions option ([#1105](https://github.com/fuse-box/fuse-box/issues/1105))
   ([4d846d2](https://github.com/fuse-box/fuse-box/commit/4d846d2))
-- sorted bundle sources
-  ([c1ba79f](https://github.com/fuse-box/fuse-box/commit/c1ba79f))
+- sorted bundle sources ([c1ba79f](https://github.com/fuse-box/fuse-box/commit/c1ba79f))
 - stdin option ([#1121](https://github.com/fuse-box/fuse-box/issues/1121))
   ([cf975ad](https://github.com/fuse-box/fuse-box/commit/cf975ad))
 - WebIndexPlugin - Possibility to shape how bundles are emitted
@@ -328,8 +259,7 @@
 
 ### Bug Fixes
 
-- Quantum - replaces property require with fsx
-  ([71ba880](https://github.com/fuse-box/fuse-box/commit/71ba880))
+- Quantum - replaces property require with fsx ([71ba880](https://github.com/fuse-box/fuse-box/commit/71ba880))
 
 <a name="3.1.1"></a>
 
@@ -351,29 +281,22 @@
   ([#1030](https://github.com/fuse-box/fuse-box/issues/1030))
   ([#1032](https://github.com/fuse-box/fuse-box/issues/1032))
   ([4400985](https://github.com/fuse-box/fuse-box/commit/4400985))
-- allowSyntheticDefaultImports is broken
-  ([#1063](https://github.com/fuse-box/fuse-box/issues/1063))
+- allowSyntheticDefaultImports is broken ([#1063](https://github.com/fuse-box/fuse-box/issues/1063))
   ([a7ed207](https://github.com/fuse-box/fuse-box/commit/a7ed207))
 - Corrects updates for HMR updates by pointing to the correct map file
   ([#1037](https://github.com/fuse-box/fuse-box/issues/1037))
   ([e299205](https://github.com/fuse-box/fuse-box/commit/e299205))
-- CSS grouping must use require on explicit user package
-  ([#1019](https://github.com/fuse-box/fuse-box/issues/1019))
+- CSS grouping must use require on explicit user package ([#1019](https://github.com/fuse-box/fuse-box/issues/1019))
   ([625c2d9](https://github.com/fuse-box/fuse-box/commit/625c2d9))
-- CSSDependencyExtractor undefined path check
-  ([e4c2096](https://github.com/fuse-box/fuse-box/commit/e4c2096))
-- CSSModules fails to retrieve data from cache
-  ([#1008](https://github.com/fuse-box/fuse-box/issues/1008))
+- CSSDependencyExtractor undefined path check ([e4c2096](https://github.com/fuse-box/fuse-box/commit/e4c2096))
+- CSSModules fails to retrieve data from cache ([#1008](https://github.com/fuse-box/fuse-box/issues/1008))
   ([fee5386](https://github.com/fuse-box/fuse-box/commit/fee5386))
-- CSSResourcePlugin breaks source maps
-  ([#1058](https://github.com/fuse-box/fuse-box/issues/1058))
+- CSSResourcePlugin breaks source maps ([#1058](https://github.com/fuse-box/fuse-box/issues/1058))
   ([ddb70eb](https://github.com/fuse-box/fuse-box/commit/ddb70eb))
-- CSSResourcePlugin crashes with "TypeError: Cannot read property 'startsWith'
-  of undefined"
+- CSSResourcePlugin crashes with "TypeError: Cannot read property 'startsWith' of undefined"
   ([edda590](https://github.com/fuse-box/fuse-box/commit/edda590)), closes
   [#1084](https://github.com/fuse-box/fuse-box/issues/1084)
-- definition of TSC options
-  ([#1065](https://github.com/fuse-box/fuse-box/issues/1065))
+- definition of TSC options ([#1065](https://github.com/fuse-box/fuse-box/issues/1065))
   ([4529845](https://github.com/fuse-box/fuse-box/commit/4529845))
 - Duplicate slashes cause quantum to fail when resolving modules
   ([f45bf5a](https://github.com/fuse-box/fuse-box/commit/f45bf5a)), closes
@@ -383,68 +306,49 @@
 - EnvPlugin doesn't work with target server on development (fixes
   [#1033](https://github.com/fuse-box/fuse-box/issues/1033))
   ([9711567](https://github.com/fuse-box/fuse-box/commit/9711567))
-- Fix [#1030](https://github.com/fuse-box/fuse-box/issues/1030)
-  (`this !== module.exports`) for Quantum
+- Fix [#1030](https://github.com/fuse-box/fuse-box/issues/1030) (`this !== module.exports`) for Quantum
   ([#1036](https://github.com/fuse-box/fuse-box/issues/1036))
   ([b1c3f1e](https://github.com/fuse-box/fuse-box/commit/b1c3f1e))
-- Fix a type in Bundle runner
-  ([#1051](https://github.com/fuse-box/fuse-box/issues/1051))
+- Fix a type in Bundle runner ([#1051](https://github.com/fuse-box/fuse-box/issues/1051))
   ([95a1eb0](https://github.com/fuse-box/fuse-box/commit/95a1eb0))
-- Fix PostCSSPlugin warning and make it emit sourcemaps
-  ([d03a392](https://github.com/fuse-box/fuse-box/commit/d03a392))
-- Fixes paths on windows
-  ([#1059](https://github.com/fuse-box/fuse-box/issues/1059))
+- Fix PostCSSPlugin warning and make it emit sourcemaps ([d03a392](https://github.com/fuse-box/fuse-box/commit/d03a392))
+- Fixes paths on windows ([#1059](https://github.com/fuse-box/fuse-box/issues/1059))
   ([9ee5e86](https://github.com/fuse-box/fuse-box/commit/9ee5e86))
-- ImageBase64Plugin spits an error when cache is OFF
-  ([#1034](https://github.com/fuse-box/fuse-box/issues/1034))
+- ImageBase64Plugin spits an error when cache is OFF ([#1034](https://github.com/fuse-box/fuse-box/issues/1034))
   ([89c7958](https://github.com/fuse-box/fuse-box/commit/89c7958))
-- Maximum call stack when importing with LESS
-  ([#1023](https://github.com/fuse-box/fuse-box/issues/1023))
+- Maximum call stack when importing with LESS ([#1023](https://github.com/fuse-box/fuse-box/issues/1023))
   ([cf55c4c](https://github.com/fuse-box/fuse-box/commit/cf55c4c))
-- Quantum is running only once, ignoring watch option
-  ([f4d8f5f](https://github.com/fuse-box/fuse-box/commit/f4d8f5f))
+- Quantum is running only once, ignoring watch option ([f4d8f5f](https://github.com/fuse-box/fuse-box/commit/f4d8f5f))
 - Quantum treeshaking respect double imports of the same file
   ([#1064](https://github.com/fuse-box/fuse-box/issues/1064))
   ([3dfcb1a](https://github.com/fuse-box/fuse-box/commit/3dfcb1a))
-- RawPlugin respects CSS dependencies for HMR
-  ([#1020](https://github.com/fuse-box/fuse-box/issues/1020))
+- RawPlugin respects CSS dependencies for HMR ([#1020](https://github.com/fuse-box/fuse-box/issues/1020))
   ([4f4e367](https://github.com/fuse-box/fuse-box/commit/4f4e367))
-- replaced concat-with-sourcemaps to a fixed version
-  ([f1cad3f](https://github.com/fuse-box/fuse-box/commit/f1cad3f))
-- replaces require variable without arguments
-  ([#1047](https://github.com/fuse-box/fuse-box/issues/1047))
+- replaced concat-with-sourcemaps to a fixed version ([f1cad3f](https://github.com/fuse-box/fuse-box/commit/f1cad3f))
+- replaces require variable without arguments ([#1047](https://github.com/fuse-box/fuse-box/issues/1047))
   ([7254820](https://github.com/fuse-box/fuse-box/commit/7254820))
-- Target electron must include events polyfill
-  ([#1038](https://github.com/fuse-box/fuse-box/issues/1038))
+- Target electron must include events polyfill ([#1038](https://github.com/fuse-box/fuse-box/issues/1038))
   ([83f0058](https://github.com/fuse-box/fuse-box/commit/83f0058))
-- tsc function fix on windows
-  ([#1061](https://github.com/fuse-box/fuse-box/issues/1061))
+- tsc function fix on windows ([#1061](https://github.com/fuse-box/fuse-box/issues/1061))
   ([c7a7982](https://github.com/fuse-box/fuse-box/commit/c7a7982))
-- Typeof null in syntheticDefaultExportPolyfill
-  ([610efbb](https://github.com/fuse-box/fuse-box/commit/610efbb))
+- Typeof null in syntheticDefaultExportPolyfill ([610efbb](https://github.com/fuse-box/fuse-box/commit/610efbb))
 - WebIndex does not update the bundle hashes on watch mode
   ([9cce9f3](https://github.com/fuse-box/fuse-box/commit/9cce9f3)), closes
   [#1013](https://github.com/fuse-box/fuse-box/issues/1013)
 
 ### Features
 
-- allowSyntheticDefaultImports
-  ([#1042](https://github.com/fuse-box/fuse-box/issues/1042))
+- allowSyntheticDefaultImports ([#1042](https://github.com/fuse-box/fuse-box/issues/1042))
   ([5748434](https://github.com/fuse-box/fuse-box/commit/5748434))
-- bake quantum api into multiple bundles
-  ([#1086](https://github.com/fuse-box/fuse-box/issues/1086))
+- bake quantum api into multiple bundles ([#1086](https://github.com/fuse-box/fuse-box/issues/1086))
   ([c83012f](https://github.com/fuse-box/fuse-box/commit/c83012f))
-- Callback function for Sparky.watch
-  ([#1056](https://github.com/fuse-box/fuse-box/issues/1056))
+- Callback function for Sparky.watch ([#1056](https://github.com/fuse-box/fuse-box/issues/1056))
   ([fc42064](https://github.com/fuse-box/fuse-box/commit/fc42064))
-- Clean CSS optimizer for Quantum
-  ([#1054](https://github.com/fuse-box/fuse-box/issues/1054))
+- Clean CSS optimizer for Quantum ([#1054](https://github.com/fuse-box/fuse-box/issues/1054))
   ([1ed2402](https://github.com/fuse-box/fuse-box/commit/1ed2402))
-- Inlined CSS source maps and Quantum CSS
-  ([#1054](https://github.com/fuse-box/fuse-box/issues/1054))
+- Inlined CSS source maps and Quantum CSS ([#1054](https://github.com/fuse-box/fuse-box/issues/1054))
   ([d36fb71](https://github.com/fuse-box/fuse-box/commit/d36fb71))
-- Quantum manifest writes entry points
-  ([66b21e4](https://github.com/fuse-box/fuse-box/commit/66b21e4))
+- Quantum manifest writes entry points ([66b21e4](https://github.com/fuse-box/fuse-box/commit/66b21e4))
 
 <a name="3.0.2"></a>
 
@@ -452,43 +356,31 @@
 
 ### Bug Fixes
 
-- Aliasing goes wrong with package.json in folder
-  ([#992](https://github.com/fuse-box/fuse-box/issues/992))
+- Aliasing goes wrong with package.json in folder ([#992](https://github.com/fuse-box/fuse-box/issues/992))
   ([0bb44d9](https://github.com/fuse-box/fuse-box/commit/0bb44d9))
-- add type to FuseBoxOptions.package
-  ([#951](https://github.com/fuse-box/fuse-box/issues/951))
+- add type to FuseBoxOptions.package ([#951](https://github.com/fuse-box/fuse-box/issues/951))
   ([f53bbff](https://github.com/fuse-box/fuse-box/commit/f53bbff))
-- Aliases broke Source Maps
-  ([#978](https://github.com/fuse-box/fuse-box/issues/978))
+- Aliases broke Source Maps ([#978](https://github.com/fuse-box/fuse-box/issues/978))
   ([ea79910](https://github.com/fuse-box/fuse-box/commit/ea79910))
-- BundleProducer overrides NODE_ENV to production
-  ([#950](https://github.com/fuse-box/fuse-box/issues/950))
+- BundleProducer overrides NODE_ENV to production ([#950](https://github.com/fuse-box/fuse-box/issues/950))
   ([39fc7f8](https://github.com/fuse-box/fuse-box/commit/39fc7f8))
-- Bust css cached with PostCSSPlugin
-  ([#965](https://github.com/fuse-box/fuse-box/issues/965))
+- Bust css cached with PostCSSPlugin ([#965](https://github.com/fuse-box/fuse-box/issues/965))
   ([95b9edd](https://github.com/fuse-box/fuse-box/commit/95b9edd))
-- Code spliting file integrity tests
-  ([3362861](https://github.com/fuse-box/fuse-box/commit/3362861))
-- CSSResourcePlugin should not rewrite absolute urls
-  ([#975](https://github.com/fuse-box/fuse-box/issues/975))
+- Code spliting file integrity tests ([3362861](https://github.com/fuse-box/fuse-box/commit/3362861))
+- CSSResourcePlugin should not rewrite absolute urls ([#975](https://github.com/fuse-box/fuse-box/issues/975))
   ([fcf4f17](https://github.com/fuse-box/fuse-box/commit/fcf4f17))
 - Ensure .babelrc options and direct BabelPlugin options are merged together
   ([#920](https://github.com/fuse-box/fuse-box/issues/920))
   ([7aa77f8](https://github.com/fuse-box/fuse-box/commit/7aa77f8))
-- Fix aliases in dynamic import statement
-  ([9242649](https://github.com/fuse-box/fuse-box/commit/9242649)), closes
+- Fix aliases in dynamic import statement ([9242649](https://github.com/fuse-box/fuse-box/commit/9242649)), closes
   [#943](https://github.com/fuse-box/fuse-box/issues/943)
-- Fixed Issue with cached tsconfig language level
-  ([efa3ffe](https://github.com/fuse-box/fuse-box/commit/efa3ffe))
+- Fixed Issue with cached tsconfig language level ([efa3ffe](https://github.com/fuse-box/fuse-box/commit/efa3ffe))
 - Fixes Quantum splitting but when resources have many dependents
   ([b181121](https://github.com/fuse-box/fuse-box/commit/b181121)), closes
   [#949](https://github.com/fuse-box/fuse-box/issues/949)
-- Fixing QuantumBit module movement mechanism
-  ([a528c9b](https://github.com/fuse-box/fuse-box/commit/a528c9b))
-- Fixing Sparky fuse context
-  ([49bd656](https://github.com/fuse-box/fuse-box/commit/49bd656))
-- Incorrect dynamic module resolution
-  ([#982](https://github.com/fuse-box/fuse-box/issues/982))
+- Fixing QuantumBit module movement mechanism ([a528c9b](https://github.com/fuse-box/fuse-box/commit/a528c9b))
+- Fixing Sparky fuse context ([49bd656](https://github.com/fuse-box/fuse-box/commit/49bd656))
+- Incorrect dynamic module resolution ([#982](https://github.com/fuse-box/fuse-box/issues/982))
   ([2160073](https://github.com/fuse-box/fuse-box/commit/2160073))
 - Issue with npm module dependencies being pulled into shared reference
   ([#955](https://github.com/fuse-box/fuse-box/issues/955))
@@ -498,100 +390,67 @@
   ([145912c](https://github.com/fuse-box/fuse-box/commit/145912c))
 - Modules are not moved to split bundles even the belong there
   ([eb9d36c](https://github.com/fuse-box/fuse-box/commit/eb9d36c))
-- Printing fuse version is moved to FuseBox.init
-  ([#1000](https://github.com/fuse-box/fuse-box/issues/1000))
+- Printing fuse version is moved to FuseBox.init ([#1000](https://github.com/fuse-box/fuse-box/issues/1000))
   ([c61551e](https://github.com/fuse-box/fuse-box/commit/c61551e))
 - Quantum crashed with undefined conditions on the plugin list
   ([3ef03fa](https://github.com/fuse-box/fuse-box/commit/3ef03fa)), closes
   [#939](https://github.com/fuse-box/fuse-box/issues/939)
-- Quantum Splitting and node_modules
-  ([a093cad](https://github.com/fuse-box/fuse-box/commit/a093cad))
-- QuantumBit fixing circular dependency issue
-  ([3ab0651](https://github.com/fuse-box/fuse-box/commit/3ab0651))
-- related to package.json main directive
-  ([#992](https://github.com/fuse-box/fuse-box/issues/992))
+- Quantum Splitting and node_modules ([a093cad](https://github.com/fuse-box/fuse-box/commit/a093cad))
+- QuantumBit fixing circular dependency issue ([3ab0651](https://github.com/fuse-box/fuse-box/commit/3ab0651))
+- related to package.json main directive ([#992](https://github.com/fuse-box/fuse-box/issues/992))
   ([071dc57](https://github.com/fuse-box/fuse-box/commit/071dc57))
-- ScriptTarget ES-edition to ES-year aliases
-  ([#990](https://github.com/fuse-box/fuse-box/issues/990))
+- ScriptTarget ES-edition to ES-year aliases ([#990](https://github.com/fuse-box/fuse-box/issues/990))
   ([#1001](https://github.com/fuse-box/fuse-box/issues/1001))
   ([cba2bec](https://github.com/fuse-box/fuse-box/commit/cba2bec))
-- Sparky combined tasks and new colours
-  ([51cf154](https://github.com/fuse-box/fuse-box/commit/51cf154))
-- Sparky failed to copy sub directories
-  ([7fb285d](https://github.com/fuse-box/fuse-box/commit/7fb285d))
-- **sparky:** Update watch flow to use user base path
-  ([#996](https://github.com/fuse-box/fuse-box/issues/996))
+- Sparky combined tasks and new colours ([51cf154](https://github.com/fuse-box/fuse-box/commit/51cf154))
+- Sparky failed to copy sub directories ([7fb285d](https://github.com/fuse-box/fuse-box/commit/7fb285d))
+- **sparky:** Update watch flow to use user base path ([#996](https://github.com/fuse-box/fuse-box/issues/996))
   ([7a878ee](https://github.com/fuse-box/fuse-box/commit/7a878ee)), closes
   [#995](https://github.com/fuse-box/fuse-box/issues/995)
 - Sparky log ([48fcf12](https://github.com/fuse-box/fuse-box/commit/48fcf12))
-- Sparky shortcut functions lose context
-  ([9b29153](https://github.com/fuse-box/fuse-box/commit/9b29153))
-- tsc added to Sparky export
-  ([31e62c0](https://github.com/fuse-box/fuse-box/commit/31e62c0))
+- Sparky shortcut functions lose context ([9b29153](https://github.com/fuse-box/fuse-box/commit/9b29153))
+- tsc added to Sparky export ([31e62c0](https://github.com/fuse-box/fuse-box/commit/31e62c0))
 
 ### Features
 
-- Ability to publish typescript sources to npm
-  ([91b3a28](https://github.com/fuse-box/fuse-box/commit/91b3a28))
-- add `appendBundles`-option to WebIndex-plugin
-  ([#942](https://github.com/fuse-box/fuse-box/issues/942))
+- Ability to publish typescript sources to npm ([91b3a28](https://github.com/fuse-box/fuse-box/commit/91b3a28))
+- add `appendBundles`-option to WebIndex-plugin ([#942](https://github.com/fuse-box/fuse-box/issues/942))
   ([3668e7a](https://github.com/fuse-box/fuse-box/commit/3668e7a))
-- Add fuse helper to Sparky
-  ([8315595](https://github.com/fuse-box/fuse-box/commit/8315595))
-- Add support for adding prefetch and preload tags.
-  ([#987](https://github.com/fuse-box/fuse-box/issues/987))
+- Add fuse helper to Sparky ([8315595](https://github.com/fuse-box/fuse-box/commit/8315595))
+- Add support for adding prefetch and preload tags. ([#987](https://github.com/fuse-box/fuse-box/issues/987))
   ([567f0d8](https://github.com/fuse-box/fuse-box/commit/567f0d8))
-- Added a rename function and some documentation
-  ([#957](https://github.com/fuse-box/fuse-box/issues/957))
+- Added a rename function and some documentation ([#957](https://github.com/fuse-box/fuse-box/issues/957))
   ([62a2bae](https://github.com/fuse-box/fuse-box/commit/62a2bae))
-- Added npmPublish, bumpVersion for Sparky
-  ([82f553d](https://github.com/fuse-box/fuse-box/commit/82f553d))
-- Added Sparky.exec
-  ([ae02e49](https://github.com/fuse-box/fuse-box/commit/ae02e49))
-- Adding default sparky context value
-  ([d5ba1e1](https://github.com/fuse-box/fuse-box/commit/d5ba1e1))
+- Added npmPublish, bumpVersion for Sparky ([82f553d](https://github.com/fuse-box/fuse-box/commit/82f553d))
+- Added Sparky.exec ([ae02e49](https://github.com/fuse-box/fuse-box/commit/ae02e49))
+- Adding default sparky context value ([d5ba1e1](https://github.com/fuse-box/fuse-box/commit/d5ba1e1))
 - allow CSS mask images to be processed with PostCSSResourcePlugin
   ([#925](https://github.com/fuse-box/fuse-box/issues/925))
   ([1f1941d](https://github.com/fuse-box/fuse-box/commit/1f1941d))
-- Allow to set root option on postcss-modules
-  ([#985](https://github.com/fuse-box/fuse-box/issues/985))
+- Allow to set root option on postcss-modules ([#985](https://github.com/fuse-box/fuse-box/issues/985))
   ([b92de87](https://github.com/fuse-box/fuse-box/commit/b92de87))
-- An ability to create context in Sparky
-  ([#962](https://github.com/fuse-box/fuse-box/issues/962))
+- An ability to create context in Sparky ([#962](https://github.com/fuse-box/fuse-box/issues/962))
   ([afca694](https://github.com/fuse-box/fuse-box/commit/afca694))
-- Ensure Quantum target matches FuseBox.init target
-  ([#953](https://github.com/fuse-box/fuse-box/issues/953))
+- Ensure Quantum target matches FuseBox.init target ([#953](https://github.com/fuse-box/fuse-box/issues/953))
   ([a65ee45](https://github.com/fuse-box/fuse-box/commit/a65ee45))
-- EnsureEs5 false in Quantum
-  ([44a099c](https://github.com/fuse-box/fuse-box/commit/44a099c))
-- Generate tsconfig.json if not found with default values
-  ([#952](https://github.com/fuse-box/fuse-box/issues/952))
+- EnsureEs5 false in Quantum ([44a099c](https://github.com/fuse-box/fuse-box/commit/44a099c))
+- Generate tsconfig.json if not found with default values ([#952](https://github.com/fuse-box/fuse-box/issues/952))
   ([53a24e7](https://github.com/fuse-box/fuse-box/commit/53a24e7))
-- Introducing Quantum noConflictApi option
-  ([e819318](https://github.com/fuse-box/fuse-box/commit/e819318)), closes
-  [#947](https://github.com/fuse-box/fuse-box/issues/947)
-  [#914](https://github.com/fuse-box/fuse-box/issues/914)
-- PostCSS added support for .pcss extension
-  ([#972](https://github.com/fuse-box/fuse-box/issues/972))
+- Introducing Quantum noConflictApi option ([e819318](https://github.com/fuse-box/fuse-box/commit/e819318)), closes
+  [#947](https://github.com/fuse-box/fuse-box/issues/947) [#914](https://github.com/fuse-box/fuse-box/issues/914)
+- PostCSS added support for .pcss extension ([#972](https://github.com/fuse-box/fuse-box/issues/972))
   ([9e4df9b](https://github.com/fuse-box/fuse-box/commit/9e4df9b))
 - Responsive target should affect tsconfig and Quantum uglify target
   ([#946](https://github.com/fuse-box/fuse-box/issues/946))
   ([3fb7176](https://github.com/fuse-box/fuse-box/commit/3fb7176))
-- sendPageReload and sendPageHMR from fuse.js
-  ([#921](https://github.com/fuse-box/fuse-box/issues/921))
+- sendPageReload and sendPageHMR from fuse.js ([#921](https://github.com/fuse-box/fuse-box/issues/921))
   ([6635a10](https://github.com/fuse-box/fuse-box/commit/6635a10))
-- Smart code splitting
-  ([3b5ba2e](https://github.com/fuse-box/fuse-box/commit/3b5ba2e)), closes
-  [#934](https://github.com/fuse-box/fuse-box/issues/934)
-  [#926](https://github.com/fuse-box/fuse-box/issues/926)
-  [#880](https://github.com/fuse-box/fuse-box/issues/880)
-  [#771](https://github.com/fuse-box/fuse-box/issues/771)
-  [#933](https://github.com/fuse-box/fuse-box/issues/933)
-  [#895](https://github.com/fuse-box/fuse-box/issues/895)
-- Smart Code Splitting respect splitConfig option
-  ([55bc66b](https://github.com/fuse-box/fuse-box/commit/55bc66b))
-- Support HMR of files included through CSS Modules
-  [@value](https://github.com/value)
+- Smart code splitting ([3b5ba2e](https://github.com/fuse-box/fuse-box/commit/3b5ba2e)), closes
+  [#934](https://github.com/fuse-box/fuse-box/issues/934) [#926](https://github.com/fuse-box/fuse-box/issues/926)
+  [#880](https://github.com/fuse-box/fuse-box/issues/880) [#771](https://github.com/fuse-box/fuse-box/issues/771)
+  [#933](https://github.com/fuse-box/fuse-box/issues/933) [#895](https://github.com/fuse-box/fuse-box/issues/895)
+- Smart Code Splitting respect splitConfig option ([55bc66b](https://github.com/fuse-box/fuse-box/commit/55bc66b))
+- Support HMR of files included through CSS Modules [@value](https://github.com/value)
   ([#999](https://github.com/fuse-box/fuse-box/issues/999))
   ([55cfe54](https://github.com/fuse-box/fuse-box/commit/55cfe54))
 
@@ -601,20 +460,17 @@
 
 ### Bug Fixes
 
-- Accepts only strings for sourceMaps
-  ([#860](https://github.com/fuse-box/fuse-box/issues/860))
+- Accepts only strings for sourceMaps ([#860](https://github.com/fuse-box/fuse-box/issues/860))
   ([65e110f](https://github.com/fuse-box/fuse-box/commit/65e110f))
-- Check for frozen object in polyfillNonStandardDefaultUsage
-  ([#850](https://github.com/fuse-box/fuse-box/issues/850))
+- Check for frozen object in polyfillNonStandardDefaultUsage ([#850](https://github.com/fuse-box/fuse-box/issues/850))
   ([6137026](https://github.com/fuse-box/fuse-box/commit/6137026))
 - css plugin doesnt check type before calling generateCorrectSourceMap
   ([#897](https://github.com/fuse-box/fuse-box/issues/897))
   ([2969f66](https://github.com/fuse-box/fuse-box/commit/2969f66))
-- Ensure correct path names for last changed file in bundle for
-  VueComponentPlugin ([#878](https://github.com/fuse-box/fuse-box/issues/878))
+- Ensure correct path names for last changed file in bundle for VueComponentPlugin
+  ([#878](https://github.com/fuse-box/fuse-box/issues/878))
   ([c67cffe](https://github.com/fuse-box/fuse-box/commit/c67cffe))
-- Ensures typescript plugin is used when vue lang="ts"
-  ([#861](https://github.com/fuse-box/fuse-box/issues/861))
+- Ensures typescript plugin is used when vue lang="ts" ([#861](https://github.com/fuse-box/fuse-box/issues/861))
   ([0716e63](https://github.com/fuse-box/fuse-box/commit/0716e63))
 - Fixes code splitting issue when Quantum doesn't take path resolver
   ([#867](https://github.com/fuse-box/fuse-box/issues/867))
@@ -622,37 +478,28 @@
 - Only inject HMR code at end of bundle if a vue file has been processed
   ([#858](https://github.com/fuse-box/fuse-box/issues/858))
   ([1b68718](https://github.com/fuse-box/fuse-box/commit/1b68718))
-- WebWorker now works with VanillaAPI
-  ([#869](https://github.com/fuse-box/fuse-box/issues/869))
+- WebWorker now works with VanillaAPI ([#869](https://github.com/fuse-box/fuse-box/issues/869))
   ([e40ec64](https://github.com/fuse-box/fuse-box/commit/e40ec64))
 
 ### Features
 
-- Add CLI API functionality
-  ([#892](https://github.com/fuse-box/fuse-box/issues/892))
+- Add CLI API functionality ([#892](https://github.com/fuse-box/fuse-box/issues/892))
   ([fcd30fb](https://github.com/fuse-box/fuse-box/commit/fcd30fb))
-- Allow path overrides configuration
-  ([05a47fb](https://github.com/fuse-box/fuse-box/commit/05a47fb))
-- Allow typescript decorators for vue components
-  ([#870](https://github.com/fuse-box/fuse-box/issues/870))
+- Allow path overrides configuration ([05a47fb](https://github.com/fuse-box/fuse-box/commit/05a47fb))
+- Allow typescript decorators for vue components ([#870](https://github.com/fuse-box/fuse-box/issues/870))
   ([18f783e](https://github.com/fuse-box/fuse-box/commit/18f783e))
 - Extended Server require with import statements on remote files
   ([#883](https://github.com/fuse-box/fuse-box/issues/883))
   ([12dfc01](https://github.com/fuse-box/fuse-box/commit/12dfc01)), closes
   [#871](https://github.com/fuse-box/fuse-box/issues/871)
-- object-rest-spread acorn parser extension
-  ([#864](https://github.com/fuse-box/fuse-box/issues/864))
+- object-rest-spread acorn parser extension ([#864](https://github.com/fuse-box/fuse-box/issues/864))
   ([3c7d18e](https://github.com/fuse-box/fuse-box/commit/3c7d18e))
-- shimsPath customisation in Quantum
-  ([50124ad](https://github.com/fuse-box/fuse-box/commit/50124ad))
-- StylusPlugin and CSSDependencyExtractor + Cache
-  ([#857](https://github.com/fuse-box/fuse-box/issues/857))
+- shimsPath customisation in Quantum ([50124ad](https://github.com/fuse-box/fuse-box/commit/50124ad))
+- StylusPlugin and CSSDependencyExtractor + Cache ([#857](https://github.com/fuse-box/fuse-box/issues/857))
   ([fd024b2](https://github.com/fuse-box/fuse-box/commit/fd024b2))
-- Uglify-es support for quantum
-  ([#884](https://github.com/fuse-box/fuse-box/issues/884))
+- Uglify-es support for quantum ([#884](https://github.com/fuse-box/fuse-box/issues/884))
   ([7add661](https://github.com/fuse-box/fuse-box/commit/7add661))
-- WebIndexPlugin now accepts a template as a string literal
-  ([#886](https://github.com/fuse-box/fuse-box/issues/886))
+- WebIndexPlugin now accepts a template as a string literal ([#886](https://github.com/fuse-box/fuse-box/issues/886))
   ([2792c1d](https://github.com/fuse-box/fuse-box/commit/2792c1d))
 
 <a name="2.3.3"></a>
@@ -676,29 +523,23 @@
 
 - check pkg main ([#797](https://github.com/fuse-box/fuse-box/issues/797))
   ([3c219de](https://github.com/fuse-box/fuse-box/commit/3c219de))
-- Entry point path failure when resolving at runtime
-  ([#823](https://github.com/fuse-box/fuse-box/issues/823))
+- Entry point path failure when resolving at runtime ([#823](https://github.com/fuse-box/fuse-box/issues/823))
   ([abd760f](https://github.com/fuse-box/fuse-box/commit/abd760f))
 - FuseBox.import and Quantum - unable to remove the record
   ([b5230fb](https://github.com/fuse-box/fuse-box/commit/b5230fb))
 - Quantum didn't handle replacement of if else conditions
   ([de1eed3](https://github.com/fuse-box/fuse-box/commit/de1eed3))
-- quantum relative package requires
-  ([#802](https://github.com/fuse-box/fuse-box/issues/802))
+- quantum relative package requires ([#802](https://github.com/fuse-box/fuse-box/issues/802))
   ([aa11433](https://github.com/fuse-box/fuse-box/commit/aa11433))
-- respect log level for cache clear
-  ([#830](https://github.com/fuse-box/fuse-box/issues/830))
+- respect log level for cache clear ([#830](https://github.com/fuse-box/fuse-box/issues/830))
   ([2d8131f](https://github.com/fuse-box/fuse-box/commit/2d8131f))
 
 ### Features
 
-- add language target to control transpilation level
-  ([ec41a95](https://github.com/fuse-box/fuse-box/commit/ec41a95))
-- expose `package.json` in file info
-  ([#782](https://github.com/fuse-box/fuse-box/issues/782))
+- add language target to control transpilation level ([ec41a95](https://github.com/fuse-box/fuse-box/commit/ec41a95))
+- expose `package.json` in file info ([#782](https://github.com/fuse-box/fuse-box/issues/782))
   ([440dd3e](https://github.com/fuse-box/fuse-box/commit/440dd3e))
-- support object rest-spread
-  ([#837](https://github.com/fuse-box/fuse-box/issues/837))
+- support object rest-spread ([#837](https://github.com/fuse-box/fuse-box/issues/837))
   ([e130db2](https://github.com/fuse-box/fuse-box/commit/e130db2))
 
 <a name="2.2.31"></a>
@@ -747,8 +588,7 @@
 
 ### Features
 
-- **error-logging:** minimize/hide in browser
-  ([#759](https://github.com/fuse-box/fuse-box/issues/759))
+- **error-logging:** minimize/hide in browser ([#759](https://github.com/fuse-box/fuse-box/issues/759))
   ([fa5f9d2](https://github.com/fuse-box/fuse-box/commit/fa5f9d2))
 
 <a name="2.2.3-beta.12"></a>
@@ -829,10 +669,8 @@
 
 ### Features
 
-- centralized error logging for bundles
-  ([01f8f21](https://github.com/fuse-box/fuse-box/commit/01f8f21))
-- error logging in browser
-  ([ea3e5fb](https://github.com/fuse-box/fuse-box/commit/ea3e5fb))
+- centralized error logging for bundles ([01f8f21](https://github.com/fuse-box/fuse-box/commit/01f8f21))
+- error logging in browser ([ea3e5fb](https://github.com/fuse-box/fuse-box/commit/ea3e5fb))
 
 <a name="2.2.2-beta.11"></a>
 
@@ -900,8 +738,7 @@
 
 ### Bug Fixes
 
-- add missing type import
-  ([#678](https://github.com/fuse-box/fuse-box/issues/678))
+- add missing type import ([#678](https://github.com/fuse-box/fuse-box/issues/678))
   ([f3dcedd](https://github.com/fuse-box/fuse-box/commit/f3dcedd))
 
 <a name="2.2.1-beta.14"></a>
@@ -942,8 +779,7 @@
 
 ### Bug Fixes
 
-- fusebox bundle in repl and \_third_party_main
-  ([#671](https://github.com/fuse-box/fuse-box/issues/671))
+- fusebox bundle in repl and \_third_party_main ([#671](https://github.com/fuse-box/fuse-box/issues/671))
   ([827b64e](https://github.com/fuse-box/fuse-box/commit/827b64e))
 
 <a name="2.2.1-beta.5"></a>
@@ -1016,8 +852,7 @@
 
 ### Features
 
-- allow traversal plugins to be passed through makeAnalysis
-  ([#634](https://github.com/fuse-box/fuse-box/issues/634))
+- allow traversal plugins to be passed through makeAnalysis ([#634](https://github.com/fuse-box/fuse-box/issues/634))
   ([68757f0](https://github.com/fuse-box/fuse-box/commit/68757f0))
 
 <a name="2.2.0-beta.17"></a>
@@ -1186,8 +1021,7 @@
 
 ### Bug Fixes
 
-- relative includes requires filename option (pug)
-  ([3c4ae38](https://github.com/fuse-box/fuse-box/commit/3c4ae38))
+- relative includes requires filename option (pug) ([3c4ae38](https://github.com/fuse-box/fuse-box/commit/3c4ae38))
 
 <a name="2.0.0"></a>
 

@@ -496,12 +496,6 @@ FuseBox.init({
 });
 ```
 
-`sourceMaps` can also be configured via the chainable API:
-
-```js
-fuse.bundle("app").sourceMaps(true);
-```
-
 Sourcemaps currently work with typescript, BabelPlugin and
 SourceMapPlainJsPlugin
 
