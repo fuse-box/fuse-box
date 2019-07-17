@@ -206,7 +206,7 @@ export function processModule(props: IDefaultParseProps) {
           props.module.externalDependencies.push(item.package);
         }
         if (item && !item.processed && item.module) {
-          processModule({ ...props, module: item.module });
+          processModule({ ...props, module: item.module, extraDependencies: undefined });
         }
       }
     });

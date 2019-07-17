@@ -13,6 +13,7 @@ import { createHMRServer, HMRServerMethods } from './hmrServer';
 import * as open from 'open';
 
 import * as proxyMiddleware from 'http-proxy-middleware';
+import { generateFTLJavaScript } from '../FTL/FasterThanLightReload';
 
 export interface IDevServerActions {
   clientSend: (name: string, payload) => void;
@@ -33,6 +34,12 @@ export function createExpressApp(ctx: Context, props: IHTTPServerProps, extra?: 
     }
   }
 
+  app.all('/__ftl', (req, res) => {
+    const ftlModules = ctx.assembleContext.getFTLModules();
+    const js = generateFTLJavaScript(ftlModules);
+    res.set('Content-Type', 'application/javascript; charset=UTF-8');
+    res.send(js);
+  });
   app.use('/', express.static(props.root));
 
   app.use('*', (req, res) => {

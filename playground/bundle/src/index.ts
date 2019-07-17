@@ -1,9 +1,6 @@
 //import 'tslib';
 
-//import './sub';
-
-import * as litHTML from 'lit-html';
-console.log(litHTML.render('', document.getElementById('root')));
+import './sub';
 
 // import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 // console.log(BrowserAnimationsModule);

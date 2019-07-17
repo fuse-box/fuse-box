@@ -1,13 +1,12 @@
+import * as convertSourceMap from 'convert-source-map';
 import * as prettyTime from 'pretty-time';
 import { BundleType, IBundleWriteResponse } from '../bundle/Bundle';
-import { inflateBundle } from '../bundle/createDevBundles';
+import { devStrings } from '../bundle/bundleStrings';
 import { Context } from '../core/Context';
+import { Module } from '../core/Module';
 import { Package } from '../core/Package';
 import { bundleResolveModule } from '../main/process_plugins';
-import { Module } from '../core/Module';
 import { createConcat } from '../utils/utils';
-import { devStrings } from '../bundle/bundleStrings';
-import * as convertSourceMap from 'convert-source-map';
 
 export interface IFasterThanLightProps {
   ctx: Context;
@@ -15,31 +14,35 @@ export interface IFasterThanLightProps {
   filePath: string;
 }
 
-function createFTLContent(module: Module) {
-  const requireSourceMaps = module.props.ctx.config.sourceMap.project;
-  module.generate();
-  const concat = createConcat(requireSourceMaps, '', '\n');
-  concat.add(null, devStrings.openPackage(module.pkg, {}));
-  concat.add(null, module.contents, module.sourceMap);
+const MAX_FTL_MODULES = 5;
+export function generateFTLJavaScript(modules: Array<Module>) {
+  const concat = createConcat(true, '', '\n');
+  concat.add(null, devStrings.openPackage('default', {}));
+  for (const m of modules) {
+    concat.add(null, devStrings.openFile(m.props.fuseBoxPath));
+    concat.add(null, m.contents, m.sourceMap);
+    concat.add(null, devStrings.closeFile());
+  }
   concat.add(null, devStrings.closePackage());
   let stringContent = concat.content.toString();
-  if (requireSourceMaps && module.sourceMap) {
-    let json = JSON.parse(module.sourceMap);
-
-    const sm = convertSourceMap.fromObject(json).toComment();
-    stringContent += '\n' + sm;
-  }
+  let json = JSON.parse(concat.sourceMap);
+  const sm = convertSourceMap.fromObject(json).toComment();
+  stringContent += '\n' + sm;
   return stringContent;
 }
 
 export function fasterThanLight(props: IFasterThanLightProps): Promise<Boolean> {
   const { ctx, bundleWriters, filePath } = props;
+  if (ctx.config.target === 'server') {
+    return;
+  }
   if (!ctx.config.cache.enabled || !ctx.devServer) {
     return;
   }
   const cache = ctx.cache;
   const defaultPackage = ctx.packages.find(pkg => pkg.isDefaultPackage);
   const targetModule = defaultPackage.modules.find(item => item.props.absPath === filePath);
+
   if (targetModule && targetModule.isExecutable()) {
     // get the current cache (even if it's broken already)
     // we need to check if external dependencies didn't change
@@ -54,6 +57,7 @@ export function fasterThanLight(props: IFasterThanLightProps): Promise<Boolean> 
     const targetBundle = bundleWriters.find(item => item.bundle.props.type === BundleType.PROJECT_JS);
 
     if (!targetBundle) return;
+
     // it may happen that user just hit "save" without doing anything
     // isCached is set in attach_cache.ts in cache.restoreModule(module);
     // that's why this check followed by "assemble_module_init" it cannot happen earlier
@@ -71,6 +75,8 @@ export function fasterThanLight(props: IFasterThanLightProps): Promise<Boolean> 
     for (let i = 0; i < oldAnalysis.imports.length; i++) {
       if (newAnalysis.imports[i].statement !== oldAnalysis.imports[i].statement) return;
     }
+    const ftlModules = ctx.assembleContext.getFTLModules();
+    if (ftlModules.length > MAX_FTL_MODULES) return;
 
     // restore replaceable, since we skip the assemble part + resolving the statements
     targetModule.fastAnalysis.replaceable = oldAnalysis.replaceable;
@@ -82,8 +88,7 @@ export function fasterThanLight(props: IFasterThanLightProps): Promise<Boolean> 
     // skipping EVERYTHING else
     bundleResolveModule(targetModule);
     return ctx.ict.resolve().then(() => {
-      const stringContent = createFTLContent(targetModule);
-      ctx.assembleContext.addFTL(targetModule.getHasedPath(), stringContent);
+      ctx.assembleContext.setFTLModule(targetModule);
       return true;
     });
   }
@@ -96,6 +101,7 @@ export function attachFTL(ctx: Context) {
     if (!bundles) return;
 
     const response = fasterThanLight({ ctx, filePath: props.info.filePath, bundleWriters: bundles });
+
     if (response) {
       props.info.FTL = true;
       ctx.ict.sync('rebundle_complete', {
@@ -106,9 +112,15 @@ export function attachFTL(ctx: Context) {
         file: props.info.filePath,
       });
       response.then(bundeResponse => {
-        ctx.log.print(`<green>✔</green> <green><bold> FTL Completed in $time</bold></green>`, {
-          time: prettyTime(process.hrtime(props.info.timeStart)),
-        });
+        const l = ctx.assembleContext.getFTLModules().length;
+        ctx.log.print(
+          `<green>✔</green> <green><bold> FTL Completed in $time</bold></green> <dim>$total/$max in-memory</dim>`,
+          {
+            time: prettyTime(process.hrtime(props.info.timeStart)),
+            total: l,
+            max: MAX_FTL_MODULES,
+          },
+        );
       });
     }
 

@@ -23,6 +23,7 @@ jest.mock('ws', () => {
 jest.mock('express', () => {
   const fn = () => {
     return {
+      all: () => {},
       use: __mock_expressUse,
       listen: __mock_expressListen,
     };
