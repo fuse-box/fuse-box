@@ -205,7 +205,7 @@ export function mockWriteFile() {
 
   utils['readFile'] = path => {
     scope.fileReads.push(path);
-    return scope.files[path].contents;
+    return scope.files[path] && scope.files[path].contents;
   };
 
   return {

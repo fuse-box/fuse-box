@@ -26,9 +26,12 @@ function hello() {}
 // };
 console.log('here');
 
-async function someStuff() {
-  const module = await import('./lazy/lazy_main');
-  console.log(module);
-}
+document.querySelector('h1').addEventListener('click', () => {
+  someStuff();
+});
 
-someStuff();
+async function someStuff() {
+  console.log('start');
+  const module = await import('./lazy/lazy_main');
+  console.log('shiiiet', module.lazyMain());
+}

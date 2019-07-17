@@ -9,6 +9,7 @@ import {
   isLocalIdentifier,
   isRequireStatement,
   isWorkerStatement,
+  isShortHandIdentifier,
 } from '../transformUtils';
 import { handleExportDefaultDeclaration } from './exportDefaultDeclaration';
 import { onImportDeclaration } from './importDeclaration';
@@ -16,12 +17,10 @@ import { exportNamedDeclaration } from './namedDeclaration';
 import { createTransformContext } from './TrasnformContext';
 import { IWebWorkerItem } from '../../analysis/fastAnalysis';
 
-export function parseAst(contents: string, options?: any) {
-  return meriyah.parse(contents, {
-    next: false,
-    webCompat: true,
-    module: true,
-  });
+export function parseAst(contents: string, options?: { loc: boolean }) {
+  let opts = { next: false, module: true, ...(options || {}) };
+
+  return meriyah.parse(contents, opts);
 }
 
 export interface IFastTransformProps {
@@ -33,7 +32,7 @@ export interface IFastTransformProps {
   sourceInterceptor?: (source: string) => string;
 }
 export function fastTransform(opts: IFastTransformProps): { code: string; sourceMap: any } {
-  const ast = opts.ast ? opts.ast : parseAst(opts.input, { locations: opts.sourceMaps });
+  const ast = opts.ast ? opts.ast : parseAst(opts.input, { loc: opts.sourceMaps });
 
   const ctx = createTransformContext(opts);
 
@@ -71,6 +70,25 @@ export function fastTransform(opts: IFastTransformProps): { code: string; source
               if (item) {
                 node.arguments[0].value = item.bundlePath;
               }
+            }
+          }
+
+          const shortHand = isShortHandIdentifier(node, parent);
+          if (shortHand) {
+            if (ctx.tracedImportSpecifiers[shortHand.node.name]) {
+              // if it belongs to a function "someFunc(foo){}"
+              if (ctx.tracedImportSpecifiers[shortHand.node.name].nodes) {
+                if (context && context.locals.indexOf(shortHand.node.name) > -1) {
+                  return;
+                }
+                shortHand.parent.shorthand = false;
+                ctx.tracedImportSpecifiers[shortHand.node.name].nodes.push({
+                  node: shortHand.node,
+                  parent: shortHand.parent,
+                  prop: 'value',
+                });
+              }
+              return;
             }
           }
 

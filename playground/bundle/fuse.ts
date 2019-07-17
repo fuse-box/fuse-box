@@ -25,9 +25,16 @@ const fuse = fusebox({
     },
   },
   cache: {
-    FTL: true,
-    enabled: true,
+    FTL: false,
+    enabled: false,
     root: path.join(__dirname, '.cache'),
+  },
+  dependencies: {
+    include: [
+      'tslib',
+      '@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js',
+      '@webcomponents/webcomponentsjs/webcomponents-bundle.js',
+    ],
   },
   webIndex: {
     publicPath: '.',

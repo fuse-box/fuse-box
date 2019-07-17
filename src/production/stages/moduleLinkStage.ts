@@ -12,7 +12,7 @@ function linkModule(productionModule: ProductionModule, props: IProductionFlow) 
 
   fromLinks.forEach(link => {
     const info = imports.find(imp => imp.statement === link.fromSource);
-    if (!info) return;
+    if (!info || !info.link) return;
     if (info.link.package && info.link.resolver) {
       const packageTargetAbsPath = info.link.resolver.package.targetAbsPath;
       const targetProductionPackage = info.link.package.productionPackage;

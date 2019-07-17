@@ -6,10 +6,11 @@ import { ILoggerProps } from '../logging/logging';
 import { IJSONPluginProps } from '../plugins/core/plugin_json';
 import { IWatcherExternalProps } from '../watcher/watcher';
 import { IWebIndexConfig } from '../web-index/webIndex';
+import { ICodeSplittingConfig } from './ICodeSplittingConfig';
 import { IResourceConfig } from './IResourceConfig';
 import { IStyleSheetProps } from './IStylesheetProps';
 import { IWebWorkerConfig } from './IWebWorkerConfig';
-import { IHMRExternalProps, ITarget, ICacheProps } from './PrivateConfig';
+import { ICacheProps, IHMRExternalProps, ITarget } from './PrivateConfig';
 export interface IPublicConfig {
   root?: string;
   target?: ITarget;
@@ -24,6 +25,8 @@ export interface IPublicConfig {
   modules?: Array<string>;
   logging?: ILoggerProps;
   webWorkers?: IWebWorkerConfig;
+
+  codeSplitting?: ICodeSplittingConfig;
 
   watch?: boolean | IWatcherExternalProps;
 

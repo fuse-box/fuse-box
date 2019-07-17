@@ -15,9 +15,14 @@ export interface ICSSContextHandler {
   module: Module;
   shared: ICSSContextHandlerExtraProps;
 }
+export function setEmpty() {}
 export function cssContextHandler(props: ICSSContextHandler) {
   const { ctx, processor, shared } = props;
-
+  const supported = props.ctx.config.supportsStylesheet() || shared.asText;
+  if (!supported) {
+    props.module.contents = 'module.exports = {}';
+    return;
+  }
   ctx.ict.promise(async () => {
     try {
       const data = await processor.render();

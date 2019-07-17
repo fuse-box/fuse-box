@@ -1,10 +1,13 @@
 //import 'tslib';
 
-import './sub';
+//import './sub';
 
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-console.log(BrowserAnimationsModule);
-console.log(199);
+import * as litHTML from 'lit-html';
+console.log(litHTML.render('', document.getElementById('root')));
+
+// import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+// console.log(BrowserAnimationsModule);
+// console.log(199);
 
 // import './styles/main.scss';
 // import { Button } from '@material-ui/core';

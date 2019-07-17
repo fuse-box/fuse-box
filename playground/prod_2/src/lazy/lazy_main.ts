@@ -1,5 +1,6 @@
 import { lazyTwo } from './lazy_two';
-
+let i = 0;
 export function lazyMain() {
-  lazyTwo();
+  i++;
+  return lazyTwo();
 }

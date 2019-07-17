@@ -33,7 +33,7 @@ export function fastAstAnalysis(props: IASTAnalysisProps): IFastAnalysis {
     report: {},
   };
 
-  const ast = parseAst(props.input, { locations: props.locations });
+  const ast = parseAst(props.input, { loc: props.locations });
   ctx.ast = ast;
   const bannedVariables = [];
   fastWalk(ast, {

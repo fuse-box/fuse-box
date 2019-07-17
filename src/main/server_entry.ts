@@ -5,9 +5,9 @@ import { createServerProcess, IServerProcess } from '../server_process/serverPro
 export function attachServerEntry(ctx: Context) {
   let serverProcess: IServerProcess;
   async function write(bundles: Array<IBundleWriteResponse>) {
-    const info = await devServerEntry(ctx, bundles);
+    const data = await addServerEntry(ctx, bundles);
     if (ctx.config.autoStartServerEntry) {
-      if (!serverProcess) serverProcess = createServerProcess({ absPath: info.stat.absPath });
+      if (!serverProcess) serverProcess = createServerProcess({ absPath: data.info.stat.absPath });
       serverProcess.start();
     }
   }
@@ -24,7 +24,7 @@ export function attachServerEntry(ctx: Context) {
   }
 }
 
-export async function devServerEntry(ctx: Context, bundles: Array<IBundleWriteResponse>) {
+export async function addServerEntry(ctx: Context, bundles: Array<IBundleWriteResponse>) {
   const serverEntry = new Bundle({
     ctx,
     name: '_server_entry',
@@ -33,9 +33,18 @@ export async function devServerEntry(ctx: Context, bundles: Array<IBundleWriteRe
     webIndexed: false,
   });
 
+  if (ctx.config.sourceMap.project) {
+    serverEntry.addContent(`require('source-map-support').install();`);
+  }
+
   const sorted = bundles.sort((a, b) => a.bundle.props.priority - b.bundle.props.priority);
   sorted.forEach(bundle => {
-    serverEntry.addContent(`require("./${bundle.stat.localPath}")`);
+    if (bundle.bundle.props.webIndexed) {
+      serverEntry.addContent(`require("./${bundle.stat.localPath}")`);
+    }
   });
-  return await serverEntry.generate().write();
+
+  const info = await serverEntry.generate().write();
+
+  return { info };
 }

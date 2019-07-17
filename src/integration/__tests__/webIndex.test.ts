@@ -1,5 +1,4 @@
 import { createFileSet, createTestBundle } from './intergrationUtils';
-import * as path from 'path';
 describe('WebIndex integration test', () => {
   it('shouuld verity webindex scripts ', async () => {
     const test = createTestBundle(
@@ -88,18 +87,18 @@ describe('WebIndex integration test', () => {
       test.mock.flush();
     });
 
-    it('embedIndexedBundles with prod (should inline js)', async () => {
-      const test = createTestBundle(
-        { entry: 'index.js', homeDir: __dirname, webIndex: { template: 'index.html', embedIndexedBundles: true } },
-        createFileSet(__dirname, { 'index.js': 'console.log(1)', 'index.html': `$bundles` }),
-      );
-      await test.fuse.runProd();
-      // const indexFile = test.helper.findInDist('index.html');
-      // const scripts = test.helper.extractScripts(indexFile.contents);
+    // it.only('embedIndexedBundles with prod (should inline js)', async () => {
+    //   const test = createTestBundle(
+    //     { entry: 'index.js', homeDir: __dirname, webIndex: { template: 'index.html', embedIndexedBundles: true } },
+    //     createFileSet(__dirname, { 'index.js': 'console.log(1)', 'index.html': `$bundles` }),
+    //   );
+    //   await test.fuse.runProd();
+    //   // const indexFile = test.helper.findInDist('index.html');
+    //   // const scripts = test.helper.extractScripts(indexFile.contents);
 
-      const filesInDist = test.helper.listDistFiles();
-      console.log(filesInDist);
-      test.mock.flush();
-    });
+    //   const filesInDist = test.helper.listDistFiles();
+    //   console.log(filesInDist);
+    //   test.mock.flush();
+    // });
   });
 });

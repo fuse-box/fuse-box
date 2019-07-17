@@ -54,15 +54,23 @@ export function isRequireStatement(node, parent) {
   }
 }
 
+export function isShortHandIdentifier(node, parent) {
+  if (node.type === 'Property' && node.shorthand === true) {
+    if (node.value && node.value.type === 'Identifier') {
+      return { node: node.value, parent: node };
+    }
+  }
+}
+
 export function isLocalIdentifier(node, parent) {
-  return (
-    node.type === 'Identifier' &&
-    parent &&
-    (parent.computed === true || (parent.property !== node && !parent.computed)) &&
-    parent.key !== node &&
-    parent.type !== 'FunctionDeclaration' &&
-    parent.type !== 'FunctionExpression'
-  );
+  if (node.type === 'Identifier' && parent) {
+    return (
+      (parent.computed === true || (parent.property !== node && !parent.computed)) &&
+      parent.key !== node &&
+      parent.type !== 'FunctionDeclaration' &&
+      parent.type !== 'FunctionExpression'
+    );
+  }
 }
 
 export function createTracedExpression(local: string, property) {

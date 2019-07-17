@@ -98,7 +98,9 @@ function acceptModule(props: IBundleGenerationStageProps, pm: ProductionModule) 
   props.flow.ctx.productionApiWrapper.wrapModule;
 
   if (pm.module.isStylesheet()) {
-    acceptStylesheet(props, pm);
+    if (pm.ctx.config.supportsStylesheet()) {
+      acceptStylesheet(props, pm);
+    }
   } else {
     pm.productionContent = wrapper.wrapModule(pm);
     const bundle = getCorrespondingBundle(props, pm);

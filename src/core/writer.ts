@@ -26,7 +26,7 @@ export interface IWriterActions {
 }
 
 function stripHash(template): string {
-  return template.replace(/\$([-_.]+)?hash([-_.]+)?/, '');
+  return template.replace(/([-_.]+)?\$hash([-_.]+)?/, '');
 }
 /**
  * Writes data to the file system
@@ -77,14 +77,15 @@ export function createWriter(props: IWriterProps): IWriterActions {
         hash: props.isProduction ? fastHash(contents) : false,
       };
       let localPath = template.replace('$name', $name);
+
       if (skipHash) {
         localPath = stripHash(localPath);
-        console.log('strip hash', template);
       } else if (typeof opts.hash === 'string') {
         localPath = localPath.replace('$hash', opts.hash);
       }
       localPath = path.join(targetBaseDir, `${localPath}${$ext}`);
       const absPath = path.join(outputDirectory, localPath);
+
       const relBrowserPath = ensureFuseBoxPath(path.relative(outputDirectory, absPath));
       const size = Buffer.byteLength(contents, 'utf8');
 

@@ -14,10 +14,13 @@ import { IProductionProps } from './IProductionProps';
 import { IResourceConfig } from './IResourceConfig';
 import { Cache } from '../cache/cache';
 import { IWebWorkerConfig } from './IWebWorkerConfig';
+import { ICodeSplittingConfig } from './ICodeSplittingConfig';
 
 export interface IHMRExternalProps {
   reloadEntryOnStylesheet?: boolean;
 }
+
+const ESSENTIAL_DEPENDENCIES = ['fuse-box-dev-import'];
 
 export type ITarget = 'browser' | 'server' | 'electron' | 'universal' | 'web-worker';
 
@@ -32,7 +35,7 @@ export interface IWatcherProps {
 }
 
 export interface ICacheProps {
-  enabled: boolean;
+  enabled?: boolean;
   root?: string;
   FTL?: boolean;
 }
@@ -78,6 +81,8 @@ export class PrivateConfig {
 
   devServer?: IDevServerProps;
 
+  codeSplitting?: ICodeSplittingConfig;
+
   // internal
 
   defaultSourceMapModulesRoot?: string;
@@ -110,6 +115,27 @@ export class PrivateConfig {
         this.dependencies.ignoreAllExternal = true;
       }
     }
+    // define default settings for code splitting
+    this.codeSplitting = props.codeSplitting || {};
+    if (!this.codeSplitting.scriptRoot) {
+      if (this.isServer()) {
+        this.codeSplitting.scriptRoot = './';
+      } else {
+        if (this.webIndex && this.webIndex.publicPath) {
+          this.codeSplitting.scriptRoot = this.webIndex.publicPath;
+        } else {
+          this.codeSplitting.scriptRoot = '/';
+        }
+      }
+    }
+  }
+
+  public isEssentialDependency(name: string) {
+    return ESSENTIAL_DEPENDENCIES.indexOf(name) > -1;
+  }
+
+  public supportsStylesheet() {
+    return !this.isServer();
   }
 
   public setupEnv() {

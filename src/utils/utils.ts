@@ -38,7 +38,7 @@ export function beautifyBundleName(absPath: string) {
   if (suggested.length > 20) {
     suggested = suggested.slice(suggested.length, 20);
   }
-  return suggested;
+  return suggested.toLowerCase();
 }
 
 export function offsetLines(obj: any, amount: number) {

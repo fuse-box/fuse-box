@@ -50,10 +50,12 @@ function moduleTransformer<T extends ts.Node>(
 
         const target = pm.findDependantModule(text);
         if (!target) {
-          log.error('Problem when resolving require "$text" in $file', {
-            text: text,
-            file: pm.module.getShortPath(),
-          });
+          if (!props.flow.ctx.config.dependencies.ignoreAllExternal) {
+            log.error('Problem when resolving require "$text" in $file', {
+              text: text,
+              file: pm.module.getShortPath(),
+            });
+          }
         } else {
           log.progressFormat(
             target.module.isExecutable() ? 'Transpile' : 'Register',

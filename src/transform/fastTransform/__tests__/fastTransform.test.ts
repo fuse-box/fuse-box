@@ -1,5 +1,6 @@
 import { fastTransform } from '../fastTransform';
-
+import { testUtils } from '../../../utils/test_utils';
+testUtils();
 describe('Fast transform', () => {
   describe('Export variables', () => {
     it('Should transform a constant', () => {
@@ -591,6 +592,38 @@ module.exports.default = {
 };
 "
 `);
+    });
+
+    it('should handle shorthand 1', () => {
+      const result = fastTransform({
+        input: `
+        import { foo } from './foo';
+        console.log({ foo});
+        `,
+      });
+      expect(result.code).toMatchJSONSnapshot();
+    });
+
+    it('should handle shorthand 2', () => {
+      const result = fastTransform({
+        input: `
+        import { foo } from './foo';
+        console.log({ foo, bar });
+        `,
+      });
+      expect(result.code).toMatchJSONSnapshot();
+    });
+
+    it('should handle shorthand 3', () => {
+      const result = fastTransform({
+        input: `
+        import { foo } from './foo';
+        function hello(foo, bar ){
+          console.log({ foo, bar });
+        }
+        `,
+      });
+      expect(result.code).toMatchJSONSnapshot();
     });
   });
 

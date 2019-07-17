@@ -1,15 +1,15 @@
+import { IBundleWriteResponse } from '../bundle/Bundle';
 import { Context } from '../core/Context';
 import { Package } from '../core/Package';
+import { IServerProcess } from '../server_process/serverProcess';
 import { createProductionContext, ProductionContext } from './ProductionContext';
+import { codeSplittingStage } from './stages/codeSplittingStage';
+import { finalStage } from './stages/finalStage';
+import { generationStage } from './stages/generationStage';
 import { moduleLinkStage } from './stages/moduleLInkStage';
 import { preparationStage } from './stages/preparationStage';
 import { referenceLinkStage } from './stages/referenceLinkStage';
-import { treeShakingStage } from './stages/treeShakingStage';
 import { transpileStage } from './stages/transpileStage';
-import { generationStage } from './stages/generationStage';
-import { finalStage } from './stages/finalStage';
-import { IBundleWriteResponse } from '../bundle/Bundle';
-import { codeSplittingStage } from './stages/codeSplittingStage';
 
 export interface IProductionMain {
   packages: Array<Package>;
@@ -22,7 +22,11 @@ export interface IProductionFlow {
   ctx: Context;
 }
 
-export async function productionMain(props: IProductionMain): Promise<Array<IBundleWriteResponse>> {
+export interface IProductionResponse {
+  bundles: Array<IBundleWriteResponse>;
+  launcher: IServerProcess;
+}
+export async function productionMain(props: IProductionMain): Promise<IProductionResponse> {
   const productionContext = createProductionContext(props);
   const flow: IProductionFlow = { productionContext, ctx: props.ctx, packages: props.packages };
 
@@ -56,7 +60,7 @@ export async function productionMain(props: IProductionMain): Promise<Array<IBun
   generationStage(flow);
 
   // writing bundles and such
-  const bundles = await finalStage(flow);
-  props.ctx.ict.sync('complete', { bundles: bundles, ctx: props.ctx, packages: props.packages });
-  return bundles;
+  const data = await finalStage(flow);
+  props.ctx.ict.sync('complete', { bundles: data.bundles, ctx: props.ctx, packages: props.packages });
+  return data;
 }

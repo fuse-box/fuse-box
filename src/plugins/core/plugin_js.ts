@@ -30,7 +30,6 @@ export function pluginJS() {
       if (!module.pkg.isDefaultPackage && config.sourceMap.vendor) {
         withSourceMaps = true;
       }
-      const debug = module.testPath('lib/_stream_readable.js');
 
       if (continueWithFastTransform) {
         ctx.log.measureTimeStart('fast');

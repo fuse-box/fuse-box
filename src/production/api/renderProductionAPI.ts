@@ -24,33 +24,11 @@ export interface IProductionAPIOptions {
   promisePolyfill?: boolean;
   loadRemoteScript?: boolean;
   isContained?: boolean;
+  splitConfig?: any;
   extendServerImport?: boolean;
   runtimeBundleMapping?: boolean;
 }
-const keys = [
-  'browser',
-  'universal',
-  'webworker',
-  'server',
-  'globalRequire',
-  'isServerFunction',
-  'isBrowserFunction',
-  'computedStatements',
-  'allowSyntheticDefaultImports',
-  'hashes',
-  'serverRequire',
-  'customStatementResolve',
-  'lazyLoading',
-  'codeSplitting',
-  'ajaxRequired',
-  'jsonLoader',
-  'cssLoader',
-  'promisePolyfill',
-  'loadRemoteScript',
-  'isContained',
-  'extendServerImport',
-  'runtimeBundleMapping',
-];
+const keys = ['browser', 'universal', 'webworker', 'server', 'allowSyntheticDefaultImports', 'splitConfig'];
 const defaultOptions: IProductionAPIOptions = {};
 for (const key in keys) {
   defaultOptions[keys[key]] = false;

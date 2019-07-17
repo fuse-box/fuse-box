@@ -3,6 +3,8 @@ import { renderProductionAPI } from '../api/renderProductionAPI';
 import { IProductionFlow } from '../main';
 import * as CleanCSS from 'clean-css';
 import * as Terser from 'terser';
+import { addServerEntry } from '../../main/server_entry';
+import { createServerProcess, IServerProcess } from '../../server_process/serverProcess';
 interface IFinalStageProps {
   flow: IProductionFlow;
 }
@@ -91,9 +93,17 @@ export async function finalStage(props: IProductionFlow) {
   const fistBundle = sorted[0];
   const lastBundle = sorted[sorted.length - 1];
 
+  const apiVariables: any = {};
+  let splitConfig: any;
+
   if (productionContext.dynamicLinks.length) {
-    const splitConfig: any = {
+    let scriptRoot = props.ctx.config.codeSplitting.scriptRoot;
+    if (/[a-z0-9_]$/i.test(scriptRoot)) {
+      scriptRoot += '/';
+    }
+    splitConfig = {
       entries: {},
+      scriptRoot: scriptRoot,
     };
     // dynamic links contain ESLink that represent a dynamic import (import())
     // each link has dynamicImportTarget which is in fact an entry to the split bundle
@@ -102,16 +112,21 @@ export async function finalStage(props: IProductionFlow) {
         splitConfig.entries[l.dynamicImportTarget.getId()] = l.dynamicImportTarget.splitBundle.getFileName();
       }
     });
-    //console.log(splitConfig);
+    apiVariables.splitConfig = JSON.stringify(splitConfig);
   }
 
   // render production api ***************
-  const api = renderProductionAPI({
-    browser: ctx.config.target === 'browser',
-    webworker: ctx.config.target === 'web-worker',
-    server: ctx.config.target === 'server',
-    allowSyntheticDefaultImports: config.allowSyntheticDefaultImports,
-  });
+
+  const api = renderProductionAPI(
+    {
+      browser: ctx.config.target === 'browser' || ctx.config.target === 'electron',
+      webworker: ctx.config.target === 'web-worker',
+      server: ctx.config.target === 'server',
+      splitConfig: !!splitConfig,
+      allowSyntheticDefaultImports: config.allowSyntheticDefaultImports,
+    },
+    apiVariables,
+  );
   log.progressFormat('API', `Injecting production api into <magenta>${fistBundle.name}</magenta> bundle`);
   fistBundle.prependContent(api);
 
@@ -133,6 +148,13 @@ export async function finalStage(props: IProductionFlow) {
     bundleResponses.push(await bundle.generate().write());
   }
 
+  let launcher: IServerProcess;
+
+  if (ctx.config.isServer()) {
+    const { info } = await addServerEntry(ctx, bundleResponses);
+    launcher = createServerProcess({ absPath: info.stat.absPath });
+  }
+
   log.progressEnd('<green><bold>$checkmark Success!</bold></green>');
-  return bundleResponses;
+  return { bundles: bundleResponses, launcher };
 }

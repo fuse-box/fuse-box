@@ -116,6 +116,7 @@ export class Module {
     this.fastAnalysis = fastAnalysis({
       packageName: this.pkg.props.meta.name,
       input: this.contents,
+      locations: this.isSourceMapRequired(),
       parseUsingAst: this.props.extension === '.js',
     });
     return this.fastAnalysis;
@@ -141,6 +142,9 @@ export class Module {
 
   public getSourceMapPath() {
     const config = this.props.ctx.config;
+    if (this.props.ctx.config.isServer()) {
+      return this.props.absPath;
+    }
     if (this.pkg.isDefaultPackage) {
       return joinFuseBoxPath(
         config.sourceMap.sourceRoot,

@@ -25,7 +25,7 @@ function trace2entry(props: IProductionFlow, target: ProductionModule, rootLink:
 
 function traceDependencies(props: IProductionFlow, productionModule: ProductionModule, rootLink: ESLink) {
   productionModule.structure.findFromLinks().forEach(fromLink => {
-    trace2entry(props, fromLink.fromSourceTarget, rootLink);
+    fromLink.fromSourceTarget && trace2entry(props, fromLink.fromSourceTarget, rootLink);
   });
 }
 function processEntry(props: IProductionFlow, rootLink: ESLink) {

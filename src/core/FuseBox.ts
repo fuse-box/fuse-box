@@ -6,6 +6,7 @@ import { parseVersion } from '../utils/utils';
 import { createContext, createProdContext } from './Context';
 import { IProductionProps } from '../config/IProductionProps';
 import * as ts from 'typescript';
+import { IProductionResponse } from '../production/main';
 export interface IBundleProps {}
 
 export interface IDevelopmentProps {}
@@ -34,11 +35,9 @@ export function fusebox(config: IPublicConfig) {
         console.error(e);
       });
     },
-    runProd: (props?: IProductionProps) => {
+    runProd: (props?: IProductionProps): Promise<IProductionResponse> => {
       const ctx = createProdContext(config, props);
-      return bundleProd(ctx).catch(e => {
-        console.log(e);
-      });
+      return bundleProd(ctx);
     },
   };
 }

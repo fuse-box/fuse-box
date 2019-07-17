@@ -1,1 +1,3 @@
-export function lazyTwo() {}
+export function lazyTwo() {
+  return 'lazy 2';
+}
