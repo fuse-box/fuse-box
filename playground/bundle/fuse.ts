@@ -23,16 +23,17 @@ const fuse = fusebox({
       $root: __dirname,
     },
   },
+  modules: ['modules/'],
   cache: {
     FTL: true,
-    enabled: true,
+    enabled: false,
     root: path.join(__dirname, '.cache'),
   },
   dependencies: {
     include: [
-      'tslib',
-      '@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js',
-      '@webcomponents/webcomponentsjs/webcomponents-bundle.js',
+      // 'tslib',
+      // '@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js',
+      // '@webcomponents/webcomponentsjs/webcomponents-bundle.js',
     ],
   },
   webIndex: {
@@ -41,7 +42,7 @@ const fuse = fusebox({
   },
   //production: {},
   homeDir: __dirname,
-  entry: 'src/index.ts',
+  entry: 'src/entry.js',
 
   plugins: [pluginJSON('configs/.*', { useDefault: true }), pluginReplace('other/Other.ts', { $version: '1.1.0' })],
 });

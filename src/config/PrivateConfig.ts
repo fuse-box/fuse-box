@@ -20,7 +20,7 @@ export interface IHMRExternalProps {
   reloadEntryOnStylesheet?: boolean;
 }
 
-const ESSENTIAL_DEPENDENCIES = ['fuse-box-dev-import'];
+const ESSENTIAL_DEPENDENCIES = ['fuse-box-dev-import', 'tslib'];
 
 export type ITarget = 'browser' | 'server' | 'electron' | 'universal' | 'web-worker';
 

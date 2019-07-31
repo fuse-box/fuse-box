@@ -147,6 +147,7 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
     }
   } else {
     const entryFile = getFolderEntryPointFromPackageJSON(json, isBrowser);
+
     const entryLookup = fileLookup({ target: entryFile, fileDir: folder });
 
     if (!entryLookup.fileExists) {
@@ -164,6 +165,19 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
     result.targetFuseBoxPath = pkg.entryFuseBoxPath;
     if (isBrowserEntry(json, isBrowser)) {
       result.forcedStatement = `${parsed.name}/${result.targetFuseBoxPath}`;
+    }
+
+    if (json.browser && typeof json.browser === 'object') {
+      const override = handleBrowserField(pkg, entryLookup.absPath);
+      if (override) {
+        //result.targetFuseBoxPath =
+        result.targetAbsPath = override;
+        pkg.entryAbsPath = override;
+        result.targetFuseBoxPath = makeFuseBoxPath(folder, override);
+        pkg.entryFuseBoxPath = result.targetFuseBoxPath;
+
+        entryLookup.customIndex = true;
+      }
     }
   }
   result.targetExtension = path.extname(result.targetAbsPath);

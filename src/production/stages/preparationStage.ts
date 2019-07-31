@@ -14,10 +14,9 @@ function staticTransform(props: IStaticTransform) {
   const module = props.productionModule.module;
   if (module.isExecutable()) {
     props.ctx.log.progressFormat('Source transform', module.getShortPath());
-
-    const project = new Project();
-
-    props.productionModule.file = project.createSourceFile('src/foo.ts', module.contents);
+    const project = new Project({ useVirtualFileSystem: true });
+    const sourcePath = 'MyClass.tsx';
+    props.productionModule.file = project.createSourceFile(sourcePath, module.contents);
     performStaticTransformations({
       ctx: module.props.ctx,
       file: props.productionModule.file,

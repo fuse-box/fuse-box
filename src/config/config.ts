@@ -39,8 +39,10 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
   if (props.target) {
     config.target = props.target;
   }
-  if (props.allowSyntheticDefaultImports) {
-    config.allowSyntheticDefaultImports = true;
+  // allow them by default
+  config.allowSyntheticDefaultImports = true;
+  if (props.allowSyntheticDefaultImports !== undefined) {
+    config.allowSyntheticDefaultImports = props.allowSyntheticDefaultImports;
   }
   config.webIndex = {
     enabled: false,

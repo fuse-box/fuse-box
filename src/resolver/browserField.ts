@@ -5,6 +5,7 @@ export function handleBrowserField(packageMeta: IPackageMeta, absPath: string): 
   if (typeof packageMeta.browser !== 'object') {
     return;
   }
+
   for (const key in packageMeta.browser) {
     const targetValue = packageMeta.browser[key];
     if (typeof targetValue === 'string') {

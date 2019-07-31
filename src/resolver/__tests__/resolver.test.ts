@@ -42,6 +42,19 @@ createRealNodeModule(
   },
 );
 
+createRealNodeModule(
+  'resolver-test_cc',
+  {
+    main: 'index.js',
+    version: '1.0.1',
+    browser: { './index.js': './browser-index.js' },
+  },
+  {
+    'index.js': 'module.exports = { main : true }',
+    'browser-index.js': 'module.exports = { browser : true }',
+  },
+);
+
 describe('Resolver test', () => {
   describe('External modules', () => {
     it('Should resolve external target', () => {
@@ -357,6 +370,7 @@ describe('Resolver test', () => {
         filePath: filePath,
         target: 'resolver-test_a',
       });
+
       const pkg = packageInfo.package;
       it('should resolve a file being in a package', () => {
         const info = resolveModule({
@@ -401,6 +415,18 @@ describe('Resolver test', () => {
         });
 
         expect(info.absPath).toMatchFilePath('node_modules/resolver-test_b/foobar.js');
+      });
+
+      it('should override an entry point', () => {
+        const info = resolveModule({
+          homeDir: homeDir,
+          filePath: __dirname,
+          buildTarget: 'browser',
+          target: 'resolver-test_cc',
+        });
+        expect(info.package.targetAbsPath).toMatchFilePath('browser-index.js');
+        expect(info.package.targetFuseBoxPath).toEqual('browser-index.js');
+        expect(info.package.meta.entryAbsPath).toMatchFilePath('browser-index.js');
       });
 
       it('should resolve a file being in a package with browser fields', () => {

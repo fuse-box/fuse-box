@@ -68,8 +68,7 @@
       /* @end */
 
       /* @if server */
-      var path = require('path');
-      require(path.resolve(splitConfig.scriptRoot, path));
+      require(require('path').resolve(splitConfig.scriptRoot, path));
       if ($fsx.f[id]) {
         return resolve($fsx.r(id));
       } else reject('Resolve error of module ' + id);

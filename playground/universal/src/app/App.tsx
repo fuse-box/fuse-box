@@ -1,28 +1,34 @@
 import * as React from 'react';
 import './App.scss';
+import { Route, Link } from 'react-router-dom';
 
-const SplitComponent = React.lazy(() => import('./SplitComponent'));
+// component={LazyLoad(() => import('./routes/MainRoute'))}
 
-export class App extends React.Component<any, any> {
+export class App extends React.Component<{ routes: any }, any> {
   constructor(props) {
     super(props);
     this.state = {};
   }
-  public action() {
-    this.setState({
-      target: (
-        <React.Suspense fallback={<div>Loading...</div>}>
-          <SplitComponent />
-        </React.Suspense>
-      ),
-    });
-  }
+
   public render() {
     return (
-      <div className="hello">
-        Hello world
-        <input onClick={() => this.action()} value="Load lazy component" type="button"></input>
-        <div className="area">{this.state.target}</div>
+      <div className="main">
+        <nav>
+          <ul>
+            <li>
+              <Link to="/">Main Route</Link>
+            </li>
+            <li>
+              <Link to="/second/">Second route</Link>
+            </li>
+          </ul>
+        </nav>
+
+        <div className="routes">
+          {this.props.routes.map((props, i) => (
+            <Route key={i} {...props} />
+          ))}
+        </div>
       </div>
     );
   }

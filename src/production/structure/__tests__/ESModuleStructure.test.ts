@@ -5,7 +5,7 @@ import { testUtils } from '../../../utils/test_utils';
 testUtils();
 function createStructure(contents: string) {
   const project = new Project();
-  const file = project.createSourceFile('src/MyClass.ts', contents);
+  const file = project.createSourceFile('src/MyClass.tsx', contents);
   return createESModuleStructure(null, file).toJSON();
 }
 

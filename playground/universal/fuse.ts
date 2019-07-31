@@ -1,5 +1,5 @@
 import { sparky, fusebox } from '../../src';
-
+import * as path from 'path';
 class Context {
   isProduction;
   runServer;
@@ -8,13 +8,15 @@ class Context {
       output: 'dist/server/$name-$hash',
       target: 'server',
       entry: 'src/server.tsx',
+      dependencies: { include: ['tslib'] },
+
       cache: {
         root: '.cache/server',
         enabled: true,
       },
+      codeSplitting: { scriptRoot: path.resolve(__dirname, './dist/server') },
       watch: { ignored: ['./dist'] },
       devServer: false,
-      logging: { level: 'succinct' },
     });
   }
   getBrowserConfig() {
@@ -22,6 +24,8 @@ class Context {
       output: 'dist/browser/$name-$hash',
       target: 'browser',
       entry: 'src/browser.tsx',
+
+      dependencies: { include: ['tslib'] },
       webIndex: {
         publicPath: '/public',
         template: 'src/index.html',
@@ -34,7 +38,6 @@ class Context {
         hmrServer: { port: 7878 },
       },
       watch: { ignored: ['./dist'] },
-      logging: { level: 'succinct' },
     });
   }
 }
@@ -56,7 +59,7 @@ task('preview', async ctx => {
   await browser.runProd({ uglify: true });
 
   const server = ctx.getServerConfig();
-  const response = await server.runProd({ uglify: true });
+  const response = await server.runProd({ uglify: false });
   response.launcher.start();
 });
 task('dist', async ctx => {

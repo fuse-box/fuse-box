@@ -3,24 +3,43 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
+import { StaticRouter } from 'react-router-dom';
 import { App } from './app/App';
+import { createServerRoutes } from './app/Router';
 
-const app = express();
+async function launch() {
+  const serverRoutes = await createServerRoutes();
 
-const browserRoot = path.resolve(__dirname, '../browser');
-app.use('/public', express.static(browserRoot));
+  const app = express();
 
-const port = 3000;
+  const browserRoot = path.resolve(__dirname, '../browser');
+  app.use('/public', express.static(browserRoot));
 
-app.get('/', (req, res) => {
-  // read generated index file
+  const port = 3000;
 
-  const indexFile = fs.readFileSync(path.resolve(browserRoot, 'index.html')).toString();
-  const reactAppAsString = ReactDOMServer.renderToString(<App />);
-  const app = indexFile.replace(/\{\{\s*ssr\s*\}\}/, reactAppAsString);
-  res.send(app);
-});
+  app.get('*', (req, res) => {
+    const indexFile = fs.readFileSync(path.resolve(browserRoot, 'index.html')).toString();
+    const context: any = {};
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+    const reactAppAsString = ReactDOMServer.renderToString(
+      <StaticRouter location={req.url} context={context}>
+        <App routes={serverRoutes} />
+      </StaticRouter>,
+    );
+    const app = indexFile.replace(/\{\{\s*ssr\s*\}\}/, reactAppAsString);
+    if (context.url) {
+      res.writeHead(301, {
+        Location: context.url,
+      });
+      res.end();
+    } else {
+      res.send(app);
+    }
+  });
+
+  app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+}
+
+launch();
 
 // https://github.com/inikulin/callsite-record

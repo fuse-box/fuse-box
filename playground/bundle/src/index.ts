@@ -1,6 +1,7 @@
 //import 'tslib';
 
-import './sub';
+import 'pouchdb-adapter-cordova-sqlite';
+//import * as sukka from 'sukka';
 
 // import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 // console.log(BrowserAnimationsModule);

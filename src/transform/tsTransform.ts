@@ -73,9 +73,14 @@ export function tsTransform(props: ITypescriptTransformProps): ts.TranspileOutpu
       return node => ts.visitNode(node, visit);
     };
   }
+
+  const after = [];
+  if (props.replacements || props.webWorkers) {
+    after.push(moduleTransformer());
+  }
   return ts.transpileModule(props.input, {
     fileName: props.fileName,
     compilerOptions: props.compilerOptions,
-    transformers: { after: [(props.replacements || props.webWorkers) && moduleTransformer()] },
+    transformers: { after: after },
   });
 }
