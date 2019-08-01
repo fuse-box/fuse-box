@@ -114,7 +114,7 @@ export function getLogger(props?: ILoggerProps): ILogger {
       }
     },
     progressFormat: (name: string, contents: string, vars?) => {
-      methods.progress('<bold><dim> <yellow>  $name</yellow> <cyan>$contents</cyan></dim></bold>', {
+      methods.progress('<bold><dim> <yellow>  $name</yellow> <cyan>$contents</cyan></dim></bold>\n', {
         name: name,
         contents: replaceVars(contents, vars),
       });

@@ -16,7 +16,6 @@ import { attachWebIndex } from './attach_webIndex';
 import { processPlugins } from './process_plugins';
 import { attachServerEntry } from './server_entry';
 import { statLog } from './stat_log';
-import { IServerProcess } from '../server_process/serverProcess';
 
 export async function bundleDev(ctx: Context) {
   const ict = ctx.ict;

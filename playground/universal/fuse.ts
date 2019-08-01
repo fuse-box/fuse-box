@@ -9,12 +9,10 @@ class Context {
       target: 'server',
       entry: 'src/server.tsx',
       dependencies: { include: ['tslib'] },
-      allowSyntheticDefaultImports: true,
-
       cache: {
+        enabled: false,
         root: '.cache/server',
       },
-
       codeSplitting: { scriptRoot: path.resolve(__dirname, './dist/server') },
     });
   }
@@ -38,8 +36,6 @@ class Context {
       watch: {
         chokidar: { usePolling: true },
       },
-      //plugins: [pluginLink('png$', { useDefault: true })],
-
       devServer: {
         httpServer: false,
         hmrServer: { port: 7878 },
