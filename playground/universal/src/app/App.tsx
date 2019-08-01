@@ -19,7 +19,7 @@ export class App extends React.Component<{ routes: any }, any> {
               <Link to="/">Main Route</Link>
             </li>
             <li>
-              <Link to="/second/">Second route</Link>
+              <Link to="/second/">Second route!11</Link>
             </li>
           </ul>
         </nav>

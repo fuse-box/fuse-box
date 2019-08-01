@@ -9,14 +9,11 @@ class Context {
       target: 'server',
       entry: 'src/server.tsx',
       dependencies: { include: ['tslib'] },
-
       cache: {
         root: '.cache/server',
-        enabled: true,
       },
+
       codeSplitting: { scriptRoot: path.resolve(__dirname, './dist/server') },
-      watch: { ignored: ['./dist'] },
-      devServer: false,
     });
   }
   getBrowserConfig() {
@@ -33,11 +30,14 @@ class Context {
       cache: {
         root: '.cache/browser',
       },
+      watch: {
+        chokidar: { usePolling: true },
+      },
+
       devServer: {
         httpServer: false,
         hmrServer: { port: 7878 },
       },
-      watch: { ignored: ['./dist'] },
     });
   }
 }

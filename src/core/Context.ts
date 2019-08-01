@@ -73,10 +73,14 @@ export class Context {
       if (this.config.cacheObject) this.cache = this.config.cacheObject;
       else this.cache = createCache({ ctx: this });
     }
+
     this.config.setupEnv();
   }
 
   public setProduction(prodProps: IProductionProps) {
+    this.config.watch.enabled = false;
+    this.config.hmr.enabled = false;
+
     prodProps = prodProps || {};
     if (prodProps.screwIE === undefined) prodProps.screwIE = true;
 

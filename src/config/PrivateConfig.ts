@@ -15,6 +15,7 @@ import { IResourceConfig } from './IResourceConfig';
 import { Cache } from '../cache/cache';
 import { IWebWorkerConfig } from './IWebWorkerConfig';
 import { ICodeSplittingConfig } from './ICodeSplittingConfig';
+import { env } from '../env';
 
 export interface IHMRExternalProps {
   reloadEntryOnStylesheet?: boolean;
@@ -126,6 +127,39 @@ export class PrivateConfig {
         } else {
           this.codeSplitting.scriptRoot = '/';
         }
+      }
+    }
+
+    this.watch = {
+      enabled: !env.isTest,
+    };
+
+    if (props.watch !== undefined) {
+      if (typeof props.watch === 'boolean') {
+        this.watch.enabled = props.watch;
+      }
+      if (typeof props.watch === 'object') {
+        this.watch.enabled = typeof props.watch === 'boolean' ? props.watch : true;
+        this.watch.watcherProps = props.watch;
+      }
+    }
+
+    // hmr ************************************************************************************************
+    const hmrAllowedByDefault = !env.isTest && this.target !== 'server' && this.watch.enabled;
+    this.hmr = {
+      enabled: hmrAllowedByDefault,
+      hmrProps: {
+        reloadEntryOnStylesheet: true,
+      },
+    };
+
+    if (hmrAllowedByDefault && props.hmr !== undefined) {
+      if (typeof props.hmr === 'boolean') {
+        this.hmr.enabled = props.hmr;
+      }
+      if (typeof props.hmr === 'object') {
+        this.hmr.enabled = true;
+        this.hmr.hmrProps = { ...this.hmr.hmrProps, ...props.hmr };
       }
     }
   }

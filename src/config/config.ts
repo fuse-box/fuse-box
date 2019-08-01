@@ -132,41 +132,6 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
     config.cache.enabled = true;
   }
 
-  // hmr ************************************************************************************************
-  config.hmr = {
-    hmrProps: {
-      reloadEntryOnStylesheet: true,
-    },
-  };
-
-  config.watch = {
-    enabled: false,
-  };
-
-  if (props.watch !== undefined) {
-    if (typeof props.watch === 'boolean') {
-      config.watch.enabled = props.watch;
-    }
-    if (typeof props.watch === 'object') {
-      config.watch.enabled = typeof props.watch === 'boolean' ? props.watch : true;
-      config.watch.watcherProps = props.watch;
-    }
-
-    if (config.watch.enabled && config.hmr.enabled !== false) {
-      config.hmr.enabled = true;
-    }
-  }
-
-  if (props.hmr && config.watch.enabled) {
-    if (typeof props.hmr === 'boolean') {
-      config.hmr.enabled = props.hmr;
-    }
-    if (typeof props.hmr === 'object') {
-      config.hmr.enabled = true;
-      config.hmr.hmrProps = { ...config.hmr.hmrProps, ...props.hmr };
-    }
-  }
-
   config.stylesheet = {};
 
   if (props.stylesheet) {

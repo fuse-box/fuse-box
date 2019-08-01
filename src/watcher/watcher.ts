@@ -2,32 +2,40 @@ import * as chokidar from 'chokidar';
 import * as path from 'path';
 import { Context } from '../core/Context';
 import { env } from '../env';
+import { WatchOptions } from 'chokidar';
 
 type IChokidarEventType = 'add' | 'change' | 'unlink' | 'addDir' | 'unlinkDir' | 'error' | 'ready';
 
 export interface IWatcherExternalProps {
   paths?: any;
-  ignored?: Array<string>;
+  skipRecommendedIgnoredPaths?: boolean;
+  ignored?: Array<string | RegExp>;
   banned?: Array<string>;
+  chokidar?: WatchOptions;
 }
 
 export function attachChokidar(props: {
   root?: string;
-  ignored?: Array<RegExp>;
+  chokidarOptions?: WatchOptions;
+  ignored?: Array<string | RegExp>;
   cb: (event: IChokidarEventType, path: string) => void;
 }) {
-  var watcher = chokidar.watch(props.root, {
+  const defaultOpts = {
     ignoreInitial: true,
     ignored: props.ignored,
     persistent: true,
-  });
+  };
+  const userOptions = props.chokidarOptions || {};
+  const finalOptions = { ...defaultOpts, ...userOptions };
+
+  var watcher = chokidar.watch(props.root, finalOptions);
   watcher.on('all', (event, path) => {
     props.cb(event, path);
   });
 }
 
 export function ignoredPath2Regex(input: string): RegExp {
-  const str = input.replace(/(\/|\\)/, '(\\/|\\\\)');
+  const str = input.replace(/(\/|\\)/g, '(\\/|\\\\)');
   return new RegExp(str);
 }
 
@@ -109,15 +117,21 @@ export function createWatcher(props: IWatcherProps, externalProps?: IWatcherExte
   externalProps = externalProps || {};
   const ignored = externalProps.ignored ? externalProps.ignored : [];
   const paths = externalProps.paths ? externalProps.paths : props.ctx.config.homeDir;
-  ignored.push('/node_modules/', '/\\.', props.ctx.writer.outputDirectory);
-  const ignoredRegEx: Array<RegExp> = ignored.map(str => ignoredPath2Regex(str));
 
+  if (!externalProps.skipRecommendedIgnoredPaths) {
+    ignored.push('/node_modules/', /(\/|\\)\./, 'dist/', 'build/', props.ctx.writer.outputDirectory);
+  }
+
+  const ignoredRegEx: Array<RegExp> = ignored.map(str => (typeof str === 'string' ? ignoredPath2Regex(str) : str));
+
+  //console.log(props.ctx.config.cache.root);
   let events: Array<WatcherAction> = [];
   let tm;
 
   ict.on('complete', data => {
     attachChokidar({
       root: paths,
+      chokidarOptions: externalProps.chokidar,
       ignored: ignoredRegEx,
       cb: (event, path) => {
         clearTimeout(tm);
