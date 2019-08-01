@@ -1,20 +1,21 @@
 import * as prettyTime from 'pretty-time';
-import { pluginCSS, pluginJSON, pluginSass } from '..';
+import { pluginCSS, pluginSass } from '..';
 import { IBundleWriteResponse } from '../bundle/Bundle';
 import { Context } from '../core/Context';
 import { assemble } from '../main/assemble';
-import { processPlugins } from '../main/process_plugins';
-import { productionMain, IProductionResponse } from './main';
 import { attachWebIndex } from '../main/attach_webIndex';
+import { processPlugins } from '../main/process_plugins';
 import { printStatFinal } from '../main/stat_log';
+import { pluginAssumption } from '../plugins/core/plugin_assumption';
 import { attachWebWorkers } from '../web-workers/attachWebWorkers';
+import { IProductionResponse, productionMain } from './main';
 
 export async function bundleProd(ctx: Context): Promise<IProductionResponse> {
   ctx.log.print('<yellow><bold>Initiating production build</bold></yellow>');
   ctx.log.printNewLine();
   const startTime = process.hrtime();
 
-  const plugins = [...ctx.config.plugins, pluginJSON(), pluginCSS(), pluginSass()];
+  const plugins = [...ctx.config.plugins, pluginAssumption(), pluginCSS(), pluginSass()];
 
   plugins.forEach(plugin => plugin && plugin(ctx));
 

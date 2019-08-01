@@ -120,7 +120,7 @@ async function reload_Process(props: OnWatcherProps) {
     log.print(`<bold><yellow>${EMOJIS.warning} Cache has been cleared</yellow></bold>`);
   }
   log.printNewLine();
-  process.exit();
+  process.exit(0);
 }
 
 async function onWatcherEvent(props: OnWatcherProps) {

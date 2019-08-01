@@ -6,12 +6,18 @@ export function attachServerEntry(ctx: Context) {
   let serverProcess: IServerProcess;
   async function write(bundles: Array<IBundleWriteResponse>) {
     const data = await addServerEntry(ctx, bundles);
-    if (ctx.config.autoStartServerEntry) {
-      if (!serverProcess) serverProcess = createServerProcess({ absPath: data.info.stat.absPath });
-      serverProcess.start();
-    }
+
+    if (!serverProcess) serverProcess = createServerProcess({ absPath: data.info.stat.absPath });
+    serverProcess.start();
   }
-  if (ctx.config.target === 'server' || ctx.config.target === 'universal') {
+  const autoStart =
+    ctx.config.autoStartEntry !== undefined
+      ? ctx.config.autoStartEntry
+      : ctx.config.target === 'server' && ctx.config.autoStartServerEntry !== undefined
+      ? ctx.config.autoStartServerEntry
+      : false;
+
+  if (autoStart) {
     ctx.ict.on('complete', props => {
       write(props.bundles);
       return props;

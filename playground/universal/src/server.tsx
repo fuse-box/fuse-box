@@ -37,7 +37,7 @@ async function launch() {
     }
   });
 
-  app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+  const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 }
 
 launch();

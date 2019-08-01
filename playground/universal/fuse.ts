@@ -1,4 +1,4 @@
-import { sparky, fusebox } from '../../src';
+import { sparky, fusebox, pluginLink } from '../../src';
 import * as path from 'path';
 class Context {
   isProduction;
@@ -9,6 +9,8 @@ class Context {
       target: 'server',
       entry: 'src/server.tsx',
       dependencies: { include: ['tslib'] },
+      allowSyntheticDefaultImports: true,
+
       cache: {
         root: '.cache/server',
       },
@@ -27,12 +29,16 @@ class Context {
         publicPath: '/public',
         template: 'src/index.html',
       },
+      link: { useDefault: true },
+
       cache: {
+        enabled: false,
         root: '.cache/browser',
       },
       watch: {
         chokidar: { usePolling: true },
       },
+      //plugins: [pluginLink('png$', { useDefault: true })],
 
       devServer: {
         httpServer: false,

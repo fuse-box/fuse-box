@@ -1,7 +1,10 @@
 import * as React from 'react';
 import './App.scss';
 import { Route, Link } from 'react-router-dom';
-
+import grumpy from './grumpy.png';
+import oi from './oi.json';
+console.log(grumpy);
+console.log(oi);
 // component={LazyLoad(() => import('./routes/MainRoute'))}
 
 export class App extends React.Component<{ routes: any }, any> {

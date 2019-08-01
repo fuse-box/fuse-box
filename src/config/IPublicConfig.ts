@@ -11,10 +11,12 @@ import { IResourceConfig } from './IResourceConfig';
 import { IStyleSheetProps } from './IStylesheetProps';
 import { IWebWorkerConfig } from './IWebWorkerConfig';
 import { ICacheProps, IHMRExternalProps, ITarget } from './PrivateConfig';
+import { IPluginLinkOptions } from '../plugins/core/plugin_link';
 export interface IPublicConfig {
   root?: string;
   target?: ITarget;
   autoStartServerEntry?: boolean;
+  autoStartEntry?: boolean;
   dependencies?: {
     include?: Array<string>;
     ignore?: Array<string>;
@@ -33,6 +35,7 @@ export interface IPublicConfig {
   resources?: IResourceConfig;
 
   json?: IJSONPluginProps;
+  link?: IPluginLinkOptions;
 
   /**
    * Environment variables. Values can be strings only

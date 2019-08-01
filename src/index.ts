@@ -1,3 +1,4 @@
+export { pluginLink } from './plugins/core/plugin_link';
 export { fusebox } from './core/fusebox';
 export { pluginCSS } from './plugins/core/plugin_css';
 export { pluginJSON } from './plugins/core/plugin_json';

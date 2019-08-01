@@ -5,7 +5,7 @@ import { ILoggerProps } from '../logging/logging';
 import { IWatcherExternalProps } from '../watcher/watcher';
 import { IWebIndexConfig } from '../web-index/webIndex';
 import { IStyleSheetProps } from './IStylesheetProps';
-import { ensureAbsolutePath } from '../utils/utils';
+import { ensureAbsolutePath, joinFuseBoxPath } from '../utils/utils';
 import { Context } from '../core/Context';
 import * as path from 'path';
 import { IPublicConfig } from './IPublicConfig';
@@ -16,6 +16,7 @@ import { Cache } from '../cache/cache';
 import { IWebWorkerConfig } from './IWebWorkerConfig';
 import { ICodeSplittingConfig } from './ICodeSplittingConfig';
 import { env } from '../env';
+import { IPluginLinkOptions } from '../plugins/core/plugin_link';
 
 export interface IHMRExternalProps {
   reloadEntryOnStylesheet?: boolean;
@@ -45,6 +46,7 @@ export class PrivateConfig {
   root?: string;
   target?: ITarget;
   autoStartServerEntry?: boolean;
+  autoStartEntry?: boolean;
   dependencies?: {
     include?: Array<string>;
     ignore?: Array<string>;
@@ -60,6 +62,7 @@ export class PrivateConfig {
   hmr?: IHMRProps;
   stylesheet?: IStyleSheetProps;
   json?: IJSONPluginProps;
+  link?: IPluginLinkOptions;
   env?: { [key: string]: string };
   cache?: ICacheProps;
   tsConfig?: string | IRawCompilerOptions;
@@ -109,9 +112,10 @@ export class PrivateConfig {
   public init(props: IPublicConfig) {
     this.dependencies = props.dependencies ? props.dependencies : {};
     if (this.isServer()) {
-      if (props.autoStartServerEntry === undefined) {
-        this.autoStartServerEntry = true;
-      }
+      if (props.autoStartServerEntry !== undefined) {
+        this.autoStartServerEntry = props.autoStartServerEntry;
+      } else this.autoStartServerEntry = true;
+
       if (this.dependencies.ignoreAllExternal === undefined) {
         this.dependencies.ignoreAllExternal = true;
       }
@@ -162,6 +166,9 @@ export class PrivateConfig {
         this.hmr.hmrProps = { ...this.hmr.hmrProps, ...props.hmr };
       }
     }
+    // Plugin Link
+    this.link = props.link ? props.link : {};
+    this.autoStartEntry = props.autoStartEntry;
   }
 
   public isEssentialDependency(name: string) {
@@ -179,6 +186,20 @@ export class PrivateConfig {
 
   public isServer() {
     return this.target === 'server' || this.target === 'universal';
+  }
+
+  public getPublicRoot(userPublicPath?: string) {
+    if (userPublicPath) {
+      return userPublicPath;
+    }
+    let publicPath = '/';
+    if (this.webIndex && this.webIndex.publicPath) {
+      publicPath = this.webIndex.publicPath;
+    }
+    if (this.resources && this.resources.resourcePublicRoot) {
+      publicPath = joinFuseBoxPath(publicPath, this.resources.resourcePublicRoot);
+    }
+    return publicPath;
   }
 
   public getResourceConfig(stylesheet?: IStyleSheetProps): IResourceConfig {

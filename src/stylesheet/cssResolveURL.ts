@@ -11,7 +11,7 @@ export interface ICSSResolveURLProps {
   ctx: Context;
 }
 
-const FONT_EXTENSIONS = ['.ttf', '.otf', '.woff', '.woff2', 'eot'];
+const FONT_EXTENSIONS = ['.ttf', '.otf', '.woff', '.woff2', '.eot'];
 const IMAGE_EXTENSIONS = ['.png', '.jpeg', '.jpg', '.gif', '.bmp'];
 const Expression = /url\(([^\)]+)\)/gm;
 
