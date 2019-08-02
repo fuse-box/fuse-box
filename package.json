@@ -152,6 +152,7 @@
     "dist": "ts-node -T fuse dist",
     "format": "prettier --list-different \"src/**/*.{js,json,md,ts,yml}\"",
     "format:fix": "prettier --write \"src/**/*.{js,json,md,ts,yml}\"",
+    "document": "ts-node -T fuse document",
     "test": "jest --verbose",
     "coverage": "jest --verbose --coverage",
     "coverage-ci": "jest --verbose --coverage --runInBand"
