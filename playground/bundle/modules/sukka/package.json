@@ -1,0 +1,8 @@
+{
+  "name": "sukka",
+  "version": "1.0.0",
+  "main": "./lib/index.js",
+  "browser": {
+    "./lib/index.js": "./lib/index-browser.js"
+  }
+}

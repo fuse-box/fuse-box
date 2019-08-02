@@ -1,4 +1,8 @@
 {
-    "main" : "./index.js",
-    "version" : "1.0.0"
+  "name": "domain",
+  "main": "index.js",
+  "version": "1.0.0",
+  "fuse-box" : {
+    "polyfill" : true
+  }
 }

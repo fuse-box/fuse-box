@@ -1,0 +1,5 @@
+{
+  "name": "module-c",
+  "main": "index.js",
+  "browser" : "browser-entry.js"
+}

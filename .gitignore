@@ -15,22 +15,19 @@ build
 dist
 node_modules
 npm-debug.log*
-playground
+coverage/
 sourcemaps.js.map
 yarn.lock
 some.sh
 docs/api
+.temp
+.cache
 
 # FuseBox Loader API built type definition
 # Which is then exported as a module from `src`
 src/modules/fuse-loader/LoaderAPI.ts
 
-# FuseBox modules built from TS
-modules/fsbx-default-css-plugin
-modules/fuse-hmr
-modules/fuse-loader
-modules/fusebox-hot-reload
-modules/fusebox-websocket
+playground/bundle/src/lodash
 
 # Website
 website/.firebase
@@ -42,3 +39,5 @@ website/translated_docs
 website/yarn.lock
 
 some\.sh
+
+src/tests/stubs/sparky/foo/e\.json

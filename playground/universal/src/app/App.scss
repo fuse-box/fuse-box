@@ -1,0 +1,33 @@
+.hello {
+  color: red;
+}
+
+nav {
+  margin: 0;
+  padding: 0;
+  ul {
+    display: flex;
+    list-style: none;
+    padding-left: 0;
+    li {
+      margin-right: 20px;
+      background: lavenderblush;
+      padding: 5px;
+      cursor: pointer;
+      &:hover {
+        background: coral;
+        a {
+          color: white;
+        }
+      }
+      a {
+        text-decoration: none;
+        color: lightcoral;
+      }
+    }
+  }
+}
+
+.main {
+  padding: 20px;
+}
