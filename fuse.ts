@@ -2,6 +2,24 @@ import { sparky } from './src/sparky/sparky';
 import { IBumpVersionType } from './src/sparky/bumpVersion';
 import { npmPublish } from './src/sparky/npmPublish';
 
+const TypeDoc = require("typedoc")
+const typedocApp = new TypeDoc.Application({
+  experimentalDecorators: true,
+  logger: "console",
+  mode:   "modules",
+  module: "CommonJS",
+  target: "ES6",
+  ignoreCompilerErrors: true,
+  excludePrivate: true,
+  excludeExternals: true,
+  allowJs: false,
+  exclude: "**/*.test.ts",
+})
+
+const typedocProject = typedocApp.convert(typedocApp.expandInputFiles([
+  "src/core/FuseBox.ts",
+]))
+
 class Context {
   npmTag: 'latest' | 'alpha' | 'next';
   versionBumpType: IBumpVersionType;
@@ -76,3 +94,16 @@ task('dist', async ctx => {
   await exec('bump-version');
   await exec('fix-env');
 });
+
+
+task("document", async ctx => {
+  //    const configuration = context.getConfig()
+  //    console.dir(context.getConfig().context.tsConfig)
+  //    process.exit()
+  console.log(typedocProject == null)
+  if (typedocProject) { // Project may not have converted correctly
+    const outputDir = "docs/api"
+    // Rendered docs
+    await typedocApp.generateDocs(typedocProject, outputDir)
+  }
+})
