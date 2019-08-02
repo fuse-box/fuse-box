@@ -21,7 +21,8 @@ yarn.lock
 some.sh
 .temp
 .cache
-docs/api
+
+docs/api/
 
 # FuseBox Loader API built type definition
 # Which is then exported as a module from `src`
