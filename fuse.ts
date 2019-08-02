@@ -6,14 +6,23 @@ const TypeDoc = require("typedoc")
 const typedocApp = new TypeDoc.Application({
   experimentalDecorators: true,
   logger: "console",
-  mode:   "file",
+  mode:   "modules",
   module: "CommonJS",
   target: "ES6",
   ignoreCompilerErrors: true,
+  excludePrivate: true,
+  excludeExternals: true,
   allowJs: false,
+  exclude: "**/*.test.ts",
 })
 
-const typedocProject = typedocApp.convert(typedocApp.expandInputFiles(["src"]))
+const typedocProject = typedocApp.convert(typedocApp.expandInputFiles([
+  "src/core/FuseBox.ts",
+
+  "src/sparky/sparky.ts",
+
+  "src/plugins/core",
+]))
 
 class Context {
   npmTag: 'latest' | 'alpha' | 'next';
