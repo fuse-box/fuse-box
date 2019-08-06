@@ -4,6 +4,8 @@ In this sections we are going through `electron` setup. As you know, electron ap
 bundle with seperate entry points. First is the `main` process which launches the application, tweaks its settings, e.g.
 window size. Fusebox has a special launcher for that one.
 
+A working example can be found [here](https://github.com/fuse-box/fuse-box-electron-seed)
+
 ## Configuration the launcher
 
 Electron launcher must consist of bundle. FuseBox manages bundles automatically, therefore the amount of bundles varies.
