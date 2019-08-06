@@ -10,6 +10,7 @@ import { moduleLinkStage } from './stages/moduleLInkStage';
 import { preparationStage } from './stages/preparationStage';
 import { referenceLinkStage } from './stages/referenceLinkStage';
 import { transpileStage } from './stages/transpileStage';
+import { manifestStage } from './stages/manifestStage';
 
 export interface IProductionMain {
   packages: Array<Package>;
@@ -61,6 +62,7 @@ export async function productionMain(props: IProductionMain): Promise<IProductio
 
   // writing bundles and such
   const data = await finalStage(flow);
+
   props.ctx.ict.sync('complete', { bundles: data.bundles, ctx: props.ctx, packages: props.packages });
   return data;
 }

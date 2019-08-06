@@ -58,15 +58,15 @@ task('preview', async ctx => {
   ctx.isProduction = true;
   await rm('./dist');
   const browser = ctx.getBrowserConfig();
-  await browser.runProd({ uglify: true });
+  await browser.runProd({ uglify: true, manifest: true });
 
   const server = ctx.getServerConfig();
-  const response = await server.runProd({ uglify: false });
+  const response = await server.runProd({ uglify: false, manifest: true });
   response.launcher.start();
 });
 task('dist', async ctx => {
   ctx.runServer = false;
   ctx.isProduction = true;
   const fuse = ctx.getBrowserConfig();
-  await fuse.runProd({ uglify: false });
+  await fuse.runProd({ uglify: false, manifest: true });
 });

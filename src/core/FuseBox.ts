@@ -6,6 +6,7 @@ import { parseVersion } from '../utils/utils';
 import { createContext, createProdContext } from './Context';
 import { IProductionProps } from '../config/IProductionProps';
 import * as ts from 'typescript';
+import { UserHandler } from '../user-handler/UserHandler';
 import { IProductionResponse } from '../production/main';
 export interface IBundleProps {}
 
@@ -28,8 +29,10 @@ export function fusebox(config: IPublicConfig) {
     }
   }
   return {
-    runDev: async (props?: IDevelopmentProps) => {
+    runDev: async (cb?: (handler: UserHandler) => void) => {
       const ctx = createContext(config);
+      if (cb) cb(new UserHandler(ctx));
+
       checkVersion(ctx.log);
       return bundleDev(ctx).catch(e => {
         console.error(e);
@@ -37,6 +40,10 @@ export function fusebox(config: IPublicConfig) {
     },
     runProd: (props?: IProductionProps): Promise<IProductionResponse> => {
       const ctx = createProdContext(config, props);
+
+      if (props && props.handler) {
+        props.handler(new UserHandler(ctx));
+      }
       return bundleProd(ctx);
     },
   };

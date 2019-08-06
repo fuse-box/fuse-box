@@ -85,14 +85,14 @@ export function inflateBundle(ctx: Context, bundle: Bundle) {
       const concat = inflatePackage(ctx, pkg);
       bundle.addContent(concat.content, concat.sourceMap);
       ctx.ict.sync('after_dev_package_inflate', { ctx, concat, pkg: pkg });
-
-      // if (bundle.props.type === BundleType.PROJECT_JS) {
-      //   //injectSettingsIntoDefaultBundle(ctx, bundle);
-      // }
     }
   }
   // close developmentAPI for isolated bundles
   if (bundle.isolated) {
+    const defaultProject = bundle.packages.find(pkg => pkg.isDefaultPackage);
+    if (defaultProject.entry) {
+      bundle.addContent(devStrings.setEntry(`default/${defaultProject.entry.props.fuseBoxPath}`));
+    }
     bundle.addContent(closeDevelopmentApi());
   }
 }
@@ -110,19 +110,19 @@ export function createDevBundles(
 ): {
   bundles: BundleCollection;
 } {
-  const useOneBundle = ctx.config.target === 'web-worker';
+  const useOneBundle = ctx.config.target === 'web-worker' || ctx.config.useSingleBundle;
   const bundleSet = createBundleSet(ctx);
   let devBundle: Bundle;
 
   if (!useOneBundle) {
     devBundle = bundleSet.getBundle(BundleType.DEV);
-    // add dev api
     devBundle.addContent(getDevelopmentApi());
     injectSettingIntoDevBundle(ctx, devBundle);
   } else {
     const defaultBundle = bundleSet.getBundle(BundleType.PROJECT_JS);
     defaultBundle.isolated = true;
     defaultBundle.addContent(openDevelopmentApi());
+    injectSettingIntoDevBundle(ctx, defaultBundle);
   }
 
   packages.forEach(pkg => {
@@ -151,10 +151,14 @@ export function createDevBundles(
     }
   });
 
-  const defaultProject = packages.find(pkg => pkg.isDefaultPackage);
-  if (defaultProject.entry) {
-    const entryBundle = bundleSet.getBundle(BundleType.PROJECT_ENTRY);
-    entryBundle.addContent(devStrings.setEntry(`default/${defaultProject.entry.props.fuseBoxPath}`));
+  inflateBundles(ctx, bundleSet.collection);
+
+  if (!useOneBundle) {
+    const defaultProject = packages.find(pkg => pkg.isDefaultPackage);
+    if (defaultProject.entry) {
+      const targetBundle = bundleSet.getBundle(BundleType.PROJECT_ENTRY);
+      targetBundle.addContent(devStrings.setEntry(`default/${defaultProject.entry.props.fuseBoxPath}`));
+    }
   }
 
   return {

@@ -1,10 +1,9 @@
 import * as path from 'path';
-import { PrivateConfig } from '../config/PrivateConfig';
 import { Context } from '../core/Context';
 import { Package } from '../core/Package';
 import { IWriterResponse } from '../core/writer';
-import { Concat, createConcat, fastHash } from '../utils/utils';
-import { sourceMapsURL, sourceMapsCSSURL } from './bundleStrings';
+import { Concat, createConcat } from '../utils/utils';
+import { sourceMapsCSSURL, sourceMapsURL } from './bundleStrings';
 
 /**
  * Bundle types with priorities

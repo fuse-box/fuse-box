@@ -5,6 +5,7 @@ import * as CleanCSS from 'clean-css';
 import * as Terser from 'terser';
 import { addServerEntry } from '../../main/server_entry';
 import { createServerProcess, IServerProcess } from '../../server_process/serverProcess';
+import { manifestStage } from './manifestStage';
 interface IFinalStageProps {
   flow: IProductionFlow;
 }
@@ -119,8 +120,9 @@ export async function finalStage(props: IProductionFlow) {
 
   const api = renderProductionAPI(
     {
-      browser: ctx.config.target === 'browser' || ctx.config.target === 'electron',
-      webworker: ctx.config.target === 'web-worker',
+      isElectron: ctx.config.target === 'electron',
+      browser: ctx.config.target === 'browser',
+      useSingleBundle: ctx.useSingleBundle,
       server: ctx.config.target === 'server',
       splitConfig: !!splitConfig,
       allowSyntheticDefaultImports: config.allowSyntheticDefaultImports,
@@ -146,6 +148,10 @@ export async function finalStage(props: IProductionFlow) {
   const bundleResponses: Array<IBundleWriteResponse> = [];
   for (const bundle of productionContext.bundles) {
     bundleResponses.push(await bundle.generate().write());
+  }
+
+  if (props.ctx.config.manifest.enabled) {
+    manifestStage(props, bundleResponses);
   }
 
   let launcher: IServerProcess;

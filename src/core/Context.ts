@@ -1,5 +1,6 @@
 import { Cache, createCache } from '../cache/cache';
 import { createConfig } from '../config/config';
+import { IProductionProps } from '../config/IProductionProps';
 import { IPublicConfig } from '../config/IPublicConfig';
 import { PrivateConfig } from '../config/PrivateConfig';
 import { createDevServer, IDevServerActions } from '../dev-server/devServer';
@@ -8,17 +9,16 @@ import { attachEssentials } from '../integrity/setup';
 import { createInterceptor, MainInterceptor } from '../interceptor/interceptor';
 import { TypescriptConfig } from '../interfaces/TypescriptInterfaces';
 import { getLogger, ILogger } from '../logging/logging';
+import { ProductionAPIWrapper } from '../production/api/ProductionApiWrapper';
 import { initTypescriptConfig } from '../tsconfig/configParser';
+import { ensureUserPath, fastHash } from '../utils/utils';
 import { createWebIndex, IWebIndexInterface } from '../web-index/webIndex';
+import { WebWorkerProcess } from '../web-workers/WebWorkerProcess';
 import { assembleContext, IAssembleContext } from './assemble_context';
 import { ContextTaskManager, createContextTaskManager } from './ContextTaskManager';
 import { Package } from './Package';
 import { createWeakModuleReferences, WeakModuleReferences } from './WeakModuleReferences';
 import { createWriter, IWriterActions } from './writer';
-import { IProductionProps } from '../config/IProductionProps';
-import { ProductionAPIWrapper } from '../production/api/ProductionApiWrapper';
-import { WebWorkerProcess } from '../web-workers/WebWorkerProcess';
-import { fastHash } from '../utils/utils';
 
 export class Context {
   public assembleContext: IAssembleContext;
@@ -97,13 +97,33 @@ export class Context {
     this.devServer = createDevServer(this);
     this.config.setupEnv();
     this.productionApiWrapper = new ProductionAPIWrapper(this);
+
+    this.config.manifest = { enabled: false };
+    if (prodProps.manifest) {
+      if (typeof prodProps.manifest === 'boolean') {
+        this.config.manifest.enabled = prodProps.manifest;
+      } else {
+        this.config.manifest = prodProps.manifest;
+        if (this.config.manifest.enabled === undefined) {
+          this.config.manifest.enabled = true;
+        }
+      }
+    }
+    if (!this.config.manifest.filePath) {
+      this.config.manifest.filePath = 'manifest.json';
+    }
+    this.config.manifest.filePath = ensureUserPath(this.config.manifest.filePath, this.writer.outputDirectory);
+  }
+
+  public get useSingleBundle() {
+    return this.config.useSingleBundle || this.config.target === 'web-worker';
   }
 
   public requireModule(name: string) {
     try {
       return require(name);
     } catch (error) {
-      this.log.error('Cannot import $name. Forgot to insall? ', { name: name });
+      this.log.error('Cannot import $name. Forgot to install? ', { name: name });
     }
   }
 }

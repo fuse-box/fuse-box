@@ -36,8 +36,12 @@
   var $fsx = (global.$fsx = {});
   /* @end */
 
-  /* @if webworker */
+  /* @if useSingleBundle */
   var $fsx = {};
+  /* @end */
+
+  /* @if !useSingleBundle && isElectron */
+  var $fsx = (window.$fsx = {});
   /* @end */
 
   /* @if browser */
@@ -102,7 +106,7 @@
     return cached.m.exports;
   };
 
-  /* @if webworker */
+  /* @if useSingleBundle */
   return $fsx;
   /* @end */
 })();

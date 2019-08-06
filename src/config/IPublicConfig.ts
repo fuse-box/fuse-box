@@ -17,6 +17,7 @@ export interface IPublicConfig {
   target?: ITarget;
   autoStartServerEntry?: boolean;
   autoStartEntry?: boolean;
+  useSingleBundle?: boolean;
   dependencies?: {
     include?: Array<string>;
     ignore?: Array<string>;

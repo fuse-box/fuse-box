@@ -1,6 +1,6 @@
 import * as prettyTime from 'pretty-time';
 import { IBundleWriteResponse } from '../bundle/Bundle';
-import { createDevBundles, inflateBundles } from '../bundle/createDevBundles';
+import { createDevBundles } from '../bundle/createDevBundles';
 import { Context } from '../core/Context';
 import { attachHMR } from '../hmr/attach_hmr';
 import { pluginAssumption } from '../plugins/core/plugin_assumption';
@@ -50,8 +50,6 @@ export async function bundleDev(ctx: Context) {
 
     // sorting bundles with dev, system, default, vendor
     const data = createDevBundles(ctx, packages);
-    // inflation (populating the contents)
-    inflateBundles(ctx, data.bundles);
 
     const writers = [];
     for (const key in data.bundles) {
@@ -63,26 +61,6 @@ export async function bundleDev(ctx: Context) {
     await attachWebIndex(ctx, bundles);
 
     attachWatcher({ ctx });
-
-    // let serverProcess: IServerProcess;
-    // async function write(bundles: Array<IBundleWriteResponse>) {
-    //   const data = await addServerEntry(ctx, bundles);
-    //   if (ctx.config.autoStartServerEntry) {
-    //     if (!serverProcess) serverProcess = createServerProcess({ absPath: data.info.stat.absPath });
-    //     serverProcess.start();
-    //   }
-    // }
-    // if (ctx.config.target === 'server') {
-    //   ctx.ict.on('complete', props => {
-    //     write(props.bundles);
-    //     return props;
-    //   });
-
-    //   ctx.ict.on('rebundle_complete', props => {
-    //     write(props.bundles);
-    //     return props;
-    //   });
-    // }
   }
 
   statLog({

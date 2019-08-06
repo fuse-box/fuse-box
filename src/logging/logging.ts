@@ -62,6 +62,7 @@ export function getLogger(props?: ILoggerProps): ILogger {
   if (process.argv.includes('--verbose')) {
     level = 'verbose';
   }
+
   const scope: {
     group?: string;
     warnings: Array<{ str: string; vars: any }>;
@@ -114,7 +115,7 @@ export function getLogger(props?: ILoggerProps): ILogger {
       }
     },
     progressFormat: (name: string, contents: string, vars?) => {
-      methods.progress('<bold><dim> <yellow>  $name</yellow> <cyan>$contents</cyan></dim></bold>\n', {
+      methods.progress('<bold><dim> <yellow>  $name</yellow> <cyan>$contents</cyan></dim></bold>', {
         name: name,
         contents: replaceVars(contents, vars),
       });

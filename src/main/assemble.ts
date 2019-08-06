@@ -268,7 +268,7 @@ export function assemble(ctx: Context, entryFile: string): Array<Package> {
     result.push(pkg);
   });
   ctx.packages = result;
-  ctx.log.progressEnd('<green><bold>$checkmark  Assemble completed</bold></green>');
+  ctx.log.progressEnd('<green><bold>$checkmark Assemble completed</bold></green>');
 
   return result;
 }

@@ -1,22 +1,22 @@
+import * as path from 'path';
+import { Cache } from '../cache/cache';
+import { Context } from '../core/Context';
 import { IDevServerProps } from '../dev-server/devServerProps';
-
+import { env } from '../env';
 import { IRawCompilerOptions } from '../interfaces/TypescriptInterfaces';
 import { ILoggerProps } from '../logging/logging';
+import { IJSONPluginProps } from '../plugins/core/plugin_json';
+import { IPluginLinkOptions } from '../plugins/core/plugin_link';
+import { ensureAbsolutePath, joinFuseBoxPath } from '../utils/utils';
 import { IWatcherExternalProps } from '../watcher/watcher';
 import { IWebIndexConfig } from '../web-index/webIndex';
-import { IStyleSheetProps } from './IStylesheetProps';
-import { ensureAbsolutePath, joinFuseBoxPath } from '../utils/utils';
-import { Context } from '../core/Context';
-import * as path from 'path';
-import { IPublicConfig } from './IPublicConfig';
-import { IJSONPluginProps } from '../plugins/core/plugin_json';
-import { IProductionProps } from './IProductionProps';
-import { IResourceConfig } from './IResourceConfig';
-import { Cache } from '../cache/cache';
-import { IWebWorkerConfig } from './IWebWorkerConfig';
 import { ICodeSplittingConfig } from './ICodeSplittingConfig';
-import { env } from '../env';
-import { IPluginLinkOptions } from '../plugins/core/plugin_link';
+import { IManifest } from './IManifest';
+import { IProductionProps } from './IProductionProps';
+import { IPublicConfig } from './IPublicConfig';
+import { IResourceConfig } from './IResourceConfig';
+import { IStyleSheetProps } from './IStylesheetProps';
+import { IWebWorkerConfig } from './IWebWorkerConfig';
 
 export interface IHMRExternalProps {
   reloadEntryOnStylesheet?: boolean;
@@ -52,6 +52,7 @@ export class PrivateConfig {
     ignore?: Array<string>;
     ignoreAllExternal?: boolean;
   };
+  useSingleBundle?: boolean;
   webWorkers?: IWebWorkerConfig;
   homeDir?: string;
   resources?: IResourceConfig;
@@ -92,6 +93,7 @@ export class PrivateConfig {
   defaultSourceMapModulesRoot?: string;
 
   cacheObject?: Cache;
+  manifest?: IManifest;
 
   public ctx?: Context;
 
@@ -169,6 +171,7 @@ export class PrivateConfig {
     // Plugin Link
     this.link = props.link ? props.link : {};
     this.autoStartEntry = props.autoStartEntry;
+    this.useSingleBundle = props.useSingleBundle;
   }
 
   public isEssentialDependency(name: string) {

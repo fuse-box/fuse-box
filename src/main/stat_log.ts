@@ -18,7 +18,7 @@ function conj(word, amount?: number) {
 export function printStatFinal(props: { log: ILogger; time: string }) {
   const log = props.log;
   if (!log.hasErrors() && !log.hasWarnings()) {
-    log.print(`<green>✔</green> <green><bold> Completed without issues in $time</bold></green>`, {
+    log.print(`<green>✔</green> <green><bold>Completed without issues in $time</bold></green>`, {
       time: props.time,
     });
   }
@@ -45,13 +45,18 @@ export function printStatFinal(props: { log: ILogger; time: string }) {
     }
   }
 }
+
+export function logFuseBoxVersion(ctx: Context) {
+  ctx.log.print('\n\n⚙  FuseBox <bold>$version</bold>', {
+    version: env.VERSION,
+  });
+}
 export function statLog(props: IStatLogProps) {
   const ctx = props.ctx;
   const log = ctx.log;
+
   if (props.printFuseBoxVersion) {
-    log.print('⚙  FuseBox <bold>$version</bold>', {
-      version: env.VERSION,
-    });
+    logFuseBoxVersion(ctx);
   }
 
   printStatFinal({ log, time: props.time });

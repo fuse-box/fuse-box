@@ -26,6 +26,7 @@ function moduleTransformer<T extends ts.Node>(
   pm: ProductionModule,
 ): ts.TransformerFactory<T> {
   const log = props.flow.ctx.log;
+  const config = props.flow.ctx.config;
   return context => {
     const webWorkers = pm.module.fastAnalysis && pm.module.fastAnalysis.workers;
     const visit: ts.Visitor = node => {
@@ -50,11 +51,13 @@ function moduleTransformer<T extends ts.Node>(
 
         const target = pm.findDependantModule(text);
         if (!target) {
-          if (!props.flow.ctx.config.dependencies.ignoreAllExternal) {
-            log.error('Problem when resolving require "$text" in $file', {
-              text: text,
-              file: pm.module.getShortPath(),
-            });
+          if (config.target !== 'electron' && config.target !== 'server') {
+            if (!props.flow.ctx.config.dependencies.ignoreAllExternal) {
+              log.error('Problem when resolving require "$text" in $file', {
+                text: text,
+                file: pm.module.getShortPath(),
+              });
+            }
           }
         } else {
           log.progressFormat(

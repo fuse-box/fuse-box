@@ -1,14 +1,14 @@
 import * as prettyTime from 'pretty-time';
 import { BundleType, IBundleWriteResponse } from '../bundle/Bundle';
-import { createDevBundles, inflateBundles } from '../bundle/createDevBundles';
+import { createDevBundles } from '../bundle/createDevBundles';
 import { Context } from '../core/Context';
-import { env } from '../env';
 import { Package } from '../core/Package';
+import { env } from '../env';
 import { EMOJIS } from '../logging/logging';
 import { extractFuseBoxPath } from '../utils/utils';
 import { createWatcher, WatcherAction } from '../watcher/watcher';
-import { assemble, processModule } from './assemble';
-import { pluginProcessPackages, bundleResolveModule } from './process_plugins';
+import { assemble } from './assemble';
+import { pluginProcessPackages } from './process_plugins';
 import { statLog } from './stat_log';
 export interface IWatcherAttachProps {
   ctx: Context;
@@ -74,8 +74,7 @@ async function appReload(props: IAppReloadProps): Promise<IAppReloadResponse> {
   await pluginProcessPackages({ ctx, packages });
   // sorting bundles with dev, system, default, vendor
   const data = createDevBundles(ctx, packages);
-  // inflation (populating the contents)
-  inflateBundles(ctx, data.bundles);
+
   const writers = [];
   for (const key in data.bundles) {
     const bundle = data.bundles[key];

@@ -9,7 +9,8 @@ interface IBundleGenerationStageProps {
 function getCorrespondingBundle(props: IBundleGenerationStageProps, pm: ProductionModule) {
   let bundle: Bundle;
   const bundles = props.flow.productionContext.bundles;
-  if (props.flow.ctx.config.target === 'web-worker') {
+
+  if (props.flow.ctx.useSingleBundle) {
     bundle = bundles.find(bundle => bundle.props.type === BundleType.PROJECT_JS);
     if (!bundle) {
       bundle = createBundle({

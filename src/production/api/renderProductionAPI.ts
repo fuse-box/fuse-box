@@ -1,12 +1,12 @@
 import * as LegoAPI from 'lego-api';
 import * as path from 'path';
-import { readFile, createConcat, Concat } from '../../utils/utils';
-import { ProductionModule } from '../ProductionModule';
+import { readFile } from '../../utils/utils';
 
 export interface IProductionAPIOptions {
-  webworker?: boolean;
+  useSingleBundle?: boolean;
   browser?: boolean;
   universal?: boolean;
+  isElectron?: boolean;
   server?: boolean;
   globalRequire?: boolean;
   isServerFunction?: boolean;
@@ -28,7 +28,15 @@ export interface IProductionAPIOptions {
   extendServerImport?: boolean;
   runtimeBundleMapping?: boolean;
 }
-const keys = ['browser', 'universal', 'webworker', 'server', 'allowSyntheticDefaultImports', 'splitConfig'];
+const keys = [
+  'browser',
+  'universal',
+  'useSingleBundle',
+  'isElectron',
+  'server',
+  'allowSyntheticDefaultImports',
+  'splitConfig',
+];
 const defaultOptions: IProductionAPIOptions = {};
 for (const key in keys) {
   defaultOptions[keys[key]] = false;
@@ -42,7 +50,7 @@ export function renderProductionAPI(conditions?: IProductionAPIOptions, variable
       data = data.replace(`$${varName}$`, variables[varName]);
     }
   }
-  if (conditions.webworker) {
+  if (conditions.useSingleBundle) {
     data = `var $fsx = ${data}`;
   }
   return data;
