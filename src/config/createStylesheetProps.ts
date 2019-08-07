@@ -7,14 +7,27 @@ export interface ICreateStylesheetProps {
 export function createStylesheetProps(props: ICreateStylesheetProps): IStyleSheetProps {
   const ctx = props.ctx;
   const options: IStyleSheetProps = {};
+  // global configuration
   if (ctx.config.stylesheet) {
     options.paths = ctx.config.stylesheet.paths;
+    // global post css config
+    options.postCSS = ctx.config.stylesheet.postCSS;
+    options.macros = ctx.config.stylesheet.macros;
   }
 
   if (props.stylesheet) {
     options.groupResourcesFilesByType = props.stylesheet.groupResourcesFilesByType;
     options.ignoreChecksForCopiedResources = props.stylesheet.ignoreChecksForCopiedResources;
     if (props.stylesheet.paths) options.paths = props.stylesheet.paths;
+
+    if (props.stylesheet.postCSS) {
+      // local override of postcss
+      options.postCSS = props.stylesheet.postCSS;
+    }
+
+    if (props.stylesheet.macros) {
+      options.macros = props.stylesheet.macros;
+    }
   }
 
   if (options.groupResourcesFilesByType === undefined) {

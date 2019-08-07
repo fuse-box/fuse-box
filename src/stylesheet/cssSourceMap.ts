@@ -4,7 +4,7 @@ import * as path from 'path';
 import { extractFuseBoxPath, joinFuseBoxPath, ensureFuseBoxPath } from '../utils/utils';
 export interface IAlignCSSSourceMap {
   module: Module;
-  sourceMap: Buffer;
+  sourceMap: Buffer | string;
   ctx: Context;
 }
 

@@ -3,10 +3,10 @@ import { IStyleSheetProps } from '../config/IStylesheetProps';
 import { Context } from '../core/Context';
 import { Module } from '../core/Module';
 import { readFile } from '../utils/utils';
+import { cssHandleResources, ICSSHandleResourcesProps } from './cssHandleResources';
 import { cssResolveModule } from './cssResolveModule';
-import { cssResolveURL } from './cssResolveURL';
-import { IStylesheetModuleResponse, IStyleSheetProcessor } from './interfaces';
 import { alignCSSSourceMap } from './cssSourceMap';
+import { IStylesheetModuleResponse, IStyleSheetProcessor } from './interfaces';
 
 export interface ISassProps {
   macros?: { [key: string]: string };
@@ -15,14 +15,6 @@ export interface ISassHandlerProps {
   ctx: Context;
   module: Module;
   options: IStyleSheetProps;
-}
-
-interface ISassImporterProps {
-  options: IStyleSheetProps;
-  ctx: Context;
-  module: Module;
-  url?: string;
-  fileRoot?: string;
 }
 
 interface IRenderModuleProps {
@@ -41,7 +33,7 @@ function evaluateSass(sassModule, options): Promise<{ css: Buffer; map: Buffer }
   });
 }
 
-export function sassImporter(props: ISassImporterProps) {
+export function sassImporter(props: ICSSHandleResourcesProps) {
   const userPaths = props.options.paths || [];
 
   const root = path.dirname(props.fileRoot);
@@ -56,36 +48,16 @@ export function sassImporter(props: ISassImporterProps) {
   });
 
   if (resolved.success) {
-    return handleResources({ path: resolved.path, contents: readFile(resolved.path) }, props);
+    return cssHandleResources({ path: resolved.path, contents: readFile(resolved.path) }, props);
   }
-}
-
-function handleResources(
-  opts: { path: string; contents: string },
-  props: ISassImporterProps,
-): { file: string; contents: string } {
-  const urlResolver = cssResolveURL({
-    filePath: opts.path,
-    ctx: props.ctx,
-    contents: opts.contents,
-    options: props.options,
-  });
-
-  return { file: opts.path, contents: urlResolver.contents };
 }
 
 export async function renderModule(props: IRenderModuleProps): Promise<IStylesheetModuleResponse> {
   const { ctx, module, nodeSass } = props;
-  let requireSourceMap = true;
-  if (ctx.config.sourceMap.css === false) {
-    requireSourceMap = false;
-  }
-  if (!module.pkg.isDefaultPackage && !ctx.config.sourceMap.vendor) {
-    requireSourceMap = false;
-  }
+  const requireSourceMap = module.isCSSSourceMapRequired();
 
   // handle root resources
-  const processed = handleResources(
+  const processed = cssHandleResources(
     { path: module.props.absPath, contents: module.contents },
     { options: props.options, ctx: props.ctx, module: module },
   );

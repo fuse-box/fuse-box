@@ -28,6 +28,10 @@ export function pluginCSS(a?: ICSSPluginProps | string | RegExp, b?: ICSSPluginP
 
     ctx.ict.on('bundle_resolve_module', props => {
       const { module } = props;
+      if (props.module.captured) {
+        return;
+      }
+
       if (!matcher.test(module.props.absPath)) return;
       ctx.log.progressFormat('pluginCss', module.props.absPath);
       module.read();

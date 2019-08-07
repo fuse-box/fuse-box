@@ -1,5 +1,6 @@
 import { ISassProps } from '../stylesheet/sassHandler';
 import { IResourceConfig } from './IResourceConfig';
+import { IPostCSSProps } from './IPostCSSProps';
 
 export interface IStyleSheetProps extends IResourceConfig {
   /**
@@ -49,4 +50,5 @@ export interface IStyleSheetProps extends IResourceConfig {
    */
   macros?: { [key: string]: string };
   sass?: ISassProps;
+  postCSS?: IPostCSSProps;
 }

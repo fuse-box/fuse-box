@@ -191,7 +191,17 @@ export class Module {
   public getHasedPath() {
     return fastHash(`${this.pkg.getPublicName()}/${this.props.fuseBoxPath}`);
   }
-
+  public isCSSSourceMapRequired() {
+    let requireSourceMap = true;
+    const config = this.props.ctx.config;
+    if (config.sourceMap.css === false) {
+      requireSourceMap = false;
+    }
+    if (!this.pkg.isDefaultPackage && !config.sourceMap.vendor) {
+      requireSourceMap = false;
+    }
+    return requireSourceMap;
+  }
   public isSourceMapRequired() {
     let requireSourceMaps = true;
     const config = this.props.ctx.config;
