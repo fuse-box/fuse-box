@@ -7,6 +7,7 @@ import { cssDevModuleRender } from '../../stylesheet/cssDevModuleRender';
 
 export interface ICSSContextHandlerExtraProps {
   asText?: boolean;
+  useDefault?: boolean;
 }
 export interface ICSSContextHandler {
   ctx: Context;
@@ -26,7 +27,13 @@ export function cssContextHandler(props: ICSSContextHandler) {
   ctx.ict.promise(async () => {
     try {
       const data = await processor.render();
-      const rendererProps = { data, ctx, options: props.options, module: props.module };
+      const rendererProps = {
+        data,
+        ctx,
+        options: props.options,
+        module: props.module,
+        useDefault: props.shared.useDefault,
+      };
       if (shared.asText) {
         props.module.notStylesheet();
         return cssAsTextRender({ ...rendererProps });

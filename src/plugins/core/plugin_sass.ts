@@ -1,17 +1,13 @@
 import { createStylesheetProps } from '../../config/createStylesheetProps';
-import { IStyleSheetProps } from '../../config/IStylesheetProps';
 import { Context } from '../../core/Context';
 import { sassHandler } from '../../stylesheet/sassHandler';
+import { IPluginCommon } from '../interfaces';
 import { parsePluginOptions } from '../pluginUtils';
 import { cssContextHandler } from './shared';
 
-export interface ISassPluginProps {
-  stylesheet?: IStyleSheetProps;
-  asText?: boolean;
-}
-export function pluginSass(a?: ISassPluginProps | string | RegExp, b?: ISassPluginProps) {
+export function pluginSass(a?: IPluginCommon | string | RegExp, b?: IPluginCommon) {
   return (ctx: Context) => {
-    let [opts, matcher] = parsePluginOptions<ISassPluginProps>(a, b, {});
+    let [opts, matcher] = parsePluginOptions<IPluginCommon>(a, b, {});
 
     opts.stylesheet = createStylesheetProps({ ctx, stylesheet: opts.stylesheet || {} });
 
@@ -40,7 +36,7 @@ export function pluginSass(a?: ISassPluginProps | string | RegExp, b?: ISassPlug
           module: module,
           options: opts.stylesheet,
           processor: sass,
-          shared: { asText: opts.asText },
+          shared: { asText: opts.asText, useDefault: opts.useDefault },
         });
       }
       return props;

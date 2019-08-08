@@ -4,6 +4,7 @@ import { Context } from '../core/Context';
 import { Module } from '../core/Module';
 import { fastHash, joinFuseBoxPath } from '../utils/utils';
 import { IStylesheetModuleResponse } from './interfaces';
+import { sourceMapsCSSURL } from '../bundle/bundleStrings';
 
 export interface ICSSModuleRender {
   ctx: Context;
@@ -27,7 +28,11 @@ export function cssDevModuleRender(props: ICSSModuleRender) {
     const publicPath = joinFuseBoxPath(resourceConfig.resourcePublicRoot, 'css', name);
 
     // replace existing sourceMappingURL
-    cssData = cssData.replace(/(sourceMappingURL=)([^\s]+)/, `$1${publicPath}`);
+    if (/sourceMappingURL/.test(cssData)) {
+      cssData = cssData.replace(/(sourceMappingURL=)([^\s]+)/, `$1${publicPath}`);
+    } else {
+      cssData += sourceMapsCSSURL(publicPath);
+    }
 
     // figuring out where to write that css
 

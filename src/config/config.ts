@@ -58,7 +58,7 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
     css: true,
     vendor: false,
     project: true,
-    sourceRoot: '/src',
+    sourceRoot: '/',
   };
 
   if (props.sourceMap !== undefined) {

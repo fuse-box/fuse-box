@@ -2,6 +2,7 @@ import { ISassProps } from '../stylesheet/sassHandler';
 import { IResourceConfig } from './IResourceConfig';
 import { IPostCSSProps } from './IPostCSSProps';
 
+import { ILessProps } from './ILessProps';
 export interface IStyleSheetProps extends IResourceConfig {
   /**
    * By default, FuseBox checks if a file has been copied over and exists in the dest file.
@@ -51,4 +52,5 @@ export interface IStyleSheetProps extends IResourceConfig {
   macros?: { [key: string]: string };
   sass?: ISassProps;
   postCSS?: IPostCSSProps;
+  less?: ILessProps;
 }

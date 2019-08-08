@@ -12,6 +12,7 @@ export function createStylesheetProps(props: ICreateStylesheetProps): IStyleShee
     options.paths = ctx.config.stylesheet.paths;
     // global post css config
     options.postCSS = ctx.config.stylesheet.postCSS;
+    options.less = ctx.config.stylesheet.less;
     options.macros = ctx.config.stylesheet.macros;
   }
 
@@ -20,9 +21,13 @@ export function createStylesheetProps(props: ICreateStylesheetProps): IStyleShee
     options.ignoreChecksForCopiedResources = props.stylesheet.ignoreChecksForCopiedResources;
     if (props.stylesheet.paths) options.paths = props.stylesheet.paths;
 
-    if (props.stylesheet.postCSS) {
+    if (props.stylesheet.postCSS !== undefined) {
       // local override of postcss
       options.postCSS = props.stylesheet.postCSS;
+    }
+
+    if (props.stylesheet.less !== undefined) {
+      options.less = props.stylesheet.less;
     }
 
     if (props.stylesheet.macros) {

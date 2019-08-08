@@ -14,7 +14,6 @@ interface IRenderModuleProps {
   options?: IStyleSheetProps;
   ctx: Context;
   module: Module;
-  nodeSass: any;
 }
 
 async function callPostCSS(plugins: Array<any>, css: string, options): Promise<{ map: string; css: string }> {
@@ -99,12 +98,8 @@ export interface IPostCSSHandlerProps {
 
 export function postCSSHandler(props: IPostCSSHandlerProps): IStyleSheetProcessor {
   const { ctx, module } = props;
-  const nodeSass = ctx.requireModule('node-sass');
-  if (!nodeSass) {
-    return;
-  }
 
   return {
-    render: async () => renderModule({ ctx, module, nodeSass, options: props.options }),
+    render: async () => renderModule({ ctx, module, options: props.options }),
   };
 }
