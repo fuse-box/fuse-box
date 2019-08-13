@@ -1,4 +1,4 @@
-import { Spinner } from './Spinner';
+import { getSpinner as Spinner } from './Spinner';
 import { setInterval } from 'timers';
 
 const spinner = new Spinner();

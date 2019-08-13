@@ -57,7 +57,7 @@ export class ESModuleStructure {
   }
 }
 
-export function createESModuleStructure(productionModule: ProductionModule, file: SourceFile) {
+export function createESModuleStructure(productionModule: ProductionModule, file?: SourceFile) {
   const structure = new ESModuleStructure(productionModule);
 
   const dynamicImports = file.getDescendantsOfKind(ts.SyntaxKind.ImportKeyword);

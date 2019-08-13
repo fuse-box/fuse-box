@@ -153,6 +153,8 @@
     "format": "prettier --list-different \"src/**/*.{js,json,md,ts,yml}\"",
     "format:fix": "prettier --write \"src/**/*.{js,json,md,ts,yml}\"",
     "test": "jest --verbose",
+
+    "test:ts": "tsc --noEmit --skipLibCheck --project src/tsconfig.json",
     "coverage": "jest --verbose --coverage",
     "coverage-ci": "jest --verbose --coverage --runInBand"
   },
