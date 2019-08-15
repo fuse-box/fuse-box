@@ -1,9 +1,8 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Component } from 'react';
-import './index.css';
-console.log(__CLIENT__);
-console.log('oi');
+import './index.styl';
+
 class App extends Component {
   render() {
     return (

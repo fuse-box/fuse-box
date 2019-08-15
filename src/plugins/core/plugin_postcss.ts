@@ -5,7 +5,7 @@ import { IPluginCommon } from '../interfaces';
 import { parsePluginOptions } from '../pluginUtils';
 import { cssContextHandler } from './shared';
 
-export function pluginPostCSS({ a, b }: { a?: IPluginCommon | string | RegExp; b?: IPluginCommon } = {}) {
+export function pluginPostCSS(a?: string | RegExp, b?: IPluginCommon) {
   return (ctx: Context) => {
     let [opts, matcher] = parsePluginOptions<IPluginCommon>(a, b, {});
 

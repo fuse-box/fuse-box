@@ -1,6 +1,5 @@
-import { sparky, fusebox, pluginPostCSS, pluginLess } from '../../src';
 import * as path from 'path';
-import * as precss from 'precss';
+import { fusebox, sparky } from '../../src';
 
 class Context {
   isProduction;
@@ -23,7 +22,7 @@ class Context {
 
       watch: true,
       hmr: true,
-      plugins: [pluginLess('*.less', { asText: true, useDefault: true })],
+      //plugins: [pluginLess('*.less', { asText: true, useDefault: true })],
       devServer: true,
     });
   }

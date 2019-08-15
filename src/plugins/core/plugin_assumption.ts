@@ -4,20 +4,8 @@ import { pluginJSONHandler } from './plugin_json';
 import { pluginLinkHandler } from './plugin_link';
 import { pluginLessCapture } from './plugin_less';
 import { createStylesheetProps } from '../../config/createStylesheetProps';
-
-const LINK_ASSUMPTION_EXTENSIONS = [
-  '.ttf',
-  '.otf',
-  '.woff',
-  '.woff2',
-  '.eot',
-  '.png',
-  '.jpeg',
-  '.jpg',
-  '.gif',
-  '.bmp',
-  '.svg',
-];
+import { LINK_ASSUMPTION_EXTENSIONS } from '../../config/extensions';
+import { pluginStylusCapture } from './plugin_stylus';
 
 export function pluginAssumption() {
   return (ctx: Context) => {
@@ -30,6 +18,14 @@ export function pluginAssumption() {
           pluginLinkHandler(props.module, {});
         } else if (ext === '.less') {
           pluginLessCapture({
+            ctx,
+            module: props.module,
+            opts: {
+              stylesheet: createStylesheetProps({ ctx, stylesheet: {} }),
+            },
+          });
+        } else if (ext === '.styl') {
+          pluginStylusCapture({
             ctx,
             module: props.module,
             opts: {

@@ -20,6 +20,15 @@ export function pluginSass(a?: IPluginCommon | string | RegExp, b?: IPluginCommo
       if (!matcher) matcher = /\.(scss|sass)$/;
 
       if (matcher.test(module.props.absPath)) {
+        if (!ctx.isInstalled('node-sass')) {
+          ctx.fatal([
+            `Fatal error when capturing ${module.props.absPath}`,
+            'Module "sass" is required, Please install it using the following command',
+            'npm install node-sass --save-dev',
+          ]);
+          return;
+        }
+
         ctx.log.progressFormat('pluginSass', module.props.absPath);
 
         props.module.read();

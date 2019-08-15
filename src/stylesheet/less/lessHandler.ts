@@ -95,12 +95,7 @@ export async function renderModule(props: { ctx: Context; module: Module; less: 
 }
 export function lessHandler(props: ILessHandlerProps): IStyleSheetProcessor {
   const { ctx, module } = props;
-
-  const less = ctx.requireModule('less');
-  if (!less) {
-    return;
-  }
-
+  const less = require('less');
   return {
     render: async () => renderModule({ ctx, module, less, options: props.options }),
   };

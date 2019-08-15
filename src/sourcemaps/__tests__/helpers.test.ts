@@ -23,7 +23,7 @@ describe('sourcemaps halpers ', () => {
       };
       const fixedmap = fixModuleSourceMap(data.module, rawMap);
       const newMap = JSON.parse(fixedmap);
-      expect(newMap.sources).toEqual(['/src/foobar.ts']);
+      expect(newMap.sources).toEqual(['/foobar.ts']);
       expect(newMap.sourcesContent).toEqual(["$fsmp$('foo')"]);
     });
 
@@ -44,7 +44,7 @@ describe('sourcemaps halpers ', () => {
       };
       const fixedmap = fixModuleSourceMap(data.module, rawMap);
       const newMap = JSON.parse(fixedmap);
-      expect(newMap.sources).toEqual(['/src/foobar.ts']);
+      expect(newMap.sources).toEqual(['/foobar.ts']);
       expect(newMap.sourcesContent).toEqual(["import('foo')"]);
     });
   });

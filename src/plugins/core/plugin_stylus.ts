@@ -1,29 +1,30 @@
 import { createStylesheetProps } from '../../config/createStylesheetProps';
 import { Context } from '../../core/Context';
 import { Module } from '../../core/Module';
-import { lessHandler } from '../../stylesheet/less/lessHandler';
 import { IPluginCommon } from '../interfaces';
 import { parsePluginOptions } from '../pluginUtils';
 import { cssContextHandler } from './shared';
+import { stylusHandler } from '../../stylesheet/stylus/stylusHandler';
 
-export function pluginLessCapture(props: { ctx: Context; module: Module; opts: IPluginCommon }) {
+export function pluginStylusCapture(props: { ctx: Context; module: Module; opts: IPluginCommon }) {
   const { ctx, module, opts } = props;
-  if (!ctx.isInstalled('less')) {
+
+  if (!ctx.isInstalled('stylus')) {
     ctx.fatal([
       `Fatal error when capturing ${module.props.absPath}`,
-      'Module "less" is required, Please install it using the following command',
-      'npm install less --save-dev',
+      'Module "stylus" is required, Please install it using the following command',
+      'npm install stylus --save-dev',
     ]);
     return;
   }
 
-  ctx.log.progressFormat('pluginLess', module.props.absPath);
+  ctx.log.progressFormat('pluginStylusCapture', module.props.absPath);
 
   props.module.read();
   props.module.captured = true;
 
-  const postCSS = lessHandler({ ctx: ctx, module, options: opts.stylesheet });
-  if (!postCSS) return;
+  const stylusProcessor = stylusHandler({ ctx: ctx, module, options: opts.stylesheet });
+  if (!stylusProcessor) return;
 
   // A shared handler that takes care of development/production render
   // as well as setting according flags
@@ -32,12 +33,12 @@ export function pluginLessCapture(props: { ctx: Context; module: Module; opts: I
     ctx,
     module: module,
     options: opts.stylesheet,
-    processor: postCSS,
+    processor: stylusProcessor,
     shared: { asText: opts.asText, useDefault: opts.useDefault },
   });
 }
 
-export function pluginLess(a?: IPluginCommon | string | RegExp, b?: IPluginCommon) {
+export function pluginStylus(a?: IPluginCommon | string | RegExp, b?: IPluginCommon) {
   return (ctx: Context) => {
     let [opts, matcher] = parsePluginOptions<IPluginCommon>(a, b, {});
 
@@ -50,7 +51,7 @@ export function pluginLess(a?: IPluginCommon | string | RegExp, b?: IPluginCommo
       }
 
       if (matcher.test(module.props.absPath)) {
-        pluginLessCapture({ ctx, module, opts: opts });
+        pluginStylusCapture({ ctx, module, opts: opts });
       }
       return props;
     });

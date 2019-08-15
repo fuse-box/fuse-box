@@ -62,7 +62,6 @@ export function pluginLink(target: string | RegExp, options?: IPluginLinkOptions
           return;
         }
 
-        console.log('poooooo');
         pluginLinkHandler(props.module, options);
       }
       return props;

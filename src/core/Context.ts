@@ -119,11 +119,23 @@ export class Context {
     return this.config.useSingleBundle || this.config.target === 'web-worker';
   }
 
-  public requireModule(name: string) {
+  public fatal(messages: Array<string>) {
+    messages = messages.map((line, index) => {
+      if (index === 0) {
+        return '❌ <red><bold>' + line + '</bold></red>\n<yellow>';
+      } else {
+        return `    ${line}`;
+      }
+    });
+    this.log.print(messages.join('\n') + '</yellow>\n');
+    process.exit(1);
+  }
+
+  public isInstalled(name) {
     try {
       return require(name);
-    } catch (error) {
-      this.log.error('Cannot import $name. Forgot to install? ', { name: name });
+    } catch (e) {
+      return false;
     }
   }
 }

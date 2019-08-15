@@ -1,8 +1,9 @@
 import * as path from 'path';
 import { IStyleSheetProps } from '../config/IStylesheetProps';
 import { Context } from '../core/Context';
-import { ensureAbsolutePath, fastHash, fileExists, joinFuseBoxPath } from '../utils/utils';
+import { fastHash, fileExists, joinFuseBoxPath } from '../utils/utils';
 import { replaceCSSMacros } from './cssResolveModule';
+import { IMAGE_EXTENSIONS, FONT_EXTENSIONS } from '../config/extensions';
 
 export interface ICSSResolveURLProps {
   filePath: string;
@@ -11,8 +12,6 @@ export interface ICSSResolveURLProps {
   ctx: Context;
 }
 
-const FONT_EXTENSIONS = ['.ttf', '.otf', '.woff', '.woff2', '.eot'];
-const IMAGE_EXTENSIONS = ['.png', '.jpeg', '.jpg', '.gif', '.bmp'];
 const Expression = /url\(([^\)]+)\)/gm;
 
 function extractValue(input: string) {
@@ -45,6 +44,12 @@ export function defineResourceGroup(extension) {
   }
   if (extension === '.svg') {
     return 'svg';
+  }
+  if (extension === '.ico') {
+    return 'ico';
+  }
+  if (extension === '.pdf') {
+    return 'documents';
   }
 }
 

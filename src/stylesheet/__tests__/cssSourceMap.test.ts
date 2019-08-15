@@ -26,7 +26,7 @@ describe('css source map test', () => {
     pkg.isDefaultPackage = true;
     const res = alignCSSSourceMap({ ctx, module, sourceMap: mockSources(['foo.scss']) });
 
-    expect(JSON.parse(res)).toEqual({ sources: ['/src/foo.scss'] });
+    expect(JSON.parse(res)).toEqual({ sources: ['/foo.scss'] });
   });
 
   it('should parse node_module', () => {

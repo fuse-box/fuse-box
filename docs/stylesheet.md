@@ -202,6 +202,8 @@ Sass in FuseBox is pre-configured with a custom importer that takes care of reso
 
 If you want to override global configuration you can use the actual plugin
 
+**IMPORTANT - DO NOT ADD THE PLUGIN IS NOT NEEDED**
+
 ```ts
 import { fusebox, pluginSass } from 'fuse-box';
 fusebox({
@@ -259,7 +261,7 @@ fusebox({
 });
 ```
 
-**IMPORTANT** do not add the plugin if not needed!
+**IMPORTANT - DO NOT ADD THE PLUGIN IS NOT NEEDED**
 
 You can tweak the configuration in the `stylesheet` field
 
@@ -294,4 +296,22 @@ fusebox({
 
 ## Working with Stylus
 
-Coming soon
+Install the module first
+
+```bash
+npm install stylus --save-dev
+```
+
+By default Stylus is preconfigured to work with FuseBox as any other CSS preprocessor, use the global configuration to
+tweak the settings
+
+If you need a custom handler use a plugin (if needed to override your global configuration)
+
+**IMPORTANT - DO NOT ADD THE PLUGIN IS NOT NEEDED**
+
+```ts
+import { fusebox, pluginLess } from 'fuse-box';
+fusebox({
+  plugins: [pluginLess('*.stylus', {})],
+});
+```

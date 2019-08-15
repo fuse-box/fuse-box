@@ -1,4 +1,4 @@
-import { sparky, fusebox, pluginPostCSS, pluginReplace } from '../../src';
+import { sparky, fusebox, pluginPostCSS, pluginLess } from '../../src';
 import * as path from 'path';
 import * as precss from 'precss';
 
@@ -11,7 +11,6 @@ class Context {
       entry: 'src/index.tsx',
       webIndex: {
         template: 'src/index.html',
-        embedIndexedBundles: true,
       },
       tsConfig: 'src/tsconfig.json',
 
@@ -19,24 +18,11 @@ class Context {
         paths: [path.join(__dirname, 'src/config')],
       },
 
-      cache: {
-        root: '.cache/fusebox/client',
-        enabled: false,
-      },
+      cache: false,
 
       watch: true,
       hmr: true,
-
-      plugins: [
-        pluginReplace('index.ts', { __CLIENT__: true, __SERVER__: false }),
-        pluginPostCSS('src/*.css', {
-          stylesheet: {
-            postCSS: {
-              plugins: [precss(/* options */)],
-            },
-          },
-        }),
-      ],
+      //plugins: [pluginLess('*.less', { asText: true, useDefault: true })],
       devServer: true,
     });
   }
