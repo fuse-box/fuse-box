@@ -45,7 +45,7 @@ export function pluginSass(a?: IPluginCommon | string | RegExp, b?: IPluginCommo
           module: module,
           options: opts.stylesheet,
           processor: sass,
-          shared: { asText: opts.asText, useDefault: opts.useDefault },
+          shared: opts,
         });
       }
       return props;

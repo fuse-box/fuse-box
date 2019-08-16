@@ -5,12 +5,14 @@ import { Module } from '../core/Module';
 import { fastHash, joinFuseBoxPath } from '../utils/utils';
 import { IStylesheetModuleResponse } from './interfaces';
 import { sourceMapsCSSURL } from '../bundle/bundleStrings';
+import { wrapContents } from '../plugins/pluginStrings';
 
 export interface ICSSModuleRender {
   ctx: Context;
   module: Module;
   options: IStyleSheetProps;
   data: IStylesheetModuleResponse;
+  useDefault?: boolean;
 }
 export function cssDevModuleRender(props: ICSSModuleRender) {
   const { ctx, module, data } = props;
@@ -43,6 +45,8 @@ export function cssDevModuleRender(props: ICSSModuleRender) {
   }
 
   let contents = `require("fuse-box-css")(${JSON.stringify(filePath)},${JSON.stringify(cssData)})`;
-
+  if (props.data.json) {
+    contents += '\n' + wrapContents(JSON.stringify(props.data.json), props.useDefault);
+  }
   module.contents = contents;
 }

@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { fusebox, sparky } from '../../src';
+import { fusebox, sparky, pluginLess } from '../../src';
 
 class Context {
   isProduction;
@@ -22,7 +22,11 @@ class Context {
 
       watch: true,
       hmr: true,
-      //plugins: [pluginLess('*.less', { asText: true, useDefault: true })],
+      plugins: [
+        pluginLess('*.less', {
+          asModule: { scopeBehaviour: 'local' },
+        }),
+      ],
       devServer: true,
     });
   }

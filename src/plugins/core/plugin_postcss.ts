@@ -34,7 +34,7 @@ export function pluginPostCSS(a?: string | RegExp, b?: IPluginCommon) {
           module: module,
           options: opts.stylesheet,
           processor: postCSS,
-          shared: { asText: opts.asText, useDefault: opts.useDefault },
+          shared: opts,
         });
       }
       return props;

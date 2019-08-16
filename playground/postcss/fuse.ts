@@ -1,6 +1,7 @@
 import { sparky, fusebox, pluginPostCSS, pluginReplace } from '../../src';
 import * as path from 'path';
 import * as precss from 'precss';
+import * as modulesScope from 'postcss-modules-scope';
 
 class Context {
   isProduction;
@@ -32,7 +33,14 @@ class Context {
         pluginPostCSS('src/*.css', {
           stylesheet: {
             postCSS: {
-              plugins: [precss(/* options */)],
+              plugins: [
+                precss(/* options */),
+                modulesScope({
+                  getJSON: function(cssFileName, json, outputFileName) {
+                    console.log(arguments);
+                  },
+                }),
+              ],
             },
           },
         }),

@@ -34,7 +34,7 @@ export function pluginStylusCapture(props: { ctx: Context; module: Module; opts:
     module: module,
     options: opts.stylesheet,
     processor: stylusProcessor,
-    shared: { asText: opts.asText, useDefault: opts.useDefault },
+    shared: opts,
   });
 }
 

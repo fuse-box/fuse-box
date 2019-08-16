@@ -33,7 +33,7 @@ export function pluginLessCapture(props: { ctx: Context; module: Module; opts: I
     module: module,
     options: opts.stylesheet,
     processor: postCSS,
-    shared: { asText: opts.asText, useDefault: opts.useDefault },
+    shared: opts,
   });
 }
 
