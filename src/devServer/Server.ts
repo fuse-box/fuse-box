@@ -47,7 +47,7 @@ export interface ServerOptions {
 			target: string;
 			changeOrigin?: boolean;
 			pathRewrite: { [key: string]: string };
-			router: { [key: string]: string };
+			router?: { [key: string]: string };
 		};
 	};
 }
