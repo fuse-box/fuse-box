@@ -1,9 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Component } from 'react';
-import lessString from './index.less';
-
-import * as md from './hello.md';
+import './index.scss';
 
 class App extends Component {
   render() {

@@ -1,8 +1,25 @@
 import { Context } from '../core/Context';
-import { IStyleSheetProps } from './IStylesheetProps';
+import { IStyleSheetProps, IStyleSheetAutoImportCapture } from './IStylesheetProps';
+import { ignoredPath2Regex } from '../watcher/watcher';
+import * as path from 'path';
+import { ensureAbsolutePath } from '../utils/utils';
+import { env } from '../env';
+
 export interface ICreateStylesheetProps {
   ctx: Context;
   stylesheet?: IStyleSheetProps;
+}
+
+function filterAutoImportProps(list: Array<IStyleSheetAutoImportCapture>) {
+  return list.map(item => {
+    if (item.capture) {
+      if (typeof item.capture === 'string') {
+        item.capture = ignoredPath2Regex(item.capture);
+      }
+    }
+    item.file = ensureAbsolutePath(item.file, env.SCRIPT_PATH);
+    return item;
+  });
 }
 export function createStylesheetProps(props: ICreateStylesheetProps): IStyleSheetProps {
   const ctx = props.ctx;
@@ -14,6 +31,7 @@ export function createStylesheetProps(props: ICreateStylesheetProps): IStyleShee
     options.postCSS = ctx.config.stylesheet.postCSS;
     options.less = ctx.config.stylesheet.less;
     options.macros = ctx.config.stylesheet.macros;
+    options.autoImport = ctx.config.stylesheet.autoImport;
   }
 
   if (props.stylesheet) {
@@ -33,6 +51,12 @@ export function createStylesheetProps(props: ICreateStylesheetProps): IStyleShee
     if (props.stylesheet.macros) {
       options.macros = props.stylesheet.macros;
     }
+    if (props.stylesheet.autoImport) {
+      options.autoImport = props.stylesheet.autoImport;
+    }
+  }
+  if (options.autoImport) {
+    options.autoImport = filterAutoImportProps(options.autoImport);
   }
 
   if (options.groupResourcesFilesByType === undefined) {

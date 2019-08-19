@@ -3,6 +3,12 @@ import { IResourceConfig } from './IResourceConfig';
 import { IPostCSSProps } from './IPostCSSProps';
 
 import { ILessProps } from './ILessProps';
+
+export interface IStyleSheetAutoImportCapture {
+  capture?: string | RegExp;
+  file: string;
+}
+
 export interface IStyleSheetProps extends IResourceConfig {
   /**
    * By default, FuseBox checks if a file has been copied over and exists in the dest file.
@@ -39,6 +45,11 @@ export interface IStyleSheetProps extends IResourceConfig {
    * @memberof IStyleSheetProps
    */
   paths?: Array<string>;
+
+  /**
+   * Auto import resources at paths
+   */
+  autoImport?: Array<IStyleSheetAutoImportCapture>;
 
   /**
    * Helps to resolve urls and untangle the paths

@@ -7,6 +7,7 @@ import { cssHandleResources, ICSSHandleResourcesProps } from './cssHandleResourc
 import { cssResolveModule } from './cssResolveModule';
 import { alignCSSSourceMap } from './cssSourceMap';
 import { IStylesheetModuleResponse, IStyleSheetProcessor } from './interfaces';
+import { cssAutoImport } from './cssAutoImport';
 
 export interface ISassProps {
   macros?: { [key: string]: string };
@@ -48,7 +49,12 @@ export function sassImporter(props: ICSSHandleResourcesProps) {
   });
 
   if (resolved.success) {
-    return cssHandleResources({ path: resolved.path, contents: readFile(resolved.path) }, props);
+    let fileContents = readFile(resolved.path);
+    if (props.options.autoImport) {
+      fileContents = cssAutoImport({ contents: fileContents, stylesheet: props.options, url: resolved.path });
+    }
+
+    return cssHandleResources({ path: resolved.path, contents: fileContents }, props);
   }
 }
 
@@ -62,9 +68,13 @@ export async function renderModule(props: IRenderModuleProps): Promise<IStyleshe
     { options: props.options, ctx: props.ctx, module: module },
   );
 
+  let contents = processed.contents;
+  if (props.options.autoImport) {
+    contents = cssAutoImport({ contents: contents, stylesheet: props.options, url: props.module.props.absPath });
+  }
   //const processed = { contents: module.contents, file: module.props.absPath };
   const data = await evaluateSass(nodeSass, {
-    data: processed.contents,
+    data: contents,
     file: processed.file,
     sourceMap: requireSourceMap,
     includePaths: [path.dirname(module.props.absPath)],

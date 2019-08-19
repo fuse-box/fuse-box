@@ -55,8 +55,9 @@ export function defineResourceGroup(extension) {
 
 export function resolveCSSResource(target, props: ICSSResolveURLProps): IURLReplaced {
   const root = path.dirname(props.filePath);
-  const config = props.ctx.config;
 
+  // getting rid of url#something or url?time=12
+  target = target.replace(/[?\#].*$/, '');
   if (props.options.macros) {
     target = replaceCSSMacros(target, props.options.macros);
   }
@@ -128,11 +129,13 @@ export function cssResolveURL(props: ICSSResolveURLProps): ICSSResolveURLResult 
       replaced.push(result);
       return `url("${result.publicPath}")`;
     } else {
-      props.ctx.log.warn('Failed to resolve $value in $file:$line', {
-        value: value,
-        file: props.filePath,
-        line: mapErrorLine(contents, offset),
-      });
+      if (!/(\$|data:image)/.test(value)) {
+        props.ctx.log.warn('Failed to resolve $value in $file:$line', {
+          value: value,
+          file: props.filePath,
+          line: mapErrorLine(contents, offset),
+        });
+      }
     }
     return `url("${value}")`;
   });

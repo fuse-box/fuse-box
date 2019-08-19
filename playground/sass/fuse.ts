@@ -10,10 +10,12 @@ class Context {
       entry: 'src/index.tsx',
       webIndex: {
         template: 'src/index.html',
+        embedIndexedBundles: true,
       },
       tsConfig: 'src/tsconfig.json',
 
       stylesheet: {
+        autoImport: [{ file: 'src/resources/resources.scss' }],
         paths: [path.join(__dirname, 'src/config')],
       },
 
@@ -21,11 +23,7 @@ class Context {
 
       watch: true,
       hmr: true,
-      plugins: [
-        pluginLess('*.less', {
-          asModule: { scopeBehaviour: 'local' },
-        }),
-      ],
+
       devServer: true,
     });
   }
@@ -43,7 +41,7 @@ task('preview', async ctx => {
   ctx.runServer = true;
   ctx.isProduction = true;
   const fuse = ctx.getConfig();
-  await fuse.runProd({ uglify: false });
+  await fuse.runProd({ uglify: true });
 });
 task('dist', async ctx => {
   ctx.runServer = false;

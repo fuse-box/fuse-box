@@ -95,11 +95,12 @@ export function fastAstAnalysis(props: IASTAnalysisProps): IFastAnalysis {
                 if (parent.arguments[0] && parent.arguments[0].type === 'Literal') {
                   if (!ctx.workers) ctx.workers = [];
                   ctx.workers.push({ path: parent.arguments[0].value, type: name });
-                } else {
-                  throw new Error(
-                    'Workers are only supported with static Literals. Please avoid the use variable, Since a Webworker will start a new process with its entry point',
-                  );
                 }
+                // else {
+                //   throw new Error(
+                //     'Workers are only supported with static Literals. Please avoid the use variable, Since a Webworker will start a new process with its entry point',
+                //   );
+                // }
               }
             } else if (name === '__dirname') {
               ctx.report.contains__dirname = true;
