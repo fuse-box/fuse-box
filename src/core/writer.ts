@@ -96,7 +96,7 @@ export function createWriter(props: IWriterProps): IWriterActions {
         relBrowserPath,
         write: async (cnt?: string) => {
           // piping the contents to webIndex instead
-          writeFile(absPath, cnt ? cnt : contents);
+          await writeFile(absPath, cnt ? cnt : contents);
         },
       };
     },
