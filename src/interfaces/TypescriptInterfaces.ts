@@ -30,7 +30,9 @@ export interface IRawCompilerOptions {
 }
 export interface IRawTypescriptConfig {
   error?: any;
+
   config?: {
+    extends?: string;
     compilerOptions?: IRawCompilerOptions;
   };
 }

@@ -7,6 +7,7 @@ import { IStyleSheetProcessor } from '../../stylesheet/interfaces';
 import { IPluginCommon } from '../interfaces';
 
 import * as postcss from 'postcss';
+import { wrapContents } from '../pluginStrings';
 
 export interface ICSSContextHandler {
   ctx: Context;
@@ -75,13 +76,15 @@ export function cssContextHandler(props: ICSSContextHandler) {
         data.json = result.json;
         data.map = undefined;
         data.css = result.css;
-        props.module.breakDependantsCache = true;
+        props.module.isCSSModule = true;
       } else if (shared.asText) {
-        props.module.notStylesheet();
         return cssAsTextRender({ ...rendererProps });
       }
       if (ctx.config.production) {
         props.module.css = data;
+        if (shared.asModule && data.json) {
+          props.module.contents = wrapContents(JSON.stringify(data.json), props.shared.useDefault);
+        }
       } else {
         cssDevModuleRender({ ...rendererProps });
       }

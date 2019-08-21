@@ -1,5 +1,4 @@
-import * as path from 'path';
-import { fusebox, sparky, pluginLess } from '../../src';
+import { sparky, fusebox } from '../../../src';
 
 class Context {
   isProduction;
@@ -7,25 +6,13 @@ class Context {
   getConfig() {
     return fusebox({
       target: 'browser',
-      entry: 'src/index.tsx',
+      output: '../dist/project',
+      homeDir: '../',
+      entry: 'project/src/index.ts',
       webIndex: {
         template: 'src/index.html',
       },
-      tsConfig: 'src/tsconfig.json',
-
-      stylesheet: {
-        paths: [path.join(__dirname, 'src/config')],
-      },
-
       cache: false,
-
-      watch: true,
-      hmr: true,
-      plugins: [
-        pluginLess('*.less', {
-          asModule: { scopeBehaviour: 'local' },
-        }),
-      ],
       devServer: true,
     });
   }
@@ -39,7 +26,7 @@ task('default', async ctx => {
 });
 
 task('preview', async ctx => {
-  rm('./dist');
+  await rm('./dist');
   ctx.runServer = true;
   ctx.isProduction = true;
   const fuse = ctx.getConfig();

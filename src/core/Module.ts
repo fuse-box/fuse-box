@@ -24,6 +24,7 @@ export class Module {
   public fastAnalysis: IFastAnalysis;
 
   public css: IStylesheetModuleResponse;
+  public isCSSModule?: boolean;
 
   /**
    * A package that holds this module

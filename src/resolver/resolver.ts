@@ -21,6 +21,7 @@ export interface IResolverProps {
   buildTarget?: ITarget;
   // user string
   target: string;
+  isDev?: boolean;
   cache?: boolean;
   homeDir?: string;
   filePath?: string;
@@ -127,6 +128,7 @@ export function resolveModule(props: IResolverProps): IResolver {
   // in this cases it should always send a forceStatement
   if (props.typescriptPaths) {
     lookupResult = pathsLookup({
+      isDev: props.isDev,
       baseURL: props.typescriptPaths.baseURL,
       cachePaths: props.cache,
       homeDir: props.homeDir,
@@ -170,7 +172,12 @@ export function resolveModule(props: IResolverProps): IResolver {
         package: pkg,
       };
     } else {
-      lookupResult = fileLookup({ filePath: props.filePath, target: target, javascriptFirst: props.javascriptFirst });
+      lookupResult = fileLookup({
+        isDev: props.isDev,
+        filePath: props.filePath,
+        target: target,
+        javascriptFirst: props.javascriptFirst,
+      });
     }
   }
 

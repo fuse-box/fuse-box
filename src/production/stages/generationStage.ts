@@ -102,6 +102,15 @@ function acceptModule(props: IBundleGenerationStageProps, pm: ProductionModule) 
     if (pm.ctx.config.supportsStylesheet()) {
       acceptStylesheet(props, pm);
     }
+
+    // handle exported objects in the json
+    if (pm.module.css && pm.module.css.json) {
+      pm.productionContent = wrapper.wrapModule(pm);
+      // trick the bundle getter
+      pm.module.notStylesheet();
+      const bundle = getCorrespondingBundle(props, pm);
+      bundle.addConcat(pm.productionContent);
+    }
   } else {
     pm.productionContent = wrapper.wrapModule(pm);
     const bundle = getCorrespondingBundle(props, pm);

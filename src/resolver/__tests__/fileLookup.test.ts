@@ -103,4 +103,15 @@ describe('lookup test', () => {
     expect(response.fileExists).toBe(true);
     expect(response.extension).toBe('.js');
   });
+
+  it('Should ignore local:main', () => {
+    const response = fileLookup({ fileDir: cases, target: 'local_main/some' });
+
+    expect(response.absPath).toMatchFilePath('some/index2.ts$');
+  });
+
+  it('Should read local:main', () => {
+    const response = fileLookup({ isDev: true, fileDir: cases, target: 'local_main/some' });
+    expect(response.absPath).toMatchFilePath('some/index3.ts$');
+  });
 });

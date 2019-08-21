@@ -1,4 +1,3 @@
-import { fastAnalysis } from '../analysis/fastAnalysis';
 import { createApplicationPackage } from '../core/application';
 import { Context } from '../core/Context';
 import { createModule, Module } from '../core/Module';
@@ -85,6 +84,7 @@ function resolveStatement(
   const config = props.ctx.config;
 
   const resolved = resolveModule({
+    isDev: !props.ctx.config.production,
     filePath: props.module.props.absPath,
     homeDir: config.homeDir,
     alias: config.alias,

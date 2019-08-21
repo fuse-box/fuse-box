@@ -186,6 +186,28 @@ You can import the string as follows below:
 import text from './index.less';
 ```
 
+## Importing as CSS Module
+
+FuseBox can make a css module for you. Every CSS preprocessor can be configured to export an object.
+
+That would require adding a corresponding plugin
+
+```ts
+pluginLess('*.less', {
+  asModule: { scopeBehaviour: 'local' },
+});
+```
+
+You can add the following properties:
+
+```ts
+scopeBehaviour?: 'global' | 'local';
+globalModulePaths?: Array<RegExp>;
+generateScopedName?: (name: string, fileName: string, css: String) => string | string;
+```
+
+FuseBox uses [postcss-modules](https://github.com/css-modules/postcss-modules) to process the css.
+
 ## Working with SASS
 
 **IMPORTANT** Sass is already integrated in FuseBox. You **DO NOT NEED** to import the plugin from FuseBox. install

@@ -14,6 +14,7 @@ export interface IGenerateHMRContentProps {
 
 export interface IHMRModuleUpdate {
   isStylesheet: boolean;
+  isCSSModule?: boolean;
   content: string;
   fuseBoxPath: string;
 }
@@ -81,7 +82,7 @@ export function generateHMRContent(props: IGenerateHMRContentProps): IHMRUpdate 
 
     response.push({
       content: stringContent,
-      isStylesheet: module.isStylesheet(),
+      isStylesheet: module.isStylesheet() && !module.isCSSModule,
       fuseBoxPath: `${pkg.getPublicName()}/${module.props.fuseBoxPath}`,
     });
   });

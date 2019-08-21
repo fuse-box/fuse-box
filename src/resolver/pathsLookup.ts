@@ -5,6 +5,7 @@ export type ITypescriptPaths = { [key: string]: Array<string> };
 interface IPathsLookupProps {
   homeDir: string;
   baseURL: string;
+  isDev?: boolean;
   cachePaths?: boolean;
   paths?: ITypescriptPaths;
   target: string;
@@ -110,7 +111,7 @@ export function pathsLookup(props: IPathsLookupProps): ILookupResult {
     if (directories) {
       for (const j in directories) {
         const directory = directories[j];
-        const result = fileLookup({ fileDir: props.baseURL, target: directory });
+        const result = fileLookup({ isDev: props.isDev, fileDir: props.baseURL, target: directory });
         if (result && result.fileExists) {
           return result;
         }

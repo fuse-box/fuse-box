@@ -1,15 +1,22 @@
-export function getFolderEntryPointFromPackageJSON(json: any, isBrowserBuild?: boolean) {
-  if (isBrowserEntry(json, isBrowserBuild)) {
-    return json.browser;
+export function getFolderEntryPointFromPackageJSON(props: {
+  useLocalField?: boolean;
+  json: any;
+  isBrowserBuild?: boolean;
+}) {
+  if (isBrowserEntry(props.json, props.isBrowserBuild)) {
+    return props.json.browser;
   }
-  if (json.module) {
-    return json.module;
+  if (props.useLocalField && props.json['local:main']) {
+    return props.json['local:main'];
   }
-  if (json['ts:main']) {
-    return json['ts:main'];
+  if (props.json.module) {
+    return props.json.module;
+  }
+  if (props.json['ts:main']) {
+    return props.json['ts:main'];
   }
 
-  return json.main || 'index.js';
+  return props.json.main || 'index.js';
 }
 
 export function isBrowserEntry(json: any, isBrowserBuild?: boolean) {

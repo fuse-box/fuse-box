@@ -2,7 +2,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Component } from 'react';
 import './index.scss';
-
+import * as stuff from './some';
+console.log(stuff);
 class App extends Component {
   render() {
     const snapshot = { isDraggingOver: false };

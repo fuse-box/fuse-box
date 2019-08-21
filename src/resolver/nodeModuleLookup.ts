@@ -146,7 +146,7 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
       result.forcedStatement = `${parsed.name}/${result.targetFuseBoxPath}`;
     }
   } else {
-    const entryFile = getFolderEntryPointFromPackageJSON(json, isBrowser);
+    const entryFile = getFolderEntryPointFromPackageJSON({ json: json, isBrowserBuild: isBrowser });
 
     const entryLookup = fileLookup({ target: entryFile, fileDir: folder });
 

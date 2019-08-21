@@ -5,6 +5,7 @@ import { getFolderEntryPointFromPackageJSON } from './shared';
 export interface ILookupProps {
   typescriptFirst?: boolean;
   javascriptFirst?: boolean;
+  isDev?: boolean;
   fileDir?: string;
   filePath?: string;
   target: string;
@@ -88,6 +89,22 @@ export function fileLookup(props: ILookupProps): ILookupResult {
     const stat = fs.lstatSync(resolved);
     if (stat.isDirectory) {
       isDirectory = true;
+
+      // only in case of a directory
+      const packageJSON = path.join(resolved, 'package.json');
+      if (fs.existsSync(packageJSON)) {
+        const useLocalMain = props.isDev && !/node_modules/.test(packageJSON);
+        const entry = getFolderEntryPointFromPackageJSON({ json: require(packageJSON), useLocalField: useLocalMain });
+        const entryFile = path.join(resolved, entry);
+        return {
+          customIndex: true,
+          isDirectoryIndex: true,
+          absPath: entryFile,
+          extension: path.extname(entryFile),
+          fileExists: fs.existsSync(entryFile),
+        };
+      }
+
       let indexes: Array<string> = TS_INDEXES_FIRST;
       if (props.javascriptFirst) {
         indexes = JS_INDEXES_FIRST;
@@ -102,19 +119,6 @@ export function fileLookup(props: ILookupProps): ILookupResult {
           absPath: directoryIndex,
           extension: path.extname(directoryIndex),
           fileExists: true,
-        };
-      }
-      // only in case of a directory
-      const packageJSON = path.join(resolved, 'package.json');
-      if (fs.existsSync(packageJSON)) {
-        const entry = getFolderEntryPointFromPackageJSON(require(packageJSON));
-        const entryFile = path.join(resolved, entry);
-        return {
-          customIndex: true,
-          isDirectoryIndex: true,
-          absPath: entryFile,
-          extension: path.extname(entryFile),
-          fileExists: fs.existsSync(entryFile),
         };
       }
     }

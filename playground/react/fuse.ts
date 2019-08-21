@@ -19,7 +19,7 @@ class Context {
       watch: true,
       hmr: true,
       devServer: this.runServer && {
-        open: true,
+        open: false,
         proxy: [
           {
             path: '/api',
