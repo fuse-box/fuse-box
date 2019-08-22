@@ -20,7 +20,7 @@ export interface IPublicConfig {
   useSingleBundle?: boolean;
   dependencies?: {
     include?: Array<string>;
-    ignore?: Array<string>;
+    ignorePackages?: Array<string>;
     ignoreAllExternal?: boolean;
   };
   homeDir?: string;

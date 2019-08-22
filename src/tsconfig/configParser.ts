@@ -3,8 +3,8 @@ import * as path from 'path';
 import * as ts from 'typescript';
 import { PrivateConfig } from '../config/PrivateConfig';
 import { IRawCompilerOptions, IRawTypescriptConfig, TypescriptConfig } from '../interfaces/TypescriptInterfaces';
-import { fileExists, pathJoin, readFile } from '../utils/utils';
 import { ITypescriptPathsConfig } from '../resolver/resolver';
+import { fileExists, pathJoin } from '../utils/utils';
 
 export function resolveTSConfig(props: {
   root: string;
@@ -54,7 +54,6 @@ export function initTypescriptConfig(
     const data: IRawTypescriptConfig = ts.readConfigFile(customTsConfigPath, ts.sys.readFile);
     basePath = path.dirname(customTsConfigPath);
     userOptions = data.config.compilerOptions;
-    console.log(data);
     extendedFile = data.config.extends;
   } else if (typeof props.tsConfig === 'object') {
     userOptions = props.tsConfig;

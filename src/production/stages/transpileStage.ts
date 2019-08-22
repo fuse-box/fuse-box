@@ -52,7 +52,7 @@ function moduleTransformer<T extends ts.Node>(
         const target = pm.findDependantModule(text);
         if (!target) {
           if (config.target !== 'electron' && config.target !== 'server') {
-            if (!props.flow.ctx.config.dependencies.ignoreAllExternal) {
+            if (!props.flow.ctx.config.shoudIgnorePackage(text)) {
               log.error('Problem when resolving require "$text" in $file', {
                 text: text,
                 file: pm.module.getShortPath(),

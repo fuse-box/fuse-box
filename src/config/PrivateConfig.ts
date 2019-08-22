@@ -49,7 +49,7 @@ export class PrivateConfig {
   autoStartEntry?: boolean;
   dependencies?: {
     include?: Array<string>;
-    ignore?: Array<string>;
+    ignorePackages?: Array<string>;
     ignoreAllExternal?: boolean;
   };
   useSingleBundle?: boolean;
@@ -176,6 +176,16 @@ export class PrivateConfig {
 
   public isEssentialDependency(name: string) {
     return ESSENTIAL_DEPENDENCIES.indexOf(name) > -1;
+  }
+
+  public shoudIgnorePackage(name: string): boolean {
+    if (this.dependencies.ignoreAllExternal && !this.isEssentialDependency(name)) {
+      return true;
+    }
+    if (this.dependencies.ignorePackages && this.dependencies.ignorePackages.indexOf(name) > -1) {
+      return true;
+    }
+    return false;
   }
 
   public supportsStylesheet() {

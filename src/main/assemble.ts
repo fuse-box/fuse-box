@@ -114,8 +114,8 @@ function resolveStatement(
   }
   if (resolved.package) {
     // ignoring all dependencies if required
-    if (props.ctx.config.dependencies.ignoreAllExternal) {
-      if (!props.ctx.config.isEssentialDependency(resolved.package.meta.name)) return;
+    if (props.ctx.config.shoudIgnorePackage(resolved.package.meta.name)) {
+      return;
     }
     return {
       resolver: resolved,
