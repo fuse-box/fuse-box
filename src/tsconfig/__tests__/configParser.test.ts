@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import '../../utils/test_utils';
 import { pathJoin } from '../../utils/utils';
-import { initTypescriptConfig, resolveTSConfig } from '../configParser';
+import { initTypescriptConfig, resolveTSConfig, parseTSConfigJson } from '../configParser';
 import { createConfig } from '../../config/config';
 const cases = pathJoin(__dirname, 'cases');
 const case1 = pathJoin(cases, 'case1');
@@ -219,18 +219,71 @@ describe('tsconfig', () => {
       });
     });
 
-    it('baseUrl in extended config override base config', () => {
+    it('compilerOptions.baseUrl in extended config override base config', () => {
       const cfg = createConfig({ tsConfig: './cases/case2/tsconfig-1.json' });
       const result = initTypescriptConfig(cfg);
       const failPath = pathJoin(__dirname, './skipOverride');
       expect(pathJoin(result.compilerOptions.baseUrl)).toEqual(failPath);
     });
 
-    it('baseurl in base is used if not in extended', () => {
+    it('typescriptPaths.baseURL in extended config override base config', () => {
+      const cfg = createConfig({ tsConfig: './cases/case2/tsconfig-1.json' });
+      const result = initTypescriptConfig(cfg);
+      const failPath = pathJoin(__dirname, './skipOverride');
+      expect(pathJoin(result.typescriptPaths.baseURL)).toEqual(failPath);
+    });
+
+    it('compilerOptions.baseUrl in base is used if not in extended', () => {
       const cfg = createConfig({ tsConfig: './cases/case2/tsconfig-2.json' });
       const result = initTypescriptConfig(cfg);
       const failPath = pathJoin(__dirname, './overideMe');
       expect(pathJoin(result.compilerOptions.baseUrl)).toEqual(failPath);
+    });
+
+    it('typescriptPaths.baseURL in base is used if not in extended', () => {
+      const cfg = createConfig({ tsConfig: './cases/case2/tsconfig-2.json' });
+      const result = initTypescriptConfig(cfg);
+      const failPath = pathJoin(__dirname, './overideMe');
+      expect(pathJoin(result.typescriptPaths.baseURL)).toEqual(failPath);
+    });
+
+    it('check extended do not override fusebox', () => {
+      const cfg = createConfig({ tsConfig: './cases/case2/tsconfig-3.json' });
+      const result = initTypescriptConfig(cfg);
+
+      expect(result.jsonCompilerOptions).toEqual({
+        rootDir: './correctRoot',
+        baseUrl: './correntRoot',
+        paths: {
+          '@awesome*': ['../../packages/awesome*'],
+        },
+        jsx: 'react',
+        lib: ['es2018', 'dom'],
+        target: 'ESNext',
+        module: 'commonjs',
+        moduleResolution: 'node',
+        importHelpers: true,
+        allowJs: true,
+        isolatedModules: true,
+        preserveConstEnums: true,
+        allowSyntheticDefaultImports: true,
+        skipLibCheck: true,
+        sourceMap: true,
+        declaration: true,
+        noImplicitAny: true,
+        noImplicitReturns: true,
+        noImplicitUseStrict: true,
+        noUnusedParameters: true,
+        suppressImplicitAnyIndexErrors: true,
+        noFallthroughCasesInSwitch: true,
+        noImplicitThis: true,
+        noUnusedLocals: true,
+        allowUnreachableCode: true,
+        removeComments: true,
+        emitDecoratorMetadata: true,
+        strictNullChecks: true,
+        experimentalDecorators: true,
+      });
     });
   });
 });

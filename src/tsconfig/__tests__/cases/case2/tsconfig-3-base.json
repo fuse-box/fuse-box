@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "rootDir": "./baseRoot",
+    "baseUrl": "./BaseUrl",
+    "paths": {
+      "@not-awesome*": ["../../packages/not-awsome*"]
+    },
+    "target": "es2016",
+    "module": "system",
+    "lib": ["es2018.regexp", "dom"],
+    "moduleResolution": "classic",
+    "isolatedModules": true,
+    "preserveConstEnums": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "declaration": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitUseStrict": true,
+    "noUnusedParameters": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "allowUnreachableCode": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "importHelpers": false,
+    "strictNullChecks": true,
+    "experimentalDecorators": false
+  }
+}
