@@ -19,6 +19,7 @@ import { ContextTaskManager, createContextTaskManager } from './ContextTaskManag
 import { Package } from './Package';
 import { createWeakModuleReferences, WeakModuleReferences } from './WeakModuleReferences';
 import { createWriter, IWriterActions } from './writer';
+import { CustomTransformers } from 'typescript';
 
 export class Context {
   public assembleContext: IAssembleContext;
@@ -26,6 +27,7 @@ export class Context {
   public interceptor: MainInterceptor;
   public ict: MainInterceptor;
   public tsConfig: TypescriptConfig;
+  public customTransformers: CustomTransformers;
   public log: ILogger;
   public webIndex: IWebIndexInterface;
   public taskManager: ContextTaskManager;
@@ -46,6 +48,7 @@ export class Context {
     this.assembleContext = assembleContext(this);
     this.ict = createInterceptor();
     this.webWorkers = {};
+    this.customTransformers = config.customTransformers;
 
     this.webIndex = createWebIndex(this);
     attachEssentials(this);
