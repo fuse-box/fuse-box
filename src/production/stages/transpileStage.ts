@@ -95,7 +95,22 @@ function transpileProductionModule(props: ITranspileStageProps, prodModule: Prod
   const result = ts.transpileModule(text, {
     fileName: prodModule.module.props.absPath,
     compilerOptions: compilerOptions,
-    transformers: { after: [moduleTransformer(props, prodModule)] },
+
+    transformers: {
+
+      // merge in any custom transformers (user-provided)
+      ...ctx.customTransformers,
+
+      // 2nd-level merge in transformers
+      after: [
+
+        // make sure core transformers are applied and executed first
+        moduleTransformer(props, prodModule),
+
+        // user-provided transformers
+        ...ctx.customTransformers.after,
+      ]
+    },
   });
 
   prodModule.transpiledSourceMap = requireSourceMaps
@@ -106,7 +121,7 @@ function transpileProductionModule(props: ITranspileStageProps, prodModule: Prod
 }
 
 export function transpileStage(props: IProductionFlow) {
-  const { productionContext, ctx, packages } = props;
+  const { productionContext } = props;
 
   const log = props.ctx.log;
 

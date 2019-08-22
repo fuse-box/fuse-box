@@ -73,6 +73,7 @@ export function pluginTypescript() {
           input: module.contents,
           webWorkers: analysis.workers,
           compilerOptions: compilerOptions,
+          transformers: ctx.customTransformers,
           replacements: !analysis.report.statementsReplaced && analysis.replaceable,
         });
         module.contents = data.outputText;

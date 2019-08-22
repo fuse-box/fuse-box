@@ -18,11 +18,8 @@ export function isRequireCall(callExpression: ts.Node) {
   }
 }
 
-export interface ITypescriptTransformProps {
+export interface ITypescriptTransformProps extends ts.TranspileOptions {
   input: string;
-  fileName?: string;
-  compilerOptions?: ts.CompilerOptions;
-
   webWorkers?: Array<IWebWorkerItem>;
   replacements?: IStatementReplaceableCollection;
 }
@@ -36,6 +33,7 @@ export function visitStatementNode(node, replacer: (input) => any) {
   }
 }
 export function tsTransform(props: ITypescriptTransformProps): ts.TranspileOutput {
+
   function moduleTransformer<T extends ts.Node>(): ts.TransformerFactory<T> {
     return context => {
       const visit: ts.Visitor = node => {
@@ -75,12 +73,28 @@ export function tsTransform(props: ITypescriptTransformProps): ts.TranspileOutpu
   }
 
   const after = [];
+
   if (props.replacements || props.webWorkers) {
     after.push(moduleTransformer());
   }
+
   return ts.transpileModule(props.input, {
     fileName: props.fileName,
     compilerOptions: props.compilerOptions,
-    transformers: { after: after },
+    transformers: {
+
+      // merge in any custom transformers (user-provided)
+      ...props.transformers,
+
+      // 2nd-level merge in transformers
+      after: [
+
+        // make sure core transformers are applied and executed first
+        ...after,
+
+        // user-provided transformers
+        ...props.transformers.after,
+      ]
+    },
   });
 }
