@@ -54,7 +54,6 @@ export function initTypescriptConfig(
     const data: IRawTypescriptConfig = ts.readConfigFile(customTsConfigPath, ts.sys.readFile);
     basePath = path.dirname(customTsConfigPath);
     userOptions = data.config.compilerOptions;
-    console.log(data);
     extendedFile = data.config.extends;
   } else if (typeof props.tsConfig === 'object') {
     userOptions = props.tsConfig;
@@ -72,48 +71,44 @@ export function initTypescriptConfig(
       props.ctx && props.ctx.log.warn('tsconfig was not found. Make sure to create one');
     }
   }
-
-  // stop baseURL override
   let baseUrlSet = false;
   if(userOptions && userOptions.baseUrl){
     baseUrlSet = true;
   }
-
   if (!basePath) {
     props.ctx && props.ctx.log.warn('tsconfig was not found. Make sure to create one');
     basePath = path.dirname(require.main.filename);
   }
 
+  // read extended json
+  if (extendedFile) {
+    const targetExtendedFile = path.join(basePath, extendedFile);
+    try {
+      const extendedJSON = require(targetExtendedFile);
+
+      // bring in config from extended, but base do not override main
+      if (extendedJSON.compilerOptions) {
+        userOptions = Object.assign(extendedJSON.compilerOptions, userOptions);
+      }
+
+      // we have this to fix basepath for paths
+      // but we do not use this if basepath is set in main config
+      if(!baseUrlSet){
+        basePath = path.dirname(targetExtendedFile);
+      }
+
+    } catch (e) {
+      props.ctx.log.warn(`Unable to extend tsconfig with ${extendedFile}. Make sure the file exists and readable`);
+    }
+  }
+
+  // set standard fields after we have combined extended if there was any
   userOptions.module = 'commonjs';
   userOptions.moduleResolution = 'node';
   userOptions.importHelpers = true;
   userOptions.experimentalDecorators = true;
   userOptions.allowJs = true;
 
-  if (extendedFile) {
-    const targetExtendedFile = path.join(basePath, extendedFile);
-    // read extended json
-    let extendedJSON;
-
-    try {
-      extendedJSON = require(targetExtendedFile);
-      if(!baseUrlSet){
-        basePath = path.dirname(targetExtendedFile);
-      }
-      
-    } catch (e) {
-      props.ctx.fatal([`Unable to extend tsconfig with ${extendedFile}`, 'Make sure the file exists and readable']);
-    }
-    // overriding baseURL and paths
-    if (extendedJSON.compilerOptions) {
-      if (extendedJSON.compilerOptions.baseUrl && !baseUrlSet) {
-        userOptions.baseUrl = extendedJSON.compilerOptions.baseUrl;
-      }
-      if (extendedJSON.compilerOptions.paths && !baseUrlSet) {
-        userOptions.paths = extendedJSON.compilerOptions.paths;
-      }
-    }
-  }
   if (!userOptions.jsx) {
     userOptions.jsx = 'react';
   }
