@@ -73,6 +73,12 @@ export function initTypescriptConfig(
     }
   }
 
+  // stop baseURL override
+  let baseUrlSet = false;
+  if(userOptions && userOptions.baseUrl){
+    baseUrlSet = true;
+  }
+
   if (!basePath) {
     props.ctx && props.ctx.log.warn('tsconfig was not found. Make sure to create one');
     basePath = path.dirname(require.main.filename);
@@ -91,16 +97,19 @@ export function initTypescriptConfig(
 
     try {
       extendedJSON = require(targetExtendedFile);
-      basePath = path.dirname(targetExtendedFile);
+      if(!baseUrlSet){
+        basePath = path.dirname(targetExtendedFile);
+      }
+      
     } catch (e) {
       props.ctx.fatal([`Unable to extend tsconfig with ${extendedFile}`, 'Make sure the file exists and readable']);
     }
     // overriding baseURL and paths
     if (extendedJSON.compilerOptions) {
-      if (extendedJSON.compilerOptions.baseUrl) {
+      if (extendedJSON.compilerOptions.baseUrl && !baseUrlSet) {
         userOptions.baseUrl = extendedJSON.compilerOptions.baseUrl;
       }
-      if (extendedJSON.compilerOptions.paths) {
+      if (extendedJSON.compilerOptions.paths && !baseUrlSet) {
         userOptions.paths = extendedJSON.compilerOptions.paths;
       }
     }
