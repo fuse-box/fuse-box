@@ -1,0 +1,10 @@
+{
+  "extends": "../../base-project2-tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "baseUrl": "./",
+    "paths": {
+      "@myorg*": ["../../packages*"]
+    }
+  }
+}
