@@ -10,7 +10,7 @@ _playground
 .release
 .settings
 .tmp
-.vscode
+
 build
 dist
 node_modules
