@@ -10,6 +10,7 @@ class App extends Component {
     function getSourceStyle(opts) {
       return {};
     }
+    console.log('render');
     return (
       <div className="App">
         <div></div>
