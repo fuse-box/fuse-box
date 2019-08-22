@@ -1,1 +1,1 @@
-{"name" : "kernel", "main" : "dist/index.js", "local:main" : "src/index.ts"}
+{"name" : "kernel", "main" : "src/index.ts", "local:main" : "src/index.ts"}
