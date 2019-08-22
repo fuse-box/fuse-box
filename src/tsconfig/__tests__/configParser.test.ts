@@ -218,5 +218,19 @@ describe('tsconfig', () => {
         target: 'ESNext',
       });
     });
+
+    it('baseUrl in extended config override base config', () => {
+      const cfg = createConfig({ tsConfig: './cases/case2/tsconfig-1.json' });
+      const result = initTypescriptConfig(cfg);
+      const failPath = pathJoin(__dirname, './skipOverride');
+      expect(pathJoin(result.compilerOptions.baseUrl)).toEqual(failPath);
+    });
+
+    it('baseurl in base is used if not in extended', () => {
+      const cfg = createConfig({ tsConfig: './cases/case2/tsconfig-2.json' });
+      const result = initTypescriptConfig(cfg);
+      const failPath = pathJoin(__dirname, './overideMe');
+      expect(pathJoin(result.compilerOptions.baseUrl)).toEqual(failPath);
+    });
   });
 });

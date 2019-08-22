@@ -1,0 +1,4 @@
+{
+  "extends": "./tsconfig-1-base",
+  "compilerOptions": { "allowJs": true, "baseUrl": "../../skipOverride" }
+}
