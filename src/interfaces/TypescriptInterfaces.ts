@@ -7,6 +7,7 @@ export interface TypescriptConfig {
   diagnostics?: Array<any>; // all errors come here
   jsonCompilerOptions?: IRawCompilerOptions;
   compilerOptions?: ts.CompilerOptions;
+  transpileOptions?: ts.TranspileOptions;
 }
 
 export type ITypescriptTarget = 'ES3' | 'ES5' | 'ES6' | 'ES2015' | 'ES2016' | 'ES2017' | 'ESNext';
