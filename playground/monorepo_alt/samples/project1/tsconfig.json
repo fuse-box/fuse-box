@@ -1,0 +1,6 @@
+{
+  "extends": "../../base-project1-tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+  }
+}
