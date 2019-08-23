@@ -1,7 +1,7 @@
 import { createFileSet, createTestBundle } from './intergrationUtils';
 import * as path from 'path';
 describe('Output intergation test', () => {
-  it('shouuld write to a default dist ', async () => {
+  it('should write to a default dist ', async () => {
     const test = createTestBundle(
       { entry: 'index.js', homeDir: __dirname },
       createFileSet(__dirname, { 'index.js': 'console.log(1)' }),

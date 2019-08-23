@@ -1,6 +1,6 @@
 import { createFileSet, createTestBundle } from './intergrationUtils';
 describe('WebIndex integration test', () => {
-  it('shouuld verity webindex scripts ', async () => {
+  it('should verify webindex scripts ', async () => {
     const test = createTestBundle(
       { entry: 'index.js', homeDir: __dirname, webIndex: { template: 'index.html' } },
       createFileSet(__dirname, { 'index.js': 'console.log(1)', 'index.html': `$bundles` }),
@@ -18,7 +18,7 @@ describe('WebIndex integration test', () => {
   });
 
   describe('public path', () => {
-    it('shouuld verity webindex scripts publicPath 1', async () => {
+    it('should verify webindex scripts publicPath 1', async () => {
       const test = createTestBundle(
         { entry: 'index.js', homeDir: __dirname, webIndex: { template: 'index.html', publicPath: '/oi' } },
         createFileSet(__dirname, { 'index.js': 'console.log(1)', 'index.html': `$bundles` }),
@@ -35,7 +35,7 @@ describe('WebIndex integration test', () => {
       test.mock.flush();
     });
 
-    it('shouuld verity webindex scripts publicPath 2', async () => {
+    it('should verify webindex scripts publicPath 2', async () => {
       const test = createTestBundle(
         { entry: 'index.js', homeDir: __dirname, webIndex: { template: 'index.html', publicPath: '.' } },
         createFileSet(__dirname, { 'index.js': 'console.log(1)', 'index.html': `$bundles` }),
@@ -56,7 +56,7 @@ describe('WebIndex integration test', () => {
   });
 
   describe('distFileName', () => {
-    it('shouuld be able to customise distFileName', async () => {
+    it('should be able to customise distFileName', async () => {
       const test = createTestBundle(
         { entry: 'index.js', homeDir: __dirname, webIndex: { template: 'index.html', distFileName: 'shmindex.html' } },
         createFileSet(__dirname, { 'index.js': 'console.log(1)', 'index.html': `$bundles` }),

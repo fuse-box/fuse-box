@@ -1,7 +1,7 @@
 # Plugin development
 
 Plugins in FuseBox are functions to which the `Context` is passed. You can alter the behavior by tapping into global
-events, intercepting modules/system events e.t.c
+events, intercepting modules/system events etc.
 
 ## Plugin Convention
 
@@ -125,7 +125,7 @@ There are several types of events related to capturing modules in `ict`
 ctx.ict.on('assemble_module_init', props => {});
 ```
 
-At this point module hasn just been resolved. It won't contain any information (analysis e.t.c) whatsoever. Never
+At this point module hasn just been resolved. It won't contain any information (analysis etc.) whatsoever. Never
 perform any async operations here, since it will lead to race conditions. NEVER transform the contents at this point.
 
 **NEVER** transform the contents at **assemble_module_init**
