@@ -1,5 +1,15 @@
 # Basics
 
+## Initialization
+
+Initialize a fuse-box instance like so.
+
+```ts
+fusebox({
+  /* you config is here */
+});
+```
+
 ## Target
 
 Possible values are: `browser`, `server`, `electron`, `universal`, `web-worker`;
