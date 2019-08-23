@@ -43,7 +43,7 @@ export async function renderModule(props: { ctx: Context; module: Module; less: 
                 options: props.options,
               });
               if (resolved.success) {
-                if (props.options.breakDepednantsCache) {
+                if (props.options.breakDependantsCache) {
                   props.module.breakDependantsCache = true;
                 }
                 props.module.addWeakReference(resolved.path);

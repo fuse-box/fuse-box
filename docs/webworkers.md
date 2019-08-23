@@ -2,11 +2,11 @@
 
 ## Introduction
 
-FuseBox v4 features and a very simple and intutive way of working with `Worker` and `ShareWorker` object. What is the
+FuseBox v4 features and a very simple and intuitive way of working with `Worker` and `ShareWorker` object. What is the
 actual problem and why does it need special treatments? To answer this question let's define requirements first;
 
 - Worker doesn't have access to `window` object hence needs a special treatment
-- Worker needs to be in a seperate bundle
+- Worker needs to be in a separate bundle
 - Worker might require transpilation (bundling)
 - Path to workers need to be overridden
 
@@ -16,7 +16,7 @@ For example:
 new Worker('./path/to/worker.js');
 ```
 
-This is how a typical worker looks like. But here is a problem. This file needs to be publically available. Here comes
+This is how a typical worker looks like. But here is a problem. This file needs to be publicly available. Here comes
 FuseBox, which offers automatic bundling with path re-writes and it supports production source maps too! Let's break it
 down and try an example.
 
@@ -61,7 +61,7 @@ self.addEventListener(
 );
 ```
 
-You're all set up. FuseBox will automatically create a seperate bundle for development and production accordingly. If
+You're all set up. FuseBox will automatically create a separate bundle for development and production accordingly. If
 you open the source of your application, you will notice that the path has been automatically re-written:
 
 It looks like this:
@@ -72,11 +72,11 @@ new Worker('/worker1_0588407ac.js');
 
 Now, but what if you want some custom configuration? No problem, we got your covered.
 
-## Default behaviour
+## Default behavior
 
 - Watching - WebWorker bundles will be watched automatically and re-bundled when changed.
 - Shared Cache object - to avoid racing conditions
-- Everything will be bunlding in 1 file
+- Everything will be bundling in 1 file
 
 ## Ignoring watcher paths
 
@@ -89,7 +89,7 @@ fusebox({
 });
 ```
 
-FuseBox doesn't know about the dependenices of the worker (it's a separate process, remember? ), hence it's wise to
+FuseBox doesn't know about the dependencies of the worker (it's a separate process, remember? ), hence it's wise to
 ignore those folders in order to prevent an excessive reload.
 
 ## Configuring

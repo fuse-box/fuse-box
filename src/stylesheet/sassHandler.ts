@@ -85,7 +85,7 @@ export async function renderModule(props: IRenderModuleProps): Promise<IStyleshe
 
       const result = sassImporter({ options: props.options, ctx, module, url, fileRoot: prev });
 
-      if (props.options.breakDepednantsCache) {
+      if (props.options.breakDependantsCache) {
         module.breakDependantsCache = true;
       }
       if (result && result.file) {

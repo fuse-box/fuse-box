@@ -23,7 +23,7 @@ fusebox({
 
 # Resource root
 
-If no option specified FuseBox, will try to assume your resource root by doing the following:
+If no option specified, FuseBox will try to assume your resource root by doing the following:
 
 - Checking `resources` setting for `resourceFolder` and `resourcePublicRoot` field
 - Checking `webIndex` setting for `publicPath` and combined it with `resourceFolder`

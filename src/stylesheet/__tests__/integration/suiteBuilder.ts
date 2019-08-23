@@ -1,8 +1,8 @@
-import { createTestBundle, IntergationHelper, createFileSet } from '../../../integration/__tests__/intergrationUtils';
+import { createTestBundle, IntegrationHelper, createFileSet } from '../../../integration/__tests__/intergrationUtils';
 import { IPublicConfig } from '../../../config/IPublicConfig';
 
 class BaseCSSTest {
-  constructor(public props: { fuse: any; mock: any; helper: IntergationHelper }) {}
+  constructor(public props: { fuse: any; mock: any; helper: IntegrationHelper }) {}
 }
 export function baseCSSTest(config: IPublicConfig, files: { [key: string]: string }) {
   const data = createTestBundle(config, files);

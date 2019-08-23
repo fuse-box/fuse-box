@@ -39,7 +39,7 @@ async function renderModule(props: IPostCSSHandlerProps) {
     },
     onImportFile: item => {
       if (!item.isExternal) {
-        if (props.options.breakDepednantsCache) {
+        if (props.options.breakDependantsCache) {
           props.module.breakDependantsCache = true;
         }
         props.module.addWeakReference(item.value);

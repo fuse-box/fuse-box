@@ -3,14 +3,14 @@
 Most of the CSS extensions are captured automatically, for example, FuseBox takes care of `.less` `.scss` `.sass` `.css`
 and `.styl` extensions without questions.
 
-The only conditions to those is having a corresponing CSS preprocessor installed.
+The only conditions to those is having a corresponding CSS preprocessor installed.
 
 Before continuing, let's break down the basics:
 
 - All plugins listen to the global configuration first
 - All CSS preprocessors have a unified configuration like `paths` and `macros`
-- Every CSS preprocessor is being matched againts their default extensions
-- Every CSS preprocessor can have a custom configuration and be matched againts specific paths
+- Every CSS preprocessor is being matched against their default extensions
+- Every CSS preprocessor can have a custom configuration and be matched against specific paths
 
 ## Global configurations
 
@@ -22,7 +22,7 @@ preprocessors.
 | paths                          | Add here a list of directories where FuseBox will search for modules                               |
 | macros                         | You can set an object with key value so it will be replaced in user imports and urls               |
 | ignoreChecksForCopiedResources | If a resource present in the filesystem FuseBox will not copy it again                             |
-| breakDepednantsCache           | If toggled all stylesheet module will break its dependants cache and will be forced to be reloaded |
+| breakDependantsCache           | If toggled all stylesheet module will break its dependants cache and will be forced to be reloaded |
 | groupResourcesFilesByType      | Files will be grouped in folder by type, e.g images will go to /resources/images                   |
 | postCSS                        | PostCSS options                                                                                    |
 
@@ -106,10 +106,10 @@ fusebox({
 });
 ```
 
-**IMPORTANT** you should avoid using `macros` in the `urls`, since that reduces the readbility, not to mentioned the
+**IMPORTANT** you should avoid using `macros` in the `urls`, since that reduces the readability, not to mentioned the
 transparency of your project. Your resources will be handled gracefully even with **deep nested** imports
 
-## Intergation with HMR
+## Integration with HMR
 
 HMR is pre-configured with all CSS preprocessors. Sit sit back and relax. Your browser view will be updated accordingly
 on every `save`

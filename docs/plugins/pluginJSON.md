@@ -7,7 +7,7 @@ title: pluginJSON
 
 By default all the exports are not using `default`.
 
-You don't need to add this plugin. IT's already a part of the core, unless you want to manually handle it and override
+You don't need to add this plugin. It's already a part of the core, unless you want to manually handle it and override
 the way the JSON is exported
 
 ```ts

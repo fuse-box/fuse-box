@@ -75,7 +75,7 @@ function onProcess(node: Identifier, props: LocalContext) {
             props.insertions.push(`const __env = ${JSON.stringify(props.ctx.config.env)};`);
           }
         } else {
-          // otherwise add process to the dependenices
+          // otherwise add process to the dependencies
           props.insertions.push(`const process = require("process");`);
         }
       }

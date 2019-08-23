@@ -55,7 +55,7 @@ export async function renderModule(props: IRenderModuleProps): Promise<IStyleshe
     });
 
     if (resolved.success) {
-      if (props.options.breakDepednantsCache) {
+      if (props.options.breakDependantsCache) {
         props.module.breakDependantsCache = true;
       }
       props.module.addWeakReference(resolved.path);

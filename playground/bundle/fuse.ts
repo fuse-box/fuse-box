@@ -18,7 +18,7 @@ const fuse = fusebox({
 
   env: { NODE_ENV: 'stage', foo: 'bar' },
   stylesheet: {
-    breakDepednantsCache: true,
+    breakDependantsCache: true,
     macros: {
       $root: __dirname,
     },

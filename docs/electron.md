@@ -1,7 +1,7 @@
 # Electron
 
-In this sections we are going through `electron` setup. As you know, electron application is split into 2 seperate
-bundle with seperate entry points. First is the `main` process which launches the application, tweaks its settings, e.g.
+In this sections we are going through `electron` setup. As you know, electron application is split into 2 separate
+bundle with separate entry points. First is the `main` process which launches the application, tweaks its settings, e.g.
 window size. Fusebox has a special launcher for that one.
 
 A working example can be found [here](https://github.com/fuse-box/fuse-box-electron-seed)
@@ -11,7 +11,7 @@ A working example can be found [here](https://github.com/fuse-box/fuse-box-elect
 Electron launcher must consist of bundle. FuseBox manages bundles automatically, therefore the amount of bundles varies.
 Therefore we must tell FuseBox to create a single bundle for that matter.
 
-Use the `useSingleBundle` field to achive that:
+Use the `useSingleBundle` field to achieve that:
 
 ```ts
 fusebox({
@@ -56,7 +56,7 @@ native), make sure you ignore all external dependencies:
 
 ### Enable "require"
 
-FuseBox will not bundle natives e.g. `fs` or `path`, therefore you must enable NodeJS intergation
+FuseBox will not bundle natives e.g. `fs` or `path`, therefore you must enable NodeJS Integration
 
 ```ts
 mainWindow = new BrowserWindow({
@@ -119,7 +119,7 @@ Make sure to set custom `output` and `homeDir`
 
 ### Loading the application
 
-You can use the devServer, however it's not really nessesary, since FuseBox can launch a seperate WebSocket and
+You can use the devServer, however it's not really nessesary, since FuseBox can launch a separate WebSocket and
 comminicate with the process (for the HMR )
 
 ```ts
