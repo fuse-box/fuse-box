@@ -33,6 +33,7 @@ task('preview', async ctx => {
   await fuse.runProd({ uglify: true });
 });
 task('dist', async ctx => {
+  rm('./dist');
   ctx.runServer = false;
   ctx.isProduction = true;
   const fuse = ctx.getConfig();

@@ -37,6 +37,7 @@ export async function addServerEntry(ctx: Context, bundles: Array<IBundleWriteRe
     priority: -1,
     type: BundleType.SERVER_ENTRY,
     webIndexed: false,
+    skipHash: true,
   });
 
   if (ctx.config.sourceMap.project) {

@@ -15,7 +15,7 @@ export function createFileSet(directory, files: { [key: string]: string }) {
   return newSet;
 }
 
-class IntergationHelper {
+export class IntergationHelper {
   public ctx: Context;
   constructor(public mock) {}
 

@@ -7,7 +7,6 @@ export function createApplicationPackage(ctx: Context, entryFile: string): Packa
   const absPath = ensureAbsolutePath(entryFile, ctx.config.homeDir);
 
   if (!fileExists(absPath)) {
-    console.log('nope', absPath);
     ctx.log.error('Entry "$entry" was not found. Tried: $file', { entry: entryFile, file: absPath });
     return;
   }

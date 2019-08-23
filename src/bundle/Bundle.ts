@@ -37,6 +37,7 @@ export interface IBundleProps {
   priority?: number;
   webIndexed?: boolean;
   type: BundleType;
+  skipHash?: boolean;
 }
 
 export interface IBundleWriteResponse {
@@ -180,7 +181,11 @@ export class Bundle {
       this.contents.add(null, this.props.type === BundleType.CSS ? sourceMapsCSSURL(file) : sourceMapsURL(file));
     }
 
-    const bundleData = ctx.writer.generate(this.getFileName(), this.contents.content.toString(), this.noHash);
+    const bundleData = ctx.writer.generate(
+      this.getFileName(),
+      this.contents.content.toString(),
+      this.noHash || this.props.skipHash,
+    );
     if (writeBundles) await bundleData.write();
     ict.sync('after_bundle_write', { bundle: this });
     return { bundle: this, stat: bundleData };
