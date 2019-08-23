@@ -4,7 +4,7 @@ title: Instructions
 ---
 
 A bundle must have instructions. Instructions tell FuseBox how to deal with your
-code,
+code.
 
 ## Everything related
 
@@ -14,6 +14,15 @@ fuse.bundle("app").instructions("> index.ts");
 
 Here we will bundle everything that's related to index.ts and execute it once
 the page is loaded
+
+## Combining symbols
+
+It is possible to combine symbols for the instructions by concatenating them
+together.
+
+```js
+fuse.bundle("app").instructions("> index.ts - someModule");
+```
 
 ## Isolating dependencies
 
