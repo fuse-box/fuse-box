@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+      "target": "es2018",
+      "module": "esNext",
+      "lib":["es2017", "dom"],
+      "moduleResolution": "node",
+      "isolatedModules": false,
+      "preserveConstEnums": true,
+      "allowSyntheticDefaultImports": true,
+      "sourceMap": true,
+      "skipLibCheck": true,
+      "declaration": true,
+      "noImplicitAny": true,
+      "noImplicitReturns": true,
+      "noImplicitUseStrict": true,
+      "noUnusedParameters": true,
+      "suppressImplicitAnyIndexErrors": true,
+      "noFallthroughCasesInSwitch": true,
+      "noImplicitThis": false,
+      "noUnusedLocals": true,
+      "allowUnreachableCode": false,
+      "removeComments": true,
+      "emitDecoratorMetadata": true,
+      "strictNullChecks": false,
+      "experimentalDecorators": true,
+      "jsx": "react",
+      "importHelpers": true,
+      "baseUrl": "./",
+      "paths": {
+        "@myorg*": ["packages*"]
+      }
+  },
+  "exclude":[
+    "node_modules",
+    "dist",
+    "**/**/fuse.ts"
+  ]
+}

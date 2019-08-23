@@ -1,0 +1,1 @@
+{"name" : "core", "main" : "dist/index.js", "local:main" : "src/index.ts", "typings" : "src/index.ts"}

@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "outDir": "dist/esm",
+    "rootDir": "./src",
+    "baseUrl": "./"
+  },
+  "exclude": ["dist"]
+}
