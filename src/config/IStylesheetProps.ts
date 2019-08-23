@@ -12,7 +12,7 @@ export interface IStyleSheetAutoImportCapture {
 export interface IStyleSheetProps extends IResourceConfig {
   /**
    * By default, FuseBox checks if a file has been copied over and exists in the dest file.
-   * That saves some time on bunlding, but also ignores a modified resource (for example an image with the same name)
+   * That saves some time on bundling, but also ignores a modified resource (for example an image with the same name)
    * Toggle this on if you work images that are copied over and over again with the same name
    * @type {boolean}
    * @memberof IStyleSheetProps
@@ -20,12 +20,12 @@ export interface IStyleSheetProps extends IResourceConfig {
   ignoreChecksForCopiedResources?: boolean;
 
   /**
-   * If toggled all stylesheet module will break its dependants cache and will be forced to be reloaded
+   * If toggled all stylesheet module will break its dependant cache and will be forced to be reloaded
    *
    * @type {boolean}
    * @memberof IStyleSheetProps
    */
-  breakDepednantsCache?: boolean;
+  breakDependantsCache?: boolean;
 
   /**
    * Files will be grouped in folder by type
@@ -38,7 +38,7 @@ export interface IStyleSheetProps extends IResourceConfig {
   groupResourcesFilesByType?: boolean;
 
   /**
-   * Path lookup. Simpilar to the ones most CSS preprocessor provide
+   * Path lookup. Similar to the ones most CSS preprocessor provide
    * It's recommended to use macro option instead as this options adds additional overhead
    *
    * @type {Array<string>}
@@ -55,7 +55,7 @@ export interface IStyleSheetProps extends IResourceConfig {
    * Helps to resolve urls and untangle the paths
    * e.g provide `{ $src : path.join(__dirname, "src")}`
    * in order to use `@import "$src/some.scss"` or `background-image: url("$src/images/logo.png")`
-   * Replaces values "as is" therefore you should take care of preffixes. Giving it just a string "src" or "a" will result
+   * Replaces values "as is" therefore you should take care of prefixes. Giving it just a string "src" or "a" will result
    * in replacing all values in the string and breaking the path.
    * @type {{ [key: string]: string }}
    * @memberof IStyleSheetProps

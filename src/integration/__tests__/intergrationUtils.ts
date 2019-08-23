@@ -15,7 +15,7 @@ export function createFileSet(directory, files: { [key: string]: string }) {
   return newSet;
 }
 
-export class IntergationHelper {
+export class IntegrationHelper {
   public ctx: Context;
   constructor(public mock) {}
 
@@ -75,7 +75,7 @@ export function createTestBundle(config: IPublicConfig, files: { [key: string]: 
   if (!config.plugins) {
     config.plugins = [];
   }
-  let helper = new IntergationHelper(mock);
+  let helper = new IntegrationHelper(mock);
   config.plugins.push(ctx => {
     helper.ctx = ctx;
   });

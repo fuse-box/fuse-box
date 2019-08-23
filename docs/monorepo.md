@@ -8,7 +8,7 @@ Unlike other bundlers, FuseBox has a concept of `homeDir` where it sets the root
 files outside of your home directory. By default, FuseBox sets `homeDir` to your project root, however, in case of a
 monorepo that's not the case, since every sub project has it's own `fuse.ts`
 
-In order to achive smooth development we should set the `homeDir` to the root of your repository, regardless of where
+In order to achieve smooth development we should set the `homeDir` to the root of your repository, regardless of where
 you `fuse.ts` is and set `entry` relative to the project root instead (which should match your `homeDir`)
 
 Here are the highlights
@@ -23,7 +23,7 @@ Here are the highlights
 
 ## Configuring project
 
-You project `homeDir` must be set the root of the parent repository. For example having the file structure
+You project `homeDir` must be set to the root of the parent repository. For example having the file structure
 
 ```
 - monorepo
@@ -48,7 +48,7 @@ fusebox({
 Each packages naturally contains `main` or `module` fields, however, that's not convenient during development, since you
 would want to pick up the sources of the package.
 
-In order to achive that, you can add `local:main` field to your `package,json`.
+In order to achieve that, you can add `local:main` field to your `package,json`.
 
 This field will be read if:
 
@@ -61,7 +61,7 @@ This field will be read if:
 
 FuseBox treats your **scoped** packages as actual directories, not packages. Since every single package contains
 `package.json` with `main` or `module` fields pointed to the dist - that will prevent FuseBox from picking up the
-changes and getting the correct entry points during development. We fix it making it believe that we are dealing with a
+changes and getting the correct entry points during development. We fix it by making it believe that we are dealing with a
 project.
 
 All is left is to configure `paths`

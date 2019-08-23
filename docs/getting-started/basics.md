@@ -1,11 +1,32 @@
 # Basics
 
+## Target
+
+Possible values are: `browser`, `server`, `electron`, `universal`, `web-worker`;
+
+```ts
+fusebox({
+  target: 'browser',
+});
+```
+
+## Defining your entry point
+
+You can specify your entry point like this:
+
+```ts
+fusebox({
+  target: 'server',
+  entry: 'yourEntryPoint'
+});
+```
+
 ## Dependencies
 
 It's possible to ignore/include/ignore all dependencies in your bundle.
 
 When target is set to `server` FuseBox toggle `ignoreAllExternal` mode automatically, since that's a recommended way of
-bunlding server (at least for development). You can tweak it like so:
+bundling server (at least for development). You can tweak it like so:
 
 ```ts
 fusebox({

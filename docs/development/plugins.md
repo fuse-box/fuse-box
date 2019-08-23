@@ -14,7 +14,7 @@ be your plugin options always.
 User can choose whether to apply the plugin globally or pick files individually.
 
 `parsePluginOptions` is a helper that parser 2 arguments and gives you a `matcher` - that's the Regular expression you'd
-be testing paths againts, and the option.
+be testing paths against, and the option.
 
 A very basic setup looks like this:
 

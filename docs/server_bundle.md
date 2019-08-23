@@ -1,6 +1,6 @@
 # Bundling for server
 
-When it gets to making server bundles FuseBox can help you achive a super fast development process
+When it gets to making server bundles, FuseBox can help you achieve a super fast development process
 
 ## Default setup
 

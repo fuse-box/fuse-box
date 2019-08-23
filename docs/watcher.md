@@ -1,6 +1,6 @@
 # Watcher
 
-Watcher in FuseBox helps you develop with ease withoout bothering yourself with restarting the process each time. It's
+Watcher in FuseBox helps you develop with ease without bothering yourself with restarting the process each time. It's
 enabled by default during development.
 
 ```ts
