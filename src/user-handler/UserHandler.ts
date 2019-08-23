@@ -2,12 +2,25 @@ import { EventEmitter } from 'events';
 import { IBundleWriteResponse } from '../bundle/Bundle';
 import { Context } from '../core/Context';
 import { ElectronLauncher } from './ElectronLauncher';
+import { ServerLauncher } from './ServerLauncher';
 
 export class UserHandlerComplete {
   result: Array<IBundleWriteResponse>;
   private electronLauncher;
+  private serverLauncher;
 
   constructor(public initial: boolean, public ctx: Context, public bundles: Array<IBundleWriteResponse>) {}
+  get server(): ServerLauncher {
+    if (this.serverLauncher) {
+      return this.serverLauncher;
+    }
+    if (this.ctx.config.target !== 'server') {
+      this.ctx.log.error('Cannot create Server launchet. Target must be electron');
+    } else {
+      this.serverLauncher = new ServerLauncher(this.ctx, this.bundles);
+    }
+    return this.serverLauncher;
+  }
 
   get electron(): ElectronLauncher {
     if (this.electronLauncher) {

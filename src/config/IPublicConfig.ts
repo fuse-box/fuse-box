@@ -15,8 +15,6 @@ import { IPluginLinkOptions } from '../plugins/core/plugin_link';
 export interface IPublicConfig {
   root?: string;
   target?: ITarget;
-  autoStartServerEntry?: boolean;
-  autoStartEntry?: boolean;
   useSingleBundle?: boolean;
   dependencies?: {
     include?: Array<string>;

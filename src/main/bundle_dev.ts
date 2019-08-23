@@ -14,7 +14,7 @@ import { attachCache } from './attach_cache';
 import { attachWatcher } from './attach_watcher';
 import { attachWebIndex } from './attach_webIndex';
 import { processPlugins } from './process_plugins';
-import { attachServerEntry } from './server_entry';
+import { attachServerEntry, addServerEntry } from './server_entry';
 import { statLog } from './stat_log';
 
 export async function bundleDev(ctx: Context) {
@@ -45,8 +45,6 @@ export async function bundleDev(ctx: Context) {
       ctx: ctx,
       packages: packages,
     });
-    // server entry reload
-    attachServerEntry(ctx);
 
     // sorting bundles with dev, system, default, vendor
     const data = createDevBundles(ctx, packages);
@@ -71,6 +69,11 @@ export async function bundleDev(ctx: Context) {
     time: prettyTime(process.hrtime(startTime), 'ms'),
   });
   if (bundles) {
+    if (ctx.config.isServer()) {
+      const serverEntryBundle = await addServerEntry(ctx, bundles);
+      bundles.push(serverEntryBundle.info);
+    }
+
     ict.sync('complete', { ctx: ctx, bundles: bundles, packages: packages });
   }
 }

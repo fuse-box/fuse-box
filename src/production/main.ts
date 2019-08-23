@@ -24,7 +24,6 @@ export interface IProductionFlow {
 
 export interface IProductionResponse {
   bundles: Array<IBundleWriteResponse>;
-  launcher: IServerProcess;
 }
 export async function productionMain(props: IProductionMain): Promise<IProductionResponse> {
   const productionContext = createProductionContext(props);

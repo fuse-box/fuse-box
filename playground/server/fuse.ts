@@ -5,10 +5,7 @@ class Context {
   runServer;
   getConfig() {
     return fusebox({
-      dependencies: {
-        ignoreAllExternal: false,
-        ignorePackages: ['react'],
-      },
+      output: './dist/$hash-$name',
       target: 'server',
       entry: 'src/index.ts',
       cache: false,
@@ -20,17 +17,28 @@ class Context {
 const { task, exec, rm } = sparky<Context>(Context);
 
 task('default', async ctx => {
-  ctx.runServer = true;
+  rm('./dist');
   const fuse = ctx.getConfig();
-  await fuse.runDev();
+  await fuse.runDev(handler => {
+    handler.onComplete(output => {
+      output.server.handleEntry({ nodeArgs: [], scriptArgs: [] });
+    });
+  });
 });
 
 task('preview', async ctx => {
   rm('./dist');
-  ctx.runServer = true;
+
   ctx.isProduction = true;
   const fuse = ctx.getConfig();
-  await fuse.runProd({ uglify: true });
+  await fuse.runProd({
+    uglify: true,
+    handler: handler => {
+      handler.onComplete(output => {
+        output.server.handleEntry({ nodeArgs: [], scriptArgs: [] });
+      });
+    },
+  });
 });
 task('dist', async ctx => {
   rm('./dist');

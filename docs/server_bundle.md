@@ -36,17 +36,28 @@ require('./app.js');
 
 ## Starting the process
 
-During the development FuseBox will automatically launch and restart your process. So you can sit and enjoy developing
-instead of configuring. However, if you wish to launch the process yourself, you should tell FuseBox to stop the
-auto-start/restart:
-
-Add the following field to the configuration:
+During development
 
 ```ts
-autoStartServerEntry: false;
+await fuse.runDev(handler => {
+  handler.onComplete(output => {
+    output.server.handleEntry({ nodeArgs: [], scriptArgs: [] });
+  });
+});
 ```
 
-Now it's all yours!
+Production
+
+```ts
+await fuse.runProd({
+  uglify: true,
+  handler: handler => {
+    handler.onComplete(output => {
+      output.server.handleEntry({ nodeArgs: [], scriptArgs: [] });
+    });
+  },
+});
+```
 
 ## Bundling vendors
 

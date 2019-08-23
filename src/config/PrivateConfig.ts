@@ -45,8 +45,6 @@ export interface ICacheProps {
 export class PrivateConfig {
   root?: string;
   target?: ITarget;
-  autoStartServerEntry?: boolean;
-  autoStartEntry?: boolean;
   dependencies?: {
     include?: Array<string>;
     ignorePackages?: Array<string>;
@@ -170,8 +168,6 @@ export class PrivateConfig {
     }
     // Plugin Link
     this.link = props.link ? props.link : {};
-    this.autoStartEntry = props.autoStartEntry;
-    this.useSingleBundle = props.useSingleBundle;
   }
 
   public isEssentialDependency(name: string) {

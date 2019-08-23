@@ -158,9 +158,9 @@ export async function finalStage(props: IProductionFlow) {
 
   if (ctx.config.isServer()) {
     const { info } = await addServerEntry(ctx, bundleResponses);
-    launcher = createServerProcess({ absPath: info.stat.absPath });
+    bundleResponses.push(info);
   }
 
   log.progressEnd('<green><bold>$checkmark Success!</bold></green>');
-  return { bundles: bundleResponses, launcher };
+  return { bundles: bundleResponses };
 }
