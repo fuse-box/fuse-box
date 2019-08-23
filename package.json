@@ -162,5 +162,5 @@
     "coverage-ci": "jest --verbose --coverage --runInBand"
   },
   "typings": "index.d.ts",
-  "version": "4.0.0-alpha.79"
+  "version": "4.0.0-alpha.80"
 }
