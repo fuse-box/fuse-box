@@ -1,7 +1,7 @@
 # Stylesheet
 
-Most of the CSS extensions are captured automatically, for example, FuseBox takes care of `.less` `.scss` `sass` `css`
-and `styl` extensions without questions.
+Most of the CSS extensions are captured automatically, for example, FuseBox takes care of `.less` `.scss` `.sass` `.css`
+and `.styl` extensions without questions.
 
 The only conditions to those is having a corresponing CSS preprocessor installed.
 
@@ -218,7 +218,7 @@ npm install node-sass --save-dev
 ```
 
 Sass in FuseBox is pre-configured with a custom importer that takes care of resolving the paths and your resources
-(fonts, images e.t.c)
+(fonts, images etc.)
 
 ### Alternative configuration
 

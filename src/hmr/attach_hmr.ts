@@ -34,7 +34,7 @@ export function attachHMR(ctx: Context) {
   const tasks: { [key: string]: IHMRTask } = {};
 
   function sortProjectUpdate(task: IHMRTask, payload: IClientSummary) {
-    // verity project files first
+    // verify project files first
     const log_pkg = '<bold><yellow>$pkg</yellow></bold>';
 
     const time = measureTime('hmr');
