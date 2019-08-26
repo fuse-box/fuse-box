@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig-3-base",
+  "compilerOptions": {
+    "rootDir": "./correctRoot",
+    "baseUrl": "./correntRoot",
+    "paths": {
+      "@awesome*": ["../../packages/awesome*"]
+    },
+    "lib": ["es2018", "dom"]
+  }
+}

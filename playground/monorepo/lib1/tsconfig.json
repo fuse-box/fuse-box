@@ -1,0 +1,8 @@
+{
+  "extends": "../paths.json",
+  "compilerOptions": {
+    "target": "es2015",
+    "jsx": "react",
+    "importHelpers": true
+  }
+}

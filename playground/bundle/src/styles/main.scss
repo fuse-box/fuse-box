@@ -1,0 +1,21 @@
+@import '$root/src/styles/foo';
+h1 {
+  color: blue;
+}
+
+.foo {
+  color: red;
+  .bar {
+    color: blue;
+  }
+  .mar {
+    color: green;
+  }
+}
+
+.foo {
+  background-color: aqua;
+  .coo {
+    color: olive;
+  }
+}

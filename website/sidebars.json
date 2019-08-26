@@ -27,7 +27,6 @@
       "task-runner/getting-started-with-sparky",
       "task-runner/sparky"
     ],
-    "Test Runner": ["test-runner/test-runner"],
     "Guides": [
       "guides/working-with-targets",
       "guides/publishing-to-npm",
@@ -62,7 +61,7 @@
       "plugins/styled-components-plugin",
       "plugins/stylus-plugin",
       "plugins/svg-plugin",
-      "plugins/uglifyes-plugin",
+      "plugins/terser-plugin",
       "plugins/uglifyjs-plugin",
       "plugins/vue-component-plugin",
       "plugins/web-index-plugin"

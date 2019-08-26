@@ -1,0 +1,10 @@
+{
+  "editor.formatOnSave": true,
+  "workbench.editor.enablePreview": false,
+  "workbench.editor.enablePreviewFromQuickOpen": false,
+  "workbench.editor.revealIfOpen": true,
+  "javascript.suggest.completeFunctionCalls": true,
+  "files.associations": {
+    "*.css": "postcss"
+  }
+}

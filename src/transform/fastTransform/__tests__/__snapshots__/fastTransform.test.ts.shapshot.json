@@ -1,0 +1,5 @@
+{
+  "03a4bc33f": "const __req1__ = require(\"./foo\");\nfunction hello(foo, bar) {\n  console.log({\n    foo,\n    bar\n  });\n}\n",
+  "03a4bc341": "const __req1__ = require(\"./foo\");\nconsole.log({\n  foo: __req1__.foo\n});\n",
+  "03a4bc340": "const __req1__ = require(\"./foo\");\nconsole.log({\n  foo: __req1__.foo,\n  bar\n});\n"
+}

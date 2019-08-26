@@ -1,0 +1,4 @@
+{
+  "extends": "./tsconfig-2-base",
+  "compilerOptions": { "allowJs": true }
+}
