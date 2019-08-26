@@ -18,6 +18,7 @@ export interface IHTTPServerProps {
   port?: number;
   fallback?: string;
   root?: string;
+  express?: (app: any, express: any) => void;
   proxy?: IDevServerProxy;
 }
 

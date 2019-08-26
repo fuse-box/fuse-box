@@ -112,10 +112,6 @@ export class PrivateConfig {
   public init(props: IPublicConfig) {
     this.dependencies = props.dependencies ? props.dependencies : {};
     if (this.isServer()) {
-      if (props.autoStartServerEntry !== undefined) {
-        this.autoStartServerEntry = props.autoStartServerEntry;
-      } else this.autoStartServerEntry = true;
-
       if (this.dependencies.ignoreAllExternal === undefined) {
         this.dependencies.ignoreAllExternal = true;
       }
@@ -168,6 +164,8 @@ export class PrivateConfig {
     }
     // Plugin Link
     this.link = props.link ? props.link : {};
+
+    if (props.useSingleBundle !== undefined) this.useSingleBundle = props.useSingleBundle;
   }
 
   public isEssentialDependency(name: string) {

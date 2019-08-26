@@ -20,6 +20,10 @@ class Context {
       hmr: true,
       devServer: this.runServer && {
         open: false,
+        httpServer: {
+          express: app => {},
+        },
+
         proxy: [
           {
             path: '/api',

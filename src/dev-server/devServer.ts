@@ -27,6 +27,13 @@ interface ICreateReactAppExtraProps {
 
 export function createExpressApp(ctx: Context, props: IHTTPServerProps, extra?: ICreateReactAppExtraProps) {
   const app = express();
+  app.all('/__ftl', (req, res) => {
+    const ftlModules = ctx.assembleContext.getFTLModules();
+    const js = generateFTLJavaScript(ftlModules);
+    res.set('Content-Type', 'application/javascript; charset=UTF-8');
+    res.send(js);
+  });
+  if (props.express) props.express(app, express);
 
   if (extra && extra.proxyProps) {
     for (const item of extra.proxyProps) {
@@ -34,12 +41,6 @@ export function createExpressApp(ctx: Context, props: IHTTPServerProps, extra?: 
     }
   }
 
-  app.all('/__ftl', (req, res) => {
-    const ftlModules = ctx.assembleContext.getFTLModules();
-    const js = generateFTLJavaScript(ftlModules);
-    res.set('Content-Type', 'application/javascript; charset=UTF-8');
-    res.send(js);
-  });
   app.use('/', express.static(props.root));
 
   app.use('*', (req, res) => {

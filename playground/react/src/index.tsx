@@ -17,7 +17,7 @@ class App extends Component {
         <p style={getSourceStyle(snapshot.isDraggingOver)}>
           To get started, edit
           <code>src/App.js</code>
-          and save to reload.
+          and save to reload.11
         </p>
       </div>
     );

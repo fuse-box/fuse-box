@@ -15,7 +15,7 @@ export class UserHandlerComplete {
       return this.serverLauncher;
     }
     if (this.ctx.config.target !== 'server') {
-      this.ctx.log.error('Cannot create Server launchet. Target must be electron');
+      this.ctx.log.error('Cannot create Server launcher. Target must be electron');
     } else {
       this.serverLauncher = new ServerLauncher(this.ctx, this.bundles);
     }
@@ -26,18 +26,20 @@ export class UserHandlerComplete {
     if (this.electronLauncher) {
       return this.electronLauncher;
     }
+    const FATAL_ERR = 'Unable to create Electron launcher';
     if (this.ctx.config.target !== 'electron') {
-      this.ctx.log.error('Cannot create Electron launchet. Target must be electron');
-    } else if (this.bundles.length !== 1) {
-      this.ctx.log.error('Cannot create Electron launcher. Toggle useSingleBundle = true in your configuration');
+      this.ctx.fatal([FATAL_ERR, '- Reason: Target must be "electron"']);
     } else {
+      if (this.bundles.length !== 1) {
+        this.ctx.fatal([FATAL_ERR, '- Reason: Set useSingleBundle field in your config']);
+      }
       try {
         const electronPath = require('electron');
 
         this.electronLauncher = new ElectronLauncher(this.ctx, this.bundles, electronPath);
         return this.electronLauncher;
       } catch (e) {
-        this.ctx.log.error('Cannot create Electron launcher. Install electron package first');
+        this.ctx.fatal([FATAL_ERR, '- Reason: Install electron package first']);
       }
     }
   }
