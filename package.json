@@ -145,7 +145,7 @@
     "url": "git+https://github.com/fuse-box/fuse-box.git"
   },
   "scripts": {
-    "alpha": "ts-node -T fuse publish-alpha",
+    "next": "ts-node -T fuse publish-next",
     "codecov": "codecov",
     "changelog": "run-s changelog:generate changelog:format",
     "changelog:format": "prettier --write CHANGELOG.md",
@@ -162,5 +162,5 @@
     "coverage-ci": "jest --verbose --coverage --runInBand"
   },
   "typings": "index.d.ts",
-  "version": "4.0.0-alpha.84"
+  "version": "4.0.0-next.87"
 }

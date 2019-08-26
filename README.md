@@ -56,8 +56,19 @@
 
 ---
 
-The next version of **FuseBox (4.0)** will feature major improvements to speed and HMR. See the
-[changelog](./FuseBox4.0_changelog.md) here.
+# FUSEBOX v4 is here
+
+A re-write of FuseBox with Major Improvements is available in the `@next` release.
+
+Please help test it and contrubite!
+
+[New documentation](https://github.com/fuse-box/fuse-box/blob/master/docs/getting-started/get-started.md)
+
+Install:
+
+```
+npm install fuse-box@next
+```
 
 --
 

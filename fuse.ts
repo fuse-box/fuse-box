@@ -2,23 +2,21 @@ import { sparky } from './src/sparky/sparky';
 import { IBumpVersionType } from './src/sparky/bumpVersion';
 import { npmPublish } from './src/sparky/npmPublish';
 
-const TypeDoc = require("typedoc")
+const TypeDoc = require('typedoc');
 const typedocApp = new TypeDoc.Application({
   experimentalDecorators: true,
-  logger: "console",
-  mode:   "modules",
-  module: "CommonJS",
-  target: "ES6",
+  logger: 'console',
+  mode: 'modules',
+  module: 'CommonJS',
+  target: 'ES6',
   ignoreCompilerErrors: true,
   excludePrivate: true,
   excludeExternals: true,
   allowJs: false,
-  exclude: "**/*.test.ts",
-})
+  exclude: '**/*.test.ts',
+});
 
-const typedocProject = typedocApp.convert(typedocApp.expandInputFiles([
-  "src/core/FuseBox.ts",
-]))
+const typedocProject = typedocApp.convert(typedocApp.expandInputFiles(['src/core/FuseBox.ts']));
 
 class Context {
   npmTag: 'latest' | 'alpha' | 'next';
@@ -55,7 +53,7 @@ task('fix-env', async () => {
 // bump version to automate
 task('bump-version', async ctx => {
   await src('package.json')
-    .bumpVersion('package.json', { type: ctx.versionBumpType || 'alpha' })
+    .bumpVersion('package.json', { type: 'next' })
     .write()
     .dest('dist/', __dirname)
     .exec();
@@ -76,17 +74,14 @@ task('copy-various', async () => {
 
 task('publish', async ctx => {
   await exec('dist');
-  await npmPublish({ path: 'dist/', tag: ctx.npmTag || 'next' });
+  await npmPublish({ path: 'dist/', tag: 'next' });
 });
 
-task('publish-alpha', async ctx => {
-  ctx.versionBumpType = 'alpha';
-  ctx.npmTag = 'alpha';
+task('publish-next', async ctx => {
   await exec('publish');
 });
 
 task('dist', async ctx => {
-  ctx.versionBumpType = 'alpha';
   await exec('clean');
   await exec('transpile');
   await exec('copy-modules');
@@ -95,15 +90,15 @@ task('dist', async ctx => {
   await exec('fix-env');
 });
 
-
-task("document", async ctx => {
+task('document', async ctx => {
   //    const configuration = context.getConfig()
   //    console.dir(context.getConfig().context.tsConfig)
   //    process.exit()
-  console.log(typedocProject == null)
-  if (typedocProject) { // Project may not have converted correctly
-    const outputDir = "docs/api"
+  console.log(typedocProject == null);
+  if (typedocProject) {
+    // Project may not have converted correctly
+    const outputDir = 'docs/api';
     // Rendered docs
-    await typedocApp.generateDocs(typedocProject, outputDir)
+    await typedocApp.generateDocs(typedocProject, outputDir);
   }
-})
+});
