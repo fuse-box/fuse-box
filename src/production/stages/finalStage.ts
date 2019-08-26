@@ -102,6 +102,7 @@ export async function finalStage(props: IProductionFlow) {
     if (/[a-z0-9_]$/i.test(scriptRoot)) {
       scriptRoot += '/';
     }
+    if (scriptRoot === '.') scriptRoot = '';
     splitConfig = {
       entries: {},
       scriptRoot: scriptRoot,
