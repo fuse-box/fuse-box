@@ -14,7 +14,7 @@ import { attachCache } from './attach_cache';
 import { attachWatcher } from './attach_watcher';
 import { attachWebIndex } from './attach_webIndex';
 import { processPlugins } from './process_plugins';
-import { attachServerEntry, addServerEntry } from './server_entry';
+import { addServerEntry } from './server_entry';
 import { statLog } from './stat_log';
 
 export async function bundleDev(ctx: Context) {

@@ -31,11 +31,6 @@ export async function bundleProd(ctx: Context): Promise<IProductionResponse> {
       packages: packages,
     });
 
-    // server entry reload
-    // if (ctx.config.isServer()) {
-    //   attachServerEntry(ctx);
-    // }
-
     data = await productionMain({ packages, ctx });
 
     await attachWebIndex(ctx, data.bundles);
