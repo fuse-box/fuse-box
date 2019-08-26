@@ -70,7 +70,7 @@ Install:
 npm install fuse-box@next
 ```
 
---
+## [React demo](https://github.com/fuse-box/react-example)
 
 # Introduction
 

@@ -12,6 +12,8 @@ with typescript. You can transpile javascript code too.
 
 Once you are done installing, let's go throught the main concepts
 
+Try [react-example](https://github.com/fuse-box/react-example)
+
 ## Concepts
 
 FuseBox is packed with features and takes a lot of assumptions when bundling your code. Here are the highlights:
