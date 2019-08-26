@@ -8,4 +8,5 @@ export interface IProductionProps {
   target?: ITypescriptTarget;
   handler?: (handler: UserHandler) => void;
   manifest?: IManifest | boolean;
+  cleanCSS?: any;
 }

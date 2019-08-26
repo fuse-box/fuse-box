@@ -1,10 +1,10 @@
-import { BundleType, IBundleWriteResponse } from '../../bundle/Bundle';
-import { renderProductionAPI } from '../api/renderProductionAPI';
-import { IProductionFlow } from '../main';
 import * as CleanCSS from 'clean-css';
 import * as Terser from 'terser';
+import { BundleType, IBundleWriteResponse } from '../../bundle/Bundle';
 import { addServerEntry } from '../../main/server_entry';
-import { createServerProcess, IServerProcess } from '../../server_process/serverProcess';
+import { IServerProcess } from '../../server_process/serverProcess';
+import { renderProductionAPI } from '../api/renderProductionAPI';
+import { IProductionFlow } from '../main';
 import { manifestStage } from './manifestStage';
 interface IFinalStageProps {
   flow: IProductionFlow;
@@ -29,12 +29,11 @@ function minifyCSS(props: IProductionFlow) {
       sourceMap = cssBundle.contents.sourceMap.toString();
     }
     log.progressFormat('css optimize', 'Optimising css bundlde "$bundle"', { bundle: cssBundle.props.name });
-    const response = new CleanCSS(
-      Object.assign({} || {}, {
-        sourceMap: true,
-        sourceMapInlineSources: true,
-      }),
-    ).minify(cssBundle.contents.content.toString(), sourceMap);
+    const userProps = props.ctx.config.production.cleanCSS || {};
+    const response = new CleanCSS({ ...userProps, sourceMap: true, sourceMapInlineSources: true }).minify(
+      cssBundle.contents.content.toString(),
+      sourceMap,
+    );
     cssBundle.override(response.styles, response.sourceMap.toString());
   });
 }

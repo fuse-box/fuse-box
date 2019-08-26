@@ -9,7 +9,6 @@ class Context {
       entry: 'src/index.tsx',
       webIndex: {
         template: 'src/index.html',
-        embedIndexedBundles: true,
       },
       tsConfig: 'src/tsconfig.json',
 
@@ -40,7 +39,7 @@ class Context {
     });
   }
 }
-const { task, exec } = sparky<Context>(Context);
+const { task, rm, exec } = sparky<Context>(Context);
 
 task('default', async ctx => {
   ctx.runServer = true;
@@ -49,14 +48,30 @@ task('default', async ctx => {
 });
 
 task('preview', async ctx => {
+  rm('./dist');
   ctx.runServer = true;
   ctx.isProduction = true;
   const fuse = ctx.getConfig();
-  await fuse.runProd({ uglify: true });
+  await fuse.runProd({
+    uglify: false,
+    cleanCSS: {
+      compatibility: {
+        properties: { urlQuotes: true },
+      },
+    },
+  });
 });
 task('dist', async ctx => {
+  rm('./dist');
   ctx.runServer = false;
   ctx.isProduction = true;
   const fuse = ctx.getConfig();
-  await fuse.runProd({ uglify: false });
+  await fuse.runProd({
+    uglify: false,
+    cleanCSS: {
+      compatibility: {
+        properties: { urlQuotes: true },
+      },
+    },
+  });
 });
