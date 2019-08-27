@@ -75,8 +75,11 @@ function onProcess(node: Identifier, props: LocalContext) {
             props.insertions.push(`const __env = ${JSON.stringify(props.ctx.config.env)};`);
           }
         } else {
-          // otherwise add process to the dependencies
-          props.insertions.push(`const process = require("process");`);
+          if (!props.processInserted) {
+            props.processInserted = true;
+            // otherwise add process to the dependencies
+            props.insertions.push(`const process = require("process");`);
+          }
         }
       }
     }
@@ -86,6 +89,7 @@ function onProcess(node: Identifier, props: LocalContext) {
 interface LocalContext {
   ctx: Context;
   entireProcessInserted?: boolean;
+  processInserted?: boolean;
   globalInserted?: boolean;
   file: SourceFile;
   insertions: Array<string>;

@@ -1,9 +1,9 @@
+import { Layout, Button } from 'antd';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import { Component } from 'react';
-import './index.scss';
-import * as stuff from './some';
-console.log(stuff);
+import 'antd/dist/antd.css';
+import * as ReactDOM from 'react-dom';
+//import './index.scss';
 class App extends Component {
   render() {
     const snapshot = { isDraggingOver: false };
@@ -12,14 +12,9 @@ class App extends Component {
     }
     console.log('render');
     return (
-      <div className="App">
-        <div></div>
-        <p style={getSourceStyle(snapshot.isDraggingOver)}>
-          To get started, edit
-          <code>src/App.js</code>
-          and save to reload.11
-        </p>
-      </div>
+      <Layout>
+        <Button type="primary">Primary</Button>
+      </Layout>
     );
   }
 }

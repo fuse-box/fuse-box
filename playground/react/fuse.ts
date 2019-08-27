@@ -17,6 +17,9 @@ class Context {
 
       watch: true,
       hmr: true,
+      logging: {
+        ignoreStatementErrors: ['indexof'],
+      },
       devServer: this.runServer && {
         open: false,
         httpServer: {

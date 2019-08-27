@@ -82,7 +82,7 @@ function resolveStatement(
 ): IAssembleResolveResult {
   const collection = props.ctx.assembleContext.collection;
   const config = props.ctx.config;
-
+  const log = props.ctx.log;
   const resolved = resolveModule({
     isDev: !props.ctx.config.production,
     filePath: props.module.props.absPath,
@@ -97,18 +97,17 @@ function resolveStatement(
     target: opts.statement,
   });
 
-  if (!resolved) {
-    props.ctx.log.warn('Cannot resolve $statement in $file', {
+  if (!resolved || (resolved && resolved.error)) {
+    if (log.props.ignoreStatementErrors && log.props.ignoreStatementErrors.includes(opts.statement)) {
+      return;
+    }
+    log.warn('Cannot resolve $statement in $file', {
       statement: opts.statement,
       file: props.module.props.absPath,
     });
     return;
   }
 
-  if (resolved.error) {
-    props.ctx.log.error(`$error in $file`, { error: resolved.error, file: props.module.props.absPath });
-    return;
-  }
   if (resolved.skip || resolved.isExternal) {
     return;
   }

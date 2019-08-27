@@ -59,7 +59,18 @@ export class ProductionModule {
           const targetModule = targetProductionPackage.pkg.modules.find(
             mod => mod.props.absPath === packageTargetAbsPath,
           );
-          return targetModule.productionModule;
+          if (targetModule) {
+            return targetModule.productionModule;
+          } else {
+            const entries = info.link.package.getAllEntries();
+            // a very rare edge case where the same version of the same package resides in difference folders
+            if (entries.length) {
+              const targetModule = targetProductionPackage.pkg.modules.find(item => {
+                return (item.props.fuseBoxPath = info.link.resolver.package.targetFuseBoxPath);
+              });
+              if (targetModule) return targetModule.productionModule;
+            }
+          }
         }
       }
     }

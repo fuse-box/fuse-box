@@ -6,6 +6,7 @@ import { env } from '../env';
 const readline = require('readline');
 type ILoggerType = 'verbose' | 'succinct' | 'disabled';
 export interface ILogger {
+  props: ILoggerProps;
   level: ILoggerType;
   group: (name: string | boolean) => void;
   info: (msg: string, variables?: { [key: string]: any }) => void;
@@ -31,7 +32,8 @@ export interface ILogger {
 }
 
 export interface ILoggerProps {
-  level: ILoggerType;
+  level?: ILoggerType;
+  ignoreStatementErrors?: Array<string>;
 }
 
 export const EMOJIS = {
@@ -57,7 +59,8 @@ function replaceVars(str, vars) {
   return str;
 }
 export function getLogger(props?: ILoggerProps): ILogger {
-  let level: ILoggerType = props && props.level ? props.level : 'succinct';
+  props = props || {};
+  let level: ILoggerType = props.level ? props.level : 'succinct';
 
   if (process.argv.includes('--verbose')) {
     level = 'verbose';
@@ -105,6 +108,7 @@ export function getLogger(props?: ILoggerProps): ILogger {
   const measures: any = {};
 
   const methods = {
+    props: props,
     group: (name: string | boolean) => {
       if (typeof name == 'boolean') {
         if (name === false) {

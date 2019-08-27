@@ -53,6 +53,9 @@ function moduleTransformer<T extends ts.Node>(
         if (!target) {
           if (config.target !== 'electron' && config.target !== 'server') {
             if (!props.flow.ctx.config.shoudIgnorePackage(text)) {
+              if (log.props.ignoreStatementErrors && log.props.ignoreStatementErrors.includes(text)) {
+                return;
+              }
               log.error('Problem when resolving require "$text" in $file', {
                 text: text,
                 file: pm.module.getShortPath(),

@@ -164,6 +164,20 @@ describe('Production / Process transform', () => {
       expect(text).toContain('process.nextTick()');
     });
 
+    it('should not add process 2 times', () => {
+      const props = createFile(
+        {},
+        `
+      process.nextTick()
+      process.nextTick()
+    `,
+      );
+      processProductionTransformation(props);
+      const text = props.file.getText();
+
+      expect(text).toMatchJSONSnapshot();
+    });
+
     it('should trasnform many', () => {
       const props = createFile(
         {},
