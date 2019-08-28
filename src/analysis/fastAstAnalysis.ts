@@ -48,6 +48,8 @@ export function fastAstAnalysis(props: IASTAnalysisProps): IFastAnalysis {
         if (node.source) {
           ctx.imports.push({ type: ImportType.RAW_IMPORT, statement: node.source.value });
         }
+      } else if (node.type === 'JSXElement') {
+        ctx.report.containsJSX = true;
       } else if (node.type === 'ImportExpression') {
         if (node.source && node.source.type === 'Literal') {
           ctx.report.es6Syntax = true;

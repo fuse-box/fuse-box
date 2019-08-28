@@ -133,6 +133,17 @@ describe('Fast ast analysis', () => {
       expect(res.report.es6Syntax).toEqual(true);
     });
 
+    it('should give jsx true', () => {
+      const res = fastAstAnalysis({
+        input: `
+        export function App() {
+          return <div>Hello world</div>;
+        }
+      `,
+      });
+      expect(res.report.containsJSX).toEqual(true);
+    });
+
     it('should give require statement', () => {
       const res = fastAstAnalysis({
         input: `

@@ -18,7 +18,7 @@ import { createTransformContext } from './TrasnformContext';
 import { IWebWorkerItem } from '../../analysis/fastAnalysis';
 
 export function parseAst(contents: string, options?: { loc: boolean }) {
-  let opts = { next: false, module: true, ...(options || {}) };
+  let opts = { jsx: true, next: false, module: true, ...(options || {}) };
 
   return meriyah.parse(contents, opts);
 }
