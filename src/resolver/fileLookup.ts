@@ -16,7 +16,7 @@ export interface ILookupResult {
   fileExists: boolean;
   absPath: string;
   extension?: string;
-
+  monorepoModulesPaths?: string;
   customIndex?: boolean;
 }
 
@@ -90,14 +90,26 @@ export function fileLookup(props: ILookupProps): ILookupResult {
     if (stat.isDirectory) {
       isDirectory = true;
 
+      let monorepoModulesPaths;
+
       // only in case of a directory
       const packageJSON = path.join(resolved, 'package.json');
       if (fs.existsSync(packageJSON)) {
         const useLocalMain = props.isDev && !/node_modules/.test(packageJSON);
-        const entry = getFolderEntryPointFromPackageJSON({ json: require(packageJSON), useLocalField: useLocalMain });
+        const packageJSONObject = require(packageJSON);
+        const entry = getFolderEntryPointFromPackageJSON({ json: packageJSONObject, useLocalField: useLocalMain });
+
+        if (useLocalMain && packageJSONObject['local:main']) {
+          const _monoModules = path.resolve(resolved, 'node_modules');
+          if (fs.existsSync(_monoModules)) {
+            monorepoModulesPaths = _monoModules;
+          }
+        }
+
         const entryFile = path.join(resolved, entry);
         return {
           customIndex: true,
+          monorepoModulesPaths,
           isDirectoryIndex: true,
           absPath: entryFile,
           extension: path.extname(entryFile),

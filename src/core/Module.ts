@@ -15,6 +15,14 @@ export interface IModuleProps {
   extension: string;
 }
 export class Module {
+  /**
+   * Meta will be store to cache if set
+   *
+   * @type {{ [key: string]: any }}
+   * @memberof Module
+   */
+  public meta: { [key: string]: any };
+
   public isCached: boolean;
   public cache: IModuleCacheBasics;
 

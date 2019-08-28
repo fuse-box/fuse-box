@@ -72,6 +72,8 @@ export interface IResolver {
   fuseBoxPath?: string;
 
   forcedStatement?: string;
+  // a resolver might return an additional path where to look for modules
+  monorepoModulesPath?: string;
 }
 
 function isExternalModule(props: IResolverProps): IResolver {
@@ -234,6 +236,7 @@ export function resolveModule(props: IResolverProps): IResolver {
     }
   }
   return {
+    monorepoModulesPath: lookupResult.monorepoModulesPaths,
     extension,
     absPath,
     fuseBoxPath,

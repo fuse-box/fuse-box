@@ -24,6 +24,7 @@ export interface IModuleCacheBasics {
 }
 
 export interface IModuleCache {
+  meta: { [key: string]: any };
   mtime: number;
   absPath: string;
   extension: string;
@@ -315,6 +316,9 @@ export class Cache {
         obj.weakReferences[absPath] = refStat.mtime.getTime();
       }
     }
+    if (module.meta) {
+      obj.meta = module.meta;
+    }
     // if (module.breakDependantsCache) {
     //   obj.breakDependantsCache = true;
     //   obj.dependants = module.moduleDependants.map(item => item.props.absPath);
@@ -342,6 +346,7 @@ export class Cache {
       module.props.extension = cached.extension;
       module.props.fuseBoxPath = cached.fuseBoxPath;
       module.fastAnalysis = cached.fastAnalysis;
+      module.meta = cached.meta;
       //module.weakReferences = cached.weakReferences;
 
       if (cached.weakReferences) {

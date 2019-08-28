@@ -12,7 +12,7 @@ class Context {
       webIndex: {
         template: 'src/index.html',
       },
-      cache: false,
+      cache: true,
       devServer: true,
     });
   }

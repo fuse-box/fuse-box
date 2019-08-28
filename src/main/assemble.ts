@@ -83,6 +83,7 @@ function resolveStatement(
   const collection = props.ctx.assembleContext.collection;
   const config = props.ctx.config;
   const log = props.ctx.log;
+
   const resolved = resolveModule({
     isDev: !props.ctx.config.production,
     filePath: props.module.props.absPath,
@@ -101,10 +102,15 @@ function resolveStatement(
     if (log.props.ignoreStatementErrors && log.props.ignoreStatementErrors.includes(opts.statement)) {
       return;
     }
-    log.warn('Cannot resolve $statement in $file', {
-      statement: opts.statement,
-      file: props.module.props.absPath,
-    });
+    log.warn(
+      resolved.error
+        ? resolved.error + ' \n    <dim>Import statement: "$statement" in $file</dim>'
+        : 'Cannot resolve $statement in $file',
+      {
+        statement: opts.statement,
+        file: props.module.props.absPath,
+      },
+    );
     return;
   }
 
@@ -122,6 +128,7 @@ function resolveStatement(
       package: registerPackage({ assemble: props.assemble, pkg: props.pkg, ctx: props.ctx, resolved: resolved }),
     };
   }
+
   if (collection.modules.has(resolved.absPath)) {
     return {
       forcedStatement: resolved.forcedStatement,
@@ -138,6 +145,10 @@ function resolveStatement(
     },
     props.pkg,
   );
+  if (resolved.monorepoModulesPath) {
+    _module.meta = _module.meta || {};
+    _module.meta.monorepoModulesPath = resolved.monorepoModulesPath;
+  }
 
   collection.modules.set(resolved.absPath, _module);
   return { processed: false, module: _module, forcedStatement: resolved.forcedStatement };
@@ -166,6 +177,15 @@ export function processModule(props: IDefaultParseProps) {
           _module.fastAnalysis.imports.push({ type: ImportType.RAW_IMPORT, statement: dep });
         }
       }
+    }
+  }
+
+  // local paths (in case of a monorepo wich is toggle by local:main in package.json)
+  // might have node_modules. That should solved the problem during development
+  // this path is added to the context to help FuseBox find modules
+  if (_module.meta && _module.meta.monorepoModulesPath) {
+    if (props.ctx.config.modules.indexOf(_module.meta.monorepoModulesPath) === -1) {
+      props.ctx.config.modules.push(_module.meta.monorepoModulesPath);
     }
   }
 
