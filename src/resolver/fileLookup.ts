@@ -93,13 +93,13 @@ export function fileLookup(props: ILookupProps): ILookupResult {
       let monorepoModulesPaths;
 
       // only in case of a directory
-      const packageJSON = path.join(resolved, 'package.json');
-      if (fs.existsSync(packageJSON)) {
-        const useLocalMain = props.isDev && !/node_modules/.test(packageJSON);
-        const packageJSONObject = require(packageJSON);
-        const entry = getFolderEntryPointFromPackageJSON({ json: packageJSONObject, useLocalField: useLocalMain });
+      const packageJSONPath = path.join(resolved, 'package.json');
+      if (fs.existsSync(packageJSONPath)) {
+        const useLocalMain = !/node_modules/.test(packageJSONPath);
+        const packageJSON = require(packageJSONPath);
+        const entry = getFolderEntryPointFromPackageJSON({ json: packageJSON, useLocalField: useLocalMain });
 
-        if (useLocalMain && packageJSONObject['local:main']) {
+        if (useLocalMain && packageJSON['local:main']) {
           const _monoModules = path.resolve(resolved, 'node_modules');
           if (fs.existsSync(_monoModules)) {
             monorepoModulesPaths = _monoModules;
