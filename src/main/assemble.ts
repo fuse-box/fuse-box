@@ -103,7 +103,7 @@ function resolveStatement(
       return;
     }
     log.warn(
-      resolved.error
+      resolved && resolved.error
         ? resolved.error + ' \n    <dim>Import statement: "$statement" in $file</dim>'
         : 'Cannot resolve $statement in $file',
       {
