@@ -1,0 +1,3 @@
+import show from '..';
+
+show();

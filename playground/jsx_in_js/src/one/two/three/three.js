@@ -1,4 +1,4 @@
-import { one } from '../../';
+import { one } from '../..';
 
 export function three() {
   one();

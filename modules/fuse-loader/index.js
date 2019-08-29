@@ -210,9 +210,15 @@ function $getRef(name, o) {
     // try index.js
     validPath = $pathJoin(filePath, '/', 'index.js');
     file = pkg.f[validPath];
+
     if (!file && filePath === '.') {
-      validPath = (pkg.s && pkg.s.entry) || 'index.js';
-      file = pkg.f[validPath];
+      // assuming we are at the root of it all
+      file = pkg.f['index.js'];
+      if (!file) file = pkg.f['index.jsx'];
+      if (!file) file = pkg.f['index.mjs'];
+      if (!file && pkg.s && pkg.s.entry) {
+        file = pkg.f[pkg.s.entry];
+      }
     }
     // last resort try adding .js extension
     // Some libraries have a weired convention of naming file lile "foo.bar""
