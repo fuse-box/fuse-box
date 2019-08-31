@@ -3,6 +3,7 @@ import { ProductionModule } from '../ProductionModule';
 import * as ts from 'typescript';
 import { fixModuleSourceMap } from '../../sourcemaps/helpers';
 import { moduleTransformer } from '../../module-transformer/production';
+import { tsTransformModule } from '../../transform/tsTransformModule';
 
 export interface ITranspileStageProps {
   flow: IProductionFlow;
@@ -33,17 +34,14 @@ function transpileProductionModule(props: ITranspileStageProps, prodModule: Prod
     compilerOptions.inlineSources = true;
   }
 
-  const customTransformers = ctx.customTransformers || {};
-
-  const result = ts.transpileModule(text, {
-    fileName: prodModule.module.props.absPath,
-    compilerOptions: compilerOptions,
-    transformers: {
-      before: customTransformers.before || [],
-      after: [].concat(moduleTransformer(props, prodModule), customTransformers.after || []),
-      afterDeclarations: customTransformers.afterDeclarations || [],
-    },
-  });
+  const result = tsTransformModule(
+    text,
+    prodModule.module.props.absPath,
+    compilerOptions,
+    [],
+    [moduleTransformer(props, prodModule)],
+    ctx.customTransformers,
+  );
 
   prodModule.transpiledSourceMap = requireSourceMaps
     ? fixModuleSourceMap(prodModule.module, result.sourceMapText)

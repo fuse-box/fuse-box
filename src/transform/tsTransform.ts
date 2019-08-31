@@ -1,6 +1,7 @@
 import * as ts from 'typescript';
 import { IStatementReplaceableCollection, IWebWorkerItem } from '../analysis/fastAnalysis';
 import { moduleTransformer } from '../module-transformer/development';
+import { tsTransformModule } from './tsTransformModule';
 
 export interface ITypescriptTransformProps extends ts.TranspileOptions {
   input: string;
@@ -14,18 +15,5 @@ export function tsTransform(props: ITypescriptTransformProps): ts.TranspileOutpu
   if (props.replacements || props.webWorkers) {
     after.push(moduleTransformer(props));
   }
-
-  if (!props.transformers) {
-    props.transformers = {};
-  }
-
-  return ts.transpileModule(props.input, {
-    fileName: props.fileName,
-    compilerOptions: props.compilerOptions,
-    transformers: {
-      before: props.transformers.before || [],
-      after: [].concat(after, props.transformers.after || []),
-      afterDeclarations: props.transformers.afterDeclarations || [],
-    },
-  });
+  return tsTransformModule(props.input, props.fileName, props.compilerOptions, [], after, props.transformers);
 }
