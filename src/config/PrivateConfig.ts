@@ -17,7 +17,6 @@ import { IPublicConfig } from './IPublicConfig';
 import { IResourceConfig } from './IResourceConfig';
 import { IStyleSheetProps } from './IStylesheetProps';
 import { IWebWorkerConfig } from './IWebWorkerConfig';
-import { CustomTransformers } from 'typescript';
 
 export interface IHMRExternalProps {
   reloadEntryOnStylesheet?: boolean;
@@ -66,7 +65,6 @@ export class PrivateConfig {
   env?: { [key: string]: string };
   cache?: ICacheProps;
   tsConfig?: string | IRawCompilerOptions;
-  customTransformers?: CustomTransformers;
   entries?: Array<string>;
   allowSyntheticDefaultImports?: boolean;
   webIndex?: IWebIndexConfig;

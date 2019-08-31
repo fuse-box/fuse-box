@@ -48,7 +48,6 @@ export class Context {
     this.assembleContext = assembleContext(this);
     this.ict = createInterceptor();
     this.webWorkers = {};
-    this.customTransformers = config.customTransformers;
 
     this.webIndex = createWebIndex(this);
     attachEssentials(this);

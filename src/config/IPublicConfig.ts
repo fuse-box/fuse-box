@@ -12,7 +12,6 @@ import { IStyleSheetProps } from './IStylesheetProps';
 import { IWebWorkerConfig } from './IWebWorkerConfig';
 import { ICacheProps, IHMRExternalProps, ITarget } from './PrivateConfig';
 import { IPluginLinkOptions } from '../plugins/core/plugin_link';
-import { CustomTransformers } from 'typescript';
 
 export interface IPublicConfig {
   root?: string;
@@ -51,7 +50,6 @@ export interface IPublicConfig {
   stylesheet?: IStyleSheetProps;
   cache?: boolean | ICacheProps;
   tsConfig?: string | IRawCompilerOptions;
-  customTransformers?: CustomTransformers;
   entry?: string | Array<string>;
   allowSyntheticDefaultImports?: boolean;
   webIndex?: IWebIndexConfig | boolean;
