@@ -15,6 +15,10 @@ export function tsTransform(props: ITypescriptTransformProps): ts.TranspileOutpu
     after.push(moduleTransformer(props));
   }
 
+  if (!props.transformers) {
+    props.transformers = {};
+  }
+
   return ts.transpileModule(props.input, {
     fileName: props.fileName,
     compilerOptions: props.compilerOptions,
