@@ -36,14 +36,6 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
     }
   }
 
-  config.customTransformers = {
-    // make sure the data structure is basically correct (iterable for merges)
-    after: [],
-    before: [],
-    afterDeclarations: [],
-    ...props.customTransformers
-  };
-
   if (props.target) {
     config.target = props.target;
   }
