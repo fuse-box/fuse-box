@@ -2,7 +2,8 @@ import { createApplicationPackage } from '../core/application';
 import { Context } from '../core/Context';
 import { createModule, Module } from '../core/Module';
 import { createPackage, Package } from '../core/Package';
-import { ImportType, IResolver, resolveModule } from '../resolver/resolver';
+import { ImportType, IResolver, resolveModule, ITypescriptPathsConfig } from '../resolver/resolver';
+import * as path from 'path';
 
 interface IDefaultParseProps {
   assemble?: boolean;
@@ -84,19 +85,32 @@ function resolveStatement(
   const config = props.ctx.config;
   const log = props.ctx.log;
 
+  let typescriptPaths = props.pkg.isDefaultPackage && props.ctx.tsConfig.typescriptPaths;
+  // let's check for custom tsConfig typescript paths here.
+  if (props.ctx.tsConfigAtPaths && props.pkg.isDefaultPackage) {
+    // fine a path that's relative to any tsConfig
+    const typescriptPathsOverride = props.ctx.tsConfigAtPaths.find(item => {
+      const relativePath = path.relative(item.absPath, props.module.props.absPath);
+      return !relativePath.startsWith('..');
+    });
+    if (typescriptPathsOverride) typescriptPaths = typescriptPathsOverride.tsConfig.typescriptPaths;
+  }
+
   const resolved = resolveModule({
     isDev: !props.ctx.config.production,
     filePath: props.module.props.absPath,
     homeDir: config.homeDir,
     alias: config.alias,
     javascriptFirst: props.module.isJavascriptModule(),
-    typescriptPaths: props.pkg.isDefaultPackage && props.ctx.tsConfig.typescriptPaths,
+    typescriptPaths: typescriptPaths,
     packageMeta: !props.pkg.isDefaultPackage && props.pkg.props.meta,
     buildTarget: config.target,
     modules: config.modules,
     importType: opts.importType,
     target: opts.statement,
   });
+
+  props.ctx.assembleContext;
 
   if (!resolved || (resolved && resolved.error)) {
     if (log.props.ignoreStatementErrors && log.props.ignoreStatementErrors.includes(opts.statement)) {
@@ -150,6 +164,12 @@ function resolveStatement(
     _module.meta.monorepoModulesPath = resolved.monorepoModulesPath;
   }
 
+  if (resolved.tsConfigAtPath) {
+    _module.meta = _module.meta || {};
+    _module.meta.tsConfigAtPath = resolved.tsConfigAtPath;
+    // adding ts config to the global context to further resolution can be handled accordingly
+    props.ctx.addTsConfigAtPath(resolved.tsConfigAtPath);
+  }
   collection.modules.set(resolved.absPath, _module);
   return { processed: false, module: _module, forcedStatement: resolved.forcedStatement };
 }

@@ -19,6 +19,7 @@ import { ContextTaskManager, createContextTaskManager } from './ContextTaskManag
 import { Package } from './Package';
 import { createWeakModuleReferences, WeakModuleReferences } from './WeakModuleReferences';
 import { createWriter, IWriterActions } from './writer';
+import { TsConfigAtPath } from '../resolver/fileLookup';
 import { CustomTransformers } from 'typescript';
 
 export class Context {
@@ -36,9 +37,8 @@ export class Context {
   public devServer?: IDevServerActions;
   public weakReferences: WeakModuleReferences;
   public webWorkers: { [key: string]: WebWorkerProcess };
-
   public productionApiWrapper: ProductionAPIWrapper;
-
+  public tsConfigAtPaths?: Array<TsConfigAtPath>;
   private _uniqueEntryHash: string;
 
   constructor(public config: PrivateConfig) {
@@ -53,6 +53,11 @@ export class Context {
     attachEssentials(this);
 
     this.taskManager = createContextTaskManager(this);
+  }
+
+  public addTsConfigAtPath(path: TsConfigAtPath) {
+    if (!this.tsConfigAtPaths) this.tsConfigAtPaths = [];
+    this.tsConfigAtPaths.push(path);
   }
 
   public getUniqueEntryHash() {

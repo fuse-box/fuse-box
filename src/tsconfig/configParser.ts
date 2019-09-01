@@ -72,7 +72,7 @@ export function initTypescriptConfig(
     }
   }
   let baseUrlSet = false;
-  if(userOptions && userOptions.baseUrl){
+  if (userOptions && userOptions.baseUrl) {
     baseUrlSet = true;
   }
   if (!basePath) {
@@ -93,10 +93,9 @@ export function initTypescriptConfig(
 
       // we have this to fix basepath for paths
       // but we do not use this if basepath is set in main config
-      if(!baseUrlSet){
+      if (!baseUrlSet) {
         basePath = path.dirname(targetExtendedFile);
       }
-
     } catch (e) {
       props.ctx.log.warn(`Unable to extend tsconfig with ${extendedFile}. Make sure the file exists and readable`);
     }
