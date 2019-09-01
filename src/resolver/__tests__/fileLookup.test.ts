@@ -104,10 +104,9 @@ describe('lookup test', () => {
     expect(response.extension).toBe('.js');
   });
 
-  it('Should ignore local:main', () => {
+  it('Should not ignore local:main', () => {
     const response = fileLookup({ fileDir: cases, target: 'local_main/some' });
-
-    expect(response.absPath).toMatchFilePath('some/index2.ts$');
+    expect(response.absPath).toMatchFilePath('some/index3.ts$');
   });
 
   it('Should read local:main', () => {
