@@ -65,6 +65,7 @@ export function resolveCSSResource(target, props: ICSSResolveURLProps): IURLRepl
   if (!path.isAbsolute(target)) {
     target = path.join(root, target);
   }
+
   if (fileExists(target)) {
     let fileGroup: string;
 
@@ -124,20 +125,22 @@ export function cssResolveURL(props: ICSSResolveURLProps): ICSSResolveURLResult 
     if (typeof value === 'undefined') {
       return match;
     }
+    // presering  svg filters, http links and data:image (base64) AND sass variables
+    if (/(^(#|data:|http)|\$)/.test(value)) {
+      // return those as is
+      return match;
+    }
     const result = resolveCSSResource(value, props);
     if (result) {
       replaced.push(result);
       return `url("${result.publicPath}")`;
-    } else {
-      if (!/(\$|data:image)/.test(value)) {
-        props.ctx.log.warn('Failed to resolve $value in $file:$line', {
-          value: value,
-          file: props.filePath,
-          line: mapErrorLine(contents, offset),
-        });
-      }
     }
-    return `url("${value}")`;
+    props.ctx.log.warn('Failed to resolve $value in $file:$line', {
+      value: value,
+      file: props.filePath,
+      line: mapErrorLine(contents, offset),
+    });
+    return match;
   });
   return { replaced, contents };
 }
