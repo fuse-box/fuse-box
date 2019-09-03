@@ -9,7 +9,7 @@ import { handleBrowserField } from './browserField';
 
 const PROJECT_NODE_MODULES = path.join(appRoot.path, 'node_modules');
 
-const NODE_MODULE_REGEX = /^(([^\.][\.a-z0-9@\-_]+)(\/)?([_a-z0-9.@-]+)?(\/)?(.*))$/i;
+const NODE_MODULE_REGEX = /^(([^\.][\.a-z0-9@\-_]*)(\/)?([_a-z0-9.@-]+)?(\/)?(.*))$/i;
 
 export interface IModuleParsed {
   name: string;

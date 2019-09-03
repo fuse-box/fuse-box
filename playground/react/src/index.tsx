@@ -1,9 +1,9 @@
-import { Layout, Button } from 'antd';
 import * as React from 'react';
 import { Component } from 'react';
-import 'antd/dist/antd.css';
+
 import * as ReactDOM from 'react-dom';
 //import './index.scss';
+
 class App extends Component {
   render() {
     const snapshot = { isDraggingOver: false };
@@ -11,11 +11,7 @@ class App extends Component {
       return {};
     }
     console.log('render');
-    return (
-      <Layout>
-        <Button type="primary">Primary</Button>
-      </Layout>
-    );
+    return <div>12312</div>;
   }
 }
 

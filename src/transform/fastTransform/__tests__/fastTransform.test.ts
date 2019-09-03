@@ -6,20 +6,20 @@ describe('Fast transform', () => {
     it('Should transform a constant', () => {
       const result = fastTransform({ input: `export const foo = 1` });
       expect(result.code).toContain('const foo = 1;');
-      expect(result.code).toContain('module.exports.foo = foo;');
+      expect(result.code).toContain('exports.foo = foo;');
     });
 
     it("Should transform 'let'", () => {
       const result = fastTransform({ input: `export let foo = 1` });
       expect(result.code).toContain('let foo = 1;');
-      expect(result.code).toContain('module.exports.foo = foo;');
+      expect(result.code).toContain('exports.foo = foo;');
     });
 
     it('Should transform 2 constants in one', () => {
       const result = fastTransform({ input: `export const foo = 1, bar = 3` });
       expect(result.code).toContain('const foo = 1, bar = 3');
-      expect(result.code).toContain('module.exports.foo = foo;');
-      expect(result.code).toContain('module.exports.bar = bar;');
+      expect(result.code).toContain('exports.foo = foo;');
+      expect(result.code).toContain('exports.bar = bar;');
     });
 
     it('Should transform 3 constants and keep the order', () => {
@@ -33,27 +33,27 @@ describe('Fast transform', () => {
 
       expect(result.code).toMatchInlineSnapshot(`
 "const foo = 1, bar = 3;
-module.exports.bar = bar;
-module.exports.foo = foo;
+exports.bar = bar;
+exports.foo = foo;
 console.log(1);
 const moo = 1;
-module.exports.moo = moo;
+exports.moo = moo;
 "
 `);
     });
 
     it('Should 2 variables with the same name', () => {
       const result = fastTransform({ input: `export {name1, name2}` });
-      expect(result.code).toContain('module.exports.name1 = name1;');
-      expect(result.code).toContain('module.exports.name2 = name2;');
+      expect(result.code).toContain('exports.name1 = name1;');
+      expect(result.code).toContain('exports.name2 = name2;');
     });
 
     it('Should 2 variables with aliases', () => {
       const result = fastTransform({ input: `export { name1 as foo, name2 as bar };` });
       expect(result).toMatchInlineSnapshot(`
 Object {
-  "code": "module.exports.foo = name1;
-module.exports.bar = name2;
+  "code": "exports.foo = name1;
+exports.bar = name2;
 ",
   "sourceMap": undefined,
 }
@@ -71,13 +71,13 @@ module.exports.bar = name2;
 
       expect(result.code).toMatchInlineSnapshot(`
 "function bar() {}
-module.exports.bar = bar;
+exports.bar = bar;
 console.log(1);
 function foo() {}
-module.exports.foo = foo;
+exports.foo = foo;
 "
 `);
-      //expect(result.code).toContain('module.exports.bar = bar;');
+      //expect(result.code).toContain('exports.bar = bar;');
       //expect(result.code).toContain('function bar() {}');
     });
 
@@ -85,33 +85,33 @@ module.exports.foo = foo;
       const result = fastTransform({ input: `export default function bar(){}` });
 
       expect(result.code).toContain('function bar() {}');
-      expect(result.code).toContain('module.exports.default = bar;');
+      expect(result.code).toContain('exports.default = bar;');
     });
 
     it('Should export a class', () => {
       const result = fastTransform({ input: `export class Bar{}` });
       expect(result.code).toContain('class Bar {}');
-      expect(result.code).toContain('module.exports.Bar = Bar;');
+      expect(result.code).toContain('exports.Bar = Bar;');
     });
 
     it('Should export a default class', () => {
       const result = fastTransform({ input: `export default class Bar{}` });
       expect(result.code).toMatchInlineSnapshot(`
 "class Bar {}
-module.exports.default = Bar;
+exports.default = Bar;
 "
 `);
     });
 
     it('Should export default expression', () => {
       const result = fastTransform({ input: `export default 1` });
-      expect(result.code).toContain('module.exports.default = 1');
+      expect(result.code).toContain('exports.default = 1');
     });
 
     it('Should export default expression 2', () => {
       const result = fastTransform({ input: `export default {}` });
       expect(result.code).toMatchInlineSnapshot(`
-"module.exports.default = {};
+"exports.default = {};
 "
 `);
     });
@@ -119,7 +119,7 @@ module.exports.default = Bar;
     it('Should export default expression 3', () => {
       const result = fastTransform({ input: `export default /\s+/` });
       expect(result.code).toMatchInlineSnapshot(`
-"module.exports.default = /s+/;
+"exports.default = /s+/;
 "
 `);
     });
@@ -127,7 +127,7 @@ module.exports.default = Bar;
     it('Should export value as default', () => {
       const result = fastTransform({ input: `export { name as default };` });
       expect(result.code).toMatchInlineSnapshot(`
-"module.exports.default = name;
+"exports.default = name;
 "
 `);
     });
@@ -138,7 +138,7 @@ module.exports.default = Bar;
       const result = fastTransform({ input: `export { name  } from "./foo"` });
       expect(result.code).toMatchInlineSnapshot(`
 "const __req1__ = require(\\"./foo\\");
-module.exports.name = __req1__.name;
+exports.name = __req1__.name;
 "
 `);
     });
@@ -147,7 +147,7 @@ module.exports.name = __req1__.name;
       const result = fastTransform({ input: `export { name as foo  } from "./foo"` });
       expect(result.code).toMatchInlineSnapshot(`
 "const __req1__ = require(\\"./foo\\");
-module.exports.foo = __req1__.name;
+exports.foo = __req1__.name;
 "
 `);
     });
@@ -156,7 +156,7 @@ module.exports.foo = __req1__.name;
       const result = fastTransform({ input: `export { default } from "./foo"` });
       expect(result.code).toMatchInlineSnapshot(`
 "const __req1__ = require(\\"./foo\\");
-module.exports.default = __req1__.default;
+exports.default = __req1__.default;
 "
 `);
     });
@@ -165,8 +165,8 @@ module.exports.default = __req1__.default;
       const result = fastTransform({ input: `export { a, b} from "./foo"` });
       expect(result.code).toMatchInlineSnapshot(`
 "const __req1__ = require(\\"./foo\\");
-module.exports.a = __req1__.a;
-module.exports.b = __req1__.b;
+exports.a = __req1__.a;
+exports.b = __req1__.b;
 "
 `);
     });
@@ -174,7 +174,7 @@ module.exports.b = __req1__.b;
     it('Should export all from source', () => {
       const result = fastTransform({ input: `export * from "a"` });
       expect(result.code).toMatchInlineSnapshot(`
-"Object.assign(module.exports, require(\\"a\\"));
+"Object.assign(exports, require(\\"a\\"));
 "
 `);
     });
@@ -299,7 +299,7 @@ __req1__.ng.module();
     export { core };
       `,
       });
-      expect(result.code).toContain('module.exports.core = __req1__');
+      expect(result.code).toContain('exports.core = __req1__');
     });
 
     it('should export all correctly', () => {
@@ -309,7 +309,7 @@ __req1__.ng.module();
         export { colors };
       `,
       });
-      expect(result.code).toContain('module.exports.colors = __req1__;');
+      expect(result.code).toContain('exports.colors = __req1__;');
     });
     it('should import and export 2', () => {
       const result = fastTransform({
@@ -318,7 +318,7 @@ __req1__.ng.module();
         export { core  };
       `,
       });
-      expect(result.code).toContain('module.exports.core = __req1__.default');
+      expect(result.code).toContain('exports.core = __req1__.default');
     });
 
     it('should sync with exports ', () => {
@@ -334,7 +334,7 @@ __req1__.ng.module();
 "const __req1__ = require(\\"../Observable\\");
 const __req2__ = require(\\"../util/noop\\");
 var NEVER = new __req1__.Observable(__req2__.noop);
-module.exports.NEVER = NEVER;
+exports.NEVER = NEVER;
 "
 `);
     });
@@ -516,7 +516,7 @@ var mixin = function (func) {
       });
       expect(result.code).toMatchInlineSnapshot(`
 "const __req1__ = require(\\"./wrapperLodash.js\\");
-module.exports.default = __req1__.default;
+exports.default = __req1__.default;
 "
 `);
     });
@@ -554,7 +554,7 @@ console.log(__req1__.default);
       });
       expect(result.code).toMatchInlineSnapshot(`
 "const add = function () {};
-module.exports.default = add;
+exports.default = add;
 "
 `);
     });
@@ -568,7 +568,7 @@ module.exports.default = add;
       });
       expect(result.code).toMatchInlineSnapshot(`
 "function toString(value) {}
-module.exports.default = toString;
+exports.default = toString;
 "
 `);
     });
@@ -586,7 +586,7 @@ module.exports.default = toString;
       expect(result.code).toMatchInlineSnapshot(`
 "const __req1__ = require(\\"./zipWith.js\\");
 const foo = 1;
-module.exports.default = {
+exports.default = {
   zipWith: __req1__.default,
   foo
 };

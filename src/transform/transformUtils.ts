@@ -179,22 +179,14 @@ export function createModuleExports(exportsVariableName, property) {
       left: {
         type: 'MemberExpression',
         object: {
-          type: 'MemberExpression',
-          object: {
-            type: 'Identifier',
-            name: 'module',
-          },
-          property: {
-            type: 'Identifier',
-            name: 'exports',
-          },
-          computed: false,
+          type: 'Identifier',
+          name: 'exports',
         },
+        computed: false,
         property: {
           type: 'Identifier',
           name: exportsVariableName,
         },
-        computed: false,
       },
       right: property,
     },
@@ -220,16 +212,8 @@ export function createModuleExportsAssign(fromSource: string) {
       },
       arguments: [
         {
-          type: 'MemberExpression',
-          object: {
-            type: 'Identifier',
-            name: 'module',
-          },
-          computed: false,
-          property: {
-            type: 'Identifier',
-            name: 'exports',
-          },
+          type: 'Identifier',
+          name: 'exports',
         },
         {
           type: 'CallExpression',

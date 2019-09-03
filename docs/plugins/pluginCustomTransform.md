@@ -19,9 +19,8 @@ import { fusebox, pluginJSON } from 'fuse-box';
 fusebox({
   plugins: [
     pluginCustomTransform({
-      before: [someCustomBeforeTransformer()],
-      after: [someCustomAfterTransformer()],
-      afterDeclarations: [someCustomAfterDeclarationTransformer()],
+      before: [customTransformer('before')],
+      after: [customTransformer('after')],
     }),
   ],
 });
@@ -32,10 +31,10 @@ Each transformer must fulfill the `TransformerFactory<T>` interface:
 ```ts
 import * as ts from 'typescript';
 
-export function someCustomTransformer<T extends ts.Node>(): ts.TransformerFactory<T> {
+export function customTransformer<T extends ts.Node>(type: string): ts.TransformerFactory<T> {
   return context => {
     console.log();
-    console.log('===> do some custom AST node transformation here');
+    console.log(`===> do some custom ${type} AST node transformation here`);
     console.log();
 
     const visit: ts.Visitor = node => {
