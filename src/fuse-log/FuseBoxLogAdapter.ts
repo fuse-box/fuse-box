@@ -1,27 +1,35 @@
-import { FuseLog } from './fuseLog';
-
+import * as prettyTime from 'pretty-time';
 import * as readline from 'readline';
 import { onExit } from '../utils/exit';
-export interface IFuseBoxLogProps {
-  level?: 'succinct' | 'verbose' | 'disabled';
-}
+import { FuseLog } from './fuseLog';
+import { IFuseLoggerProps } from '../config/IFuseLoggerProps';
 
 function conj(word, amount?: number) {
   return amount === 1 ? `1 ${word}` : `${amount} ${word}s`;
 }
+
 export class FuseBoxLogAdapter extends FuseLog {
   private _warnings: Array<string>;
   private _errors: Array<string>;
+  private startTime;
   constructor(public props: IFuseBoxLogProps) {
     super();
     if (!this.props.level) {
       this.props.level = 'succinct';
+    }
+    if (process.argv.includes('--verbose')) {
+      this.props.level = 'verbose';
     }
     this._warnings = [];
     this._errors = [];
     onExit('logging', () => {
       console.log('');
     });
+    this.startTimeMeasure();
+  }
+
+  startTimeMeasure() {
+    this.startTime = process.hrtime();
   }
 
   clearLine() {
@@ -67,6 +75,13 @@ export class FuseBoxLogAdapter extends FuseLog {
     }
   }
 
+  css(group: string, message: string) {
+    this.log('info', this.getString(`${this.indent}<bold><yellow>${group}</yellow></bold> ${message}`));
+  }
+  processing(group: string, message: string) {
+    this.log('info', this.getString(`${this.indent}<bold><green>${group}</green></bold> ${message}`));
+  }
+
   heading(message: string, vars?) {
     const str = this.getString(this.indent + message, vars);
     this.log('heading', str);
@@ -91,27 +106,32 @@ export class FuseBoxLogAdapter extends FuseLog {
     for (const item of this._errors) {
       this.log('bottom_message', item);
     }
+    if (hasErrors || hasWarnings) {
+      this.echo('\n');
+    }
+    const time = prettyTime(process.hrtime(this.startTime), 'ms');
 
     const genericError = '<white><bold><bgRed> ERROR </bgRed></bold></white>';
+    const timeFormat = `in <magenta>$time</magenta>`;
     if (hasErrors && hasWarnings) {
       this.log(
         'bottom_message',
         this.getString(
           this.indent +
-            `@error ${genericError} <red><bold>Completed with $err and <yellow>$warn</yellow> in $time</red></bold>`,
+            `${genericError} <red><bold>Completed with $err and <yellow>$warn</yellow> ${timeFormat}</red></bold>`,
           {
             err: conj('error', this._errors.length),
             warn: conj('warning', this._warnings.length),
-            time: `1s`,
+            time: time,
           },
         ),
       );
     } else if (hasErrors) {
       this.log(
         'bottom_message',
-        this.getString(this.indent + `@error ${genericError} <red><bold>Completed with $err in $time</red></bold>`, {
+        this.getString(this.indent + `${genericError} <red><bold>Completed with $err ${timeFormat}</red></bold>`, {
           err: conj('error', this._errors.length),
-          time: `1s`,
+          time: time,
         }),
       );
     } else if (hasWarnings) {
@@ -119,25 +139,28 @@ export class FuseBoxLogAdapter extends FuseLog {
         'bottom_message',
         this.getString(
           this.indent +
-            '@warning <white><bold><bgYellow> WARNING </bgYellow></bold></white>  <yellow><bold>Completed with $err in $time</yellow></bold>',
+            `<black><bold><bgYellow> WARNING </bgYellow></bold></black>  <yellow><bold>Completed with $warn ${timeFormat}</yellow></bold>`,
           {
             warn: conj('warning', this._warnings.length),
-            time: `1s`,
+            time: time,
           },
         ),
       );
     } else {
       this.log(
         'bottom_message',
-        this.getString(this.indent + `@success <green><bold>Completed without build issues in $time</bold></green>`, {
-          time: `1s`,
-        }),
+        this.getString(
+          this.indent + `@success <green><bold>Completed without build issues ${timeFormat}</bold></green>`,
+          {
+            time: time,
+          },
+        ),
       );
     }
   }
 }
 
-export function createLog(props: IFuseBoxLogProps): FuseBoxLogAdapter {
+export function createFuseLogger(props: IFuseLoggerProps): FuseBoxLogAdapter {
   return new FuseBoxLogAdapter(props);
 }
 
@@ -179,32 +202,42 @@ async function generateStream(fn: (data: string) => void) {
   }
 }
 
-const log = createLog({});
-log.fuseHeader({ version: '4.0.0', mode: 'development', entry: __filename });
+//const log = createLog({});
+//log.fuseHeader({ version: '4.0.0', mode: 'development', entry: __filename });
 
-async function foo() {
-  await generateStream(data => {
-    log.info('assemble', data);
-    if (getRandomInt(1, 20) === 10) {
-      //log.warn(getWord(2, 10));
-    }
-    if (getRandomInt(1, 20) === 10) {
-      //log.error(getWord(2, 10));
-    }
-  });
+// async function foo() {
+//   await generateStream(data => {
+//     log.info('assemble', data);
+//     if (getRandomInt(1, 20) === 10) {
+//       log.warn(getWord(2, 10));
+//     }
+//     if (getRandomInt(1, 20) === 10) {
+//       log.error(getWord(2, 10));
+//     }
 
-  await generateStream(data => {
-    log.info('transpile', data);
-    if (getRandomInt(1, 20) === 10) {
-      //log.warn(getWord(2, 10));
-    }
-  });
-  //log.error(getWord(2, 10));
+//     if (getRandomInt(1, 5) === 3) {
+//       log.css('SASS', getWord(2, 10));
+//     }
+//     if (getRandomInt(1, 5) === 3) {
+//       log.css('LESS', getWord(2, 10));
+//     }
+//     if (getRandomInt(1, 5) === 3) {
+//       log.processing('Typescript', getWord(2, 10));
+//     }
+//   });
 
-  log.fuseFinalise();
-  //log.echo('\n');
-  // log.meta('development', 'Server is running on port 4444');
-  // log.meta('development', 'Watching for changes');
-}
+//   await generateStream(data => {
+//     log.info('transpile', data);
+//     if (getRandomInt(1, 20) === 10) {
+//       //log.warn(getWord(2, 10));
+//     }
+//   });
+//   //log.error(getWord(2, 10));
 
-foo();
+//   log.fuseFinalise();
+//   //log.echo('\n');
+//   // log.meta('development', 'Server is running on port 4444');
+//   // log.meta('development', 'Watching for changes');
+// }
+
+// foo();

@@ -50,7 +50,6 @@ export function initTypescriptConfig(
   } else customTsConfigPath = props.tsConfig;
   let extendedFile;
   if (typeof customTsConfigPath === 'string') {
-    props.ctx && props.ctx.log.progressFormat('tsconfig', customTsConfigPath);
     const data: IRawTypescriptConfig = ts.readConfigFile(customTsConfigPath, ts.sys.readFile);
     basePath = path.dirname(customTsConfigPath);
     userOptions = data.config.compilerOptions;
@@ -62,7 +61,6 @@ export function initTypescriptConfig(
     const fileName = pathJoin(props.homeDir, props.entries[0]);
     const result = resolveTSConfig({ root: root, fileName: fileName });
     if (result.filePath) {
-      props.ctx && props.ctx.log.progressFormat('tsconfig', result.filePath);
       basePath = path.dirname(result.filePath);
       const data: IRawTypescriptConfig = ts.readConfigFile(result.filePath, ts.sys.readFile);
       userOptions = data.config.compilerOptions;

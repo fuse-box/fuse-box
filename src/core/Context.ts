@@ -1,3 +1,4 @@
+import { CustomTransformers } from 'typescript';
 import { Cache, createCache } from '../cache/cache';
 import { createConfig } from '../config/config';
 import { IProductionProps } from '../config/IProductionProps';
@@ -5,11 +6,12 @@ import { IPublicConfig } from '../config/IPublicConfig';
 import { PrivateConfig } from '../config/PrivateConfig';
 import { createDevServer, IDevServerActions } from '../dev-server/devServer';
 import { env } from '../env';
+import { createFuseLogger, FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
 import { attachEssentials } from '../integrity/setup';
 import { createInterceptor, MainInterceptor } from '../interceptor/interceptor';
 import { TypescriptConfig } from '../interfaces/TypescriptInterfaces';
-import { getLogger, ILogger } from '../logging/logging';
 import { ProductionAPIWrapper } from '../production/api/ProductionApiWrapper';
+import { TsConfigAtPath } from '../resolver/fileLookup';
 import { initTypescriptConfig } from '../tsconfig/configParser';
 import { ensureUserPath, fastHash } from '../utils/utils';
 import { createWebIndex, IWebIndexInterface } from '../web-index/webIndex';
@@ -19,8 +21,6 @@ import { ContextTaskManager, createContextTaskManager } from './ContextTaskManag
 import { Package } from './Package';
 import { createWeakModuleReferences, WeakModuleReferences } from './WeakModuleReferences';
 import { createWriter, IWriterActions } from './writer';
-import { TsConfigAtPath } from '../resolver/fileLookup';
-import { CustomTransformers } from 'typescript';
 
 export class Context {
   public assembleContext: IAssembleContext;
@@ -29,7 +29,7 @@ export class Context {
   public ict: MainInterceptor;
   public tsConfig: TypescriptConfig;
   public customTransformers: CustomTransformers;
-  public log: ILogger;
+  public log: FuseBoxLogAdapter;
   public webIndex: IWebIndexInterface;
   public taskManager: ContextTaskManager;
   public writer: IWriterActions;
@@ -43,7 +43,7 @@ export class Context {
 
   constructor(public config: PrivateConfig) {
     this.config.ctx = this;
-    this.log = getLogger(config.logging);
+    this.log = createFuseLogger(this.config.logging);
     this.weakReferences = createWeakModuleReferences(this);
     this.assembleContext = assembleContext(this);
     this.ict = createInterceptor();

@@ -1,7 +1,7 @@
-import * as prettyTime from 'pretty-time';
 import { IBundleWriteResponse } from '../bundle/Bundle';
 import { createDevBundles } from '../bundle/createDevBundles';
 import { Context } from '../core/Context';
+import { env } from '../env';
 import { attachHMR } from '../hmr/attach_hmr';
 import { pluginAssumption } from '../plugins/core/plugin_assumption';
 import { pluginCSS } from '../plugins/core/plugin_css';
@@ -15,12 +15,11 @@ import { attachWatcher } from './attach_watcher';
 import { attachWebIndex } from './attach_webIndex';
 import { processPlugins } from './process_plugins';
 import { addServerEntry } from './server_entry';
-import { statLog } from './stat_log';
 
 export async function bundleDev(ctx: Context) {
   const ict = ctx.ict;
-  const startTime = process.hrtime();
-
+  console.log('here');
+  ctx.log.fuseHeader({ entry: ctx.config.entries[0], mode: 'development', version: env.VERSION });
   const plugins = [
     ...ctx.config.plugins,
     pluginAssumption(),
@@ -61,19 +60,13 @@ export async function bundleDev(ctx: Context) {
     attachWatcher({ ctx });
   }
 
-  statLog({
-    printFuseBoxVersion: true,
-    printPackageStat: true,
-    ctx: ctx,
-    packages: packages,
-    time: prettyTime(process.hrtime(startTime), 'ms'),
-  });
   if (bundles) {
     if (ctx.config.isServer()) {
       const serverEntryBundle = await addServerEntry(ctx, bundles);
       bundles.push(serverEntryBundle.info);
     }
-
     ict.sync('complete', { ctx: ctx, bundles: bundles, packages: packages });
   }
+
+  ctx.log.fuseFinalise();
 }

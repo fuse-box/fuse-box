@@ -1,4 +1,5 @@
 import { codeLog } from './colors';
+import { wrapCodeString } from '../logging/codeLog';
 
 function parseArguments(args: Array<any>) {
   let group;
