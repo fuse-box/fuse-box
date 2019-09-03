@@ -32,14 +32,14 @@ describe('Fast transform', () => {
       });
 
       expect(result.code).toMatchInlineSnapshot(`
-"const foo = 1, bar = 3;
-exports.bar = bar;
-exports.foo = foo;
-console.log(1);
-const moo = 1;
-exports.moo = moo;
-"
-`);
+        "const foo = 1, bar = 3;
+        exports.bar = bar;
+        exports.foo = foo;
+        console.log(1);
+        const moo = 1;
+        exports.moo = moo;
+        "
+      `);
     });
 
     it('Should 2 variables with the same name', () => {
@@ -51,13 +51,13 @@ exports.moo = moo;
     it('Should 2 variables with aliases', () => {
       const result = fastTransform({ input: `export { name1 as foo, name2 as bar };` });
       expect(result).toMatchInlineSnapshot(`
-Object {
-  "code": "exports.foo = name1;
-exports.bar = name2;
-",
-  "sourceMap": undefined,
-}
-`);
+        Object {
+          "code": "exports.foo = name1;
+        exports.bar = name2;
+        ",
+          "sourceMap": undefined,
+        }
+      `);
     });
 
     it('Should export a function', () => {
@@ -70,13 +70,13 @@ exports.bar = name2;
       });
 
       expect(result.code).toMatchInlineSnapshot(`
-"function bar() {}
-exports.bar = bar;
-console.log(1);
-function foo() {}
-exports.foo = foo;
-"
-`);
+        "function bar() {}
+        exports.bar = bar;
+        console.log(1);
+        function foo() {}
+        exports.foo = foo;
+        "
+      `);
       //expect(result.code).toContain('exports.bar = bar;');
       //expect(result.code).toContain('function bar() {}');
     });
@@ -97,10 +97,10 @@ exports.foo = foo;
     it('Should export a default class', () => {
       const result = fastTransform({ input: `export default class Bar{}` });
       expect(result.code).toMatchInlineSnapshot(`
-"class Bar {}
-exports.default = Bar;
-"
-`);
+        "class Bar {}
+        exports.default = Bar;
+        "
+      `);
     });
 
     it('Should export default expression', () => {
@@ -111,25 +111,25 @@ exports.default = Bar;
     it('Should export default expression 2', () => {
       const result = fastTransform({ input: `export default {}` });
       expect(result.code).toMatchInlineSnapshot(`
-"exports.default = {};
-"
-`);
+        "exports.default = {};
+        "
+      `);
     });
 
     it('Should export default expression 3', () => {
       const result = fastTransform({ input: `export default /\s+/` });
       expect(result.code).toMatchInlineSnapshot(`
-"exports.default = /s+/;
-"
-`);
+        "exports.default = /s+/;
+        "
+      `);
     });
 
     it('Should export value as default', () => {
       const result = fastTransform({ input: `export { name as default };` });
       expect(result.code).toMatchInlineSnapshot(`
-"exports.default = name;
-"
-`);
+        "exports.default = name;
+        "
+      `);
     });
   });
 
@@ -137,46 +137,46 @@ exports.default = Bar;
     it('Should export one variable from source', () => {
       const result = fastTransform({ input: `export { name  } from "./foo"` });
       expect(result.code).toMatchInlineSnapshot(`
-"const __req1__ = require(\\"./foo\\");
-exports.name = __req1__.name;
-"
-`);
+        "const __req1__ = require(\\"./foo\\");
+        exports.name = __req1__.name;
+        "
+      `);
     });
 
     it('Should export one variable (with as) from source', () => {
       const result = fastTransform({ input: `export { name as foo  } from "./foo"` });
       expect(result.code).toMatchInlineSnapshot(`
-"const __req1__ = require(\\"./foo\\");
-exports.foo = __req1__.name;
-"
-`);
+        "const __req1__ = require(\\"./foo\\");
+        exports.foo = __req1__.name;
+        "
+      `);
     });
 
     it('Should export defaul variable  from source', () => {
       const result = fastTransform({ input: `export { default } from "./foo"` });
       expect(result.code).toMatchInlineSnapshot(`
-"const __req1__ = require(\\"./foo\\");
-exports.default = __req1__.default;
-"
-`);
+        "const __req1__ = require(\\"./foo\\");
+        exports.default = __req1__.default;
+        "
+      `);
     });
 
     it('Should export 2 variables from source', () => {
       const result = fastTransform({ input: `export { a, b} from "./foo"` });
       expect(result.code).toMatchInlineSnapshot(`
-"const __req1__ = require(\\"./foo\\");
-exports.a = __req1__.a;
-exports.b = __req1__.b;
-"
-`);
+        "const __req1__ = require(\\"./foo\\");
+        exports.a = __req1__.a;
+        exports.b = __req1__.b;
+        "
+      `);
     });
 
     it('Should export all from source', () => {
       const result = fastTransform({ input: `export * from "a"` });
       expect(result.code).toMatchInlineSnapshot(`
-"Object.assign(exports, require(\\"a\\"));
-"
-`);
+        "Object.assign(exports, require(\\"a\\"));
+        "
+      `);
     });
   });
 
@@ -190,11 +190,11 @@ exports.b = __req1__.b;
       `,
       });
       expect(result.code).toMatchInlineSnapshot(`
-"const __req1__ = require(\\"foo\\");
-console.log(1);
-__req1__.foobar();
-"
-`);
+        "const __req1__ = require(\\"foo\\");
+        console.log(1);
+        __req1__.foobar();
+        "
+      `);
     });
 
     it('Should import something a trace it down 2', () => {
@@ -206,11 +206,11 @@ __req1__.foobar();
       `,
       });
       expect(result.code).toMatchInlineSnapshot(`
-"const __req1__ = require(\\"foo\\");
-console.log(1);
-new __req1__.Foobar();
-"
-`);
+        "const __req1__ = require(\\"foo\\");
+        console.log(1);
+        new __req1__.Foobar();
+        "
+      `);
     });
 
     it('Should import something a trace it down 3', () => {
@@ -286,10 +286,10 @@ new __req1__.Foobar();
       });
 
       expect(result.code).toMatchInlineSnapshot(`
-"const __req1__ = require(\\"./angular\\");
-__req1__.ng.module();
-"
-`);
+        "const __req1__ = require(\\"./angular\\");
+        __req1__.ng.module();
+        "
+      `);
     });
 
     it('should import and export', () => {
@@ -331,12 +331,12 @@ __req1__.ng.module();
       });
 
       expect(result.code).toMatchInlineSnapshot(`
-"const __req1__ = require(\\"../Observable\\");
-const __req2__ = require(\\"../util/noop\\");
-var NEVER = new __req1__.Observable(__req2__.noop);
-exports.NEVER = NEVER;
-"
-`);
+        "const __req1__ = require(\\"../Observable\\");
+        const __req2__ = require(\\"../util/noop\\");
+        var NEVER = new __req1__.Observable(__req2__.noop);
+        exports.NEVER = NEVER;
+        "
+      `);
     });
     it('Should import everything use it', () => {
       const result = fastTransform({
@@ -368,11 +368,11 @@ exports.NEVER = NEVER;
 			`,
       });
       expect(result.code).toMatchInlineSnapshot(`
-"console.log(1);
-require(\\"foo\\");
-console.log(2);
-"
-`);
+        "console.log(1);
+        require(\\"foo\\");
+        console.log(2);
+        "
+      `);
     });
 
     it('should keep import order', () => {
@@ -384,11 +384,11 @@ console.log(2);
       });
 
       expect(result.code).toMatchInlineSnapshot(`
-"console.log(1);
-const __req1__ = require(\\"./foo\\");
-console.log(2);
-"
-`);
+        "console.log(1);
+        const __req1__ = require(\\"./foo\\");
+        console.log(2);
+        "
+      `);
     });
   });
 
@@ -463,13 +463,13 @@ console.log(2);
         `,
       });
       expect(result.code).toMatchInlineSnapshot(`
-"const __req1__ = require(\\"foo\\");
-function hello(foo, bar) {
-  console.log(foo, bar);
-}
-console.log(__req1__.foo);
-"
-`);
+        "const __req1__ = require(\\"foo\\");
+        function hello(foo, bar) {
+          console.log(foo, bar);
+        }
+        console.log(__req1__.foo);
+        "
+      `);
     });
 
     it('should not mess with the scope 2', () => {
@@ -481,11 +481,11 @@ console.log(__req1__.foo);
         `,
       });
       expect(result.code).toMatchInlineSnapshot(`
-"const __req1__ = require(\\"foo\\");
-const foo = 1;
-console.log(foo, __req1__.bar);
-"
-`);
+        "const __req1__ = require(\\"foo\\");
+        const foo = 1;
+        console.log(foo, __req1__.bar);
+        "
+      `);
     });
 
     it('should not mess with the scope 3', () => {
@@ -499,12 +499,12 @@ console.log(foo, __req1__.bar);
         `,
       });
       expect(result.code).toMatchInlineSnapshot(`
-"const __req1__ = require(\\"./function.js\\");
-var mixin = function (func) {
-  console.log(func);
-};
-"
-`);
+        "const __req1__ = require(\\"./function.js\\");
+        var mixin = function (func) {
+          console.log(func);
+        };
+        "
+      `);
     });
 
     it('should not mess with the scope 4', () => {
@@ -515,10 +515,10 @@ var mixin = function (func) {
         `,
       });
       expect(result.code).toMatchInlineSnapshot(`
-"const __req1__ = require(\\"./wrapperLodash.js\\");
-exports.default = __req1__.default;
-"
-`);
+        "const __req1__ = require(\\"./wrapperLodash.js\\");
+        exports.default = __req1__.default;
+        "
+      `);
     });
 
     it('should not mess with the scope 5', () => {
@@ -534,15 +534,54 @@ exports.default = __req1__.default;
         `,
       });
       expect(result.code).toMatchInlineSnapshot(`
-"const __req1__ = require(\\"./func.js\\");
-var mixin = (function (func) {
-  return function (object) {
-    func(object, source, options);
-  };
-})(_mixin);
-console.log(__req1__.default);
-"
-`);
+        "const __req1__ = require(\\"./func.js\\");
+        var mixin = (function (func) {
+          return function (object) {
+            func(object, source, options);
+          };
+        })(_mixin);
+        console.log(__req1__.default);
+        "
+      `);
+    });
+
+    it('should not mess with the scope 6 ( defined function)', () => {
+      const result = fastTransform({
+        input: `
+        import o from './func.js';
+        function o() {}
+        console.log(o)
+        `,
+      });
+      expect(result.code).toContain('console.log(o);');
+    });
+
+    it('should not mess with the scope 6 ( defined function ) + other', () => {
+      const result = fastTransform({
+        input: `
+        import o from './func.js';
+        import b from './bar.js';
+        function o() {
+          console.log(b)
+          const b = function(){
+          }
+          console.log(b)
+        }
+        console.log(o)
+        `,
+      });
+
+      expect(result.code).toMatchInlineSnapshot(`
+        "const __req1__ = require(\\"./func.js\\");
+        const __req2__ = require(\\"./bar.js\\");
+        function o() {
+          console.log(__req2__.default);
+          const b = function () {};
+          console.log(b);
+        }
+        console.log(o);
+        "
+      `);
     });
 
     it('should export default var', () => {
@@ -553,10 +592,10 @@ console.log(__req1__.default);
         `,
       });
       expect(result.code).toMatchInlineSnapshot(`
-"const add = function () {};
-exports.default = add;
-"
-`);
+        "const add = function () {};
+        exports.default = add;
+        "
+      `);
     });
 
     it('should export default toString ( weird case) ', () => {
@@ -567,10 +606,10 @@ exports.default = add;
         `,
       });
       expect(result.code).toMatchInlineSnapshot(`
-"function toString(value) {}
-exports.default = toString;
-"
-`);
+        "function toString(value) {}
+        exports.default = toString;
+        "
+      `);
     });
 
     it('should handle object export (default)', () => {
@@ -584,14 +623,14 @@ exports.default = toString;
         `,
       });
       expect(result.code).toMatchInlineSnapshot(`
-"const __req1__ = require(\\"./zipWith.js\\");
-const foo = 1;
-exports.default = {
-  zipWith: __req1__.default,
-  foo
-};
-"
-`);
+        "const __req1__ = require(\\"./zipWith.js\\");
+        const foo = 1;
+        exports.default = {
+          zipWith: __req1__.default,
+          foo
+        };
+        "
+      `);
     });
 
     it('should handle shorthand 1', () => {

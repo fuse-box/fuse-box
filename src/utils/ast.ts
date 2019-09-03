@@ -22,6 +22,7 @@ export function fastWalk(ast: any, walker: IASTWalkProps) {
       if (node.context) {
         context = node.context;
       }
+
       if (node.type === 'VariableDeclaration') {
         if (node.declarations) {
           for (const decl of node.declarations) {
@@ -46,6 +47,20 @@ export function fastWalk(ast: any, walker: IASTWalkProps) {
       }
 
       if (node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression') {
+        if (node.id && node.id.type === 'Identifier') {
+          // handles the following case:
+          /*
+            function o() {}
+            console.log(o)
+          */
+          if (context === undefined) context = { locals: [] };
+          context.locals.push(node.id.name);
+          if (props.idx && props.prop) {
+            if (props.parent[props.prop][props.idx + 1]) {
+              props.parent[props.prop][props.idx + 1].context = context;
+            }
+          }
+        }
         if (node.params) {
           for (const item of node.params) {
             if (item.type === 'Identifier') {
