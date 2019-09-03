@@ -9,6 +9,7 @@ import { cssResolveModule } from '../cssResolveModule';
 import { IStylesheetModuleResponse, IStyleSheetProcessor } from '../interfaces';
 import * as path from 'path';
 import { alignCSSSourceMap } from '../cssSourceMap';
+import { ILogger } from '../../logging/logging';
 
 interface IRenderModuleProps {
   options?: IStyleSheetProps;
@@ -16,12 +17,26 @@ interface IRenderModuleProps {
   module: Module;
 }
 
-async function callPostCSS(plugins: Array<any>, css: string, options): Promise<{ map: string; css: string }> {
+async function callPostCSS(
+  plugins: Array<any>,
+  css: string,
+  options,
+  logger: ILogger,
+): Promise<{ map: string; css: string }> {
   return new Promise((resolve, reject) => {
     postcss(plugins)
       .process(css, options)
       .then(result => {
         return resolve(result as any);
+      })
+      .catch((e: any) => {
+        // https://api.postcss.org/CssSyntaxError.html
+        if (e.name === 'CssSyntaxError') {
+          logger.error(e.message);
+        } else {
+          logger.error(e);
+        }
+        return resolve({ map: '', css: 'string' });
       });
   });
 }
@@ -77,11 +92,16 @@ export async function renderModule(props: IRenderModuleProps): Promise<IStyleshe
     }
   }
 
-  const data = await callPostCSS(pluginList, processed.contents, {
-    from: props.module.props.absPath,
-    to: props.module.props.absPath,
-    map: requireSourceMap && { inline: false },
-  });
+  const data = await callPostCSS(
+    pluginList,
+    processed.contents,
+    {
+      from: props.module.props.absPath,
+      to: props.module.props.absPath,
+      map: requireSourceMap && { inline: false },
+    },
+    props.ctx.log,
+  );
 
   let sourceMap: string;
   if (data.map) {
