@@ -82,7 +82,7 @@ export function generateHMRContent(props: IGenerateHMRContentProps): IHMRUpdate 
 
     response.push({
       content: stringContent,
-      isStylesheet: module.isStylesheet() && !module.isCSSModule,
+      isStylesheet: module.isStylesheet() && !module.isCSSModule && !module.isCSSText,
       fuseBoxPath: `${pkg.getPublicName()}/${module.props.fuseBoxPath}`,
     });
   });
