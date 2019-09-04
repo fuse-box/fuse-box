@@ -3,13 +3,17 @@ import { Context } from '../core/Context';
 import { IHMRServerProps } from './devServerProps';
 export interface ISocketClientInterface {
   onMessage?: (fn: (name: string, payload) => void) => void;
-  sendEvent(name: string, payload?);
+  sendEvent(name: string, payload?, ws_instance?: WebSocket);
+  getClient(): WebSocket;
 }
 // keep that in mind:
 // https://github.com/elsassph/react-hmr-ts/tree/master/examples/fuse-box
 
 export function createClient(client): ISocketClientInterface {
   return {
+    getClient() {
+      return client;
+    },
     sendEvent(name: string, payload?) {
       client.send(JSON.stringify({ name, payload }));
     },
@@ -45,17 +49,29 @@ export function createHMRServer(props: ICreateHMRServerProps): HMRServerMethods 
     ws.on('message', function incoming(data) {
       const json = JSON.parse(data);
       scope.listeners.forEach(fn => {
-        fn(json.name, json.payload);
+        fn(json.name, json.payload, this);
       });
     });
   });
 
   return {
-    onMessage: (fn: (name: string, payload) => void) => {
+    getClient: () => {
+      return null;
+    },
+    onMessage: (fn: (name: string, payload, ws_instance?: WebSocket) => void) => {
       scope.listeners.push(fn);
     },
-    sendEvent: (name: string, payload?) => {
-      clients.forEach(client => client.sendEvent(name, payload));
+    sendEvent: (name: string, payload?, ws_instance?: WebSocket) => {
+      if (ws_instance) {
+        // if ws_instance then just respond to it
+        clients.forEach(client => {
+          if (client.getClient() === ws_instance) {
+            client.sendEvent(name, payload, ws_instance);
+          }
+        });
+      } else {
+        clients.forEach(client => client.sendEvent(name, payload, ws_instance));
+      }
     },
   };
 }

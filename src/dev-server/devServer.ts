@@ -16,7 +16,7 @@ import * as proxyMiddleware from 'http-proxy-middleware';
 import { generateFTLJavaScript } from '../FTL/FasterThanLightReload';
 
 export interface IDevServerActions {
-  clientSend: (name: string, payload) => void;
+  clientSend: (name: string, payload, ws_instance?: WebSocket) => void;
   onClientMessage: (fn: (name: string, payload) => void) => void;
 }
 
@@ -137,7 +137,7 @@ export function createDevServer(ctx: Context): IDevServerActions {
   });
 
   return {
-    onClientMessage: (fn: (name: string, payload) => void) => {
+    onClientMessage: (fn: (name: string, payload, ws_instance?: WebSocket) => void) => {
       if (hmrServerMethods) {
         hmrServerMethods.onMessage(fn);
       } else {
@@ -145,9 +145,9 @@ export function createDevServer(ctx: Context): IDevServerActions {
         onMessageCallbacks.push(fn);
       }
     },
-    clientSend: (name: string, payload) => {
+    clientSend: (name: string, payload, ws_instance?: WebSocket) => {
       if (hmrServerMethods) {
-        hmrServerMethods.sendEvent(name, payload);
+        hmrServerMethods.sendEvent(name, payload, ws_instance);
       }
     },
   };
