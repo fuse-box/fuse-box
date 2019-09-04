@@ -78,7 +78,10 @@ export function cssContextHandler(props: ICSSContextHandler) {
         data.css = result.css;
         props.module.isCSSModule = true;
       } else if (shared.asText) {
-        return cssAsTextRender({ ...rendererProps });
+        props.module.isCSSText = true;
+        props.module.notStylesheet();
+        props.module.contents = wrapContents(JSON.stringify(data.css), props.shared.useDefault);
+        return;
       }
       if (ctx.config.production) {
         props.module.css = data;

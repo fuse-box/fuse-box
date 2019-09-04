@@ -1,0 +1,4 @@
+{
+  "0deb0dd1": "\n@Component({\n  selector: \"app-root\",\n  template : require(\"./hello.html\"),\n  styles : [require(\"./foo.css\"),require(\"bar.scss\")],\n})\n",
+  "0deb0dd0": "\n@Component({\n  selector: \"app-root\",\n  template : require(\"./hello.html\"),\n  styles : [require(\"bar.scss\")],\n})\n"
+}

@@ -33,6 +33,7 @@ export class Module {
 
   public css: IStylesheetModuleResponse;
   public isCSSModule?: boolean;
+  public isCSSText?: boolean;
 
   /**
    * A package that holds this module
