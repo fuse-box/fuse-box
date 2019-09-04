@@ -1,4 +1,5 @@
 import { Project } from 'ts-morph';
+import * as ts from 'typescript';
 import { createESModuleStructure } from '../../structure/ESModuleStructure';
 // import { createRawTransform } from '../raw/rawTransform';
 
@@ -24,8 +25,18 @@ function createFile(contents: string) {
 }
 
 const file = createFile(`
-export { default } from "./oi"
+function test(){
+  if ("production" === "production")
+      return;
+}
 `);
 
-const structure = createESModuleStructure(file);
-console.log(JSON.stringify(structure.toJSON(), null, 2));
+const Identifiers = file.getDescendantsOfKind(ts.SyntaxKind.IfStatement);
+
+Identifiers.forEach(node => {
+  if (!node.wasForgotten()) {
+    node.replaceWithText(node.getThenStatement().getText());
+  }
+});
+
+console.log(file.getText());

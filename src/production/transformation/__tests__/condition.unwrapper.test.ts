@@ -74,6 +74,18 @@ var b = 2;
       expect(result).toMatchJSONSnapshot();
     });
 
+    it('should work without {', () => {
+      const original = ` function test(){
+          if ("production" === "production")
+              return;
+      }
+      `;
+      const data = createFile({}, original);
+      conditionUnwrapperProduction(data);
+      const result = data.file.getText();
+      expect(result).toMatchJSONSnapshot();
+    });
+
     it('should work with !false', () => {
       const original = `if(!false){console.log("yes")} else alert('no')`;
       const data = createFile({}, original);

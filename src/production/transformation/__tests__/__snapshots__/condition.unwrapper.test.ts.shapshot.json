@@ -44,5 +44,6 @@
   "0e5deb38": "console.log(\"yes\")",
   "41d36129": "alert('no')",
   "573e3511": "alert('no')",
-  "07044b600": "console.log(\"yes\")"
+  "07044b600": "console.log(\"yes\")",
+  "f91ebe7": "function test(){\n          return;\n      }\n      "
 }

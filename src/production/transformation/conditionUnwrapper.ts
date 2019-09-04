@@ -47,14 +47,13 @@ function computeLeftRight(left, right, sign) {
   }
 }
 function getStatementText(node: Statement) {
-  let theText;
   const syntaxList = node.getChildSyntaxList();
   if (syntaxList) {
-    theText = syntaxList.getText({ trimLeadingIndentation: true });
+    return syntaxList.getText({ trimLeadingIndentation: true });
   } else if (node.compilerNode['expression']) {
-    theText = node.compilerNode['expression'].getText();
+    return node.compilerNode['expression'].getText();
   }
-  return theText;
+  return node.getText();
 }
 
 function setResult(result: any, node: IfStatement) {
