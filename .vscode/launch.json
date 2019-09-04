@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Start current file in debugging mode (ts-node)",
+      "name": "Run current file (ts-node)",
       "type": "node",
       "request": "launch",
       "args": ["${relativeFile}"],
@@ -14,13 +14,17 @@
       "env": { "TS_NODE_TRANSPILE_ONLY": "true", "TS_NODE_IGNORE_DIAGNOSTICS": "true" }
     },
     {
-      "name": "Debug Jest configParser",
       "type": "node",
       "request": "launch",
-      "runtimeArgs": ["--inspect-brk", "${workspaceRoot}/node_modules/jest/bin/jest.js", "--runInBand", "configParser"],
+      "name": "Jest Current File (jest)",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": ["${fileBasenameNoExtension}", "--config", "jest.config.js"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "port": 9229
+      "disableOptimisticBPs": true,
+      "windows": {
+        "program": "${workspaceFolder}/node_modules/jest/bin/jest"
+      }
     }
   ]
 }
