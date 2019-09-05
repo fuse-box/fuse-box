@@ -1,6 +1,5 @@
 import { Context } from '../core/Context';
 import { env } from '../env';
-import console = require('console');
 
 export function prerequisites(ctx: Context) {
   ctx.log.fuseHeader({
