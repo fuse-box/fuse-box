@@ -32,7 +32,6 @@ export function pluginJS() {
       }
 
       if (continueWithFastTransform) {
-        ctx.log.measureTimeStart('fast');
         const transformation = fastTransform({
           absPath: module.props.absPath,
           webWorkers: analysis && analysis.workers,
@@ -57,12 +56,7 @@ export function pluginJS() {
         analysis.report.statementsReplaced = true;
         analysis.report.transpiled = true;
 
-        if (ctx.log.level === 'verbose') {
-          ctx.log.progressFormat('fastTransform', module.getShortPath() + ' in ' + ctx.log.measureTimeEnd('fast'));
-        } else {
-          ctx.log.progressFormat('fastTransform', module.getShortPath());
-        }
-        ctx.log.progressEnd();
+        ctx.log.info('transform', module.getShortPath());
       } else {
         if (analysis && analysis.report) {
           analysis.report.statementsReplaced = false;

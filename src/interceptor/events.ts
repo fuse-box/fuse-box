@@ -16,6 +16,7 @@ export interface ISoftReload {
 export interface InterceptorEvents {
   test?: { foo: string };
   assemble_module_init?: { module: Module };
+  assemble_module_ftl_init?: { module: Module };
   assemble_module?: { module: Module };
   assemble_fast_analysis?: { module: Module };
 

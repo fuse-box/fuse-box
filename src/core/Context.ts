@@ -76,7 +76,8 @@ export class Context {
     });
     this.tsConfig = initTypescriptConfig(this.config);
     this.devServer = createDevServer(this);
-    if (this.config.cache) {
+
+    if (this.config.cache && this.config.cache.enabled) {
       if (this.config.cacheObject) this.cache = this.config.cacheObject;
       else this.cache = createCache({ ctx: this });
     }
@@ -126,15 +127,8 @@ export class Context {
     return this.config.useSingleBundle || this.config.target === 'web-worker';
   }
 
-  public fatal(messages: Array<string>) {
-    messages = messages.map((line, index) => {
-      if (index === 0) {
-        return '❌ <red><bold>' + line + '</bold></red>\n<yellow>';
-      } else {
-        return `    ${line}`;
-      }
-    });
-    this.log.print(messages.join('\n') + '</yellow>\n');
+  public fatal(header: string, messages?: Array<string>) {
+    this.log.fuseFatal(header, messages);
     process.exit(1);
   }
 

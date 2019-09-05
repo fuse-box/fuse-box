@@ -7,6 +7,7 @@ class Context {
       target: 'browser',
       entry: 'src/entry.ts',
       modules: ['./node_modules'],
+
       webIndex: {
         publicPath: '.',
         template: 'src/index.html',
@@ -18,7 +19,7 @@ class Context {
       plugins: [
         pluginAngular('*.component.ts'),
         pluginSass({ asText: true, useDefault: false }),
-        pluginCSS('app*', { asText: true }),
+        pluginCSS('app*.css', { asText: true }),
       ],
     });
 }

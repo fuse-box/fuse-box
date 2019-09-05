@@ -13,6 +13,10 @@ export interface IDevelopmentProps {}
 
 export function fusebox(config: IPublicConfig) {
   function checkVersion(log: FuseBoxLogAdapter) {
+    // process.on('uncaughtException', e => {
+    //   console.log(e);
+    // });
+
     const nodeVersion = parseVersion(process.version)[0];
     if (nodeVersion < 11) {
       log.warn(
@@ -34,6 +38,7 @@ export function fusebox(config: IPublicConfig) {
 
       checkVersion(ctx.log);
       return bundleDev(ctx).catch(e => {
+        console.log('error is here bieach');
         console.error(e);
       });
     },

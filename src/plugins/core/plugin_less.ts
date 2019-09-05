@@ -9,15 +9,14 @@ import { cssContextHandler } from './shared';
 export function pluginLessCapture(props: { ctx: Context; module: Module; opts: IPluginCommon }) {
   const { ctx, module, opts } = props;
   if (!ctx.isInstalled('less')) {
-    ctx.fatal([
-      `Fatal error when capturing ${module.props.absPath}`,
+    ctx.fatal(`Fatal error when capturing ${module.props.absPath}`, [
       'Module "less" is required, Please install it using the following command',
       'npm install less --save-dev',
     ]);
     return;
   }
 
-  ctx.log.progressFormat('pluginLess', module.props.absPath);
+  ctx.log.info('less', module.props.absPath);
 
   props.module.read();
   props.module.captured = true;

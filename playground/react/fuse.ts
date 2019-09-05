@@ -13,31 +13,18 @@ class Context {
       tsConfig: 'src/tsconfig.json',
 
       stylesheet: { paths: [path.join(__dirname, 'src/config')] },
-      cache: false,
+      cache: true,
 
       watch: true,
       hmr: true,
       logging: {
-        ignoreStatementErrors: ['indexof'],
+        level: 'succinct',
       },
       devServer: this.runServer && {
         open: false,
         httpServer: {
           express: app => {},
         },
-
-        proxy: [
-          {
-            path: '/api',
-            options: {
-              target: 'https://jsonplaceholder.typicode.com',
-              changeOrigin: true,
-              pathRewrite: {
-                '^/api': '/',
-              },
-            },
-          },
-        ],
       },
     });
   }

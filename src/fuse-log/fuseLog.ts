@@ -95,39 +95,3 @@ export class FuseLog {
 export function createLog<L>(CustomLogger?: L) {
   return new FuseLog();
 }
-
-// class MyLogger extends FuseLog {}
-
-// const log = new MyLogger();
-// console.log(' ');
-// console.log(' ');
-// log.info('Processing', 'Some information here');
-// log.info('Processing', 'Doing something else');
-// log.info('Processing', 'Creating properties');
-
-// console.log(' ');
-
-// log.warn('Something needs your attention');
-// log.warn('Attention', 'You should read some documentation');
-// log.success('Nice');
-// log.success('Success', "You've noticed that message");
-
-// console.log(' ');
-
-// log.error('Generic error', 'You are not supposed to do that');
-// log.error('You are clearly missing an important flag');
-
-// console.log(' ');
-
-// log.meta('Event', 'Something is happening');
-// log.meta('Event', 'Will happen soon');
-// log.meta('Event', 'Not yet');
-// log.meta('Doing that', `We're getting close`);
-
-// console.log(' ');
-
-// log.success("Hey $name, we'e good now!", { name: 'FuseBox' });
-// log.success('Completed', 'Now we totally <magenta>finished</magenta>');
-
-// console.log(' ');
-// console.log(' ');

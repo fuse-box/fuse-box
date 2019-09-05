@@ -10,15 +10,14 @@ export function pluginStylusCapture(props: { ctx: Context; module: Module; opts:
   const { ctx, module, opts } = props;
 
   if (!ctx.isInstalled('stylus')) {
-    ctx.fatal([
-      `Fatal error when capturing ${module.props.absPath}`,
+    ctx.fatal(`Fatal error when capturing ${module.props.absPath}`, [
       'Module "stylus" is required, Please install it using the following command',
       'npm install stylus --save-dev',
     ]);
     return;
   }
 
-  ctx.log.progressFormat('pluginStylusCapture', module.props.absPath);
+  ctx.log.info('stylus', module.props.absPath);
 
   props.module.read();
   props.module.captured = true;

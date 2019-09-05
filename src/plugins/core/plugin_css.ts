@@ -30,7 +30,7 @@ export function pluginCSS(a?: ICSSPluginProps | string | RegExp, b?: ICSSPluginP
       const { module } = props;
 
       if (!matcher.test(module.props.absPath) || props.module.captured) return;
-      ctx.log.progressFormat('pluginCss', module.props.absPath);
+      ctx.log.info('css', module.props.absPath);
       module.read();
 
       props.module.captured = true;

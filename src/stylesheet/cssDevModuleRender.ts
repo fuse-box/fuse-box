@@ -40,7 +40,7 @@ export function cssDevModuleRender(props: ICSSModuleRender) {
 
     const targetSourceMapPath = path.join(resourceConfig.resourceFolder, 'css', name);
 
-    ctx.log.verbose('<cyan>Writing css sourcemap to $file</cyan>', { file: targetSourceMapPath });
+    ctx.log.info('css', 'Writing css sourcemap to $file', { file: targetSourceMapPath });
     ctx.writer.write(targetSourceMapPath, data.map);
   }
 

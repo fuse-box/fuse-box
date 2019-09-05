@@ -3,6 +3,7 @@ import * as readline from 'readline';
 import { onExit } from '../utils/exit';
 import { FuseLog } from './fuseLog';
 import { IFuseLoggerProps } from '../config/IFuseLoggerProps';
+import { env } from '../env';
 
 function conj(word, amount?: number) {
   return amount === 1 ? `1 ${word}` : `${amount} ${word}s`;
@@ -11,8 +12,9 @@ function conj(word, amount?: number) {
 export class FuseBoxLogAdapter extends FuseLog {
   private _warnings: Array<string>;
   private _errors: Array<string>;
+  private streaming: boolean;
   private startTime;
-  constructor(public props: IFuseBoxLogProps) {
+  constructor(public props: IFuseLoggerProps) {
     super();
     if (!this.props.level) {
       this.props.level = 'succinct';
@@ -20,12 +22,22 @@ export class FuseBoxLogAdapter extends FuseLog {
     if (process.argv.includes('--verbose')) {
       this.props.level = 'verbose';
     }
+
     this._warnings = [];
     this._errors = [];
     onExit('logging', () => {
       console.log('');
     });
     this.startTimeMeasure();
+  }
+
+  startStreaming() {
+    this.streaming = true;
+  }
+
+  stopStreaming() {
+    this.clearLine();
+    this.streaming = false;
   }
 
   startTimeMeasure() {
@@ -42,6 +54,18 @@ export class FuseBoxLogAdapter extends FuseLog {
   flush() {
     this._warnings = [];
     this._errors = [];
+  }
+
+  verbose(group: string, message: string) {
+    if (this.props.level === 'verbose') {
+      this.info(group, message);
+    }
+  }
+  clearConsole() {
+    const blank = '\n'.repeat(process.stdout.rows);
+    console.log(blank);
+    readline.cursorTo(process.stdout, 0, 0);
+    readline.clearScreenDown(process.stdout);
   }
 
   log(type: string, message: string) {
@@ -68,7 +92,14 @@ export class FuseBoxLogAdapter extends FuseLog {
       return console.log(message);
     }
 
-    if (this.props.level === 'succinct') {
+    if (type === 'echo') {
+      return console.log(message);
+    }
+
+    if (!this.streaming) {
+      return console.log(message);
+    }
+    if (this.props.level === 'succinct' && this.streaming) {
       readline.clearLine(process.stdout, 0);
       readline.cursorTo(process.stdout, 0);
       process.stdout.write(message);
@@ -82,22 +113,52 @@ export class FuseBoxLogAdapter extends FuseLog {
     this.log('info', this.getString(`${this.indent}<bold><green>${group}</green></bold> ${message}`));
   }
 
+  line() {
+    this.echo('');
+  }
+
   heading(message: string, vars?) {
     const str = this.getString(this.indent + message, vars);
     this.log('heading', str);
   }
 
-  fuseHeader(props: { version: string; mode: 'development' | 'production'; entry: string }) {
-    this.echo('\n');
-
-    this.heading('⚙  <bold><green>FuseBox $version</green></bold>', props);
+  fuseReloadHeader() {
+    this.line();
+    this.heading('⚙  <bold><green>FuseBox $version</green></bold>', { version: env.VERSION });
+    this.line();
+  }
+  fuseHeader(props: {
+    version: string;
+    FTL?: boolean;
+    mode: 'development' | 'production';
+    entry: string;
+    cacheFolder?: string;
+  }) {
+    this.line();
+    this.heading('⚙  <bold>FuseBox $version</bold>', props);
     this.heading('   Mode: <yellow>$mode</yellow>', props);
     this.heading('   Entry: <dim>$entry</dim>', props);
-    this.echo('\n');
+    if (props.cacheFolder) {
+      this.heading('   Cache: <dim>$cacheFolder</dim>', props);
+    }
+    if (props.FTL !== undefined) {
+      this.heading('   FTL reload: <dim>$ftl</dim>', { ftl: props.FTL ? 'enabled' : 'disabled' });
+    }
+    this.line();
+  }
+
+  fuseFatal(header: string, messages?: Array<string>) {
+    this.echo(this.indent + `<white><bold><bgRed> FATAL </bgRed></bold></white> <bold><red>${header}</bold></red>`);
+
+    if (messages) {
+      this.echo('');
+      messages.forEach(msg => {
+        this.echo(this.indent + '<red><bold>- ' + msg + '</bold></red>');
+      });
+    }
   }
 
   fuseFinalise() {
-    this.clearLine();
     const hasErrors = this._errors.length > 0;
     const hasWarnings = this._warnings.length > 0;
     for (const item of this._warnings) {
@@ -112,7 +173,7 @@ export class FuseBoxLogAdapter extends FuseLog {
     const time = prettyTime(process.hrtime(this.startTime), 'ms');
 
     const genericError = '<white><bold><bgRed> ERROR </bgRed></bold></white>';
-    const timeFormat = `in <magenta>$time</magenta>`;
+    const timeFormat = `in <yellow>$time</yellow>`;
     if (hasErrors && hasWarnings) {
       this.log(
         'bottom_message',
@@ -150,94 +211,18 @@ export class FuseBoxLogAdapter extends FuseLog {
       this.log(
         'bottom_message',
         this.getString(
-          this.indent + `@success <green><bold>Completed without build issues ${timeFormat}</bold></green>`,
+          this.indent +
+            `<white><bold><bgGreen> SUCCESS </bgGreen></bold></white>  <green><bold>Completed without build issues ${timeFormat}</bold></green>`,
           {
             time: time,
           },
         ),
       );
     }
+    this.line();
   }
 }
 
 export function createFuseLogger(props: IFuseLoggerProps): FuseBoxLogAdapter {
   return new FuseBoxLogAdapter(props);
 }
-
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-function getWord(min: number, max: number) {
-  const lorem =
-    'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur';
-
-  const amount = getRandomInt(min, max);
-  const words = lorem.split(' ');
-  let data = [];
-  for (let i = 0; i <= amount; i++) {
-    const pos = getRandomInt(0, words.length);
-    data.push(words[pos]);
-  }
-  return data.join(' ');
-}
-
-async function generateStream(fn: (data: string) => void) {
-  async function delay() {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        return resolve();
-      }, getRandomInt(20, 70));
-    });
-  }
-  let iterations = 15;
-  let list = [];
-  for (let i = 0; i < iterations; i++) {
-    list.push(getWord(2, 10));
-  }
-  for (const item of list) {
-    await delay();
-    fn(item);
-  }
-}
-
-//const log = createLog({});
-//log.fuseHeader({ version: '4.0.0', mode: 'development', entry: __filename });
-
-// async function foo() {
-//   await generateStream(data => {
-//     log.info('assemble', data);
-//     if (getRandomInt(1, 20) === 10) {
-//       log.warn(getWord(2, 10));
-//     }
-//     if (getRandomInt(1, 20) === 10) {
-//       log.error(getWord(2, 10));
-//     }
-
-//     if (getRandomInt(1, 5) === 3) {
-//       log.css('SASS', getWord(2, 10));
-//     }
-//     if (getRandomInt(1, 5) === 3) {
-//       log.css('LESS', getWord(2, 10));
-//     }
-//     if (getRandomInt(1, 5) === 3) {
-//       log.processing('Typescript', getWord(2, 10));
-//     }
-//   });
-
-//   await generateStream(data => {
-//     log.info('transpile', data);
-//     if (getRandomInt(1, 20) === 10) {
-//       //log.warn(getWord(2, 10));
-//     }
-//   });
-//   //log.error(getWord(2, 10));
-
-//   log.fuseFinalise();
-//   //log.echo('\n');
-//   // log.meta('development', 'Server is running on port 4444');
-//   // log.meta('development', 'Watching for changes');
-// }
-
-// foo();

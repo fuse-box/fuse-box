@@ -32,7 +32,7 @@ export function pluginLinkHandler(module: Module, options?: IPluginLinkOptions) 
   const destination = path.join(resourceConfig.resourceFolder, name);
 
   module.captured = true;
-  ctx.log.verbose('<cyan><bold>link:</bold> Captured $file with <bold>pluginLink</bold></cyan>', {
+  ctx.log.info('link', 'Captured $file with <bold>pluginLink</bold>', {
     file: module.props.absPath,
   });
 

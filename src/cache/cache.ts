@@ -40,7 +40,7 @@ export interface IModuleCache {
 const TREE_FILE_KEY = 'tree.json';
 
 export class Cache {
-  private rootFolder: string;
+  public rootFolder: string;
 
   private unsynced = new Map<string, any>();
   private synced = new Map<string, any>();
@@ -57,8 +57,6 @@ export class Cache {
       env.VERSION,
       env.isTest ? '' : fastHash(config.homeDir + config.entries.join('')),
     );
-
-    this.ctx.log.verbose('<dim>   Cache folder: $root </dim>', { root: this.rootFolder });
 
     this.packageCacheFolder = path.join(this.rootFolder, env.CACHE.PACKAGES);
     this.projectCacheFolder = path.join(this.rootFolder, env.CACHE.PROJET_FILES);

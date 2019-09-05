@@ -20,7 +20,7 @@ function registerPackage(props: { assemble?: boolean; pkg: Package; ctx: Context
 
   let pkg: Package = collection.packages.get(resolved.package.meta.name, resolved.package.meta.version);
   if (!pkg) {
-    props.ctx.log.progressFormat('assemble package', resolved.package.meta.name + ':' + resolved.package.meta.version);
+    props.ctx.log.info('assemble package', resolved.package.meta.name + ':' + resolved.package.meta.version);
     pkg = createPackage({ ctx: props.ctx, meta: resolved.package.meta });
     collection.packages.add(pkg);
   } else {
@@ -113,13 +113,13 @@ function resolveStatement(
   props.ctx.assembleContext;
 
   if (!resolved || (resolved && resolved.error)) {
-    if (log.props.ignoreStatementErrors && log.props.ignoreStatementErrors.includes(opts.statement)) {
-      return;
-    }
+    // if (log.props.ignoreStatementErrors && log.props.ignoreStatementErrors.includes(opts.statement)) {
+    //   return;
+    // }
     log.warn(
       resolved && resolved.error
-        ? resolved.error + ' \n    <dim>Import statement: "$statement" in $file</dim>'
-        : 'Cannot resolve $statement in $file',
+        ? resolved.error + ' / Import statement: "$statement" in <dim>$file</dim>'
+        : 'Cannot resolve $statement in <dim>$file</dim>',
       {
         statement: opts.statement,
         file: props.module.props.absPath,
@@ -307,7 +307,6 @@ export function assemble(ctx: Context, entryFile: string): Array<Package> {
     result.push(pkg);
   });
   ctx.packages = result;
-  ctx.log.progressEnd('<green><bold>$checkmark Assemble completed</bold></green>');
 
   return result;
 }

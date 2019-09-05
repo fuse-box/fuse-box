@@ -14,7 +14,7 @@ export function pluginReplace(a?: IPluginReplaceProps | string | RegExp, b?: IPl
 
       const { module } = props;
 
-      ctx.log.progressFormat('pluginReplace', 'replacing in $file', {
+      ctx.log.info('pluginReplace', 'replacing in $file', {
         file: module.props.absPath,
       });
 

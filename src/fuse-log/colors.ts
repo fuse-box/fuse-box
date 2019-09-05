@@ -52,13 +52,14 @@ export function codeLog(input: string, vars?: { [key: string]: any }) {
     if (type) {
       if (type === '$' && vars && vars[variable]) return vars[variable];
       if (type === '@') {
+        if (SYMBOLS[variable]) return SYMBOLS[variable];
+        else return `@` + variable;
       }
-      if (type === '@' && SYMBOLS[variable]) return SYMBOLS[variable];
     }
 
     if (COLOR_CODES[name]) {
       if (closing) {
-        return `\u001b[${COLOR_CODES[name][1]}m`;
+        return `\u001b[${COLOR_CODES[name][1]}m\u001b[0m`; //needs always to reset after closing, else you might get weird results
       }
       return `\u001b[${COLOR_CODES[name][0]}m`;
     }

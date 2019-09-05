@@ -1,7 +1,6 @@
 import { IBundleWriteResponse } from '../bundle/Bundle';
 import { createDevBundles } from '../bundle/createDevBundles';
 import { Context } from '../core/Context';
-import { env } from '../env';
 import { attachHMR } from '../hmr/attach_hmr';
 import { pluginAssumption } from '../plugins/core/plugin_assumption';
 import { pluginCSS } from '../plugins/core/plugin_css';
@@ -13,13 +12,16 @@ import { assemble } from './assemble';
 import { attachCache } from './attach_cache';
 import { attachWatcher } from './attach_watcher';
 import { attachWebIndex } from './attach_webIndex';
+import { prerequisites } from './prerequisite';
 import { processPlugins } from './process_plugins';
 import { addServerEntry } from './server_entry';
 
 export async function bundleDev(ctx: Context) {
   const ict = ctx.ict;
-  console.log('here');
-  ctx.log.fuseHeader({ entry: ctx.config.entries[0], mode: 'development', version: env.VERSION });
+
+  ctx.log.startStreaming();
+  prerequisites(ctx);
+
   const plugins = [
     ...ctx.config.plugins,
     pluginAssumption(),
@@ -32,7 +34,9 @@ export async function bundleDev(ctx: Context) {
   plugins.forEach(plugin => plugin && plugin(ctx));
 
   attachCache(ctx);
+
   attachHMR(ctx);
+
   attachWebWorkers(ctx);
 
   // lib-esm/params/paramTypes.js"
@@ -60,6 +64,9 @@ export async function bundleDev(ctx: Context) {
     attachWatcher({ ctx });
   }
 
+  ctx.log.stopStreaming();
+  ctx.log.fuseFinalise();
+
   if (bundles) {
     if (ctx.config.isServer()) {
       const serverEntryBundle = await addServerEntry(ctx, bundles);
@@ -67,6 +74,4 @@ export async function bundleDev(ctx: Context) {
     }
     ict.sync('complete', { ctx: ctx, bundles: bundles, packages: packages });
   }
-
-  ctx.log.fuseFinalise();
 }

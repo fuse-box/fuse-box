@@ -43,14 +43,17 @@ export function initTypescriptConfig(
 ): TypescriptConfig {
   let basePath: string = configScriptPath;
 
+  let tsConfigFilePath;
+
   let userOptions: IRawCompilerOptions = {};
   let customTsConfigPath;
   if (typeof props.tsConfig === 'string' && !fileExists(props.tsConfig)) {
-    props.ctx && props.ctx.log.error('tsconfig was not found at $path', { path: props.tsConfig });
+    // TODO: should die in pain
   } else customTsConfigPath = props.tsConfig;
   let extendedFile;
   if (typeof customTsConfigPath === 'string') {
     const data: IRawTypescriptConfig = ts.readConfigFile(customTsConfigPath, ts.sys.readFile);
+    tsConfigFilePath = customTsConfigPath;
     basePath = path.dirname(customTsConfigPath);
     userOptions = data.config.compilerOptions;
     extendedFile = data.config.extends;
@@ -61,12 +64,11 @@ export function initTypescriptConfig(
     const fileName = pathJoin(props.homeDir, props.entries[0]);
     const result = resolveTSConfig({ root: root, fileName: fileName });
     if (result.filePath) {
+      tsConfigFilePath = result.filePath;
       basePath = path.dirname(result.filePath);
       const data: IRawTypescriptConfig = ts.readConfigFile(result.filePath, ts.sys.readFile);
       userOptions = data.config.compilerOptions;
       extendedFile = data.config.extends;
-    } else {
-      props.ctx && props.ctx.log.warn('tsconfig was not found. Make sure to create one');
     }
   }
   let baseUrlSet = false;
@@ -134,6 +136,7 @@ export function initTypescriptConfig(
   const config = ts.convertCompilerOptionsFromJson(userOptions, basePath);
 
   return {
+    tsConfigFilePath,
     typescriptPaths: typescriptPaths,
     basePath,
     jsonCompilerOptions: userOptions,

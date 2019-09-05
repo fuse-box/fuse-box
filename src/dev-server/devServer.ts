@@ -34,9 +34,25 @@ export function createExpressApp(ctx: Context, props: IHTTPServerProps, extra?: 
     res.send(js);
   });
   if (props.express) props.express(app, express);
+  function logProvider(p) {
+    return {
+      log: msg => {
+        ctx.log.info('proxy', msg);
+      },
+      debug: msg => {
+        ctx.log.info('proxy', msg);
+      },
+      info: msg => {
+        ctx.log.info('proxy', msg);
+      },
+      warn: msg => ctx.log.warn('proxy', msg),
+      error: msg => ctx.log.error('proxy', msg),
+    };
+  }
 
   if (extra && extra.proxyProps) {
     for (const item of extra.proxyProps) {
+      item.options.logProvider = logProvider;
       app.use(item.path, proxyMiddleware(item.options));
     }
   }
@@ -52,7 +68,7 @@ export function createExpressApp(ctx: Context, props: IHTTPServerProps, extra?: 
       extra.openProps.target = extra.openProps.target || `http://localhost:${props.port}`;
       open(extra.openProps.target, extra.openProps);
     }
-    ctx.log.print(`<dim>Development server is running at <bold>http://localhost:$port</bold></dim>`, {
+    ctx.log.info('development', `Development server is running at <bold>http://localhost:$port</bold>`, {
       port: props.port,
     });
   });

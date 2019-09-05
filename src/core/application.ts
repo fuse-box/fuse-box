@@ -7,8 +7,10 @@ export function createApplicationPackage(ctx: Context, entryFile: string): Packa
   const absPath = ensureAbsolutePath(entryFile, ctx.config.homeDir);
 
   if (!fileExists(absPath)) {
-    ctx.log.error('Entry "$entry" was not found. Tried: $file', { entry: entryFile, file: absPath });
-    return;
+    ctx.fatal('Your entry point was not found', [
+      `You have set the following entry point <yellow>${entryFile}</yellow>`,
+      `We tried <underline>${absPath}</underline>`,
+    ]);
   }
   const fuseBoxPath = makeFuseBoxPath(ctx.config.homeDir, absPath);
   const extension = getExtension(absPath);
