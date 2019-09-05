@@ -1,16 +1,15 @@
 import { codeLog } from './colors';
 
-export class FuseLog {
+export abstract class FuseLog {
   indent = '  ';
-  log(type: string, result: string) {
-    console.log(result);
-  }
+
+  abstract log(type: string, message: string);
 
   getString(message: string, vars?: any) {
     return codeLog(message, vars);
   }
 
-  echo(message: string, vars?) {
+  echo(message: string, vars?: any) {
     this.log('echo', this.getString(message, vars));
   }
 
