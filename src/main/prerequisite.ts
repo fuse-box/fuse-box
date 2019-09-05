@@ -1,5 +1,6 @@
 import { Context } from '../core/Context';
 import { env } from '../env';
+import console = require('console');
 
 export function prerequisites(ctx: Context) {
   ctx.log.fuseHeader({
@@ -9,4 +10,7 @@ export function prerequisites(ctx: Context) {
     cacheFolder: ctx.cache && ctx.cache.rootFolder,
     FTL: ctx.cache && ctx.config.cache.FTL,
   });
+  if (!ctx.tsConfig.tsConfigFilePath) {
+    ctx.log.info('tsconfig', 'tsconfig.json was not found. Using internal defaults.');
+  }
 }

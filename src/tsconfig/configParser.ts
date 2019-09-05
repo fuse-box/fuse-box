@@ -76,7 +76,6 @@ export function initTypescriptConfig(
     baseUrlSet = true;
   }
   if (!basePath) {
-    props.ctx && props.ctx.log.info('tsconfig.json was not found. Using internal defaults.');
     basePath = path.dirname(require.main.filename);
   }
 
