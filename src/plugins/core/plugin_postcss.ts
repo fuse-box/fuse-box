@@ -18,7 +18,7 @@ export function pluginPostCSS(a?: string | RegExp, b?: IPluginCommon) {
       }
 
       if (matcher.test(module.props.absPath)) {
-        ctx.log.progressFormat('pluginPostCSS', module.props.absPath);
+        ctx.log.info('PostCSS', module.props.absPath);
 
         props.module.read();
         props.module.captured = true;

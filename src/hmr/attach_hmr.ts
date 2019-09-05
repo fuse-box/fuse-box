@@ -35,15 +35,14 @@ export function attachHMR(ctx: Context) {
   let lastGeneratedHMR = null;
   let lastPayLoadID = null;
 
-  function sortProjectUpdate(task: IHMRTask, payload: IClientSummary, ws_instance?: WebSocket) {
+  function softProjectUpdate(task: IHMRTask, payload: IClientSummary, ws_instance?: WebSocket) {
     // verify project files first
     const log_pkg = '<bold><yellow>$pkg</yellow></bold>';
 
     const time = measureTime('hmr');
-
     // check if its the last payLoadIDm, if so we want to reuse
     if (payload.id === lastPayLoadID) {
-      ctx.log.print('<dim><bold>HMR content<$id> reused in $time</dim></bold>', { time: time.end(), id: payload.id });
+      ctx.log.info('hmr', 'Update <dim><$id></dim> has been reused', { id: payload.id });
       devServer.clientSend(
         'hmr',
         { packages: lastGeneratedHMR.packages, modules: lastGeneratedHMR.modules },
@@ -56,7 +55,7 @@ export function attachHMR(ctx: Context) {
       projectPackage.modules.forEach(module => {
         // if client doesn't the compiled module
         if (!clientProjectFiles.includes(module.props.fuseBoxPath)) {
-          ctx.log.print(`<bold><dim>HMR module</dim></bold> $name from ${log_pkg}`, {
+          ctx.log.info('hmr', `Module $name from ${log_pkg}`, {
             name: module.props.fuseBoxPath,
             pkg: 'default',
           });
@@ -73,7 +72,7 @@ export function attachHMR(ctx: Context) {
 
         if (!payload.summary[name]) {
           // here we need the entire package update
-          ctx.log.print(`<bold><dim>HMR module</dim></bold> ${log_pkg}`, { pkg: name });
+          ctx.log.info('hmr', `Module ${log_pkg}`, { pkg: name });
           packagesForUpdate.push(pkg);
           return;
         }
@@ -83,7 +82,7 @@ export function attachHMR(ctx: Context) {
           const module = pkg.modules[i];
           if (!packageFiles.includes(module.props.fuseBoxPath)) {
             // making a partial update
-            ctx.log.print(`<bold><dim>HMR module</dim></bold> $name ${log_pkg}`, {
+            ctx.log.info('hmr', `Module $name ${log_pkg}`, {
               name: module.props.fuseBoxPath,
               pkg: name,
             });
@@ -96,10 +95,11 @@ export function attachHMR(ctx: Context) {
       lastGeneratedHMR = generateHMRContent({ packages: packagesForUpdate, modules: modulesForUpdate, ctx: ctx });
       lastPayLoadID = payload.id;
 
-      ctx.log.print('<dim><bold>HMR content<$id> generated in $time</dim></bold>', {
+      ctx.log.info('hmr', 'Update <dim><$id></dim> generated in $time', {
         time: time.end(),
         id: payload.id,
       });
+
       devServer.clientSend(
         'hmr',
         { packages: lastGeneratedHMR.packages, modules: lastGeneratedHMR.modules },
@@ -111,7 +111,7 @@ export function attachHMR(ctx: Context) {
   // here we recieve an update from client - the entire tree of its modules
   devServer.onClientMessage((event, payload: IClientSummary, ws_instance?: WebSocket) => {
     if (event === 'summary' && payload.id && tasks[payload.id]) {
-      sortProjectUpdate(tasks[payload.id], payload, ws_instance);
+      softProjectUpdate(tasks[payload.id], payload, ws_instance);
     }
   });
 
@@ -127,7 +127,7 @@ export function attachHMR(ctx: Context) {
             module => module.props.absPath === props.ctx.weakReferences.collection[file][0],
           );
           if (target) {
-            props.ctx.log.print('<bold><dim>HMR reference mapped: $file</dim></bold>', { file: target.props.absPath });
+            props.ctx.log.info('hmr', 'Reference mapped: $file', { file: target.props.absPath });
           }
         }
       }
@@ -138,6 +138,7 @@ export function attachHMR(ctx: Context) {
           modulesForUpdate: [target],
         };
         const id = generateUpdateId();
+
         tasks[id] = task;
 
         devServer.clientSend('get-summary', { id });

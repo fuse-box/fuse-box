@@ -7,6 +7,7 @@ import { Module } from '../core/Module';
 import { Package } from '../core/Package';
 import { bundleResolveModule } from '../main/process_plugins';
 import { createConcat } from '../utils/utils';
+import { TEXT_EXTENSIONS, FTL_ELIGIBLE_EXTENSIONS } from '../config/extensions';
 
 export interface IFasterThanLightProps {
   ctx: Context;
@@ -43,15 +44,41 @@ export function fasterThanLight(props: IFasterThanLightProps): Promise<Boolean> 
   const defaultPackage = ctx.packages.find(pkg => pkg.isDefaultPackage);
   const targetModule = defaultPackage.modules.find(item => item.props.absPath === filePath);
 
-  if (targetModule && targetModule.isExecutable()) {
+  if (targetModule) {
     // get the current cache (even if it's broken already)
     // we need to check if external dependencies didn't change
     const data = cache.getModuleCacheData(targetModule);
     if (!data) return;
 
+    // check for FTL eligible extensions like CSS html and such
+    if (FTL_ELIGIBLE_EXTENSIONS.indexOf(targetModule.props.extension) > -1) {
+      // peform a full cylcle here
+      ctx.log.info('FTL', `Entering FTL mode`);
+      targetModule.read(true);
+      targetModule.isCached = false;
+      targetModule.captured = false;
+      ctx.ict.sync('assemble_module_init', { module: targetModule });
+      // reset data so it can be read again an being not captured too.
+
+      const ftlModules = ctx.assembleContext.getFTLModules();
+      if (ftlModules.length > MAX_FTL_MODULES) return;
+
+      bundleResolveModule(targetModule);
+      return ctx.ict.resolve().then(() => {
+        ctx.assembleContext.setFTLModule(targetModule);
+        return true;
+      });
+    }
+
+    // stop from accidentally working with a non-executable file
+    if (!targetModule.isExecutable()) {
+      return;
+    }
+
     if (!data.fastAnalysis) {
       return;
     }
+
     ctx.ict.sync('assemble_module_init', { module: targetModule });
 
     const targetBundle = bundleWriters.find(item => item.bundle.props.type === BundleType.PROJECT_JS);
@@ -64,6 +91,8 @@ export function fasterThanLight(props: IFasterThanLightProps): Promise<Boolean> 
 
     const oldAnalysis = data.fastAnalysis;
     targetModule.read(true);
+
+    ctx.ict.sync('assemble_module_ftl_init', { module: targetModule });
 
     const newAnalysis = targetModule.fastAnalyse();
 
@@ -78,7 +107,8 @@ export function fasterThanLight(props: IFasterThanLightProps): Promise<Boolean> 
     const ftlModules = ctx.assembleContext.getFTLModules();
     if (ftlModules.length > MAX_FTL_MODULES) return;
 
-    // restore replaceable, since we skip the assemble part + resolving the statements
+    ctx.log.info('FTL', `Entering FTL mode`);
+    // restore replaceable,  since we skip the assemble part + resolving the statements
     targetModule.fastAnalysis.replaceable = oldAnalysis.replaceable;
     targetModule.fastAnalysis.report.transpiled = false;
     ctx.ict.sync('assemble_fast_analysis', { module: targetModule });
@@ -104,23 +134,27 @@ export function attachFTL(ctx: Context) {
 
     if (response) {
       props.info.FTL = true;
-      ctx.ict.sync('rebundle_complete', {
-        bundles,
-        packages,
-        ctx,
-        watcherAction: props.info.watcherProps.action,
-        file: props.info.filePath,
-      });
+
       response.then(bundeResponse => {
+        ctx.ict.sync('rebundle_complete', {
+          bundles,
+          packages,
+          ctx,
+          watcherAction: props.info.watcherProps.action,
+          file: props.info.filePath,
+        });
         const l = ctx.assembleContext.getFTLModules().length;
-        ctx.log.print(
-          `<green>✔</green> <green><bold> FTL Completed in $time</bold></green> <dim>$total/$max in-memory</dim>`,
+        ctx.log.line();
+        ctx.log.echo(
+          ctx.log.indent +
+            '<bold><white><bgGreen> FTL SUCCESS </bgGreen></bold></white> in <bold>$time</bold> <dim>$total/$max in-memory</dim>',
           {
             time: prettyTime(process.hrtime(props.info.timeStart)),
             total: l,
             max: MAX_FTL_MODULES,
           },
         );
+        ctx.log.line();
       });
     }
 

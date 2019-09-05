@@ -2,7 +2,8 @@ import * as React from 'react';
 import { Component } from 'react';
 
 import * as ReactDOM from 'react-dom';
-//import './index.scss';
+import { Other } from './Other';
+import './index.scss';
 
 class App extends Component {
   render() {
@@ -11,7 +12,12 @@ class App extends Component {
       return {};
     }
     console.log('render');
-    return <div>12312</div>;
+    return (
+      <div>
+        oioooo
+        <Other></Other>
+      </div>
+    );
   }
 }
 

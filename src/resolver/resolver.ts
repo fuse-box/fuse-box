@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { fileExists, makeFuseBoxPath, path2Regex } from '../utils/utils';
-import { fileLookup, ILookupResult } from './fileLookup';
+import { fileLookup, ILookupResult, TsConfigAtPath } from './fileLookup';
 import { INodeModuleLookup, isNodeModule, nodeModuleLookup } from './nodeModuleLookup';
 import { pathsLookup } from './pathsLookup';
 import { isElectronPolyfill, isServerPolyfill } from './polyfills';
@@ -74,6 +74,8 @@ export interface IResolver {
   forcedStatement?: string;
   // a resolver might return an additional path where to look for modules
   monorepoModulesPath?: string;
+
+  tsConfigAtPath?: TsConfigAtPath;
 }
 
 function isExternalModule(props: IResolverProps): IResolver {
@@ -235,7 +237,9 @@ export function resolveModule(props: IResolverProps): IResolver {
       forcedStatement = `~/${fuseBoxPath}`;
     }
   }
+  lookupResult.tsConfigAtPath;
   return {
+    tsConfigAtPath: lookupResult.tsConfigAtPath,
     monorepoModulesPath: lookupResult.monorepoModulesPaths,
     extension,
     absPath,

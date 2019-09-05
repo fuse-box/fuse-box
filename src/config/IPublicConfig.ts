@@ -2,16 +2,16 @@ import { Cache } from '../cache/cache';
 import { Context } from '../core/Context';
 import { IDevServerProps } from '../dev-server/devServerProps';
 import { IRawCompilerOptions } from '../interfaces/TypescriptInterfaces';
-import { ILoggerProps } from '../logging/logging';
 import { IJSONPluginProps } from '../plugins/core/plugin_json';
+import { IPluginLinkOptions } from '../plugins/core/plugin_link';
 import { IWatcherExternalProps } from '../watcher/watcher';
 import { IWebIndexConfig } from '../web-index/webIndex';
 import { ICodeSplittingConfig } from './ICodeSplittingConfig';
+import { IFuseLoggerProps } from './IFuseLoggerProps';
 import { IResourceConfig } from './IResourceConfig';
 import { IStyleSheetProps } from './IStylesheetProps';
 import { IWebWorkerConfig } from './IWebWorkerConfig';
 import { ICacheProps, IHMRExternalProps, ITarget } from './PrivateConfig';
-import { IPluginLinkOptions } from '../plugins/core/plugin_link';
 
 export interface IPublicConfig {
   root?: string;
@@ -25,7 +25,7 @@ export interface IPublicConfig {
   homeDir?: string;
   output?: string;
   modules?: Array<string>;
-  logging?: ILoggerProps;
+  logging?: IFuseLoggerProps;
   webWorkers?: IWebWorkerConfig;
 
   codeSplitting?: ICodeSplittingConfig;

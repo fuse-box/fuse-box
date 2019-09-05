@@ -103,7 +103,7 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
   result.meta = pkg;
 
   if (!folder) {
-    return { error: `Cannot resolve ${parsed.name}` };
+    return { error: `Cannot resolve "${parsed.name}"` };
   }
 
   const packageJSONFile = path.join(folder, 'package.json');

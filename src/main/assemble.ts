@@ -2,7 +2,8 @@ import { createApplicationPackage } from '../core/application';
 import { Context } from '../core/Context';
 import { createModule, Module } from '../core/Module';
 import { createPackage, Package } from '../core/Package';
-import { ImportType, IResolver, resolveModule } from '../resolver/resolver';
+import { ImportType, IResolver, resolveModule, ITypescriptPathsConfig } from '../resolver/resolver';
+import * as path from 'path';
 
 interface IDefaultParseProps {
   assemble?: boolean;
@@ -19,7 +20,7 @@ function registerPackage(props: { assemble?: boolean; pkg: Package; ctx: Context
 
   let pkg: Package = collection.packages.get(resolved.package.meta.name, resolved.package.meta.version);
   if (!pkg) {
-    props.ctx.log.progressFormat('assemble package', resolved.package.meta.name + ':' + resolved.package.meta.version);
+    props.ctx.log.info('assemble package', resolved.package.meta.name + ':' + resolved.package.meta.version);
     pkg = createPackage({ ctx: props.ctx, meta: resolved.package.meta });
     collection.packages.add(pkg);
   } else {
@@ -84,13 +85,24 @@ function resolveStatement(
   const config = props.ctx.config;
   const log = props.ctx.log;
 
+  let typescriptPaths = props.pkg.isDefaultPackage && props.ctx.tsConfig.typescriptPaths;
+  // let's check for custom tsConfig typescript paths here.
+  if (props.ctx.tsConfigAtPaths && props.pkg.isDefaultPackage) {
+    // fine a path that's relative to any tsConfig
+    const typescriptPathsOverride = props.ctx.tsConfigAtPaths.find(item => {
+      const relativePath = path.relative(item.absPath, props.module.props.absPath);
+      return !relativePath.startsWith('..');
+    });
+    if (typescriptPathsOverride) typescriptPaths = typescriptPathsOverride.tsConfig.typescriptPaths;
+  }
+
   const resolved = resolveModule({
     isDev: !props.ctx.config.production,
     filePath: props.module.props.absPath,
     homeDir: config.homeDir,
     alias: config.alias,
     javascriptFirst: props.module.isJavascriptModule(),
-    typescriptPaths: props.pkg.isDefaultPackage && props.ctx.tsConfig.typescriptPaths,
+    typescriptPaths: typescriptPaths,
     packageMeta: !props.pkg.isDefaultPackage && props.pkg.props.meta,
     buildTarget: config.target,
     modules: config.modules,
@@ -98,14 +110,16 @@ function resolveStatement(
     target: opts.statement,
   });
 
+  props.ctx.assembleContext;
+
   if (!resolved || (resolved && resolved.error)) {
-    if (log.props.ignoreStatementErrors && log.props.ignoreStatementErrors.includes(opts.statement)) {
-      return;
-    }
+    // if (log.props.ignoreStatementErrors && log.props.ignoreStatementErrors.includes(opts.statement)) {
+    //   return;
+    // }
     log.warn(
       resolved && resolved.error
-        ? resolved.error + ' \n    <dim>Import statement: "$statement" in $file</dim>'
-        : 'Cannot resolve $statement in $file',
+        ? resolved.error + ' / Import statement: "$statement" in <dim>$file</dim>'
+        : 'Cannot resolve $statement in <dim>$file</dim>',
       {
         statement: opts.statement,
         file: props.module.props.absPath,
@@ -150,6 +164,12 @@ function resolveStatement(
     _module.meta.monorepoModulesPath = resolved.monorepoModulesPath;
   }
 
+  if (resolved.tsConfigAtPath) {
+    _module.meta = _module.meta || {};
+    _module.meta.tsConfigAtPath = resolved.tsConfigAtPath;
+    // adding ts config to the global context to further resolution can be handled accordingly
+    props.ctx.addTsConfigAtPath(resolved.tsConfigAtPath);
+  }
   collection.modules.set(resolved.absPath, _module);
   return { processed: false, module: _module, forcedStatement: resolved.forcedStatement };
 }
@@ -287,7 +307,6 @@ export function assemble(ctx: Context, entryFile: string): Array<Package> {
     result.push(pkg);
   });
   ctx.packages = result;
-  ctx.log.progressEnd('<green><bold>$checkmark Assemble completed</bold></green>');
 
   return result;
 }

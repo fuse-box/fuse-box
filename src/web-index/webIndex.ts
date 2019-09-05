@@ -99,7 +99,7 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
       };
       let contents = replaceWebIndexStrings(readFile(opts.templatePath), scriptOpts);
 
-      logger.progressFormat('WebIndex', 'writing to $name</yellow></bold></dim>', {
+      logger.info('webindex', 'writing to $name</yellow></bold></dim>', {
         name: opts.distFileName,
       });
       await ctx.writer.write(opts.distFileName, contents);

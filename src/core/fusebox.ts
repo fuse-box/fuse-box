@@ -1,19 +1,22 @@
+import * as ts from 'typescript';
+import { IProductionProps } from '../config/IProductionProps';
 import { IPublicConfig } from '../config/IPublicConfig';
-import { ILogger } from '../logging/logging';
+import { FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
 import { bundleDev } from '../main/bundle_dev';
 import { bundleProd } from '../production/bundle_prod';
+import { IProductionResponse } from '../production/main';
+import { UserHandler } from '../user-handler/UserHandler';
 import { parseVersion } from '../utils/utils';
 import { createContext, createProdContext } from './Context';
-import { IProductionProps } from '../config/IProductionProps';
-import * as ts from 'typescript';
-import { UserHandler } from '../user-handler/UserHandler';
-import { IProductionResponse } from '../production/main';
-export interface IBundleProps {}
 
 export interface IDevelopmentProps {}
 
 export function fusebox(config: IPublicConfig) {
-  function checkVersion(log: ILogger) {
+  function checkVersion(log: FuseBoxLogAdapter) {
+    // process.on('uncaughtException', e => {
+    //   console.log(e);
+    // });
+
     const nodeVersion = parseVersion(process.version)[0];
     if (nodeVersion < 11) {
       log.warn(
@@ -35,6 +38,7 @@ export function fusebox(config: IPublicConfig) {
 
       checkVersion(ctx.log);
       return bundleDev(ctx).catch(e => {
+        console.log('error is here bieach');
         console.error(e);
       });
     },

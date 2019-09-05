@@ -1,6 +1,8 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { getFolderEntryPointFromPackageJSON } from './shared';
+import { TypescriptConfig } from '../interfaces/TypescriptInterfaces';
+import { initTypescriptConfig } from '../tsconfig/configParser';
 
 export interface ILookupProps {
   typescriptFirst?: boolean;
@@ -11,12 +13,18 @@ export interface ILookupProps {
   target: string;
 }
 
+export interface TsConfigAtPath {
+  absPath: string;
+  tsConfig: TypescriptConfig;
+}
+
 export interface ILookupResult {
   isDirectoryIndex?: boolean;
   fileExists: boolean;
   absPath: string;
   extension?: string;
   monorepoModulesPaths?: string;
+  tsConfigAtPath?: TsConfigAtPath;
   customIndex?: boolean;
 }
 
@@ -91,6 +99,7 @@ export function fileLookup(props: ILookupProps): ILookupResult {
       isDirectory = true;
 
       let monorepoModulesPaths;
+      let tsConfigAtPath: TsConfigAtPath;
 
       // only in case of a directory
       const packageJSONPath = path.join(resolved, 'package.json');
@@ -104,12 +113,20 @@ export function fileLookup(props: ILookupProps): ILookupResult {
           if (fs.existsSync(_monoModules)) {
             monorepoModulesPaths = _monoModules;
           }
+
+          const _tsConfig = path.resolve(resolved, 'tsconfig.json');
+          if (fs.existsSync(_tsConfig)) {
+            const props: any = { tsConfig: _tsConfig };
+            const _tsConfigObject = initTypescriptConfig(props);
+            tsConfigAtPath = { absPath: resolved, tsConfig: _tsConfigObject };
+          }
         }
 
         const entryFile = path.join(resolved, entry);
         return {
           customIndex: true,
           monorepoModulesPaths,
+          tsConfigAtPath,
           isDirectoryIndex: true,
           absPath: entryFile,
           extension: path.extname(entryFile),

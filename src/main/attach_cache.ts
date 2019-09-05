@@ -51,7 +51,7 @@ export function attachCache(ctx: Context) {
     const response = cache.getPackage(props.pkg, props.userModules);
 
     if (!response.abort) {
-      ctx.log.progressFormat('From Cache', '$success $name:$version', {
+      ctx.log.info('cached', 'loaded $name:$version', {
         name: props.pkg.props.meta.name,
         version: props.pkg.props.meta.version,
       });

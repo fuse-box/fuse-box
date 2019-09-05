@@ -1,4 +1,3 @@
-import * as prettyTime from 'pretty-time';
 import { BundleType, IBundleWriteResponse } from '../bundle/Bundle';
 import { createDevBundles } from '../bundle/createDevBundles';
 import { Context } from '../core/Context';
@@ -9,7 +8,6 @@ import { extractFuseBoxPath } from '../utils/utils';
 import { createWatcher, WatcherAction } from '../watcher/watcher';
 import { assemble } from './assemble';
 import { pluginProcessPackages } from './process_plugins';
-import { statLog } from './stat_log';
 export interface IWatcherAttachProps {
   ctx: Context;
 }
@@ -37,6 +35,8 @@ async function appReload(props: IAppReloadProps): Promise<IAppReloadResponse> {
   const watcher = props.watcherProps;
   const ctx = watcher.ctx;
 
+  ctx.log.startTimeMeasure();
+
   if (props.watcherProps.file) {
     const softReloadContext = {
       FTL: false,
@@ -45,6 +45,7 @@ async function appReload(props: IAppReloadProps): Promise<IAppReloadResponse> {
 
       timeStart: process.hrtime(),
     };
+
     ctx.ict.sync('soft_relod', { info: softReloadContext });
     if (softReloadContext.FTL) {
       return;
@@ -53,10 +54,13 @@ async function appReload(props: IAppReloadProps): Promise<IAppReloadResponse> {
 
   // nuke all files, all objects in memory
   if (props.nukeAllCache) {
+    ctx.log.info('cache', 'nuke cache');
     ctx.cache.nukeAll();
   } else if (props.nukePackageCache) {
+    ctx.log.info('cache', 'nuke package cache');
     ctx.cache.nukePackageCache();
   } else if (props.nukeProjectCache) {
+    ctx.log.info('cache', 'nuke project cache');
     ctx.cache.nukeProjectCache();
   }
 
@@ -68,7 +72,7 @@ async function appReload(props: IAppReloadProps): Promise<IAppReloadResponse> {
   // in case if everything was cached, then one modules is commented out, and then ucommented again.
   // we need to find a solution here, writing large vendors all over again makes an impact on the peformance
 
-  const startTime = process.hrtime();
+  ctx.log.startStreaming();
 
   const packages = assemble(ctx, ctx.config.entries[0]);
   await pluginProcessPackages({ ctx, packages });
@@ -93,13 +97,10 @@ async function appReload(props: IAppReloadProps): Promise<IAppReloadResponse> {
   }
 
   const bundleResponse = await Promise.all(writers.map(i => i()));
-
-  statLog({
-    ctx: ctx,
-    packages: packages,
-    time: prettyTime(process.hrtime(startTime)),
-  });
-
+  ctx.log.stopStreaming();
+  ctx.log.info('reload', 'Completed');
+  ctx.log.line();
+  ctx.log.fuseFinalise();
   return { bundles: bundleResponse, packages };
 }
 async function reload_SoftFromEntry(props: OnWatcherProps): Promise<IAppReloadResponse> {
@@ -113,26 +114,30 @@ async function reload_HardModules(props: OnWatcherProps): Promise<IAppReloadResp
 async function reload_Process(props: OnWatcherProps) {
   const ctx = props.ctx;
   const log = ctx.log;
-  log.print(`<bold><yellow>${EMOJIS.warning} Configuration changed, restart required</yellow></bold>`);
+  log.echo(`<bold><yellow>${EMOJIS.warning} Configuration changed, restart required</yellow></bold>`);
   if (ctx.cache) {
     ctx.cache.nukeAll();
-    log.print(`<bold><yellow>${EMOJIS.warning} Cache has been cleared</yellow></bold>`);
+    log.echo(`<bold><yellow>${EMOJIS.warning} Cache has been cleared</yellow></bold>`);
   }
-  log.printNewLine();
+
   process.exit(0);
 }
 
 async function onWatcherEvent(props: OnWatcherProps) {
   const log = props.ctx.log;
-  const fuseBoxPath = props.file && extractFuseBoxPath(props.ctx.config.homeDir, props.file);
+
   const shortPath = props.file && extractFuseBoxPath(env.APP_ROOT, props.file);
 
   let response: IAppReloadResponse;
   if (props.action == WatcherAction.RELOAD_ONE_FILE) {
-    log.print('<bold><dim>Soft Reload: $file</dim></bold>', { file: shortPath });
+    log.fuseReloadHeader();
+    log.info('changed', '<dim>$file</dim>', { file: shortPath });
+
     response = await reload_SoftFromEntry(props);
   } else if (props.action === WatcherAction.HARD_RELOAD_MODULES) {
-    log.print('<bold><dim>Hard reload modules: $file</dim></bold>', { file: shortPath });
+    log.fuseReloadHeader();
+    log.info('hard reload', '$file', { file: shortPath });
+
     response = await reload_HardModules(props);
   } else if (props.action == WatcherAction.RESTART_PROCESS) {
     reload_Process(props);
@@ -164,6 +169,8 @@ export function attachWatcher(props: IWatcherAttachProps) {
           // do not allow another process to kick in
           return;
         }
+        props.ctx.log.flush();
+        props.ctx.log.clearConsole();
         inProgress = true;
         await onWatcherEvent({ action: a, file: f, ctx });
         inProgress = false;

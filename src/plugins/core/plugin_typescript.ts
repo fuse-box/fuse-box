@@ -63,7 +63,7 @@ export function pluginTypescript() {
       compilerOptions.outFile = undefined;
 
       ict.promise(async () => {
-        ctx.log.progressFormat('Typescript', '$package/$name', {
+        ctx.log.info('typescript', '$package/$name', {
           name: module.props.fuseBoxPath,
           package: module.pkg.props.meta.name,
         });

@@ -39,7 +39,8 @@ export function sparky<T>(Ctx: new () => T) {
         return;
       }
 
-      log.print('<cyan>→ Running <bold>$name</bold><cyan>', { name });
+      log.print('<cyan>→ Running <bold>$name</bold></cyan>', { name });
+
       await tasks[name](ctx);
     },
     task: (name: string, fn: (ctx: T) => void) => {

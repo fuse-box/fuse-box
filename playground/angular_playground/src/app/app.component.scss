@@ -1,4 +1,5 @@
+@import 'other';
 .greeting {
-  background-color: darken($color: red, $amount: 20);
-  padding: 5px;
+  background-color: red;
+  padding: 10px;
 }
