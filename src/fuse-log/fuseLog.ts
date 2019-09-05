@@ -1,24 +1,5 @@
 import { codeLog } from './colors';
 
-function parseArguments(args: Array<any>) {
-  let message: any;
-  let vars: any;
-  if (args.length === 1) message = args[0];
-  if (args.length === 2) {
-    if (typeof args[1] === 'object') {
-      message = args[0];
-      vars = args[1];
-    }
-    if (typeof args[1] === 'string') {
-      message = args[1];
-    }
-  }
-  if (args.length === 3) {
-    message = args[1];
-    vars = args[2];
-  }
-  return { message, vars };
-}
 export class FuseLog {
   indent = '  ';
   log(type: string, result: string) {
@@ -33,8 +14,7 @@ export class FuseLog {
     this.log('echo', this.getString(message, vars));
   }
 
-  info(group: string, ...args: any) {
-    const { message, vars } = parseArguments(args);
+  info(group: string, message: string, vars?: any) {
     let str = this.indent;
     if (group) {
       str += `<bold><cyan>${group}</cyan></bold> `;
@@ -43,16 +23,12 @@ export class FuseLog {
     this.log('info', codeLog(str, vars));
   }
 
-  warn(...args: any) {
-    const { message, vars } = parseArguments(args);
-    const str = `${this.indent}<bold>@warning <yellow>${message}</yellow></bold> `;
-    this.log('warn', codeLog(str, vars));
+  warn(message: string, vars?: any) {
+    this.log('warn', codeLog(`${this.indent}<bold>@warning <yellow>${message}</yellow></bold> `, vars));
   }
 
-  success(...args: any) {
-    const { message, vars } = parseArguments(args);
-    const str = `${this.indent}<bold>@success <green>${message}</green></bold> `;
-    this.log('success', codeLog(str, vars));
+  success(message: string, vars?: any) {
+    this.log('success', codeLog(`${this.indent}<bold>@success <green>${message}</green></bold> `, vars));
   }
 
   meta(group: string, message: string, vars?: any) {
@@ -62,9 +38,7 @@ export class FuseLog {
     );
   }
 
-  error(...args: any) {
-    const { message, vars } = parseArguments(args);
-    const str = `${this.indent}<bold>@error <red>${message}</red></bold> `;
-    this.log('error', codeLog(str, vars));
+  error(message: string, vars?: any) {
+    this.log('error', codeLog(`${this.indent}<bold>@error <red>${message}</red></bold> `, vars));
   }
 }
