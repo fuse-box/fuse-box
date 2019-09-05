@@ -7,6 +7,7 @@ function globalExitHandler(type: string) {
   for (const key in handlers) {
     handlers[key](type);
   }
+
   if (type === 'exit') {
     process.exit();
   }

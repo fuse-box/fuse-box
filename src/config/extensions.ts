@@ -9,5 +9,5 @@ export const LINK_ASSUMPTION_EXTENSIONS = [
   ...ICO_EXTENSIONS,
   ...DOCUMENT_EXTENSIONS,
 ];
-
 export const TEXT_EXTENSIONS = ['.md', '.txt', '.html'];
+export const FTL_ELIGIBLE_EXTENSIONS = [...TEXT_EXTENSIONS, ...STYLESHEET_EXTENSIONS];

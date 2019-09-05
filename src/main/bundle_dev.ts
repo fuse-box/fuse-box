@@ -1,4 +1,3 @@
-import * as prettyTime from 'pretty-time';
 import { IBundleWriteResponse } from '../bundle/Bundle';
 import { createDevBundles } from '../bundle/createDevBundles';
 import { Context } from '../core/Context';
@@ -13,13 +12,15 @@ import { assemble } from './assemble';
 import { attachCache } from './attach_cache';
 import { attachWatcher } from './attach_watcher';
 import { attachWebIndex } from './attach_webIndex';
+import { prerequisites } from './prerequisite';
 import { processPlugins } from './process_plugins';
 import { addServerEntry } from './server_entry';
-import { statLog } from './stat_log';
 
 export async function bundleDev(ctx: Context) {
   const ict = ctx.ict;
-  const startTime = process.hrtime();
+
+  ctx.log.startStreaming();
+  prerequisites(ctx);
 
   const plugins = [
     ...ctx.config.plugins,
@@ -33,7 +34,9 @@ export async function bundleDev(ctx: Context) {
   plugins.forEach(plugin => plugin && plugin(ctx));
 
   attachCache(ctx);
+
   attachHMR(ctx);
+
   attachWebWorkers(ctx);
 
   // lib-esm/params/paramTypes.js"
@@ -61,19 +64,14 @@ export async function bundleDev(ctx: Context) {
     attachWatcher({ ctx });
   }
 
-  statLog({
-    printFuseBoxVersion: true,
-    printPackageStat: true,
-    ctx: ctx,
-    packages: packages,
-    time: prettyTime(process.hrtime(startTime), 'ms'),
-  });
+  ctx.log.stopStreaming();
+  ctx.log.fuseFinalise();
+
   if (bundles) {
     if (ctx.config.isServer()) {
       const serverEntryBundle = await addServerEntry(ctx, bundles);
       bundles.push(serverEntryBundle.info);
     }
-
     ict.sync('complete', { ctx: ctx, bundles: bundles, packages: packages });
   }
 }

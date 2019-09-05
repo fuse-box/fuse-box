@@ -132,6 +132,17 @@ export class Module {
     return this.fastAnalysis;
   }
 
+  public setMeta(key: string, value: any) {
+    this.meta = this.meta || {};
+    this.meta[key] = value;
+  }
+
+  public getMeta(key: string) {
+    if (this.meta && this.meta[key]) {
+      return this.meta[key];
+    }
+  }
+
   public addWeakReference(url: string) {
     if (url === this.props.absPath) return;
     if (!this.weakReferences) this.weakReferences = [];
@@ -237,6 +248,7 @@ export class Module {
       this.contents = concat.content.toString();
       this.sourceMap = concat.sourceMap;
     }
+
     return {
       contents: this.contents,
       sourceMap: this.sourceMap,

@@ -8,6 +8,7 @@ export interface TypescriptConfig {
   jsonCompilerOptions?: IRawCompilerOptions;
   compilerOptions?: ts.CompilerOptions;
   transpileOptions?: ts.TranspileOptions;
+  tsConfigFilePath: string;
 }
 
 export type ITypescriptTarget = 'ES3' | 'ES5' | 'ES6' | 'ES2015' | 'ES2016' | 'ES2017' | 'ESNext';

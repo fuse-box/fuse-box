@@ -50,8 +50,8 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
   if (typeof props.webIndex === 'boolean') {
     config.webIndex.enabled = props.webIndex;
   } else if (typeof props.webIndex === 'object') {
-    config.webIndex.enabled = typeof props.webIndex.enabled === 'boolean' ? props.webIndex.enabled : true;
     config.webIndex = props.webIndex;
+    config.webIndex.enabled = typeof props.webIndex.enabled === 'boolean' ? props.webIndex.enabled : true;
   }
 
   config.sourceMap = {
@@ -87,6 +87,8 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
 
   if (props.logging) {
     config.logging = props.logging;
+  } else {
+    config.logging = { level: 'succinct' };
   }
 
   config.webWorkers = { enabled: true };
@@ -114,7 +116,7 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
   // cache ************************************************************************************************
   config.cache = {
     enabled: false,
-    FTL: false,
+    FTL: config.target !== 'server' && config.webIndex.enabled,
     root: path.join(env.APP_ROOT, 'node_modules/.fusebox'),
   };
 
@@ -125,8 +127,8 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
     if (props.cache.root !== undefined) {
       config.cache.root = ensureAbsolutePath(props.cache.root, env.SCRIPT_PATH);
     }
-    if (props.cache.FTL === true) {
-      config.cache.FTL = true;
+    if (props.cache.FTL !== undefined) {
+      config.cache.FTL = props.cache.FTL;
     }
   } else if (props.cache === undefined && !env.isTest) {
     config.cache.enabled = true;

@@ -52,8 +52,7 @@ export function cssContextHandler(props: ICSSContextHandler) {
   }
   if (shared.asModule) {
     if (!ctx.isInstalled('postcss-modules')) {
-      ctx.fatal([
-        `Fatal error when capturing ${props.module.props.absPath}`,
+      ctx.fatal(`Fatal error when capturing ${props.module.props.absPath}`, [
         'Module "postcss-modules" is required, Please install it using the following command',
         'npm install postcss-modules --save-dev',
       ]);
@@ -81,6 +80,7 @@ export function cssContextHandler(props: ICSSContextHandler) {
         props.module.isCSSText = true;
         props.module.notStylesheet();
         props.module.contents = wrapContents(JSON.stringify(data.css), props.shared.useDefault);
+
         return;
       }
       if (ctx.config.production) {

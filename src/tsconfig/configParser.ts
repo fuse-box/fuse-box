@@ -43,15 +43,17 @@ export function initTypescriptConfig(
 ): TypescriptConfig {
   let basePath: string = configScriptPath;
 
+  let tsConfigFilePath;
+
   let userOptions: IRawCompilerOptions = {};
   let customTsConfigPath;
   if (typeof props.tsConfig === 'string' && !fileExists(props.tsConfig)) {
-    props.ctx && props.ctx.log.error('tsconfig was not found at $path', { path: props.tsConfig });
+    // TODO: should die in pain
   } else customTsConfigPath = props.tsConfig;
   let extendedFile;
   if (typeof customTsConfigPath === 'string') {
-    props.ctx && props.ctx.log.progressFormat('tsconfig', customTsConfigPath);
     const data: IRawTypescriptConfig = ts.readConfigFile(customTsConfigPath, ts.sys.readFile);
+    tsConfigFilePath = customTsConfigPath;
     basePath = path.dirname(customTsConfigPath);
     userOptions = data.config.compilerOptions;
     extendedFile = data.config.extends;
@@ -62,17 +64,15 @@ export function initTypescriptConfig(
     const fileName = pathJoin(props.homeDir, props.entries[0]);
     const result = resolveTSConfig({ root: root, fileName: fileName });
     if (result.filePath) {
-      props.ctx && props.ctx.log.progressFormat('tsconfig', result.filePath);
+      tsConfigFilePath = result.filePath;
       basePath = path.dirname(result.filePath);
       const data: IRawTypescriptConfig = ts.readConfigFile(result.filePath, ts.sys.readFile);
       userOptions = data.config.compilerOptions;
       extendedFile = data.config.extends;
-    } else {
-      props.ctx && props.ctx.log.warn('tsconfig was not found. Make sure to create one');
     }
   }
   let baseUrlSet = false;
-  if(userOptions && userOptions.baseUrl){
+  if (userOptions && userOptions.baseUrl) {
     baseUrlSet = true;
   }
   if (!basePath) {
@@ -93,10 +93,9 @@ export function initTypescriptConfig(
 
       // we have this to fix basepath for paths
       // but we do not use this if basepath is set in main config
-      if(!baseUrlSet){
+      if (!baseUrlSet) {
         basePath = path.dirname(targetExtendedFile);
       }
-
     } catch (e) {
       props.ctx.log.warn(`Unable to extend tsconfig with ${extendedFile}. Make sure the file exists and readable`);
     }
@@ -137,6 +136,7 @@ export function initTypescriptConfig(
   const config = ts.convertCompilerOptionsFromJson(userOptions, basePath);
 
   return {
+    tsConfigFilePath,
     typescriptPaths: typescriptPaths,
     basePath,
     jsonCompilerOptions: userOptions,

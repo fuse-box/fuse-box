@@ -10,7 +10,7 @@ export interface IJSONPluginProps {
 
 export function pluginJSONHandler(module: Module, opts: IJSONPluginProps) {
   module.captured = true;
-  module.props.ctx.log.verbose('<cyan><bold>JSON:</bold> Captured $file with <bold>pluginJSON</bold></cyan>', {
+  module.props.ctx.log.info('json', ' Captured $file with pluginJSON', {
     file: module.props.absPath,
   });
   module.read();

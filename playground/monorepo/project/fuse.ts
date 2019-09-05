@@ -6,8 +6,9 @@ class Context {
   getConfig() {
     return fusebox({
       target: 'browser',
-      output: '../dist/project',
+      output: './dist',
       homeDir: '../',
+      tsConfig: 'tsconfig.json',
       entry: 'project/src/index.ts',
       webIndex: {
         template: 'src/index.html',

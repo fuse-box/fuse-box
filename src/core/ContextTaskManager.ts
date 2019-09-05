@@ -23,7 +23,7 @@ export class ContextTaskManager {
     const promises = [];
     for (const original in this.copyFilesTask) {
       const target = this.copyFilesTask[original];
-      this.ctx.log.verbose('<cyan><bold>Copy file:</bold> From $original to $target</cyan>', { original, target });
+      this.ctx.log.verbose('copy', 'from $original to $target', { original, target });
       promises.push(copyFile(original, target));
     }
     return Promise.all(promises)
