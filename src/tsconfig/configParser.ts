@@ -76,7 +76,6 @@ export function initTypescriptConfig(
     baseUrlSet = true;
   }
   if (!basePath) {
-    props.ctx && props.ctx.log.warn('tsconfig was not found. Make sure to create one');
     basePath = path.dirname(require.main.filename);
   }
 
