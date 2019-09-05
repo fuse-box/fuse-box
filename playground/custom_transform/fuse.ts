@@ -5,10 +5,6 @@ const isProd = process.argv.indexOf('--prod') > -1;
 
 function customTransformer<T extends ts.Node>(type: string): ts.TransformerFactory<T> {
   return context => {
-    console.log();
-    console.log(`===> customTransformer ${type} called`);
-    console.log();
-
     const visit: ts.Visitor = node => {
       return ts.visitEachChild(node, child => visit(child), context);
     };
@@ -30,6 +26,9 @@ const fuse = fusebox({
   devServer: true,
   watch: true,
   cache: false,
+  tsConfig: {
+    allowJs: true,
+  },
   plugins: [
     pluginCustomTransform({
       before: [customTransformer('before')],
