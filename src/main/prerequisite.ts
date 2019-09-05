@@ -9,7 +9,4 @@ export function prerequisites(ctx: Context) {
     cacheFolder: ctx.cache && ctx.cache.rootFolder,
     FTL: ctx.cache && ctx.config.cache.FTL,
   });
-  if (!ctx.tsConfig.tsConfigFilePath) {
-    ctx.log.warn('We tried to lookup tsconfig.json but none was found.');
-  }
 }
