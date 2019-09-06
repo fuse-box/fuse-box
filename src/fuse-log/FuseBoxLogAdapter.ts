@@ -167,6 +167,10 @@ export class FuseBoxLogAdapter extends FuseLog {
       this.log('bottom_message', item);
     }
   }
+
+  getTime() {
+    return prettyTime(process.hrtime(this.startTime), 'ms');
+  }
   fuseFinalise() {
     const hasErrors = this._errors.length > 0;
     const hasWarnings = this._warnings.length > 0;
@@ -174,7 +178,7 @@ export class FuseBoxLogAdapter extends FuseLog {
     if (hasErrors || hasWarnings) {
       this.echo('\n');
     }
-    const time = prettyTime(process.hrtime(this.startTime), 'ms');
+    const time = this.getTime();
 
     const genericError = '<white><bold><bgRed> ERROR </bgRed></bold></white>';
     const timeFormat = `in <yellow>$time</yellow>`;

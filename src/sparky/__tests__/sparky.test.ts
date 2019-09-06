@@ -58,22 +58,22 @@ describe('Sparky test', () => {
 
   it('should replace contents (with string 2 regex)', async () => {
     const chain = mockSparkySrc(`${__dirname}/stubs/case-a/**/**.*`);
-    // const list = await chain
-    //   .contentsOf('a.txt', str => {
-    //     return 'some text';
-    //   })
-    //   .exec();
+    await chain
+      .contentsOf('a.txt', str => {
+        return 'some text';
+      })
+      .exec();
     const readFiles = chain['__scope']().readFiles;
     expect(readFiles[Object.keys(readFiles)[0]]).toEqual('some text');
   });
 
   it('should replace contents (with regex)', async () => {
     const chain = mockSparkySrc(`${__dirname}/stubs/case-a/**/**.*`);
-    // const list = await chain
-    //   .contentsOf(/a\.txt/, str => {
-    //     return 'some text';
-    //   })
-    //   .exec();
+    await chain
+      .contentsOf(/a\.txt/, str => {
+        return 'some text';
+      })
+      .exec();
     const readFiles = chain['__scope']().readFiles;
     expect(readFiles[Object.keys(readFiles)[0]]).toEqual('some text');
   });
