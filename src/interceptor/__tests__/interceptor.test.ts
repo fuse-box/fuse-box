@@ -91,4 +91,31 @@ describe('Interceptor', () => {
     expect(Date.now() - timeNow).toBeGreaterThan(2000);
     expect(response.module.contents).toEqual('foo');
   });
+
+  it('should be backwards compatible with non-async callbacks', async () => {
+    const interceptor = createInterceptor();
+
+    interceptor.on('assemble_module', (props: { module: Module }) => {
+      props.module.contents = 'foo';
+      return props;
+    });
+
+    const response = await interceptor.awaitForSync('assemble_module', { module: _module });
+
+    expect(response.module.contents).toEqual('foo');
+  });
+
+  it('should NOT be be forward compatible with async callbacks', () => {
+    const interceptor = createInterceptor();
+
+    interceptor.awaitOn('assemble_module', async (props: { module: Module }) => {
+      props.module.contents = 'foo';
+      return props;
+    });
+
+    const response = interceptor.sync('assemble_module', { module: _module });
+
+    expect(response).toBeInstanceOf(Promise);
+    expect(response.module).not.toBeDefined();
+  });
 });
