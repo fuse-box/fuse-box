@@ -140,6 +140,8 @@
     "format:fix": "prettier --write \"src/**/*.{js,json,md,ts,yml}\"",
     "document": "ts-node -T fuse document",
     "test": "jest --verbose",
+    "test-ci": "jest --verbose --runInBand",
+    "typecheck": "ts-node -T fuse typecheck",
     "coverage": "jest --verbose --coverage",
     "coverage-ci": "jest --verbose --coverage --runInBand"
   },
