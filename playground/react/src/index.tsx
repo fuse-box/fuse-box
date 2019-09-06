@@ -11,10 +11,10 @@ class App extends Component {
     function getSourceStyle(opts) {
       return {};
     }
-    console.log('render');
+
     return (
       <div>
-        oioooo
+        111111
         <Other></Other>
       </div>
     );

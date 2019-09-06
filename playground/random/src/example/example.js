@@ -1,3 +1,0 @@
-import show from '..';
-
-show();

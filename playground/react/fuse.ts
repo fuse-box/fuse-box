@@ -13,19 +13,21 @@ class Context {
       tsConfig: 'src/tsconfig.json',
 
       stylesheet: { paths: [path.join(__dirname, 'src/config')] },
-      cache: true,
+      cache: false,
 
       watch: true,
       hmr: true,
       logging: {
         level: 'succinct',
       },
-      devServer: this.runServer && {
-        open: false,
-        httpServer: {
-          express: app => {},
-        },
-      },
+      devServer: true,
+      // devServer: this.runServer && {
+      //   open: false,
+      //   httpServer: {
+      //     express: app => {},
+      //   },
+      //   hmrServer: { useCurrentUrl: true },
+      // },
     });
   }
 }
