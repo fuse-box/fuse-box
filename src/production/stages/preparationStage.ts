@@ -1,9 +1,9 @@
 import { Project } from 'ts-morph';
+import { Context } from '../../core/Context';
 import { IProductionFlow } from '../main';
 import { ProductionModule } from '../ProductionModule';
 import { ProductionPackage } from '../ProductionPackage';
 import { performStaticTransformations } from '../transformation';
-import { Context } from '../../core/Context';
 
 interface IStaticTransform {
   productionModule: ProductionModule;
@@ -13,7 +13,7 @@ interface IStaticTransform {
 function staticTransform(props: IStaticTransform) {
   const module = props.productionModule.module;
   if (module.isExecutable()) {
-    props.ctx.log.progressFormat('Source transform', module.getShortPath());
+    props.ctx.log.info('source transform', module.getShortPath());
     const project = new Project({ useVirtualFileSystem: true });
     const sourcePath = 'MyClass.tsx';
     props.productionModule.file = project.createSourceFile(sourcePath, module.contents);
@@ -29,7 +29,7 @@ export function preparationStage(props: IProductionFlow) {
   productionContext.productionPackages = [];
   const log = props.ctx.log;
 
-  log.progress('<dim><bold>- Preparation step - static transform and optimise</bold></dim>');
+  log.info('preparation step', '<dim><bold>- Preparation step - static transform and optimise</bold></dim>');
   packages.forEach(pkg => {
     const productionPackage = new ProductionPackage(productionContext, pkg);
     pkg.productionPackage = productionPackage;
@@ -42,5 +42,5 @@ export function preparationStage(props: IProductionFlow) {
     });
     productionContext.productionPackages.push(productionPackage);
   });
-  log.progressEnd('<green><bold>$checkmark Preparation step completed</bold></green>');
+  log.info('preparation step', '<green><bold>$checkmark Preparation step completed</bold></green>');
 }

@@ -1,6 +1,5 @@
-import { ImportSpecifier, ImportDeclaration } from 'ts-morph';
+import { ImportDeclaration, ImportSpecifier } from 'ts-morph';
 import { ESLink } from './ESLink';
-import { treeShakingStage } from '../stages/treeShakingStage';
 
 export class ImportVariable {
   public name: string;

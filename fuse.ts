@@ -2,22 +2,6 @@ import { sparky } from './src/sparky/sparky';
 import { IBumpVersionType } from './src/sparky/bumpVersion';
 import { npmPublish } from './src/sparky/npmPublish';
 
-const TypeDoc = require('typedoc');
-const typedocApp = new TypeDoc.Application({
-  experimentalDecorators: true,
-  logger: 'console',
-  mode: 'modules',
-  module: 'CommonJS',
-  target: 'ES6',
-  ignoreCompilerErrors: true,
-  excludePrivate: true,
-  excludeExternals: true,
-  allowJs: false,
-  exclude: '**/*.test.ts',
-});
-
-const typedocProject = typedocApp.convert(typedocApp.expandInputFiles(['src/core/FuseBox.ts']));
-
 class Context {
   npmTag: 'latest' | 'alpha' | 'next';
   versionBumpType: IBumpVersionType;
@@ -37,6 +21,17 @@ task('clean', async () => {
   await rm('dist');
 });
 
+task('typecheck', () => {
+  const typeChecker = require('fuse-box-typechecker').TypeChecker({
+    tsConfig: './src/tsconfig.json',
+    basePath: './',
+    name: 'checkerSync',
+  });
+  // to run it right away
+  typeChecker.printSettings();
+  typeChecker.inspectAndPrint();
+  typeChecker.worker_watch('./src');
+});
 // replacing the path (since we copy everything to dist)
 task('fix-env', async () => {
   const package_json = require('./dist/package.json');
@@ -91,6 +86,21 @@ task('dist', async ctx => {
 });
 
 task('document', async ctx => {
+  const TypeDoc = require('typedoc');
+  const typedocApp = new TypeDoc.Application({
+    experimentalDecorators: true,
+    logger: 'console',
+    mode: 'modules',
+    module: 'CommonJS',
+    target: 'ES6',
+    ignoreCompilerErrors: true,
+    excludePrivate: true,
+    excludeExternals: true,
+    allowJs: false,
+    exclude: '**/*.test.ts',
+  });
+
+  const typedocProject = typedocApp.convert(typedocApp.expandInputFiles(['src/core/FuseBox.ts']));
   //    const configuration = context.getConfig()
   //    console.dir(context.getConfig().context.tsConfig)
   //    process.exit()

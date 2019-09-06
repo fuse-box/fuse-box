@@ -6,7 +6,7 @@ import { writeFile } from '../../utils/utils';
 export function manifestStage(props: IProductionFlow, bundles: Array<IBundleWriteResponse>) {
   const log = props.ctx.log;
   const config = props.ctx.config;
-  log.progress('<dim><bold>- Manifest stage</bold></dim>');
+  log.info('manifest', '<dim><bold>Manifest stage</bold></dim>');
 
   const json: IManifestJSON = {
     bundles: [],
@@ -23,8 +23,8 @@ export function manifestStage(props: IProductionFlow, bundles: Array<IBundleWrit
       webIndexed: bundle.bundle.props.webIndexed,
     });
   });
-  log.progressFormat('manifest', config.manifest.filePath);
+  log.info('manifest', config.manifest.filePath);
 
-  log.progressEnd('<green><bold>$checkmark Manifest generated</bold></green>');
+  log.info('manifest', '<green><bold>$checkmark Manifest generated</bold></green>');
   writeFile(config.manifest.filePath, JSON.stringify(json, null, 2));
 }

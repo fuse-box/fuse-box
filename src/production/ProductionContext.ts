@@ -1,10 +1,9 @@
+import { Bundle } from '../bundle/Bundle';
 import { Context } from '../core/Context';
 import { Module } from '../core/Module';
 import { Package } from '../core/Package';
-import { ILogger } from '../logging/logging';
 import { ProductionModule } from './ProductionModule';
 import { ProductionPackage } from './ProductionPackage';
-import { Bundle } from '../bundle/Bundle';
 import { ESLink } from './structure/ESLink';
 
 export interface IProductionContext {
@@ -23,7 +22,7 @@ export class ProductionContext {
   public schema: Array<ProductionModule>;
 
   public bundles: Array<Bundle>;
-  private log: ILogger;
+
   constructor(props: IProductionContext) {
     this.moduleIDCounter = 0;
     this.dynamicLinks = [];

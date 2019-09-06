@@ -22,7 +22,7 @@ function linkModule(productionModule: ProductionModule, props: IProductionFlow) 
         link.fromSourceTarget = targetModule.productionModule;
       }
       if (targetModule && targetModule.isExecutable()) {
-        log.progressFormat(
+        log.verbose(
           'Link package',
           `<cyan>$fromSource</cyan> from <magenta>$origin</magenta> to <green>$target</green>`,
           {
@@ -46,15 +46,11 @@ function linkModule(productionModule: ProductionModule, props: IProductionFlow) 
       }
       link.fromSourceTarget = info.link.module.productionModule;
       if (target.module.isExecutable()) {
-        log.progressFormat(
-          'Link module',
-          `<cyan>$fromSource</cyan> from <magenta>$from</magenta> to <green>$to</green>`,
-          {
-            fromSource: link.fromSource,
-            from: module.getShortPath(),
-            to: target.module.getShortPath(),
-          },
-        );
+        log.verbose('Link module', `<cyan>$fromSource</cyan> from <magenta>$from</magenta> to <green>$to</green>`, {
+          fromSource: link.fromSource,
+          from: module.getShortPath(),
+          to: target.module.getShortPath(),
+        });
         target.dependants.push(link);
         link.productionModule = productionModule;
       }
@@ -66,7 +62,7 @@ export function moduleLinkStage(props: IProductionFlow) {
   const { productionContext } = props;
 
   const log = props.ctx.log;
-  log.progress('<dim><bold>- Module Link stage - linking modules and packages</bold></dim>');
+  log.info('module link', '<dim><bold>Module Link stage - linking modules and packages</bold></dim>');
 
   productionContext.productionPackages.forEach(pkg => {
     pkg.productionModules.forEach(mod => {
@@ -76,5 +72,5 @@ export function moduleLinkStage(props: IProductionFlow) {
     });
   });
 
-  log.progressEnd('<green><bold>$checkmark Module Link stage completed</bold></green>');
+  log.info('module link', '<green><bold>$checkmark Module Link stage completed</bold></green>');
 }

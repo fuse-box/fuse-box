@@ -1,6 +1,6 @@
-import { tsTransformModule } from '../tsTransformModule';
-import { initTypescriptConfig } from '../../tsconfig/configParser';
 import * as ts from 'typescript';
+import { initTypescriptConfig } from '../../tsconfig/configParser';
+import { tsTransformModule } from '../tsTransformModule';
 
 describe('tsTransformModule test', () => {
   let compilerOptions: ts.CompilerOptions;
@@ -13,7 +13,8 @@ describe('tsTransformModule test', () => {
   };
 
   beforeAll(() => {
-    const config = initTypescriptConfig({});
+    const anyConf: any = {};
+    const config = initTypescriptConfig(anyConf);
     compilerOptions = config.compilerOptions;
   });
 

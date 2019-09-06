@@ -38,7 +38,7 @@ export function fastAstAnalysis(props: IASTAnalysisProps): IFastAnalysis {
   const bannedVariables = [];
   fastWalk(ast, {
     visit: (node, props) => {
-      let { parent, prop, idx } = props;
+      let { parent } = props;
       if (
         node.type === 'ImportDeclaration' ||
         node.type === 'ExportNamedDeclaration' ||

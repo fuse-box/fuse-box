@@ -15,7 +15,7 @@ function referenceLink(productionModule: ProductionModule, props: IProductionFlo
         });
         if (target) {
           target.dependantVariables.push(importedExternal);
-          log.progressFormat(
+          log.verbose(
             'Import Reference',
             '<cyan>$ref</cyan> [ $objType ] from <green>$fromModule</green> to <magenta>$toModule</magenta>',
             {
@@ -38,7 +38,7 @@ function referenceLink(productionModule: ProductionModule, props: IProductionFlo
         });
         if (target) {
           target.dependantExports.push(exportedExternal);
-          log.progressFormat(
+          log.verbose(
             'Export Reference',
             '<cyan>$ref</cyan> [ $objType ]  <green>$fromModule</green> to <magenta>$from</magenta>',
             {
@@ -57,11 +57,11 @@ export function referenceLinkStage(props: IProductionFlow) {
   const { productionContext } = props;
 
   const log = props.ctx.log;
-  log.progress('<dim><bold>- Reference Link stage - linking exports/imports</bold></dim>');
+  log.info('Reference Link stage', '<dim><bold>linking exports/imports</bold></dim>');
 
   productionContext.productionPackages.forEach(pkg => {
     pkg.productionModules.forEach(mod => referenceLink(mod, props));
   });
 
-  log.progressEnd('<green><bold>$checkmark Reference Link stage completed</bold></green>');
+  log.info('Reference Link stage', '<green><bold>$checkmark Reference Link stage completed</bold></green>');
 }

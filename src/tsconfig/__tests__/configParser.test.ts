@@ -1,10 +1,9 @@
 import * as ts from 'typescript';
+import { createConfig } from '../../config/config';
 import '../../utils/test_utils';
 import { pathJoin } from '../../utils/utils';
 import { initTypescriptConfig, resolveTSConfig } from '../configParser';
-import { createConfig } from '../../config/config';
 const cases = pathJoin(__dirname, 'cases');
-const case1 = pathJoin(cases, 'case1');
 
 describe('tsconfig', () => {
   describe('resolve tsconfig file', () => {

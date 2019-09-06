@@ -24,6 +24,7 @@ export class Module {
   public meta: { [key: string]: any };
 
   public isCached: boolean;
+  public errored: boolean;
   public cache: IModuleCacheBasics;
 
   public assembled: boolean;

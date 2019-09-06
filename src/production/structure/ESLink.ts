@@ -1,13 +1,12 @@
 import {
+  CallExpression,
   ClassDeclaration,
   ExportAssignment,
   ExportDeclaration,
   FunctionDeclaration,
   ImportDeclaration,
-  Node,
   ObjectLiteralExpression,
   SourceFile,
-  CallExpression,
   StringLiteral,
 } from 'ts-morph';
 import * as ts from 'typescript';
@@ -43,8 +42,8 @@ export class ESLink {
 
   private importDeclarationNode: ImportDeclaration;
   private exportDeclarationNode: ExportDeclaration;
-  private exportAssignmentNode: ExportAssignment;
-  private exportObjectDeclarationNode: FunctionDeclaration;
+  public exportAssignmentNode: ExportAssignment;
+  public exportObjectDeclarationNode: FunctionDeclaration;
 
   constructor(public productionModule: ProductionModule) {
     this.exports = [];
@@ -152,22 +151,22 @@ export class ESLink {
     }
   }
 
-  private isImportDeclaration(node: Node): ImportDeclaration {
-    if (node.getParent()) {
-      if (node.getParent().getKind() === ts.SyntaxKind.ImportClause) {
-        if (node.getParent().getParent()) {
-          if (
-            node
-              .getParent()
-              .getParent()
-              .getKind() === ts.SyntaxKind.ImportDeclaration
-          ) {
-            return node.getParent().getParent() as ImportDeclaration;
-          }
-        }
-      }
-    }
-  }
+  // private isImportDeclaration(node: Node): ImportDeclaration {
+  //   if (node.getParent()) {
+  //     if (node.getParent().getKind() === ts.SyntaxKind.ImportClause) {
+  //       if (node.getParent().getParent()) {
+  //         if (
+  //           node
+  //             .getParent()
+  //             .getParent()
+  //             .getKind() === ts.SyntaxKind.ImportDeclaration
+  //         ) {
+  //           return node.getParent().getParent() as ImportDeclaration;
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   /**
    * ExportDeclaration ******************************************************************

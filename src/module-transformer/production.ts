@@ -36,9 +36,9 @@ export function moduleTransformer<T extends ts.Node>(
         if (!target) {
           if (config.target !== 'electron' && config.target !== 'server') {
             if (!props.flow.ctx.config.shoudIgnorePackage(text)) {
-              if (log.props.ignoreStatementErrors && log.props.ignoreStatementErrors.includes(text)) {
-                return;
-              }
+              // if (log.props.ignoreStatementErrors && log.props.ignoreStatementErrors.includes(text)) {
+              //   return;
+              // }
               log.error('Problem when resolving require "$text" in $file', {
                 text: text,
                 file: pm.module.getShortPath(),
@@ -46,10 +46,12 @@ export function moduleTransformer<T extends ts.Node>(
             }
           }
         } else {
-          log.progressFormat(
-            target.module.isExecutable() ? 'Transpile' : 'Register',
-            `"${text}" from ${pm.module.getShortPath()} to ${target.module.getShortPath()}`,
-          );
+          // log.info(
+          //   target.module.isExecutable() ? 'Transpile' : 'Register',
+          //   `"${text}" from ${pm.module.getShortPath()} to ${target.module.getShortPath()}`,
+          // );
+
+          log.info(target.module.isExecutable() ? 'Transpile' : 'Register', target.module.getShortPath());
 
           addModule2ProductionSchema(props, target);
           return ts.createCall(

@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { IStyleSheetProps } from '../config/IStylesheetProps';
-import { fileExists, path2Regex } from '../utils/utils';
+import { fileExists } from '../utils/utils';
 
 export interface IResolveCSSModuleProps {
   paths: Array<string>;

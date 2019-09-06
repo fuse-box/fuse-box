@@ -1,19 +1,19 @@
+import * as path from 'path';
+import { env } from '../env';
+import { FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
 import { simplifiedRegExp } from '../plugins/pluginUtils';
 import {
-  readFile,
-  writeFile,
-  ensureFuseBoxPath,
   ensureAbsolutePath,
   ensureDir,
-  removeFile,
+  ensureFuseBoxPath,
+  readFile,
   readFileAsBuffer,
+  removeFile,
+  writeFile,
 } from '../utils/utils';
+import { bumpVersion, IBumpVersion } from './bumpVersion';
 import { sparky_src } from './sparky_src';
 import { tsc, TscOptions } from './tsc';
-import { ILogger } from '../logging/logging';
-import { env } from '../env';
-import * as path from 'path';
-import { IBumpVersion, bumpVersion } from './bumpVersion';
 export interface ISparkyChain {
   src: (glob: string) => ISparkyChain;
   tsc: (opts: TscOptions) => ISparkyChain;
@@ -25,7 +25,7 @@ export interface ISparkyChain {
   contentsOf: (mask: string | RegExp, fn: (contents: string) => string) => ISparkyChain;
   dest: (target: string, base: string) => ISparkyChain;
 }
-export function sparkyChain(log: ILogger): ISparkyChain {
+export function sparkyChain(log: FuseBoxLogAdapter): ISparkyChain {
   const activities = [];
   const readFiles = {};
   let newLocation, newLocationBase;

@@ -1,7 +1,6 @@
 import * as path from 'path';
-import { ensureAbsolutePath, ensureFuseBoxPath, fastHash, writeFile } from '../utils/utils';
 import { env } from '../env';
-import { Context } from './Context';
+import { ensureAbsolutePath, ensureFuseBoxPath, fastHash, writeFile } from '../utils/utils';
 
 export interface IWriter {}
 export interface IWriterProps {

@@ -1,12 +1,10 @@
+import * as postcss from 'postcss';
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
 import { Context } from '../../core/Context';
 import { Module } from '../../core/Module';
-import { cssAsTextRender } from '../../stylesheet/cssAsTextRender';
 import { cssDevModuleRender } from '../../stylesheet/cssDevModuleRender';
 import { IStyleSheetProcessor } from '../../stylesheet/interfaces';
 import { IPluginCommon } from '../interfaces';
-
-import * as postcss from 'postcss';
 import { wrapContents } from '../pluginStrings';
 
 export interface ICSSContextHandler {

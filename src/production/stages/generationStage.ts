@@ -86,7 +86,7 @@ function acceptStylesheet(props: IBundleGenerationStageProps, pm: ProductionModu
     return;
   }
   const data = pm.module.css;
-  log.progressFormat('CSS', 'Adding css from <green>$from</green> to bundle <magenta>"$bundle"</magenta>', {
+  log.info('css', 'Adding css from <green>$from</green> to bundle <magenta>"$bundle"</magenta>', {
     bundle: bundle.props.name,
     from: pm.module.getShortPath(),
   });
@@ -94,7 +94,6 @@ function acceptStylesheet(props: IBundleGenerationStageProps, pm: ProductionModu
 }
 
 function acceptModule(props: IBundleGenerationStageProps, pm: ProductionModule) {
-  const log = props.flow.ctx.log;
   const wrapper = props.flow.ctx.productionApiWrapper;
   props.flow.ctx.productionApiWrapper.wrapModule;
 
@@ -127,8 +126,8 @@ export function generationStage(props: IProductionFlow) {
     flow: props,
   };
 
-  log.progress('<dim><bold>- Bundle generation stage </bold></dim>');
+  log.info('bundle generation', '<dim><bold>- Bundle generation stage </bold></dim>');
   productionContext.schema.forEach(pm => acceptModule(opts, pm));
 
-  log.progressEnd('<green><bold>$checkmark Bundles are ready</bold></green>');
+  log.info('bundle generation', '<green><bold>$checkmark Bundles are ready</bold></green>');
 }

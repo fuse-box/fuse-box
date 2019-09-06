@@ -1,7 +1,6 @@
-import { IBundleWriteResponse, BundleType } from '../bundle/Bundle';
-import { Context } from '../core/Context';
 import { spawn } from 'child_process';
-import { onExit } from '../utils/exit';
+import { BundleType, IBundleWriteResponse } from '../bundle/Bundle';
+import { Context } from '../core/Context';
 
 export class ServerLauncher {
   private node;
@@ -21,7 +20,7 @@ export class ServerLauncher {
 
     const serverEntry = this.response.find(item => item.bundle.props.type == BundleType.SERVER_ENTRY);
     if (!serverEntry) {
-      return this.ctx.fatal(['Server entry was not found', 'Make sure your dist contains server entry']);
+      return this.ctx.fatal('Server entry was not found', ['Make sure your dist contains server entry']);
     }
     this.node = spawn('node', [...nodeArgs, serverEntry.stat.absPath, ...scriptArgs], {
       stdio: 'inherit',

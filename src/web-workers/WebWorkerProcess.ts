@@ -34,8 +34,7 @@ export class WebWorkerProcess {
     this.isRunning = true;
     const ctx = this.props.ctx;
 
-    ctx.log.printNewLine();
-    ctx.log.print('<dim>Worker process start $path</dim>', { path: this.props.item.absPath });
+    ctx.log.info('worker', 'Worker process start $path', { path: this.props.item.absPath });
 
     let config: IPublicConfig = {
       homeDir: ctx.config.homeDir,
@@ -48,7 +47,7 @@ export class WebWorkerProcess {
       plugins: [
         localCtx => {
           localCtx.ict.on('rebundle_complete', p => {
-            ctx.log.print('<magenta>Worker re-bundled </magenta><dim> $worker</dim>', {
+            ctx.log.info('worker', 'Worker re-bundled $worker', {
               worker: this.props.item.absPath,
             });
             return p;
@@ -82,11 +81,11 @@ export class WebWorkerProcess {
 
     if (ctx.config.production) {
       await fuse.runProd(ctx.config.production);
-      ctx.log.print('<magenta>Worker bundled (production) </magenta><dim> $worker</dim>', {
+      ctx.log.info('worker', 'Worker bundled (production) $worker', {
         worker: this.props.item.absPath,
       });
     } else {
-      ctx.log.print('<magenta>Worker bundled (development) </magenta><dim> $worker</dim>', {
+      ctx.log.info('worker', 'Worker bundled (development) $worker', {
         worker: this.props.item.absPath,
       });
       await fuse.runDev();
@@ -95,7 +94,7 @@ export class WebWorkerProcess {
 }
 export function registerWebWorkerProcess(props: IWebWorkerProcessProps) {
   const workerProcess = new WebWorkerProcess(props);
-  props.ctx.log.progressFormat('Worker registered', props.item.absPath);
+  props.ctx.log.info('worker', 'registered ' + props.item.absPath);
   props.ctx.webWorkers[props.item.absPath] = workerProcess;
   return workerProcess;
 }

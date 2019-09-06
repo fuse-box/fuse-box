@@ -1,20 +1,16 @@
-import * as prettyTime from 'pretty-time';
 import { pluginCSS, pluginSass } from '..';
 import { Context } from '../core/Context';
 import { assemble } from '../main/assemble';
 import { attachWebIndex } from '../main/attach_webIndex';
+import { prerequisites } from '../main/prerequisite';
 import { processPlugins } from '../main/process_plugins';
-import { logFuseBoxVersion, printStatFinal } from '../main/stat_log';
 import { pluginAssumption } from '../plugins/core/plugin_assumption';
 import { attachWebWorkers } from '../web-workers/attachWebWorkers';
 import { IProductionResponse, productionMain } from './main';
 
 export async function bundleProd(ctx: Context): Promise<IProductionResponse> {
-  logFuseBoxVersion(ctx);
-  ctx.log.print('<cyan><bold>  Production build</bold></cyan>');
-  ctx.log.printNewLine();
-
-  const startTime = process.hrtime();
+  prerequisites(ctx);
+  ctx.log.startStreaming();
 
   const plugins = [...ctx.config.plugins, pluginAssumption(), pluginCSS(), pluginSass()];
 
@@ -36,11 +32,6 @@ export async function bundleProd(ctx: Context): Promise<IProductionResponse> {
     await attachWebIndex(ctx, data.bundles);
   }
 
-  printStatFinal({ log: ctx.log, time: prettyTime(process.hrtime(startTime), 'ms') });
-  //setTimeout(() => {
-  //ctx.log.printNewLine();
-  ctx.log.printWarnings();
-  ctx.log.printErrors();
-  //}, 0);
+  ctx.log.fuseFinalise();
   return data;
 }

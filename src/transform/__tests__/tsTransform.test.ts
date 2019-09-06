@@ -1,12 +1,13 @@
+import * as ts from 'typescript';
 import { devImports } from '../../integrity/devPackage';
 import { ImportType } from '../../resolver/resolver';
 import { initTypescriptConfig } from '../../tsconfig/configParser';
 import { tsTransform } from '../tsTransform';
-import * as ts from 'typescript';
 describe('Ts transform test', () => {
   let compilerOptions: ts.CompilerOptions;
   beforeAll(() => {
-    const config = initTypescriptConfig({});
+    const anyConf: any = {};
+    const config = initTypescriptConfig(anyConf);
     compilerOptions = config.compilerOptions;
   });
 

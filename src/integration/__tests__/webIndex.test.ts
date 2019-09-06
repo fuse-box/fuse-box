@@ -45,7 +45,7 @@ describe('WebIndex integration test', () => {
       const scripts = test.helper.extractScripts(indexFile.contents);
       expect(scripts.jsPaths).toHaveLength(3);
 
-      const listed = test.helper.listDistFiles();
+      //const listed = test.helper.listDistFiles();
 
       scripts.jsPaths.forEach(p => {
         expect(p[0]).not.toEqual('/');

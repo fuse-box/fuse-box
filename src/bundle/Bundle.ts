@@ -84,7 +84,7 @@ export class Bundle {
 
   public noHash?: boolean;
   public name: string;
-  private useCustomGenerator: boolean;
+  public useCustomGenerator: boolean;
 
   constructor(public props: IBundleProps) {
     this.packages = [];

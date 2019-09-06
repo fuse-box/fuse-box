@@ -2,13 +2,9 @@ import * as CleanCSS from 'clean-css';
 import * as Terser from 'terser';
 import { BundleType, IBundleWriteResponse } from '../../bundle/Bundle';
 import { addServerEntry } from '../../main/server_entry';
-import { IServerProcess } from '../../server_process/serverProcess';
 import { renderProductionAPI } from '../api/renderProductionAPI';
 import { IProductionFlow } from '../main';
 import { manifestStage } from './manifestStage';
-interface IFinalStageProps {
-  flow: IProductionFlow;
-}
 
 function findEntryIds(props: IProductionFlow): Array<number> {
   const ids = [];
@@ -19,7 +15,7 @@ function findEntryIds(props: IProductionFlow): Array<number> {
 }
 
 function minifyCSS(props: IProductionFlow) {
-  const { productionContext, ctx } = props;
+  const { productionContext } = props;
   const log = props.ctx.log;
   const cssBundles = productionContext.bundles.filter(b => b.props.type === BundleType.CSS);
 
@@ -28,7 +24,7 @@ function minifyCSS(props: IProductionFlow) {
     if (cssBundle.contents.sourceMap) {
       sourceMap = cssBundle.contents.sourceMap.toString();
     }
-    log.progressFormat('css optimize', 'Optimising css bundlde "$bundle"', { bundle: cssBundle.props.name });
+    log.info('css optimize', 'Optimising css bundlde "$bundle"', { bundle: cssBundle.props.name });
     const userProps = props.ctx.config.production.cleanCSS || {};
     const response = new CleanCSS({ ...userProps, sourceMap: true, sourceMapInlineSources: true }).minify(
       cssBundle.contents.content.toString(),
@@ -52,7 +48,7 @@ function uglifyBundles(props: IProductionFlow) {
   const jsBundles = productionContext.bundles.filter(b => b.isJavascriptType());
 
   jsBundles.forEach(bundle => {
-    log.progressFormat('uglify', 'Uglifying js bundle "$bundle"', { bundle: bundle.props.name });
+    log.info('uglify', 'Uglifying js bundle "$bundle"', { bundle: bundle.props.name });
     const opts: any = typeof config.uglify === 'object' ? config.uglify : {};
     if (bundle.needsSourceMaps()) {
       opts.sourceMap = {
@@ -77,11 +73,7 @@ export async function finalStage(props: IProductionFlow) {
   const config = props.ctx.config;
   const log = props.ctx.log;
 
-  const opts: IFinalStageProps = {
-    flow: props,
-  };
-
-  log.progress('<dim><bold>- Entering final stage </bold></dim>');
+  log.info('final stage', 'Entering final stage');
 
   // get all webindexed js bundles
   const webIndexJSBundles = productionContext.bundles.filter(
@@ -129,7 +121,7 @@ export async function finalStage(props: IProductionFlow) {
     },
     apiVariables,
   );
-  log.progressFormat('API', `Injecting production api into <magenta>${fistBundle.name}</magenta> bundle`);
+  log.info('API', `Injecting production api into <magenta>${fistBundle.name}</magenta> bundle`);
   fistBundle.prependContent(api);
 
   // add entry points *********************
@@ -154,13 +146,11 @@ export async function finalStage(props: IProductionFlow) {
     manifestStage(props, bundleResponses);
   }
 
-  let launcher: IServerProcess;
-
   if (ctx.config.isServer()) {
     const { info } = await addServerEntry(ctx, bundleResponses);
     bundleResponses.push(info);
   }
 
-  log.progressEnd('<green><bold>$checkmark Success!</bold></green>');
+  log.info('completed', '<green><bold>$checkmark Success!</bold></green>');
   return { bundles: bundleResponses };
 }

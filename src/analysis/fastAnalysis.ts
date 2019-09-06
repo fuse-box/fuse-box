@@ -2,7 +2,6 @@ import { IAssembleResolveResult } from '../main/assemble';
 import { ImportType, IResolver } from '../resolver/resolver';
 import { fastAstAnalysis } from './fastAstAnalysis';
 import { tokenize } from './tokenizer';
-import { WebWorkerProcess } from '../web-workers/WebWorkerProcess';
 
 //import { AnalysisContext } from "./AnalysisContext";
 

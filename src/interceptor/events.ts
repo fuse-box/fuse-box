@@ -1,11 +1,11 @@
 import { Bundle, IBundleWriteResponse } from '../bundle/Bundle';
+import { IAssembleContext } from '../core/assemble_context';
 import { Context } from '../core/Context';
 import { Module } from '../core/Module';
 import { Package } from '../core/Package';
+import { OnWatcherProps } from '../main/attach_watcher';
 import { Concat } from '../utils/utils';
-import { IAssembleContext } from '../core/assemble_context';
-import { WatcherAction, IWatcherProps } from '../watcher/watcher';
-import { IWatcherAttachProps, OnWatcherProps } from '../main/attach_watcher';
+import { WatcherAction } from '../watcher/watcher';
 
 export interface ISoftReload {
   filePath: string;
