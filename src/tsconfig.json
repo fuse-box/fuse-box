@@ -19,5 +19,5 @@
     "preserveConstEnums": true,
     "suppressImplicitAnyIndexErrors": true
   },
-  "exclude": ["node_modules", "*__tests__*", "playground", "_playground", "_benchmark*"]
+  "exclude": ["node_modules", "src/**/__tests__", "playground", "_playground", "src/**/_benchmark*"]
 }

@@ -1,7 +1,5 @@
 import { spawn } from 'child_process';
-import { ensureAbsolutePath } from '../utils/utils';
 import { env } from '../env';
-import * as path from 'path';
 
 export type Libs =
   | 'ES5'
@@ -105,21 +103,9 @@ export interface TscOptions {
   exclude?: Array<string>;
 }
 
-export async function tsc(opts?: TscOptions) {
+export async function tsc(opts?: TscOptions, target?: string) {
   let tscOptions: any = [];
 
-  if (opts.project) {
-    opts.project = ensureAbsolutePath(opts.project, path.dirname(env.SCRIPT_FILE));
-  }
-
-  if (opts.files) {
-    tscOptions = tscOptions.concat(opts.files);
-    delete opts.files;
-  }
-
-  if (opts.outDir) {
-    opts.outDir = ensureAbsolutePath(opts.outDir, path.dirname(env.SCRIPT_FILE));
-  }
   for (const key in opts) {
     if (opts[key] !== undefined) {
       if (key === 'watch') {
@@ -129,10 +115,13 @@ export async function tsc(opts?: TscOptions) {
       }
     }
   }
+  if (target) {
+    tscOptions.push(target);
+  }
 
   return new Promise((resolve, reject) => {
     const proc = spawn('tsc' + (/^win/.test(process.platform) ? '.cmd' : ''), tscOptions, {
-      stdio: 'inherit',
+      cwd: env.SCRIPT_PATH,
     });
     proc.on('close', function(code) {
       if (code === 8) {

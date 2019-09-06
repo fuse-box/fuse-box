@@ -1,6 +1,7 @@
-import { sparky } from './src/sparky/sparky';
 import { IBumpVersionType } from './src/sparky/bumpVersion';
 import { npmPublish } from './src/sparky/npmPublish';
+import { sparky } from './src/sparky/sparky';
+import { tsc } from './src/sparky/tsc';
 
 class Context {
   npmTag: 'latest' | 'alpha' | 'next';
@@ -8,13 +9,31 @@ class Context {
 }
 const { src, rm, task, exec } = sparky(Context);
 
+function runTypeChecker() {
+  const typeChecker = require('fuse-box-typechecker').TypeChecker({
+    tsConfig: './src/tsconfig.json',
+    basePath: './',
+    name: 'typecheck',
+    throwOnSyntactic: true,
+    throwOnSemantic: true,
+    throwOnGlobal: true,
+  });
+  // to run it right away
+  typeChecker.printSettings();
+
+  return typeChecker.inspectAndPrint();
+}
 task('transpile', async c => {
-  await src('src/**/**.ts')
-    .filter(file => {
-      return !(/([_]+(benchmark|playground))/.test(file) || /__test(s)?__/.test(file));
-    })
-    .tsc({ target: 'ES2017', outDir: './dist', declaration: true, module: 'CommonJS' })
-    .exec();
+  await tsc(
+    {
+      declaration: true,
+      module: 'CommonJS',
+      skipLibCheck: true,
+      target: 'ES2017',
+      outDir: 'dist',
+    },
+    'src/index.ts',
+  );
 });
 
 task('clean', async () => {
@@ -22,15 +41,7 @@ task('clean', async () => {
 });
 
 task('typecheck', () => {
-  const typeChecker = require('fuse-box-typechecker').TypeChecker({
-    tsConfig: './src/tsconfig.json',
-    basePath: './',
-    name: 'checkerSync',
-  });
-  // to run it right away
-  typeChecker.printSettings();
-  typeChecker.inspectAndPrint();
-  typeChecker.worker_watch('./src');
+  runTypeChecker();
 });
 // replacing the path (since we copy everything to dist)
 task('fix-env', async () => {
@@ -78,6 +89,7 @@ task('publish-next', async ctx => {
 
 task('dist', async ctx => {
   await exec('clean');
+  await exec('typecheck');
   await exec('transpile');
   await exec('copy-modules');
   await exec('copy-various');
@@ -101,10 +113,7 @@ task('document', async ctx => {
   });
 
   const typedocProject = typedocApp.convert(typedocApp.expandInputFiles(['src/core/FuseBox.ts']));
-  //    const configuration = context.getConfig()
-  //    console.dir(context.getConfig().context.tsConfig)
-  //    process.exit()
-  console.log(typedocProject == null);
+
   if (typedocProject) {
     // Project may not have converted correctly
     const outputDir = 'docs/api';

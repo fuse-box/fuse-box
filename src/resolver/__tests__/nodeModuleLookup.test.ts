@@ -71,7 +71,7 @@ describe('isNodeModule', () => {
     const res = isNodeModule('chart.js');
     expect(res).toEqual({ name: 'chart.js' });
   });
-  
+
   it('case 15', () => {
     const res = isNodeModule('validate.io-undefined');
     expect(res).toEqual({ name: 'validate.io-undefined' });
@@ -83,7 +83,7 @@ describe('NodeModule lookup', () => {
   const filePath = path.join(cases, 'src2/index.ts');
   it('should fail to look up a module', () => {
     const res = nodeModuleLookup({ filePath: filePath, target: '__foo' }, { name: '__foo' });
-    expect(res).toEqual({ error: 'Cannot resolve __foo' });
+    expect(res).toEqual({ error: 'Cannot resolve "__foo"' });
   });
 
   it('should fail to look up a module without package.json', () => {

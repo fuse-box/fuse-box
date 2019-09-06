@@ -3,6 +3,8 @@ import { createFuseLogger } from '../fuse-log/FuseBoxLogAdapter';
 import { ensureAbsolutePath, removeFolder } from '../utils/utils';
 import { sparkyChain } from './sparky_chain';
 
+import * as prettyTime from 'pretty-time';
+
 export function sparky<T>(Ctx: new () => T) {
   const ctx = new Ctx();
   const tasks: any = {};
@@ -25,6 +27,7 @@ export function sparky<T>(Ctx: new () => T) {
     execScheduled = true;
   };
 
+  const times: any = {};
   const scope = {
     activities: [],
     rm: (folder: string) => {
@@ -37,10 +40,13 @@ export function sparky<T>(Ctx: new () => T) {
         log.printBottomMessages();
         return;
       }
+      times[name] = process.hrtime();
 
-      log.info('[' + name + ']', 'Starting', { name });
-
+      log.info('<magenta>[ ' + name + ' ]</magenta>', 'Starting', { name });
       await tasks[name](ctx);
+      log.info('<dim><magenta>[ ' + name + ' ]</magenta></dim>', '<dim>Completed in $time</dim>', {
+        time: prettyTime(process.hrtime(times[name]), 'ms'),
+      });
 
       log.printBottomMessages();
     },
