@@ -72,6 +72,7 @@ export function getEssentialWebIndexParams(config: IWebIndexConfig | boolean, lo
     distFileName,
     publicPath,
     templateContent,
+    templatePath,
   };
 }
 
@@ -120,12 +121,23 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
         bundles: scriptTags.join('\n'),
         css: cssTags.join('\n'),
       };
-      const contents = replaceWebIndexStrings(opts.templateContent, scriptOpts);
+
+      let fileContents = opts.templateContent;
+
+      const pluginResponse = await ctx.ict.send('before_webindex_write', {
+        filePath: opts.templatePath,
+        fileContents,
+        bundles,
+      });
+
+      if (pluginResponse && pluginResponse.fileContents) {
+        fileContents = pluginResponse.fileContents;
+      }
 
       logger.info('webindex', 'writing to $name</yellow></bold></dim>', {
         name: opts.distFileName,
       });
-      await ctx.writer.write(opts.distFileName, contents);
+      await ctx.writer.write(opts.distFileName, replaceWebIndexStrings(fileContents, scriptOpts));
     },
   };
 }
