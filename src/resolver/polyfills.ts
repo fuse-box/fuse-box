@@ -23,6 +23,8 @@ const SERVER_POLYFILL = new Set<string>([
   'zlib',
   'constants',
   'worker_threads',
+  'v8',
+  'vm',
 ]);
 
 const ELECTRON_POLYFILL = new Set<string>([
