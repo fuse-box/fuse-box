@@ -10,13 +10,14 @@ export class SocketClient {
     const protocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
     const domain = location.hostname || 'localhost';
 
-    if (opts.useCurrentUrl) {
-      this.url = protocol + location.hostname + (location.port ? ':' + location.port : '');
+    if (opts.connectionURL) {
+      this.url = opts.connectionURL;
     } else {
-      this.url = opts.host || `${protocol}${domain}:${port}`;
-
-      if (opts.uri) {
-        this.url = opts.uri;
+      if (opts.useCurrentURL) {
+        this.url = protocol + location.hostname + (location.port ? ':' + location.port : '');
+      }
+      if (opts.port) {
+        this.url = `${protocol}${domain}:${opts.port}`;
       }
     }
 

@@ -121,7 +121,19 @@ export function createDevServer(ctx: Context): IDevServerActions {
         const bundle = props.bundle;
 
         if (bundle.props.type === BundleType.PROJECT_JS) {
-          bundle.addContent(`FuseBox.import("fuse-box-hot-reload").connect(${JSON.stringify(hmrServerProps)})`);
+          const clientProps: any = {};
+
+          if (hmrServerProps.connectionURL) {
+            clientProps.connectionURL = hmrServerProps.connectionURL;
+          } else {
+            if (hmrServerProps.useCurrentURL || httpServerProps.port === hmrServerProps.port) {
+              clientProps.useCurrentURL = true;
+            } else if (hmrServerProps.port) {
+              clientProps.port = hmrServerProps.port;
+            }
+          }
+
+          bundle.addContent(`FuseBox.import("fuse-box-hot-reload").connect(${JSON.stringify(clientProps)})`);
         }
         return props;
       });

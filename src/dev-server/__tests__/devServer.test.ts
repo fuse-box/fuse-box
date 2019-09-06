@@ -79,7 +79,7 @@ describe('Dev server test', () => {
     });
     const bundle = createBundle({ ctx: data.ctx, name: 's', type: BundleType.PROJECT_JS });
     data.ctx.ict.sync('before_bundle_write', { bundle });
-    expect(bundle.generate().contents).toEqual(`FuseBox.import("fuse-box-hot-reload").connect({"port":4444})`);
+    expect(bundle.generate().contents).toEqual(`FuseBox.import("fuse-box-hot-reload").connect({"useCurrentURL":true})`);
   });
 
   it('Should not inject code with hmr', () => {
