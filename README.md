@@ -1,21 +1,27 @@
 <p align="center">
-  <img
-    height="151"
-    width="468"
-    src="https://raw.githubusercontent.com/fuse-box/fuse-box/master/logo.png">
+  <img width="200" src="./logo.svg">
 </p>
 
 <h2 align="center">A bundler that does it right</h2>
 
 <p align="center">
-  <a href="https://travis-ci.org/fuse-box/fuse-box">
+  <a href="#">
     <img
-      alt="Travis CI Build Status"
-      src="https://img.shields.io/travis/fuse-box/fuse-box/master.svg?label=Travis+CI">
+      alt="Downloads"
+      src="https://badgen.net/npm/dm/fuse-box">
   </a>
-  <a href="https://codecov.io/gh/fuse-box/fuse-box">
-    <img src="https://codecov.io/gh/fuse-box/fuse-box/branch/v4/graph/badge.svg" />
+
+  <a href="#">
+    <img
+      alt="Circle ci"
+      src="https://badgen.net/circleci/github/fuse-box/fuse-box">
   </a>
+
+  <a href="#">
+    <img
+      src="https://badgen.net/npm/v/fuse-box/next">
+  </a>
+
   <a href="https://www.npmjs.com/package/fuse-box">
     <img
       alt="npm version"
@@ -42,19 +48,16 @@
       alt="Sponsors on Open Collective"
       src="https://opencollective.com/fuse-box/sponsors/badge.svg">
   </a>
-  <a href="https://gitter.im/fusebox-bundler/Lobby">
-    <img
-      alt="Chat on Gitter"
-      src="https://img.shields.io/gitter/room/fusebox-bundler/Lobby.svg">
-  </a>
+  
   <a href="https://twitter.com/FuseBoxJS">
     <img
       alt="Follow FuseBox on Twitter"
       src="https://img.shields.io/twitter/follow/FuseBoxJS.svg?label=follow+FuseBox">
   </a>
+
 </p>
 
----
+<p align="center"><a href="https://slack.fuse-box.org">FuseBox on slack</a><p>
 
 # FUSEBOX v4 is here
 
@@ -70,99 +73,19 @@ Install:
 npm install fuse-box@next
 ```
 
+```ts
+import { fusebox } from 'fuse-box';
+fusebox({
+  target: 'browser',
+  entry: 'src/index.tsx',
+  webIndex: {
+    template: 'src/index.html',
+  },
+  devServer: true,
+}).runDev();
+```
+
 ## [React demo](https://github.com/fuse-box/react-example)
-
-# Introduction
-
-FuseBox is a performant bundler/module loader, where you measure you build time in millseconds. It combines the power of
-[Webpack](https://webpack.js.org), [JSPM](https://jspm.io) and [SystemJS](https://github.com/systemjs/systemjs).
-
-### Blazing fast
-
-FuseBox is extremely convenient for developers. Incremental build of an entire application takes 50 to 100 milliseconds.
-It requires no configuration to bundle projects such as `babel-core`.
-
-### TypeScript First
-
-FuseBox loves [TypeScript](https://www.typescriptlang.org), and does not require any additional configuration to support
-it. It will compile and bundle your code within a fraction of a second, yet it offers a comprehensive loader API. It is
-packed with features and unfolds limitless possibilities of extending.
-
-### Task Runner
-
-FuseBox features a powerfull [task runner](https://fuse-box.org/docs/task-runner/getting-started-with-sparky). It fits
-perfectly in the modern API of FuseBox while resembling well established concepts behind [Gulp](https://gulpjs.org).
-
-### Plugins
-
-We maintain all of the most used plugins. You can just pick what you need and plug it in. If there's anything missing,
-[let us know](./CONTRIBUTING.md#feature-requests)!
-
-### Highlights
-
-- No headache, minimal configuration
-- First class [TypeScript](https://fuse-box.org/docs/getting-started/typescript-project) support
-- [Tree shaking](https://fuse-box.org/docs/production-builds/quantum#tree-shaking)
-- Code Splitting
-- [Dynamic imports](https://fuse-box.org/docs/development/dynamic-imports)
-- [CSS Code splitting](https://fuse-box.org/docs/getting-started/add-css#production-build)
-- Blazing fast bundle time
-- [DevServer and HMR](https://fuse-box.org/docs/development/development-server) integrate with existing HTTP apps in 1
-  second!
-- Works everywhere for easy universal applications
-
-There is so much more... FuseBox pushes bundling to a whole new level!
-
-# Getting Started
-
-### Installation
-
-FuseBox has many baked in plugins to help you get started. All you need to do is to install `fuse-box` using npm or
-yarn.
-
-```sh
-npm install fuse-box --save-dev
-yarn add fuse-box --dev
-```
-
-### Usage
-
-To build a TypeScript application, create a file `fuse.js` in the root directory of your project:
-
-```js
-const { FuseBox } = require('fuse-box');
-
-const fuse = FuseBox.init({
-  homeDir: 'src',
-  output: 'dist/$name.js',
-});
-
-fuse.bundle('app').instructions(`> index.ts`);
-
-fuse.run();
-```
-
-And run it!
-
-```sh
-node fuse
-```
-
-### Documentation
-
-You can find a more detailed getting started guide on our [website](https://fuse-box.org/docs/getting-started/setup). It
-will walk you through the basics and give you a solid foundation to dig deeper.
-
-### Examples and seeds
-
-You can find many examples and application scaffolds on our [here](https://github.com/fuse-box/fuse-box-examples). Don't
-hesitate to reach out to us on [Gitter](https://gitter.im/fusebox-bundler/Lobby). Please consult our
-[Contributing guidelines](https://fuse-box.org/docs/contributing) before creating an issue, we're trying to keep it nice
-and tidy.
-
-#### React Example
-
-[React project](https://github.com/fuse-box/fuse-react-demo) using React with Code Splitting + CSS Splitting
 
 # Open Collective
 
@@ -220,18 +143,3 @@ Become a sponsor and get your logo on our README on Github with a link to your s
 <a href="https://opencollective.com/fuse-box/sponsor/7/website" target="_blank"><img src="https://opencollective.com/fuse-box/sponsor/7/avatar.svg"></a>
 <a href="https://opencollective.com/fuse-box/sponsor/8/website" target="_blank"><img src="https://opencollective.com/fuse-box/sponsor/8/avatar.svg"></a>
 <a href="https://opencollective.com/fuse-box/sponsor/9/website" target="_blank"><img src="https://opencollective.com/fuse-box/sponsor/9/avatar.svg"></a>
-
-# Contributing
-
-Please consult [Contributing Guildelines](https://fuse-box.org/docs/contributing) for details. If you already know it,
-here's a fastlane to our communication channels:
-
-- [Official Documentation](http://fuse-box.org/)
-- [Submit an Issue](https://github.com/fuse-box/fuse-box/issues/new)
-- [Make Documentation Better](https://github.com/fuse-box/fuse-box/tree/master/docs)
-- [Join Gitter Channel](https://gitter.im/fusebox-bundler/Lobby)
-
-Special thanks to [devmondo](https://github.com/devmondo) for incredible ideas, giving inspiration and relentless
-testing/contributing to the project.
-
-If you like the project, don't forget to star it!
