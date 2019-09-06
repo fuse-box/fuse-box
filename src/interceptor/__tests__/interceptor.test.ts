@@ -70,4 +70,25 @@ describe('Interceptor', () => {
     await icp.resolve();
     expect(responses).toEqual([1, 2]);
   });
+
+  it('should await all interceptors to finish', async () => {
+    const interceptor = createInterceptor();
+
+    interceptor.awaitOn('assemble_module', async (props: { module: Module }) => {
+      const sleep = async (sec: number) => {
+        return new Promise(resolve => setTimeout(resolve, sec * 1000));
+      };
+
+      await sleep(2);
+
+      props.module.contents = 'foo';
+      return props;
+    });
+
+    const timeNow = Date.now();
+    const response = await interceptor.awaitForSync('assemble_module', { module: _module });
+
+    expect(Date.now() - timeNow).toBeGreaterThan(2000);
+    expect(response.module.contents).toEqual('foo');
+  });
 });
