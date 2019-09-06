@@ -9,10 +9,17 @@ export class SocketClient {
     const port = opts.port || window.location.port;
     const protocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
     const domain = location.hostname || 'localhost';
-    this.url = opts.host || `${protocol}${domain}:${port}`;
-    if (opts.uri) {
-      this.url = opts.uri;
+
+    if (opts.useCurrentUrl) {
+      this.url = protocol + location.hostname + (location.port ? ':' + location.port : '');
+    } else {
+      this.url = opts.host || `${protocol}${domain}:${port}`;
+
+      if (opts.uri) {
+        this.url = opts.uri;
+      }
     }
+
     this.authSent = false;
     this.emitter = new events.EventEmitter();
   }
@@ -27,8 +34,8 @@ export class SocketClient {
   }
   connect(fn) {
     setTimeout(() => {
-      this.client = new WebSocket(this.url);
       log(`Connecting to FuseBox HMR at ${this.url}`);
+      this.client = new WebSocket(this.url);
       this.bindEvents(fn);
     }, 0);
   }

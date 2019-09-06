@@ -10,6 +10,7 @@ export type IDevServerProxy = {
 
 export interface IHMRServerProps {
   enabled?: boolean;
+  useCurrentUrl: boolean;
   port?: number;
   url?: string;
 }

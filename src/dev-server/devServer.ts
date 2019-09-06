@@ -121,8 +121,7 @@ export function createDevServer(ctx: Context): IDevServerActions {
         const bundle = props.bundle;
 
         if (bundle.props.type === BundleType.PROJECT_JS) {
-          const opts = { port: hmrServerProps.port };
-          bundle.addContent(`FuseBox.import("fuse-box-hot-reload").connect(${JSON.stringify(opts)})`);
+          bundle.addContent(`FuseBox.import("fuse-box-hot-reload").connect(${JSON.stringify(hmrServerProps)})`);
         }
         return props;
       });

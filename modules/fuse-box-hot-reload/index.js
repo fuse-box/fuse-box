@@ -15,10 +15,7 @@ function gatherSummary() {
   return summary;
 }
 export const connect = opts => {
-  let client = new SocketClient({
-    port: opts.port,
-    uri: opts.uri,
-  });
+  let client = new SocketClient(opts);
   client.connect();
 
   client.on('get-summary', data => {
