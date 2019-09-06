@@ -58,6 +58,21 @@ const pluginBar = () => (ctx: Context) => {
 };
 ```
 
+If your plugin is asynchronous and you want to instruct fuse-box to wait until the `Promise` that it returns will
+resolve, you should use `awaitOn`. This will give fuse-box the change to wait until your plugin finished it's work.
+Please notice that fuse-box will decide if it will await the results or not (depending on the event and context).
+
+```ts
+const pluginBar = () => (ctx: Context) => {
+  ctx.ict.awaitOn('complete', async props => {
+    console.log('Bundling is completed');
+
+    // in async functions, all return values are wrapped in Promises automatically
+    return props;
+  });
+};
+```
+
 ## Module plugins
 
 Module plugins are the ones that work with the actual files (javascript or typescript) A very simple plugin that
@@ -125,8 +140,8 @@ There are several types of events related to capturing modules in `ict`
 ctx.ict.on('assemble_module_init', props => {});
 ```
 
-At this point module hasn just been resolved. It won't contain any information (analysis etc.) whatsoever. Never
-perform any async operations here, since it will lead to race conditions. NEVER transform the contents at this point.
+At this point module hasn just been resolved. It won't contain any information (analysis etc.) whatsoever. Never perform
+any async operations here, since it will lead to race conditions. NEVER transform the contents at this point.
 
 **NEVER** transform the contents at **assemble_module_init**
 
