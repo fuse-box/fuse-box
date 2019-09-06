@@ -55,7 +55,7 @@ export function transpileStage(props: IProductionFlow) {
 
   const log = props.ctx.log;
 
-  log.progress('<dim><bold>- Transpile stage</bold></dim>');
+  log.info('Transpile stage', '<dim><bold>- Transpile stage</bold></dim>');
   const opts: ITranspileStageProps = {
     flow: props,
     amount: 0,
@@ -65,7 +65,7 @@ export function transpileStage(props: IProductionFlow) {
 
   modules.forEach(mod => addModule2ProductionSchema(opts, mod.productionModule));
 
-  log.progressEnd('<green><bold>$checkmark $amount Modules have been transpiled</bold></green>', {
+  log.info('Transpile stage', '<green><bold>$checkmark $amount Modules have been transpiled</bold></green>', {
     amount: opts.amount,
   });
 }

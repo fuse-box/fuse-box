@@ -1,14 +1,14 @@
-import { sparkyChain } from './sparky_chain';
-import { getLogger } from '../logging/logging';
-import { removeFolder, ensureAbsolutePath } from '../utils/utils';
 import { env } from '../env';
+import { createFuseLogger } from '../fuse-log/FuseBoxLogAdapter';
+import { ensureAbsolutePath, removeFolder } from '../utils/utils';
+import { sparkyChain } from './sparky_chain';
 
 export function sparky<T>(Ctx: new () => T) {
   const ctx = new Ctx();
   const tasks: any = {};
 
-  const log = getLogger({ level: 'verbose' });
-
+  const log = createFuseLogger({ level: 'verbose' });
+  log.flush();
   let execScheduled = false;
   const execNext = () => {
     if (!execScheduled) {
@@ -20,8 +20,6 @@ export function sparky<T>(Ctx: new () => T) {
 
       setTimeout(async () => {
         await scope.exec(taskName);
-        log.printErrors();
-        log.printWarnings();
       }, 0);
     }
     execScheduled = true;
@@ -36,12 +34,15 @@ export function sparky<T>(Ctx: new () => T) {
     exec: async (name: string) => {
       if (!tasks[name]) {
         log.error("Can't find task name: $name", { name });
+        log.printBottomMessages();
         return;
       }
 
-      log.print('<cyan>→ Running <bold>$name</bold></cyan>', { name });
+      log.info('[' + name + ']', 'Starting', { name });
 
       await tasks[name](ctx);
+
+      log.printBottomMessages();
     },
     task: (name: string, fn: (ctx: T) => void) => {
       tasks[name] = fn;

@@ -102,6 +102,7 @@ export interface TscOptions {
   types?: string[];
   typeRoots?: string[];
   watch?: boolean;
+  exclude?: Array<string>;
 }
 
 export async function tsc(opts?: TscOptions) {

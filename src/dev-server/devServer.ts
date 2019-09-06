@@ -45,8 +45,8 @@ export function createExpressApp(ctx: Context, props: IHTTPServerProps, extra?: 
       info: msg => {
         ctx.log.info('proxy', msg);
       },
-      warn: msg => ctx.log.warn('proxy', msg),
-      error: msg => ctx.log.error('proxy', msg),
+      warn: msg => ctx.log.warn(msg),
+      error: msg => ctx.log.error(msg),
     };
   }
 
@@ -68,6 +68,7 @@ export function createExpressApp(ctx: Context, props: IHTTPServerProps, extra?: 
       extra.openProps.target = extra.openProps.target || `http://localhost:${props.port}`;
       open(extra.openProps.target, extra.openProps);
     }
+
     ctx.log.info('development', `Development server is running at <bold>http://localhost:$port</bold>`, {
       port: props.port,
     });

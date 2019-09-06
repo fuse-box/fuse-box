@@ -4,7 +4,6 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "isolatedModules": false,
-    "jsx": "react",
     "importHelpers": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
@@ -15,8 +14,10 @@
     "removeComments": true,
     "noEmitHelpers": true,
     "noLib": false,
-    "outDir": "build/",
+    "outDir": "../dist/",
+    "skipLibCheck": true,
     "preserveConstEnums": true,
     "suppressImplicitAnyIndexErrors": true
-  }
+  },
+  "exclude": ["node_modules", "*__tests__*", "playground", "_playground", "_benchmark*"]
 }

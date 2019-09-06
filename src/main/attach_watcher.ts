@@ -3,7 +3,7 @@ import { createDevBundles } from '../bundle/createDevBundles';
 import { Context } from '../core/Context';
 import { Package } from '../core/Package';
 import { env } from '../env';
-import { EMOJIS } from '../logging/logging';
+
 import { extractFuseBoxPath } from '../utils/utils';
 import { createWatcher, WatcherAction } from '../watcher/watcher';
 import { assemble } from './assemble';
@@ -114,10 +114,10 @@ async function reload_HardModules(props: OnWatcherProps): Promise<IAppReloadResp
 async function reload_Process(props: OnWatcherProps) {
   const ctx = props.ctx;
   const log = ctx.log;
-  log.echo(`<bold><yellow>${EMOJIS.warning} Configuration changed, restart required</yellow></bold>`);
+  log.echo(`<bold><yellow>@warning Configuration changed, restart required</yellow></bold>`);
   if (ctx.cache) {
     ctx.cache.nukeAll();
-    log.echo(`<bold><yellow>${EMOJIS.warning} Cache has been cleared</yellow></bold>`);
+    log.echo(`<bold><yellow>@warning Cache has been cleared</yellow></bold>`);
   }
 
   process.exit(0);

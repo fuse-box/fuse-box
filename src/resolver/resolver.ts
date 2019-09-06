@@ -1,11 +1,10 @@
-import * as path from 'path';
-import { fileExists, makeFuseBoxPath, path2Regex } from '../utils/utils';
+import { ITarget } from '../config/PrivateConfig';
+import { makeFuseBoxPath, path2Regex } from '../utils/utils';
+import { handleBrowserField } from './browserField';
 import { fileLookup, ILookupResult, TsConfigAtPath } from './fileLookup';
 import { INodeModuleLookup, isNodeModule, nodeModuleLookup } from './nodeModuleLookup';
 import { pathsLookup } from './pathsLookup';
 import { isElectronPolyfill, isServerPolyfill } from './polyfills';
-import { handleBrowserField } from './browserField';
-import { ITarget } from '../config/PrivateConfig';
 export enum ImportType {
   REQUIRE,
   FROM,

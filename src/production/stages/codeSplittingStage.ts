@@ -4,10 +4,6 @@ import { IProductionFlow } from '../main';
 import { ProductionModule } from '../ProductionModule';
 import { ESLink } from '../structure/ESLink';
 
-interface ICodeSplittingStageProps {
-  flow: IProductionFlow;
-}
-
 function trace2entry(props: IProductionFlow, target: ProductionModule, rootLink: ESLink) {
   let traced = false;
   const root = rootLink.dynamicImportTarget;
@@ -39,15 +35,11 @@ export function codeSplittingStage(props: IProductionFlow) {
 
   const log = props.ctx.log;
 
-  const opts: ICodeSplittingStageProps = {
-    flow: props,
-  };
-
   if (productionContext.dynamicLinks.length === 0) {
     return;
   }
 
-  log.progress('<dim><bold>- Code splitting stage </bold></dim>');
+  log.info('<magenta>code splitting</magenta>', 'Code splitting stage');
   productionContext.dynamicLinks.forEach(link => {
     const root = link.dynamicImportTarget;
     processEntry(props, link);
@@ -60,8 +52,8 @@ export function codeSplittingStage(props: IProductionFlow) {
         type: BundleType.SPLIT_JS,
       });
       bundle.noHash = true;
-      props.ctx.log.progressFormat(
-        'Code splitting',
+      props.ctx.log.info(
+        'code splittings',
         'Created bundle <magenta>$name</magenta> with entry <green>$entry</green>',
         {
           name: bundle.name,
@@ -69,7 +61,7 @@ export function codeSplittingStage(props: IProductionFlow) {
         },
       );
       for (const pm of root.dynamicDependencies) {
-        props.ctx.log.progressFormat('Code splitting', '<magenta>$name</magenta> <- <green>$path</green>', {
+        props.ctx.log.info('code splitting', '<magenta>$name</magenta> <- <green>$path</green>', {
           name: bundle.name,
           path: pm.getShortPath(),
         });
@@ -78,5 +70,5 @@ export function codeSplittingStage(props: IProductionFlow) {
     }
   });
 
-  log.progressEnd('<green><bold>$checkmark Code splitting stage completed</bold></green>');
+  log.info('code splitting', '<green><bold>$checkmark Code splitting stage completed</bold></green>');
 }

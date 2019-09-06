@@ -1,9 +1,8 @@
 import { Context } from '../core/Context';
-import { IStyleSheetProps, IStyleSheetAutoImportCapture } from './IStylesheetProps';
-import { ignoredPath2Regex } from '../watcher/watcher';
-import * as path from 'path';
-import { ensureAbsolutePath } from '../utils/utils';
 import { env } from '../env';
+import { ensureAbsolutePath } from '../utils/utils';
+import { ignoredPath2Regex } from '../watcher/watcher';
+import { IStyleSheetAutoImportCapture, IStyleSheetProps } from './IStylesheetProps';
 
 export interface ICreateStylesheetProps {
   ctx: Context;

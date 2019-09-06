@@ -30,7 +30,7 @@ export function attachCache(ctx: Context) {
     const pkg = props.module.pkg;
     const ctx = module.props.ctx;
 
-    if (ctx.cache && pkg.isDefaultPackage) {
+    if (ctx.cache && pkg.isDefaultPackage && !module.errored) {
       cache.saveModule(module, { contents: props.concat.content.toString(), sourceMap: props.concat.sourceMap });
     }
     return props;

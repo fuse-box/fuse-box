@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as postcss from 'postcss';
 import * as atImport from 'postcss-import';
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
@@ -6,10 +7,9 @@ import { Module } from '../../core/Module';
 import { readFile } from '../../utils/utils';
 import { cssHandleResources } from '../cssHandleResources';
 import { cssResolveModule } from '../cssResolveModule';
-import { IStylesheetModuleResponse, IStyleSheetProcessor } from '../interfaces';
-import * as path from 'path';
 import { alignCSSSourceMap } from '../cssSourceMap';
-import { ILogger } from '../../logging/logging';
+import { IStylesheetModuleResponse, IStyleSheetProcessor } from '../interfaces';
+import { FuseBoxLogAdapter } from '../../fuse-log/FuseBoxLogAdapter';
 
 interface IRenderModuleProps {
   options?: IStyleSheetProps;
@@ -21,7 +21,7 @@ async function callPostCSS(
   plugins: Array<any>,
   css: string,
   options,
-  logger: ILogger,
+  logger: FuseBoxLogAdapter,
 ): Promise<{ map: string; css: string }> {
   return new Promise((resolve, reject) => {
     postcss(plugins)

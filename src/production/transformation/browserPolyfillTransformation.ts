@@ -1,7 +1,7 @@
-import { SourceFile, Node, Identifier } from 'ts-morph';
+import * as path from 'path';
+import { Identifier, SourceFile } from 'ts-morph';
 import * as ts from 'typescript';
 import { Context } from '../../core/Context';
-import * as path from 'path';
 
 export interface IProcessTransformProps {
   ctx: Context;

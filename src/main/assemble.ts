@@ -1,9 +1,9 @@
+import * as path from 'path';
 import { createApplicationPackage } from '../core/application';
 import { Context } from '../core/Context';
 import { createModule, Module } from '../core/Module';
 import { createPackage, Package } from '../core/Package';
-import { ImportType, IResolver, resolveModule, ITypescriptPathsConfig } from '../resolver/resolver';
-import * as path from 'path';
+import { ImportType, IResolver, resolveModule } from '../resolver/resolver';
 
 interface IDefaultParseProps {
   assemble?: boolean;
@@ -110,12 +110,12 @@ function resolveStatement(
     target: opts.statement,
   });
 
-  props.ctx.assembleContext;
-
   if (!resolved || (resolved && resolved.error)) {
     // if (log.props.ignoreStatementErrors && log.props.ignoreStatementErrors.includes(opts.statement)) {
     //   return;
     // }
+
+    let shouldIgnoreCaching = true; // will be toggled
     log.warn(
       resolved && resolved.error
         ? resolved.error + ' / Import statement: "$statement" in <dim>$file</dim>'
@@ -125,6 +125,10 @@ function resolveStatement(
         file: props.module.props.absPath,
       },
     );
+
+    if (shouldIgnoreCaching) {
+      props.module.errored = true;
+    }
     return;
   }
 
@@ -177,6 +181,7 @@ function resolveStatement(
 export function processModule(props: IDefaultParseProps) {
   const icp = props.ctx.ict;
   const _module = props.module;
+  _module.errored = false;
 
   icp.sync('assemble_module_init', { module: _module });
   props.pkg.modules.push(props.module);

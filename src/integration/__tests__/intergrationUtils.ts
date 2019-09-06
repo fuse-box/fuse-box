@@ -32,7 +32,7 @@ export class IntegrationHelper {
   }
 
   public extractScripts(contents: string) {
-    const data: { jsPaths: Array<string>; cssPaths: Array<string>; jsRaw: Array<string>; cssRaw: [] } = {
+    const data: { jsPaths: Array<string>; cssPaths: Array<string>; jsRaw: Array<string>; cssRaw: Array<string> } = {
       jsPaths: [],
       cssPaths: [],
       jsRaw: [],

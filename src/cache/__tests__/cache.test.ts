@@ -2,9 +2,9 @@ import * as path from 'path';
 import { fastAnalysis } from '../../analysis/fastAnalysis';
 import { IPublicConfig } from '../../config/IPublicConfig';
 import { createContext } from '../../core/Context';
-import { env } from '../../env';
 import { createModule } from '../../core/Module';
 import { createPackage, Package } from '../../core/Package';
+import { env } from '../../env';
 import { ImportType } from '../../resolver/resolver';
 import { mockModule, mockWriteFile } from '../../utils/test_utils';
 import { createCache } from '../cache';
@@ -504,7 +504,7 @@ describe('FileCache test', () => {
       const bar = createFakePackage({ name: 'bar', version: '5.0.0', moduleAmount: 1 });
       const foo = createFakePackage({ name: 'foo', version: '2.0.0', moduleAmount: 2, dependencies: [bar] });
       const basics = { contents: 'foobar', sourceMap: 'sourcemap' };
-      const { ctx, cache } = mockCache({ cache: true });
+      const { cache } = mockCache({ cache: true });
 
       cache.savePackage(foo, basics);
       cache.savePackage(bar, basics);

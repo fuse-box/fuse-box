@@ -1,19 +1,13 @@
-import * as path from 'path';
-import { IPublicConfig } from '../../config/IPublicConfig';
-import { Context, createContext } from '../../core/Context';
-import { Package } from '../../core/Package';
-import { assemble } from '../assemble';
-
-function createProjectContext(folder: string, opts?: IPublicConfig) {
-  opts = opts || {};
-  return createContext({
-    ...{
-      modules: [path.resolve(__dirname, 'cases/modules/')],
-      homeDir: path.resolve(__dirname, 'cases/projects/', folder),
-    },
-    ...opts,
-  });
-}
+// function createProjectContext(folder: string, opts?: IPublicConfig) {
+//   opts = opts || {};
+//   return createContext({
+//     ...{
+//       modules: [path.resolve(__dirname, 'cases/modules/')],
+//       homeDir: path.resolve(__dirname, 'cases/projects/', folder),
+//     },
+//     ...opts,
+//   });
+// }
 
 // async function resolve(folder: string, opts: IPublicConfig, entry: string): Promise<Array<Package>> {
 //   const ctx = createProjectContext(folder, opts);

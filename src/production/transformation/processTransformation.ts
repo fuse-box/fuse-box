@@ -1,4 +1,4 @@
-import { SourceFile, Node, Identifier } from 'ts-morph';
+import { Identifier, SourceFile } from 'ts-morph';
 import * as ts from 'typescript';
 import { Context } from '../../core/Context';
 

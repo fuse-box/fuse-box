@@ -56,11 +56,12 @@ export class FuseBoxLogAdapter extends FuseLog {
     this._errors = [];
   }
 
-  verbose(group: string, message: string) {
+  verbose(group: string, message: string, vars?: any) {
     if (this.props.level === 'verbose') {
-      this.info(group, message);
+      this.info(group, message, vars);
     }
   }
+
   clearConsole() {
     const blank = '\n'.repeat(process.stdout.rows);
     console.log(blank);
@@ -158,15 +159,18 @@ export class FuseBoxLogAdapter extends FuseLog {
     }
   }
 
-  fuseFinalise() {
-    const hasErrors = this._errors.length > 0;
-    const hasWarnings = this._warnings.length > 0;
+  printBottomMessages() {
     for (const item of this._warnings) {
       this.log('bottom_message', item);
     }
     for (const item of this._errors) {
       this.log('bottom_message', item);
     }
+  }
+  fuseFinalise() {
+    const hasErrors = this._errors.length > 0;
+    const hasWarnings = this._warnings.length > 0;
+    this.printBottomMessages();
     if (hasErrors || hasWarnings) {
       this.echo('\n');
     }

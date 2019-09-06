@@ -1,6 +1,5 @@
 import { Project } from 'ts-morph';
 import * as ts from 'typescript';
-import { createESModuleStructure } from '../../structure/ESModuleStructure';
 // import { createRawTransform } from '../raw/rawTransform';
 
 // function createFile(config: IPublicConfig, contents: string) {

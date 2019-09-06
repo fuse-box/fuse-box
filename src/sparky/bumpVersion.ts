@@ -4,7 +4,7 @@ export interface IBumpVersion {
   type: IBumpVersionType;
 }
 export function bumpVersion(stringJson: string, opts: IBumpVersion): string {
-  let filePath, json;
+  let json;
 
   json = JSON.parse(stringJson);
 

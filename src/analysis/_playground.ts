@@ -1,4 +1,3 @@
-import { fastAnalysis } from './fastAnalysis';
 import { parseAst } from '../transform/fastTransform/fastTransform';
 //require(/*foo*/"ololo")
 const str = `

@@ -28,10 +28,10 @@ export class UserHandlerComplete {
     }
     const FATAL_ERR = 'Unable to create Electron launcher';
     if (this.ctx.config.target !== 'electron') {
-      this.ctx.fatal([FATAL_ERR, '- Reason: Target must be "electron"']);
+      this.ctx.fatal(FATAL_ERR, ['Reason: Target must be "electron"']);
     } else {
       if (this.bundles.length !== 1) {
-        this.ctx.fatal([FATAL_ERR, '- Reason: Set useSingleBundle field in your config']);
+        this.ctx.fatal(FATAL_ERR, ['Reason: Set useSingleBundle field in your config']);
       }
       try {
         const electronPath = require('electron');
@@ -39,7 +39,7 @@ export class UserHandlerComplete {
         this.electronLauncher = new ElectronLauncher(this.ctx, this.bundles, electronPath);
         return this.electronLauncher;
       } catch (e) {
-        this.ctx.fatal([FATAL_ERR, '- Reason: Install electron package first']);
+        this.ctx.fatal(FATAL_ERR, ['Reason: Install electron package first']);
       }
     }
   }
