@@ -26,7 +26,7 @@ export function pluginMinifyHtmlLiterals(...options: IPluginMinifyHtmlLiterals[]
         }
 
         // check if we have any html`` or css`` template tags
-        if (module.contents.indexOf('html`') !== -1 || module.contents.indexOf('css`') !== -1) {
+        if (/\html`|css`/.test(module.contents)) {
           ctx.log.info('pluginMinifyHtmlLiterals', 'minifying $file', {
             file: module.props.absPath,
           });
@@ -34,9 +34,11 @@ export function pluginMinifyHtmlLiterals(...options: IPluginMinifyHtmlLiterals[]
           // https://github.com/asyncLiz/minify-html-literals
           let newcontent;
           try {
-            const minifyHTMLLiterals = require('minify-html-literals');
+            const { minifyHTMLLiterals } = require('minify-html-literals');
             newcontent = minifyHTMLLiterals(module.contents, ...useroptions);
-          } catch {}
+          } catch (e) {
+            console.log(e);
+          }
 
           if (newcontent && newcontent.code) {
             module.contents = newcontent.code;
