@@ -18,16 +18,18 @@ export interface IWebIndexConfig {
 export const WEBINDEX_DEFAULT_TEMPLATE = `<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title></title>
-    $css
-    $bundles
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title></title>
+  $css
 </head>
 <body>
+  $bundles
 </body>
-</html>`;
+</html>
+
+`;
 
 export interface IWebIndexInterface {
   isDisabled?: boolean;
