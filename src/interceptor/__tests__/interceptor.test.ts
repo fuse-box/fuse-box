@@ -88,7 +88,7 @@ describe('Interceptor', () => {
     const timeNow = Date.now();
     const response = await interceptor.send('assemble_module', { module: _module });
 
-    expect(Date.now() - timeNow).toBeGreaterThan(2000);
+    expect(Date.now() - timeNow).toBeGreaterThanOrEqual(2000);
     expect(response.module.contents).toEqual('foo');
   });
 
