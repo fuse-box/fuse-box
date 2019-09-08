@@ -13,7 +13,7 @@ class Context {
       tsConfig: 'src/tsconfig.json',
 
       stylesheet: { paths: [path.join(__dirname, 'src/config')] },
-      cache: false,
+      cache: true,
 
       watch: true,
       hmr: true,

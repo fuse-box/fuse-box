@@ -14,7 +14,7 @@ class App extends Component {
 
     return (
       <div>
-        111111
+        222
         <Other></Other>
       </div>
     );

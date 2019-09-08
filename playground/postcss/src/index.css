@@ -3,6 +3,8 @@
 body {
   /* @import 'resources.scss';
   color: $color1; */
+
+  font-weight: bold;
   background-image: url('./assets/logo.png');
 }
 :local(.continueButton) {

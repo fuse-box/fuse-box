@@ -19,7 +19,7 @@ class Context {
         paths: [path.join(__dirname, 'src/config')],
       },
 
-      cache: false,
+      cache: true,
 
       watch: true,
       hmr: true,
