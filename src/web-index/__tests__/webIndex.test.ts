@@ -12,19 +12,6 @@ import {
 import { FuseBoxLogAdapter } from '../../fuse-log/FuseBoxLogAdapter';
 const fileMock = mockWriteFile();
 
-const defaultTemplate = `
-<!DOCTYPE html>
-<html>
-  <head>
-    <title></title>
-    $css
-  </head>
-  <body>
-    $bundles
-  </body>
-</html>
-
-`;
 describe('WebIndex test', () => {
   describe('replaceWebIndexStrings', () => {
     it('should replace in one line', () => {
@@ -62,7 +49,7 @@ describe('WebIndex test', () => {
   describe('webindex', () => {
     beforeEach(() => {
       fileMock.flush();
-      fileMock.addFile(join(env.FUSE_MODULES, 'web-index-default-template/template.html'), defaultTemplate);
+      fileMock.addFile(join(env.FUSE_MODULES, 'web-index-default-template/template.html'), WEBINDEX_DEFAULT_TEMPLATE);
     });
     afterAll(() => {
       fileMock.unmock();
