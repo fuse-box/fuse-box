@@ -15,22 +15,6 @@ export interface IWebIndexConfig {
   embedIndexedBundles?: boolean;
 }
 
-export const WEBINDEX_DEFAULT_TEMPLATE = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title></title>
-  $css
-</head>
-<body>
-  $bundles
-</body>
-</html>
-
-`;
-
 export interface IWebIndexInterface {
   isDisabled?: boolean;
   addBundleContent?: (content: string) => void;
@@ -48,7 +32,7 @@ export function getEssentialWebIndexParams(config: IWebIndexConfig | boolean, lo
   let templatePath = join(env.FUSE_MODULES, 'web-index-default-template/template.html');
   let publicPath = '/';
   let distFileName = 'index.html';
-  let templateContent = WEBINDEX_DEFAULT_TEMPLATE;
+  let templateContent = readFile(templatePath);
   if (typeof config === 'object') {
     if (config.template) {
       templatePath = ensureAbsolutePath(config.template, env.SCRIPT_PATH);

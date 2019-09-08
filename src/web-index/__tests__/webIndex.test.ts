@@ -3,14 +3,12 @@ import { BundleType, createBundleSet } from '../../bundle/Bundle';
 import { createContext } from '../../core/Context';
 import { env } from '../../env';
 import { mockWriteFile } from '../../utils/test_utils';
-import {
-  getEssentialWebIndexParams,
-  IWebIndexConfig,
-  replaceWebIndexStrings,
-  WEBINDEX_DEFAULT_TEMPLATE,
-} from '../webIndex';
+import { getEssentialWebIndexParams, IWebIndexConfig, replaceWebIndexStrings } from '../webIndex';
 import { FuseBoxLogAdapter } from '../../fuse-log/FuseBoxLogAdapter';
+import { readFile } from '../../utils/utils';
 const fileMock = mockWriteFile();
+const templatePath = join(env.FUSE_MODULES, 'web-index-default-template/template.html');
+const defaultTemplateContent = readFile(templatePath);
 
 describe('WebIndex test', () => {
   describe('replaceWebIndexStrings', () => {
@@ -49,7 +47,7 @@ describe('WebIndex test', () => {
   describe('webindex', () => {
     beforeEach(() => {
       fileMock.flush();
-      fileMock.addFile(join(env.FUSE_MODULES, 'web-index-default-template/template.html'), WEBINDEX_DEFAULT_TEMPLATE);
+      fileMock.addFile(join(env.FUSE_MODULES, 'web-index-default-template/template.html'), defaultTemplateContent);
     });
     afterAll(() => {
       fileMock.unmock();
@@ -111,7 +109,7 @@ describe('WebIndex test', () => {
 
     it('should throw NO error if file not found, but use default template', async () => {
       const opts = getEssentialWebIndexParams({ template: 'foo' }, new FuseBoxLogAdapter({}));
-      expect(opts.templateContent).toEqual(WEBINDEX_DEFAULT_TEMPLATE);
+      expect(opts.templateContent).toEqual(defaultTemplateContent);
     });
   });
 });
