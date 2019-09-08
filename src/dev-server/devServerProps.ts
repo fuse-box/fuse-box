@@ -20,7 +20,6 @@ export interface IHTTPServerProps {
   fallback?: string;
   root?: string;
   express?: (app: any, express: any) => void;
-  proxy?: IDevServerProxy;
 }
 
 export interface IOpenProps {

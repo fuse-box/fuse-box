@@ -20,7 +20,7 @@ class Context {
       logging: {
         level: 'succinct',
       },
-      devServer: true,
+      devServer: { httpServer: { port: 3000 } },
       // devServer: this.runServer && {
       //   open: false,
       //   httpServer: {

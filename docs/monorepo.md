@@ -50,19 +50,14 @@ would want to pick up the sources of the package.
 
 In order to achieve that, you can add `local:main` field to your `package,json`.
 
-This field will be read if:
-
-- The folder isn't located in `node_modules`
-- You are running `runDev` (development mode)
-
-`local:main` will be ignored otherwise if the above conditions aren't met
+This field will be read if The folder isn't located in `node_modules` otherwise `local:main` will be ignored
 
 ### But why really?
 
 FuseBox treats your **scoped** packages as actual directories, not packages. Since every single package contains
 `package.json` with `main` or `module` fields pointed to the dist - that will prevent FuseBox from picking up the
-changes and getting the correct entry points during development. We fix it by making it believe that we are dealing with a
-project.
+changes and getting the correct entry points during development. We fix it by making it believe that we are dealing with
+a project.
 
 All is left is to configure `paths`
 
