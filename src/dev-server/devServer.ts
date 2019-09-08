@@ -63,16 +63,20 @@ export function createExpressApp(ctx: Context, props: IHTTPServerProps, extra?: 
     res.sendFile(props.fallback);
   });
 
-  return app.listen(props.port, () => {
-    if (extra && extra.openProps) {
-      extra.openProps.target = extra.openProps.target || `http://localhost:${props.port}`;
-      open(extra.openProps.target, extra.openProps);
-    }
+  return app
+    .listen(props.port, () => {
+      if (extra && extra.openProps) {
+        extra.openProps.target = extra.openProps.target || `http://localhost:${props.port}`;
+        open(extra.openProps.target, extra.openProps);
+      }
 
-    ctx.log.info('development', `Development server is running at <bold>http://localhost:$port</bold>`, {
-      port: props.port,
+      ctx.log.info('development', `Development server is running at <bold>http://localhost:$port</bold>`, {
+        port: props.port,
+      });
+    })
+    .on('error', err => {
+      ctx.fatal('An error occurred while trying to start the devServer.', [err.message]);
     });
-  });
 }
 
 export function createDevServer(ctx: Context): IDevServerActions {
