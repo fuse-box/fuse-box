@@ -9,11 +9,11 @@ export function getFolderEntryPointFromPackageJSON(props: {
   if (props.useLocalField && props.json['local:main']) {
     return props.json['local:main'];
   }
-  if (props.json.module) {
-    return props.json.module;
-  }
   if (props.json['ts:main']) {
     return props.json['ts:main'];
+  }
+  if (props.json.module) {
+    return props.json.module;
   }
 
   return props.json.main || 'index.js';
