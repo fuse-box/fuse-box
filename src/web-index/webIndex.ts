@@ -4,6 +4,7 @@ import { Context } from '../core/Context';
 import { env } from '../env';
 import { ensureAbsolutePath, fileExists, readFile, joinFuseBoxPath } from '../utils/utils';
 import { htmlStrings } from './htmlStrings';
+import { FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
 
 export interface IWebIndexConfig {
   enabled?: boolean;
@@ -13,6 +14,21 @@ export interface IWebIndexConfig {
   publicPath?: string;
   embedIndexedBundles?: boolean;
 }
+
+export const WEBINDEX_DEFAULT_TEMPLATE = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    $css
+    $bundles
+</head>
+<body>
+</body>
+</html>`;
+
 export interface IWebIndexInterface {
   isDisabled?: boolean;
   addBundleContent?: (content: string) => void;
@@ -26,16 +42,14 @@ export function replaceWebIndexStrings(str: string, keys: { [key: string]: any }
   });
 }
 
-export function getEssentialWebIndexParams(config: IWebIndexConfig | boolean) {
+export function getEssentialWebIndexParams(config: IWebIndexConfig | boolean, log: FuseBoxLogAdapter) {
   let templatePath = join(env.FUSE_MODULES, 'web-index-default-template/template.html');
   let publicPath = '/';
   let distFileName = 'index.html';
+  let templateContent = WEBINDEX_DEFAULT_TEMPLATE;
   if (typeof config === 'object') {
     if (config.template) {
       templatePath = ensureAbsolutePath(config.template, env.SCRIPT_PATH);
-      if (!fileExists(templatePath)) {
-        throw new Error(`Failed to find webindex ${templatePath}`);
-      }
     }
     if (config.publicPath) {
       publicPath = config.publicPath;
@@ -45,10 +59,17 @@ export function getEssentialWebIndexParams(config: IWebIndexConfig | boolean) {
       distFileName = config.distFileName;
     }
   }
+
+  if (fileExists(templatePath)) {
+    templateContent = readFile(templatePath);
+  } else {
+    log.warn('No webIndex template found, using default HTML template instead.');
+  }
+
   return {
     distFileName,
     publicPath,
-    templatePath,
+    templateContent,
   };
 }
 
@@ -59,7 +80,7 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
   if (isDisabled) {
     return { isDisabled };
   }
-  const opts = getEssentialWebIndexParams(config);
+  const opts = getEssentialWebIndexParams(config, ctx.log);
 
   return {
     resolve: (userPath: string) => {
@@ -97,7 +118,7 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
         bundles: scriptTags.join('\n'),
         css: cssTags.join('\n'),
       };
-      let contents = replaceWebIndexStrings(readFile(opts.templatePath), scriptOpts);
+      const contents = replaceWebIndexStrings(opts.templateContent, scriptOpts);
 
       logger.info('webindex', 'writing to $name</yellow></bold></dim>', {
         name: opts.distFileName,

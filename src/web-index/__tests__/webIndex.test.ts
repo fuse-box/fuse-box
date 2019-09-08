@@ -3,7 +3,13 @@ import { BundleType, createBundleSet } from '../../bundle/Bundle';
 import { createContext } from '../../core/Context';
 import { env } from '../../env';
 import { mockWriteFile } from '../../utils/test_utils';
-import { getEssentialWebIndexParams, IWebIndexConfig, replaceWebIndexStrings } from '../webIndex';
+import {
+  getEssentialWebIndexParams,
+  IWebIndexConfig,
+  replaceWebIndexStrings,
+  WEBINDEX_DEFAULT_TEMPLATE,
+} from '../webIndex';
+import { FuseBoxLogAdapter } from '../../fuse-log/FuseBoxLogAdapter';
 const fileMock = mockWriteFile();
 
 const defaultTemplate = `
@@ -116,10 +122,9 @@ describe('WebIndex test', () => {
       expect(data.contents).toContain(`src="/app.js"></script>`);
     });
 
-    it('should throw an error if a file not found', async () => {
-      expect(() => {
-        getEssentialWebIndexParams({ template: 'foo' });
-      }).toThrowError();
+    it('should throw NO error if file not found, but use default template', async () => {
+      const opts = getEssentialWebIndexParams({ template: 'foo' }, new FuseBoxLogAdapter({}));
+      expect(opts.templateContent).toEqual(WEBINDEX_DEFAULT_TEMPLATE);
     });
   });
 });
