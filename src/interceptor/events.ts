@@ -1,11 +1,11 @@
-import { Bundle, IBundleWriteResponse } from "../bundle/Bundle";
-import { IAssembleContext } from "../core/assemble_context";
-import { Context } from "../core/Context";
-import { Module } from "../core/Module";
-import { Package } from "../core/Package";
-import { OnWatcherProps } from "../main/attach_watcher";
-import { Concat } from "../utils/utils";
-import { WatcherAction } from "../watcher/watcher";
+import { Bundle, IBundleWriteResponse } from '../bundle/Bundle';
+import { IAssembleContext } from '../core/assemble_context';
+import { Context } from '../core/Context';
+import { Module } from '../core/Module';
+import { Package } from '../core/Package';
+import { OnWatcherProps } from '../main/attach_watcher';
+import { Concat } from '../utils/utils';
+import { WatcherAction } from '../watcher/watcher';
 
 export interface ISoftReload {
   filePath: string;
@@ -24,6 +24,8 @@ export interface InterceptorEvents {
     filePath: string;
     fileContents: string;
     bundles: Array<IBundleWriteResponse>;
+    scriptTags: Array<string>;
+    cssTags: Array<string>;
   };
 
   assemble_package_from_project: {
