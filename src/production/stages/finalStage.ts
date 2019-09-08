@@ -30,7 +30,7 @@ function minifyCSS(props: IProductionFlow) {
       cssBundle.contents.content.toString(),
       sourceMap,
     );
-    cssBundle.override(response.styles, response.sourceMap.toString());
+    cssBundle.override((response as any).styles, (response as any).sourceMap.toString());
   });
 }
 
