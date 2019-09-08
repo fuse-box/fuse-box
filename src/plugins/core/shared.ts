@@ -59,6 +59,8 @@ export function cssContextHandler(props: ICSSContextHandler) {
   }
   ctx.ict.promise(async () => {
     try {
+      // reset errored status
+      props.module.errored = false;
       const data = await processor.render();
       const rendererProps = {
         data,
@@ -90,6 +92,10 @@ export function cssContextHandler(props: ICSSContextHandler) {
         cssDevModuleRender({ ...rendererProps });
       }
     } catch (e) {
+      // prevent module from being cached
+      props.module.errored = true;
+      let errMessage = e.message ? e.message : `Uknown error in file ${props.module.props.absPath}`;
+      props.module.contents = `console.error(${JSON.stringify(errMessage)})`;
       ctx.log.error('$error in $file', {
         error: e.message,
         file: props.module.props.absPath,

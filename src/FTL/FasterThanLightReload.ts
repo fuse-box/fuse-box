@@ -155,6 +155,8 @@ export function attachFTL(ctx: Context) {
           },
         );
         ctx.log.line();
+
+        ctx.log.printBottomMessages();
       });
     }
 

@@ -26,18 +26,8 @@ async function callPostCSS(
   return new Promise((resolve, reject) => {
     postcss(plugins)
       .process(css, options)
-      .then(result => {
-        return resolve(result as any);
-      })
-      .catch((e: any) => {
-        // https://api.postcss.org/CssSyntaxError.html
-        if (e.name === 'CssSyntaxError') {
-          logger.error(e.message);
-        } else {
-          logger.error(e);
-        }
-        return resolve({ map: '', css: 'string' });
-      });
+      .then(resolve as any)
+      .catch(reject);
   });
 }
 
