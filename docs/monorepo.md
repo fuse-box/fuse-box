@@ -16,8 +16,7 @@ Here are the highlights
 - Always set `homeDir` to the root of your repository
 - Add `tsconfig.json` with `paths` and `baseUrl` field even if you are not using TypeScript. FuseBox respects
   `tsconfig.json` even if there is no TypeScript involved.
-- Learn how to set `paths` correctly. Do not try aliasing it.
-- Set different `output` folders.
+- Learn how to set [paths](/docs/paths.md) correctly. Do not try aliasing it.
 - Each package for development purposes should contain `local:main` field in the `package.json` which should point to
   your source. That will help a lot during development. (You won't need to build each project)
 
@@ -43,14 +42,14 @@ fusebox({
 });
 ```
 
-## Setting up packages for development
+## local:main
 
 Each packages naturally contains `main` or `module` fields, however, that's not convenient during development, since you
 would want to pick up the sources of the package.
 
-In order to achieve that, you can add `local:main` field to your `package,json`.
+In order to achieve that, you should add `local:main` field to your `package,json`.
 
-This field will be read if The folder isn't located in `node_modules` otherwise `local:main` will be ignored
+This field will be read if The folder isn't located in `node_modules` otherwise ignored
 
 ### But why really?
 
@@ -69,9 +68,9 @@ order for FuseBox to understand how to resolve your scoped repository for develo
 ```json
 {
   "compilerOptions": {
-    "baseUrl": ".", // should point to the path "monorepo"
+    "baseUrl": ".", // should point to your local src
     "paths": {
-      "@org/*": ["./*"]
+      "@org/*": ["../../packages/*"]
     }
   }
 }
