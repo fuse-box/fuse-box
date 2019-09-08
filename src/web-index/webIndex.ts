@@ -128,6 +128,8 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
         filePath: opts.templatePath,
         fileContents,
         bundles,
+        scriptTags,
+        cssTags,
       });
 
       if (pluginResponse && pluginResponse.fileContents) {

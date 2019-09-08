@@ -53,13 +53,17 @@ can develop a plugin that listens to the event `before_webindex_write` like this
 
 function myCustomWebIndexTransformPlugin(options?: any) {
   return async (ctx: Context) => {
-    ctx.ict.awaitOn(
+    ctx.ict.waitFor(
       'before_webindex_write',
-      async (props: { filePath: string; fileContents: string; bundles: Array<IBundleWriteResponse> }) => {
+      async (props: {
+        filePath: string;
+        fileContents: string;
+        bundles: Array<IBundleWriteResponse>,
+        scriptTags: Array<string>,
+        cssTags: Array<string>
+      }) => {
         props.fileContents = props.fileContents + 'Appended something after </html>'.
-        return {
-          ...props,
-        };
+        return props;
       },
     );
   };
