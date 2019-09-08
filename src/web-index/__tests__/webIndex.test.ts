@@ -5,10 +5,23 @@ import { env } from '../../env';
 import { mockWriteFile } from '../../utils/test_utils';
 import { getEssentialWebIndexParams, IWebIndexConfig, replaceWebIndexStrings } from '../webIndex';
 import { FuseBoxLogAdapter } from '../../fuse-log/FuseBoxLogAdapter';
-import { readFile } from '../../utils/utils';
 const fileMock = mockWriteFile();
-const templatePath = join(env.FUSE_MODULES, 'web-index-default-template/template.html');
-const defaultTemplateContent = readFile(templatePath);
+
+const WEBINDEX_DEFAULT_TEMPLATE = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title></title>
+    $css
+  </head>
+  <body>
+    $bundles
+  </body>
+</html>
+
+`;
 
 describe('WebIndex test', () => {
   describe('replaceWebIndexStrings', () => {
@@ -47,7 +60,7 @@ describe('WebIndex test', () => {
   describe('webindex', () => {
     beforeEach(() => {
       fileMock.flush();
-      fileMock.addFile(join(env.FUSE_MODULES, 'web-index-default-template/template.html'), defaultTemplateContent);
+      fileMock.addFile(join(env.FUSE_MODULES, 'web-index-default-template/template.html'), WEBINDEX_DEFAULT_TEMPLATE);
     });
     afterAll(() => {
       fileMock.unmock();
@@ -109,7 +122,7 @@ describe('WebIndex test', () => {
 
     it('should throw NO error if file not found, but use default template', async () => {
       const opts = getEssentialWebIndexParams({ template: 'foo' }, new FuseBoxLogAdapter({}));
-      expect(opts.templateContent).toEqual(defaultTemplateContent);
+      expect(opts.templateContent).toEqual(WEBINDEX_DEFAULT_TEMPLATE);
     });
   });
 });
