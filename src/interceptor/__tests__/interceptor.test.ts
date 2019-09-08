@@ -74,7 +74,7 @@ describe('Interceptor', () => {
   it('should await all interceptors to finish', async () => {
     const interceptor = createInterceptor();
 
-    interceptor.awaitOn('assemble_module', async (props: { module: Module }) => {
+    interceptor.waitFor('assemble_module', async (props: { module: Module }) => {
       const sleep = async (sec: number) => {
         return new Promise(resolve => setTimeout(resolve, sec * 1000));
       };
@@ -86,7 +86,7 @@ describe('Interceptor', () => {
     });
 
     const timeNow = Date.now();
-    const response = await interceptor.awaitForSync('assemble_module', { module: _module });
+    const response = await interceptor.send('assemble_module', { module: _module });
 
     expect(Date.now() - timeNow).toBeGreaterThan(2000);
     expect(response.module.contents).toEqual('foo');
@@ -100,7 +100,7 @@ describe('Interceptor', () => {
       return props;
     });
 
-    const response = await interceptor.awaitForSync('assemble_module', { module: _module });
+    const response = await interceptor.send('assemble_module', { module: _module });
 
     expect(response.module.contents).toEqual('foo');
   });
@@ -108,7 +108,7 @@ describe('Interceptor', () => {
   it('should NOT be be forward compatible with async callbacks', () => {
     const interceptor = createInterceptor();
 
-    interceptor.awaitOn('assemble_module', async (props: { module: Module }) => {
+    interceptor.waitFor('assemble_module', async (props: { module: Module }) => {
       props.module.contents = 'foo';
       return props;
     });

@@ -59,12 +59,12 @@ const pluginBar = () => (ctx: Context) => {
 ```
 
 If your plugin is asynchronous and you want to instruct fuse-box to wait until the `Promise` that it returns will
-resolve, you should use `awaitOn`. This will give fuse-box the change to wait until your plugin finished it's work.
+resolve, you should use `waitFor`. This will give fuse-box the change to wait until your plugin finished it's work.
 Please notice that fuse-box will decide if it will await the results or not (depending on the event and context).
 
 ```ts
 const pluginBar = () => (ctx: Context) => {
-  ctx.ict.awaitOn('complete', async props => {
+  ctx.ict.waitFor('complete', async props => {
     console.log('Bundling is completed');
 
     // in async functions, all return values are wrapped in Promises automatically

@@ -6,8 +6,8 @@ interface TypedInterceptor<T> {
   resolve: () => Promise<any>;
   on<K extends keyof T>(key: K, fn: (props: T[K]) => T[K]);
   sync<K extends keyof T>(key: K, props: T[K]): T[K];
-  awaitForSync<K extends keyof T>(key: K, props: T[K]): Promise<T[K]>;
-  awaitOn<K extends keyof T>(key: K, fn: (props: T[K]) => Promise<T[K]>);
+  send<K extends keyof T>(key: K, props: T[K]): Promise<T[K]>;
+  waitFor<K extends keyof T>(key: K, fn: (props: T[K]) => Promise<T[K]>);
 }
 export type MainInterceptor = TypedInterceptor<InterceptorEvents>;
 export function createInterceptor(): MainInterceptor {
@@ -51,14 +51,14 @@ export function createInterceptor(): MainInterceptor {
       }
       return props;
     },
-    awaitOn: on,
-    awaitForSync: async function(key: string, props: any) {
+    waitFor: on,
+    send: async function(key: string, props: any) {
       if (subscriptions.has(key)) {
         const fns = subscriptions.get(key);
         const responses = [];
 
-        for (let i = 0; i < fns.length; i++) {
-          responses.push(await fns[i](props));
+        for (let fn of fns) {
+          responses.push(await fn(props));
         }
 
         if (responses.length > 0) {
