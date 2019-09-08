@@ -4,11 +4,11 @@ import * as consolidate from 'consolidate';
 
 export function pluginConsolidate(engine: string, options: any) {
   return async (ctx: Context) => {
-    ctx.ict.awaitOn(
+    ctx.ict.waitFor(
       'before_webindex_write',
       async (props: { filePath: string; fileContents: string; bundles: Array<IBundleWriteResponse> }) => {
         if (typeof consolidate[engine] !== 'function') {
-          ctx.log.error(`The template engine you selected is not available in consolidate: ${engine}`);
+          ctx.fatal(`The template engine you selected is not available in consolidate: ${engine}`);
         }
 
         try {
@@ -18,12 +18,9 @@ export function pluginConsolidate(engine: string, options: any) {
           });
           props.fileContents = processedTemplate;
         } catch (e) {
-          ctx.log.error(`Error processing the web-index template using consolidate: ${e.message}`);
+          ctx.fatal('Error processing the web-index template using consolidate.', [e.message]);
         }
-
-        return {
-          ...props,
-        };
+        return props;
       },
     );
   };
