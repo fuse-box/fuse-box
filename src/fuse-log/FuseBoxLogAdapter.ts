@@ -4,6 +4,7 @@ import { onExit } from '../utils/exit';
 import { FuseLog } from './fuseLog';
 import { IFuseLoggerProps } from '../config/IFuseLoggerProps';
 import { env } from '../env';
+import { ignoredPath2Regex } from '../watcher/watcher';
 
 function conj(word, amount?: number) {
   return amount === 1 ? `1 ${word}` : `${amount} ${word}s`;
@@ -14,6 +15,7 @@ export class FuseBoxLogAdapter extends FuseLog {
   private _errors: Array<string>;
   private streaming: boolean;
   private startTime;
+  public ignoreStatementErrors: Array<RegExp>;
   constructor(public props: IFuseLoggerProps) {
     super();
     if (!this.props.level) {
@@ -21,6 +23,10 @@ export class FuseBoxLogAdapter extends FuseLog {
     }
     if (process.argv.includes('--verbose')) {
       this.props.level = 'verbose';
+    }
+
+    if (props.ignoreStatementErrors) {
+      this.ignoreStatementErrors = props.ignoreStatementErrors.map(item => ignoredPath2Regex(item));
     }
 
     this._warnings = [];

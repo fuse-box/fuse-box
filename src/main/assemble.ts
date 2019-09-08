@@ -111,9 +111,9 @@ function resolveStatement(
   });
 
   if (!resolved || (resolved && resolved.error)) {
-    // if (log.props.ignoreStatementErrors && log.props.ignoreStatementErrors.includes(opts.statement)) {
-    //   return;
-    // }
+    if (log.ignoreStatementErrors && log.ignoreStatementErrors.find(re => re.test(opts.statement))) {
+      return;
+    }
 
     let shouldIgnoreCaching = true; // will be toggled
     log.warn(
