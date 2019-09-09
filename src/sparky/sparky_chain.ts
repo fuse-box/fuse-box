@@ -37,7 +37,7 @@ export function sparkyChain(log: FuseBoxLogAdapter): ISparkyChain {
     }
 
     if (newLocation && newLocationBase) {
-      const root = ensureAbsolutePath(newLocation, env.APP_ROOT);
+      const root = ensureAbsolutePath(newLocation, env.SCRIPT_PATH);
       for (const i in latest) {
         const file = latest[i];
 
