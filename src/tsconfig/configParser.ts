@@ -48,7 +48,7 @@ export function initTypescriptConfig(
   let userOptions: IRawCompilerOptions = {};
   let customTsConfigPath;
   if (typeof props.tsConfig === 'string' && !fileExists(props.tsConfig)) {
-    // TODO: should die in pain
+    throw new Error(`tsconfig.json wasn't found at path ${props.tsConfig}`);
   } else customTsConfigPath = props.tsConfig;
   let extendedFile;
   if (typeof customTsConfigPath === 'string') {

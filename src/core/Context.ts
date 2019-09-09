@@ -74,7 +74,11 @@ export class Context {
       root: env.SCRIPT_PATH,
       output: this.config.output,
     });
-    this.tsConfig = initTypescriptConfig(this.config);
+    try {
+      this.tsConfig = initTypescriptConfig(this.config);
+    } catch (e) {
+      this.fatal('Cannot initialise tsconfig', [e.message]);
+    }
     this.devServer = createDevServer(this);
 
     if (this.config.cache && this.config.cache.enabled) {
@@ -101,7 +105,12 @@ export class Context {
       root: env.SCRIPT_PATH,
       output: this.config.output,
     });
-    this.tsConfig = initTypescriptConfig(this.config);
+    try {
+      this.tsConfig = initTypescriptConfig(this.config);
+    } catch (e) {
+      this.fatal('Cannot initialise tsconfig', [e.message]);
+    }
+
     this.devServer = createDevServer(this);
     this.config.setupEnv();
     this.productionApiWrapper = new ProductionAPIWrapper(this);
