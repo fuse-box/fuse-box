@@ -25,12 +25,8 @@ expect.extend({
   toMatchFilePath(expectedPath, comparedPath) {
     expectedPath = ensureFuseBoxPath(expectedPath);
     comparedPath = ensureFuseBoxPath(comparedPath);
-    comparedPath = comparedPath
-      .split('.')
-      .join('\\.')
-      .split('/')
-      .join('\\/');
-    const exp = new RegExp(comparedPath);
+
+    const exp = simplifiedRegExp(comparedPath);
     const isMatched = exp.test(expectedPath);
     return {
       pass: isMatched,

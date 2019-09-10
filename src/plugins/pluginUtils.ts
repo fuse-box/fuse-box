@@ -22,15 +22,19 @@ export function simplifiedRegExp(input: undefined | string | RegExp): RegExp {
   if (!input) {
     return;
   }
+
   if (typeof input === 'string') {
     let r = '';
     for (let i = 0; i < input.length; i++) {
       switch (input[i]) {
         case '.':
-          r += '\\.';
+          r += '(\\.|.)';
           break;
         case '/':
           r += '(\\/|\\\\)';
+          break;
+        case '\\':
+          r += '\\\\';
           break;
         case '*':
           r += '.*';
