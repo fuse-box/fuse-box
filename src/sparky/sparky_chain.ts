@@ -42,8 +42,8 @@ export function sparkyChain(log: FuseBoxLogAdapter): ISparkyChain {
         const file = latest[i];
 
         readFiles[file] = readFiles[file] || readFileAsBuffer(file);
-
-        const s = ensureFuseBoxPath(file).split(newLocationBase);
+        // normalize path so split works with windows path
+        const s = path.normalize(ensureFuseBoxPath(file)).split(newLocationBase);
         if (!s[1]) {
           log.error(`Can't find base of ${newLocationBase} of ${file}`);
           return;
