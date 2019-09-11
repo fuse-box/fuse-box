@@ -28,7 +28,7 @@ export function simplifiedRegExp(input: undefined | string | RegExp): RegExp {
     for (let i = 0; i < input.length; i++) {
       switch (input[i]) {
         case '.':
-          r += '(\\.|.)';
+          r += '\\.';
           break;
         case '/':
           r += '(\\/|\\\\)';
