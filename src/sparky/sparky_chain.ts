@@ -1,7 +1,6 @@
 import * as path from 'path';
 import { env } from '../env';
 import { FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
-import { simplifiedRegExp } from '../plugins/pluginUtils';
 import {
   ensureAbsolutePath,
   ensureDir,
@@ -10,6 +9,7 @@ import {
   readFileAsBuffer,
   removeFile,
   writeFile,
+  path2RegexPattern,
 } from '../utils/utils';
 import { bumpVersion, IBumpVersion } from './bumpVersion';
 import { sparky_src } from './sparky_src';
@@ -93,7 +93,7 @@ export function sparkyChain(log: FuseBoxLogAdapter): ISparkyChain {
       return chain;
     },
     bumpVersion: (mask: string | RegExp, opts: IBumpVersion) => {
-      const re: RegExp = typeof mask === 'string' ? simplifiedRegExp(mask) : mask;
+      const re: RegExp = typeof mask === 'string' ? path2RegexPattern(mask) : mask;
       activities.push(async (files: Array<string>) => {
         const target = files.find(file => re.test(file));
         if (target) {
@@ -106,7 +106,7 @@ export function sparkyChain(log: FuseBoxLogAdapter): ISparkyChain {
     },
     // can be used to replace the contents of a file
     contentsOf: (mask: string | RegExp, fn: (contents: string) => string) => {
-      const re: RegExp = typeof mask === 'string' ? simplifiedRegExp(mask) : mask;
+      const re: RegExp = typeof mask === 'string' ? path2RegexPattern(mask) : mask;
       activities.push(async (files: Array<string>) => {
         const target = files.find(file => re.test(file));
         if (target) {

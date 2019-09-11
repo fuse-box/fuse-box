@@ -4,7 +4,6 @@ import * as path from 'path';
 import { env } from '../env';
 import * as prettyTime from 'pretty-time';
 import * as offsetLinesModule from 'offset-sourcemap-lines';
-import { simplifiedRegExp } from '../plugins/pluginUtils';
 const CACHED_PATHS = new Map<string, RegExp>();
 
 export function path2Regex(path: string) {
@@ -165,8 +164,35 @@ export function findReplace(str: string, re: RegExp, fn: (args) => string) {
     return fn(args);
   });
 }
-export function path2RegexPattern(path: string) {
-  return simplifiedRegExp(path);
+
+export function path2RegexPattern(input: undefined | string | RegExp): RegExp {
+  if (!input) {
+    return;
+  }
+
+  if (typeof input === 'string') {
+    let r = '';
+    for (let i = 0; i < input.length; i++) {
+      switch (input[i]) {
+        case '.':
+          r += '\\.';
+          break;
+        case '/':
+          r += '(\\/|\\\\)';
+          break;
+        case '\\':
+          r += '\\\\';
+          break;
+        case '*':
+          r += '.*';
+          break;
+        default:
+          r += input[i];
+      }
+    }
+    return new RegExp(r);
+  }
+  return input;
 }
 
 export function ensureUserPath(userPath: string, root?: string) {

@@ -1,7 +1,6 @@
 import * as path from 'path';
 import { Context } from '../../core/Context';
-import { joinFuseBoxPath, fileExists, fastHash } from '../../utils/utils';
-import { simplifiedRegExp } from '../pluginUtils';
+import { joinFuseBoxPath, fileExists, fastHash, path2RegexPattern } from '../../utils/utils';
 import { defineResourceGroup } from '../../stylesheet/cssResolveURL';
 import { Module } from '../../core/Module';
 import { wrapContents } from '../pluginStrings';
@@ -49,7 +48,7 @@ export function pluginLinkHandler(module: Module, options?: IPluginLinkOptions) 
 export function pluginLink(target: string | RegExp, options?: IPluginLinkOptions) {
   let matcher: RegExp;
   if (typeof target === 'string') {
-    matcher = simplifiedRegExp(target);
+    matcher = path2RegexPattern(target);
   } else matcher = target;
   options = options || {};
 

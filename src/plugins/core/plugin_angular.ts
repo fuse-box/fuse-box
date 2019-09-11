@@ -1,14 +1,14 @@
 import { Context } from '../../core/Context';
-import { simplifiedRegExp } from '../pluginUtils';
 import { angularURLReplacer } from '../../frameworks/angular/angularURLReplacer';
 import { Module } from '../../core/Module';
+import { path2RegexPattern } from '../../utils/utils';
 
 export interface INGPluginOptions {}
 
 export function pluginAngular(target: string | RegExp, options?: INGPluginOptions) {
   let matcher: RegExp;
   if (typeof target === 'string') {
-    matcher = simplifiedRegExp(target);
+    matcher = path2RegexPattern(target);
   } else matcher = target;
   options = options || {};
 
