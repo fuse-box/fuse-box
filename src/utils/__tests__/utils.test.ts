@@ -12,6 +12,7 @@ import {
   createVarString,
   parseVersion,
   beautifyBundleName,
+  path2RegexPattern,
 } from '../utils';
 
 describe('utils', () => {
@@ -124,6 +125,24 @@ describe('utils', () => {
       expect(joinFuseBoxPath('http://sdf', 'bar')).toEqual('http://sdf/bar');
 
       //expect(joinFuseBoxPath(`windows\\bar`, 'foo/', 'oi')).toEqual('windows/bar.ts');
+    });
+  });
+
+  describe('path2RegexPattern', () => {
+    it('ensureFuseBoxPath - check \\ vs /', () => {
+      expect(path2RegexPattern(`users\\documents\\bar.ts`).test('users/documents/bar.ts')).toEqual(true);
+    });
+
+    it('ensureFuseBoxPath - check / vs \\', () => {
+      expect(path2RegexPattern(`users/documents/bar.ts`).test('users\\documents\\bar.ts')).toEqual(true);
+    });
+
+    it('ensureFuseBoxPath - check single dir using /', () => {
+      expect(path2RegexPattern(`/documents/`).test('users\\documents\\bar.ts')).toEqual(true);
+    });
+
+    it('ensureFuseBoxPath - check single dir using \\', () => {
+      expect(path2RegexPattern(`\\documents\\`).test('users/documents/bar.ts')).toEqual(true);
     });
   });
 });
