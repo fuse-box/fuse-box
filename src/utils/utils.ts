@@ -180,8 +180,8 @@ export function path2RegexPattern(input: undefined | string | RegExp): RegExp {
         case '/':
           r += '(\\/|\\\\)';
           break;
-        case '\\':
-          r += '\\\\';
+        case '\\': // window paths
+          r += '(\\/|\\\\)';
           break;
         case '*':
           r += '.*';
