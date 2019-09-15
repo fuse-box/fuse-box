@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import { getFolderEntryPointFromPackageJSON } from './shared';
 import { TypescriptConfig } from '../interfaces/TypescriptInterfaces';
 import { initTypescriptConfig } from '../tsconfig/configParser';
+import { fileExists } from '../utils/utils';
 
 export interface ILookupProps {
   typescriptFirst?: boolean;
@@ -43,7 +44,7 @@ function tryIndexes(target: string, indexes: Array<string>) {
   for (const i in indexes) {
     const indexFile = indexes[i];
     const resolved = path.join(target, indexFile);
-    if (fs.existsSync(resolved)) {
+    if (fileExists(resolved)) {
       return resolved;
     }
   }
@@ -52,7 +53,7 @@ function tryIndexes(target: string, indexes: Array<string>) {
 function tryExtensions(target: string, extensions: Array<string>) {
   for (const i in extensions) {
     const resolved = `${target}${extensions[i]}`;
-    if (fs.existsSync(resolved)) {
+    if (fileExists(resolved)) {
       return resolved;
     }
   }
@@ -65,11 +66,11 @@ export function fileLookup(props: ILookupProps): ILookupResult {
   let resolved = path.join(props.filePath ? path.dirname(props.filePath) : props.fileDir, props.target);
   const extension = path.extname(resolved);
 
-  if (extension && fs.existsSync(resolved)) {
+  if (extension && fileExists(resolved)) {
     return {
       extension: path.extname(resolved),
       absPath: resolved,
-      fileExists: fs.existsSync(resolved),
+      fileExists: fileExists(resolved),
     };
   }
 
@@ -92,7 +93,7 @@ export function fileLookup(props: ILookupProps): ILookupResult {
 
   let isDirectory: boolean;
   // try directory indexes
-  const exists = fs.existsSync(resolved);
+  const exists = fileExists(resolved);
   if (exists) {
     const stat = fs.lstatSync(resolved);
     if (stat.isDirectory) {
@@ -103,19 +104,19 @@ export function fileLookup(props: ILookupProps): ILookupResult {
 
       // only in case of a directory
       const packageJSONPath = path.join(resolved, 'package.json');
-      if (fs.existsSync(packageJSONPath)) {
+      if (fileExists(packageJSONPath)) {
         const useLocalMain = !/node_modules/.test(packageJSONPath);
         const packageJSON = require(packageJSONPath);
         const entry = getFolderEntryPointFromPackageJSON({ json: packageJSON, useLocalField: useLocalMain });
 
         if (useLocalMain && packageJSON['local:main']) {
           const _monoModules = path.resolve(resolved, 'node_modules');
-          if (fs.existsSync(_monoModules)) {
+          if (fileExists(_monoModules)) {
             monorepoModulesPaths = _monoModules;
           }
 
           const _tsConfig = path.resolve(resolved, 'tsconfig.json');
-          if (fs.existsSync(_tsConfig)) {
+          if (fileExists(_tsConfig)) {
             const props: any = { tsConfig: _tsConfig };
             const _tsConfigObject = initTypescriptConfig(props);
             tsConfigAtPath = { absPath: resolved, tsConfig: _tsConfigObject };
@@ -130,7 +131,7 @@ export function fileLookup(props: ILookupProps): ILookupResult {
           isDirectoryIndex: true,
           absPath: entryFile,
           extension: path.extname(entryFile),
-          fileExists: fs.existsSync(entryFile),
+          fileExists: fileExists(entryFile),
         };
       }
 

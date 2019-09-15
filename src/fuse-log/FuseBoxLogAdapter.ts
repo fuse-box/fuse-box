@@ -25,6 +25,7 @@ export class FuseBoxLogAdapter extends FuseLog {
       this.props.level = 'verbose';
     }
 
+    if (env.isTest && !process.argv.includes('--log')) this.props.level = 'disabled';
     if (props.ignoreStatementErrors) {
       this.ignoreStatementErrors = props.ignoreStatementErrors.map(item => ignoredPath2Regex(item));
     }
@@ -178,6 +179,9 @@ export class FuseBoxLogAdapter extends FuseLog {
     return prettyTime(process.hrtime(this.startTime), 'ms');
   }
   fuseFinalise() {
+    if (this.props.level === 'disabled') {
+      return;
+    }
     const hasErrors = this._errors.length > 0;
     const hasWarnings = this._warnings.length > 0;
     this.printBottomMessages();

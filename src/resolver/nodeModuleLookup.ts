@@ -1,11 +1,10 @@
 import * as appRoot from 'app-root-path';
-import * as fs from 'fs';
 import * as path from 'path';
 import { fileExists, makeFuseBoxPath } from '../utils/utils';
+import { handleBrowserField } from './browserField';
 import { fileLookup } from './fileLookup';
 import { IPackageMeta, IResolverProps } from './resolver';
 import { getFolderEntryPointFromPackageJSON, isBrowserEntry } from './shared';
-import { handleBrowserField } from './browserField';
 
 const PROJECT_NODE_MODULES = path.join(appRoot.path, 'node_modules');
 
@@ -67,7 +66,7 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
   if (props.modules) {
     for (const i in props.modules) {
       const f = path.join(props.modules[i], parsed.name);
-      if (fs.existsSync(f)) {
+      if (fileExists(f)) {
         return f;
       }
     }

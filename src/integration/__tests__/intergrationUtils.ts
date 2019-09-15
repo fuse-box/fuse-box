@@ -12,6 +12,7 @@ export function createFileSet(directory, files: { [key: string]: string }) {
   for (const key in files) {
     newSet[path.join(directory, key)] = files[key];
   }
+
   return newSet;
 }
 
@@ -25,6 +26,10 @@ export class IntegrationHelper {
 
   public findInDist(target: string) {
     return this.mock.findFile(path.join(this.getOutputDirectory(), target));
+  }
+
+  public findFile(target: string) {
+    return this.mock.findFile(target);
   }
 
   public listDistFiles() {

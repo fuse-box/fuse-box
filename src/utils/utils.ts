@@ -105,9 +105,7 @@ export function extractFuseBoxPath(homeDir: string, targetPath: string) {
   return result;
 }
 
-export function fileExists(file: string) {
-  return fs.existsSync(file);
-}
+export const fileExists = fs.existsSync;
 
 export function readFile(file: string) {
   return fs.readFileSync(file).toString();

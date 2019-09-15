@@ -38,7 +38,6 @@ export function fusebox(config: IPublicConfig) {
 
       checkVersion(ctx.log);
       return bundleDev(ctx).catch(e => {
-        console.log('error is here bieach');
         console.error(e);
       });
     },
