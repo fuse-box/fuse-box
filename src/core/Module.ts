@@ -188,6 +188,10 @@ export class Module {
     return this.contents;
   }
 
+  public makeExectuable() {
+    this._isExecutable = true;
+  }
+
   public isExecutable() {
     if (this._isExecutable === undefined) {
       this._isExecutable = EXECUTABLE_EXTENSIONS.includes(this.props.extension);

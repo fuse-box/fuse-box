@@ -18,6 +18,7 @@ export interface InterceptorEvents {
   assemble_module_init?: { module: Module };
   assemble_module_ftl_init?: { module: Module };
   assemble_module?: { module: Module };
+  assemble_before_analysis?: { module: Module };
   assemble_fast_analysis?: { module: Module };
 
   before_webindex_write?: {

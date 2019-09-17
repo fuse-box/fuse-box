@@ -188,6 +188,7 @@ export function processModule(props: IDefaultParseProps) {
   if (_module.isExecutable()) {
     if (!_module.isCached) {
       _module.read();
+      icp.sync('assemble_before_analysis', { module: _module });
       _module.fastAnalyse();
       // temp hack to set jsx analysis based on extension
       if (_module.props.extension === '.jsx') {

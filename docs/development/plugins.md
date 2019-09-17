@@ -134,6 +134,37 @@ module.
 
 There are several types of events related to capturing modules in `ict`
 
+### assemble_before_analysis
+
+If you have a custom language that you transform beforehand and then want to feed the javascript for analysis, that
+would be right event
+
+If you have a custom extension `.foo` follow the examble below
+
+```ts
+ctx.ict.on('assemble_before_analysis', props => {
+  const module = props.module;
+  if (props.module.props.extension === '.foo') {
+    // do whatever you want with the contents
+    // it's loaded at this point
+    module.contents = `import "that_will_be_picked_up_by_fusebox"`;
+  }
+  return props;
+});
+```
+
+Don't forget to make that `foo` extension executable
+
+```ts
+ctx.ict.on('assemble_module_init', props => {
+  if (props.module.props.extension === '.foo') {
+    // making module executable so fusebox will take it parse all dependencies later on
+    props.module.makeExectuable();
+  }
+  return props;
+});
+```
+
 ### assemble_module_init
 
 ```ts
