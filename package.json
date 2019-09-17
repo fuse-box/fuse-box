@@ -147,5 +147,5 @@
     "coverage-ci": "jest --verbose --coverage --runInBand"
   },
   "typings": "index.d.ts",
-  "version": "4.0.0-next.134"
+  "version": "4.0.0-next.135"
 }
