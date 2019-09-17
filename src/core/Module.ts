@@ -188,7 +188,7 @@ export class Module {
     return this.contents;
   }
 
-  public makeExectuable() {
+  public makeExecutable() {
     this._isExecutable = true;
   }
 

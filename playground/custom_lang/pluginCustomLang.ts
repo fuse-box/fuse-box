@@ -8,8 +8,8 @@ export function pluginCustomLang() {
   return (ctx: Context) => {
     ctx.ict.on('assemble_module_init', props => {
       if (props.module.props.extension === '.foo') {
-        // making module executable so fusebox will take it parse all dependencies later on
-        props.module.makeExectuable();
+        // making module executable so fusebox will take it and parse all dependencies later on
+        props.module.makeExecutable();
       }
       return props;
     });
