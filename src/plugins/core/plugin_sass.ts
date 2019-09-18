@@ -39,7 +39,6 @@ export function pluginSass(a?: IPluginCommon | string | RegExp, b?: IPluginCommo
       // as well as setting according flags
       // It also accepts extra properties (like asText) to handle text rendering
       // Accepts postCSS Processor as well
-      console.log('here doing this');
       cssContextHandler({
         ctx,
         module: module,
