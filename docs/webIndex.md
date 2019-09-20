@@ -9,7 +9,7 @@ fusebox({
 });
 ```
 
-Your template may contain two variables which are replaced by thier `<script ...>` and `<link rel="stylesheet" ... />`
+Your template may contain two variables which are replaced by their `<script ...>` and `<link rel="stylesheet" ... />`
 counterparts:
 
 - `$bundles`: JavaScript bundles generated
