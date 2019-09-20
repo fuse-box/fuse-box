@@ -87,7 +87,7 @@ fusebox({
 
 ### express
 
-Access `express` server by prodiving a callback
+Access `express` server by providing a callback
 
 ```ts
 fusebox({
@@ -103,7 +103,7 @@ fusebox({
 ```
 
 `express` callback gives you an `application` itself where you can override anything paths except for `/__ftl` which is
-used internally and cannot be overriden. The second argument is `express` itself
+used internally and cannot be overridden. The second argument is `express` itself
 
 ## HMR server settings
 
