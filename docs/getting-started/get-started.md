@@ -10,7 +10,7 @@ FuseBox requires typescript at the core level, since many of the operations rely
 production - all the modules are compiled using typescript. Please note, that it doesn't mean that FuseBox works only
 with typescript. You can transpile javascript code too.
 
-Once you are done installing, let's go throught the main concepts
+Once you are done installing, let's go through the main concepts
 
 Try [react-example](https://github.com/fuse-box/react-example)
 
@@ -70,7 +70,7 @@ Let's create `src/index.html` with the following contents:
 ```
 
 Once your application has been bundled, FuseBox will copy this template and replace `$bundles` and `$css` with the
-following scripts. To read more about how webIndex propery works, read [here](../webIndex.md)
+following scripts. To read more about how webIndex properly works, read [here](../webIndex.md)
 
 And finally we launch the process by calling `fuse.runDev()`
 
@@ -78,7 +78,7 @@ And finally we launch the process by calling `fuse.runDev()`
 
 Possible values are: `browser`, `server`, `electron`;
 
-FuseBox behaves differenly when processing modules using those targets. For `example` a `server` target won't touch
+FuseBox behaves differently when processing modules using those targets. For `example` a `server` target won't touch
 `process` variables, as opposed to `browser` target, where it's being polyfilled.
 
 ```ts
