@@ -150,7 +150,7 @@ pluginName(/components\/.*\.css$/, {
 });
 ```
 
-Global configuration in the `stylesheet` property can be overriden by the plugin. For example. if your PostCSS modules
+Global configuration in the `stylesheet` property can be overridden by the plugin. For example. if your PostCSS modules
 require different macros you can define it in the `pluginPostCSS`
 
 ## Importing as text
