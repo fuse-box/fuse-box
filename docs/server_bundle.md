@@ -63,7 +63,7 @@ await fuse.runProd({
 
 FuseBox manages bundles automatically and for the best performance all vendors are ignored.
 
-However, in some cases you would want the vendors to be bundled. (For example when uploading to lamdba services). It's a
+However, in some cases you would want the vendors to be bundled. (For example when uploading to lambda services). It's a
 good idea to enable vendors and test how it all works during the development.
 
 Let's reset the default settings:
