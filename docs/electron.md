@@ -119,8 +119,8 @@ Make sure to set custom `output` and `homeDir`
 
 ### Loading the application
 
-You can use the devServer, however it's not really nessesary, since FuseBox can launch a separate WebSocket and
-comminicate with the process (for the HMR )
+You can use the devServer, however it's not really necessary, since FuseBox can launch a separate WebSocket and
+communicate with the process (for the HMR )
 
 ```ts
 {
@@ -166,7 +166,7 @@ mainWindow.loadURL(
 
 ## Production builds
 
-Production build (like any other screnario) is initiated by calling `runProd`. But unlike `runDev` as we know, it has a
+Production build (like any other scenario) is initiated by calling `runProd`. But unlike `runDev` as we know, it has a
 slightly different API;
 
 ```ts
