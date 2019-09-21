@@ -19,7 +19,7 @@ describe('utils', () => {
   describe('beautifyBundleName', () => {
     it('should beautifyBundleName 1', () => {
       const name = beautifyBundleName('foo/bar/oi.js');
-      expect(name).toEqual('bar-oi');
+      expect(name).toEqual('foo-bar-oi');
     });
     it('should beautifyBundleName 2', () => {
       const name = beautifyBundleName('oi.js');
@@ -28,6 +28,20 @@ describe('utils', () => {
     it('should beautifyBundleName 3', () => {
       const name = beautifyBundleName('./not-found-page/not-found-page/not-found-page.module');
       expect(name).toEqual('not-found-page');
+    });
+    it('should beautifyBundleName 4', () => {
+      const name = beautifyBundleName('./not-found-page/not-found-page/not-found-page.module', Number.MAX_VALUE);
+      expect(name).toEqual('not-found-page-not-found-page-not-found-page');
+    });
+
+    it('should beautifyBundleName 4', () => {
+      const name = beautifyBundleName('./not-found-page/not-found-page/not-found-page.module', 10);
+      expect(name).toEqual('not-found-page');
+    });
+
+    it('should beautifyBundleName 4', () => {
+      const name = beautifyBundleName('./this/path/is/wild/right/ok.module', Number.MAX_VALUE);
+      expect(name).toEqual('this-path-is-wild-right-ok');
     });
   });
   describe('parseVersion', () => {
