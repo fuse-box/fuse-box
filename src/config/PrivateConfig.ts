@@ -118,8 +118,8 @@ export class PrivateConfig {
     }
     // define default settings for code splitting
     this.codeSplitting = props.codeSplitting || {};
-    this.codeSplitting.useHash = typeof this.codeSplitting.useHash === undefined ? true : this.codeSplitting.useHash
-    this.codeSplitting.maxPathLength = this.codeSplitting.maxPathLength || 20
+    this.codeSplitting.useHash = typeof this.codeSplitting.useHash === undefined ? true : this.codeSplitting.useHash;
+    this.codeSplitting.maxPathLength = typeof this.codeSplitting.maxPathLength === 'number' ? this.codeSplitting.maxPathLength : 20;
 
     if (!this.codeSplitting.scriptRoot) {
       if (this.isServer()) {

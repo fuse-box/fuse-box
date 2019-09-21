@@ -50,7 +50,7 @@ export function codeSplittingStage(props: IProductionFlow) {
 
       const bundle = createBundle({
         ctx: props.ctx,
-        name: `${useHash ? fastHash(root.module.props.absPath) + '-' : ''}${beautifyBundleName(root.module.props.absPath, maxlen)}`,
+        name: `${useHash ? fastHash(root.module.props.absPath) + '-' : ''}${beautifyBundleName(root.module.props.fuseBoxPath, maxlen)}`,
         webIndexed: false,
         type: BundleType.SPLIT_JS,
       });
