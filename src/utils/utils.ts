@@ -31,9 +31,8 @@ export function removeFolder(userPath) {
 export function beautifyBundleName(absPath: string, maxLength?: number) {
   return absPath
     .replace(/(\.\w+)$/g, '')
-    .replace('.', '')
     .split(/(\/|\\)/g)
-    .filter(a => a !== '' && !a.match(/(\/|\\)/g))
+    .filter(a => a !== '' && a !== '.' && !a.match(/(\/|\\)/g))
     .reduce((acc, curr, _idx, arr) => acc
       ? maxLength && acc.length > maxLength
         ? arr[arr.length - 1]

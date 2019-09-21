@@ -43,6 +43,21 @@ describe('utils', () => {
       const name = beautifyBundleName('./this/path/is/wild/right/ok.module');
       expect(name).toEqual('this-path-is-wild-right-ok');
     });
+
+    it('should beautifyBundleName 6', () => {
+      const name = beautifyBundleName('./site/not-found/not-found.module');
+      expect(name).toEqual('site-not-found-not-found');
+    });
+
+    it('should beautifyBundleName 6', () => {
+      const name = beautifyBundleName('ngc/browser/site/not-found/not-found.module.js');
+      expect(name).toEqual('ngc-browser-site-not-found-not-found.module');
+    });
+
+    it('should beautifyBundleName 7', () => {
+      const name = beautifyBundleName('./ngc/browser/site/not-found/not-found.module.js');
+      expect(name).toEqual('ngc-browser-site-not-found-not-found.module');
+    });
   });
   describe('parseVersion', () => {
     it('should parse with v', () => {
