@@ -28,14 +28,14 @@ export function removeFolder(userPath) {
   fsExtra.removeSync(userPath);
 }
 
-export function beautifyBundleName(absPath: string, maxLength = 20) {
+export function beautifyBundleName(absPath: string, maxLength?: number) {
   return absPath
     .replace(/(\.\w+)$/g, '')
     .replace('.', '')
     .split(/(\/|\\)/g)
     .filter(a => a !== '' && !a.match(/(\/|\\)/g))
     .reduce((acc, curr, _idx, arr) => acc
-      ? acc.length > maxLength
+      ? maxLength && acc.length > maxLength
         ? arr[arr.length - 1]
         : `${acc}-${curr}`
       : curr)

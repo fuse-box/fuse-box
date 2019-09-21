@@ -18,29 +18,29 @@ import {
 describe('utils', () => {
   describe('beautifyBundleName', () => {
     it('should beautifyBundleName 1', () => {
-      const name = beautifyBundleName('foo/bar/oi.js');
+      const name = beautifyBundleName('foo/bar/oi.js', 20);
       expect(name).toEqual('foo-bar-oi');
     });
     it('should beautifyBundleName 2', () => {
-      const name = beautifyBundleName('oi.js');
+      const name = beautifyBundleName('oi.js', 20);
       expect(name).toEqual('oi');
     });
     it('should beautifyBundleName 3', () => {
-      const name = beautifyBundleName('./not-found-page/not-found-page/not-found-page.module');
+      const name = beautifyBundleName('./not-found-page/not-found-page/not-found-page.module', 20);
       expect(name).toEqual('not-found-page');
     });
     it('should beautifyBundleName 4', () => {
-      const name = beautifyBundleName('./not-found-page/not-found-page/not-found-page.module', Number.MAX_VALUE);
+      const name = beautifyBundleName('./not-found-page/not-found-page/not-found-page.module');
       expect(name).toEqual('not-found-page-not-found-page-not-found-page');
     });
 
-    it('should beautifyBundleName 4', () => {
+    it('should beautifyBundleName 5', () => {
       const name = beautifyBundleName('./not-found-page/not-found-page/not-found-page.module', 10);
       expect(name).toEqual('not-found-page');
     });
 
-    it('should beautifyBundleName 4', () => {
-      const name = beautifyBundleName('./this/path/is/wild/right/ok.module', Number.MAX_VALUE);
+    it('should beautifyBundleName 6', () => {
+      const name = beautifyBundleName('./this/path/is/wild/right/ok.module');
       expect(name).toEqual('this-path-is-wild-right-ok');
     });
   });
