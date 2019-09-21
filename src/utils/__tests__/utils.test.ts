@@ -25,6 +25,10 @@ describe('utils', () => {
       const name = beautifyBundleName('oi.js');
       expect(name).toEqual('oi');
     });
+    it('should beautifyBundleName 3', () => {
+      const name = beautifyBundleName('./not-found-page/not-found-page/not-found-page.module');
+      expect(name).toEqual('not-found-page');
+    });
   });
   describe('parseVersion', () => {
     it('should parse with v', () => {

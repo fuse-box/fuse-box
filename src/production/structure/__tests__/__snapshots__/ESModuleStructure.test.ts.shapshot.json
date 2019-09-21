@@ -163,5 +163,170 @@
         }
       ]
     }
+  ],
+  "010103452": [
+    {
+      "fromSource": "hello",
+      "imports": [
+        {
+          "name": "foo",
+          "importSpecifierNode": true
+        }
+      ]
+    }
+  ],
+  "0590d87a": [
+    {
+      "fromSource": "hello",
+      "imports": [
+        {
+          "name": "foo",
+          "local": "oi",
+          "importSpecifierNode": true
+        }
+      ]
+    }
+  ],
+  "0fbc1ffe": [
+    {
+      "fromSource": "hello",
+      "imports": [
+        {
+          "name": "default",
+          "defaultImportDeclarationNode": true
+        }
+      ]
+    }
+  ],
+  "04b474574": [
+    {
+      "fromSource": "./bar",
+      "exports": [
+        {
+          "type": "ImportReference",
+          "name": "foo",
+          "exported": "foo",
+          "exportSpecifierNode": true
+        }
+      ]
+    }
+  ],
+  "04b474573": [
+    {
+      "fromSource": "./bar",
+      "exports": [
+        {
+          "type": "ImportReference",
+          "name": "foo",
+          "exported": "oi",
+          "exportSpecifierNode": true
+        }
+      ]
+    }
+  ],
+  "019c392e3": [
+    {
+      "exports": [
+        {
+          "type": "Object",
+          "name": "foo",
+          "objectNode": "FunctionDeclaration",
+          "exported": "foo",
+          "exportSpecifierNode": true
+        }
+      ]
+    }
+  ],
+  "01f8c41ad": [
+    {
+      "exports": [
+        {
+          "type": "Object",
+          "name": "Foo",
+          "objectNode": "ClassDeclaration",
+          "exported": "Foo",
+          "exportSpecifierNode": true
+        }
+      ]
+    }
+  ],
+  "48c5e8ab": [
+    {
+      "exports": [
+        {
+          "type": "Object",
+          "name": "foo",
+          "objectNode": "FunctionDeclaration",
+          "exported": "foo"
+        }
+      ]
+    }
+  ],
+  "90a154b": [
+    {
+      "exports": [
+        {
+          "type": "Object",
+          "objectNode": "FunctionDeclaration",
+          "exported": "default"
+        }
+      ]
+    }
+  ],
+  "90a154c": [
+    {
+      "exports": [
+        {
+          "type": "Object",
+          "name": "foo",
+          "objectNode": "FunctionDeclaration",
+          "exported": "default"
+        }
+      ]
+    }
+  ],
+  "03ace95dc": [
+    {
+      "fromSource": "foo",
+      "exports": [
+        {
+          "type": "ImportReference",
+          "name": "foo",
+          "exported": "some",
+          "exportSpecifierNode": true
+        },
+        {
+          "type": "ImportReference",
+          "name": "bar",
+          "exported": "moo",
+          "exportSpecifierNode": true
+        }
+      ]
+    }
+  ],
+  "03ff06b09": [
+    {
+      "exports": [
+        {
+          "type": "DefaultAssignment",
+          "name": "default",
+          "exported": "default",
+          "objectLiteralExpressionNode": true
+        }
+      ]
+    }
+  ],
+  "09ca040": [
+    {
+      "fromSource": "./oi",
+      "exports": [
+        {
+          "type": "ImportReference",
+          "name": "default",
+          "exported": "default",
+          "exportSpecifierNode": true
+        }
+      ]
+    }
   ]
 }

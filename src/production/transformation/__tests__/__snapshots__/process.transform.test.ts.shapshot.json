@@ -4,5 +4,11 @@
   "6dac9b37": "console.log(global.Symbol)\n    ",
   "59436dd8": "const __env = {\"NODE_ENV\":\"development\"};\n      console.log(__env)\n    ",
   "4f165ffb": "const __env = {\"NODE_ENV\":\"development\"};\n      console.log(__env)\n      console.log(__env)\n    ",
-  "04f689fe5": "const process = require(\"process\");\n      process.nextTick()\n      process.nextTick()\n    "
+  "04f689fe5": "const process = require(\"process\");\n      process.nextTick()\n      process.nextTick()\n    ",
+  "017c2cd6e": "const global = {};\n      console.log(global.Symbol)\n    ",
+  "017c2cd6d": "const global = {};\n      console.log(global.Symbol)\n      console.log(global.Symbol)\n    ",
+  "06ac8e152": "console.log(global.Symbol)\n    ",
+  "0521c833f": "const __env = {\"NODE_ENV\":\"development\"};\n      console.log(__env)\n    ",
+  "056c395dc": "const __env = {\"NODE_ENV\":\"development\"};\n      console.log(__env)\n      console.log(__env)\n    ",
+  "035ff23bc": "const process = require(\"process\");\n      process.nextTick()\n      process.nextTick()\n    "
 }
