@@ -46,7 +46,7 @@ export function codeSplittingStage(props: IProductionFlow) {
 
     if (root.dynamicDependencies.length > 0) {
       const useHash = props.ctx.config.codeSplitting.useHash
-      const maxlen = props.ctx.config.codeSplitting.maxFilenameLength
+      const maxlen = props.ctx.config.codeSplitting.maxPathLength
 
       const bundle = createBundle({
         ctx: props.ctx,

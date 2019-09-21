@@ -1,5 +1,5 @@
 export interface ICodeSplittingConfig {
   scriptRoot?: string;
-  maxFilenameLength?: number;
+  maxPathLength?: number;
   useHash?: boolean;
 }
