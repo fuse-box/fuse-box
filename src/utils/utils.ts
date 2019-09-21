@@ -28,17 +28,18 @@ export function removeFolder(userPath) {
   fsExtra.removeSync(userPath);
 }
 
-export function beautifyBundleName(absPath: string) {
-  absPath = absPath.replace(/(\.\w+)$/i, '');
-  const items = absPath.split(/(\/|\\)/);
-  const l = items.length;
-  const [a, b] = [items[l - 1], items[l - 3]];
-
-  let suggested = b ? `${b}-${a}` : a;
-  if (suggested.length > 20) {
-    suggested = suggested.slice(suggested.length, 20);
-  }
-  return suggested.toLowerCase();
+export function beautifyBundleName(absPath: string, maxLength?: number) {
+  return absPath
+    .replace(/(\.\w+)$/g, '')
+    .replace('.', '')
+    .split(/(\/|\\)/g)
+    .filter(a => a !== '' && !a.match(/(\/|\\)/g))
+    .reduce((acc, curr, _idx, arr) => acc
+      ? maxLength && acc.length > maxLength
+        ? arr[arr.length - 1]
+        : `${acc}-${curr}`
+      : curr)
+    .toLowerCase()
 }
 
 export function offsetLines(obj: any, amount: number) {
@@ -210,7 +211,7 @@ export type Concat = {
   sourceMap: string;
 };
 export type ConcatModule = {
-  new (generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
+  new(generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
 };
 export const Concat: ConcatModule = require('fuse-concat-with-sourcemaps');
 
