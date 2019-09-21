@@ -45,5 +45,5 @@ cache on, it might still take a few seconds to generate it on the fly. With `FTL
 You will be "dropped" out of FTL if you change file's dependency tree (For example add or remove an import) or exceed a
 maximum in-memory amount of stored modules (which is 5)
 
-`FTL` is extremely usefull when working on multiple components in a large project. HMR reload time will be reduced from
+`FTL` is extremely useful when working on multiple components in a large project. HMR reload time will be reduced from
 `2-3 seconds` to `5-10 milliseconds`

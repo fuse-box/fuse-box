@@ -8,7 +8,7 @@ events, intercepting modules/system events etc.
 all plugins in FuseBox start with `plugin`. Let's keep the convention and add another plugin `pluginFoo`
 
 It's important to make your plugin flexible, therefore if your plugin works with modules (captured) you should offer 2
-arguments, where the first one could be either a `string` or `RegExp` of `YourOptionInteface`. The second argument must
+arguments, where the first one could be either a `string` or `RegExp` of `YourOptionInterface`. The second argument must
 be your plugin options always.
 
 User can choose whether to apply the plugin globally or pick files individually.
@@ -139,7 +139,7 @@ There are several types of events related to capturing modules in `ict`
 If you have a custom language that you transform beforehand and then want to feed the javascript for analysis, that
 would be right event
 
-If you have a custom extension `.foo` follow the examble below
+If you have a custom extension `.foo` follow the example below
 
 ```ts
 ctx.ict.on('assemble_before_analysis', props => {
@@ -228,7 +228,7 @@ ctx.ict.on('bundle_resolve_module', props => {
 });
 ```
 
-If you are bulding a plugin that exports content make sure you give a possiblity to toggle `useDefault`. `wrapContents`
+If you are building a plugin that exports content make sure you give a possibility to toggle `useDefault`. `wrapContents`
 will take care of that.
 
 The resulting contents will look as follows;
