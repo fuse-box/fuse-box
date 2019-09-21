@@ -45,9 +45,12 @@ export function codeSplittingStage(props: IProductionFlow) {
     processEntry(props, link);
 
     if (root.dynamicDependencies.length > 0) {
+      const useHash = props.ctx.config.codeSplitting.useHash
+      const maxlen = props.ctx.config.codeSplitting.maxFilenameLength
+
       const bundle = createBundle({
         ctx: props.ctx,
-        name: fastHash(root.module.props.absPath) + '-' + beautifyBundleName(root.module.props.absPath),
+        name: `${!!useHash ? fastHash(root.module.props.absPath) + '-' : ''}${beautifyBundleName(root.module.props.absPath, maxlen)}`,
         webIndexed: false,
         type: BundleType.SPLIT_JS,
       });
