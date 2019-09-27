@@ -119,20 +119,20 @@ export class PrivateConfig {
     // define default settings for code splitting
     this.codeSplitting = props.codeSplitting || {};
     this.codeSplitting.useHash = typeof this.codeSplitting.useHash === undefined ? true : this.codeSplitting.useHash;
-    this.codeSplitting.maxPathLength = typeof this.codeSplitting.maxPathLength === 'number' ? this.codeSplitting.maxPathLength : 20;
+    this.codeSplitting.maxPathLength =
+      typeof this.codeSplitting.maxPathLength === 'number' ? this.codeSplitting.maxPathLength : 20;
 
     if (!this.codeSplitting.scriptRoot) {
       if (this.isServer()) {
         this.codeSplitting.scriptRoot = './';
       } else {
-        if (this.webIndex && this.webIndex.publicPath) {
+        if (this.webIndex && typeof this.webIndex.publicPath != 'undefined') {
           this.codeSplitting.scriptRoot = this.webIndex.publicPath;
         } else {
           this.codeSplitting.scriptRoot = '/';
         }
       }
     }
-
 
     this.watch = {
       enabled: !env.isTest,
@@ -204,10 +204,10 @@ export class PrivateConfig {
       return userPublicPath;
     }
     let publicPath = '/';
-    if (this.webIndex && this.webIndex.publicPath) {
+    if (this.webIndex && typeof this.webIndex.publicPath != 'undefined') {
       publicPath = this.webIndex.publicPath;
     }
-    if (this.resources && this.resources.resourcePublicRoot) {
+    if (this.resources && typeof this.resources.resourcePublicRoot != 'undefined') {
       publicPath = joinFuseBoxPath(publicPath, this.resources.resourcePublicRoot);
     }
     return publicPath;

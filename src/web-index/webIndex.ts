@@ -1,10 +1,10 @@
 import { join } from 'path';
-import { IBundleWriteResponse, BundleType } from '../bundle/Bundle';
+import { BundleType, IBundleWriteResponse } from '../bundle/Bundle';
 import { Context } from '../core/Context';
 import { env } from '../env';
-import { ensureAbsolutePath, fileExists, readFile, joinFuseBoxPath } from '../utils/utils';
-import { htmlStrings } from './htmlStrings';
 import { FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
+import { ensureAbsolutePath, fileExists, joinFuseBoxPath, readFile } from '../utils/utils';
+import { htmlStrings } from './htmlStrings';
 
 export interface IWebIndexConfig {
   enabled?: boolean;
@@ -37,10 +37,9 @@ export function getEssentialWebIndexParams(config: IWebIndexConfig | boolean, lo
     if (config.template) {
       templatePath = ensureAbsolutePath(config.template, env.SCRIPT_PATH);
     }
-    if (config.publicPath) {
+    if (typeof config.publicPath != 'undefined') {
       publicPath = config.publicPath;
     }
-
     if (config.distFileName) {
       distFileName = config.distFileName;
     }
@@ -74,8 +73,8 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
       return joinFuseBoxPath(opts.publicPath, userPath);
     },
     generate: async (bundles: Array<IBundleWriteResponse>) => {
-      const scriptTags = [];
-      const cssTags = [];
+      let scriptTags = [];
+      let cssTags = [];
       let ftlEnabled = false;
       if (ctx.cache && ctx.config.cache.FTL && ctx.devServer && !ctx.config.production) {
         ftlEnabled = true;
@@ -101,10 +100,6 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
           }
         }
       });
-      const scriptOpts: any = {
-        bundles: scriptTags.join('\n'),
-        css: cssTags.join('\n'),
-      };
 
       let fileContents = opts.templateContent;
 
@@ -119,6 +114,23 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
       if (pluginResponse && pluginResponse.fileContents) {
         fileContents = pluginResponse.fileContents;
       }
+
+      if (pluginResponse && pluginResponse.bundles) {
+        bundles = pluginResponse.bundles;
+      }
+
+      if (pluginResponse && pluginResponse.scriptTags) {
+        scriptTags = pluginResponse.scriptTags;
+      }
+
+      if (pluginResponse && pluginResponse.fileContents) {
+        cssTags = pluginResponse.cssTags;
+      }
+
+      const scriptOpts: any = {
+        bundles: scriptTags.join('\n'),
+        css: cssTags.join('\n'),
+      };
 
       logger.info('webindex', 'writing to $name</yellow></bold></dim>', {
         name: opts.distFileName,
