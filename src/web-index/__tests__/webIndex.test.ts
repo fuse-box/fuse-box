@@ -2,9 +2,9 @@ import { join } from 'path';
 import { BundleType, createBundleSet } from '../../bundle/Bundle';
 import { createContext } from '../../core/Context';
 import { env } from '../../env';
+import { FuseBoxLogAdapter } from '../../fuse-log/FuseBoxLogAdapter';
 import { mockWriteFile } from '../../utils/test_utils';
 import { getEssentialWebIndexParams, IWebIndexConfig, replaceWebIndexStrings } from '../webIndex';
-import { FuseBoxLogAdapter } from '../../fuse-log/FuseBoxLogAdapter';
 const fileMock = mockWriteFile();
 
 const WEBINDEX_DEFAULT_TEMPLATE = `<!DOCTYPE html>
@@ -123,6 +123,18 @@ describe('WebIndex test', () => {
     it('should throw NO error if file not found, but use default template', async () => {
       const opts = getEssentialWebIndexParams({ template: 'foo' }, new FuseBoxLogAdapter({}));
       expect(opts.templateContent).toEqual(WEBINDEX_DEFAULT_TEMPLATE);
+    });
+
+    it('should use an empty publicPath', async () => {
+      await generateCSSBundle({ publicPath: '' });
+      const data = findIndexInMock();
+      expect(data.contents).toContain(`href="styles.css"`);
+    });
+
+    it('should use an specific local publicPath', async () => {
+      await generateCSSBundle({ publicPath: './' });
+      const data = findIndexInMock();
+      expect(data.contents).toContain(`href="./styles.css"`);
     });
   });
 });
