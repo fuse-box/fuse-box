@@ -4,7 +4,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "isolatedModules": false,
-    "importHelpers": true,
+    "jsx": "react",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "noUnusedLocals": true,
@@ -14,17 +14,8 @@
     "removeComments": true,
     "noEmitHelpers": true,
     "noLib": false,
-    "outDir": "../dist/",
-    "skipLibCheck": true,
+    "outDir": "build/",
     "preserveConstEnums": true,
     "suppressImplicitAnyIndexErrors": true
-  },
-  "exclude": [
-    "node_modules",
-    "src/**/__tests__",
-    "playground",
-    "_playground",
-    "src/**/_benchmark*",
-    "packages/compiler/playground"
-  ]
+  }
 }
