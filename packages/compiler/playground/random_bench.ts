@@ -1,27 +1,27 @@
-import { bench, getRandomInt } from "./bench";
-import { ADDRGETNETWORKPARAMS } from "dns";
+import { bench, getRandomInt } from './bench';
+import { ADDRGETNETWORKPARAMS } from 'dns';
 
 const b = bench({ iterations: 100000 });
 
 const benchPushAndIndex = () => {
   const arr1 = [];
   const arr2 = [];
-  b.measure("push", i => {
+  b.measure('push', i => {
     arr1.push(i);
   });
 
-  b.measure("index[]", i => {
+  b.measure('index[]', i => {
     arr2[arr2.length] = i;
   });
   b.start();
 };
 
 const benchArrayCheck = () => {
-  b.measure("Array.inArray", () => {
+  b.measure('Array.inArray', () => {
     const res = Array.isArray(getRandomInt(1, 10) === 5 ? [] : true);
   });
 
-  b.measure("Array instance of", () => {
+  b.measure('Array instance of', () => {
     const d = getRandomInt(1, 10) === 5 ? [] : true;
     const res = d instanceof Array;
   });
@@ -35,7 +35,7 @@ const benchIndexOf = () => {
     data.push(i);
   }
 
-  b.measure("indexOf", () => {
+  b.measure('indexOf', () => {
     data.indexOf(getRandomInt(1, 10000));
   });
 
@@ -43,7 +43,7 @@ const benchIndexOf = () => {
   //   data.findIndex(i => i === getRandomInt(1, 10000));
   // });
 
-  b.measure("includes", () => {
+  b.measure('includes', () => {
     data.includes(getRandomInt(1, 10000));
   });
   b.start();
@@ -59,14 +59,14 @@ function benchArrVersusObj() {
     obj[i] = 1;
   }
 
-  b.measure("Array.indexOf", () => {
+  b.measure('Array.indexOf', () => {
     arr.indexOf(getRandomInt(1, 10000));
   });
-  b.measure("Array.includes", () => {
+  b.measure('Array.includes', () => {
     arr.includes(getRandomInt(1, 10000));
   });
 
-  b.measure("in object", () => {
+  b.measure('in object', () => {
     if (obj[getRandomInt(1, 10000)]) {
     }
   });
@@ -82,24 +82,24 @@ function benchObjCopy() {
     obj[i] = 1;
   }
 
-  b.measure("for const key in obj", () => {
+  b.measure('for const key in obj', () => {
     const newArray: any = {};
     for (const key in obj) {
       newArray[key] = 1;
     }
   });
 
-  b.measure("spread operator", () => {
+  b.measure('spread operator', () => {
     const newArray = { ...obj };
   });
 
-  b.measure("Object.assign", () => {
+  b.measure('Object.assign', () => {
     Object.assign({}, obj);
   });
 
   b.start();
 }
-//benchObjCopy();
+benchObjCopy();
 //benchArrVersusObj();
 
 function benchIterators() {
@@ -110,17 +110,19 @@ function benchIterators() {
     arr.push(i);
   }
 
-  b.measure("for (const i of arr) {}", () => {
+  b.measure('for (const i of arr) {}', () => {
     for (const i of arr) {
     }
   });
 
-  b.measure("while(i < arr.length){ i++ }", () => {
+  b.measure('while(i < arr.length){ i++ }', () => {
     let i = 0;
-    while(i < arr.length){ i++ }
+    while (i < arr.length) {
+      i++;
+    }
   });
 
   b.start();
 }
 
-benchIterators();
+///benchIterators();
