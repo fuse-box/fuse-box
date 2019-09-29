@@ -126,7 +126,7 @@ export class PrivateConfig {
       if (this.isServer()) {
         this.codeSplitting.scriptRoot = './';
       } else {
-        if (this.webIndex && typeof this.webIndex.publicPath != 'undefined') {
+        if (this.webIndex && typeof this.webIndex.publicPath === 'string') {
           this.codeSplitting.scriptRoot = this.webIndex.publicPath;
         } else {
           this.codeSplitting.scriptRoot = '/';
