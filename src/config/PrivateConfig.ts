@@ -207,7 +207,7 @@ export class PrivateConfig {
     if (this.webIndex && typeof this.webIndex.publicPath === 'string') {
       publicPath = this.webIndex.publicPath;
     }
-    if (this.resources && typeof this.resources.resourcePublicRoot != 'undefined') {
+    if (this.resources && typeof this.resources.resourcePublicRoot === 'string') {
       publicPath = joinFuseBoxPath(publicPath, this.resources.resourcePublicRoot);
     }
     return publicPath;
