@@ -84,13 +84,14 @@ export function JSXTransformer(opts?: IJSXTranformerOptions): ITransformer {
           const { type, name, value } = attr; // call 'attr' once
           if (type === 'JSXAttribute') {
             const createdProp = createProperty(name.name, value);
+
             if (newObj) {
               propObject = {
                 type: 'ObjectExpression',
                 properties: [createdProp],
               };
-            } else {
               newObj = false;
+            } else {
               propObject.properties.push(createdProp);
             }
           }
