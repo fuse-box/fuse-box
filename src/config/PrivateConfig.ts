@@ -204,7 +204,7 @@ export class PrivateConfig {
       return userPublicPath;
     }
     let publicPath = '/';
-    if (this.webIndex && typeof this.webIndex.publicPath != 'undefined') {
+    if (this.webIndex && typeof this.webIndex.publicPath === 'string') {
       publicPath = this.webIndex.publicPath;
     }
     if (this.resources && typeof this.resources.resourcePublicRoot != 'undefined') {
