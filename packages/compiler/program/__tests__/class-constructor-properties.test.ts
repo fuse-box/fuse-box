@@ -7,14 +7,14 @@ describe('Class constructor properties', () => {
 
             class HelloWorld {
 
-                constructor(public welcome: string, 
-                            private to: string, 
+                constructor(public welcome: string,
+                            private to: string,
                             protected awesomeness: string,
                             of: number,
                             fuse?: boolean) {
-                                
+
                     this.fuse = fuse;
-                } 
+                }
             }
         `,
     });
@@ -37,16 +37,16 @@ describe('Class constructor properties', () => {
 
             class HelloWorld extends Amazing {
 
-                constructor(public welcome: string, 
-                            private to: string, 
+                constructor(public welcome: string,
+                            private to: string,
                             protected awesomeness: string,
                             of: number,
                             fuse?: boolean) {
-                                
+
                     super();
 
                     this.fuse = fuse;
-                } 
+                }
             }
         `,
     });
@@ -71,12 +71,12 @@ class HelloWorld extends Amazing {
 
             class HelloWorld extends Amazing {
 
-                constructor(public welcome: string, 
-                            private to: string, 
+                constructor(public welcome: string,
+                            private to: string,
                             protected awesomeness: string,
                             of: number,
                             fuse?: boolean) {
-                                
+
                     super();
 
                     (() => {console.log('Freaky block statement here.');})();
@@ -85,7 +85,7 @@ class HelloWorld extends Amazing {
                 }
 
                 welcomeToTheBlock() {
-                  
+
                 }
             }
         `,
@@ -115,12 +115,12 @@ class HelloWorld extends Amazing {
 
             class HelloWorld extends Amazing {
 
-                constructor(@foo public welcome: string, 
-                            @foo() private to: string, 
+                constructor(@foo public welcome: string,
+                            @foo() private to: string,
                             @foo(123, 'ab') protected awesomeness: string,
                             of: number,
                             fuse?: boolean) {
-                                
+
                     super();
 
                     (() => {console.log('Freaky block statement here.');})();
@@ -129,7 +129,7 @@ class HelloWorld extends Amazing {
                 }
 
                 welcomeToTheBlock() {
-                  
+
                 }
             }
         `,
@@ -158,14 +158,14 @@ class HelloWorld extends Amazing {
 
             class HelloWorld {
 
-                constructor(welcome: string, 
-                            to: string, 
+                constructor(welcome: string,
+                            to: string,
                             awesomeness: string,
                             of: number,
                             fuse?: boolean) {
-                                
+
                     this.fuse = fuse;
-                } 
+                }
             }
         `,
     });
@@ -185,18 +185,18 @@ class HelloWorld extends Amazing {
 
             class HelloWorld extends Amazing {
 
-                constructor(@foo public welcome: string, 
-                            @foo() private to: string, 
+                constructor(@foo public welcome: string,
+                            @foo() private to: string,
                             @foo(123, 'ab') protected awesomeness: string,
                             of: number,
                             fuse?: boolean) {
-                                
+
                     super();
 
                     const innerClass = class extends Amazing {
 
-                      constructor(@foo public welcome: string, 
-                        @foo() private to: string, 
+                      constructor(@foo public welcome: string,
+                        @foo() private to: string,
                         @foo(123, 'ab') protected awesomeness: string,
                         of: number,
                         fuse?: boolean) {
@@ -208,7 +208,7 @@ class HelloWorld extends Amazing {
                 }
 
                 welcomeToTheBlock() {
-                  
+
                 }
             }
         `,
@@ -239,7 +239,7 @@ class HelloWorld extends Amazing {
   it('should deal with immediate function calls on initialized properties', () => {
     const result = compileModule({
       code: `
-            
+
             class HelloWorld {
 
                 constructor(public welcome : string) {
@@ -261,7 +261,7 @@ class HelloWorld extends Amazing {
   it('should deal with multiple class definitions following each other', () => {
     const result = compileModule({
       code: `
-            
+
             class HelloWorld {
 
                 constructor(public welcome : string) {

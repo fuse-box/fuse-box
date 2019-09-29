@@ -1,20 +1,17 @@
-import { compileModule } from "../program/compileModule";
+import { compileModule } from '../program/compileModule';
 
 const result = compileModule({
   code: `
-      import stuff from "./stuff"
-      class FirstClass {
-        constructor(public name : string){
-          console.log(FirstClass_hey);
+  class HelloWorld {
 
-          class SubClass {
-            constructor(public name : string){
-              console.log(SubClass_hey);
-            }
-          }
-        }
-      }
+    constructor(public welcome: string,
+                private to: string,
+                protected awesomeness: string,
+                hey: number,
+                fuse?: boolean) {
 
-    `
+    }
+}
+    `,
 });
 console.log(result.code);
