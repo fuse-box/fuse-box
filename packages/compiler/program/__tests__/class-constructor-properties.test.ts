@@ -303,4 +303,30 @@ class HelloWorld3 {
 }
 `);
   });
+
+  it('should work with class as a default value', () => {
+    const result = compileModule({
+      code: `
+      class A {
+        constructor(
+          public name = class {
+            constructor(public hey = 2) {}
+          },
+        ) {}
+      }
+      `,
+    });
+    expect(result.code).toMatchInlineSnapshot(`
+      "class A {
+        constructor(name = class {
+          constructor(hey = 2) {
+            this.hey = hey;
+          }
+        }) {
+          this.name = name;
+        }
+      }
+      "
+    `);
+  });
 });
