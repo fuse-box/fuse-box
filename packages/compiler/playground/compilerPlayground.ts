@@ -2,16 +2,14 @@ import { compileModule } from '../program/compileModule';
 
 const result = compileModule({
   code: `
-  class HelloWorld {
+  class A {
+    constructor(
+      public name = class {
+        constructor(public hey = 2) {}
+      },
+    ) {}
+  }
 
-    constructor(public welcome: string,
-                private to: string,
-                protected awesomeness: string,
-                hey: number,
-                fuse?: boolean) {
-
-    }
-}
-    `,
+`,
 });
 console.log(result.code);

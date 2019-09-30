@@ -100,16 +100,16 @@ describe('JSX', () => {
     `);
   });
 
-  it.only('should work with JSXSpreadChild', () => {
-    const result = compileModule({
-      code: `
+  // it.only('should work with JSXSpreadChild', () => {
+  //   const result = compileModule({
+  //     code: `
 
-        function test(){
-          return (<i>{...children}</i>)
-        }
-          `,
-    });
+  //       function test(){
+  //         return (<i>{...children}</i>)
+  //       }
+  //         `,
+  //   });
 
-    console.log(result.code);
-  });
+  //   console.log(result.code);
+  // });
 });
