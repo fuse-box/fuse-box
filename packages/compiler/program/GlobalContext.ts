@@ -1,5 +1,5 @@
-import { ASTNode } from "../interfaces/AST";
-import { IProgramProps } from "./transpileModule";
+import { ASTNode } from '../interfaces/AST';
+import { IProgramProps } from './transpileModule';
 
 export interface GlobalContext {
   getNextIndex: () => number;
@@ -14,19 +14,20 @@ export interface GlobalContext {
       first?: string;
       second?: string;
       insertAfter?: ASTNode;
+      replaced?: boolean;
     };
   };
   namespace?: string;
+  completeCallbacks?: Array<() => void>;
 }
 
-export function createGlobalContext(userContext?: {
-  [key: string]: any;
-}): GlobalContext {
+export function createGlobalContext(userContext?: { [key: string]: any }): GlobalContext {
   let index = 1;
   let essentialContext = {
+    completeCallbacks: [],
     getNextIndex: () => index++,
     identifierReplacement: {},
-    namespace: "exports"
+    namespace: 'exports',
   };
   if (userContext) {
     for (const key in userContext) {

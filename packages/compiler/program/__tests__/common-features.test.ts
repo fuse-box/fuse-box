@@ -13,13 +13,32 @@ describe('Common features test', () => {
       `,
       });
       expect(result.code).toMatchInlineSnapshot(`
-        "class A {
-          constructor(name) {
-            this.name = name;
-          }
-        }
-        "
-      `);
+                                "class A {
+                                  constructor(name) {
+                                    this.name = name;
+                                  }
+                                }
+                                "
+                        `);
+    });
+  });
+
+  describe('Should remove declare', () => {
+    it('should remove consts', () => {
+      const result = compileModule({
+        code: `
+        alert(1)
+        declare const A: any, B: any;
+        alert(2)
+      `,
+      });
+      expect(result).toMatchInlineSnapshot(`
+                Object {
+                  "code": "alert(1);
+                alert(2);
+                ",
+                }
+            `);
     });
   });
 
@@ -35,10 +54,10 @@ describe('Common features test', () => {
       `,
       });
       expect(result.code).toMatchInlineSnapshot(`
-        "console.log(1);
-        console.log(2);
-        "
-      `);
+                                "console.log(1);
+                                console.log(2);
+                                "
+                        `);
     });
 
     it('should remove interface', () => {
@@ -47,6 +66,21 @@ describe('Common features test', () => {
            alert(1);
            interface Foo {}
            alert(2);
+        `,
+      });
+      expect(result.code).toMatchInlineSnapshot(`
+                                "alert(1);
+                                alert(2);
+                                "
+                        `);
+    });
+
+    it('should ignore export declare', () => {
+      const result = compileModule({
+        code: `
+        alert(1)
+        export declare const A: any, B: any, oi = 2;
+        alert(2)
         `,
       });
       expect(result.code).toMatchInlineSnapshot(`

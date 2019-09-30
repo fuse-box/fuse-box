@@ -1,11 +1,12 @@
-import { ASTNode } from "../interfaces/AST";
-import { IFastVisit, IVisit } from "./Visitor";
+import { ASTNode } from '../interfaces/AST';
+import { IFastVisit, IVisit } from './Visitor';
 
 export function astTransformer() {
   let replaces: Array<{ target: IVisit; nodes: Array<ASTNode> }>;
   let insertions: Array<{ target: IVisit; nodes: Array<ASTNode> }>;
   let removes: Array<{ target: IVisit }>;
   let whenFinsihedCallbacks: Array<(node: ASTNode) => void>;
+  let onCompletCallbacks: Array<() => void>;
   const methods = {
     replaceLater: (target: IVisit, nodes: Array<ASTNode>) => {
       if (!replaces) replaces = [];
@@ -19,25 +20,24 @@ export function astTransformer() {
       if (!insertions) insertions = [];
       insertions.push({ target, nodes });
     },
+    onComplete: (cb: () => void) => {
+      if (!onCompletCallbacks) onCompletCallbacks = [];
+      onCompletCallbacks.push(cb);
+    },
     whenFinished: (fn: (node: ASTNode) => {}) => {
       if (!whenFinsihedCallbacks) whenFinsihedCallbacks = [];
       whenFinsihedCallbacks.push(fn);
     },
+    onCompletCallbacks: onCompletCallbacks,
     finalise: (props: IFastVisit) => {
       if (replaces) {
         for (const item of replaces) {
           const visitor = item.target;
           if (visitor.property && visitor.parent) {
             if (visitor.parent[visitor.property] instanceof Array) {
-              const index = visitor.parent[visitor.property].indexOf(
-                visitor.node
-              );
+              const index = visitor.parent[visitor.property].indexOf(visitor.node);
               if (index > -1) {
-                visitor.parent[visitor.property].splice(
-                  index,
-                  1,
-                  ...item.nodes
-                );
+                visitor.parent[visitor.property].splice(index, 1, ...item.nodes);
               }
             } else {
               visitor.parent[visitor.property] = item.nodes[0];
@@ -51,15 +51,9 @@ export function astTransformer() {
           const visitor = item.target;
           if (visitor.property && visitor.parent) {
             if (visitor.parent[visitor.property] instanceof Array) {
-              const index = visitor.parent[visitor.property].indexOf(
-                visitor.node
-              );
+              const index = visitor.parent[visitor.property].indexOf(visitor.node);
               if (index > -1) {
-                visitor.parent[visitor.property].splice(
-                  index + 1,
-                  0,
-                  ...item.nodes
-                );
+                visitor.parent[visitor.property].splice(index + 1, 0, ...item.nodes);
               }
             } else {
               visitor.parent[visitor.property] = item.nodes[0];
@@ -73,9 +67,7 @@ export function astTransformer() {
           const visitor = item.target;
           if (visitor.property && visitor.parent) {
             if (visitor.parent[visitor.property] instanceof Array) {
-              const index = visitor.parent[visitor.property].indexOf(
-                visitor.node
-              );
+              const index = visitor.parent[visitor.property].indexOf(visitor.node);
               if (index > -1) {
                 visitor.parent[visitor.property].splice(index, 1);
               }
@@ -83,12 +75,13 @@ export function astTransformer() {
           }
         }
       }
+
       if (whenFinsihedCallbacks) {
         for (const cb of whenFinsihedCallbacks) {
           cb(props.ast);
         }
       }
-    }
+    },
   };
   return methods;
 }
