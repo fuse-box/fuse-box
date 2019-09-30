@@ -1,10 +1,14 @@
 import { IASTScope } from '../Visitor/Visitor';
 
 export interface ASTNode {
+  alternate?: ASTNode;
   scope?: IASTScope;
+  prefix?: boolean;
+  consequent?: ASTNode;
   type: ASTNodeType;
   shorthand?: boolean;
   specifiers?: Array<ASTNode>;
+  test?: ASTNode;
   imported?: ASTNode;
   source?: ASTNode;
   method?: boolean;
