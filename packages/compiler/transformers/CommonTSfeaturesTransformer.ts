@@ -8,7 +8,13 @@ export function CommonTSfeaturesTransformer(): ITransformer {
       case 'ParameterProperty':
         return { replaceWith: node.parameter };
       case 'AbstractMethodDefinition':
+      case 'InterfaceDeclaration':
         return { removeNode: true };
+      case 'ExportNamedDeclaration':
+        if (node.declaration && node.declaration.type === 'InterfaceDeclaration') {
+          return { removeNode: true };
+        }
+        break;
     }
   };
 }
