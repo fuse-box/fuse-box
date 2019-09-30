@@ -37,19 +37,6 @@ export function transpileModule(props: IProgramProps) {
     TopLevelVisit({
       ast: props.ast,
       globalContext: props.globalContext,
-      // onNamespace: node => {
-      //   if (typeof node.body === "object") {
-      //     const nm = node.body as ASTNode;
-
-      //     transpileModule({
-      //       ...props,
-      //       ast: nm,
-      //       namespace: node.id.name,
-      //       globalContext: createGlobalContext({})
-      //     });
-      //   }
-      //   return node;
-      // },
       fn: visit => {
         for (const onTopLevelCallback of onTopLevelTransformers) {
           let response = onTopLevelCallback(visit);
@@ -68,4 +55,9 @@ export function transpileModule(props: IProgramProps) {
       }
     },
   });
+  if (props.globalContext.completeCallbacks.length) {
+    for (const cb of props.globalContext.completeCallbacks) {
+      cb();
+    }
+  }
 }

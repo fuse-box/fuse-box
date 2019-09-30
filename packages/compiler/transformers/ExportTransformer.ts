@@ -1,7 +1,7 @@
-import { GlobalContext } from "../program/GlobalContext";
-import { ITransformer } from "../program/transpileModule";
-import { createExports, isDefinedLocally } from "../Visitor/helpers";
-import { IVisit } from "../Visitor/Visitor";
+import { GlobalContext } from '../program/GlobalContext';
+import { ITransformer } from '../program/transpileModule';
+import { createExports, isDefinedLocally } from '../Visitor/helpers';
+import { IVisit } from '../Visitor/Visitor';
 
 export function ExportTransformer(): ITransformer {
   return {
@@ -16,14 +16,10 @@ export function ExportTransformer(): ITransformer {
           for (const localVar of definedLocally) {
             if (global.exportAfterDeclaration[localVar]) {
               newNodes.push(
-                createExports(
-                  global.namespace,
-                  global.exportAfterDeclaration[localVar].target,
-                  {
-                    type: "Identifier",
-                    name: localVar
-                  }
-                )
+                createExports(global.namespace, global.exportAfterDeclaration[localVar].target, {
+                  type: 'Identifier',
+                  name: localVar,
+                }),
               );
             }
           }
@@ -40,11 +36,8 @@ export function ExportTransformer(): ITransformer {
 
       // remove export interface
       // export interface HelloWorld{}
-      if (node.type === "ExportNamedDeclaration") {
-        if (
-          node.declaration &&
-          node.declaration.type === "InterfaceDeclaration"
-        ) {
+      if (node.type === 'ExportNamedDeclaration') {
+        if (node.declaration && node.declaration.type === 'InterfaceDeclaration') {
           return { removeNode: true };
         }
       }
@@ -53,37 +46,32 @@ export function ExportTransformer(): ITransformer {
        * *********************************************************
        *    export default func
        */
-      if (node.type === "ExportDefaultDeclaration") {
+      if (node.type === 'ExportDefaultDeclaration') {
         if (node.declaration) {
           // Looking at this case:
           //      console.log(foo)
           //      export default function foo(){}
           if (
-            (node.declaration.type === "FunctionDeclaration" ||
-              node.declaration.type === "ClassDeclaration") &&
+            (node.declaration.type === 'FunctionDeclaration' || node.declaration.type === 'ClassDeclaration') &&
             node.declaration.id
           ) {
             return {
               replaceWith: [
                 node.declaration,
-                createExports(global.namespace, "default", {
-                  type: "Identifier",
-                  name: node.declaration.id.name
-                })
-              ]
+                createExports(global.namespace, 'default', {
+                  type: 'Identifier',
+                  name: node.declaration.id.name,
+                }),
+              ],
             };
           }
           return {
-            replaceWith: createExports(
-              global.namespace,
-              "default",
-              node.declaration
-            )
+            replaceWith: createExports(global.namespace, 'default', node.declaration),
           };
         }
       }
 
-      if (node.type === "ExportNamedDeclaration") {
+      if (node.type === 'ExportNamedDeclaration') {
         /**
          * ******************************************************************************
          * CASE with variable exports
@@ -106,17 +94,16 @@ export function ExportTransformer(): ITransformer {
             ) {
               newNodes.push(
                 createExports(global.namespace, specifier.exported.name, {
-                  type: "Identifier",
-                  name: specifier.local.name
-                })
+                  type: 'Identifier',
+                  name: specifier.local.name,
+                }),
               );
             } else {
               // if none was decleared, it must be declared earlier (so we check if later with onEachNode in this transformer )
-              if (!global.exportAfterDeclaration)
-                global.exportAfterDeclaration = {};
+              if (!global.exportAfterDeclaration) global.exportAfterDeclaration = {};
 
               global.exportAfterDeclaration[specifier.local.name] = {
-                target: specifier.exported.name
+                target: specifier.exported.name,
               };
             }
           }
@@ -135,13 +122,16 @@ export function ExportTransformer(): ITransformer {
               replaceWith: [
                 node.declaration,
                 createExports(global.namespace, node.declaration.id.name, {
-                  type: "Identifier",
-                  name: node.declaration.id.name
-                })
-              ]
+                  type: 'Identifier',
+                  name: node.declaration.id.name,
+                }),
+              ],
             };
           }
-          if (node.declaration.type === "VariableDeclaration") {
+          if (node.declaration.type === 'VariableDeclaration') {
+            if (node.declaration.declare) {
+              return { removeNode: true, ignoreChildren: true };
+            }
             /**
              * ******************************************************************
              * Exports defined constants
@@ -151,22 +141,18 @@ export function ExportTransformer(): ITransformer {
             if (node.declaration.declarations) {
               let newNodes = [];
               for (const declaration of node.declaration.declarations) {
-                global.identifierReplacement[declaration.id.name] = {
-                  first: global.namespace,
-                  second: declaration.id.name
-                };
+                if (!declaration.declare) {
+                  global.identifierReplacement[declaration.id.name] = {
+                    first: global.namespace,
+                    second: declaration.id.name,
+                  };
 
-                if (declaration.init) {
-                  // check if there is INIT
-                  // we night have something like this:
-                  //    export var FooBar;
-                  newNodes.push(
-                    createExports(
-                      global.namespace,
-                      declaration.id.name,
-                      declaration.init
-                    )
-                  );
+                  if (declaration.init) {
+                    // check if there is INIT
+                    // we night have something like this:
+                    //    export var FooBar;
+                    newNodes.push(createExports(global.namespace, declaration.id.name, declaration.init));
+                  }
                 }
               }
               return { replaceWith: newNodes };
@@ -174,6 +160,6 @@ export function ExportTransformer(): ITransformer {
           }
         }
       }
-    }
+    },
   };
 }
