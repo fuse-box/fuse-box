@@ -29,8 +29,8 @@ export interface IVisitorMod {
   replaceWith?: ASTNode | Array<ASTNode>;
   scopeMeta?: { [key: string]: any };
   insertAfterThisNode?: ASTNode | Array<ASTNode>;
+  onComplete?: () => void;
   ignoreChildren?: boolean;
-  whenFinished?: (ast: ASTNode) => void;
   removeNode?: boolean;
 }
 
@@ -75,6 +75,9 @@ function _visit(
       for (const key in response.scopeMeta) {
         visit.node.scope.meta[key] = response.scopeMeta[key];
       }
+    }
+    if (response.onComplete) {
+      globalContext.completeCallbacks.push(response.onComplete);
     }
     if (response.removeNode) {
       t.removeLater(visit);
@@ -134,6 +137,9 @@ export function TopLevelVisit(props: IFastVisit) {
       }
       const response = props.fn(visit);
       if (response) {
+        if (response.onComplete) {
+          props.globalContext.completeCallbacks.push(response.onComplete);
+        }
         if (response.removeNode) {
           transformer.removeLater(visit);
         } else if (response.replaceWith) {

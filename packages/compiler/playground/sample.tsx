@@ -18,16 +18,33 @@
 //   // );
 // }
 
-class A {
-  constructor(
-    public name = class {
-      constructor(public hey = 2) {}
-    },
-  ) {}
-}
+import { Type } from './types';
 
-declare class Hey {
-  name: string;
+export function hey(t: Type) {
+  return 1;
 }
+// function f() {
+//   console.log('f(): evaluated');
+//   return function(target, propertyKey: string, descriptor: PropertyDescriptor) {
+//     console.log('f(): called');
+//   };
+// }
 
-declare const a: {};
+// function g() {
+//   console.log('g(): evaluated');
+//   return function(target, propertyKey: string, descriptor: PropertyDescriptor) {
+//     console.log('g(): called');
+//   };
+// }
+
+// class C {
+//   @f()
+//   @g()
+//   method() {
+//     const list = [];
+//     class A {
+//       @f()
+//       foo() {}
+//     }
+//   }
+// }
