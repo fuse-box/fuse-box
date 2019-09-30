@@ -3,13 +3,12 @@ import { generate } from '../generator/generator';
 import { ASTNode } from '../interfaces/AST';
 import { ICompilerOptions } from '../interfaces/ICompilerOptions';
 import { ClassConstructorPropertyTransformer2 } from '../transformers/ClassConstructorPropertyTransformer_2';
+import { CommonTSfeaturesTransformer } from '../transformers/CommonTSfeaturesTransformer';
 import { ExportTransformer } from '../transformers/ExportTransformer';
 import { GlobalContextTransformer } from '../transformers/GlobalContextTransformer';
 import { ImportTransformer } from '../transformers/ImportTransformer';
-import { InterfaceRemoverTransformer } from '../transformers/InterfaceRemoverTransformer';
 import { JSXTransformer } from '../transformers/JSXTransformer';
 import { NamespaceTransformer } from '../transformers/NameSpaceTransformer';
-import { CommonTSfeaturesTransformer } from '../transformers/CommonTSfeaturesTransformer';
 import { IVisit, IVisitorMod } from '../Visitor/Visitor';
 import { createGlobalContext } from './GlobalContext';
 import { ITransformerList, transpileModule } from './transpileModule';
@@ -38,10 +37,12 @@ export function compileModule(props: ICompileModuleProps) {
 
     JSXTransformer(),
     NamespaceTransformer(),
-    InterfaceRemoverTransformer(),
+
+    // must be before export/import
+    CommonTSfeaturesTransformer(),
+
     ImportTransformer(),
     ExportTransformer(),
-    CommonTSfeaturesTransformer(),
   ];
   transpileModule({
     ast: ast as ASTNode,

@@ -25,3 +25,9 @@ class A {
     },
   ) {}
 }
+
+declare class Hey {
+  name: string;
+}
+
+declare const a: {};
