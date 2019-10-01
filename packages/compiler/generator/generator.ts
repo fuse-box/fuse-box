@@ -236,6 +236,7 @@ export const baseGenerator = {
         formatComments(state, statement.comments, indent, lineEnd);
       }
       state.write(indent);
+
       this[statement.type](statement, state);
       state.write(lineEnd);
     }

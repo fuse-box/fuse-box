@@ -9,9 +9,11 @@ export interface ASTNode {
   shorthand?: boolean;
   specifiers?: Array<ASTNode>;
   test?: ASTNode;
+  initializer?: ASTNode;
   imported?: ASTNode;
   source?: ASTNode;
   method?: boolean;
+  members?: Array<ASTNode>;
 
   JSXElement?: ASTNode;
 
@@ -104,7 +106,7 @@ export type ASTNodeType =
   | 'JSXEmptyExpression'
   | 'JSXExpressionContainer'
   | 'JSXFragment'
-  | 'JSXIdentifier;'
+  | 'JSXIdentifier'
   | 'JSXMemberExpression'
   | 'JSXOpeningElement'
   | 'JSXOpeningFragment'
