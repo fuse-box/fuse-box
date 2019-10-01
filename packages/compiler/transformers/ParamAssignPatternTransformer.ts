@@ -6,7 +6,6 @@ export function ParamAssignPatternTransformer(): ITransformer {
   return (visit: IVisit) => {
     const { node, parent } = visit;
     const type = node.type;
-    const isConstructor = parent && parent.type === 'MethodDefinition' && parent.kind === 'constructor';
 
     const isFunctionExpression = type === 'FunctionExpression';
     const isFunctionDeclaration = type === 'FunctionDeclaration';
