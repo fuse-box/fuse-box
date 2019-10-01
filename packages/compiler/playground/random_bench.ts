@@ -1,6 +1,6 @@
 import { bench, getRandomInt } from './bench';
 import { ADDRGETNETWORKPARAMS } from 'dns';
-
+import * as Big from 'big.js';
 const b = bench({ iterations: 100000 });
 
 const benchPushAndIndex = () => {
@@ -99,7 +99,7 @@ function benchObjCopy() {
 
   b.start();
 }
-benchObjCopy();
+//benchObjCopy();
 //benchArrVersusObj();
 
 function benchIterators() {
@@ -126,3 +126,25 @@ function benchIterators() {
 }
 
 ///benchIterators();
+
+//console.log('5' + ('5' * '20') / '10');
+
+function benchCompute() {
+  const b = bench({ iterations: 1000 });
+  const arr = [];
+
+  b.measure('Big', () => {
+    Big('5')
+      .plus('5')
+      .times('20')
+      .div('10')
+      .toString();
+  });
+
+  b.measure('parseFloat', () => {
+    parseFloat('5') + (parseFloat('5') * parseFloat('20')) / parseFloat('10');
+  });
+
+  b.start();
+}
+benchCompute();

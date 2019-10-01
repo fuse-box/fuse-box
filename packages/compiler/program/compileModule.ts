@@ -4,6 +4,7 @@ import { ASTNode } from '../interfaces/AST';
 import { ICompilerOptions } from '../interfaces/ICompilerOptions';
 import { ClassConstructorPropertyTransformer2 } from '../transformers/ClassConstructorPropertyTransformer_2';
 import { CommonTSfeaturesTransformer } from '../transformers/CommonTSfeaturesTransformer';
+import { EnumTransformer } from '../transformers/EnumTransformer';
 import { ExportTransformer } from '../transformers/ExportTransformer';
 import { GlobalContextTransformer } from '../transformers/GlobalContextTransformer';
 import { ImportTransformer } from '../transformers/ImportTransformer';
@@ -31,16 +32,13 @@ export function compileModule(props: ICompileModuleProps) {
 
   const defaultTransformers: ITransformerList = [
     GlobalContextTransformer(),
-    //ParamAssignPatternTransformer(),
+    EnumTransformer(),
     ClassConstructorPropertyTransformer2(),
-    //ClassConstructorPropertyTransformer(),
-
     JSXTransformer(),
     NamespaceTransformer(),
 
     // must be before export/import
     CommonTSfeaturesTransformer(),
-
     ImportTransformer(),
     ExportTransformer(),
   ];

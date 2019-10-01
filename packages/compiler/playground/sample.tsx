@@ -1,28 +1,86 @@
-// import * as React from "react";
+const someNumber = 1;
+enum FileAccess {
+  // constant members
+  None,
+  Read = 1 << 1,
+  Write = 1 << 2,
+  ReadWrite = Read | Write,
+  // computed member
+  G = '123'.length,
+  Eh = 1 + someNumber,
+}
 
-// export function hello() {
-//   const props = { a: 1 };
-//   const other = { b: 2 };
-//   const aa = "dd";
-//   const rest = {};
-//   const arr = [];
-//   //const a = {...rest ...props}
-//   return (<div>1<span  id="1" f={3}  {...rest} b="1"  ></span></div>)
-//   // return (
-//   //   // <div>
-//   //   //   1
-//   //   //   <span {...props} {...other} className={<div></div>}>
-//   //   //     {some}
-//   //   //   </span>
-//   //   // </div>
-//   // );
+// 6 * (3 * 2)
+const a = {
+  type: 'BinaryExpression',
+  left: {
+    type: 'Literal',
+    value: 6,
+  },
+  right: {
+    type: 'BinaryExpression',
+    left: {
+      type: 'Literal',
+      value: 3,
+    },
+    right: {
+      type: 'Literal',
+      value: 2,
+    },
+    operator: '*',
+  },
+  operator: '*',
+};
+// 1 * (6 * 3) * 2;
+const b = {
+  type: 'BinaryExpression',
+  left: {
+    type: 'BinaryExpression',
+    left: {
+      type: 'Literal',
+      value: 6,
+    },
+    right: {
+      type: 'Literal',
+      value: 3,
+    },
+    operator: '*',
+  },
+  right: {
+    type: 'Literal',
+    value: 2,
+  },
+  operator: '*',
+};
+// enum FileAccess {
+//   // constant members
+//   None,
+//   Read = 1 << 1,
+//   Write = 1 << 2,
+//   ReadWrite = Read | Write,
+//   // computed member
+//   G = '123'.length,
 // }
 
-import { Type } from './types';
+// import React from 'react';
 
-export function hey(t: Type) {
-  return 1;
-}
+// export class Hello extends React.Component<{ children: Array<JSX.Element> }, any> {
+//   render() {
+//     return (
+//       <div>
+//         <>
+//           <div>1</div>
+//         </>
+//       </div>
+//     );
+//   }
+// }
+
+// import { Type } from './types';
+
+// export function hey(t: Type) {
+//   return 1;
+
 // function f() {
 //   console.log('f(): evaluated');
 //   return function(target, propertyKey: string, descriptor: PropertyDescriptor) {

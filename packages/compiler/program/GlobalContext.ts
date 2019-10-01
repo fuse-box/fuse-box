@@ -14,7 +14,7 @@ export interface GlobalContext {
       first?: string;
       second?: string;
       insertAfter?: ASTNode;
-      replaced?: boolean;
+      inUse?: boolean;
     };
   };
   namespace?: string;

@@ -1,15 +1,21 @@
 import { compileModule } from '../program/compileModule';
+import { readFileSync } from 'fs';
 
-const result = compileModule({
-  code: `
+let file;
 
-  import MySuperClass, * as everything from "module-name";
-  everything.something();
+//file = readFileSync(__dirname + '/source_test/angular_1.ts').toString();
+file = readFileSync(__dirname + '/sample.tsx').toString();
+const result = compileModule({ code: file });
+// const result = compileModule({
+//   code: `
 
-  console.log(everything);
-  new MySuperClass();
+//   import MySuperClass, * as everything from "module-name";
+//   everything.something();
 
-`,
-});
+//   console.log(everything);
+//   new MySuperClass();
+
+// `,
+// });
 console.log(result.code);
 export default abstract class RendererFactory2 {}
