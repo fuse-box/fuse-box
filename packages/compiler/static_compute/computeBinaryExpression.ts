@@ -4,9 +4,6 @@ type ComputedIdentfiers = { [key: string]: any };
 
 function calcExpression(left, operator, right) {
   let result;
-
-  left = parseFloat(left);
-  right = parseFloat(right);
   switch (operator) {
     case '+':
       return left + right;
