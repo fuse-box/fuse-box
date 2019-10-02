@@ -1,12 +1,12 @@
-import { compileModule } from "../compileModule";
+import { compileModule } from '../program/compileModule';
 
-describe("Es exports tests", () => {
-  describe("Object export / function/ class", () => {
-    it("should export function", () => {
+describe('Es exports tests', () => {
+  describe('Object export / function/ class', () => {
+    it('should export function', () => {
       const result = compileModule({
         code: `
          export function hello(){}
-          `
+          `,
       });
 
       expect(result.code).toMatchInlineSnapshot(`
@@ -17,13 +17,13 @@ describe("Es exports tests", () => {
     });
   });
 
-  describe("Mix import and export", () => {
-    it("should export object with keys", () => {
+  describe('Mix import and export', () => {
+    it('should export object with keys', () => {
       const result = compileModule({
         code: `
         import stuff from "./stuff";
         export { stuff  };
-            `
+            `,
       });
 
       expect(result.code).toMatchInlineSnapshot(`
@@ -33,12 +33,12 @@ describe("Es exports tests", () => {
       `);
     });
 
-    it("should export object with keys (import all)", () => {
+    it('should export object with keys (import all)', () => {
       const result = compileModule({
         code: `
         import * as stuff from "./stuff";
         export { stuff  };
-            `
+            `,
       });
 
       expect(result.code).toMatchInlineSnapshot(`
@@ -48,12 +48,12 @@ describe("Es exports tests", () => {
       `);
     });
 
-    it("should export object with keys (import all) with alias", () => {
+    it('should export object with keys (import all) with alias', () => {
       const result = compileModule({
         code: `
         import * as stuff from "./stuff";
         export { stuff as oi  };
-            `
+            `,
       });
 
       expect(result.code).toMatchInlineSnapshot(`
@@ -64,15 +64,15 @@ describe("Es exports tests", () => {
     });
   });
 
-  describe("Export var with value", () => {
-    it("should export a variable 1", () => {
+  describe('Export var with value', () => {
+    it('should export a variable 1', () => {
       const result = compileModule({
         code: `
         import { Observable } from '../Observable';
         import { noop } from '../util/noop';
         export var NEVER = new Observable(noop);
         console.log(NEVER);
-            `
+            `,
       });
       expect(result.code).toMatchInlineSnapshot(`
         "var Observable_1 = require(\\"../Observable\\");
@@ -82,13 +82,13 @@ describe("Es exports tests", () => {
         "
       `);
     });
-    it("should trace down an undefined variable", () => {
+    it('should trace down an undefined variable', () => {
       const result = compileModule({
         code: `
         export var FooBar;
         (function (FooBar) {
         })(FooBar || (FooBar = {}));
-            `
+            `,
       });
       expect(result.code).toMatchInlineSnapshot(`
         "(function (FooBar) {})(exports.FooBar || (exports.FooBar = {}));
@@ -96,7 +96,7 @@ describe("Es exports tests", () => {
       `);
     });
 
-    it("should export a variable 1", () => {
+    it('should export a variable 1', () => {
       const result = compileModule({
         code: `
         export const a = function() {
@@ -104,7 +104,7 @@ describe("Es exports tests", () => {
         };
         console.log(a);
         export var Foo = { foo: "bar" };
-            `
+            `,
       });
       expect(result.code).toMatchInlineSnapshot(`
         "exports.a = function () {
@@ -119,14 +119,14 @@ describe("Es exports tests", () => {
     });
   });
 
-  describe("Object export", () => {
-    it("should export object with keys", () => {
+  describe('Object export', () => {
+    it('should export object with keys', () => {
       const result = compileModule({
         code: `
           const name1 = 2;
           const name2 = 3;
           export {name1, name2}
-            `
+            `,
       });
       expect(result.code).toMatchInlineSnapshot(`
         "const name1 = 2;
@@ -137,13 +137,13 @@ describe("Es exports tests", () => {
       `);
     });
 
-    it("should export object with keys2 (late) 1", () => {
+    it('should export object with keys2 (late) 1', () => {
       const result = compileModule({
         code: `
           export {name1 as fun, name2}
           const name1 = 1;
           const name2 = 2;
-          `
+          `,
       });
 
       expect(result.code).toMatchInlineSnapshot(`
@@ -155,13 +155,13 @@ describe("Es exports tests", () => {
       `);
     });
 
-    it("should export object with keys2 (late)  function", () => {
+    it('should export object with keys2 (late)  function', () => {
       const result = compileModule({
         code: `
           export {name1 as fun, name2}
           function name1(){}
           const name2 = 2;
-          `
+          `,
       });
 
       expect(result.code).toMatchInlineSnapshot(`
@@ -173,13 +173,13 @@ describe("Es exports tests", () => {
       `);
     });
 
-    it("should export object with keys2 (late) function reversed order", () => {
+    it('should export object with keys2 (late) function reversed order', () => {
       const result = compileModule({
         code: `
           function name1(){}
           const name2 = 2;
           export {name1 as fun, name2}
-          `
+          `,
       });
       expect(result.code).toMatchInlineSnapshot(`
         "function name1() {}
@@ -190,14 +190,14 @@ describe("Es exports tests", () => {
       `);
     });
 
-    it("should export object with keys2 (late) 2 ( function )", () => {
+    it('should export object with keys2 (late) 2 ( function )', () => {
       const result = compileModule({
         code: `
           console.log(1);
           export {name1 as fun, name2}
           function name1() {}
           console.log(2);
-          `
+          `,
       });
 
       expect(result.code).toMatchInlineSnapshot(`
@@ -209,14 +209,14 @@ describe("Es exports tests", () => {
       `);
     });
 
-    it("should export object with keys2 (late) 2 ( class )", () => {
+    it('should export object with keys2 (late) 2 ( class )', () => {
       const result = compileModule({
         code: `
           console.log(1);
           export {MySuperClass as fun, name2}
           class MySuperClass {}
           console.log(2);
-          `
+          `,
       });
 
       expect(result.code).toMatchInlineSnapshot(`
@@ -229,12 +229,12 @@ describe("Es exports tests", () => {
     });
   });
 
-  describe("Exports const", () => {
-    it("should export constants", () => {
+  describe('Exports const', () => {
+    it('should export constants', () => {
       const result = compileModule({
         code: `
       export const foo = 1, bar = 3
-          `
+          `,
       });
 
       expect(result.code).toMatchInlineSnapshot(`
@@ -244,14 +244,14 @@ describe("Es exports tests", () => {
           `);
     });
 
-    it("should export constants and use globally", () => {
+    it('should export constants and use globally', () => {
       const result = compileModule({
         code: `
       export const foo = 1, bar = 3;
       function test(){
         console.log(foo)
       }
-          `
+          `,
       });
 
       expect(result.code).toMatchInlineSnapshot(`
@@ -264,14 +264,14 @@ describe("Es exports tests", () => {
           `);
     });
 
-    it("should export constants and avoid collision", () => {
+    it('should export constants and avoid collision', () => {
       const result = compileModule({
         code: `
       export const foo = 1, bar = 3;
       function test(foo){
         console.log(foo)
       }
-          `
+          `,
       });
 
       expect(result.code).toMatchInlineSnapshot(`
@@ -285,13 +285,13 @@ describe("Es exports tests", () => {
     });
   });
 
-  describe("Export default declaration", () => {
-    it("should export default ", () => {
+  describe('Export default declaration', () => {
+    it('should export default ', () => {
       const result = compileModule({
         code: `
         const add = function(){}
         export default add;
-          `
+          `,
       });
       expect(result.code).toMatchInlineSnapshot(`
         "const add = function () {};
@@ -300,12 +300,12 @@ describe("Es exports tests", () => {
       `);
     });
 
-    it("should export default (should play nicely with import) ", () => {
+    it('should export default (should play nicely with import) ', () => {
       const result = compileModule({
         code: `
         import add from "./some";
         export default add;
-          `
+          `,
       });
       expect(result.code).toMatchInlineSnapshot(`
         "var some_1 = require(\\"./some\\");
@@ -314,12 +314,12 @@ describe("Es exports tests", () => {
       `);
     });
 
-    it("should export default (inverse order) ", () => {
+    it('should export default (inverse order) ', () => {
       const result = compileModule({
         code: `
         export default add;
         function add(){}
-          `
+          `,
       });
       expect(result.code).toMatchInlineSnapshot(`
         "exports.default = add;
@@ -328,7 +328,7 @@ describe("Es exports tests", () => {
       `);
     });
 
-    it("should not replace the scope ", () => {
+    it('should not replace the scope ', () => {
       const result = compileModule({
         code: `
         function hello() {
@@ -336,7 +336,7 @@ describe("Es exports tests", () => {
         }
         export default add;
         function add() {}
-          `
+          `,
       });
 
       expect(result.code).toMatchInlineSnapshot(`
@@ -349,11 +349,11 @@ describe("Es exports tests", () => {
       `);
     });
 
-    it("should export expression ", () => {
+    it('should export expression ', () => {
       const result = compileModule({
         code: `
         export default { add : add }
-          `
+          `,
       });
       expect(result.code).toMatchInlineSnapshot(`
         "exports.default = {
@@ -363,12 +363,12 @@ describe("Es exports tests", () => {
       `);
     });
 
-    it("should export default function with a name", () => {
+    it('should export default function with a name', () => {
       const result = compileModule({
         code: `
         console.log(foo)
         export default function foo(){}
-          `
+          `,
       });
       expect(result.code).toMatchInlineSnapshot(`
         "console.log(foo);
@@ -378,11 +378,11 @@ describe("Es exports tests", () => {
       `);
     });
 
-    it("should export default function without a name", () => {
+    it('should export default function without a name', () => {
       const result = compileModule({
         code: `
         export default function(){}
-          `
+          `,
       });
       expect(result.code).toMatchInlineSnapshot(`
         "exports.default = function () {};
@@ -390,11 +390,11 @@ describe("Es exports tests", () => {
       `);
     });
 
-    it("should export default class without a name", () => {
+    it('should export default class without a name', () => {
       const result = compileModule({
         code: `
         export default class {}
-          `
+          `,
       });
       expect(result.code).toMatchInlineSnapshot(`
         "exports.default = class {};

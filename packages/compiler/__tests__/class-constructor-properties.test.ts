@@ -1,4 +1,4 @@
-import { compileModule } from '../compileModule';
+import { compileModule } from '../program/compileModule';
 
 describe('Class constructor properties', () => {
   it('should initialize constructor properties in the constructor', () => {
