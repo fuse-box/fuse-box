@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Enums test should compute binary 1`] = `
+"var Stuff;
+(function (Stuff) {
+  Stuff[Stuff[\\"first\\"] = 0] = \\"first\\"
+  Stuff[Stuff[\\"second\\"] = 4] = \\"second\\"
+})(Stuff || (Stuff = {}))
+"
+`;
+
+exports[`Enums test should compute binary and do some math 1`] = `
+"var Stuff;
+(function (Stuff) {
+  Stuff[Stuff[\\"first\\"] = 0] = \\"first\\"
+  Stuff[Stuff[\\"second\\"] = 64] = \\"second\\"
+})(Stuff || (Stuff = {}))
+"
+`;
+
+exports[`Enums test should compute binary and do some math with Math.function 1`] = `
+"var Stuff;
+(function (Stuff) {
+  Stuff[Stuff[\\"first\\"] = 0] = \\"first\\"
+  Stuff[Stuff[\\"second\\"] = 67108864] = \\"second\\"
+})(Stuff || (Stuff = {}))
+"
+`;
+
+exports[`Enums test should work with a custom numner enum 1`] = `
+"var Stuff;
+(function (Stuff) {
+  Stuff[Stuff[\\"first\\"] = 0] = \\"first\\"
+  Stuff[Stuff[\\"second\\"] = 30] = \\"second\\"
+})(Stuff || (Stuff = {}))
+"
+`;
+
+exports[`Enums test should work with a simple enum 1`] = `
+"var Stuff;
+(function (Stuff) {
+  Stuff[Stuff[\\"first\\"] = 0] = \\"first\\"
+  Stuff[Stuff[\\"second\\"] = 1] = \\"second\\"
+})(Stuff || (Stuff = {}))
+"
+`;

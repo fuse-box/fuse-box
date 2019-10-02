@@ -15,36 +15,36 @@ function getAst(expression: string): ASTNode {
 describe('Compute binary expression', () => {
   it('sample 1', () => {
     const res = computeBinaryExpression(getAst('1+2*2'));
-    expect(res).toEqual(5);
+    expect(res.value).toEqual(5);
   });
 
   it('sample 2', () => {
     const res = computeBinaryExpression(getAst('1+2*2+(5*2)'));
-    expect(res).toEqual(15);
+    expect(res.value).toEqual(15);
   });
   it('sample 3', () => {
     const res = computeBinaryExpression(getAst('1+2*2+(5*0x23)'));
-    expect(res).toEqual(180);
+    expect(res.value).toEqual(180);
   });
   it('sample 4', () => {
     const res = computeBinaryExpression(getAst('10%2'));
-    expect(res).toEqual(0);
+    expect(res.value).toEqual(0);
   });
   it('sample 5', () => {
     const res = computeBinaryExpression(getAst('1<<2'));
-    expect(res).toEqual(4);
+    expect(res.value).toEqual(4);
   });
   it('sample 6', () => {
     const res = computeBinaryExpression(getAst('1>>2'));
-    expect(res).toEqual(0);
+    expect(res.value).toEqual(0);
   });
   it('sample 7', () => {
     const res = computeBinaryExpression(getAst('5>>>1'));
-    expect(res).toEqual(2);
+    expect(res.value).toEqual(2);
   });
   it('sample 8', () => {
     const res = computeBinaryExpression(getAst('2**10'));
-    expect(res).toEqual(1024);
+    expect(res.value).toEqual(1024);
   });
 
   it('sample 1 with variable', () => {
@@ -52,7 +52,7 @@ describe('Compute binary expression', () => {
       Read: 1 << 1,
       Write: 1 << 2,
     });
-    expect(res).toEqual(6);
+    expect(res.value).toEqual(6);
   });
 
   it('sample 2 with variable', () => {
@@ -60,7 +60,7 @@ describe('Compute binary expression', () => {
       Read: 1 << 1,
       Write: 1 << 2,
     });
-    expect(res).toEqual(8);
+    expect(res.value).toEqual(8);
   });
 
   it('sample 3 with variable', () => {
@@ -68,7 +68,7 @@ describe('Compute binary expression', () => {
       Read: 2,
       Write: 4,
     });
-    expect(res).toEqual(26);
+    expect(res.value).toEqual(26);
   });
 
   describe('Math', () => {
@@ -77,14 +77,14 @@ describe('Compute binary expression', () => {
         Read: 2,
         Write: 4,
       });
-      expect(res).toEqual(20.90929742682568);
+      expect(res.value).toEqual(20.90929742682568);
     });
     it('Math - uknown function', () => {
       const res = computeBinaryExpression(getAst('20 + Math.hey(2)'), {
         Read: 2,
         Write: 4,
       });
-      expect(res).toEqual(NaN);
+      expect(res.value).toEqual(NaN);
     });
 
     it('Uknown function', () => {
@@ -92,7 +92,7 @@ describe('Compute binary expression', () => {
         Read: 2,
         Write: 4,
       });
-      expect(res).toEqual(NaN);
+      expect(res.value).toEqual(NaN);
     });
 
     it('Math without params', () => {
@@ -100,7 +100,7 @@ describe('Compute binary expression', () => {
         Read: 2,
         Write: 4,
       });
-      expect(res).toEqual(NaN);
+      expect(res.value).toEqual(NaN);
     });
 
     it('Math without function', () => {
@@ -108,7 +108,7 @@ describe('Compute binary expression', () => {
         Read: 2,
         Write: 4,
       });
-      expect(res).toEqual(NaN);
+      expect(res.value).toEqual(NaN);
     });
   });
 });
