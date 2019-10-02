@@ -1,7 +1,7 @@
-import { compileModule } from "../compileModule";
+import { compileModule } from '../program/compileModule';
 
-describe("Namespaces", () => {
-  it("should compile namespace", () => {
+describe('Namespaces', () => {
+  it('should compile namespace', () => {
     const result = compileModule({
       code: `
         import oi from "./oi";
@@ -12,7 +12,7 @@ describe("Namespaces", () => {
             console.log(a, oi, b);
         }
         console.log(a, foo, oi, b);
-        `
+        `,
     });
     expect(result.code).toMatchInlineSnapshot(`
       "var oi_1 = require(\\"./oi\\");

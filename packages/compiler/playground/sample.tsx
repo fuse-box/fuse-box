@@ -1,57 +1,11 @@
 const someNumber = 1;
-enum FileAccess {
-  // constant members
-  None,
-  Read = 1 << 1,
-  Write = 1 << 2,
-  ReadWrite = Read | Write,
-  // computed member
-  G = '123'.length,
-  Eh = 1 + someNumber,
+export const enum Stuff {
+  First = 1 << 1,
+  Second = First + 2,
 }
 
-// 6 * (3 * 2)
-const a = {
-  type: 'BinaryExpression',
-  left: {
-    type: 'Literal',
-    value: 6,
-  },
-  right: {
-    type: 'BinaryExpression',
-    left: {
-      type: 'Literal',
-      value: 3,
-    },
-    right: {
-      type: 'Literal',
-      value: 2,
-    },
-    operator: '*',
-  },
-  operator: '*',
-};
-// 1 * (6 * 3) * 2;
-const b = {
-  type: 'BinaryExpression',
-  left: {
-    type: 'BinaryExpression',
-    left: {
-      type: 'Literal',
-      value: 6,
-    },
-    right: {
-      type: 'Literal',
-      value: 3,
-    },
-    operator: '*',
-  },
-  right: {
-    type: 'Literal',
-    value: 2,
-  },
-  operator: '*',
-};
+console.log(Stuff.First);
+
 // enum FileAccess {
 //   // constant members
 //   None,

@@ -1,4 +1,4 @@
-import { compileModule } from '../compileModule';
+import { compileModule } from '../program/compileModule';
 
 describe('JSX', () => {
   it('should parse simple jsx', () => {

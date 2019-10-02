@@ -1,57 +1,7 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const someNumber = 1;
-var FileAccess;
-(function (FileAccess) {
-    // constant members
-    FileAccess[FileAccess["None"] = 0] = "None";
-    FileAccess[FileAccess["Read"] = 2] = "Read";
-    FileAccess[FileAccess["Write"] = 4] = "Write";
-    FileAccess[FileAccess["ReadWrite"] = 6] = "ReadWrite";
-    // computed member
-    FileAccess[FileAccess["G"] = '123'.length] = "G";
-    FileAccess[FileAccess["Eh"] = 1 + someNumber] = "Eh";
-})(FileAccess || (FileAccess = {}));
-// 6 * (3 * 2)
-const a = {
-    type: 'BinaryExpression',
-    left: {
-        type: 'Literal',
-        value: 6,
-    },
-    right: {
-        type: 'BinaryExpression',
-        left: {
-            type: 'Literal',
-            value: 3,
-        },
-        right: {
-            type: 'Literal',
-            value: 2,
-        },
-        operator: '*',
-    },
-    operator: '*',
-};
-// 1 * (6 * 3) * 2;
-const b = {
-    type: 'BinaryExpression',
-    left: {
-        type: 'BinaryExpression',
-        left: {
-            type: 'Literal',
-            value: 6,
-        },
-        right: {
-            type: 'Literal',
-            value: 3,
-        },
-        operator: '*',
-    },
-    right: {
-        type: 'Literal',
-        value: 2,
-    },
-    operator: '*',
-};
+console.log(2 /* First */);
 // enum FileAccess {
 //   // constant members
 //   None,
