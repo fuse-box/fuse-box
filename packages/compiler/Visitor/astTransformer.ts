@@ -6,6 +6,7 @@ export function astTransformer() {
   let insertions: Array<{ target: IVisit; nodes: Array<ASTNode> }>;
   let removes: Array<{ target: IVisit }>;
   let whenFinsihedCallbacks: Array<(node: ASTNode) => void>;
+  let prependedToBody: Array<{ target: IVisit; nodes: Array<ASTNode> }>;
   let onCompletCallbacks: Array<() => void>;
   const methods = {
     replaceLater: (target: IVisit, nodes: Array<ASTNode>) => {
@@ -23,6 +24,10 @@ export function astTransformer() {
     onComplete: (cb: () => void) => {
       if (!onCompletCallbacks) onCompletCallbacks = [];
       onCompletCallbacks.push(cb);
+    },
+    prependToBody: (target: IVisit, nodes: Array<ASTNode>) => {
+      if (!prependedToBody) prependedToBody = [];
+      prependedToBody.push({ target, nodes });
     },
     whenFinished: (fn: (node: ASTNode) => {}) => {
       if (!whenFinsihedCallbacks) whenFinsihedCallbacks = [];
@@ -79,6 +84,14 @@ export function astTransformer() {
       if (whenFinsihedCallbacks) {
         for (const cb of whenFinsihedCallbacks) {
           cb(props.ast);
+        }
+      }
+
+      if (prependedToBody) {
+        let index = 0;
+        while (index < prependedToBody.length) {
+          (props.ast.body as Array<ASTNode>).splice(index, 0, ...prependedToBody[index].nodes);
+          index++;
         }
       }
     },

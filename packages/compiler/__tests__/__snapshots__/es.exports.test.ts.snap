@@ -1,0 +1,226 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Es exports tests Export default declaration Should export obj 1`] = `
+"var core_1 = require(\\"@uirouter/core\\");
+exports.core = core_1;
+"
+`;
+
+exports[`Es exports tests Export default declaration should export a shorthand expression with import reference  1`] = `
+"var some_package_1 = require(\\"some_package\\");
+exports.default = {
+  hey: some_package_1.default
+};
+"
+`;
+
+exports[`Es exports tests Export default declaration should export default  1`] = `
+"const add = function () {};
+exports.default = add;
+"
+`;
+
+exports[`Es exports tests Export default declaration should export default (inverse order)  1`] = `
+"exports.default = add;
+function add() {}
+"
+`;
+
+exports[`Es exports tests Export default declaration should export default (should play nicely with import)  1`] = `
+"var some_1 = require(\\"./some\\");
+exports.default = some_1.default;
+"
+`;
+
+exports[`Es exports tests Export default declaration should export default class without a name 1`] = `
+"exports.default = class {};
+"
+`;
+
+exports[`Es exports tests Export default declaration should export default function with a name 1`] = `
+"console.log(foo);
+function foo() {}
+exports.default = foo;
+"
+`;
+
+exports[`Es exports tests Export default declaration should export default function without a name 1`] = `
+"exports.default = function () {};
+"
+`;
+
+exports[`Es exports tests Export default declaration should export expression  1`] = `
+"exports.default = {
+  add: add
+};
+"
+`;
+
+exports[`Es exports tests Export default declaration should not replace the scope  1`] = `
+"function hello() {
+  console.log(add);
+}
+exports.default = add;
+function add() {}
+"
+`;
+
+exports[`Es exports tests Export from source should export 1 1`] = `
+"var foo_1 = require(\\"./foo\\");
+exports.name = foo_1.name;
+"
+`;
+
+exports[`Es exports tests Export from source should export 1 with alias 1`] = `
+"var foo_1 = require(\\"./foo\\");
+exports.hey = foo_1.name;
+"
+`;
+
+exports[`Es exports tests Export from source should export 2 vars 1`] = `
+"var foo_1 = require(\\"./foo\\");
+exports.oi = foo_1.oi;
+exports.hey = foo_1.name;
+"
+`;
+
+exports[`Es exports tests Export from source should export all 1`] = `
+"Object.assign(exports, require(\\"./foo\\"))
+"
+`;
+
+exports[`Es exports tests Export from source should export default 1`] = `
+"var foo_1 = require(\\"./foo\\");
+exports.default = foo_1.default;
+"
+`;
+
+exports[`Es exports tests Export from source should handle shorhand 1`] = `
+"var zipWith_js_1 = require(\\"./zipWith.js\\");
+const foo = 1;
+exports.default = {
+  zipWith: zipWith_js_1.default,
+  foo
+};
+"
+`;
+
+exports[`Es exports tests Export var with value should export a variable 1 1`] = `
+"var Observable_1 = require(\\"../Observable\\");
+var noop_2 = require(\\"../util/noop\\");
+exports.NEVER = new Observable_1.Observable(noop_2.noop);
+console.log(exports.NEVER);
+"
+`;
+
+exports[`Es exports tests Export var with value should export a variable 1 2`] = `
+"exports.a = function () {
+  console.log(exports.Foo);
+};
+console.log(exports.a);
+exports.Foo = {
+  foo: \\"bar\\"
+};
+"
+`;
+
+exports[`Es exports tests Export var with value should trace down an undefined variable 1`] = `
+"(function (FooBar) {})(exports.FooBar || (exports.FooBar = {}));
+"
+`;
+
+exports[`Es exports tests Exports const should export constants 1`] = `
+"exports.foo = 1;
+exports.bar = 3;
+"
+`;
+
+exports[`Es exports tests Exports const should export constants and avoid collision 1`] = `
+"exports.foo = 1;
+exports.bar = 3;
+function test(foo) {
+  console.log(foo);
+}
+"
+`;
+
+exports[`Es exports tests Exports const should export constants and use globally 1`] = `
+"exports.foo = 1;
+exports.bar = 3;
+function test() {
+  console.log(exports.foo);
+}
+"
+`;
+
+exports[`Es exports tests Mix import and export should export object with keys (import all) 1`] = `
+"var stuff_1 = require(\\"./stuff\\");
+exports.stuff = stuff_1;
+"
+`;
+
+exports[`Es exports tests Mix import and export should export object with keys (import all) with alias 1`] = `
+"var stuff_1 = require(\\"./stuff\\");
+exports.oi = stuff_1;
+"
+`;
+
+exports[`Es exports tests Mix import and export should export object with keys 1`] = `
+"var stuff_1 = require(\\"./stuff\\");
+exports.stuff = stuff_1.default;
+"
+`;
+
+exports[`Es exports tests Object export / function/ class should export function 1`] = `
+"function hello() {}
+exports.hello = hello;
+"
+`;
+
+exports[`Es exports tests Object export should export object with keys 1`] = `
+"const name1 = 2;
+exports.name1 = name1;
+const name2 = 3;
+exports.name2 = name2;
+"
+`;
+
+exports[`Es exports tests Object export should export object with keys2 (late)  function 1`] = `
+"function name1() {}
+exports.fun = name1;
+const name2 = 2;
+exports.name2 = name2;
+"
+`;
+
+exports[`Es exports tests Object export should export object with keys2 (late) 1 1`] = `
+"const name1 = 1;
+exports.fun = name1;
+const name2 = 2;
+exports.name2 = name2;
+"
+`;
+
+exports[`Es exports tests Object export should export object with keys2 (late) 2 ( class ) 1`] = `
+"console.log(1);
+class MySuperClass {}
+exports.fun = MySuperClass;
+console.log(2);
+"
+`;
+
+exports[`Es exports tests Object export should export object with keys2 (late) 2 ( function ) 1`] = `
+"console.log(1);
+function name1() {}
+exports.fun = name1;
+console.log(2);
+"
+`;
+
+exports[`Es exports tests Object export should export object with keys2 (late) function reversed order 1`] = `
+"function name1() {}
+exports.fun = name1;
+const name2 = 2;
+exports.name2 = name2;
+"
+`;

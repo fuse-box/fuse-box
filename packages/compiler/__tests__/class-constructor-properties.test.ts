@@ -19,15 +19,7 @@ describe('Class constructor properties', () => {
         `,
     });
 
-    expect(result.code).toEqual(`class HelloWorld {
-  constructor(welcome, to, awesomeness, of, fuse) {
-    this.welcome = welcome;
-    this.to = to;
-    this.awesomeness = awesomeness;
-    this.fuse = fuse;
-  }
-}
-`);
+    expect(result.code).toMatchSnapshot();
   });
 
   it('should work with super classes', () => {
@@ -51,17 +43,7 @@ describe('Class constructor properties', () => {
         `,
     });
 
-    expect(result.code).toEqual(`class Amazing {}
-class HelloWorld extends Amazing {
-  constructor(welcome, to, awesomeness, of, fuse) {
-    super();
-    this.welcome = welcome;
-    this.to = to;
-    this.awesomeness = awesomeness;
-    this.fuse = fuse;
-  }
-}
-`);
+    expect(result.code).toMatchSnapshot();
   });
 
   it('should not add initializer calls in standard block statements', () => {
@@ -91,21 +73,7 @@ class HelloWorld extends Amazing {
         `,
     });
 
-    expect(result.code).toEqual(`class Amazing {}
-class HelloWorld extends Amazing {
-  constructor(welcome, to, awesomeness, of, fuse) {
-    super();
-    this.welcome = welcome;
-    this.to = to;
-    this.awesomeness = awesomeness;
-    (() => {
-      console.log("Freaky block statement here.");
-    })();
-    this.fuse = fuse;
-  }
-  welcomeToTheBlock() {}
-}
-`);
+    expect(result.code).toMatchSnapshot();
   });
 
   it('should ignore decorators for now', () => {
@@ -134,22 +102,7 @@ class HelloWorld extends Amazing {
             }
         `,
     });
-
-    expect(result.code).toEqual(`class Amazing {}
-class HelloWorld extends Amazing {
-  constructor(welcome, to, awesomeness, of, fuse) {
-    super();
-    this.welcome = welcome;
-    this.to = to;
-    this.awesomeness = awesomeness;
-    (() => {
-      console.log("Freaky block statement here.");
-    })();
-    this.fuse = fuse;
-  }
-  welcomeToTheBlock() {}
-}
-`);
+    expect(result.code).toMatchSnapshot();
   });
 
   it('should leave classes without constructor props alone', () => {
@@ -170,12 +123,7 @@ class HelloWorld extends Amazing {
         `,
     });
 
-    expect(result.code).toEqual(`class HelloWorld {
-  constructor(welcome, to, awesomeness, of, fuse) {
-    this.fuse = fuse;
-  }
-}
-`);
+    expect(result.code).toMatchSnapshot();
   });
 
   it('should deal with inner classes', () => {
@@ -214,26 +162,7 @@ class HelloWorld extends Amazing {
         `,
     });
 
-    expect(result.code).toEqual(`class Amazing {}
-class HelloWorld extends Amazing {
-  constructor(welcome, to, awesomeness, of, fuse) {
-    super();
-    this.welcome = welcome;
-    this.to = to;
-    this.awesomeness = awesomeness;
-    const innerClass = class extends Amazing {
-      constructor(welcome, to, awesomeness, of, fuse) {
-        super();
-        this.welcome = welcome;
-        this.to = to;
-        this.awesomeness = awesomeness;
-      }
-    };
-    this.fuse = fuse;
-  }
-  welcomeToTheBlock() {}
-}
-`);
+    expect(result.code).toMatchSnapshot();
   });
 
   it('should deal with immediate function calls on initialized properties', () => {
@@ -249,13 +178,7 @@ class HelloWorld extends Amazing {
         `,
     });
 
-    expect(result.code).toEqual(`class HelloWorld {
-  constructor(welcome) {
-    this.welcome = welcome;
-    console.log(this.welcome);
-  }
-}
-`);
+    expect(result.code).toMatchSnapshot();
   });
 
   it('should deal with multiple class definitions following each other', () => {
@@ -283,25 +206,7 @@ class HelloWorld extends Amazing {
         `,
     });
 
-    expect(result.code).toEqual(`class HelloWorld {
-  constructor(welcome) {
-    this.welcome = welcome;
-    console.log(this.welcome);
-  }
-}
-class HelloWorld2 {
-  constructor(welcome2) {
-    this.welcome2 = welcome2;
-    console.log(this.welcome2);
-  }
-}
-class HelloWorld3 {
-  constructor(welcome3) {
-    this.welcome3 = welcome3;
-    console.log(this.welcome3);
-  }
-}
-`);
+    expect(result.code).toMatchSnapshot();
   });
 
   it('should work with class as a default value', () => {
@@ -316,17 +221,56 @@ class HelloWorld3 {
       }
       `,
     });
-    expect(result.code).toMatchInlineSnapshot(`
-      "class A {
-        constructor(name = class {
-          constructor(hey = 2) {
-            this.hey = hey;
-          }
-        }) {
-          this.name = name;
+    expect(result.code).toMatchSnapshot();
+  });
+
+  describe('Class props', () => {
+    it("should remove property that's not inited", () => {
+      const result = compileModule({
+        code: `
+        class A {
+          public name : string;
         }
-      }
-      "
-    `);
+        `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should remove add a property without constructor', () => {
+      const result = compileModule({
+        code: `
+        class A {
+          public name : string = "hey"
+        }
+        `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should remove add a property to the existing constructor', () => {
+      const result = compileModule({
+        code: `
+        class A {
+          public name : string = "hey";
+          constructor(){}
+        }
+        `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should remove add a property to the existing constructor respecting other public methods', () => {
+      const result = compileModule({
+        code: `
+        class A {
+          public name : string = "hey";
+          constructor(private hey : string = "key"){
+            console.log( this.name )
+          }
+        }
+        `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
   });
 });

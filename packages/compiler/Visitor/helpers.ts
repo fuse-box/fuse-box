@@ -108,7 +108,7 @@ export function createExports(exportsKey: string, exportsVariableName: string, p
   };
 }
 
-export function createRequireStatement(source: string, local?: string): ASTNode {
+export function createRequireStatement(source: string, local?: string): { reqStatement: ASTNode; statement: ASTNode } {
   const reqStatement: ASTNode = {
     type: 'CallExpression',
     callee: {
@@ -118,31 +118,36 @@ export function createRequireStatement(source: string, local?: string): ASTNode 
     arguments: [
       {
         type: 'Literal',
-
         value: source,
       },
     ],
   };
   if (!local) {
     return {
-      type: 'ExpressionStatement',
-      expression: reqStatement,
+      reqStatement,
+      statement: {
+        type: 'ExpressionStatement',
+        expression: reqStatement,
+      },
     };
   }
   return {
-    type: 'VariableDeclaration',
+    reqStatement,
+    statement: {
+      type: 'VariableDeclaration',
 
-    declarations: [
-      {
-        type: 'VariableDeclarator',
+      declarations: [
+        {
+          type: 'VariableDeclarator',
 
-        id: {
-          type: 'Identifier',
-          name: local,
+          id: {
+            type: 'Identifier',
+            name: local,
+          },
+          init: reqStatement,
         },
-        init: reqStatement,
-      },
-    ],
-    kind: 'var',
+      ],
+      kind: 'var',
+    },
   };
 }

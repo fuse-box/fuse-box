@@ -1,6 +1,6 @@
-import { ASTNode } from '../interfaces/AST';
-import { ITransformer } from '../program/transpileModule';
-import { IVisit } from '../Visitor/Visitor';
+import { ASTNode } from '../../interfaces/AST';
+import { ITransformer } from '../../program/transpileModule';
+import { IVisit } from '../../Visitor/Visitor';
 
 //const Factories: { [key: string]: () => ASTNode } = {};
 
@@ -137,7 +137,12 @@ export function JSXTransformer(opts?: IJSXTranformerOptions): ITransformer {
 
           if (type === 'JSXSpreadAttribute') {
             spreaded = true;
-            propObjects.push(propObject);
+            if (propObject) propObjects.push(propObject);
+            else
+              propObjects.push({
+                type: 'ObjectExpression',
+                properties: [],
+              });
             newObj = true;
             propObjects.push(attr.argument);
           }
@@ -145,6 +150,7 @@ export function JSXTransformer(opts?: IJSXTranformerOptions): ITransformer {
 
         if (spreaded) {
           props = createObjectAssignExpression();
+
           props.arguments = propObjects;
         } else if (propObject) {
           props = propObject;

@@ -1,5 +1,5 @@
-import { ITransformer } from '../program/transpileModule';
-import { IVisit, IVisitorMod } from '../Visitor/Visitor';
+import { ITransformer } from '../../program/transpileModule';
+import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
 
 // to test: function maybeUnwrapEmpty<T>(value: T[]): T[];
 // to test: (oi as any).foo
@@ -19,6 +19,7 @@ export function CommonTSfeaturesTransformer(): ITransformer {
       case 'DeclareFunction':
       case 'AbstractMethodDefinition':
       case 'InterfaceDeclaration':
+      case 'ClassProperty':
         return { removeNode: true, ignoreChildren: true };
       case 'ExportNamedDeclaration':
         const decl = node.declaration;

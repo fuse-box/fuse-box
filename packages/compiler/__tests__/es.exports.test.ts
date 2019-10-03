@@ -1,4 +1,5 @@
 import { compileModule } from '../program/compileModule';
+import { ImportType } from '../interfaces/ImportType';
 
 describe('Es exports tests', () => {
   describe('Object export / function/ class', () => {
@@ -9,11 +10,7 @@ describe('Es exports tests', () => {
           `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-              "function hello() {}
-              exports.hello = hello;
-              "
-          `);
+      expect(result.code).toMatchSnapshot();
     });
   });
 
@@ -26,11 +23,7 @@ describe('Es exports tests', () => {
             `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-        "var stuff_1 = require(\\"./stuff\\");
-        exports.stuff = stuff_1.default;
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should export object with keys (import all)', () => {
@@ -41,11 +34,7 @@ describe('Es exports tests', () => {
             `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-        "var stuff_1 = require(\\"./stuff\\");
-        exports.stuff = stuff_1;
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should export object with keys (import all) with alias', () => {
@@ -56,11 +45,7 @@ describe('Es exports tests', () => {
             `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-        "var stuff_1 = require(\\"./stuff\\");
-        exports.oi = stuff_1;
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
   });
 
@@ -74,13 +59,7 @@ describe('Es exports tests', () => {
         console.log(NEVER);
             `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-        "var Observable_1 = require(\\"../Observable\\");
-        var noop_2 = require(\\"../util/noop\\");
-        exports.NEVER = new Observable_1.Observable(noop_2.noop);
-        console.log(exports.NEVER);
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
     it('should trace down an undefined variable', () => {
       const result = compileModule({
@@ -90,10 +69,7 @@ describe('Es exports tests', () => {
         })(FooBar || (FooBar = {}));
             `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-        "(function (FooBar) {})(exports.FooBar || (exports.FooBar = {}));
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should export a variable 1', () => {
@@ -106,16 +82,7 @@ describe('Es exports tests', () => {
         export var Foo = { foo: "bar" };
             `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-        "exports.a = function () {
-          console.log(exports.Foo);
-        };
-        console.log(exports.a);
-        exports.Foo = {
-          foo: \\"bar\\"
-        };
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
   });
 
@@ -128,13 +95,7 @@ describe('Es exports tests', () => {
           export {name1, name2}
             `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-        "const name1 = 2;
-        exports.name1 = name1;
-        const name2 = 3;
-        exports.name2 = name2;
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should export object with keys2 (late) 1', () => {
@@ -146,13 +107,7 @@ describe('Es exports tests', () => {
           `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-        "const name1 = 1;
-        exports.fun = name1;
-        const name2 = 2;
-        exports.name2 = name2;
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should export object with keys2 (late)  function', () => {
@@ -164,13 +119,7 @@ describe('Es exports tests', () => {
           `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-        "function name1() {}
-        exports.fun = name1;
-        const name2 = 2;
-        exports.name2 = name2;
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should export object with keys2 (late) function reversed order', () => {
@@ -181,13 +130,7 @@ describe('Es exports tests', () => {
           export {name1 as fun, name2}
           `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-        "function name1() {}
-        exports.fun = name1;
-        const name2 = 2;
-        exports.name2 = name2;
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should export object with keys2 (late) 2 ( function )', () => {
@@ -200,13 +143,7 @@ describe('Es exports tests', () => {
           `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-        "console.log(1);
-        function name1() {}
-        exports.fun = name1;
-        console.log(2);
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should export object with keys2 (late) 2 ( class )', () => {
@@ -219,13 +156,7 @@ describe('Es exports tests', () => {
           `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-        "console.log(1);
-        class MySuperClass {}
-        exports.fun = MySuperClass;
-        console.log(2);
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
   });
 
@@ -237,11 +168,7 @@ describe('Es exports tests', () => {
           `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-              "exports.foo = 1;
-              exports.bar = 3;
-              "
-          `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should export constants and use globally', () => {
@@ -254,14 +181,7 @@ describe('Es exports tests', () => {
           `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-              "exports.foo = 1;
-              exports.bar = 3;
-              function test() {
-                console.log(exports.foo);
-              }
-              "
-          `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should export constants and avoid collision', () => {
@@ -274,14 +194,7 @@ describe('Es exports tests', () => {
           `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-              "exports.foo = 1;
-              exports.bar = 3;
-              function test(foo) {
-                console.log(foo);
-              }
-              "
-          `);
+      expect(result.code).toMatchSnapshot();
     });
   });
 
@@ -293,11 +206,7 @@ describe('Es exports tests', () => {
         export default add;
           `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-        "const add = function () {};
-        exports.default = add;
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should export default (should play nicely with import) ', () => {
@@ -307,11 +216,7 @@ describe('Es exports tests', () => {
         export default add;
           `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-        "var some_1 = require(\\"./some\\");
-        exports.default = some_1.default;
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should export default (inverse order) ', () => {
@@ -321,11 +226,7 @@ describe('Es exports tests', () => {
         function add(){}
           `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-        "exports.default = add;
-        function add() {}
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should not replace the scope ', () => {
@@ -339,14 +240,7 @@ describe('Es exports tests', () => {
           `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-        "function hello() {
-          console.log(add);
-        }
-        exports.default = add;
-        function add() {}
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should export expression ', () => {
@@ -355,12 +249,18 @@ describe('Es exports tests', () => {
         export default { add : add }
           `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-        "exports.default = {
-          add: add
-        };
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should export a shorthand expression with import reference ', () => {
+      const result = compileModule({
+        code: `
+        import hey from "some_package";
+        export default { hey }
+          `,
+      });
+
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should export default function with a name', () => {
@@ -370,12 +270,17 @@ describe('Es exports tests', () => {
         export default function foo(){}
           `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-        "console.log(foo);
-        function foo() {}
-        exports.default = foo;
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('Should export obj', () => {
+      const result = compileModule({
+        code: `
+        import * as core from '@uirouter/core';
+        export { core };
+          `,
+      });
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should export default function without a name', () => {
@@ -384,10 +289,7 @@ describe('Es exports tests', () => {
         export default function(){}
           `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-        "exports.default = function () {};
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should export default class without a name', () => {
@@ -396,45 +298,73 @@ describe('Es exports tests', () => {
         export default class {}
           `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-        "exports.default = class {};
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
   });
 
-  //   it('should export default toString ( weird case) ', () => {
-  //     const result = compileModule({
-  //       code: `
-  //       function toString(value) {}
-  //       export default toString;
-  //       `,
-  //     });
-  //     expect(result.code).toMatchInlineSnapshot(`
-  //       "function toString(value) {}
-  //       exports.default = toString;
-  //       "
-  //     `);
-  //   });
+  describe('Export from source', () => {
+    it('should handle shorhand', () => {
+      const result = compileModule({
+        code: `
+        import zipWith from './zipWith.js';
+        const foo = 1;
+        export default {
+          zipWith, foo
+        }
+          `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
 
-  //   it('should handle object export (default)', () => {
-  //     const result = compileModule({
-  //       code: `
-  //       import zipWith from './zipWith.js';
-  //       const foo = 1;
-  //       export default {
-  //         zipWith, foo
-  //       }
-  //       `,
-  //     });
-  //     expect(result.code).toMatchInlineSnapshot(`
-  //       "const __req1__ = require(\\"./zipWith.js\\");
-  //       const foo = 1;
-  //       exports.default = {
-  //         zipWith: __req1__.default,
-  //         foo
-  //       };
-  //       "
-  //     `);
-  //   });
+    it('should export 1', () => {
+      const result = compileModule({
+        code: `export { name } from "./foo" `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should export 1 with alias', () => {
+      const result = compileModule({
+        code: `export { name as hey } from "./foo" `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should export 2 vars', () => {
+      const result = compileModule({
+        code: `export { oi, name as hey } from "./foo" `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should export default', () => {
+      const result = compileModule({
+        code: `export { default } from "./foo" `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should export all', () => {
+      const result = compileModule({
+        code: `export * from "./foo" `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should emit require call', () => {
+      const result = compileModule({
+        code: `export * from "./foo" `,
+      });
+      expect(result.requireStatementCollection).toEqual([
+        {
+          importType: ImportType.FROM,
+          statement: {
+            type: 'CallExpression',
+            callee: { type: 'Identifier', name: 'require' },
+            arguments: [{ type: 'Literal', value: './foo' }],
+          },
+        },
+      ]);
+    });
+  });
 });
