@@ -1,0 +1,145 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Es imports tests Import interfaces should  keey the statement if at least one of the imports are used 1`] = `
+"var types_1 = require(\\"./types\\");
+function hey(t) {
+  return types_1.oi();
+}
+exports.hey = hey;
+"
+`;
+
+exports[`Es imports tests Import interfaces should ignore the import of an interface 1`] = `
+"function hey(t) {
+  return 1;
+}
+exports.hey = hey;
+"
+`;
+
+exports[`Es imports tests Local variable replacement Should import everything amd remove it (override) 1`] = `
+"const everything = {};
+console.log(everything);
+"
+`;
+
+exports[`Es imports tests Local variable replacement Should import everything and replace in an object 1`] = `
+"var c_1 = require(\\"c\\");
+const a = {
+  oi: c_1.oi(String)
+};
+"
+`;
+
+exports[`Es imports tests Local variable replacement Should import everything use it 1`] = `
+"var tslib_1 = require(\\"tslib\\");
+tslib_1.something();
+"
+`;
+
+exports[`Es imports tests Local variable replacement Should import everything use it 2 1`] = `
+"var module_name_1 = require(\\"module-name\\");
+module_name_1.something();
+new module_name_1.default();
+"
+`;
+
+exports[`Es imports tests Local variable replacement Should import everything use it 3 1`] = `
+"var module_name_1 = require(\\"module-name\\");
+console.log(module_name_1);
+"
+`;
+
+exports[`Es imports tests Local variable replacement Should import multiple and trace it down 1`] = `
+"var c_1 = require(\\"c\\");
+console.log(c_1.default, c_1.b);
+"
+`;
+
+exports[`Es imports tests Local variable replacement Should import multiple and trace it down 2 1`] = `
+"var c_1 = require(\\"c\\");
+console.log(c_1.a, c_1.b);
+"
+`;
+
+exports[`Es imports tests Local variable replacement Should import something a trace it down 1`] = `
+"var foo_1 = require(\\"foo\\");
+console.log(1);
+foo_1.foobar();
+"
+`;
+
+exports[`Es imports tests Local variable replacement Should import something a trace it down 2 1`] = `
+"var foo_1 = require(\\"foo\\");
+console.log(1);
+new foo_1.FooBar();
+"
+`;
+
+exports[`Es imports tests Local variable replacement Should import something a trace it down 3 1`] = `
+"var foo_1 = require(\\"foo\\");
+console.log(foo_1.Foobar);
+"
+`;
+
+exports[`Es imports tests Local variable replacement Should import something a trace it down 4 1`] = `
+"var foo_1 = require(\\"foo\\");
+console.log([foo_1.Foobar]);
+"
+`;
+
+exports[`Es imports tests Local variable replacement Should import something a trace it down 5 1`] = `
+"var foo_1 = require(\\"foo\\");
+console.log(foo_1.default);
+"
+`;
+
+exports[`Es imports tests Local variable replacement Should import with sideeffects 1`] = `
+"console.log(1);
+require(\\"foo\\");
+console.log(2);
+"
+`;
+
+exports[`Es imports tests Local variable replacement Should trace down assignable 1`] = `
+"var foo_1 = require(\\"foo\\");
+Oi.prototype[foo_1.foo] = function () {};
+"
+`;
+
+exports[`Es imports tests Local variable replacement should import with alias 1`] = `
+"var angular_1 = require(\\"./angular\\");
+angular_1.ng.module();
+"
+`;
+
+exports[`Es imports tests Local variable replacement should not collide with local scope 1`] = `
+"var hello_1 = require(\\"./hello\\");
+function hello(foo) {
+  console.log(foo, hello_1.bar);
+}
+"
+`;
+
+exports[`Es imports tests Local variable replacement should not collide with local scope 2 1`] = `
+"var hello_1 = require(\\"./hello\\");
+function hello(foo) {
+  console.log(foo, hello_1.bar);
+}
+console.log(hello_1.foo, hello_1.bar);
+"
+`;
+
+exports[`Es imports tests Local variable replacement should not mess with the scope 2 1`] = `
+"var foo_1 = require(\\"foo\\");
+const foo = 1;
+console.log(foo, foo_1.bar);
+"
+`;
+
+exports[`Es imports tests Local variable replacement should not mess with the scope 3 1`] = `
+"var mixin = function (func) {
+  console.log(func);
+};
+"
+`;

@@ -26,8 +26,14 @@ const benchArrayCheck = () => {
     const res = d instanceof Array;
   });
 
+  b.measure('variable.constructor === Array', () => {
+    const d = getRandomInt(1, 10) === 5 ? [] : true;
+    const res = d.constructor === Array;
+  });
+
   b.start();
 };
+benchArrayCheck();
 
 const benchIndexOf = () => {
   const data = [];
@@ -130,7 +136,7 @@ function benchIterators() {
 //console.log('5' + ('5' * '20') / '10');
 
 function benchCompute() {
-  const b = bench({ iterations: 1000 });
+  const b = bench({ iterations: 100 });
   const arr = [];
 
   b.measure('Big', () => {
@@ -147,4 +153,9 @@ function benchCompute() {
 
   b.start();
 }
-benchCompute();
+//benchCompute();
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}

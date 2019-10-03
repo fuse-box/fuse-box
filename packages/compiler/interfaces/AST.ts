@@ -1,6 +1,8 @@
 import { IASTScope } from '../Visitor/Visitor';
 
 export interface ASTNode {
+  fuse_classInitializers?: Array<ASTNode>;
+  fuse_process?: ASTNode;
   alternate?: ASTNode;
   scope?: IASTScope;
   prefix?: boolean;
@@ -10,6 +12,7 @@ export interface ASTNode {
   specifiers?: Array<ASTNode>;
   test?: ASTNode;
   initializer?: ASTNode;
+
   imported?: ASTNode;
   source?: ASTNode;
   method?: boolean;
@@ -32,7 +35,7 @@ export interface ASTNode {
   declaration?: ASTNode;
   id?: ASTNode;
   body?: Array<ASTNode> | ASTNode;
-  expression?: ASTNode;
+  expression?: any;
   callee?: ASTNode;
   params?: Array<ASTNode>;
   async?: boolean;
@@ -162,6 +165,7 @@ export type ASTNodeType =
   | 'ExportKeyword'
   | 'ExternalModuleReference'
   | 'FunctionType'
+  | 'ImportExpression'
   | 'ImportEqualsDeclaration'
   | 'ImportType'
   | 'IndexedAccessType'

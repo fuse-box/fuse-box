@@ -1,11 +1,14 @@
 import * as path from 'path';
-import { GlobalContext } from '../program/GlobalContext';
-import { ITransformer } from '../program/transpileModule';
-import { createRequireStatement } from '../Visitor/helpers';
-import { IVisit } from '../Visitor/Visitor';
+import { GlobalContext } from '../../program/GlobalContext';
+import { ITransformer } from '../../program/transpileModule';
+import { createRequireStatement } from '../../Visitor/helpers';
+import { IVisit } from '../../Visitor/Visitor';
+import { ITransformerSharedOptions } from '../../interfaces/ITransformerSharedOptions';
+import { ImportType } from '../../interfaces/ImportType';
 
 // FIX SHORTHANDS
-export function ImportTransformer(): ITransformer {
+export function ImportTransformer(options?: ITransformerSharedOptions): ITransformer {
+  options = options || {};
   return {
     onTopLevelTraverse: (visit: IVisit) => {
       const node = visit.node;
@@ -43,10 +46,9 @@ export function ImportTransformer(): ITransformer {
           }
         });
 
-        const reqStatement = createRequireStatement(node.source.value, node.specifiers.length && variable);
-
         return {
           onComplete: () => {
+            const reqStatement = createRequireStatement(node.source.value, node.specifiers.length && variable);
             // when everything is finished we need to check if those variables have been used at all
             // they were all unused we need remove the require/import statement at all
 
@@ -56,7 +58,12 @@ export function ImportTransformer(): ITransformer {
             const property = visit.property;
             if (node.specifiers.length === 0) {
               const index = parent[property].indexOf(node);
-              if (index > -1) parent[property].splice(index, 1, reqStatement);
+              if (index > -1) {
+                if (options.onRequireCallExpression) {
+                  options.onRequireCallExpression(ImportType.RAW_IMPORT, reqStatement.reqStatement);
+                }
+                parent[property].splice(index, 1, reqStatement.statement);
+              }
               return;
             }
 
@@ -71,7 +78,12 @@ export function ImportTransformer(): ITransformer {
             // doing a manual replace
             if (atLeastOneInUse) {
               const index = parent[property].indexOf(node);
-              if (index > -1) parent[property].splice(index, 1, reqStatement);
+              if (index > -1) {
+                parent[property].splice(index, 1, reqStatement.statement);
+                if (options.onRequireCallExpression) {
+                  options.onRequireCallExpression(ImportType.FROM, reqStatement.reqStatement);
+                }
+              }
             } else {
               const index = parent[property].indexOf(node);
               if (index > -1) parent[property].splice(index, 1);

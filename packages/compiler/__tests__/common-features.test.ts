@@ -12,14 +12,7 @@ describe('Common features test', () => {
 
       `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-                                "class A {
-                                  constructor(name) {
-                                    this.name = name;
-                                  }
-                                }
-                                "
-                        `);
+      expect(result.code).toMatchSnapshot();
     });
   });
 
@@ -32,13 +25,7 @@ describe('Common features test', () => {
         alert(2)
       `,
       });
-      expect(result).toMatchInlineSnapshot(`
-                Object {
-                  "code": "alert(1);
-                alert(2);
-                ",
-                }
-            `);
+      expect(result.code).toMatchSnapshot();
     });
   });
 
@@ -53,11 +40,7 @@ describe('Common features test', () => {
           console.log(2);
       `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-                                "console.log(1);
-                                console.log(2);
-                                "
-                        `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should remove interface', () => {
@@ -68,11 +51,7 @@ describe('Common features test', () => {
            alert(2);
         `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-                                "alert(1);
-                                alert(2);
-                                "
-                        `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should ignore export declare', () => {
@@ -83,11 +62,7 @@ describe('Common features test', () => {
         alert(2)
         `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-        "alert(1);
-        alert(2);
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
   });
 });

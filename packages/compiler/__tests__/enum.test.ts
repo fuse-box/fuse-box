@@ -71,15 +71,7 @@ describe('Enums test', () => {
         }
     `,
     });
-    expect(result.code).toMatchInlineSnapshot(`
-      "var Stuff;
-      (function (Stuff) {
-        Stuff[Stuff[\\"First\\"] = 2] = \\"First\\"
-        Stuff[Stuff[\\"Second\\"] = 67108864] = \\"Second\\"
-        Stuff[Stuff[\\"Third\\"] = 100663296] = \\"Third\\"
-      })(Stuff || (Stuff = {}))
-      "
-    `);
+    expect(result.code).toMatchSnapshot();
   });
 
   it('should respect local enum references if not able to compute', () => {
@@ -91,25 +83,7 @@ describe('Enums test', () => {
         }
     `,
     });
-    expect(result.code).toMatchInlineSnapshot(`
-            "var Stuff;
-            (function (Stuff) {
-              Stuff[Stuff[\\"First\\"] = 2] = \\"First\\"
-              Stuff[Stuff[\\"Second\\"] = Hey + 1 + Stuff.First] = \\"Second\\"
-            })(Stuff || (Stuff = {}))
-            "
-        `);
-  });
 
-  it.only('should have no problem exporting a enum', () => {
-    const result = compileModule({
-      code: `
-        export enum Stuff {
-          First = 1 << 1,
-          Second = Hey + 1 + First,
-        }
-    `,
-    });
-    console.log(result.code);
+    expect(result.code).toMatchSnapshot();
   });
 });

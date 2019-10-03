@@ -1,0 +1,174 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Class constructor properties Class props should remove add a property to the existing constructor 1`] = `
+"class A {
+  constructor() {
+    this.name = \\"hey\\";
+  }
+}
+"
+`;
+
+exports[`Class constructor properties Class props should remove add a property to the existing constructor respecting other public methods 1`] = `
+"class A {
+  constructor(hey = \\"key\\") {
+    this.hey = hey;
+    this.name = \\"hey\\";
+    console.log(this.name);
+  }
+}
+"
+`;
+
+exports[`Class constructor properties Class props should remove add a property without constructor 1`] = `
+"class A {
+  constructor() {
+    this.name = \\"hey\\";
+  }
+}
+"
+`;
+
+exports[`Class constructor properties Class props should remove property that's not inited 1`] = `
+"class A {}
+"
+`;
+
+exports[`Class constructor properties should deal with immediate function calls on initialized properties 1`] = `
+"class HelloWorld {
+  constructor(welcome) {
+    this.welcome = welcome;
+    console.log(this.welcome);
+  }
+}
+"
+`;
+
+exports[`Class constructor properties should deal with inner classes 1`] = `
+"class Amazing {}
+class HelloWorld extends Amazing {
+  constructor(welcome, to, awesomeness, of, fuse) {
+    super();
+    this.welcome = welcome;
+    this.to = to;
+    this.awesomeness = awesomeness;
+    const innerClass = class extends Amazing {
+      constructor(welcome, to, awesomeness, of, fuse) {
+        super();
+        this.welcome = welcome;
+        this.to = to;
+        this.awesomeness = awesomeness;
+      }
+    };
+    this.fuse = fuse;
+  }
+  welcomeToTheBlock() {}
+}
+"
+`;
+
+exports[`Class constructor properties should deal with multiple class definitions following each other 1`] = `
+"class HelloWorld {
+  constructor(welcome) {
+    this.welcome = welcome;
+    console.log(this.welcome);
+  }
+}
+class HelloWorld2 {
+  constructor(welcome2) {
+    this.welcome2 = welcome2;
+    console.log(this.welcome2);
+  }
+}
+class HelloWorld3 {
+  constructor(welcome3) {
+    this.welcome3 = welcome3;
+    console.log(this.welcome3);
+  }
+}
+"
+`;
+
+exports[`Class constructor properties should ignore decorators for now 1`] = `
+"class Amazing {}
+class HelloWorld extends Amazing {
+  constructor(welcome, to, awesomeness, of, fuse) {
+    super();
+    this.welcome = welcome;
+    this.to = to;
+    this.awesomeness = awesomeness;
+    (() => {
+      console.log(\\"Freaky block statement here.\\");
+    })();
+    this.fuse = fuse;
+  }
+  welcomeToTheBlock() {}
+}
+"
+`;
+
+exports[`Class constructor properties should initialize constructor properties in the constructor 1`] = `
+"class HelloWorld {
+  constructor(welcome, to, awesomeness, of, fuse) {
+    this.welcome = welcome;
+    this.to = to;
+    this.awesomeness = awesomeness;
+    this.fuse = fuse;
+  }
+}
+"
+`;
+
+exports[`Class constructor properties should leave classes without constructor props alone 1`] = `
+"class HelloWorld {
+  constructor(welcome, to, awesomeness, of, fuse) {
+    this.fuse = fuse;
+  }
+}
+"
+`;
+
+exports[`Class constructor properties should not add initializer calls in standard block statements 1`] = `
+"class Amazing {}
+class HelloWorld extends Amazing {
+  constructor(welcome, to, awesomeness, of, fuse) {
+    super();
+    this.welcome = welcome;
+    this.to = to;
+    this.awesomeness = awesomeness;
+    (() => {
+      console.log(\\"Freaky block statement here.\\");
+    })();
+    this.fuse = fuse;
+  }
+  welcomeToTheBlock() {}
+}
+"
+`;
+
+exports[`Class constructor properties should work with class as a default value 1`] = `
+"class A {
+  constructor(name = class {
+    constructor(hey = 2) {
+      this.hey = hey;
+    }
+  }) {
+    this.name = name;
+  }
+}
+"
+`;
+
+exports[`Class constructor properties should work with super classes 1`] = `
+"class Amazing {}
+class HelloWorld extends Amazing {
+  constructor(welcome, to, awesomeness, of, fuse) {
+    super();
+    this.welcome = welcome;
+    this.to = to;
+    this.awesomeness = awesomeness;
+    this.fuse = fuse;
+  }
+}
+"
+`;

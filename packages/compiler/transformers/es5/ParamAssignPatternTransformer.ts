@@ -1,6 +1,6 @@
-import { ASTNode } from '../interfaces/AST';
-import { ITransformer } from '../program/transpileModule';
-import { IVisit } from '../Visitor/Visitor';
+import { ASTNode } from '../../interfaces/AST';
+import { ITransformer } from '../../program/transpileModule';
+import { IVisit } from '../../Visitor/Visitor';
 
 export function ParamAssignPatternTransformer(): ITransformer {
   return (visit: IVisit) => {

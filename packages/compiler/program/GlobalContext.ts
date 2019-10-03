@@ -3,6 +3,7 @@ import { IProgramProps } from './transpileModule';
 
 export interface GlobalContext {
   getNextIndex: () => number;
+  hoisted: { [key: string]: number };
   exportAfterDeclaration?: {
     [key: string]: {
       target?: string;
@@ -25,6 +26,7 @@ export function createGlobalContext(userContext?: { [key: string]: any }): Globa
   let index = 1;
   let essentialContext = {
     completeCallbacks: [],
+    hoisted: {},
     getNextIndex: () => index++,
     identifierReplacement: {},
     namespace: 'exports',

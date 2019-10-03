@@ -9,12 +9,7 @@ describe('JSX', () => {
         }
           `,
     });
-    expect(result.code).toMatchInlineSnapshot(`
-                                                            "function test() {
-                                                              return React.createElement(\\"div\\", null);
-                                                            }
-                                                            "
-                                        `);
+    expect(result.code).toMatchSnapshot();
   });
 
   it('should add text', () => {
@@ -25,12 +20,7 @@ describe('JSX', () => {
         }
           `,
     });
-    expect(result.code).toMatchInlineSnapshot(`
-                                                            "function test() {
-                                                              return React.createElement(\\"div\\", null, \\"1\\");
-                                                            }
-                                                            "
-                                        `);
+    expect(result.code).toMatchSnapshot();
   });
 
   it('should add just attributes', () => {
@@ -42,16 +32,7 @@ describe('JSX', () => {
         }
           `,
     });
-    expect(result.code).toMatchInlineSnapshot(`
-                                                "var oi_1 = require(\\"./oi\\");
-                                                function test() {
-                                                  return React.createElement(\\"i\\", {
-                                                    id: \\"1\\",
-                                                    f: oi_1.default
-                                                  });
-                                                }
-                                                "
-                                `);
+    expect(result.code).toMatchSnapshot();
   });
 
   it('should add just attributes and spread', () => {
@@ -64,16 +45,19 @@ describe('JSX', () => {
           `,
     });
 
-    expect(result.code).toMatchInlineSnapshot(`
-                                                      "var oi_1 = require(\\"./oi\\");
-                                                      function test() {
-                                                        return React.createElement(\\"i\\", Object.assign({
-                                                          id: \\"1\\",
-                                                          f: oi_1.default
-                                                        }, props));
-                                                      }
-                                                      "
-                                    `);
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('should have only one spread props', () => {
+    const result = compileModule({
+      code: `
+        import oi from "./oi";
+        function test(){
+          return (<i {...props} ></i>)
+        }
+          `,
+    });
+    expect(result.code).toMatchSnapshot();
   });
 
   it('should keep the order', () => {
@@ -86,18 +70,7 @@ describe('JSX', () => {
           `,
     });
 
-    expect(result.code).toMatchInlineSnapshot(`
-                                          "var oi_1 = require(\\"./oi\\");
-                                          function test() {
-                                            return React.createElement(\\"i\\", Object.assign({
-                                              id: 1,
-                                              f: oi_1.default
-                                            }, props, {
-                                              s: 2
-                                            }, rest));
-                                          }
-                                          "
-                            `);
+    expect(result.code).toMatchSnapshot();
   });
 
   it('should remove empty expressions', () => {
@@ -110,12 +83,7 @@ describe('JSX', () => {
           `,
     });
 
-    expect(result.code).toMatchInlineSnapshot(`
-                              "function test() {
-                                return React.createElement(\\"i\\", null, \\" \\", \\" \\");
-                              }
-                              "
-                    `);
+    expect(result.code).toMatchSnapshot();
   });
 
   it('should handle JSX fragment', () => {
@@ -134,13 +102,7 @@ describe('JSX', () => {
           `,
     });
 
-    expect(result.code).toMatchInlineSnapshot(`
-            "var react_1 = require(\\"react\\");
-            function test() {
-              return react_1.default.createElement(\\"div\\", null, react_1.default.createElement(react_1.default.Fragment, null, react_1.default.createElement(\\"div\\", null, \\"1\\")));
-            }
-            "
-        `);
+    expect(result.code).toMatchSnapshot();
   });
 
   it('should work with JSXSpreadChild', () => {
@@ -152,11 +114,6 @@ describe('JSX', () => {
         }
           `,
     });
-    expect(result.code).toMatchInlineSnapshot(`
-      "function test() {
-        return React.createElement(\\"i\\", null, children);
-      }
-      "
-    `);
+    expect(result.code).toMatchSnapshot();
   });
 });

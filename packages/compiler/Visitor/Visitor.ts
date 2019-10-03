@@ -1,5 +1,6 @@
 import { ASTNode } from '../interfaces/AST';
 import { astTransformer } from './astTransformer';
+import { isLocalIdentifier } from './helpers';
 import { scopeTracker } from './scopeTracker';
 
 export interface IVisitProps {
@@ -17,6 +18,7 @@ export interface IASTScope {
 
 export interface IVisit {
   node: ASTNode;
+  isLocalIdentifier?: boolean;
   globalContext?: any;
   parent?: ASTNode;
   property?: string;
@@ -29,6 +31,7 @@ export interface IVisitorMod {
   replaceWith?: ASTNode | Array<ASTNode>;
   scopeMeta?: { [key: string]: any };
   insertAfterThisNode?: ASTNode | Array<ASTNode>;
+  prependToBody?: Array<ASTNode>;
   onComplete?: () => void;
   ignoreChildren?: boolean;
   removeNode?: boolean;
@@ -42,6 +45,14 @@ export interface IFastVisit {
   globalContext?: any;
 }
 
+const IRNOGED_TYPES = {
+  typeAnnotation: 1,
+  typeParameters: 1,
+  returnType: 1,
+  implements: 1,
+  decorators: 1,
+  superTypeParameters: 1,
+};
 function _visit(
   t,
   globalContext,
@@ -57,6 +68,7 @@ function _visit(
     parent: props.parent,
     property: props.property,
     id: props.id,
+    isLocalIdentifier: isLocalIdentifier(node, props.parent),
   };
 
   scopeTracker(visit);
@@ -79,6 +91,9 @@ function _visit(
     if (response.onComplete) {
       globalContext.completeCallbacks.push(response.onComplete);
     }
+    if (response.prependToBody) {
+      t.prependToBody(visit, response.prependToBody);
+    }
     if (response.removeNode) {
       t.removeLater(visit);
       return;
@@ -100,19 +115,19 @@ function _visit(
   }
 
   for (const property in node) {
-    if (property[0] === '$') {
-      continue;
-    }
-
     const child = node[property];
     if (child instanceof Array) {
-      for (let i = 0; i < child.length; i++) {
-        if (child && child[i] && child[i].type) {
-          _visit(t, globalContext, fn, child[i], { parent: node, property, id: i }, visit.scope);
+      let i = 0;
+      while (i < child.length) {
+        const item = child[i];
+        if (item && item.type && !IRNOGED_TYPES[item.type]) {
+          _visit(t, globalContext, fn, item, { parent: node, property, id: i }, visit.scope);
         }
+        i++;
       }
     } else {
-      if (child && child.type) _visit(t, globalContext, fn, child, { parent: node, property }, visit.scope);
+      if (child && child.type && !IRNOGED_TYPES[child.type])
+        _visit(t, globalContext, fn, child, { parent: node, property }, visit.scope);
     }
   }
 }

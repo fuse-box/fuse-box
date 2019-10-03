@@ -1,4 +1,5 @@
 import { compileModule } from '../program/compileModule';
+import { ImportType } from '../interfaces/ImportType';
 
 /**
  to test:
@@ -17,13 +18,7 @@ describe('Es imports tests', () => {
             }
         `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-                                                        "var hello_1 = require(\\"./hello\\");
-                                                        function hello(foo) {
-                                                          console.log(foo, hello_1.bar);
-                                                        }
-                                                        "
-                                          `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should not collide with local scope 2', () => {
@@ -37,14 +32,7 @@ describe('Es imports tests', () => {
         `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-                                                        "var hello_1 = require(\\"./hello\\");
-                                                        function hello(foo) {
-                                                          console.log(foo, hello_1.bar);
-                                                        }
-                                                        console.log(hello_1.foo, hello_1.bar);
-                                                        "
-                                          `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('Should import something a trace it down', () => {
@@ -55,12 +43,7 @@ describe('Es imports tests', () => {
           foobar();
         `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-                                                        "var foo_1 = require(\\"foo\\");
-                                                        console.log(1);
-                                                        foo_1.foobar();
-                                                        "
-                                          `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('Should import something a trace it down 2', () => {
@@ -71,12 +54,7 @@ describe('Es imports tests', () => {
           new FooBar();
         `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-                                                        "var foo_1 = require(\\"foo\\");
-                                                        console.log(1);
-                                                        new foo_1.FooBar();
-                                                        "
-                                          `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('Should import something a trace it down 3', () => {
@@ -86,11 +64,7 @@ describe('Es imports tests', () => {
           console.log(Foobar)
         `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-                                                        "var foo_1 = require(\\"foo\\");
-                                                        console.log(foo_1.Foobar);
-                                                        "
-                                          `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('Should import something a trace it down 4', () => {
@@ -101,11 +75,7 @@ describe('Es imports tests', () => {
         `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-                                                        "var foo_1 = require(\\"foo\\");
-                                                        console.log([foo_1.Foobar]);
-                                                        "
-                                          `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('Should import something a trace it down 5', () => {
@@ -116,11 +86,7 @@ describe('Es imports tests', () => {
         `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-                                                        "var foo_1 = require(\\"foo\\");
-                                                        console.log(foo_1.default);
-                                                        "
-                                          `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('Should import multiple and trace it down', () => {
@@ -131,11 +97,7 @@ describe('Es imports tests', () => {
         `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-                                                        "var c_1 = require(\\"c\\");
-                                                        console.log(c_1.default, c_1.b);
-                                                        "
-                                          `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('Should import multiple and trace it down 2', () => {
@@ -145,12 +107,7 @@ describe('Es imports tests', () => {
           console.log(a, b)
         `,
       });
-
-      expect(result.code).toMatchInlineSnapshot(`
-                                                        "var c_1 = require(\\"c\\");
-                                                        console.log(c_1.a, c_1.b);
-                                                        "
-                                          `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('Should import everything and replace in an object', () => {
@@ -162,13 +119,7 @@ describe('Es imports tests', () => {
           }
         `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-                                                        "var c_1 = require(\\"c\\");
-                                                        const a = {
-                                                          oi: c_1.oi(String)
-                                                        };
-                                                        "
-                                          `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should import with alias', () => {
@@ -179,11 +130,7 @@ describe('Es imports tests', () => {
         `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-                                                        "var angular_1 = require(\\"./angular\\");
-                                                        angular_1.ng.module();
-                                                        "
-                                          `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('Should import everything use it', () => {
@@ -194,11 +141,7 @@ describe('Es imports tests', () => {
         `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-                                                        "var tslib_1 = require(\\"tslib\\");
-                                                        tslib_1.something();
-                                                        "
-                                          `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('Should import everything use it 2', () => {
@@ -209,12 +152,7 @@ describe('Es imports tests', () => {
         new MySuperClass();
         `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-                                "var module_name_1 = require(\\"module-name\\");
-                                module_name_1.something();
-                                new module_name_1.default();
-                                "
-                        `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('Should import everything use it 3', () => {
@@ -225,11 +163,7 @@ describe('Es imports tests', () => {
 
         `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-                        "var module_name_1 = require(\\"module-name\\");
-                        console.log(module_name_1);
-                        "
-                  `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('Should import everything amd remove it (override)', () => {
@@ -241,11 +175,7 @@ describe('Es imports tests', () => {
 
         `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-                "const everything = {};
-                console.log(everything);
-                "
-            `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('Should trace down assignable', () => {
@@ -255,11 +185,7 @@ describe('Es imports tests', () => {
           Oi.prototype[foo] = function(){}
         `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-                                                        "var foo_1 = require(\\"foo\\");
-                                                        Oi.prototype[foo_1.foo] = function () {};
-                                                        "
-                                          `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('Should import with sideeffects', () => {
@@ -271,12 +197,7 @@ describe('Es imports tests', () => {
               `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-                                                        "console.log(1);
-                                                        require(\\"foo\\");
-                                                        console.log(2);
-                                                        "
-                                          `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should not mess with the scope 2', () => {
@@ -288,12 +209,7 @@ describe('Es imports tests', () => {
         `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-                                                        "var foo_1 = require(\\"foo\\");
-                                                        const foo = 1;
-                                                        console.log(foo, foo_1.bar);
-                                                        "
-                                          `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should not mess with the scope 3', () => {
@@ -307,12 +223,7 @@ describe('Es imports tests', () => {
         `,
       });
 
-      expect(result.code).toMatchInlineSnapshot(`
-        "var mixin = function (func) {
-          console.log(func);
-        };
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
   });
 
@@ -327,13 +238,7 @@ describe('Es imports tests', () => {
         }
       `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-                                                "function hey(t) {
-                                                  return 1;
-                                                }
-                                                exports.hey = hey;
-                                                "
-                                    `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should  keey the statement if at least one of the imports are used', () => {
@@ -346,14 +251,64 @@ describe('Es imports tests', () => {
         }
       `,
       });
-      expect(result.code).toMatchInlineSnapshot(`
-                                        "var types_1 = require(\\"./types\\");
-                                        function hey(t) {
-                                          return types_1.oi();
-                                        }
-                                        exports.hey = hey;
-                                        "
-                              `);
+      expect(result.code).toMatchSnapshot();
+    });
+  });
+
+  describe('Test require statement collection', () => {
+    it('should not emit a require statement ', () => {
+      const result = compileModule({
+        code: `
+        import { Type, oi } from './types';
+
+        export function hey(t: Type) {
+
+        }
+      `,
+      });
+      expect(result.requireStatementCollection).toEqual([]);
+    });
+
+    it('should emit require statement ', () => {
+      const result = compileModule({
+        code: `
+        import { Type, oi } from './types';
+
+        export function hey(t: Type) {
+          console.log(oi);
+        }
+      `,
+      });
+
+      expect(result.requireStatementCollection).toEqual([
+        {
+          importType: ImportType.FROM,
+          statement: {
+            type: 'CallExpression',
+            callee: { type: 'Identifier', name: 'require' },
+            arguments: [{ type: 'Literal', value: './types' }],
+          },
+        },
+      ]);
+    });
+
+    it('should emit raw import statement ', () => {
+      const result = compileModule({
+        code: `
+          import "./foo"
+      `,
+      });
+
+      expect(result.requireStatementCollection).toEqual([
+        {
+          importType: ImportType.RAW_IMPORT,
+          statement: {
+            type: 'CallExpression',
+            callee: { type: 'Identifier', name: 'require' },
+            arguments: [{ type: 'Literal', value: './foo' }],
+          },
+        },
+      ]);
     });
   });
 });
