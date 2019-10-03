@@ -1,9 +1,19 @@
-import { GlobalContext } from '../program/GlobalContext';
-import { ITransformer } from '../program/transpileModule';
-import { createExports, isDefinedLocally } from '../Visitor/helpers';
-import { IVisit } from '../Visitor/Visitor';
+import { GlobalContext } from '../../program/GlobalContext';
+import { ITransformer } from '../../program/transpileModule';
+import { createExports, isDefinedLocally } from '../../Visitor/helpers';
+import { IVisit } from '../../Visitor/Visitor';
+import * as path from 'path';
+import { ASTNode } from '../../interfaces/AST';
+import { ITransformerSharedOptions } from '../../interfaces/ITransformerSharedOptions';
+import { ImportType } from '../../interfaces/ImportType';
 
-export function ExportTransformer(): ITransformer {
+const INTERESTED_NODES = {
+  ExportNamedDeclaration: 1,
+  ExportDefaultDeclaration: 1,
+  ExportAllDeclaration: 1,
+};
+export function ExportTransformer(options?: ITransformerSharedOptions): ITransformer {
+  options = options || options;
   return {
     onEachNode: (visit: IVisit) => {
       const global = visit.globalContext as GlobalContext;
@@ -34,19 +44,130 @@ export function ExportTransformer(): ITransformer {
 
       const global = visit.globalContext as GlobalContext;
 
+      const type = node.type;
+      if (!INTERESTED_NODES[type]) return;
+
       // remove export interface
       // export interface HelloWorld{}
-      if (node.type === 'ExportNamedDeclaration') {
+      if (type === 'ExportNamedDeclaration') {
         if (node.declaration && node.declaration.type === 'InterfaceDeclaration') {
           return { removeNode: true };
         }
       }
+
+      /**
+       * **************************************************************************
+       * Export with source
+       * export { one, two } from "./source"
+       *
+       * Needs to be simply replaced, no tracking involved
+       */
+      if (node.source) {
+        const sourceVariable = path.basename(node.source.value).replace(/\.|-/, '_') + '_' + global.getNextIndex();
+
+        // export * from "a"
+        if (node.type === 'ExportAllDeclaration') {
+          const reqExpression: ASTNode = {
+            type: 'CallExpression',
+            callee: {
+              type: 'Identifier',
+              name: 'require',
+            },
+            arguments: [
+              {
+                type: 'Literal',
+                value: node.source.value,
+              },
+            ],
+          };
+          if (options.onRequireCallExpression) {
+            options.onRequireCallExpression(ImportType.FROM, reqExpression);
+          }
+          return {
+            replaceWith: {
+              type: 'CallExpression',
+              callee: {
+                type: 'MemberExpression',
+                object: {
+                  type: 'Identifier',
+                  name: 'Object',
+                },
+                computed: false,
+                property: {
+                  type: 'Identifier',
+                  name: 'assign',
+                },
+              },
+              arguments: [
+                {
+                  type: 'Identifier',
+                  name: 'exports',
+                },
+                reqExpression,
+              ],
+            },
+          };
+        }
+
+        // export { foo } from "./bar"
+        // creating
+        //    var obj = require("module")
+        const exportedNodes: Array<ASTNode> = [
+          {
+            type: 'VariableDeclaration',
+            kind: 'var',
+            declarations: [
+              {
+                type: 'VariableDeclarator',
+                init: {
+                  type: 'CallExpression',
+                  callee: {
+                    type: 'Identifier',
+                    name: 'require',
+                  },
+                  arguments: [
+                    {
+                      type: 'Literal',
+                      value: node.source.value,
+                    },
+                  ],
+                },
+                id: {
+                  type: 'Identifier',
+                  name: sourceVariable,
+                },
+              },
+            ],
+          },
+        ];
+
+        if (type === 'ExportNamedDeclaration') {
+          for (const specifier of node.specifiers) {
+            exportedNodes.push(
+              createExports(global.namespace, specifier.exported.name, {
+                type: 'MemberExpression',
+                object: {
+                  type: 'Identifier',
+                  name: sourceVariable,
+                },
+                computed: false,
+                property: {
+                  type: 'Identifier',
+                  name: specifier.local.name,
+                },
+              }),
+            );
+          }
+        }
+        return { replaceWith: exportedNodes };
+      }
+
       /**
        * Handling export default declaratio
        * *********************************************************
        *    export default func
        */
-      if (node.type === 'ExportDefaultDeclaration') {
+      if (type === 'ExportDefaultDeclaration') {
         if (node.declaration) {
           // Looking at this case:
           //      console.log(foo)
@@ -71,7 +192,7 @@ export function ExportTransformer(): ITransformer {
         }
       }
 
-      if (node.type === 'ExportNamedDeclaration') {
+      if (type === 'ExportNamedDeclaration') {
         /**
          * ******************************************************************************
          * CASE with variable exports

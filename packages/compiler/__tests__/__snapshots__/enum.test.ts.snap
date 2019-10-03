@@ -27,6 +27,25 @@ exports[`Enums test should compute binary and do some math with Math.function 1`
 "
 `;
 
+exports[`Enums test should compute crazy enum and reference is in another enum 1`] = `
+"var Stuff;
+(function (Stuff) {
+  Stuff[Stuff[\\"First\\"] = 2] = \\"First\\"
+  Stuff[Stuff[\\"Second\\"] = 67108864] = \\"Second\\"
+  Stuff[Stuff[\\"Third\\"] = 100663296] = \\"Third\\"
+})(Stuff || (Stuff = {}))
+"
+`;
+
+exports[`Enums test should respect local enum references if not able to compute 1`] = `
+"var Stuff;
+(function (Stuff) {
+  Stuff[Stuff[\\"First\\"] = 2] = \\"First\\"
+  Stuff[Stuff[\\"Second\\"] = Hey + 1 + Stuff.First] = \\"Second\\"
+})(Stuff || (Stuff = {}))
+"
+`;
+
 exports[`Enums test should work with a custom numner enum 1`] = `
 "var Stuff;
 (function (Stuff) {

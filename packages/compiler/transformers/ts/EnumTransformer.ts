@@ -1,6 +1,6 @@
-import { IVisit, IVisitorMod } from '../Visitor/Visitor';
-import { ASTNode } from '../interfaces/AST';
-import { computeBinaryExpression } from '../static_compute/computeBinaryExpression';
+import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
+import { ASTNode } from '../../interfaces/AST';
+import { computeBinaryExpression } from '../../static_compute/computeBinaryExpression';
 
 export function EnumTransformer() {
   return (visit: IVisit): IVisitorMod => {
