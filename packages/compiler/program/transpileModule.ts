@@ -10,7 +10,7 @@ export type ITransformer =
       onEachNode?: ITranformerCallback;
     };
 
-export type ITransformerList = Array<ITransformer>;
+export type ITransformerList = Array<ITransformer | undefined>;
 export interface IProgramProps {
   ast: ASTNode;
   globalContext?: any;
@@ -24,11 +24,13 @@ export function transpileModule(props: IProgramProps) {
   const onTopLevelTransformers: Array<ITranformerCallback> = [];
   //console.log(JSON.stringify(props.ast, null, 2));
   for (const t of props.transformers) {
-    if (typeof t === 'object') {
-      if (t.onEachNode) eachNodeTransformers.push(t.onEachNode);
-      if (t.onTopLevelTraverse) onTopLevelTransformers.push(t.onTopLevelTraverse);
-    } else {
-      eachNodeTransformers.push(t);
+    if (t) {
+      if (typeof t === 'object') {
+        if (t.onEachNode) eachNodeTransformers.push(t.onEachNode);
+        if (t.onTopLevelTraverse) onTopLevelTransformers.push(t.onTopLevelTraverse);
+      } else {
+        eachNodeTransformers.push(t);
+      }
     }
   }
 

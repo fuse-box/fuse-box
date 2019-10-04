@@ -1,5 +1,5 @@
-import { compileModule } from '../program/compileModule';
 import { readFileSync } from 'fs';
+import { compileModule } from '../program/compileModule';
 
 let file;
 
@@ -18,4 +18,3 @@ const result = compileModule({ code: file });
 // `,
 // });
 console.log(result.code);
-export default abstract class RendererFactory2 {}
