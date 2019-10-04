@@ -1,8 +1,9 @@
-import { compileModule } from '../program/compileModule';
+import { testTranspile } from '../transpilers/testTranpiler';
+
 describe('Parameter transform', () => {
   describe('Default values', () => {
     it('must transform function declaration', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `function oi(b = {}){
         }
       `,
@@ -14,7 +15,7 @@ describe('Parameter transform', () => {
     });
 
     it('must transform constructor declaration', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `function oi(b = {}){
         }
       `,

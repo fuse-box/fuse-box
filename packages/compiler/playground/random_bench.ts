@@ -1,4 +1,4 @@
-import { bench, getRandomInt } from './bench';
+import { bench } from './bench';
 import { ADDRGETNETWORKPARAMS } from 'dns';
 import * as Big from 'big.js';
 const b = bench({ iterations: 100000 });

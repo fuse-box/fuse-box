@@ -1,8 +1,8 @@
-import { compileModule } from '../program/compileModule';
+import { testTranspile } from '../transpilers/testTranpiler';
 
 describe('Class constructor properties', () => {
   it('should initialize constructor properties in the constructor', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
 
             class HelloWorld {
@@ -23,7 +23,7 @@ describe('Class constructor properties', () => {
   });
 
   it('should work with super classes', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
             class Amazing {}
 
@@ -47,7 +47,7 @@ describe('Class constructor properties', () => {
   });
 
   it('should not add initializer calls in standard block statements', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
             class Amazing {}
 
@@ -77,7 +77,7 @@ describe('Class constructor properties', () => {
   });
 
   it('should ignore decorators for now', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
             class Amazing {}
 
@@ -106,7 +106,7 @@ describe('Class constructor properties', () => {
   });
 
   it('should leave classes without constructor props alone', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
 
             class HelloWorld {
@@ -127,7 +127,7 @@ describe('Class constructor properties', () => {
   });
 
   it('should deal with inner classes', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
             class Amazing {}
 
@@ -166,7 +166,7 @@ describe('Class constructor properties', () => {
   });
 
   it('should deal with immediate function calls on initialized properties', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
 
             class HelloWorld {
@@ -182,7 +182,7 @@ describe('Class constructor properties', () => {
   });
 
   it('should deal with multiple class definitions following each other', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
 
             class HelloWorld {
@@ -210,7 +210,7 @@ describe('Class constructor properties', () => {
   });
 
   it('should work with class as a default value', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
       class A {
         constructor(
@@ -226,7 +226,7 @@ describe('Class constructor properties', () => {
 
   describe('Class props', () => {
     it("should remove property that's not inited", () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         class A {
           public name : string;
@@ -237,7 +237,7 @@ describe('Class constructor properties', () => {
     });
 
     it('should remove add a property without constructor', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         class A {
           public name : string = "hey"
@@ -248,7 +248,7 @@ describe('Class constructor properties', () => {
     });
 
     it('should remove add a property to the existing constructor', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         class A {
           public name : string = "hey";
@@ -260,7 +260,7 @@ describe('Class constructor properties', () => {
     });
 
     it('should remove add a property to the existing constructor respecting other public methods', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         class A {
           public name : string = "hey";

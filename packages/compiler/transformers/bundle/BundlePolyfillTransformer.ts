@@ -4,6 +4,7 @@ import { ITransformerSharedOptions } from '../../interfaces/ITransformerSharedOp
 import { GlobalContext } from '../../program/GlobalContext';
 import { createRequireStatement } from '../../Visitor/helpers';
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
+import { ImportType } from '../../interfaces/ImportType';
 
 export interface IBundleEssentialProps {
   target?: 'browser' | 'server' | 'electron';
@@ -21,10 +22,10 @@ export const PolyfillEssentialConfig = {
   https: 'https',
 };
 
-export function BundleEssentialTransformer(options: IBundleEssntialTransformerOptions) {
+export function BundlePolyfillTransformer(options: IBundleEssntialTransformerOptions) {
   const RequireStatementsInserted = {};
   const VariablesInserted = {};
-
+  options = options || {};
   return (visit: IVisit): IVisitorMod => {
     const { node } = visit;
 
@@ -57,6 +58,8 @@ export function BundleEssentialTransformer(options: IBundleEssntialTransformerOp
         if (!RequireStatementsInserted[moduleName]) {
           RequireStatementsInserted[moduleName] = 1;
           const statement = createRequireStatement(moduleName, name);
+          if (options.onRequireCallExpression)
+            options.onRequireCallExpression(ImportType.REQUIRE, statement.reqStatement);
           statements.push(statement.statement);
         }
         if (name !== moduleName) {
@@ -81,13 +84,6 @@ export function BundleEssentialTransformer(options: IBundleEssntialTransformerOp
         if (statements.length) {
           return { prependToBody: statements };
         }
-      }
-
-      /**
-       * Process transformation **********************************************************
-       */
-      if (name === 'process') {
-        const parent = visit.parent;
       }
     }
     return;

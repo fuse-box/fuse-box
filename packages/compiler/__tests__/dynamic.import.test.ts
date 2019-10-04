@@ -1,9 +1,9 @@
-import { compileModule } from '../program/compileModule';
 import { ImportType } from '../interfaces/ImportType';
+import { testTranspile } from '../transpilers/testTranpiler';
 
 describe('Dynamic improt test', () => {
   it('should ', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
         async function hey() {
           console.log(1);
