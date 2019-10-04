@@ -1,9 +1,11 @@
-import { compileModule } from '../program/compileModule';
-import { PolyfillEssentialConfig } from '../transformers/bundle/BundleEssentialTransformer';
-describe('Bundle essential transform test', () => {
+import { ImportType } from '../interfaces/ImportType';
+import { PolyfillEssentialConfig } from '../transformers/bundle/BundlePolyfillTransformer';
+import { testTranspile } from '../transpilers/testTranpiler';
+
+describe('Bundle polyfill transform test', () => {
   describe('Common transform ', () => {
     it('should replace __dirname', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
            console.log(__dirname)
       `,
@@ -11,14 +13,11 @@ describe('Bundle essential transform test', () => {
           moduleFileName: '/some-dir/file.ts',
         },
       });
-      expect(result.code).toMatchInlineSnapshot(`
-                "console.log(\\"/some-dir/file.ts\\");
-                "
-            `);
+      expect(result.code).toMatchSnapshot();
     });
 
     it('should replace __filename', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
            console.log(__filename)
       `,
@@ -26,10 +25,7 @@ describe('Bundle essential transform test', () => {
           moduleFileName: '/some-dir/file.ts',
         },
       });
-      expect(result.code).toMatchInlineSnapshot(`
-        "console.log(\\"/some-dir\\");
-        "
-      `);
+      expect(result.code).toMatchSnapshot();
     });
   });
 
@@ -38,9 +34,19 @@ describe('Bundle essential transform test', () => {
       for (const name in PolyfillEssentialConfig) {
         const moduleName = PolyfillEssentialConfig[name];
         it(`shuold insert ${moduleName}`, () => {
-          const result = compileModule({
+          const result = testTranspile({
             code: `console.log(${moduleName})`,
           });
+          expect(result.requireStatementCollection).toEqual([
+            {
+              importType: ImportType.REQUIRE,
+              statement: {
+                type: 'CallExpression',
+                callee: { type: 'Identifier', name: 'require' },
+                arguments: [{ type: 'Literal', value: moduleName }],
+              },
+            },
+          ]);
           expect(result.code).toMatchSnapshot();
         });
       }
@@ -50,7 +56,7 @@ describe('Bundle essential transform test', () => {
       for (const name in PolyfillEssentialConfig) {
         const moduleName = PolyfillEssentialConfig[name];
         it(`shuold insert ${moduleName} with method reference`, () => {
-          const result = compileModule({
+          const result = testTranspile({
             code: `console.log(${moduleName}.method)`,
           });
 
@@ -62,7 +68,7 @@ describe('Bundle essential transform test', () => {
       for (const name in PolyfillEssentialConfig) {
         const moduleName = PolyfillEssentialConfig[name];
         it(`shuold insert ${moduleName} with method reference with a call`, () => {
-          const result = compileModule({
+          const result = testTranspile({
             code: `console.log(${moduleName}.method() )`,
           });
 
@@ -73,7 +79,7 @@ describe('Bundle essential transform test', () => {
 
     describe('Should not add anything', () => {
       it('should not add Buffer because its been hoisted', () => {
-        const result = compileModule({
+        const result = testTranspile({
           code: `
             exports.Buffer = Buffer;
             function Buffer(){}
@@ -84,7 +90,7 @@ describe('Bundle essential transform test', () => {
       });
 
       it('should not add Buffer because its has been defined', () => {
-        const result = compileModule({
+        const result = testTranspile({
           code: `
             function some(){
               const buffer = {};
@@ -96,7 +102,7 @@ describe('Bundle essential transform test', () => {
       });
 
       it('should not add Buffer because it has NOT been defined', () => {
-        const result = compileModule({
+        const result = testTranspile({
           code: `
             function some(){
               console.log(buffer)

@@ -1,8 +1,8 @@
-import { compileModule } from '../program/compileModule';
+import { testTranspile } from '../transpilers/testTranpiler';
 
 describe('Enums test', () => {
   it('should work with a simple enum', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
         enum Stuff {
           first,
@@ -14,7 +14,7 @@ describe('Enums test', () => {
   });
 
   it('should work with a custom numner enum', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
         enum Stuff {
           first,
@@ -26,7 +26,7 @@ describe('Enums test', () => {
   });
 
   it('should compute binary', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
         enum Stuff {
           first,
@@ -38,7 +38,7 @@ describe('Enums test', () => {
   });
 
   it('should compute binary and do some math', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
         enum Stuff {
           first,
@@ -50,7 +50,7 @@ describe('Enums test', () => {
   });
 
   it('should compute binary and do some math with Math.function', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
         enum Stuff {
           first,
@@ -62,7 +62,7 @@ describe('Enums test', () => {
   });
 
   it('should compute crazy enum and reference is in another enum', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
         enum Stuff {
           First = 1 << 1,
@@ -75,7 +75,7 @@ describe('Enums test', () => {
   });
 
   it('should respect local enum references if not able to compute', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
         enum Stuff {
           First = 1 << 1,
