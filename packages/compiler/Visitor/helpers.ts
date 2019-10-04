@@ -151,3 +151,44 @@ export function createRequireStatement(source: string, local?: string): { reqSta
     },
   };
 }
+
+function findObject(node: ASTNode, accessList: Array<string>) {
+  if (!node.object) {
+    return;
+  }
+  if (!node.object.name) {
+    accessList.unshift(node.property.name);
+    return findObject(node.object, accessList);
+  }
+  accessList.unshift(node.property.name);
+  return node.object;
+}
+
+const _CallExpression = {
+  CallExpression: 1,
+  NewExpression: 1,
+};
+
+export function isPropertyOrPropertyAccess(node: ASTNode, parent: ASTNode, propertyName: string) {
+  const accessList = [];
+  if (_CallExpression[node.type] && node.callee) {
+    if (node.callee.name === propertyName) {
+      return [propertyName];
+    }
+    if (node.callee.type === 'MemberExpression') {
+      const obj = findObject(node.callee, accessList);
+      accessList.unshift(propertyName);
+      if (obj && obj.name === propertyName) return accessList;
+    }
+  }
+
+  if (node.type === 'MemberExpression' && parent.type !== 'MemberExpression') {
+    if (node.property) accessList.unshift(node.property.name);
+    let obj = findObject(node.object, accessList);
+
+    if (obj && obj.name === propertyName) {
+      accessList.unshift(propertyName);
+      return accessList;
+    }
+  }
+}

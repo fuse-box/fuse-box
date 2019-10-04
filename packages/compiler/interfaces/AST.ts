@@ -1,8 +1,8 @@
 import { IASTScope } from '../Visitor/Visitor';
 
 export interface ASTNode {
-  fuse_classInitializers?: Array<ASTNode>;
-  fuse_process?: ASTNode;
+  $parent?: { node?: ASTNode; property: string };
+  $fuse_classInitializers?: Array<ASTNode>;
   alternate?: ASTNode;
   scope?: IASTScope;
   prefix?: boolean;

@@ -113,8 +113,11 @@ function _visit(
       return;
     }
   }
-
+  //node.$parent = props.parent;
   for (const property in node) {
+    if (property[0] === '$') {
+      continue;
+    }
     const child = node[property];
     if (child instanceof Array) {
       let i = 0;
