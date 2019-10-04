@@ -1,8 +1,8 @@
-import { compileModule } from '../program/compileModule';
+import { testTranspile } from '../transpilers/testTranpiler';
 
 describe('Namespaces', () => {
   it('should compile namespace', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
         import oi from "./oi";
         export const b = 1;

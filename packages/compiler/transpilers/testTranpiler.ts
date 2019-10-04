@@ -4,7 +4,7 @@ import { ASTNode } from '../interfaces/AST';
 import { ICompilerOptions } from '../interfaces/ICompilerOptions';
 import { ImportType } from '../interfaces/ImportType';
 import { ITransformerRequireStatementCollection } from '../interfaces/ITransformerRequireStatements';
-import { BundleEssentialTransformer, IBundleEssentialProps } from '../transformers/bundle/BundleEssentialTransformer';
+import { BundlePolyfillTransformer, IBundleEssentialProps } from '../transformers/bundle/BundlePolyfillTransformer';
 import { GlobalContextTransformer } from '../transformers/GlobalContextTransformer';
 import { DynamicImportTransformer } from '../transformers/shared/DynamicImportTransformer';
 import { ExportTransformer } from '../transformers/shared/ExportTransformer';
@@ -15,9 +15,10 @@ import { CommonTSfeaturesTransformer } from '../transformers/ts/CommonTSfeatures
 import { EnumTransformer } from '../transformers/ts/EnumTransformer';
 import { NamespaceTransformer } from '../transformers/ts/NameSpaceTransformer';
 import { IVisit, IVisitorMod } from '../Visitor/Visitor';
-import { createGlobalContext } from './GlobalContext';
-import { ITransformerList, transpileModule } from './transpileModule';
-import { BrowserProcessTransform } from '../transformers/bundle/BrowserProcessTransform';
+
+import { BrowserProcessTransformer } from '../transformers/bundle/BrowserProcessTransformer';
+import { ITransformerList, transpileModule } from '../program/transpileModule';
+import { createGlobalContext } from '../program/GlobalContext';
 
 export interface ICompileModuleProps {
   code: string;
@@ -27,7 +28,7 @@ export interface ICompileModuleProps {
   bundleProps?: IBundleEssentialProps;
 }
 
-export function compileModule(props: ICompileModuleProps) {
+export function testTranspile(props: ICompileModuleProps) {
   const ast = buntis.parseTSModule(props.code, {
     directives: true,
     jsx: true,
@@ -35,7 +36,7 @@ export function compileModule(props: ICompileModuleProps) {
     loc: true,
   });
   const requireStatementCollection: ITransformerRequireStatementCollection = [];
-  function addRequireStatement(importType: ImportType, statement: ASTNode) {
+  function onRequireCallExpression(importType: ImportType, statement: ASTNode) {
     requireStatementCollection.push({ importType, statement });
   }
 
@@ -47,10 +48,10 @@ export function compileModule(props: ICompileModuleProps) {
 
   const defaultTransformers: ITransformerList = [
     GlobalContextTransformer(),
-    bundleProps.target === 'browser' &&
-      BrowserProcessTransform({ ...bundleProps, onRequireCallExpression: addRequireStatement }),
-    BundleEssentialTransformer({ onRequireCallExpression: addRequireStatement, ...bundleProps }),
-    DynamicImportTransformer({ onRequireCallExpression: addRequireStatement }),
+    bundleProps.target === 'browser' && BrowserProcessTransformer({ ...bundleProps, onRequireCallExpression }),
+    BundlePolyfillTransformer({ ...bundleProps, onRequireCallExpression }),
+    BundlePolyfillTransformer({ onRequireCallExpression, ...bundleProps }),
+    DynamicImportTransformer({ onRequireCallExpression }),
     EnumTransformer(),
     ClassConstructorPropertyTransformer(),
     JSXTransformer(),
@@ -58,8 +59,8 @@ export function compileModule(props: ICompileModuleProps) {
 
     // must be before export/import
     CommonTSfeaturesTransformer(),
-    ImportTransformer({ onRequireCallExpression: addRequireStatement }),
-    ExportTransformer({ onRequireCallExpression: addRequireStatement }),
+    ImportTransformer({ onRequireCallExpression }),
+    ExportTransformer({ onRequireCallExpression }),
   ];
   transpileModule({
     ast: ast as ASTNode,

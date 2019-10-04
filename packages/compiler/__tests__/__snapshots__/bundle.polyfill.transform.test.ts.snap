@@ -1,0 +1,123 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Bundle polyfill transform test Common transform  should replace __dirname 1`] = `
+"console.log(\\"/some-dir/file.ts\\");
+"
+`;
+
+exports[`Bundle polyfill transform test Common transform  should replace __filename 1`] = `
+"console.log(\\"/some-dir\\");
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Member reference reference shuold insert buffer with method reference 1`] = `
+"var buffer = require(\\"buffer\\");
+console.log(buffer.method);
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Member reference reference shuold insert buffer with method reference 2`] = `
+"var buffer = require(\\"buffer\\");
+console.log(buffer.method);
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Member reference reference shuold insert http with method reference 1`] = `
+"var http = require(\\"http\\");
+console.log(http.method);
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Member reference reference shuold insert https with method reference 1`] = `
+"var https = require(\\"https\\");
+console.log(https.method);
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Member reference reference shuold insert stream with method reference 1`] = `
+"var stream = require(\\"stream\\");
+console.log(stream.method);
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Member reference with a call shuold insert buffer with method reference with a call 1`] = `
+"var buffer = require(\\"buffer\\");
+console.log(buffer.method());
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Member reference with a call shuold insert buffer with method reference with a call 2`] = `
+"var buffer = require(\\"buffer\\");
+console.log(buffer.method());
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Member reference with a call shuold insert http with method reference with a call 1`] = `
+"var http = require(\\"http\\");
+console.log(http.method());
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Member reference with a call shuold insert https with method reference with a call 1`] = `
+"var https = require(\\"https\\");
+console.log(https.method());
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Member reference with a call shuold insert stream with method reference with a call 1`] = `
+"var stream = require(\\"stream\\");
+console.log(stream.method());
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Should not add anything should not add Buffer because it has NOT been defined 1`] = `
+"var buffer = require(\\"buffer\\");
+function some() {
+  console.log(buffer);
+}
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Should not add anything should not add Buffer because its been hoisted 1`] = `
+"exports.Buffer = Buffer;
+function Buffer() {}
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Should not add anything should not add Buffer because its has been defined 1`] = `
+"function some() {
+  const buffer = {};
+  console.log(buffer);
+}
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Single reference shuold insert buffer 1`] = `
+"var buffer = require(\\"buffer\\");
+console.log(buffer);
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Single reference shuold insert buffer 2`] = `
+"var buffer = require(\\"buffer\\");
+console.log(buffer);
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Single reference shuold insert http 1`] = `
+"var http = require(\\"http\\");
+console.log(http);
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Single reference shuold insert https 1`] = `
+"var https = require(\\"https\\");
+console.log(https);
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Single reference shuold insert stream 1`] = `
+"var stream = require(\\"stream\\");
+console.log(stream);
+"
+`;

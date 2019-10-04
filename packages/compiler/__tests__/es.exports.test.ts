@@ -1,10 +1,10 @@
-import { compileModule } from '../program/compileModule';
 import { ImportType } from '../interfaces/ImportType';
+import { testTranspile } from '../transpilers/testTranpiler';
 
 describe('Es exports tests', () => {
   describe('Object export / function/ class', () => {
     it('should export function', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
          export function hello(){}
           `,
@@ -16,7 +16,7 @@ describe('Es exports tests', () => {
 
   describe('Mix import and export', () => {
     it('should export object with keys', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         import stuff from "./stuff";
         export { stuff  };
@@ -27,7 +27,7 @@ describe('Es exports tests', () => {
     });
 
     it('should export object with keys (import all)', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         import * as stuff from "./stuff";
         export { stuff  };
@@ -38,7 +38,7 @@ describe('Es exports tests', () => {
     });
 
     it('should export object with keys (import all) with alias', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         import * as stuff from "./stuff";
         export { stuff as oi  };
@@ -51,7 +51,7 @@ describe('Es exports tests', () => {
 
   describe('Export var with value', () => {
     it('should export a variable 1', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         import { Observable } from '../Observable';
         import { noop } from '../util/noop';
@@ -62,7 +62,7 @@ describe('Es exports tests', () => {
       expect(result.code).toMatchSnapshot();
     });
     it('should trace down an undefined variable', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         export var FooBar;
         (function (FooBar) {
@@ -73,7 +73,7 @@ describe('Es exports tests', () => {
     });
 
     it('should export a variable 1', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         export const a = function() {
           console.log(Foo);
@@ -88,7 +88,7 @@ describe('Es exports tests', () => {
 
   describe('Object export', () => {
     it('should export object with keys', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
           const name1 = 2;
           const name2 = 3;
@@ -99,7 +99,7 @@ describe('Es exports tests', () => {
     });
 
     it('should export object with keys2 (late) 1', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
           export {name1 as fun, name2}
           const name1 = 1;
@@ -111,7 +111,7 @@ describe('Es exports tests', () => {
     });
 
     it('should export object with keys2 (late)  function', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
           export {name1 as fun, name2}
           function name1(){}
@@ -123,7 +123,7 @@ describe('Es exports tests', () => {
     });
 
     it('should export object with keys2 (late) function reversed order', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
           function name1(){}
           const name2 = 2;
@@ -134,7 +134,7 @@ describe('Es exports tests', () => {
     });
 
     it('should export object with keys2 (late) 2 ( function )', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
           console.log(1);
           export {name1 as fun, name2}
@@ -147,7 +147,7 @@ describe('Es exports tests', () => {
     });
 
     it('should export object with keys2 (late) 2 ( class )', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
           console.log(1);
           export {MySuperClass as fun, name2}
@@ -162,7 +162,7 @@ describe('Es exports tests', () => {
 
   describe('Exports const', () => {
     it('should export constants', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
       export const foo = 1, bar = 3
           `,
@@ -172,7 +172,7 @@ describe('Es exports tests', () => {
     });
 
     it('should export constants and use globally', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
       export const foo = 1, bar = 3;
       function test(){
@@ -185,7 +185,7 @@ describe('Es exports tests', () => {
     });
 
     it('should export constants and avoid collision', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
       export const foo = 1, bar = 3;
       function test(foo){
@@ -200,7 +200,7 @@ describe('Es exports tests', () => {
 
   describe('Export default declaration', () => {
     it('should export default ', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         const add = function(){}
         export default add;
@@ -210,7 +210,7 @@ describe('Es exports tests', () => {
     });
 
     it('should export default (should play nicely with import) ', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         import add from "./some";
         export default add;
@@ -220,7 +220,7 @@ describe('Es exports tests', () => {
     });
 
     it('should export default (inverse order) ', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         export default add;
         function add(){}
@@ -230,7 +230,7 @@ describe('Es exports tests', () => {
     });
 
     it('should not replace the scope ', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         function hello() {
           console.log(add);
@@ -244,7 +244,7 @@ describe('Es exports tests', () => {
     });
 
     it('should export expression ', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         export default { add : add }
           `,
@@ -253,7 +253,7 @@ describe('Es exports tests', () => {
     });
 
     it('should export a shorthand expression with import reference ', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         import hey from "some_package";
         export default { hey }
@@ -264,7 +264,7 @@ describe('Es exports tests', () => {
     });
 
     it('should export default function with a name', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         console.log(foo)
         export default function foo(){}
@@ -274,7 +274,7 @@ describe('Es exports tests', () => {
     });
 
     it('Should export obj', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         import * as core from '@uirouter/core';
         export { core };
@@ -284,7 +284,7 @@ describe('Es exports tests', () => {
     });
 
     it('should export default function without a name', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         export default function(){}
           `,
@@ -293,7 +293,7 @@ describe('Es exports tests', () => {
     });
 
     it('should export default class without a name', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         export default class {}
           `,
@@ -304,7 +304,7 @@ describe('Es exports tests', () => {
 
   describe('Export from source', () => {
     it('should handle shorhand', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         import zipWith from './zipWith.js';
         const foo = 1;
@@ -317,42 +317,42 @@ describe('Es exports tests', () => {
     });
 
     it('should export 1', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `export { name } from "./foo" `,
       });
       expect(result.code).toMatchSnapshot();
     });
 
     it('should export 1 with alias', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `export { name as hey } from "./foo" `,
       });
       expect(result.code).toMatchSnapshot();
     });
 
     it('should export 2 vars', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `export { oi, name as hey } from "./foo" `,
       });
       expect(result.code).toMatchSnapshot();
     });
 
     it('should export default', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `export { default } from "./foo" `,
       });
       expect(result.code).toMatchSnapshot();
     });
 
     it('should export all', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `export * from "./foo" `,
       });
       expect(result.code).toMatchSnapshot();
     });
 
     it('should emit require call', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `export * from "./foo" `,
       });
       expect(result.requireStatementCollection).toEqual([

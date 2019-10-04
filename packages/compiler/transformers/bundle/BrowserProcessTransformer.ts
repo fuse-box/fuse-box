@@ -12,7 +12,7 @@ interface BrowserProcessTransformProps {
   env?: { [key: string]: string };
 }
 export type IBrowserProcessTransform = BrowserProcessTransformProps & ITransformerSharedOptions;
-export function BrowserProcessTransform(options: IBrowserProcessTransform) {
+export function BrowserProcessTransformer(options: IBrowserProcessTransform) {
   options = options || {};
 
   let globalEnvInserted = false;
@@ -28,6 +28,7 @@ export function BrowserProcessTransform(options: IBrowserProcessTransform) {
         if (options.env && options.env[keyName] !== undefined) {
           return { replaceWith: { type: 'Literal', value: options.env[keyName].toString() } };
         }
+        return { replaceWith: { type: 'Identifier', value: 'undefined' } };
       }
       if (variableAmount === 2) {
         switch (accessList[1]) {

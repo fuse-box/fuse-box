@@ -1,9 +1,9 @@
-import { compileModule } from '../program/compileModule';
+import { testTranspile } from '../transpilers/testTranpiler';
 
 describe('Common features test', () => {
   describe('Abstract methods', () => {
     it('should remove abstract methods', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
           abstract  class A {
             constructor(public name){}
@@ -18,7 +18,7 @@ describe('Common features test', () => {
 
   describe('Should remove declare', () => {
     it('should remove consts', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         alert(1)
         declare const A: any, B: any;
@@ -31,7 +31,7 @@ describe('Common features test', () => {
 
   describe('Interface removal', () => {
     it('should remove export interface', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
           console.log(1);
           export interface Foo {
@@ -44,7 +44,7 @@ describe('Common features test', () => {
     });
 
     it('should remove interface', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
            alert(1);
            interface Foo {}
@@ -55,7 +55,7 @@ describe('Common features test', () => {
     });
 
     it('should ignore export declare', () => {
-      const result = compileModule({
+      const result = testTranspile({
         code: `
         alert(1)
         export declare const A: any, B: any, oi = 2;

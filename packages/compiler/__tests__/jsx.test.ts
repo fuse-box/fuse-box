@@ -1,8 +1,8 @@
-import { compileModule } from '../program/compileModule';
+import { testTranspile } from '../transpilers/testTranpiler';
 
 describe('JSX', () => {
   it('should parse simple jsx', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
         function test(){
             return <div></div>
@@ -13,7 +13,7 @@ describe('JSX', () => {
   });
 
   it('should add text', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
         function test(){
             return <div>1</div>
@@ -24,7 +24,7 @@ describe('JSX', () => {
   });
 
   it('should add just attributes', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
         import oi from "./oi";
         function test(){
@@ -36,7 +36,7 @@ describe('JSX', () => {
   });
 
   it('should add just attributes and spread', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
         import oi from "./oi";
         function test(){
@@ -49,7 +49,7 @@ describe('JSX', () => {
   });
 
   it('should have only one spread props', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
         import oi from "./oi";
         function test(){
@@ -61,7 +61,7 @@ describe('JSX', () => {
   });
 
   it('should keep the order', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
         import oi from "./oi";
         function test(){
@@ -74,7 +74,7 @@ describe('JSX', () => {
   });
 
   it('should remove empty expressions', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
         import oi from "./oi";
         function test(){
@@ -87,7 +87,7 @@ describe('JSX', () => {
   });
 
   it('should handle JSX fragment', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
         import React from "react";
         function test(){
@@ -106,7 +106,7 @@ describe('JSX', () => {
   });
 
   it('should work with JSXSpreadChild', () => {
-    const result = compileModule({
+    const result = testTranspile({
       code: `
 
         function test(){

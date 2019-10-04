@@ -5,6 +5,11 @@ exports[`Process transform test process.env.*** should replace process.env.NODE_
 "
 `;
 
+exports[`Process transform test process.env.*** should replace with undefined if value not found 1`] = `
+"console.log(undefined);
+"
+`;
+
 exports[`Process transform test process.xxx should inject process if a variable is not recognized 1`] = `
 "var process = require(\\"process\\");
 console.log(process.some());
