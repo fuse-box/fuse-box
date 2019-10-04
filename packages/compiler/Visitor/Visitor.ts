@@ -29,6 +29,7 @@ export interface IVisit {
 export interface IVisitorMod {
   context?: any;
   replaceWith?: ASTNode | Array<ASTNode>;
+  avoidReVisit?: boolean;
   scopeMeta?: { [key: string]: any };
   insertAfterThisNode?: ASTNode | Array<ASTNode>;
   prependToBody?: Array<ASTNode>;
@@ -101,6 +102,7 @@ function _visit(
       let replacedNodes = [].concat(response.replaceWith);
       t.replaceLater(visit, replacedNodes);
       // we need walk through them right after replacing and ignore the old nodes
+      if (response.avoidReVisit || response.ignoreChildren) return;
       for (const n of replacedNodes) {
         _visit(t, globalContext, fn, n, { parent: props.parent, property: props.property }, visit.scope);
       }
