@@ -1,5 +1,5 @@
 import { compileModule } from '../program/compileModule';
-import { PolyfillEssentialConfig } from '../transformers/BundleEssentialTransformer';
+import { PolyfillEssentialConfig } from '../transformers/bundle/BundleEssentialTransformer';
 describe('Bundle essential transform test', () => {
   describe('Common transform ', () => {
     it('should replace __dirname', () => {
@@ -7,7 +7,7 @@ describe('Bundle essential transform test', () => {
         code: `
            console.log(__dirname)
       `,
-        bundleEssentials: {
+        bundleProps: {
           moduleFileName: '/some-dir/file.ts',
         },
       });
@@ -22,7 +22,7 @@ describe('Bundle essential transform test', () => {
         code: `
            console.log(__filename)
       `,
-        bundleEssentials: {
+        bundleProps: {
           moduleFileName: '/some-dir/file.ts',
         },
       });

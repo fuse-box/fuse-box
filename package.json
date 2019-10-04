@@ -31,7 +31,7 @@
     "base64-img": "^1.0.3",
     "base64-js": "^1.2.0",
     "bowser": "^2.0.0-beta.3",
-    "buntis": "^0.1.38",
+    "buntis": "^0.1.42",
     "chokidar": "^3.0.2",
     "clean-css": "^4.2.1",
     "convert-source-map": "^1.6.0",

@@ -24,7 +24,7 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
           (node.body as Array<ASTNode>).splice(0, 0, {
             type: 'MethodDefinition',
             kind: 'constructor',
-            fuse_classInitializers: bodyInitializers,
+            $fuse_classInitializers: bodyInitializers,
             key: {
               type: 'Identifier',
               name: 'constructor',
@@ -38,7 +38,7 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
               },
             },
           });
-        } else constructorNode.fuse_classInitializers = bodyInitializers;
+        } else constructorNode.$fuse_classInitializers = bodyInitializers;
       }
     }
 
@@ -61,9 +61,9 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
           }
           index++;
         }
-        if (node.fuse_classInitializers) {
+        if (node.$fuse_classInitializers) {
           hasSomethingToAdd = true;
-          thisParams = thisParams.concat(node.fuse_classInitializers);
+          thisParams = thisParams.concat(node.$fuse_classInitializers);
         }
 
         if (hasSomethingToAdd) {

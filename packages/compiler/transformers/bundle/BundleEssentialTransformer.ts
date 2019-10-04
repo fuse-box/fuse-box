@@ -1,9 +1,9 @@
 import * as path from 'path';
-import { ASTNode } from '../interfaces/AST';
-import { ITransformerSharedOptions } from '../interfaces/ITransformerSharedOptions';
-import { GlobalContext } from '../program/GlobalContext';
-import { createRequireStatement } from '../Visitor/helpers';
-import { IVisit, IVisitorMod } from '../Visitor/Visitor';
+import { ASTNode } from '../../interfaces/AST';
+import { ITransformerSharedOptions } from '../../interfaces/ITransformerSharedOptions';
+import { GlobalContext } from '../../program/GlobalContext';
+import { createRequireStatement } from '../../Visitor/helpers';
+import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
 
 export interface IBundleEssentialProps {
   target?: 'browser' | 'server' | 'electron';
@@ -20,20 +20,14 @@ export const PolyfillEssentialConfig = {
   http: 'http',
   https: 'https',
 };
+
 export function BundleEssentialTransformer(options: IBundleEssntialTransformerOptions) {
   const RequireStatementsInserted = {};
   const VariablesInserted = {};
-  return (visit: IVisit): IVisitorMod => {
-    const node = visit.node;
 
-    // if (node.type === 'MemberExpression') {
-    //   if (node.object && node.object.object && node.object.object.name === 'process') {
-    //     if (visit.parent && visit.parent.type === 'CallExpression') {
-    //       node.object.object.fuse_process = visit.parent;
-    //     } else node.object.object.fuse_process = node;
-    //   }
-    // }
-    //const global = visit.globalContext as GlobalContext;
+  return (visit: IVisit): IVisitorMod => {
+    const { node } = visit;
+
     if (visit.isLocalIdentifier) {
       const globalContext = visit.globalContext as GlobalContext;
       const locals = visit.scope && visit.scope.locals ? visit.scope.locals : {};

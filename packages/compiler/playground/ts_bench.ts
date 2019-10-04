@@ -2,7 +2,7 @@ import { bench } from './bench';
 import * as ts from 'typescript';
 import { readFileSync } from 'fs';
 import { compileModule } from '../program/compileModule';
-const b = bench({ iterations: 100 });
+const b = bench({ iterations: 1000 });
 const fileName = __dirname + '/source_test/random.tsx';
 
 const file = readFileSync(fileName).toString();
