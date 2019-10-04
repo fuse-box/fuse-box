@@ -59,24 +59,18 @@ export function createExpressionStatement(left: ASTNode, right: ASTNode) {
     },
   };
 }
-export function defineVariable(left: string, right: string | ASTNode): ASTNode {
+export function defineVariable(name: string, right: ASTNode): ASTNode {
   return {
     type: 'VariableDeclaration',
     kind: 'var',
     declarations: [
       {
         type: 'VariableDeclarator',
-        init: {
+        init: right,
+        id: {
           type: 'Identifier',
-          name: left,
+          name: name,
         },
-        id:
-          typeof right === 'string'
-            ? {
-                type: 'Identifier',
-                name: right,
-              }
-            : right,
       },
     ],
   };
@@ -169,6 +163,31 @@ const _CallExpression = {
   NewExpression: 1,
 };
 
+export function createASTFromObject(obj: { [key: string]: any }): ASTNode {
+  const properties: Array<ASTNode> = [];
+  const parent: ASTNode = {
+    type: 'ObjectExpression',
+    properties,
+  };
+  for (const key in obj) {
+    properties.push({
+      type: 'Property',
+      key: {
+        type: 'Identifier',
+        name: key,
+      },
+      value: {
+        type: 'Literal',
+        value: obj[key],
+      },
+      kind: 'init',
+      computed: false,
+      shorthand: false,
+    });
+  }
+  return parent;
+}
+
 export function isPropertyOrPropertyAccess(node: ASTNode, parent: ASTNode, propertyName: string) {
   const accessList = [];
   if (_CallExpression[node.type] && node.callee) {
@@ -182,13 +201,18 @@ export function isPropertyOrPropertyAccess(node: ASTNode, parent: ASTNode, prope
     }
   }
 
-  if (node.type === 'MemberExpression' && parent.type !== 'MemberExpression') {
-    if (node.property) accessList.unshift(node.property.name);
-    let obj = findObject(node.object, accessList);
+  if (node.type === 'MemberExpression') {
+    if (node.object && node.object.name === propertyName) {
+      return [propertyName, node.property.name];
+    }
+    if (parent && parent.type !== 'MemberExpression') {
+      if (node.property) accessList.unshift(node.property.name);
+      let obj = findObject(node.object, accessList);
 
-    if (obj && obj.name === propertyName) {
-      accessList.unshift(propertyName);
-      return accessList;
+      if (obj && obj.name === propertyName) {
+        accessList.unshift(propertyName);
+        return accessList;
+      }
     }
   }
 }

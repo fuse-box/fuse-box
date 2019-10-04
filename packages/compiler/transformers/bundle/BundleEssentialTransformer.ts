@@ -7,8 +7,8 @@ import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
 
 export interface IBundleEssentialProps {
   target?: 'browser' | 'server' | 'electron';
-
-  moduleFileName: string;
+  env?: { [key: string]: any };
+  moduleFileName?: string;
 }
 
 export type IBundleEssntialTransformerOptions = IBundleEssentialProps & ITransformerSharedOptions;

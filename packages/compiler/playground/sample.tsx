@@ -1,1 +1,1 @@
-console.log(new process.a.b.c());
+console.log(process.hey());
