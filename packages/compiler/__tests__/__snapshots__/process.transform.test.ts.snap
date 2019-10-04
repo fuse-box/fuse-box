@@ -1,0 +1,59 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Process transform test process.env.*** should replace process.env.NODE_ENV 1`] = `
+"console.log(\\"development\\");
+"
+`;
+
+exports[`Process transform test process.xxx should inject process if a variable is not recognized 1`] = `
+"var process = require(\\"process\\");
+console.log(process.some());
+"
+`;
+
+exports[`Process transform test process.xxx should transform process.browser 1`] = `
+"console.log(true);
+"
+`;
+
+exports[`Process transform test process.xxx should transform process.cwd 1`] = `
+"console.log(\\"./\\");
+"
+`;
+
+exports[`Process transform test process.xxx should transform process.env (not add twice) 1`] = `
+"var ___env = {
+  foo: \\"bar\\"
+};
+alert(___env);
+console.log(___env);
+"
+`;
+
+exports[`Process transform test process.xxx should transform process.env 1`] = `
+"var ___env = {
+  foo: \\"bar\\"
+};
+console.log(___env);
+"
+`;
+
+exports[`Process transform test process.xxx should transform process.title 1`] = `
+"console.log(\\"browser\\");
+"
+`;
+
+exports[`Process transform test process.xxx should transform process.umask 1`] = `
+"console.log(0);
+"
+`;
+
+exports[`Process transform test process.xxx should transform process.version 1`] = `
+"console.log(\\"v11.13.0\\");
+"
+`;
+
+exports[`Process transform test process.xxx should transform process.versions 1`] = `
+"console.log({});
+"
+`;
