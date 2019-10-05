@@ -316,6 +316,24 @@ fusebox({
 });
 ```
 
+### Adding options
+
+You can pass options to the Less compiler
+
+```ts
+fusebox({
+  stylesheet: {
+    less: {
+      options: {
+        modifyVars: { color1: 'red' },
+      },
+    },
+  },
+});
+```
+
+Available options are [listed here](http://lesscss.org/usage/#less-options)
+
 ## Working with Stylus
 
 Install the module first

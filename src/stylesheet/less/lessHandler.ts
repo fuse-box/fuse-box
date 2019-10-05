@@ -74,13 +74,18 @@ export async function renderModule(props: { ctx: Context; module: Module; less: 
   );
 
   let pluginList: Array<any> = [Importer];
+  let compilerOptions: any = {};
   if (props.options.less) {
     if (props.options.less.plugins) {
       pluginList = pluginList.concat(props.options.less.plugins);
     }
+    if (props.options.less.options) {
+      compilerOptions = props.options.less.options;
+    }
   }
 
   const data = await renderWithLess(props.less, processed.contents, {
+    ...compilerOptions,
     sourceMap: requireSourceMap && { outputSourceFiles: true },
     filename: module.props.absPath,
     plugins: pluginList,
