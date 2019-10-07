@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Browser fast condition FuseBox.* should unwrap isBrowser 1`] = `
+"console.log(\\"isBrowser\\");
+"
+`;
+
+exports[`Browser fast condition FuseBox.* should unwrap isServer 1`] = `
+"console.log(\\"isServer\\");
+"
+`;
+
+exports[`Browser fast condition Process env should unwrap dev 1`] = `
+"console.log(\\"dev\\");
+"
+`;
+
+exports[`Browser fast condition Process env should unwrap dev with alternate 1`] = `
+"console.log(\\"this is dev\\");
+"
+`;
