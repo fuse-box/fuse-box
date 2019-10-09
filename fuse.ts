@@ -4,7 +4,7 @@ import { sparky } from './src/sparky/sparky';
 import { tsc } from './src/sparky/tsc';
 
 class Context {
-  npmTag: 'latest' | 'alpha' | 'next';
+  npmTag: string;
   versionBumpType: IBumpVersionType;
 }
 const { src, rm, task, exec } = sparky(Context);
@@ -59,7 +59,7 @@ task('fix-env', async () => {
 // bump version to automate
 task('bump-version', async ctx => {
   await src('package.json')
-    .bumpVersion('package.json', { type: 'next' })
+    .bumpVersion('package.json', { type: ctx.npmTag as any })
     .write()
     .dest('dist/', __dirname)
     .exec();
@@ -80,16 +80,31 @@ task('copy-various', async () => {
 
 task('publish', async ctx => {
   await exec('dist');
-  await npmPublish({ path: 'dist/', tag: 'next' });
+  console.log('publis', ctx.npmTag);
+  await npmPublish({ path: 'dist/', tag: ctx.npmTag });
 });
 
 task('publish-next', async ctx => {
+  ctx.npmTag = 'next';
+  await exec('publish');
+});
+task('publish-alpha', async ctx => {
+  ctx.npmTag = 'alpha';
   await exec('publish');
 });
 
+task('dist-alpha', async ctx => {
+  ctx.npmTag = 'alpha';
+  await exec('dist');
+});
+
+task('public-alpha', async ctx => {
+  ctx.npmTag = 'alpha';
+  await exec('publish');
+});
 task('dist', async ctx => {
   await exec('clean');
-  await exec('typecheck');
+  //await exec('typecheck');
   await exec('transpile');
   await exec('copy-modules');
   await exec('copy-various');
