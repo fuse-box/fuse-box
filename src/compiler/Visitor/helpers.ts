@@ -10,26 +10,32 @@ const _isLocalIdentifierRulesExceptionNodes = {
   FunctionExpression: 1,
   ImportDefaultSpecifier: 1,
 };
-export function isLocalIdentifier(node: ASTNode, parent?: ASTNode) {
-  if (node.type === 'Identifier' && parent && !_isLocalIdentifierRulesExceptionNodes[parent.type]) {
-    return (parent.computed === true || (parent.property !== node && !parent.computed)) && parent.key !== node;
+export function isLocalIdentifier(node: ASTNode, parent: ASTNode, propertyName: string) {
+  if (node.type === 'Identifier') {
+    if (propertyName === 'superClass') return true;
+    if (parent && !_isLocalIdentifierRulesExceptionNodes[parent.type]) {
+      return (parent.computed === true || (parent.property !== node && !parent.computed)) && parent.key !== node;
+    }
   }
 }
 
-export function isDefinedLocally(node: ASTNode): Array<string> {
-  if (node.id && node.id.name) {
-    return [node.id.name];
+export function isDefinedLocally(node: ASTNode): Array<{ init: boolean; name: string }> {
+  // if (node.id && node.id.name) {
+  //   return [node.id.name];
+  // }
+  if (node.type === 'FunctionDeclaration' || node.type === 'ClassDeclaration') {
+    if (node.id) return [{ init: true, name: node.id.name }];
   }
   if (node.type === 'VariableDeclaration') {
     const defined = [];
     if (node.declarations) {
       for (const decl of node.declarations) {
         if (decl.type === 'VariableDeclarator' && decl.id && decl.id.type === 'Identifier') {
-          defined.push(decl.id.name);
+          defined.push({ name: decl.id.name, init: !!decl.init });
         }
       }
+      return defined;
     }
-    return defined;
   }
 }
 
@@ -67,6 +73,23 @@ export function defineVariable(name: string, right: ASTNode): ASTNode {
       {
         type: 'VariableDeclarator',
         init: right,
+        id: {
+          type: 'Identifier',
+          name: name,
+        },
+      },
+    ],
+  };
+}
+
+export function createVariableDeclaration(name: string, node: ASTNode): ASTNode {
+  return {
+    type: 'VariableDeclaration',
+    kind: 'let',
+    declarations: [
+      {
+        type: 'VariableDeclarator',
+        init: node,
         id: {
           type: 'Identifier',
           name: name,

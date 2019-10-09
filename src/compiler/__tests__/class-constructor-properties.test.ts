@@ -76,35 +76,6 @@ describe('Class constructor properties', () => {
     expect(result.code).toMatchSnapshot();
   });
 
-  it('should ignore decorators for now', () => {
-    const result = testTranspile({
-      code: `
-            class Amazing {}
-
-            class HelloWorld extends Amazing {
-
-                constructor(@foo public welcome: string,
-                            @foo() private to: string,
-                            @foo(123, 'ab') protected awesomeness: string,
-                            of: number,
-                            fuse?: boolean) {
-
-                    super();
-
-                    (() => {console.log('Freaky block statement here.');})();
-
-                    this.fuse = fuse;
-                }
-
-                welcomeToTheBlock() {
-
-                }
-            }
-        `,
-    });
-    expect(result.code).toMatchSnapshot();
-  });
-
   it('should leave classes without constructor props alone', () => {
     const result = testTranspile({
       code: `

@@ -33,7 +33,8 @@ exports.default = some_1.default;
 `;
 
 exports[`Es exports tests Export default declaration should export default class without a name 1`] = `
-"exports.default = class {};
+"class __DefaultExport__ {}
+exports.default = __DefaultExport__;
 "
 `;
 
@@ -45,7 +46,8 @@ exports.default = foo;
 `;
 
 exports[`Es exports tests Export default declaration should export default function without a name 1`] = `
-"exports.default = function () {};
+"function __DefaultExport__() {}
+exports.default = __DefaultExport__;
 "
 `;
 
@@ -179,24 +181,24 @@ exports.hello = hello;
 
 exports[`Es exports tests Object export should export object with keys 1`] = `
 "const name1 = 2;
-exports.name1 = name1;
 const name2 = 3;
+exports.name1 = name1;
 exports.name2 = name2;
 "
 `;
 
 exports[`Es exports tests Object export should export object with keys2 (late)  function 1`] = `
 "function name1() {}
-exports.fun = name1;
 const name2 = 2;
+exports.fun = name1;
 exports.name2 = name2;
 "
 `;
 
 exports[`Es exports tests Object export should export object with keys2 (late) 1 1`] = `
 "const name1 = 1;
-exports.fun = name1;
 const name2 = 2;
+exports.fun = name1;
 exports.name2 = name2;
 "
 `;
@@ -204,23 +206,23 @@ exports.name2 = name2;
 exports[`Es exports tests Object export should export object with keys2 (late) 2 ( class ) 1`] = `
 "console.log(1);
 class MySuperClass {}
-exports.fun = MySuperClass;
 console.log(2);
+exports.fun = MySuperClass;
 "
 `;
 
 exports[`Es exports tests Object export should export object with keys2 (late) 2 ( function ) 1`] = `
 "console.log(1);
 function name1() {}
-exports.fun = name1;
 console.log(2);
+exports.fun = name1;
 "
 `;
 
 exports[`Es exports tests Object export should export object with keys2 (late) function reversed order 1`] = `
 "function name1() {}
-exports.fun = name1;
 const name2 = 2;
+exports.fun = name1;
 exports.name2 = name2;
 "
 `;

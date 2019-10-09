@@ -19,8 +19,8 @@ export function pluginCSS(a?: ICSSPluginProps | string | RegExp, b?: ICSSPluginP
       ctx.ict.on('assemble_module_init', props => {
         const { module } = props;
         if (module.isStylesheet()) {
-          module.fastAnalysis = { imports: [] };
-          module.fastAnalysis.imports.push({ type: ImportType.REQUIRE, statement: 'fuse-box-css' });
+          module.analysis = { imports: [] };
+          module.analysis.imports.push({ type: ImportType.REQUIRE, literal: 'fuse-box-css' });
         }
         return props;
       });

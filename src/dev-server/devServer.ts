@@ -116,12 +116,12 @@ export function createDevServer(ctx: Context): IDevServerActions {
   if (hmrServerProps.enabled) {
     // injecting hmr dependency
     if (!isProduction) {
-      ict.on('assemble_fast_analysis', props => {
+      ict.on('assemble_after_transpile', props => {
         const module = props.module;
         const pkg = module.pkg;
 
         if (pkg.isDefaultPackage && pkg.entry === module) {
-          module.fastAnalysis.imports.push({ type: ImportType.REQUIRE, statement: 'fuse-box-hot-reload' });
+          module.analysis.imports.push({ type: ImportType.REQUIRE, literal: 'fuse-box-hot-reload' });
         }
         return props;
       });

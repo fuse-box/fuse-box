@@ -16,7 +16,7 @@ export function ImportTransformer(options?: ITransformerSharedOptions): ITransfo
 
       if (node.type === 'ImportDeclaration') {
         // converts "./foo/bar.hello.js" to foo_bar_hello_js_1 (1:1 like typescript does)
-        const variable = path.basename(node.source.value).replace(/\.|-/, '_') + '_' + global.getNextIndex();
+        const variable = path.basename(node.source.value).replace(/\.|-/g, '_') + '_' + global.getNextIndex();
 
         node.specifiers.forEach(specifier => {
           if (specifier.type === 'ImportSpecifier') {

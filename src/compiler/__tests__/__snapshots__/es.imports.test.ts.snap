@@ -1,5 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Es imports tests Edge cases should handle lodash edge case 1 1`] = `
+"var toString_js_1 = require(\\"./toString.js\\");
+var upperFirst_js_2 = require(\\"./upperFirst.js\\");
+function capitalize(string) {
+  return upperFirst_js_2.default(toString_js_1.default(string).toLowerCase());
+}
+exports.default = capitalize;
+"
+`;
+
 exports[`Es imports tests Import interfaces should  keey the statement if at least one of the imports are used 1`] = `
 "var types_1 = require(\\"./types\\");
 function hey(t) {
@@ -14,6 +24,12 @@ exports[`Es imports tests Import interfaces should ignore the import of an inter
   return 1;
 }
 exports.hey = hey;
+"
+`;
+
+exports[`Es imports tests Local variable replacement Should import and replace in extends 1`] = `
+"var foo_1 = require(\\"foo\\");
+class App extends foo_1.Foo {}
 "
 `;
 

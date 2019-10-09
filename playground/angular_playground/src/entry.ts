@@ -1,2 +1,4 @@
-import "./polyfills";
-import "./main";
+import './polyfills';
+import './main';
+
+console.log('yes');

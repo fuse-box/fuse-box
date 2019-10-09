@@ -1,0 +1,152 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Decorators test Class Properties should decorate name 1 1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+class A {}
+__fuse_decorate.d([foo], A.prototype, \\"name\\", void 0);
+"
+`;
+
+exports[`Decorators test Class Properties should decorate name 2 1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+class A {
+  constructor() {
+    this.name = \\"hey\\";
+  }
+}
+__fuse_decorate.d([foo], A.prototype, \\"name\\", void 0);
+"
+`;
+
+exports[`Decorators test Class decorators Should consider import variables too 1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+var mod_1 = require(\\"./mod\\");
+function __DefaultExport__() {
+  class SomeClass {}
+  SomeClass = __fuse_decorate.d([bar({
+    hey: mod_1.default
+  })], SomeClass);
+}
+exports.default = __DefaultExport__;
+"
+`;
+
+exports[`Decorators test Class decorators Should have no problems transforming further 1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+let __DefaultExport__ = class __DefaultExport__ {
+  constructor() {
+    this.name = \\"Bob\\";
+  }
+};
+__DefaultExport__ = __fuse_decorate.d([bar()], __DefaultExport__);
+exports.default = __DefaultExport__;
+"
+`;
+
+exports[`Decorators test Class decorators Should inject 1 decorator  1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+class Foo {}
+Foo = __fuse_decorate.d([hey], Foo);
+"
+`;
+
+exports[`Decorators test Class decorators Should inject 2 decorators  1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+class Foo {}
+Foo = __fuse_decorate.d([foo, bar()], Foo);
+"
+`;
+
+exports[`Decorators test Class decorators Should inject a decorator on export class 1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+let Foo = class Foo {};
+Foo = __fuse_decorate.d([bar()], Foo);
+exports.Foo = Foo;
+"
+`;
+
+exports[`Decorators test Class decorators Should inject a decorator on export default class with a name 1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+let Foo = class Foo {};
+Foo = __fuse_decorate.d([bar()], Foo);
+exports.default = Foo;
+"
+`;
+
+exports[`Decorators test Class decorators Should inject a decorator on export default class without a name 1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+let __DefaultExport__ = class __DefaultExport__ {};
+__DefaultExport__ = __fuse_decorate.d([bar()], __DefaultExport__);
+exports.default = __DefaultExport__;
+"
+`;
+
+exports[`Decorators test Class decorators Should inject inside a default function 1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+function __DefaultExport__() {
+  class SomeClass {}
+  SomeClass = __fuse_decorate.d([bar()], SomeClass);
+}
+exports.default = __DefaultExport__;
+"
+`;
+
+exports[`Decorators test Method decorators should decorate class method 1`] = `
+Object {
+  "code": "var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+class A {
+  hey() {}
+}
+__fuse_decorate.d([foo], A.prototype, \\"hey\\", null);
+",
+  "requireStatementCollection": Array [],
+}
+`;
+
+exports[`Decorators test Method decorators should decorate class static method 1`] = `
+Object {
+  "code": "var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+class A {
+  static hey() {}
+}
+__fuse_decorate.d([foo], A, \\"hey\\", null);
+",
+  "requireStatementCollection": Array [],
+}
+`;
+
+exports[`Decorators test Method param decorators should contain 1 decorator  1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+class A {
+  hey(a) {}
+}
+__fuse_decorate.d([__fuse_decorate.p(0, foo)], A.prototype, \\"hey\\", null);
+"
+`;
+
+exports[`Decorators test Method param decorators should contain 1 decorator with a static method  1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+class A {
+  static hey(a) {}
+}
+__fuse_decorate.d([__fuse_decorate.p(0, foo)], A, \\"hey\\", null);
+"
+`;
+
+exports[`Decorators test Method param decorators should contain 2 decorators  1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+class A {
+  hey(a) {}
+}
+__fuse_decorate.d([__fuse_decorate.p(0, foo), __fuse_decorate.p(0, bar())], A.prototype, \\"hey\\", null);
+"
+`;
+
+exports[`Decorators test Method param decorators should contain 3 decorators  1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+class A {
+  hey(a, b) {}
+}
+__fuse_decorate.d([__fuse_decorate.p(0, foo), __fuse_decorate.p(0, bar()), __fuse_decorate.p(1, oi)], A.prototype, \\"hey\\", null);
+"
+`;
