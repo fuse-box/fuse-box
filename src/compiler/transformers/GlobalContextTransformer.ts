@@ -40,8 +40,8 @@ export function GlobalContextTransformer(): ITransformer {
         // traced.replaced is confusing, fails on
         //      import * as hey from "./oi"
         //      hey.something();
-        if (traced) {
-          if (locals[nodeName]) return;
+        if (traced && traced.first) {
+          if (locals[nodeName] === 1) return;
           traced.inUse = true;
           if (traced.first === nodeName) {
             return;
@@ -54,6 +54,9 @@ export function GlobalContextTransformer(): ITransformer {
             if (node.shorthand) node.shorthand = false;
             node.value = statement;
             return { replaceWith: node };
+          }
+          if (statement.object) {
+            statement.object.loc = node.loc;
           }
           return { replaceWith: statement };
         }

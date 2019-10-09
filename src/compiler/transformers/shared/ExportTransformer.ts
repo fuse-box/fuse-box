@@ -1,40 +1,82 @@
 import { GlobalContext } from '../../program/GlobalContext';
 import { ITransformer } from '../../program/transpileModule';
-import { createExports, isDefinedLocally } from '../../Visitor/helpers';
-import { IVisit } from '../../Visitor/Visitor';
+import { createExports, isDefinedLocally, createVariableDeclaration } from '../../Visitor/helpers';
+import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
 import * as path from 'path';
 import { ASTNode } from '../../interfaces/AST';
 import { ITransformerSharedOptions } from '../../interfaces/ITransformerSharedOptions';
 import { ImportType } from '../../interfaces/ImportType';
 
+function considerDecorators(node: ASTNode) {
+  let statement: ASTNode = node.declaration;
+  if (
+    node.declaration.type === 'ClassDeclaration' &&
+    node.declaration.decorators &&
+    node.declaration.decorators.length
+  ) {
+    statement = createVariableDeclaration(node.declaration.id.name, node.declaration);
+    // assigne decorators to the statement
+    statement.decorators = node.declaration.decorators;
+    statement.$fuse_decoratorForClassIdentifier = node.declaration.id.name;
+    // remove them from the original declaration (in order for the decorators to be instered after)
+    node.declaration.decorators = [];
+  }
+  return statement;
+}
 const INTERESTED_NODES = {
   ExportNamedDeclaration: 1,
   ExportDefaultDeclaration: 1,
   ExportAllDeclaration: 1,
 };
+
 export function ExportTransformer(options?: ITransformerSharedOptions): ITransformer {
   options = options || options;
+
   return {
     onEachNode: (visit: IVisit) => {
       const global = visit.globalContext as GlobalContext;
-
       if (global.exportAfterDeclaration) {
         const node = visit.node;
         const definedLocally = isDefinedLocally(node);
-        if (definedLocally) {
+
+        if (definedLocally && !visit.node.$fuse_visited) {
           const newNodes = [];
+
+          const response: IVisitorMod = {};
+
           for (const localVar of definedLocally) {
-            if (global.exportAfterDeclaration[localVar]) {
-              newNodes.push(
-                createExports(global.namespace, global.exportAfterDeclaration[localVar].target, {
-                  type: 'Identifier',
-                  name: localVar,
-                }),
-              );
+            if (global.exportAfterDeclaration[localVar.name]) {
+              const ast = createExports(global.namespace, global.exportAfterDeclaration[localVar.name].target, {
+                type: 'Identifier',
+                name: localVar.name,
+              });
+
+              //if (!localVar.init) {
+              // global.identifierReplacement[localVar.name] = {
+              //   first: global.namespace,
+              //   second: localVar.name,
+              // };
+              if (!response.appendToBody) response.appendToBody = [];
+              response.appendToBody.push(ast);
+              // } else {
+              //   newNodes.push(
+              //     createExports(global.namespace, global.exportAfterDeclaration[localVar.name].target, {
+              //       type: 'Identifier',
+              //       name: localVar.name,
+              //     }),
+              //   );
+              // }
             }
           }
           if (newNodes.length) {
-            return { insertAfterThisNode: newNodes };
+            node.$fuse_visited = true;
+
+            // console.log('new nodes', newNodes);
+            // return { replaceWith: [node].concat(newNodes) };
+            response.insertAfterThisNode = newNodes;
+          }
+          if (response.insertAfterThisNode || response.appendToBody) {
+            return response;
           }
         }
       }
@@ -63,7 +105,7 @@ export function ExportTransformer(options?: ITransformerSharedOptions): ITransfo
        * Needs to be simply replaced, no tracking involved
        */
       if (node.source) {
-        const sourceVariable = path.basename(node.source.value).replace(/\.|-/, '_') + '_' + global.getNextIndex();
+        const sourceVariable = path.basename(node.source.value).replace(/\.|-/g, '_') + '_' + global.getNextIndex();
 
         // export * from "a"
         if (node.type === 'ExportAllDeclaration') {
@@ -172,13 +214,27 @@ export function ExportTransformer(options?: ITransformerSharedOptions): ITransfo
           // Looking at this case:
           //      console.log(foo)
           //      export default function foo(){}
-          if (
-            (node.declaration.type === 'FunctionDeclaration' || node.declaration.type === 'ClassDeclaration') &&
-            node.declaration.id
-          ) {
+          if (node.declaration.type === 'FunctionDeclaration' || node.declaration.type === 'ClassDeclaration') {
+            if (!node.declaration.id) {
+              node.declaration.id = { type: 'Identifier', name: '__DefaultExport__' };
+            }
+
+            // if there are decorators on the class we need to transform and assigne to a variable
+            /**
+             * @dec
+             * export default class A {
+             *
+             * }
+             *
+             * Should be converted to:
+             *
+             * let A = class A {
+             * }
+             */
+            let statement: ASTNode = considerDecorators(node);
             return {
               replaceWith: [
-                node.declaration,
+                statement,
                 createExports(global.namespace, 'default', {
                   type: 'Identifier',
                   name: node.declaration.id.name,
@@ -220,6 +276,7 @@ export function ExportTransformer(options?: ITransformerSharedOptions): ITransfo
                 }),
               );
             } else {
+              //console.log('NOE', specifier.local.name);
               // if none was decleared, it must be declared earlier (so we check if later with onEachNode in this transformer )
               if (!global.exportAfterDeclaration) global.exportAfterDeclaration = {};
 
@@ -239,9 +296,10 @@ export function ExportTransformer(options?: ITransformerSharedOptions): ITransfo
          */
         if (node.declaration) {
           if (node.declaration.id && node.declaration.id.name) {
+            const statement = considerDecorators(node);
             return {
               replaceWith: [
-                node.declaration,
+                statement,
                 createExports(global.namespace, node.declaration.id.name, {
                   type: 'Identifier',
                   name: node.declaration.id.name,

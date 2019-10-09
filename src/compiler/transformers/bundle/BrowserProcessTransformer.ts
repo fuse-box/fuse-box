@@ -27,22 +27,22 @@ export function BrowserProcessTransformer(options: IBrowserProcessTransform) {
         const keyName = accessList[2];
 
         if (options.env && options.env[keyName] !== undefined) {
-          return { replaceWith: { type: 'Literal', value: options.env[keyName].toString() } };
+          return { replaceWith: { type: 'Literal', value: options.env[keyName].toString(), loc: node.loc } };
         }
         return { replaceWith: { type: 'Identifier', value: 'undefined' } };
       }
       if (variableAmount === 2) {
         switch (accessList[1]) {
           case 'version':
-            return { replaceWith: { type: 'Literal', value: process.version }, avoidReVisit: true };
+            return { replaceWith: { loc: node.loc, type: 'Literal', value: process.version }, avoidReVisit: true };
           case 'versions':
-            return { replaceWith: { type: 'ObjectExpression', properties: [] }, avoidReVisit: true };
+            return { replaceWith: { loc: node.loc, type: 'ObjectExpression', properties: [] }, avoidReVisit: true };
           case 'title':
-            return { replaceWith: { type: 'Literal', value: 'browser' }, avoidReVisit: true };
+            return { replaceWith: { loc: node.loc, type: 'Literal', value: 'browser' }, avoidReVisit: true };
           case 'umask':
             return { replaceWith: { type: 'Literal', value: 0 }, avoidReVisit: true };
           case 'browser':
-            return { replaceWith: { type: 'Literal', value: true }, avoidReVisit: true };
+            return { replaceWith: { loc: node.loc, type: 'Literal', value: true }, avoidReVisit: true };
           case 'cwd':
             return { replaceWith: { type: 'Literal', value: './' }, avoidReVisit: true };
           case 'env':

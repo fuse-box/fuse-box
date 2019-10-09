@@ -188,6 +188,18 @@ describe('Es imports tests', () => {
       expect(result.code).toMatchSnapshot();
     });
 
+    it('Should import and replace in extends', () => {
+      const result = testTranspile({
+        code: `
+          import { Foo } from "foo";
+          class App extends Foo {
+
+          }
+        `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+
     it('Should import with sideeffects', () => {
       const result = testTranspile({
         code: `
@@ -309,6 +321,22 @@ describe('Es imports tests', () => {
           },
         },
       ]);
+    });
+  });
+
+  describe('Edge cases', () => {
+    it('should handle lodash edge case 1', () => {
+      const result = testTranspile({
+        code: `
+          import toString from './toString.js';
+          import upperFirst from './upperFirst.js';
+          function capitalize(string) {
+            return upperFirst(toString(string).toLowerCase());
+          }
+          export default capitalize;
+      `,
+      });
+      expect(result.code).toMatchSnapshot();
     });
   });
 });

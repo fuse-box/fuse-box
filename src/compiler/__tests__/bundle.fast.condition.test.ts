@@ -43,6 +43,20 @@ describe('Browser fast condition', () => {
       expect(res.requireStatementCollection).toEqual([]);
     });
 
+    it('should not touch other statements', () => {
+      const res = testTranspile({
+        bundleProps: { env: { NODE_ENV: 'production' } },
+        code: `
+        if ( a.b ) {
+           console.log(1)
+        } else {
+          console.log(2)
+        }
+      `,
+      });
+      expect(res.code).toMatchSnapshot();
+    });
+
     it('should emit require statement', () => {
       const res = testTranspile({
         bundleProps: { env: { NODE_ENV: 'production' } },
