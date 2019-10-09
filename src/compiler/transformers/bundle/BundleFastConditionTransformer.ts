@@ -30,6 +30,8 @@ export function BundleFastConditionUnwrapper(options: IBundleFastConditionTransf
       let replacement: ASTNode;
       let result: boolean;
 
+      let shouldTranspile = false;
+
       if (target) {
         // process.env.*
         if (
@@ -38,6 +40,7 @@ export function BundleFastConditionUnwrapper(options: IBundleFastConditionTransf
           target.object.property.name === 'env'
         ) {
           if (rightValue && operator) {
+            shouldTranspile = true;
             result = computeBoolean(options.env[target.property.name], operator, rightValue);
             if (result) replacement = node.consequent;
             else replacement = node.alternate;
@@ -45,22 +48,26 @@ export function BundleFastConditionUnwrapper(options: IBundleFastConditionTransf
         }
         if (target.object.name === 'FuseBox') {
           if (target.property.name === 'isBrowser') {
+            shouldTranspile = true;
             if (options.isBrowser) replacement = node.consequent;
             else replacement = node.alternate;
           }
 
           if (target.property.name === 'isServer') {
+            shouldTranspile = true;
             if (options.isServer) replacement = node.consequent;
             else replacement = node.alternate;
           }
         }
       }
 
-      if (replacement) {
-        if (replacement.body) return { replaceWith: replacement.body };
-        else if (replacement.type === 'ExpressionStatement') return { replaceWith: replacement };
-      } else {
-        return { removeNode: true };
+      if (shouldTranspile) {
+        if (replacement) {
+          if (replacement.body) return { replaceWith: replacement.body };
+          else if (replacement.type === 'ExpressionStatement') return { replaceWith: replacement };
+        } else {
+          return { removeNode: true };
+        }
       }
     }
     return;

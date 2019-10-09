@@ -2,10 +2,16 @@ import { IASTScope } from '../Visitor/Visitor';
 
 export interface ASTNode {
   $fuse_classInitializers?: Array<ASTNode>;
+  $fuse_decoratorsCaptured?: boolean;
+  $fuse_visited?: boolean;
+  $fuse_decoratorsProcessed?: boolean;
+  $fuse_decoratorForClassIdentifier?: string;
   $transpiled?: boolean;
   alternate?: ASTNode;
   scope?: IASTScope;
   prefix?: boolean;
+  decorators?: Array<ASTNode>;
+  loc?: { start: { line: number; column: number }; end: { line: number; column: number } };
   consequent?: ASTNode;
   type: ASTNodeType;
   shorthand?: boolean;

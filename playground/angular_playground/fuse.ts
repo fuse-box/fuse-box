@@ -14,6 +14,7 @@ class Context {
       },
       cache: { enabled: false, FTL: true, root: './.cache' },
       watch: true,
+      sourceMap: false,
       devServer: this.runServer,
 
       plugins: [
@@ -26,6 +27,7 @@ class Context {
 const { task, rm, exec } = sparky<Context>(Context);
 
 task('default', async ctx => {
+  rm('./dist');
   ctx.runServer = true;
   const fuse = ctx.getConfig();
   await fuse.runDev();

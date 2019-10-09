@@ -7,6 +7,7 @@ export function astTransformer() {
   let removes: Array<{ target: IVisit }>;
   let whenFinsihedCallbacks: Array<(node: ASTNode) => void>;
   let prependedToBody: Array<{ target: IVisit; nodes: Array<ASTNode> }>;
+  let appendedToBody: Array<{ target: IVisit; nodes: Array<ASTNode> }>;
   let onCompletCallbacks: Array<() => void>;
   const methods = {
     replaceLater: (target: IVisit, nodes: Array<ASTNode>) => {
@@ -29,6 +30,11 @@ export function astTransformer() {
       if (!prependedToBody) prependedToBody = [];
       prependedToBody.push({ target, nodes });
     },
+    appendToBody: (target: IVisit, nodes: Array<ASTNode>) => {
+      if (!appendedToBody) appendedToBody = [];
+      appendedToBody.push({ target, nodes });
+    },
+
     whenFinished: (fn: (node: ASTNode) => {}) => {
       if (!whenFinsihedCallbacks) whenFinsihedCallbacks = [];
       whenFinsihedCallbacks.push(fn);
@@ -57,6 +63,7 @@ export function astTransformer() {
           if (visitor.property && visitor.parent) {
             if (visitor.parent[visitor.property] instanceof Array) {
               const index = visitor.parent[visitor.property].indexOf(visitor.node);
+              //console.log('>>>', JSON.stringify(item.nodes[0], null, 2));
               if (index > -1) {
                 visitor.parent[visitor.property].splice(index + 1, 0, ...item.nodes);
               }
@@ -94,7 +101,16 @@ export function astTransformer() {
           index++;
         }
       }
+
+      if (appendedToBody) {
+        for (const item of appendedToBody) {
+          for (const c of item.nodes) {
+            (props.ast.body as Array<ASTNode>).push(c);
+          }
+        }
+      }
     },
   };
+
   return methods;
 }

@@ -47,27 +47,27 @@ export function attachWebWorkers(ctx: Context) {
 
   ctx.ict.on('assemble_module_init', props => {
     const { module } = props;
-    if (module.isCached && props.module.fastAnalysis && props.module.fastAnalysis.workers) {
-      module.fastAnalysis.workers.forEach(wk => {
-        if (wk.absPath) {
-          const webWorkerProcess = ensureWorkerExists(wk, module);
-          webWorkerProcess.resolveWebWorkerBundlePath();
-        }
-      });
-    }
+    // if (module.isCached && props.module.fastAnalysis && props.module.fastAnalysis.workers) {
+    //   module.fastAnalysis.workers.forEach(wk => {
+    //     if (wk.absPath) {
+    //       const webWorkerProcess = ensureWorkerExists(wk, module);
+    //       webWorkerProcess.resolveWebWorkerBundlePath();
+    //     }
+    //   });
+    // }
     return props;
   });
 
-  ctx.ict.on('assemble_fast_analysis', props => {
+  ctx.ict.on('assemble_after_transpile', props => {
     const { module } = props;
-    if (props.module.fastAnalysis && props.module.fastAnalysis.workers) {
-      module.fastAnalysis.workers.forEach(wk => {
-        const resolved = resolveWorkerPath(module, wk.path);
-        // this will be saved to cache
-        wk.absPath = resolved.absPath;
-        const webWorkerProcess = ensureWorkerExists(wk, module);
-        wk.bundlePath = webWorkerProcess.resolveWebWorkerBundlePath();
-      });
+    if (props.module.analysis && props.module.workers) {
+      // module.fastAnalysis.workers.forEach(wk => {
+      //   const resolved = resolveWorkerPath(module, wk.path);
+      //   // this will be saved to cache
+      //   wk.absPath = resolved.absPath;
+      //   const webWorkerProcess = ensureWorkerExists(wk, module);
+      //   wk.bundlePath = webWorkerProcess.resolveWebWorkerBundlePath();
+      // });
     }
     return props;
   });

@@ -10,6 +10,15 @@ exports[`Browser fast condition FuseBox.* should unwrap isServer 1`] = `
 "
 `;
 
+exports[`Browser fast condition Process env should not touch other statements 1`] = `
+"if (a.b) {
+  console.log(1);
+} else {
+  console.log(2);
+}
+"
+`;
+
 exports[`Browser fast condition Process env should unwrap dev 1`] = `
 "console.log(\\"dev\\");
 "

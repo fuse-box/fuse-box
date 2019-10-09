@@ -7,6 +7,9 @@ export function CommonTSfeaturesTransformer(): ITransformer {
   return (visit: IVisit): IVisitorMod => {
     const { node } = visit;
 
+    //console.log(node);
+    if (node.type === 'ClassDeclaration') {
+    }
     if (node.declare) {
       return { removeNode: true, ignoreChildren: true };
     }

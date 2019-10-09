@@ -270,6 +270,7 @@ describe('Es exports tests', () => {
         export default function foo(){}
           `,
       });
+
       expect(result.code).toMatchSnapshot();
     });
 
@@ -289,6 +290,7 @@ describe('Es exports tests', () => {
         export default function(){}
           `,
       });
+
       expect(result.code).toMatchSnapshot();
     });
 
@@ -298,6 +300,7 @@ describe('Es exports tests', () => {
         export default class {}
           `,
       });
+
       expect(result.code).toMatchSnapshot();
     });
   });

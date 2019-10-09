@@ -1,9 +1,12 @@
 import * as path from 'path';
+import { ITransformerRequireStatement } from '../compiler/interfaces/ITransformerRequireStatements';
 import { createApplicationPackage } from '../core/application';
 import { Context } from '../core/Context';
 import { createModule, Module } from '../core/Module';
 import { createPackage, Package } from '../core/Package';
-import { ImportType, IResolver, resolveModule } from '../resolver/resolver';
+import { IResolver, resolveModule } from '../resolver/resolver';
+import { ImportType } from '../compiler/interfaces/ImportType';
+import { resolveNaptr } from 'dns';
 
 interface IDefaultParseProps {
   assemble?: boolean;
@@ -185,22 +188,35 @@ export function processModule(props: IDefaultParseProps) {
 
   icp.sync('assemble_module_init', { module: _module });
   props.pkg.modules.push(props.module);
+
+  let literalStatements: { [key: string]: ITransformerRequireStatement };
   if (_module.isExecutable()) {
     if (!_module.isCached) {
       _module.read();
-      icp.sync('assemble_before_analysis', { module: _module });
-      _module.fastAnalyse();
-      // temp hack to set jsx analysis based on extension
-      if (_module.props.extension === '.jsx') {
-        _module.fastAnalysis.report.containsJSX = true;
-      }
-      icp.sync('assemble_fast_analysis', { module: _module });
 
-      _module.fastAnalysis.replaceable = [];
-      // adding extra dependencies
+      icp.sync('assemble_before_transpile', { module: _module });
+      _module.parse();
+
+      props.ctx.log.info('compiler', _module.getShortPath());
+      const response = _module.transpile();
+      _module.analysis = {
+        imports: [],
+      };
+
+      literalStatements = {};
+      icp.sync('assemble_after_transpile', { module: _module });
+      for (const item of response.requireStatementCollection) {
+        if (item.statement.arguments.length === 1) {
+          const importLiteral = item.statement.arguments[0];
+          _module.analysis.imports.push({ type: item.importType, literal: importLiteral.value });
+          literalStatements[importLiteral.value] = item;
+        }
+      }
+
+      //adding extra dependencies
       if (props.extraDependencies) {
         for (const dep of props.extraDependencies) {
-          _module.fastAnalysis.imports.push({ type: ImportType.RAW_IMPORT, statement: dep });
+          _module.analysis.imports.push({ type: ImportType.REQUIRE, literal: dep });
         }
       }
     }
@@ -216,31 +232,17 @@ export function processModule(props: IDefaultParseProps) {
   }
 
   _module.assembled = true;
-  if (_module.fastAnalysis && _module.fastAnalysis.imports) {
-    const modules = [];
-    _module.fastAnalysis.imports.forEach(data => {
-      const response = resolveStatement({ statement: data.statement, importType: data.type }, props);
-
+  const modules = [];
+  if (_module.analysis && _module.analysis.imports) {
+    for (const data of _module.analysis.imports) {
+      const response = resolveStatement({ statement: data.literal, importType: data.type }, props);
       if (response) {
-        if (props.ctx.config.production) {
-          data.link = response;
-        }
-        // if (response.module) {
-        //   if (!response.module.moduleDependants) response.module.moduleDependants = [];
-        //   if (response.module.moduleDependants.indexOf(_module) === -1) {
-        //     response.module.moduleDependants.push(_module);
-        //   }
-        // }
-        if (response.forcedStatement) {
-          _module.fastAnalysis.replaceable.push({
-            type: data.type,
-            fromStatement: data.statement,
-            toStatement: response.forcedStatement,
-          });
-        }
         modules.push(response);
+        if (response.forcedStatement && literalStatements[data.literal]) {
+          literalStatements[data.literal].statement.arguments[0].value = response.forcedStatement;
+        }
       }
-    });
+    }
     modules.forEach(item => {
       if (item) {
         if (item.module) {
@@ -255,6 +257,9 @@ export function processModule(props: IDefaultParseProps) {
         }
       }
     });
+  }
+  if (_module.isExecutable() && !_module.isCached) {
+    _module.generateCode();
   }
 }
 

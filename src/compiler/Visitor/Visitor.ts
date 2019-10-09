@@ -33,6 +33,7 @@ export interface IVisitorMod {
   scopeMeta?: { [key: string]: any };
   insertAfterThisNode?: ASTNode | Array<ASTNode>;
   prependToBody?: Array<ASTNode>;
+  appendToBody?: Array<ASTNode>;
   onComplete?: () => void;
   ignoreChildren?: boolean;
   removeNode?: boolean;
@@ -69,7 +70,7 @@ function _visit(
     parent: props.parent,
     property: props.property,
     id: props.id,
-    isLocalIdentifier: isLocalIdentifier(node, props.parent),
+    isLocalIdentifier: isLocalIdentifier(node, props.parent, props.property),
   };
 
   scopeTracker(visit);
@@ -95,6 +96,9 @@ function _visit(
     if (response.prependToBody) {
       t.prependToBody(visit, response.prependToBody);
     }
+    if (response.appendToBody) {
+      t.appendToBody(visit, response.appendToBody);
+    }
     if (response.removeNode) {
       t.removeLater(visit);
       return;
@@ -102,15 +106,19 @@ function _visit(
       let replacedNodes = [].concat(response.replaceWith);
       t.replaceLater(visit, replacedNodes);
       // we need walk through them right after replacing and ignore the old nodes
-      if (response.avoidReVisit || response.ignoreChildren) return;
+      if (response.avoidReVisit || response.ignoreChildren) {
+        return;
+      }
       for (const n of replacedNodes) {
         _visit(t, globalContext, fn, n, { parent: props.parent, property: props.property }, visit.scope);
       }
       return;
     } else if (response.insertAfterThisNode) {
-      let insertNodes = [].concat(response.insertAfterThisNode);
-      t.insertAfter(visit, insertNodes);
-      return;
+      let newNodes = [].concat(response.insertAfterThisNode);
+
+      t.insertAfter(visit, newNodes);
+      //return;
+      //console.log('DONE ************************************');
     } else if (response.ignoreChildren) {
       return;
     }
@@ -125,6 +133,7 @@ function _visit(
       let i = 0;
       while (i < child.length) {
         const item = child[i];
+
         if (item && item.type && !IRNOGED_TYPES[item.type]) {
           _visit(t, globalContext, fn, item, { parent: node, property, id: i }, visit.scope);
         }

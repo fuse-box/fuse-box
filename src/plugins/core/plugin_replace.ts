@@ -11,7 +11,7 @@ export function pluginReplace(a?: IPluginReplaceProps | string | RegExp, b?: IPl
     expressions.push([safeRegex(key), opts[key]]);
   }
   return (ctx: Context) => {
-    ctx.ict.on('assemble_fast_analysis', props => {
+    ctx.ict.on('assemble_before_transpile', props => {
       // filter out options
 
       if (matcher && !matcher.test(props.module.props.absPath)) {

@@ -1,8 +1,25 @@
-//import 'tslib';
+// //import 'tslib';
 
-import 'pouchdb-adapter-cordova-sqlite';
-//import * as sukka from 'sukka';
+// //import 'pouchdb-adapter-cordova-sqlite';
+// //import * as sukka from 'sukka';
 
+// import camelCase from './lodash/camelCase';
+// console.log(camelCase('some-string'));
+
+import oi, { oneSubmodule } from './mods/one';
+
+console.log(1);
+function heyFunction(name) {
+  const lal = oi(name);
+  const res = oi(name) + oneSubmodule() + lal;
+  return res;
+}
+heyFunction('hello');
+const env = process.env.NODE_ENV;
+
+console.log(process.env.NODE_ENV, 'hey', env);
+
+console.log(1);
 // import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 // console.log(BrowserAnimationsModule);
 // console.log(199);

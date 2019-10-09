@@ -35,6 +35,7 @@ export function generateFTLJavaScript(modules: Array<Module>) {
 
 export function fasterThanLight(props: IFasterThanLightProps): Promise<Boolean> {
   const { ctx, bundleWriters, filePath } = props;
+  return;
   if (ctx.config.target === 'server') {
     return;
   }

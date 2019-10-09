@@ -5,9 +5,10 @@ import { GlobalContext } from '../../program/GlobalContext';
 import { createRequireStatement } from '../../Visitor/helpers';
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
 import { ImportType } from '../../interfaces/ImportType';
+import { ITarget } from '../../../config/PrivateConfig';
 
 export interface IBundleEssentialProps {
-  target?: 'browser' | 'server' | 'electron';
+  target?: ITarget;
   env?: { [key: string]: any };
   isBrowser?: boolean;
   isServer?: boolean;

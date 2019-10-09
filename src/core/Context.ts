@@ -7,7 +7,6 @@ import { PrivateConfig } from '../config/PrivateConfig';
 import { createDevServer, IDevServerActions } from '../dev-server/devServer';
 import { env } from '../env';
 import { createFuseLogger, FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
-import { attachEssentials } from '../integrity/setup';
 import { createInterceptor, MainInterceptor } from '../interceptor/interceptor';
 import { TypescriptConfig } from '../interfaces/TypescriptInterfaces';
 import { ProductionAPIWrapper } from '../production/api/ProductionApiWrapper';
@@ -50,7 +49,6 @@ export class Context {
     this.webWorkers = {};
 
     this.webIndex = createWebIndex(this);
-    attachEssentials(this);
 
     this.taskManager = createContextTaskManager(this);
   }

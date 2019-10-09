@@ -469,6 +469,7 @@ export const baseGenerator = {
     state.write(';');
   },
   VariableDeclarator(node, state) {
+    if (!node.id) return;
     this[node.id.type](node.id, state);
     if (node.init != null) {
       state.write(' = ');
@@ -982,7 +983,8 @@ class State {
       mapping.name = node.name;
       this.sourceMap.addMapping(mapping);
     }
-    if (code.length > 0) {
+
+    if (code && code.length > 0) {
       if (this.lineEndSize > 0) {
         if (code.endsWith(this.lineEnd)) {
           this.line += this.lineEndSize;
@@ -1025,6 +1027,7 @@ export function generate(node, options) {
   */
   const state = new State(options);
   // Travel through the AST node and generate the code
+  //  console.log(node, node.type);
   state.generator[node.type](node, state);
   return state.output;
 }

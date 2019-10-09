@@ -1,10 +1,9 @@
 import * as path from 'path';
-import { IFastAnalysis } from '../analysis/fastAnalysis';
 import { Context } from '../core/Context';
-import { env } from '../env';
-import { Module } from '../core/Module';
+import { IAnalysis, Module } from '../core/Module';
 import { createPackage, Package } from '../core/Package';
-import { ensureDir, fileExists, fileStat, readFile, removeFolder, writeFile, fastHash } from '../utils/utils';
+import { env } from '../env';
+import { ensureDir, fastHash, fileExists, fileStat, readFile, removeFolder, writeFile } from '../utils/utils';
 import { ICacheDependencies, ICachePackage, ICachePackageResponse, ICacheTreeContents } from './Interfaces';
 
 function generateValidKey(key) {
@@ -32,7 +31,7 @@ export interface IModuleCache {
   dependants?: Array<string>;
   weakReferences?: { [key: string]: number };
   fuseBoxPath: string;
-  fastAnalysis: IFastAnalysis;
+  analysis: IAnalysis;
   contents: string;
   sourceMap: string;
 }
@@ -300,7 +299,7 @@ export class Cache {
     const mtime = stat.mtime.getTime();
     const obj: any = {
       mtime,
-      fastAnalysis: module.fastAnalysis,
+      analysis: module.analysis,
       contents: basics.contents,
       sourceMap: basics.sourceMap,
       absPath: module.props.absPath,
@@ -343,7 +342,7 @@ export class Cache {
 
       module.props.extension = cached.extension;
       module.props.fuseBoxPath = cached.fuseBoxPath;
-      module.fastAnalysis = cached.fastAnalysis;
+      module.analysis = cached.analysis;
       module.meta = cached.meta;
       //module.weakReferences = cached.weakReferences;
 

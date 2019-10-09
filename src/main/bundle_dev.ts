@@ -4,9 +4,7 @@ import { Context } from '../core/Context';
 import { attachHMR } from '../hmr/attach_hmr';
 import { pluginAssumption } from '../plugins/core/plugin_assumption';
 import { pluginCSS } from '../plugins/core/plugin_css';
-import { pluginJS } from '../plugins/core/plugin_js';
 import { pluginSass } from '../plugins/core/plugin_sass';
-import { pluginTypescript } from '../plugins/core/plugin_typescript';
 import { attachWebWorkers } from '../web-workers/attachWebWorkers';
 import { assemble } from './assemble';
 import { attachCache } from './attach_cache';
@@ -22,14 +20,7 @@ export async function bundleDev(ctx: Context) {
   ctx.log.startStreaming();
   prerequisites(ctx);
 
-  const plugins = [
-    ...ctx.config.plugins,
-    pluginAssumption(),
-    pluginCSS(),
-    pluginJS(),
-    pluginSass(),
-    pluginTypescript(),
-  ];
+  const plugins = [...ctx.config.plugins, pluginAssumption(), pluginCSS(), pluginSass()];
 
   plugins.forEach(plugin => plugin && plugin(ctx));
 
@@ -37,7 +28,7 @@ export async function bundleDev(ctx: Context) {
 
   attachHMR(ctx);
 
-  attachWebWorkers(ctx);
+  //attachWebWorkers(ctx);
 
   // lib-esm/params/paramTypes.js"
 
