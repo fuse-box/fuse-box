@@ -12,7 +12,7 @@ import { TypescriptConfig } from '../interfaces/TypescriptInterfaces';
 import { ProductionAPIWrapper } from '../production/api/ProductionApiWrapper';
 import { TsConfigAtPath } from '../resolver/fileLookup';
 import { initTypescriptConfig } from '../tsconfig/configParser';
-import { ensureUserPath, fastHash } from '../utils/utils';
+import { ensureUserPath, fastHash, path2RegexPattern } from '../utils/utils';
 import { createWebIndex, IWebIndexInterface } from '../web-index/webIndex';
 import { WebWorkerProcess } from '../web-workers/WebWorkerProcess';
 import { assembleContext, IAssembleContext } from './assemble_context';
@@ -20,6 +20,7 @@ import { ContextTaskManager, createContextTaskManager } from './ContextTaskManag
 import { Package } from './Package';
 import { createWeakModuleReferences, WeakModuleReferences } from './WeakModuleReferences';
 import { createWriter, IWriterActions } from './writer';
+import { ITransformer } from '../compiler/program/transpileModule';
 
 export class Context {
   public assembleContext: IAssembleContext;
@@ -39,6 +40,7 @@ export class Context {
   public productionApiWrapper: ProductionAPIWrapper;
   public tsConfigAtPaths?: Array<TsConfigAtPath>;
   private _uniqueEntryHash: string;
+  private _tranformersAtPaths: Array<{ test: RegExp; transformer: (opts: any) => ITransformer }>;
 
   constructor(public config: PrivateConfig) {
     this.config.ctx = this;
@@ -87,6 +89,21 @@ export class Context {
     this.config.setupEnv();
   }
 
+  public transformerAtPath(path: string | RegExp, transformer: (opts: any) => ITransformer) {
+    if (!this._tranformersAtPaths) this._tranformersAtPaths = [];
+    this._tranformersAtPaths.push({ test: path2RegexPattern(path), transformer });
+  }
+
+  public getTransformersAtPath(path: string): Array<(opts: any) => ITransformer> {
+    if (!this._tranformersAtPaths) return;
+    const transformers = [];
+    for (const item of this._tranformersAtPaths) {
+      if (item.test.test(path)) {
+        transformers.push(item.transformer);
+      }
+    }
+    return transformers;
+  }
   public setProduction(prodProps: IProductionProps) {
     this.config.watch.enabled = false;
     this.config.hmr.enabled = false;
@@ -135,6 +152,7 @@ export class Context {
   }
 
   public fatal(header: string, messages?: Array<string>) {
+    this.log.clearConsole();
     this.log.fuseFatal(header, messages);
     process.exit(1);
   }

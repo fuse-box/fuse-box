@@ -7,6 +7,7 @@ export interface ASTNode {
   $fuse_decoratorsProcessed?: boolean;
   $fuse_decoratorForClassIdentifier?: string;
   $transpiled?: boolean;
+  elements?: Array<ASTNode>;
   alternate?: ASTNode;
   scope?: IASTScope;
   prefix?: boolean;

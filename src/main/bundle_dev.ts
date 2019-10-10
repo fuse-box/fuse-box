@@ -5,7 +5,6 @@ import { attachHMR } from '../hmr/attach_hmr';
 import { pluginAssumption } from '../plugins/core/plugin_assumption';
 import { pluginCSS } from '../plugins/core/plugin_css';
 import { pluginSass } from '../plugins/core/plugin_sass';
-import { attachWebWorkers } from '../web-workers/attachWebWorkers';
 import { assemble } from './assemble';
 import { attachCache } from './attach_cache';
 import { attachWatcher } from './attach_watcher';
@@ -27,8 +26,6 @@ export async function bundleDev(ctx: Context) {
   attachCache(ctx);
 
   attachHMR(ctx);
-
-  //attachWebWorkers(ctx);
 
   // lib-esm/params/paramTypes.js"
 

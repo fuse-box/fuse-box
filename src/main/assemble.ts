@@ -1,12 +1,11 @@
 import * as path from 'path';
+import { ImportType } from '../compiler/interfaces/ImportType';
 import { ITransformerRequireStatement } from '../compiler/interfaces/ITransformerRequireStatements';
 import { createApplicationPackage } from '../core/application';
 import { Context } from '../core/Context';
 import { createModule, Module } from '../core/Module';
 import { createPackage, Package } from '../core/Package';
 import { IResolver, resolveModule } from '../resolver/resolver';
-import { ImportType } from '../compiler/interfaces/ImportType';
-import { resolveNaptr } from 'dns';
 
 interface IDefaultParseProps {
   assemble?: boolean;
@@ -238,7 +237,7 @@ export function processModule(props: IDefaultParseProps) {
       const response = resolveStatement({ statement: data.literal, importType: data.type }, props);
       if (response) {
         modules.push(response);
-        if (response.forcedStatement && literalStatements[data.literal]) {
+        if (literalStatements && response.forcedStatement && literalStatements[data.literal]) {
           literalStatements[data.literal].statement.arguments[0].value = response.forcedStatement;
         }
       }
@@ -261,6 +260,7 @@ export function processModule(props: IDefaultParseProps) {
   if (_module.isExecutable() && !_module.isCached) {
     _module.generateCode();
   }
+  icp.sync('assemble_module_complete', { module: _module });
 }
 
 function parseDefaultPackage(ctx: Context, pkg: Package) {

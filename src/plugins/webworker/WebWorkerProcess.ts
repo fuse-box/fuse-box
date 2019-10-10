@@ -1,15 +1,8 @@
-import { IWebWorkerItem } from '../analysis/fastAnalysis';
-import { IPublicConfig } from '../config/IPublicConfig';
-import { Context } from '../core/Context';
-import { fusebox } from '../core/fusebox';
-import { Module } from '../core/Module';
-import { fastHash } from '../utils/utils';
+import { IPublicConfig } from '../../config/IPublicConfig';
+import { fusebox } from '../../core/fusebox';
+import { fastHash } from '../../utils/utils';
+import { IWebWorkerProcessProps } from './interfaces';
 
-export interface IWebWorkerProcessProps {
-  ctx: Context;
-  module: Module;
-  item?: IWebWorkerItem;
-}
 export class WebWorkerProcess {
   public bundleName: string;
   public isRunning: boolean;
@@ -28,7 +21,7 @@ export class WebWorkerProcess {
     return this.props.item.bundlePath;
   }
 
-  public async run() {
+  public async run(customConfig?: IPublicConfig) {
     if (this.isRunning) return;
 
     this.isRunning = true;
@@ -63,18 +56,18 @@ export class WebWorkerProcess {
       watch: ctx.config.watch.enabled,
     };
 
-    if (ctx.config.webWorkers.config) {
+    if (customConfig) {
       // add missing stuff to the configuartion
       // but don't allow override the compulsory configuration
-      config = { ...ctx.config.webWorkers.config, ...config };
+      config = { ...customConfig, ...config };
 
       // need to add plugins here if exist
       if (ctx.config.webWorkers.config.plugins) {
-        config.plugins = config.plugins.concat(ctx.config.webWorkers.config.plugins);
+        config.plugins = config.plugins.concat(customConfig.plugins);
       }
       // allow override watch property
       if (ctx.config.webWorkers.config.watch) {
-        config.watch = ctx.config.webWorkers.config.watch;
+        config.watch = customConfig.watch;
       }
     }
     const fuse = fusebox(config);

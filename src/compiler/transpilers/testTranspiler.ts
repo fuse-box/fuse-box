@@ -21,6 +21,7 @@ import { CommonTSfeaturesTransformer } from '../transformers/ts/CommonTSfeatures
 import { EnumTransformer } from '../transformers/ts/EnumTransformer';
 import { NamespaceTransformer } from '../transformers/ts/NameSpaceTransformer';
 import { IVisit, IVisitorMod } from '../Visitor/Visitor';
+import { AngularURLTransformer } from '../transformers/ts/AngularURLTransformer';
 
 export interface ICompileModuleProps {
   code: string;
@@ -53,6 +54,7 @@ export function testTranspile(props: ICompileModuleProps) {
 
   const defaultTransformers: ITransformerList = [
     GlobalContextTransformer(),
+    AngularURLTransformer(),
     BundleFastConditionUnwrapper({
       env: bundleProps.env,
       isBrowser: bundleProps.isBrowser,
