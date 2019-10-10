@@ -243,7 +243,6 @@ describe('Assemble test', () => {
       const defaultModule = packages.find(item => item.props.meta.name === 'default');
 
       const mainModule = defaultModule.modules.find(item => item.props.fuseBoxPath === 'index.js');
-      expect(mainModule.fastAnalysis.replaceable).toEqual([]);
     });
     it('Should have a replacement on index.ts', () => {
       const ctx = createProjectContext('src7', { target: 'browser' });
@@ -252,13 +251,6 @@ describe('Assemble test', () => {
       const defaultModule = packages.find(item => item.props.meta.name === 'default');
 
       const mainModule = defaultModule.modules.find(item => item.props.fuseBoxPath === 'index.js');
-      expect(mainModule.fastAnalysis.replaceable).toEqual([
-        {
-          type: ImportType.RAW_IMPORT,
-          fromStatement: 'module-c',
-          toStatement: 'module-c/browser-entry.js',
-        },
-      ]);
     });
 
     it('Should not get processed because it"s cached', () => {

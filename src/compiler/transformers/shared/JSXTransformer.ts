@@ -109,8 +109,14 @@ export function JSXTransformer(opts?: IJSXTranformerOptions): ITransformer {
 
         for (const attr of openingElement.attributes) {
           // less member access
-          const { type, value } = attr; // call 'attr' once
+          let { type, value } = attr; // call 'attr' once
+
           if (type === 'JSXAttribute') {
+            if (!value)
+              value = {
+                type: 'Identifier',
+                name: attr.name.name,
+              };
             const createdProp: ASTNode = {
               type: 'Property',
               key: {

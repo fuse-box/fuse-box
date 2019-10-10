@@ -1,9 +1,9 @@
 import { IProductionFlow } from '../main';
 import { ProductionModule } from '../ProductionModule';
 import * as ts from 'typescript';
-import { fixModuleSourceMap } from '../../sourcemaps/helpers';
+//import { fixModuleSourceMap } from '../../sourcemaps/helpers';
 import { moduleTransformer } from '../../module-transformer/production';
-import { tsTransformModule } from '../../transform/tsTransformModule';
+//import { tsTransformModule } from '../../transform/tsTransformModule';
 
 export interface ITranspileStageProps {
   flow: IProductionFlow;
@@ -34,20 +34,20 @@ function transpileProductionModule(props: ITranspileStageProps, prodModule: Prod
     compilerOptions.inlineSources = true;
   }
 
-  const result = tsTransformModule(
-    text,
-    prodModule.module.props.absPath,
-    compilerOptions,
-    [],
-    [moduleTransformer(props, prodModule)],
-    ctx.customTransformers,
-  );
+  // const result = tsTransformModule(
+  //   text,
+  //   prodModule.module.props.absPath,
+  //   compilerOptions,
+  //   [],
+  //   [moduleTransformer(props, prodModule)],
+  //   ctx.customTransformers,
+  // );
 
-  prodModule.transpiledSourceMap = requireSourceMaps
-    ? fixModuleSourceMap(prodModule.module, result.sourceMapText)
-    : undefined;
+  // prodModule.transpiledSourceMap = requireSourceMaps
+  //   ? fixModuleSourceMap(prodModule.module, result.sourceMapText)
+  //   : undefined;
 
-  prodModule.transpiledContent = result.outputText;
+  //prodModule.transpiledContent = result.outputText;
 }
 
 export function transpileStage(props: IProductionFlow) {

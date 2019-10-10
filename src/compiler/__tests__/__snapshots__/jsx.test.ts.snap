@@ -1,5 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`JSX should add attribute without value 1`] = `
+"var oi_1 = require(\\"./oi\\");
+function test() {
+  return React.createElement(\\"i\\", {
+    oi: oi_1.default
+  });
+}
+"
+`;
+
 exports[`JSX should add just attributes 1`] = `
 "var oi_1 = require(\\"./oi\\");
 function test() {
