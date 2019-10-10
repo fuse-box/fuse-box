@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { fastAnalysis } from '../../analysis/fastAnalysis';
+
 import { IPublicConfig } from '../../config/IPublicConfig';
 import { createContext } from '../../core/Context';
 import { createModule } from '../../core/Module';
@@ -104,25 +104,17 @@ describe('FileCache test', () => {
       module.props.extension = '.ts';
       module.read();
 
-      module.fastAnalysis = fastAnalysis({ input: module.contents });
+      module.analysis = { imports: [] };
       cache.saveModule(module, { contents: 'aa', sourceMap: 'a' });
 
       expect(module.props.fuseBoxPath).toBeTruthy();
       expect(module.props.extension).toBe('.ts');
-      expect(module.fastAnalysis).toEqual({
-        imports: [{ type: ImportType.REQUIRE, statement: './foo' }],
-        report: {},
-      });
 
       await cache.sync();
 
       const cachedModule = cache.restoreModule(module);
       expect(cachedModule.props.fuseBoxPath).toBeTruthy();
       expect(cachedModule.props.extension).toBe('.ts');
-      expect(cachedModule.fastAnalysis).toEqual({
-        imports: [{ type: ImportType.REQUIRE, statement: './foo' }],
-        report: {},
-      });
     });
 
     it('Should not restore module (timestamp mismatch)', async () => {
@@ -133,7 +125,6 @@ describe('FileCache test', () => {
       module.props.extension = '.ts';
       module.read();
 
-      module.fastAnalysis = fastAnalysis({ input: module.contents });
       cache.saveModule(module, { contents: 'aa', sourceMap: 'a' });
       await cache.sync();
 

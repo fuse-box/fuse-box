@@ -2,6 +2,30 @@ import { ImportType } from '../interfaces/ImportType';
 import { testTranspile } from '../transpilers/testTranspiler';
 
 describe('Es exports tests', () => {
+  describe('export typescript objects', () => {
+    it('should remove interface', () => {
+      const result = testTranspile({
+        code: `
+         export interface Hey{}
+         alert(1)
+          `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should remove type', () => {
+      const result = testTranspile({
+        code: `
+         export type Some = Map<string,string>;
+         alert(2)
+          `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+  });
+
   describe('Object export / function/ class', () => {
     it('should export function', () => {
       const result = testTranspile({

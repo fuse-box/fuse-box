@@ -142,7 +142,7 @@ describe('Create dev bundles', () => {
     it("should take modules' cached version", () => {
       const ctx = createProjectContext('src2', {});
       ctx.ict.on('assemble_module_init', props => {
-        props.module.fastAnalysis = { imports: [] };
+        props.module.analysis = { imports: [] };
         props.module.setCache({ contents: 'cached module', sourceMap: '{}' });
         return props;
       });

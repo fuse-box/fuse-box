@@ -226,3 +226,13 @@ exports.fun = name1;
 exports.name2 = name2;
 "
 `;
+
+exports[`Es exports tests export typescript objects should remove interface 1`] = `
+"alert(1);
+"
+`;
+
+exports[`Es exports tests export typescript objects should remove type 1`] = `
+"alert(2);
+"
+`;

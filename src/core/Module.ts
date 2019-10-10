@@ -2,9 +2,11 @@ import * as buntis from 'buntis';
 import * as meriyah from 'meriyah';
 import * as sourceMapModule from 'source-map';
 import { IModuleCacheBasics } from '../cache/cache';
+import { generate } from '../compiler/generator/generator';
 import { ASTNode } from '../compiler/interfaces/AST';
 import { ImportType } from '../compiler/interfaces/ImportType';
 import { ITransformerResult } from '../compiler/interfaces/ITranformerResult';
+import { ITranspiler } from '../compiler/interfaces/ITranspiler';
 import { javascriptTranspiler } from '../compiler/transpilers/javascriptTranspiler';
 import { typescriptTranspiler } from '../compiler/transpilers/typescriptTranspiler';
 import { testPath } from '../plugins/pluginUtils';
@@ -13,9 +15,6 @@ import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { extractFuseBoxPath, fastHash, joinFuseBoxPath, readFile } from '../utils/utils';
 import { Context } from './Context';
 import { Package } from './Package';
-import { generate } from '../compiler/generator/generator';
-import * as ts from 'typescript';
-import { ITranspiler } from '../compiler/interfaces/ITranspiler';
 const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.mjs'];
 
 export interface IAnalysis {
@@ -138,19 +137,24 @@ export class Module {
   }
 
   public parse(): ASTNode {
-    const withSourcemaps = this.isSourceMapRequired();
-    if (!this.isJavascriptModule()) {
-      this.ast = buntis.parseTSModule(this.contents, {
-        directives: true,
-        jsx: true,
-        next: true,
-        loc: withSourcemaps,
-      }) as ASTNode;
-    } else {
-      let opts = { jsx: true, next: false, module: true, loc: withSourcemaps };
-      this.ast = meriyah.parse(this.contents, opts) as ASTNode;
-      return this.ast;
+    try {
+      const withSourcemaps = this.isSourceMapRequired();
+      if (!this.isJavascriptModule()) {
+        this.ast = buntis.parseTSModule(this.contents, {
+          directives: true,
+          jsx: this.props.extension === '.tsx',
+          next: true,
+          loc: withSourcemaps,
+        }) as ASTNode;
+      } else {
+        let opts = { jsx: true, next: false, module: true, loc: withSourcemaps };
+        this.ast = meriyah.parse(this.contents, opts) as ASTNode;
+      }
+    } catch (e) {
+      this.props.ctx.fatal('Error while parsing the code', [`at ${this.props.absPath}`, e.stack]);
     }
+
+    return this.ast;
   }
 
   public transpile() {

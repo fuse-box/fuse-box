@@ -7,6 +7,10 @@ import { ASTNode } from '../../interfaces/AST';
 import { ITransformerSharedOptions } from '../../interfaces/ITransformerSharedOptions';
 import { ImportType } from '../../interfaces/ImportType';
 
+const IGNORED_DECLARATIONS = {
+  InterfaceDeclaration: 1,
+  TypeAliasDeclaration: 1,
+};
 function considerDecorators(node: ASTNode) {
   let statement: ASTNode = node.declaration;
   if (
@@ -92,7 +96,7 @@ export function ExportTransformer(options?: ITransformerSharedOptions): ITransfo
       // remove export interface
       // export interface HelloWorld{}
       if (type === 'ExportNamedDeclaration') {
-        if (node.declaration && node.declaration.type === 'InterfaceDeclaration') {
+        if (node.declaration && IGNORED_DECLARATIONS[node.declaration.type]) {
           return { removeNode: true };
         }
       }

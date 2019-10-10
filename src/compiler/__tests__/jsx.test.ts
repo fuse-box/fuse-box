@@ -35,6 +35,19 @@ describe('JSX', () => {
     expect(result.code).toMatchSnapshot();
   });
 
+  it('should add attribute without value', () => {
+    const result = testTranspile({
+      code: `
+        import oi from "./oi";
+        function test(){
+          return (<i oi ></i>)
+        }
+          `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+
   it('should add just attributes and spread', () => {
     const result = testTranspile({
       code: `
