@@ -47,11 +47,11 @@ describe('Dev server test', () => {
       packageProps: { isDefaultPackage: true },
     });
     data.pkg.entry = data.module;
-    data.module.fastAnalysis = { imports: [] };
+    data.module.analysis = { imports: [] };
 
     data.ctx.ict.sync('assemble_fast_analysis', { module: data.module });
-    expect(data.module.fastAnalysis.imports).toHaveLength(1);
-    expect(data.module.fastAnalysis.imports[0].statement).toEqual('fuse-box-hot-reload');
+    expect(data.module.analysis.imports).toHaveLength(1);
+    expect(data.module.analysis.imports[0].literal).toEqual('fuse-box-hot-reload');
   });
 
   it('Should not inject fuse-box-hot-reload', () => {
@@ -63,10 +63,10 @@ describe('Dev server test', () => {
       packageProps: { isDefaultPackage: false },
     });
     data.pkg.entry = data.module;
-    data.module.fastAnalysis = { imports: [] };
+    data.module.analysis = { imports: [] };
 
     data.ctx.ict.sync('assemble_fast_analysis', { module: data.module });
-    expect(data.module.fastAnalysis.imports).toHaveLength(0);
+    expect(data.module.analysis.imports).toHaveLength(0);
   });
 
   it('Should inject code with hmr', () => {

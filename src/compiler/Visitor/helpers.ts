@@ -186,6 +186,16 @@ const _CallExpression = {
   NewExpression: 1,
 };
 
+export function createRequireCallExpression(elements: Array<ASTNode>): ASTNode {
+  return {
+    type: 'CallExpression',
+    callee: {
+      type: 'Identifier',
+      name: 'require',
+    },
+    arguments: elements,
+  };
+}
 export function createASTFromObject(obj: { [key: string]: any }): ASTNode {
   const properties: Array<ASTNode> = [];
   const parent: ASTNode = {

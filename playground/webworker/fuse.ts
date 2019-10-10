@@ -1,4 +1,4 @@
-import { sparky, fusebox } from '../../src';
+import { sparky, fusebox, pluginWebWorker } from '../../src';
 import * as path from 'path';
 class Context {
   isProduction;
@@ -10,7 +10,8 @@ class Context {
       webIndex: {
         template: 'src/index.html',
       },
-      cache: false,
+      cache: { root: './.cache' },
+      plugins: [pluginWebWorker()],
       devServer: this.runServer && {
         open: false,
         proxy: [
@@ -32,6 +33,7 @@ class Context {
 const { task, exec, rm } = sparky<Context>(Context);
 
 task('default', async ctx => {
+  await rm('./dist');
   ctx.runServer = true;
   const fuse = ctx.getConfig();
   await fuse.runDev();

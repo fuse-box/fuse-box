@@ -52,6 +52,13 @@ export function typescriptTranspiler(props: ITranspiler): ITransformerResult {
     ImportTransformer({ onRequireCallExpression }),
     ExportTransformer({ onRequireCallExpression }),
   ];
+  if (props.transformers && props.transformers.length) {
+    const opts = { module: props.module, onRequireCallExpression };
+    for (const transformer of props.transformers) {
+      defaultTransformers.unshift(transformer(opts));
+    }
+  }
+
   transpileModule({
     ast: props.ast as ASTNode,
     globalContext: createGlobalContext({}),
