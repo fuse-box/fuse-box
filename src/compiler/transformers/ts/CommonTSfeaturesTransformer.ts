@@ -20,6 +20,7 @@ export function CommonTSfeaturesTransformer(): ITransformer {
       case 'AsExpression':
         return { replaceWith: node.expression };
       case 'DeclareFunction':
+      case 'TypeAliasDeclaration':
       case 'AbstractMethodDefinition':
       case 'InterfaceDeclaration':
       case 'ClassProperty':

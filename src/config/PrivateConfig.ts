@@ -23,7 +23,7 @@ export interface IHMRExternalProps {
   hardReloadScripts?: boolean;
 }
 
-const ESSENTIAL_DEPENDENCIES = ['fuse-box-dev-import', 'tslib'];
+const ESSENTIAL_DEPENDENCIES = ['fuse-box-dev-import', 'tslib', 'fuse_helpers_decorate'];
 
 export type ITarget = 'browser' | 'server' | 'electron' | 'universal' | 'web-worker';
 
