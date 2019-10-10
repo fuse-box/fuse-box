@@ -15,6 +15,7 @@ import { Context } from './Context';
 import { Package } from './Package';
 import { generate } from '../compiler/generator/generator';
 import * as ts from 'typescript';
+import { ITranspiler } from '../compiler/interfaces/ITranspiler';
 const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.mjs'];
 
 export interface IAnalysis {
@@ -154,14 +155,18 @@ export class Module {
 
   public transpile() {
     const config = this.props.ctx.config;
-    const options = {
+    const options: ITranspiler = {
       ast: this.ast,
+      module: this,
       env: config.env,
       isBrowser: config.target !== 'server',
       isServer: config.target === 'server',
       moduleFileName: this.props.fuseBoxPath,
       target: config.target,
     };
+    options.transformers = this.props.ctx.getTransformersAtPath(this.props.absPath);
+    if (options.transformers && options.transformers.length) {
+    }
     let result: ITransformerResult;
     if (this.isJavascriptModule()) {
       result = javascriptTranspiler(options);
@@ -176,9 +181,12 @@ export class Module {
     this.meta[key] = value;
   }
 
-  public getMeta(key: string) {
+  public getMeta(key: string, defaultValue?) {
     if (this.meta && this.meta[key]) {
       return this.meta[key];
+    } else if (defaultValue) {
+      this.setMeta(key, defaultValue);
+      return defaultValue;
     }
   }
 

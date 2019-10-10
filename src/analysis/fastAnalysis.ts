@@ -21,12 +21,6 @@ interface IBrowserEssential {
 
 export type IWebWorkerType = 'Worker' | 'SharedWorker';
 
-export interface IWebWorkerItem {
-  type?: IWebWorkerType;
-  path: string;
-  absPath?: string;
-  bundlePath?: string;
-}
 export interface IFastAnalysis {
   ast?: any;
   workers?: Array<IWebWorkerItem>;

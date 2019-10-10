@@ -35,7 +35,7 @@ export function generateFTLJavaScript(modules: Array<Module>) {
 
 export function fasterThanLight(props: IFasterThanLightProps): Promise<Boolean> {
   const { ctx, bundleWriters, filePath } = props;
-  return;
+
   if (ctx.config.target === 'server') {
     return;
   }
@@ -77,7 +77,7 @@ export function fasterThanLight(props: IFasterThanLightProps): Promise<Boolean> 
       return;
     }
 
-    if (!data.fastAnalysis) {
+    if (!data.analysis) {
       return;
     }
 
@@ -91,30 +91,36 @@ export function fasterThanLight(props: IFasterThanLightProps): Promise<Boolean> 
     // isCached is set in attach_cache.ts in cache.restoreModule(module);
     // that's why this check followed by "assemble_module_init" it cannot happen earlier
 
-    const oldAnalysis = data.fastAnalysis;
+    const oldAnalysis = data.analysis;
     targetModule.read(true);
 
     ctx.ict.sync('assemble_module_ftl_init', { module: targetModule });
 
-    const newAnalysis = targetModule.fastAnalyse();
+    targetModule.parse();
+
+    const response = targetModule.transpile();
+    const newImports = [];
+    for (const c of response.requireStatementCollection) {
+      newImports.push(c.statement.arguments[0].value);
+    }
 
     // if there is a length difference - that's to continue
-    if (oldAnalysis.imports.length !== newAnalysis.imports.length) return;
+    if (oldAnalysis.imports.length !== newImports.length) return;
 
     // stop the difference
     // if arrays don't match we have some something changed
     for (let i = 0; i < oldAnalysis.imports.length; i++) {
-      if (newAnalysis.imports[i].statement !== oldAnalysis.imports[i].statement) return;
+      if (newImports[i] !== oldAnalysis.imports[i].literal) return;
     }
     const ftlModules = ctx.assembleContext.getFTLModules();
     if (ftlModules.length > MAX_FTL_MODULES) return;
 
     ctx.log.info('FTL', `Entering FTL mode`);
     // restore replaceable,  since we skip the assemble part + resolving the statements
-    targetModule.fastAnalysis.replaceable = oldAnalysis.replaceable;
-    targetModule.fastAnalysis.report.transpiled = false;
-    ctx.ict.sync('assemble_fast_analysis', { module: targetModule });
 
+    ctx.ict.sync('assemble_before_transpile', { module: targetModule });
+
+    targetModule.generateCode();
     targetModule.isCached = false;
     // manually triger the resolution for this module
     // skipping EVERYTHING else
