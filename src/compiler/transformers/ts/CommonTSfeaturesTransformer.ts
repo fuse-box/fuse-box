@@ -8,10 +8,13 @@ export function CommonTSfeaturesTransformer(): ITransformer {
     const { node } = visit;
 
     //console.log(node);
-    if (node.type === 'ClassDeclaration') {
-    }
+
     if (node.declare) {
       return { removeNode: true, ignoreChildren: true };
+    }
+
+    if (node.type === 'TypeAssertion') {
+      return { replaceWith: node.expression };
     }
 
     switch (node.type) {

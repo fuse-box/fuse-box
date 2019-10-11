@@ -82,6 +82,7 @@ export function JSXTransformer(opts?: IJSXTranformerOptions): ITransformer {
   return (visit: IVisit) => {
     const node = visit.node;
     const name = node.name as string;
+    const locals = visit.scope && visit.scope.locals ? visit.scope.locals : {};
     switch (node.type) {
       case 'JSXMemberExpression':
         node.type = 'MemberExpression';
@@ -112,17 +113,19 @@ export function JSXTransformer(opts?: IJSXTranformerOptions): ITransformer {
           let { type, value } = attr; // call 'attr' once
 
           if (type === 'JSXAttribute') {
-            if (!value)
-              value = {
-                type: 'Identifier',
-                name: attr.name.name,
-              };
+            if (!value) {
+              value = { type: 'Literal', value: true };
+            }
+            let key: ASTNode;
+            if (attr.name.name.indexOf('-') > -1) {
+              key = { type: 'Literal', value: attr.name.name };
+            } else {
+              key = { type: 'Identifier', name: attr.name.name };
+            }
+
             const createdProp: ASTNode = {
               type: 'Property',
-              key: {
-                type: 'Identifier',
-                name: attr.name.name,
-              },
+              key: key,
               value: value,
               kind: 'init',
               computed: false,

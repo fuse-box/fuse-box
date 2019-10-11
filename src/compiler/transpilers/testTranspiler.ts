@@ -13,18 +13,19 @@ import { RequireStatementInterceptor } from '../transformers/bundle/RequireState
 import { GlobalContextTransformer } from '../transformers/GlobalContextTransformer';
 import { DynamicImportTransformer } from '../transformers/shared/DynamicImportTransformer';
 import { ExportTransformer } from '../transformers/shared/ExportTransformer';
-import { DecoratorTransformer } from '../transformers/ts/DecoratorTransformer';
 import { ImportTransformer } from '../transformers/shared/ImportTransformer';
 import { JSXTransformer } from '../transformers/shared/JSXTransformer';
+import { AngularURLTransformer } from '../transformers/ts/AngularURLTransformer';
 import { ClassConstructorPropertyTransformer } from '../transformers/ts/ClassConstructorPropertyTransformer';
 import { CommonTSfeaturesTransformer } from '../transformers/ts/CommonTSfeaturesTransformer';
+import { DecoratorTransformer } from '../transformers/ts/decorators/DecoratorTransformer';
 import { EnumTransformer } from '../transformers/ts/EnumTransformer';
 import { NamespaceTransformer } from '../transformers/ts/NameSpaceTransformer';
 import { IVisit, IVisitorMod } from '../Visitor/Visitor';
-import { AngularURLTransformer } from '../transformers/ts/AngularURLTransformer';
 
 export interface ICompileModuleProps {
   code: string;
+  withJSX?: boolean;
   globalContext?: any;
   transformers?: Array<(globalContext) => (visit: IVisit) => IVisitorMod>;
   compilerOptions?: ICompilerOptions;
@@ -32,9 +33,12 @@ export interface ICompileModuleProps {
 }
 
 export function testTranspile(props: ICompileModuleProps) {
+  if (props.withJSX === undefined) {
+    props.withJSX = true;
+  }
   const ast = buntis.parseTSModule(props.code, {
     directives: true,
-    jsx: true,
+    jsx: props.withJSX,
     next: true,
     loc: true,
   });
@@ -54,7 +58,7 @@ export function testTranspile(props: ICompileModuleProps) {
 
   const defaultTransformers: ITransformerList = [
     GlobalContextTransformer(),
-    AngularURLTransformer(),
+    AngularURLTransformer({ onRequireCallExpression }),
     BundleFastConditionUnwrapper({
       env: bundleProps.env,
       isBrowser: bundleProps.isBrowser,

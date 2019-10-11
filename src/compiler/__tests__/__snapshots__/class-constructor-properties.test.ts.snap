@@ -1,5 +1,26 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Class constructor properties Class props should create constructor with extends 1`] = `
+"class A extends B {
+  constructor() {
+    super(...arguments);
+    this.name = \\"hey\\";
+  }
+}
+"
+`;
+
+exports[`Class constructor properties Class props should create constructor with extends being in export default 1`] = `
+"class __DefaultExport__ extends B {
+  constructor() {
+    super(...arguments);
+    this.name = \\"hey\\";
+  }
+}
+exports.default = __DefaultExport__;
+"
+`;
+
 exports[`Class constructor properties Class props should remove add a property to the existing constructor 1`] = `
 "class A {
   constructor() {
@@ -31,6 +52,18 @@ exports[`Class constructor properties Class props should remove add a property w
 
 exports[`Class constructor properties Class props should remove property that's not inited 1`] = `
 "class A {}
+"
+`;
+
+exports[`Class constructor properties Class props should respect existing constructor with extends being in export default 1`] = `
+"class __DefaultExport__ extends B {
+  constructor(oi) {
+    super(oi);
+    this.oi = oi;
+    this.name = \\"hey\\";
+  }
+}
+exports.default = __DefaultExport__;
 "
 `;
 

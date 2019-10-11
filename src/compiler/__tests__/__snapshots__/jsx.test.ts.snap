@@ -1,15 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`JSX should add attribute without value 1`] = `
-"var oi_1 = require(\\"./oi\\");
-function test() {
-  return React.createElement(\\"i\\", {
-    oi: oi_1.default
-  });
-}
-"
-`;
-
 exports[`JSX should add just attributes 1`] = `
 "var oi_1 = require(\\"./oi\\");
 function test() {
@@ -32,9 +22,27 @@ function test() {
 "
 `;
 
+exports[`JSX should add key literal attributes 1`] = `
+"function hey() {
+  return React.createElement(\\"div\\", {
+    \\"data-automation\\": \\"df\\"
+  });
+}
+"
+`;
+
 exports[`JSX should add text 1`] = `
 "function test() {
   return React.createElement(\\"div\\", null, \\"1\\");
+}
+"
+`;
+
+exports[`JSX should convert attributes without vales to boolean 1`] = `
+"function hey() {
+  return React.createElement(\\"div\\", {
+    some: true
+  });
 }
 "
 `;

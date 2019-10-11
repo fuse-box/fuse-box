@@ -33,6 +33,7 @@ export function GlobalContextTransformer(): ITransformer {
         let nodeName;
         if (shorthand) nodeName = shorthand.name;
         else nodeName = node.name;
+
         // if it belongs to a function "someFunc(foo){}"
 
         const traced = global.identifierReplacement[nodeName];
@@ -40,8 +41,11 @@ export function GlobalContextTransformer(): ITransformer {
         // traced.replaced is confusing, fails on
         //      import * as hey from "./oi"
         //      hey.something();
+
         if (traced && traced.first) {
-          if (locals[nodeName] === 1) return;
+          if (locals[nodeName] === 1) {
+            return;
+          }
           traced.inUse = true;
           if (traced.first === nodeName) {
             return;
@@ -58,6 +62,7 @@ export function GlobalContextTransformer(): ITransformer {
           if (statement.object) {
             statement.object.loc = node.loc;
           }
+
           return { replaceWith: statement };
         }
         return;

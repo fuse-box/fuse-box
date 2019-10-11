@@ -23,8 +23,10 @@ export function scopeTracker(visitor: IVisit): IASTScope {
     if (node.declarations) {
       for (const decl of node.declarations) {
         if (decl.type === 'VariableDeclarator' && decl.id && decl.id.type === 'Identifier') {
+          const debug = decl.id.name === 'TweenMax';
           if (scope === undefined) scope = { locals: {} };
           scope.locals[decl.id.name] = 1;
+
           // we need to check for the next item on the list (if we are in an array)
           if (visitor.id !== undefined && property) {
             if (parent[property][visitor.id + 1]) {
@@ -39,9 +41,11 @@ export function scopeTracker(visitor: IVisit): IASTScope {
       node.expression.arguments['scope'] = scope;
     }
   } else if (_FunctionDecl[type]) {
-    if (node.id && node.id.type === 'Identifier') {
+    if (node.body) {
       if (scope === undefined) scope = { locals: {} };
-      scope.locals[node.id.name] = 1;
+      if (node.id && node.id.name) {
+        scope.locals[node.id.name] = 1;
+      }
       if (visitor.id && property) {
         if (parent[property][visitor.id + 1]) {
           parent[property][visitor.id + 1].scope = scope;
@@ -69,5 +73,6 @@ export function scopeTracker(visitor: IVisit): IASTScope {
     }
   }
   visitor.scope = scope;
+
   return scope;
 }
