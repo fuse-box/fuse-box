@@ -108,6 +108,25 @@ describe('Es exports tests', () => {
       });
       expect(result.code).toMatchSnapshot();
     });
+
+    it('should respect locals within an anon function', () => {
+      const result = testTranspile({
+        code: `
+        import TweenLite, { _gsScope, globals } from './TweenLite.js';
+
+        some(function() {
+          var TweenMax = {};
+          TweenMax.version = '2.0.2';
+          TweenMax.hey = '1';
+          console.log(TweenMax);
+          return TweenMax;
+        });
+        export var Foo = globals.TweenMax;
+            `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
   });
 
   describe('Object export', () => {

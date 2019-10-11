@@ -10,7 +10,6 @@ import { ITranspiler } from '../compiler/interfaces/ITranspiler';
 import { javascriptTranspiler } from '../compiler/transpilers/javascriptTranspiler';
 import { typescriptTranspiler } from '../compiler/transpilers/typescriptTranspiler';
 import { testPath } from '../plugins/pluginUtils';
-import { ProductionModule } from '../production/ProductionModule';
 import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { extractFuseBoxPath, fastHash, joinFuseBoxPath, readFile } from '../utils/utils';
 import { Context } from './Context';
@@ -112,8 +111,6 @@ export class Module {
   private _isExecutable: boolean;
   private _isJavascriptModule: boolean;
 
-  public productionModule: ProductionModule;
-
   constructor(public props: IModuleProps, pkg: Package) {
     this.pkg = pkg;
     this.assembled = false;
@@ -169,8 +166,7 @@ export class Module {
       target: config.target,
     };
     options.transformers = this.props.ctx.getTransformersAtPath(this.props.absPath);
-    if (options.transformers && options.transformers.length) {
-    }
+
     let result: ITransformerResult;
     if (this.isJavascriptModule()) {
       result = javascriptTranspiler(options);

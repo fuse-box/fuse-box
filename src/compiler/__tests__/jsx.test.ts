@@ -35,14 +35,23 @@ describe('JSX', () => {
     expect(result.code).toMatchSnapshot();
   });
 
-  it('should add attribute without value', () => {
+  it('should add key literal attributes', () => {
     const result = testTranspile({
       code: `
-        import oi from "./oi";
-        function test(){
-          return (<i oi ></i>)
-        }
-          `,
+      function hey() {
+        return <div data-automation="df"></div>;
+      }`,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('should convert attributes without vales to boolean', () => {
+    const result = testTranspile({
+      code: `
+      function hey() {
+        return <div some></div>;
+      }`,
     });
 
     expect(result.code).toMatchSnapshot();

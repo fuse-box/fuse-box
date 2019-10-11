@@ -142,13 +142,13 @@
     "format": "prettier --list-different \"src/**/*.{js,json,md,ts,yml}\"",
     "format:fix": "prettier --write \"src/**/*.{js,json,md,ts,yml}\"",
     "document": "ts-node -T fuse document",
-    "test": "jest --verbose",
-    "test.watch": "jest --watch",
+    "test": "jest --verbose --updateSnapshot",
+    "test.watch": "jest --watch --updateSnapshot",
     "test-ci": "jest --verbose --runInBand",
     "typecheck": "ts-node -T fuse typecheck",
     "coverage": "jest --verbose --coverage",
     "coverage-ci": "jest --verbose --coverage --runInBand"
   },
   "typings": "index.d.ts",
-  "version": "4.0.0-alpha.212"
+  "version": "4.0.0-alpha.218"
 }

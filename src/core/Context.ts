@@ -1,5 +1,6 @@
 import { CustomTransformers } from 'typescript';
 import { Cache, createCache } from '../cache/cache';
+import { ITransformer } from '../compiler/program/transpileModule';
 import { createConfig } from '../config/config';
 import { IProductionProps } from '../config/IProductionProps';
 import { IPublicConfig } from '../config/IPublicConfig';
@@ -9,18 +10,16 @@ import { env } from '../env';
 import { createFuseLogger, FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
 import { createInterceptor, MainInterceptor } from '../interceptor/interceptor';
 import { TypescriptConfig } from '../interfaces/TypescriptInterfaces';
-import { ProductionAPIWrapper } from '../production/api/ProductionApiWrapper';
+import { ProductionContext } from '../production/ProductionContext';
 import { TsConfigAtPath } from '../resolver/fileLookup';
 import { initTypescriptConfig } from '../tsconfig/configParser';
 import { ensureUserPath, fastHash, path2RegexPattern } from '../utils/utils';
 import { createWebIndex, IWebIndexInterface } from '../web-index/webIndex';
-import { WebWorkerProcess } from '../web-workers/WebWorkerProcess';
 import { assembleContext, IAssembleContext } from './assemble_context';
 import { ContextTaskManager, createContextTaskManager } from './ContextTaskManager';
 import { Package } from './Package';
 import { createWeakModuleReferences, WeakModuleReferences } from './WeakModuleReferences';
 import { createWriter, IWriterActions } from './writer';
-import { ITransformer } from '../compiler/program/transpileModule';
 
 export class Context {
   public assembleContext: IAssembleContext;
@@ -36,8 +35,9 @@ export class Context {
   public cache: Cache;
   public devServer?: IDevServerActions;
   public weakReferences: WeakModuleReferences;
-  public webWorkers: { [key: string]: WebWorkerProcess };
-  public productionApiWrapper: ProductionAPIWrapper;
+
+  public productionContext: ProductionContext;
+  //public productionApiWrapper: ProductionAPIWrapper;
   public tsConfigAtPaths?: Array<TsConfigAtPath>;
   private _uniqueEntryHash: string;
   private _tranformersAtPaths: Array<{ test: RegExp; transformer: (opts: any) => ITransformer }>;
@@ -48,7 +48,6 @@ export class Context {
     this.weakReferences = createWeakModuleReferences(this);
     this.assembleContext = assembleContext(this);
     this.ict = createInterceptor();
-    this.webWorkers = {};
 
     this.webIndex = createWebIndex(this);
 
@@ -128,7 +127,7 @@ export class Context {
 
     this.devServer = createDevServer(this);
     this.config.setupEnv();
-    this.productionApiWrapper = new ProductionAPIWrapper(this);
+    //    this.productionApiWrapper = new ProductionAPIWrapper(this);
 
     this.config.manifest = { enabled: false };
     if (prodProps.manifest) {
@@ -145,6 +144,7 @@ export class Context {
       this.config.manifest.filePath = 'manifest.json';
     }
     this.config.manifest.filePath = ensureUserPath(this.config.manifest.filePath, this.writer.outputDirectory);
+    this.productionContext = new ProductionContext(this);
   }
 
   public get useSingleBundle() {

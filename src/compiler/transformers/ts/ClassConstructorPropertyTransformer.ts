@@ -2,24 +2,45 @@ import { ASTNode } from '../../interfaces/AST';
 import { ITransformer } from '../../program/transpileModule';
 import { IVisit } from '../../Visitor/Visitor';
 
+const SUPER_WITH_ARGS: ASTNode = {
+  type: 'ExpressionStatement',
+  expression: {
+    type: 'CallExpression',
+    callee: {
+      type: 'Super',
+    },
+    arguments: [
+      {
+        type: 'SpreadElement',
+        argument: {
+          type: 'Identifier',
+          name: 'arguments',
+        },
+      },
+    ],
+  },
+};
 export function ClassConstructorPropertyTransformer(): ITransformer {
   return (visit: IVisit) => {
     const { node } = visit;
 
     if (node.type === 'ClassBody') {
       const bodyInitializers = [];
-      let isCnstructorFound = false;
+      let isConstructorFound = false;
+      let hasSuperClass = !!visit.parent.superClass;
       let constructorNode: ASTNode;
       for (const bodyEl of node.body as Array<ASTNode>) {
         if (bodyEl.type === 'ClassProperty' && bodyEl.value) {
           bodyInitializers.push({ paramName: bodyEl.key.name, ast: bodyEl.value });
         } else if (bodyEl.type === 'MethodDefinition' && bodyEl.kind === 'constructor') {
-          isCnstructorFound = true;
+          isConstructorFound = true;
           constructorNode = bodyEl;
         }
       }
       if (bodyInitializers.length) {
-        if (!isCnstructorFound) {
+        if (!isConstructorFound) {
+          const bodyBlockStatement = [];
+          if (hasSuperClass) bodyBlockStatement.push(SUPER_WITH_ARGS);
           // injecting constructor if none found
           (node.body as Array<ASTNode>).splice(0, 0, {
             type: 'MethodDefinition',
@@ -34,7 +55,7 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
               params: [],
               body: {
                 type: 'BlockStatement',
-                body: [],
+                body: bodyBlockStatement,
               },
             },
           });

@@ -39,6 +39,7 @@ export function ExportTransformer(options?: ITransformerSharedOptions): ITransfo
   return {
     onEachNode: (visit: IVisit) => {
       const global = visit.globalContext as GlobalContext;
+
       if (global.exportAfterDeclaration) {
         const node = visit.node;
         const definedLocally = isDefinedLocally(node);
@@ -55,21 +56,8 @@ export function ExportTransformer(options?: ITransformerSharedOptions): ITransfo
                 name: localVar.name,
               });
 
-              //if (!localVar.init) {
-              // global.identifierReplacement[localVar.name] = {
-              //   first: global.namespace,
-              //   second: localVar.name,
-              // };
               if (!response.appendToBody) response.appendToBody = [];
               response.appendToBody.push(ast);
-              // } else {
-              //   newNodes.push(
-              //     createExports(global.namespace, global.exportAfterDeclaration[localVar.name].target, {
-              //       type: 'Identifier',
-              //       name: localVar.name,
-              //     }),
-              //   );
-              // }
             }
           }
           if (newNodes.length) {
