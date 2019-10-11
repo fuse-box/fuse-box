@@ -1,16 +1,16 @@
-import { ASTNode } from '../../interfaces/AST';
-import { ITransformer } from '../../program/transpileModule';
+import { ASTNode } from '../../../interfaces/AST';
+import { ITransformer } from '../../../program/transpileModule';
 import {
   createClassDecorators,
   createPropertyDecorator,
   createMethodDecorator,
   createMethodPropertyDecorator,
   createMethodArgumentParam,
-} from '../../Visitor/decorator_helpers';
-import { createRequireStatement } from '../../Visitor/helpers';
-import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
-import { ITransformerSharedOptions } from '../../interfaces/ITransformerSharedOptions';
-import { ImportType } from '../../interfaces/ImportType';
+} from '../../../Visitor/decorator_helpers';
+import { createRequireStatement } from '../../../Visitor/helpers';
+import { IVisit, IVisitorMod } from '../../../Visitor/Visitor';
+import { ITransformerSharedOptions } from '../../../interfaces/ITransformerSharedOptions';
+import { ImportType } from '../../../interfaces/ImportType';
 
 export interface IDecoratorTransformerOpts {
   helperModule?: string;

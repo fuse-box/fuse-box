@@ -1,0 +1,422 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Annotation test Generics should detect "Number" 1`] = `
+Object {
+  "name": "Number",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Generics should detect "String" 1`] = `
+Object {
+  "name": "String",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Generics should detect "number" 1`] = `
+Object {
+  "name": "Number",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Generics should detect "string" 1`] = `
+Object {
+  "name": "String",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "Array" 1`] = `
+Object {
+  "name": "Array",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "ArrayBuffer" 1`] = `
+Object {
+  "name": "ArrayBuffer",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "BigInt64Array" 1`] = `
+Object {
+  "name": "BigInt64Array",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "BigUint64Array" 1`] = `
+Object {
+  "name": "BigUint64Array",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "CallableFunction" 1`] = `
+Object {
+  "name": "Object",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "DataView" 1`] = `
+Object {
+  "name": "DataView",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "Date" 1`] = `
+Object {
+  "name": "Date",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "Error" 1`] = `
+Object {
+  "name": "Error",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "EvalError" 1`] = `
+Object {
+  "name": "EvalError",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "Float32Array" 1`] = `
+Object {
+  "name": "Float32Array",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "Float64Array" 1`] = `
+Object {
+  "name": "Float64Array",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "Function" 1`] = `
+Object {
+  "name": "Function",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "FunctionConstructor" 1`] = `
+Object {
+  "name": "Function",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "FunctionStringCallback" 1`] = `
+Object {
+  "name": "Function",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "GeneratorFunction" 1`] = `
+Object {
+  "name": "Function",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "Int8Array" 1`] = `
+Object {
+  "name": "Int8Array",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "Int16Array" 1`] = `
+Object {
+  "name": "Int16Array",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "Int32Array" 1`] = `
+Object {
+  "name": "Int32Array",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "Map" 1`] = `
+Object {
+  "name": "Map",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "Number" 1`] = `
+Object {
+  "name": "Number",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "Object" 1`] = `
+Object {
+  "name": "Object",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "Promise" 1`] = `
+Object {
+  "name": "Promise",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "RangeError" 1`] = `
+Object {
+  "name": "RangeError",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "ReferenceError" 1`] = `
+Object {
+  "name": "ReferenceError",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "RegExp" 1`] = `
+Object {
+  "name": "RegExp",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "Set" 1`] = `
+Object {
+  "name": "Set",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "String" 1`] = `
+Object {
+  "name": "String",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "Symbol" 1`] = `
+Object {
+  "name": "Symbol",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "SyntaxError" 1`] = `
+Object {
+  "name": "SyntaxError",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "TypeError" 1`] = `
+Object {
+  "name": "TypeError",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "URIError" 1`] = `
+Object {
+  "name": "URIError",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "Uint8Array" 1`] = `
+Object {
+  "name": "Uint8Array",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "Uint8ClampedArray" 1`] = `
+Object {
+  "name": "Uint8ClampedArray",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "Uint16Array" 1`] = `
+Object {
+  "name": "Uint16Array",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "Uint32Array" 1`] = `
+Object {
+  "name": "Uint32Array",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "VoidFunction" 1`] = `
+Object {
+  "name": "Function",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "WeakMap" 1`] = `
+Object {
+  "name": "WeakMap",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "WeakSet" 1`] = `
+Object {
+  "name": "WeakSet",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "XMLHttpRequest" 1`] = `
+Object {
+  "name": "XMLHttpRequest",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test Known identifiers should detect "boolean" 1`] = `undefined`;
+
+exports[`Annotation test Void Zero should detect "never" 1`] = `
+Object {
+  "argument": Object {
+    "type": "Literal",
+    "value": 0,
+  },
+  "operator": "void",
+  "prefix": true,
+  "type": "UnaryExpression",
+}
+`;
+
+exports[`Annotation test Void Zero should detect "null" 1`] = `
+Object {
+  "argument": Object {
+    "type": "Literal",
+    "value": 0,
+  },
+  "operator": "void",
+  "prefix": true,
+  "type": "UnaryExpression",
+}
+`;
+
+exports[`Annotation test Void Zero should detect "undefined" 1`] = `
+Object {
+  "argument": Object {
+    "type": "Literal",
+    "value": 0,
+  },
+  "operator": "void",
+  "prefix": true,
+  "type": "UnaryExpression",
+}
+`;
+
+exports[`Annotation test Void Zero should detect "void" 1`] = `
+Object {
+  "argument": Object {
+    "type": "Literal",
+    "value": 0,
+  },
+  "operator": "void",
+  "prefix": true,
+  "type": "UnaryExpression",
+}
+`;
+
+exports[`Annotation test other should detect "'a'" 1`] = `
+Object {
+  "name": "String",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test other should detect "() => {}" 1`] = `
+Object {
+  "name": "Function",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test other should detect "[]" 1`] = `
+Object {
+  "name": "Array",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test other should detect "{}" 1`] = `
+Object {
+  "name": "Object",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test other should detect "0x22" 1`] = `
+Object {
+  "name": "Number",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test other should detect "1" 1`] = `
+Object {
+  "name": "Number",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test other should detect "any" 1`] = `
+Object {
+  "name": "Object",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test other should detect "false" 1`] = `
+Object {
+  "name": "Boolean",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test other should detect "keyof S" 1`] = `
+Object {
+  "name": "Object",
+  "type": "Identifier",
+}
+`;
+
+exports[`Annotation test other should detect "true" 1`] = `
+Object {
+  "name": "Boolean",
+  "type": "Identifier",
+}
+`;

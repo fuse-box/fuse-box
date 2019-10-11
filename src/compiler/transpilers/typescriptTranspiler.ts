@@ -18,7 +18,7 @@ import { CommonTSfeaturesTransformer } from '../transformers/ts/CommonTSfeatures
 import { EnumTransformer } from '../transformers/ts/EnumTransformer';
 import { NamespaceTransformer } from '../transformers/ts/NameSpaceTransformer';
 import { ITransformerResult } from '../interfaces/ITranformerResult';
-import { DecoratorTransformer } from '../transformers/ts/DecoratorTransformer';
+import { DecoratorTransformer } from '../transformers/ts/decorators/DecoratorTransformer';
 
 export function typescriptTranspiler(props: ITranspiler): ITransformerResult {
   const requireStatementCollection: ITransformerRequireStatementCollection = [];

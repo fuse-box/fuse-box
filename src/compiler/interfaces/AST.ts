@@ -6,7 +6,11 @@ export interface ASTNode {
   $fuse_visited?: boolean;
   $fuse_decoratorsProcessed?: boolean;
   $fuse_decoratorForClassIdentifier?: string;
+  typeAnnotation?: ASTNode;
+  literal?: ASTNode;
+  typeName?: ASTNode;
   $transpiled?: boolean;
+  elementTypes?: Array<ASTNode>;
   elements?: Array<ASTNode>;
   alternate?: ASTNode;
   scope?: IASTScope;

@@ -1,8 +1,7 @@
+import { IModuleCacheBasics } from '../cache/cache';
 import { IPackageMeta } from '../resolver/resolver';
 import { Context } from './Context';
 import { Module } from './Module';
-import { IModuleCacheBasics } from '../cache/cache';
-import { ProductionPackage } from '../production/ProductionPackage';
 
 export interface IPackageProps {
   ctx: Context;
@@ -26,7 +25,7 @@ export class Package {
   public userEntries: Array<Module>;
   public modules: Array<Module>;
   public externalPackages: Array<Package>;
-  public productionPackage: ProductionPackage;
+  //public productionPackage: ProductionPackage;
   constructor(public props: IPackageProps) {
     this.modules = [];
     this.userEntries = [];

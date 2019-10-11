@@ -65,4 +65,17 @@ describe('Common features test', () => {
       expect(result.code).toMatchSnapshot();
     });
   });
+
+  describe('Various', () => {
+    it('should remove type assertion', () => {
+      const result = testTranspile({
+        withJSX: false,
+        code: `
+          if( (<any>_e.target) === 1){}
+        `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+  });
 });

@@ -218,6 +218,45 @@ describe('Class constructor properties', () => {
       expect(result.code).toMatchSnapshot();
     });
 
+    it('should create constructor with extends', () => {
+      const result = testTranspile({
+        code: `
+        class A extends B {
+          public name : string = "hey"
+        }
+        `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should create constructor with extends being in export default', () => {
+      const result = testTranspile({
+        code: `
+        export default class extends B {
+          public name : string = "hey"
+        }
+        `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should respect existing constructor with extends being in export default', () => {
+      const result = testTranspile({
+        code: `
+        export default class extends B {
+          public name : string = "hey"
+          constructor(private oi : number){
+            super(oi)
+          }
+        }
+        `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
     it('should remove add a property to the existing constructor', () => {
       const result = testTranspile({
         code: `

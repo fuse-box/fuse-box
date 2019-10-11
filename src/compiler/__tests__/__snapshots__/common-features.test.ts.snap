@@ -32,3 +32,8 @@ exports[`Common features test Should remove declare should remove consts 1`] = `
 alert(2);
 "
 `;
+
+exports[`Common features test Various should remove type assertion 1`] = `
+"if (_e.target === 1) {}
+"
+`;
