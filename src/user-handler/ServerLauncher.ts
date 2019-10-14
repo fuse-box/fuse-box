@@ -20,13 +20,21 @@ export class ServerLauncher {
     const nodeArgs = props && props.nodeArgs || [];
     const scriptArgs = props && props.scriptArgs || [];
     const options = props && props.options || {};
+    const env = {
+      ...process.env,
+      ...this.ctx.config.env,
+      ...options.env
+    };
+
     const serverEntry = this.response.find(item => item.bundle.props.type == BundleType.SERVER_ENTRY);
     if (!serverEntry) {
       return this.ctx.fatal('Server entry was not found', ['Make sure your dist contains server entry']);
     }
+
     this.childProcess = spawn('node', [...nodeArgs, serverEntry.stat.absPath, ...scriptArgs], {
       stdio: 'inherit',
       ...options,
+      env,
     });
 
     this.childProcess.on('close', code => {
