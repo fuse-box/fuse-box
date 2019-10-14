@@ -29,5 +29,10 @@ export class ServerLauncher {
       ...options,
     });
 
+    this.childProcess.on('close', code => {
+			if (code === 8) {
+				this.ctx.fatal('Server quit unexpectedly. Will retry when new changes are bundled.')
+			}
+		})
   }
 }
