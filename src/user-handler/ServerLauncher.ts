@@ -1,4 +1,4 @@
-import { spawn, SpawnOptions } from 'child_process';
+import { ChildProcess, spawn, SpawnOptions } from 'child_process';
 import { BundleType, IBundleWriteResponse } from '../bundle/Bundle';
 import { Context } from '../core/Context';
 
@@ -9,11 +9,11 @@ interface handleEntryProps {
 }
 
 export class ServerLauncher {
-  private node;
+  private childProcess: ChildProcess;
   constructor(public ctx: Context, public response: Array<IBundleWriteResponse>) {}
 
   public kill() {
-    if (this.node) this.node.kill();
+    if (this.childProcess) this.childProcess.kill();
   }
   public handleEntry(props?: handleEntryProps) {
     this.kill();
@@ -24,9 +24,10 @@ export class ServerLauncher {
     if (!serverEntry) {
       return this.ctx.fatal('Server entry was not found', ['Make sure your dist contains server entry']);
     }
-    this.node = spawn('node', [...nodeArgs, serverEntry.stat.absPath, ...scriptArgs], {
+    this.childProcess = spawn('node', [...nodeArgs, serverEntry.stat.absPath, ...scriptArgs], {
       stdio: 'inherit',
       ...options,
     });
+
   }
 }
