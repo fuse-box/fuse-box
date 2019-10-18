@@ -37,7 +37,7 @@ export function typescriptTranspiler(props: ITranspiler): ITransformerResult {
       isBrowser: props.isBrowser,
       isServer: props.isServer,
     }),
-    DecoratorTransformer({ onRequireCallExpression }),
+    DecoratorTransformer({ onRequireCallExpression, emitDecoratorMetadata: props.emitDecoratorMetadata }),
     RequireStatementInterceptor({ onRequireCallExpression }),
     props.target === 'browser' && BrowserProcessTransformer({ env: props.env, onRequireCallExpression }),
     BundlePolyfillTransformer({ ...props, onRequireCallExpression }),

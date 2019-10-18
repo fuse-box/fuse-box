@@ -10,4 +10,5 @@ export interface ITranspiler {
   env: { [key: string]: string };
   isBrowser: boolean;
   isServer: boolean;
+  emitDecoratorMetadata?: boolean;
 }

@@ -139,6 +139,14 @@ exports.Foo = TweenLite_js_1.globals.TweenMax;
 "
 `;
 
+exports[`Es exports tests Export var with value should trace down all varaiables ignore assignements (local scope) 1`] = `
+"exports.__assign = function () {
+  exports.__assign = Object.assign || (function __assign() {});
+  return exports.__assign.apply(this, arguments);
+};
+"
+`;
+
 exports[`Es exports tests Export var with value should trace down an undefined variable 1`] = `
 "(function (FooBar) {})(exports.FooBar || (exports.FooBar = {}));
 "

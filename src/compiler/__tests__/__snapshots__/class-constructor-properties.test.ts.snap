@@ -78,8 +78,7 @@ exports[`Class constructor properties should deal with immediate function calls 
 `;
 
 exports[`Class constructor properties should deal with inner classes 1`] = `
-"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
-class Amazing {}
+"class Amazing {}
 class HelloWorld extends Amazing {
   constructor(welcome, to, awesomeness, of, fuse) {
     super();
@@ -98,7 +97,6 @@ class HelloWorld extends Amazing {
   }
   welcomeToTheBlock() {}
 }
-__fuse_decorate.d([__fuse_decorate.p(0, foo), __fuse_decorate.p(1, foo()), __fuse_decorate.p(2, foo(123, \\"ab\\"))], HelloWorld.prototype, \\"constructor\\", null);
 "
 `;
 

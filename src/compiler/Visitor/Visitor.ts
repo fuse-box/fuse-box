@@ -11,6 +11,7 @@ export interface IVisitProps {
 }
 export interface IASTScope {
   context?: any;
+
   locals?: { [key: string]: any };
   meta?: { [key: string]: any };
   namespace?: string;

@@ -8,6 +8,7 @@ file = readFileSync(__dirname + '/sample1.ts').toString();
 const result = testTranspile({
   withJSX: false,
   code: file,
+  emitDecoratorMetadata: true,
   bundleProps: { target: 'browser', env: { NODE_ENV: 'development' } },
 });
 
