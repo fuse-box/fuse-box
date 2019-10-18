@@ -49,7 +49,7 @@ export const KNOWN_IDENTIFIERS = {
   // here i give up with mapping. F.This
 };
 
-const voidZero = {
+export const voidZero = {
   type: 'UnaryExpression',
   operator: 'void',
   argument: {
@@ -73,8 +73,36 @@ const LiteralTypes = {
   function: id_Function,
 };
 
+function maybe(id: string) {
+  return {
+    type: 'ConditionalExpression',
+    test: {
+      type: 'BinaryExpression',
+      left: {
+        type: 'UnaryExpression',
+        operator: 'typeof',
+        argument: {
+          type: 'Identifier',
+          name: id,
+        },
+        prefix: true,
+      },
+      right: {
+        type: 'Literal',
+        value: 'function',
+      },
+      operator: '===',
+    },
+    consequent: {
+      type: 'Identifier',
+      name: id,
+    },
+    alternate: id_Object,
+  };
+}
+
 export function convertTypeAnnotation(node: ASTNode) {
-  if (node.type !== 'TypeAnnotation') return id('Object');
+  if (!node || node.type !== 'TypeAnnotation') return id('Object');
   const typeAnnotation = node.typeAnnotation;
 
   switch (typeAnnotation.type) {
@@ -107,7 +135,10 @@ export function convertTypeAnnotation(node: ASTNode) {
       if (typeAnnotation.typeName && typeAnnotation.typeName.type === 'Identifier') {
         const known = KNOWN_IDENTIFIERS[typeAnnotation.typeName.name];
         if (known) return id(known);
+
+        return maybe(typeAnnotation.typeName.name);
       }
+      return id_Object;
     default:
       break;
   }

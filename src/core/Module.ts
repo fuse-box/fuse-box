@@ -156,6 +156,8 @@ export class Module {
 
   public transpile() {
     const config = this.props.ctx.config;
+    const compilerOptions = this.props.ctx.tsConfig.jsonCompilerOptions;
+
     const options: ITranspiler = {
       ast: this.ast,
       module: this,
@@ -164,7 +166,9 @@ export class Module {
       isServer: config.target === 'server',
       moduleFileName: this.props.fuseBoxPath,
       target: config.target,
+      emitDecoratorMetadata: compilerOptions.emitDecoratorMetadata,
     };
+
     options.transformers = this.props.ctx.getTransformersAtPath(this.props.absPath);
 
     let result: ITransformerResult;

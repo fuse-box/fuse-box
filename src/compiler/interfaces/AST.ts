@@ -23,6 +23,7 @@ export interface ASTNode {
   specifiers?: Array<ASTNode>;
   test?: ASTNode;
   initializer?: ASTNode;
+  returnType?: ASTNode;
 
   imported?: ASTNode;
   source?: ASTNode;

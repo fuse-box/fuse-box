@@ -1,6 +1,8 @@
-import { ASTNode } from '../interfaces/AST';
+import { ASTNode } from '../../../interfaces/AST';
+import { voidZero, convertTypeAnnotation } from './Annotations';
+import { metatadataAST, getMethodPropertiesMetadata, getParamTypes } from './Metadata';
 
-const __DECORATE__ = {
+export const __DECORATE__ = {
   type: 'MemberExpression',
   object: {
     type: 'Identifier',
@@ -10,6 +12,19 @@ const __DECORATE__ = {
   property: {
     type: 'Identifier',
     name: 'd',
+  },
+};
+
+export const FUSEBOX_DECORATOR_META: ASTNode = {
+  type: 'MemberExpression',
+  object: {
+    type: 'Identifier',
+    name: '__fuse_decorate',
+  },
+  computed: false,
+  property: {
+    type: 'Identifier',
+    name: 'm',
   },
 };
 export function createPropertyDecorator(props: {
@@ -56,15 +71,7 @@ export function createPropertyDecorator(props: {
           type: 'Literal',
           value: props.propertyName,
         },
-        {
-          type: 'UnaryExpression',
-          operator: 'void',
-          argument: {
-            type: 'Literal',
-            value: 0,
-          },
-          prefix: true,
-        },
+        voidZero,
       ],
     },
   };
@@ -122,8 +129,12 @@ export function createClassDecorators(props: {
   className: string;
   helperModule: string;
   decorators: Array<ASTNode>;
-}): ASTNode {
-  return {
+}): { expressionStatement: ASTNode; arrayExpression: ASTNode } {
+  const arrayExpression: ASTNode = {
+    type: 'ArrayExpression',
+    elements: props.decorators,
+  };
+  const expressionStatement: ASTNode = {
     type: 'ExpressionStatement',
     expression: {
       type: 'AssignmentExpression',
@@ -147,11 +158,7 @@ export function createClassDecorators(props: {
           },
         },
         arguments: [
-          {
-            type: 'ArrayExpression',
-            elements: props.decorators,
-            optional: false,
-          },
+          arrayExpression,
           {
             type: 'Identifier',
             name: props.className,
@@ -160,6 +167,30 @@ export function createClassDecorators(props: {
       },
     },
   };
+  return { expressionStatement, arrayExpression };
+}
+
+export function createMethodMetadata(props: {
+  node?: ASTNode;
+}): { designType: ASTNode; returnType: ASTNode; paramTypes: ASTNode } {
+  const node = props.node;
+  const designType = metatadataAST('design:type', {
+    type: 'Identifier',
+    name: 'Function',
+  });
+  let returnTypeAnnotation;
+
+  if (!node.value.returnType) {
+    returnTypeAnnotation = voidZero;
+  } else {
+    returnTypeAnnotation = convertTypeAnnotation(node.value.returnType);
+  }
+
+  const returnType = metatadataAST('design:returntype', returnTypeAnnotation);
+
+  const paramTypes = getParamTypes(node.value);
+
+  return { designType, returnType, paramTypes };
 }
 export function createMethodDecorator(props: {
   helperModule: string;

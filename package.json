@@ -115,6 +115,7 @@
   },
   "scripts": {
     "next": "ts-node -T fuse publish-next",
+    "alpha": "ts-node -T fuse publish-alpha",
     "codecov": "codecov",
     "changelog": "run-s changelog:generate changelog:format",
     "changelog:format": "prettier --write CHANGELOG.md",
@@ -134,5 +135,5 @@
     "coverage-ci": "jest --verbose --coverage --runInBand"
   },
   "typings": "index.d.ts",
-  "version": "4.0.0-alpha.218"
+  "version": "4.0.0-alpha.219"
 }

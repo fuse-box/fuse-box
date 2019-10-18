@@ -1,19 +1,21 @@
 import { ASTNode } from '../../../interfaces/AST';
+import { ImportType } from '../../../interfaces/ImportType';
+import { ITransformerSharedOptions } from '../../../interfaces/ITransformerSharedOptions';
 import { ITransformer } from '../../../program/transpileModule';
-import {
-  createClassDecorators,
-  createPropertyDecorator,
-  createMethodDecorator,
-  createMethodPropertyDecorator,
-  createMethodArgumentParam,
-} from '../../../Visitor/decorator_helpers';
 import { createRequireStatement } from '../../../Visitor/helpers';
 import { IVisit, IVisitorMod } from '../../../Visitor/Visitor';
-import { ITransformerSharedOptions } from '../../../interfaces/ITransformerSharedOptions';
-import { ImportType } from '../../../interfaces/ImportType';
+import {
+  createClassDecorators,
+  createMethodArgumentParam,
+  createMethodMetadata,
+  createMethodPropertyDecorator,
+  createPropertyDecorator,
+} from './decorator_helpers';
+import { getParamTypes, getPropertyMetadata } from './Metadata';
 
 export interface IDecoratorTransformerOpts {
   helperModule?: string;
+  emitDecoratorMetadata?: boolean;
 }
 export function DecoratorTransformer(opts?: IDecoratorTransformerOpts & ITransformerSharedOptions): ITransformer {
   opts = opts || {};
@@ -44,6 +46,7 @@ export function DecoratorTransformer(opts?: IDecoratorTransformerOpts & ITransfo
       targetClassBody = (node.body as ASTNode).body as Array<ASTNode>;
     }
     if (targetClassBody) {
+      let classDecoratorArrayExpression: ASTNode;
       const statements: Array<ASTNode> = [];
       /**
        * Class Decorators
@@ -64,17 +67,29 @@ export function DecoratorTransformer(opts?: IDecoratorTransformerOpts & ITransfo
           className: className,
           decorators: expressions,
         });
-        statements.push(statement);
+        statements.push(statement.expressionStatement);
+
+        // check for metadata
+        if (opts.emitDecoratorMetadata) {
+          classDecoratorArrayExpression = statement.arrayExpression;
+        }
       }
 
       // decorate properties
       for (const item of targetClassBody) {
+        if (item.kind === 'constructor') {
+          if (classDecoratorArrayExpression) {
+            classDecoratorArrayExpression.elements.push(getParamTypes(item.value as ASTNode));
+          }
+        }
         if (item.decorators && item.decorators.length) {
           const expressions: Array<ASTNode> = [];
           for (const dec of item.decorators) {
             expressions.push(dec.expression);
           }
           if (item.type === 'ClassProperty') {
+            expressions.push(getPropertyMetadata(item.typeAnnotation));
+
             statements.push(
               createPropertyDecorator({
                 helperModule: opts.helperModule,
@@ -83,31 +98,27 @@ export function DecoratorTransformer(opts?: IDecoratorTransformerOpts & ITransfo
                 decorators: expressions,
               }),
             );
-          } else if (item.type === 'MethodDefinition') {
-            statements.push(
-              createMethodDecorator({
-                helperModule: opts.helperModule,
-                className: className,
-                isStatic: item.static,
-                methodName: item.key.name,
-                decorators: expressions,
-              }),
-            );
           }
         }
 
-        if (item.type === 'MethodDefinition') {
+        if (item.type === 'MethodDefinition' && item.kind !== 'constructor') {
           if (item.value && item.value.type === 'FunctionExpression') {
             const params = item.value.params as Array<ASTNode>;
+            const expressions = [];
+
+            if (item.decorators && item.decorators.length) {
+              for (const methodDecorator of item.decorators) {
+                expressions.push(methodDecorator.expression);
+              }
+            }
 
             if (params && params.length) {
               let index = 0;
-              const paramDecors = [];
               while (index < params.length) {
                 let p = params[index];
                 if (p.decorators && p.decorators.length) {
                   for (const dec of p.decorators) {
-                    paramDecors.push(
+                    expressions.push(
                       createMethodArgumentParam({
                         helperModule: opts.helperModule,
                         decorator: dec.expression,
@@ -118,7 +129,14 @@ export function DecoratorTransformer(opts?: IDecoratorTransformerOpts & ITransfo
                 }
                 index++;
               }
-              if (paramDecors.length) {
+              if (expressions.length) {
+                // method decorators metadata
+                if (opts.emitDecoratorMetadata) {
+                  const medatadata = createMethodMetadata({ node: item });
+                  expressions.push(medatadata.designType);
+                  expressions.push(medatadata.paramTypes);
+                  expressions.push(medatadata.returnType);
+                }
                 statements.push(
                   createMethodPropertyDecorator({
                     isStatic: item.static,
@@ -126,7 +144,7 @@ export function DecoratorTransformer(opts?: IDecoratorTransformerOpts & ITransfo
                     className: className,
                     methodName: item.key.name,
                     index: index,
-                    elements: paramDecors,
+                    elements: expressions,
                   }),
                 );
               }

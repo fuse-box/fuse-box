@@ -200,4 +200,158 @@ describe('Decorators test', () => {
       expect(res.code).toMatchSnapshot();
     });
   });
+
+  describe('Metadata', () => {
+    describe('Constructor metadata', () => {
+      it('should handle normal properties', () => {
+        const res = testTranspile({
+          emitDecoratorMetadata: true,
+          code: `
+          @a
+          @b()
+          export class HomeComponent {
+            constructor(env: Env, bar: Runkari) {}
+          }
+    `,
+        });
+        expect(res.code).toMatchSnapshot();
+      });
+
+      it('should handle properties with visibility', () => {
+        const res = testTranspile({
+          emitDecoratorMetadata: true,
+          code: `
+          @a
+          @b()
+          export class HomeComponent {
+            constructor(public env: Env, bar) {}
+          }
+    `,
+        });
+
+        expect(res.code).toMatchSnapshot();
+      });
+
+      it('should respect imports', () => {
+        const res = testTranspile({
+          emitDecoratorMetadata: true,
+          code: `
+          import Env from "./some-data";
+          @a
+          @b()
+          export class HomeComponent {
+            constructor(public env: Env, bar) {}
+          }
+    `,
+        });
+
+        expect(res.code).toMatchSnapshot();
+      });
+
+      it('should work ok without any props', () => {
+        const res = testTranspile({
+          emitDecoratorMetadata: true,
+          code: `
+          @a
+          @b()
+          export class HomeComponent {
+            constructor() {}
+          }
+    `,
+        });
+        expect(res.code).toMatchSnapshot();
+      });
+
+      it('should work ok without constructor', () => {
+        const res = testTranspile({
+          emitDecoratorMetadata: true,
+          code: `
+          @a
+          @b()
+          export class HomeComponent {
+
+          }
+    `,
+        });
+
+        expect(res.code).toMatchSnapshot();
+      });
+    });
+
+    describe('Paramater decorators', () => {
+      it('should add 1', () => {
+        const res = testTranspile({
+          emitDecoratorMetadata: true,
+          code: `
+          export class HomeComponent {
+            @hey
+            public name: string;
+          }
+
+    `,
+        });
+        expect(res.code).toMatchSnapshot();
+      });
+
+      it('should add 2 decorators', () => {
+        const res = testTranspile({
+          emitDecoratorMetadata: true,
+          code: `
+          export class HomeComponent {
+            @hey
+            @oi({})
+            public name: string;
+          }
+
+    `,
+        });
+        expect(res.code).toMatchSnapshot();
+      });
+    });
+
+    describe('method params meta', () => {
+      it('should handle 1', () => {
+        const res = testTranspile({
+          emitDecoratorMetadata: true,
+          code: `
+          class Application {
+            @hey
+            @gay
+            name(@kukka @sukka kakka: string) {}
+          }
+    `,
+        });
+        expect(res.code).toMatchSnapshot();
+      });
+
+      it('should handle with return type', () => {
+        const res = testTranspile({
+          emitDecoratorMetadata: true,
+          code: `
+          class Application {
+            @hey
+            @gay
+            name(@kukka @sukka kakka: string) : HelloSomeObject {}
+          }
+    `,
+        });
+
+        expect(res.code).toMatchSnapshot();
+      });
+
+      it('should handle 2', () => {
+        const res = testTranspile({
+          emitDecoratorMetadata: true,
+          code: `
+          class Application {
+            @oi
+            name(some: string): HelloSomeObject {}
+          }
+    `,
+        });
+
+        expect(res.code).toMatchSnapshot();
+      });
+    });
+  });
 });

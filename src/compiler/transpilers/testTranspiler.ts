@@ -30,6 +30,7 @@ export interface ICompileModuleProps {
   transformers?: Array<(globalContext) => (visit: IVisit) => IVisitorMod>;
   compilerOptions?: ICompilerOptions;
   bundleProps?: IBundleEssentialProps;
+  emitDecoratorMetadata?: boolean;
 }
 
 export function testTranspile(props: ICompileModuleProps) {
@@ -64,7 +65,7 @@ export function testTranspile(props: ICompileModuleProps) {
       isBrowser: bundleProps.isBrowser,
       isServer: bundleProps.isServer,
     }),
-    DecoratorTransformer(),
+    DecoratorTransformer({ emitDecoratorMetadata: props.emitDecoratorMetadata }),
     RequireStatementInterceptor({ onRequireCallExpression }),
     bundleProps.target === 'browser' && BrowserProcessTransformer({ ...bundleProps, onRequireCallExpression }),
     BundlePolyfillTransformer({ ...bundleProps, onRequireCallExpression }),

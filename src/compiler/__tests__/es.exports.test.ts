@@ -96,6 +96,19 @@ describe('Es exports tests', () => {
       expect(result.code).toMatchSnapshot();
     });
 
+    it('should trace down all varaiables ignore assignements (local scope)', () => {
+      const result = testTranspile({
+        code: `
+        export var __assign = function() {
+          __assign = Object.assign || function __assign() {};
+          return __assign.apply(this, arguments);
+        };
+            `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
     it('should export a variable 1', () => {
       const result = testTranspile({
         code: `
