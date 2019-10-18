@@ -23,7 +23,6 @@ export function scopeTracker(visitor: IVisit): IASTScope {
     if (node.declarations) {
       for (const decl of node.declarations) {
         if (decl.type === 'VariableDeclarator' && decl.id && decl.id.type === 'Identifier') {
-          const debug = decl.id.name === 'TweenMax';
           if (scope === undefined) scope = { locals: {} };
           scope.locals[decl.id.name] = 1;
 
@@ -40,7 +39,10 @@ export function scopeTracker(visitor: IVisit): IASTScope {
     if (node.expression && node.expression.arguments) {
       node.expression.arguments['scope'] = scope;
     }
-  } else if (_FunctionDecl[type]) {
+  }
+  // grab function declaration but avoid those defined in the expression statement.e.g
+  // var a = function hey(){}
+  else if (_FunctionDecl[type] && parent.right !== node) {
     if (node.body) {
       if (scope === undefined) scope = { locals: {} };
       if (node.id && node.id.name) {

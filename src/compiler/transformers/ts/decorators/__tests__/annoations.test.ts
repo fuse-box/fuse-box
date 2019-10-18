@@ -1,6 +1,6 @@
 import * as buntis from 'buntis';
 import { convertTypeAnnotation, KNOWN_IDENTIFIERS } from '../Annotations';
-
+import '../../../../../utils/test_utils';
 function conv(typeAnnotation?: string) {
   const ast = buntis.parseTSModule(`function a(${typeAnnotation ? 'c : ' + typeAnnotation : 'c'}){}`, {
     directives: true,
@@ -26,7 +26,8 @@ describe('Annotation test', () => {
     for (const name of other) {
       it(`should detect "${name}"`, () => {
         const res = conv(name);
-        expect(res).toMatchSnapshot();
+
+        expect(JSON.stringify(res)).toMatchSnapshot();
       });
     }
   });
@@ -36,7 +37,7 @@ describe('Annotation test', () => {
       it(`should detect "${name}"`, () => {
         const res = conv(name);
         //console.log(name, '=>', res);
-        expect(res).toMatchSnapshot();
+        expect(JSON.stringify(res)).toMatchSnapshot();
       });
     }
   });
@@ -46,7 +47,7 @@ describe('Annotation test', () => {
       it(`should detect "${name}"`, () => {
         const res = conv(name);
         // console.log(name, '=>', res);
-        expect(res).toMatchSnapshot();
+        expect(JSON.stringify(res)).toMatchSnapshot();
       });
     }
   });
@@ -56,8 +57,16 @@ describe('Annotation test', () => {
       it(`should detect "${name}"`, () => {
         const res = conv(name);
         //console.log(name, '=>', res);
-        expect(res).toMatchSnapshot();
+        expect(JSON.stringify(res)).toMatchSnapshot();
       });
     }
+  });
+
+  describe('Maybe objects', () => {
+    it(`should detect SomeObject as maybe 1`, () => {
+      const res = conv('SomeStuff');
+
+      expect(JSON.stringify(res)).toMatchSnapshot();
+    });
   });
 });

@@ -1,4 +1,5 @@
-function __decorate(decorators, target, key, desc) {
+// __decorato
+export function d(decorators, target, key, desc) {
   var c = arguments.length,
     r = c < 3 ? target : desc === null ? (desc = Object.getOwnPropertyDescriptor(target, key)) : desc,
     d;
@@ -9,10 +10,14 @@ function __decorate(decorators, target, key, desc) {
       if ((d = decorators[i])) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
   return c > 3 && r && Object.defineProperty(target, key, r), r;
 }
-exports.d = __decorate;
-function __param(paramIndex, decorator) {
+// __param
+export function p(paramIndex, decorator) {
   return function(target, key) {
     decorator(target, key, paramIndex);
   };
 }
-exports.p = __param;
+// __metadata
+export function m(metadataKey, metadataValue) {
+  if (typeof Reflect === 'object' && typeof Reflect.metadata === 'function')
+    return Reflect.metadata(metadataKey, metadataValue);
+}
