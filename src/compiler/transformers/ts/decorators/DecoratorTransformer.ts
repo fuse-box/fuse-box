@@ -2,7 +2,7 @@ import { ASTNode } from '../../../interfaces/AST';
 import { ImportType } from '../../../interfaces/ImportType';
 import { ITransformerSharedOptions } from '../../../interfaces/ITransformerSharedOptions';
 import { ITransformer } from '../../../program/transpileModule';
-import { createRequireStatement } from '../../../Visitor/helpers';
+import { createRequireStatement, isValidMethodDefinition } from '../../../Visitor/helpers';
 import { IVisit, IVisitorMod } from '../../../Visitor/Visitor';
 import {
   createClassDecorators,
@@ -77,7 +77,7 @@ export function DecoratorTransformer(opts?: IDecoratorTransformerOpts & ITransfo
 
       // decorate properties
       for (const item of targetClassBody) {
-        if (item.kind === 'constructor') {
+        if (item.kind === 'constructor' && isValidMethodDefinition(item)) {
           if (classDecoratorArrayExpression) {
             classDecoratorArrayExpression.elements.push(getParamTypes(item.value as ASTNode));
           }
@@ -101,7 +101,7 @@ export function DecoratorTransformer(opts?: IDecoratorTransformerOpts & ITransfo
           }
         }
 
-        if (item.type === 'MethodDefinition' && item.kind !== 'constructor') {
+        if (isValidMethodDefinition(item) && item.kind !== 'constructor') {
           if (item.value && item.value.type === 'FunctionExpression') {
             const params = item.value.params as Array<ASTNode>;
             const expressions = [];

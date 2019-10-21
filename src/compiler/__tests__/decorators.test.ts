@@ -248,6 +248,22 @@ describe('Decorators test', () => {
         expect(res.code).toMatchSnapshot();
       });
 
+      it('should handle overload gracefully', () => {
+        const res = testTranspile({
+          emitDecoratorMetadata: true,
+          code: `
+          import Env from "./some-data";
+          @a
+          @b()
+          export class HomeComponent {
+            constructor(name : string)
+            constructor(public env: Env, bar) {}
+          }
+    `,
+        });
+        expect(res.code).toMatchSnapshot();
+      });
+
       it('should work ok without any props', () => {
         const res = testTranspile({
           emitDecoratorMetadata: true,

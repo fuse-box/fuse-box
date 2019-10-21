@@ -21,6 +21,16 @@ exports.default = __DefaultExport__;
 "
 `;
 
+exports[`Class constructor properties Class props should handle constructor overrides 1`] = `
+"class A {
+  constructor(hey = \\"key\\") {
+    this.hey = hey;
+    this.name = \\"hey\\";
+  }
+}
+"
+`;
+
 exports[`Class constructor properties Class props should remove add a property to the existing constructor 1`] = `
 "class A {
   constructor() {

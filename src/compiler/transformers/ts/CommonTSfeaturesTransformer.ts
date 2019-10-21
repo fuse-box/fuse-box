@@ -17,6 +17,9 @@ export function CommonTSfeaturesTransformer(): ITransformer {
       return { replaceWith: node.expression };
     }
 
+    if (node.type === 'MethodDefinition' && node.value && node.value.type === 'EmptyBodyFunctionExpression') {
+      return { removeNode: true };
+    }
     switch (node.type) {
       case 'ParameterProperty':
         return { replaceWith: node.parameter };

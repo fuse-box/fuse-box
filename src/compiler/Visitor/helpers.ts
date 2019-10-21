@@ -19,6 +19,10 @@ export function isLocalIdentifier(node: ASTNode, parent: ASTNode, propertyName: 
   }
 }
 
+export function isValidMethodDefinition(node: ASTNode) {
+  return node.type === 'MethodDefinition' && node.value.type === 'FunctionExpression';
+}
+
 export function isDefinedLocally(node: ASTNode): Array<{ init: boolean; name: string }> {
   // if (node.id && node.id.name) {
   //   return [node.id.name];

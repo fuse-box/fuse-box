@@ -1,6 +1,7 @@
 import { ASTNode } from '../../interfaces/AST';
 import { ITransformer } from '../../program/transpileModule';
 import { IVisit } from '../../Visitor/Visitor';
+import { isValidMethodDefinition } from '../../Visitor/helpers';
 
 const SUPER_WITH_ARGS: ASTNode = {
   type: 'ExpressionStatement',
@@ -32,7 +33,7 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
       for (const bodyEl of node.body as Array<ASTNode>) {
         if (bodyEl.type === 'ClassProperty' && bodyEl.value) {
           bodyInitializers.push({ paramName: bodyEl.key.name, ast: bodyEl.value });
-        } else if (bodyEl.type === 'MethodDefinition' && bodyEl.kind === 'constructor') {
+        } else if (isValidMethodDefinition(bodyEl) && bodyEl.kind === 'constructor') {
           isConstructorFound = true;
           constructorNode = bodyEl;
         }
@@ -63,7 +64,7 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
       }
     }
 
-    if (node.type === 'MethodDefinition' && node.kind === 'constructor') {
+    if (isValidMethodDefinition(node) && node.kind === 'constructor') {
       if (node.value.params) {
         let index = 0;
         let hasSomethingToAdd = false;
