@@ -101,6 +101,19 @@ exports.HomeComponent = HomeComponent;
 "
 `;
 
+exports[`Decorators test Metadata Constructor metadata should handle overload gracefully 1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+var some_data_1 = require(\\"./some-data\\");
+let HomeComponent = class HomeComponent {
+  constructor(env, bar) {
+    this.env = env;
+  }
+};
+HomeComponent = __fuse_decorate.d([a, b(), __fuse_decorate.m(\\"design:paramtypes\\", [typeof some_data_1.default === \\"function\\" ? some_data_1.default : Object, Object])], HomeComponent);
+exports.HomeComponent = HomeComponent;
+"
+`;
+
 exports[`Decorators test Metadata Constructor metadata should handle properties with visibility 1`] = `
 "var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
 let HomeComponent = class HomeComponent {

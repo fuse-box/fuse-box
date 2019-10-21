@@ -282,5 +282,21 @@ describe('Class constructor properties', () => {
       });
       expect(result.code).toMatchSnapshot();
     });
+
+    it('should handle constructor overrides', () => {
+      const result = testTranspile({
+        code: `
+        class A {
+          public name : string = "hey";
+          constructor(number)
+          constructor(private hey : string = "key"){
+
+          }
+        }
+        `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
   });
 });
