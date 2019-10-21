@@ -1,4 +1,5 @@
-export var __assign = function() {
-  __assign = Object.assign || function __assign() {};
-  return __assign.apply(this, arguments);
-};
+@oi
+export class HomeComponent {
+  constructor(hey: number);
+  constructor(public env: string, bar) {}
+}
