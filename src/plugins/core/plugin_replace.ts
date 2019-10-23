@@ -20,7 +20,7 @@ export function pluginReplace(a?: IPluginReplaceProps | string | RegExp, b?: IPl
 
       module.read();
       for (let key in opts) {
-        module.contents = module.contents.replace(key, opts[key]);
+        module.contents = module.contents.replace(new RegExp(key, 'g'), opts[key]);
       }
       return props;
     });
