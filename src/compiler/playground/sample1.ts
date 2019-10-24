@@ -1,3 +1,2 @@
-export namespace Hey {
-  export function hello() {}
-}
+import _ = require('lodash');
+console.log(_);
