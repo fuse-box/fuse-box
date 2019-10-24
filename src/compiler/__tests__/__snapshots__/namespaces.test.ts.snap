@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Namespaces should compile namespace 1`] = `
+"var oi_1 = require(\\"./oi\\");
+exports.b = 1;
+var Foo;
+(function (Foo) {
+  Foo.a = 1;
+  function hello() {}
+  Foo.hello = hello;
+  console.log(Foo.a, oi_1.default, exports.b);
+})(Foo || (Foo = {}));
+console.log(a, foo, oi_1.default, exports.b);
+"
+`;
+
+exports[`Namespaces should export namespace 1`] = `
+"var Hey;
+(function (Hey) {
+  function hello() {}
+  Hey.hello = hello;
+})(Hey || (Hey = {}));
+exports.Hey = Hey;
+"
+`;

@@ -320,7 +320,7 @@ export class Module {
         code = generate(this.ast, { ecmaVersion: 7, sourceMap: map /*lineEnd: '', indent: ''*/ });
       } catch (e) {
         this.props.ctx.log.clearConsole();
-        this.props.ctx.fatal('Error when genering the code from AST', [e.stack, `In file ${this.props.absPath}`]);
+        this.props.ctx.fatal('Error when generating code from AST', [e.stack, `In file ${this.props.absPath}`]);
       }
       let jsonSourceMaps;
 

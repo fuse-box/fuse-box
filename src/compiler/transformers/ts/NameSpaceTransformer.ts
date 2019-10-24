@@ -2,17 +2,28 @@ import { ASTNode } from '../../interfaces/AST';
 import { ITransformer, transpileModule } from '../../program/transpileModule';
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
 import { GlobalContext, createGlobalContext } from '../../program/GlobalContext';
+import { createExports } from '../../Visitor/helpers';
 
 export function NamespaceTransformer(): ITransformer {
   return {
     onEachNode: (visit: IVisit) => {
+      const node = visit.node;
+
       if (visit.node.type === 'ModuleDeclaration') {
         return { ignoreChildren: true };
       }
     },
     onTopLevelTraverse: (visit: IVisit): IVisitorMod => {
-      const node = visit.node;
+      let node = visit.node;
+      let withExport = false;
       const globalContext = visit.globalContext as GlobalContext;
+
+      if (node.type === 'ExportNamedDeclaration') {
+        if (node.declaration && node.declaration.type === 'ModuleDeclaration') {
+          node = node.declaration;
+          withExport = true;
+        }
+      }
 
       if (node.type === 'ModuleDeclaration') {
         const nm = node.body as ASTNode;
@@ -88,9 +99,18 @@ export function NamespaceTransformer(): ITransformer {
             ],
           },
         };
+
+        const nodes = [Declaration, FunctionBody];
+        if (withExport) {
+          const exportDeclaration = createExports(globalContext.namespace, mameSpaceName, {
+            type: 'Identifier',
+            name: mameSpaceName,
+          });
+          nodes.push(exportDeclaration);
+        }
         // replace it with a new node
         return {
-          replaceWith: [Declaration, FunctionBody],
+          replaceWith: nodes,
         };
       }
     },
