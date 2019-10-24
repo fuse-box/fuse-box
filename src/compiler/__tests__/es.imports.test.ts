@@ -8,6 +8,26 @@ import { testTranspile } from '../transpilers/testTranspiler';
 */
 
 describe('Es imports tests', () => {
+  describe('import =', () => {
+    it('should handle ImportEqualStatement', () => {
+      const result = testTranspile({
+        code: `
+        import _ = require('lodash');
+        `,
+      });
+      expect(result.requireStatementCollection).toEqual([
+        {
+          importType: ImportType.RAW_IMPORT,
+          statement: {
+            type: 'CallExpression',
+            callee: { type: 'Identifier', name: 'require' },
+            arguments: [{ type: 'Literal', value: 'lodash' }],
+          },
+        },
+      ]);
+      expect(result.code).toMatchSnapshot();
+    });
+  });
   describe('Local variable replacement', () => {
     it('should not collide with local scope', () => {
       const result = testTranspile({
