@@ -14,6 +14,13 @@ export function ImportTransformer(options?: ITransformerSharedOptions): ITransfo
       const node = visit.node;
       const global = visit.globalContext as GlobalContext;
 
+      if (node.type === 'ImportEqualsDeclaration') {
+        const reqStatement = createRequireStatement(node.moduleReference.expression.value, node.id.name);
+        if (options.onRequireCallExpression) {
+          options.onRequireCallExpression(ImportType.RAW_IMPORT, reqStatement.reqStatement);
+        }
+        return { replaceWith: reqStatement.statement };
+      }
       if (node.type === 'ImportDeclaration') {
         // converts "./foo/bar.hello.js" to foo_bar_hello_js_1 (1:1 like typescript does)
         const variable = path.basename(node.source.value).replace(/\.|-/g, '_') + '_' + global.getNextIndex();

@@ -159,3 +159,8 @@ exports[`Es imports tests Local variable replacement should not mess with the sc
 };
 "
 `;
+
+exports[`Es imports tests import = should handle ImportEqualStatement 1`] = `
+"var _ = require(\\"lodash\\");
+"
+`;
