@@ -1,5 +1,6 @@
 import { Context } from '../../core/Context';
 import { parsePluginOptions } from '../pluginUtils';
+import { safeRegex } from '../../utils/utils';
 
 export type IPluginReplaceProps = { [key: string]: any };
 export function pluginReplace(a?: IPluginReplaceProps | string | RegExp, b?: IPluginReplaceProps) {
@@ -17,10 +18,10 @@ export function pluginReplace(a?: IPluginReplaceProps | string | RegExp, b?: IPl
       ctx.log.info('pluginReplace', 'replacing in $file', {
         file: module.props.absPath,
       });
-
+      
       module.read();
       for (let key in opts) {
-        module.contents = module.contents.replace(new RegExp(key.replace(/[-[\]{}()*+!<=:?.\/\\^$|#\s,]/g, '\\$&'), 'g'), opts[key]);
+        module.contents = module.contents.replace(safeRegex(key), opts[key]);
       }
       return props;
     });
