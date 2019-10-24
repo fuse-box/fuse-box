@@ -14,19 +14,18 @@ describe('Namespaces', () => {
         console.log(a, foo, oi, b);
         `,
     });
-    expect(result.code).toMatchInlineSnapshot(`
-      "var oi_1 = require(\\"./oi\\");
-      exports.b = 1;
-      var Foo;
-      (function (Foo) {
-        Foo.a = 1;
-        function hello() {}
-        Foo.hello = hello;
-        console.log(Foo.a, oi_1.default, exports.b);
-      })(Foo || (Foo = {}));
-      console.log(a, foo, oi_1.default, exports.b);
-      "
-    `);
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('should export namespace', () => {
+    const result = testTranspile({
+      code: `
+      export namespace Hey {
+        export function hello() {}
+      }
+        `,
+    });
+    expect(result.code).toMatchSnapshot();
   });
   // testing all of that is a waste of time, namespaces should be deprecated
 });
