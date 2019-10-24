@@ -156,6 +156,10 @@ export function cleanExistingSourceMappingURL(contents: string) {
   return contents.replace(/\/*#\s*sourceMappingURL=\s*([^\s]+)\s*\*\//, '');
 }
 
+export function safeRegex(contents: string) {
+  return new RegExp(contents.replace(/[-[\]{}()*+!<=:?.\/\\^$|#\s,]/g, '\\$&'), 'g');
+}
+
 export function findReplace(str: string, re: RegExp, fn: (args) => string) {
   return str.replace(re, (...args) => {
     return fn(args);
