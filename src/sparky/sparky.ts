@@ -3,7 +3,7 @@ import { createFuseLogger } from '../fuse-log/FuseBoxLogAdapter';
 import { ensureAbsolutePath, removeFolder } from '../utils/utils';
 import { sparkyChain } from './sparky_chain';
 
-import * as prettyTime from 'pretty-time';
+let prettyTime = require('pretty-time');
 
 export function sparky<T>(Ctx: new () => T) {
   const ctx = new Ctx();

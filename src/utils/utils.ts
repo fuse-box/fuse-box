@@ -2,9 +2,10 @@ import * as fs from 'fs';
 import * as fsExtra from 'fs-extra';
 import * as path from 'path';
 import { env } from '../env';
-import * as prettyTime from 'pretty-time';
+
 import * as offsetLinesModule from 'offset-sourcemap-lines';
 const CACHED_PATHS = new Map<string, RegExp>();
+let prettyTime = require('pretty-time');
 
 export function path2Regex(path: string) {
   if (CACHED_PATHS.get(path)) {
@@ -33,12 +34,10 @@ export function beautifyBundleName(absPath: string, maxLength?: number) {
     .replace(/(\.\w+)$/g, '')
     .split(/(\/|\\)/g)
     .filter(a => a !== '' && a !== '.' && !a.match(/(\/|\\)/g))
-    .reduce((acc, curr, _idx, arr) => acc
-      ? maxLength && acc.length > maxLength
-        ? arr[arr.length - 1]
-        : `${acc}-${curr}`
-      : curr)
-    .toLowerCase()
+    .reduce((acc, curr, _idx, arr) =>
+      acc ? (maxLength && acc.length > maxLength ? arr[arr.length - 1] : `${acc}-${curr}`) : curr,
+    )
+    .toLowerCase();
 }
 
 export function offsetLines(obj: any, amount: number) {
@@ -210,7 +209,7 @@ export type Concat = {
   sourceMap: string;
 };
 export type ConcatModule = {
-  new(generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
+  new (generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
 };
 export const Concat: ConcatModule = require('fuse-concat-with-sourcemaps');
 

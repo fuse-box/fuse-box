@@ -1,5 +1,5 @@
 import * as convertSourceMap from 'convert-source-map';
-import * as prettyTime from 'pretty-time';
+
 import { BundleType, IBundleWriteResponse } from '../bundle/Bundle';
 import { devStrings } from '../bundle/bundleStrings';
 import { FTL_ELIGIBLE_EXTENSIONS } from '../config/extensions';
@@ -8,6 +8,7 @@ import { Module } from '../core/Module';
 import { Package } from '../core/Package';
 import { bundleResolveModule } from '../main/process_plugins';
 import { createConcat } from '../utils/utils';
+const prettyTime = require('pretty-time');
 
 export interface IFasterThanLightProps {
   ctx: Context;

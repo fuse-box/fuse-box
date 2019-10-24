@@ -1,10 +1,11 @@
-import * as prettyTime from 'pretty-time';
 import * as readline from 'readline';
 import { onExit } from '../utils/exit';
 import { FuseLog } from './fuseLog';
 import { IFuseLoggerProps } from '../config/IFuseLoggerProps';
 import { env } from '../env';
 import { ignoredPath2Regex } from '../watcher/watcher';
+
+let prettyTime = require('pretty-time');
 
 function conj(word, amount?: number) {
   return amount === 1 ? `1 ${word}` : `${amount} ${word}s`;

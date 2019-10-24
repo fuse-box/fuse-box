@@ -1,0 +1,14 @@
+{
+    "name": "fusebox-test",
+    "scripts": {
+        "postinstall": "lerna bootstrap",
+        "compile": "lerna run --parallel compile"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "fuse-box-typechecker": "latest",
+        "lerna": "^3.18.2",
+        "ts-node": "^8.4.1",
+        "typescript": "^3.6.4"
+    }
+}
