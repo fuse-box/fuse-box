@@ -1,7 +1,7 @@
 import * as appRoot from 'app-root-path';
 import * as path from 'path';
 import { env } from '../env';
-import { ensureAbsolutePath } from '../utils/utils';
+import { ensureAbsolutePath, fileExists, pathJoin } from '../utils/utils';
 import { IPublicConfig } from './IPublicConfig';
 import { PrivateConfig } from './PrivateConfig';
 
@@ -22,6 +22,14 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
   if (props.modules) {
     config.modules = config.modules.concat(props.modules).map(item => ensureAbsolutePath(item, env.SCRIPT_PATH));
   }
+  // make sure we have node_modules if that exists relatively to the script path (fuse.js)
+  const relativeNodeModulePath = pathJoin(env.SCRIPT_PATH, 'node_modules');
+  if (fileExists(relativeNodeModulePath)) {
+    if (!config.modules.find(i => i === relativeNodeModulePath)) {
+      config.modules.push(relativeNodeModulePath);
+    }
+  }
+
   if (props.output) {
     config.output = props.output;
   }
