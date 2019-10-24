@@ -60,6 +60,7 @@ task('dist', async ctx => {
   const fuse = ctx.getConfig();
   await fuse.runProd({
     uglify: false,
+    screwIE: false,
     cleanCSS: {
       compatibility: {
         properties: { urlQuotes: true },

@@ -53,7 +53,7 @@
   /* @if splitConfig */
   var splitConfig = $splitConfig$;
   function loadLocalScript(id, path) {
-    return new Promise((resolve, reject) => {
+    return new Promise(function(resolve, reject) {
       /* @if browser */
       var scriptId = '__entry' + id + '__';
       var script = document.getElementById(scriptId);
