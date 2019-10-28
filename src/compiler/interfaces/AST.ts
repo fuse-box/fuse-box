@@ -4,6 +4,7 @@ export interface ASTNode {
   $fuse_classInitializers?: Array<ASTNode>;
   $fuse_decoratorsCaptured?: boolean;
   $fuse_visited?: boolean;
+  $fuse_class_declaration_visited?: boolean;
   $fuse_decoratorsProcessed?: boolean;
   $fuse_decoratorForClassIdentifier?: string;
   typeAnnotation?: ASTNode;
@@ -11,6 +12,7 @@ export interface ASTNode {
   literal?: ASTNode;
   typeName?: ASTNode;
   $transpiled?: boolean;
+  expressions?: Array<ASTNode>;
   elementTypes?: Array<ASTNode>;
   elements?: Array<ASTNode>;
   alternate?: ASTNode;
