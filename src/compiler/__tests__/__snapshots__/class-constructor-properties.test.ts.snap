@@ -1,5 +1,36 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Class constructor properties Class props should create a computed prop 1`] = `
+"const foo = \\"prop\\";
+class A {
+  constructor() {
+    this[foo] = \\"hey\\";
+  }
+}
+"
+`;
+
+exports[`Class constructor properties Class props should create a computed prop respecting export 1`] = `
+"exports.IsException = Symbol();
+class __DefaultExport__ {
+  constructor() {
+    this[exports.IsException] = true;
+  }
+}
+exports.default = __DefaultExport__;
+"
+`;
+
+exports[`Class constructor properties Class props should create a computed prop respecting imports 1`] = `
+"var mod_1 = require(\\"mod\\");
+class A {
+  constructor() {
+    this[mod_1.default] = \\"hey\\";
+  }
+}
+"
+`;
+
 exports[`Class constructor properties Class props should create constructor with extends 1`] = `
 "class A extends B {
   constructor() {
@@ -77,6 +108,73 @@ exports.default = __DefaultExport__;
 "
 `;
 
+exports[`Class constructor properties Static properties should add a computed property 1`] = `
+"const hey = \\"oi\\";
+class A {}
+A[hey] = \\"some value\\";
+"
+`;
+
+exports[`Class constructor properties Static properties should add a computed property respecting existing export 1`] = `
+"exports.IsException = Symbol();
+class __DefaultExport__ {}
+__DefaultExport__[exports.IsException] = true;
+exports.default = __DefaultExport__;
+"
+`;
+
+exports[`Class constructor properties Static properties should add a computed property respecting imports 1`] = `
+"var mod_1 = require(\\"mod\\");
+class A {}
+A[mod_1.default] = \\"some value\\";
+"
+`;
+
+exports[`Class constructor properties Static properties should handle a static default property 1`] = `
+"class A {}
+A.hey = \\"some\\";
+"
+`;
+
+exports[`Class constructor properties Static properties should not add an empty static property 1`] = `
+"class A {}
+"
+`;
+
+exports[`Class constructor properties Static properties should static prop with class assigned to a const 1`] = `
+"var _1_;
+const foo = (_1_ = class A {}, _1_.oi = true, _1_);
+"
+`;
+
+exports[`Class constructor properties Static properties should static prop with class assigned to a const 2 (with return combo) 1`] = `
+"var _1_;
+exports.exception = constructor => {
+  return (_1_ = class _UnnamedClass_1 extends constructor {
+    constructor() {
+      super(...arguments);
+      this.hey = 1;
+    }
+  }, _1_.hey = 1, _1_);
+};
+"
+`;
+
+exports[`Class constructor properties Static properties should static prop with class assigned to a const 2 (with return) 1`] = `
+"var _1_;
+exports.exception = constructor => {
+  return (_1_ = class _UnnamedClass_1 extends constructor {}, _1_.hey = 1, _1_);
+};
+"
+`;
+
+exports[`Class constructor properties Static properties should static prop with class assigned to a const 2 1`] = `
+"var _1_;
+var _2_;
+const foo = (_1_ = class A {}, _1_.oi = true, _1_), b = (_2_ = class _UnnamedClass_1 {}, _2_.oops = 1, _2_);
+"
+`;
+
 exports[`Class constructor properties should deal with immediate function calls on initialized properties 1`] = `
 "class HelloWorld {
   constructor(welcome) {
@@ -129,6 +227,18 @@ class HelloWorld3 {
     console.log(this.welcome3);
   }
 }
+"
+`;
+
+exports[`Class constructor properties should handle class expression 1`] = `
+"exports.exception = constructor => {
+  return class extends constructor {
+    constructor() {
+      super(...arguments);
+      this.name = constructor.name;
+    }
+  };
+};
 "
 `;
 

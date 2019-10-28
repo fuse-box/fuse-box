@@ -22,6 +22,22 @@ describe('Class constructor properties', () => {
     expect(result.code).toMatchSnapshot();
   });
 
+  it('should handle class expression', () => {
+    const result = testTranspile({
+      withJSX: false,
+      code: `
+      export const exception = <Ex extends new (...args: any[]) => any>(constructor: Ex) => {
+        return class extends constructor {
+          public name = constructor.name;
+        };
+      };
+
+        `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+
   it('should work with super classes', () => {
     const result = testTranspile({
       code: `
@@ -226,7 +242,6 @@ describe('Class constructor properties', () => {
         }
         `,
       });
-
       expect(result.code).toMatchSnapshot();
     });
 
@@ -293,6 +308,174 @@ describe('Class constructor properties', () => {
 
           }
         }
+        `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should create a computed prop', () => {
+      const result = testTranspile({
+        code: `
+        const foo = "prop"
+        class A  {
+          public [foo] : string = "hey"
+        }
+        `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should create a computed prop respecting imports', () => {
+      const result = testTranspile({
+        code: `
+        import foo from "mod";
+        class A  {
+          public [foo] : string = "hey"
+        }
+        `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should create a computed prop respecting export', () => {
+      const result = testTranspile({
+        code: `
+        export const IsException = Symbol();
+        export default class {
+          public [IsException] = true;
+        }
+
+        `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+  });
+
+  describe('Static properties', () => {
+    it('should handle a static default property', () => {
+      const result = testTranspile({
+        code: `
+        class A {
+          public static hey : string = "some"
+        }
+        `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should not add an empty static property', () => {
+      const result = testTranspile({
+        code: `
+        class A {
+          public static hey : string;
+        }
+        `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should add a computed property', () => {
+      const result = testTranspile({
+        code: `
+        const hey = "oi"
+        class A {
+          public static [hey] : string = "some value"
+        }
+        `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should add a computed property respecting imports', () => {
+      const result = testTranspile({
+        code: `
+        import hey from "mod";
+        class A {
+          public static [hey] : string = "some value"
+        }
+        `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should add a computed property respecting existing export', () => {
+      const result = testTranspile({
+        code: `
+        export const IsException = Symbol();
+        export default class {
+          public static [IsException] = true;
+        }
+
+        `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should static prop with class assigned to a const', () => {
+      const result = testTranspile({
+        code: `
+
+        const foo = class A {
+          public static oi = true;
+        }
+
+        `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should static prop with class assigned to a const 2', () => {
+      const result = testTranspile({
+        code: `
+
+        const foo = class A {
+          public static oi = true;
+        }, b = class {
+          public static oops = 1;
+        }
+
+        `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should static prop with class assigned to a const 2 (with return)', () => {
+      const result = testTranspile({
+        withJSX: false,
+        code: `
+
+        export const exception = <Ex extends new (...args: any[]) => any>(constructor: Ex) => {
+          return class extends constructor {
+            public static hey = 1;
+          };
+        };
+
+
+        `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should static prop with class assigned to a const 2 (with return combo)', () => {
+      const result = testTranspile({
+        withJSX: false,
+        code: `
+
+        export const exception = <Ex extends new (...args: any[]) => any>(constructor: Ex) => {
+          return class extends constructor {
+            public static hey = 1;
+            public oi hey = 1;
+          };
+        };
+
+
         `,
       });
 

@@ -1,7 +1,8 @@
 import { ASTNode } from '../../interfaces/AST';
 import { ITransformer } from '../../program/transpileModule';
 import { IVisit } from '../../Visitor/Visitor';
-import { isValidMethodDefinition } from '../../Visitor/helpers';
+import { isValidMethodDefinition, createExpressionStatement } from '../../Visitor/helpers';
+import { GlobalContext } from '../../program/GlobalContext';
 
 const SUPER_WITH_ARGS: ASTNode = {
   type: 'ExpressionStatement',
@@ -22,45 +23,69 @@ const SUPER_WITH_ARGS: ASTNode = {
   },
 };
 export function ClassConstructorPropertyTransformer(): ITransformer {
+  let classIds = 0;
   return (visit: IVisit) => {
     const { node } = visit;
 
-    if (node.type === 'ClassBody') {
-      const bodyInitializers = [];
-      let isConstructorFound = false;
-      let hasSuperClass = !!visit.parent.superClass;
-      let constructorNode: ASTNode;
-      for (const bodyEl of node.body as Array<ASTNode>) {
-        if (bodyEl.type === 'ClassProperty' && bodyEl.value) {
-          bodyInitializers.push({ paramName: bodyEl.key.name, ast: bodyEl.value });
-        } else if (isValidMethodDefinition(bodyEl) && bodyEl.kind === 'constructor') {
-          isConstructorFound = true;
-          constructorNode = bodyEl;
+    let StaticProps: Array<ASTNode>;
+    let ClassNode: ASTNode;
+
+    if (
+      node.type === 'ClassDeclaration' ||
+      (node.type === 'ClassExpression' && !node.$fuse_class_declaration_visited)
+    ) {
+      if (node.body && (node.body as ASTNode).type === 'ClassBody') {
+        const classBody = node.body as ASTNode;
+        if (classBody.type === 'ClassBody') {
+          const bodyInitializers = [];
+          let isConstructorFound = false;
+          let hasSuperClass = node.superClass;
+
+          let constructorNode: ASTNode;
+          ClassNode = node;
+
+          for (const bodyEl of classBody.body as Array<ASTNode>) {
+            if (bodyEl.type === 'ClassProperty' && bodyEl.value) {
+              if (bodyEl.static) {
+                if (!StaticProps) StaticProps = [];
+                StaticProps.push(bodyEl);
+              } else {
+                bodyInitializers.push({
+                  paramName: bodyEl.key.name,
+                  computed: bodyEl.computed,
+                  ast: bodyEl.value,
+                });
+              }
+            } else if (isValidMethodDefinition(bodyEl) && bodyEl.kind === 'constructor') {
+              isConstructorFound = true;
+              constructorNode = bodyEl;
+            }
+          }
+          if (bodyInitializers.length) {
+            if (!isConstructorFound) {
+              const bodyBlockStatement = [];
+              if (hasSuperClass) bodyBlockStatement.push(SUPER_WITH_ARGS);
+              // injecting constructor if none found
+              (classBody.body as Array<ASTNode>).splice(0, 0, {
+                type: 'MethodDefinition',
+                kind: 'constructor',
+                $fuse_classInitializers: bodyInitializers,
+                key: {
+                  type: 'Identifier',
+                  name: 'constructor',
+                },
+                value: {
+                  type: 'FunctionExpression',
+                  params: [],
+                  body: {
+                    type: 'BlockStatement',
+                    body: bodyBlockStatement,
+                  },
+                },
+              });
+            } else constructorNode.$fuse_classInitializers = bodyInitializers;
+          }
         }
-      }
-      if (bodyInitializers.length) {
-        if (!isConstructorFound) {
-          const bodyBlockStatement = [];
-          if (hasSuperClass) bodyBlockStatement.push(SUPER_WITH_ARGS);
-          // injecting constructor if none found
-          (node.body as Array<ASTNode>).splice(0, 0, {
-            type: 'MethodDefinition',
-            kind: 'constructor',
-            $fuse_classInitializers: bodyInitializers,
-            key: {
-              type: 'Identifier',
-              name: 'constructor',
-            },
-            value: {
-              type: 'FunctionExpression',
-              params: [],
-              body: {
-                type: 'BlockStatement',
-                body: bodyBlockStatement,
-              },
-            },
-          });
-        } else constructorNode.$fuse_classInitializers = bodyInitializers;
       }
     }
 
@@ -110,7 +135,7 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
                 left: {
                   type: 'MemberExpression',
                   object: { type: 'ThisExpression' },
-                  computed: false,
+                  computed: item.computed === true,
                   property: { type: 'Identifier', name: item.paramName },
                 },
                 operator: '=',
@@ -120,6 +145,85 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
             insertPosition++;
           }
         }
+      }
+    }
+    // handle static props
+    if (StaticProps) {
+      if (!ClassNode.id) ClassNode.id = { type: 'Identifier', name: `_UnnamedClass_${++classIds}` };
+
+      const className = ClassNode.id.name;
+      const statements: Array<ASTNode> = [];
+      for (const prop of StaticProps) {
+        const statement = createExpressionStatement(
+          {
+            type: 'MemberExpression',
+            object: {
+              type: 'Identifier',
+              name: className,
+            },
+            computed: prop.computed,
+            property: {
+              type: 'Identifier',
+              name: prop.key.name,
+            },
+          },
+          prop.value,
+        );
+        statements.push(statement);
+      }
+
+      if (visit.parent.body) {
+        // this is a simple case, where we have body to insert after
+        return { insertAfterThisNode: statements };
+      } else {
+        const globalContext = visit.globalContext as GlobalContext;
+        // prevent the same transformer from visiting the same node
+        // Since we have done all the tranformers, but need to return exactly same CLASS
+        // due to a SequenceExpression transformation
+        ClassNode.$fuse_class_declaration_visited = true;
+        // we need to generate a new variable which will be appened to body
+        // e.g var _1_;
+        const NewSysVariableName = globalContext.getNextSystemVariable();
+
+        const sequenceExpressions: ASTNode = { type: 'SequenceExpression', expressions: [] };
+        const classAssignment: ASTNode = {
+          type: 'AssignmentExpression',
+          left: { type: 'Identifier', name: NewSysVariableName },
+          operator: '=',
+          right: ClassNode,
+        };
+        sequenceExpressions.expressions.push(classAssignment);
+        // convert expression statements to AssignmentExpression
+        // we also should modify the target object (it's a different variable now)
+        for (const oldStatement of statements) {
+          oldStatement.expression.left.object.name = NewSysVariableName;
+          const n: ASTNode = {
+            type: 'AssignmentExpression',
+            left: oldStatement.expression.left,
+            operator: '=',
+            right: oldStatement.expression.right,
+          };
+          sequenceExpressions.expressions.push(n);
+          sequenceExpressions.expressions.push({ type: 'Identifier', name: NewSysVariableName });
+        }
+
+        // generate a declaration
+        const sysVariableDeclaration: ASTNode = {
+          type: 'VariableDeclaration',
+          kind: 'var',
+          declarations: [
+            {
+              type: 'VariableDeclarator',
+              init: null,
+              id: {
+                type: 'Identifier',
+                name: NewSysVariableName,
+              },
+            },
+          ],
+        };
+
+        return { replaceWith: sequenceExpressions, prependToBody: [sysVariableDeclaration] };
       }
     }
   };

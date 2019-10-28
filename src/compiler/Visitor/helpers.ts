@@ -58,7 +58,7 @@ export function createMemberExpression(obj: string, target: string): ASTNode {
   };
 }
 
-export function createExpressionStatement(left: ASTNode, right: ASTNode) {
+export function createExpressionStatement(left: ASTNode, right: ASTNode): ASTNode {
   return {
     type: 'ExpressionStatement',
     expression: {
