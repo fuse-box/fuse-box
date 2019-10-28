@@ -118,6 +118,10 @@ function _visit(
       let newNodes = [].concat(response.insertAfterThisNode);
 
       t.insertAfter(visit, newNodes);
+
+      for (const n of newNodes) {
+        _visit(t, globalContext, fn, n, { parent: props.parent, property: props.property }, visit.scope);
+      }
       //return;
       //console.log('DONE ************************************');
     } else if (response.ignoreChildren) {
