@@ -66,6 +66,10 @@ function registerPackage(props: { assemble?: boolean; pkg: Package; ctx: Context
     }
     target = userEntry;
   }
+
+  if (target && !collection.modules.has(target.props.absPath)) {
+    collection.modules.set(target.props.absPath, target);
+  }
   if (target && !target.assembled && props.assemble) {
     processModule({ ...props, module: target, pkg: pkg });
   }
