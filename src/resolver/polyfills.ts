@@ -28,6 +28,7 @@ const SERVER_POLYFILL = new Set<string>([
   'vm',
   'dgram',
   'dns',
+  'string_decoder',
 ]);
 
 const ELECTRON_POLYFILL = new Set<string>([
