@@ -1,0 +1,4 @@
+{
+  "name": "foobar",
+  "main": "src/lib/foobar.ts"
+}

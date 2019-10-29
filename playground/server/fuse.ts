@@ -9,6 +9,9 @@ class Context {
       target: 'server',
       entry: 'src/index.ts',
       cache: false,
+      modules: ['packages'],
+      allowSyntheticDefaultImports: true,
+      dependencies: { ignoreAllExternal: false },
       watch: true,
       hmr: true,
     });
