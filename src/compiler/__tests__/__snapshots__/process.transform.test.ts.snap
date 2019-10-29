@@ -1,5 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Process transform test Should not touch process should inject process on assignment 1`] = `
+"var process = require(\\"process\\");
+process.env.NODE_ENV = \\"hey\\";
+"
+`;
+
+exports[`Process transform test Should not touch process should transform process.version 1`] = `
+"var process = {};
+console.log(process.version);
+"
+`;
+
 exports[`Process transform test process.env.*** should replace process.env.NODE_ENV 1`] = `
 "console.log(\\"development\\");
 "

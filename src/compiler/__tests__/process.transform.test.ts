@@ -23,6 +23,30 @@ describe('Process transform test', () => {
       expect(result.code).toMatchSnapshot();
     });
   });
+
+  describe('Should not touch process', () => {
+    it('should transform process.version', () => {
+      const result = testTranspile({
+        code: `
+          var process = {};
+          console.log(process.version);
+      `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should inject process on assignment', () => {
+      const result = testTranspile({
+        code: `
+          process.env.NODE_ENV = "hey";
+
+      `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+  });
   describe('process.xxx', () => {
     it('should transform process.version', () => {
       const result = testTranspile({

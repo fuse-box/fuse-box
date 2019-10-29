@@ -7,6 +7,7 @@ import {
   createRequireStatement,
 } from '../../Visitor/helpers';
 import { ImportType } from '../../interfaces/ImportType';
+import { GlobalContext } from '../../program/GlobalContext';
 
 interface BrowserProcessTransformProps {
   env?: { [key: string]: string };
@@ -17,11 +18,37 @@ export function BrowserProcessTransformer(options: IBrowserProcessTransform) {
 
   let globalEnvInserted = false;
   let entireEnvInserted = false;
+  let ignoreProcess = false;
   return (visit: IVisit): IVisitorMod => {
+    if (ignoreProcess) return;
+    const globalContext = visit.globalContext as GlobalContext;
+
+    if (globalContext.hoisted['process']) {
+      ignoreProcess = true;
+      return;
+    }
+
     const { node, parent } = visit;
+    const locals = visit.scope && visit.scope.locals ? visit.scope.locals : {};
 
     const accessList = isPropertyOrPropertyAccess(node, parent, 'process');
+
     if (accessList) {
+      if (locals['process'] === 1) return;
+      if (visit.parent.type === 'AssignmentExpression') {
+        if (!entireEnvInserted) {
+          entireEnvInserted = true;
+          const statement = createRequireStatement('process', 'process');
+          if (options.onRequireCallExpression)
+            options.onRequireCallExpression(ImportType.REQUIRE, statement.reqStatement);
+          return {
+            ignoreChildren: true,
+            avoidReVisit: true,
+            prependToBody: [statement.statement],
+          };
+        }
+        return;
+      }
       const variableAmount = accessList.length;
       if (variableAmount === 3 && accessList[1] === 'env') {
         const keyName = accessList[2];

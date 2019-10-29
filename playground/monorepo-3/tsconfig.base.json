@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "target": "es2018",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "allowJs": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": false,
+        "noEmitHelpers": true,
+        "importHelpers": true,
+        "pretty": true,
+        "sourceMap": true,
+        "lib": ["es2018", "esnext.asynciterable"],
+        "strict": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "removeComments": false,
+        "noImplicitReturns": true
+    },
+    "exclude": ["./node_modules"],
+    "compileOnSave": true,
+    "buildOnSave": true
+}

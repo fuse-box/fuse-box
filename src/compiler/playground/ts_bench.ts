@@ -3,7 +3,7 @@ import * as ts from 'typescript';
 import { testTranspile } from '../transpilers/testTranspiler';
 import { bench } from './bench';
 
-const b = bench({ iterations: 1000 });
+const b = bench({ iterations: 100 });
 const fileName = __dirname + '/source_test/random.tsx';
 
 const file = readFileSync(fileName).toString();

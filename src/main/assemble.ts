@@ -234,12 +234,16 @@ export function processModule(props: IDefaultParseProps) {
   const modules = [];
   if (_module.analysis && _module.analysis.imports) {
     for (const data of _module.analysis.imports) {
-      const response = resolveStatement({ statement: data.literal, importType: data.type }, props);
-      if (response) {
-        modules.push(response);
-        if (literalStatements && response.forcedStatement && literalStatements[data.literal]) {
-          literalStatements[data.literal].statement.arguments[0].value = response.forcedStatement;
+      if (data.literal) {
+        const response = resolveStatement({ statement: data.literal, importType: data.type }, props);
+        if (response) {
+          modules.push(response);
+          if (literalStatements && response.forcedStatement && literalStatements[data.literal]) {
+            literalStatements[data.literal].statement.arguments[0].value = response.forcedStatement;
+          }
         }
+      } else {
+        // Should handle computed statements
       }
     }
     modules.forEach(item => {
