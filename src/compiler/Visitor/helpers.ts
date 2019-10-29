@@ -227,6 +227,7 @@ export function createASTFromObject(obj: { [key: string]: any }): ASTNode {
 
 export function isPropertyOrPropertyAccess(node: ASTNode, parent: ASTNode, propertyName: string) {
   const accessList = [];
+
   if (_CallExpression[node.type] && node.callee) {
     if (node.callee.name === propertyName) {
       return [propertyName];

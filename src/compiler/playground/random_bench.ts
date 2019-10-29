@@ -33,7 +33,7 @@ const benchArrayCheck = () => {
 
   b.start();
 };
-benchArrayCheck();
+//benchArrayCheck();
 
 const benchIndexOf = () => {
   const data = [];
@@ -159,3 +159,80 @@ function getRandomInt(min, max) {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+function benchStuff() {
+  const b = bench({ iterations: 1000 });
+  const arr = [];
+
+  const Chars = {
+    NonBreakingSpace: 12288,
+    ZeroWidthNoBreakSpace: 234234,
+    ByteOrderMark: 34252345,
+    Ogham: 241234,
+    MathematicalSpace: 1234123,
+    NarrowNoBreakSpace: 123412,
+    EnQuad: 600,
+    ZeroWidthSpace: 900,
+    NextLine: 8,
+    IdeographicSpace: 23452345,
+  };
+  function isUnicodeOnlySpace1(code: number): boolean {
+    return (
+      code === Chars.NonBreakingSpace ||
+        code === Chars.ZeroWidthNoBreakSpace ||
+        code === Chars.ByteOrderMark ||
+        code === Chars.Ogham ||
+        (code >= Chars.EnQuad && code <= Chars.ZeroWidthSpace),
+      code === Chars.NarrowNoBreakSpace ||
+        code === Chars.MathematicalSpace ||
+        code === Chars.NextLine ||
+        code === Chars.IdeographicSpace
+    );
+  }
+
+  b.measure('isUnicodeOnlySpace1', () => {
+    const code = getRandomInt(0, 23452345);
+    isUnicodeOnlySpace1(code);
+  });
+
+  const valid = {
+    [Chars.NonBreakingSpace]: Chars.NonBreakingSpace,
+    [Chars.ZeroWidthNoBreakSpace]: Chars.ZeroWidthNoBreakSpace,
+    [Chars.ByteOrderMark]: Chars.ZeroWidthNoBreakSpace,
+    [Chars.Ogham]: Chars.ByteOrderMark,
+    [Chars.MathematicalSpace]: Chars.MathematicalSpace,
+    [Chars.NarrowNoBreakSpace]: Chars.NarrowNoBreakSpace,
+    [Chars.NextLine]: Chars.NextLine,
+    [Chars.IdeographicSpace]: Chars.IdeographicSpace,
+  };
+  valid[4];
+
+  b.measure('valid', () => {
+    const code = getRandomInt(0, 23452345);
+    const res = valid[code];
+    //res >= Chars.EnQuad && res <= Chars.ZeroWidthSpace;
+  });
+
+  const alt = [
+    Chars.NonBreakingSpace,
+    Chars.ZeroWidthNoBreakSpace,
+    Chars.ZeroWidthNoBreakSpace,
+    Chars.ByteOrderMark,
+    Chars.MathematicalSpace,
+    Chars.NarrowNoBreakSpace,
+    Chars.NextLine,
+    Chars.IdeographicSpace,
+  ];
+
+  const s = new Set(alt);
+
+  b.measure('alt', () => {
+    const code = getRandomInt(0, 23452345);
+    s.has(code);
+    //res >= Chars.EnQuad && res <= Chars.ZeroWidthSpace;
+  });
+
+  b.start();
+}
+
+benchStuff();

@@ -26,7 +26,8 @@ const SERVER_POLYFILL = new Set<string>([
   'worker_threads',
   'v8',
   'vm',
-  'dgram'
+  'dgram',
+  'dns',
 ]);
 
 const ELECTRON_POLYFILL = new Set<string>([
@@ -56,7 +57,8 @@ const ELECTRON_POLYFILL = new Set<string>([
   'constants',
   'v8',
   'vm',
-  'dgram'
+  'dgram',
+  'dns',
 ]);
 export function isServerPolyfill(name: string) {
   return SERVER_POLYFILL.has(name);

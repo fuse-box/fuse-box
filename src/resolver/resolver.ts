@@ -114,6 +114,7 @@ export function resolveModule(props: IResolverProps): IResolver {
   const isElectronBuild = props.buildTarget === 'electron';
   const isUniversalBuild = props.buildTarget === 'universal';
   let target = props.target;
+
   let forcedStatement: string;
   let forceReplacement = false;
 
