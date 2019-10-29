@@ -26,7 +26,8 @@ const SERVER_POLYFILL = new Set<string>([
   'worker_threads',
   'v8',
   'vm',
-  'dgram'
+  'dgram',
+  'dns',
 ]);
 
 const ELECTRON_POLYFILL = new Set<string>([
