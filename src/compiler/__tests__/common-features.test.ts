@@ -77,5 +77,18 @@ describe('Common features test', () => {
 
       expect(result.code).toMatchSnapshot();
     });
+
+    it('should handle NotNullExpression', () => {
+      const result = testTranspile({
+        withJSX: false,
+        code: `
+        function hey(res){
+          return res!;
+      }
+        `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
   });
 });
