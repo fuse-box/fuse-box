@@ -13,7 +13,7 @@ export function CommonTSfeaturesTransformer(): ITransformer {
       return { removeNode: true, ignoreChildren: true };
     }
 
-    if (node.type === 'TypeAssertion') {
+    if (node.type === 'TypeAssertion' || node.type === 'NonNullExpression') {
       return { replaceWith: node.expression };
     }
 
