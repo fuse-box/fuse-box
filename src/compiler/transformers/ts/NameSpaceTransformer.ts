@@ -7,14 +7,15 @@ import { createExports } from '../../Visitor/helpers';
 export function NamespaceTransformer(): ITransformer {
   return {
     onEachNode: (visit: IVisit) => {
-      const node = visit.node;
-
       if (visit.node.type === 'ModuleDeclaration') {
         return { ignoreChildren: true };
       }
     },
     onTopLevelTraverse: (visit: IVisit): IVisitorMod => {
       let node = visit.node;
+      if (node.declare) {
+        return { removeNode: true, ignoreChildren: true };
+      }
       let withExport = false;
       const globalContext = visit.globalContext as GlobalContext;
 

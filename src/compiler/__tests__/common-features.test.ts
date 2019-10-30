@@ -64,6 +64,27 @@ describe('Common features test', () => {
       });
       expect(result.code).toMatchSnapshot();
     });
+
+    it('should ignore export declare', () => {
+      const result = testTranspile({
+        code: `
+        type plain = {
+          [key: string]: plain | any;
+        };
+        declare module '*.graphql' {
+          const value: string;
+          export default value;
+        }
+        declare module '*.docx' {
+          const value: any;
+          export = value;
+        }
+        alert(1)
+
+        `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
   });
 
   describe('Various', () => {

@@ -15,6 +15,11 @@ alert(2);
 "
 `;
 
+exports[`Common features test Interface removal should ignore export declare 2`] = `
+"alert(1);
+"
+`;
+
 exports[`Common features test Interface removal should remove export interface 1`] = `
 "console.log(1);
 console.log(2);
