@@ -125,11 +125,16 @@ export function createDecoratorRequireHelperStatement(moduleName: string, params
   };
 }
 
+export interface IClassDecorator {
+  expressionStatement: ASTNode;
+  arrayExpression: ASTNode;
+}
+
 export function createClassDecorators(props: {
   className: string;
   helperModule: string;
   decorators: Array<ASTNode>;
-}): { expressionStatement: ASTNode; arrayExpression: ASTNode } {
+}): IClassDecorator {
   const arrayExpression: ASTNode = {
     type: 'ArrayExpression',
     elements: props.decorators,
@@ -253,6 +258,33 @@ export function createMethodDecorator(props: {
       ],
     },
   };
+}
+
+export function collectDecorators(opts: {
+  helperModule: string;
+  expressions: Array<ASTNode>;
+  params: Array<ASTNode>;
+}): Array<ASTNode> {
+  const params = opts.params;
+  if (params && params.length) {
+    let index = 0;
+    while (index < params.length) {
+      let p = params[index];
+      if (p.decorators && p.decorators.length) {
+        for (const dec of p.decorators) {
+          opts.expressions.push(
+            createMethodArgumentParam({
+              helperModule: opts.helperModule,
+              decorator: dec.expression,
+              index: index,
+            }),
+          );
+        }
+      }
+      index++;
+    }
+  }
+  return opts.expressions;
 }
 
 export function createMethodArgumentParam(props: {

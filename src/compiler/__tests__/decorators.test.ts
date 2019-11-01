@@ -370,4 +370,68 @@ describe('Decorators test', () => {
       });
     });
   });
+
+  describe('Cosntructor decorators', () => {
+    it('should not create decorators', () => {
+      const res = testTranspile({
+        emitDecoratorMetadata: true,
+        code: `
+        class Application {
+          constructor(hey : string){}
+        }
+  `,
+      });
+      expect(res.code).toMatchSnapshot();
+    });
+
+    it('should create decorator wrapper', () => {
+      const res = testTranspile({
+        emitDecoratorMetadata: true,
+        code: `
+        class Application {
+          constructor(@oi hey, name : string){}
+        }
+  `,
+      });
+
+      expect(res.code).toMatchSnapshot();
+    });
+
+    it('should create decorator def with 2 decorators', () => {
+      const res = testTranspile({
+        emitDecoratorMetadata: true,
+        code: `
+        class Application {
+          constructor(@oi @foo hey, name : string){}
+        }
+  `,
+      });
+      expect(res.code).toMatchSnapshot();
+    });
+
+    it('should create decorators on 3 properties', () => {
+      const res = testTranspile({
+        emitDecoratorMetadata: true,
+        code: `
+        class Application {
+          constructor(@oi @foo hey, @hey name : string){}
+        }
+  `,
+      });
+      expect(res.code).toMatchSnapshot();
+    });
+
+    it('should create a parent property decorator + constructor props all in one wrapper', () => {
+      const res = testTranspile({
+        emitDecoratorMetadata: true,
+        code: `
+        @Injectable({})
+        class Application {
+          constructor(@oi hey : number){}
+        }
+  `,
+      });
+      expect(res.code).toMatchSnapshot();
+    });
+  });
 });

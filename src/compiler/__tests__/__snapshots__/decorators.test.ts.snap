@@ -91,6 +91,49 @@ exports.default = __DefaultExport__;
 "
 `;
 
+exports[`Decorators test Cosntructor decorators should create a parent property decorator + constructor props all in one wrapper 1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+class Application {
+  constructor(hey) {}
+}
+Application = __fuse_decorate.d([Injectable({}), __fuse_decorate.p(0, oi), __fuse_decorate.m(\\"design:paramtypes\\", [Number])], Application);
+"
+`;
+
+exports[`Decorators test Cosntructor decorators should create decorator def with 2 decorators 1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+class Application {
+  constructor(hey, name) {}
+}
+Application = __fuse_decorate.d([__fuse_decorate.p(0, oi), __fuse_decorate.p(0, foo), __fuse_decorate.m(\\"design:paramtypes\\", [Object, String])], Application);
+"
+`;
+
+exports[`Decorators test Cosntructor decorators should create decorator wrapper 1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+class Application {
+  constructor(hey, name) {}
+}
+Application = __fuse_decorate.d([__fuse_decorate.p(0, oi), __fuse_decorate.m(\\"design:paramtypes\\", [Object, String])], Application);
+"
+`;
+
+exports[`Decorators test Cosntructor decorators should create decorators on 3 properties 1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+class Application {
+  constructor(hey, name) {}
+}
+Application = __fuse_decorate.d([__fuse_decorate.p(0, oi), __fuse_decorate.p(0, foo), __fuse_decorate.p(1, hey), __fuse_decorate.m(\\"design:paramtypes\\", [Object, String])], Application);
+"
+`;
+
+exports[`Decorators test Cosntructor decorators should not create decorators 1`] = `
+"class Application {
+  constructor(hey) {}
+}
+"
+`;
+
 exports[`Decorators test Metadata Constructor metadata should handle normal properties 1`] = `
 "var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
 let HomeComponent = class HomeComponent {
