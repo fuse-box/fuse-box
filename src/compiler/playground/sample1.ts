@@ -1,9 +1,5 @@
-declare module 'file-type' {
-  namespace fileType {
-    const minimumBytes: number;
-  }
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
-  function fileType(input: Buffer | Uint8Array): { ext: string; mime: string } | null;
-
-  export = fileType;
+export class HomeComponent {
+  constructor(hey: string) {}
 }
