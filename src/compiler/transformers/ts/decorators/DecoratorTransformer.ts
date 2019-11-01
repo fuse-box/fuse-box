@@ -10,6 +10,8 @@ import {
   createMethodMetadata,
   createMethodPropertyDecorator,
   createPropertyDecorator,
+  IClassDecorator,
+  collectDecorators,
 } from './decorator_helpers';
 import { getParamTypes, getPropertyMetadata } from './Metadata';
 
@@ -56,28 +58,53 @@ export function DecoratorTransformer(opts?: IDecoratorTransformerOpts & ITransfo
        *  }
        *
        */
+      let classDecorator: IClassDecorator;
       if (node.decorators && node.decorators.length) {
         const expressions: Array<ASTNode> = [];
         for (const dec of node.decorators) {
           expressions.push(dec.expression);
         }
 
-        const statement = createClassDecorators({
+        classDecorator = createClassDecorators({
           helperModule: opts.helperModule,
           className: className,
           decorators: expressions,
         });
-        statements.push(statement.expressionStatement);
+        statements.push(classDecorator.expressionStatement);
 
         // check for metadata
         if (opts.emitDecoratorMetadata) {
-          classDecoratorArrayExpression = statement.arrayExpression;
+          classDecoratorArrayExpression = classDecorator.arrayExpression;
         }
       }
 
       // decorate properties
       for (const item of targetClassBody) {
         if (item.kind === 'constructor' && isValidMethodDefinition(item)) {
+          const params = item.value.params as Array<ASTNode>;
+          // special treatment for constructor params
+          if (params && params.length) {
+            let constructorDecorators: Array<ASTNode> = [];
+            collectDecorators({
+              helperModule: opts.helperModule,
+              params,
+              expressions: constructorDecorators,
+            });
+            if (constructorDecorators.length) {
+              if (!classDecoratorArrayExpression) {
+                classDecorator = createClassDecorators({
+                  helperModule: opts.helperModule,
+                  className: className,
+                  decorators: [],
+                });
+                statements.push(classDecorator.expressionStatement);
+                classDecoratorArrayExpression = classDecorator.arrayExpression;
+              }
+              for (const exp of constructorDecorators) {
+                classDecoratorArrayExpression.elements.push(exp);
+              }
+            }
+          }
           if (classDecoratorArrayExpression) {
             classDecoratorArrayExpression.elements.push(getParamTypes(item.value as ASTNode));
           }
@@ -101,52 +128,39 @@ export function DecoratorTransformer(opts?: IDecoratorTransformerOpts & ITransfo
           }
         }
 
-        if (isValidMethodDefinition(item) && item.kind !== 'constructor') {
+        if (isValidMethodDefinition(item)) {
+          const params = item.value.params as Array<ASTNode>;
           if (item.value && item.value.type === 'FunctionExpression') {
-            const params = item.value.params as Array<ASTNode>;
-            const expressions = [];
+            if (item.kind !== 'constructor') {
+              const expressions = [];
 
-            if (item.decorators && item.decorators.length) {
-              for (const methodDecorator of item.decorators) {
-                expressions.push(methodDecorator.expression);
+              if (item.decorators && item.decorators.length) {
+                for (const methodDecorator of item.decorators) {
+                  expressions.push(methodDecorator.expression);
+                }
               }
-            }
 
-            if (params && params.length) {
-              let index = 0;
-              while (index < params.length) {
-                let p = params[index];
-                if (p.decorators && p.decorators.length) {
-                  for (const dec of p.decorators) {
-                    expressions.push(
-                      createMethodArgumentParam({
-                        helperModule: opts.helperModule,
-                        decorator: dec.expression,
-                        index: index,
-                      }),
-                    );
+              if (params && params.length) {
+                collectDecorators({ helperModule: opts.helperModule, params, expressions });
+                if (expressions.length) {
+                  // method decorators metadata
+                  if (opts.emitDecoratorMetadata) {
+                    const medatadata = createMethodMetadata({ node: item });
+                    expressions.push(medatadata.designType);
+                    expressions.push(medatadata.paramTypes);
+                    expressions.push(medatadata.returnType);
                   }
+                  statements.push(
+                    createMethodPropertyDecorator({
+                      isStatic: item.static,
+                      helperModule: opts.helperModule,
+                      className: className,
+                      methodName: item.key.name,
+
+                      elements: expressions,
+                    }),
+                  );
                 }
-                index++;
-              }
-              if (expressions.length) {
-                // method decorators metadata
-                if (opts.emitDecoratorMetadata) {
-                  const medatadata = createMethodMetadata({ node: item });
-                  expressions.push(medatadata.designType);
-                  expressions.push(medatadata.paramTypes);
-                  expressions.push(medatadata.returnType);
-                }
-                statements.push(
-                  createMethodPropertyDecorator({
-                    isStatic: item.static,
-                    helperModule: opts.helperModule,
-                    className: className,
-                    methodName: item.key.name,
-                    index: index,
-                    elements: expressions,
-                  }),
-                );
               }
             }
           }
