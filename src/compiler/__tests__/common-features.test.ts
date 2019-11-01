@@ -112,4 +112,51 @@ describe('Common features test', () => {
       expect(result.code).toMatchSnapshot();
     });
   });
+
+  describe.only('This typing', () => {
+    it('should remove 1', () => {
+      const result = testTranspile({
+        code: `
+          function hey(this : string, a){}
+        `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should remove 2', () => {
+      const result = testTranspile({
+        code: `
+          const hey = function(this : string, a){
+            console.log(this)
+          }
+        `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should remove 3', () => {
+      const result = testTranspile({
+        code: `
+          class A {
+            foo(this : string){}
+          }
+        `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should and preserve other args', () => {
+      const result = testTranspile({
+        code: `
+          class A {
+            foo(this : string, some : number){}
+          }
+        `,
+      });
+      expect(result.code).toMatchSnapshot();
+    });
+  });
 });
