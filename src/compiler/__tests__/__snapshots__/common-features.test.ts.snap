@@ -38,6 +38,32 @@ alert(2);
 "
 `;
 
+exports[`Common features test This typing should and preserve other args 1`] = `
+"class A {
+  foo(some) {}
+}
+"
+`;
+
+exports[`Common features test This typing should remove 1 1`] = `
+"function hey(a) {}
+"
+`;
+
+exports[`Common features test This typing should remove 2 1`] = `
+"const hey = function (a) {
+  console.log(this);
+};
+"
+`;
+
+exports[`Common features test This typing should remove 3 1`] = `
+"class A {
+  foo() {}
+}
+"
+`;
+
 exports[`Common features test Various should handle NotNullExpression 1`] = `
 "function hey(res) {
   return res;
