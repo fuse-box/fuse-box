@@ -1,6 +1,7 @@
 import { ITransformer } from '../../program/transpileModule';
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
 
+const FUNC_EXPRESSIONS = { FunctionExpression: 1, FunctionDeclaration: 1 };
 // to test: function maybeUnwrapEmpty<T>(value: T[]): T[];
 // to test: (oi as any).foo
 export function CommonTSfeaturesTransformer(): ITransformer {
@@ -11,7 +12,19 @@ export function CommonTSfeaturesTransformer(): ITransformer {
       }
     },
     onEachNode: (visit: IVisit): IVisitorMod => {
-      const { node } = visit;
+      const { node, parent, property } = visit;
+
+      // handle "this" typings
+      // e.g function hey(this: number, a) {}
+      if (
+        parent &&
+        property === 'params' &&
+        FUNC_EXPRESSIONS[parent.type] &&
+        node.type === 'Identifier' &&
+        node.name === 'this'
+      ) {
+        return { removeNode: true };
+      }
 
       if (node.declare) {
         return { removeNode: true, ignoreChildren: true };
