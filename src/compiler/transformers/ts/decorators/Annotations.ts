@@ -106,6 +106,8 @@ export function convertTypeAnnotation(node: ASTNode) {
   const typeAnnotation = node.typeAnnotation;
 
   switch (typeAnnotation.type) {
+    case 'BooleanKeyword':
+      return id_Boolean;
     case 'NeverKeyword':
     case 'NullKeyword':
     case 'VoidKeyword':
