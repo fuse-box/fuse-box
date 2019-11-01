@@ -50,11 +50,16 @@ export interface IFastVisit {
 
 const IRNOGED_TYPES = {
   typeAnnotation: 1,
+
   typeParameters: 1,
-  returnType: 1,
   implements: 1,
   decorators: 1,
   superTypeParameters: 1,
+};
+
+const IGNORED_KEYS = {
+  returnType: 1,
+  typeParameters: 1,
 };
 function _visit(
   t,
@@ -130,7 +135,7 @@ function _visit(
   }
   //node.$parent = props.parent;
   for (const property in node) {
-    if (property[0] === '$') {
+    if (property[0] === '$' || IGNORED_KEYS[property] === 1) {
       continue;
     }
     const child = node[property];
