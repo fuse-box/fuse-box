@@ -115,6 +115,7 @@ export function convertTypeAnnotation(node: ASTNode) {
       return voidZero;
     case 'AnyKeyword':
     case 'TypeOperator':
+    case 'UnionType':
       return id_Object;
     case 'StringKeyword':
       return id_String;
@@ -143,6 +144,6 @@ export function convertTypeAnnotation(node: ASTNode) {
       }
       return id_Object;
     default:
-      break;
+      return id_Object;
   }
 }

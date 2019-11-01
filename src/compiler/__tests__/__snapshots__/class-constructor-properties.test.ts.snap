@@ -175,6 +175,15 @@ const foo = (_1_ = class A {}, _1_.oi = true, _1_), b = (_2_ = class _UnnamedCla
 "
 `;
 
+exports[`Class constructor properties Static properties static props in export default class with decorators 1`] = `
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+var _1_;
+let ApiService = (_1_ = class ApiService {}, _1_.foo = () => {}, _1_.bar = () => {}, _1_);
+ApiService = __fuse_decorate.d([Injectable()], ApiService);
+exports.default = ApiService;
+"
+`;
+
 exports[`Class constructor properties should deal with immediate function calls on initialized properties 1`] = `
 "class HelloWorld {
   constructor(welcome) {
@@ -186,25 +195,28 @@ exports[`Class constructor properties should deal with immediate function calls 
 `;
 
 exports[`Class constructor properties should deal with inner classes 1`] = `
-"class Amazing {}
+"var __fuse_decorate = require(\\"fuse_helpers_decorate\\");
+class Amazing {}
 class HelloWorld extends Amazing {
   constructor(welcome, to, awesomeness, of, fuse) {
     super();
     this.welcome = welcome;
     this.to = to;
     this.awesomeness = awesomeness;
-    const innerClass = class extends Amazing {
-      constructor(welcome, to, awesomeness, of, fuse) {
+    class Hey extends Amazing {
+      constructor(welcome, to, fuse) {
         super();
         this.welcome = welcome;
         this.to = to;
-        this.awesomeness = awesomeness;
       }
-    };
+    }
+    Hey.someM = () => {};
+    Hey = __fuse_decorate.d([__fuse_decorate.p(0, foo), __fuse_decorate.p(1, foo()), __fuse_decorate.m(\\"design:paramtypes\\", [String, String, Boolean])], Hey);
     this.fuse = fuse;
   }
   welcomeToTheBlock() {}
 }
+HelloWorld = __fuse_decorate.d([__fuse_decorate.p(0, foo), __fuse_decorate.p(1, foo()), __fuse_decorate.p(2, foo(123, \\"ab\\")), __fuse_decorate.m(\\"design:paramtypes\\", [String, String, String, Number, Boolean])], HelloWorld);
 "
 `;
 
