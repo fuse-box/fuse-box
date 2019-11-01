@@ -127,18 +127,14 @@ describe('Class constructor properties', () => {
                             fuse?: boolean) {
 
                     super();
-
-                    const innerClass = class extends Amazing {
-
+                    class Hey extends Amazing {
                       constructor(@foo public welcome: string,
                         @foo() private to: string,
-                        @foo(123, 'ab') protected awesomeness: string,
-                        of: number,
                         fuse?: boolean) {
                           super();
                         }
+                      static someM = () => {}
                     }
-
                     this.fuse = fuse;
                 }
 
@@ -479,6 +475,20 @@ describe('Class constructor properties', () => {
         `,
       });
 
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('static props in export default class with decorators', () => {
+      const result = testTranspile({
+        withJSX: false,
+        code: `
+        @Injectable()
+        export default class ApiService {
+          static foo = () => {}
+          static bar = () => {}
+        }
+        `,
+      });
       expect(result.code).toMatchSnapshot();
     });
   });

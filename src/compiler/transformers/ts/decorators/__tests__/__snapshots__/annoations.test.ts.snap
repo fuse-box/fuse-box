@@ -86,7 +86,7 @@ exports[`Annotation test Known identifiers should detect "WeakSet" 1`] = `"{\\"t
 
 exports[`Annotation test Known identifiers should detect "XMLHttpRequest" 1`] = `"{\\"type\\":\\"Identifier\\",\\"name\\":\\"XMLHttpRequest\\"}"`;
 
-exports[`Annotation test Known identifiers should detect "boolean" 1`] = `undefined`;
+exports[`Annotation test Known identifiers should detect "boolean" 1`] = `"{\\"type\\":\\"Identifier\\",\\"name\\":\\"Boolean\\"}"`;
 
 exports[`Annotation test Maybe objects should detect SomeObject as maybe 1 1`] = `"{\\"type\\":\\"ConditionalExpression\\",\\"test\\":{\\"type\\":\\"BinaryExpression\\",\\"left\\":{\\"type\\":\\"UnaryExpression\\",\\"operator\\":\\"typeof\\",\\"argument\\":{\\"type\\":\\"Identifier\\",\\"name\\":\\"SomeStuff\\"},\\"prefix\\":true},\\"right\\":{\\"type\\":\\"Literal\\",\\"value\\":\\"function\\"},\\"operator\\":\\"===\\"},\\"consequent\\":{\\"type\\":\\"Identifier\\",\\"name\\":\\"SomeStuff\\"},\\"alternate\\":{\\"type\\":\\"Identifier\\",\\"name\\":\\"Object\\"}}"`;
 

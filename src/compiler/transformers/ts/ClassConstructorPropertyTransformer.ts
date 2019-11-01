@@ -176,7 +176,9 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
         // this is a simple case, where we have body to insert after
         return { insertAfterThisNode: statements };
       } else {
+        if (ClassNode.$fuse_class_declaration_visited) return;
         const globalContext = visit.globalContext as GlobalContext;
+
         // prevent the same transformer from visiting the same node
         // Since we have done all the tranformers, but need to return exactly same CLASS
         // due to a SequenceExpression transformation
@@ -204,8 +206,8 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
             right: oldStatement.expression.right,
           };
           sequenceExpressions.expressions.push(n);
-          sequenceExpressions.expressions.push({ type: 'Identifier', name: NewSysVariableName });
         }
+        sequenceExpressions.expressions.push({ type: 'Identifier', name: NewSysVariableName });
 
         // generate a declaration
         const sysVariableDeclaration: ASTNode = {

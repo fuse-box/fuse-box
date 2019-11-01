@@ -113,7 +113,7 @@ describe('Common features test', () => {
     });
   });
 
-  describe.only('This typing', () => {
+  describe('This typing', () => {
     it('should remove 1', () => {
       const result = testTranspile({
         code: `
