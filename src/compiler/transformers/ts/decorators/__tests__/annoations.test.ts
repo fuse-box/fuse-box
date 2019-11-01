@@ -46,7 +46,6 @@ describe('Annotation test', () => {
     for (const name of KNOWN) {
       it(`should detect "${name}"`, () => {
         const res = conv(name);
-        // console.log(name, '=>', res);
         expect(JSON.stringify(res)).toMatchSnapshot();
       });
     }
