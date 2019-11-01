@@ -123,6 +123,7 @@ export function convertTypeAnnotation(node: ASTNode) {
     case 'FunctionType':
       return id_Function;
     case 'TupleType':
+    case 'ArrayType':
       return id_Array;
     case 'LiteralType':
       if (typeAnnotation.literal && typeAnnotation.literal.value !== undefined) {
