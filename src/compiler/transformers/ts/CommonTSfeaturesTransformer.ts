@@ -46,6 +46,7 @@ export function CommonTSfeaturesTransformer(): ITransformer {
         case 'TypeAliasDeclaration':
         case 'AbstractMethodDefinition':
         case 'InterfaceDeclaration':
+        case 'AbstractClassProperty':
         case 'ClassProperty':
           return { removeNode: true, ignoreChildren: true };
         case 'ExportNamedDeclaration':
