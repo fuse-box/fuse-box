@@ -294,19 +294,6 @@ export class Module {
   }
 
   public generateCode() {
-    // if (this.props.extension === '.ts') {
-    //   const compilerOptions: ts.CompilerOptions = {
-    //     module: ts.ModuleKind.CommonJS,
-    //     experimentalDecorators: true,
-    //   };
-    //   const data = ts.transpileModule(this.contents, {
-    //     fileName: this.props.absPath,
-    //     compilerOptions,
-    //   });
-    //   this.contents = data.outputText;
-    //   console.log('here...');
-    //   return;
-    // }
     if (this.ast) {
       const withSourcemaps = this.isSourceMapRequired();
       let map;
