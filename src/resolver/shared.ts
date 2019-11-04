@@ -6,11 +6,16 @@ export function getFolderEntryPointFromPackageJSON(props: {
   if (isBrowserEntry(props.json, props.isBrowserBuild)) {
     return props.json.browser;
   }
+
   if (props.useLocalField && props.json['local:main']) {
     return props.json['local:main'];
   }
+
   if (props.json['ts:main']) {
     return props.json['ts:main'];
+  }
+  if (props.json.esm2015) {
+    return props.json.esm2015;
   }
   if (props.json.module) {
     return props.json.module;
