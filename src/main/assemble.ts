@@ -192,7 +192,7 @@ export function processModule(props: IDefaultParseProps) {
   icp.sync('assemble_module_init', { module: _module });
   props.pkg.modules.push(props.module);
 
-  let literalStatements: { [key: string]: ITransformerRequireStatement };
+  let literalStatements: { [key: string]: Array<ITransformerRequireStatement> };
   if (_module.isExecutable()) {
     if (!_module.isCached) {
       _module.read();
@@ -212,7 +212,8 @@ export function processModule(props: IDefaultParseProps) {
         if (item.statement.arguments.length === 1) {
           const importLiteral = item.statement.arguments[0];
           _module.analysis.imports.push({ type: item.importType, literal: importLiteral.value });
-          literalStatements[importLiteral.value] = item;
+          if (!literalStatements[importLiteral.value]) literalStatements[importLiteral.value] = [];
+          literalStatements[importLiteral.value].push(item);
         }
       }
 
@@ -240,10 +241,13 @@ export function processModule(props: IDefaultParseProps) {
     for (const data of _module.analysis.imports) {
       if (data.literal) {
         const response = resolveStatement({ statement: data.literal, importType: data.type }, props);
-        if (response) {
+        if (response && literalStatements) {
           modules.push(response);
-          if (literalStatements && response.forcedStatement && literalStatements[data.literal]) {
-            literalStatements[data.literal].statement.arguments[0].value = response.forcedStatement;
+          const nodes = literalStatements[data.literal];
+          if (literalStatements && response.forcedStatement && nodes) {
+            for (const node of nodes) {
+              node.statement.arguments[0].value = response.forcedStatement;
+            }
           }
         }
       } else {
