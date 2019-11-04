@@ -1,0 +1,59 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`scope test option 1 1`] = `
+"function hey() {}
+"
+`;
+
+exports[`scope test option 2 1`] = `
+"function hey() {}
+console.log(hey);
+"
+`;
+
+exports[`scope test variation 3 1`] = `
+"function foo(hey) {}
+"
+`;
+
+exports[`scope test variation 4 1`] = `
+"const hey = hey => {};
+"
+`;
+
+exports[`scope test variation 5 1`] = `
+"const hey = hey => {
+  console.log(hey);
+};
+"
+`;
+
+exports[`scope test variation 6 1`] = `
+"var oi_1 = require(\\"oi\\");
+console.log(oi_1.hey);
+const hey = hey => {
+  console.log(hey);
+};
+"
+`;
+
+exports[`scope test variation 7 1`] = `
+"class Hey {
+  foo(hey) {
+    console.log(hey);
+  }
+}
+"
+`;
+
+exports[`scope test variation with class After 1`] = `
+"var oi_1 = require(\\"oi\\");
+console.log(oi_1.Hey);
+class Hey {
+  foo(hey) {
+    console.log(hey);
+  }
+}
+new Hey();
+"
+`;

@@ -3,6 +3,8 @@ import { IASTScope, IVisit } from './Visitor';
 const _FunctionDecl = {
   FunctionDeclaration: 1,
   FunctionExpression: 1,
+  ClassDeclaration: 1,
+  ArrowFunctionExpression: 1,
 };
 export function scopeTracker(visitor: IVisit): IASTScope {
   const { node, parent, property } = visitor;
