@@ -146,7 +146,7 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
 
     result.targetAbsPath = parsedLookup.absPath;
 
-    if (json.browser && typeof json.browser === 'object') {
+    if (isBrowser && json.browser && typeof json.browser === 'object') {
       const override = handleBrowserField(pkg, parsedLookup.absPath);
       if (override) {
         result.targetAbsPath = override;
@@ -182,7 +182,7 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
       result.forcedStatement = `${parsed.name}/${result.targetFuseBoxPath}`;
     }
 
-    if (json.browser && typeof json.browser === 'object') {
+    if (isBrowser && json.browser && typeof json.browser === 'object') {
       const override = handleBrowserField(pkg, entryLookup.absPath);
       if (override) {
         //result.targetFuseBoxPath =
