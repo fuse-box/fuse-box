@@ -46,6 +46,28 @@ exports[`scope test variation 7 1`] = `
 "
 `;
 
+exports[`scope test variation compute properties 1`] = `
+"exports.a = () => {};
+const b = {
+  [exports.a]: 1
+};
+"
+`;
+
+exports[`scope test variation normal prop 1`] = `
+"exports.a = () => {};
+const b = {
+  a: exports.a
+};
+"
+`;
+
+exports[`scope test variation with arrow expression 1`] = `
+"exports.a = () => {};
+console.log(() => exports.a);
+"
+`;
+
 exports[`scope test variation with class After 1`] = `
 "var oi_1 = require(\\"oi\\");
 console.log(oi_1.Hey);

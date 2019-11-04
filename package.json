@@ -47,7 +47,6 @@
     "lego-api": "^1.0.7",
     "meriyah": "1.8.6",
     "mustache": "^2.3.0",
-    "npm": "^6.10.0",
     "offset-sourcemap-lines": "^1.0.1",
     "open": "^6.4.0",
     "postcss": "^7.0.17",
@@ -152,5 +151,5 @@
     "coverage-ci": "jest --verbose --coverage --runInBand"
   },
   "typings": "index.d.ts",
-  "version": "4.0.0-alpha.247"
+  "version": "4.0.0-alpha.250"
 }
