@@ -100,4 +100,37 @@ describe('scope test', () => {
 
     expect(result.code).toMatchSnapshot();
   });
+
+  it('variation with arrow expression', () => {
+    const result = testTranspile({
+      code: `
+      export const a = () => {};
+      console.log(() => a);
+      `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('variation compute properties', () => {
+    const result = testTranspile({
+      code: `
+      export const a = () => {};
+      const b = {[a] : 1}
+      `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('variation normal prop', () => {
+    const result = testTranspile({
+      code: `
+      export const a = () => {};
+      const b = {a : a}
+      `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
 });
