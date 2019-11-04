@@ -70,6 +70,15 @@ console.log(stream.method());
 "
 `;
 
+
+exports[`Bundle polyfill transform test polyfills Should not add anything should add buffer only once 1`] = `
+"var Buffer = require(\\"buffer\\");
+var Buffer = buffer;
+console.log(Buffer);
+console.log(Buffer);
+"
+`;
+
 exports[`Bundle polyfill transform test polyfills Should not add anything should not add Buffer because it has NOT been defined 1`] = `
 "var buffer = require(\\"buffer\\");
 function some() {

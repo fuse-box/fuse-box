@@ -112,6 +112,16 @@ describe('Bundle polyfill transform test', () => {
 
         expect(result.code).toMatchSnapshot();
       });
+
+      it('should add buffer only once', () => {
+        const result = testTranspile({
+          code: `
+            console.log(Buffer)
+            console.log(Buffer)
+          `,
+        });
+        expect(result.code).toMatchSnapshot();
+      });
     });
   });
 });
