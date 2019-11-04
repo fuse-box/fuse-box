@@ -56,6 +56,7 @@ export function BundlePolyfillTransformer(options: IBundleEssntialTransformerOpt
        */
       if (PolyfillEssentialConfig[name]) {
         if (VariablesInserted[name]) return;
+        VariablesInserted[name] = 1;
         const statements: Array<ASTNode> = [];
         const moduleName = PolyfillEssentialConfig[name];
         if (!RequireStatementsInserted[moduleName]) {
