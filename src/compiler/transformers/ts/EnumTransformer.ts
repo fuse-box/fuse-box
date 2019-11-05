@@ -2,6 +2,31 @@ import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
 import { ASTNode } from '../../interfaces/AST';
 import { computeBinaryExpression } from '../../static_compute/computeBinaryExpression';
 
+function enumStringValueExpression(enumName: string, property: string, value: string): ASTNode {
+  return {
+    type: 'ExpressionStatement',
+    expression: {
+      type: 'AssignmentExpression',
+      left: {
+        type: 'MemberExpression',
+        object: {
+          type: 'Identifier',
+          name: enumName,
+        },
+        computed: true,
+        property: {
+          type: 'Literal',
+          value: property,
+        },
+      },
+      operator: '=',
+      right: {
+        type: 'Literal',
+        value: value,
+      },
+    },
+  };
+}
 export function EnumTransformer() {
   return (visit: IVisit): IVisitorMod => {
     const node = visit.node;
@@ -71,73 +96,86 @@ export function EnumTransformer() {
       const computedValues = {};
       const members = {};
       for (const member of node.members) {
-        const memberName = member.id.name;
-        members[memberName] = 1;
+        const prop = member.id;
+
+        //members[memberName] = 1;
         let rightValue;
+
+        let memberName;
+        if (prop.type === 'Literal') memberName = prop.value;
+        else memberName = prop.name;
+        members[memberName] = 1;
+
         if (member.initializer) {
-          const computed = computeBinaryExpression(member.initializer, computedValues);
-          if (!computed.value) {
-            // if we couldn't compute a value for the property
-            // we still need to check if it has references to our enum
-            // an convert it to a member expression
-            for (const key in computed.collected) {
-              if (members[key]) {
-                const n = computed.collected[key];
-                // since we don't know the parent (speed wise)
-                // we replace the object directly
-                n.type = 'MemberExpression';
-                n.object = {
-                  type: 'Identifier',
-                  name: enumName,
-                };
-                n.property = {
-                  type: 'Identifier',
-                  name: key,
-                };
-              }
-            }
-            rightValue = member.initializer;
+          if (member.initializer.type === 'Literal' && typeof member.initializer.value === 'string') {
+            enumBody.push(enumStringValueExpression(enumName, memberName, member.initializer.value));
           } else {
-            // value has been computed correctlu
-            // we can replace it with just a value now
-            computedValues[memberName] = computed.value;
-            rightValue = { type: 'Literal', value: computed.value };
+            const computed = computeBinaryExpression(member.initializer, computedValues);
+            if (!computed.value) {
+              // if we couldn't compute a value for the property
+              // we still need to check if it has references to our enum
+              // an convert it to a member expression
+              for (const key in computed.collected) {
+                if (members[key]) {
+                  const n = computed.collected[key];
+                  // since we don't know the parent (speed wise)
+                  // we replace the object directly
+                  n.type = 'MemberExpression';
+                  n.object = {
+                    type: 'Identifier',
+                    name: enumName,
+                  };
+                  n.property = {
+                    type: 'Identifier',
+                    name: key,
+                  };
+                }
+              }
+              rightValue = member.initializer;
+            } else {
+              // value has been computed correctlu
+              // we can replace it with just a value now
+              computedValues[memberName] = computed.value;
+              rightValue = { type: 'Literal', value: computed.value };
+            }
           }
         } else rightValue = { type: 'Literal', value: index++ };
 
-        enumBody.push({
-          type: 'AssignmentExpression',
-          left: {
-            type: 'MemberExpression',
-            object: {
-              type: 'Identifier',
-              name: enumName,
-            },
-            computed: true,
-            property: {
-              type: 'AssignmentExpression',
-              left: {
-                type: 'MemberExpression',
-                object: {
-                  type: 'Identifier',
-                  name: enumName,
-                },
-                computed: true,
-                property: {
-                  type: 'Literal',
-                  value: memberName,
-                },
+        if (rightValue) {
+          enumBody.push({
+            type: 'AssignmentExpression',
+            left: {
+              type: 'MemberExpression',
+              object: {
+                type: 'Identifier',
+                name: enumName,
               },
-              operator: '=',
-              right: rightValue,
+              computed: true,
+              property: {
+                type: 'AssignmentExpression',
+                left: {
+                  type: 'MemberExpression',
+                  object: {
+                    type: 'Identifier',
+                    name: enumName,
+                  },
+                  computed: true,
+                  property: {
+                    type: 'Literal',
+                    value: memberName,
+                  },
+                },
+                operator: '=',
+                right: rightValue,
+              },
             },
-          },
-          operator: '=',
-          right: {
-            type: 'Literal',
-            value: memberName,
-          },
-        });
+            operator: '=',
+            right: {
+              type: 'Literal',
+              value: memberName,
+            },
+          });
+        }
       }
 
       return { replaceWith: [Declaration, EnumWrapper] };
