@@ -1,5 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Enums test should be able to handle numbers 1`] = `
+"var Stuff;
+(function (Stuff) {
+  Stuff[Stuff[\\"foo\\"] = 1] = \\"foo\\"
+})(Stuff || (Stuff = {}))
+"
+`;
+
 exports[`Enums test should compute binary 1`] = `
 "var Stuff;
 (function (Stuff) {
@@ -37,11 +45,35 @@ exports[`Enums test should compute crazy enum and reference is in another enum 1
 "
 `;
 
+exports[`Enums test should convert to sting if defined 1`] = `
+"var Stuff;
+(function (Stuff) {
+  Stuff[\\"foo\\"] = \\"bar\\";
+})(Stuff || (Stuff = {}))
+"
+`;
+
 exports[`Enums test should respect local enum references if not able to compute 1`] = `
 "var Stuff;
 (function (Stuff) {
   Stuff[Stuff[\\"First\\"] = 2] = \\"First\\"
   Stuff[Stuff[\\"Second\\"] = Hey + 1 + Stuff.First] = \\"Second\\"
+})(Stuff || (Stuff = {}))
+"
+`;
+
+exports[`Enums test should respect string value 1 1`] = `
+"var Stuff;
+(function (Stuff) {
+  Stuff[Stuff[\\"foo\\"] = 0] = \\"foo\\"
+})(Stuff || (Stuff = {}))
+"
+`;
+
+exports[`Enums test should respect string value 2 1`] = `
+"var Stuff;
+(function (Stuff) {
+  Stuff[\\"foo\\"] = \\"bar\\";
 })(Stuff || (Stuff = {}))
 "
 `;
