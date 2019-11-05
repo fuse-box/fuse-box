@@ -86,4 +86,51 @@ describe('Enums test', () => {
 
     expect(result.code).toMatchSnapshot();
   });
+
+  it('should respect string value 1', () => {
+    const result = testTranspile({
+      code: `
+        enum Stuff {
+          'foo'
+        }
+    `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('should respect string value 2', () => {
+    const result = testTranspile({
+      code: `
+        enum Stuff {
+          'foo' = 'bar'
+        }
+    `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('should convert to sting if defined', () => {
+    const result = testTranspile({
+      code: `
+        enum Stuff {
+          foo = 'bar'
+        }
+    `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('should be able to handle numbers', () => {
+    const result = testTranspile({
+      code: `
+        enum Stuff {
+          foo = 1
+        }
+    `,
+    });
+    expect(result.code).toMatchSnapshot();
+  });
 });
