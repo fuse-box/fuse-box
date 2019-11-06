@@ -30,6 +30,22 @@ console.log(oi_1.default);
 "
 `;
 
+exports[`scope test Object respect spread in Array 1`] = `
+"function one(props) {
+  const [foo, ...rest] = props;
+  console.log(rest);
+}
+"
+`;
+
+exports[`scope test Object respect spread in Object 1`] = `
+"function one(props) {
+  const {foo, ...rest} = props;
+  console.log(rest);
+}
+"
+`;
+
 exports[`scope test option 1 1`] = `
 "function hey() {}
 "

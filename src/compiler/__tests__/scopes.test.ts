@@ -176,4 +176,33 @@ describe('scope test', () => {
 
     expect(result.code).toMatchSnapshot();
   });
+
+  it('Object respect spread in Object', () => {
+    const result = testTranspile({
+      code: `
+      import {foo, rest} from "oi";
+      function one(props){
+        const {foo, ...rest} = props;
+        console.log(rest)
+
+      }
+      `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('Object respect spread in Array', () => {
+    const result = testTranspile({
+      code: `
+      import {foo, rest} from "oi";
+      function one(props){
+        const [foo, ...rest] = props;
+        console.log(rest)
+      }
+      `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
 });

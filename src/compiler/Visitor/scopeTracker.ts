@@ -34,6 +34,8 @@ export function scopeTracker(visitor: IVisit): IASTScope {
               for (const el of id.elements) {
                 if (el.type === 'Identifier') {
                   scope.locals[el.name] = 1;
+                } else if (el.type === 'RestElement') {
+                  scope.locals[el.argument.name] = 1;
                 }
               }
             }
@@ -41,6 +43,8 @@ export function scopeTracker(visitor: IVisit): IASTScope {
             for (const prop of id.properties) {
               if (prop.type === 'Property' && prop.key == prop.value) {
                 scope.locals[prop.key.name] = 1;
+              } else if (prop.type === 'RestElement') {
+                scope.locals[prop.argument.name] = 1;
               }
             }
           }
