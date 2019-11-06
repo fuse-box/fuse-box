@@ -67,11 +67,15 @@ export function fileLookup(props: ILookupProps): ILookupResult {
   const extension = path.extname(resolved);
 
   if (extension && fileExists(resolved)) {
-    return {
-      extension: path.extname(resolved),
-      absPath: resolved,
-      fileExists: fileExists(resolved),
-    };
+    const stat = fs.lstatSync(resolved);
+
+    if (stat.isFile()) {
+      return {
+        extension: path.extname(resolved),
+        absPath: resolved,
+        fileExists: fileExists(resolved),
+      };
+    }
   }
 
   // try files without extensions first
