@@ -161,4 +161,19 @@ describe('scope test', () => {
     });
     expect(result.code).toMatchSnapshot();
   });
+
+  it('Object pattern with spread', () => {
+    const result = testTranspile({
+      code: `
+      import foo from "oi";
+      function one(props){
+        const {foo, ...rest} = props;
+        console.log(foo)
+      }
+      console.log(foo)
+      `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
 });
