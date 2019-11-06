@@ -1,2 +1,6 @@
-console.log(Buffer);
-console.log(Buffer);
+enum Test {
+  foo,
+  bar,
+  sukka = 'd',
+  kakka = 2,
+}

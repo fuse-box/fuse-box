@@ -22,6 +22,7 @@ import { DecoratorTransformer } from '../transformers/ts/decorators/DecoratorTra
 import { EnumTransformer } from '../transformers/ts/EnumTransformer';
 import { NamespaceTransformer } from '../transformers/ts/NameSpaceTransformer';
 import { IVisit, IVisitorMod } from '../Visitor/Visitor';
+import { ObfuscationTransformer } from '../transformers/ObfuscationTransformer';
 
 export interface ICompileModuleProps {
   code: string;
@@ -59,6 +60,7 @@ export function testTranspile(props: ICompileModuleProps) {
 
   const defaultTransformers: ITransformerList = [
     GlobalContextTransformer(),
+    //ObfuscationTransformer(),
     AngularURLTransformer({ onRequireCallExpression }),
     BundleFastConditionUnwrapper({
       env: bundleProps.env,

@@ -32,7 +32,7 @@ const fuse = fusebox({
   devServer: true,
   //production: {},
   homeDir: __dirname,
-  entry: 'src/index.js',
+  entry: 'src/index.ts',
 
   //plugins: [pluginJSON('configs/.*', { useDefault: true }), pluginReplace('other/Other.ts', { $version: '1.1.0' })],
 });

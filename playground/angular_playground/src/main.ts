@@ -10,8 +10,14 @@ console.log(rem(5));
 if (environment.production) {
   enableProdMode();
 }
+import * as shit from '@ngx-translate/core';
+console.log(shit);
 
-console.log('well!!');
+console.log(require('hammerjs'));
+import { MatDialogRef, MatDialogConfig } from '@angular/material';
+const dialogConfig = new MatDialogConfig();
+
+console.log(dialogConfig);
 
 platformBrowserDynamic()
   .bootstrapModule(AppModule)
