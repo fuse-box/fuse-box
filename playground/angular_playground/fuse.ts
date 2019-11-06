@@ -12,7 +12,7 @@ class Context {
         publicPath: '.',
         template: 'src/index.html',
       },
-      cache: { enabled: true, FTL: true, root: './.cache' },
+      cache: { enabled: false, FTL: true, root: './.cache' },
       watch: true,
       devServer: this.runServer,
 
