@@ -9,6 +9,7 @@ const _isLocalIdentifierRulesExceptionNodes = {
   ArrayPattern: 1,
   ClassDeclaration: 1,
   FunctionExpression: 1,
+  RestElement: 1,
   //ArrowFunctionExpression: 1,
   ImportDefaultSpecifier: 1,
 };
@@ -20,9 +21,7 @@ export function isLocalIdentifier(node: ASTNode, parent: ASTNode, propertyName: 
       if (parent.$assign_pattern) {
         return;
       }
-
       if (parent.computed) return true;
-
       return parent.property !== node && !parent.computed && parent.key !== node;
     }
   }
