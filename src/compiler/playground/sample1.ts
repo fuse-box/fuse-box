@@ -1,6 +1,7 @@
-enum Test {
-  foo,
-  bar,
-  sukka = 'd',
-  kakka = 2,
+import { foo, bar } from 'fop';
+
+function hey(props) {
+  const { foo } = props;
+  const [bar] = props;
+  console.log(bar, foo);
 }

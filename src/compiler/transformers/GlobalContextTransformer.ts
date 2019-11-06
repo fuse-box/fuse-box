@@ -1,7 +1,7 @@
 import { ASTNode } from '../interfaces/AST';
 import { GlobalContext } from '../program/GlobalContext';
 import { ITransformer } from '../program/transpileModule';
-import { createMemberExpression, isLocalIdentifier } from '../Visitor/helpers';
+import { createMemberExpression } from '../Visitor/helpers';
 import { IVisit } from '../Visitor/Visitor';
 
 export function GlobalContextTransformer(): ITransformer {
@@ -22,6 +22,11 @@ export function GlobalContextTransformer(): ITransformer {
 
       const locals = visit.scope && visit.scope.locals ? visit.scope.locals : {};
 
+      if (node.type === 'ObjectPattern') {
+        for (const item of node.properties) {
+          item.$assign_pattern = true;
+        }
+      }
       let shorthand;
       if (node.type === 'Property' && node.shorthand === true) {
         if (node.value && node.value.type === 'Identifier') {
@@ -29,7 +34,7 @@ export function GlobalContextTransformer(): ITransformer {
         }
       }
 
-      if (visit.isLocalIdentifier || shorthand) {
+      if (visit.isLocalIdentifier || (shorthand && !node.$assign_pattern)) {
         let nodeName;
         if (shorthand) nodeName = shorthand.name;
         else nodeName = node.name;
