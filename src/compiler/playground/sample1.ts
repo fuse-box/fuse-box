@@ -1,10 +1,6 @@
-import { foo, bar } from 'fop';
+import { foo, bar, rest } from 'fop';
 
 function hey(props) {
-  const {
-    options,
-    foo,
-    input: { bar, onBlur, value, name },
-    ...rest
-  } = props;
+  const [a, b, ...rest] = props;
+  console.log(rest);
 }
