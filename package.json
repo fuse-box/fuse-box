@@ -44,7 +44,7 @@
     "http-proxy-middleware": "^0.19.1",
     "ieee754": "^1.1.8",
     "lego-api": "^1.0.7",
-    "meriyah": "^1.6.15",
+    "meriyah": "1.8.6",
     "mustache": "^2.3.0",
     "npm": "^6.10.0",
     "offset-sourcemap-lines": "^1.0.1",
@@ -148,5 +148,5 @@
     "coverage-ci": "jest --verbose --coverage --runInBand"
   },
   "typings": "index.d.ts",
-  "version": "4.0.0-next.149"
+  "version": "4.0.0-next.150"
 }

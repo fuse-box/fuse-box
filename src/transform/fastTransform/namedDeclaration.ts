@@ -58,8 +58,6 @@ export function exportNamedDeclaration(ctx: ITransformContext, node, parent, pro
   if (node.specifiers) {
     if (node.specifiers.length) {
       handleExportSpecifiers(ctx, node, parent, prop, idx);
-    } else {
-      ctx.toRemove(parent[prop], node);
     }
   }
 }
