@@ -1,0 +1,4 @@
+{
+  "name": "pukka",
+  "main": "../target.ts"
+}
