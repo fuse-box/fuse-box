@@ -39,7 +39,7 @@ export function scopeTracker(visitor: IVisit): IASTScope {
             }
           } else if (id.type === 'ObjectPattern' && id.properties) {
             for (const prop of id.properties) {
-              if (prop.key == prop.value) {
+              if (prop.type === 'Property' && prop.key == prop.value) {
                 scope.locals[prop.key.name] = 1;
               }
             }
