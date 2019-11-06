@@ -6,6 +6,7 @@ export interface ASTNode {
   $fuse_visited?: boolean;
   $fuse_class_declaration_visited?: boolean;
   $fuse_decoratorsProcessed?: boolean;
+  $assign_pattern?: boolean;
   $fuse_decoratorForClassIdentifier?: string;
   typeAnnotation?: ASTNode;
   moduleReference?: ASTNode;

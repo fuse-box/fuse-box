@@ -23,17 +23,33 @@ export function scopeTracker(visitor: IVisit): IASTScope {
 
   if (type === 'VariableDeclaration') {
     if (node.declarations) {
+      if (scope === undefined) scope = { locals: {} };
       for (const decl of node.declarations) {
-        if (decl.type === 'VariableDeclarator' && decl.id && decl.id.type === 'Identifier') {
-          if (scope === undefined) scope = { locals: {} };
-          scope.locals[decl.id.name] = 1;
-
-          // we need to check for the next item on the list (if we are in an array)
-          if (visitor.id !== undefined && property) {
-            if (parent[property][visitor.id + 1]) {
-              parent[property][visitor.id + 1].scope = scope;
+        if (decl.type === 'VariableDeclarator' && decl.id) {
+          const id = decl.id;
+          if (id.type === 'Identifier') {
+            scope.locals[id.name] = 1;
+          } else if (id.type === 'ArrayPattern') {
+            if (id.elements) {
+              for (const el of id.elements) {
+                if (el.type === 'Identifier') {
+                  scope.locals[el.name] = 1;
+                }
+              }
+            }
+          } else if (id.type === 'ObjectPattern' && id.properties) {
+            for (const prop of id.properties) {
+              if (prop.key == prop.value) {
+                scope.locals[prop.key.name] = 1;
+              }
             }
           }
+        }
+      }
+      // we need to check for the next item on the list (if we are in an array)
+      if (visitor.id !== undefined && property) {
+        if (parent[property][visitor.id + 1]) {
+          parent[property][visitor.id + 1].scope = scope;
         }
       }
     }

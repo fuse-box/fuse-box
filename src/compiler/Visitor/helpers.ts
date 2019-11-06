@@ -6,6 +6,7 @@ const _isLocalIdentifierRulesExceptionNodes = {
   ImportNamespaceSpecifier: 1,
   TypeReference: 1,
   FunctionDeclaration: 1,
+  ArrayPattern: 1,
   ClassDeclaration: 1,
   FunctionExpression: 1,
   //ArrowFunctionExpression: 1,
@@ -16,7 +17,12 @@ export function isLocalIdentifier(node: ASTNode, parent: ASTNode, propertyName: 
     if (propertyName === 'params') return;
     if (propertyName === 'superClass') return true;
     if (parent && !_isLocalIdentifierRulesExceptionNodes[parent.type]) {
+      if (parent.$assign_pattern) {
+        return;
+      }
+
       if (parent.computed) return true;
+
       return parent.property !== node && !parent.computed && parent.key !== node;
     }
   }
