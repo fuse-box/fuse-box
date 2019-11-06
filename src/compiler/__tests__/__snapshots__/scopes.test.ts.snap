@@ -1,5 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`scope test Array pattern 1`] = `
+"var oi_1 = require(\\"oi\\");
+function one(props) {
+  const [foo] = props;
+  console.log(foo);
+}
+console.log(oi_1.default);
+"
+`;
+
+exports[`scope test Object pattern 1`] = `
+"var oi_1 = require(\\"oi\\");
+function one(props) {
+  const {foo} = props;
+  console.log(foo);
+}
+console.log(oi_1.default);
+"
+`;
+
 exports[`scope test option 1 1`] = `
 "function hey() {}
 "

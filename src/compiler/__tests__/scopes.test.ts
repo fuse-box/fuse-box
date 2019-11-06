@@ -133,4 +133,32 @@ describe('scope test', () => {
 
     expect(result.code).toMatchSnapshot();
   });
+
+  it('Array pattern', () => {
+    const result = testTranspile({
+      code: `
+      import foo from "oi";
+      function one(props){
+        const [foo] = props;
+        console.log(foo)
+      }
+      console.log(foo)
+      `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+  it('Object pattern', () => {
+    const result = testTranspile({
+      code: `
+      import foo from "oi";
+      function one(props){
+        const {foo} = props;
+        console.log(foo)
+      }
+      console.log(foo)
+      `,
+    });
+    expect(result.code).toMatchSnapshot();
+  });
 });
