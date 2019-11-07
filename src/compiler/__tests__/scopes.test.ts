@@ -205,4 +205,18 @@ describe('scope test', () => {
 
     expect(result.code).toMatchSnapshot();
   });
+
+  it('should work with nulll', () => {
+    const result = testTranspile({
+      code: `
+      import {foo, rest} from "oi";
+      function one(props){
+        const [, foo, ...rest] = props;
+        console.log(rest)
+      }
+      `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
 });

@@ -32,10 +32,12 @@ export function scopeTracker(visitor: IVisit): IASTScope {
           } else if (id.type === 'ArrayPattern') {
             if (id.elements) {
               for (const el of id.elements) {
-                if (el.type === 'Identifier') {
-                  scope.locals[el.name] = 1;
-                } else if (el.type === 'RestElement') {
-                  scope.locals[el.argument.name] = 1;
+                if (el) {
+                  if (el.type === 'Identifier') {
+                    scope.locals[el.name] = 1;
+                  } else if (el.type === 'RestElement') {
+                    scope.locals[el.argument.name] = 1;
+                  }
                 }
               }
             }
