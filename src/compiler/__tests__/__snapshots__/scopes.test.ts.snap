@@ -57,6 +57,14 @@ console.log(hey);
 "
 `;
 
+exports[`scope test should work with nulll 1`] = `
+"function one(props) {
+  const [, foo, ...rest] = props;
+  console.log(rest);
+}
+"
+`;
+
 exports[`scope test variation 3 1`] = `
 "function foo(hey) {}
 "
