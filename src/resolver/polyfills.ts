@@ -31,32 +31,7 @@ const SERVER_POLYFILL = new Set<string>([
 
 const ELECTRON_POLYFILL = new Set<string>([
   'electron',
-  'assert',
-  'buffer',
-  'child_process',
-  'cluster',
-  'crypto',
-  'fs',
-  'http',
-  'http2',
-  'https',
-  'module',
-  'net',
-  'os',
-  'path',
-  'process',
-  'querystring',
-  'stream',
-  'timers',
-  'tls',
-  'tty',
-  'url',
-  'util',
-  'zlib',
-  'constants',
-  'v8',
-  'vm',
-  'dgram'
+  ...SERVER_POLYFILL
 ]);
 export function isServerPolyfill(name: string) {
   return SERVER_POLYFILL.has(name);
