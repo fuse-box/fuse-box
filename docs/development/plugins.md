@@ -36,7 +36,7 @@ export function pluginFoo(a: string | RegExp | IPluginProps, b?: IPluginProps) {
 Obviosly, if you are not planning on applying your plugin globally (to all files) you can skip the `parsePluginOptions`
 having only one arguments
 
-## How plugins works?
+## How do plugins work?
 
 ### ICT - Interceptor
 
