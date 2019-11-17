@@ -1,58 +1,129 @@
 # Get started
 
-To begin with, let's install required dependencies.
+
+
+## Core Concepts
+
+FuseBox is highly configurable, but also starts with smart defaults.
+This gives it a great learning curve; easy at first while great for super users.
+Here are a few conceptual highlights to understand:
+
+- `fuse.ts` - There is typically one main configuration called script `fuse.ts` or `fuse.js`.
+
+- `homeDir` - *(defaults to the location of `fuse.ts`)* Every project has a root path which all bundles resolve by.
+This dramatically improves performance by making it possible to leave transpiled output untouched.
+
+- the "dist" folder - This is where the output that fuse-box compiles is saved.  A fully self-contained bundle of the project.
+
+- css/sass/less - By default, imports of stylesheet files in your code will be automatically caught and (for sass or less) transpiled before
+being added to the bundle.  You can read more about that [here](../stylesheet.md)
+
+- svg/img/other assets - By default, imports of common asset types will result in the file being copied over to the dist folder.
+
+- dev vs production builds - During development, fuse-box aims to be very, very fast.
+But for production builds fuse-box runs much slower and utilizes a lot of RAM to create hyper-dense bundles instead.
+
+---------
+
+## Making Your First Bundle
+*Prerequisites: You must have nodejs and npm installed on your device with an "npm init" project*
+
+**Step 1. Install Fuse-Box**
+
+To begin, install fuse-box and it's required dependencies:
 
 ```bash
 npm install typescript fuse-box tslib --save-dev
 ```
+<!-- TODO:  Can the order of this be changed to put "fuse-box" first? -->
 
-FuseBox requires typescript at the core level, since many of the operations rely on it. `tslib` is being used by
-production - all the modules are compiled using typescript. Please note, that it doesn't mean that FuseBox works only
-with typescript. You can transpile javascript code too.
+TEMPORARY EDIT: For those wanting to use 4.0, install `npm i fuse-box@4.0.0-alpha.256 --save-dev` instead
 
-Once you are done installing, let's go through the main concepts
 
-Try [react-example](https://github.com/fuse-box/react-example)
+*What are these extra dependencies?*
+- `typescript` - FuseBox is written in typescript, though your project can be in plain javascript as well.
+- `tslib` - An addition to typescript which cleans up certain syntax
 
-## Concepts
 
-FuseBox is packed with features and takes a lot of assumptions when bundling your code. Here are the highlights:
 
-- FuseBox has a concept of `homeDir` which defaults to the location of your `fuse.ts` file launcher. All bundles rely on
-  this value to calculate a special path which is being used when resolving paths during development
-- Home directory `homeDir` is the key for being so fast. FuseBox tries to avoid unnecessary transformations, by leaving
-  the transpiled output untouched.
-- Many things are taken on the assumption basis. For example, you can import any `CSS` style CSS preprocessor and
-  FuseBox will handle it accordingly. You can import `svg` (or many others) files and those will be copied over to the
-  dist folder with a link as a result of import
-- FuseBox uses an alternative process for transformations during the production build. It's much slower and requires a
-  lot of RAM. All modules during development use `EsNext` target to include most of the features without transforming
-  them
-- FuseBox is radically different compared to WebPack or any other bundlers, and requires a much less learning curve to
-  grasp the concepts.
+**Step 2. Create fuse file**
 
-## Making your first bundle
+Create a `fuse.ts` or `fuse.js` file (whichever makes you comfortable) at the root of your project.
+Add the following contents to your fuse file:
 
-First off, we should create a `fuse.ts` or `fuse.js` files (whichever makes you comfortable) with the following contents
 
 ```ts
 import { fusebox } from 'fuse-box';
 const fuse = fusebox({
-  target: 'browser',
   entry: 'src/index.ts',
   devServer: true,
-  webIndex: {
-    template: 'src/index.html',
-  },
 });
 
 fuse.runDev();
 ```
+*What do these configs do?*
+- `entry` - defines the main root file of your project
+- `devServer` - runs a local live server for viewing your site as you update the codebase
+- `fuse.runDev()` - starts fuse bundling in "dev mode," which emphasizes bundling speed over bundling density
 
-Entry is the entry point of your application. We would like to open a development server too and use some `index.html`
-as our index.
+<!-- TODO: - You can see much more details on configuration in ADD LINK -->
 
-Let's create `src/index.html` with the following contents:
+
+**Step 3.  Create your entry file**
+
+Create a `src/index.ts` or `src/index.js` file to act as your main project entry point.  If you intend to use a
+framework, this is where you will later tell your framework to add content to the page.  But for simplicity's sake, just
+copy the following:
+
+```js
+document.addEventListener("DOMContentLoaded", () => {
+	document.body.innerHTML += `
+		A random number: ${Math.random()}<br>
+		(refresh to update)
+	`;
+});
+```
+
+**Step 4.  Run your project**
+
+If you chose `fuse.js` (javascript) as your fuse file:
+1. simply run `node fuse.js` to start your project
+
+If you chose `fues.ts` (typescript) as your fuse file:
+1. first install ts-node (`npm i ts-node --save-dev`)
+2. then run `ts-node fuse.ts`
+
+This should start a local web server which you can open in your browser.
+Try messing with the innerHTML of document.body to see how quickly it updates.
+
+-------
+
+## Making Your First Bundle More Interesting
+
+The minimal project above is taking advantage of as many defaults as possible.  One of these defaults is
+the `index.html` file that anchors your project.  There's a good chance you'll want to use something other
+than the default for this, so follow these steps to get it setup:
+
+**Step 1.  Specify the index.html in your fuse file**
+
+You must tell fuse where to find your index.html file.
+Modify your functioning fuse file (from above) to include a webIndex prop.
+
+```ts
+const fuse = fusebox({
+  // full config ommitted...
+  webIndex: {
+    template: 'src/index.html',
+  },
+});
+```
+
+To read more about webIndex [click here](../webIndex.md)
+
+
+**Step 2.  Create the index.html**
+
+Create a `src/index.html` file with the following contents:
 
 ```html
 <!DOCTYPE html>
@@ -69,39 +140,35 @@ Let's create `src/index.html` with the following contents:
 </html>
 ```
 
-Once your application has been bundled, FuseBox will copy this template and replace `$bundles` and `$css` with the
-following scripts. To read more about how webIndex properly works, read [here](../webIndex.md)
+**_What are $css and $bundles?_** These two keywords are used for templating.  After fuse has bundled together all of the styling and and scripting,
+it will inject the links toward these bundle files in `$css` for styles and `$bundles` for scripts.
 
-And finally we launch the process by calling `fuse.runDev()`
+---------
 
-## Targets
+## Even More Interesting Project Setups
+
+Try [react-example](https://github.com/fuse-box/react-example)
+
+---------
+
+## Other Important Introductory Configs
+
+### **Targets**
+
+```ts
+fusebox({
+	// full config ommitted...
+  target: 'browser',
+});
+```
 
 Possible values are: `browser`, `server`, `electron`;
 
 FuseBox behaves differently when processing modules using those targets. For `example` a `server` target won't touch
 `process` variables, as opposed to `browser` target, where it's being polyfilled.
 
-```ts
-fusebox({
-  target: 'browser',
-});
-```
 
-## Defining your entry point
-
-You can specify your entry point like this:
-
-```ts
-fusebox({
-  target: 'server',
-  entry: 'index.ts',
-});
-```
-
-FuseBox has only one entry point. If you wish to load more files, split your entry point better or use
-(dependencies)[#dependencies] field to include additional modules to the bundle
-
-## Dependencies
+### **Dependencies**
 
 It's possible to ignore/include/ignore all dependencies in your bundle.
 
@@ -110,6 +177,7 @@ bundling server (at least for development). You can tweak it like so:
 
 ```ts
 fusebox({
+	// full config ommitted...
   target: 'server',
   dependencies: {
     ignoreAllExternal: isProduction,
@@ -122,6 +190,7 @@ In most cases that should be fine. However, FuseBox won't be able to bundle nati
 
 ```ts
 fusebox({
+	// full config ommitted...
   target: 'server',
   dependencies: {
     ignoreAllExternal: true,
@@ -134,6 +203,7 @@ You can also include packages or modules by using `include` field:
 
 ```ts
 fusebox({
+	// full config ommitted...
   target: 'server',
   dependencies: {
     include: ['tslib', './someModuleRelativeToTheEntry'],
@@ -144,18 +214,19 @@ fusebox({
 `include` works relatively to the entry point, In fact all the strings are being resolved as a dependency of your entry
 point. You can add modules there too.
 
-## Caching
+### **Caching**
+
+```ts
+fusebox({
+	// full config ommitted...
+  cache: false,
+});
+```
 
 Caching in FuseBox is enabled automatically.
 
 Default cache folder is located under `node_modules/.fusebox`.
 
-```ts
-fusebox({
-  // ... basic config
-  cache: false,
-});
-```
 
 `runProd()` disable caching automatically since we shouldn't use caching for production builds. More information about
 caching is [here](cache.md)
