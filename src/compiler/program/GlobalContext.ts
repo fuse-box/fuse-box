@@ -23,8 +23,10 @@ export interface GlobalContext {
   completeCallbacks?: Array<() => void>;
 }
 
+const Letters = ['a', 'b', 'c', 'd', 'f', 'g', 'h', 'i'];
+
 export function createGlobalContext(userContext?: { [key: string]: any }): GlobalContext {
-  let VARIABLE_COUNTER = 0;
+  let VARIABLE_COUNTER = -1;
   let index = 1;
   let essentialContext = {
     completeCallbacks: [],
@@ -34,7 +36,8 @@ export function createGlobalContext(userContext?: { [key: string]: any }): Globa
     identifierReplacement: {},
     namespace: 'exports',
     getNextSystemVariable: () => {
-      return `_${++VARIABLE_COUNTER}_`;
+      //return `_${++VARIABLE_COUNTER}_`;
+      return `_${Letters[++VARIABLE_COUNTER]}`;
     },
   };
   if (userContext) {

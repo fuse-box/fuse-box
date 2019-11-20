@@ -10,6 +10,8 @@ export interface ASTNode {
   $fuse_decoratorForClassIdentifier?: string;
   typeAnnotation?: ASTNode;
   moduleReference?: ASTNode;
+  chain?: ASTNode;
+  base?: ASTNode;
   literal?: ASTNode;
   typeName?: ASTNode;
   $transpiled?: boolean;
@@ -75,6 +77,8 @@ export interface ASTNode {
   parameter?: ASTNode;
 }
 export type ASTNodeType =
+  | 'OptionalExpression'
+  | 'OptionalChain'
   | 'Line'
   | 'Block'
   | 'HTMLOpen'
