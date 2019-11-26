@@ -1,14 +1,8 @@
 {
-  "61212976": "const global = {};\n      console.log(global.Symbol)\n    ",
-  "61212977": "const global = {};\n      console.log(global.Symbol)\n      console.log(global.Symbol)\n    ",
   "6fca3d5b": "const global = {};\n      console.log(global.Symbol)\n    ",
   "6fca3d5c": "const global = {};\n      console.log(global.Symbol)\n      console.log(global.Symbol)\n    ",
   "6dac9b37": "console.log(global.Symbol)\n    ",
   "59436dd8": "const __env = {\"NODE_ENV\":\"development\"};\n      console.log(__env)\n    ",
   "4f165ffb": "const __env = {\"NODE_ENV\":\"development\"};\n      console.log(__env)\n      console.log(__env)\n    ",
-  "04f689fe5": "const process = require(\"process\");\n      process.nextTick()\n      process.nextTick()\n    ",
-  "64f8ec92": "console.log(global.Symbol)\n    ",
-  "01ab542a3": "const __env = {\"NODE_ENV\":\"development\"};\n      console.log(__env)\n    ",
-  "01a12f240": "const __env = {\"NODE_ENV\":\"development\"};\n      console.log(__env)\n      console.log(__env)\n    ",
-  "634437e0": "const process = require(\"process\");\n      process.nextTick()\n      process.nextTick()\n    "
+  "04f689fe5": "const process = require(\"process\");\n      process.nextTick()\n      process.nextTick()\n    "
 }
