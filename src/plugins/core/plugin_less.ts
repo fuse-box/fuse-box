@@ -39,7 +39,7 @@ export function pluginLessCapture(props: { ctx: Context; module: Module; opts: I
 export function pluginLess(a?: IPluginCommon | string | RegExp, b?: IPluginCommon) {
   return (ctx: Context) => {
     let [opts, matcher] = parsePluginOptions<IPluginCommon>(a, b, {});
-
+    if (!matcher) matcher = /\.(less)$/;
     opts.stylesheet = createStylesheetProps({ ctx, stylesheet: opts.stylesheet || {} });
 
     ctx.ict.on('bundle_resolve_module', props => {
