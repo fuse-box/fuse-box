@@ -45,5 +45,6 @@
   "41d36129": "alert('no')",
   "573e3511": "alert('no')",
   "07044b600": "console.log(\"yes\")",
-  "f91ebe7": "function test(){\n          return;\n      }\n      "
+  "f91ebe7": "function test(){\n          return;\n      }\n      ",
+  "050d94879": "function test(){\n          console.log(1)\n        }\n    "
 }
