@@ -8,7 +8,9 @@ FuseBox is highly configurable, but also starts with smart defaults.
 This gives it a great learning curve; easy at first while great for super users.
 Here are a few conceptual highlights to understand:
 
-- `fuse.ts` - There is typically one main configuration called script `fuse.ts` or `fuse.js`.
+- `fuse.ts` - There is always a main configuration script typically called `fuse.ts` or `fuse.js`.  To see the full extent of configuration, [click here](./full-config.md).
+
+- `tsconfig.json` - Optionally, the `tsconfig.json` file is also sourced for [some parts of configuration](../monorepo.md).
 
 - `homeDir` - *(defaults to the location of `fuse.ts`)* Every project has a root path which all bundles resolve by.
 This dramatically improves performance by making it possible to leave transpiled output untouched.

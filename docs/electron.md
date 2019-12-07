@@ -1,62 +1,122 @@
 # Electron
 
-In this sections we are going through `electron` setup. As you know, electron application is split into 2 separate
-bundle with separate entry points. First is the `main` process which launches the application, tweaks its settings, e.g.
-window size. Fusebox has a special launcher for that one.
+[Electron](https://electronjs.org/) is a tool for making web apps act like
+native applications.  Electron applications are split into 2 separate bundles:
 
-A working example can be found [here](https://github.com/fuse-box/fuse-box-electron-seed)
+1. `launcher` - the launcher process which starts the application and tweaks its settings (e.g. window size, file menu)
 
-## Configuration the launcher
+2. `renderer` - a mostly typical web app bundle.
 
-Electron launcher must consist of bundle. FuseBox manages bundles automatically, therefore the amount of bundles varies.
-Therefore we must tell FuseBox to create a single bundle for that matter.
+-----
+## Goal
 
-Use the `useSingleBundle` field to achieve that:
+The following instructions will create a project which loosely resembles this file structure.
+
+```
+fuse.ts
+- src
+  - launcher
+    - launcher.ts
+  - renderer
+    - renderer.ts
+- dist
+  - launcher
+  - renderer
+```
+
+A working example project can be found [here](https://github.com/fuse-box/fuse-box-electron-seed).
+
+It is highly recommended you [view the example fuse.ts file](https://github.com/fuse-box/fuse-box-electron-seed/blob/master/fuse.ts) for this project.
+
+------
+
+## Configuration for the Launcher Bundle
+*Items 2-4 will be checked automatically at run time, but can not be set automatically.  You must set them.*
+
+1. The `target` field must be `'electron'`.
+
+2. To avoid collision between the `launcher` and `render` bundles, **their `output` and `homeDir` fields must be custom and different.**
+
+3. The Electron launcher must be a single bundle. To specify this use the `useSingleBundle` field.
+
+    *(By default, FuseBox manages bundles automatically and the amount of them may vary.)*
+
+4. Because Electron dependencies are all native, trying to bundle them will cause errors.  To specify they should not be bundled set the `dependencies` field to `{ ignoreAllExternal: true }`.
+
+5. (Optional) Though most collisions are unlikely, you will likely also want to set a custom cache location.
+
 
 ```ts
+// fuse.ts
+
 fusebox({
-  output: 'dist/main/$name-$hash',
-  target: 'electron',
-  homeDir: 'src/main',
-  entry: 'main.ts',
-  useSingleBundle: true,
-  dependencies: { ignoreAllExternal: true },
-  logging: { level: 'succinct' },
+  entry: 'launcher.ts',
+
+  target: 'electron',                         // #1
+  output: 'dist/launcher/$name-$hash',        // #2
+  homeDir: 'src/launcher',                    // #2
+  useSingleBundle: true,                      // #3
+  dependencies: { ignoreAllExternal: true },  // #4
   cache: {
     enabled: true,
-    root: '.cache/main',
+    root: '.cache/launcher',                  // #5
   },
+
+  logging: { level: 'succinct' }, // optional but nice
 });
 ```
 
-We set target `electron`, and with custom `output` and `homeDir`.
+-----
 
-You need a custom `homeDir` for the watcher. Make sure that the launcher and your renderer are located in different
-folders as they serve different purposes.
+## Configuration for the Renderer Bundle
 
-```
-- src
-    - launcher
-    - main
-fuse.ts
-```
+For the most part, the renderer bundle can be written and developed in the same way you write and develop web apps; with the addition of these configurations:
 
-**Important to note** Make sure you have different `homeDir` fields.
+1. The `target` field must be set to `'electron'`
 
-Electron dependencies for the launcher cannot be bundled, as those don't have bundle compatible packages (they are all
-native), make sure you ignore all external dependencies:
+2. Similar to configuration for the Launcher, `output`, `homeDir`, `cache`, and `webIndex` **must be customized to avoid collision.**
+
+3. For reasons, `tslib` is required
+
+4. (Optional) You can still use the devServer (browser flow) for development.
+
+
+
+Here is an example of a valid renderer config:
 
 ```ts
-{
-  dependencies: {
-    ignoreAllExternal: true;
-  }
-}
+fusebox({
+  entry: 'renderer.ts',
+
+  target: 'electron',                     // #1
+  output: 'dist/renderer/$name-$hash',    // #2
+  homeDir: 'src/renderer',                // #2
+  webIndex: {
+    publicPath: './',
+    template: 'src/renderer/index.html',  // #2
+  },
+  cache: {
+    enabled: false,
+    root: '.cache/renderer',              // #2
+  },
+  dependencies: { include: ['tslib'] },   // #3
+
+  devServer: {                            // #4
+    httpServer: false,
+    hmrServer: { port: 7878 },
+  },
+
+  logging: { level: 'succinct' }, // optional but nice
+});
 ```
 
-### Enable "require"
 
-FuseBox will not bundle natives e.g. `fs` or `path`, therefore you must enable NodeJS Integration
+---------
+
+## Launcher Code
+
+
+The FuseBox bundle will not contain natives like `fs` or `path`, so you must enable NodeJS Integration in Electron.
 
 ```ts
 mainWindow = new BrowserWindow({
@@ -67,9 +127,26 @@ mainWindow = new BrowserWindow({
 });
 ```
 
-### Launching
 
-After the process is completed you can launch the application by using a special electron handler in FuseBox;
+You can then direct your `mainWindow` to load up the renderer bundle.
+
+```ts
+mainWindow.loadURL(
+  url.format({
+    pathname: path.join(app.getAppPath(), '../', 'renderer', `index.html`),
+    protocol: 'file:',
+    slashes: true,
+  }),
+);
+```
+
+-----
+
+## Running the Electron Project
+
+You can now launch the application using the electron handler.
+
+*(make sure you have the `electron` package installed)*
 
 ```ts
 const main = fusebox({
@@ -82,87 +159,13 @@ main.runDev(handler => {
 })
 ```
 
-You need to have `electron` package installed. `output.electron` is a getter function, which will verify all required
-conditions in order to launch the electron process. It will also verify the `useSingleBundle` option.
+From here FuseBox will manage the process and start/restart the application when your `launcher`
+bundle is changed.
 
-Now you can sit back and relax, FuseBox will manage the process and start/restart the application when your `main`
-launcher is changed. That's why it's important to split the renderer and the launcher to avoid unnecessary restarts
 
-## Configuration the renderer
+-------
 
-Here is an example of a valid renderer config:
 
-```ts
-fusebox({
-  output: 'dist/renderer/$name-$hash',
-  target: 'electron',
-  homeDir: 'src/renderer',
-  entry: 'index.ts',
-  dependencies: { include: ['tslib'] },
-  logging: { level: 'succinct' },
-  webIndex: {
-    publicPath: './',
-    template: 'src/renderer/index.html',
-  },
-  cache: {
-    enabled: false,
-    root: '.cache/renderere',
-  },
-  devServer: {
-    httpServer: false,
-    hmrServer: { port: 7878 },
-  },
-});
-```
-
-Make sure to set custom `output` and `homeDir`
-
-### Loading the application
-
-You can use the devServer, however it's not really necessary, since FuseBox can launch a separate WebSocket and
-communicate with the process (for the HMR )
-
-```ts
-{
-  devServer: {
-    httpServer: false,
-    hmrServer: { port: 7878 },
-  }
-}
-```
-
-Additionally, let's tweak `webIndex` configuration in order for the bundles to get loaded correctly
-
-```ts
-{
-webIndex: {
-    publicPath: './',
-    template: 'src/renderer/index.html',
-  }
-}
-```
-
-And finally, let's modify our main process, to load `index.html` which is generated by the `renderer`
-
-Assuming the following dist structure:
-
-```
-- dist
-  - main
-  - renderer
-```
-
-Open your `main.ts` module and configure the `mainWindow`
-
-```ts
-mainWindow.loadURL(
-  url.format({
-    pathname: path.join(app.getAppPath(), '../', 'renderer', `index.html`),
-    protocol: 'file:',
-    slashes: true,
-  }),
-);
-```
 
 ## Production builds
 
@@ -192,7 +195,7 @@ bundles will be hashed, that would the right place to look for your application 
     {
       "type": "PROJECT_JS",
       "size": 1887,
-      "absPath": "electron/dist/main/app-38c09469.js",
+      "absPath": "electron/dist/launcher/app-38c09469.js",
       "localPath": "app-38c09469.js",
       "name": "app",
       "priority": 10,
