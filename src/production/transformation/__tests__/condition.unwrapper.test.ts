@@ -31,6 +31,22 @@ var b = 2;
     expect(text).toMatchJSONSnapshot();
   });
 
+  it('should unwrap if true in a function', () => {
+    const data = createFile(
+      {},
+      `
+        function test(){
+          if( true ){
+            console.log(1)
+          }
+        }
+    `,
+    );
+    conditionUnwrapperProduction(data);
+    const text = data.file.getText();
+    expect(text).toMatchJSONSnapshot();
+  });
+
   it('should unwrap if false', () => {
     const data = createFile(
       {},

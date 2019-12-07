@@ -69,6 +69,10 @@ function setResult(result: any, node: IfStatement) {
   }
 }
 function onIfStatement(node: IfStatement, props: LocalContext) {
+  if (typeof node.getExpression === "undefined") {
+    return;
+  }
+
   const expression = node.getExpression();
   const desc = expression.getDescendants();
 
