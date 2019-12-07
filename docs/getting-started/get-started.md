@@ -147,7 +147,16 @@ it will inject the links toward these bundle files in `$css` for styles and `$bu
 
 ---------
 
-## Even More Interesting Project Setups
+## **Recommended Reading**
+
+1. To see the entire configuration set for FuseBox, [click here](./full-config.md).
+
+2. To get an overview of the various plugins which FuseBox has, [click here](../plugins/all_plugins_synopsis.md).
+
+-----
+
+
+## Example Projects
 
 Try [react-example](https://github.com/fuse-box/react-example)
 
