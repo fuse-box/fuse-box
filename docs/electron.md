@@ -39,7 +39,7 @@ It is highly recommended you [view the example fuse.ts file](https://github.com/
 
 3. The Electron launcher must be a single bundle. To specify this use the `useSingleBundle` field.
 
-    *(By default, FuseBox manages bundles automatically and the amount of them may vary.)*
+    *(By default, FuseBox manages bundles automatically and sometimes splits them into smaller pieces.)*
 
 4. Because Electron dependencies are all native, trying to bundle them will cause errors.  To specify they should not be bundled set the `dependencies` field to `{ ignoreAllExternal: true }`.
 

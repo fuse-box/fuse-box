@@ -27,7 +27,7 @@ export interface IPublicConfig {
 	};
 	webWorkers?: IWebWorkerConfig = {
 		enabled?: boolean;
-		config?: IPublicConfig;
+		config?: IPublicConfig = { recursive include tree };
 	};
 
 	codeSplitting?: ICodeSplittingConfig = {
@@ -177,6 +177,7 @@ devServer?: boolean | undefined | IDevServerProps = {
 };
 ```
 
+<br>
 
 
 ### [**logging**](../logging.md) - What's written to console
@@ -187,6 +188,7 @@ logging?: IFuseLoggerProps = {
 	ignoreStatementErrors?: Array<string>;
 };
 ```
+<br>
 
 ### [**cache**](../cache.md) - How much work is reused, where it's stored
 
@@ -197,10 +199,81 @@ cache?: boolean | ICacheProps = {
 	FTL?: boolean;
 };
 ```
-
+<br>
 
 
 ### [**tsconfig**](../monorepo.md) - How paths are resolved
 ```
 tsConfig?: string | IRawCompilerOptions = { very large. check out tsconfig };
+```
+<br>
+
+### [**resources**](../resource_links.md) - How assets (png, ttf, etc) are copied to dist
+
+```
+resources?: IResourceConfig = {
+	resourcePublicRoot?: string; //default: "/resources"
+	resourceFolder?: string; //default: "{YOUR_DIST_FOLDER}/resources"
+}
+```
+<br>
+
+
+### [**stylesheet**](../stylesheet.md) - How stylesheet files (css, sass, etc) are imported and processed
+
+```
+stylesheet?: IStyleSheetProps = {
+	ignoreChecksForCopiedResources?: boolean;
+	breakDependantsCache?: boolean;
+	groupResourcesFilesByType?: boolean;  //default: true
+	paths?: Array<string>;
+	autoImport?: Array<IStyleSheetAutoImportCapture>;
+	macros?: { [key: string]: string };
+	sass?: ISassProps;
+	postCSS?: IPostCSSProps;
+	less?: ILessProps;
+};
+```
+
+<br>
+
+### [**watch**](../watcher.md) - How updates to project files are responded to
+
+```
+watch?: boolean | IWatcherExternalProps = {
+	paths?: any;
+	skipRecommendedIgnoredPaths?: boolean;
+	ignored?: Array<string | RegExp>;
+	banned?: Array<string>;
+	chokidar?: WatchOptions;
+};
+```
+
+
+<br>
+
+### [**webIndex**](../webIndex.md) - How the final html file is generated
+
+```
+webIndex?: boolean | IWebIndexConfig = {
+	enabled?: boolean;
+	target?: string;
+	template?: string;
+	distFileName?: string;
+	publicPath?: string;
+	embedIndexedBundles?: boolean;
+};
+```
+
+
+
+<br>
+
+### [**webWorkers**](../webworkers.md) - How WebWorker code is bundled
+
+```
+webWorkers?: IWebWorkerConfig = {
+	enabled?: boolean;
+	config?: IPublicConfig;
+};
 ```

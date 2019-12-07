@@ -63,7 +63,7 @@ const pluginBar = () => (ctx: Context) => {
 ```
 
 If your plugin is asynchronous and you want to instruct fuse-box to wait fair for it, you should pass a `Promise` to `context.ict.waitFor()`.
-*Please notice that fuse-box might not wait (depending on the event and context).*
+*Please notice that some event types are never treated asynchronously.*
 
 ```ts
 const pluginBar = () => (ctx: Context) => {
