@@ -10,6 +10,8 @@ Here are a few conceptual highlights to understand:
 
 - `fuse.ts` - There is always a main configuration script typically called `fuse.ts` or `fuse.js`.  To see the full extent of configuration, [click here](./full-config.md).
 
+- `node_modules/.fusebox` - This is where all of the caching is stored.  **If anything ever goes wrong, try deleting this file.**
+
 - `tsconfig.json` - Optionally, the `tsconfig.json` file is also sourced for [some parts of configuration](../monorepo.md).
 
 - `homeDir` - *(defaults to the location of `fuse.ts`)* Every project has a root path which all bundles resolve by.
@@ -59,6 +61,7 @@ import { fusebox } from 'fuse-box';
 const fuse = fusebox({
   entry: 'src/index.ts',
   devServer: true,
+  webIndex: true,
 });
 
 fuse.runDev();
