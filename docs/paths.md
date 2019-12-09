@@ -3,15 +3,21 @@
 FuseBox allows you to customize the way you resolve your paths. FuseBox is 100% compliant with the TypeScript
 specifications of `paths` in `tsConfig.json`
 
-You don't need to be using typescript in order to customise your projects path resolution, FuseBox will read
+You can (and likely should) [read up on Typescript paths here](https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping)
+
+You don't need to be using typescript in order to customize your projects path resolution, FuseBox will read
 `tsconfig.json` regardless of the language.
+
+Also, if you'd really rather not have a `tsconfig.json` file, there is a [`tsconfig` field](./getting-started/full-config.md) in which you can set these properties
+
+---------
 
 ## baseUrl
 
-`baseUrl` is one of the fundamental things you need to understand first. Let's take as an example the following file
-structure
+`baseUrl` is the root from which every other path resolves.  For example, if you had a set up like this:
 
 ```
+// Project Folder Setup
 - src/
   - components/
     - Foo.ts
@@ -20,9 +26,8 @@ structure
   - tsconfig.json
 ```
 
-And `tsconfig.json`
-
-```json
+```js
+// tsconfig.json
 {
   "compilerOptions": {
     "baseUrl": "."
@@ -30,19 +35,20 @@ And `tsconfig.json`
 }
 ```
 
-In our case just this setting will allow us to the following imports:
+The following code would be valid:
 
 ```ts
 import 'components/foo';
 import 'utilities/fs';
 ```
 
-Since our baseUrl is pointed to `src/` (it's set to `.` but our `tsconfig.json` is located in `src/`) everything under
-will be listed and resolved with ease.
+The reason it works is because `baseUrl` is pointed to `src/` *(it's set to `.` but our `tsconfig.json` is located in `src/`)*.
+
+-------
 
 ## paths
 
-`Paths` is a very powerful mechanism to make your URL beautiful. It's especially helpful when dealing with
+`Paths` are a very powerful mechanism to make your URL beautiful. They're especially helpful when dealing with
 [monorepos](/docs/monorepo.md).
 
 ```json
