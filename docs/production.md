@@ -1,8 +1,6 @@
 # Production builds
 
-To run FuseBox in production call `runProd` instead of `runDev` in your `fuse.ts` file.
-
--------
+To run FuseBox in production call `runProd`
 
 ## Setting up cleanCSS
 

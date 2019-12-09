@@ -1,18 +1,16 @@
 # Stylesheet
 
-Most modern CSS extensions (`.less` `.scss` `.sass` `.css`
-and `.styl`) are captured and processed automatically by FuseBox.
+Most of the CSS extensions are captured automatically, for example, FuseBox takes care of `.less` `.scss` `.sass` `.css`
+and `.styl` extensions without questions.
 
-The **only condition** is having the corresponding CSS preprocessor(s) installed.
+The only conditions to those is having a corresponding CSS preprocessor installed.
 
-### Overview
+Before continuing, let's break down the basics:
 
 - All plugins listen to the global configuration first
 - All CSS preprocessors have a unified configuration like `paths` and `macros`
 - Every CSS preprocessor is being matched against their default extensions
 - Every CSS preprocessor can have a custom configuration and be matched against specific paths
-
-----
 
 ## Global configurations
 
@@ -41,9 +39,8 @@ fusebox({
 });
 ```
 
-*While generally better to define your configurations globally (for all stylesheet types), it is possible to specify file types...*
-
----
+It's important to understand that most of the configuration in regards to styles should be better defined globally,
+since all the css preprocessors will be able to benefit from it.
 
 ## Using macros
 
@@ -59,7 +56,7 @@ fusebox({
 });
 ```
 
-Macros represents an object with key value.  All `@import` and `url()` will be filtered through the macros
+Macros represents and object with key value, all `@import` and `url()` is going be to filtered through the macros
 configuration once defined
 
 Using with `@import` syntax

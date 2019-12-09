@@ -1,27 +1,27 @@
 # Watcher
 
-Watcher watches for projecnt file changes, and will run updates when they occur.  It is based on [the chokidar project](https://github.com/paulmillr/chokidar).
+Watcher in FuseBox helps you develop with ease without bothering yourself with restarting the process each time. It's
+enabled by default during development.
 
 ```ts
 fusebox({ watch: true });
 ```
 
-----
+The watcher is based on [chokidar](https://github.com/paulmillr/chokidar)
 
-## Default Watcher Rules
-
-There are a few rules that FuseBox automatically adds to the watcher. Those rules are based on common conventions
+There are a few rules that FuseBox is automatically adding to the watcher. Those rules are based on common conventions
 and practices.
 
-### Ignoring the paths
+## Ignoring the paths
 
-In order to ignore updates to `.hidden_files`, `dist`, and `build` directories, the following ignore rule is added by default:
+By default, FuseBox is adding the following ignore rules.
 
 ```ts
 ['/node_modules/', /(\/|\\)\./, 'dist/', 'build/', YOUR_OUTPUT_DIRECTORY];
 ```
 
-If you wish to override these rules, you should add the following flag:
+We don't want `.hidden_files` `dist` nor `build` directories to be watched, including node_modules and your projects'
+output directory. If you wish to take control of those rules and override them you should add the following flag:
 
 ```ts
 fusebox({
@@ -30,9 +30,10 @@ fusebox({
 });
 ```
 
-*(note: Strings are automatically converted to regular expressions. FuseBox also takes care of windows/\*nix paths for you. For example`./` is converted into `(\/|\\)\.`)*
+Please note, that FuseBox converts strings to regular expressions. It also takes care of windows/\*nix paths for you.
+For example`./` is converted into `(\/|\\)\.`
 
-### Chokidar options
+## Chokidar options
 
 You can pass chokidar options by using `chokidar` field:
 
@@ -44,4 +45,4 @@ fusebox({
 });
 ```
 
-*(note: The `ignored` field given to `chokidar` is declared by the `watch` field in FuseBox's configuration.  Do not define the `ignored` field here.)*
+Note that `ignored` paths is declared at the `watch` level, as it's being handled and tweaked by FuseBox

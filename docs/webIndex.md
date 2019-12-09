@@ -1,39 +1,7 @@
 # Web Index
 
-The `webIndex` field is used to configure how the final product html files are templated and handled.
-
-By default, FuseBox will generate an empty html file with links to your javascript and stylesheet added.  
-
----
-
-## Creating a Custom HTML Template
-
-1. First, create an html template file. The template should include the following two template strings:
-
-    - `$bundles`: JavaScript bundles generated.  Will be replaced with a list of `<script ...>` items
-    - `$css`: CSS bundles generated.  Will be replaced with a list of `<link rel="stylesheet" ... />` items.
-
-
-
-2. Then, direct FuseBox to use this template as the webIndex.
-
-
-### Example 
-
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>My Page Title</title>
-    $css
-  </head>
-
-  <body>
-    Some content above the JS bundles. 
-    $bundles
-  </body>
-</html>
-```
+The `webIndex` feature allows to process a template HTML file in your project and let fuse-box inject the generated
+JavaScript and CSS bundles at specific places you define.
 
 ```ts
 fusebox({
@@ -41,13 +9,25 @@ fusebox({
 });
 ```
 
-*If you'd like to define your own custom template strings (ie: `$bundles` and `$css`) you can do so with the [Consolidate Plugin](./plugins/pluniConsolidate.md)*
+Your template may contain two variables which are replaced by their `<script ...>` and `<link rel="stylesheet" ... />`
+counterparts:
 
+- `$bundles`: JavaScript bundles generated
+- `$css`: CSS bundles generated
 
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    $css
+  </head>
 
-
-
--------
+  <body>
+    Some content above the JS bundles. $bundles
+  </body>
+</html>
+```
 
 ## Advanced options
 
@@ -64,14 +44,13 @@ The WebIndex feature can be customized by the following optional parameters:
 }
 ```
 
-----
+## Custom transformations
 
-## Super Custom Transformations
-
-If the [Consolidate Plugin](./plugins/pluniConsolidate.md)* is not enough for your purposes, fou might be interested in transforming the `index.html` template page dynamically. 
-You can develop a plugin to do this by listening to the  `"before_webindex_write"` event:
+You might be interested in transforming the `index.html` template page even further dynamically. For this purpose you
+can develop a plugin that listens to the event `before_webindex_write` like this:
 
 ```ts
+
 function myCustomWebIndexTransformPlugin(options?: any) {
   return async (ctx: Context) => {
     ctx.ict.waitFor(

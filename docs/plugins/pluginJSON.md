@@ -5,10 +5,10 @@ title: pluginJSON
 
 ## Usage
 
-This plugin is included by default.  It is used to catch imports of json files
-and transform them into a json object.
+By default all the exports are not using `default`.
 
-You can manually override the way the JSON is exported like so:
+You don't need to add this plugin. It's already a part of the core, unless you want to manually handle it and override
+the way the JSON is exported
 
 ```ts
 import { fusebox, pluginJSON } from 'fuse-box';

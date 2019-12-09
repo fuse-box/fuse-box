@@ -96,13 +96,7 @@ export function initTypescriptConfig(
         basePath = path.dirname(targetExtendedFile);
       }
     } catch (e) {
-      const message = e && e.message;
-      if (message && typeof message === "string") {
-        props.ctx.log.warn(message);
-      } else {
-        props.ctx.log.warn(`Unable to extend tsconfig with ${targetExtendedFile}. Make sure the file exists and readable`);
-        props.ctx.log.warn(e);
-      }
+      props.ctx.log.warn(`Unable to extend tsconfig with ${extendedFile}. Make sure the file exists and readable`);
     }
   }
 

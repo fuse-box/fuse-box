@@ -5,12 +5,15 @@ title: pluginMinifyHtmlLiterals
 
 ## Usage
 
-*This plugin is typically only used for production builds.*  It will minify any html it finds within `html` or `css` template string literals.  (ie: ``conts str = html`<div>I'm an html string literal</div>`;``)This plugin uses the npm module
-[minify-html-literals](https://github.com/asyncLiz/minify-html-literals#readme).
+This plugin should only be used for production builds. `pluginMinifyHtmlLiterals` uses npm module
+[minify-html-literals](https://github.com/asyncLiz/minify-html-literals#readme). Plugin looks for template tags with
+name `html` and `css` in javascript and typescript files.
 
 ```ts
 import { fusebox, pluginMinifyHtmlLiterals } from 'fuse-box';
+```
 
+```ts
 fusebox({
   plugins: [pluginMinifyHtmlLiterals()],
 });

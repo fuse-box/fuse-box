@@ -52,7 +52,7 @@ function getPathsData(props: IPathsLookupProps): TypescriptPaths {
 }
 
 /**
- * Listing homeDir directories to simplify matching and make it easier for the matcher
+ * Listing homeDir directories to simplify matching and makae it easier for the matcher
  *
  * @param {IPathsLookupProps} props
  * @returns {(DirectoryListing | undefined)}
@@ -66,7 +66,7 @@ function getIndexFiles(props: IPathsLookupProps): DirectoryListing | undefined {
       const files = [];
       const listed = fs.readdirSync(props.baseURL);
       for (const file of listed) {
-        if (file.startsWith('.') === false) {
+        if (file[0] !== '.') {
           const [nameWithoutExtension] = file.split('.');
           files.push({
             nameWithoutExtension,

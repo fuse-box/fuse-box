@@ -8,11 +8,7 @@ FuseBox is highly configurable, but also starts with smart defaults.
 This gives it a great learning curve; easy at first while great for super users.
 Here are a few conceptual highlights to understand:
 
-- `fuse.ts` - There is always a main configuration script typically called `fuse.ts` or `fuse.js`.  To see the full extent of configuration, [click here](./full-config.md).
-
-- `node_modules/.fusebox` - This is where all of the caching is stored.  **If anything ever goes wrong, try deleting this file.**
-
-- `tsconfig.json` - Optionally, the `tsconfig.json` file is also sourced for [some parts of configuration](../monorepo.md).
+- `fuse.ts` - There is typically one main configuration called script `fuse.ts` or `fuse.js`.
 
 - `homeDir` - *(defaults to the location of `fuse.ts`)* Every project has a root path which all bundles resolve by.
 This dramatically improves performance by making it possible to leave transpiled output untouched.
@@ -41,7 +37,7 @@ npm install typescript fuse-box tslib --save-dev
 ```
 <!-- TODO:  Can the order of this be changed to put "fuse-box" first? -->
 
-TEMPORARY EDIT: For those wanting to use 4.0, install `npm i fuse-box@next --save-dev` instead
+TEMPORARY EDIT: For those wanting to use 4.0, install `npm i fuse-box@4.0.0-alpha.256 --save-dev` instead
 
 
 *What are these extra dependencies?*
@@ -61,7 +57,6 @@ import { fusebox } from 'fuse-box';
 const fuse = fusebox({
   entry: 'src/index.ts',
   devServer: true,
-  webIndex: true,
 });
 
 fuse.runDev();
@@ -150,16 +145,7 @@ it will inject the links toward these bundle files in `$css` for styles and `$bu
 
 ---------
 
-## **Recommended Reading**
-
-1. To see the entire configuration set for FuseBox, [click here](./full-config.md).
-
-2. To get an overview of the various plugins which FuseBox has, [click here](../plugins/all_plugins_synopsis.md).
-
------
-
-
-## Example Projects
+## Even More Interesting Project Setups
 
 Try [react-example](https://github.com/fuse-box/react-example)
 
