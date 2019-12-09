@@ -15,6 +15,11 @@ While monorepos are mostly a version control concept, there are some changes to 
 
 Fortunately, there is an `entry` property, so you can move your `homeDir` to any parent folder and then work your `entry` property back down.
 
+----
+
+## Example Project
+
+To see an example monorepo project [click here](https://github.com/fuse-box/fuse-mono).
 
 ------
 ## Monorepo Setup Synopsis

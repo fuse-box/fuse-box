@@ -41,7 +41,7 @@ npm install typescript fuse-box tslib --save-dev
 ```
 <!-- TODO:  Can the order of this be changed to put "fuse-box" first? -->
 
-TEMPORARY EDIT: For those wanting to use 4.0, install `npm i fuse-box@4.0.0-alpha.256 --save-dev` instead
+TEMPORARY EDIT: For those wanting to use 4.0, install `npm i fuse-box@next --save-dev` instead
 
 
 *What are these extra dependencies?*

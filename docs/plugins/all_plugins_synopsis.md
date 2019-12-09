@@ -1,8 +1,15 @@
 # Plugins
 
+
+### [Replace](./pluginReplace.md)
+
+Replace any arbitrary string, in any specified files, with any other string.  *This Plugin can be a life saver if you need target and replace a bad path or minor bundling error*.
+
+<br>
+
 ### [Consolidate](./pluginConsolidate.md)
 
-"Consolidate" is a template engine which allows for injecting arbritary text to an html template.  This plugin interfaces with it.
+"Consolidate" is a template engine which allows for injecting arbitrary text to an html template.  This plugin interfaces with it.
 
 <br>
 
@@ -25,11 +32,6 @@ Only used for minification, typically only in production builds.  This plugin wi
 
 <br>
 
-### [Replace](./pluginReplace.md)
-
-Replace any arbritrary string, in any specified files, with any other string.
-
-<br>
 
 ---------
 
