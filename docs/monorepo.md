@@ -1,28 +1,42 @@
 # Monorepo
 
-## Understanding the concepts
+### What and Why?
 
-Before reading further it's strongly recommended to read thoroughly the following.
+A monorepo is a project structure in which many small interconnected projects are all part of a single repo.  The more common alternative is to have every project be its own repo.
 
-Unlike other bundlers, FuseBox has a concept of `homeDir` where it sets the root of your project. You cannot require
-files outside of your home directory. By default, FuseBox sets `homeDir` to your project root, however, in case of a
-monorepo that's not the case, since every sub project has it's own `fuse.ts`
+The reason for using a monorepo is so that -- whilst working on two projects together -- you never accidentally push a commit to one but not the other.  It's very easy to break a project for others without a monorepo.  With a monorepo, all changes get committed together.
 
-In order to achieve smooth development we should set the `homeDir` to the root of your repository, regardless of where
-you `fuse.ts` is and set `entry` relative to the project root instead (which should match your `homeDir`)
 
-Here are the highlights
+### Understanding the concepts
 
-- Always set `homeDir` to the root of your repository
-- Add `tsconfig.json` with `paths` and `baseUrl` field even if you are not using TypeScript. FuseBox respects
-  `tsconfig.json` even if there is no TypeScript involved.
-- Learn how to set [paths](/docs/paths.md) correctly. Do not try aliasing it.
-- Each package for development purposes should contain `local:main` field in the `package.json` which should point to
-  your source. That will help a lot during development. (You won't need to build each project)
+<!-- Before reading further it's strongly recommended to read thoroughly the following. -->
 
-## Configuring project
+While monorepos are mostly a version control concept, there are some changes to configuration required to rock one in FuseBox.  This is largely because **you can not access files above your `homeDir`**.
 
-You project `homeDir` must be set to the root of the parent repository. For example having the file structure
+Fortunately, there is an `entry` property, so you can move your `homeDir` to any parent folder and then work your `entry` property back down.
+
+----
+
+## Example Project
+
+To see an example monorepo project [click here](https://github.com/fuse-box/fuse-mono).
+
+------
+## Monorepo Setup Synopsis
+
+The following are explained in detail further down the page.
+
+1. Set `homeDir` field to the root of your repository, and `entry` field to your main project file.
+2. Add/set up `tsconfig.json` with `paths` and `baseUrl` fields. FuseBox pulls these values from
+  `tsconfig.json` as part of its own configuration *(even if there is no TypeScript involved)*.
+
+4. Every other package you include from the repo should contain `local:main` field in the `package.json` which should point to your source *(instead of `dist`)*.
+----
+
+## 1. homeDir and entry
+
+
+You project `homeDir` must be set to the root of the parent repository. For example, if you had this project folder structure
 
 ```
 - monorepo
@@ -31,7 +45,7 @@ You project `homeDir` must be set to the root of the parent repository. For exam
     - bar
 ```
 
-`homeDir` Should point to `monorepo` folder
+`homeDir` should point to `monorepo` folder
 
 ```ts
 fusebox({
@@ -42,28 +56,13 @@ fusebox({
 });
 ```
 
-## local:main
+----
 
-Each packages naturally contains `main` or `module` fields, however, that's not convenient during development, since you
-would want to pick up the sources of the package.
+## 2. Configuring paths
 
-In order to achieve that, you should add `local:main` field to your `package,json`.
+Simply put, your `tsconfig` must have a `baseUrl` field which points to your local src and a `paths` field which routes to your packages.
 
-This field will be read if The folder isn't located in `node_modules` otherwise ignored
-
-### But why really?
-
-FuseBox treats your **scoped** packages as actual directories, not packages. Since every single package contains
-`package.json` with `main` or `module` fields pointed to the dist - that will prevent FuseBox from picking up the
-changes and getting the correct entry points during development. We fix it by making it believe that we are dealing with
-a project.
-
-All is left is to configure `paths`
-
-## Configuring paths
-
-Regardless of TypeScript or JavaScript, you will have to create `tsconfig.json` and give it `baseUrl` and paths, in
-order for FuseBox to understand how to resolve your scoped repository for development. For example:
+All full page on [how to set paths here can be found here](./paths.md). *(note: aliasing will not work)*
 
 ```json
 {
@@ -76,10 +75,24 @@ order for FuseBox to understand how to resolve your scoped repository for develo
 }
 ```
 
-Whenever FuseBox resolves meets `import "@org/foo"` it will go through the rules defined in `paths` and resolve your
-package during the development. All the packages will be treated as a part of your project without any "side effects".
-It will be possible to HMR them too, with working source maps.
+----
 
-If you are not familiar with TypeScript paths, you should read up
-[here](https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping) even if you are not using
-TypeScript. FuseBox takes this as a base for resolving paths, and has a 100% compliant implementation
+## 3. local:main
+
+All node packages naturally contains `main` or `module` fields by default in their `package.json`. Unfortunately, **both of these point to the projects `dist` folder**.
+
+It's likely you'll not be compiling these projects, but instead wanting to simply include the source code.
+
+To achieve that, you should add `local:main` field to your `package,json`.
+
+This field will only be used if the folder isn't located in `node_modules`.
+
+```js
+// package.json
+{
+  // settings omitted...
+  "main": "index.js",
+  "name": "fuse-box",
+  "local:main": "./src/index.ts",
+}
+```
