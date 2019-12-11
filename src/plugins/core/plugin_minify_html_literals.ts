@@ -1,4 +1,5 @@
-import { Context } from '../../core/context';
+import { Context } from '../../core/Context';
+// import { getPackageManagerName } from '../../env';
 
 /**
  * See https://github.com/asyncLiz/minify-html-literals after source input
@@ -20,7 +21,7 @@ export function pluginMinifyHtmlLiterals(...options: IPluginMinifyHtmlLiterals[]
     //     if (!ctx.isInstalled('minify-html-literals')) {
     //       ctx.fatal(`Fatal error when capturing ${module.props.absPath}`, [
     //         'Module "minify-html-literals" is required, Please install it using the following command',
-    //         'npm install minify-html-literals --save-dev',
+    //          `${getPackageManagerName()} install minify-html-literals --save-dev`,
     //       ]);
     //       return;
     //     }
