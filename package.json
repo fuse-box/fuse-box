@@ -138,5 +138,10 @@
     "typecheck": "ts-node -T fuse typecheck"
   },
   "typings": "index.d.ts",
+<<<<<<< HEAD
   "version": "4.0.0-alpha.329"
 }
+=======
+  "version": "4.0.0-alpha.309"
+}
+>>>>>>> feat: Check the package manager

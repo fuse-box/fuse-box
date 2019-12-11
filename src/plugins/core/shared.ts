@@ -7,6 +7,7 @@ import { IStyleSheetProcessor } from '../../stylesheet/interfaces';
 import { isNodeModuleInstalled } from '../../utils/utils';
 import { IPluginCommon } from '../interfaces';
 import { wrapContents } from '../pluginStrings';
+import { getPackageManagerName } from '../../env';
 
 export interface ICSSContextHandler {
   ctx: Context;
@@ -54,7 +55,7 @@ export function cssContextHandler(props: ICSSContextHandler) {
     if (!isNodeModuleInstalled('postcss-modules')) {
       ctx.fatal(`Fatal error when capturing ${props.module.absPath}`, [
         'Module "postcss-modules" is required, Please install it using the following command',
-        'npm install postcss-modules --save-dev',
+        `${getPackageManagerName()} install postcss-modules --save-dev`,
       ]);
       return;
     }
