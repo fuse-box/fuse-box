@@ -1,7 +1,9 @@
 import { join, dirname } from 'path';
 import { existsSync } from 'fs';
 
-export let MAX_BACK_STEPS = 50;
+export const FIND_UP_GLOBAL_CONFIG = {
+	maxStepsBack: 50
+};
 
 export function findUp(start: string, target: string, boundaryArg?: {
 	boundary: string,
@@ -11,7 +13,7 @@ export function findUp(start: string, target: string, boundaryArg?: {
 	let lastTry = false;
 	let backSteps = 0;
 	while (++backSteps) {
-		if (backSteps >= MAX_BACK_STEPS) {
+		if (backSteps >= FIND_UP_GLOBAL_CONFIG.maxStepsBack) {
 			console.error("Too many back steps");
 			return null;
 		}

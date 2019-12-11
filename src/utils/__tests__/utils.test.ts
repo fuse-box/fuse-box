@@ -181,7 +181,7 @@ describe('utils', () => {
     });
   });
 
-  // Seph - Unsure of how to write these tests
+  // These tests will fail if this test file is moved.
   describe('findUp', () => {
     const currentDir = __dirname;
     const target = "package.json";
