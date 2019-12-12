@@ -1,59 +1,10 @@
 import * as path from 'path';
-import { createRealNodeModule } from '../../utils/test_utils';
 import { ImportType, resolveModule } from '../resolver';
+import { assertResolverModulesSetup } from './setup';
 const cases = path.join(__dirname, 'cases/');
 const customModules = path.join(cases, '_modules');
-createRealNodeModule(
-  'resolver-test_a',
-  {
-    main: 'index.js',
-    version: '1.0.1',
-    browser: 'something-for-browser.js',
-  },
-  {
-    'index.js': 'module.exports = {}',
-    'foobar.js': 'module.exports = {}',
-    'components/MyComponent.jsx': '',
-    'sub/package.json': JSON.stringify({
-      main: 'subindex.js',
-    }),
-    'something-for-browser.js': '',
-    'sub/subindex.js': '',
-  },
-);
 
-createRealNodeModule(
-  'resolver-test_b',
-  {
-    main: 'index.js',
-    version: '1.0.1',
-    browser: { './foobar.js': './sub/subindex.js', oops: false },
-  },
-  {
-    'index.js': 'module.exports = {}',
-    'foobar.js': 'module.exports = {}',
-    'deepa/index.js': `require('../foobar')`,
-    'components/MyComponent.jsx': '',
-    'sub/package.json': JSON.stringify({
-      main: 'subindex.js',
-    }),
-    'something-for-browser.js': '',
-    'sub/subindex.js': '',
-  },
-);
-
-createRealNodeModule(
-  'resolver-test_cc',
-  {
-    main: 'index.js',
-    version: '1.0.1',
-    browser: { './index.js': './browser-index.js' },
-  },
-  {
-    'index.js': 'module.exports = { main : true }',
-    'browser-index.js': 'module.exports = { browser : true }',
-  },
-);
+assertResolverModulesSetup();
 
 describe('Resolver test', () => {
   describe('External modules', () => {

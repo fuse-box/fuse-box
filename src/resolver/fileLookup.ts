@@ -11,7 +11,6 @@ export interface ILookupProps {
   fileDir?: string;
   filePath?: string;
   target: string;
-  inBaseUrl?: boolean;
 }
 
 export interface TsConfigAtPath {
@@ -80,6 +79,7 @@ export function fileLookup(props: ILookupProps): ILookupResult {
   let isDirectory: boolean;
   // try directory indexes
   const exists = fileExists(resolved);
+  console.log(resolved, "exists", exists);
   if (exists) {
     const stat = fs.lstatSync(resolved);
     isDirectory = stat.isDirectory();
@@ -95,48 +95,47 @@ export function fileLookup(props: ILookupProps): ILookupResult {
       }
       directoryIndex = tryIndexes(resolved, indexes);
 
-      if (props.inBaseUrl !== true) {
-        let monorepoModulesPaths;
-        let tsConfigAtPath: TsConfigAtPath;
-        // only in case of a directory
-        const packageJSONPath = path.join(resolved, 'package.json');
-        const packageJSON = require(packageJSONPath);
-        const isModule = !!packageJSON;
-        if (isModule) {
-          // const packageRoot = path.dirname(packageJSONPath)
-          const notAModule = !/node_modules/.test(packageJSONPath);
-          if (notAModule) {
-            console.error(`File lookup should not be used for local:main "sibling modules".`);
-          }
-          const entry = getFolderEntryPointFromPackageJSON({ json: packageJSON });
 
-          // if (useLocalMain && packageJSON['local:main']) {
-          //   const _monoModules = path.resolve(packageRoot, 'node_modules');
-          //   if (fileExists(_monoModules)) {
-          //     monorepoModulesPaths = _monoModules;
-          //   }
-
-          //   const _tsConfig = path.join(packageRoot, 'tsconfig.json');
-          //   if (fileExists(_tsConfig)) {
-          //     const props: any = { tsConfig: _tsConfig };
-          //     const _tsConfigObject = initTypescriptConfig(props);
-          //     tsConfigAtPath = { absPath: _tsConfig, tsConfig: _tsConfigObject };
-          //   }
-          // }
-
-          const absPath = path.join(resolved, entry);
-
-          return {
-            customIndex: true,
-            monorepoModulesPaths,
-            tsConfigAtPath,
-            isDirectoryIndex: true,
-            absPath,
-            extension: path.extname(absPath),
-            fileExists: fileExists(absPath),
-          };
+      let monorepoModulesPaths;
+      let tsConfigAtPath: TsConfigAtPath;
+      // only in case of a directory
+      const packageJSONPath = path.join(resolved, 'package.json');
+      const packageJSON = fs.existsSync(packageJSONPath) && require(packageJSONPath);
+      const isModule = !!packageJSON;
+      if (isModule) {
+        const notAModule = !/node_modules/.test(packageJSONPath);
+        if (notAModule) {
+          console.error(`File lookup should not be used for local:main "sibling modules".`);
         }
+        const entry = getFolderEntryPointFromPackageJSON({ json: packageJSON });
+
+        // if (useLocalMain && packageJSON['local:main']) {
+        //   const _monoModules = path.resolve(packageRoot, 'node_modules');
+        //   if (fileExists(_monoModules)) {
+        //     monorepoModulesPaths = _monoModules;
+        //   }
+
+        //   const _tsConfig = path.join(packageRoot, 'tsconfig.json');
+        //   if (fileExists(_tsConfig)) {
+        //     const props: any = { tsConfig: _tsConfig };
+        //     const _tsConfigObject = initTypescriptConfig(props);
+        //     tsConfigAtPath = { absPath: _tsConfig, tsConfig: _tsConfigObject };
+        //   }
+        // }
+
+        const absPath = path.join(resolved, entry);
+
+        return {
+          customIndex: true,
+          monorepoModulesPaths,
+          tsConfigAtPath,
+          isDirectoryIndex: true,
+          absPath,
+          extension: path.extname(absPath),
+          fileExists: fileExists(absPath),
+        };
       }
+
     }
 
     if (directoryIndex) {

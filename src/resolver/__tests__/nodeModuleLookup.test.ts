@@ -83,7 +83,7 @@ describe('NodeModule lookup', () => {
   const filePath = path.join(cases, 'src2/index.ts');
   it('should fail to look up a module', () => {
     const res = nodeModuleLookup({ filePath: filePath, target: '__foo' }, { name: '__foo' });
-    expect(res).toEqual({ error: 'Cannot resolve "__foo"' });
+    expect(res && res.error).toContain('Cannot resolve "__foo"');
   });
 
   it('should fail to look up a module without package.json', () => {

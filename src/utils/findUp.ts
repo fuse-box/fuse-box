@@ -9,8 +9,13 @@ export function findUp(start: string, target: string, boundaryArg?: {
 	boundary: string,
 	inclusive: boolean,
 }): string | null {
-	const { isDirectory } = statSync(start);
-	let currentDir = isDirectory ? start : dirname(start);
+	console.log("getStat", start);
+	let currentDir = start;
+	try {
+		const stat = statSync(start);
+		currentDir = stat.isDirectory() ? start : dirname(start);
+	} catch (err) { }
+
 	let lastTry = false;
 	let backSteps = 0;
 	while (backSteps++ <= FIND_UP_GLOBAL_CONFIG.maxStepsBack) {

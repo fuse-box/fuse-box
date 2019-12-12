@@ -28,13 +28,13 @@ export function pathsLookup(props: IPathsLookupProps): ILookupResult {
   // and files without the need in specifying "paths"
   // so we check if first
   const indexFiles = getIndexFiles(props);
-
+  console.log(indexFiles);
   if (indexFiles) {
     for (const item of indexFiles) {
       // check if starts with it only
       const regex = new RegExp(`^${item.nameWithoutExtension}($|\\.|\\/)`);
       if (regex.test(props.target)) {
-        const result = fileLookup({ fileDir: props.baseURL, target: props.target, inBaseUrl: true });
+        const result = fileLookup({ fileDir: props.baseURL, target: props.target });
         if (result && result.fileExists) {
           return result;
         }
@@ -46,11 +46,12 @@ export function pathsLookup(props: IPathsLookupProps): ILookupResult {
   // "items" should be cached, so we are getting simple functions that contain
   // regular expressions
   const items = getPathsData(props);
+  console.log(items);
   for (const test of items) {
     const directories = test(props.target);
     if (directories) {
       for (const directory of directories) {
-        const result = fileLookup({ isDev: props.isDev, fileDir: props.baseURL, target: directory, inBaseUrl: true });
+        const result = fileLookup({ isDev: props.isDev, fileDir: props.baseURL, target: directory });
         if (result && result.fileExists) {
           return result;
         }
@@ -88,7 +89,7 @@ export function pathsLookup(props: IPathsLookupProps): ILookupResult {
             const entryDir = path.dirname(entry);
             const tsPathDir = path.dirname(tsPath);
 
-            if (entryDir.includes(tsPathDir) || tsPathDir.includes(entryDir)) {
+            if (entryDir.indexOf(tsPathDir) !== -1 || tsPathDir.indexOf(entryDir) !== -1) {
               absPath = entryDir.length > tsPathDir.length ? entry : tsPath;
             } else {
               throw (`Entry point (${entryDir}) differs from tsConfig path (${tsPathDir}).
@@ -194,7 +195,7 @@ function getIndexFiles(props: IPathsLookupProps): DirectoryListing | undefined {
       const files = [];
       const listed = fs.readdirSync(props.baseURL);
       for (const file of listed) {
-        if (file.startsWith('.') === false) {
+        if (file[0] === '.') {
           const [nameWithoutExtension] = file.split('.');
           files.push({
             nameWithoutExtension,
