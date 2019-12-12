@@ -7,7 +7,7 @@ export function pluginConsolidate(engine: string, options: any) {
     if (!isNodeModuleInstalled('consolidate')) {
       ctx.fatal(`Fatal error when trying to use  pluginConsolidate`, [
         'Module "consolidate" is required, Please install it using the following command',
-        `${getPackageManagerName()} install consolidate --save-dev`,
+        `${getPackageManagerData().installDevCmd} consolidate`,
       ]);
     }
     const consolidate = require('consolidate');
