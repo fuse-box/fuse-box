@@ -88,7 +88,7 @@ function resolveStatement(
   let typescriptPaths = props.pkg.isDefaultPackage && props.ctx.tsConfig.typescriptPaths;
   // let's check for custom tsConfig typescript paths here.
   if (props.ctx.tsConfigAtPaths && props.pkg.isDefaultPackage) {
-    // fine a path that's relative to any tsConfig
+    // find a path that's relative to any tsConfig
     const typescriptPathsOverride = props.ctx.tsConfigAtPaths.find(item => {
       const relativePath = path.relative(item.absPath, props.module.props.absPath);
       return !relativePath.startsWith('..');
@@ -119,7 +119,7 @@ function resolveStatement(
     log.warn(
       resolved && resolved.error
         ? resolved.error + ' / Import statement: "$statement" in <dim>$file</dim>'
-        : 'Cannot resolve $statement in <dim>$file</dim>',
+        : `Cannot resolve $statement in <dim>$file</dim>.  Attempted "${props.module.props.absPath}"`,
       {
         statement: opts.statement,
         file: props.module.props.absPath,
