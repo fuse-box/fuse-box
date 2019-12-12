@@ -22,15 +22,21 @@ export const env = {
   isTest: !!process.env.JEST_TEST,
 };
 
-export function getPackageManagerName() {
+export function getPackageManagerData() {
+  function Data(name: string, installCmd: string, installDevCmd: string) {
+    this.name = name;
+    this.installCmd = installCmd;
+    this.installDevCmd = installDevCmd;
+  }
+
   if (fs.existsSync(path.join(FUSE_ROOT, './.yarnrc'))
       || fs.existsSync(path.join(FUSE_ROOT, './yarn.lock'))) {
-    return 'yarn';
+    return new Data('yarn', 'yarn add', 'yarn add --dev');
   } else if (fs.existsSync(path.join(FUSE_ROOT, './pnpm-lock.yaml'))) {
-    return 'pnpm';
+    return new Data('pnpm', 'pnpm add', 'pnpm add --save-dev');
   } else {
     // package-lock.json
-    return 'npm';
+    return new Data('npm', 'npm install', 'npm install --save-dev');;
   }
 }
 
