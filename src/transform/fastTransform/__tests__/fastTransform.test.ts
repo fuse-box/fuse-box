@@ -664,6 +664,21 @@ describe('Fast transform', () => {
       });
       expect(result.code).toMatchJSONSnapshot();
     });
+
+    it('should handle scope resolve', () => {
+      const result = fastTransform({
+        input: `
+        import { resolve } from "mod"
+        const shutdownHttpServer = () =>
+        new Promise((resolve) => {
+          server.close(() => {
+            resolve();
+          });
+        });
+        `,
+      });
+      expect(result.code).toMatchJSONSnapshot();
+    });
   });
 
   describe('Source interceptor', () => {
