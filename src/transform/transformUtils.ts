@@ -68,7 +68,8 @@ export function isLocalIdentifier(node, parent) {
       (parent.computed === true || (parent.property !== node && !parent.computed)) &&
       parent.key !== node &&
       parent.type !== 'FunctionDeclaration' &&
-      parent.type !== 'FunctionExpression'
+      parent.type !== 'FunctionExpression' &&
+      parent.type !== 'ArrowFunctionExpression'
     );
   }
 }

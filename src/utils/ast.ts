@@ -46,7 +46,11 @@ export function fastWalk(ast: any, walker: IASTWalkProps) {
         }
       }
 
-      if (node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression') {
+      if (
+        node.type === 'FunctionDeclaration' ||
+        node.type === 'FunctionExpression' ||
+        node.type === 'ArrowFunctionExpression'
+      ) {
         if (node.id && node.id.type === 'Identifier') {
           // handles the following case:
           /*
@@ -61,18 +65,20 @@ export function fastWalk(ast: any, walker: IASTWalkProps) {
             }
           }
         }
+
         if (node.params) {
           for (const item of node.params) {
             if (item.type === 'Identifier') {
-              if (node.body.context === undefined) {
+              let body = node.body;
+              if (body.context === undefined) {
                 // create context
-                node.body.context = {
+                body.context = {
                   exports: context && context.exports ? context.exports.concat([]) : [],
                   // here we need to make a copy of the locals
                   locals: context ? context.locals.concat([]) : [],
                 };
               }
-              node.body.context.locals.push(item.name);
+              body.context.locals.push(item.name);
             }
           }
         }
