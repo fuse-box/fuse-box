@@ -119,7 +119,7 @@ function resolveStatement(
     log.warn(
       resolved && resolved.error
         ? resolved.error + ' / Import statement: "$statement" in <dim>$file</dim>'
-        : `Cannot resolve $statement in <dim>$file</dim>.  Attempted "${props.module.props.absPath}"`,
+        : `Cannot resolve $statement in <dim>$file</dim>.`,
       {
         statement: opts.statement,
         file: props.module.props.absPath,

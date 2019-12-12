@@ -5,7 +5,6 @@ import { handleBrowserField } from './browserField';
 import { fileLookup } from './fileLookup';
 import { IPackageMeta, IResolverProps } from './resolver';
 import { getFolderEntryPointFromPackageJSON, isBrowserEntry } from './shared';
-import { findUp } from '../utils/findUp';
 
 const PROJECT_NODE_MODULES = path.join(appRoot.path, 'node_modules');
 
@@ -83,19 +82,7 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
   }
 }
 
-export function findTargetFolderInTypescriptPaths(props: IResolverProps) {
-  const moduleName = props.target;
-  const tsPaths = props.typescriptPaths && props.typescriptPaths.paths && props.typescriptPaths.paths[moduleName];
-  if (tsPaths) {
-    for (let tsPath of tsPaths) {
-      const testFolder = path.join(props.typescriptPaths.baseURL, tsPath);
-      const packageJSONFile = findUp(testFolder, 'package.json');
-      if (packageJSONFile) {
-        return path.dirname(packageJSONFile);
-      }
-    }
-  }
-}
+
 
 
 export interface INodeModuleLookup {
@@ -110,19 +97,11 @@ export interface INodeModuleLookup {
 
 export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): INodeModuleLookup {
   let folder = findTargetFolder(props, parsed);
-  let packageJSONFile: string;
-  let useLocalField = false;
   if (!folder) {
-    folder = findTargetFolderInTypescriptPaths(props);
-    if (folder) {
-      useLocalField = true;
-      packageJSONFile = path.join(folder, "package.json");
-    } else {
-      return { error: `Cannot resolve "${parsed.name}" with "${props.filePath}"` };
-    }
-  } else {
-    packageJSONFile = findUp(folder, 'package.json');
+    return { error: `Cannot resolve "${parsed.name}" with "${props.filePath}"` };
   }
+
+  const packageJSONFile = path.join(folder, 'package.json');
 
   if (!packageJSONFile) {
     return { error: `Failed to find package.json in ${folder} when resolving module ${parsed.name}` };
@@ -171,12 +150,12 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
       result.forcedStatement = `${parsed.name}/${result.targetFuseBoxPath}`;
     }
   } else {
-    const entryFile = getFolderEntryPointFromPackageJSON({ useLocalField, json: json, isBrowserBuild: isBrowser });
+    const entryFile = getFolderEntryPointFromPackageJSON({ json: json, isBrowserBuild: isBrowser });
     const entryLookup = fileLookup({ target: entryFile, fileDir: folder });
 
     if (!entryLookup.fileExists) {
       return {
-        error: `Failed to resolve an entry point in package ${parsed.name}. File ${entryFile} cannot be resolved.`,
+        error: `Failed to resolve an entry point in package ${parsed.name}. File ${entryFile} cannot be resolved at "${entryLookup.absPath}".`,
       };
     }
 

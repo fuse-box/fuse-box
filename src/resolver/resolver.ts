@@ -77,6 +77,187 @@ export interface IResolver {
   tsConfigAtPath?: TsConfigAtPath;
 }
 
+
+/** The function used to resolve a string into a module. */
+export function resolveModule(props: IResolverProps): IResolver {
+  // check if module is http(s)
+  const external = isExternalModule(props);
+  if (external) {
+    return external;
+  }
+  const isBrowserBuild = props.buildTarget === 'browser';
+  let forcedStatement: string;
+  let forceReplacement = false;
+  let lookupResult: ILookupResult;
+
+  // synopsis
+  {
+    return fillLookupResult()
+      || convertLookupResultToResolver();
+  }
+
+
+  /** Attempts to resolve in this order:
+   * 1. External module (http)
+   * 2. Paths (/sub-folder/item.ts) -> pathLookup.ts
+   * 3. Node Module (/node_modules/...) -> nodeModuleLookup.ts
+   * 4. Absolute path (/user/you/code/project/...) -> fileLookup.ts*/
+  function fillLookupResult() {
+    let target = props.target;
+    // replace aliases
+    // props.target will be updated
+    if (props.alias) {
+      const res = replaceAliases(props);
+      forceReplacement = res.forceReplacement;
+      target = res.target;
+    }
+
+    // handle typescript paths
+    // in this cases it should always send a forceStatement
+    if (props.typescriptPaths) {
+      try {
+        lookupResult = pathsLookup({
+          isDev: props.isDev,
+          baseURL: props.typescriptPaths.baseURL,
+          cachePaths: props.cache,
+          homeDir: props.homeDir,
+          paths: props.typescriptPaths.paths,
+          target: target,
+        });
+      } catch (error) {
+        if (typeof error === "string") {
+          return { error };
+        }
+      }
+
+      if (lookupResult) {
+        forceReplacement = true;
+      }
+    }
+
+    const browserFieldLookup =
+      props.packageMeta && isBrowserBuild && props.packageMeta.browser && typeof props.packageMeta.browser === 'object';
+    // continue looking for the file
+    if (!lookupResult) {
+      let moduleParsed = isNodeModule(target);
+      if (moduleParsed) {
+        const isServerBuild = props.buildTarget === 'server';
+        const isElectronBuild = props.buildTarget === 'electron';
+        const isUniversalBuild = props.buildTarget === 'universal';
+        // first check if we need to bundle it at all;
+        if (!isUniversalBuild && isServerBuild && isServerPolyfill(moduleParsed.name)) {
+          return { skip: true };
+        }
+        if (!isUniversalBuild && isElectronBuild && isElectronPolyfill(moduleParsed.name)) {
+          return { skip: true };
+        }
+        if (browserFieldLookup) {
+          if (props.packageMeta.browser[moduleParsed.name] === false) {
+            forcedStatement = 'fuse-empty-package';
+            moduleParsed = { name: forcedStatement };
+            forceReplacement = true;
+          }
+        }
+        const pkg = nodeModuleLookup(props, moduleParsed);
+
+        if (pkg.error) {
+          return { error: pkg.error };
+        }
+        const aliasForced = forceReplacement && target;
+        return {
+          forcedStatement: forcedStatement ? forcedStatement : pkg.forcedStatement ? pkg.forcedStatement : aliasForced,
+          package: pkg,
+        };
+      } else {
+        // last ditch effort
+        // just lookup the item as a file
+        lookupResult = fileLookup({
+          isDev: props.isDev,
+          filePath: props.filePath,
+          target: target,
+          javascriptFirst: props.javascriptFirst,
+        });
+      }
+    }
+  }
+
+
+  function convertLookupResultToResolver() {
+    if (!lookupResult.fileExists) {
+      return { error: `Module file "${lookupResult.absPath}" does not exist.` };
+    }
+
+    if (props.packageMeta) {
+      if (isBrowserBuild && props.packageMeta.browser && typeof props.packageMeta.browser === 'object') {
+        // a match should direct according to the specs
+        const override = handleBrowserField(props.packageMeta, lookupResult.absPath);
+        if (override) {
+          forceReplacement = true;
+          lookupResult.absPath = override;
+        }
+      }
+    }
+
+    if (lookupResult.customIndex) {
+      forceReplacement = true;
+    }
+    if (props.importType && props.importType === ImportType.DYNAMIC) {
+      forceReplacement = true;
+    }
+
+    const extension = lookupResult.extension;
+    const absPath = lookupResult.absPath;
+
+    let fuseBoxPath: string;
+    if (props.packageMeta) {
+      if (props.packageMeta.packageAltRoots) {
+        if (absPath.includes(props.packageMeta.packageRoot)) {
+          fuseBoxPath = makeFuseBoxPath(props.packageMeta.packageRoot, absPath);
+        } else {
+          for (const root of props.packageMeta.packageAltRoots) {
+            if (absPath.includes(root)) {
+              fuseBoxPath = makeFuseBoxPath(root, absPath);
+              break;
+            }
+          }
+        }
+      } else {
+        fuseBoxPath = makeFuseBoxPath(props.packageMeta.packageRoot, absPath);
+      }
+    } else {
+      fuseBoxPath = makeFuseBoxPath(props.homeDir, absPath);
+    }
+
+    if (forceReplacement) {
+      if (props.packageMeta) {
+        forcedStatement = `${props.packageMeta.name}/${fuseBoxPath}`;
+      } else {
+        forcedStatement = `~/${fuseBoxPath}`;
+      }
+    }
+    lookupResult.tsConfigAtPath;
+    return {
+      tsConfigAtPath: lookupResult.tsConfigAtPath,
+      monorepoModulesPath: lookupResult.monorepoModulesPaths,
+      extension,
+      absPath,
+      fuseBoxPath,
+      forcedStatement,
+    };
+  }
+}
+
+
+
+
+
+
+// ------------ NON EXPORTS  ---------
+
+
+
+
+
 function isExternalModule(props: IResolverProps): IResolver {
   if (/^https?:/.test(props.target)) {
     return {
@@ -102,147 +283,4 @@ function replaceAliases(
     }
   }
   return { target, forceReplacement };
-}
-
-export function resolveModule(props: IResolverProps): IResolver {
-  const external = isExternalModule(props);
-  if (external) {
-    return external;
-  }
-  const isBrowserBuild = props.buildTarget === 'browser';
-  const isServerBuild = props.buildTarget === 'server';
-  const isElectronBuild = props.buildTarget === 'electron';
-  const isUniversalBuild = props.buildTarget === 'universal';
-  let target = props.target;
-  let forcedStatement: string;
-  let forceReplacement = false;
-
-  let lookupResult: ILookupResult;
-
-  // replace aliaes
-  // props.target will be updated
-  if (props.alias) {
-    const res = replaceAliases(props);
-    forceReplacement = res.forceReplacement;
-    target = res.target;
-  }
-
-  // handle typescript paths
-  // in this cases it should always send a forceStatement
-  if (props.typescriptPaths) {
-    lookupResult = pathsLookup({
-      isDev: props.isDev,
-      baseURL: props.typescriptPaths.baseURL,
-      cachePaths: props.cache,
-      homeDir: props.homeDir,
-      paths: props.typescriptPaths.paths,
-      target: target,
-    });
-
-    if (lookupResult) {
-      forceReplacement = true;
-    }
-  }
-
-  const browserFieldLookup =
-    props.packageMeta && isBrowserBuild && props.packageMeta.browser && typeof props.packageMeta.browser === 'object';
-  // continue looking for the file
-  if (!lookupResult) {
-    let moduleParsed = isNodeModule(target);
-    if (moduleParsed) {
-      // first check if we need to bundle it at all;
-      if (!isUniversalBuild && isServerBuild && isServerPolyfill(moduleParsed.name)) {
-        return { skip: true };
-      }
-      if (!isUniversalBuild && isElectronBuild && isElectronPolyfill(moduleParsed.name)) {
-        return { skip: true };
-      }
-      if (browserFieldLookup) {
-        if (props.packageMeta.browser[moduleParsed.name] === false) {
-          forcedStatement = 'fuse-empty-package';
-          moduleParsed = { name: forcedStatement };
-          forceReplacement = true;
-        }
-      }
-      const pkg = nodeModuleLookup(props, moduleParsed);
-
-      if (pkg.error) {
-        return { error: pkg.error };
-      }
-      const aliasForced = forceReplacement && target;
-      return {
-        forcedStatement: forcedStatement ? forcedStatement : pkg.forcedStatement ? pkg.forcedStatement : aliasForced,
-        package: pkg,
-      };
-    } else {
-      lookupResult = fileLookup({
-        isDev: props.isDev,
-        filePath: props.filePath,
-        target: target,
-        javascriptFirst: props.javascriptFirst,
-      });
-    }
-  }
-
-  if (!lookupResult.fileExists) {
-    return;
-  }
-
-  if (props.packageMeta) {
-    if (isBrowserBuild && props.packageMeta.browser && typeof props.packageMeta.browser === 'object') {
-      // a match should direct according to the specs
-      const override = handleBrowserField(props.packageMeta, lookupResult.absPath);
-      if (override) {
-        forceReplacement = true;
-        lookupResult.absPath = override;
-      }
-    }
-  }
-
-  if (lookupResult.customIndex) {
-    forceReplacement = true;
-  }
-  if (props.importType && props.importType === ImportType.DYNAMIC) {
-    forceReplacement = true;
-  }
-
-  const extension = lookupResult.extension;
-  const absPath = lookupResult.absPath;
-
-  let fuseBoxPath: string;
-  if (props.packageMeta) {
-    if (props.packageMeta.packageAltRoots) {
-      if (absPath.includes(props.packageMeta.packageRoot)) {
-        fuseBoxPath = makeFuseBoxPath(props.packageMeta.packageRoot, absPath);
-      } else {
-        for (const root of props.packageMeta.packageAltRoots) {
-          if (absPath.includes(root)) {
-            fuseBoxPath = makeFuseBoxPath(root, absPath);
-            break;
-          }
-        }
-      }
-    } else {
-      fuseBoxPath = makeFuseBoxPath(props.packageMeta.packageRoot, absPath);
-    }
-  } else {
-    fuseBoxPath = makeFuseBoxPath(props.homeDir, absPath);
-  }
-
-  if (forceReplacement) {
-    if (props.packageMeta) {
-      forcedStatement = `${props.packageMeta.name}/${fuseBoxPath}`;
-    } else {
-      forcedStatement = `~/${fuseBoxPath}`;
-    }
-  }
-  lookupResult.tsConfigAtPath;
-  return {
-    tsConfigAtPath: lookupResult.tsConfigAtPath,
-    monorepoModulesPath: lookupResult.monorepoModulesPaths,
-    extension,
-    absPath,
-    fuseBoxPath,
-    forcedStatement,
-  };
 }

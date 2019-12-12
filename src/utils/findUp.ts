@@ -1,5 +1,5 @@
 import { join, dirname } from 'path';
-import { existsSync } from 'fs';
+import { existsSync, statSync } from 'fs';
 
 export const FIND_UP_GLOBAL_CONFIG = {
 	maxStepsBack: 50
@@ -9,7 +9,8 @@ export function findUp(start: string, target: string, boundaryArg?: {
 	boundary: string,
 	inclusive: boolean,
 }): string | null {
-	let currentDir = dirname(start);
+	const { isDirectory } = statSync(start);
+	let currentDir = isDirectory ? start : dirname(start);
 	let lastTry = false;
 	let backSteps = 0;
 	while (backSteps++ <= FIND_UP_GLOBAL_CONFIG.maxStepsBack) {
