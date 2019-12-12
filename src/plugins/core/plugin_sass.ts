@@ -4,7 +4,7 @@ import { sassHandler } from '../../stylesheet/sassHandler';
 import { IPluginCommon } from '../interfaces';
 import { parsePluginOptions } from '../pluginUtils';
 import { cssContextHandler } from './shared';
-import { getPackageManagerName } from '../../env';
+import { getPackageManagerData } from '../../env';
 
 export function pluginSass(a?: IPluginCommon | string | RegExp, b?: IPluginCommon) {
   let [opts, matcher] = parsePluginOptions<IPluginCommon>(a, b, {});
@@ -21,7 +21,7 @@ export function pluginSass(a?: IPluginCommon | string | RegExp, b?: IPluginCommo
       if (!ctx.isInstalled('node-sass')) {
         ctx.fatal(`Fatal error when capturing ${module.props.absPath}`, [
           'Module "sass" is required, Please install it using the following command',
-          `${getPackageManagerName()} install node-sass --save-dev`,
+          `${getPackageManagerData().installDevCmd} node-sass`,
         ]);
 
         return;

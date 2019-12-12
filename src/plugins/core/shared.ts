@@ -6,7 +6,7 @@ import { cssDevModuleRender } from '../../stylesheet/cssDevModuleRender';
 import { IStyleSheetProcessor } from '../../stylesheet/interfaces';
 import { IPluginCommon } from '../interfaces';
 import { wrapContents } from '../pluginStrings';
-import { getPackageManagerName } from '../../env';
+import { getPackageManagerData } from '../../env';
 
 export interface ICSSContextHandler {
   ctx: Context;
@@ -53,7 +53,7 @@ export function cssContextHandler(props: ICSSContextHandler) {
     if (!ctx.isInstalled('postcss-modules')) {
       ctx.fatal(`Fatal error when capturing ${props.module.props.absPath}`, [
         'Module "postcss-modules" is required, Please install it using the following command',
-        `${getPackageManagerName()} install postcss-modules --save-dev`,
+        `${getPackageManagerData().installDevCmd} postcss-modules`,
       ]);
       return;
     }

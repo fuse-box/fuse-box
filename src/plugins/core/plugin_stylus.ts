@@ -5,7 +5,7 @@ import { IPluginCommon } from '../interfaces';
 import { parsePluginOptions } from '../pluginUtils';
 import { cssContextHandler } from './shared';
 import { stylusHandler } from '../../stylesheet/stylus/stylusHandler';
-import { getPackageManagerName } from '../../env';
+import { getPackageManagerData } from '../../env';
 
 export function pluginStylusCapture(props: { ctx: Context; module: Module; opts: IPluginCommon }) {
   const { ctx, module, opts } = props;
@@ -13,7 +13,7 @@ export function pluginStylusCapture(props: { ctx: Context; module: Module; opts:
   if (!ctx.isInstalled('stylus')) {
     ctx.fatal(`Fatal error when capturing ${module.props.absPath}`, [
       'Module "stylus" is required, Please install it using the following command',
-      `${getPackageManagerName()} install stylus --save-dev`,
+      `${getPackageManagerData().installDevCmd} stylus`,
     ]);
     return;
   }

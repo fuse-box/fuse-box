@@ -5,14 +5,14 @@ import { lessHandler } from '../../stylesheet/less/lessHandler';
 import { IPluginCommon } from '../interfaces';
 import { parsePluginOptions } from '../pluginUtils';
 import { cssContextHandler } from './shared';
-import { getPackageManagerName } from '../../env';
+import { getPackageManagerData } from '../../env';
 
 export function pluginLessCapture(props: { ctx: Context; module: Module; opts: IPluginCommon }) {
   const { ctx, module, opts } = props;
   if (!ctx.isInstalled('less')) {
     ctx.fatal(`Fatal error when capturing ${module.props.absPath}`, [
       'Module "less" is required, Please install it using the following command',
-      `${getPackageManagerName()} install less --save-dev`,
+      `${getPackageManagerData().installDevCmd} less`,
     ]);
     return;
   }
