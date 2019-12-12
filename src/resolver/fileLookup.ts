@@ -13,6 +13,7 @@ export interface ILookupProps {
   fileDir?: string;
   filePath?: string;
   target: string;
+  inBaseUrl?: boolean;
 }
 
 export interface TsConfigAtPath {
@@ -101,51 +102,56 @@ export function fileLookup(props: ILookupProps): ILookupResult {
   const exists = fileExists(resolved);
   if (exists) {
     const stat = fs.lstatSync(resolved);
-    if (stat.isDirectory) {
-      isDirectory = true;
+    isDirectory = stat.isDirectory();
 
-      let monorepoModulesPaths;
-      let tsConfigAtPath: TsConfigAtPath;
+    if (isDirectory) {
+      if (props.inBaseUrl !== true) {
+        let monorepoModulesPaths;
+        let tsConfigAtPath: TsConfigAtPath;
+        // only in case of a directory
+        const projectRoot = path.join(resolved, "../../../"); // TODO: get the actual projectRoot
+        const packageJSONPath = findUp(resolved, 'package.json', {
+          boundary: projectRoot,
+          inclusive: false,
+        });
+        const packageRoot = path.dirname(packageJSONPath)
+        if (fileExists(packageJSONPath)) {
+          const useLocalMain = !/node_modules/.test(packageJSONPath);
+          const packageJSON = require(packageJSONPath);
+          const entry = getFolderEntryPointFromPackageJSON({ json: packageJSON, useLocalField: useLocalMain });
 
-
-      // only in case of a directory
-      const projectRoot = path.join(resolved, "../../../"); // TODO: get the actual projectRoot
-      const packageJSONPath = findUp(resolved, 'package.json', {
-        boundary: projectRoot,
-        inclusive: false,
-      })
-      if (fileExists(packageJSONPath)) {
-        const useLocalMain = !/node_modules/.test(packageJSONPath);
-        const packageJSON = require(packageJSONPath);
-        const entry = getFolderEntryPointFromPackageJSON({ json: packageJSON, useLocalField: useLocalMain });
-
-        if (useLocalMain && packageJSON['local:main']) {
-          const _monoModules = path.resolve(path.dirname(packageJSONPath), 'node_modules');
-          if (fileExists(_monoModules)) {
-            monorepoModulesPaths = _monoModules;
+          if (packageJSON['main:local']) {
+            console.error(`Found "main:local" in package.json.  Should be "local:main"`);
           }
 
-          const _tsConfig = findUp(resolved, 'tsconfig.json', {
-            boundary: projectRoot,
-            inclusive: true,
-          });
-          if (fileExists(_tsConfig)) {
-            const props: any = { tsConfig: _tsConfig };
-            const _tsConfigObject = initTypescriptConfig(props);
-            tsConfigAtPath = { absPath: path.dirname(_tsConfig), tsConfig: _tsConfigObject };
+          if (useLocalMain && packageJSON['local:main']) {
+            const _monoModules = path.resolve(packageRoot, 'node_modules');
+            if (fileExists(_monoModules)) {
+              monorepoModulesPaths = _monoModules;
+            }
+
+            const _tsConfig = findUp(resolved, 'tsconfig.json', {
+              boundary: projectRoot,
+              inclusive: false,
+            });
+            if (fileExists(_tsConfig)) {
+              const props: any = { tsConfig: _tsConfig };
+              const _tsConfigObject = initTypescriptConfig(props);
+              tsConfigAtPath = { absPath: _tsConfig, tsConfig: _tsConfigObject };
+            }
           }
+
+          const entryFile = path.join(resolved, entry);
+          return {
+            customIndex: true,
+            monorepoModulesPaths,
+            tsConfigAtPath,
+            isDirectoryIndex: true,
+            absPath: entryFile,
+            extension: path.extname(entryFile),
+            fileExists: fileExists(entryFile),
+          };
         }
-
-        const entryFile = path.join(resolved, entry);
-        return {
-          customIndex: true,
-          monorepoModulesPaths,
-          tsConfigAtPath,
-          isDirectoryIndex: true,
-          absPath: entryFile,
-          extension: path.extname(entryFile),
-          fileExists: fileExists(entryFile),
-        };
       }
 
       let indexes: Array<string> = TS_INDEXES_FIRST;

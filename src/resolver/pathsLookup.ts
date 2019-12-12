@@ -86,14 +86,13 @@ export function pathsLookup(props: IPathsLookupProps): ILookupResult {
   // and files without the need in specifying "paths"
   // so we check if first
   const indexFiles = getIndexFiles(props);
-  if (indexFiles) {
-    for (const i in indexFiles) {
-      const item = indexFiles[i];
 
+  if (indexFiles) {
+    for (const item of indexFiles) {
       // check if starts with it only
       const regex = new RegExp(`^${item.nameWithoutExtension}($|\\.|\\/)`);
       if (regex.test(props.target)) {
-        const result = fileLookup({ fileDir: props.baseURL, target: props.target });
+        const result = fileLookup({ fileDir: props.baseURL, target: props.target, inBaseUrl: true });
         if (result && result.fileExists) {
           return result;
         }
@@ -105,17 +104,21 @@ export function pathsLookup(props: IPathsLookupProps): ILookupResult {
   // "items" should be cached, so we are getting simple functions that contain
   // regular expressions
   const items = getPathsData(props);
-  for (const i in items) {
-    const test = items[i];
+  for (const test of items) {
     const directories = test(props.target);
     if (directories) {
-      for (const j in directories) {
-        const directory = directories[j];
-        const result = fileLookup({ isDev: props.isDev, fileDir: props.baseURL, target: directory });
+      for (const directory of directories) {
+        const result = fileLookup({ isDev: props.isDev, fileDir: props.baseURL, target: directory, inBaseUrl: true });
         if (result && result.fileExists) {
           return result;
         }
       }
     }
   }
+
+  // if (props.typescriptPaths) {
+  //   const startPath = path.join(props.typescriptPaths.baseURL, props.target);
+  //   const packageJSONFile = findUp(startPath, 'package.json');
+  //   return (packageJSONFile && path.dirname(packageJSONFile)) || undefined;
+  // }
 }
