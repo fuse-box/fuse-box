@@ -56,7 +56,7 @@ The reason it works is because `baseUrl` is pointed to `src/` *(it's set to `.` 
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@myorg/*": ["../../packages/*"]
+      "@myorg/*": ["../../projects/*"]
     }
   }
 }
