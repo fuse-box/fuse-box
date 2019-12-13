@@ -62,6 +62,7 @@ export function parseAllModulePaths(fileAbsPath: string) {
   }
 }
 
+const CACHED_LOCAL_MODULES: { [key: string]: string | null } = {};
 export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): string {
   // handle custom modules here
   if (props.modules) {
@@ -81,7 +82,10 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
     }
   }
 
-  const localModuleRoot = findUp(props.filePath, "node_modules");
+  let localModuleRoot = CACHED_LOCAL_MODULES[props.filePath];
+  if (localModuleRoot === undefined) {
+    localModuleRoot = CACHED_LOCAL_MODULES[props.filePath] = findUp(props.filePath, "node_modules");
+  }
   if (!!localModuleRoot) {
     paths.push(localModuleRoot);
     const attempted = path.join(localModuleRoot, parsed.name);
