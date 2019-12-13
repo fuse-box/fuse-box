@@ -185,7 +185,7 @@ export function resolveModule(props: IResolverProps): IResolver {
   }
 
   if (!lookupResult.fileExists) {
-    return;
+    return { error: `File does not exist "${lookupResult.absPath}"` };
   }
 
   if (props.packageMeta) {

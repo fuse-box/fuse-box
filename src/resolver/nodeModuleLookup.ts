@@ -5,6 +5,7 @@ import { handleBrowserField } from './browserField';
 import { fileLookup } from './fileLookup';
 import { IPackageMeta, IResolverProps } from './resolver';
 import { getFolderEntryPointFromPackageJSON, isBrowserEntry } from './shared';
+import { findUp } from '../utils/findUp';
 
 const PROJECT_NODE_MODULES = path.join(appRoot.path, 'node_modules');
 
@@ -73,13 +74,23 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
   }
 
   const paths = parseAllModulePaths(props.filePath);
-
   for (let i = paths.length - 1; i >= 0; i--) {
     const attempted = path.join(paths[i], parsed.name);
     if (fileExists(attempted)) {
       return attempted;
     }
   }
+
+  const localModuleRoot = findUp(props.filePath, "node_modules");
+  if (!!localModuleRoot) {
+    paths.push(localModuleRoot);
+    const attempted = path.join(localModuleRoot, parsed.name);
+    if (fileExists(attempted)) {
+      return attempted;
+    }
+  }
+
+  throw `Cannot resolve "${props.target}" module from: ${paths.join(", ")}`;
 }
 export interface INodeModuleLookup {
   error?: string;
@@ -92,7 +103,13 @@ export interface INodeModuleLookup {
 }
 
 export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): INodeModuleLookup {
-  const folder = findTargetFolder(props, parsed);
+  let folder: string;
+  try {
+    folder = findTargetFolder(props, parsed);
+  } catch (error) {
+    if (typeof error !== "string") throw error;
+    return { error };
+  }
 
   const result: INodeModuleLookup = {};
   const pkg: IPackageMeta = {
@@ -100,10 +117,6 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
     packageRoot: folder,
   };
   result.meta = pkg;
-
-  if (!folder) {
-    return { error: `Cannot resolve "${parsed.name}"` };
-  }
 
   const packageJSONFile = path.join(folder, 'package.json');
   if (!fileExists(packageJSONFile)) {
