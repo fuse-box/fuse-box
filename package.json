@@ -61,7 +61,7 @@
     "stream-browserify": "^2.0.1",
     "strict-event-emitter-types": "^2.0.0",
     "terser": "^4.0.0",
-    "ts-morph": "^5.0.0",
+    "ts-morph": "^6.0.2",
     "util": "^0.12.0",
     "watch": "^1.0.1",
     "ws": "^7.1.0"
@@ -148,5 +148,5 @@
     "coverage-ci": "jest --verbose --coverage --runInBand"
   },
   "typings": "index.d.ts",
-  "version": "4.0.0-next.158"
+  "version": "4.0.0-next.159"
 }
