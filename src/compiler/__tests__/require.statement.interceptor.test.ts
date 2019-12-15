@@ -16,6 +16,8 @@ describe('Require statement intercepto', () => {
           type: 'CallExpression',
           callee: { type: 'Identifier', name: 'require' },
           arguments: [{ type: 'Literal', value: './a' }],
+          optional: false,
+          shortCircuited: false,
           typeParameters: null,
         },
       },
@@ -34,6 +36,8 @@ describe('Require statement intercepto', () => {
         importType: ImportType.REQUIRE,
         statement: {
           type: 'CallExpression',
+          optional: false,
+          shortCircuited: false,
           callee: { type: 'Identifier', name: 'require' },
           arguments: [{ type: 'Literal', value: './a' }],
           typeParameters: null,
