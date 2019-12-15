@@ -15,6 +15,7 @@ import { DynamicImportTransformer } from '../transformers/shared/DynamicImportTr
 import { ExportTransformer } from '../transformers/shared/ExportTransformer';
 import { ImportTransformer } from '../transformers/shared/ImportTransformer';
 import { JSXTransformer } from '../transformers/shared/JSXTransformer';
+import { OptionalChaningTransformer } from '../transformers/shared/OptionalChaningTransformer';
 import { AngularURLTransformer } from '../transformers/ts/AngularURLTransformer';
 import { ClassConstructorPropertyTransformer } from '../transformers/ts/ClassConstructorPropertyTransformer';
 import { CommonTSfeaturesTransformer } from '../transformers/ts/CommonTSfeaturesTransformer';
@@ -22,8 +23,6 @@ import { DecoratorTransformer } from '../transformers/ts/decorators/DecoratorTra
 import { EnumTransformer } from '../transformers/ts/EnumTransformer';
 import { NamespaceTransformer } from '../transformers/ts/NameSpaceTransformer';
 import { IVisit, IVisitorMod } from '../Visitor/Visitor';
-import { ObfuscationTransformer } from '../transformers/ObfuscationTransformer';
-import { OptionalChaningTransformer } from '../transformers/shared/OptionalChaningTransformer';
 
 export interface ICompileModuleProps {
   code: string;
@@ -39,6 +38,7 @@ export function testTranspile(props: ICompileModuleProps) {
   if (props.withJSX === undefined) {
     props.withJSX = true;
   }
+
   const ast = buntis.parseTSModule(props.code, {
     directives: true,
     jsx: props.withJSX,
