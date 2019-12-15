@@ -74,9 +74,11 @@ describe('Browser fast condition', () => {
           importType: ImportType.REQUIRE,
           statement: {
             type: 'CallExpression',
+            optional: false,
+            shortCircuited: false,
             callee: { type: 'Identifier', name: 'require' },
             arguments: [{ type: 'Literal', value: './prod' }],
-            typeParameters: [],
+            typeParameters: null,
           },
         },
       ]);

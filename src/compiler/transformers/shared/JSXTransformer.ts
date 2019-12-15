@@ -1,6 +1,7 @@
 import { ASTNode } from '../../interfaces/AST';
 import { ITransformer } from '../../program/transpileModule';
 import { IVisit } from '../../Visitor/Visitor';
+import { GlobalContext } from '../../program/GlobalContext';
 
 //const Factories: { [key: string]: () => ASTNode } = {};
 
@@ -59,11 +60,9 @@ function createObjectAssignExpression(): ASTNode {
 export interface IJSXTranformerOptions {
   jsxFactory?: string;
 }
-export function JSXTransformer(opts?: IJSXTranformerOptions): ITransformer {
-  if (!opts) opts = {};
-  if (!opts.jsxFactory) opts.jsxFactory = 'React.createElement';
 
-  const [first, second] = opts.jsxFactory.split('.');
+function parseFactory(factory: string) {
+  const [first, second] = factory.split('.');
   const JSXFragment: ASTNode = {
     type: 'MemberExpression',
     object: {
@@ -78,11 +77,24 @@ export function JSXTransformer(opts?: IJSXTranformerOptions): ITransformer {
   };
 
   const createElement = createJSXFactory({ first, second });
+  return { JSXFragment, createElement };
+}
+
+const FACTORIES = {};
+export function JSXTransformer(opts?: IJSXTranformerOptions): ITransformer {
+  if (!opts) opts = {};
+  if (!opts.jsxFactory) opts.jsxFactory = 'React.createElement';
 
   return (visit: IVisit) => {
     const node = visit.node;
     const name = node.name as string;
-    const locals = visit.scope && visit.scope.locals ? visit.scope.locals : {};
+    const globalContext = visit.globalContext as GlobalContext;
+
+    const factory = globalContext.jsxFactory || opts.jsxFactory;
+    if (!FACTORIES[factory]) FACTORIES[factory] = parseFactory(factory);
+
+    const { JSXFragment, createElement } = FACTORIES[factory];
+
     switch (node.type) {
       case 'JSXMemberExpression':
         node.type = 'MemberExpression';

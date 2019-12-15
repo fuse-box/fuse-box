@@ -10,6 +10,7 @@ export interface GlobalContext {
       target?: string;
     };
   };
+  jsxFactory?: string;
   programProps?: IProgramProps;
   identifierReplacement: {
     [key: string]: {
