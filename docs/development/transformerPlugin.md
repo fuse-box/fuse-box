@@ -10,12 +10,14 @@ plugin to the correct files.
 
 `transformerAtPath` accepts three arguments
 
-```
+```ts
 public transformerAtPath(
   path: string | RegExp,
   transformer: (opts: any) => ITransformer,
   transformerOptions?: any
-) {};
+) {
+  // ...
+};
 ```
 
 We use the third parameter to pass down our config.
@@ -37,7 +39,7 @@ plugins: [
       autoInject: true
     }
   )
-],
+]
 ```
 
 Because we write the plugin ourselfs, we control the format we pass down to the `transformerAtPath`
@@ -45,20 +47,20 @@ Because we write the plugin ourselfs, we control the format we pass down to the 
 `plugin_test.ts`
 ```ts
 export function pluginTest(opts?: any) {
-    const { target, ...options } = opts;
-    return (ctx: Context) => {
-        ctx.transformerAtPath(target, TestTransformer, options);
-    };
-}
+  const { target, ...options } = opts;
+  return (ctx: Context) => {
+    ctx.transformerAtPath(target, TestTransformer, options);
+  };
+};
 ```
 
 `plugin_alternative.ts`
 ```ts
 export function pluginAlternative(target: string | RegExp, options?: any) {
-    return (ctx: Context) => {
-        ctx.transformerAtPath(target, TestTransformer, options);
-    };
-}
+  return (ctx: Context) => {
+    ctx.transformerAtPath(target, TestTransformer, options);
+  };
+};
 ```
 
 Becasue `transformerAtPath` bubbles down our options, we can use them in the Transformer
@@ -69,5 +71,5 @@ export const TestTransformer = (opts?: any): ITransformer => {
   if (opts.autoInject) {
     // do something super awesome!!
   }
-}
+};
 ```
