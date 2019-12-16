@@ -88,9 +88,11 @@ export class Context {
     this.config.setupEnv();
   }
 
-  public transformerAtPath(path: string | RegExp, transformer: (opts: any) => ITransformer) {
+  public transformerAtPath(path: string | RegExp, transformer: (opts: any) => ITransformer, transformerOptions?: any) {
     if (!this._tranformersAtPaths) this._tranformersAtPaths = [];
-    this._tranformersAtPaths.push({ test: path2RegexPattern(path), transformer });
+    this._tranformersAtPaths.push({
+      test: path2RegexPattern(path), transformer: (opts: any) => transformer({ ...transformerOptions, ...opts })
+    });
   }
 
   public getTransformersAtPath(path: string): Array<(opts: any) => ITransformer> {
