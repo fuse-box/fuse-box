@@ -16,7 +16,12 @@ interface IDefaultParseProps {
   extraDependencies?: Array<string>;
 }
 
-function registerPackage(props: { assemble?: boolean; pkg: Package; ctx: Context; resolved: IResolver }) {
+function registerPackage(props: {
+  assemble?: boolean;
+  pkg: Package;
+  ctx: Context;
+  resolved: IResolver;
+}): { target: Module; pkg: Package } {
   const collection = props.ctx.assembleContext.collection;
   const resolved = props.resolved;
 
@@ -73,12 +78,13 @@ function registerPackage(props: { assemble?: boolean; pkg: Package; ctx: Context
   if (target && !target.assembled && props.assemble) {
     processModule({ ...props, module: target, pkg: pkg });
   }
-  return pkg;
+  return { pkg, target };
 }
 
 export interface IAssembleResolveResult {
   resolver?: IResolver;
   module?: Module;
+  packageTarget?: Module;
   forcedStatement?: string;
   processed?: boolean;
   package?: Package;
@@ -146,10 +152,17 @@ function resolveStatement(
     if (props.ctx.config.shoudIgnorePackage(resolved.package.meta.name)) {
       return;
     }
+    const packageData = registerPackage({
+      assemble: props.assemble,
+      pkg: props.pkg,
+      ctx: props.ctx,
+      resolved: resolved,
+    });
     return {
       resolver: resolved,
       forcedStatement: resolved.forcedStatement,
-      package: registerPackage({ assemble: props.assemble, pkg: props.pkg, ctx: props.ctx, resolved: resolved }),
+      packageTarget: packageData.target,
+      package: packageData.pkg,
     };
   }
 
@@ -243,10 +256,17 @@ export function processModule(props: IDefaultParseProps) {
         const response = resolveStatement({ statement: data.literal, importType: data.type }, props);
         if (response && literalStatements) {
           modules.push(response);
+
           const nodes = literalStatements[data.literal];
-          if (literalStatements && response.forcedStatement && nodes) {
-            for (const node of nodes) {
-              node.statement.arguments[0].value = response.forcedStatement;
+          if (nodes) {
+            // for production map imports to module
+            if (props.ctx.config.production) {
+              _module.moduleSourceRefs[data.literal] = response.module || response.packageTarget;
+            }
+            if (response.forcedStatement) {
+              for (const node of nodes) {
+                node.statement.arguments[0].value = response.forcedStatement;
+              }
             }
           }
         }
@@ -269,7 +289,7 @@ export function processModule(props: IDefaultParseProps) {
       }
     });
   }
-  if (_module.isExecutable() && !_module.isCached) {
+  if (!props.ctx.config.production && _module.isExecutable() && !_module.isCached) {
     _module.generateCode();
   }
   icp.sync('assemble_module_complete', { module: _module });
@@ -279,12 +299,7 @@ function parseDefaultPackage(ctx: Context, pkg: Package) {
   ctx.assembleContext.collection.modules.set(pkg.entry.props.absPath, pkg.entry);
 
   // Production might require tslib so we need to add it here
-  if (ctx.config.production) {
-    if (!ctx.config.dependencies.include) ctx.config.dependencies.include = [];
-    if (!ctx.config.dependencies.include.includes('tslib')) {
-      ctx.config.dependencies.include.push('tslib');
-    }
-  }
+
   processModule({
     ctx: ctx,
     pkg: pkg,

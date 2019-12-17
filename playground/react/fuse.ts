@@ -60,12 +60,12 @@ task('dist', async ctx => {
   ctx.isProduction = true;
   const fuse = ctx.getConfig();
   await fuse.runProd({
-    uglify: false,
-    screwIE: false,
-    cleanCSS: {
-      compatibility: {
-        properties: { urlQuotes: true },
-      },
-    },
+    // uglify: false,
+    // screwIE: false,
+    // cleanCSS: {
+    //   compatibility: {
+    //     properties: { urlQuotes: true },
+    //   },
+    // },
   });
 });

@@ -23,6 +23,7 @@ import { DecoratorTransformer } from '../transformers/ts/decorators/DecoratorTra
 import { EnumTransformer } from '../transformers/ts/EnumTransformer';
 import { NamespaceTransformer } from '../transformers/ts/NameSpaceTransformer';
 import { IVisit, IVisitorMod } from '../Visitor/Visitor';
+import { InitialModuleReferenceTransformer } from '../transformers/production/InitialModuleReference';
 
 export interface ICompileModuleProps {
   code: string;
@@ -32,6 +33,39 @@ export interface ICompileModuleProps {
   compilerOptions?: ICompilerOptions;
   bundleProps?: IBundleEssentialProps;
   emitDecoratorMetadata?: boolean;
+}
+
+export function testInitialProduction(props: ICompileModuleProps) {
+  if (props.withJSX === undefined) {
+    props.withJSX = true;
+  }
+
+  const ast = buntis.parseTSModule(props.code, {
+    directives: true,
+    jsx: props.withJSX,
+    next: true,
+    loc: true,
+  });
+  const requireStatementCollection: ITransformerRequireStatementCollection = [];
+  function onRequireCallExpression(importType: ImportType, statement: ASTNode) {
+    // making sure we have haven't emitted the same property twice
+    if (!statement['emitted']) {
+      Object.defineProperty(statement, 'emitted', { enumerable: false, value: true });
+      requireStatementCollection.push({ importType, statement });
+    }
+  }
+
+  const defaultTransformers: ITransformerList = [InitialModuleReferenceTransformer({ onRequireCallExpression })];
+  transpileModule({
+    ast: ast as ASTNode,
+    compilerOptions: props.compilerOptions,
+    globalContext: createGlobalContext(props.globalContext),
+    transformers: defaultTransformers,
+  });
+
+  const res = generate(ast, {});
+
+  return { code: res, requireStatementCollection };
 }
 
 export function testTranspile(props: ICompileModuleProps) {
