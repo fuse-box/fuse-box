@@ -136,6 +136,7 @@ export function resolveModule(props: IResolverProps): IResolver {
       cachePaths: props.cache,
       homeDir: props.homeDir,
       paths: props.typescriptPaths.paths,
+      fromPath: props.filePath,
       target: target,
     });
 

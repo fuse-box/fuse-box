@@ -6,7 +6,7 @@ const CASE1 = path.join(__dirname, 'cases/paths_lookup/src1');
 describe('Paths lookup', () => {
   describe('Basic lookup based on listing', () => {
     it('Should lookup and resolve baseURL . (tsx)', () => {
-      const result = pathsLookup({ baseURL: CASE1, homeDir: CASE1, target: 'bar/Bar' });
+      const result = pathsLookup({ baseURL: CASE1, homeDir: CASE1, fromPath: CASE1, target: 'bar/Bar' });
 
       expect(result.fileExists).toBe(true);
       expect(result.absPath).toMatch(/Bar\.tsx$/);
@@ -14,25 +14,31 @@ describe('Paths lookup', () => {
     });
 
     it('Should lookup and resolve baseURL . (foo/index.ts)', () => {
-      const result = pathsLookup({ baseURL: CASE1, homeDir: CASE1, target: 'foo' });
+      const result = pathsLookup({ baseURL: CASE1, homeDir: CASE1, fromPath: CASE1, target: 'foo' });
       expect(result.fileExists).toBe(true);
 
       expect(result.absPath).toMatchFilePath('foo/index.ts$');
     });
 
     it('Should lookup and resolve baseURL . (foo/index.ts) with slash', () => {
-      const result = pathsLookup({ baseURL: CASE1, homeDir: CASE1, target: 'foo/' });
+      const result = pathsLookup({ baseURL: CASE1, homeDir: CASE1, fromPath: CASE1, target: 'foo/' });
       expect(result.fileExists).toBe(true);
       expect(result.absPath).toMatchFilePath('foo/index.ts$');
     });
 
+    it('Should lookup and resolve js file in package with name same as file', () => {
+      const result = pathsLookup({ baseURL: CASE1, homeDir: CASE1, fromPath: path.join(CASE1, "some.js/index.js"), target: 'some.js' });
+      expect(result.fileExists).toBe(true);
+      expect(result.absPath).toMatchFilePath('some.js/some.js$');
+    });
+
     it('Should fail to resolve', () => {
-      const result = pathsLookup({ baseURL: CASE1, homeDir: CASE1, target: 'foosome/' });
+      const result = pathsLookup({ baseURL: CASE1, homeDir: CASE1, fromPath: CASE1, target: 'foosome/' });
       expect(result).toBe(undefined);
     });
 
     it('Should result just a file name Moi.ts', () => {
-      const result = pathsLookup({ baseURL: CASE1, homeDir: CASE1, target: 'Moi' });
+      const result = pathsLookup({ baseURL: CASE1, homeDir: CASE1, fromPath: CASE1, target: 'Moi' });
       expect(result.fileExists).toBe(true);
 
       expect(result.absPath).toMatchFilePath('Moi.ts$');
@@ -44,6 +50,7 @@ describe('Paths lookup', () => {
       const result = pathsLookup({
         baseURL: CASE1,
         homeDir: CASE1,
+        fromPath: CASE1,
         paths: {
           '@app/*': ['something/app/*'],
         },
@@ -58,6 +65,7 @@ describe('Paths lookup', () => {
       const result = pathsLookup({
         baseURL: CASE1,
         homeDir: CASE1,
+        fromPath: CASE1,
         paths: {
           '@app/*': ['something/app/*', 'something/other/*'],
         },
@@ -72,6 +80,7 @@ describe('Paths lookup', () => {
       const result = pathsLookup({
         baseURL: CASE1,
         homeDir: CASE1,
+        fromPath: CASE1,
         paths: {
           '@app/*/foo': ['something/*/Foo'],
         },
@@ -86,6 +95,7 @@ describe('Paths lookup', () => {
       const result = pathsLookup({
         baseURL: CASE1,
         homeDir: CASE1,
+        fromPath: CASE1,
         paths: {
           '@app/*': ['foo'],
         },
@@ -100,6 +110,7 @@ describe('Paths lookup', () => {
       const result = pathsLookup({
         baseURL: CASE1,
         homeDir: CASE1,
+        fromPath: CASE1,
         paths: {
           '@app*': ['foo'],
         },
@@ -114,6 +125,7 @@ describe('Paths lookup', () => {
       const result = pathsLookup({
         baseURL: CASE1,
         homeDir: CASE1,
+        fromPath: CASE1,
         paths: {
           path: ['foo'],
         },

@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import { fileLookup, ILookupResult } from './fileLookup';
 
 export type ITypescriptPaths = { [key: string]: Array<string> };
@@ -8,6 +9,7 @@ interface IPathsLookupProps {
   isDev?: boolean;
   cachePaths?: boolean;
   paths?: ITypescriptPaths;
+  fromPath: string;
   target: string;
 }
 
@@ -82,6 +84,11 @@ function getIndexFiles(props: IPathsLookupProps): DirectoryListing | undefined {
 }
 
 export function pathsLookup(props: IPathsLookupProps): ILookupResult {
+  const fileDir =
+    fs.statSync(props.fromPath).isDirectory()
+      ? props.fromPath
+      : path.dirname(props.fromPath);
+
   // if baseDir is the same as homeDir we can assume aliasing directories
   // and files without the need in specifying "paths"
   // so we check if first
@@ -93,7 +100,7 @@ export function pathsLookup(props: IPathsLookupProps): ILookupResult {
       // check if starts with it only
       const regex = new RegExp(`^${item.nameWithoutExtension}($|\\.|\\/)`);
       if (regex.test(props.target)) {
-        const result = fileLookup({ fileDir: props.baseURL, target: props.target });
+        const result = fileLookup({ fileDir, target: props.target });
         if (result && result.fileExists) {
           return result;
         }
@@ -111,7 +118,7 @@ export function pathsLookup(props: IPathsLookupProps): ILookupResult {
     if (directories) {
       for (const j in directories) {
         const directory = directories[j];
-        const result = fileLookup({ isDev: props.isDev, fileDir: props.baseURL, target: directory });
+        const result = fileLookup({ isDev: props.isDev, fileDir, target: directory });
         if (result && result.fileExists) {
           return result;
         }
