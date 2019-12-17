@@ -5,14 +5,54 @@ import { Context } from '../../../core/Context';
 import { Package } from '../../../core/Package';
 import { ModuleLinkTransformer } from './ModuleLinkTransformer';
 import { IProductionTransformerContext } from '../interfaces';
+import { Module } from '../../../core/Module';
 
+function codeSplitting(props: { ctx: Context; splitEntry: Module }) {
+  const submodules: Array<Module> = [];
+  const { ctx, splitEntry } = props;
+
+  // trace the file's origing
+  // it should match the split entry
+  function traceOrigin(target: Module) {
+    let traced = false;
+    for (const dependant of target.productionDependants) {
+      if (dependant === splitEntry) traced = true;
+      else {
+        traced = traceOrigin(dependant);
+        if (!traced) return;
+      }
+    }
+    return traced;
+  }
+
+  // go through dependencies and try tracing down the origin
+  function traceDepedencies(target: Module) {
+    for (const dependency of target.productionDependencies) {
+      if (traceOrigin(dependency)) {
+        submodules.push(dependency);
+        traceDepedencies(dependency);
+      }
+    }
+  }
+  traceDepedencies(splitEntry);
+
+  console.log('Split data');
+  console.log('--------->>>');
+  submodules.forEach(item => {
+    console.log(item.getShortPath());
+  });
+  console.log('----');
+}
 export function launchFirstStage(ctx: Context, packages: Array<Package>) {
   const productionContext = ctx.productionContext;
+
+  const splitEntries = [];
   packages.forEach(pkg => {
     pkg.modules.forEach(module => {
       // store dependencies and dependants
+      const refs = module.moduleSourceRefs;
       for (const sourceValue in module.moduleSourceRefs) {
-        const targetModule = module.moduleSourceRefs[sourceValue];
+        const targetModule = refs[sourceValue];
         if (targetModule.productionDependants.indexOf(module) === -1) {
           targetModule.productionDependants.push(module);
         }
@@ -30,8 +70,9 @@ export function launchFirstStage(ctx: Context, packages: Array<Package>) {
           module,
           productionContext,
           onDynamicImport: (source: string) => {
-            // need to remove the from the dependencies, check the origin and create
-            // a different bundle
+            if (refs[source]) {
+              splitEntries.push(refs[source]);
+            }
           },
         };
         transpileModule({
@@ -42,4 +83,8 @@ export function launchFirstStage(ctx: Context, packages: Array<Package>) {
       }
     });
   });
+
+  for (const splitEntry of splitEntries) {
+    codeSplitting({ ctx, splitEntry });
+  }
 }
