@@ -111,6 +111,11 @@ export class Module {
   private _isExecutable: boolean;
   private _isJavascriptModule: boolean;
 
+  // production related properties
+  public moduleSourceRefs: { [key: string]: Module } = {};
+  public productionDependants: Array<Module> = [];
+  public productionDependencies: Array<Module> = [];
+
   constructor(public props: IModuleProps, pkg: Package) {
     this.pkg = pkg;
     this.assembled = false;
@@ -145,6 +150,7 @@ export class Module {
         }) as ASTNode;
       } else {
         let opts = { jsx: true, next: false, module: true, loc: withSourcemaps };
+
         this.ast = meriyah.parse(this.contents, opts) as ASTNode;
       }
     } catch (e) {

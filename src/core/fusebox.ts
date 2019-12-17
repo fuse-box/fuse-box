@@ -5,7 +5,8 @@ import { FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
 import { bundleDev } from '../main/bundle_dev';
 import { UserHandler } from '../user-handler/UserHandler';
 import { parseVersion } from '../utils/utils';
-import { createContext } from './Context';
+import { createContext, createProdContext } from './Context';
+import { bundleProd } from '../production/bundleProd';
 
 export interface IDevelopmentProps {}
 
@@ -41,11 +42,12 @@ export function fusebox(config: IPublicConfig) {
     },
     runProd: (props?: IProductionProps) => {
       console.log('not implemented yet');
-      // const ctx = createProdContext(config, props);
+      const ctx = createProdContext(config, props);
 
-      // if (props && props.handler) {
-      //   props.handler(new UserHandler(ctx));
-      // }
+      if (props && props.handler) {
+        props.handler(new UserHandler(ctx));
+      }
+      bundleProd(ctx);
       // return bundleProd(ctx);
     },
   };
