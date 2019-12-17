@@ -1,5 +1,6 @@
 import { ASTNode } from '../interfaces/AST';
 import { ImportType } from '../interfaces/ImportType';
+import { ITransformerResult } from '../interfaces/ITranformerResult';
 import { ITransformerRequireStatementCollection } from '../interfaces/ITransformerRequireStatements';
 import { ITranspiler } from '../interfaces/ITranspiler';
 import { createGlobalContext } from '../program/GlobalContext';
@@ -15,10 +16,9 @@ import { ImportTransformer } from '../transformers/shared/ImportTransformer';
 import { JSXTransformer } from '../transformers/shared/JSXTransformer';
 import { ClassConstructorPropertyTransformer } from '../transformers/ts/ClassConstructorPropertyTransformer';
 import { CommonTSfeaturesTransformer } from '../transformers/ts/CommonTSfeaturesTransformer';
+import { DecoratorTransformer } from '../transformers/ts/decorators/DecoratorTransformer';
 import { EnumTransformer } from '../transformers/ts/EnumTransformer';
 import { NamespaceTransformer } from '../transformers/ts/NameSpaceTransformer';
-import { ITransformerResult } from '../interfaces/ITranformerResult';
-import { DecoratorTransformer } from '../transformers/ts/decorators/DecoratorTransformer';
 
 export function typescriptTranspiler(props: ITranspiler): ITransformerResult {
   const requireStatementCollection: ITransformerRequireStatementCollection = [];
