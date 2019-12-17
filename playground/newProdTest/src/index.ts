@@ -1,8 +1,11 @@
 //import * as oi from 'foo';
-import { hey } from 'foo/hey';
-import { util } from './utils';
-import './index.scss';
-console.log('hello world');
-console.log(hey);
 
+import './index.scss';
+import { util } from './utils';
+console.log('hello world');
+
+async function aaaa() {
+  const res = await import('./split');
+  console.log(res);
+}
 util();
