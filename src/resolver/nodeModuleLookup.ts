@@ -56,10 +56,10 @@ export function parseAllModulePaths(fileAbsPath: string) {
     if (matchedLast && matchedLast[0]) {
       paths.push(path.join(paths[paths.length - 1], matchedLast[0], 'node_modules'));
     }
-    return paths;
-  } else {
-    return [PROJECT_NODE_MODULES];
   }
+
+  paths.push(PROJECT_NODE_MODULES);
+  return paths;
 }
 
 const CACHED_LOCAL_MODULES: { [key: string]: string | null } = {};
@@ -74,6 +74,8 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
     }
   }
 
+
+
   const paths = parseAllModulePaths(props.filePath);
   for (let i = paths.length - 1; i >= 0; i--) {
     const attempted = path.join(paths[i], parsed.name);
@@ -86,7 +88,7 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
   if (localModuleRoot === undefined) {
     localModuleRoot = CACHED_LOCAL_MODULES[props.filePath] = findUp(props.filePath, "node_modules");
   }
-  if (!!localModuleRoot) {
+  if (!!localModuleRoot && paths.indexOf(localModuleRoot) === -1) {
     paths.push(localModuleRoot);
     const attempted = path.join(localModuleRoot, parsed.name);
     if (fileExists(attempted)) {
