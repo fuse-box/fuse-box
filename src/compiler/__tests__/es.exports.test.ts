@@ -1,5 +1,16 @@
 import { ImportType } from '../interfaces/ImportType';
-import { testTranspile } from '../transpilers/testTranspiler';
+import { initCommonTransform } from '../testUtils';
+import { ImportTransformer } from '../transformers/shared/ImportTransformer';
+import { CommonTSfeaturesTransformer } from '../transformers/ts/CommonTSfeaturesTransformer';
+import { ExportTransformer } from '../transformers/shared/ExportTransformer';
+
+const testTranspile = (props: { code: string; jsx?: boolean }) => {
+  return initCommonTransform({
+    jsx: props.jsx,
+    transformers: [ImportTransformer(), ExportTransformer(), CommonTSfeaturesTransformer()],
+    code: props.code,
+  });
+};
 
 describe('Es exports tests', () => {
   describe('export typescript objects', () => {

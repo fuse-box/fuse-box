@@ -1,11 +1,24 @@
 import { ImportType } from '../interfaces/ImportType';
-import { testTranspile } from '../transpilers/testTranspiler';
+
+import { initCommonTransform } from '../testUtils';
+import { BrowserProcessTransformer } from '../transformers/bundle/BrowserProcessTransformer';
+
+const testTranspile = (props: { code: string; target?: string; env?: any }) => {
+  return initCommonTransform({
+    props: {
+      ctx: { config: { env: props.env || {}, target: props.target || 'browser' } },
+    },
+    transformers: [BrowserProcessTransformer()],
+    code: props.code,
+  });
+};
 
 describe('Process transform test', () => {
   describe('process.env.***', () => {
     it('should replace process.env.NODE_ENV', () => {
       const result = testTranspile({
-        bundleProps: { target: 'browser', env: { NODE_ENV: 'development' } },
+        target: 'browser',
+        env: { NODE_ENV: 'development' },
         code: `
           console.log(process.env.NODE_ENV);
       `,
@@ -15,7 +28,8 @@ describe('Process transform test', () => {
 
     it('should replace with undefined if value not found', () => {
       const result = testTranspile({
-        bundleProps: { target: 'browser', env: {} },
+        target: 'browser',
+        env: {},
         code: `
           console.log(process.env.NODE_ENV);
       `,
@@ -95,10 +109,8 @@ describe('Process transform test', () => {
     it('should transform process.env', () => {
       const result = testTranspile({
         code: `console.log(process.env);`,
-        bundleProps: {
-          target: 'browser',
-          env: { foo: 'bar' },
-        },
+        target: 'browser',
+        env: { foo: 'bar' },
       });
       expect(result.code).toMatchSnapshot();
     });
@@ -109,10 +121,8 @@ describe('Process transform test', () => {
         alert(process.env)
         console.log(process.env);
         `,
-        bundleProps: {
-          target: 'browser',
-          env: { foo: 'bar' },
-        },
+        target: 'browser',
+        env: { foo: 'bar' },
       });
       expect(result.code).toMatchSnapshot();
     });

@@ -1,4 +1,4 @@
-import { fusebox, pluginAngular, pluginSass, sparky, pluginCSS } from '../../src';
+import { fusebox, pluginAngular, pluginCSS, pluginSass, sparky } from '../../src';
 class Context {
   isProduction;
   runServer;
@@ -30,6 +30,7 @@ task('default', async ctx => {
   rm('./dist');
   ctx.runServer = true;
   const fuse = ctx.getConfig();
+  console.log('oi');
   await fuse.runDev();
 });
 

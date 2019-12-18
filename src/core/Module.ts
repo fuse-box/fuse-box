@@ -14,6 +14,7 @@ import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { extractFuseBoxPath, fastHash, joinFuseBoxPath, readFile } from '../utils/utils';
 import { Context } from './Context';
 import { Package } from './Package';
+import { transpileStageOne } from '../compiler/transformer';
 const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.mjs'];
 
 export interface IAnalysis {
@@ -161,29 +162,7 @@ export class Module {
   }
 
   public transpile() {
-    const config = this.props.ctx.config;
-    const compilerOptions = this.props.ctx.tsConfig.jsonCompilerOptions;
-
-    const options: ITranspiler = {
-      ast: this.ast,
-      module: this,
-      env: config.env,
-      isBrowser: config.target !== 'server',
-      isServer: config.target === 'server',
-      moduleFileName: this.props.fuseBoxPath,
-      target: config.target,
-      emitDecoratorMetadata: compilerOptions.emitDecoratorMetadata,
-    };
-
-    options.transformers = this.props.ctx.getTransformersAtPath(this.props.absPath);
-
-    let result: ITransformerResult;
-    if (this.isJavascriptModule()) {
-      result = javascriptTranspiler(options);
-    } else {
-      result = typescriptTranspiler(options);
-    }
-    return result;
+    return transpileStageOne(this);
   }
 
   public setMeta(key: string, value: any) {

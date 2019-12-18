@@ -1,5 +1,18 @@
-import { testTranspile } from '../transpilers/testTranspiler';
 import { ImportType } from '../interfaces/ImportType';
+import { initCommonTransform } from '../testUtils';
+import { RequireStatementInterceptor } from '../transformers/bundle/RequireStatementInterceptor';
+import { ImportTransformer } from '../transformers/shared/ImportTransformer';
+
+const testTranspile = (props: { code: string; target?: string; fileName?: string }) => {
+  return initCommonTransform({
+    props: {
+      module: { props: { fuseBoxPath: props.fileName || '/test/file.js' } },
+      ctx: { config: { target: props.target || 'browser' } },
+    },
+    transformers: [RequireStatementInterceptor(), ImportTransformer()],
+    code: props.code,
+  });
+};
 
 describe('Require statement intercepto', () => {
   it('should emit require', () => {

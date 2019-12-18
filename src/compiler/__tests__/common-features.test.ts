@@ -1,6 +1,16 @@
-import { testTranspile } from '../transpilers/testTranspiler';
+import { initCommonTransform } from '../testUtils';
+import { ClassConstructorPropertyTransformer } from '../transformers/ts/ClassConstructorPropertyTransformer';
+import { CommonTSfeaturesTransformer } from '../transformers/ts/CommonTSfeaturesTransformer';
 
 describe('Common features test', () => {
+  const testTranspile = (props: { code: string; jsx?: boolean }) => {
+    return initCommonTransform({
+      jsx: props.jsx,
+      transformers: [ClassConstructorPropertyTransformer(), CommonTSfeaturesTransformer()],
+      code: props.code,
+    });
+  };
+
   describe('Abstract methods', () => {
     it('should remove abstract methods', () => {
       const result = testTranspile({
@@ -90,7 +100,6 @@ describe('Common features test', () => {
   describe('Various', () => {
     it('should remove type assertion', () => {
       const result = testTranspile({
-        withJSX: false,
         code: `
           if( (<any>_e.target) === 1){}
         `,
@@ -101,7 +110,6 @@ describe('Common features test', () => {
 
     it('should handle NotNullExpression', () => {
       const result = testTranspile({
-        withJSX: false,
         code: `
         function hey(res){
           return res!;

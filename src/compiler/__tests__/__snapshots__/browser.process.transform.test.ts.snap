@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Browser process transformer test should not touch other statements 1`] = `
+"if (a.b) {
+  console.log(1);
+} else {
+  console.log(2);
+}
+"
+`;
+
+exports[`Browser process transformer test should unwrap dev 1`] = `
+"console.log(\\"dev\\");
+"
+`;
+
+exports[`Browser process transformer test should unwrap dev with alternate 1`] = `
+"console.log(\\"this is dev\\");
+"
+`;
