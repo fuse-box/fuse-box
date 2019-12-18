@@ -1,25 +1,25 @@
 import { join } from 'path';
-import { IBundleWriteResponse, BundleType } from '../bundle/Bundle';
+import { BundleType, IBundleWriteResponse } from '../bundle/Bundle';
 import { Context } from '../core/Context';
 import { env } from '../env';
-import { ensureAbsolutePath, fileExists, readFile, joinFuseBoxPath } from '../utils/utils';
-import { htmlStrings } from './htmlStrings';
 import { FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
+import { ensureAbsolutePath, fileExists, joinFuseBoxPath, readFile } from '../utils/utils';
+import { htmlStrings } from './htmlStrings';
 
 export interface IWebIndexConfig {
+  distFileName?: string;
+  embedIndexedBundles?: boolean;
   enabled?: boolean;
+  publicPath?: string;
   target?: string;
   template?: string;
-  distFileName?: string;
-  publicPath?: string;
-  embedIndexedBundles?: boolean;
 }
 
 export interface IWebIndexInterface {
   isDisabled?: boolean;
   addBundleContent?: (content: string) => void;
-  resolve?: (userPath: string) => string;
   generate?: (bundles: Array<IBundleWriteResponse>) => void;
+  resolve?: (userPath: string) => string;
 }
 
 export function replaceWebIndexStrings(str: string, keys: { [key: string]: any }) {
@@ -70,9 +70,6 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
   const opts = getEssentialWebIndexParams(config, ctx.log);
 
   return {
-    resolve: (userPath: string) => {
-      return joinFuseBoxPath(opts.publicPath, userPath);
-    },
     generate: async (bundles: Array<IBundleWriteResponse>) => {
       const scriptTags = [];
       const cssTags = [];
@@ -124,6 +121,9 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
         name: opts.distFileName,
       });
       await ctx.writer.write(opts.distFileName, replaceWebIndexStrings(fileContents, scriptOpts));
+    },
+    resolve: (userPath: string) => {
+      return joinFuseBoxPath(opts.publicPath, userPath);
     },
   };
 }

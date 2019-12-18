@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Context } from '../core/Context';
-import { IAnalysis, Module } from '../core/Module';
-import { createPackage, Package } from '../core/Package';
+import { Module, IAnalysis } from '../core/Module';
+import { Package, createPackage } from '../core/Package';
 import { env } from '../env';
 import { ensureDir, fastHash, fileExists, fileStat, readFile, removeFolder, writeFile } from '../utils/utils';
 import { ICacheDependencies, ICachePackage, ICachePackageResponse, ICacheTreeContents } from './Interfaces';
@@ -15,25 +15,25 @@ export interface IFileCacheProps {
 }
 
 export interface IModuleCacheBasics {
+  breakDependantsCache?: boolean;
   contents: string;
+  dependants?: Array<string>;
   sourceMap: string;
   weakReferences?: Array<string>;
-  breakDependantsCache?: boolean;
-  dependants?: Array<string>;
 }
 
 export interface IModuleCache {
-  meta: { [key: string]: any };
-  mtime: number;
   absPath: string;
-  extension: string;
-  breakDependantsCache?: boolean;
-  dependants?: Array<string>;
-  weakReferences?: { [key: string]: number };
-  fuseBoxPath: string;
   analysis: IAnalysis;
+  breakDependantsCache?: boolean;
   contents: string;
+  dependants?: Array<string>;
+  extension: string;
+  fuseBoxPath: string;
+  mtime: number;
   sourceMap: string;
+  meta: { [key: string]: any };
+  weakReferences?: { [key: string]: number };
 }
 
 const TREE_FILE_KEY = 'tree.json';
@@ -282,11 +282,11 @@ export class Cache {
     }
 
     return {
+      dependants: dependants,
       target: {
         moduleMismatch,
         pkg,
       },
-      dependants: dependants,
     };
   }
 
@@ -298,13 +298,13 @@ export class Cache {
     const stat = fileStat(module.props.absPath);
     const mtime = stat.mtime.getTime();
     const obj: any = {
-      mtime,
+      absPath: module.props.absPath,
       analysis: module.analysis,
       contents: basics.contents,
-      sourceMap: basics.sourceMap,
-      absPath: module.props.absPath,
       extension: module.props.extension,
       fuseBoxPath: module.props.fuseBoxPath,
+      mtime,
+      sourceMap: basics.sourceMap,
     };
     if (module.weakReferences) {
       obj.weakReferences = {};
@@ -380,11 +380,11 @@ export class Cache {
     const modules = pkg.modules.map(mod => mod.props.fuseBoxPath);
 
     const obj: ICachePackage = {
-      name: meta.name,
-      version: meta.version,
       dependencies: deps,
       meta: meta,
       modules: modules,
+      name: meta.name,
+      version: meta.version,
     };
     tree.packages[pkg.props.meta.name][meta.version] = obj;
 

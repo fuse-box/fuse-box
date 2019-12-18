@@ -1,26 +1,26 @@
 import { CustomTransformers } from 'typescript';
 import { Cache, createCache } from '../cache/cache';
+import { ITransformer } from '../compiler/interfaces/ITransformer';
 import { ITransformer } from '../compiler/program/transpileModule';
-import { createConfig } from '../config/config';
 import { IProductionProps } from '../config/IProductionProps';
 import { IPublicConfig } from '../config/IPublicConfig';
 import { PrivateConfig } from '../config/PrivateConfig';
+import { createConfig } from '../config/config';
 import { createDevServer, IDevServerActions } from '../dev-server/devServer';
 import { env } from '../env';
-import { createFuseLogger, FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
-import { createInterceptor, MainInterceptor } from '../interceptor/interceptor';
+import { FuseBoxLogAdapter, createFuseLogger } from '../fuse-log/FuseBoxLogAdapter';
+import { MainInterceptor, createInterceptor } from '../interceptor/interceptor';
 import { TypescriptConfig } from '../interfaces/TypescriptInterfaces';
 import { ProductionContext } from '../production/ProductionContext';
 import { TsConfigAtPath } from '../resolver/fileLookup';
 import { initTypescriptConfig } from '../tsconfig/configParser';
 import { ensureUserPath, fastHash, path2RegexPattern } from '../utils/utils';
 import { createWebIndex, IWebIndexInterface } from '../web-index/webIndex';
-import { assembleContext, IAssembleContext } from './assemble_context';
 import { ContextTaskManager, createContextTaskManager } from './ContextTaskManager';
 import { Package } from './Package';
-import { createWeakModuleReferences, WeakModuleReferences } from './WeakModuleReferences';
+import { WeakModuleReferences, createWeakModuleReferences } from './WeakModuleReferences';
+import { assembleContext, IAssembleContext } from './assemble_context';
 import { createWriter, IWriterActions } from './writer';
-import { ITransformer } from '../compiler/interfaces/ITransformer';
 
 export class Context {
   public assembleContext: IAssembleContext;
@@ -71,8 +71,8 @@ export class Context {
   public setDevelopment() {
     this.writer = createWriter({
       isProduction: false,
-      root: env.SCRIPT_PATH,
       output: this.config.output,
+      root: env.SCRIPT_PATH,
     });
     try {
       this.tsConfig = initTypescriptConfig(this.config);
@@ -107,8 +107,8 @@ export class Context {
     this.config.production = prodProps;
     this.writer = createWriter({
       isProduction: true,
-      root: env.SCRIPT_PATH,
       output: this.config.output,
+      root: env.SCRIPT_PATH,
     });
     try {
       this.tsConfig = initTypescriptConfig(this.config);

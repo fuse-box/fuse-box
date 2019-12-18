@@ -1,27 +1,27 @@
 import * as path from 'path';
-import { ImportType } from '../compiler/interfaces/ImportType';
 import { ITransformerRequireStatement } from '../compiler/interfaces/ITransformerRequireStatements';
-import { createApplicationPackage } from '../core/application';
+import { ImportType } from '../compiler/interfaces/ImportType';
 import { Context } from '../core/Context';
-import { createModule, Module } from '../core/Module';
-import { createPackage, Package } from '../core/Package';
-import { IResolver, resolveModule } from '../resolver/resolver';
+import { Module, createModule } from '../core/Module';
+import { Package, createPackage } from '../core/Package';
+import { createApplicationPackage } from '../core/application';
+import { resolveModule, IResolver } from '../resolver/resolver';
 
 interface IDefaultParseProps {
+  FTL?: boolean;
   assemble?: boolean;
+  ctx: Context;
+  extraDependencies?: Array<string>;
   module: Module;
   pkg: Package;
-  ctx: Context;
-  FTL?: boolean;
-  extraDependencies?: Array<string>;
 }
 
 function registerPackage(props: {
   assemble?: boolean;
-  pkg: Package;
   ctx: Context;
+  pkg: Package;
   resolved: IResolver;
-}): { target: Module; pkg: Package } {
+}): { pkg: Package; target: Module } {
   const collection = props.ctx.assembleContext.collection;
   const resolved = props.resolved;
 
@@ -82,15 +82,15 @@ function registerPackage(props: {
 }
 
 export interface IAssembleResolveResult {
-  resolver?: IResolver;
-  module?: Module;
-  packageTarget?: Module;
   forcedStatement?: string;
-  processed?: boolean;
+  module?: Module;
   package?: Package;
+  packageTarget?: Module;
+  processed?: boolean;
+  resolver?: IResolver;
 }
 function resolveStatement(
-  opts: { statement: string; importType: ImportType },
+  opts: { importType: ImportType; statement: string },
   props: IDefaultParseProps,
 ): IAssembleResolveResult {
   const collection = props.ctx.assembleContext.collection;
@@ -109,17 +109,17 @@ function resolveStatement(
   }
 
   const resolved = resolveModule({
-    isDev: !props.ctx.config.production,
+    alias: config.alias,
+    buildTarget: config.target,
     filePath: props.module.props.absPath,
     homeDir: config.homeDir,
-    alias: config.alias,
-    javascriptFirst: props.module.isJavascriptModule(),
-    typescriptPaths: typescriptPaths,
-    packageMeta: !props.pkg.isDefaultPackage && props.pkg.props.meta,
-    buildTarget: config.target,
-    modules: config.modules,
     importType: opts.importType,
+    isDev: !props.ctx.config.production,
+    javascriptFirst: props.module.isJavascriptModule(),
+    modules: config.modules,
+    packageMeta: !props.pkg.isDefaultPackage && props.pkg.props.meta,
     target: opts.statement,
+    typescriptPaths: typescriptPaths,
   });
 
   if (!resolved || (resolved && resolved.error)) {
@@ -133,8 +133,8 @@ function resolveStatement(
         ? resolved.error + ' / Import statement: "$statement" in <dim>$file</dim>'
         : 'Cannot resolve $statement in <dim>$file</dim>',
       {
-        statement: opts.statement,
         file: props.module.props.absPath,
+        statement: opts.statement,
       },
     );
 
@@ -154,23 +154,23 @@ function resolveStatement(
     }
     const packageData = registerPackage({
       assemble: props.assemble,
-      pkg: props.pkg,
       ctx: props.ctx,
+      pkg: props.pkg,
       resolved: resolved,
     });
     return {
-      resolver: resolved,
       forcedStatement: resolved.forcedStatement,
-      packageTarget: packageData.target,
       package: packageData.pkg,
+      packageTarget: packageData.target,
+      resolver: resolved,
     };
   }
 
   if (collection.modules.has(resolved.absPath)) {
     return {
       forcedStatement: resolved.forcedStatement,
-      processed: true,
       module: collection.modules.get(resolved.absPath),
+      processed: true,
     };
   }
   const _module = createModule(
@@ -194,7 +194,7 @@ function resolveStatement(
     props.ctx.addTsConfigAtPath(resolved.tsConfigAtPath);
   }
   collection.modules.set(resolved.absPath, _module);
-  return { processed: false, module: _module, forcedStatement: resolved.forcedStatement };
+  return { forcedStatement: resolved.forcedStatement, module: _module, processed: false };
 }
 
 export function processModule(props: IDefaultParseProps) {
@@ -224,7 +224,7 @@ export function processModule(props: IDefaultParseProps) {
       for (const item of response.requireStatementCollection) {
         if (item.statement.arguments.length === 1) {
           const importLiteral = item.statement.arguments[0];
-          _module.analysis.imports.push({ type: item.importType, literal: importLiteral.value });
+          _module.analysis.imports.push({ literal: importLiteral.value, type: item.importType });
           if (!literalStatements[importLiteral.value]) literalStatements[importLiteral.value] = [];
           literalStatements[importLiteral.value].push(item);
         }
@@ -233,7 +233,7 @@ export function processModule(props: IDefaultParseProps) {
       //adding extra dependencies
       if (props.extraDependencies) {
         for (const dep of props.extraDependencies) {
-          _module.analysis.imports.push({ type: ImportType.REQUIRE, literal: dep });
+          _module.analysis.imports.push({ literal: dep, type: ImportType.REQUIRE });
         }
       }
     }
@@ -253,7 +253,7 @@ export function processModule(props: IDefaultParseProps) {
   if (_module.analysis && _module.analysis.imports) {
     for (const data of _module.analysis.imports) {
       if (data.literal) {
-        const response = resolveStatement({ statement: data.literal, importType: data.type }, props);
+        const response = resolveStatement({ importType: data.type, statement: data.literal }, props);
         if (response && literalStatements) {
           modules.push(response);
 
@@ -284,7 +284,7 @@ export function processModule(props: IDefaultParseProps) {
           props.module.externalDependencies.push(item.package);
         }
         if (item && !item.processed && item.module) {
-          processModule({ ...props, module: item.module, extraDependencies: undefined });
+          processModule({ ...props, extraDependencies: undefined, module: item.module });
         }
       }
     });
@@ -302,9 +302,9 @@ function parseDefaultPackage(ctx: Context, pkg: Package) {
 
   processModule({
     ctx: ctx,
-    pkg: pkg,
-    module: pkg.entry,
     extraDependencies: ctx.config.dependencies.include,
+    module: pkg.entry,
+    pkg: pkg,
   });
 }
 
@@ -316,17 +316,17 @@ function assemblePackage(pkg: Package, ctx: Context) {
     }
 
     ctx.ict.sync('assemble_package_from_project', {
+      assembleContext: ctx.assembleContext,
       pkg,
       userModules: modules,
-      assembleContext: ctx.assembleContext,
     });
     if (!pkg.isCached) {
       modules.map(item => {
         processModule({
           assemble: true,
+          ctx: ctx,
           module: item,
           pkg: pkg,
-          ctx: ctx,
         });
       });
     }

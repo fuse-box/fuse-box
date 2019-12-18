@@ -1,18 +1,18 @@
 import { IStyleSheetProps } from '../config/IStylesheetProps';
 import { Context } from '../core/Context';
 import { Module } from '../core/Module';
-import { IStylesheetModuleResponse } from './interfaces';
 import { wrapContents } from '../plugins/pluginStrings';
+import { IStylesheetModuleResponse } from './interfaces';
 
 export interface ICSSModuleRender {
   ctx: Context;
+  data: IStylesheetModuleResponse;
   module: Module;
   options: IStyleSheetProps;
   useDefault?: boolean;
-  data: IStylesheetModuleResponse;
 }
 export function cssAsTextRender(props: ICSSModuleRender) {
-  const { module, data } = props;
+  const { data, module } = props;
 
   let contents = wrapContents(JSON.stringify(data.css), props.useDefault);
 

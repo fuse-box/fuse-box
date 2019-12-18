@@ -30,10 +30,6 @@ export function sparky<T>(Ctx: new () => T) {
   const times: any = {};
   const scope = {
     activities: [],
-    rm: (folder: string) => {
-      removeFolder(ensureAbsolutePath(folder, env.SCRIPT_PATH));
-    },
-    src: (glob: string) => sparkyChain(log).src(glob),
     exec: async (name: string) => {
       if (!tasks[name]) {
         log.error("Can't find task name: $name", { name });
@@ -50,6 +46,10 @@ export function sparky<T>(Ctx: new () => T) {
 
       log.printBottomMessages();
     },
+    rm: (folder: string) => {
+      removeFolder(ensureAbsolutePath(folder, env.SCRIPT_PATH));
+    },
+    src: (glob: string) => sparkyChain(log).src(glob),
     task: (name: string, fn: (ctx: T) => void) => {
       tasks[name] = fn;
       execNext();

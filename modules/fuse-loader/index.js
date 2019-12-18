@@ -243,11 +243,11 @@ function $getRef(name, o) {
   }
   return {
     file: file,
-    wildcard: wildcard,
-    pkgName: pkgName,
-    versions: pkg.v,
     filePath: filePath,
+    pkgName: pkgName,
     validPath: validPath,
+    versions: pkg.v,
+    wildcard: wildcard,
   };
 }
 /**
@@ -332,7 +332,7 @@ function syntheticDefaultExportPolyfill(input) {
 
   // free to define properties
   if (!hasDefaultProperty) {
-    Object.defineProperty(input, 'default', { value: input, writable: true, enumerable: false });
+    Object.defineProperty(input, 'default', { enumerable: false, value: input, writable: true });
   }
 
   if (!hasModuleProperty) {
@@ -413,8 +413,8 @@ function $import(name, o) {
   locals.module = { exports: locals.exports };
   locals.require = function(name, optionalCallback) {
     var result = $import(name, {
-      pkg: pkg,
       path: path,
+      pkg: pkg,
       v: ref.versions,
     });
     if (FuseBox['sdep']) {

@@ -1,3 +1,4 @@
+import { MelaStore } from 'Store';
 import { CheckBoxAdapter } from 'fuse-design/data-input/checkbox';
 import { DropDown } from 'fuse-design/data-input/dropdown';
 import { Form, FormColumn, FormGrid } from 'fuse-design/data-input/form';
@@ -8,7 +9,6 @@ import { SectionHeader } from 'fuse-design/display/headers';
 import { Fusion } from 'fuse-react';
 import * as React from 'react';
 import { Schema } from 'schema';
-import { MelaStore } from 'Store';
 import { GoogleMaps } from 'ui/GoogleMaps/GoogleMaps';
 
 const store = MelaStore.getInstance<MelaStore>();
@@ -45,19 +45,19 @@ export class PropertyForm extends Fusion<
         <Form>
           <FormGrid>
             <FormColumn size={2}>
-              <DropDown label="Bedrooms" form={form} name="bedrooms" data={[1, 2, 3, 4, 5]} />
+              <DropDown data={[1, 2, 3, 4, 5]} form={form} label="Bedrooms" name="bedrooms" />
             </FormColumn>
             <FormColumn size={2}>
-              <DropDown label="Bathrooms" form={form} name="bathrooms" data={[1, 2, 3, 4, 5]} />
+              <DropDown data={[1, 2, 3, 4, 5]} form={form} label="Bathrooms" name="bathrooms" />
             </FormColumn>
           </FormGrid>
 
           <FormGrid>
             <FormColumn size={2}>
-              <Input label="Square Meters" form={form} name="sq_meters" />
+              <Input form={form} label="Square Meters" name="sq_meters" />
             </FormColumn>
             <FormColumn size={2}>
-              <Input label="Year built" form={form} name="year_built" />
+              <Input form={form} label="Year built" name="year_built" />
             </FormColumn>
           </FormGrid>
         </Form>
@@ -72,10 +72,10 @@ export class PropertyForm extends Fusion<
         <SectionHeader icon="images" style="primary" text="Image gallery" />
         <Form>
           <AdminGallery
-            mainImageKey="main_picture"
             form={form}
-            name="image_gallery"
             getURL={image => store.settings.cdn + '/' + image + '?width=500&quality=90'}
+            mainImageKey="main_picture"
+            name="image_gallery"
           />
         </Form>
       </Block>
@@ -89,11 +89,11 @@ export class PropertyForm extends Fusion<
         <SectionHeader icon="tags" style="primary" text="Property features" />
         <Form>
           <CheckBoxAdapter
-            selectAllCheckBox="Select all"
-            rowLimit={10}
-            name="tags"
-            form={form}
             data={Schema.propertyTags.asCheckBoxData()}
+            form={form}
+            name="tags"
+            rowLimit={10}
+            selectAllCheckBox="Select all"
           />
         </Form>
       </Block>
@@ -107,37 +107,37 @@ export class PropertyForm extends Fusion<
         <Form>
           <FormGrid>
             <FormColumn size={1}>
-              <Input form={form} name="title" label="Property title" />
+              <Input form={form} label="Property title" name="title" />
             </FormColumn>
           </FormGrid>
           <FormGrid>
             <FormColumn size={2}>
               <DropDown
-                label="Property type"
-                form={form}
-                name="property_type"
                 data={Schema.propertyTypeSchema.asData()}
+                form={form}
+                label="Property type"
+                name="property_type"
               />
             </FormColumn>
             <FormColumn size={2}>
               <DropDown
-                label="Listing type type"
-                form={form}
-                name="listing_type"
                 data={Schema.listingTypeSchema.asData()}
+                form={form}
+                label="Listing type type"
+                name="listing_type"
               />
             </FormColumn>
           </FormGrid>
 
           <FormGrid>
             <FormColumn size={1}>
-              <Input form={form} name="price" label="Property price (EUR)" />
+              <Input form={form} label="Property price (EUR)" name="price" />
             </FormColumn>
           </FormGrid>
 
           <FormGrid>
             <FormColumn size={1}>
-              <Input type="textarea" form={form} name="description" label="Property description" />
+              <Input form={form} label="Property description" name="description" type="textarea" />
             </FormColumn>
           </FormGrid>
 

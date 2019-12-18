@@ -1,11 +1,11 @@
-import { ChildProcess, spawn, SpawnOptions } from 'child_process';
+import { ChildProcess, SpawnOptions, spawn } from 'child_process';
 import { BundleType, IBundleWriteResponse } from '../bundle/Bundle';
 import { Context } from '../core/Context';
 
 interface handleEntryProps {
   nodeArgs: Array<string>
-  scriptArgs: Array<string>
   options?: SpawnOptions
+  scriptArgs: Array<string>
 }
 
 export class ServerLauncher {

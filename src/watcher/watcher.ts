@@ -1,23 +1,23 @@
+import { WatchOptions } from 'chokidar';
 import * as chokidar from 'chokidar';
 import * as path from 'path';
 import { Context } from '../core/Context';
 import { env } from '../env';
-import { WatchOptions } from 'chokidar';
 
-type IChokidarEventType = 'add' | 'change' | 'unlink' | 'addDir' | 'unlinkDir' | 'error' | 'ready';
+type IChokidarEventType = 'add' | 'addDir' | 'change' | 'error' | 'ready' | 'unlink' | 'unlinkDir';
 
 export interface IWatcherExternalProps {
-  paths?: any;
-  skipRecommendedIgnoredPaths?: boolean;
-  ignored?: Array<string | RegExp>;
   banned?: Array<string>;
   chokidar?: WatchOptions;
+  ignored?: Array<string | RegExp>;
+  paths?: any;
+  skipRecommendedIgnoredPaths?: boolean;
 }
 
 export function attachChokidar(props: {
-  root?: string;
   chokidarOptions?: WatchOptions;
   ignored?: Array<string | RegExp>;
+  root?: string;
   cb: (event: IChokidarEventType, path: string) => void;
 }) {
   const defaultOpts = {
@@ -74,19 +74,19 @@ export function detectAction(file: string, homeDir: string): WatcherAction {
 }
 
 export function getEventData(props: {
-  input: { event: IChokidarEventType; path: string };
   ctx: Context;
+  input: { event: IChokidarEventType; path: string };
 }): WatcherAction {
   const evt = props.input.event;
   const file = path.normalize(props.input.path);
   const homeDir = props.ctx.config.homeDir;
   const events = {
     add: () => detectAction(file, homeDir),
-    change: () => detectAction(file, homeDir),
-    unlink: () => detectAction(file, homeDir),
     addDir: () => detectAction(file, homeDir),
-    unlinkDir: () => detectAction(file, homeDir),
+    change: () => detectAction(file, homeDir),
     error: () => {},
+    unlink: () => detectAction(file, homeDir),
+    unlinkDir: () => detectAction(file, homeDir),
   };
   if (events[evt]) {
     return events[evt]();
@@ -130,12 +130,12 @@ export function createWatcher(props: IWatcherProps, externalProps?: IWatcherExte
 
   ict.on('complete', data => {
     attachChokidar({
-      root: paths,
       chokidarOptions: externalProps.chokidar,
       ignored: ignoredRegEx,
+      root: paths,
       cb: (event, path) => {
         clearTimeout(tm);
-        const action = getEventData({ input: { event, path }, ctx });
+        const action = getEventData({ ctx, input: { event, path } });
         if (action) {
           events.push(action);
         }

@@ -2,17 +2,17 @@ import { Package } from '../core/Package';
 import { IPackageMeta } from '../resolver/resolver';
 
 export interface ICacheAdapter {
+  ensure<T>(key: string): T;
+  get<T>(key: string): T;
   init();
   set(key: string, value: any);
-  get<T>(key: string): T;
-  ensure<T>(key: string): T;
   sync(): void;
 }
 
 export interface ICacheRequest {
+  forModules: Array<string>;
   name: string;
   version: string;
-  forModules: Array<string>;
 }
 
 export type ICacheResponse = Array<{
@@ -27,11 +27,11 @@ export interface ICachePackageContent {
 
 export type ICacheDependencies = Array<{ name: string; version: string }>;
 export interface ICachePackage {
+  dependencies?: ICacheDependencies;
+  meta?: IPackageMeta;
+  modules: Array<string>;
   name: string;
   version: string;
-  modules: Array<string>;
-  meta?: IPackageMeta;
-  dependencies?: ICacheDependencies;
 }
 
 export type ICachePackages = { [version: string]: ICachePackage };
@@ -42,9 +42,9 @@ export interface ICacheTreeContents {
 
 export interface ICachePackageResponse {
   abort?: boolean;
+  dependants?: Array<Package>;
   target?: {
     moduleMismatch?: boolean;
     pkg: Package;
   };
-  dependants?: Array<Package>;
 }

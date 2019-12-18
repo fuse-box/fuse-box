@@ -14,23 +14,23 @@ import { IWebWorkerConfig } from './IWebWorkerConfig';
 import { ICacheProps, IHMRExternalProps, ITarget } from './PrivateConfig';
 
 export interface IPublicConfig {
+  homeDir?: string;
+  logging?: IFuseLoggerProps;
+  modules?: Array<string>;
+  output?: string;
   root?: string;
   target?: ITarget;
   useSingleBundle?: boolean;
-  dependencies?: {
-    include?: Array<string>;
-    ignorePackages?: Array<string>;
-    ignoreAllExternal?: boolean;
-  };
-  homeDir?: string;
-  output?: string;
-  modules?: Array<string>;
-  logging?: IFuseLoggerProps;
   webWorkers?: IWebWorkerConfig;
+  dependencies?: {
+    ignoreAllExternal?: boolean;
+    ignorePackages?: Array<string>;
+    include?: Array<string>;
+  };
 
   codeSplitting?: ICodeSplittingConfig;
 
-  watch?: boolean | IWatcherExternalProps;
+  watch?: IWatcherExternalProps | boolean;
 
   resources?: IResourceConfig;
 
@@ -46,35 +46,35 @@ export interface IPublicConfig {
    */
   env?: { [key: string]: string };
 
-  hmr?: boolean | IHMRExternalProps;
-  stylesheet?: IStyleSheetProps;
-  cache?: boolean | ICacheProps;
-  tsConfig?: string | IRawCompilerOptions;
-  entry?: string | Array<string>;
   allowSyntheticDefaultImports?: boolean;
-  webIndex?: IWebIndexConfig | boolean;
-  turboMode?:
-    | {
-        maxWorkers?: number;
-        workerPortsRange?: { start: number; end: number };
-        workerPorts?: Array<number>;
-      }
-    | boolean;
+  cache?: ICacheProps | boolean;
+  entry?: Array<string> | string;
+  hmr?: IHMRExternalProps | boolean;
+  plugins?: Array<(ctx: Context) => void>;
   sourceMap?:
+    | boolean
     | {
+        css?: boolean;
+        project?: boolean;
         sourceRoot?: string;
         vendor?: boolean;
-        project?: boolean;
-        css?: boolean;
-      }
-    | boolean;
-  plugins?: Array<(ctx: Context) => void>;
+      };
+  stylesheet?: IStyleSheetProps;
+  tsConfig?: IRawCompilerOptions | string;
+  turboMode?:
+    | boolean
+    | {
+        maxWorkers?: number;
+        workerPorts?: Array<number>;
+        workerPortsRange?: { end: number; start: number };
+      };
+  webIndex?: IWebIndexConfig | boolean;
   alias?: { [key: string]: string };
 
   // read only
   defaultCollectionName?: string;
 
-  devServer?: IDevServerProps | boolean | undefined;
+  devServer?: undefined | IDevServerProps | boolean;
 
   cacheObject?: Cache;
 }

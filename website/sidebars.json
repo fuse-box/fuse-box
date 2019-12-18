@@ -1,14 +1,6 @@
 {
   "docs": {
-    "Getting Started": [
-      "getting-started/installation",
-      "getting-started/setup",
-      "getting-started/typescript-project",
-      "getting-started/javascript-project",
-      "getting-started/add-css",
-      "getting-started/about-plugins",
-      "getting-started/environments"
-    ],
+    "Contributing": ["contributing"],
     "Development": [
       "development/configuration",
       "development/instructions",
@@ -19,13 +11,14 @@
       "development/code-splitting",
       "development/dynamic-imports"
     ],
-    "Production Builds": [
-      "production-builds/quantum",
-      "production-builds/quantum-configuration"
-    ],
-    "Task Runner": [
-      "task-runner/getting-started-with-sparky",
-      "task-runner/sparky"
+    "Getting Started": [
+      "getting-started/installation",
+      "getting-started/setup",
+      "getting-started/typescript-project",
+      "getting-started/javascript-project",
+      "getting-started/add-css",
+      "getting-started/about-plugins",
+      "getting-started/environments"
     ],
     "Guides": [
       "guides/working-with-targets",
@@ -33,7 +26,14 @@
       "guides/debugging-with-vscode",
       "guides/development-with-docker"
     ],
-    "Contributing": ["contributing"]
+    "Production Builds": [
+      "production-builds/quantum",
+      "production-builds/quantum-configuration"
+    ],
+    "Task Runner": [
+      "task-runner/getting-started-with-sparky",
+      "task-runner/sparky"
+    ]
   },
   "plugins": {
     "Plugins": [

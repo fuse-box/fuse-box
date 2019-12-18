@@ -1,8 +1,8 @@
 {
-  "name": "https",
-  "main": "index.js",
-  "version": "1.0.0",
   "fuse-box" : {
     "polyfill" : true
-  }
+  },
+  "main": "index.js",
+  "name": "https",
+  "version": "1.0.0"
 }

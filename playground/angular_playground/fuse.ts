@@ -4,18 +4,18 @@ class Context {
   runServer;
   getConfig = () =>
     fusebox({
-      target: 'browser',
       entry: 'src/entry.ts',
       modules: ['./node_modules'],
+      target: 'browser',
 
+      cache: { FTL: true, enabled: false, root: './.cache' },
+      devServer: this.runServer,
+      sourceMap: false,
+      watch: true,
       webIndex: {
         publicPath: '.',
         template: 'src/index.html',
       },
-      cache: { enabled: false, FTL: true, root: './.cache' },
-      watch: true,
-      sourceMap: false,
-      devServer: this.runServer,
 
       plugins: [
         pluginAngular('*.component.ts'),
@@ -24,7 +24,7 @@ class Context {
       ],
     });
 }
-const { task, rm, exec } = sparky<Context>(Context);
+const { exec, rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   rm('./dist');

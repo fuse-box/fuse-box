@@ -225,9 +225,9 @@ export const connect = (port, uri, reloadFullPage) => {
     // we should verify that all dependencies are registered in FuseBox client's memory
     if (data.type && data.type === "js" && data.dependencies) {
       const req = {
-        original: data,
-        loadedPackages: [],
         files: [],
+        loadedPackages: [],
+        original: data,
       };
       for (const pkgName in FuseBox.packages) {
         req.loadedPackages.push(pkgName);

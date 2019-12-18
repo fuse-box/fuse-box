@@ -1,20 +1,20 @@
 import { fusebox } from '../../src/core/fusebox';
 
 const fuse = fusebox({
-  target: 'browser',
   entry: 'src/index.js',
-  modules: ['modules'],
   logging: {
     level: 'succinct',
   },
+  modules: ['modules'],
+  sourceMap: true,
+  target: 'browser',
   webIndex: {
     template: 'src/index.html',
   },
-  sourceMap: true,
 
+  cache: false,
   devServer: true,
   watch: true,
-  cache: false,
 });
 
 const isProd = process.argv.indexOf('--prod') > -1;

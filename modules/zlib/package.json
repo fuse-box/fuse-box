@@ -1,8 +1,8 @@
 {
-  "name": "zlib",
-  "main": "index.js",
-  "version": "1.0.0",
   "fuse-box" : {
     "polyfill" : true
-  }
+  },
+  "main": "index.js",
+  "name": "zlib",
+  "version": "1.0.0"
 }

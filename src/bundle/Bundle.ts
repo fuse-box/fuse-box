@@ -26,8 +26,8 @@ export enum BundleType {
 export const BundleNames = {
   [BundleType.CSS]: 'styles',
   [BundleType.DEV]: 'dev',
-  [BundleType.PROJECT_JS]: 'app',
   [BundleType.PROJECT_ENTRY]: 'entry',
+  [BundleType.PROJECT_JS]: 'app',
   [BundleType.VENDOR_JS]: 'vendor',
 };
 
@@ -35,9 +35,9 @@ export interface IBundleProps {
   ctx: Context;
   name: string;
   priority?: number;
-  webIndexed?: boolean;
-  type: BundleType;
   skipHash?: boolean;
+  type: BundleType;
+  webIndexed?: boolean;
 }
 
 export interface IBundleWriteResponse {
@@ -58,7 +58,7 @@ export function getBundleByType(collection: BundleCollection, ctx: Context, type
 
   collection[bundleName] = collection[bundleName]
     ? collection[bundleName]
-    : createBundle({ ctx: ctx, name: bundleName, type: type, priority: type, webIndexed: webIndexed });
+    : createBundle({ ctx: ctx, name: bundleName, priority: type, type: type, webIndexed: webIndexed });
   return collection[bundleName];
 }
 
@@ -198,9 +198,9 @@ export class Bundle {
     const addSourceMaps = this.needsSourceMaps(); //shouldAddSourcemaps(this.props.type, config);
     const content = this.contents.content.toString();
     return {
-      write: (): Promise<IBundleWriteResponse> => this.write(addSourceMaps),
       contents: content,
       sourceMap: this.contents.sourceMap,
+      write: (): Promise<IBundleWriteResponse> => this.write(addSourceMaps),
     };
   }
 }

@@ -1,14 +1,14 @@
-import { readFile, fileExists } from '../utils/utils';
 import * as path from 'path';
+import { fileExists, readFile } from '../utils/utils';
 
 const IMPORT_REGEX = /@(?:import|value)[^"']+["']([^"']+)/g;
 
 export interface ICSSDependencyExtractorProps {
   collectDependencies?: boolean;
+  entryAbsPath?: string;
+  entryContents?: string;
   sassStyle?: boolean;
   tryExtensions?: Array<string>;
-  entryContents?: string;
-  entryAbsPath?: string;
   onURL?: (filePath: string) => string;
 }
 

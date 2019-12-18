@@ -6,9 +6,9 @@ export interface IServerProcessProps {
 }
 
 export interface IServerProcess {
+  exec: (args?: Array<string>) => void;
   kill: () => void;
   start: () => void;
-  exec: (args?: Array<string>) => void;
 }
 export function createServerProcess(props: IServerProcessProps): IServerProcess {
   let node, storedArgs;
@@ -16,16 +16,6 @@ export function createServerProcess(props: IServerProcessProps): IServerProcess 
   //   console.log('STOPPED SHIT');
   // });
   const obj = {
-    kill: () => {
-      if (node) node.kill();
-    },
-    start: () => {
-      obj.kill();
-      const node = obj.exec(storedArgs);
-      onExit('createServerProcess', () => {
-        node.kill();
-      });
-    },
     exec: (cliArgs: Array<string> = []) => {
       storedArgs = cliArgs;
       node = spawn('node', [props.absPath, ...cliArgs], {
@@ -38,6 +28,16 @@ export function createServerProcess(props: IServerProcessProps): IServerProcess 
         }
       });
       return node;
+    },
+    kill: () => {
+      if (node) node.kill();
+    },
+    start: () => {
+      obj.kill();
+      const node = obj.exec(storedArgs);
+      onExit('createServerProcess', () => {
+        node.kill();
+      });
     },
   };
   return obj;

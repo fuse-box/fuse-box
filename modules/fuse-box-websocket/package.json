@@ -1,8 +1,8 @@
 {
-  "name": "fuse-box-web-socket",
-  "main": "index.js",
-  "version": "1.0.0",
   "fuse-box": {
     "dev": true
-  }
+  },
+  "main": "index.js",
+  "name": "fuse-box-web-socket",
+  "version": "1.0.0"
 }

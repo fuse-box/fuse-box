@@ -3,13 +3,13 @@ import { Context } from '../core/Context';
 import { Module } from '../core/Module';
 import { extractFuseBoxPath, joinFuseBoxPath } from '../utils/utils';
 export interface IAlignCSSSourceMap {
+  ctx: Context;
   module: Module;
   sourceMap: any;
-  ctx: Context;
 }
 
 export function alignCSSSourceMap(props: IAlignCSSSourceMap): string {
-  const { ctx, sourceMap, module } = props;
+  const { ctx, module, sourceMap } = props;
 
   const json = sourceMap.file ? sourceMap : JSON.parse(sourceMap.toString());
   const rootPath = path.dirname(module.props.absPath);

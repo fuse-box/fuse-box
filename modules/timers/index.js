@@ -45,7 +45,7 @@ if (FuseBox.isServer) {
 				args[i] = arguments[i + 1];
 			}
 			// Store and register the task
-			var task = { callback: callback, args: args };
+			var task = { args: args, callback: callback };
 			tasksByHandle[nextHandle] = task;
 			registerImmediate(nextHandle);
 			return nextHandle++;

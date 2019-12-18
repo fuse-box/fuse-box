@@ -1,15 +1,4 @@
 {
-  "name": "hello",
-  "version": "0.0.0",
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e"
-  },
-  "private": true,
   "dependencies": {
     "@angular/animations": "~8.2.4",
     "@angular/cdk": "^8.2.3",
@@ -37,5 +26,16 @@
     "@types/jasmine": "~3.3.8",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4"
-  }
+  },
+  "name": "hello",
+  "private": true,
+  "scripts": {
+    "build": "ng build",
+    "e2e": "ng e2e",
+    "lint": "ng lint",
+    "ng": "ng",
+    "start": "ng serve",
+    "test": "ng test"
+  },
+  "version": "0.0.0"
 }

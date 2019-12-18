@@ -13,28 +13,28 @@ function customTransformer<T extends ts.Node>(type: string): ts.TransformerFacto
 }
 
 const fuse = fusebox({
-  target: 'browser',
+  cache: false,
+  devServer: true,
   entry: 'src/index.ts',
-  modules: ['modules'],
   logging: {
     level: 'succinct',
   },
-  webIndex: {
-    template: 'src/index.html',
-  },
+  modules: ['modules'],
+  plugins: [
+    pluginCustomTransform({
+      after: [customTransformer('after')],
+      before: [customTransformer('before')],
+    }),
+  ],
   sourceMap: true,
-  devServer: true,
-  watch: true,
-  cache: false,
+  target: 'browser',
   tsConfig: {
     allowJs: true,
   },
-  plugins: [
-    pluginCustomTransform({
-      before: [customTransformer('before')],
-      after: [customTransformer('after')],
-    }),
-  ],
+  watch: true,
+  webIndex: {
+    template: 'src/index.html',
+  },
 });
 
 if (isProd) {

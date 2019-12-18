@@ -1,7 +1,7 @@
 export interface IStylesheetModuleResponse {
-  map?: string;
   css: string;
   json?: any;
+  map?: string;
 }
 
 export interface IStyleSheetProcessor {

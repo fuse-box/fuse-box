@@ -7,16 +7,16 @@ import { Package } from '../core/Package';
 import { Concat, createConcat, offsetLines } from '../utils/utils';
 
 export interface IGenerateHMRContentProps {
+  ctx: Context;
   modules: Array<Module>;
   packages?: Array<Package>;
-  ctx: Context;
 }
 
 export interface IHMRModuleUpdate {
-  isStylesheet: boolean;
-  isCSSModule?: boolean;
   content: string;
   fuseBoxPath: string;
+  isCSSModule?: boolean;
+  isStylesheet: boolean;
 }
 
 export interface IHMRUpdate {
@@ -32,11 +32,11 @@ export function generateHMRContent(props: IGenerateHMRContentProps): IHMRUpdate 
     packageUpdate = props.packages.map(pkg => {
       const name = pkg.getPublicName();
       if (pkg.isCached) {
-        return { name, content: pkg.cache.contents };
+        return { content: pkg.cache.contents, name };
       } else {
         const inflated = inflatePackage(ctx, pkg);
 
-        return { name, content: inflated.content.toString() };
+        return { content: inflated.content.toString(), name };
       }
     });
   }
@@ -82,12 +82,12 @@ export function generateHMRContent(props: IGenerateHMRContentProps): IHMRUpdate 
 
     response.push({
       content: stringContent,
-      isStylesheet: module.isStylesheet() && !module.isCSSModule && !module.isCSSText,
       fuseBoxPath: `${pkg.getPublicName()}/${module.props.fuseBoxPath}`,
+      isStylesheet: module.isStylesheet() && !module.isCSSModule && !module.isCSSText,
     });
   });
   return {
-    packages: packageUpdate,
     modules: response,
+    packages: packageUpdate,
   };
 }

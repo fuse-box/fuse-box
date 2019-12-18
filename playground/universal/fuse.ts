@@ -1,49 +1,49 @@
-import { sparky, fusebox, pluginLink } from '../../src';
 import * as path from 'path';
+import { fusebox, pluginLink, sparky } from '../../src';
 class Context {
   isProduction;
   runServer;
   getServerConfig() {
     return fusebox({
-      output: 'dist/server/$name-$hash',
-      target: 'server',
-      entry: 'src/server.tsx',
-      dependencies: { include: ['tslib'] },
       cache: {
         enabled: false,
         root: '.cache/server',
       },
       codeSplitting: { scriptRoot: path.resolve(__dirname, './dist/server') },
+      dependencies: { include: ['tslib'] },
+      entry: 'src/server.tsx',
+      output: 'dist/server/$name-$hash',
+      target: 'server',
     });
   }
   getBrowserConfig() {
     return fusebox({
+      entry: 'src/browser.tsx',
       output: 'dist/browser/$name-$hash',
       target: 'browser',
-      entry: 'src/browser.tsx',
 
       dependencies: { include: ['tslib'] },
+      link: { useDefault: true },
       webIndex: {
         publicPath: '/public',
         template: 'src/index.html',
       },
-      link: { useDefault: true },
 
       cache: {
         enabled: false,
         root: '.cache/browser',
       },
+      devServer: {
+        hmrServer: { port: 7878 },
+        httpServer: false,
+      },
       watch: {
         chokidar: { usePolling: true },
-      },
-      devServer: {
-        httpServer: false,
-        hmrServer: { port: 7878 },
       },
     });
   }
 }
-const { task, exec, rm } = sparky<Context>(Context);
+const { exec, rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   await rm('./dist');

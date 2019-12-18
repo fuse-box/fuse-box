@@ -4,22 +4,22 @@ class Context {
   runServer;
   getConfig = () =>
     fusebox({
-      target: 'browser',
       entry: 'src/index.ts',
       modules: ['./node_modules'],
+      target: 'browser',
 
+      cache: { enabled: true, root: './.cache' },
+      devServer: this.runServer,
+      watch: true,
       webIndex: {
         publicPath: '.',
         template: 'src/index.html',
       },
-      cache: { enabled: true, root: './.cache' },
-      watch: true,
-      devServer: this.runServer,
 
       plugins: [],
     });
 }
-const { task, rm } = sparky<Context>(Context);
+const { rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   ctx.runServer = true;

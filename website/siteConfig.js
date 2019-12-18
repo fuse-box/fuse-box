@@ -7,14 +7,15 @@ const siteConfig = {
     indexName: "fuse_box",
   },
   baseUrl: "/",
+  cleanUrl: true,
   colors: {
     primaryColor: "#223351",
     secondaryColor: "#3160af",
   },
-  cleanUrl: true,
   copyright: "Copyright © " + new Date().getFullYear() + " FuseBox",
   favicon: "img/favicon.ico",
   footerIcon: "img/logo.svg",
+  gaTrackingId: "UA-124354958-1",
   headerIcon: "img/logo.svg",
   headerLinks: [
     {
@@ -33,7 +34,6 @@ const siteConfig = {
   highlight: {
     theme: "default",
   },
-  gaTrackingId: "UA-124354958-1",
   ogImage: "img/docusaurus.png",
   onPageNav: "separate",
   organizationName: "FuseBox",

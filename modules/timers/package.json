@@ -1,8 +1,8 @@
 {
-  "name": "times",
-  "main": "index.js",
-  "version": "1.0.0",
   "fuse-box" : {
     "polyfill" : true
-  }
+  },
+  "main": "index.js",
+  "name": "times",
+  "version": "1.0.0"
 }

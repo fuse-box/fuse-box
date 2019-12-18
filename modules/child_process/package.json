@@ -1,8 +1,8 @@
 {
-  "name": "child_process",
-  "main": "index.js",
-  "version": "1.0.0",
   "fuse-box" : {
     "polyfill" : true
-  }
+  },
+  "main": "index.js",
+  "name": "child_process",
+  "version": "1.0.0"
 }

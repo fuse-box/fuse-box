@@ -1,6 +1,6 @@
+import { spawn } from 'child_process';
 import { IBundleWriteResponse } from '../bundle/Bundle';
 import { Context } from '../core/Context';
-import { spawn } from 'child_process';
 import { onExit } from '../utils/exit';
 
 export class ElectronLauncher {

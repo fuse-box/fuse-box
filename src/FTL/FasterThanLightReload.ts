@@ -11,8 +11,8 @@ import { createConcat } from '../utils/utils';
 const prettyTime = require('pretty-time');
 
 export interface IFasterThanLightProps {
-  ctx: Context;
   bundleWriters: Array<IBundleWriteResponse>;
+  ctx: Context;
   filePath: string;
 }
 
@@ -34,7 +34,7 @@ export function generateFTLJavaScript(modules: Array<Module>) {
 }
 
 export function fasterThanLight(props: IFasterThanLightProps): Promise<Boolean> {
-  const { ctx, bundleWriters, filePath } = props;
+  const { bundleWriters, ctx, filePath } = props;
 
   if (ctx.config.target === 'server') {
     return;
@@ -138,7 +138,7 @@ export function attachFTL(ctx: Context) {
   ctx.ict.on('soft_relod', props => {
     if (!bundles) return;
 
-    const response = fasterThanLight({ ctx, filePath: props.info.filePath, bundleWriters: bundles });
+    const response = fasterThanLight({ bundleWriters: bundles, ctx, filePath: props.info.filePath });
 
     if (response) {
       props.info.FTL = true;
@@ -146,10 +146,10 @@ export function attachFTL(ctx: Context) {
       response.then(bundeResponse => {
         ctx.ict.sync('rebundle_complete', {
           bundles,
-          packages,
           ctx,
-          watcherAction: props.info.watcherProps.action,
           file: props.info.filePath,
+          packages,
+          watcherAction: props.info.watcherProps.action,
         });
         const l = ctx.assembleContext.getFTLModules().length;
         ctx.log.line();
@@ -157,9 +157,9 @@ export function attachFTL(ctx: Context) {
           ctx.log.indent +
             '<bold><white><bgGreen> FTL SUCCESS </bgGreen></bold></white> in <bold>$time</bold> <dim>$total/$max in-memory</dim>',
           {
+            max: MAX_FTL_MODULES,
             time: prettyTime(process.hrtime(props.info.timeStart)),
             total: l,
-            max: MAX_FTL_MODULES,
           },
         );
         ctx.log.line();

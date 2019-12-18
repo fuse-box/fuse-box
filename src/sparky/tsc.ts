@@ -2,19 +2,11 @@ import { spawn } from 'child_process';
 import { env } from '../env';
 
 export type Libs =
-  | 'ES5'
-  | 'ES6'
-  | 'ES2015'
-  | 'ES7'
-  | 'ES2016'
-  | 'ES2017'
-  | 'ESNext'
   | 'DOM'
   | 'DOM.Iterable'
-  | 'WebWorker'
-  | 'ScriptHost'
-  | 'ES2015.Core'
+  | 'ES2015'
   | 'ES2015.Collection'
+  | 'ES2015.Core'
   | 'ES2015.Generator'
   | 'ES2015.Iterable'
   | 'ES2015.Promise'
@@ -22,14 +14,21 @@ export type Libs =
   | 'ES2015.Reflect'
   | 'ES2015.Symbol'
   | 'ES2015.Symbol.WellKnown'
+  | 'ES2016'
   | 'ES2016.Array.Include'
-  | 'ES2017.object'
+  | 'ES2017'
   | 'ES2017.SharedMemory'
   | 'ES2017.TypedArrays'
+  | 'ES2017.object'
+  | 'ES5'
+  | 'ES6'
+  | 'ES7'
+  | 'ESNext'
+  | 'ScriptHost'
+  | 'WebWorker'
   | 'esnext.asynciterable';
 
 export interface TscOptions {
-  files?: Array<string>;
   allowJs?: boolean;
   allowSyntheticDefaultImports?: boolean;
   allowUnreachableCode?: boolean;
@@ -45,23 +44,25 @@ export interface TscOptions {
   downlevelIteration?: boolean;
   emitBOM?: boolean;
   emitDecoratorMetadata?: boolean;
+  exclude?: Array<string>;
   experimentalDecorators?: boolean;
+  files?: Array<string>;
   forceConsistentCasingInFileNames?: boolean;
   importHelpers?: boolean;
+  init?: boolean;
   inlineSourceMap?: boolean;
   inlineSources?: boolean;
-  init?: boolean;
   isolatedModules?: boolean;
   jsx?: 'Preserve' | 'React';
   jsxFactory?: string;
   lib?: Array<Libs>;
   listEmittedFiles?: boolean;
   listFiles?: boolean;
-  locale?: 'en' | 'cs' | 'de' | 'es' | 'fr' | 'it' | 'ja' | 'ko' | 'pl' | 'pt-BR' | 'ru' | 'tr' | 'zh-CN' | 'zh-TW';
+  locale?: 'cs' | 'de' | 'en' | 'es' | 'fr' | 'it' | 'ja' | 'ko' | 'pl' | 'pt-BR' | 'ru' | 'tr' | 'zh-CN' | 'zh-TW';
   mapRoot?: string;
   maxNodeModuleJsDepth?: number;
-  module?: 'None' | 'CommonJS' | 'AMD' | 'System' | 'UMD' | 'ES6' | 'ES2015' | 'ESNext';
-  moduleResolution?: 'Node' | 'Classic';
+  module?: 'AMD' | 'CommonJS' | 'ES2015' | 'ES6' | 'ESNext' | 'None' | 'System' | 'UMD';
+  moduleResolution?: 'Classic' | 'Node';
   newLine?: 'crlf' | 'lf';
   noEmit?: boolean;
   noEmitHelpers?: boolean;
@@ -95,12 +96,11 @@ export interface TscOptions {
   stripInternal?: boolean;
   suppressExcessPropertyErrors?: boolean;
   suppressImplicitAnyIndexErrors?: boolean;
-  target?: 'ES3' | 'ES5' | 'ES6' | 'ES2015' | 'ES2016' | 'ES2017' | 'ESNext';
+  target?: 'ES2015' | 'ES2016' | 'ES2017' | 'ES3' | 'ES5' | 'ES6' | 'ESNext';
   traceResolution?: boolean;
-  types?: string[];
   typeRoots?: string[];
+  types?: string[];
   watch?: boolean;
-  exclude?: Array<string>;
 }
 
 export async function tsc(opts?: TscOptions, target?: string) {

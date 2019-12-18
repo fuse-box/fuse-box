@@ -1,7 +1,7 @@
 export function getFolderEntryPointFromPackageJSON(props: {
-  useLocalField?: boolean;
-  json: any;
   isBrowserBuild?: boolean;
+  json: any;
+  useLocalField?: boolean;
 }) {
   if (isBrowserEntry(props.json, props.isBrowserBuild)) {
     return props.json.browser;

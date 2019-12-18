@@ -5,25 +5,25 @@ class Context {
   runServer;
   getConfig() {
     return fusebox({
-      target: 'browser',
       entry: 'src/index.ts',
+      target: 'browser',
       webIndex: {
         template: 'src/index.html',
       },
 
       cache: false,
 
-      watch: true,
+      devServer: true,
       hmr: true,
       logging: {
         level: 'succinct',
       },
       plugins: [pluginCustomLang()],
-      devServer: true,
+      watch: true,
     });
   }
 }
-const { task, rm, exec } = sparky<Context>(Context);
+const { exec, rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   ctx.runServer = true;

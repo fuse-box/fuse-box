@@ -11,8 +11,8 @@ function generateUpdateId() {
 
 interface IHMRTask {
   action: WatcherAction;
-  packages: Array<Package>;
   modulesForUpdate: Array<Module>;
+  packages: Array<Package>;
 }
 
 interface IClientSummary {
@@ -45,12 +45,12 @@ export function attachHMR(ctx: Context) {
       ctx.log.info('hmr', 'Update <dim><$id></dim> has been reused', { id: payload.id });
       devServer.clientSend(
         'hmr',
-        { packages: lastGeneratedHMR.packages, modules: lastGeneratedHMR.modules },
+        { modules: lastGeneratedHMR.modules, packages: lastGeneratedHMR.packages },
         ws_instance,
       );
     } else {
       const clientProjectFiles = payload.summary['default'];
-      const { packages, modulesForUpdate } = task;
+      const { modulesForUpdate, packages } = task;
       const projectPackage = packages.find(pkg => pkg.isDefaultPackage);
       projectPackage.modules.forEach(module => {
         // if client doesn't the compiled module
@@ -92,17 +92,17 @@ export function attachHMR(ctx: Context) {
       });
 
       //save lastgenerated, so we can reuse
-      lastGeneratedHMR = generateHMRContent({ packages: packagesForUpdate, modules: modulesForUpdate, ctx: ctx });
+      lastGeneratedHMR = generateHMRContent({ ctx: ctx, modules: modulesForUpdate, packages: packagesForUpdate });
       lastPayLoadID = payload.id;
 
       ctx.log.info('hmr', 'Update <dim><$id></dim> generated in $time', {
-        time: time.end(),
         id: payload.id,
+        time: time.end(),
       });
 
       devServer.clientSend(
         'hmr',
-        { packages: lastGeneratedHMR.packages, modules: lastGeneratedHMR.modules },
+        { modules: lastGeneratedHMR.modules, packages: lastGeneratedHMR.packages },
         ws_instance,
       );
     }
@@ -116,7 +116,7 @@ export function attachHMR(ctx: Context) {
   });
 
   ctx.ict.on('rebundle_complete', props => {
-    const { packages, file } = props;
+    const { file, packages } = props;
     if (file) {
       const project = packages.find(pkg => pkg.isDefaultPackage);
       let target = project.modules.find(module => module.props.absPath === file);
@@ -133,9 +133,9 @@ export function attachHMR(ctx: Context) {
       }
       if (target) {
         const task: IHMRTask = {
-          packages: packages,
           action: props.watcherAction,
           modulesForUpdate: [target],
+          packages: packages,
         };
         const id = generateUpdateId();
 

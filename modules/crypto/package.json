@@ -1,8 +1,8 @@
 {
-  "name": "crypto",
-  "main": "index.js",
-  "version": "1.0.0",
   "fuse-box" : {
     "polyfill" : true
-  }
+  },
+  "main": "index.js",
+  "name": "crypto",
+  "version": "1.0.0"
 }

@@ -1,9 +1,9 @@
 import * as readline from 'readline';
-import { onExit } from '../utils/exit';
-import { FuseLog } from './fuseLog';
 import { IFuseLoggerProps } from '../config/IFuseLoggerProps';
 import { env } from '../env';
+import { onExit } from '../utils/exit';
 import { ignoredPath2Regex } from '../watcher/watcher';
+import { FuseLog } from './fuseLog';
 
 let prettyTime = require('pretty-time');
 
@@ -201,8 +201,8 @@ export class FuseBoxLogAdapter extends FuseLog {
             `${genericError} <red><bold>Completed with $err and <yellow>$warn</yellow> ${timeFormat}</red></bold>`,
           {
             err: conj('error', this._errors.length),
-            warn: conj('warning', this._warnings.length),
             time: time,
+            warn: conj('warning', this._warnings.length),
           },
         ),
       );
@@ -221,8 +221,8 @@ export class FuseBoxLogAdapter extends FuseLog {
           this.indent +
             `<black><bold><bgYellow> WARNING </bgYellow></bold></black>  <yellow><bold>Completed with $warn ${timeFormat}</yellow></bold>`,
           {
-            warn: conj('warning', this._warnings.length),
             time: time,
+            warn: conj('warning', this._warnings.length),
           },
         ),
       );

@@ -64,9 +64,9 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
 
   config.sourceMap = {
     css: true,
-    vendor: false,
     project: true,
     sourceRoot: '/',
+    vendor: false,
   };
 
   if (props.sourceMap !== undefined) {
@@ -123,8 +123,8 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
 
   // cache ************************************************************************************************
   config.cache = {
-    enabled: false,
     FTL: config.target !== 'server' && config.webIndex.enabled,
+    enabled: false,
     root: path.join(env.APP_ROOT, 'node_modules/.fusebox'),
   };
 

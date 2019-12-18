@@ -1,28 +1,28 @@
-import { sparky, fusebox } from '../../src';
 import * as path from 'path';
+import { fusebox, sparky } from '../../src';
 class Context {
   isProduction;
   runServer;
   getConfig() {
     return fusebox({
-      target: 'browser',
-      entry: 'src/index.ts',
-      webIndex: {
-        template: 'src/index.html',
-      },
-      tsConfig: 'src/tsconfig.json',
       cache: false,
-      modules: ['./modules'],
-      watch: true,
+      devServer: { httpServer: { port: 3000 } },
+      entry: 'src/index.ts',
       hmr: true,
       logging: {
         level: 'succinct',
       },
-      devServer: { httpServer: { port: 3000 } },
+      modules: ['./modules'],
+      target: 'browser',
+      tsConfig: 'src/tsconfig.json',
+      watch: true,
+      webIndex: {
+        template: 'src/index.html',
+      },
     });
   }
 }
-const { task, rm, exec } = sparky<Context>(Context);
+const { exec, rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   ctx.runServer = true;

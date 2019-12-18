@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as ts from 'typescript';
-import { IRawCompilerOptions, IRawTypescriptConfig } from './interfaces';
 import { ITypescriptPathsConfig } from '../resolver/resolver';
+import { IRawCompilerOptions, IRawTypescriptConfig } from './interfaces';
 
 export function parseTsConfigFile(filePath: string) {
   const data: IRawTypescriptConfig = ts.readConfigFile(filePath, ts.sys.readFile);

@@ -5,19 +5,19 @@ class Context {
   runServer;
   getConfig() {
     return fusebox({
+      allowSyntheticDefaultImports: true,
+      cache: false,
+      dependencies: { ignoreAllExternal: false },
+      entry: 'src/index.ts',
+      hmr: true,
+      modules: ['packages'],
       output: './dist/$hash-$name',
       target: 'server',
-      entry: 'src/index.ts',
-      cache: false,
-      modules: ['packages'],
-      allowSyntheticDefaultImports: true,
-      dependencies: { ignoreAllExternal: false },
       watch: true,
-      hmr: true,
     });
   }
 }
-const { task, exec, rm } = sparky<Context>(Context);
+const { exec, rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   rm('./dist');

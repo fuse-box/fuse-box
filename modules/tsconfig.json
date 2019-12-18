@@ -1,25 +1,25 @@
 {
-  "compilerOptions": {
-    "target": "es2017",
-    "module": "commonjs",
-    "lib": ["dom", "es5", "es2015.symbol", "es2015.iterable", "es2015.promise"],
-    "moduleResolution": "node",
-    "isolatedModules": false,
-    "jsx": "react",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "declaration": true,
-    "noImplicitAny": false,
-    "noImplicitUseStrict": false,
-    "removeComments": false,
-    "noLib": false,
-    "preserveConstEnums": true,
-    "suppressImplicitAnyIndexErrors": true
-  },
-  "exclude": [],
-  "compileOnSave": false,
-  "buildOnSave": false,
   "atom": {
     "rewriteTsconfig": false
-  }
+  },
+  "buildOnSave": false,
+  "compileOnSave": false,
+  "compilerOptions": {
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "isolatedModules": false,
+    "jsx": "react",
+    "lib": ["dom", "es5", "es2015.symbol", "es2015.iterable", "es2015.promise"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "noImplicitUseStrict": false,
+    "noLib": false,
+    "preserveConstEnums": true,
+    "removeComments": false,
+    "suppressImplicitAnyIndexErrors": true,
+    "target": "es2017"
+  },
+  "exclude": []
 }

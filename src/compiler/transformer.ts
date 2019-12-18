@@ -1,25 +1,25 @@
 import { Module } from '../core/Module';
 import { ASTNode } from './interfaces/AST';
-import { ImportType } from './interfaces/ImportType';
+import { ITransformerResult } from './interfaces/ITranformerResult';
 import { ITransformer, ITransformerVisitors } from './interfaces/ITransformer';
 import { ITransformerRequireStatementCollection } from './interfaces/ITransformerRequireStatements';
+import { ImportType } from './interfaces/ImportType';
 import { createGlobalContext } from './program/GlobalContext';
 import { transpileModule } from './program/transpileModule';
+import { GlobalContextTransformer } from './transformers/GlobalContextTransformer';
 import { BrowserProcessTransformer } from './transformers/bundle/BrowserProcessTransformer';
 import { BundleFastConditionUnwrapper } from './transformers/bundle/BundleFastConditionTransformer';
 import { BundlePolyfillTransformer } from './transformers/bundle/BundlePolyfillTransformer';
 import { RequireStatementInterceptor } from './transformers/bundle/RequireStatementInterceptor';
-import { GlobalContextTransformer } from './transformers/GlobalContextTransformer';
 import { DynamicImportTransformer } from './transformers/shared/DynamicImportTransformer';
 import { ExportTransformer } from './transformers/shared/ExportTransformer';
 import { ImportTransformer } from './transformers/shared/ImportTransformer';
 import { JSXTransformer } from './transformers/shared/JSXTransformer';
 import { ClassConstructorPropertyTransformer } from './transformers/ts/ClassConstructorPropertyTransformer';
 import { CommonTSfeaturesTransformer } from './transformers/ts/CommonTSfeaturesTransformer';
-import { DecoratorTransformer } from './transformers/ts/decorators/DecoratorTransformer';
 import { EnumTransformer } from './transformers/ts/EnumTransformer';
 import { NamespaceTransformer } from './transformers/ts/NameSpaceTransformer';
-import { ITransformerResult } from './interfaces/ITranformerResult';
+import { DecoratorTransformer } from './transformers/ts/decorators/DecoratorTransformer';
 
 /**
  * Order of those transformers MATTER!

@@ -1,7 +1,7 @@
-import { ensureAbsolutePath, getExtension, makeFuseBoxPath, fileExists } from '../utils/utils';
+import { ensureAbsolutePath, fileExists, getExtension, makeFuseBoxPath } from '../utils/utils';
 import { Context } from './Context';
 import { Module } from './Module';
-import { IPackageProps, Package } from './Package';
+import { Package, IPackageProps } from './Package';
 
 export function createApplicationPackage(ctx: Context, entryFile: string): Package {
   const absPath = ensureAbsolutePath(entryFile, ctx.config.homeDir);
@@ -17,10 +17,10 @@ export function createApplicationPackage(ctx: Context, entryFile: string): Packa
   const pkg = createDefaultPackage(ctx);
   const module = new Module(
     {
-      ctx,
-      fuseBoxPath,
       absPath,
+      ctx,
       extension,
+      fuseBoxPath,
     },
     pkg,
   );

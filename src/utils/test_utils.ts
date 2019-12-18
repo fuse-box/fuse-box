@@ -2,13 +2,13 @@ import * as appRoot from 'app-root-path';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { IPublicConfig } from '../config/IPublicConfig';
-import { createDefaultPackage } from '../core/application';
 import { Context, createContext } from '../core/Context';
-import { createModule, IModuleProps, Module } from '../core/Module';
-import { createPackage, Package } from '../core/Package';
+import { Module, createModule, IModuleProps } from '../core/Module';
+import { Package, createPackage } from '../core/Package';
+import { createDefaultPackage } from '../core/application';
 import { assemble } from '../main/assemble';
 
-import { ensureFuseBoxPath, path2RegexPattern, fastHash } from './utils';
+import { ensureFuseBoxPath, fastHash, path2RegexPattern } from './utils';
 
 const utils = require('./utils');
 declare global {
@@ -37,19 +37,19 @@ expect.extend({
 
 export interface IMockModuleProps {
   config?: IPublicConfig;
-  packageProps?: {
-    name?: string;
-    isDefaultPackage?: boolean;
-  };
   moduleProps?: {
     absPath?: string;
     extension?: string;
     fuseBoxPath?: string;
   };
+  packageProps?: {
+    isDefaultPackage?: boolean;
+    name?: string;
+  };
 }
 export interface IMockModuleResponse {
-  module: Module;
   ctx: Context;
+  module: Module;
   pkg: Package;
 }
 export function mockModule(props: IMockModuleProps): IMockModuleResponse {
@@ -59,8 +59,8 @@ export function mockModule(props: IMockModuleProps): IMockModuleResponse {
   const pkg = createPackage({
     ctx: ctx,
     meta: {
-      packageRoot: __dirname,
       name: packageProps.name || 'default',
+      packageRoot: __dirname,
     },
   });
   if (packageProps.isDefaultPackage) {
@@ -68,16 +68,16 @@ export function mockModule(props: IMockModuleProps): IMockModuleResponse {
   }
 
   return {
+    ctx: ctx,
     module: createModule(
       {
-        ctx: ctx,
         absPath: moduleProps.absPath || '/',
+        ctx: ctx,
         extension: moduleProps.extension || '.js',
         fuseBoxPath: moduleProps.fuseBoxPath || '/',
       },
       pkg,
     ),
-    ctx: ctx,
     pkg: pkg,
   };
 }
@@ -115,11 +115,11 @@ export function createAssembleHellper(folder: string) {
     return {
       ctx,
       packages,
-      getDefaultPackage: () => packages.find(p => p.isDefaultPackage),
       getDefaultModules: () => {
         const pkg = packages.find(p => p.isDefaultPackage);
         return pkg.modules;
       },
+      getDefaultPackage: () => packages.find(p => p.isDefaultPackage),
     };
   };
 }
@@ -154,7 +154,7 @@ export function createRealNodeModule(name: string, packageJSON, files: { [key: s
 
 export function mockDefaultModule(ctx: Context, props?: IModuleProps) {
   const pkg = createDefaultPackage(ctx);
-  let p = { ctx: ctx, absPath: '/', extension: '.js', fuseBoxPath: 'index.js' };
+  let p = { absPath: '/', ctx: ctx, extension: '.js', fuseBoxPath: 'index.js' };
   if (props) {
     p = { ...p, ...props };
   }
@@ -163,11 +163,11 @@ export function mockDefaultModule(ctx: Context, props?: IModuleProps) {
 
 export function mockWriteFile() {
   const scope = {
-    written: [],
-    files: {},
-    removedFolders: [],
     ensureDir: [],
     fileReads: [],
+    files: {},
+    removedFolders: [],
+    written: [],
   };
   const originalReadFile = utils.readFile;
   let originalFunction = utils.writeFile;
@@ -178,7 +178,7 @@ export function mockWriteFile() {
 
   utils['writeFile'] = (name, contents) => {
     scope.files[name] = { contents, stat: { mtime: new Date() } };
-    scope.written.push({ name: name, contents: contents });
+    scope.written.push({ contents: contents, name: name });
   };
 
   utils['ensureDir'] = userPath => {
@@ -205,12 +205,28 @@ export function mockWriteFile() {
   };
 
   return {
+    addFile(path: string, contents) {
+      scope.files[path] = { contents, stat: { mtime: new Date() } };
+    },
+    getEnsureDir() {
+      return scope.ensureDir;
+    },
+    getFileReads() {
+      return scope.fileReads;
+    },
+    deleteFile: (path: string) => {
+      Object.keys(scope.files).forEach(key => {
+        if (key.indexOf(path) > -1) {
+          delete scope.files[key];
+        }
+      });
+    },
     findFile: (pattern): { name: string; contents: string; stat: any } => {
       const re = path2RegexPattern(pattern);
       for (const key in scope.files) {
         const item = scope.files[key];
         if (re.test(key)) {
-          return { name: key, contents: item.contents, stat: item.stat };
+          return { contents: item.contents, name: key, stat: item.stat };
         }
       }
     },
@@ -220,16 +236,10 @@ export function mockWriteFile() {
       for (const key in scope.files) {
         const item = scope.files[key];
         if (re.test(key)) {
-          found.push({ name: key, contents: item.contents, stat: item.stat });
+          found.push({ contents: item.contents, name: key, stat: item.stat });
         }
       }
       return found;
-    },
-    getFileReads() {
-      return scope.fileReads;
-    },
-    getEnsureDir() {
-      return scope.ensureDir;
     },
     findRemovedFolder: pattern => {
       const re = path2RegexPattern(pattern);
@@ -240,22 +250,19 @@ export function mockWriteFile() {
         }
       }
     },
+    flush: () => {
+      scope.fileReads = [];
+      scope.removedFolders = [];
+      scope.written = [];
+      scope.files = {};
+      scope.ensureDir = [];
+    },
+    getFileAmount: () => Object.keys(scope.files).length,
+    getFiles: () => scope.files,
     getRemovedFolders: () => {
       return scope.removedFolders;
     },
-    getFileAmount: () => Object.keys(scope.files).length,
     getWrittenFiles: (index?: number) => (index !== undefined ? scope.written[index] : scope.written),
-    getFiles: () => scope.files,
-    deleteFile: (path: string) => {
-      Object.keys(scope.files).forEach(key => {
-        if (key.indexOf(path) > -1) {
-          delete scope.files[key];
-        }
-      });
-    },
-    addFile(path: string, contents) {
-      scope.files[path] = { contents, stat: { mtime: new Date() } };
-    },
     unmock: () => {
       utils['filesStat'] = originalFileStat;
       utils['writeFile'] = originalFunction;
@@ -263,13 +270,6 @@ export function mockWriteFile() {
       utils['fileExists'] = originalFileExists;
       utils['readFile'] = originalReadFile;
       utils['removeFolder'] = originalRemoveFolder;
-    },
-    flush: () => {
-      scope.fileReads = [];
-      scope.removedFolders = [];
-      scope.written = [];
-      scope.files = {};
-      scope.ensureDir = [];
     },
   };
 }

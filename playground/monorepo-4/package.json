@@ -1,9 +1,4 @@
 {
-    "name": "fusebox-test",
-    "scripts": {
-        "postinstall": "lerna bootstrap",
-        "compile": "lerna run --parallel compile"
-    },
     "dependencies": {},
     "devDependencies": {
         "fuse-box": "next",
@@ -11,5 +6,10 @@
         "lerna": "^3.18.2",
         "ts-node": "^8.4.1",
         "typescript": "^3.6.4"
+    },
+    "name": "fusebox-test",
+    "scripts": {
+        "compile": "lerna run --parallel compile",
+        "postinstall": "lerna bootstrap"
     }
 }

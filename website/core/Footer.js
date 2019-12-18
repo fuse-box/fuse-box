@@ -15,13 +15,13 @@ class Footer extends React.Component {
     return (
       <footer className="nav-footer" id="footer">
         <section className="sitemap">
-          <a href={this.props.config.baseUrl} className="nav-home">
+          <a className="nav-home" href={this.props.config.baseUrl}>
             {this.props.config.footerIcon && (
               <img
-                src={this.props.config.baseUrl + this.props.config.footerIcon}
                 alt={this.props.config.title}
-                width="66"
                 height="58"
+                src={this.props.config.baseUrl + this.props.config.footerIcon}
+                width="66"
               />
             )}
           </a>
@@ -46,8 +46,8 @@ class Footer extends React.Component {
             <a href="https://gitter.im/fusebox-bundler/Lobby">Gitter</a>
             <a
               href="https://twitter.com/fuseboxjs"
-              target="_blank"
               rel="noreferrer noopener"
+              target="_blank"
             >
               Twitter
             </a>

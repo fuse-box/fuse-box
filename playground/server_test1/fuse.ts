@@ -1,13 +1,13 @@
 import { fusebox } from '../../src/core/fusebox';
 
 const fuse = fusebox({
-  target: 'server',
-  entry: 'src/index.ts',
+  cache: false,
   dependencies: {
     ignoreAllExternal: false,
   },
+  entry: 'src/index.ts',
+  target: 'server',
   watch: true,
-  cache: false,
 });
 
 fuse.runDev();

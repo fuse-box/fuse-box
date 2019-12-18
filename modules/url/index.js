@@ -26,17 +26,17 @@ if (FuseBox.isServer) {
 
 	var punycode = require("punycode");
 	var util = {
-		isString: function(arg) {
-			return typeof arg === "string";
-		},
-		isObject: function(arg) {
-			return typeof arg === "object" && arg !== null;
-		},
 		isNull: function(arg) {
 			return arg === null;
 		},
 		isNullOrUndefined: function(arg) {
 			return arg == null;
+		},
+		isObject: function(arg) {
+			return typeof arg === "object" && arg !== null;
+		},
+		isString: function(arg) {
+			return typeof arg === "string";
 		}
 	};
 
@@ -98,16 +98,16 @@ if (FuseBox.isServer) {
 		},
 		// protocols that always contain a // bit.
 		slashedProtocol = {
-			http: true,
-			https: true,
-			ftp: true,
-			gopher: true,
 			file: true,
-			"http:": true,
-			"https:": true,
+			"file:": true,
+			ftp: true,
 			"ftp:": true,
+			gopher: true,
 			"gopher:": true,
-			"file:": true
+			http: true,
+			"http:": true,
+			https: true,
+			"https:": true
 		},
 		querystring = require("querystring");
 

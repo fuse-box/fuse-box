@@ -1,17 +1,17 @@
 import * as path from 'path';
-import { fusebox, sparky, pluginLess } from '../../src';
+import { fusebox, pluginLess, sparky } from '../../src';
 
 class Context {
   isProduction;
   runServer;
   getConfig() {
     return fusebox({
-      target: 'browser',
       entry: 'src/index.tsx',
+      target: 'browser',
+      tsConfig: 'src/tsconfig.json',
       webIndex: {
         template: 'src/index.html',
       },
-      tsConfig: 'src/tsconfig.json',
 
       stylesheet: {
         paths: [path.join(__dirname, 'src/config')],
@@ -19,18 +19,18 @@ class Context {
 
       cache: false,
 
-      watch: true,
+      devServer: true,
       hmr: true,
       plugins: [
         pluginLess('*.less', {
           asModule: { scopeBehaviour: 'local' },
         }),
       ],
-      devServer: true,
+      watch: true,
     });
   }
 }
-const { task, exec, rm } = sparky<Context>(Context);
+const { exec, rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   ctx.runServer = true;

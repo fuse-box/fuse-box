@@ -1,4 +1,5 @@
 import * as express from 'express';
+import * as open from 'open';
 import { BundleType } from '../bundle/Bundle';
 import { Context } from '../core/Context';
 import { ImportType } from '../resolver/resolver';
@@ -9,8 +10,7 @@ import {
   IOpenProps,
   IProxyCollection,
 } from './devServerProps';
-import { createHMRServer, HMRServerMethods } from './hmrServer';
-import * as open from 'open';
+import { HMRServerMethods, createHMRServer } from './hmrServer';
 
 import * as proxyMiddleware from 'http-proxy-middleware';
 import { generateFTLJavaScript } from '../FTL/FasterThanLightReload';
@@ -36,17 +36,17 @@ export function createExpressApp(ctx: Context, props: IHTTPServerProps, extra?: 
   if (props.express) props.express(app, express);
   function logProvider(p) {
     return {
-      log: msg => {
-        ctx.log.info('proxy', msg);
-      },
       debug: msg => {
         ctx.log.info('proxy', msg);
       },
+      error: msg => ctx.log.error(msg),
       info: msg => {
         ctx.log.info('proxy', msg);
       },
+      log: msg => {
+        ctx.log.info('proxy', msg);
+      },
       warn: msg => ctx.log.warn(msg),
-      error: msg => ctx.log.error(msg),
     };
   }
 
@@ -121,7 +121,7 @@ export function createDevServer(ctx: Context): IDevServerActions {
         const pkg = module.pkg;
 
         if (pkg.isDefaultPackage && pkg.entry === module) {
-          module.analysis.imports.push({ type: ImportType.REQUIRE, literal: 'fuse-box-hot-reload' });
+          module.analysis.imports.push({ literal: 'fuse-box-hot-reload', type: ImportType.REQUIRE });
         }
         return props;
       });
@@ -157,7 +157,7 @@ export function createDevServer(ctx: Context): IDevServerActions {
 
       // if the ports are the same, we mount HMR on the same server
       if (hmrServerProps.enabled && hmrServerProps.port === httpServerProps.port && !isProduction) {
-        hmrServerMethods = createHMRServer({ internalServer, ctx, opts: hmrServerProps });
+        hmrServerMethods = createHMRServer({ ctx, internalServer, opts: hmrServerProps });
       }
     }
     if (hmrServerProps.enabled && !hmrServerMethods && !isProduction) {
@@ -173,17 +173,17 @@ export function createDevServer(ctx: Context): IDevServerActions {
   });
 
   return {
+    clientSend: (name: string, payload, ws_instance?: WebSocket) => {
+      if (hmrServerMethods) {
+        hmrServerMethods.sendEvent(name, payload, ws_instance);
+      }
+    },
     onClientMessage: (fn: (name: string, payload, ws_instance?: WebSocket) => void) => {
       if (hmrServerMethods) {
         hmrServerMethods.onMessage(fn);
       } else {
         // if the server isn't ready store it here
         onMessageCallbacks.push(fn);
-      }
-    },
-    clientSend: (name: string, payload, ws_instance?: WebSocket) => {
-      if (hmrServerMethods) {
-        hmrServerMethods.sendEvent(name, payload, ws_instance);
       }
     },
   };

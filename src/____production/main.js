@@ -9,17 +9,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, ops: [], sent: function() { if (1 & t[0]) throw t[1]; return t[1]; }, trys: [] }, f, y, t, g;
+    return g = { next: verb(0), "return": verb(2), "throw": verb(1) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
         while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
+            if (f = 1, y && (t = 2 & op[0] ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [2 & op[0], t.value];
             switch (op[0]) {
                 case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
+                case 4: _.label++; return { done: false, value: op[1] };
                 case 5: _.label++; y = op[1]; op = [0]; continue;
                 case 7: op = _.ops.pop(); _.trys.pop(); continue;
                 default:
@@ -32,7 +32,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
             }
             op = body.call(thisArg, _);
         } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+        if (5 & op[0]) throw op[1]; return { done: true, value: op[0] ? op[1] : void 0 };
     }
 };
 exports.__esModule = true;
@@ -51,7 +51,7 @@ function productionMain(props) {
             switch (_a.label) {
                 case 0:
                     productionContext = ProductionContext_1.createProductionContext(props);
-                    flow = { productionContext: productionContext, ctx: props.ctx, packages: props.packages };
+                    flow = { ctx: props.ctx, packages: props.packages, productionContext: productionContext };
                     /** Stage 1 */
                     // Replace process, add polyfills
                     // unwrap if conditions with dead code elimination

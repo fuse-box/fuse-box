@@ -1,18 +1,18 @@
 export interface IManifest {
+  details?: boolean;
   enabled?: boolean;
   filePath?: string;
-  details?: boolean;
 }
 
 export interface IManifestBundle {
-  type: string;
-  name: string;
-  size: number;
-  localPath: string;
   absPath: string;
-  relBrowserPath: string;
-  webIndexed: boolean;
+  localPath: string;
+  name: string;
   priority: number;
+  relBrowserPath: string;
+  size: number;
+  type: string;
+  webIndexed: boolean;
 }
 export interface IManifestJSON {
   bundles: Array<IManifestBundle>;

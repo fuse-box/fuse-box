@@ -4,9 +4,10 @@ import * as sourceMapModule from 'source-map';
 import { IModuleCacheBasics } from '../cache/cache';
 import { generate } from '../compiler/generator/generator';
 import { ASTNode } from '../compiler/interfaces/AST';
-import { ImportType } from '../compiler/interfaces/ImportType';
 import { ITransformerResult } from '../compiler/interfaces/ITranformerResult';
 import { ITranspiler } from '../compiler/interfaces/ITranspiler';
+import { ImportType } from '../compiler/interfaces/ImportType';
+import { transpileStageOne } from '../compiler/transformer';
 import { javascriptTranspiler } from '../compiler/transpilers/javascriptTranspiler';
 import { typescriptTranspiler } from '../compiler/transpilers/typescriptTranspiler';
 import { testPath } from '../plugins/pluginUtils';
@@ -14,7 +15,6 @@ import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { extractFuseBoxPath, fastHash, joinFuseBoxPath, readFile } from '../utils/utils';
 import { Context } from './Context';
 import { Package } from './Package';
-import { transpileStageOne } from '../compiler/transformer';
 const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.mjs'];
 
 export interface IAnalysis {
@@ -22,10 +22,10 @@ export interface IAnalysis {
 }
 
 export interface IModuleProps {
-  ctx: Context;
   absPath: string;
-  fuseBoxPath: string;
+  ctx: Context;
   extension: string;
+  fuseBoxPath: string;
 }
 export class Module {
   /**
@@ -150,7 +150,7 @@ export class Module {
           loc: withSourcemaps,
         }) as ASTNode;
       } else {
-        let opts = { jsx: true, next: false, module: true, loc: withSourcemaps };
+        let opts = { jsx: true, loc: withSourcemaps, module: true, next: false };
 
         this.ast = meriyah.parse(this.contents, opts) as ASTNode;
       }

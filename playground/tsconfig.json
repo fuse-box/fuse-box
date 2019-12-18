@@ -1,22 +1,22 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
     "isolatedModules": false,
     "jsx": "react",
-    "importHelpers": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "noUnusedLocals": true,
-    "declaration": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmitHelpers": true,
     "noImplicitAny": false,
     "noImplicitUseStrict": false,
-    "removeComments": true,
-    "noEmitHelpers": true,
     "noLib": false,
+    "noUnusedLocals": true,
     "outDir": "build/",
     "preserveConstEnums": true,
-    "suppressImplicitAnyIndexErrors": true
+    "removeComments": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "target": "es2015"
   }
 }

@@ -24,7 +24,7 @@ export interface IHMRExternalProps {
 
 const ESSENTIAL_DEPENDENCIES = ['fuse-box-dev-import', 'tslib', 'fuse_helpers_decorate'];
 
-export type ITarget = 'browser' | 'server' | 'electron' | 'universal' | 'web-worker';
+export type ITarget = 'browser' | 'electron' | 'server' | 'universal' | 'web-worker';
 
 export interface IHMRProps {
   enabled?: boolean;
@@ -37,18 +37,18 @@ export interface IWatcherProps {
 }
 
 export interface ICacheProps {
+  FTL?: boolean;
   enabled?: boolean;
   root?: string;
-  FTL?: boolean;
 }
 
 export class PrivateConfig {
   root?: string;
   target?: ITarget;
   dependencies?: {
-    include?: Array<string>;
-    ignorePackages?: Array<string>;
     ignoreAllExternal?: boolean;
+    ignorePackages?: Array<string>;
+    include?: Array<string>;
   };
   useSingleBundle?: boolean;
   webWorkers?: IWebWorkerConfig;
@@ -64,15 +64,15 @@ export class PrivateConfig {
   link?: IPluginLinkOptions;
   env?: { [key: string]: string };
   cache?: ICacheProps;
-  tsConfig?: string | IRawCompilerOptions;
+  tsConfig?: IRawCompilerOptions | string;
   entries?: Array<string>;
   allowSyntheticDefaultImports?: boolean;
   webIndex?: IWebIndexConfig;
   sourceMap?: {
+    css?: boolean;
+    project?: boolean;
     sourceRoot?: string;
     vendor?: boolean;
-    project?: boolean;
-    css?: boolean;
   };
 
   plugins?: Array<(ctx: Context) => void>;

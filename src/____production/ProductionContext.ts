@@ -7,8 +7,8 @@ import { ProductionPackage } from './ProductionPackage';
 import { ESLink } from './structure/ESLink';
 
 export interface IProductionContext {
-  packages: Array<Package>;
   ctx: Context;
+  packages: Array<Package>;
 }
 
 export class ProductionContext {

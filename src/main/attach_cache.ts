@@ -1,5 +1,5 @@
-import { Context } from '../core/Context';
 import { attachFTL } from '../FTL/FasterThanLightReload';
+import { Context } from '../core/Context';
 
 export function attachCache(ctx: Context) {
   const config = ctx.config;
@@ -41,7 +41,7 @@ export function attachCache(ctx: Context) {
     const ctx = pkg.props.ctx;
 
     if (!pkg.isDefaultPackage && ctx.cache) {
-      cache.savePackage(pkg, { sourceMap: props.concat.sourceMap, contents: props.concat.content.toString() });
+      cache.savePackage(pkg, { contents: props.concat.content.toString(), sourceMap: props.concat.sourceMap });
     }
     return props;
   });

@@ -4,17 +4,17 @@ class Context {
   runServer;
   getMainConfig() {
     return fusebox({
-      output: 'dist/main/$name-$hash',
-      target: 'electron',
-      homeDir: 'src/main',
-      entry: 'main.ts',
-      useSingleBundle: true,
-      dependencies: { ignoreAllExternal: true },
-      logging: { level: 'succinct' },
       cache: {
         enabled: true,
         root: '.cache/main',
       },
+      dependencies: { ignoreAllExternal: true },
+      entry: 'main.ts',
+      homeDir: 'src/main',
+      logging: { level: 'succinct' },
+      output: 'dist/main/$name-$hash',
+      target: 'electron',
+      useSingleBundle: true,
     });
   }
   launch(handler) {
@@ -24,28 +24,28 @@ class Context {
   }
   getRendererConfig() {
     return fusebox({
-      output: 'dist/renderer/$name-$hash',
-      target: 'electron',
-      homeDir: 'src/renderer',
-      entry: 'index.ts',
-      dependencies: { include: ['tslib'] },
-      logging: { level: 'succinct' },
-      webIndex: {
-        publicPath: './',
-        template: 'src/renderer/index.html',
-      },
       cache: {
         enabled: false,
         root: '.cache/renderere',
       },
+      dependencies: { include: ['tslib'] },
       devServer: {
-        httpServer: false,
         hmrServer: { port: 7878 },
+        httpServer: false,
+      },
+      entry: 'index.ts',
+      homeDir: 'src/renderer',
+      logging: { level: 'succinct' },
+      output: 'dist/renderer/$name-$hash',
+      target: 'electron',
+      webIndex: {
+        publicPath: './',
+        template: 'src/renderer/index.html',
       },
     });
   }
 }
-const { task, rm } = sparky<Context>(Context);
+const { rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   await rm('./dist');

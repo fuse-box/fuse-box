@@ -1,8 +1,8 @@
 {
-  "name": "object-assign-polyfill",
-  "main": "index.js",
-  "version": "1.0.0",
   "fuse-box" : {
     "polyfill" : true
-  }
+  },
+  "main": "index.js",
+  "name": "object-assign-polyfill",
+  "version": "1.0.0"
 }

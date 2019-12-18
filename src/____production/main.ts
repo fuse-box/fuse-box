@@ -1,7 +1,7 @@
 import { IBundleWriteResponse } from '../bundle/Bundle';
 import { Context } from '../core/Context';
 import { Package } from '../core/Package';
-import { createProductionContext, ProductionContext } from './ProductionContext';
+import { ProductionContext, createProductionContext } from './ProductionContext';
 import { codeSplittingStage } from './stages/codeSplittingStage';
 import { finalStage } from './stages/finalStage';
 import { generationStage } from './stages/generationStage';
@@ -11,14 +11,14 @@ import { referenceLinkStage } from './stages/referenceLinkStage';
 import { transpileStage } from './stages/transpileStage';
 
 export interface IProductionMain {
-  packages: Array<Package>;
   ctx: Context;
+  packages: Array<Package>;
 }
 
 export interface IProductionFlow {
-  productionContext: ProductionContext;
-  packages: Array<Package>;
   ctx: Context;
+  packages: Array<Package>;
+  productionContext: ProductionContext;
 }
 
 export interface IProductionResponse {
@@ -26,7 +26,7 @@ export interface IProductionResponse {
 }
 export async function productionMain(props: IProductionMain): Promise<IProductionResponse> {
   const productionContext = createProductionContext(props);
-  const flow: IProductionFlow = { productionContext, ctx: props.ctx, packages: props.packages };
+  const flow: IProductionFlow = { ctx: props.ctx, packages: props.packages, productionContext };
 
   /** Stage 1 */
   // Replace process, add polyfills

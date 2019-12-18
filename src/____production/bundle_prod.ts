@@ -5,7 +5,7 @@ import { attachWebIndex } from '../main/attach_webIndex';
 import { prerequisites } from '../main/prerequisite';
 import { processPlugins } from '../main/process_plugins';
 import { pluginAssumption } from '../plugins/core/plugin_assumption';
-import { IProductionResponse, productionMain } from './main';
+import { productionMain, IProductionResponse } from './main';
 
 export async function bundleProd(ctx: Context): Promise<IProductionResponse> {
   prerequisites(ctx);

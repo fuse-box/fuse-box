@@ -1,26 +1,26 @@
-import { fusebox, sparky, pluginMinifyHtmlLiterals } from '../../src';
+import { fusebox, pluginMinifyHtmlLiterals, sparky } from '../../src';
 
 class Context {
   isProduction;
   runServer;
   getConfig = () =>
     fusebox({
-      target: 'browser',
       entry: 'src/index.ts',
       modules: ['./node_modules'],
+      target: 'browser',
 
+      cache: false,
+      devServer: this.runServer,
+      watch: true,
       webIndex: {
         publicPath: '.',
         template: 'src/index.html',
       },
-      cache: false,
-      watch: true,
-      devServer: this.runServer,
 
       plugins: [pluginMinifyHtmlLiterals()],
     });
 }
-const { task, rm } = sparky<Context>(Context);
+const { rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   ctx.runServer = true;

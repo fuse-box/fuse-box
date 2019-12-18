@@ -31,7 +31,7 @@
 
 		// free to define properties
 		if (!hasDefaultProperty) {
-			Object.defineProperty(input, 'default', { value: input, writable: true, enumerable: false });
+			Object.defineProperty(input, 'default', { enumerable: false, value: input, writable: true });
 		}
 
 		if (!hasModuleProperty) {

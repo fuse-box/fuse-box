@@ -4,21 +4,21 @@ import { fusebox } from '../../src/core/fusebox';
 
 const { rm } = sparky(class {});
 const fuse = fusebox({
-  target: 'browser',
-  entry: 'src/index.ts',
-  modules: ['modules'],
-  logging: {
-    level: 'succinct',
-  },
   dependencies: {
     include: ['tslib'],
   },
-  webWorkers: {},
+  entry: 'src/index.ts',
+  logging: {
+    level: 'succinct',
+  },
+  modules: ['modules'],
+  target: 'browser',
   webIndex: {
     template: 'src/index.html',
   },
+  webWorkers: {},
 
-  cache: { root: '.cache', enabled: false },
+  cache: { enabled: false, root: '.cache' },
   resources: {
     resourcePublicRoot: '/test',
   },
@@ -26,12 +26,12 @@ const fuse = fusebox({
 
   plugins: [
     pluginSass('text/*.scss', {
-      stylesheet: {
-        resourcePublicRoot: '/dump',
-        resourceFolder: 'dump',
-        groupResourcesFilesByType: false,
-      },
       asText: true,
+      stylesheet: {
+        groupResourcesFilesByType: false,
+        resourceFolder: 'dump',
+        resourcePublicRoot: '/dump',
+      },
     }),
   ],
   sourceMap: true,
@@ -45,8 +45,8 @@ const isProd = process.argv.indexOf('--prod') > -1;
 rm(path.join(__dirname, 'dist'));
 if (isProd) {
   fuse.runProd({
-    target: 'ES5',
     screwIE: true,
+    target: 'ES5',
     uglify: false,
   });
 } else {

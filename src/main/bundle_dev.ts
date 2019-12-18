@@ -60,6 +60,6 @@ export async function bundleDev(ctx: Context) {
       const serverEntryBundle = await addServerEntry(ctx, bundles);
       bundles.push(serverEntryBundle.info);
     }
-    ict.sync('complete', { ctx: ctx, bundles: bundles, packages: packages });
+    ict.sync('complete', { bundles: bundles, ctx: ctx, packages: packages });
   }
 }

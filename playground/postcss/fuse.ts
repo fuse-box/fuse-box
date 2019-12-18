@@ -1,33 +1,34 @@
-import { sparky, fusebox, pluginPostCSS, pluginReplace } from '../../src';
 import * as path from 'path';
-import * as precss from 'precss';
 import * as modulesScope from 'postcss-modules-scope';
+import * as precss from 'precss';
+import { fusebox, pluginPostCSS, pluginReplace, sparky } from '../../src';
 
 class Context {
   isProduction;
   runServer;
   getConfig() {
     return fusebox({
-      target: 'browser',
       entry: 'src/index.tsx',
-      webIndex: {
-        template: 'src/index.html',
-        embedIndexedBundles: true,
-      },
+      target: 'browser',
       tsConfig: 'src/tsconfig.json',
+      webIndex: {
+        embedIndexedBundles: true,
+        template: 'src/index.html',
+      },
 
       stylesheet: {
         paths: [path.join(__dirname, 'src/config')],
       },
 
       cache: {
-        root: '.cache/fusebox/client',
         enabled: false,
+        root: '.cache/fusebox/client',
       },
 
-      watch: true,
       hmr: true,
+      watch: true,
 
+      devServer: true,
       plugins: [
         pluginReplace('index.ts', { __CLIENT__: true, __SERVER__: false }),
         pluginPostCSS('src/*.css', {
@@ -45,11 +46,10 @@ class Context {
           },
         }),
       ],
-      devServer: true,
     });
   }
 }
-const { task, exec, rm } = sparky<Context>(Context);
+const { exec, rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   rm('./dist');

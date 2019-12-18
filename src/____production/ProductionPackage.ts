@@ -1,6 +1,6 @@
 import { Package } from '../core/Package';
-import { ProductionModule } from './ProductionModule';
 import { ProductionContext } from './ProductionContext';
+import { ProductionModule } from './ProductionModule';
 
 export class ProductionPackage {
   public productionModules: Array<ProductionModule>;

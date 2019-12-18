@@ -1,4 +1,5 @@
 import { SourceFile } from 'ts-morph';
+import { Bundle } from '../bundle/Bundle';
 import { Context } from '../core/Context';
 import { Module } from '../core/Module';
 import { Concat } from '../utils/utils';
@@ -6,7 +7,6 @@ import { ProductionContext } from './ProductionContext';
 import { ProductionPackage } from './ProductionPackage';
 import { ESLink } from './structure/ESLink';
 import { ESModuleStructure } from './structure/ESModuleStructure';
-import { Bundle } from '../bundle/Bundle';
 
 export class ProductionModule {
   public file: SourceFile;

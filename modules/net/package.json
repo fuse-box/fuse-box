@@ -1,8 +1,8 @@
 {
-  "name": "net",
-  "main": "index.js",
-  "version": "1.0.0",
   "fuse-box" : {
     "polyfill" : true
-  }
+  },
+  "main": "index.js",
+  "name": "net",
+  "version": "1.0.0"
 }

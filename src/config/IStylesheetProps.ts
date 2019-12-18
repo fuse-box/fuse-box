@@ -1,11 +1,11 @@
 import { ISassProps } from '../stylesheet/sassHandler';
-import { IResourceConfig } from './IResourceConfig';
 import { IPostCSSProps } from './IPostCSSProps';
+import { IResourceConfig } from './IResourceConfig';
 
 import { ILessProps } from './ILessProps';
 
 export interface IStyleSheetAutoImportCapture {
-  capture?: string | RegExp;
+  capture?: RegExp | string;
   file: string;
 }
 
@@ -60,8 +60,8 @@ export interface IStyleSheetProps extends IResourceConfig {
    * @type {{ [key: string]: string }}
    * @memberof IStyleSheetProps
    */
-  macros?: { [key: string]: string };
-  sass?: ISassProps;
-  postCSS?: IPostCSSProps;
   less?: ILessProps;
+  postCSS?: IPostCSSProps;
+  sass?: ISassProps;
+  macros?: { [key: string]: string };
 }

@@ -1,8 +1,8 @@
 {
-  "name": "fuse-box-css",
-  "main": "index.js",
-  "version": "1.0.0",
   "fuse-box" : {
     "system" : true
-  }
+  },
+  "main": "index.js",
+  "name": "fuse-box-css",
+  "version": "1.0.0"
 }

@@ -5,7 +5,7 @@ import { Package } from '../core/Package';
 import { env } from '../env';
 
 import { extractFuseBoxPath } from '../utils/utils';
-import { createWatcher, WatcherAction } from '../watcher/watcher';
+import { WatcherAction, createWatcher } from '../watcher/watcher';
 import { assemble } from './assemble';
 import { pluginProcessPackages } from './process_plugins';
 export interface IWatcherAttachProps {
@@ -14,17 +14,17 @@ export interface IWatcherAttachProps {
 
 export interface OnWatcherProps {
   action: WatcherAction;
-  file: string;
   ctx: Context;
+  file: string;
 }
 
 interface IAppReloadProps {
   nukeAllCache?: boolean;
-  nukeProjectCache?: boolean;
   nukePackageCache?: boolean;
+  nukeProjectCache?: boolean;
+  watcherProps: OnWatcherProps;
   writeOnlyProject?: boolean;
   writeOnlyVendor?: boolean;
-  watcherProps: OnWatcherProps;
 }
 interface IAppReloadResponse {
   bundles: Array<IBundleWriteResponse>;
@@ -40,8 +40,8 @@ async function appReload(props: IAppReloadProps): Promise<IAppReloadResponse> {
   if (props.watcherProps.file) {
     const softReloadContext = {
       FTL: false,
-      watcherProps: props.watcherProps,
       filePath: props.watcherProps.file,
+      watcherProps: props.watcherProps,
 
       timeStart: process.hrtime(),
     };
@@ -144,11 +144,11 @@ async function onWatcherEvent(props: OnWatcherProps) {
   }
   if (response) {
     props.ctx.ict.sync('rebundle_complete', {
-      ctx: props.ctx,
-      watcherAction: props.action,
       bundles: response.bundles,
-      packages: response.packages,
+      ctx: props.ctx,
       file: props.file,
+      packages: response.packages,
+      watcherAction: props.action,
     });
   }
 }

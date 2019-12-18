@@ -60,7 +60,7 @@ export class SocketClient {
       }
     };
     this.client.onerror = event => {
-      this.error({ reason: event.reason, message: 'Socket error' });
+      this.error({ message: 'Socket error', reason: event.reason });
     };
     this.client.onclose = event => {
       this.emitter.emit('close', { message: 'Socket closed' });

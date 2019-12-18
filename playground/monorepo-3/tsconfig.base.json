@@ -1,24 +1,24 @@
 {
+    "buildOnSave": true,
+    "compileOnSave": true,
     "compilerOptions": {
-        "target": "es2018",
+        "allowJs": true,
+        "allowSyntheticDefaultImports": false,
+        "emitDecoratorMetadata": true,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "importHelpers": true,
+        "lib": ["es2018", "esnext.asynciterable"],
         "module": "commonjs",
         "moduleResolution": "node",
-        "allowJs": true,
-        "resolveJsonModule": true,
-        "esModuleInterop": true,
-        "allowSyntheticDefaultImports": false,
         "noEmitHelpers": true,
-        "importHelpers": true,
+        "noImplicitReturns": true,
         "pretty": true,
-        "sourceMap": true,
-        "lib": ["es2018", "esnext.asynciterable"],
-        "strict": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
         "removeComments": false,
-        "noImplicitReturns": true
+        "resolveJsonModule": true,
+        "sourceMap": true,
+        "strict": true,
+        "target": "es2018"
     },
-    "exclude": ["./node_modules"],
-    "compileOnSave": true,
-    "buildOnSave": true
+    "exclude": ["./node_modules"]
 }

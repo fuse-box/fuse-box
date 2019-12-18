@@ -1,18 +1,18 @@
 import * as buntis from 'buntis';
 import { generate } from './generator/generator';
 import { ASTNode } from './interfaces/AST';
-import { ImportType } from './interfaces/ImportType';
 import { ITransformer } from './interfaces/ITransformer';
 import { ITransformerRequireStatementCollection } from './interfaces/ITransformerRequireStatements';
+import { ImportType } from './interfaces/ImportType';
 import { createGlobalContext } from './program/GlobalContext';
 import { transpileModule } from './program/transpileModule';
 import { GlobalContextTransformer } from './transformers/GlobalContextTransformer';
 
 export function initCommonTransform(props: {
-  jsx?: boolean;
   code: string;
-  transformers: Array<ITransformer>;
+  jsx?: boolean;
   props?: any;
+  transformers: Array<ITransformer>;
 }) {
   const requireStatementCollection: ITransformerRequireStatementCollection = [];
   function onRequireCallExpression(importType: ImportType, statement: ASTNode) {
@@ -26,8 +26,8 @@ export function initCommonTransform(props: {
   const ast = buntis.parseTSModule(props.code, {
     directives: true,
     jsx: props.jsx,
-    next: true,
     loc: true,
+    next: true,
   });
   const tranformers = [GlobalContextTransformer().commonVisitors(props.props)];
   for (const t of props.transformers) {

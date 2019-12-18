@@ -1,36 +1,36 @@
-import { sparky, fusebox, pluginWebWorker } from '../../src';
 import * as path from 'path';
+import { fusebox, pluginWebWorker, sparky } from '../../src';
 class Context {
   isProduction;
   runServer;
   getConfig() {
     return fusebox({
-      target: 'browser',
-      entry: 'src/index.ts',
-      webIndex: {
-        template: 'src/index.html',
-      },
       cache: { root: './.cache' },
-      plugins: [pluginWebWorker()],
       devServer: this.runServer && {
         open: false,
         proxy: [
           {
-            path: '/api',
             options: {
-              target: 'https://jsonplaceholder.typicode.com',
               changeOrigin: true,
               pathRewrite: {
                 '^/api': '/',
               },
+              target: 'https://jsonplaceholder.typicode.com',
             },
+            path: '/api',
           },
         ],
+      },
+      entry: 'src/index.ts',
+      plugins: [pluginWebWorker()],
+      target: 'browser',
+      webIndex: {
+        template: 'src/index.html',
       },
     });
   }
 }
-const { task, exec, rm } = sparky<Context>(Context);
+const { exec, rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   await rm('./dist');

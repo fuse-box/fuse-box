@@ -4,23 +4,23 @@ import { Module } from '../core/Module';
 import { cssResolveURL } from './cssResolveURL';
 
 export interface ICSSHandleResourcesProps {
-  options: IStyleSheetProps;
   ctx: Context;
-  module: Module;
-  url?: string;
   fileRoot?: string;
+  module: Module;
+  options: IStyleSheetProps;
+  url?: string;
 }
 
 export function cssHandleResources(
-  opts: { path: string; contents: string },
+  opts: { contents: string; path: string },
   props: ICSSHandleResourcesProps,
-): { file: string; contents: string } {
+): { contents: string; file: string } {
   const urlResolver = cssResolveURL({
-    filePath: opts.path,
-    ctx: props.ctx,
     contents: opts.contents,
+    ctx: props.ctx,
+    filePath: opts.path,
     options: props.options,
   });
 
-  return { file: opts.path, contents: urlResolver.contents };
+  return { contents: urlResolver.contents, file: opts.path };
 }

@@ -127,9 +127,9 @@ function getMessage(self) {
 
 function fail(actual, expected, message, operator, stackStartFunction) {
   throw new assert.AssertionError({
-    message: message,
     actual: actual,
     expected: expected,
+    message: message,
     operator: operator,
     stackStartFunction: stackStartFunction,
   });

@@ -1,5 +1,5 @@
-import { Context } from '../core/Context';
 import * as path from 'path';
+import { Context } from '../core/Context';
 export type IDevServerProxy = {
   [key: string]: {
     target?: string;
@@ -9,35 +9,35 @@ export type IDevServerProxy = {
 };
 
 export interface IHMRServerProps {
-  enabled?: boolean;
-  useCurrentURL?: boolean;
-  port?: number;
   connectionURL?: string;
+  enabled?: boolean;
+  port?: number;
+  useCurrentURL?: boolean;
 }
 export interface IHTTPServerProps {
   enabled?: boolean;
-  port?: number;
   fallback?: string;
+  port?: number;
   root?: string;
   express?: (app: any, express: any) => void;
 }
 
 export interface IOpenProps {
+  app?: Array<string> | string;
   background?: boolean; // mac os only
-  wait?: boolean;
   target?: string;
-  app?: string | Array<string>;
+  wait?: boolean;
 }
 export interface IProxyCollection {
-  path: string;
   options: any;
+  path: string;
 }
 export interface IDevServerProps {
   enabled?: boolean;
-  open?: boolean | IOpenProps;
-  proxy?: Array<IProxyCollection>;
-  httpServer?: IHTTPServerProps | boolean;
   hmrServer?: IHMRServerProps | boolean;
+  httpServer?: IHTTPServerProps | boolean;
+  open?: IOpenProps | boolean;
+  proxy?: Array<IProxyCollection>;
 }
 
 export function createDevServerConfig(ctx: Context): IDevServerProps {
@@ -51,7 +51,7 @@ export function createDevServerConfig(ctx: Context): IDevServerProps {
   }
   // enable everything is case of true
   if (props === true) {
-    props = { enabled: true, httpServer: {}, hmrServer: {} };
+    props = { enabled: true, hmrServer: {}, httpServer: {} };
   }
 
   // we allow only objects here

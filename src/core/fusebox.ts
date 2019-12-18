@@ -3,10 +3,10 @@ import { IProductionProps } from '../config/IProductionProps';
 import { IPublicConfig } from '../config/IPublicConfig';
 import { FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
 import { bundleDev } from '../main/bundle_dev';
+import { bundleProd } from '../production/bundleProd';
 import { UserHandler } from '../user-handler/UserHandler';
 import { parseVersion } from '../utils/utils';
 import { createContext, createProdContext } from './Context';
-import { bundleProd } from '../production/bundleProd';
 
 export interface IDevelopmentProps {}
 

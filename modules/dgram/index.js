@@ -17,6 +17,6 @@ function createSocket(typeOrOptions, callback) {
     return socket;
 }
 exports["default"] = {
-    createSocket: createSocket,
-    Socket: Socket_1.Socket
+    Socket: Socket_1.Socket,
+    createSocket: createSocket
 };

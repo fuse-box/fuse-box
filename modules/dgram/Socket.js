@@ -103,7 +103,7 @@ var Socket = /** @class */ (function (_super) {
                 throw new Error('Socket not created');
             }
             if (!this._addressInfo) {
-                this._addressInfo = { address: '0.0.0.0', 'port': 0, 'family': 'udp4' };
+                this._addressInfo = { address: '0.0.0.0', 'family': 'udp4', 'port': 0 };
                 this.bind(this._addressInfo.port, this._addressInfo.address);
             }
             if (Array.isArray(msg) && msg.length === 0) {
@@ -160,8 +160,8 @@ var Socket = /** @class */ (function (_super) {
         }
         this._addressInfo = {
             address: address,
-            port: port,
-            family: 'udp4'
+            family: 'udp4',
+            port: port
         };
         if (browserUDP === UDPBrowserTypes.ChromeSocketsUDP) {
             if (!this._chromeSocketId) {

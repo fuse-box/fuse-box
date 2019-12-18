@@ -1,27 +1,27 @@
-import { sparky, fusebox } from '../../src';
 import * as path from 'path';
+import { fusebox, sparky } from '../../src';
 class Context {
   isProduction;
   runServer;
   getConfig() {
     return fusebox({
-      target: 'browser',
       entry: 'src/index.tsx',
+      target: 'browser',
+      tsConfig: 'src/tsconfig.json',
       webIndex: {
         template: 'src/index.html',
       },
-      tsConfig: 'src/tsconfig.json',
 
       alias: { '^formik-wizard$': 'formik-wizard/dist/index.js' },
-      stylesheet: { paths: [path.join(__dirname, 'src/config')] },
       cache: false,
+      stylesheet: { paths: [path.join(__dirname, 'src/config')] },
 
-      watch: true,
+      devServer: { httpServer: { port: 3000 } },
       hmr: true,
       logging: {
         level: 'succinct',
       },
-      devServer: { httpServer: { port: 3000 } },
+      watch: true,
       // devServer: this.runServer && {
       //   open: false,
       //   httpServer: {
@@ -32,7 +32,7 @@ class Context {
     });
   }
 }
-const { task, rm, exec } = sparky<Context>(Context);
+const { exec, rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   ctx.runServer = true;

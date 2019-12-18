@@ -2,7 +2,7 @@ import { isRegExp, path2RegexPattern } from '../utils/utils';
 
 const CACHED_PATHS = {};
 
-export function testPath(input: string, target: string | RegExp) {
+export function testPath(input: string, target: RegExp | string) {
   if (typeof target === 'string') {
     if (!CACHED_PATHS[target]) {
       CACHED_PATHS[target] = path2RegexPattern(target);

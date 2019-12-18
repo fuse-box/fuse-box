@@ -1,18 +1,18 @@
 import * as path from 'path';
-import { fusebox, sparky, pluginLess } from '../../src';
+import { fusebox, pluginLess, sparky } from '../../src';
 
 class Context {
   isProduction;
   runServer;
   getConfig() {
     return fusebox({
-      target: 'browser',
       entry: 'src/index.tsx',
-      webIndex: {
-        template: 'src/index.html',
-        embedIndexedBundles: true,
-      },
+      target: 'browser',
       tsConfig: 'src/tsconfig.json',
+      webIndex: {
+        embedIndexedBundles: true,
+        template: 'src/index.html',
+      },
 
       stylesheet: {
         autoImport: [{ file: 'src/resources/resources.scss' }],
@@ -21,14 +21,14 @@ class Context {
 
       cache: true,
 
-      watch: true,
       hmr: true,
+      watch: true,
 
       devServer: true,
     });
   }
 }
-const { task, exec, rm } = sparky<Context>(Context);
+const { exec, rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   rm('./dist');

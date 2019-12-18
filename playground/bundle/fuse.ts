@@ -1,18 +1,11 @@
 import * as path from 'path';
 import { fusebox } from '../../src/core/fusebox';
 const fuse = fusebox({
-  target: 'browser',
   logging: {
     level: 'succinct',
   },
+  target: 'browser',
 
-  stylesheet: {
-    macros: {
-      $root: __dirname,
-    },
-  },
-  sourceMap: true,
-  modules: ['modules/'],
   cache: {
     FTL: false,
     enabled: false,
@@ -25,14 +18,21 @@ const fuse = fusebox({
       // '@webcomponents/webcomponentsjs/webcomponents-bundle.js',
     ],
   },
+  devServer: true,
+  entry: 'src/index.ts',
+  //production: {},
+  homeDir: __dirname,
+  modules: ['modules/'],
+  sourceMap: true,
+  stylesheet: {
+    macros: {
+      $root: __dirname,
+    },
+  },
   webIndex: {
     publicPath: '.',
     template: 'src/index.html',
   },
-  devServer: true,
-  //production: {},
-  homeDir: __dirname,
-  entry: 'src/index.ts',
 
   //plugins: [pluginJSON('configs/.*', { useDefault: true }), pluginReplace('other/Other.ts', { $version: '1.1.0' })],
 });

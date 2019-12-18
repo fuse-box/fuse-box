@@ -43,10 +43,10 @@ exports.format = function(f) {
 		if (x === "%%") return "%";
 		if (i >= len) return x;
 		switch (x) {
-			case "%s":
-				return String(args[i++]);
 			case "%d":
 				return Number(args[i++]);
+			case "%s":
+				return String(args[i++]);
 			case "%j":
 				try {
 					return JSON.stringify(args[i++]);
@@ -155,32 +155,32 @@ exports.inspect = inspect;
 
 // http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
 inspect.colors = {
-	bold: [1, 22],
-	italic: [3, 23],
-	underline: [4, 24],
-	inverse: [7, 27],
-	white: [37, 39],
-	grey: [90, 39],
 	black: [30, 39],
 	blue: [34, 39],
+	bold: [1, 22],
 	cyan: [36, 39],
 	green: [32, 39],
+	grey: [90, 39],
+	inverse: [7, 27],
+	italic: [3, 23],
 	magenta: [35, 39],
 	red: [31, 39],
+	underline: [4, 24],
+	white: [37, 39],
 	yellow: [33, 39]
 };
 
 // Don't use 'blue' not visible on cmd.exe
 inspect.styles = {
-	special: "cyan",
-	number: "yellow",
 	boolean: "yellow",
-	undefined: "grey",
-	null: "bold",
-	string: "green",
 	date: "magenta",
+	null: "bold",
+	number: "yellow",
 	// "name": intentionally not styling
-	regexp: "red"
+	regexp: "red",
+	special: "cyan",
+	string: "green",
+	undefined: "grey"
 };
 
 function stylizeWithColor(str, styleType) {
@@ -566,10 +566,10 @@ if (typeof Object.create === "function") {
 		ctor.super_ = superCtor;
 		ctor.prototype = Object.create(superCtor.prototype, {
 			constructor: {
-				value: ctor,
+				configurable: true,
 				enumerable: false,
-				writable: true,
-				configurable: true
+				value: ctor,
+				writable: true
 			}
 		});
 	};

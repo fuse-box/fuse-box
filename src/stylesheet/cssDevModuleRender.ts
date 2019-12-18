@@ -1,21 +1,21 @@
 import * as path from 'path';
+import { sourceMapsCSSURL } from '../bundle/bundleStrings';
 import { IStyleSheetProps } from '../config/IStylesheetProps';
 import { Context } from '../core/Context';
 import { Module } from '../core/Module';
+import { wrapContents } from '../plugins/pluginStrings';
 import { fastHash, joinFuseBoxPath } from '../utils/utils';
 import { IStylesheetModuleResponse } from './interfaces';
-import { sourceMapsCSSURL } from '../bundle/bundleStrings';
-import { wrapContents } from '../plugins/pluginStrings';
 
 export interface ICSSModuleRender {
   ctx: Context;
+  data: IStylesheetModuleResponse;
   module: Module;
   options: IStyleSheetProps;
-  data: IStylesheetModuleResponse;
   useDefault?: boolean;
 }
 export function cssDevModuleRender(props: ICSSModuleRender) {
-  const { ctx, module, data } = props;
+  const { ctx, data, module } = props;
   const filePath = module.pkg.getPublicName() + '/' + module.props.fuseBoxPath;
   // let the context know
 

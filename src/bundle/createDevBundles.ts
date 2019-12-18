@@ -1,9 +1,9 @@
 import { Context } from '../core/Context';
-import { getDevelopmentApi, openDevelopmentApi, closeDevelopmentApi } from '../env';
 import { Package } from '../core/Package';
+import { closeDevelopmentApi, getDevelopmentApi, openDevelopmentApi } from '../env';
+import { Concat, createConcat } from '../utils/utils';
 import { Bundle, BundleCollection, BundleType, createBundleSet } from './Bundle';
 import { devStrings } from './bundleStrings';
-import { createConcat, Concat } from '../utils/utils';
 
 /**
  * Adding global settings like allowSyntheticDefaultImports and targets
@@ -53,8 +53,8 @@ export function inflatePackage(ctx: Context, pkg: Package): Concat {
     } else {
       if (_module.contents === undefined) {
         ctx.log.error('$pkg/$path has not been processed by any plugins', {
-          pkg: _module.pkg.getPublicName(),
           path: _module.props.fuseBoxPath,
+          pkg: _module.pkg.getPublicName(),
         });
       } else {
         const fileConcat = createConcat(true, '', '\n');
@@ -84,7 +84,7 @@ export function inflateBundle(ctx: Context, bundle: Bundle) {
     } else {
       const concat = inflatePackage(ctx, pkg);
       bundle.addContent(concat.content, concat.sourceMap);
-      ctx.ict.sync('after_dev_package_inflate', { ctx, concat, pkg: pkg });
+      ctx.ict.sync('after_dev_package_inflate', { concat, ctx, pkg: pkg });
     }
   }
   // close developmentAPI for isolated bundles
