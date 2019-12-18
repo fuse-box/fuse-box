@@ -1,11 +1,22 @@
 import { ImportType } from '../interfaces/ImportType';
-import { testTranspile } from '../transpilers/testTranspiler';
+import { initCommonTransform } from '../testUtils';
+import { ImportTransformer } from '../transformers/shared/ImportTransformer';
+import { ExportTransformer } from '../transformers/shared/ExportTransformer';
+import { CommonTSfeaturesTransformer } from '../transformers/ts/CommonTSfeaturesTransformer';
 
 /**
  to test:
     import * as hey from "./oi"
     hey.something();
 */
+
+const testTranspile = (props: { code: string; jsx?: boolean }) => {
+  return initCommonTransform({
+    jsx: props.jsx,
+    transformers: [ImportTransformer(), ExportTransformer(), CommonTSfeaturesTransformer()],
+    code: props.code,
+  });
+};
 
 describe('Es imports tests', () => {
   describe('import =', () => {

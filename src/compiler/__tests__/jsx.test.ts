@@ -1,4 +1,14 @@
-import { testTranspile } from '../transpilers/testTranspiler';
+import { initCommonTransform } from '../testUtils';
+import { ImportTransformer } from '../transformers/shared/ImportTransformer';
+import { JSXTransformer } from '../transformers/shared/JSXTransformer';
+
+const testTranspile = (props: { code: string; jsx?: boolean }) => {
+  return initCommonTransform({
+    jsx: true,
+    transformers: [JSXTransformer(), ImportTransformer()],
+    code: props.code,
+  });
+};
 
 describe('JSX', () => {
   it('should parse simple jsx', () => {

@@ -20,6 +20,7 @@ import { ContextTaskManager, createContextTaskManager } from './ContextTaskManag
 import { Package } from './Package';
 import { createWeakModuleReferences, WeakModuleReferences } from './WeakModuleReferences';
 import { createWriter, IWriterActions } from './writer';
+import { ITransformer } from '../compiler/interfaces/ITransformer';
 
 export class Context {
   public assembleContext: IAssembleContext;
@@ -88,23 +89,11 @@ export class Context {
     this.config.setupEnv();
   }
 
-  public transformerAtPath(path: string | RegExp, transformer: (opts: any) => ITransformer, transformerOptions?: any) {
-    if (!this._tranformersAtPaths) this._tranformersAtPaths = [];
-    this._tranformersAtPaths.push({
-      test: path2RegexPattern(path), transformer: (opts: any) => transformer({ ...transformerOptions, ...opts })
-    });
+  public userTransformers: Array<ITransformer> = [];
+  public addTransformer(transformer: ITransformer) {
+    this.userTransformers.push(transformer);
   }
 
-  public getTransformersAtPath(path: string): Array<(opts: any) => ITransformer> {
-    if (!this._tranformersAtPaths) return;
-    const transformers = [];
-    for (const item of this._tranformersAtPaths) {
-      if (item.test.test(path)) {
-        transformers.push(item.transformer);
-      }
-    }
-    return transformers;
-  }
   public setProduction(prodProps: IProductionProps) {
     this.config.watch.enabled = false;
     this.config.hmr.enabled = false;

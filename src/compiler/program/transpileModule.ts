@@ -1,22 +1,13 @@
 import { ASTNode } from '../interfaces/AST';
-import { ICompilerOptions } from '../interfaces/ICompilerOptions';
-import { FastVisit, IVisit, IVisitorMod, TopLevelVisit } from '../Visitor/Visitor';
+import { ITranformerCallback, ITransformerVisitors } from '../interfaces/ITransformer';
+import { FastVisit, TopLevelVisit } from '../Visitor/Visitor';
 
-export type ITranformerCallback = (visit: IVisit) => IVisitorMod | void | undefined;
-export type ITransformer =
-  | ITranformerCallback
-  | {
-      onTopLevelTraverse?: ITranformerCallback;
-      onEachNode?: ITranformerCallback;
-    };
-
-export type ITransformerList = Array<ITransformer | undefined>;
+export type ITransformerList = Array<ITransformerVisitors | undefined>;
 export interface IProgramProps {
   ast: ASTNode;
   globalContext?: any;
   namespace?: string;
   transformers: ITransformerList;
-  compilerOptions?: ICompilerOptions;
 }
 
 export function transpileModule(props: IProgramProps) {

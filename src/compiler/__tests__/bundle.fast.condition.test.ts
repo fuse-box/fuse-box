@@ -1,65 +1,24 @@
-import { testTranspile } from '../transpilers/testTranspiler';
+import { initCommonTransform } from '../testUtils';
+import { BundleFastConditionUnwrapper } from '../transformers/bundle/BundleFastConditionTransformer';
+import { BrowserProcessTransformer } from '../transformers/bundle/BrowserProcessTransformer';
+import { RequireStatementInterceptor } from '../transformers/bundle/RequireStatementInterceptor';
 import { ImportType } from '../interfaces/ImportType';
+
+const testTranspile = (props: { code: string; NODE_ENV?: string; target?: string }) => {
+  return initCommonTransform({
+    props: {
+      ctx: { config: { env: { NODE_ENV: props.NODE_ENV || 'development' }, target: props.target || 'browser' } },
+    },
+    transformers: [BundleFastConditionUnwrapper(), BrowserProcessTransformer(), RequireStatementInterceptor()],
+    code: props.code,
+  });
+};
 
 describe('Browser fast condition', () => {
   describe('Process env', () => {
-    it('should unwrap dev', () => {
-      const res = testTranspile({
-        bundleProps: { env: { NODE_ENV: 'development' } },
-        code: `
-        if ( process.env.NODE_ENV === "development"){
-          console.log("dev")
-        }
-      `,
-      });
-      expect(res.code).toMatchSnapshot();
-    });
-
-    it('should unwrap dev with alternate', () => {
-      const res = testTranspile({
-        bundleProps: { env: { NODE_ENV: 'production' } },
-        code: `
-        if ( process.env.NODE_ENV === "development"){
-          console.log("dev")
-        } else {
-          console.log("this is dev")
-        }
-      `,
-      });
-      expect(res.code).toMatchSnapshot();
-    });
-
-    it('should not emit require statement', () => {
-      const res = testTranspile({
-        bundleProps: { env: { NODE_ENV: 'production' } },
-        code: `
-        if ( process.env.NODE_ENV === "development"){
-          require("./dev")
-        } else {
-          console.log("this is dev")
-        }
-      `,
-      });
-      expect(res.requireStatementCollection).toEqual([]);
-    });
-
-    it('should not touch other statements', () => {
-      const res = testTranspile({
-        bundleProps: { env: { NODE_ENV: 'production' } },
-        code: `
-        if ( a.b ) {
-           console.log(1)
-        } else {
-          console.log(2)
-        }
-      `,
-      });
-      expect(res.code).toMatchSnapshot();
-    });
-
     it('should emit require statement', () => {
       const res = testTranspile({
-        bundleProps: { env: { NODE_ENV: 'production' } },
+        NODE_ENV: 'production',
         code: `
         if ( process.env.NODE_ENV === "development"){
           require("./dev")
@@ -85,10 +44,11 @@ describe('Browser fast condition', () => {
     });
   });
 
-  describe('FuseBox.*', () => {
+  describe('Fast condition', () => {
     it('should unwrap isBrowser', () => {
       const res = testTranspile({
-        bundleProps: { isBrowser: true, env: { NODE_ENV: 'production' } },
+        NODE_ENV: 'production',
+        target: 'browser',
         code: `
         if ( FuseBox.isBrowser){
           console.log("isBrowser")
@@ -100,7 +60,8 @@ describe('Browser fast condition', () => {
 
     it('should unwrap isServer', () => {
       const res = testTranspile({
-        bundleProps: { isServer: true, env: { NODE_ENV: 'production' } },
+        NODE_ENV: 'production',
+        target: 'server',
         code: `
         if ( FuseBox.isServer){
           console.log("isServer")
