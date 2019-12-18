@@ -1,6 +1,25 @@
-import { testTranspile } from '../transpilers/testTranspiler';
+import { initCommonTransform } from '../testUtils';
+import { ExportTransformer } from '../transformers/shared/ExportTransformer';
+import { ClassConstructorPropertyTransformer } from '../transformers/ts/ClassConstructorPropertyTransformer';
+import { CommonTSfeaturesTransformer } from '../transformers/ts/CommonTSfeaturesTransformer';
+import { DecoratorTransformer } from '../transformers/ts/decorators/DecoratorTransformer';
+import { ImportTransformer } from '../transformers/shared/ImportTransformer';
 
 describe('Class constructor properties', () => {
+  const testTranspile = (props: { code: string; jsx?: boolean }) => {
+    return initCommonTransform({
+      jsx: props.jsx,
+      transformers: [
+        DecoratorTransformer(),
+        ClassConstructorPropertyTransformer(),
+        CommonTSfeaturesTransformer(),
+        ImportTransformer(),
+        ExportTransformer(),
+      ],
+      code: props.code,
+    });
+  };
+
   it('should initialize constructor properties in the constructor', () => {
     const result = testTranspile({
       code: `
@@ -24,7 +43,7 @@ describe('Class constructor properties', () => {
 
   it('should handle class expression', () => {
     const result = testTranspile({
-      withJSX: false,
+      jsx: false,
       code: `
       export const exception = <Ex extends new (...args: any[]) => any>(constructor: Ex) => {
         return class extends constructor {
@@ -443,7 +462,7 @@ describe('Class constructor properties', () => {
 
     it('should static prop with class assigned to a const 2 (with return)', () => {
       const result = testTranspile({
-        withJSX: false,
+        jsx: false,
         code: `
 
         export const exception = <Ex extends new (...args: any[]) => any>(constructor: Ex) => {
@@ -461,7 +480,7 @@ describe('Class constructor properties', () => {
 
     it('should static prop with class assigned to a const 2 (with return combo)', () => {
       const result = testTranspile({
-        withJSX: false,
+        jsx: false,
         code: `
 
         export const exception = <Ex extends new (...args: any[]) => any>(constructor: Ex) => {
@@ -480,7 +499,7 @@ describe('Class constructor properties', () => {
 
     it('static props in export default class with decorators', () => {
       const result = testTranspile({
-        withJSX: false,
+        jsx: false,
         code: `
         @Injectable()
         export default class ApiService {

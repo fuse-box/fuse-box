@@ -1,9 +1,21 @@
-import { testTranspile } from '../transpilers/testTranspiler';
+import { initCommonTransform } from '../testUtils';
+import { ExportTransformer } from '../transformers/shared/ExportTransformer';
+import { ImportTransformer } from '../transformers/shared/ImportTransformer';
+
+const testTranspile = (props: { code: string; target?: string; fileName?: string }) => {
+  return initCommonTransform({
+    props: {
+      module: { props: { fuseBoxPath: props.fileName || '/test/file.js' } },
+      ctx: { config: { target: props.target || 'browser' } },
+    },
+    transformers: [ImportTransformer(), ExportTransformer()],
+    code: props.code,
+  });
+};
 
 describe('scope test', () => {
   it('option 1', () => {
     const result = testTranspile({
-      withJSX: false,
       code: `
       import { hey } from 'oi';
       function hey(){}
@@ -15,7 +27,6 @@ describe('scope test', () => {
 
   it('option 2', () => {
     const result = testTranspile({
-      withJSX: false,
       code: `
       import { hey } from 'oi';
       function hey(){}
@@ -28,7 +39,6 @@ describe('scope test', () => {
 
   it('variation 3', () => {
     const result = testTranspile({
-      withJSX: false,
       code: `
       import { hey } from 'oi';
       function foo(hey){}
@@ -40,7 +50,6 @@ describe('scope test', () => {
 
   it('variation 4', () => {
     const result = testTranspile({
-      withJSX: false,
       code: `
       import { hey } from 'oi';
       const hey = (hey) => {}

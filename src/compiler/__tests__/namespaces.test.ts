@@ -1,4 +1,15 @@
-import { testTranspile } from '../transpilers/testTranspiler';
+import { initCommonTransform } from '../testUtils';
+import { ExportTransformer } from '../transformers/shared/ExportTransformer';
+import { ImportTransformer } from '../transformers/shared/ImportTransformer';
+import { NamespaceTransformer } from '../transformers/ts/NameSpaceTransformer';
+
+const testTranspile = (props: { code: string; jsx?: boolean }) => {
+  return initCommonTransform({
+    jsx: true,
+    transformers: [NamespaceTransformer(), ImportTransformer(), ExportTransformer()],
+    code: props.code,
+  });
+};
 
 describe('Namespaces', () => {
   it('should compile namespace', () => {

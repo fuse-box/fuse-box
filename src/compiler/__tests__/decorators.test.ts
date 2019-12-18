@@ -1,6 +1,28 @@
-import { testTranspile } from '../transpilers/testTranspiler';
+import { initCommonTransform } from '../testUtils';
+import { ExportTransformer } from '../transformers/shared/ExportTransformer';
+import { ImportTransformer } from '../transformers/shared/ImportTransformer';
+import { ClassConstructorPropertyTransformer } from '../transformers/ts/ClassConstructorPropertyTransformer';
+import { CommonTSfeaturesTransformer } from '../transformers/ts/CommonTSfeaturesTransformer';
+import { DecoratorTransformer } from '../transformers/ts/decorators/DecoratorTransformer';
 
 describe('Decorators test', () => {
+  const testTranspile = (props: { code: string; jsx?: boolean; emitDecoratorMetadata?: boolean }) => {
+    return initCommonTransform({
+      jsx: props.jsx,
+      props: {
+        ctx: { tsConfig: { compilerOptions: { emitDecoratorMetadata: props.emitDecoratorMetadata } } },
+      },
+      transformers: [
+        DecoratorTransformer(),
+        ClassConstructorPropertyTransformer(),
+        CommonTSfeaturesTransformer(),
+        ImportTransformer(),
+        ExportTransformer(),
+      ],
+      code: props.code,
+    });
+  };
+
   describe('Class decorators', () => {
     it('Should inject 1 decorator ', () => {
       const res = testTranspile({

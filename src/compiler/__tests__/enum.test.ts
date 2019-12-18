@@ -1,6 +1,15 @@
-import { testTranspile } from '../transpilers/testTranspiler';
+import { initCommonTransform } from '../testUtils';
+import { EnumTransformer } from '../transformers/ts/EnumTransformer';
 
 describe('Enums test', () => {
+  const testTranspile = (props: { code: string; jsx?: boolean }) => {
+    return initCommonTransform({
+      jsx: props.jsx,
+      transformers: [EnumTransformer()],
+      code: props.code,
+    });
+  };
+
   it('should work with a simple enum', () => {
     const result = testTranspile({
       code: `

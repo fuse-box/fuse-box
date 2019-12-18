@@ -1,6 +1,18 @@
 import { ImportType } from '../interfaces/ImportType';
-import { PolyfillEssentialConfig } from '../transformers/bundle/BundlePolyfillTransformer';
-import { testTranspile } from '../transpilers/testTranspiler';
+import { PolyfillEssentialConfig, BundlePolyfillTransformer } from '../transformers/bundle/BundlePolyfillTransformer';
+import { initCommonTransform } from '../testUtils';
+import { RequireStatementInterceptor } from '../transformers/bundle/RequireStatementInterceptor';
+
+const testTranspile = (props: { code: string; target?: string; fileName?: string }) => {
+  return initCommonTransform({
+    props: {
+      module: { props: { fuseBoxPath: props.fileName || '/test/file.js' } },
+      ctx: { config: { target: props.target || 'browser' } },
+    },
+    transformers: [BundlePolyfillTransformer(), RequireStatementInterceptor()],
+    code: props.code,
+  });
+};
 
 describe('Bundle polyfill transform test', () => {
   describe('Common transform ', () => {
@@ -9,10 +21,9 @@ describe('Bundle polyfill transform test', () => {
         code: `
            console.log(__dirname)
       `,
-        bundleProps: {
-          moduleFileName: '/some-dir/file.ts',
-        },
+        fileName: '/some-dir/file.ts',
       });
+
       expect(result.code).toMatchSnapshot();
     });
 
@@ -21,10 +32,9 @@ describe('Bundle polyfill transform test', () => {
         code: `
            console.log(__filename)
       `,
-        bundleProps: {
-          moduleFileName: '/some-dir/file.ts',
-        },
+        fileName: '/some-dir/file.ts',
       });
+
       expect(result.code).toMatchSnapshot();
     });
   });
