@@ -16,6 +16,7 @@ export function Phase_1_ImportLink(): ITransformer {
           const { node } = visit;
           if (node.type === 'ImportDeclaration') {
             if (node.specifiers.length === 0) {
+              tree['stuff'] = true;
               // find module in refs and also add TreeReferenceType
               //tree.externalReferences.add( )
             }
