@@ -4,6 +4,7 @@ import { ProductionContext } from '../../production/ProductionContext';
 import { IVisit, IVisitorMod } from '../Visitor/Visitor';
 import { ASTNode } from './AST';
 import { ImportType } from './ImportType';
+import { Package } from '../../core/Package';
 
 export type ITranformerCallback = (visit: IVisit) => IVisitorMod | void | undefined;
 
@@ -30,6 +31,6 @@ export interface ITransformer {
     test?: RegExp;
   };
   commonVisitors?: (props: ITransformerCommon) => ITransformerVisitors;
-  productionInit?: (props: ITransformerProduction) => void;
+  productionInit?: (productionContext: ProductionContext) => void;
   productionVisitors?: (props: ITransformerProduction) => ITransformerVisitors;
 }
