@@ -5,16 +5,13 @@ import { IModuleCacheBasics } from '../cache/cache';
 import { generate } from '../compiler/generator/generator';
 import { ASTNode } from '../compiler/interfaces/AST';
 import { ImportType } from '../compiler/interfaces/ImportType';
-import { ITransformerResult } from '../compiler/interfaces/ITranformerResult';
-import { ITranspiler } from '../compiler/interfaces/ITranspiler';
-import { javascriptTranspiler } from '../compiler/transpilers/javascriptTranspiler';
-import { typescriptTranspiler } from '../compiler/transpilers/typescriptTranspiler';
+import { transformCommonVisitors } from '../compiler/transformer';
 import { testPath } from '../plugins/pluginUtils';
+import { IModuleTree } from '../production/module/ModuleTree';
 import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { extractFuseBoxPath, fastHash, joinFuseBoxPath, readFile } from '../utils/utils';
 import { Context } from './Context';
 import { Package } from './Package';
-import { transpileStageOne } from '../compiler/transformer';
 const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.mjs'];
 
 export interface IAnalysis {
@@ -117,6 +114,8 @@ export class Module {
   public productionDependants: Array<Module> = [];
   public productionDependencies: Array<Module> = [];
 
+  public moduleTree: IModuleTree;
+
   constructor(public props: IModuleProps, pkg: Package) {
     this.pkg = pkg;
     this.assembled = false;
@@ -162,7 +161,7 @@ export class Module {
   }
 
   public transpile() {
-    return transpileStageOne(this);
+    return transformCommonVisitors(this);
   }
 
   public setMeta(key: string, value: any) {

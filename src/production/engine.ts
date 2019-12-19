@@ -1,8 +1,8 @@
-import { DependencyLink } from './phase1/DependencyLink';
+import { WarmupPhase } from './phase1/WarmupPhase';
 import { IProductionContext } from './ProductionContext';
 
 export function Engine(productionContext: IProductionContext) {
-  const phases = [DependencyLink];
+  const phases = [WarmupPhase];
   return {
     start: async () => {
       for (const phase of phases) phase(productionContext);

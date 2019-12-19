@@ -1,10 +1,9 @@
 import { Context } from '../../core/Context';
 import { Module } from '../../core/Module';
-import { ProductionContext } from '../../production/ProductionContext';
+import { IProductionContext } from '../../production/ProductionContext';
 import { IVisit, IVisitorMod } from '../Visitor/Visitor';
 import { ASTNode } from './AST';
 import { ImportType } from './ImportType';
-import { Package } from '../../core/Package';
 
 export type ITranformerCallback = (visit: IVisit) => IVisitorMod | void | undefined;
 
@@ -22,7 +21,7 @@ export interface ITransformerCommon {
 export interface ITransformerProduction {
   ctx: Context;
   module: Module;
-  productionContext: ProductionContext;
+  productionContext: IProductionContext;
 }
 
 export interface ITransformer {
@@ -31,6 +30,6 @@ export interface ITransformer {
     test?: RegExp;
   };
   commonVisitors?: (props: ITransformerCommon) => ITransformerVisitors;
-  productionInit?: (productionContext: ProductionContext) => void;
-  productionVisitors?: (props: ITransformerProduction) => ITransformerVisitors;
+
+  productionWarmupPhase?: (props: ITransformerProduction) => ITransformerVisitors;
 }

@@ -41,7 +41,6 @@ export function fusebox(config: IPublicConfig) {
       });
     },
     runProd: (props?: IProductionProps) => {
-      console.log('not implemented yet');
       const ctx = createProdContext(config, props);
 
       if (props && props.handler) {
