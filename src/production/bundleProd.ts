@@ -17,14 +17,14 @@ export async function bundleProd(ctx: Context) {
   plugins.forEach(plugin => plugin && plugin(ctx));
 
   const packages = assemble(ctx, ctx.config.entries[0]);
-  console.log('!!!');
+
   if (packages) {
     await processPlugins({
       ctx: ctx,
       packages: packages,
     });
   }
-  console.log('here', packages);
+
   const context = ProductionContext(ctx, packages);
 
   await Engine(context).start();
