@@ -1,6 +1,6 @@
 import { CustomTransformers } from 'typescript';
 import { Cache, createCache } from '../cache/cache';
-import { ITransformer } from '../compiler/program/transpileModule';
+import { ITransformer } from '../compiler/interfaces/ITransformer';
 import { createConfig } from '../config/config';
 import { IProductionProps } from '../config/IProductionProps';
 import { IPublicConfig } from '../config/IPublicConfig';
@@ -10,17 +10,15 @@ import { env } from '../env';
 import { createFuseLogger, FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
 import { createInterceptor, MainInterceptor } from '../interceptor/interceptor';
 import { TypescriptConfig } from '../interfaces/TypescriptInterfaces';
-import { ProductionContext } from '../production/ProductionContext';
 import { TsConfigAtPath } from '../resolver/fileLookup';
 import { initTypescriptConfig } from '../tsconfig/configParser';
-import { ensureUserPath, fastHash, path2RegexPattern } from '../utils/utils';
+import { ensureUserPath, fastHash } from '../utils/utils';
 import { createWebIndex, IWebIndexInterface } from '../web-index/webIndex';
 import { assembleContext, IAssembleContext } from './assemble_context';
 import { ContextTaskManager, createContextTaskManager } from './ContextTaskManager';
 import { Package } from './Package';
 import { createWeakModuleReferences, WeakModuleReferences } from './WeakModuleReferences';
 import { createWriter, IWriterActions } from './writer';
-import { ITransformer } from '../compiler/interfaces/ITransformer';
 
 export class Context {
   public assembleContext: IAssembleContext;
@@ -37,11 +35,9 @@ export class Context {
   public devServer?: IDevServerActions;
   public weakReferences: WeakModuleReferences;
 
-  public productionContext: ProductionContext;
   //public productionApiWrapper: ProductionAPIWrapper;
   public tsConfigAtPaths?: Array<TsConfigAtPath>;
   private _uniqueEntryHash: string;
-  private _tranformersAtPaths: Array<{ test: RegExp; transformer: (opts: any) => ITransformer }>;
 
   constructor(public config: PrivateConfig) {
     this.config.ctx = this;
@@ -135,7 +131,6 @@ export class Context {
       this.config.manifest.filePath = 'manifest.json';
     }
     this.config.manifest.filePath = ensureUserPath(this.config.manifest.filePath, this.writer.outputDirectory);
-    this.productionContext = new ProductionContext(this);
   }
 
   public get useSingleBundle() {

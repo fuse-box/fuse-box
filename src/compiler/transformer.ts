@@ -1,6 +1,7 @@
 import { Module } from '../core/Module';
 import { ASTNode } from './interfaces/AST';
 import { ImportType } from './interfaces/ImportType';
+import { ITransformerResult } from './interfaces/ITranformerResult';
 import { ITransformer, ITransformerVisitors } from './interfaces/ITransformer';
 import { ITransformerRequireStatementCollection } from './interfaces/ITransformerRequireStatements';
 import { createGlobalContext } from './program/GlobalContext';
@@ -19,9 +20,6 @@ import { CommonTSfeaturesTransformer } from './transformers/ts/CommonTSfeaturesT
 import { DecoratorTransformer } from './transformers/ts/decorators/DecoratorTransformer';
 import { EnumTransformer } from './transformers/ts/EnumTransformer';
 import { NamespaceTransformer } from './transformers/ts/NameSpaceTransformer';
-import { ITransformerResult } from './interfaces/ITranformerResult';
-
-import { PRODUCTION_TRANSFORMERS } from '../production/transformers';
 
 /**
  * Order of those transformers MATTER!
@@ -52,7 +50,7 @@ export const BASE_TRANSFORMERS: Array<ITransformer> = [
   ExportTransformer(),
 ];
 
-function isEligible(module: Module, transformer: ITransformer) {
+export function isTransformerEligible(module: Module, transformer: ITransformer) {
   const absPath = module.props.absPath;
   const isTypescript = module.isTypescriptModule();
   if (transformer.target) {
@@ -68,7 +66,7 @@ function isEligible(module: Module, transformer: ITransformer) {
   return true;
 }
 
-export function transpileStageOne(module: Module): ITransformerResult {
+export function transformCommonVisitors(module: Module): ITransformerResult {
   const requireStatementCollection: ITransformerRequireStatementCollection = [];
   function onRequireCallExpression(importType: ImportType, statement: ASTNode) {
     // making sure we have haven't emitted the same property twice
@@ -89,11 +87,11 @@ export function transpileStageOne(module: Module): ITransformerResult {
     // user transformer need to be executed after the first transformers
     if (index === 1) {
       for (const userTransformer of userTransformers) {
-        if (userTransformer.commonVisitors && isEligible(module, userTransformer))
+        if (userTransformer.commonVisitors && isTransformerEligible(module, userTransformer))
           commonVisitors.push(userTransformer.commonVisitors({ ctx, module, onRequireCallExpression }));
       }
     }
-    if (transformer.commonVisitors && isEligible(module, transformer))
+    if (transformer.commonVisitors && isTransformerEligible(module, transformer))
       commonVisitors.push(transformer.commonVisitors({ ctx, module, onRequireCallExpression }));
     index++;
   }
