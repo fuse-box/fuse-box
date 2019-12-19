@@ -1,13 +1,12 @@
-import { prerequisites } from '../main/prerequisite';
 import { Context } from '../core/Context';
+import { assemble } from '../main/assemble';
+import { prerequisites } from '../main/prerequisite';
+import { processPlugins } from '../main/process_plugins';
 import { pluginAssumption } from '../plugins/core/plugin_assumption';
 import { pluginCSS } from '../plugins/core/plugin_css';
 import { pluginSass } from '../plugins/core/plugin_sass';
-import { assemble } from '../main/assemble';
-import { processPlugins } from '../main/process_plugins';
-import { launchFirstStage } from './transformers/stage-1';
+import { Engine } from './engine';
 import { ProductionContext } from './ProductionContext';
-import { launchProductionInit } from './transformers';
 
 export async function bundleProd(ctx: Context) {
   prerequisites(ctx);
@@ -26,7 +25,9 @@ export async function bundleProd(ctx: Context) {
     });
   }
 
-  launchProductionInit(ctx, packages);
+  const context = ProductionContext(ctx, packages);
+
+  await Engine(context).start();
 
   ctx.log.fuseFinalise();
 }
