@@ -1,8 +1,9 @@
 import { ASTNode } from '../../compiler/interfaces/AST';
 import { Module } from '../../core/Module';
 import { IProductionContext } from '../ProductionContext';
+import { IVisit } from '../../compiler/Visitor/Visitor';
 
-export function DynamicImport(module: Module, node: ASTNode) {}
+export function DynamicImport(module: Module, visit: IVisit) {}
 export type IDynamicImport = ReturnType<typeof DynamicImport>;
 
 export function DynamicImports(productionContext: IProductionContext, module: Module) {
@@ -10,7 +11,7 @@ export function DynamicImports(productionContext: IProductionContext, module: Mo
   return {
     isReferencedByModule: (target: Module) => {},
     hasModules: () => collection.length > 0,
-    register: (node: ASTNode) => collection.push(DynamicImport(module, node)),
+    register: (visit: IVisit) => collection.push(DynamicImport(module, visit)),
   };
 }
 
