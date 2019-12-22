@@ -75,11 +75,11 @@ function ImportReference(props: {
     node.callee.name === 'require'
   ) {
     // const bar = require('foo');
-    type = {
+    type = ModuleRefType.SIDE_EFFECT_IMPORT;
+    source = {
       type: 'Literal',
-      value: ModuleRefType.SIDE_EFFECT_IMPORT
+      value: node.arguments[0].value
     };
-    source = node.arguments[0].value;
 
   } else if (node.type === 'ImportEqualsDeclaration') {
     // import _ = require('foo');
