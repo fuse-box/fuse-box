@@ -1,8 +1,7 @@
+import { ASTNode } from '../../compiler/interfaces/AST';
 import { IVisit } from '../../compiler/Visitor/Visitor';
 import { Module } from '../../core/Module';
 import { IProductionContext } from '../ProductionContext';
-import { ASTNode } from '../../compiler/interfaces/AST';
-import { ReturnTypedNode } from 'ts-morph';
 
 export interface ExportReferenceProps {
   module: Module;
