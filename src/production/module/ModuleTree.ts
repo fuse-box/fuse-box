@@ -1,7 +1,8 @@
 import { ASTNode } from '../../compiler/interfaces/AST';
+import { IVisit } from '../../compiler/Visitor/Visitor';
 import { Module } from '../../core/Module';
 import { IProductionContext } from '../ProductionContext';
-import { IVisit } from '../../compiler/Visitor/Visitor';
+import { ExportReferences, IExportReferences } from './ExportReference';
 
 export function DynamicImport(module: Module, visit: IVisit) {}
 export type IDynamicImport = ReturnType<typeof DynamicImport>;
@@ -25,9 +26,10 @@ export function ExternalReferences(productionContext: IProductionContext, module
 }
 
 export function ModuleTree(productionContext: IProductionContext, module: Module) {
+  const exportReferences: IExportReferences = ExportReferences(productionContext, module);
   return {
-    externalReferences: ExternalReferences(productionContext, module),
-    dynamicImports: DynamicImports(productionContext, module),
+    exportReferences,
+    //dynamicImports: DynamicImports(productionContext, module),
   };
 }
 
