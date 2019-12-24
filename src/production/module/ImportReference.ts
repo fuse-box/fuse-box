@@ -27,24 +27,28 @@ export interface ImportReferenceProps {
 };
 
 export function ImportReference(props: ImportReferenceProps) {
-  return {
+  const exported = {
     module: props.module,
     remove: function () {
+      exported.removed = true;
       // @todo remove myself..
       if (props.visit.property && props.visit.parent) {
         if (props.visit.parent[props.visit.property] instanceof Array) {
-          const index = props.visit.parent[props.visit.property].indexOf(node);
+          const index = props.visit.parent[props.visit.property].indexOf(props.visit.node);
           if (index > -1) {
             props.visit.parent[props.visit.property].splice(index, 1);
           }
         }
       }
     },
+    removed: false,
     source: props.source,
     specifiers: props.specifiers,
     type: props.type,
     visit: props.visit
   };
+
+  return exported;
 };
 
 export interface ImportSpecifierReferenceProps {
