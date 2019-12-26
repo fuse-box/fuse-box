@@ -27,6 +27,8 @@ describe('Phase 1 Import link test', () => {
     expect(refs).toHaveLength(1);
     refs[0].remove();
     expect(refs[0].removed).toBe(true);
+    refs.splice(0, 1);
+    expect(refs).toHaveLength(0);
   });
 
   // it('Import Equals declaration', () => {
