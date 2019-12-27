@@ -14,7 +14,7 @@ const utils = require('./utils');
 declare global {
   namespace jest {
     // tslint:disable-next-line:interface-name
-    interface Matchers<R> {
+    interface Matchers<R, T> {
       toMatchFilePath(path: string): R;
       toMatchJSONSnapshot(): R;
     }
@@ -273,7 +273,7 @@ export function mockWriteFile() {
     },
   };
 }
-export function testUtils() {}
+export function testUtils() { }
 
 expect.extend({
   toMatchJSONSnapshot(str: string) {
