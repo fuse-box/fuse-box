@@ -21,8 +21,6 @@ export const env = {
 };
 
 export function getPackageManagerData() {
-  console.log("SHIT");
-  console.log(FUSE_ROOT);
   if (fs.existsSync(path.join(FUSE_ROOT, './.yarnrc'))
       || fs.existsSync(path.join(FUSE_ROOT, './yarn.lock'))) {
     return {name: 'yarn', installCmd: 'yarn add', installDevCmd: 'yarn add --dev'}
