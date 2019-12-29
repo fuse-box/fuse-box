@@ -23,20 +23,16 @@ export const env = {
 };
 
 export function getPackageManagerData() {
-  function Data(name: string, installCmd: string, installDevCmd: string) {
-    this.name = name;
-    this.installCmd = installCmd;
-    this.installDevCmd = installDevCmd;
-  }
-
+  console.log("SHIT");
+  console.log(FUSE_ROOT);
   if (fs.existsSync(path.join(FUSE_ROOT, './.yarnrc'))
       || fs.existsSync(path.join(FUSE_ROOT, './yarn.lock'))) {
-    return new Data('yarn', 'yarn add', 'yarn add --dev');
+    return {name: 'yarn', installCmd: 'yarn add', installDevCmd: 'yarn add --dev'}
   } else if (fs.existsSync(path.join(FUSE_ROOT, './pnpm-lock.yaml'))) {
-    return new Data('pnpm', 'pnpm add', 'pnpm add --save-dev');
+    return {name: 'pnpm', installCmd: 'pnpm add', installDevCmd: 'pnpm add --save-dev'}
   } else {
     // package-lock.json
-    return new Data('npm', 'npm install', 'npm install --save-dev');;
+    return {name: 'npm', installCmd: 'npm install', installDevCmd: 'npm install --save-dev'}
   }
 }
 
