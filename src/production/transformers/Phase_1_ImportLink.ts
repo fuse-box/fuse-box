@@ -42,11 +42,12 @@ export function Phase_1_ImportLink(): ITransformer {
 
       return {
         onEachNode: (visit: IVisit): IVisitorMod => {
+          if (visit.parent && visit.parent.type === 'Program') {
+            return;
+          }
+
           const { node } = visit;
-          if (
-            visit.parent && visit.parent.type !== 'Program' &&
-            (isEligibleDynamicImport(node) || isEligibleRequire(node))
-          ) {
+          if (isEligibleDynamicImport(node) || isEligibleRequire(node)) {
             tree.importReferences.register({ module, productionContext, visit });
           }
         },
