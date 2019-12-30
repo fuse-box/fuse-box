@@ -141,7 +141,7 @@ function regularImport(props: ImportReferencesProps, scope: IImportReferences) {
 };
 
 // const bar = require('foo');
-function regualRequire(props: ImportReferencesProps, scope: IImportReferences) {
+function regularRequire(props: ImportReferencesProps, scope: IImportReferences) {
   const { node } = props.visit;
 
   scope.references.push(
@@ -163,6 +163,20 @@ function sideEffectImportRequire(props: ImportReferencesProps, scope: IImportRef
       module: props.module,
       source: node.moduleReference.expression.value,
       type: ImportReferenceType.SIDE_EFFECT_IMPORT,
+      visit: props.visit
+    })
+  );
+}
+
+// import('./module');
+function dynamicImport(props: ImportReferencesProps, scope: IImportReferences) {
+  const { node } = props.visit;
+
+  scope.references.push(
+    ImportReference({
+      module: props.module,
+      source: node.source.value,
+      type: ImportReferenceType.DYNAMIC_IMPORT,
       visit: props.visit
     })
   );
@@ -194,11 +208,13 @@ export function ImportReferences(productionContext: IProductionContext, module: 
       } else if (node.type === 'ImportEqualsDeclaration') {
         // import _ = require('foo');
         sideEffectImportRequire(props, scope);
+      } else if (node.type === 'ImportExpression') {
+        // import('./module');
+        dynamicImport(props, scope);
       }
       /**
        * @todo
        *
-       * Dynamic import
        * export ... FROM ...
        */
     }

@@ -25,5 +25,6 @@ util();
 async function aaaa() {
   const res = await import('./split');
 }
-const dynImp1 = () => import('./dyn1');
-const dynImp2 = import('./dyn2');
+const dynImp1 = () => import('./dyn/dyn1');
+const dynImp2 = import('./dyn/dyn2');
+const dynImp3Ignore = import('./dyn/dyn3');
