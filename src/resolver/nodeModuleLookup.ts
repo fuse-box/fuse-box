@@ -83,19 +83,17 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
     }
   }
 
-  let localModuleRoot = CACHED_LOCAL_MODULES[props.filePath];
-  if (localModuleRoot === undefined) {
-    localModuleRoot = CACHED_LOCAL_MODULES[props.filePath] = findUp(props.filePath, 'node_modules');
-  }
-  if (!!localModuleRoot && paths.indexOf(localModuleRoot) === -1) {
-    paths.push(localModuleRoot);
-    const attempted = path.join(localModuleRoot, parsed.name);
-    if (fileExists(attempted)) {
-      return attempted;
-    }
-  }
+  // let localModuleRoot = CACHED_LOCAL_MODULES[props.filePath];
+  // if (localModuleRoot === undefined) {
+  //   localModuleRoot = CACHED_LOCAL_MODULES[props.filePath] = findUp(props.filePath, 'node_modules');
+  // }
 
-  throw `Cannot resolve "${props.target}" module from: ${paths.join(', ')}`;
+  // if (!!localModuleRoot && paths.indexOf(localModuleRoot) === -1) {
+  //   const attempted = path.join(localModuleRoot, parsed.name);
+  //   if (fileExists(attempted)) {
+  //     return attempted;
+  //   }
+  // }
 }
 export interface INodeModuleLookup {
   error?: string;
@@ -109,11 +107,11 @@ export interface INodeModuleLookup {
 
 export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): INodeModuleLookup {
   let folder: string;
-  try {
-    folder = findTargetFolder(props, parsed);
-  } catch (error) {
-    if (typeof error !== 'string') throw error;
-    return { error };
+
+  folder = findTargetFolder(props, parsed);
+
+  if (!folder) {
+    return { error: `Cannot resolve "${parsed.name}"` };
   }
 
   const result: INodeModuleLookup = {};
