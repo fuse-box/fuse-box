@@ -83,17 +83,17 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
     }
   }
 
-  // let localModuleRoot = CACHED_LOCAL_MODULES[props.filePath];
-  // if (localModuleRoot === undefined) {
-  //   localModuleRoot = CACHED_LOCAL_MODULES[props.filePath] = findUp(props.filePath, 'node_modules');
-  // }
+  let localModuleRoot = CACHED_LOCAL_MODULES[props.filePath];
+  if (localModuleRoot === undefined) {
+    localModuleRoot = CACHED_LOCAL_MODULES[props.filePath] = findUp(props.filePath, 'node_modules');
+  }
 
-  // if (!!localModuleRoot && paths.indexOf(localModuleRoot) === -1) {
-  //   const attempted = path.join(localModuleRoot, parsed.name);
-  //   if (fileExists(attempted)) {
-  //     return attempted;
-  //   }
-  // }
+  if (!!localModuleRoot && paths.indexOf(localModuleRoot) === -1) {
+    const attempted = path.join(localModuleRoot, parsed.name);
+    if (fileExists(attempted)) {
+      return attempted;
+    }
+  }
 }
 export interface INodeModuleLookup {
   error?: string;
