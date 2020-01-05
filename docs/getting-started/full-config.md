@@ -62,6 +62,7 @@ export interface IPublicConfig {
 
 	hmr?: boolean | IHMRExternalProps = {
 		reloadEntryOnStylesheet?: boolean;
+		hardReloadScripts?: boolean;
 	};
 	stylesheet?: IStyleSheetProps = {
 		ignoreChecksForCopiedResources?: boolean;

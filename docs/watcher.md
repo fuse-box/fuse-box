@@ -45,15 +45,3 @@ fusebox({
 ```
 
 *(note: The `ignored` field given to `chokidar` is declared by the `watch` field in FuseBox's configuration.  Do not define the `ignored` field here.)*
-
-### Hard reload scripts (js/ts files)
-
-By default scripts are hot reloaded. Change the `hardReloadScripts` option to hard reload when changes are detected to script source files.
-
-```ts
-fusebox({
-  watch: {
-    hardReloadScripts: true,
-  },
-});
-```

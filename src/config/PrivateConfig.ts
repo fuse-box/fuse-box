@@ -20,6 +20,7 @@ import { IWebWorkerConfig } from './IWebWorkerConfig';
 
 export interface IHMRExternalProps {
   reloadEntryOnStylesheet?: boolean;
+  hardReloadScripts?: boolean;
 }
 
 const ESSENTIAL_DEPENDENCIES = ['fuse-box-dev-import', 'tslib'];
@@ -119,7 +120,8 @@ export class PrivateConfig {
     // define default settings for code splitting
     this.codeSplitting = props.codeSplitting || {};
     this.codeSplitting.useHash = typeof this.codeSplitting.useHash === undefined ? true : this.codeSplitting.useHash;
-    this.codeSplitting.maxPathLength = typeof this.codeSplitting.maxPathLength === 'number' ? this.codeSplitting.maxPathLength : 20;
+    this.codeSplitting.maxPathLength =
+      typeof this.codeSplitting.maxPathLength === 'number' ? this.codeSplitting.maxPathLength : 20;
 
     if (!this.codeSplitting.scriptRoot) {
       if (this.isServer()) {
@@ -132,7 +134,6 @@ export class PrivateConfig {
         }
       }
     }
-
 
     this.watch = {
       enabled: !env.isTest,

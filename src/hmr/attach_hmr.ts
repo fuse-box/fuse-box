@@ -2,8 +2,11 @@ import { Context } from '../core/Context';
 import { Module } from '../core/Module';
 import { Package } from '../core/Package';
 import { fastHash, measureTime } from '../utils/utils';
+import { EXECUTABLE_EXTENSIONS } from '../config/extensions';
 import { WatcherAction } from '../watcher/watcher';
 import { generateHMRContent } from './hmr_content';
+
+const SCRIPT_EXT_REGEX = new RegExp(`\\.(${EXECUTABLE_EXTENSIONS.join('|').replace(/\./g, '')})$`);
 
 function generateUpdateId() {
   return fastHash(new Date().getTime().toString() + Math.random().toString());
@@ -108,26 +111,22 @@ export function attachHMR(ctx: Context) {
     }
   }
 
-  function hardProjectUpdate(ws_instance?: WebSocket) {
-    ctx.log.info('reload', 'Reloading webpage');
-    devServer.clientSend('reload', undefined, ws_instance);
-  }
-
   // here we recieve an update from client - the entire tree of its modules
   devServer.onClientMessage((event, payload: IClientSummary, ws_instance?: WebSocket) => {
     const task = tasks[payload.id];
     if (event === 'summary' && payload.id && task) {
-      if (task.action === WatcherAction.HARD_RELOAD_MODULES) {
-        hardProjectUpdate(ws_instance);
-      } else {
-        softProjectUpdate(task, payload, ws_instance);
-      }
+      softProjectUpdate(task, payload, ws_instance);
     }
   });
 
   ctx.ict.on('rebundle_complete', props => {
     const { packages, file } = props;
-    if (file) {
+
+    const hardReloadScripts = ctx.config.hmr.hmrProps.hardReloadScripts;
+    if (hardReloadScripts && SCRIPT_EXT_REGEX.test(file)) {
+      ctx.log.info('reload', 'Reloading webpage');
+      devServer.clientSend('reload', undefined);
+    } else if (file) {
       const project = packages.find(pkg => pkg.isDefaultPackage);
       let target = project.modules.find(module => module.props.absPath === file);
       if (!target) {

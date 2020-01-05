@@ -1,13 +1,10 @@
 import * as chokidar from 'chokidar';
 import * as path from 'path';
-import { EXECUTABLE_EXTENSIONS } from '../config/extensions';
 import { Context } from '../core/Context';
 import { env } from '../env';
 import { WatchOptions } from 'chokidar';
 
 type IChokidarEventType = 'add' | 'change' | 'unlink' | 'addDir' | 'unlinkDir' | 'error' | 'ready';
-
-const SCRIPT_EXT_REGEX = new RegExp(`\\.(${EXECUTABLE_EXTENSIONS.join('|').replace(/\./g, '')})$`);
 
 export interface IWatcherExternalProps {
   paths?: any;
@@ -15,7 +12,6 @@ export interface IWatcherExternalProps {
   ignored?: Array<string | RegExp>;
   banned?: Array<string>;
   chokidar?: WatchOptions;
-  hardReloadScripts?: boolean;
 }
 
 export function attachChokidar(props: {
@@ -58,17 +54,13 @@ export enum WatcherAction {
   RESTART_PROCESS = 'RESTART_PROCESS',
 }
 
-export function detectAction(file: string, homeDir: string, hardReloadScripts: boolean): WatcherAction {
+export function detectAction(file: string, homeDir: string): WatcherAction {
   if (file === env.SCRIPT_FILE) {
     return WatcherAction.RESTART_PROCESS;
   }
 
   if (path.basename(file) === 'tsconfig.json') {
     return WatcherAction.RELOAD_TS_CONFIG;
-  }
-
-  if (hardReloadScripts && SCRIPT_EXT_REGEX.test(file)) {
-    return WatcherAction.HARD_RELOAD_MODULES;
   }
 
   if (/(package-lock\.json|yarn\.lock)$/.test(file)) {
@@ -90,13 +82,12 @@ export function getEventData(props: {
   const evt = props.input.event;
   const file = path.normalize(props.input.path);
   const homeDir = props.ctx.config.homeDir;
-  const hardReloadScripts = props.ctx.config.watch.watcherProps.hardReloadScripts;
   const events = {
-    add: () => detectAction(file, homeDir, hardReloadScripts),
-    change: () => detectAction(file, homeDir, hardReloadScripts),
-    unlink: () => detectAction(file, homeDir, hardReloadScripts),
-    addDir: () => detectAction(file, homeDir, hardReloadScripts),
-    unlinkDir: () => detectAction(file, homeDir, hardReloadScripts),
+    add: () => detectAction(file, homeDir),
+    change: () => detectAction(file, homeDir),
+    unlink: () => detectAction(file, homeDir),
+    addDir: () => detectAction(file, homeDir),
+    unlinkDir: () => detectAction(file, homeDir),
     error: () => {},
   };
   if (events[evt]) {
