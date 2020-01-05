@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
 If you chose `fuse.js` (javascript) as your fuse file:
 1. simply run `node fuse.js` to start your project
 
-If you chose `fues.ts` (typescript) as your fuse file:
+If you chose `fuse.ts` (typescript) as your fuse file:
 1. first install ts-node (`npm i ts-node --save-dev`)
 2. then run `ts-node fuse.ts`
 
