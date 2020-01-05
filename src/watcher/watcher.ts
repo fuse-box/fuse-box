@@ -1,10 +1,13 @@
 import * as chokidar from 'chokidar';
 import * as path from 'path';
+import { EXECUTABLE_EXTENSIONS } from '../config/extensions';
 import { Context } from '../core/Context';
 import { env } from '../env';
 import { WatchOptions } from 'chokidar';
 
 type IChokidarEventType = 'add' | 'change' | 'unlink' | 'addDir' | 'unlinkDir' | 'error' | 'ready';
+
+const SCRIPT_EXT_REGEX = new RegExp(`\\.(${EXECUTABLE_EXTENSIONS.join('|').replace(/\./g, '')})$`);
 
 export interface IWatcherExternalProps {
   paths?: any;
@@ -64,7 +67,7 @@ export function detectAction(file: string, homeDir: string, hardReloadScripts: b
     return WatcherAction.RELOAD_TS_CONFIG;
   }
 
-  if (hardReloadScripts && /\.(js|jsx|ts|tsx)$/.test(file)) {
+  if (hardReloadScripts && SCRIPT_EXT_REGEX.test(file)) {
     return WatcherAction.HARD_RELOAD_MODULES;
   }
 
