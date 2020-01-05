@@ -2,7 +2,7 @@
 
 The `webIndex` field is used to configure how the final product html files are templated and handled.
 
-By default, FuseBox will generate an empty html file with links to your javascript and stylesheet added.  
+By default, FuseBox will generate an empty html file with links to your javascript and stylesheet added.
 
 ---
 
@@ -12,24 +12,26 @@ By default, FuseBox will generate an empty html file with links to your javascri
 
     - `$bundles`: JavaScript bundles generated.  Will be replaced with a list of `<script ...>` items
     - `$css`: CSS bundles generated.  Will be replaced with a list of `<link rel="stylesheet" ... />` items.
+    - `$import('<path>')`: Resource imports. Will be replaced with the path of the copied resource.
 
 
 
 2. Then, direct FuseBox to use this template as the webIndex.
 
 
-### Example 
+### Example
 
 ```html
 <!DOCTYPE html>
 <html>
   <head>
     <title>My Page Title</title>
+    <link rel="icon" href="$import('assets/favicon.png')" />
     $css
   </head>
 
   <body>
-    Some content above the JS bundles. 
+    Some content above the JS bundles.
     $bundles
   </body>
 </html>
@@ -68,7 +70,7 @@ The WebIndex feature can be customized by the following optional parameters:
 
 ## Super Custom Transformations
 
-If the [Consolidate Plugin](./plugins/pluniConsolidate.md)* is not enough for your purposes, fou might be interested in transforming the `index.html` template page dynamically. 
+If the [Consolidate Plugin](./plugins/pluniConsolidate.md)* is not enough for your purposes, fou might be interested in transforming the `index.html` template page dynamically.
 You can develop a plugin to do this by listening to the  `"before_webindex_write"` event:
 
 ```ts
