@@ -5,6 +5,7 @@ import { env } from '../env';
 import { ensureAbsolutePath, fileExists, readFile, joinFuseBoxPath } from '../utils/utils';
 import { htmlStrings } from './htmlStrings';
 import { FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
+import { resolveCSSResource } from '../stylesheet/cssResolveURL';
 
 export interface IWebIndexConfig {
   enabled?: boolean;
@@ -22,7 +23,7 @@ export interface IWebIndexInterface {
   generate?: (bundles: Array<IBundleWriteResponse>) => void;
 }
 
-export function replaceWebIndexStrings(str: string, keys: { [key: string]: any }) {
+export function replaceWebIndexStrings(str: string, keys: Record<string, string>) {
   return str.replace(/\$([a-z_-]+)/gi, (_var, name) => {
     return keys[name] !== undefined ? (typeof keys[name] === 'object' ? JSON.stringify(keys[name]) : keys[name]) : '';
   });
@@ -101,10 +102,6 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
           }
         }
       });
-      const scriptOpts: any = {
-        bundles: scriptTags.join('\n'),
-        css: cssTags.join('\n'),
-      };
 
       let fileContents = opts.templateContent;
 
@@ -120,10 +117,31 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
         fileContents = pluginResponse.fileContents;
       }
 
+      fileContents = fileContents.replace(/\$import\('(.+?)'\)/g, (_, relPath: string) => {
+        const result = resolveCSSResource(relPath, {
+          contents: '',
+          ctx,
+          filePath: opts.templatePath,
+          options: ctx.config.stylesheet,
+        });
+        if (result) {
+          return result.publicPath;
+        } else {
+          ctx.log.warn(`Unable to resolve ${result.original}`);
+          return '';
+        }
+      });
+
+      const scriptOpts = {
+        bundles: scriptTags.join('\n'),
+        css: cssTags.join('\n'),
+      };
+      fileContents = replaceWebIndexStrings(fileContents, scriptOpts);
+
       logger.info('webindex', 'writing to $name</yellow></bold></dim>', {
         name: opts.distFileName,
       });
-      await ctx.writer.write(opts.distFileName, replaceWebIndexStrings(fileContents, scriptOpts));
+      await ctx.writer.write(opts.distFileName, fileContents);
     },
   };
 }
