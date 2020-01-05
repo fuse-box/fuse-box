@@ -12,6 +12,7 @@ export interface IWatcherExternalProps {
   ignored?: Array<string | RegExp>;
   banned?: Array<string>;
   chokidar?: WatchOptions;
+  hardReloadScripts?: boolean;
 }
 
 export function attachChokidar(props: {
@@ -54,19 +55,25 @@ export enum WatcherAction {
   RESTART_PROCESS = 'RESTART_PROCESS',
 }
 
-export function detectAction(file: string, homeDir: string): WatcherAction {
-  const isInsideHomeDir = !/\.\./.test(path.relative(homeDir, file));
-
+export function detectAction(file: string, homeDir: string, hardReloadScripts: boolean): WatcherAction {
   if (file === env.SCRIPT_FILE) {
     return WatcherAction.RESTART_PROCESS;
   }
+
   if (path.basename(file) === 'tsconfig.json') {
     return WatcherAction.RELOAD_TS_CONFIG;
   }
-  if (/(package.lock.json|yarn.lock)$/.test(file)) {
+
+  if (hardReloadScripts && /\.(js|jsx|ts|tsx)$/.test(file)) {
     return WatcherAction.HARD_RELOAD_MODULES;
   }
-  if (!isInsideHomeDir) {
+
+  if (/(package-lock\.json|yarn\.lock)$/.test(file)) {
+    return WatcherAction.HARD_RELOAD_MODULES;
+  }
+
+  const isNotInsideHomeDir = /\.\./.test(path.relative(homeDir, file));
+  if (isNotInsideHomeDir) {
     return;
   }
 
@@ -80,12 +87,13 @@ export function getEventData(props: {
   const evt = props.input.event;
   const file = path.normalize(props.input.path);
   const homeDir = props.ctx.config.homeDir;
+  const hardReloadScripts = props.ctx.config.watch.watcherProps.hardReloadScripts;
   const events = {
-    add: () => detectAction(file, homeDir),
-    change: () => detectAction(file, homeDir),
-    unlink: () => detectAction(file, homeDir),
-    addDir: () => detectAction(file, homeDir),
-    unlinkDir: () => detectAction(file, homeDir),
+    add: () => detectAction(file, homeDir, hardReloadScripts),
+    change: () => detectAction(file, homeDir, hardReloadScripts),
+    unlink: () => detectAction(file, homeDir, hardReloadScripts),
+    addDir: () => detectAction(file, homeDir, hardReloadScripts),
+    unlinkDir: () => detectAction(file, homeDir, hardReloadScripts),
     error: () => {},
   };
   if (events[evt]) {
