@@ -17,7 +17,7 @@ interface IHMRTask {
 
 interface IClientSummary {
   id: string;
-  summary: { [key: string]: Array<string> };
+  summary: Record<string, string[]>;
 }
 export function attachHMR(ctx: Context) {
   const config = ctx.config;
@@ -31,7 +31,7 @@ export function attachHMR(ctx: Context) {
     return;
   }
 
-  const tasks: { [key: string]: IHMRTask } = {};
+  const tasks: Record<string, IHMRTask> = {};
   let lastGeneratedHMR = null;
   let lastPayLoadID = null;
 
@@ -108,10 +108,20 @@ export function attachHMR(ctx: Context) {
     }
   }
 
+  function hardProjectUpdate(ws_instance?: WebSocket) {
+    ctx.log.info('reload', 'Reloading webpage');
+    devServer.clientSend('reload', undefined, ws_instance);
+  }
+
   // here we recieve an update from client - the entire tree of its modules
   devServer.onClientMessage((event, payload: IClientSummary, ws_instance?: WebSocket) => {
-    if (event === 'summary' && payload.id && tasks[payload.id]) {
-      softProjectUpdate(tasks[payload.id], payload, ws_instance);
+    const task = tasks[payload.id];
+    if (event === 'summary' && payload.id && task) {
+      if (task.action === WatcherAction.HARD_RELOAD_MODULES) {
+        hardProjectUpdate(ws_instance);
+      } else {
+        softProjectUpdate(task, payload, ws_instance);
+      }
     }
   });
 
