@@ -62,6 +62,7 @@ export interface IPublicConfig {
 
 	hmr?: boolean | IHMRExternalProps = {
 		reloadEntryOnStylesheet?: boolean;
+		hardReloadScripts?: boolean;
 	};
 	stylesheet?: IStyleSheetProps = {
 		ignoreChecksForCopiedResources?: boolean;
@@ -215,6 +216,17 @@ resources?: IResourceConfig = {
 	resourcePublicRoot?: string; //default: "/resources"
 	resourceFolder?: string; //default: "{YOUR_DIST_FOLDER}/resources"
 }
+```
+<br>
+
+
+### [**hmr**](../hmr.md) - Hot module reloading options
+
+```
+hmr?: boolean | IHMRExternalProps = {
+	reloadEntryOnStylesheet?: boolean;
+	hardReloadScripts?: boolean;
+};
 ```
 <br>
 
