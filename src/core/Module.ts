@@ -7,11 +7,12 @@ import { ASTNode } from '../compiler/interfaces/AST';
 import { ImportType } from '../compiler/interfaces/ImportType';
 import { transformCommonVisitors } from '../compiler/transformer';
 import { testPath } from '../plugins/pluginUtils';
-import { IModuleTree } from '../production/module/ModuleTree';
+import { IModuleTree, ModuleTree } from '../production/module/ModuleTree';
 import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { extractFuseBoxPath, fastHash, joinFuseBoxPath, readFile } from '../utils/utils';
 import { Context } from './Context';
 import { Package } from './Package';
+import { IProductionContext } from '../production/ProductionContext';
 const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.mjs'];
 
 export interface IAnalysis {
@@ -176,6 +177,10 @@ export class Module {
       this.setMeta(key, defaultValue);
       return defaultValue;
     }
+  }
+
+  public addModuleTree(forced: boolean = false) {
+    this.moduleTree = ModuleTree(this.props.ctx, this);
   }
 
   public addWeakReference(url: string) {

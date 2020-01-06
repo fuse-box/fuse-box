@@ -6,10 +6,12 @@ import { ExportReferences, IExportReferences } from './ExportReference';
 import { ImportReferences, IImportReference } from './ImportReference';
 
 export function ModuleTree(productionContext: IProductionContext, module: Module) {
-  const importReferences: IImportReference = ImportReferences(productionContext, module);
+  const dependants: Array<IImportReference> = [];
   const exportReferences: IExportReferences = ExportReferences(productionContext, module);
+  const importReferences: IImportReference = ImportReferences(productionContext, module);
 
   return {
+    dependants,
     exportReferences,
     importReferences,
   };
