@@ -1,4 +1,3 @@
-import { readFileSync } from 'fs';
 import { testTranspile } from '../transpilers/testTranspiler';
 
 let file;
