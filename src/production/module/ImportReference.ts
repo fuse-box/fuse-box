@@ -80,6 +80,7 @@ export function ImportSpecifierReference(props: ImportSpecifierReferenceProps) {
     },
     removed: false,
     specifier: props.specifier,
+    type: props.type,
     visit: props.visit
   };
 
