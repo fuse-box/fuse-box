@@ -220,6 +220,17 @@ resources?: IResourceConfig = {
 <br>
 
 
+### [**hmr**](../hmr.md) - Hot module reloading options
+
+```
+hmr?: boolean | IHMRExternalProps = {
+	reloadEntryOnStylesheet?: boolean;
+	hardReloadScripts?: boolean;
+};
+```
+<br>
+
+
 ### [**stylesheet**](../stylesheet.md) - How stylesheet files (css, sass, etc) are imported and processed
 
 ```
