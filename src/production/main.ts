@@ -60,6 +60,5 @@ export async function productionMain(props: IProductionMain): Promise<IProductio
   // writing bundles and such
   const data = await finalStage(flow);
   props.ctx.log.stopStreaming();
-  props.ctx.ict.sync('complete', { bundles: data.bundles, ctx: props.ctx, packages: props.packages });
   return data;
 }
