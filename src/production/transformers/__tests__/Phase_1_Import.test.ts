@@ -95,7 +95,7 @@ describe('Phase 1 - Imports test', () => {
     expect(refs[0].source === './foo');
     expect(refs[0].specifiers).toHaveLength(1);
     expect(refs[0].specifiers[0].local === 'bar');
-    expect(refs[0].specifiers[0].name === 'default');
+    expect(refs[0].specifiers[0].name === undefined);
   });
 
   it(`regularImport import { bar } from './bar' should be ignored`, () => {

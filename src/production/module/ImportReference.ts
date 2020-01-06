@@ -88,7 +88,6 @@ function ImportSpecifier(visit: IVisit, specifier: ASTNode): ImportSpecifierRefe
   if (specifier.type === 'ImportNamespaceSpecifier') {
     // import * as React from 'react'
     local = specifier.local.name;
-    name = 'default';
   } else if (specifier.type === 'ImportDefaultSpecifier') {
     // import styled from '@emotion/styled'
     local = specifier.local.name;
