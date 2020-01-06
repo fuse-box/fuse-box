@@ -33,7 +33,7 @@ fusebox({
 *(note: Strings are automatically converted to regular expressions. FuseBox also takes care of windows/\*nix paths for you. For example`./` is converted into `(\/|\\)\.`)*
 
 ## Suggested files to ignore
-* Emacs flycheck temporary files: `/flycheck_/i`. For a specific file, something like `/flycheck_filename.extension/i`
+* Emacs flycheck temporary files: `/flycheck_/i`. For a specific file, something like `/flycheck_filename.extension/i` where "filename.extension" could be, for example, "index.ts".
 
 
 ### Chokidar options
