@@ -12,7 +12,6 @@ import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { extractFuseBoxPath, fastHash, joinFuseBoxPath, readFile } from '../utils/utils';
 import { Context } from './Context';
 import { Package } from './Package';
-import { IProductionContext } from '../production/ProductionContext';
 const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.mjs'];
 
 export interface IAnalysis {
