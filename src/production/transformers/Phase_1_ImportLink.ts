@@ -29,8 +29,10 @@ export function Phase_1_ImportLink(): ITransformer {
       function isEligibleImportOrExport(node): boolean {
         return (
           NODES_OF_INTEREST[node.type] &&
-          node.source &&
-          refs[node.source.value]
+          (
+            (node.source && refs[node.source.value]) ||
+            (node.moduleReference && refs[node.moduleReference.expression.value])
+          )
         );
       }
 
@@ -56,7 +58,6 @@ export function Phase_1_ImportLink(): ITransformer {
 
         onTopLevelTraverse: (visit: IVisit) => {
           const { node } = visit;
-          // @todo, export from.
           if (isEligibleImportOrExport(node) || isEligibleRequire(node)) {
             tree.importReferences.register({ module, productionContext, visit });
           }

@@ -94,12 +94,15 @@ function ImportSpecifier(visit: IVisit, specifier: ASTNode): ImportSpecifierRefe
     local = specifier.local.name;
     name = 'default';
   } else if (
-    specifier.type === 'ImportSpecifier' ||
-    specifier.type === 'ExportSpecifier'
+    specifier.type === 'ImportSpecifier'
   ) {
     // import { something } from 'some-module'
     local = specifier.local.name;
     name = specifier.imported.name;
+  } else if (specifier.type === 'ExportSpecifier') {
+    // export { something } from 'some-module'
+    local = specifier.local.name;
+    name = specifier.exported.name;
   }
 
   return ImportSpecifierReference({
