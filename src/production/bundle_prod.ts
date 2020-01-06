@@ -30,6 +30,8 @@ export async function bundleProd(ctx: Context): Promise<IProductionResponse> {
     data = await productionMain({ packages, ctx });
 
     await attachWebIndex(ctx, data.bundles);
+
+    ctx.ict.sync('complete', { bundles: data.bundles, ctx, packages });
   }
 
   ctx.log.fuseFinalise();
