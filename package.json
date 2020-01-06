@@ -113,24 +113,25 @@
     "url": "git+https://github.com/fuse-box/fuse-box.git"
   },
   "scripts": {
-    "next": "ts-node -T fuse publish-next",
-    "codecov": "codecov",
+    "alpha": "ts-node -T fuse publish-alpha",
     "changelog": "run-s changelog:generate changelog:format",
     "changelog:format": "prettier --write CHANGELOG.md",
     "changelog:generate": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
+    "codecov": "codecov",
     "commit": "git-cz",
     "commitmsg": "validate-commit-msg",
+    "coverage": "jest --verbose --coverage",
+    "coverage-ci": "jest --verbose --coverage --runInBand",
     "devDeps": "gulp installDevDeps",
     "dist": "ts-node -T fuse dist",
+    "document": "ts-node -T fuse document",
     "format": "prettier --list-different \"src/**/*.{js,json,md,ts,yml}\"",
     "format:fix": "prettier --write \"src/**/*.{js,json,md,ts,yml}\"",
-    "document": "ts-node -T fuse document",
+    "next": "ts-node -T fuse publish-next",
     "test": "jest --verbose",
-    "test.watch": "jest --watch",
     "test-ci": "jest --verbose --runInBand",
-    "typecheck": "ts-node -T fuse typecheck",
-    "coverage": "jest --verbose --coverage",
-    "coverage-ci": "jest --verbose --coverage --runInBand"
+    "test.watch": "jest --watch",
+    "typecheck": "ts-node -T fuse typecheck"
   },
   "typings": "index.d.ts",
   "version": "4.0.0-alpha.256"

@@ -15,6 +15,7 @@ export function testProductionWarmup(props: {
   code: string;
   transformers: Array<ITransformer>;
   props?: any;
+  moduleProps?: any;
 }) {
   const ctx = createContext({
     cache: false,
@@ -23,15 +24,17 @@ export function testProductionWarmup(props: {
   });
 
   const pkg = createPackage({ ctx: ctx, meta: {} as any });
-  const module = createModule(
-    {
+
+  const module = Object.assign(
+    createModule({
       absPath: __filename,
       ctx: ctx,
       extension: '.ts',
       fuseBoxPath: 'file.ts',
-    },
-    pkg,
+    }, pkg),
+    props.moduleProps || {},
   );
+
   pkg.modules.push(module);
 
   module.contents = props.code;
@@ -52,5 +55,6 @@ export function testProductionWarmup(props: {
     globalContext: createGlobalContext(),
     transformers: tranformers,
   });
+
   return { productionContext, module, tree };
 }
