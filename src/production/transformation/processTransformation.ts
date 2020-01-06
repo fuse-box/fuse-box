@@ -21,7 +21,12 @@ function onGlobal(node: Identifier, props: LocalContext) {
     }
     if (!props.globalInserted) {
       props.globalInserted = true;
-      props.insertions.push(`const global = globalThis || self || window || global;`);
+      props.insertions.push(`const global =
+        typeof globalThis !== 'undefined' ? globalThis :
+        typeof self !== 'undefined' ? self :
+        typeof window !== 'undefined' ? window :
+        typeof global !== 'undefined' ? global :
+        {};`);
     }
   }
 }
