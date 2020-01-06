@@ -12,6 +12,11 @@ export enum ImportReferenceType {
   EXPORT_FROM,
 };
 
+export enum ImportSpecifierReferenceType {
+  OBJECT_SPECIFIER,
+  NAMESPACE_SPECIFIER
+}
+
 export interface ImportReferencesProps {
   module: Module;
   productionContext: IProductionContext;
@@ -22,7 +27,15 @@ export interface ImportReferenceProps {
   module: Module;
   source: string;
   specifiers?: Array<ASTNode>;
-  type: ImportReferenceType;
+  type: ImportSpecifierReferenceType;
+  visit: IVisit;
+};
+
+export interface ImportSpecifierReferenceProps {
+  local: string;
+  name: string;
+  specifier: ASTNode;
+  type: ImportSpecifierReferenceType;
   visit: IVisit;
 };
 
@@ -30,10 +43,8 @@ export function ImportReference(props: ImportReferenceProps) {
   const exported = {
     module: props.module,
     remove: function () {
-      // temporary added for test purposes
       exported.removed = true;
-
-      // @todo remove myself..
+      // @todo finish this
       if (props.visit.property && props.visit.parent) {
         if (props.visit.parent[props.visit.property] instanceof Array) {
           const index = props.visit.parent[props.visit.property].indexOf(props.visit.node);
@@ -43,9 +54,7 @@ export function ImportReference(props: ImportReferenceProps) {
         }
       }
     },
-    // @todo remove this when we're implementing remove
     removed: false,
-
     source: props.source,
     specifiers: props.specifiers,
     type: props.type,
@@ -55,19 +64,13 @@ export function ImportReference(props: ImportReferenceProps) {
   return exported;
 };
 
-export interface ImportSpecifierReferenceProps {
-  local: string;
-  name: string;
-  specifier: ASTNode;
-  visit: IVisit;
-};
-
 export function ImportSpecifierReference(props: ImportSpecifierReferenceProps) {
-  return {
+  const exported = {
     local: props.local,
     name: props.name,
     remove: function () {
-      // @todo
+      exported.removed = true;
+      // @todo finish this
       if (props.visit.node.specifiers instanceof Array) {
         const index = props.visit.node.specifiers.indexOf(props.specifier);
         if (index > -1) {
@@ -75,19 +78,23 @@ export function ImportSpecifierReference(props: ImportSpecifierReferenceProps) {
         }
       }
     },
+    removed: false,
     specifier: props.specifier,
     visit: props.visit
-  }
-}
+  };
 
+  return exported;
+}
 
 function ImportSpecifier(visit: IVisit, specifier: ASTNode): ImportSpecifierReference {
   let local: string;
   let name: string;
+  let type: string = ImportSpecifierReferenceType.OBJECT_SPECIFIER;
 
   if (specifier.type === 'ImportNamespaceSpecifier') {
     // import * as React from 'react'
     local = specifier.local.name;
+    type = ImportSpecifierReferenceType.NAMESPACE_SPECIFIER;
   } else if (specifier.type === 'ImportDefaultSpecifier') {
     // import styled from '@emotion/styled'
     local = specifier.local.name;
@@ -108,6 +115,7 @@ function ImportSpecifier(visit: IVisit, specifier: ASTNode): ImportSpecifierRefe
     local,
     name,
     specifier,
+    type,
     visit
   });
 };
