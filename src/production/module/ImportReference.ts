@@ -57,6 +57,7 @@ export function ImportReference(props: ImportReferenceProps) {
     removed: false,
     source: props.source,
     specifiers: props.specifiers,
+    target: props.module.moduleSourceRefs[props.source],
     type: props.type,
     visit: props.visit
   };
@@ -237,7 +238,31 @@ function exportSpecifierImport(props: ImportReferenceProps, scope: IImportRefere
 export function ImportReferences(productionContext: IProductionContext, module: Module) {
   const references: Array<IImportReference> = [];
 
+  /**
+   * We need to traverse to find the dependant modules of this module
+   */
+  const dependants = [];
+  for (const dependantModule of productionContext.modules) {
+    if (
+      dependantModule !== module &&
+      dependantModule.moduleTree &&
+      dependantModule.moduleTree.importReferences.references.length > 0
+    ) {
+      const { references } = dependantModule.moduleTree.importReferences;
+      for (const referencedModule of references) {
+        if (referencedModule.target === module) {
+          dependants.push({
+            type: referencedModule.type,
+            module: referencedModule.module
+          });
+          break;
+        }
+      }
+    }
+  }
+
   const scope = {
+    dependants,
     references,
     register: (props: ImportReferencesProps) => {
       const { node } = props.visit;
