@@ -4,6 +4,8 @@ import { ITransformer } from '../../compiler/interfaces/ITransformer';
 import { Module } from '../../core/Module';
 
 const NODES_OF_INTEREST = {
+  ExportAllDeclaration: 1,
+  ExportNamedDeclaration: 1,
   ImportDeclaration: 1,
   ImportEqualsDeclaration: 1
 };
@@ -24,7 +26,7 @@ export function Phase_1_ImportLink(): ITransformer {
         );
       }
 
-      function isEligibleImport(node): boolean {
+      function isEligibleImportOrExport(node): boolean {
         return (
           NODES_OF_INTEREST[node.type] &&
           node.source &&
@@ -55,7 +57,7 @@ export function Phase_1_ImportLink(): ITransformer {
         onTopLevelTraverse: (visit: IVisit) => {
           const { node } = visit;
           // @todo, export from.
-          if (isEligibleImport(node) || isEligibleRequire(node)) {
+          if (isEligibleImportOrExport(node) || isEligibleRequire(node)) {
             tree.importReferences.register({ module, productionContext, visit });
           }
         }

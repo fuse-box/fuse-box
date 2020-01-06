@@ -112,3 +112,21 @@ describe('Phase 1 Import link test', () => {
   //   // @todo: type? RE_EXPORT_ALL }],
   // });
 });
+
+
+
+
+// require("./a")
+// require()
+// require(1)
+// require("./a" + b)
+// function a(){
+//    require("./a" + b)
+//    require("./a")
+// }
+
+// async function foo(){
+// 	await import("./foo")
+// 	await import(1)
+// 	await import("as" + a)
+// }

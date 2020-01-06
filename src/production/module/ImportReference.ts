@@ -9,7 +9,7 @@ export enum ImportReferenceType {
   SIDE_EFFECT_IMPORT,
   IMPORT_SPECIFIERS,
   DYNAMIC_IMPORT,
-  EXPORT,
+  EXPORT_FROM,
 };
 
 export interface ImportReferencesProps {
@@ -30,7 +30,9 @@ export function ImportReference(props: ImportReferenceProps) {
   const exported = {
     module: props.module,
     remove: function () {
+      // temporary added for test purposes
       exported.removed = true;
+
       // @todo remove myself..
       if (props.visit.property && props.visit.parent) {
         if (props.visit.parent[props.visit.property] instanceof Array) {
@@ -41,7 +43,9 @@ export function ImportReference(props: ImportReferenceProps) {
         }
       }
     },
+    // @todo remove this when we're implementing remove
     removed: false,
+
     source: props.source,
     specifiers: props.specifiers,
     type: props.type,
@@ -89,7 +93,10 @@ function ImportSpecifier(visit: IVisit, specifier: ASTNode): ImportSpecifierRefe
     // import styled from '@emotion/styled'
     local = specifier.local.name;
     name = 'default';
-  } else if (specifier.type === 'ImportSpecifier') {
+  } else if (
+    specifier.type === 'ImportSpecifier' ||
+    specifier.type === 'ExportSpecifier'
+  ) {
     // import { something } from 'some-module'
     local = specifier.local.name;
     name = specifier.imported.name;
@@ -182,6 +189,40 @@ function dynamicImport(props: ImportReferencesProps, scope: IImportReferences) {
   );
 }
 
+// export * from 'module';
+function exportAllImport(props: ImportReferenceProps, scope: IImportReferences) {
+  const { node } = props.visit;
+
+  scope.references.push(
+    ImportReference({
+      module: props.module,
+      source: node.source.value,
+      type: ImportReferenceType.EXPORT_FROM,
+      visit: props.visit
+    })
+  );
+}
+
+// export { foo, bar as baz } from 'module';
+function exportSpecifierImport(props: ImportReferenceProps, scope: IImportReferences) {
+  let specifiers: Array<ASTNode> = [];
+  const { node } = props.visit;
+
+  for (const specifier of node.specifiers) {
+    specifiers.push(ImportSpecifier(props.visit, specifier));
+  }
+
+  scope.references.push(
+    ImportReference({
+      module: props.module,
+      source: node.source.value,
+      specifiers,
+      type: ImportReferenceType.EXPORT_FROM,
+      visit: props.visit
+    })
+  );
+}
+
 export function ImportReferences(productionContext: IProductionContext, module: Module) {
   const references: Array<IImportReference> = [];
 
@@ -211,12 +252,13 @@ export function ImportReferences(productionContext: IProductionContext, module: 
       } else if (node.type === 'ImportExpression') {
         // import('./module');
         dynamicImport(props, scope);
+      } else if (node.type === 'ExportAllDeclaration') {
+        // export * from 'module';
+        exportAllImport(props, scope);
+      } else if (node.type === 'ExportNamedDeclaration') {
+        // export { foo, bar as baz } from 'module';
+        exportSpecifierImport(props, scope);
       }
-      /**
-       * @todo
-       *
-       * export ... FROM ...
-       */
     }
   };
   return scope;
