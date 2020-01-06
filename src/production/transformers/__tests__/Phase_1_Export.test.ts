@@ -118,11 +118,12 @@ describe('Phase 1 export', () => {
   });
 
   describe('Internal export references', () => {
-    it('Function foo should have 1 internal export reference', () => {
+    it.only('Function foo should have 1 internal export reference', () => {
       const { tree } = test(`
           function bar(){}
 
           function foo(){
+            console.log(1);
             return bar();
           }
           export { foo, bar }

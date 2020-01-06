@@ -67,13 +67,15 @@ fusebox({
 });
 ```
 
+------
+
 ## Development server access
 
 There are a few properties that should help you tweaking the server
 
-### fallback
+### Fallback (for single page apps)
 
-Set `fallback` if you want to customize a fallback file (default to `index.html`)
+Set `fallback` if you want to customize a fallback file (default to `index.html`).  If a path is not found, the url will fallback to this file.
 
 ```ts
 fusebox({
@@ -85,9 +87,10 @@ fusebox({
 });
 ```
 
-### express
+### Express
 
-Access `express` server by providing a callback
+FuseBox uses Express to host the dev server.  You can access the
+`Express.Application` by providing a callback.
 
 ```ts
 fusebox({
@@ -102,8 +105,9 @@ fusebox({
 });
 ```
 
-`express` callback gives you an `application` itself where you can override anything paths except for `/__ftl` which is
-used internally and cannot be overridden. The second argument is `express` itself
+`express` callback gives you an `application` itself where you can override any paths except for `/__ftl`. The second argument is `express` itself.  You can [learn more about express here](https://expressjs.com/en/5x/api.html#app).
+
+------
 
 ## HMR server settings
 

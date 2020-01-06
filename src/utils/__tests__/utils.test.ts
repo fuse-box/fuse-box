@@ -14,6 +14,8 @@ import {
   beautifyBundleName,
   path2RegexPattern,
 } from '../utils';
+import { findUp } from '../findUp';
+import { join } from 'path';
 
 describe('utils', () => {
   describe('beautifyBundleName', () => {
@@ -178,4 +180,34 @@ describe('utils', () => {
       expect(path2RegexPattern(`\\documents\\`).test('users/documents/bar.ts')).toEqual(true);
     });
   });
+
+  // These tests will fail if this test file is moved.
+  describe('findUp', () => {
+    const currentDir = __dirname;
+    const target = "package.json";
+    const projectRoot = join(currentDir, "../../../");
+    const targetPath = join(projectRoot, target);
+
+    it('findUp - target in start dir', () => {
+      expect(findUp(currentDir, target)).toEqual(targetPath);
+    });
+
+    it('findUp - target in parent of start dir', () => {
+      expect(findUp(currentDir, target)).toEqual(targetPath);
+    });
+
+    it('findUp - target at inclusive boundary', () => {
+      expect(findUp(currentDir, target, {
+        boundary: projectRoot,
+        inclusive: true,
+      })).toEqual(targetPath);
+    });
+
+    it('findUp - target at exclusive boundary', () => {
+      expect(findUp(currentDir, target, {
+        boundary: projectRoot,
+        inclusive: false,
+      })).toEqual(null);
+    });
+  })
 });

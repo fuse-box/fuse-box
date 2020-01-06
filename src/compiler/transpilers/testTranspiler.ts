@@ -8,7 +8,7 @@ import { createPackage } from '../../core/Package';
 import { makeFuseBoxPath } from '../../utils/utils';
 import { generate } from '../generator/generator';
 import { ASTNode } from '../interfaces/AST';
-import { transpileStageOne } from '../transformer';
+import { transformCommonVisitors } from '../transformer';
 
 export interface ICompileModuleProps {
   target?: ITarget;
@@ -57,7 +57,7 @@ export function testTranspile(props: ICompileModuleProps) {
   );
   module.ast = ast as ASTNode;
 
-  transpileStageOne(module);
+  transformCommonVisitors(module);
 
   const res = generate(ast, {});
 

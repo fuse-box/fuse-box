@@ -7,6 +7,7 @@ const testTranspile = (props: { code: string; jsx?: boolean }) => {
     jsx: true,
     transformers: [JSXTransformer(), ImportTransformer()],
     code: props.code,
+    props: { module: { props: { extension: '.tsx' } } },
   });
 };
 

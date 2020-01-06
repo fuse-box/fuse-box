@@ -11,7 +11,7 @@ export interface TypescriptConfig {
   tsConfigFilePath: string;
 }
 
-export type ITypescriptTarget = 'ES3' | 'ES5' | 'ES6' | 'ES2015' | 'ES2016' | 'ES2017' | 'ESNext';
+export type ITypescriptTarget = 'ES3' | 'ES5' | 'ES6' | 'ES2015' | 'ES2016' | 'ES2017' | 'ES2019' | 'ESNext';
 
 export interface IRawCompilerOptions {
   target?: ITypescriptTarget;

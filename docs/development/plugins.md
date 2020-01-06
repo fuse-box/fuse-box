@@ -1,81 +1,87 @@
 # Plugin development
 
-Plugins in FuseBox are functions to which the `Context` is passed. You can alter the behavior by tapping into global
-events, intercepting modules/system events etc.
+Plugins in FuseBox are functions to which the `Context` is passed.
+Using the `Context`, you can alter the behavior of fuse-box by
+tapping into global/system events, intercepting modules, etc.
 
 ## Plugin Convention
 
-all plugins in FuseBox start with `plugin`. Let's keep the convention and add another plugin `pluginFoo`
+While FuseBox is very flexible with what can be done, there are some battle tested
+conventions which will help make your plugin easier to understand:
 
-It's important to make your plugin flexible, therefore if your plugin works with modules (captured) you should offer 2
-arguments, where the first one could be either a `string` or `RegExp` of `YourOptionInterface`. The second argument must
-be your plugin options always.
+1. Start the name of your plugin with the word "plugin."  Ex. pluginSass, pluginRawText, etc.
 
-User can choose whether to apply the plugin globally or pick files individually.
+2. Make the first argument for initialization of type `[string | RegExp | IYourPluginProps]`
+and the second a configuration object of type `IYourPluginProps`.
 
-`parsePluginOptions` is a helper that parser 2 arguments and gives you a `matcher` - that's the Regular expression you'd
-be testing paths against, and the option.
+	*(The `[string | RegExp]` is used to optionally match certain files.  The `IYourPluginProps` describe the configuration of your plugin.)*
+
+3. (Optional) Use `parsePluginOptions` to parse these two arguments and returns a standard `RegExp` and `IPluginProps` pair.
 
 A very basic setup looks like this:
 
 ```ts
 import { parsePluginOptions } from 'fuse-box/plugins/pluginUtils';
 export interface IPluginProps {
-  useDefault?: boolean;
+	enableWarpSpeed?: boolean;
 }
 export function pluginFoo(a: string | RegExp | IPluginProps, b?: IPluginProps) {
-  let [opts, matcher] = parsePluginOptions<IPluginProps>(a, b, {
-    useDefault: true, // those are the default values if user didn't specifiy any
-  });
-  return (ctx: Context) => {
-
-  });
+	let [opts, matcher] = parsePluginOptions<IPluginProps>(a, b, {
+		enableWarpSpeed: false, // these are the default prop values
+	});
+	return (ctx: Context) => {
+		// plugin logic goes here...
+	});
 })
 ```
 
-Obviosly, if you are not planning on applying your plugin globally (to all files) you can skip the `parsePluginOptions`
-having only one arguments
 
-## How plugins works?
+------
+
+
+## How do plugins work?
 
 ### ICT - Interceptor
 
-Every plugin is a function which returns another function with the `Context`. Context in FuseBox is a global object
-which is shared between all the running instances in FuseBox. They way we alter the behavior is through an
-`Interceptor`.
+Every plugin is part of a chain which takes the `Context`, modifies it, and passes it on.
 
-Interceptor or `ict` (that's how it's being called in the Context) is an object which can emit and trigger events. Most
-of the functionality goes through the `ict`
+The `Context` is a global object
+which is shared between all the running instances in FuseBox.
+This context object has an `Interceptor` property `context.ict`.
 
-Having the Context gives us the access to `ict`. For example:
 
-```ts
-const pluginBar = () => (ctx: Context) => {
-  ctx.ict.on('complete', props => {
-    console.log('Bundling is completed');
-    return props;
-  });
-};
-```
+The Interceptor is an object which can emit and trigger events. Most functionality goes through the `Interceptor`.
 
-If your plugin is asynchronous and you want to instruct fuse-box to wait until the `Promise` that it returns will
-resolve, you should use `waitFor`. This will give fuse-box the change to wait until your plugin finished it's work.
-Please notice that fuse-box will decide if it will await the results or not (depending on the event and context).
 
 ```ts
 const pluginBar = () => (ctx: Context) => {
-  ctx.ict.waitFor('complete', async props => {
-    console.log('Bundling is completed');
-
-    // in async functions, all return values are wrapped in Promises automatically
-    return props;
-  });
+	ctx.ict.on('complete', props => {
+		console.log('Bundling is completed');
+		return props;
+	});
 };
 ```
+
+If your plugin is asynchronous and you want to instruct fuse-box to wait fair for it, you should pass a `Promise` to `context.ict.waitFor()`.
+*Please notice that some event types are never treated asynchronously.*
+
+```ts
+const pluginBar = () => (ctx: Context) => {
+	ctx.ict.waitFor('complete', async props => {
+		await someAsyncFunction();
+		console.log('Bundling is completed');
+
+		// async functions automatically treat return as resolve
+		return props;
+	});
+};
+```
+
+------
 
 ## Module plugins
 
-Module plugins are the ones that work with the actual files (javascript or typescript) A very simple plugin that
+Module plugins ones which do work on the actual files (javascript or typescript). A very simple plugin that
 modifies the code, would look like this:
 
 ```ts
@@ -84,30 +90,32 @@ import { wrapContents } from 'fuse-box/plugins/pluginStrings';
 import { parsePluginOptions } from 'fuse-box/plugins/pluginUtils';
 
 export interface IPluginProps {
-  useDefault?: boolean;
+	useDefault?: boolean;
 }
 
 export function pluginFoo(a: string | RegExp | IPluginProps, b?: IPluginProps) {
-  let [opts, matcher] = parsePluginOptions<IPluginProps>(a, b, {
-    useDefault: true,
-  });
-  return (ctx: Context) => {
-    ctx.ict.on('bundle_resolve_module', props => {
-      if (!props.module.captured) {
-        const module = props.module;
+	let [opts, matcher] = parsePluginOptions<IPluginProps>(a, b, {
+		useDefault: true,
+	});
+	return (ctx: Context) => {
+		ctx.ict.on('bundle_resolve_module', props => {
+			if (!props.module.captured) {
+				const module = props.module;
 
-        if (!matcher.test(module.props.absPath)) {
-          return;
-        }
-        // read the contents
-        module.read();
-        module.contents = wrapContents('module.contents = foo', opts.useDefault);
-      }
-      return props;
-    });
-  };
+				if (!matcher.test(module.props.absPath)) {
+					return;
+				}
+				// read the contents
+				module.read();
+				module.contents = wrapContents('module.contents = foo', opts.useDefault);
+			}
+			return props;
+		});
+	};
 }
 ```
+
+------
 
 ## Capturing modules
 
@@ -115,9 +123,9 @@ You can capture modules with a simple RegExp that is provided by `parsePluginOpt
 
 ```ts
 ctx.ict.on('bundle_resolve_module', props => {
-  if (!matcher.test(props.module.props.absPath)) {
-    return;
-  }
+	if (!matcher.test(props.module.props.absPath)) {
+		return;
+	}
 });
 ```
 
@@ -125,7 +133,7 @@ It's usually a very good practice not to block other plugins and check whether a
 
 ```ts
 if (!props.module.captured) {
-  props.module.captured = true;
+	props.module.captured = true;
 }
 ```
 
@@ -133,6 +141,10 @@ Don't forget to toggle the flag, otherwise it might affect and break other plugi
 module.
 
 There are several types of events related to capturing modules in `ict`
+
+------
+
+## Module Events
 
 ### assemble_before_analysis
 
@@ -143,13 +155,13 @@ If you have a custom extension `.foo` follow the example below
 
 ```ts
 ctx.ict.on('assemble_before_analysis', props => {
-  const module = props.module;
-  if (props.module.props.extension === '.foo') {
-    // do whatever you want with the contents
-    // it's loaded at this point
-    module.contents = `import "that_will_be_picked_up_by_fusebox"`;
-  }
-  return props;
+	const module = props.module;
+	if (props.module.props.extension === '.foo') {
+		// do whatever you want with the contents
+		// it's loaded at this point
+		module.contents = `import "that_will_be_picked_up_by_fusebox"`;
+	}
+	return props;
 });
 ```
 
@@ -157,11 +169,11 @@ Don't forget to make that `foo` extension executable
 
 ```ts
 ctx.ict.on('assemble_module_init', props => {
-  if (props.module.props.extension === '.foo') {
-    // making module executable so fusebox will take it and parse all dependencies later on
-    props.module.makeExecutable();
-  }
-  return props;
+	if (props.module.props.extension === '.foo') {
+		// making module executable so fusebox will take it and parse all dependencies later on
+		props.module.makeExecutable();
+	}
+	return props;
 });
 ```
 
@@ -191,13 +203,13 @@ That would a great place to add dependencies or read some information about the 
 
 ```ts
 ict.on('assemble_fast_analysis', props => {
-  const module = props.module;
-  const pkg = module.pkg;
+	const module = props.module;
+	const pkg = module.pkg;
 
-  if (pkg.isDefaultPackage && pkg.entry === module) {
-    module.fastAnalysis.imports.push({ type: ImportType.REQUIRE, statement: 'fuse-box-hot-reload' });
-  }
-  return props;
+	if (pkg.isDefaultPackage && pkg.entry === module) {
+		module.fastAnalysis.imports.push({ type: ImportType.REQUIRE, statement: 'fuse-box-hot-reload' });
+	}
+	return props;
 });
 ```
 
@@ -213,18 +225,18 @@ Transform you contents here.
 import { wrapContents } from 'fusebox/plugins/pluginStrings';
 
 ctx.ict.on('bundle_resolve_module', props => {
-  if (!props.module.captured) {
-    const module = props.module;
+	if (!props.module.captured) {
+		const module = props.module;
 
-    if (!matcher.test(module.props.absPath)) {
-      return;
-    }
-    // read the contents
-    module.read();
-    module.contents = wrapContents(JSON.stringify({ foo: 'bar' }), opts.useDefault);
-    props.module.captured = true;
-  }
-  return props;
+		if (!matcher.test(module.props.absPath)) {
+			return;
+		}
+		// read the contents
+		module.read();
+		module.contents = wrapContents(JSON.stringify({ foo: 'bar' }), opts.useDefault);
+		props.module.captured = true;
+	}
+	return props;
 });
 ```
 

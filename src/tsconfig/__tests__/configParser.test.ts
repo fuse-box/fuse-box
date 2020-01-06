@@ -85,7 +85,7 @@ describe('tsconfig', () => {
         moduleResolution: 'node',
         importHelpers: true,
         experimentalDecorators: true,
-        target: 'ESNext',
+        target: 'ES2019',
       });
     });
 
@@ -101,7 +101,7 @@ describe('tsconfig', () => {
         moduleResolution: 'node',
         importHelpers: true,
         experimentalDecorators: true,
-        target: 'ESNext',
+        target: 'ES2019',
       });
     });
 
@@ -116,7 +116,7 @@ describe('tsconfig', () => {
         moduleResolution: 'node',
         importHelpers: true,
         experimentalDecorators: true,
-        target: 'ESNext',
+        target: 'ES2019',
       });
     });
 
@@ -163,7 +163,7 @@ describe('tsconfig', () => {
         moduleResolution: 'node',
         importHelpers: true,
         experimentalDecorators: true,
-        target: 'ESNext',
+        target: 'ES2019',
       });
     });
 
@@ -179,7 +179,7 @@ describe('tsconfig', () => {
         moduleResolution: 'node',
         importHelpers: true,
         experimentalDecorators: true,
-        target: 'ESNext',
+        target: 'ES2019',
       });
     });
 
@@ -196,7 +196,7 @@ describe('tsconfig', () => {
         moduleResolution: 'node',
         importHelpers: true,
         experimentalDecorators: true,
-        target: 'ESNext',
+        target: 'ES2019',
       });
     });
 
@@ -214,7 +214,7 @@ describe('tsconfig', () => {
         moduleResolution: 'node',
         importHelpers: true,
         experimentalDecorators: true,
-        target: 'ESNext',
+        target: 'ES2019',
       });
     });
 
@@ -258,7 +258,7 @@ describe('tsconfig', () => {
         },
         jsx: 'react',
         lib: ['es2018', 'dom'],
-        target: 'ESNext',
+        target: 'ES2019',
         module: 'commonjs',
         moduleResolution: 'node',
         importHelpers: true,

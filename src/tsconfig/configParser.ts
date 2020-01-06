@@ -111,7 +111,7 @@ export function initTypescriptConfig(
     userOptions.jsx = 'react';
   }
   if (!props.production) {
-    userOptions.target = 'ESNext';
+    userOptions.target = 'ES2019';
   } else {
     if (!userOptions.target) {
       userOptions.target = 'ES2017';

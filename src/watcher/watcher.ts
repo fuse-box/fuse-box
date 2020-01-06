@@ -55,18 +55,20 @@ export enum WatcherAction {
 }
 
 export function detectAction(file: string, homeDir: string): WatcherAction {
-  const isInsideHomeDir = !/\.\./.test(path.relative(homeDir, file));
-
   if (file === env.SCRIPT_FILE) {
     return WatcherAction.RESTART_PROCESS;
   }
+
   if (path.basename(file) === 'tsconfig.json') {
     return WatcherAction.RELOAD_TS_CONFIG;
   }
-  if (/(package.lock.json|yarn.lock)$/.test(file)) {
+
+  if (/(package-lock\.json|yarn\.lock)$/.test(file)) {
     return WatcherAction.HARD_RELOAD_MODULES;
   }
-  if (!isInsideHomeDir) {
+
+  const isNotInsideHomeDir = /\.\./.test(path.relative(homeDir, file));
+  if (isNotInsideHomeDir) {
     return;
   }
 

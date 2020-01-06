@@ -5,6 +5,7 @@ import { handleBrowserField } from './browserField';
 import { fileLookup } from './fileLookup';
 import { IPackageMeta, IResolverProps } from './resolver';
 import { getFolderEntryPointFromPackageJSON, isBrowserEntry } from './shared';
+import { findUp } from '../utils/findUp';
 
 const PROJECT_NODE_MODULES = path.join(appRoot.path, 'node_modules');
 
@@ -56,11 +57,12 @@ export function parseAllModulePaths(fileAbsPath: string) {
       paths.push(path.join(paths[paths.length - 1], matchedLast[0], 'node_modules'));
     }
     return paths;
-  } else {
-    return [PROJECT_NODE_MODULES];
   }
+
+  return [PROJECT_NODE_MODULES];
 }
 
+const CACHED_LOCAL_MODULES: { [key: string]: string | null } = {};
 export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): string {
   // handle custom modules here
   if (props.modules) {
@@ -80,6 +82,18 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
       return attempted;
     }
   }
+
+  let localModuleRoot = CACHED_LOCAL_MODULES[props.filePath];
+  if (localModuleRoot === undefined) {
+    localModuleRoot = CACHED_LOCAL_MODULES[props.filePath] = findUp(props.filePath, 'node_modules');
+  }
+
+  if (!!localModuleRoot && paths.indexOf(localModuleRoot) === -1) {
+    const attempted = path.join(localModuleRoot, parsed.name);
+    if (fileExists(attempted)) {
+      return attempted;
+    }
+  }
 }
 export interface INodeModuleLookup {
   error?: string;
@@ -92,7 +106,13 @@ export interface INodeModuleLookup {
 }
 
 export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): INodeModuleLookup {
-  const folder = findTargetFolder(props, parsed);
+  let folder: string;
+
+  folder = findTargetFolder(props, parsed);
+
+  if (!folder) {
+    return { error: `Cannot resolve "${parsed.name}"` };
+  }
 
   const result: INodeModuleLookup = {};
   const pkg: IPackageMeta = {
@@ -100,10 +120,6 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
     packageRoot: folder,
   };
   result.meta = pkg;
-
-  if (!folder) {
-    return { error: `Cannot resolve "${parsed.name}"` };
-  }
 
   const packageJSONFile = path.join(folder, 'package.json');
   if (!fileExists(packageJSONFile)) {

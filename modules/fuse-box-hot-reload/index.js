@@ -25,6 +25,10 @@ export const connect = opts => {
     client.send('summary', { id, summary });
   });
 
+  client.on('reload', () => {
+    window.location.reload();
+  });
+
   client.on('hmr', payload => {
     let styleSheetUpdate = false;
     if (FuseBox.reloadEntryOnStylesheet && payload.modules.length === 1 && payload.modules[0].isStylesheet) {

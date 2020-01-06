@@ -20,6 +20,7 @@ import { IWebWorkerConfig } from './IWebWorkerConfig';
 
 export interface IHMRExternalProps {
   reloadEntryOnStylesheet?: boolean;
+  hardReloadScripts?: boolean;
 }
 
 const ESSENTIAL_DEPENDENCIES = ['fuse-box-dev-import', 'tslib', 'fuse_helpers_decorate'];
