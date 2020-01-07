@@ -6,6 +6,7 @@ export interface IParserOptions {
   locations?: boolean;
 }
 export function parseTypeScript(code: string, props?: IParserOptions): ASTNode {
+  props = props || {};
   return parser.parse(code, {
     range: props.locations,
     // loc: false,

@@ -1,10 +1,10 @@
-import * as buntis from 'buntis';
 import * as meriyah from 'meriyah';
 import * as sourceMapModule from 'source-map';
 import { IModuleCacheBasics } from '../cache/cache';
 import { generate } from '../compiler/generator/generator';
 import { ASTNode } from '../compiler/interfaces/AST';
 import { ImportType } from '../compiler/interfaces/ImportType';
+import { parseTypeScript } from '../compiler/parser';
 import { transformCommonVisitors } from '../compiler/transformer';
 import { testPath } from '../plugins/pluginUtils';
 import { IModuleTree } from '../production/module/ModuleTree';
@@ -12,7 +12,6 @@ import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { extractFuseBoxPath, fastHash, joinFuseBoxPath, readFile } from '../utils/utils';
 import { Context } from './Context';
 import { Package } from './Package';
-import { parseTypeScript } from '../compiler/parser';
 const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.mjs'];
 
 export interface IAnalysis {

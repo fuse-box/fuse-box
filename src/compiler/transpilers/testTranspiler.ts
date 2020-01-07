@@ -1,4 +1,3 @@
-import * as buntis from 'buntis';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ITarget } from '../../config/PrivateConfig';
@@ -8,8 +7,8 @@ import { createPackage } from '../../core/Package';
 import { makeFuseBoxPath } from '../../utils/utils';
 import { generate } from '../generator/generator';
 import { ASTNode } from '../interfaces/AST';
-import { transformCommonVisitors } from '../transformer';
 import { parseTypeScript } from '../parser';
+import { transformCommonVisitors } from '../transformer';
 
 export interface ICompileModuleProps {
   target?: ITarget;
