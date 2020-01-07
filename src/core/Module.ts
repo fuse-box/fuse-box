@@ -19,10 +19,10 @@ export interface IAnalysis {
 }
 
 export interface IModuleProps {
-  ctx: Context;
   absPath: string;
-  fuseBoxPath: string;
+  ctx: Context;
   extension: string;
+  fuseBoxPath: string;
 }
 export class Module {
   /**
@@ -144,7 +144,7 @@ export class Module {
       if (!this.isJavascriptModule()) {
         this.ast = parseTypeScript(this.contents, { jsx: this.props.extension === '.tsx', locations: withSourcemaps });
       } else {
-        let opts = { jsx: true, next: false, module: true, loc: withSourcemaps };
+        let opts = { jsx: true, loc: withSourcemaps, module: true, next: false };
 
         this.ast = meriyah.parse(this.contents, opts) as ASTNode;
       }
