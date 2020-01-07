@@ -28,7 +28,6 @@
     "@typescript-eslint/typescript-estree": "^2.15.0",
     "app-root-path": "^3.0.0",
     "astring": "^1.4.3",
-    "buntis": "0.2.1",
     "chokidar": "^3.3.1",
     "clean-css": "^4.2.1",
     "convert-source-map": "^1.7.0",

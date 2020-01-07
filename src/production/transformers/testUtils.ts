@@ -1,14 +1,13 @@
-import { ITransformer } from '../../compiler/interfaces/ITransformer';
-import * as buntis from 'buntis';
-import { GlobalContextTransformer } from '../../compiler/transformers/GlobalContextTransformer';
-import { transpileModule } from '../../compiler/program/transpileModule';
-import { createGlobalContext } from '../../compiler/program/GlobalContext';
-import { createContext } from '../../core/Context';
-import { createPackage } from '../../core/Package';
-import { createModule } from '../../core/Module';
 import { ASTNode } from '../../compiler/interfaces/AST';
-import { ProductionContext } from '../ProductionContext';
+import { ITransformer } from '../../compiler/interfaces/ITransformer';
+import { createGlobalContext } from '../../compiler/program/GlobalContext';
+import { transpileModule } from '../../compiler/program/transpileModule';
+import { GlobalContextTransformer } from '../../compiler/transformers/GlobalContextTransformer';
+import { createContext } from '../../core/Context';
+import { createModule } from '../../core/Module';
+import { createPackage } from '../../core/Package';
 import { ModuleTree } from '../module/ModuleTree';
+import { ProductionContext } from '../ProductionContext';
 
 export function testProductionWarmup(props: {
   jsx?: boolean;

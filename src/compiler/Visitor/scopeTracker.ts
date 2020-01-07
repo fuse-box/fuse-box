@@ -43,7 +43,7 @@ export function scopeTracker(visitor: IVisit): IASTScope {
             }
           } else if (id.type === 'ObjectPattern' && id.properties) {
             for (const prop of id.properties) {
-              if (prop.type === 'Property' && prop.key.name == prop.value.name) {
+              if (prop.type === 'Property' && prop.key.name === prop.value.name) {
                 scope.locals[prop.key.name] = 1;
               } else if (prop.type === 'RestElement') {
                 scope.locals[prop.argument.name] = 1;
@@ -81,21 +81,19 @@ export function scopeTracker(visitor: IVisit): IASTScope {
 
     if (node.params) {
       for (const item of node.params) {
-        if (item.type === 'Identifier') {
-          if (node.body) {
-            if (node.body['scope'] === undefined) {
-              // copy scope
-              let targetLocals = {};
-              if (scope) {
-                // the fastest way to copy an object
-                for (const key in scope.locals) targetLocals[key] = 1;
-              }
-              node.body['scope'] = {
-                locals: targetLocals,
-              };
+        if (item.type === 'Identifier' && node.body) {
+          if (node.body['scope'] === undefined) {
+            // copy scope
+            let targetLocals = {};
+            if (scope) {
+              // the fastest way to copy an object
+              for (const key in scope.locals) targetLocals[key] = 1;
             }
-            node.body['scope'].locals[item.name] = 1;
+            node.body['scope'] = {
+              locals: targetLocals,
+            };
           }
+          node.body['scope'].locals[item.name] = 1;
         }
       }
     }
