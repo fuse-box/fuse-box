@@ -1,5 +1,5 @@
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
-import { ASTNode } from '../../interfaces/AST';
+import { ASTNode, ASTType } from '../../interfaces/AST';
 import { computeBinaryExpression } from '../../static_compute/computeBinaryExpression';
 import { ITransformer } from '../../interfaces/ITransformer';
 
@@ -37,7 +37,7 @@ export function EnumTransformer(): ITransformer {
         onEachNode: (visit: IVisit): IVisitorMod => {
           const node = visit.node;
 
-          if (node.type === 'EnumDeclaration') {
+          if (node.type === ASTType.EnumDeclaration) {
             const enumName = node.id.name;
 
             const Declaration: ASTNode = {

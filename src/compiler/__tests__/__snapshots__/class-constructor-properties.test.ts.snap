@@ -153,7 +153,7 @@ exports.exception = constructor => {
   return (_1_ = class _UnnamedClass_1 extends constructor {
     constructor() {
       super(...arguments);
-      this.hey = 1;
+      this.oi = 1;
     }
   }, _1_.hey = 1, _1_);
 };
@@ -284,7 +284,7 @@ class HelloWorld extends Amazing {
     this.to = to;
     this.awesomeness = awesomeness;
     (() => {
-      console.log(\\"Freaky block statement here.\\");
+      console.log('Freaky block statement here.');
     })();
     this.fuse = fuse;
   }

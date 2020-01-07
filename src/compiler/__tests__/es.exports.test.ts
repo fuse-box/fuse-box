@@ -140,8 +140,8 @@ describe('Es exports tests', () => {
 
         some(function() {
           var TweenMax = {};
-          TweenMax.version = '2.0.2';
-          TweenMax.hey = '1';
+          TweenMax.version = "2.0.2";
+          TweenMax.hey = "1";
           console.log(TweenMax);
           return TweenMax;
         });

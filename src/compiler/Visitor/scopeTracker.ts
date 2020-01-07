@@ -43,7 +43,7 @@ export function scopeTracker(visitor: IVisit): IASTScope {
             }
           } else if (id.type === 'ObjectPattern' && id.properties) {
             for (const prop of id.properties) {
-              if (prop.type === 'Property' && prop.key == prop.value) {
+              if (prop.type === 'Property' && prop.key.name === prop.value.name) {
                 scope.locals[prop.key.name] = 1;
               } else if (prop.type === 'RestElement') {
                 scope.locals[prop.argument.name] = 1;
@@ -81,7 +81,7 @@ export function scopeTracker(visitor: IVisit): IASTScope {
 
     if (node.params) {
       for (const item of node.params) {
-        if (item.type === 'Identifier') {
+        if (item.type === 'Identifier' && node.body) {
           if (node.body['scope'] === undefined) {
             // copy scope
             let targetLocals = {};

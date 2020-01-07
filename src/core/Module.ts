@@ -1,10 +1,10 @@
-import * as buntis from 'buntis';
 import * as meriyah from 'meriyah';
 import * as sourceMapModule from 'source-map';
 import { IModuleCacheBasics } from '../cache/cache';
 import { generate } from '../compiler/generator/generator';
 import { ASTNode } from '../compiler/interfaces/AST';
 import { ImportType } from '../compiler/interfaces/ImportType';
+import { parseTypeScript } from '../compiler/parser';
 import { transformCommonVisitors } from '../compiler/transformer';
 import { testPath } from '../plugins/pluginUtils';
 import { IModuleTree, ModuleTree } from '../production/module/ModuleTree';
@@ -143,12 +143,7 @@ export class Module {
     try {
       const withSourcemaps = this.isSourceMapRequired();
       if (!this.isJavascriptModule()) {
-        this.ast = buntis.parseTSModule(this.contents, {
-          directives: true,
-          jsx: this.props.extension === '.tsx',
-          next: true,
-          loc: withSourcemaps,
-        }) as ASTNode;
+        this.ast = parseTypeScript(this.contents, { jsx: this.props.extension === '.tsx', locations: withSourcemaps });
       } else {
         let opts = { jsx: true, next: false, module: true, loc: withSourcemaps };
 
