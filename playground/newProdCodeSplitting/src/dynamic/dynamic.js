@@ -1,6 +1,6 @@
 import { counter } from '../utils/counter';
 
-export const dynamicFunc = () => {
+export default () => {
   console.log('hi, my name is dynamicFunc');
 
   counter();
