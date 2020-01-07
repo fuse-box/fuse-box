@@ -1,11 +1,10 @@
-import { ImportReferenceType } from '../../module/ImportReference';
+import { ImportType } from '../../module/ImportReference';
 import { Phase_1_ImportLink } from '../Phase_1_ImportLink';
 import { testProductionWarmup } from '../testUtils';
 
 function test(code: string) {
   return testProductionWarmup({
     code,
-    transformers: [Phase_1_ImportLink()],
     moduleProps: {
       moduleSourceRefs: {
         './foo': {
@@ -14,7 +13,8 @@ function test(code: string) {
           }
         }
       }
-    }
+    },
+    transformers: [Phase_1_ImportLink()]
   });
 }
 
@@ -27,7 +27,7 @@ describe('Phase 1 - Imports test', () => {
 
     expect(refs).toHaveLength(1);
     expect(refs[0].source).toEqual('./foo');
-    expect(refs[0].type).toEqual(ImportReferenceType.SIDE_EFFECT_IMPORT);
+    expect(refs[0].type).toEqual(ImportType.SIDE_EFFECT_IMPORT);
   });
 
   it(`sideEffectImport import './foo' should be removed`, () => {

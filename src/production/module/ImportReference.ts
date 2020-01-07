@@ -1,5 +1,7 @@
 import { IVisit } from '../../compiler/Visitor/Visitor';
 import { ASTNode } from '../../compiler/interfaces/AST';
+import { ASTType } from '../../compiler/interfaces/AST';
+import { getDynamicImport } from '../../compiler/transformers/astHelpers';
 import { Module } from '../../core/Module';
 import { IProductionContext } from '../ProductionContext';
 
@@ -67,21 +69,19 @@ function ImportSpecifier(visit: IVisit, specifier: ASTNode) {
   let name: string;
   let type: ImportSpecifierType = ImportSpecifierType.OBJECT_SPECIFIER;
 
-  if (specifier.type === 'ImportNamespaceSpecifier') {
+  if (specifier.type === ASTType.ImportNamespaceSpecifier) {
     // import * as React from 'react'
     local = specifier.local.name;
     type = ImportSpecifierType.NAMESPACE_SPECIFIER;
-  } else if (specifier.type === 'ImportDefaultSpecifier') {
+  } else if (specifier.type === ASTType.ImportDefaultSpecifier) {
     // import styled from '@emotion/styled'
     local = specifier.local.name;
     name = 'default';
-  } else if (
-    specifier.type === 'ImportSpecifier'
-  ) {
+  } else if (specifier.type === ASTType.ImportSpecifier) {
     // import { something } from 'some-module'
     local = specifier.local.name;
     name = specifier.imported.name;
-  } else if (specifier.type === 'ExportSpecifier') {
+  } else if (specifier.type === ASTType.ExportSpecifier) {
     // export { something } from 'some-module'
     local = specifier.local.name;
     name = specifier.exported.name;
@@ -175,11 +175,12 @@ function sideEffectImportRequire(props: IImportReferencesProps, scope: IImportRe
 // import('./module');
 function dynamicImport(props: IImportReferencesProps, scope: IImportReferences) {
   const { node } = props.visit;
+  const { source } = getDynamicImport(node);
 
   scope.references.push(
     Import({
       module: props.module,
-      source: node.source.value,
+      source,
       type: ImportType.DYNAMIC_IMPORT,
       visit: props.visit
     })
@@ -227,7 +228,7 @@ export function ImportReferences(productionContext: IProductionContext, module: 
     references,
     register: (props: IImportReferencesProps) => {
       const { node } = props.visit;
-      if (node.type === 'ImportDeclaration') {
+      if (node.type === ASTType.ImportDeclaration) {
         if (node.specifiers.length === 0) {
           // import './foo';
           sideEffectImport(props, scope);
@@ -238,21 +239,31 @@ export function ImportReferences(productionContext: IProductionContext, module: 
           regularImport(props, scope)
         }
       } else if (
-        node.type === 'CallExpression' &&
+        node.type === ASTType.CallExpression &&
+        node.callee &&
         node.callee.name === 'require'
       ) {
         // const bar = require('foo');
         regularRequire(props, scope);
-      } else if (node.type === 'ImportEqualsDeclaration') {
+      } else if (node.type === ASTType.ImportEqualsDeclaration) {
         // import _ = require('foo');
         sideEffectImportRequire(props, scope);
-      } else if (node.type === 'ImportExpression') {
+      } else if (
+        // meriyah
+        node.type === ASTType.ImportExpression ||
+        // ts-parser
+        (
+          node.type === ASTType.CallExpression &&
+          node.callee &&
+          node.callee.type === 'Import'
+        )
+      ) {
         // import('./module');
         dynamicImport(props, scope);
-      } else if (node.type === 'ExportAllDeclaration') {
+      } else if (node.type === ASTType.ExportAllDeclaration) {
         // export * from 'module';
         exportAllImport(props, scope);
-      } else if (node.type === 'ExportNamedDeclaration') {
+      } else if (node.type === ASTType.ExportNamedDeclaration) {
         // export { foo, bar as baz } from 'module';
         exportSpecifierImport(props, scope);
       }
