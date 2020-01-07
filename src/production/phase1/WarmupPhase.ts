@@ -38,10 +38,6 @@ export function WarmupPhase(productionContext: IProductionContext) {
       // laters on we will be working with the same AST
       module.parse();
 
-      if (!module.moduleTree) {
-        module.addModuleTree();
-      }
-
       launchPhaseOne(productionContext, module);
     }
   }

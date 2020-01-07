@@ -63,9 +63,6 @@ export function ImportReference(props: ImportReferenceProps): IImportReferences 
     visit: props.visit
   };
 
-  if (!target.moduleTree) {
-    target.addModuleTree(true);
-  }
   target.moduleTree.dependants.push(exported);
 
   return exported;

@@ -122,6 +122,7 @@ export class Module {
     this.header = [];
     this.moduleDependencies = [];
     this.externalDependencies = [];
+    this.moduleTree = ModuleTree(this.props.ctx, this);
   }
 
   public isEntry() {
@@ -176,10 +177,6 @@ export class Module {
       this.setMeta(key, defaultValue);
       return defaultValue;
     }
-  }
-
-  public addModuleTree(forced: boolean = false) {
-    this.moduleTree = ModuleTree(this.props.ctx, this);
   }
 
   public addWeakReference(url: string) {

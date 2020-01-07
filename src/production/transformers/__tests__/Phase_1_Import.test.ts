@@ -9,7 +9,9 @@ function test(code: string) {
     moduleProps: {
       moduleSourceRefs: {
         './foo': {
-          some: 'value'
+          moduleTree: {
+            dependants: []
+          }
         }
       }
     }
