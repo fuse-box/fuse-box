@@ -1,10 +1,6 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-
-const routes: Routes = [];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule],
-})
-export class AppRoutingModule {}
+import foo from 'oi';
+function one(props) {
+  const { foo, ...rest } = props;
+  console.log(foo);
+}
+console.log(foo);

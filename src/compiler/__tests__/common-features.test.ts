@@ -148,7 +148,8 @@ describe('Common features test', () => {
       const result = testTranspile({
         code: `
           class A {
-            foo(this : string){}
+            foo(this : string){
+            }
           }
         `,
       });

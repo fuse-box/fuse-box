@@ -1,4 +1,4 @@
-import { ASTNode } from '../../interfaces/AST';
+import { ASTNode, ASTType } from '../../interfaces/AST';
 import { transpileModule } from '../../program/transpileModule';
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
 import { GlobalContext, createGlobalContext } from '../../program/GlobalContext';
@@ -11,7 +11,7 @@ export function NamespaceTransformer(): ITransformer {
     commonVisitors: props => {
       return {
         onEachNode: (visit: IVisit) => {
-          if (visit.node.type === 'ModuleDeclaration') {
+          if (visit.node.type === ASTType.ModuleDeclaration) {
             return { ignoreChildren: true };
           }
         },
@@ -24,13 +24,13 @@ export function NamespaceTransformer(): ITransformer {
           const globalContext = visit.globalContext as GlobalContext;
 
           if (node.type === 'ExportNamedDeclaration') {
-            if (node.declaration && node.declaration.type === 'ModuleDeclaration') {
+            if (node.declaration && node.declaration.type === ASTType.ModuleDeclaration) {
               node = node.declaration;
               withExport = true;
             }
           }
 
-          if (node.type === 'ModuleDeclaration') {
+          if (node.type === ASTType.ModuleDeclaration) {
             const nm = node.body as ASTNode;
             const mameSpaceName = node.id.name;
             // launch custom transpilation for that namespace

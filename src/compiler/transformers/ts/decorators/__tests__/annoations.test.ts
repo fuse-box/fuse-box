@@ -1,11 +1,18 @@
-import * as buntis from 'buntis';
+//import * as buntis from 'buntis';
 import { convertTypeAnnotation, KNOWN_IDENTIFIERS } from '../Annotations';
+import * as parser from '@typescript-eslint/typescript-estree';
 import '../../../../../utils/test_utils';
+// function conv(typeAnnotation?: string) {
+//   const ast = buntis.parseTSModule(`function a(${typeAnnotation ? 'c : ' + typeAnnotation : 'c'}){}`, {
+//     directives: true,
+//     next: true,
+//   }) as any;
+//   //console.log(JSON.stringify(ast, null, 2));
+//   return convertTypeAnnotation(ast.body[0].params[0].typeAnnotation);
+// }
+
 function conv(typeAnnotation?: string) {
-  const ast = buntis.parseTSModule(`function a(${typeAnnotation ? 'c : ' + typeAnnotation : 'c'}){}`, {
-    directives: true,
-    next: true,
-  }) as any;
+  const ast = parser.parse(`function a(${typeAnnotation ? 'c : ' + typeAnnotation : 'c'}){}`, {}) as any;
   //console.log(JSON.stringify(ast, null, 2));
   return convertTypeAnnotation(ast.body[0].params[0].typeAnnotation);
 }
@@ -37,6 +44,7 @@ describe('Annotation test', () => {
       it(`should detect "${name}"`, () => {
         const res = conv(name);
         //console.log(name, '=>', res);
+
         expect(JSON.stringify(res)).toMatchSnapshot();
       });
     }

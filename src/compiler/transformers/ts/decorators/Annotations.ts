@@ -1,4 +1,4 @@
-import { ASTNode } from '../../../interfaces/AST';
+import { ASTNode, ASTType } from '../../../interfaces/AST';
 
 function id(name: string): ASTNode {
   return { type: 'Identifier', name };
@@ -102,31 +102,31 @@ function maybe(id: string) {
 }
 
 export function convertTypeAnnotation(node: ASTNode) {
-  if (!node || node.type !== 'TypeAnnotation') return id('Object');
+  if (!node || node.type !== ASTType.TypeAnnotation) return id('Object');
   const typeAnnotation = node.typeAnnotation;
 
   switch (typeAnnotation.type) {
-    case 'BooleanKeyword':
+    case ASTType.BooleanKeyword:
       return id_Boolean;
-    case 'NeverKeyword':
-    case 'NullKeyword':
-    case 'VoidKeyword':
-    case 'UndefinedKeyword':
+    case ASTType.NeverKeyword:
+    case ASTType.NullKeyword:
+    case ASTType.VoidKeyword:
+    case ASTType.UndefinedKeyword:
       return voidZero;
-    case 'AnyKeyword':
+    case ASTType.AnyKeyword:
     case 'TypeOperator':
     case 'UnionType':
       return id_Object;
-    case 'StringKeyword':
+    case ASTType.StringKeyword:
       return id_String;
-    case 'NumberKeyword':
+    case ASTType.NumberKeyword:
       return id_Number;
-    case 'FunctionType':
+    case ASTType.FunctionType:
       return id_Function;
-    case 'TupleType':
-    case 'ArrayType':
+    case ASTType.TupleType:
+    case ASTType.ArrayType:
       return id_Array;
-    case 'LiteralType':
+    case ASTType.LiteralType:
       if (typeAnnotation.literal && typeAnnotation.literal.value !== undefined) {
         const t = typeof typeAnnotation.literal.value;
 
@@ -135,7 +135,7 @@ export function convertTypeAnnotation(node: ASTNode) {
       }
     case 'TypeLiteral':
       return id_Object;
-    case 'TypeReference':
+    case ASTType.TypeReference:
       if (typeAnnotation.typeName && typeAnnotation.typeName.type === 'Identifier') {
         const known = KNOWN_IDENTIFIERS[typeAnnotation.typeName.name];
         if (known) return id(known);

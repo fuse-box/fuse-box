@@ -1,4 +1,4 @@
-import { ASTNode } from '../../interfaces/AST';
+import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { GlobalContext } from '../../program/GlobalContext';
 import { createExpressionStatement, isValidMethodDefinition } from '../../Visitor/helpers';
@@ -101,7 +101,7 @@ export function ClassConstructorPropertyTransformer(): ITransformer {
               let thisParams = [];
               while (index < node.value.params.length) {
                 const param = node.value.params[index] as ASTNode;
-                if (param.type === 'ParameterProperty') {
+                if (param.type === ASTType.ParameterProperty) {
                   hasSomethingToAdd = true;
                   let name;
                   if (param.parameter.left) {
