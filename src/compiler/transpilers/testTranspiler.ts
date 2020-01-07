@@ -9,6 +9,7 @@ import { makeFuseBoxPath } from '../../utils/utils';
 import { generate } from '../generator/generator';
 import { ASTNode } from '../interfaces/AST';
 import { transformCommonVisitors } from '../transformer';
+import { parseTypeScript } from '../parser';
 
 export interface ICompileModuleProps {
   target?: ITarget;
@@ -27,12 +28,7 @@ export function testTranspile(props: ICompileModuleProps) {
 
   const ext = props.fileName ? path.extname(props.fileName) : '.tsx';
 
-  const ast = buntis.parseTSModule(contents, {
-    directives: true,
-    jsx: ext !== '.ts',
-    next: true,
-    loc: true,
-  });
+  const ast = parseTypeScript(contents, { jsx: ext !== '.ts' });
 
   const ctx = createContext({
     cache: false,

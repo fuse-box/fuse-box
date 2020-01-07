@@ -4,6 +4,7 @@ import { ITransformer } from '../../interfaces/ITransformer';
 import { GlobalContext } from '../../program/GlobalContext';
 import { createRequireStatement } from '../../Visitor/helpers';
 import { IVisit } from '../../Visitor/Visitor';
+import { ASTType } from '../../interfaces/AST';
 
 export function ImportTransformer(): ITransformer {
   return {
@@ -13,7 +14,7 @@ export function ImportTransformer(): ITransformer {
           const node = visit.node;
           const global = visit.globalContext as GlobalContext;
 
-          if (node.type === 'ImportEqualsDeclaration') {
+          if (node.type === ASTType.ImportEqualsDeclaration) {
             const reqStatement = createRequireStatement(node.moduleReference.expression.value, node.id.name);
             if (props.onRequireCallExpression) {
               props.onRequireCallExpression(ImportType.RAW_IMPORT, reqStatement.reqStatement);

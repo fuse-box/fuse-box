@@ -25,6 +25,7 @@
     }
   },
   "dependencies": {
+    "@typescript-eslint/typescript-estree": "^2.15.0",
     "app-root-path": "^3.0.0",
     "astring": "^1.4.3",
     "buntis": "0.2.1",

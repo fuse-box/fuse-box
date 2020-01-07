@@ -30,8 +30,6 @@ describe('Require statement intercepto', () => {
           callee: { type: 'Identifier', name: 'require' },
           arguments: [{ type: 'Literal', value: './a' }],
           optional: false,
-          shortCircuited: false,
-          typeParameters: null,
         },
       },
     ]);
@@ -50,10 +48,9 @@ describe('Require statement intercepto', () => {
         statement: {
           type: 'CallExpression',
           optional: false,
-          shortCircuited: false,
+
           callee: { type: 'Identifier', name: 'require' },
           arguments: [{ type: 'Literal', value: './a' }],
-          typeParameters: null,
         },
       },
       {

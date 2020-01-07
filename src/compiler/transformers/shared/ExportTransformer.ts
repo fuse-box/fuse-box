@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { ASTNode } from '../../interfaces/AST';
+import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ImportType } from '../../interfaces/ImportType';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { GlobalContext } from '../../program/GlobalContext';
@@ -7,8 +7,8 @@ import { createExports, createVariableDeclaration, isDefinedLocally } from '../.
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
 
 const IGNORED_DECLARATIONS = {
-  InterfaceDeclaration: 1,
-  TypeAliasDeclaration: 1,
+  [ASTType.InterfaceDeclaration]: 1,
+  [ASTType.TypeAliasDeclaration]: 1,
 };
 function considerDecorators(node: ASTNode) {
   let statement: ASTNode = node.declaration;

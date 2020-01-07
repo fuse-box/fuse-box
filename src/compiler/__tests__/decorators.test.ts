@@ -129,6 +129,7 @@ describe('Decorators test', () => {
         }
     `,
       });
+
       expect(res.code).toMatchSnapshot();
     });
 

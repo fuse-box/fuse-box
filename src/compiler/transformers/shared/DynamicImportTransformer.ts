@@ -2,6 +2,7 @@ import { ASTNode } from '../../interfaces/AST';
 import { ImportType } from '../../interfaces/ImportType';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
+import { getDynamicImport } from '../astHelpers';
 
 export function DynamicImportTransformer(): ITransformer {
   return {
@@ -9,7 +10,11 @@ export function DynamicImportTransformer(): ITransformer {
       return {
         onEachNode: (visit: IVisit): IVisitorMod => {
           const node = visit.node;
-          if (node.type === 'ImportExpression') {
+
+          const dynamicImport = getDynamicImport(node);
+          if (dynamicImport) {
+            if (dynamicImport.error) return;
+
             const requireCallExpression: ASTNode = {
               type: 'CallExpression',
               callee: {
@@ -19,7 +24,7 @@ export function DynamicImportTransformer(): ITransformer {
               arguments: [
                 {
                   type: 'Literal',
-                  value: node.source.value,
+                  value: dynamicImport.source,
                 },
               ],
             };
@@ -68,6 +73,7 @@ export function DynamicImportTransformer(): ITransformer {
               replaceWith: callExpression,
             };
           }
+
           return;
         },
       };

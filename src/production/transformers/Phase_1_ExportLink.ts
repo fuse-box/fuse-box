@@ -55,7 +55,7 @@ export function Phase_1_ExportLink(): ITransformer {
             const ref: IExportReference = scope.meta.ref;
 
             if (visit.isLocalIdentifier && !locals[node.name]) {
-              console.log(scope.meta.ref, node.name);
+              //console.log(scope.meta.ref, node.name);
             }
           }
 
