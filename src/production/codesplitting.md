@@ -35,8 +35,7 @@ IProductionContext: {
 ```js
 ModuleTypes: {
   SPLIT_MODULE,
-  MAIN_MODULE,
-  VENDOR_MODULE
+  MAIN_MODULE
 }
 ```
 
