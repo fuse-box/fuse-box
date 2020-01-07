@@ -1,13 +1,13 @@
 import { IVisit, IVisitorMod } from '../../compiler/Visitor/Visitor';
-import { ASTNode } from '../../compiler/interfaces/AST';
+import { ASTType } from '../../compiler/interfaces/AST';
 import { ITransformer } from '../../compiler/interfaces/ITransformer';
-import { Module } from '../../core/Module';
+import { getDynamicImport } from '../../compiler/transformers/astHelpers';
 
 const NODES_OF_INTEREST = {
-  ExportAllDeclaration: 1,
-  ExportNamedDeclaration: 1,
-  ImportDeclaration: 1,
-  ImportEqualsDeclaration: 1
+  [ASTType.ExportAllDeclaration]: 1,
+  [ASTType.ExportNamedDeclaration]: 1,
+  [ASTType.ImportDeclaration]: 1,
+  [ASTType.ImportEqualsDeclaration]: 1
 };
 
 export function Phase_1_ImportLink(): ITransformer {
@@ -18,35 +18,32 @@ export function Phase_1_ImportLink(): ITransformer {
 
       function isEligibleRequire(node): boolean {
         return (
-          node.type === 'CallExpression' &&
+          node.type === ASTType.CallExpression &&
           node.callee.name === 'require' &&
           node.arguments.length === 1 &&
           node.arguments[0].type === 'Literal' &&
-          refs[node.arguments[0].value]
+          !!refs[node.arguments[0].value]
         );
       }
 
       function isEligibleImportOrExport(node): boolean {
         return (
-          NODES_OF_INTEREST[node.type] &&
+          !!NODES_OF_INTEREST[node.type] &&
           (
-            (node.source && refs[node.source.value]) ||
-            (node.moduleReference && refs[node.moduleReference.expression.value])
+            (!!node.source && !!refs[node.source.value]) ||
+            (!!node.moduleReference && !!refs[node.moduleReference.expression.value])
           )
         );
       }
 
       function isEligibleDynamicImport(node): boolean {
-        return (
-          node.type === 'ImportExpression' &&
-          node.source &&
-          refs[node.source.value]
-        )
+        const dynamicImport = getDynamicImport(node);
+        return !!dynamicImport && !!dynamicImport.source && !!refs[dynamicImport.source];
       }
 
       return {
         onEachNode: (visit: IVisit): IVisitorMod => {
-          if (visit.parent && visit.parent.type === 'Program') {
+          if (visit.parent && visit.parent.type === ASTType.Program) {
             return;
           }
 

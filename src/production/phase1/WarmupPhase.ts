@@ -6,7 +6,6 @@ import { PRODUCTION_TRANSFORMERS } from '../transformers/collection';
 import { transpileModule } from '../../compiler/program/transpileModule';
 import { createGlobalContext } from '../../compiler/program/GlobalContext';
 import { ASTNode } from '../../compiler/interfaces/AST';
-import { ModuleTree } from '../module/ModuleTree';
 
 function launchPhaseOne(productionContext: IProductionContext, module: Module) {
   const ctx = productionContext.ctx;
@@ -39,8 +38,6 @@ export function WarmupPhase(productionContext: IProductionContext) {
       // laters on we will be working with the same AST
       module.parse();
 
-      // create and assign module tree
-      module.moduleTree = ModuleTree(productionContext, module);
       launchPhaseOne(productionContext, module);
     }
   }
