@@ -1,11 +1,11 @@
+import { ASTNode } from '../../compiler/interfaces/AST';
 import { ITransformer } from '../../compiler/interfaces/ITransformer';
+import { createGlobalContext } from '../../compiler/program/GlobalContext';
+import { transpileModule } from '../../compiler/program/transpileModule';
 import { BASE_TRANSFORMERS, isTransformerEligible } from '../../compiler/transformer';
 import { Module } from '../../core/Module';
 import { IProductionContext } from '../ProductionContext';
 import { PRODUCTION_TRANSFORMERS } from '../transformers/collection';
-import { transpileModule } from '../../compiler/program/transpileModule';
-import { createGlobalContext } from '../../compiler/program/GlobalContext';
-import { ASTNode } from '../../compiler/interfaces/AST';
 
 function launchPhaseOne(productionContext: IProductionContext, module: Module) {
   const ctx = productionContext.ctx;
@@ -31,6 +31,7 @@ function launchPhaseOne(productionContext: IProductionContext, module: Module) {
     transformers: transformers,
   });
 }
+
 export function WarmupPhase(productionContext: IProductionContext) {
   for (const module of productionContext.modules) {
     if (module.isExecutable()) {

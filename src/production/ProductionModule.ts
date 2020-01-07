@@ -1,8 +1,8 @@
-import { ProductionContext } from './ProductionContext';
+import { IProductionContext } from './ProductionContext';
 
 export interface IProductionModuleProps {
-  productionContext: ProductionContext;
+  productionContext: IProductionContext;
 }
 export class ProductionModule {
-  constructor(public props: IProductionModuleProps) {}
+  constructor(public props: IProductionModuleProps) { }
 }
