@@ -9,7 +9,7 @@ export enum ImportType {
   SIDE_EFFECT_IMPORT,
   IMPORT_SPECIFIERS,
   DYNAMIC_IMPORT,
-  EXPORT_FROM,
+  EXPORT_FROM
 };
 
 export enum ImportSpecifierType {
