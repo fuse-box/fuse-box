@@ -1,23 +1,62 @@
 # Code splitting in production
+The desired structure after CodeSplittingPhase of the productionContext
 
-This is a write up while making code splitting into production.
+## Example source code
 
-Desired structure
+```js
+index.ts
+  import a;
+  import b;
+
+a.ts
+  await import("./foo")
+
+b.ts
+  await import("./foo")
+
+foo.ts:
+   import "./bar"
+
+bar.ts:
+    ...
+```
 
 ```js
 IProductionContext: {
   ctx: Context,
   modules: Array<Module>,
-  splitReferences: {
-    references,
-    register: function() {
-    }
-  }
+  splitEntries: SplitEntries<{
+    entries: Array<SplitEntry?>,
+    register: function() {}
+  }>
 }
 ```
 
 ```js
-references: [
-  
-]
+ModuleTypes: {
+  SPLIT_MODULE,
+  MAIN_MODULE,
+  VENDOR_MODULE
+}
+```
+
+```js
+splitEntries: {
+  entries: [{
+    entry: { // FooModule:
+      moduleTree: {
+        ...,
+        moduleType: SPLIT_MODULE
+      }
+    },
+    references: [
+      dynamicImportFromA,
+      dynamicImportFromB
+    ],
+    modules: [
+      FooModule,
+      BarModule
+    ]
+  }]
+}
 ```
