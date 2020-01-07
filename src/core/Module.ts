@@ -12,6 +12,7 @@ import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { extractFuseBoxPath, fastHash, joinFuseBoxPath, readFile } from '../utils/utils';
 import { Context } from './Context';
 import { Package } from './Package';
+import { parseTypeScript } from '../compiler/parser';
 const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.mjs'];
 
 export interface IAnalysis {
@@ -142,12 +143,7 @@ export class Module {
     try {
       const withSourcemaps = this.isSourceMapRequired();
       if (!this.isJavascriptModule()) {
-        this.ast = buntis.parseTSModule(this.contents, {
-          directives: true,
-          jsx: this.props.extension === '.tsx',
-          next: true,
-          loc: withSourcemaps,
-        }) as ASTNode;
+        this.ast = parseTypeScript(this.contents, { jsx: this.props.extension === '.tsx', locations: withSourcemaps });
       } else {
         let opts = { jsx: true, next: false, module: true, loc: withSourcemaps };
 

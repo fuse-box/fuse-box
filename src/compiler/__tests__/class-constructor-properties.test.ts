@@ -141,7 +141,7 @@ describe('Class constructor properties', () => {
 
                 constructor(@foo public welcome: string,
                             @foo() private to: string,
-                            @foo(123, 'ab') protected awesomeness: string,
+                            @foo(123, "ab") protected awesomeness: string,
                             of: number,
                             fuse?: boolean) {
 
@@ -486,7 +486,7 @@ describe('Class constructor properties', () => {
         export const exception = <Ex extends new (...args: any[]) => any>(constructor: Ex) => {
           return class extends constructor {
             public static hey = 1;
-            public oi hey = 1;
+            public oi = 1;
           };
         };
 

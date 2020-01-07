@@ -34,10 +34,9 @@ describe('Browser fast condition', () => {
           statement: {
             type: 'CallExpression',
             optional: false,
-            shortCircuited: false,
+
             callee: { type: 'Identifier', name: 'require' },
             arguments: [{ type: 'Literal', value: './prod' }],
-            typeParameters: null,
           },
         },
       ]);

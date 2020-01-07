@@ -1,10 +1,10 @@
-import { ASTNode } from '../interfaces/AST';
+import { ASTNode, ASTType } from '../interfaces/AST';
 
 const _isLocalIdentifierRulesExceptionNodes = {
   ImportSpecifier: 1,
   ImportDeclaration: 1,
   ImportNamespaceSpecifier: 1,
-  TypeReference: 1,
+  [ASTType.TypeReference]: 1,
   FunctionDeclaration: 1,
   ArrayPattern: 1,
   ClassDeclaration: 1,
@@ -28,7 +28,7 @@ export function isLocalIdentifier(node: ASTNode, parent: ASTNode, propertyName: 
 }
 
 export function isValidMethodDefinition(node: ASTNode) {
-  return node.type === 'MethodDefinition' && node.value.type === 'FunctionExpression';
+  return node.type === 'MethodDefinition' && node.value.type === 'FunctionExpression' && node.value.body;
 }
 
 export function isDefinedLocally(node: ASTNode): Array<{ init: boolean; name: string }> {

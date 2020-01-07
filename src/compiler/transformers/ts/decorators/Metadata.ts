@@ -1,4 +1,4 @@
-import { ASTNode } from '../../../interfaces/AST';
+import { ASTNode, ASTType } from '../../../interfaces/AST';
 import { convertTypeAnnotation } from './Annotations';
 import { FUSEBOX_DECORATOR_META } from './decorator_helpers';
 
@@ -65,7 +65,7 @@ export function getParamTypes(node: ASTNode): ASTNode {
   };
   for (const p of node.params) {
     let target: ASTNode = p;
-    if (p.type === 'ParameterProperty') {
+    if (p.type === ASTType.ParameterProperty) {
       target = target.parameter;
     }
     arrayExpression.elements.push(convertTypeAnnotation(target.typeAnnotation));
