@@ -7,7 +7,7 @@ import { ImportType } from '../compiler/interfaces/ImportType';
 import { parseTypeScript } from '../compiler/parser';
 import { transformCommonVisitors } from '../compiler/transformer';
 import { testPath } from '../plugins/pluginUtils';
-import { IModuleTree, ModuleTree } from '../production/module/ModuleTree';
+import { IModuleTree } from '../production/module/ModuleTree';
 import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { extractFuseBoxPath, fastHash, joinFuseBoxPath, readFile } from '../utils/utils';
 import { Context } from './Context';
@@ -19,10 +19,10 @@ export interface IAnalysis {
 }
 
 export interface IModuleProps {
-  ctx: Context;
   absPath: string;
-  fuseBoxPath: string;
+  ctx: Context;
   extension: string;
+  fuseBoxPath: string;
 }
 export class Module {
   /**
@@ -122,7 +122,6 @@ export class Module {
     this.header = [];
     this.moduleDependencies = [];
     this.externalDependencies = [];
-    this.moduleTree = ModuleTree(this.props.ctx, this);
   }
 
   public isEntry() {
@@ -145,7 +144,7 @@ export class Module {
       if (!this.isJavascriptModule()) {
         this.ast = parseTypeScript(this.contents, { jsx: this.props.extension === '.tsx', locations: withSourcemaps });
       } else {
-        let opts = { jsx: true, next: false, module: true, loc: withSourcemaps };
+        let opts = { jsx: true, loc: withSourcemaps, module: true, next: false };
 
         this.ast = meriyah.parse(this.contents, opts) as ASTNode;
       }
