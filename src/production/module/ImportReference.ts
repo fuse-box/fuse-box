@@ -18,6 +18,7 @@ export enum ImportSpecifierType {
 }
 
 export type IImportReferences = ReturnType<typeof ImportReferences>;
+
 export type IImport = ReturnType<typeof Import>;
 export type IImportSpecifier = ReturnType<typeof ImportSpecifier>;
 
@@ -37,10 +38,10 @@ export interface IImportProps {
 
 function Import(props: IImportProps) {
   const target = props.module.moduleSourceRefs[props.source];
-  const exported = {
+  const importReference = {
     module: props.module,
     remove: function () {
-      exported.removed = true;
+      importReference.removed = true;
       // @todo finish this
       if (props.visit.property && props.visit.parent) {
         if (props.visit.parent[props.visit.property] instanceof Array) {
@@ -59,9 +60,9 @@ function Import(props: IImportProps) {
     visit: props.visit
   };
 
-  target.moduleTree.dependants.push(exported);
+  target.moduleTree.dependants.push(importReference);
 
-  return exported;
+  return importReference;
 };
 
 function ImportSpecifier(visit: IVisit, specifier: ASTNode) {
@@ -87,11 +88,11 @@ function ImportSpecifier(visit: IVisit, specifier: ASTNode) {
     name = specifier.exported.name;
   }
 
-  const exported = {
+  const importSpecifier = {
     local,
     name,
     remove: function () {
-      exported.removed = true;
+      importSpecifier.removed = true;
       // @todo finish this
       if (visit.node.specifiers instanceof Array) {
         const index = visit.node.specifiers.indexOf(specifier);
@@ -105,7 +106,7 @@ function ImportSpecifier(visit: IVisit, specifier: ASTNode) {
     visit
   };
 
-  return exported;
+  return importSpecifier;
 };
 
 // import './foo';
