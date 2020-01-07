@@ -5,6 +5,7 @@ import { ITransformer } from '../../interfaces/ITransformer';
 import { GlobalContext } from '../../program/GlobalContext';
 import { createExports, createVariableDeclaration, isDefinedLocally } from '../../Visitor/helpers';
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
+import { generateVariableFromSource } from '../astHelpers';
 
 const IGNORED_DECLARATIONS = {
   [ASTType.InterfaceDeclaration]: 1,
@@ -96,7 +97,7 @@ export function ExportTransformer(): ITransformer {
            * Needs to be simply replaced, no tracking involved
            */
           if (node.source) {
-            const sourceVariable = path.basename(node.source.value).replace(/\.|-/g, '_') + '_' + global.getNextIndex();
+            const sourceVariable = generateVariableFromSource(node.source.value, global.getNextIndex());
 
             // export * from "a"
             if (node.type === 'ExportAllDeclaration') {
