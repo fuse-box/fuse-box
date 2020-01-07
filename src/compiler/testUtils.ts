@@ -33,13 +33,6 @@ export function initCommonTransform(props: {
   }
 
   const ast = parseTypeScript(props.code, { jsx: props.jsx });
-
-  // const ast = buntis.parseTSModule(props.code, {
-  //   directives: true,
-  //   jsx: props.jsx,
-  //   next: true,
-  //   loc: true,
-  // });
   const tranformers = [GlobalContextTransformer().commonVisitors(props.props)];
   for (const t of props.transformers) {
     if (t.commonVisitors) {
