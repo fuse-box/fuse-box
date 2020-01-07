@@ -5,6 +5,7 @@ import { GlobalContext } from '../../program/GlobalContext';
 import { createRequireStatement } from '../../Visitor/helpers';
 import { IVisit } from '../../Visitor/Visitor';
 import { ASTType } from '../../interfaces/AST';
+import { generateVariableFromSource } from '../astHelpers';
 
 export function ImportTransformer(): ITransformer {
   return {
@@ -23,7 +24,7 @@ export function ImportTransformer(): ITransformer {
           }
           if (node.type === 'ImportDeclaration') {
             // converts "./foo/bar.hello.js" to foo_bar_hello_js_1 (1:1 like typescript does)
-            const variable = path.basename(node.source.value).replace(/\.|-/g, '_') + '_' + global.getNextIndex();
+            const variable = generateVariableFromSource(node.source.value, global.getNextIndex());
 
             node.specifiers.forEach(specifier => {
               if (specifier.type === 'ImportSpecifier') {
