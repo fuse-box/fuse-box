@@ -66,9 +66,10 @@ export function BundlePolyfillTransformer(): ITransformer {
               VariablesInserted[name] = 1;
               const statements: Array<ASTNode> = [];
               const moduleName = PolyfillEssentialConfig[name];
+
               if (!RequireStatementsInserted[moduleName]) {
                 RequireStatementsInserted[moduleName] = 1;
-                const statement = createRequireStatement(moduleName, name);
+                const statement = createRequireStatement(moduleName, moduleName);
                 if (props.onRequireCallExpression)
                   props.onRequireCallExpression(ImportType.REQUIRE, statement.reqStatement);
                 statements.push(statement.statement);

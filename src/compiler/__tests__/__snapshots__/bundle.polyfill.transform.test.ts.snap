@@ -72,7 +72,7 @@ console.log(stream.method());
 
 
 exports[`Bundle polyfill transform test polyfills Should not add anything should add buffer only once 1`] = `
-"var Buffer = require(\\"buffer\\");
+"var buffer = require(\\"buffer\\");
 var Buffer = buffer;
 console.log(Buffer);
 console.log(Buffer);
