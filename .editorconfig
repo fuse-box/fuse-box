@@ -6,9 +6,9 @@ indent_size = 2
 indent_style = space
 tabSize=2
 quote_type = single
-
 insert_final_newline = true
 max_line_length=120
 trim_trailing_whitespace = true
+
 [*.md]
 trim_trailing_whitespace = false
