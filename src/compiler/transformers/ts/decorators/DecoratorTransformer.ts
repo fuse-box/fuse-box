@@ -71,7 +71,7 @@ export function DecoratorTransformer(): ITransformer {
                 className: className,
                 decorators: expressions,
               });
-              statements.push(classDecorator.expressionStatement);
+              //statements.push(classDecorator.expressionStatement);
 
               // check for metadata
               if (emitDecoratorMetadata) {
@@ -98,7 +98,7 @@ export function DecoratorTransformer(): ITransformer {
                         className: className,
                         decorators: [],
                       });
-                      statements.push(classDecorator.expressionStatement);
+                      //statements.push(classDecorator.expressionStatement);
                       classDecoratorArrayExpression = classDecorator.arrayExpression;
                     }
                     for (const exp of constructorDecorators) {
@@ -168,6 +168,9 @@ export function DecoratorTransformer(): ITransformer {
               }
             }
 
+            if (classDecorator) {
+              statements.push(classDecorator.expressionStatement);
+            }
             const mod: IVisitorMod = {};
             if (statements.length) {
               mod.replaceWith = [node].concat(statements);
