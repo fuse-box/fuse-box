@@ -1,5 +1,5 @@
+import * as path from 'path';
 import { ASTNode } from '../interfaces/AST';
-
 export function getDynamicImport(node: ASTNode) {
   // buntis case
   if (node.type === 'ImportExpression') {
@@ -17,4 +17,12 @@ export function getDynamicImport(node: ASTNode) {
       return { error: 'At this moment computed statements are not supported' };
     }
   }
+}
+
+export function generateVariableFromSource(source: string, index: number) {
+  let variable = path.basename(source).replace(/\.|-/g, '_') + '_' + index;
+  if (!/^[a-z]/i.test(variable)) {
+    variable = 'a' + variable;
+  }
+  return variable;
 }

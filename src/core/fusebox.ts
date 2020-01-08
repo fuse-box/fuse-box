@@ -40,7 +40,7 @@ export function fusebox(config: IPublicConfig) {
         console.error(e);
       });
     },
-    runProd: (props?: IProductionProps) => {
+    runProd: (props?: IProductionProps): Promise<any> => {
       const ctx = createProdContext(config, props);
 
       if (props && props.handler) {
@@ -48,6 +48,7 @@ export function fusebox(config: IPublicConfig) {
       }
       bundleProd(ctx);
       // return bundleProd(ctx);
+      return Promise.resolve();
     },
   };
 }
