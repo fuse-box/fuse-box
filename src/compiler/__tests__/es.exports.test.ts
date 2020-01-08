@@ -25,6 +25,17 @@ describe('Es exports tests', () => {
       expect(result.code).toMatchSnapshot();
     });
 
+    it('should remove export default interface', () => {
+      const result = testTranspile({
+        code: `
+         export default interface Hey{}
+         alert(1)
+          `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
     it('should remove type', () => {
       const result = testTranspile({
         code: `

@@ -203,6 +203,9 @@ export function ExportTransformer(): ITransformer {
            */
           if (type === 'ExportDefaultDeclaration') {
             if (node.declaration) {
+              if (node.declaration.type === ASTType.InterfaceDeclaration) {
+                return { removeNode: true };
+              }
               // Looking at this case:
               //      console.log(foo)
               //      export default function foo(){}
