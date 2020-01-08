@@ -14,9 +14,12 @@ export function getFolderEntryPointFromPackageJSON(props: {
   if (props.json['ts:main']) {
     return props.json['ts:main'];
   }
-  if (props.json.esm2015) {
-    return props.json.esm2015;
-  }
+  // if (props.json.esm5) {
+  //   return props.json.esm5;
+  // }
+  // if (props.json.esm2015) {
+  //   return props.json.esm2015;
+  // }
   if (props.json.module) {
     return props.json.module;
   }
