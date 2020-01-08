@@ -17,11 +17,6 @@ export enum ImportSpecifierType {
   NAMESPACE_SPECIFIER
 }
 
-export type IImportReferences = ReturnType<typeof ImportReferences>;
-
-export type IImport = ReturnType<typeof Import>;
-export type IImportSpecifier = ReturnType<typeof ImportSpecifier>;
-
 export interface IImportReferencesProps {
   module: Module;
   productionContext: IProductionContext;
@@ -35,6 +30,17 @@ export interface IImportProps {
   type: ImportType;
   visit: IVisit;
 };
+
+export interface IImport {
+  module: Module;
+  removed: boolean;
+  source: string;
+  specifiers: Array<IImportSpecifier>;
+  target: Module;
+  type: ImportType;
+  visit: IVisit;
+  remove: () => void;
+}
 
 function Import(props: IImportProps) {
   const target = props.module.moduleSourceRefs[props.source];
@@ -64,6 +70,17 @@ function Import(props: IImportProps) {
 
   return importReference;
 };
+
+
+
+export interface IImportSpecifier {
+  local: string;
+  name: string;
+  removed: boolean;
+  type: ImportSpecifierType;
+  visit: IVisit;
+  remove: () => void;
+}
 
 function ImportSpecifier(visit: IVisit, specifier: ASTNode) {
   let local: string;
@@ -222,11 +239,14 @@ function exportSpecifierImport(props: IImportReferencesProps, scope: IImportRefe
   );
 }
 
-export function ImportReferences(productionContext: IProductionContext, module: Module) {
-  const references: Array<IImport> = [];
+export interface IImportReferences {
+  references: Array<IImport>;
+  register: (props: IImportReferencesProps) => void;
+}
 
+export function ImportReferences(productionContext: IProductionContext, module: Module): IImportReferences {
   const scope = {
-    references,
+    references: [],
     register: (props: IImportReferencesProps) => {
       const { node } = props.visit;
       if (node.type === ASTType.ImportDeclaration) {
