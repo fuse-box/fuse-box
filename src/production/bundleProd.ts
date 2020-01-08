@@ -6,9 +6,9 @@ import { pluginAssumption } from '../plugins/core/plugin_assumption';
 import { pluginCSS } from '../plugins/core/plugin_css';
 import { pluginSass } from '../plugins/core/plugin_sass';
 import { Engine } from './engine';
-import { ProductionContext } from './ProductionContext';
+import { ProductionContext, IProductionContext } from './ProductionContext';
 
-export async function bundleProd(ctx: Context) {
+async function productionContextFlow(ctx: Context): Promise<IProductionContext> {
   prerequisites(ctx);
   ctx.log.startStreaming();
 
@@ -25,9 +25,17 @@ export async function bundleProd(ctx: Context) {
     });
   }
 
-  const context = ProductionContext(ctx, packages);
-
+  return ProductionContext(ctx, packages);
+}
+export async function bundleProd(ctx: Context) {
+  const context = await productionContextFlow(ctx);
   await Engine(context).start();
 
   ctx.log.fuseFinalise();
+}
+
+export async function productionPhases(ctx: Context, phases): Promise<IProductionContext> {
+  const context = await productionContextFlow(ctx);
+  await Engine(context).startPhases(phases);
+  return context;
 }

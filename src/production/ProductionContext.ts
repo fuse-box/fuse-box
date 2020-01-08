@@ -3,21 +3,29 @@ import { Module } from '../core/Module';
 import { Package } from '../core/Package';
 import { ModuleTree } from './module/ModuleTree';
 
-export function ProductionContext(ctx: Context, packages: Array<Package>) {
+export function ProductionContext(ctx: Context, packages: Array<Package>): IProductionContext {
   const modules: Array<Module> = [];
-  const context = {
+
+  const productionContext: IProductionContext = {
     ctx,
-    modules
-  }
+    modules,
+  };
+
+  productionContext.splitEntries = SplitEntries(productionContext);
 
   for (const pkg of packages) {
     for (const module of pkg.modules) {
-      module.moduleTree = ModuleTree(context, module);
-      context.modules.push(module);
+      module.moduleTree = ModuleTree(productionContext, module);
+
+      productionContext.modules.push(module);
     }
   }
 
   return context;
 }
 
-export type IProductionContext = ReturnType<typeof ProductionContext>;
+export interface IProductionContext {
+  ctx: Context;
+  modules: Array<Module>;
+  splitEntries?: ISplitEntries;
+}
