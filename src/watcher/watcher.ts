@@ -121,7 +121,7 @@ export function createWatcher(props: IWatcherProps, externalProps?: IWatcherExte
   const paths = externalProps.paths ? externalProps.paths : props.ctx.config.homeDir;
 
   if (!externalProps.skipRecommendedIgnoredPaths) {
-    ignored.push('/node_modules/', /(\/|\\)\./, 'dist/', 'build/', props.ctx.writer.outputDirectory);
+    ignored.push('/node_modules/', /(\/|\\)\./, 'dist/', 'build/', /flycheck_/, /~$/, /\#.*\#$/, props.ctx.writer.outputDirectory);
   }
 
   const ignoredRegEx: Array<RegExp> = ignored.map(str => (typeof str === 'string' ? ignoredPath2Regex(str) : str));
