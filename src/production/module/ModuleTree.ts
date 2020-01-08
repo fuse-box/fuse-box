@@ -8,17 +8,21 @@ export enum ModuleType {
   SPLIT_MODULE
 };
 
+export interface IModuleTree {
+  dependants: Array<IImport>;
+  exportReferences: IExportReferences;
+  importReferences: IImportReferences;
+  moduleType: ModuleType;
+}
+
 export function ModuleTree(productionContext: IProductionContext, module: Module) {
-  const dependants: Array<IImport> = [];
   const exportReferences: IExportReferences = ExportReferences(productionContext, module);
   const importReferences: IImportReferences = ImportReferences(productionContext, module);
 
   return {
-    dependants,
+    dependants: [],
     exportReferences,
     importReferences,
     moduleType: ModuleType.MAIN_MODULE,
   };
 }
-
-export type IModuleTree = ReturnType<typeof ModuleTree>;

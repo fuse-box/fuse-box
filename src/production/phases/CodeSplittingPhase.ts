@@ -1,51 +1,57 @@
+import { Module } from '../../core/Module';
 import { IProductionContext } from '../ProductionContext';
-import { ImportType } from '../module/ImportReference';
-import { ModuleType } from '../module/ModuleTree';
+import { ImportType, IImport } from '../module/ImportReference';
 
 export function CodeSplittingPhase(productionContext: IProductionContext) {
-  for (const module of productionContext.modules) {
-    if (module.isExecutable()) {
-      console.log(`parsing: ${module.getShortPath()}`);
+  let possibleSplitEntry;
 
-      const { moduleTree } = module;
+  for (possibleSplitEntry of productionContext.modules) {
+    if (
+      !possibleSplitEntry.isEntry() &&
+      possibleSplitEntry.pkg.isDefaultPackage
+    ) {
+      // console.log(`parsing: ${possibleSplitEntry.getShortPath()}`);
+      const { moduleTree } = possibleSplitEntry;
+      let isDynamic = true;
 
-      if (moduleTree.dependants.length > 0) {
-        let dynamic = true;
-        for (const dependant of moduleTree.dependants) {
-          if (dependant.type !== ImportType.DYNAMIC_IMPORT) {
-            dynamic = false;
-            break;
-          }
-        }
-        if (dynamic) {
-          productionContext.splitEntries.register(module);
+      for (const dependant of moduleTree.dependants) {
+        if (dependant.type !== ImportType.DYNAMIC_IMPORT) {
+          isDynamic = false;
+          break;
         }
       }
-    }
-    //console.log(module.moduleTree.moduleType);
-  }
-}
 
-/*
-function traceOrigin(target: Module) {
-  let traced = false;
-  for (const dependant of target.productionDependants) {
-    if (dependant === splitEntry) traced = true;
-    else {
-      traced = traceOrigin(dependant);
-      if (!traced) return;
+      // go figure out it's submodules to bundle in this split
+      if (isDynamic) {
+        const subModules = traverseDependencies(possibleSplitEntry);
+        productionContext.splitEntries.register(possibleSplitEntry, subModules);
+      }
     }
   }
-  return traced;
-}
-// go through dependencies and try tracing down the origin
-function traceDepedencies(target: Module) {
-  for (const dependency of target.productionDependencies) {
-    if (traceOrigin(dependency)) {
-      submodules.push(dependency);
-      traceDepedencies(dependency);
+
+  function traceOrigin(target: Module): boolean {
+    let traced = false;
+    for (const { module } of target.moduleTree.dependants) {
+      if (module === possibleSplitEntry) {
+        traced = true;
+      } else {
+        traced = traceOrigin(module);
+        if (!traced) break;
+      }
     }
+    return traced;
+  }
+
+  function traverseDependencies(target: Module): Array<IImport> {
+    let subModules = [];
+    for (const dependency of target.moduleTree.importReferences.references) {
+      if (traceOrigin(dependency.target)) {
+        subModules = subModules.concat(
+          [dependency],
+          traverseDependencies(dependency.target),
+        );
+      }
+    }
+    return subModules;
   }
 }
-traceDepedencies(splitEntry);
-*/

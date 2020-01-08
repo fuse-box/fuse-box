@@ -5,25 +5,23 @@ import { ModuleType } from './ModuleTree';
 
 export interface ISplitEntry {
   entry: Module;
-  modules: Array<Module>;
+  modules: Array<IImport>;
   references: Array<IImport>;
 }
 
-export function SplitEntry(productionContext: IProductionContext, module: Module): ISplitEntry {
+export function SplitEntry(productionContext: IProductionContext, module: Module, subModules: Array<IImport>): ISplitEntry {
   module.moduleTree.moduleType = ModuleType.SPLIT_MODULE;
-  // @todo:
-  // fill modules
 
   return {
     entry: module,
-    modules: [],
-    references: [...module.moduleTree.dependants],
+    modules: subModules,
+    references: module.moduleTree.dependants,
   };
 }
 
 export interface ISplitEntries {
   entries: Array<ISplitEntry>;
-  register: (module: Module) => void;
+  register: (module: Module, subModules: Array<IImport>) => void;
 }
 
 export function SplitEntries(productionContext: IProductionContext): ISplitEntries {
@@ -31,8 +29,8 @@ export function SplitEntries(productionContext: IProductionContext): ISplitEntri
 
   return {
     entries,
-    register: function(module: Module) {
-      entries.push(SplitEntry(productionContext, module));
+    register: function (module: Module, subModules: Array<IImport>) {
+      entries.push(SplitEntry(productionContext, module, subModules));
     },
   };
 }
