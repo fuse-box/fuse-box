@@ -42,7 +42,7 @@ export interface IImport {
   remove: () => void;
 }
 
-function Import(props: IImportProps) {
+function Import(props: IImportProps): IImport {
   const target = props.module.moduleSourceRefs[props.source];
   const importReference = {
     module: props.module,
@@ -71,8 +71,6 @@ function Import(props: IImportProps) {
   return importReference;
 };
 
-
-
 export interface IImportSpecifier {
   local: string;
   name: string;
@@ -82,7 +80,7 @@ export interface IImportSpecifier {
   remove: () => void;
 }
 
-function ImportSpecifier(visit: IVisit, specifier: ASTNode) {
+function ImportSpecifier(visit: IVisit, specifier: ASTNode): IImportSpecifier {
   let local: string;
   let name: string;
   let type: ImportSpecifierType = ImportSpecifierType.OBJECT_SPECIFIER;
