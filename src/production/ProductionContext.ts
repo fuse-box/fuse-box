@@ -4,14 +4,12 @@ import { Package } from '../core/Package';
 import { ModuleTree } from './module/ModuleTree';
 import { SplitEntries, ISplitEntries } from './module/SplitEntries';
 
-export function ProductionContext(ctx: Context, packages: Array<Package>) {
+export function ProductionContext(ctx: Context, packages: Array<Package>): IProductionContext {
   const modules: Array<Module> = [];
-  const splitEntries: ISplitEntries = {};
 
-  const productionContext = {
+  const productionContext: IProductionContext = {
     ctx,
     modules,
-    splitEntries
   };
 
   productionContext.splitEntries = SplitEntries(productionContext);
@@ -19,6 +17,7 @@ export function ProductionContext(ctx: Context, packages: Array<Package>) {
   for (const pkg of packages) {
     for (const module of pkg.modules) {
       module.moduleTree = ModuleTree(productionContext, module);
+
       productionContext.modules.push(module);
     }
   }
@@ -26,4 +25,8 @@ export function ProductionContext(ctx: Context, packages: Array<Package>) {
   return productionContext;
 }
 
-export type IProductionContext = ReturnType<typeof ProductionContext>;
+export interface IProductionContext {
+  ctx: Context;
+  splitEntries?: ISplitEntries;
+  modules: Array<Module>;
+}

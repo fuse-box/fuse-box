@@ -1,6 +1,6 @@
 import { ImportType } from '../../module/ImportReference';
 import { Phase_1_ImportLink } from '../Phase_1_ImportLink';
-import { testProductionWarmup } from '../testUtils';
+import { testProductionWarmup } from '../../testUtils';
 
 function test(code: string) {
   return testProductionWarmup({
@@ -9,12 +9,12 @@ function test(code: string) {
       moduleSourceRefs: {
         './foo': {
           moduleTree: {
-            dependants: []
-          }
-        }
-      }
+            dependants: [],
+          },
+        },
+      },
     },
-    transformers: [Phase_1_ImportLink()]
+    transformers: [Phase_1_ImportLink()],
   });
 }
 
@@ -55,7 +55,6 @@ describe('Phase 1 - Imports test', () => {
     expect(refs[0].specifiers[0].local === 'foo');
     expect(refs[0].specifiers[0].name === 'default');
   });
-
 
   it(`regularImport import { foo, bar as baz } from './foo'`, () => {
     const { tree } = test(`
@@ -259,7 +258,6 @@ describe('Phase 1 - Imports test', () => {
     expect(refs).toHaveLength(0);
   });
 });
-
 
 /**
  * @todo:

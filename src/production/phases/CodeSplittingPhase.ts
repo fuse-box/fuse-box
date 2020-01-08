@@ -5,7 +5,7 @@ import { ModuleType } from '../module/ModuleTree';
 export function CodeSplittingPhase(productionContext: IProductionContext) {
   for (const module of productionContext.modules) {
     if (module.isExecutable()) {
-      console.log(`parsing: ${module.props.fuseBoxPath}`);
+      console.log(`parsing: ${module.getShortPath()}`);
 
       const { moduleTree } = module;
 
@@ -22,7 +22,7 @@ export function CodeSplittingPhase(productionContext: IProductionContext) {
         }
       }
     }
-    console.log(module.moduleTree.moduleType);
+    //console.log(module.moduleTree.moduleType);
   }
 }
 

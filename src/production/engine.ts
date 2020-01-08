@@ -11,6 +11,11 @@ export function Engine(productionContext: IProductionContext) {
       for (const phase of phases) {
         phase(productionContext);
       }
-    }
+    },
+    startPhases: async customPhases => {
+      for (const phase of customPhases) {
+        phase(productionContext);
+      }
+    },
   };
 }

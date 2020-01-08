@@ -6,7 +6,8 @@ import { bundleDev } from '../main/bundle_dev';
 import { UserHandler } from '../user-handler/UserHandler';
 import { parseVersion } from '../utils/utils';
 import { createContext, createProdContext } from './Context';
-import { bundleProd } from '../production/bundleProd';
+import { bundleProd, productionPhases } from '../production/bundleProd';
+import { IProductionContext } from '../production/ProductionContext';
 
 export interface IDevelopmentProps {}
 
@@ -39,6 +40,10 @@ export function fusebox(config: IPublicConfig) {
       return bundleDev(ctx).catch(e => {
         console.error(e);
       });
+    },
+    runProductionContext: (phases, props?: IProductionProps): Promise<IProductionContext> => {
+      const ctx = createProdContext(config, props);
+      return productionPhases(ctx, phases);
     },
     runProd: (props?: IProductionProps): Promise<any> => {
       const ctx = createProdContext(config, props);
