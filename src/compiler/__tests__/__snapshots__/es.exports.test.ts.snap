@@ -248,6 +248,24 @@ exports.name2 = name2;
 "
 `;
 
+exports[`Es exports tests Object export should export the same object with different names (multiple refs in the code) 1`] = `
+"var AnimationDriver = (function () {
+  function AnimationDriver() {}
+  AnimationDriver.NOOP = new NoopAnimationDriver();
+  return AnimationDriver;
+})();
+exports.AnimationDriver = AnimationDriver;
+exports.ɵAnimationDriver = AnimationDriver;
+"
+`;
+
+exports[`Es exports tests Object export should export the same object with different names 1`] = `
+"const foo = 1;
+exports.foo = foo;
+exports.foo1 = foo;
+"
+`;
+
 exports[`Es exports tests export typescript objects should remove export default interface 1`] = `
 "alert(1);
 "

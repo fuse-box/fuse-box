@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ImportType } from '../../interfaces/ImportType';
 import { ITransformer } from '../../interfaces/ITransformer';
@@ -36,6 +35,7 @@ const INTERESTED_NODES = {
 export function ExportTransformer(): ITransformer {
   return {
     commonVisitors: props => {
+      const definedLocallyProcessed: Record<string, number> = {};
       return {
         onEachNode: (visit: IVisit) => {
           const global = visit.globalContext as GlobalContext;
@@ -50,14 +50,19 @@ export function ExportTransformer(): ITransformer {
               const response: IVisitorMod = {};
 
               for (const localVar of definedLocally) {
-                if (global.exportAfterDeclaration[localVar.name]) {
-                  const ast = createExports(global.namespace, global.exportAfterDeclaration[localVar.name].target, {
-                    type: 'Identifier',
-                    name: localVar.name,
-                  });
-
+                // we don't want to add it multiple times
+                if (definedLocallyProcessed[localVar.name]) break;
+                definedLocallyProcessed[localVar.name] = 1;
+                const targetAfter = global.exportAfterDeclaration[localVar.name];
+                if (targetAfter) {
                   if (!response.appendToBody) response.appendToBody = [];
-                  response.appendToBody.push(ast);
+                  for (const item of targetAfter.targets) {
+                    const ast = createExports(global.namespace, item, {
+                      type: 'Identifier',
+                      name: localVar.name,
+                    });
+                    response.appendToBody.push(ast);
+                  }
                 }
               }
               if (newNodes.length) {
@@ -271,13 +276,19 @@ export function ExportTransformer(): ITransformer {
                     }),
                   );
                 } else {
-                  //console.log('NOE', specifier.local.name);
                   // if none was decleared, it must be declared earlier (so we check if later with onEachNode in this transformer )
-                  if (!global.exportAfterDeclaration) global.exportAfterDeclaration = {};
+                  let exportAfterDeclaration = global.exportAfterDeclaration;
+                  if (!exportAfterDeclaration) {
+                    global.exportAfterDeclaration = exportAfterDeclaration = {};
+                  }
 
-                  global.exportAfterDeclaration[specifier.local.name] = {
-                    target: specifier.exported.name,
-                  };
+                  if (!exportAfterDeclaration[specifier.local.name]) {
+                    exportAfterDeclaration[specifier.local.name] = { targets: [] };
+                  }
+                  // it can have multiple exports of the same variable. For example
+                  // export {foo, foo as foo1}
+
+                  exportAfterDeclaration[specifier.local.name].targets.push(specifier.exported.name);
                 }
               }
               return { replaceWith: newNodes };

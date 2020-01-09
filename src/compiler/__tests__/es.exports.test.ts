@@ -188,6 +188,34 @@ describe('Es exports tests', () => {
       expect(result.code).toMatchSnapshot();
     });
 
+    it('should export the same object with different names', () => {
+      const result = testTranspile({
+        code: `
+          export {foo, foo as foo1}
+          const foo = 1;
+
+          `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should export the same object with different names (multiple refs in the code)', () => {
+      const result = testTranspile({
+        code: `
+          var AnimationDriver = /** @class */ (function() {
+            function AnimationDriver() {}
+            AnimationDriver.NOOP = new NoopAnimationDriver();
+            return AnimationDriver;
+          })();
+          export { AnimationDriver, AnimationDriver as ɵAnimationDriver };
+
+          `,
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
     it('should export object with keys2 (late)  function', () => {
       const result = testTranspile({
         code: `
