@@ -2,26 +2,27 @@ import { Context } from '../core/Context';
 import { Module } from '../core/Module';
 import { Package } from '../core/Package';
 import { ModuleTree } from './module/ModuleTree';
+import { SplitEntries, ISplitEntries } from './module/SplitEntries';
 
 export function ProductionContext(ctx: Context, packages: Array<Package>): IProductionContext {
-  const modules: Array<Module> = [];
+  let moduleIdentifier = 0;
 
   const productionContext: IProductionContext = {
     ctx,
-    modules,
+    modules: [],
   };
 
   productionContext.splitEntries = SplitEntries(productionContext);
 
   for (const pkg of packages) {
     for (const module of pkg.modules) {
-      module.moduleTree = ModuleTree(productionContext, module);
-
+      module.moduleTree = ModuleTree({ module, productionContext });
+      module.moduleId = moduleIdentifier++;
       productionContext.modules.push(module);
     }
   }
 
-  return context;
+  return productionContext;
 }
 
 export interface IProductionContext {

@@ -3,16 +3,31 @@ import { IProductionContext } from '../ProductionContext';
 import { ExportReferences, IExportReferences } from './ExportReference';
 import { ImportReferences, IImport, IImportReferences } from './ImportReference';
 
-export function ModuleTree(productionContext: IProductionContext, module: Module) {
-  const dependants: Array<IImport> = [];
+export enum ModuleType {
+  MAIN_MODULE,
+  SPLIT_MODULE
+};
+
+export interface IModuleTree {
+  dependants: Array<IImport>;
+  exportReferences: IExportReferences;
+  importReferences: IImportReferences;
+  moduleType: ModuleType;
+}
+
+export interface IModuleTreeProps {
+  module: Module;
+  productionContext: IProductionContext;
+}
+
+export function ModuleTree({ module, productionContext }: IModuleTreeProps): IModuleTree {
   const exportReferences: IExportReferences = ExportReferences(productionContext, module);
   const importReferences: IImportReferences = ImportReferences(productionContext, module);
 
   return {
-    dependants,
+    dependants: [],
     exportReferences,
     importReferences,
+    moduleType: ModuleType.MAIN_MODULE,
   };
 }
-
-export type IModuleTree = ReturnType<typeof ModuleTree>;

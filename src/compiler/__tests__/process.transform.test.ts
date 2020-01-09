@@ -68,7 +68,8 @@ describe('Process transform test', () => {
           console.log(process.version);
       `,
       });
-      expect(result.code).toMatchSnapshot();
+
+      expect(result.code).toMatch(/console.log\("v\d+/);
     });
 
     it('should transform process.versions', () => {

@@ -65,11 +65,6 @@ exports[`Process transform test process.xxx should transform process.umask 1`] =
 "
 `;
 
-exports[`Process transform test process.xxx should transform process.version 1`] = `
-"console.log(\\"v11.13.0\\");
-"
-`;
-
 exports[`Process transform test process.xxx should transform process.versions 1`] = `
 "console.log({});
 "

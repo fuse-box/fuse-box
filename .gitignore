@@ -26,6 +26,7 @@ docs/api
 # FuseBox Loader API built type definition
 # Which is then exported as a module from `src`
 src/modules/fuse-loader/LoaderAPI.ts
+src/production/__test__/dist
 
 playground/bundle/src/lodash
 

@@ -4,8 +4,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-
-console.log('aoo routuing', BrowserAnimationsModule);
+console.log('BrowserModule', BrowserModule);
+console.log('aoo BrowserAnimationsModule', BrowserAnimationsModule);
 @NgModule({
   declarations: [AppComponent],
   imports: [BrowserModule, AppRoutingModule, BrowserAnimationsModule],

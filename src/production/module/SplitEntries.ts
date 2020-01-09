@@ -9,30 +9,42 @@ export interface ISplitEntry {
   references: Array<IImport>;
 }
 
-export function SplitEntry(productionContext: IProductionContext, module: Module): ISplitEntry {
+export interface ISplitEntryProps {
+  module: Module;
+  productionContext: IProductionContext;
+  subModules: Array<Module>;
+}
+
+export function SplitEntry(props: ISplitEntryProps): ISplitEntry {
+  const { module, subModules } = props;
   module.moduleTree.moduleType = ModuleType.SPLIT_MODULE;
-  // @todo:
-  // fill modules
 
   return {
     entry: module,
-    modules: [],
-    references: [...module.moduleTree.dependants],
+    modules: subModules,
+    references: module.moduleTree.dependants,
   };
 }
 
 export interface ISplitEntries {
   entries: Array<ISplitEntry>;
-  register: (module: Module) => void;
+  ids: Record<number, boolean>;
+  addId: (moduleId: number) => void;
+  register: (splitEntry: ISplitEntry) => void;
 }
 
 export function SplitEntries(productionContext: IProductionContext): ISplitEntries {
   const entries: Array<ISplitEntry> = [];
+  const ids: Record<number, boolean> = {};
 
   return {
-    entries,
-    register: function(module: Module) {
-      entries.push(SplitEntry(productionContext, module));
+    addId: function (moduleId: number): void {
+      ids[moduleId] = true;
     },
-  };
+    entries,
+    ids,
+    register: function (splitEntry: ISplitEntry): void {
+      entries.push(splitEntry);
+    }
+  }
 }

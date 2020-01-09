@@ -1,26 +1,27 @@
 import * as appRoot from 'app-root-path';
-import { unlinkSync, writeFileSync, unlink } from 'fs';
-import * as path from 'path';
-import { ASTNode } from '../compiler/interfaces/AST';
-import { ITransformer } from '../compiler/interfaces/ITransformer';
-import { createGlobalContext } from '../compiler/program/GlobalContext';
-import { transpileModule } from '../compiler/program/transpileModule';
-import { GlobalContextTransformer } from '../compiler/transformers/GlobalContextTransformer';
-import { IPublicConfig } from '../config/IPublicConfig';
-import { createContext } from '../core/Context';
-import { fusebox } from '../core/fusebox';
-import { createModule } from '../core/Module';
-import { createPackage } from '../core/Package';
-import { ensureDir, fastHash } from '../utils/utils';
-import { ModuleTree } from './module/ModuleTree';
-import { IProductionContext, ProductionContext } from './ProductionContext';
+import { unlink, unlinkSync, writeFileSync } from 'fs';
 import * as fsExtra from 'fs-extra';
+import * as path from 'path';
+import { ASTNode } from '../../compiler/interfaces/AST';
+import { ITransformer } from '../../compiler/interfaces/ITransformer';
+import { createGlobalContext } from '../../compiler/program/GlobalContext';
+import { transpileModule } from '../../compiler/program/transpileModule';
+import { GlobalContextTransformer } from '../../compiler/transformers/GlobalContextTransformer';
+import { IPublicConfig } from '../../config/IPublicConfig';
+import { createContext } from '../../core/Context';
+import { createModule } from '../../core/Module';
+import { createPackage } from '../../core/Package';
+import { fusebox } from '../../core/fusebox';
+import { ensureDir, fastHash } from '../../utils/utils';
+import { ProductionContext, IProductionContext } from '../ProductionContext';
+import { ModuleTree } from '../module/ModuleTree';
+
 export function testProductionWarmup(props: {
-  jsx?: boolean;
   code: string;
-  transformers: Array<ITransformer>;
-  props?: any;
+  jsx?: boolean;
   moduleProps?: any;
+  props?: any;
+  transformers: Array<ITransformer>;
 }) {
   const ctx = createContext({
     cache: false,
@@ -47,10 +48,11 @@ export function testProductionWarmup(props: {
 
   module.contents = props.code;
   module.parse();
+  module.moduleId = 1;
 
   const productionContext = ProductionContext(ctx, [pkg]);
 
-  const tree = (module.moduleTree = ModuleTree(productionContext, module));
+  const tree = (module.moduleTree = ModuleTree({ module, productionContext }));
 
   const tranformers = [GlobalContextTransformer().commonVisitors(props.props)];
   for (const t of props.transformers) {
@@ -64,7 +66,7 @@ export function testProductionWarmup(props: {
     transformers: tranformers,
   });
 
-  return { productionContext, module, tree };
+  return { module, productionContext, tree };
 }
 
 function createFileSet(directory, files: Record<string, string>) {
@@ -75,6 +77,7 @@ function createFileSet(directory, files: Record<string, string>) {
 
   return newSet;
 }
+
 export class ProdPhasesTestEnv {
   private rootDir: string;
   private homeDir: string;

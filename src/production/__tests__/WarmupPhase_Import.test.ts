@@ -1,6 +1,6 @@
-import { ImportType } from '../../module/ImportReference';
-import { Phase_1_ImportLink } from '../Phase_1_ImportLink';
-import { testProductionWarmup } from '../../testUtils';
+import { ImportType } from '../module/ImportReference';
+import { Phase_1_ImportLink } from '../transformers/WarmupPhase_Import';
+import { testProductionWarmup } from './testUtils';
 
 function test(code: string) {
   return testProductionWarmup({

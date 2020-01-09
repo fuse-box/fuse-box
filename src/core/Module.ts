@@ -24,6 +24,7 @@ export interface IModuleProps {
   extension: string;
   fuseBoxPath: string;
 }
+
 export class Module {
   /**
    * Meta will be store to cache if set
@@ -113,8 +114,10 @@ export class Module {
   public moduleSourceRefs: { [key: string]: Module } = {};
   public productionDependants: Array<Module> = [];
   public productionDependencies: Array<Module> = [];
-
+  public moduleId: undefined | number = undefined;
   public moduleTree: IModuleTree;
+
+  private _isCommonsEligible: boolean = false;
 
   constructor(public props: IModuleProps, pkg: Package) {
     this.pkg = pkg;
@@ -246,6 +249,15 @@ export class Module {
   public getHasedPath() {
     return fastHash(`${this.pkg.getPublicName()}/${this.props.fuseBoxPath}`);
   }
+
+  public isCommonsEligible() {
+    return this._isCommonsEligible;
+  }
+
+  public flagAsCommonsEligible() {
+    this._isCommonsEligible = true;
+  }
+
   public isCSSSourceMapRequired() {
     let requireSourceMap = true;
     const config = this.props.ctx.config;
@@ -257,6 +269,7 @@ export class Module {
     }
     return requireSourceMap;
   }
+
   public isSourceMapRequired() {
     let requireSourceMaps = true;
     const config = this.props.ctx.config;

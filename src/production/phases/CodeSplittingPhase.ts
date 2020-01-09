@@ -1,0 +1,197 @@
+import { Module } from '../../core/Module';
+import { IProductionContext } from '../ProductionContext';
+import { ImportType } from '../module/ImportReference';
+import { SplitEntry, ISplitEntry } from '../module/SplitEntries';
+
+/**
+ * Function to check if a module is only required thr
+ * @param possibleSplitEntry
+ */
+function resolveDynamicImport(possibleSplitEntry: Module): boolean {
+  const { moduleTree } = possibleSplitEntry;
+  let isDynamic = true;
+  for (const dependant of moduleTree.dependants) {
+    // if all dependants require this module dynamic
+    // then we have a splitEntry
+    if (dependant.type !== ImportType.DYNAMIC_IMPORT) {
+      isDynamic = false;
+      break;
+    }
+  }
+  return isDynamic;
+}
+
+/**
+ * The core of the code splitting
+ *
+ * Provide it with a target and it will spit out a valid ISplitEntry
+ *
+ * @param productionContext
+ * @param target
+ */
+export function ResolveSplitEntry(productionContext: IProductionContext, target: Module): ISplitEntry {
+  const entryModuleId = target.moduleId;
+  const subModules: Array<Module> = [target];
+  const circularModules: Record<number, Record<number, boolean>> = {};
+  const visited: Record<number, boolean> = {};
+  const traversed: Record<number, boolean> = {
+    [entryModuleId]: true,
+  };
+
+  const splitEntry = {
+    circularModules,
+    subModules,
+    /**
+     * traceCircularDependency accepts a target of type Module
+     * it needs a reference to the parentId so we can safely trace back
+     *
+     * @param target
+     * @param parentId
+     */
+    traceCircularDependency: function (target: Module, parentId: number): boolean {
+      let traced = false;
+      const { moduleId, moduleTree: { dependants } } = target;
+
+      // prevent infinite loop
+      if (!!this.circularModules[parentId][moduleId]) {
+        return this.circularModules[parentId][moduleId];
+      }
+
+      for (const { module: dependant } of dependants) {
+        /**
+         * if we resolve to the parent or entryModuleId
+         * we're safe to assume we're contained within the split
+         * otherwise dive in to the dependant hierarchy
+         */
+        traced =
+          dependant.moduleId === entryModuleId ||
+          dependant.moduleId === parentId ||
+          this.traceCircularDependency(dependant, parentId);
+        this.circularModules[parentId][moduleId] = traced;
+        if (!traced) break;
+      }
+      return traced;
+    },
+    /**
+     * traceOrigin accepts a target of type Module
+     * it will validate against the already processed modules
+     * and returns true if it origins back to the possibleSplitEntry Module
+     *
+     * @param target
+     */
+    traceOrigin: function (target: Module, parentId: number): boolean {
+      const { moduleId, moduleTree: { dependants } } = target;
+      /**
+       * This check is to validate possible circular dependencies
+       * It's quite complex to keep track of all falsy code
+       * so we create a stack trace for it to validate against
+       */
+      if (!!this.visited[moduleId]) {
+        if (!(parentId in this.circularModules)) {
+          this.circularModules[parentId] = {};
+        }
+        const result = this.traceCircularDependency(target, parentId);
+        // @todo: log circular trace to console
+        // this.circularModules contains a stack trace
+        return result;
+      }
+      this.visited[moduleId] = true;
+
+      let traced = false;
+      for (const { module } of dependants) {
+        if (module.moduleId === entryModuleId) {
+          traced = true;
+        } else if (!!productionContext.splitEntries.ids[module.moduleId]) {
+          // the module is a dynamic module and not the entry, so false!
+          // we flagAsCommonsEligible here!
+          target.flagAsCommonsEligible();
+          traced = false;
+        } else {
+          traced = this.traceOrigin(module, moduleId);
+        }
+        if (!traced) {
+          // @todo: config to flag all shared commons?
+          // target.flagAsCommonsEligible();
+          break;
+        }
+      }
+      return traced;
+    },
+    /**
+     * traverseDependencies accepts a target of type Module
+     * it will check the modules that reference this module to validate isolation
+     * if it's an isolated module (no other references) it will be included
+     * in the splitted bundle. Also the dependencies of this module will be checked
+     * to see if we can integrate those too
+     *
+     * @param target
+     */
+    traverseDependencies: function (target: Module, entry: boolean = false): boolean {
+      const { moduleId, moduleTree: { importReferences: { references } } } = target;
+
+      // we already traversed this module, so we can skip it
+      // this happens in case of circular deps
+      // we return true because we want this module to be excluded
+      if (!entry && !!this.traversed[moduleId]) return true;
+      this.traversed[moduleId] = true;
+
+      // check if target is a dynamic module. If so, we want to exclude it
+      const isDynamic = !entry
+        ? !!productionContext.splitEntries.ids[target.moduleId]
+        : false;
+      if (!isDynamic) {
+        for (const { target: reference } of references) {
+          if (this.traceOrigin(reference, moduleId)) {
+            const exclude = this.traverseDependencies(reference, false);
+            if (!exclude) this.subModules.push(reference);
+          }
+        }
+      }
+      return isDynamic;
+    },
+    traversed,
+    visited
+  };
+
+  splitEntry.traverseDependencies(target, true);
+
+  return SplitEntry({
+    module: target,
+    productionContext,
+    subModules: splitEntry.subModules,
+  });
+}
+
+/**
+ * CodeSplittingPhase
+ * heavy lifting by validating all modules included in the context
+ * @param productionContext
+ */
+export function CodeSplittingPhase(productionContext: IProductionContext) {
+  // loop over all modules to extract the modules that can be splitted
+  const splitEntries = [];
+  for (const possibleSplitEntry of productionContext.modules) {
+    if (
+      !possibleSplitEntry.isEntry() &&
+      possibleSplitEntry.pkg.isDefaultPackage
+    ) {
+      // check if the current module is only imported through
+      // dynamic imports
+      const isDynamic = resolveDynamicImport(possibleSplitEntry);
+      if (isDynamic) {
+        // resolve the complete tree for this module and add it
+        // to the split entries
+        splitEntries.push(possibleSplitEntry);
+        productionContext.splitEntries.addId(possibleSplitEntry.moduleId);
+      }
+    }
+  }
+
+  // we needed to traverse all modules first to improve splitEntry resolvement
+  // so now we can parse all dynamicModules that we found.
+  for (const splitEntry of splitEntries) {
+    productionContext.splitEntries.register(
+      ResolveSplitEntry(productionContext, splitEntry)
+    );
+  }
+}

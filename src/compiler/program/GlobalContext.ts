@@ -7,7 +7,7 @@ export interface GlobalContext {
   hoisted: { [key: string]: number };
   exportAfterDeclaration?: {
     [key: string]: {
-      target?: string;
+      targets?: Array<string>;
     };
   };
   jsxFactory?: string;

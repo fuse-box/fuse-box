@@ -5,8 +5,8 @@ import { processPlugins } from '../main/process_plugins';
 import { pluginAssumption } from '../plugins/core/plugin_assumption';
 import { pluginCSS } from '../plugins/core/plugin_css';
 import { pluginSass } from '../plugins/core/plugin_sass';
-import { Engine } from './engine';
 import { ProductionContext, IProductionContext } from './ProductionContext';
+import { Engine } from './engine';
 
 async function productionContextFlow(ctx: Context): Promise<IProductionContext> {
   prerequisites(ctx);

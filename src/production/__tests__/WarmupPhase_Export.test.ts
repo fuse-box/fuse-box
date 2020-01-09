@@ -1,5 +1,5 @@
-import { Phase_1_ExportLink } from '../Phase_1_ExportLink';
-import { testProductionWarmup } from '../../testUtils';
+import { Phase_1_ExportLink } from '../transformers/WarmupPhase_Export';
+import { testProductionWarmup } from './testUtils';
 
 describe('Phase 1 export', () => {
   function test(code: string) {
