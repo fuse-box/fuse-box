@@ -1,13 +1,12 @@
-module.exports = function isBuffer(arg) {
-  if (typeof Buffer !== 'undefined') {
-    return arg instanceof Buffer;
-  } else {
-    return (
-      arg &&
-      typeof arg === 'object' &&
-      typeof arg.copy === 'function' &&
-      typeof arg.fill === 'function' &&
-      typeof arg.readUInt8 === 'function'
-    );
-  }
-};
+var AnimationDriver = /** @class */ (function() {
+  function AnimationDriver() {}
+  AnimationDriver.NOOP = new NoopAnimationDriver();
+  return AnimationDriver;
+})();
+
+//function AnimationDriver() {}
+//function foo() {}
+// function foo() {}
+// export { foo as foo1, foo };
+
+export { AnimationDriver, AnimationDriver as ɵAnimationDriver };
