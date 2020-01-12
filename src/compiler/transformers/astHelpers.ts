@@ -1,9 +1,12 @@
-import { ASTNode } from '../interfaces/AST';
 import * as path from 'path';
+import { ASTNode } from '../interfaces/AST';
+
 export function getDynamicImport(node: ASTNode) {
-  // buntis case
+  // meriyah case
   if (node.type === 'ImportExpression') {
-    if (node.source) return { source: node.source.value };
+    if (node.source) {
+      return { source: node.source.value };
+    }
     return { error: 'At this moment computed statements are not supported' };
   }
   // eslint parser case

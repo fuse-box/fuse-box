@@ -9,18 +9,13 @@ export enum ImportType {
   SIDE_EFFECT_IMPORT,
   IMPORT_SPECIFIERS,
   DYNAMIC_IMPORT,
-  EXPORT_FROM,
+  EXPORT_FROM
 };
 
 export enum ImportSpecifierType {
   OBJECT_SPECIFIER,
   NAMESPACE_SPECIFIER
 }
-
-export type IImportReferences = ReturnType<typeof ImportReferences>;
-
-export type IImport = ReturnType<typeof Import>;
-export type IImportSpecifier = ReturnType<typeof ImportSpecifier>;
 
 export interface IImportReferencesProps {
   module: Module;
@@ -36,7 +31,18 @@ export interface IImportProps {
   visit: IVisit;
 };
 
-function Import(props: IImportProps) {
+export interface IImport {
+  module: Module;
+  removed: boolean;
+  source: string;
+  specifiers: Array<IImportSpecifier>;
+  target: Module;
+  type: ImportType;
+  visit: IVisit;
+  remove: () => void;
+}
+
+function Import(props: IImportProps): IImport {
   const target = props.module.moduleSourceRefs[props.source];
   const importReference = {
     module: props.module,
@@ -65,7 +71,16 @@ function Import(props: IImportProps) {
   return importReference;
 };
 
-function ImportSpecifier(visit: IVisit, specifier: ASTNode) {
+export interface IImportSpecifier {
+  local: string;
+  name: string;
+  removed: boolean;
+  type: ImportSpecifierType;
+  visit: IVisit;
+  remove: () => void;
+}
+
+function ImportSpecifier(visit: IVisit, specifier: ASTNode): IImportSpecifier {
   let local: string;
   let name: string;
   let type: ImportSpecifierType = ImportSpecifierType.OBJECT_SPECIFIER;
@@ -222,11 +237,14 @@ function exportSpecifierImport(props: IImportReferencesProps, scope: IImportRefe
   );
 }
 
-export function ImportReferences(productionContext: IProductionContext, module: Module) {
-  const references: Array<IImport> = [];
+export interface IImportReferences {
+  references: Array<IImport>;
+  register: (props: IImportReferencesProps) => void;
+}
 
+export function ImportReferences(productionContext: IProductionContext, module: Module): IImportReferences {
   const scope = {
-    references,
+    references: [],
     register: (props: IImportReferencesProps) => {
       const { node } = props.visit;
       if (node.type === ASTType.ImportDeclaration) {
