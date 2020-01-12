@@ -98,6 +98,28 @@ export function scopeTracker(visitor: IVisit): IASTScope {
       }
     }
   }
+
+  if (Array.isArray(node.body)) {
+    // hoisted variables
+    for (const item of node.body) {
+      if (item.type === 'FunctionDeclaration' && item.body && item.id) {
+        if (!scope) {
+          scope = { locals: {} };
+          node.body['scope'] = scope;
+        }
+        scope.locals[item.id.name] = 1;
+      } else if (item.type == 'VariableDeclaration' && item.kind === 'var' && item.declarations) {
+        for (const i of item.declarations) {
+          if (!scope) {
+            scope = { locals: {} };
+            node.body['scope'] = scope;
+          }
+          scope.locals[i.id.name] = 1;
+        }
+      }
+    }
+  }
+
   visitor.scope = scope;
 
   return scope;

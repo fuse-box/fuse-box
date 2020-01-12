@@ -42,11 +42,10 @@ export function BundlePolyfillTransformer(): ITransformer {
           const { node } = visit;
 
           if (visit.isLocalIdentifier) {
-            const globalContext = visit.globalContext as GlobalContext;
             const locals = visit.scope && visit.scope.locals ? visit.scope.locals : {};
             const name = node.name;
 
-            if (locals[name] || globalContext.hoisted[name]) {
+            if (locals[name]) {
               return;
             }
 

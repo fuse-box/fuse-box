@@ -6,16 +6,6 @@ import { createMemberExpression } from '../Visitor/helpers';
 export function GlobalContextTransformer(): ITransformer {
   return {
     commonVisitors: props => ({
-      onTopLevelTraverse: visit => {
-        const { node } = visit;
-        if (node.type === 'FunctionDeclaration') {
-          visit.globalContext.hoisted[node.id.name] = 1;
-        } else if (node.type == 'VariableDeclaration' && node.kind === 'var' && node.declarations) {
-          for (const i of node.declarations) {
-            visit.globalContext.hoisted[i.id.name] = 1;
-          }
-        }
-      },
       onEachNode: visit => {
         const node = visit.node;
         const global = visit.globalContext as GlobalContext;
@@ -35,6 +25,7 @@ export function GlobalContextTransformer(): ITransformer {
           let nodeName;
           if (shorthand) nodeName = shorthand.name;
           else nodeName = node.name;
+
           // if it belongs to a function "someFunc(foo){}"
           const traced = global.identifierReplacement[nodeName];
           // traced.replaced is confusing, fails on
@@ -44,10 +35,13 @@ export function GlobalContextTransformer(): ITransformer {
             if (locals[nodeName] === 1) {
               return;
             }
+
             traced.inUse = true;
             if (traced.first === nodeName) {
               return;
             }
+            // even if we found the variable it might be defined as a hoisted variable down the scope
+
             const statement: ASTNode = traced.second
               ? createMemberExpression(traced.first, traced.second)
               : { type: 'Identifier', name: traced.first };

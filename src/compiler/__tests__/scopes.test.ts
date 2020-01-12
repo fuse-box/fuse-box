@@ -228,4 +228,16 @@ describe('scope test', () => {
 
     expect(result.code).toMatchSnapshot();
   });
+
+  it('should handle hoisted variable', () => {
+    const result = testTranspile({
+      code: `
+      export var Foo = (function() {
+        console.log(Foo);
+        function Foo() {}
+      })();
+      `,
+    });
+    expect(result.code).toMatchSnapshot();
+  });
 });

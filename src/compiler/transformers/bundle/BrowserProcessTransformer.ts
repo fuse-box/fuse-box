@@ -29,20 +29,17 @@ export function BrowserProcessTransformer(): ITransformer {
       return {
         onEachNode: (visit: IVisit): IVisitorMod => {
           if (ignoreProcess) return;
-          const globalContext = visit.globalContext as GlobalContext;
-
-          if (globalContext.hoisted['process']) {
-            ignoreProcess = true;
-            return;
-          }
 
           const { node, parent } = visit;
           const locals = visit.scope && visit.scope.locals ? visit.scope.locals : {};
 
+          if (locals['process'] === 1) {
+            return;
+          }
+
           const accessList = isPropertyOrPropertyAccess(node, parent, 'process');
 
           if (accessList) {
-            if (locals['process'] === 1) return;
             if (visit.parent.type === 'AssignmentExpression') {
               if (!entireEnvInserted) {
                 entireEnvInserted = true;
