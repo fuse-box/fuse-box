@@ -240,4 +240,19 @@ describe('scope test', () => {
     });
     expect(result.code).toMatchSnapshot();
   });
+
+  it('should handle hoisted variable 2', () => {
+    const result = testTranspile({
+      code: `
+      function some() {}
+      export var Disposable = (function() {
+        function Disposable() {}
+        return Disposable;
+      })();
+      console.log(Disposable);
+
+      `,
+    });
+    expect(result.code).toMatchSnapshot();
+  });
 });
