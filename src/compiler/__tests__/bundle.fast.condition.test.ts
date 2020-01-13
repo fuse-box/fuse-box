@@ -1,8 +1,7 @@
 import { initCommonTransform } from '../testUtils';
-import { BundleFastConditionUnwrapper } from '../transformers/bundle/BundleFastConditionTransformer';
 import { BrowserProcessTransformer } from '../transformers/bundle/BrowserProcessTransformer';
+import { BundleFastConditionUnwrapper } from '../transformers/bundle/BundleFastConditionTransformer';
 import { RequireStatementInterceptor } from '../transformers/bundle/RequireStatementInterceptor';
-import { ImportType } from '../interfaces/ImportType';
 
 const testTranspile = (props: { code: string; NODE_ENV?: string; target?: string }) => {
   return initCommonTransform({
@@ -28,18 +27,8 @@ describe('Browser fast condition', () => {
       `,
       });
 
-      expect(res.requireStatementCollection).toEqual([
-        {
-          importType: ImportType.REQUIRE,
-          statement: {
-            type: 'CallExpression',
-            optional: false,
-
-            callee: { type: 'Identifier', name: 'require' },
-            arguments: [{ type: 'Literal', value: './prod' }],
-          },
-        },
-      ]);
+      expect(res.requireStatementCollection).toHaveLength(1);
+      expect(res.requireStatementCollection[0].statement.arguments[0].value).toEqual('./prod');
     });
   });
 

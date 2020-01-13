@@ -240,6 +240,19 @@ describe('scope test', () => {
     });
     expect(result.code).toMatchSnapshot();
   });
+  it('should handle hoisted variable deep', () => {
+    const result = testTranspile({
+      code: `
+      export var Foo = (function() {
+        function Bar(){
+          console.log(Foo);
+        }
+        function Foo() {}
+      })();
+      `,
+    });
+    expect(result.code).toMatchSnapshot();
+  });
 
   it('should handle hoisted variable 2', () => {
     const result = testTranspile({

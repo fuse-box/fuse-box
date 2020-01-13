@@ -75,6 +75,16 @@ console.log(exports.Disposable);
 "
 `;
 
+exports[`scope test should handle hoisted variable deep 1`] = `
+"exports.Foo = (function () {
+  function Bar() {
+    console.log(Foo);
+  }
+  function Foo() {}
+})();
+"
+`;
+
 exports[`scope test should work with nulll 1`] = `
 "function one(props) {
   const [, foo, ...rest] = props;

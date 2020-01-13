@@ -1,6 +1,5 @@
-function some() {}
-export var Disposable = (function() {
-  function Disposable() {}
-  return Disposable;
-})();
-console.log(Disposable);
+import toString from './toString.js';
+
+function capitalize(string) {
+  return toString(string);
+}

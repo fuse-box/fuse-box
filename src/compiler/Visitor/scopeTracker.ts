@@ -100,9 +100,11 @@ export function scopeTracker(visitor: IVisit): IASTScope {
   }
 
   if (Array.isArray(node.body) && node.body[0]) {
+    //scope = scope || { locals: {} };
     const elScope = scope || { locals: {} };
-    node.body[0]['scope'] = scope;
-    //hoisted variables
+    node.body[0]['scope'] = elScope;
+
+    // hoisted variables
     for (const item of node.body) {
       if (item.type === 'FunctionDeclaration' && item.body && item.id) {
         elScope.locals[item.id.name] = 1;
