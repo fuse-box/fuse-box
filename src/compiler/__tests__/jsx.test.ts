@@ -4,10 +4,10 @@ import { JSXTransformer } from '../transformers/shared/JSXTransformer';
 
 const testTranspile = (props: { code: string; jsx?: boolean }) => {
   return initCommonTransform({
-    jsx: true,
-    transformers: [JSXTransformer(), ImportTransformer()],
     code: props.code,
+    jsx: true,
     props: { module: { props: { extension: '.tsx' } } },
+    transformers: [JSXTransformer(), ImportTransformer()],
   });
 };
 
@@ -75,9 +75,21 @@ describe('JSX', () => {
         function test(){
           return (<i id="1" f={oi} {...props} ></i>)
         }
-          `,
+      `,
     });
 
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('should spread correctly', () => {
+    const result = testTranspile({
+      code: `
+        function EventList () {
+          const cameraIDs = ['a'];
+          return <Foo jo='test' {...entry} cameraIDs={cameraIDs} key='123' />;
+        }
+      `,
+    });
     expect(result.code).toMatchSnapshot();
   });
 
@@ -88,7 +100,7 @@ describe('JSX', () => {
         function test(){
           return (<i {...props} ></i>)
         }
-          `,
+      `,
     });
     expect(result.code).toMatchSnapshot();
   });
@@ -102,7 +114,6 @@ describe('JSX', () => {
         }
           `,
     });
-
     expect(result.code).toMatchSnapshot();
   });
 

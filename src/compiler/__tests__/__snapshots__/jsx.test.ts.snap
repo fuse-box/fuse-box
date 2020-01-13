@@ -89,6 +89,19 @@ exports[`JSX should remove empty expressions 1`] = `
 "
 `;
 
+exports[`JSX should spread correctly 1`] = `
+"function EventList() {
+  const cameraIDs = ['a'];
+  return React.createElement(Foo, Object.assign({
+    jo: 'test'
+  }, entry, {
+    cameraIDs: cameraIDs,
+    key: '123'
+  }));
+}
+"
+`;
+
 exports[`JSX should work with JSXSpreadChild 1`] = `
 "function test() {
   return React.createElement(\\"i\\", null, children);
