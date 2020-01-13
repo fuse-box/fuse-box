@@ -6,6 +6,15 @@ const _FunctionDecl = {
   ClassDeclaration: 1,
   ArrowFunctionExpression: 1,
 };
+function copyScope(visitor: IVisit, scope) {
+  const { id, property, parent } = visitor;
+
+  const newScope = {};
+  for (const key in scope.locals) newScope[key] = 1;
+  if (parent[property][id + 1]) {
+    parent[property][id + 1].scope = { locals: newScope };
+  }
+}
 export function scopeTracker(visitor: IVisit): IASTScope {
   const { node, parent, property } = visitor;
   const type = node.type;
@@ -54,9 +63,7 @@ export function scopeTracker(visitor: IVisit): IASTScope {
       }
       // we need to check for the next item on the list (if we are in an array)
       if (visitor.id !== undefined && property) {
-        if (parent[property][visitor.id + 1]) {
-          parent[property][visitor.id + 1].scope = scope;
-        }
+        copyScope(visitor, scope);
       }
     }
   } else if (type === 'ExpressionStatement') {
@@ -69,16 +76,14 @@ export function scopeTracker(visitor: IVisit): IASTScope {
   else if (_FunctionDecl[type] && parent.right !== node) {
     if (node.body) {
       if (scope === undefined) scope = { locals: {} };
+
       if (node.id && node.id.name) {
         scope.locals[node.id.name] = 1;
       }
-      if (visitor.id && property) {
-        if (parent[property][visitor.id + 1]) {
-          parent[property][visitor.id + 1].scope = scope;
-        }
+      if (visitor.id !== undefined && property) {
+        copyScope(visitor, scope);
       }
     }
-
     if (node.params) {
       for (const item of node.params) {
         if (item.type === 'Identifier' && node.body) {
@@ -86,7 +91,6 @@ export function scopeTracker(visitor: IVisit): IASTScope {
             // copy scope
             let targetLocals = {};
             if (scope) {
-              // the fastest way to copy an object
               for (const key in scope.locals) targetLocals[key] = 1;
             }
             node.body['scope'] = {
@@ -100,10 +104,9 @@ export function scopeTracker(visitor: IVisit): IASTScope {
   }
 
   if (Array.isArray(node.body) && node.body[0]) {
-    //scope = scope || { locals: {} };
+    scope = scope || { locals: {} };
     const elScope = scope || { locals: {} };
-    node.body[0]['scope'] = elScope;
-
+    node.body[0].scope = elScope;
     // hoisted variables
     for (const item of node.body) {
       if (item.type === 'FunctionDeclaration' && item.body && item.id) {

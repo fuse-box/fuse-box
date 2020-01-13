@@ -57,6 +57,31 @@ console.log(hey);
 "
 `;
 
+exports[`scope test should handle hoisted var inside 1`] = `
+"var stuff_1 = require(\\"stuff\\");
+function hello() {}
+function some() {
+  function execute() {}
+}
+stuff_1.execute();
+"
+`;
+
+exports[`scope test should handle hoisted var inside 2 1`] = `
+"var stuff_1 = require(\\"stuff\\");
+function some() {
+  function execute() {}
+}
+stuff_1.execute();
+"
+`;
+
+exports[`scope test should handle hoisted var inside 3 1`] = `
+"function execute() {}
+execute();
+"
+`;
+
 exports[`scope test should handle hoisted variable 1`] = `
 "exports.Foo = (function () {
   console.log(Foo);
@@ -82,6 +107,36 @@ exports[`scope test should handle hoisted variable deep 1`] = `
   }
   function Foo() {}
 })();
+"
+`;
+
+exports[`scope test should handle multiple scenarious at one 1`] = `
+"var shit_1 = require(\\"shit\\");
+var oi_2 = require(\\"oi\\");
+var hey_3 = require(\\"hey\\");
+function hello() {}
+function some() {
+  const execute = {};
+}
+shit_1.execute();
+function one(props) {
+  const {foo, ...rest} = props;
+  console.log(foo);
+}
+console.log(oi_2.default);
+console.log(hey_3.Hey);
+class Hey {
+  foo(hey) {
+    console.log(hey);
+  }
+}
+new Hey();
+function some() {}
+exports.Disposable = (function () {
+  function Disposable() {}
+  return Disposable;
+})();
+console.log(exports.Disposable);
 "
 `;
 

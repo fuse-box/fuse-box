@@ -240,6 +240,7 @@ describe('scope test', () => {
     });
     expect(result.code).toMatchSnapshot();
   });
+
   it('should handle hoisted variable deep', () => {
     const result = testTranspile({
       code: `
@@ -257,6 +258,89 @@ describe('scope test', () => {
   it('should handle hoisted variable 2', () => {
     const result = testTranspile({
       code: `
+      function some() {}
+      export var Disposable = (function() {
+        function Disposable() {}
+        return Disposable;
+      })();
+      console.log(Disposable);
+
+      `,
+    });
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('should handle hoisted var inside', () => {
+    const result = testTranspile({
+      code: `
+      import { execute } from 'stuff';
+      function hello() {}
+      function some() {
+        function execute(){}
+      }
+      execute();
+
+      `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('should handle hoisted var inside 2', () => {
+    const result = testTranspile({
+      code: `
+      import { execute } from 'stuff';
+
+      function some() {
+        function execute(){}
+      }
+      execute();
+
+      `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('should handle hoisted var inside 3', () => {
+    const result = testTranspile({
+      code: `
+      import { execute } from 'stuff';
+      function execute(){}
+      execute();
+
+      `,
+    });
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('should handle multiple scenarious at one', () => {
+    const result = testTranspile({
+      code: `
+      import { execute } from 'shit';
+      import foo from 'oi';
+      import { Hey } from 'hey';
+
+      function hello() {}
+      function some() {
+        const execute = {};
+      }
+      execute();
+
+      function one(props) {
+        const { foo, ...rest } = props;
+        console.log(foo);
+      }
+      console.log(foo);
+
+      console.log(Hey);
+      class Hey {
+        foo(hey) {
+          console.log(hey);
+        }
+      }
+      new Hey();
+
       function some() {}
       export var Disposable = (function() {
         function Disposable() {}
