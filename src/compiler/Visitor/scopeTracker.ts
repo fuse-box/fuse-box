@@ -27,13 +27,7 @@ export function scopeTracker(visitor: IVisit): IASTScope {
   const { node, parent, property } = visitor;
   const type = node.type;
 
-  let scope = visitor.scope;
-
-  if (node.scope) {
-    scope = node.scope;
-  }
-
-  if (scope && !scope.locals) scope.locals = {};
+  let scope = node.scope ? node.scope : visitor.scope;
 
   if (type === 'VariableDeclaration') {
     // here we just update the existing scope
@@ -68,9 +62,7 @@ export function scopeTracker(visitor: IVisit): IASTScope {
         }
       }
       // we need to check for the next item on the list (if we are in an array)
-      if (visitor.id !== undefined && property) {
-        copyScopeToNextNode(visitor, scope);
-      }
+      if (visitor.id !== undefined && property) copyScopeToNextNode(visitor, scope);
     }
   } else if (type === 'ExpressionStatement') {
     if (node.expression && node.expression.arguments) {
@@ -84,24 +76,20 @@ export function scopeTracker(visitor: IVisit): IASTScope {
   // this should be copied to the next item in the body
   else if (_FunctionDecl[type] && parent.right !== node) {
     if (node.body) {
-      if (scope === undefined) scope = { locals: {} };
-      else scope = copy(scope);
+      scope = scope ? copy(scope) : { locals: {} };
 
       if (node.id && node.id.name) {
         scope.locals[node.id.name] = 1;
       }
-      if (visitor.id !== undefined && property) {
-        copyScopeToNextNode(visitor, scope);
-      }
-    }
-    if (node.params) {
-      // create params scope
-      // .e.g function(one, two) {}
-      // the body of this function should have a copy a of the parent scope + its own local variables
-      const funcScope = {};
-      for (const item of node.params) {
-        if (item.type === 'Identifier' && node.body) {
-          funcScope[item.name] = 1;
+      if (visitor.id !== undefined && property) copyScopeToNextNode(visitor, scope);
+
+      if (node.params) {
+        // create params scope
+        // .e.g function(one, two) {}
+        // the body of this function should have a copy a of the parent scope + its own local variables
+        const funcScope = {};
+        for (const item of node.params) {
+          if (item.type === 'Identifier') funcScope[item.name] = 1;
         }
         node.body['scope'] = copy(scope, funcScope);
       }
