@@ -314,6 +314,65 @@ describe('scope test', () => {
     expect(result.code).toMatchSnapshot();
   });
 
+  it('should handle hoisted var inside 4', () => {
+    const result = testTranspile({
+      code: `
+      import { isFunction, noop } from '../utils/js_utils';
+      export var Disposable = (function() {
+        function Disposable(action) {}
+
+        return Disposable;
+      })();
+      console.log(Disposable);
+      `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('should handle hoisted var inside 5', () => {
+    const result = testTranspile({
+      code: `
+      export var Disposable = (function() {
+        function Disposable(action) {}
+
+        return Disposable;
+      })();
+      console.log(Disposable);
+      `,
+    });
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('should handle hoisted var inside 6', () => {
+    const result = testTranspile({
+      code: `
+      import { isFunction, noop } from '../utils/js_utils';
+      export var Disposable = (function() {
+        function Disposable(action) {
+          console.log(isFunction)
+        }
+
+        return Disposable;
+      })();
+      console.log(Disposable);
+      `,
+    });
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('should trace down an import 1', () => {
+    const result = testTranspile({
+      code: `
+      import zenObservable from 'zen-observable';
+      var Observable = zenObservable;
+
+      `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+
   it('should handle multiple scenarious at one', () => {
     const result = testTranspile({
       code: `

@@ -9,7 +9,6 @@ const _isLocalIdentifierRulesExceptionNodes = {
   ArrayPattern: 1,
   ClassDeclaration: 1,
   FunctionExpression: 1,
-  VariableDeclarator: 1,
   RestElement: 1,
   //ArrowFunctionExpression: 1,
   ImportDefaultSpecifier: 1,

@@ -7,14 +7,14 @@ export function GlobalContextTransformer(): ITransformer {
   return {
     commonVisitors: props => ({
       onTopLevelTraverse: visit => {
-        const { node } = visit;
-        if (node.type === 'FunctionDeclaration') {
-          visit.globalContext.hoisted[node.id.name] = 1;
-        } else if (node.type == 'VariableDeclaration' && node.kind === 'var' && node.declarations) {
-          for (const i of node.declarations) {
-            visit.globalContext.hoisted[i.id.name] = 1;
-          }
-        }
+        // const { node } = visit;
+        // if (node.type === 'FunctionDeclaration') {
+        //   visit.globalContext.hoisted[node.id.name] = 1;
+        // } else if (node.type == 'VariableDeclaration' && node.kind === 'var' && node.declarations) {
+        //   for (const i of node.declarations) {
+        //     visit.globalContext.hoisted[i.id.name] = 1;
+        //   }
+        // }
       },
       onEachNode: visit => {
         const node = visit.node;
@@ -38,6 +38,7 @@ export function GlobalContextTransformer(): ITransformer {
 
           // if it belongs to a function "someFunc(foo){}"
           const traced = globalContext.identifierReplacement[nodeName];
+
           // traced.replaced is confusing, fails on
           //      import * as hey from "./oi"
           //      hey.something();

@@ -105,6 +105,7 @@ export function scopeTracker(visitor: IVisit): IASTScope {
 
   if (Array.isArray(node.body) && node.body[0]) {
     scope = scope || { locals: {} };
+
     const elScope = scope || { locals: {} };
     node.body[0].scope = elScope;
     // hoisted variables

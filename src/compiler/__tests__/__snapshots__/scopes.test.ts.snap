@@ -82,6 +82,36 @@ execute();
 "
 `;
 
+exports[`scope test should handle hoisted var inside 4 1`] = `
+"exports.Disposable = (function () {
+  function Disposable(action) {}
+  return Disposable;
+})();
+console.log(exports.Disposable);
+"
+`;
+
+exports[`scope test should handle hoisted var inside 5 1`] = `
+"exports.Disposable = (function () {
+  function Disposable(action) {}
+  return Disposable;
+})();
+console.log(exports.Disposable);
+"
+`;
+
+exports[`scope test should handle hoisted var inside 6 1`] = `
+"var js_utils_1 = require(\\"../utils/js_utils\\");
+exports.Disposable = (function () {
+  function Disposable(action) {
+    console.log(js_utils_1.isFunction);
+  }
+  return Disposable;
+})();
+console.log(exports.Disposable);
+"
+`;
+
 exports[`scope test should handle hoisted variable 1`] = `
 "exports.Foo = (function () {
   console.log(Foo);
@@ -137,6 +167,12 @@ exports.Disposable = (function () {
   return Disposable;
 })();
 console.log(exports.Disposable);
+"
+`;
+
+exports[`scope test should trace down an import 1 1`] = `
+"var zen_observable_1 = require(\\"zen-observable\\");
+var Observable = zen_observable_1.default;
 "
 `;
 
