@@ -361,6 +361,52 @@ describe('scope test', () => {
     expect(result.code).toMatchSnapshot();
   });
 
+  it('should handle hoisted var Buffer', () => {
+    const result = testTranspile({
+      code: `
+      'use strict'
+
+      var base64 = require('base64-js');
+      var ieee754 = require('ieee754');
+
+      exports.Buffer = Buffer;
+      function Buffer(){}
+      `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('should handle hoisted var Buffer 2', () => {
+    const result = testTranspile({
+      code: `
+      'use strict'
+      function two(){}
+      function one(){}
+      console.log(Buffer)
+      function Buffer(){}
+      function three(){}
+      `,
+    });
+    expect(result.code).toMatchSnapshot();
+  });
+
+  it('should handle import buffer', () => {
+    const result = testTranspile({
+      code: `
+      'use strict'
+      import Buffer from "other"
+      function two(){}
+      function one(){}
+      console.log(Buffer)
+
+      function three(){}
+      `,
+    });
+
+    expect(result.code).toMatchSnapshot();
+  });
+
   it('should trace down an import 1', () => {
     const result = testTranspile({
       code: `

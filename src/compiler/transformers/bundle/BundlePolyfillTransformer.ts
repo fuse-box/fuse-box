@@ -46,7 +46,7 @@ export function BundlePolyfillTransformer(): ITransformer {
             const locals = visit.scope && visit.scope.locals ? visit.scope.locals : {};
             const name = node.name;
 
-            if (locals[name] === 1 || globalContext.hoisted[name] === 1) {
+            if (locals[name] === 1) {
               return;
             }
 
