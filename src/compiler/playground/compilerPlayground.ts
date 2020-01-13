@@ -3,7 +3,7 @@ import * as prettier from 'prettier';
 
 let file;
 
-const code = testTranspile({ fileName: __dirname + '/sample1.ts', emitDecoratorMetadata: true });
+const code = testTranspile({ fileName: __dirname + '/sample1.tsx', emitDecoratorMetadata: true });
 //console.log(code);
 const res = prettier.format(code, {});
 console.log(res);
