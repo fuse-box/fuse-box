@@ -198,13 +198,6 @@ export function TopLevelVisit(props: IFastVisit) {
 
 export function FastVisit(props: IFastVisit): ASTNode {
   const transformer = astTransformer();
-  if (Array.isArray(props.ast.body)) {
-    // a unique scope must be create on each body node
-    //props.ast.body['scope'] = { locals: {} };
-    for (const bodyEl of props.ast.body as Array<ASTNode>) {
-      bodyEl['scope'] = { locals: {} };
-    }
-  }
   _visit(transformer, props.globalContext, props.fn, props.ast, {}, undefined);
   transformer.finalise(props);
   return props.ast;

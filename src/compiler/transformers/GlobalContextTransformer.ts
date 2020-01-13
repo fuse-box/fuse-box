@@ -6,16 +6,6 @@ import { createMemberExpression } from '../Visitor/helpers';
 export function GlobalContextTransformer(): ITransformer {
   return {
     commonVisitors: props => ({
-      onTopLevelTraverse: visit => {
-        // const { node } = visit;
-        // if (node.type === 'FunctionDeclaration') {
-        //   visit.globalContext.hoisted[node.id.name] = 1;
-        // } else if (node.type == 'VariableDeclaration' && node.kind === 'var' && node.declarations) {
-        //   for (const i of node.declarations) {
-        //     visit.globalContext.hoisted[i.id.name] = 1;
-        //   }
-        // }
-      },
       onEachNode: visit => {
         const node = visit.node;
         const globalContext = visit.globalContext as GlobalContext;
@@ -43,7 +33,7 @@ export function GlobalContextTransformer(): ITransformer {
           //      import * as hey from "./oi"
           //      hey.something();
           if (traced && traced.first) {
-            if (locals[nodeName] === 1 || globalContext.hoisted[nodeName] === 1) {
+            if (locals[nodeName] === 1) {
               return;
             }
 

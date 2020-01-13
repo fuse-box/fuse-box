@@ -1,19 +1,27 @@
 import { IASTScope, IVisit } from './Visitor';
 
 const _FunctionDecl = {
+  ArrowFunctionExpression: 1,
+  ClassDeclaration: 1,
   FunctionDeclaration: 1,
   FunctionExpression: 1,
-  ClassDeclaration: 1,
-  ArrowFunctionExpression: 1,
 };
-function copyScope(visitor: IVisit, scope) {
-  const { id, property, parent } = visitor;
-
-  const newScope = {};
-  for (const key in scope.locals) newScope[key] = 1;
+function copyScopeToNextNode(visitor: IVisit, scope) {
+  const { id, parent, property } = visitor;
+  const newLocals = {};
+  for (const key in scope.locals) newLocals[key] = 1;
   if (parent[property][id + 1]) {
-    parent[property][id + 1].scope = { locals: newScope };
+    parent[property][id + 1].scope = { locals: newLocals };
   }
+}
+
+function copy(scope, extra?) {
+  const newLocals = {};
+  for (const key in scope.locals) newLocals[key] = 1;
+  if (extra) {
+    for (const key in extra) newLocals[key] = 1;
+  }
+  return { locals: newLocals };
 }
 export function scopeTracker(visitor: IVisit): IASTScope {
   const { node, parent, property } = visitor;
@@ -25,12 +33,10 @@ export function scopeTracker(visitor: IVisit): IASTScope {
     scope = node.scope;
   }
 
-  // const parent = visitor.parent;
-  // const property = visitor.property;
-
   if (scope && !scope.locals) scope.locals = {};
 
   if (type === 'VariableDeclaration') {
+    // here we just update the existing scope
     if (node.declarations) {
       if (scope === undefined) scope = { locals: {} };
       for (const decl of node.declarations) {
@@ -63,7 +69,7 @@ export function scopeTracker(visitor: IVisit): IASTScope {
       }
       // we need to check for the next item on the list (if we are in an array)
       if (visitor.id !== undefined && property) {
-        copyScope(visitor, scope);
+        copyScopeToNextNode(visitor, scope);
       }
     }
   } else if (type === 'ExpressionStatement') {
@@ -73,40 +79,43 @@ export function scopeTracker(visitor: IVisit): IASTScope {
   }
   // grab function declaration but avoid those defined in the expression statement.e.g
   // var a = function hey(){}
+  // or
+  // function hey(){}
+  // this should be copied to the next item in the body
   else if (_FunctionDecl[type] && parent.right !== node) {
     if (node.body) {
       if (scope === undefined) scope = { locals: {} };
+      else scope = copy(scope);
 
       if (node.id && node.id.name) {
         scope.locals[node.id.name] = 1;
       }
       if (visitor.id !== undefined && property) {
-        copyScope(visitor, scope);
+        copyScopeToNextNode(visitor, scope);
       }
     }
     if (node.params) {
+      // create params scope
+      // .e.g function(one, two) {}
+      // the body of this function should have a copy a of the parent scope + its own local variables
+      const funcScope = {};
       for (const item of node.params) {
         if (item.type === 'Identifier' && node.body) {
-          if (node.body['scope'] === undefined) {
-            // copy scope
-            let targetLocals = {};
-            if (scope) {
-              for (const key in scope.locals) targetLocals[key] = 1;
-            }
-            node.body['scope'] = {
-              locals: targetLocals,
-            };
-          }
-          node.body['scope'].locals[item.name] = 1;
+          funcScope[item.name] = 1;
         }
+        node.body['scope'] = copy(scope, funcScope);
       }
     }
   }
 
+  // visiting node.body ahead of time (the visitor isn't there yet)
+  // but we need to collect hoisted variables
   if (Array.isArray(node.body) && node.body[0]) {
     scope = scope || { locals: {} };
 
     const elScope = scope || { locals: {} };
+    // when hoisting it's just enough to add the first item on list
+    // since we're there yet, the visitor will pick it up and propagate till the end of the list
     node.body[0].scope = elScope;
     // hoisted variables
     for (const item of node.body) {

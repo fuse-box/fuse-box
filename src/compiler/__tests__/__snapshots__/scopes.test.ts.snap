@@ -57,6 +57,25 @@ console.log(hey);
 "
 `;
 
+exports[`scope test should handle hoisted var Buffer 1`] = `
+"'use strict';
+var base64 = require('base64-js');
+var ieee754 = require('ieee754');
+exports.Buffer = Buffer;
+function Buffer() {}
+"
+`;
+
+exports[`scope test should handle hoisted var Buffer 2 1`] = `
+"'use strict';
+function two() {}
+function one() {}
+console.log(Buffer);
+function Buffer() {}
+function three() {}
+"
+`;
+
 exports[`scope test should handle hoisted var inside 1`] = `
 "var stuff_1 = require(\\"stuff\\");
 function hello() {}
@@ -137,6 +156,16 @@ exports[`scope test should handle hoisted variable deep 1`] = `
   }
   function Foo() {}
 })();
+"
+`;
+
+exports[`scope test should handle import buffer 1`] = `
+"'use strict';
+var other_1 = require(\\"other\\");
+function two() {}
+function one() {}
+console.log(other_1.default);
+function three() {}
 "
 `;
 
