@@ -44,6 +44,12 @@ console.log(https.method);
 "
 `;
 
+exports[`Bundle polyfill transform test polyfills Member reference reference shuold insert process with method reference 1`] = `
+"var process = require(\\"process\\");
+console.log(process.method);
+"
+`;
+
 exports[`Bundle polyfill transform test polyfills Member reference reference shuold insert stream with method reference 1`] = `
 "var stream = require(\\"stream\\");
 console.log(stream.method);
@@ -71,6 +77,12 @@ console.log(http.method());
 exports[`Bundle polyfill transform test polyfills Member reference with a call shuold insert https with method reference with a call 1`] = `
 "var https = require(\\"https\\");
 console.log(https.method());
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Member reference with a call shuold insert process with method reference with a call 1`] = `
+"var process = require(\\"process\\");
+console.log(process.method());
 "
 `;
 
@@ -131,6 +143,12 @@ console.log(http);
 exports[`Bundle polyfill transform test polyfills Single reference shuold insert https 1`] = `
 "var https = require(\\"https\\");
 console.log(https);
+"
+`;
+
+exports[`Bundle polyfill transform test polyfills Single reference shuold insert process 1`] = `
+"var process = require(\\"process\\");
+console.log(process);
 "
 `;
 
