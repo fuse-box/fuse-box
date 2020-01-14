@@ -20,7 +20,7 @@ export interface ICompileModuleProps {
 
 export function testTranspile(props: ICompileModuleProps) {
   let contents = props.code;
-  let fileName = props.fileName || __filename;
+
   if (!contents) {
     contents = fs.readFileSync(props.fileName).toString();
   }
@@ -57,5 +57,4 @@ export function testTranspile(props: ICompileModuleProps) {
   const res = generate(ast, {});
 
   return res;
-  //return { code: res, requireStatementCollection };
 }

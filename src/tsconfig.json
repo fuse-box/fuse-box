@@ -24,7 +24,8 @@
     "src/**/__tests__",
     "playground",
     "_playground",
+    "src/____production",
     "src/**/_benchmark*",
-    "packages/compiler/playground"
+    "src/compiler/playground"
   ]
 }

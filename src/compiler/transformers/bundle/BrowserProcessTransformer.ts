@@ -1,7 +1,6 @@
 import { ImportType } from '../../interfaces/ImportType';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { ITransformerSharedOptions } from '../../interfaces/ITransformerSharedOptions';
-import { GlobalContext } from '../../program/GlobalContext';
 import {
   createASTFromObject,
   createRequireStatement,

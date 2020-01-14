@@ -1,6 +1,6 @@
 import { ASTNode } from '../../../interfaces/AST';
-import { voidZero, convertTypeAnnotation } from './Annotations';
-import { metatadataAST, getMethodPropertiesMetadata, getParamTypes } from './Metadata';
+import { convertTypeAnnotation, voidZero } from './Annotations';
+import { getParamTypes, metatadataAST } from './Metadata';
 
 export const __DECORATE__ = {
   type: 'MemberExpression',

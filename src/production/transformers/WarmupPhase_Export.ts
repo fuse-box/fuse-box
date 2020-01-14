@@ -1,7 +1,6 @@
 import { ITransformer } from '../../compiler/interfaces/ITransformer';
 import { IVisit, IVisitorMod } from '../../compiler/Visitor/Visitor';
-import { ExportReferenceType, IExportReference } from '../module/ExportReference';
-import { ASTNode } from '../../compiler/interfaces/AST';
+import { ExportReferenceType } from '../module/ExportReference';
 
 const NODES_OF_INTEREST = {
   ExportAllDeclaration: 1,
@@ -13,11 +12,12 @@ const OBJECT_DECLARATIONS = {
   FunctionDeclaration: 1,
   ClassDeclaration: 1,
 };
-function isObjectDefineLocally(node: ASTNode) {
-  if (OBJECT_DECLARATIONS[node.type]) {
-    if (node.id) return [{ init: true, name: node.id.name }];
-  }
-}
+
+// function isObjectDefineLocally(node: ASTNode) {
+//   if (OBJECT_DECLARATIONS[node.type]) {
+//     if (node.id) return [{ init: true, name: node.id.name }];
+//   }
+// }
 
 export function Phase_1_ExportLink(): ITransformer {
   return {
@@ -52,7 +52,7 @@ export function Phase_1_ExportLink(): ITransformer {
           }
 
           if (scope && scope.meta && scope.meta.ref) {
-            const ref: IExportReference = scope.meta.ref;
+            //const ref: IExportReference = scope.meta.ref;
 
             if (visit.isLocalIdentifier && !locals[node.name]) {
               //console.log(scope.meta.ref, node.name);

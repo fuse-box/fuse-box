@@ -9,7 +9,7 @@ export class WebWorkerProcess {
   constructor(public props: IWebWorkerProcessProps) {
     //this.props.item.worker = this;
     this.isRunning = false;
-    const amount = Object.keys(props.ctx.webWorkers).length + 1;
+    const amount = 1; //Object.keys(props.ctx.webWorkers).length + 1;
     this.bundleName = `worker${amount}_${fastHash(this.props.item.absPath)}`;
   }
 
@@ -88,6 +88,6 @@ export class WebWorkerProcess {
 export function registerWebWorkerProcess(props: IWebWorkerProcessProps) {
   const workerProcess = new WebWorkerProcess(props);
   props.ctx.log.info('worker', 'registered ' + props.item.absPath);
-  props.ctx.webWorkers[props.item.absPath] = workerProcess;
+  //props.ctx.webWorkers[props.item.absPath] = workerProcess;
   return workerProcess;
 }
