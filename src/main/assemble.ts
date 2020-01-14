@@ -250,22 +250,25 @@ export function processModule(props: IDefaultParseProps) {
 
   _module.assembled = true;
   const modules = [];
+
   if (_module.analysis && _module.analysis.imports) {
     for (const data of _module.analysis.imports) {
       if (data.literal) {
         const response = resolveStatement({ statement: data.literal, importType: data.type }, props);
-        if (response && literalStatements) {
+        if (response) {
           modules.push(response);
-
-          const nodes = literalStatements[data.literal];
-          if (nodes) {
-            // for production map imports to module
-            if (props.ctx.config.production) {
-              _module.moduleSourceRefs[data.literal] = response.module || response.packageTarget;
-            }
-            if (response.forcedStatement) {
-              for (const node of nodes) {
-                node.statement.arguments[0].value = response.forcedStatement;
+          // handle node replacement if needed
+          if (literalStatements) {
+            const nodes = literalStatements[data.literal];
+            if (nodes) {
+              // for production map imports to module
+              if (props.ctx.config.production) {
+                _module.moduleSourceRefs[data.literal] = response.module || response.packageTarget;
+              }
+              if (response.forcedStatement) {
+                for (const node of nodes) {
+                  node.statement.arguments[0].value = response.forcedStatement;
+                }
               }
             }
           }
