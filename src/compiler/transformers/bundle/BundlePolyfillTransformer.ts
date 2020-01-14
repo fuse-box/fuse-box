@@ -31,7 +31,9 @@ export function BundlePolyfillTransformer(): ITransformer {
   return {
     commonVisitors: props => {
       const isBrowser = props.ctx.config.target === 'browser';
-      if (!isBrowser) return;
+      const isWebWorker = props.ctx.config.target === 'web-worker';
+      if (!(isBrowser || isWebWorker)) return;
+
       const VariablesInserted = {};
       const RequireStatementsInserted = {};
       const fileName = props.module.props.fuseBoxPath;
@@ -54,6 +56,8 @@ export function BundlePolyfillTransformer(): ITransformer {
                 return { replaceWith: { type: 'Literal', value: fileName } };
               case '__filename':
                 return { replaceWith: { type: 'Literal', value: dirName } };
+              case 'global':
+                return { replaceWith: { type: 'Identifier', name: isWebWorker ? 'self' : 'window' } };
             }
 
             /**
