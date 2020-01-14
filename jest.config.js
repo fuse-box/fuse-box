@@ -16,6 +16,7 @@ module.exports = {
   testPathIgnorePatterns: [
     '.fusebox/',
     '/lib/',
+    '__refactor',
     '____production',
     'node_modules/',
     'modules',
