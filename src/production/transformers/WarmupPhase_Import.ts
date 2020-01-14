@@ -43,7 +43,7 @@ export function Phase_1_ImportLink(): ITransformer {
 
       return {
         onEachNode: (visit: IVisit): IVisitorMod => {
-          if (visit.parent && visit.parent.type === ASTType.Program) {
+          if (!visit.parent || visit.parent.type === ASTType.Program) {
             return;
           }
 
@@ -52,7 +52,6 @@ export function Phase_1_ImportLink(): ITransformer {
             tree.importReferences.register({ module, productionContext, visit });
           }
         },
-
         onTopLevelTraverse: (visit: IVisit) => {
           const { node } = visit;
           if (isEligibleImportOrExport(node) || isEligibleRequire(node)) {
