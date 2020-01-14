@@ -1,13 +1,12 @@
 import * as path from 'path';
+import { ITarget } from '../../../config/PrivateConfig';
+import { ensureFuseBoxPath } from '../../../utils/utils';
 import { ASTNode } from '../../interfaces/AST';
+import { ImportType } from '../../interfaces/ImportType';
+import { ITransformer } from '../../interfaces/ITransformer';
 import { ITransformerSharedOptions } from '../../interfaces/ITransformerSharedOptions';
-import { GlobalContext } from '../../program/GlobalContext';
 import { createRequireStatement } from '../../Visitor/helpers';
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
-import { ImportType } from '../../interfaces/ImportType';
-import { ITarget } from '../../../config/PrivateConfig';
-import { ITransformer } from '../../interfaces/ITransformer';
-import { ensureFuseBoxPath } from '../../../utils/utils';
 
 export interface IBundleEssentialProps {
   target?: ITarget;

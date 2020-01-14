@@ -1,27 +1,24 @@
-import { ITransformer } from '../../compiler/program/transpileModule';
-import { IVisit } from '../../compiler/Visitor/Visitor';
+import { IPublicConfig } from '../../config/IPublicConfig';
 import { Context } from '../../core/Context';
 import { Module } from '../../core/Module';
-import { resolveModule, ImportType } from '../../resolver/resolver';
 import { WebWorkerProcess } from './WebWorkerProcess';
-import { IPublicConfig } from '../../config/IPublicConfig';
 
-function resolveWorkerPath(module: Module, target: string) {
-  const ctx = module.props.ctx;
-  const config = ctx.config;
-  const resolved = resolveModule({
-    filePath: module.props.absPath,
-    homeDir: config.homeDir,
-    alias: config.alias,
-    javascriptFirst: module.isJavascriptModule(),
-    typescriptPaths: module.pkg.isDefaultPackage && ctx.tsConfig.typescriptPaths,
-    buildTarget: config.target,
-    modules: config.modules,
-    importType: ImportType.REQUIRE,
-    target: target,
-  });
-  return resolved;
-}
+// function resolveWorkerPath(module: Module, target: string) {
+//   const ctx = module.props.ctx;
+//   const config = ctx.config;
+//   const resolved = resolveModule({
+//     filePath: module.props.absPath,
+//     homeDir: config.homeDir,
+//     alias: config.alias,
+//     javascriptFirst: module.isJavascriptModule(),
+//     typescriptPaths: module.pkg.isDefaultPackage && ctx.tsConfig.typescriptPaths,
+//     buildTarget: config.target,
+//     modules: config.modules,
+//     importType: ImportType.REQUIRE,
+//     target: target,
+//   });
+//   return resolved;
+// }
 
 export function pluginWebWorker(opts?: { config?: IPublicConfig }) {
   opts = opts || {};
@@ -44,65 +41,65 @@ export function pluginWebWorker(opts?: { config?: IPublicConfig }) {
       }
     }
 
-    ctx.transformerAtPath(
-      ctx.config.homeDir, // limiting workers to home directory
-      (opts): ITransformer => {
-        return (visit: IVisit) => {
-          const { node } = visit;
-          if (node.type === 'NewExpression' && node.callee && node.callee.type === 'Identifier') {
-            const callee = node.callee;
-            if (callee.name === 'Worker' || callee.name === 'SharedWorker') {
-              const locals = visit.scope && visit.scope.locals ? visit.scope.locals : {};
+    // ctx.transformerAtPath(
+    //   ctx.config.homeDir, // limiting workers to home directory
+    //   (opts): ITransformer => {
+    //     return (visit: IVisit) => {
+    //       const { node } = visit;
+    //       if (node.type === 'NewExpression' && node.callee && node.callee.type === 'Identifier') {
+    //         const callee = node.callee;
+    //         if (callee.name === 'Worker' || callee.name === 'SharedWorker') {
+    //           const locals = visit.scope && visit.scope.locals ? visit.scope.locals : {};
 
-              // if worker has been defined locally
-              if (locals[callee.name]) return;
+    //           // if worker has been defined locally
+    //           if (locals[callee.name]) return;
 
-              const module = opts.module as Module;
-              if (node.arguments) {
-                if (node.arguments.length !== 1) {
-                  return ctx.fatal('Worker build error', [
-                    `at ${module.props.absPath}`,
-                    'Workers are allowed to have only only one argument',
-                  ]);
-                }
-                const firstArgumentNode = node.arguments[0];
-                if (firstArgumentNode.type !== 'Literal') {
-                  return ctx.fatal('Worker build error', [
-                    `at ${module.props.absPath}`,
-                    `An grgument should be a string literal got: ${firstArgumentNode.type}`,
-                  ]);
-                }
+    //           const module = opts.module as Module;
+    //           if (node.arguments) {
+    //             if (node.arguments.length !== 1) {
+    //               return ctx.fatal('Worker build error', [
+    //                 `at ${module.props.absPath}`,
+    //                 'Workers are allowed to have only only one argument',
+    //               ]);
+    //             }
+    //             const firstArgumentNode = node.arguments[0];
+    //             if (firstArgumentNode.type !== 'Literal') {
+    //               return ctx.fatal('Worker build error', [
+    //                 `at ${module.props.absPath}`,
+    //                 `An grgument should be a string literal got: ${firstArgumentNode.type}`,
+    //               ]);
+    //             }
 
-                const workerPath = firstArgumentNode.value;
-                const resolved = resolveWorkerPath(module, workerPath);
-                if (!resolved || (resolved && !resolved.absPath)) {
-                  return ctx.fatal('Worker build error', [
-                    `at ${module.props.absPath}`,
-                    `Unable to resolve worker: ${workerPath}`,
-                    `Module not found. Make sure ${workerPath} can be resolved and spelled correctly`,
-                  ]);
-                }
-                if (resolved.package) {
-                  return ctx.fatal('Worker build error', [
-                    `at ${module.props.absPath}`,
-                    `Workers cannot be resolved to a package`,
-                  ]);
-                }
-                let workerProcess: WebWorkerProcess = registerWebWorker(resolved.absPath, module);
+    //             const workerPath = firstArgumentNode.value;
+    //             const resolved = resolveWorkerPath(module, workerPath);
+    //             if (!resolved || (resolved && !resolved.absPath)) {
+    //               return ctx.fatal('Worker build error', [
+    //                 `at ${module.props.absPath}`,
+    //                 `Unable to resolve worker: ${workerPath}`,
+    //                 `Module not found. Make sure ${workerPath} can be resolved and spelled correctly`,
+    //               ]);
+    //             }
+    //             if (resolved.package) {
+    //               return ctx.fatal('Worker build error', [
+    //                 `at ${module.props.absPath}`,
+    //                 `Workers cannot be resolved to a package`,
+    //               ]);
+    //             }
+    //             let workerProcess: WebWorkerProcess = registerWebWorker(resolved.absPath, module);
 
-                firstArgumentNode.value = workerProcess.resolveWebWorkerBundlePath();
+    //             firstArgumentNode.value = workerProcess.resolveWebWorkerBundlePath();
 
-                // store data to cache to retrieve later
-                const workers = module.getMeta('workers', []) as Array<string>;
-                if (workers.indexOf(resolved.absPath) === -1) {
-                  workers.push(resolved.absPath);
-                }
-              }
-            }
-          }
-        };
-      },
-    );
+    //             // store data to cache to retrieve later
+    //             const workers = module.getMeta('workers', []) as Array<string>;
+    //             if (workers.indexOf(resolved.absPath) === -1) {
+    //               workers.push(resolved.absPath);
+    //             }
+    //           }
+    //         }
+    //       }
+    //     };
+    //   },
+    // );
 
     ctx.ict.on('assemble_module_complete', props => {
       const { module } = props;

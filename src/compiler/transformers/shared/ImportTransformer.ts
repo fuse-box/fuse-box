@@ -1,10 +1,9 @@
-import * as path from 'path';
+import { ASTType } from '../../interfaces/AST';
 import { ImportType } from '../../interfaces/ImportType';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { GlobalContext } from '../../program/GlobalContext';
 import { createRequireStatement } from '../../Visitor/helpers';
 import { IVisit } from '../../Visitor/Visitor';
-import { ASTType } from '../../interfaces/AST';
 import { generateVariableFromSource } from '../astHelpers';
 
 export function ImportTransformer(): ITransformer {
