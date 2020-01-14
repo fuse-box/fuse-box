@@ -12,7 +12,7 @@ export function getDynamicImport(node: ASTNode) {
   // eslint parser case
   if (node.type === 'CallExpression') {
     if (node.callee && node.callee.type === 'Import') {
-      if (node.arguments.length === 1) {
+      if (node.arguments.length === 1 && !!node.arguments[0].value) {
         return { source: node.arguments[0].value };
       }
       return { error: 'At this moment computed statements are not supported' };
