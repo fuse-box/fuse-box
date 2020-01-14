@@ -49,7 +49,7 @@ describe('Dev server test', () => {
     data.pkg.entry = data.module;
     data.module.analysis = { imports: [] };
 
-    data.ctx.ict.sync('assemble_fast_analysis', { module: data.module });
+    data.ctx.ict.sync('assemble_after_transpile', { module: data.module });
     expect(data.module.analysis.imports).toHaveLength(1);
     expect(data.module.analysis.imports[0].literal).toEqual('fuse-box-hot-reload');
   });
@@ -65,7 +65,7 @@ describe('Dev server test', () => {
     data.pkg.entry = data.module;
     data.module.analysis = { imports: [] };
 
-    data.ctx.ict.sync('assemble_fast_analysis', { module: data.module });
+    data.ctx.ict.sync('assemble_after_transpile', { module: data.module });
     expect(data.module.analysis.imports).toHaveLength(0);
   });
 
