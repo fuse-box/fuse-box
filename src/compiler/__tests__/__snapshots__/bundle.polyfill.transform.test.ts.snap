@@ -10,6 +10,16 @@ exports[`Bundle polyfill transform test Common transform  should replace __filen
 "
 `;
 
+exports[`Bundle polyfill transform test Common transform  should replace global with self for web-worker target 1`] = `
+"console.log(self);
+"
+`;
+
+exports[`Bundle polyfill transform test Common transform  should replace global with window for browser target 1`] = `
+"console.log(window);
+"
+`;
+
 exports[`Bundle polyfill transform test polyfills Member reference reference shuold insert buffer with method reference 1`] = `
 "var buffer = require(\\"buffer\\");
 console.log(buffer.method);
@@ -69,7 +79,6 @@ exports[`Bundle polyfill transform test polyfills Member reference with a call s
 console.log(stream.method());
 "
 `;
-
 
 exports[`Bundle polyfill transform test polyfills Should not add anything should add buffer only once 1`] = `
 "var buffer = require(\\"buffer\\");

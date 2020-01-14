@@ -37,6 +37,24 @@ describe('Bundle polyfill transform test', () => {
 
       expect(result.code).toMatchSnapshot();
     });
+
+    it('should replace global with window for browser target', () => {
+      const result = testTranspile({
+        code: `console.log(global)`,
+        target: 'browser',
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
+
+    it('should replace global with self for web-worker target', () => {
+      const result = testTranspile({
+        code: `console.log(global)`,
+        target: 'web-worker',
+      });
+
+      expect(result.code).toMatchSnapshot();
+    });
   });
 
   describe('polyfills', () => {
