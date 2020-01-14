@@ -1,0 +1,29 @@
+.Details {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  .repo-link {
+    padding: 20px;
+  }
+  .try-updating {
+    max-width: 500px;
+    padding: 20px;
+    text-align: center;
+    font-weight: bold;
+  }
+  .hint {
+    max-width: 500px;
+    padding: 20px;
+    text-align: center;
+    font-size: 14px;
+    background-color: rgb(240, 240, 240);
+    border-radius: 5px;
+  }
+
+  .fork {
+      margin-top: 40px;
+      font-size: 15px;
+  }
+}

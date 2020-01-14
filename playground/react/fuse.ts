@@ -10,25 +10,15 @@ class Context {
       webIndex: {
         template: 'src/index.html',
       },
-      tsConfig: 'src/tsconfig.json',
 
-      alias: { '^formik-wizard$': 'formik-wizard/dist/index.js' },
       stylesheet: { paths: [path.join(__dirname, 'src/config')] },
-      cache: false,
-
+      cache: { root: './.cache' },
       watch: true,
       hmr: true,
       logging: {
         level: 'succinct',
       },
       devServer: { httpServer: { port: 3000 } },
-      // devServer: this.runServer && {
-      //   open: false,
-      //   httpServer: {
-      //     express: app => {},
-      //   },
-      //   hmrServer: { useCurrentUrl: true },
-      // },
     });
   }
 }
