@@ -3,79 +3,83 @@ import { IASTScope } from '../Visitor/Visitor';
 export interface ASTNode {
   type: keyof typeof ASTType;
 
-  $fuse_classInitializers?: Array<ASTNode>;
-  $fuse_decoratorsCaptured?: boolean;
-  $fuse_visited?: boolean;
-  $fuse_class_declaration_visited?: boolean;
-  $fuse_decoratorsProcessed?: boolean;
   $assign_pattern?: boolean;
+  $fuse_classInitializers?: Array<ASTNode>;
+  $fuse_class_declaration_visited?: boolean;
   $fuse_decoratorForClassIdentifier?: string;
-  typeAnnotation?: ASTNode;
-  moduleReference?: ASTNode;
-  chain?: ASTNode;
-  base?: ASTNode;
-  literal?: ASTNode;
-  typeName?: ASTNode;
+  $fuse_decoratorsCaptured?: boolean;
+  $fuse_decoratorsProcessed?: boolean;
+  $fuse_visited?: boolean;
   $transpiled?: boolean;
-  expressions?: Array<ASTNode>;
+  alternate?: ASTNode;
+  base?: ASTNode;
+  chain?: ASTNode;
+  consequent?: ASTNode;
+  decorators?: Array<ASTNode>;
   elementTypes?: Array<ASTNode>;
   elements?: Array<ASTNode>;
-  alternate?: ASTNode;
-  scope?: IASTScope;
+  expressions?: Array<ASTNode>;
+  initializer?: ASTNode;
+  literal?: ASTNode;
+  moduleReference?: ASTNode;
   prefix?: boolean;
-  decorators?: Array<ASTNode>;
-  loc?: { start: { line: number; column: number }; end: { line: number; column: number } };
-  consequent?: ASTNode;
+  returnType?: ASTNode;
+  scope?: IASTScope;
   shorthand?: boolean;
   specifiers?: Array<ASTNode>;
   test?: ASTNode;
-  initializer?: ASTNode;
-  returnType?: ASTNode;
+  typeAnnotation?: ASTNode;
+  typeName?: ASTNode;
+  loc?: { end: { column: number; line: number }; start: { column: number; line: number } };
 
   imported?: ASTNode;
-  source?: ASTNode;
-  method?: boolean;
   members?: Array<ASTNode>;
+  method?: boolean;
+  source?: ASTNode;
 
   JSXElement?: ASTNode;
 
-  children?: Array<ASTNode>;
-  attributes?: Array<ASTNode>;
-  openingElement?: ASTNode;
-  closingElement?: ASTNode;
   argument?: ASTNode;
+  attributes?: Array<ASTNode>;
+  children?: Array<ASTNode>;
+  closingElement?: ASTNode;
+  openingElement?: ASTNode;
 
-  local?: ASTNode;
-  exported?: ASTNode;
-  name?: any;
-  kind?: string;
-  init?: null | ASTNode;
-  declarations?: Array<ASTNode>;
-  declaration?: ASTNode;
-  id?: ASTNode;
-  body?: Array<ASTNode> | ASTNode;
-  expression?: any;
-  callee?: ASTNode;
-  params?: Array<ASTNode>;
-  async?: boolean;
-  generator?: boolean;
-  arguments?: Array<ASTNode>;
-  operator?: string;
-  left?: ASTNode;
-  right?: ASTNode;
-  value?: any;
-  key?: ASTNode;
   abstract?: boolean;
-  properties?: Array<ASTNode>;
-  object?: ASTNode;
-  property?: ASTNode;
-  declare?: boolean;
-  implements?: Array<ASTNode>;
-  superClass?: ASTNode;
-  static?: boolean;
-  computed?: boolean;
   accessibility?: string;
+  arguments?: Array<ASTNode>;
+  async?: boolean;
+  body?: ASTNode | Array<ASTNode>;
+  callee?: ASTNode;
+  computed?: boolean;
+  declaration?: ASTNode;
+  declarations?: Array<ASTNode>;
+  declare?: boolean;
+  exported?: ASTNode;
+  expression?: any;
+  generator?: boolean;
+  id?: ASTNode;
+  implements?: Array<ASTNode>;
+  init?: null | ASTNode;
+  key?: ASTNode;
+  kind?: string;
+  left?: ASTNode;
+  local?: ASTNode;
+  name?: any;
+  object?: ASTNode;
+  operator?: string;
   parameter?: ASTNode;
+  params?: Array<ASTNode>;
+  properties?: Array<ASTNode>;
+  property?: ASTNode;
+  quasi?: ASTNode;
+  quasis?: Array<ASTNode>;
+  right?: ASTNode;
+  static?: boolean;
+  superClass?: ASTNode;
+  tag?: ASTNode;
+  tail?: ASTNode;
+  value?: any;
 }
 
 export const ASTType = {
@@ -83,25 +87,19 @@ export const ASTType = {
   EnumMember: 'TSEnumMember',
 
   ParameterProperty: 'TSParameterProperty',
-  TypeAnnotation: 'TSTypeAnnotation',
   StringKeyword: 'TSStringKeyword',
+  TypeAnnotation: 'TSTypeAnnotation',
 
+  AbstractClassProperty: 'TSAbstractClassProperty',
+  AbstractMethodDefinition: 'TSAbstractMethodDefinition',
   AsExpression: 'TSAsExpression',
   DeclareFunction: 'TSDeclareFunction',
   DeclareKeyword: 'TSDeclareKeyword',
-  AbstractMethodDefinition: 'TSAbstractMethodDefinition',
-  TypeAliasDeclaration: 'TSTypeAliasDeclaration',
   InterfaceDeclaration: 'TSInterfaceDeclaration',
-  AbstractClassProperty: 'TSAbstractClassProperty',
-  TypeAssertion: 'TSTypeAssertion',
   NonNullExpression: 'TSNonNullExpression',
+  TypeAliasDeclaration: 'TSTypeAliasDeclaration',
+  TypeAssertion: 'TSTypeAssertion',
 
-  OptionalExpression: 'OptionalExpression',
-  OptionalChain: 'OptionalChain',
-  Line: 'Line',
-  Block: 'Block',
-  HTMLOpen: 'HTMLOpen',
-  HTMLClose: 'HTMLClose',
   ArrayExpression: 'ArrayExpression',
   ArrayPattern: 'ArrayPattern',
   ArrowFunctionExpression: 'ArrowFunctionExpression',
@@ -110,6 +108,7 @@ export const ASTType = {
   AwaitExpression: 'AwaitExpression',
   BigIntLiteral: 'BigIntLiteral',
   BinaryExpression: 'BinaryExpression',
+  Block: 'Block',
   BlockStatement: 'BlockStatement',
   BreakStatement: 'BreakStatement',
   CallExpression: 'CallExpression',
@@ -134,6 +133,8 @@ export const ASTType = {
   ForStatement: 'ForStatement',
   FunctionDeclaration: 'FunctionDeclaration',
   FunctionExpression: 'FunctionExpression',
+  HTMLClose: 'HTMLClose',
+  HTMLOpen: 'HTMLOpen',
   Identifier: 'Identifier',
   IfStatement: 'IfStatement',
   Import: 'Import',
@@ -156,6 +157,7 @@ export const ASTType = {
   JSXSpreadChild: 'JSXSpreadChild',
   JSXText: 'JSXText',
   LabeledStatement: 'LabeledStatement',
+  Line: 'Line',
   Literal: 'Literal',
   LogicalExpression: 'LogicalExpression',
   MemberExpression: 'MemberExpression',
@@ -164,9 +166,9 @@ export const ASTType = {
   NewExpression: 'NewExpression',
   ObjectExpression: 'ObjectExpression',
   ObjectPattern: 'ObjectPattern',
+  OptionalChain: 'OptionalChain',
+  OptionalExpression: 'OptionalExpression',
   Program: 'Program',
-  module: 'module',
-  script: 'script',
   Property: 'Property',
   RestElement: 'RestElement',
   ReturnStatement: 'ReturnStatement',
@@ -181,6 +183,8 @@ export const ASTType = {
   ThisExpression: 'ThisExpression',
   ThrowStatement: 'ThrowStatement',
   TryStatement: 'TryStatement',
+  module: 'module',
+  script: 'script',
 
   AbstractKeyword: 'AbstractKeyword',
 
@@ -193,8 +197,8 @@ export const ASTType = {
   CallSignatureDeclaration: 'CallSignatureDeclaration',
   ClassImplements: 'ClassImplements',
   ConditionalType: 'ConditionalType',
-  ConstructorType: 'ConstructorType',
   ConstructSignatureDeclaration: 'ConstructSignatureDeclaration',
+  ConstructorType: 'ConstructorType',
 
   EmptyBodyFunctionExpression: 'EmptyBodyFunctionExpression',
 
@@ -202,11 +206,11 @@ export const ASTType = {
   ExportKeyword: 'ExportKeyword',
   ExternalModuleReference: 'ExternalModuleReference',
   FunctionType: 'TSFunctionType',
-  ImportExpression: 'ImportExpression',
   ImportEqualsDeclaration: 'TSImportEqualsDeclaration',
+  ImportExpression: 'ImportExpression',
   ImportType: 'ImportType',
-  IndexedAccessType: 'IndexedAccessType',
   IndexSignature: 'IndexSignature',
+  IndexedAccessType: 'IndexedAccessType',
   InferType: 'InferType',
 
   InterfaceBody: 'InterfaceBody',
@@ -226,10 +230,10 @@ export const ASTType = {
   OptionalType: 'OptionalType',
 
   ParenthesizedType: 'ParenthesizedType',
-  PropertySignature: 'PropertySignature',
-  PublicKeyword: 'PublicKeyword',
   PrivateKeyword: 'PrivateKeyword',
+  PropertySignature: 'PropertySignature',
   ProtectedKeyword: 'ProtectedKeyword',
+  PublicKeyword: 'PublicKeyword',
   QualifiedName: 'QualifiedName',
   ReadonlyKeyword: 'ReadonlyKeyword',
   RestType: 'RestType',
@@ -239,24 +243,24 @@ export const ASTType = {
   ThisType: 'ThisType',
   TupleType: 'TSTupleType',
 
+  JSDocNullableType: 'JSDocNullableType',
+  JSDocUnknownType: 'JSDocUnknownType',
   TypeLiteral: 'TypeLiteral',
   TypeOperator: 'TypeOperator',
   TypeParameter: 'TypeParameter',
   TypeParameterDeclaration: 'TypeParameterDeclaration',
   TypeParameterInstantiation: 'TypeParameterInstantiation',
   TypePredicate: 'TypePredicate',
-  JSDocNullableType: 'JSDocNullableType',
-  JSDocUnknownType: 'JSDocUnknownType',
   TypeQuery: 'TypeQuery',
   TypeReference: 'TSTypeReference',
+  UnaryExpression: 'UnaryExpression',
   UndefinedKeyword: 'TSUndefinedKeyword',
   UnionType: 'UnionType',
   UnknownKeyword: 'UnknownKeyword',
-  VoidKeyword: 'TSVoidKeyword',
   UpdateExpression: 'UpdateExpression',
-  UnaryExpression: 'UnaryExpression',
   VariableDeclaration: 'VariableDeclaration',
   VariableDeclarator: 'VariableDeclarator',
+  VoidKeyword: 'TSVoidKeyword',
   WhileStatement: 'WhileStatement',
   WithStatement: 'WithStatement',
   YieldExpression: 'YieldExpression',

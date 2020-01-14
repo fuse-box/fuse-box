@@ -1,7 +1,7 @@
 import { IVisit } from '../../compiler/Visitor/Visitor';
 import { ASTNode } from '../../compiler/interfaces/AST';
 import { ASTType } from '../../compiler/interfaces/AST';
-import { getDynamicImport } from '../../compiler/transformers/astHelpers';
+import { getDynamicImport } from '../../compiler/transformers/importHelpers';
 import { Module } from '../../core/Module';
 import { IProductionContext } from '../ProductionContext';
 
