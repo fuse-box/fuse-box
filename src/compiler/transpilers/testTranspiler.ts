@@ -30,7 +30,7 @@ export function testTranspile(props: ICompileModuleProps) {
 
   let ast;
   if (props.useMeriyah) {
-    ast = parseJavascript(contents, { jsx: ext !== '.ts' });
+    ast = parseJavascript(contents, { jsx: true });
   } else {
     ast = parseTypeScript(contents, { jsx: true });
   }
