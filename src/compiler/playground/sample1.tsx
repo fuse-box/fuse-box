@@ -1,5 +1,10 @@
-function Buffer(arg, encodingOrOffset, length) {}
-
-console.log('h1');
-if (!Buffer.TYPED_ARRAY_SUPPORT) {
-}
+export var Foo = (function() {
+  function Bar() {
+    function one() {
+      function two() {
+        console.log(Foo);
+      }
+    }
+  }
+  function Foo() {}
+})();

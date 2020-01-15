@@ -21,6 +21,7 @@ export interface IDecoratorTransformerOpts {
 export function DecoratorTransformer(): ITransformer {
   const helperModule = '__fuse_decorate';
   return {
+    target: { type: 'ts' },
     commonVisitors: props => {
       let helperInserted = false;
       const emitDecoratorMetadata = props.ctx ? props.ctx.tsConfig.compilerOptions.emitDecoratorMetadata : false;

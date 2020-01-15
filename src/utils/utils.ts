@@ -146,8 +146,8 @@ export function makeFuseBoxPath(homeDir: string, absPath: string) {
 export function measureTime(group?: string) {
   let startTime = process.hrtime();
   return {
-    end: () => {
-      return prettyTime(process.hrtime(startTime));
+    end: (precision?) => {
+      return prettyTime(process.hrtime(startTime), precision);
     },
   };
 }

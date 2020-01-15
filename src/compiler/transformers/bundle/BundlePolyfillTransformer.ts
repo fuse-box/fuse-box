@@ -7,6 +7,7 @@ import { ITransformer } from '../../interfaces/ITransformer';
 import { ITransformerSharedOptions } from '../../interfaces/ITransformerSharedOptions';
 import { createRequireStatement } from '../../Visitor/helpers';
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
+import { isLocalDefined } from '../astHelpers';
 
 export interface IBundleEssentialProps {
   target?: ITarget;
@@ -44,10 +45,9 @@ export function BundlePolyfillTransformer(): ITransformer {
           const { node } = visit;
 
           if (visit.isLocalIdentifier) {
-            const locals = visit.scope && visit.scope.locals ? visit.scope.locals : {};
             const name = node.name;
 
-            if (locals[name] === 1) {
+            if (isLocalDefined(name, visit.scope)) {
               return;
             }
 
