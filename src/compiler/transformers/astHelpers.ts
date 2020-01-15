@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { ASTNode } from '../interfaces/AST';
+import { IASTScope } from '../Visitor/Visitor';
 
 export function getDynamicImport(node: ASTNode) {
   // meriyah case
@@ -26,4 +27,10 @@ export function generateVariableFromSource(source: string, index: number) {
     variable = 'a' + variable;
   }
   return variable;
+}
+
+export function isLocalDefined(name: string, scope: IASTScope) {
+  if (!scope) return;
+  if (scope.locals && scope.locals[name] === 1) return true;
+  if (scope.hoisted && scope.hoisted[name] === 1) return true;
 }

@@ -7,7 +7,7 @@ import { createPackage } from '../../core/Package';
 import { makeFuseBoxPath } from '../../utils/utils';
 import { generate } from '../generator/generator';
 import { ASTNode } from '../interfaces/AST';
-import { parseTypeScript } from '../parser';
+import { parseTypeScript, parseJavascript } from '../parser';
 import { transformCommonVisitors } from '../transformer';
 
 export interface ICompileModuleProps {
@@ -16,6 +16,7 @@ export interface ICompileModuleProps {
   fileName?: string;
   code?: string;
   emitDecoratorMetadata?: boolean;
+  useMeriyah?: boolean;
 }
 
 export function testTranspile(props: ICompileModuleProps) {
@@ -27,7 +28,12 @@ export function testTranspile(props: ICompileModuleProps) {
 
   const ext = props.fileName ? path.extname(props.fileName) : '.tsx';
 
-  const ast = parseTypeScript(contents, { jsx: ext !== '.ts' });
+  let ast;
+  if (props.useMeriyah) {
+    ast = parseJavascript(contents, { jsx: ext !== '.ts' });
+  } else {
+    ast = parseTypeScript(contents, { jsx: true });
+  }
 
   const ctx = createContext({
     cache: false,

@@ -11,7 +11,7 @@ export interface IVisitProps {
 }
 export interface IASTScope {
   context?: any;
-
+  hoisted?: Record<string, number>;
   locals?: { [key: string]: any };
   meta?: { [key: string]: any };
   namespace?: string;
@@ -50,9 +50,8 @@ export interface IFastVisit {
 
 const IRNOGED_TYPES = {
   typeAnnotation: 1,
-
   typeParameters: 1,
-  implements: 1,
+  ClassImplements: 1,
   decorators: 1,
   superTypeParameters: 1,
 };
@@ -139,7 +138,7 @@ function _visit(
       continue;
     }
     const child = node[property];
-    if (child instanceof Array) {
+    if (Array.isArray(child)) {
       let i = 0;
       while (i < child.length) {
         const item = child[i];

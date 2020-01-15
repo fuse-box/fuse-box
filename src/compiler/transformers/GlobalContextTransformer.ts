@@ -2,6 +2,7 @@ import { ASTNode } from '../interfaces/AST';
 import { ITransformer } from '../interfaces/ITransformer';
 import { GlobalContext } from '../program/GlobalContext';
 import { createMemberExpression } from '../Visitor/helpers';
+import { isLocalDefined } from './astHelpers';
 
 export function GlobalContextTransformer(): ITransformer {
   return {
@@ -9,7 +10,7 @@ export function GlobalContextTransformer(): ITransformer {
       onEachNode: visit => {
         const node = visit.node;
         const globalContext = visit.globalContext as GlobalContext;
-        const locals = visit.scope && visit.scope.locals ? visit.scope.locals : {};
+
         if (node.type === 'ObjectPattern') {
           for (const item of node.properties) {
             item.$assign_pattern = true;
@@ -33,7 +34,7 @@ export function GlobalContextTransformer(): ITransformer {
           //      import * as hey from "./oi"
           //      hey.something();
           if (traced && traced.first) {
-            if (locals[nodeName] === 1) {
+            if (isLocalDefined(nodeName, visit.scope)) {
               return;
             }
 
