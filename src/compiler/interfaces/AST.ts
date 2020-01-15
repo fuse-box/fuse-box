@@ -40,18 +40,16 @@ export interface ASTNode {
 
   JSXElement?: ASTNode;
 
-  argument?: ASTNode;
-  arguments?: Array<ASTNode>;
-  attributes?: Array<ASTNode>;
-  children?: Array<ASTNode>;
-  closingElement?: ASTNode;
-  openingElement?: ASTNode;
-
   abstract?: boolean;
   accessibility?: string;
+  argument?: ASTNode;
+  arguments?: Array<ASTNode>;
   async?: boolean;
+  attributes?: Array<ASTNode>;
   body?: ASTNode | Array<ASTNode>;
   callee?: ASTNode;
+  children?: Array<ASTNode>;
+  closingElement?: ASTNode;
   computed?: boolean;
   declaration?: ASTNode;
   declarations?: Array<ASTNode>;
@@ -68,14 +66,19 @@ export interface ASTNode {
   local?: ASTNode;
   name?: any;
   object?: ASTNode;
+  openingElement?: ASTNode;
   operator?: string;
   parameter?: ASTNode;
   params?: Array<ASTNode>;
   properties?: Array<ASTNode>;
   property?: ASTNode;
+  quasi?: ASTNode;
+  quasis?: Array<ASTNode>;
   right?: ASTNode;
   static?: boolean;
   superClass?: ASTNode;
+  tag?: ASTNode;
+  tail?: ASTNode;
   value?: any;
 }
 

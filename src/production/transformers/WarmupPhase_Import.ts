@@ -1,7 +1,7 @@
 import { IVisit, IVisitorMod } from '../../compiler/Visitor/Visitor';
 import { ASTType } from '../../compiler/interfaces/AST';
 import { ITransformer } from '../../compiler/interfaces/ITransformer';
-import { getDynamicImport } from '../../compiler/transformers/astHelpers';
+import { getDynamicImport } from '../../compiler/transformers/importHelpers';
 
 const NODES_OF_INTEREST = {
   [ASTType.ExportAllDeclaration]: 1,
