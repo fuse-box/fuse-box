@@ -8,6 +8,7 @@ import {
   isPropertyOrPropertyAccess,
 } from '../../Visitor/helpers';
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
+import { isLocalDefined } from '../astHelpers';
 
 interface BrowserProcessTransformProps {
   env?: { [key: string]: string };
@@ -30,9 +31,8 @@ export function BrowserProcessTransformer(): ITransformer {
           if (ignoreProcess) return;
 
           const { node, parent } = visit;
-          const locals = visit.scope && visit.scope.locals ? visit.scope.locals : {};
 
-          if (locals['process'] === 1) {
+          if (isLocalDefined('process', visit.scope)) {
             return;
           }
 

@@ -1,3 +1,4 @@
+import { ASTNode, ASTType } from '../interfaces/AST';
 import { IASTScope, IVisit } from './Visitor';
 
 const _FunctionDecl = {
@@ -6,29 +7,35 @@ const _FunctionDecl = {
   FunctionDeclaration: 1,
   FunctionExpression: 1,
 };
+
+const _Body = {
+  [ASTType.BlockStatement]: 1,
+  [ASTType.Program]: 1,
+};
 function copyScopeToNextNode(visitor: IVisit, scope) {
   const { id, parent, property } = visitor;
   const newLocals = {};
   for (const key in scope.locals) newLocals[key] = 1;
   if (parent[property][id + 1]) {
-    parent[property][id + 1].scope = { locals: newLocals };
+    parent[property][id + 1].scope = { hoisted: scope.hoisted, locals: newLocals };
   }
 }
 
-function copy(scope, extra?) {
+function copy(scope: IASTScope, extra?): IASTScope {
   const newLocals = {};
   for (const key in scope.locals) newLocals[key] = 1;
   if (extra) {
     for (const key in extra) newLocals[key] = 1;
   }
-  return { locals: newLocals };
+
+  return { hoisted: scope.hoisted, locals: newLocals };
 }
+
 export function scopeTracker(visitor: IVisit): IASTScope {
-  const { node, parent, property } = visitor;
+  const { node, property } = visitor;
   const type = node.type;
 
   let scope = node.scope ? node.scope : visitor.scope;
-
   if (type === 'VariableDeclaration') {
     // here we just update the existing scope
     if (node.declarations) {
@@ -62,7 +69,9 @@ export function scopeTracker(visitor: IVisit): IASTScope {
         }
       }
       // we need to check for the next item on the list (if we are in an array)
-      if (visitor.id !== undefined && property) copyScopeToNextNode(visitor, scope);
+      if (visitor.id !== undefined && property) {
+        copyScopeToNextNode(visitor, scope);
+      }
     }
   } else if (type === 'ExpressionStatement') {
     if (node.expression && node.expression.arguments) {
@@ -74,14 +83,16 @@ export function scopeTracker(visitor: IVisit): IASTScope {
   // or
   // function hey(){}
   // this should be copied to the next item in the body
-  else if (_FunctionDecl[type] && parent.right !== node) {
+  else if (_FunctionDecl[type]) {
     if (node.body) {
       scope = scope ? copy(scope) : { locals: {} };
 
       if (node.id && node.id.name) {
         scope.locals[node.id.name] = 1;
       }
-      if (visitor.id !== undefined && property) copyScopeToNextNode(visitor, scope);
+      if (visitor.id !== undefined && property) {
+        copyScopeToNextNode(visitor, scope);
+      }
 
       if (node.params) {
         // create params scope
@@ -98,24 +109,41 @@ export function scopeTracker(visitor: IVisit): IASTScope {
 
   // visiting node.body ahead of time (the visitor isn't there yet)
   // but we need to collect hoisted variables
-  if (Array.isArray(node.body) && node.body[0]) {
-    scope = scope || { locals: {} };
-
-    const elScope = scope || { locals: {} };
+  else if (_Body[node.type] && node.body[0]) {
+    scope = scope ? scope : { locals: {} };
+    const elScope = scope;
+    const bodyEl = node.body[0];
     // when hoisting it's just enough to add the first item on list
     // since we're there yet, the visitor will pick it up and propagate till the end of the list
-    node.body[0].scope = elScope;
+    bodyEl.scope = elScope;
     // hoisted variables
-    for (const item of node.body) {
+    const hoisted = {};
+    let index = 0;
+    let shouldAdd = false;
+    const bodyNodesLength = (node.body as Array<ASTNode>).length;
+    while (index < bodyNodesLength) {
+      const item: ASTNode = node.body[index];
       if (item.type === 'FunctionDeclaration' && item.body && item.id) {
-        elScope.locals[item.id.name] = 1;
+        hoisted[item.id.name] = 1;
+        shouldAdd = true;
       } else if (item.type == 'VariableDeclaration' && item.kind === 'var' && item.declarations) {
-        for (const i of item.declarations) {
-          elScope.locals[i.id.name] = 1;
+        // for (const i of item.declarations) {
+        //   shouldAdd = true;
+        //   hoisted[i.id.name] = 1;
+        // }
+      }
+      index++;
+    }
+    if (shouldAdd) {
+      if (elScope.hoisted) {
+        for (const key in elScope.hoisted) {
+          hoisted[key] = 1;
         }
       }
+      elScope.hoisted = hoisted;
     }
   }
+
   visitor.scope = scope;
   return scope;
 }

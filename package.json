@@ -135,5 +135,5 @@
     "typecheck": "ts-node -T fuse typecheck"
   },
   "typings": "index.d.ts",
-  "version": "4.0.0-alpha.278"
+  "version": "4.0.0-alpha.279"
 }
