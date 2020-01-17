@@ -12,7 +12,7 @@ import { attachWebIndex } from './attach_webIndex';
 import { prerequisites } from './prerequisite';
 import { processPlugins } from './process_plugins';
 import { addServerEntry } from './server_entry';
-
+import { ModuleResolver } from '../ModuleResolver/ModuleResolver';
 export async function bundleDev(ctx: Context) {
   const ict = ctx.ict;
 
@@ -30,7 +30,7 @@ export async function bundleDev(ctx: Context) {
   // lib-esm/params/paramTypes.js"
 
   let bundles: Array<IBundleWriteResponse>;
-  const packages = assemble(ctx, ctx.config.entries[0]);
+  const packages = ModuleResolver(ctx, ctx.config.entries[0]); // assemble(ctx, ctx.config.entries[0]);
   if (packages) {
     await processPlugins({
       ctx: ctx,
