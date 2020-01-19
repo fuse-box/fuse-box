@@ -15,10 +15,12 @@ export interface IModule {
   pkg?: IPackage;
   absPath?: string;
   contents?: string;
-  read: () => string;
-  parse: () => ASTNode;
-  generate: () => void;
-  transpile: () => ITransformerResult;
+  sourceMap?: string;
+  publicPath?: string;
+  read?: () => string;
+  parse?: () => ASTNode;
+  generate?: () => void;
+  transpile?: () => ITransformerResult;
   isJavaScript?: boolean;
   isTypeScript?: boolean;
   extension?: string;

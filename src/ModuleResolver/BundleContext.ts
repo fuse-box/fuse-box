@@ -14,11 +14,11 @@ export function createBundleContext(ctx: Context) {
     modules,
     packages,
     getPackage: (meta: IPackageMeta): IPackage => {
-      const name = meta ? meta.version + '@' + meta.name : 'default';
+      const name = meta ? meta.name + '@' + meta.version : 'default';
       return packages[name];
     },
     setPackage: (pkg: IPackage) => {
-      const name = pkg.meta ? pkg.meta.version + '@' + pkg.meta.name : 'default';
+      const name = pkg.meta ? pkg.meta.name + '@' + pkg.meta.version : 'default';
       packages[name] = pkg;
     },
     getModule: (absPath: string) => {

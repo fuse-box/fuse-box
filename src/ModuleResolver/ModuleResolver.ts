@@ -38,10 +38,12 @@ function resolve(props: {
   if (resolved.package) {
     absPath = resolved.package.targetAbsPath;
     let pkg = bundleContext.getPackage(resolved.package.meta);
+
     if (!pkg) {
       pkg = createPackage({ type: PackageType.EXTERNAL_PACKAGE, meta: resolved.package.meta });
       bundleContext.setPackage(pkg);
     }
+
     return initModule({ absPath, bundleContext, ctx, pkg });
   } else {
     return initModule({ absPath: resolved.absPath, bundleContext, ctx, pkg: parent.pkg });
@@ -92,7 +94,11 @@ export function ModuleResolver(ctx: Context, entryFile: string) {
   for (const key in bundleContext.modules) {
     const module = bundleContext.modules[key];
     const code = module.generate();
-    console.log('******' + module.absPath + '******');
+    console.log('****** ' + module.id + ' --> ' + module.absPath + '******');
+
     console.log(code);
+  }
+  for (const key in bundleContext.packages) {
+    console.log(key);
   }
 }
