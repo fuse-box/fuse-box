@@ -1,5 +1,4 @@
 import { join } from 'path';
-import { BundleType } from '../bundle/Bundle';
 import { IBundleWriteResponse } from '../bundle_new/Bundle';
 import { Context } from '../core/Context';
 import { env } from '../env';

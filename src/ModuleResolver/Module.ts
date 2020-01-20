@@ -8,7 +8,7 @@ import { newTransformCommonVisitors } from '../compiler/new_transformer';
 import { ITransformerResult } from '../compiler/interfaces/ITranformerResult';
 import { generate } from '../compiler/generator/generator';
 import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
-import { STYLESHEET_EXTENSIONS, EXECUTABLE_EXTENSIONS } from '../config/extensions';
+import { STYLESHEET_EXTENSIONS, EXECUTABLE_EXTENSIONS, JS_EXTENSIONS, TS_EXTENSIONS } from '../config/extensions';
 export function Module() {}
 
 export interface IModule {
@@ -44,8 +44,8 @@ export interface IModule {
 
 export function createModule(props: { pkg?: IPackage; absPath?: string; ctx?: Context }): IModule {
   const ext = path.extname(props.absPath);
-  const isJavaScript = ['.js', '.jsx'].includes(ext);
-  const isTypeScript = ['.tsx', '.tsx'].includes(ext);
+  const isJavaScript = JS_EXTENSIONS.includes(ext);
+  const isTypeScript = TS_EXTENSIONS.includes(ext);
 
   let isCSSSourceMapRequired = true;
   const config = props.ctx.config;
