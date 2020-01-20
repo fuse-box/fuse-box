@@ -1,8 +1,8 @@
+import { createMemberExpression } from '../Visitor/helpers';
+import { isLocalDefined } from '../helpers/astHelpers';
 import { ASTNode } from '../interfaces/AST';
 import { ITransformer } from '../interfaces/ITransformer';
 import { GlobalContext } from '../program/GlobalContext';
-import { createMemberExpression } from '../Visitor/helpers';
-import { isLocalDefined } from './astHelpers';
 
 export function GlobalContextTransformer(): ITransformer {
   return {
@@ -46,7 +46,7 @@ export function GlobalContextTransformer(): ITransformer {
 
             const statement: ASTNode = traced.second
               ? createMemberExpression(traced.first, traced.second)
-              : { type: 'Identifier', name: traced.first };
+              : { name: traced.first, type: 'Identifier' };
             if (shorthand) {
               if (node.shorthand) node.shorthand = false;
               node.value = statement;

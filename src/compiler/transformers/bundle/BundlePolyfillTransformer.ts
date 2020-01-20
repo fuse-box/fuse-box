@@ -1,31 +1,31 @@
 import * as path from 'path';
 import { ITarget } from '../../../config/PrivateConfig';
 import { ensureFuseBoxPath } from '../../../utils/utils';
+import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
+import { createRequireStatement } from '../../Visitor/helpers';
+import { isLocalDefined } from '../../helpers/astHelpers';
 import { ASTNode } from '../../interfaces/AST';
-import { ImportType } from '../../interfaces/ImportType';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { ITransformerSharedOptions } from '../../interfaces/ITransformerSharedOptions';
-import { createRequireStatement } from '../../Visitor/helpers';
-import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
-import { isLocalDefined } from '../astHelpers';
+import { ImportType } from '../../interfaces/ImportType';
 
 export interface IBundleEssentialProps {
-  target?: ITarget;
-  env?: { [key: string]: any };
   isBrowser?: boolean;
   isServer?: boolean;
   moduleFileName?: string;
+  target?: ITarget;
+  env?: { [key: string]: any };
 }
 
 export type IBundleEssntialTransformerOptions = IBundleEssentialProps & ITransformerSharedOptions;
 
 export const PolyfillEssentialConfig = {
-  stream: 'stream',
-  buffer: 'buffer',
   Buffer: 'buffer',
+  buffer: 'buffer',
   http: 'http',
   https: 'https',
   process: 'process',
+  stream: 'stream',
 };
 
 export function BundlePolyfillTransformer(): ITransformer {
@@ -57,7 +57,7 @@ export function BundlePolyfillTransformer(): ITransformer {
               case '__filename':
                 return { replaceWith: { type: 'Literal', value: dirName } };
               case 'global':
-                return { replaceWith: { type: 'Identifier', name: isWebWorker ? 'self' : 'window' } };
+                return { replaceWith: { name: isWebWorker ? 'self' : 'window', type: 'Identifier' } };
             }
 
             /**
@@ -79,21 +79,21 @@ export function BundlePolyfillTransformer(): ITransformer {
               }
               if (name !== moduleName) {
                 statements.push({
-                  type: 'VariableDeclaration',
-                  kind: 'var',
                   declarations: [
                     {
-                      type: 'VariableDeclarator',
-                      init: {
-                        type: 'Identifier',
-                        name: moduleName,
-                      },
                       id: {
-                        type: 'Identifier',
                         name: name,
+                        type: 'Identifier',
                       },
+                      init: {
+                        name: moduleName,
+                        type: 'Identifier',
+                      },
+                      type: 'VariableDeclarator',
                     },
                   ],
+                  kind: 'var',
+                  type: 'VariableDeclaration',
                 });
               }
               if (statements.length) {

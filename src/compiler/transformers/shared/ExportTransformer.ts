@@ -1,10 +1,10 @@
-import { ASTNode, ASTType } from '../../interfaces/AST';
-import { ImportType } from '../../interfaces/ImportType';
-import { ITransformer } from '../../interfaces/ITransformer';
-import { GlobalContext } from '../../program/GlobalContext';
-import { createExports, createVariableDeclaration, isDefinedLocally } from '../../Visitor/helpers';
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
-import { generateVariableFromSource } from '../astHelpers';
+import { createExports, createVariableDeclaration, isDefinedLocally } from '../../Visitor/helpers';
+import { generateVariableFromSource } from '../../helpers/astHelpers';
+import { ASTNode, ASTType } from '../../interfaces/AST';
+import { ITransformer } from '../../interfaces/ITransformer';
+import { ImportType } from '../../interfaces/ImportType';
+import { GlobalContext } from '../../program/GlobalContext';
 
 const IGNORED_DECLARATIONS = {
   [ASTType.InterfaceDeclaration]: 1,
@@ -27,9 +27,9 @@ function considerDecorators(node: ASTNode) {
   return statement;
 }
 const INTERESTED_NODES = {
-  ExportNamedDeclaration: 1,
-  ExportDefaultDeclaration: 1,
   ExportAllDeclaration: 1,
+  ExportDefaultDeclaration: 1,
+  ExportNamedDeclaration: 1,
 };
 
 export function ExportTransformer(): ITransformer {
@@ -58,8 +58,8 @@ export function ExportTransformer(): ITransformer {
                   if (!response.appendToBody) response.appendToBody = [];
                   for (const item of targetAfter.targets) {
                     const ast = createExports(global.namespace, item, {
-                      type: 'Identifier',
                       name: localVar.name,
+                      type: 'Identifier',
                     });
                     response.appendToBody.push(ast);
                   }
@@ -107,43 +107,43 @@ export function ExportTransformer(): ITransformer {
             // export * from "a"
             if (node.type === 'ExportAllDeclaration') {
               const reqExpression: ASTNode = {
-                type: 'CallExpression',
-                callee: {
-                  type: 'Identifier',
-                  name: 'require',
-                },
                 arguments: [
                   {
                     type: 'Literal',
                     value: node.source.value,
                   },
                 ],
+                callee: {
+                  name: 'require',
+                  type: 'Identifier',
+                },
+                type: 'CallExpression',
               };
               if (props.onRequireCallExpression) {
                 props.onRequireCallExpression(ImportType.FROM, reqExpression);
               }
               return {
                 replaceWith: {
-                  type: 'CallExpression',
-                  callee: {
-                    type: 'MemberExpression',
-                    object: {
-                      type: 'Identifier',
-                      name: 'Object',
-                    },
-                    computed: false,
-                    property: {
-                      type: 'Identifier',
-                      name: 'assign',
-                    },
-                  },
                   arguments: [
                     {
-                      type: 'Identifier',
                       name: 'exports',
+                      type: 'Identifier',
                     },
                     reqExpression,
                   ],
+                  callee: {
+                    computed: false,
+                    object: {
+                      name: 'Object',
+                      type: 'Identifier',
+                    },
+                    property: {
+                      name: 'assign',
+                      type: 'Identifier',
+                    },
+                    type: 'MemberExpression',
+                  },
+                  type: 'CallExpression',
                 },
               };
             }
@@ -153,30 +153,30 @@ export function ExportTransformer(): ITransformer {
             //    var obj = require("module")
             const exportedNodes: Array<ASTNode> = [
               {
-                type: 'VariableDeclaration',
-                kind: 'var',
                 declarations: [
                   {
-                    type: 'VariableDeclarator',
+                    id: {
+                      name: sourceVariable,
+                      type: 'Identifier',
+                    },
                     init: {
-                      type: 'CallExpression',
-                      callee: {
-                        type: 'Identifier',
-                        name: 'require',
-                      },
                       arguments: [
                         {
                           type: 'Literal',
                           value: node.source.value,
                         },
                       ],
+                      callee: {
+                        name: 'require',
+                        type: 'Identifier',
+                      },
+                      type: 'CallExpression',
                     },
-                    id: {
-                      type: 'Identifier',
-                      name: sourceVariable,
-                    },
+                    type: 'VariableDeclarator',
                   },
                 ],
+                kind: 'var',
+                type: 'VariableDeclaration',
               },
             ];
 
@@ -184,16 +184,16 @@ export function ExportTransformer(): ITransformer {
               for (const specifier of node.specifiers) {
                 exportedNodes.push(
                   createExports(global.namespace, specifier.exported.name, {
-                    type: 'MemberExpression',
-                    object: {
-                      type: 'Identifier',
-                      name: sourceVariable,
-                    },
                     computed: false,
-                    property: {
+                    object: {
+                      name: sourceVariable,
                       type: 'Identifier',
-                      name: specifier.local.name,
                     },
+                    property: {
+                      name: specifier.local.name,
+                      type: 'Identifier',
+                    },
+                    type: 'MemberExpression',
                   }),
                 );
               }
@@ -216,7 +216,7 @@ export function ExportTransformer(): ITransformer {
               //      export default function foo(){}
               if (node.declaration.type === 'FunctionDeclaration' || node.declaration.type === 'ClassDeclaration') {
                 if (!node.declaration.id) {
-                  node.declaration.id = { type: 'Identifier', name: '__DefaultExport__' };
+                  node.declaration.id = { name: '__DefaultExport__', type: 'Identifier' };
                 }
 
                 // if there are decorators on the class we need to transform and assigne to a variable
@@ -236,8 +236,8 @@ export function ExportTransformer(): ITransformer {
                   replaceWith: [
                     statement,
                     createExports(global.namespace, 'default', {
-                      type: 'Identifier',
                       name: node.declaration.id.name,
+                      type: 'Identifier',
                     }),
                   ],
                 };
@@ -271,8 +271,8 @@ export function ExportTransformer(): ITransformer {
                 ) {
                   newNodes.push(
                     createExports(global.namespace, specifier.exported.name, {
-                      type: 'Identifier',
                       name: specifier.local.name,
+                      type: 'Identifier',
                     }),
                   );
                 } else {
@@ -307,15 +307,15 @@ export function ExportTransformer(): ITransformer {
                   replaceWith: [
                     statement,
                     createExports(global.namespace, node.declaration.id.name, {
-                      type: 'Identifier',
                       name: node.declaration.id.name,
+                      type: 'Identifier',
                     }),
                   ],
                 };
               }
               if (node.declaration.type === 'VariableDeclaration') {
                 if (node.declaration.declare) {
-                  return { removeNode: true, ignoreChildren: true };
+                  return { ignoreChildren: true, removeNode: true };
                 }
                 /**
                  * ******************************************************************

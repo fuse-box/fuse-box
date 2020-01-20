@@ -1,14 +1,14 @@
-import { ImportType } from '../../interfaces/ImportType';
-import { ITransformer } from '../../interfaces/ITransformer';
-import { ITransformerSharedOptions } from '../../interfaces/ITransformerSharedOptions';
+import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
 import {
   createASTFromObject,
   createRequireStatement,
   defineVariable,
   isPropertyOrPropertyAccess,
 } from '../../Visitor/helpers';
-import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
-import { isLocalDefined } from '../astHelpers';
+import { isLocalDefined } from '../../helpers/astHelpers';
+import { ITransformer } from '../../interfaces/ITransformer';
+import { ITransformerSharedOptions } from '../../interfaces/ITransformerSharedOptions';
+import { ImportType } from '../../interfaces/ImportType';
 
 interface BrowserProcessTransformProps {
   env?: { [key: string]: string };
@@ -46,8 +46,8 @@ export function BrowserProcessTransformer(): ITransformer {
                 if (props.onRequireCallExpression)
                   props.onRequireCallExpression(ImportType.REQUIRE, statement.reqStatement);
                 return {
-                  ignoreChildren: true,
                   avoidReVisit: true,
+                  ignoreChildren: true,
                   prependToBody: [statement.statement],
                 };
               }
@@ -58,30 +58,30 @@ export function BrowserProcessTransformer(): ITransformer {
               const keyName = accessList[2];
 
               if (env && env[keyName] !== undefined) {
-                return { replaceWith: { type: 'Literal', value: env[keyName].toString(), loc: node.loc } };
+                return { replaceWith: { loc: node.loc, type: 'Literal', value: env[keyName].toString() } };
               }
               return { replaceWith: { type: 'Identifier', value: 'undefined' } };
             }
             if (variableAmount === 2) {
               switch (accessList[1]) {
+                case 'browser':
+                  return { avoidReVisit: true, replaceWith: { loc: node.loc, type: 'Literal', value: true } };
+                case 'cwd':
+                  return { avoidReVisit: true, replaceWith: { type: 'Literal', value: './' } };
+                case 'title':
+                  return { avoidReVisit: true, replaceWith: { loc: node.loc, type: 'Literal', value: 'browser' } };
+                case 'umask':
+                  return { avoidReVisit: true, replaceWith: { type: 'Literal', value: 0 } };
                 case 'version':
                   return {
-                    replaceWith: { loc: node.loc, type: 'Literal', value: process.version },
                     avoidReVisit: true,
+                    replaceWith: { loc: node.loc, type: 'Literal', value: process.version },
                   };
                 case 'versions':
                   return {
-                    replaceWith: { loc: node.loc, type: 'ObjectExpression', properties: [] },
                     avoidReVisit: true,
+                    replaceWith: { loc: node.loc, properties: [], type: 'ObjectExpression' },
                   };
-                case 'title':
-                  return { replaceWith: { loc: node.loc, type: 'Literal', value: 'browser' }, avoidReVisit: true };
-                case 'umask':
-                  return { replaceWith: { type: 'Literal', value: 0 }, avoidReVisit: true };
-                case 'browser':
-                  return { replaceWith: { loc: node.loc, type: 'Literal', value: true }, avoidReVisit: true };
-                case 'cwd':
-                  return { replaceWith: { type: 'Literal', value: './' }, avoidReVisit: true };
                 case 'env':
                   if (env) {
                     const response: IVisitorMod = {};
@@ -89,9 +89,9 @@ export function BrowserProcessTransformer(): ITransformer {
                       response.prependToBody = [defineVariable('___env', createASTFromObject(env))];
                       globalEnvInserted = true;
                     }
-                    response.replaceWith = { type: 'Identifier', name: '___env' };
+                    response.replaceWith = { name: '___env', type: 'Identifier' };
                     return response;
-                  } else return { replaceWith: createASTFromObject({}), avoidReVisit: true };
+                  } else return { avoidReVisit: true, replaceWith: createASTFromObject({}) };
 
                 default:
                   // inserting require("process")

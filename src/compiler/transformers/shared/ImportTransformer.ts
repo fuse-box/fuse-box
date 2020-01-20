@@ -1,10 +1,10 @@
-import { ASTType } from '../../interfaces/AST';
-import { ImportType } from '../../interfaces/ImportType';
-import { ITransformer } from '../../interfaces/ITransformer';
-import { GlobalContext } from '../../program/GlobalContext';
-import { createRequireStatement } from '../../Visitor/helpers';
 import { IVisit } from '../../Visitor/Visitor';
-import { generateVariableFromSource } from '../astHelpers';
+import { createRequireStatement } from '../../Visitor/helpers';
+import { generateVariableFromSource } from '../../helpers/astHelpers';
+import { ASTType } from '../../interfaces/AST';
+import { ITransformer } from '../../interfaces/ITransformer';
+import { ImportType } from '../../interfaces/ImportType';
+import { GlobalContext } from '../../program/GlobalContext';
 
 export function ImportTransformer(): ITransformer {
   return {

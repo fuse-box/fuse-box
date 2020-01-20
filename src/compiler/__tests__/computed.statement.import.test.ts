@@ -1,6 +1,6 @@
+import { computedStatementToPath, expressionValueTypes } from '../helpers/importHelpers';
 import { ASTNode } from '../interfaces/AST';
 import { parseTypeScript } from '../parser';
-import { computedStatementToPath, expressionValueTypes } from '../transformers/importHelpers';
 
 function getAst(expression: string): ASTNode {
   const ast = parseTypeScript(expression);

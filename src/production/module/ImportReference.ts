@@ -1,7 +1,7 @@
 import { IVisit } from '../../compiler/Visitor/Visitor';
+import { getDynamicImport } from '../../compiler/helpers/importHelpers';
 import { ASTNode } from '../../compiler/interfaces/AST';
 import { ASTType } from '../../compiler/interfaces/AST';
-import { getDynamicImport } from '../../compiler/transformers/importHelpers';
 import { Module } from '../../core/Module';
 import { IProductionContext } from '../ProductionContext';
 
@@ -9,19 +9,19 @@ export enum ImportType {
   SIDE_EFFECT_IMPORT,
   IMPORT_SPECIFIERS,
   DYNAMIC_IMPORT,
-  EXPORT_FROM
-};
+  EXPORT_FROM,
+}
 
 export enum ImportSpecifierType {
   OBJECT_SPECIFIER,
-  NAMESPACE_SPECIFIER
+  NAMESPACE_SPECIFIER,
 }
 
 export interface IImportReferencesProps {
   module: Module;
   productionContext: IProductionContext;
   visit: IVisit;
-};
+}
 
 export interface IImportProps {
   module: Module;
@@ -29,7 +29,7 @@ export interface IImportProps {
   specifiers?: Array<IImportSpecifier>;
   type: ImportType;
   visit: IVisit;
-};
+}
 
 export interface IImport {
   module: Module;
@@ -46,7 +46,7 @@ function Import(props: IImportProps): IImport {
   const target = props.module.moduleSourceRefs[props.source];
   const importReference = {
     module: props.module,
-    remove: function () {
+    remove: function() {
       importReference.removed = true;
       // @todo finish this
       if (props.visit.property && props.visit.parent) {
@@ -63,13 +63,13 @@ function Import(props: IImportProps): IImport {
     specifiers: props.specifiers,
     target,
     type: props.type,
-    visit: props.visit
+    visit: props.visit,
   };
 
   target.moduleTree.dependants.push(importReference);
 
   return importReference;
-};
+}
 
 export interface IImportSpecifier {
   local: string;
@@ -106,7 +106,7 @@ function ImportSpecifier(visit: IVisit, specifier: ASTNode): IImportSpecifier {
   const importSpecifier = {
     local,
     name,
-    remove: function () {
+    remove: function() {
       importSpecifier.removed = true;
       // @todo finish this
       if (visit.node.specifiers instanceof Array) {
@@ -118,11 +118,11 @@ function ImportSpecifier(visit: IVisit, specifier: ASTNode): IImportSpecifier {
     },
     removed: false,
     type,
-    visit
+    visit,
   };
 
   return importSpecifier;
-};
+}
 
 // import './foo';
 function sideEffectImport(props: IImportReferencesProps, scope: IImportReferences) {
@@ -133,10 +133,10 @@ function sideEffectImport(props: IImportReferencesProps, scope: IImportReference
       module: props.module,
       source: node.source.value,
       type: ImportType.SIDE_EFFECT_IMPORT,
-      visit: props.visit
-    })
+      visit: props.visit,
+    }),
   );
-};
+}
 
 // import xx from 'xx';
 // import { yy, bb as cc } from 'yy';
@@ -155,10 +155,10 @@ function regularImport(props: IImportReferencesProps, scope: IImportReferences) 
       source: node.source.value,
       specifiers,
       type: ImportType.IMPORT_SPECIFIERS,
-      visit: props.visit
-    })
+      visit: props.visit,
+    }),
   );
-};
+}
 
 // const bar = require('foo');
 function regularRequire(props: IImportReferencesProps, scope: IImportReferences) {
@@ -169,10 +169,10 @@ function regularRequire(props: IImportReferencesProps, scope: IImportReferences)
       module: props.module,
       source: node.arguments[0].value,
       type: ImportType.SIDE_EFFECT_IMPORT,
-      visit: props.visit
-    })
+      visit: props.visit,
+    }),
   );
-};
+}
 
 // import _ = require('foo');
 function sideEffectImportRequire(props: IImportReferencesProps, scope: IImportReferences) {
@@ -183,8 +183,8 @@ function sideEffectImportRequire(props: IImportReferencesProps, scope: IImportRe
       module: props.module,
       source: node.moduleReference.expression.value,
       type: ImportType.SIDE_EFFECT_IMPORT,
-      visit: props.visit
-    })
+      visit: props.visit,
+    }),
   );
 }
 
@@ -198,8 +198,8 @@ function dynamicImport(props: IImportReferencesProps, scope: IImportReferences) 
       module: props.module,
       source,
       type: ImportType.DYNAMIC_IMPORT,
-      visit: props.visit
-    })
+      visit: props.visit,
+    }),
   );
 }
 
@@ -212,8 +212,8 @@ function exportAllImport(props: IImportReferencesProps, scope: IImportReferences
       module: props.module,
       source: node.source.value,
       type: ImportType.EXPORT_FROM,
-      visit: props.visit
-    })
+      visit: props.visit,
+    }),
   );
 }
 
@@ -232,8 +232,8 @@ function exportSpecifierImport(props: IImportReferencesProps, scope: IImportRefe
       source: node.source.value,
       specifiers,
       type: ImportType.EXPORT_FROM,
-      visit: props.visit
-    })
+      visit: props.visit,
+    }),
   );
 }
 
@@ -255,13 +255,9 @@ export function ImportReferences(productionContext: IProductionContext, module: 
           // import xx from 'xx';
           // import { yy, bb as cc } from 'yy';
           // import zz as aa from 'zz'
-          regularImport(props, scope)
+          regularImport(props, scope);
         }
-      } else if (
-        node.type === ASTType.CallExpression &&
-        node.callee &&
-        node.callee.name === 'require'
-      ) {
+      } else if (node.type === ASTType.CallExpression && node.callee && node.callee.name === 'require') {
         // const bar = require('foo');
         regularRequire(props, scope);
       } else if (node.type === ASTType.ImportEqualsDeclaration) {
@@ -271,11 +267,7 @@ export function ImportReferences(productionContext: IProductionContext, module: 
         // meriyah
         node.type === ASTType.ImportExpression ||
         // ts-parser
-        (
-          node.type === ASTType.CallExpression &&
-          node.callee &&
-          node.callee.type === 'Import'
-        )
+        (node.type === ASTType.CallExpression && node.callee && node.callee.type === 'Import')
       ) {
         // import('./module');
         dynamicImport(props, scope);
@@ -286,7 +278,7 @@ export function ImportReferences(productionContext: IProductionContext, module: 
         // export { foo, bar as baz } from 'module';
         exportSpecifierImport(props, scope);
       }
-    }
+    },
   };
 
   return scope;
