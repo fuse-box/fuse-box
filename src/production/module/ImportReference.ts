@@ -1,8 +1,8 @@
+import { IModule } from '../../ModuleResolver/Module';
 import { IVisit } from '../../compiler/Visitor/Visitor';
 import { getDynamicImport } from '../../compiler/helpers/importHelpers';
 import { ASTNode } from '../../compiler/interfaces/AST';
 import { ASTType } from '../../compiler/interfaces/AST';
-import { Module } from '../../core/Module';
 import { IProductionContext } from '../ProductionContext';
 
 export enum ImportType {
@@ -18,13 +18,13 @@ export enum ImportSpecifierType {
 }
 
 export interface IImportReferencesProps {
-  module: Module;
+  module: IModule;
   productionContext: IProductionContext;
   visit: IVisit;
 }
 
 export interface IImportProps {
-  module: Module;
+  module: IModule;
   source: string;
   specifiers?: Array<IImportSpecifier>;
   type: ImportType;
@@ -32,11 +32,11 @@ export interface IImportProps {
 }
 
 export interface IImport {
-  module: Module;
+  module: IModule;
   removed: boolean;
   source: string;
   specifiers: Array<IImportSpecifier>;
-  target: Module;
+  target: IModule;
   type: ImportType;
   visit: IVisit;
   remove: () => void;
@@ -46,7 +46,7 @@ function Import(props: IImportProps): IImport {
   const target = props.module.moduleSourceRefs[props.source];
   const importReference = {
     module: props.module,
-    remove: function() {
+    remove: function () {
       importReference.removed = true;
       // @todo finish this
       if (props.visit.property && props.visit.parent) {
@@ -106,7 +106,7 @@ function ImportSpecifier(visit: IVisit, specifier: ASTNode): IImportSpecifier {
   const importSpecifier = {
     local,
     name,
-    remove: function() {
+    remove: function () {
       importSpecifier.removed = true;
       // @todo finish this
       if (visit.node.specifiers instanceof Array) {

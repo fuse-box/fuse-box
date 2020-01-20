@@ -1,10 +1,10 @@
-import { ASTNode } from '../../compiler/interfaces/AST';
+import { IModule } from '../../ModuleResolver/Module';
 import { IVisit } from '../../compiler/Visitor/Visitor';
-import { Module } from '../../core/Module';
+import { ASTNode } from '../../compiler/interfaces/AST';
 import { IProductionContext } from '../ProductionContext';
 
 export interface ExportReferenceProps {
-  module: Module;
+  module: IModule;
   productionContext: IProductionContext;
   visit: IVisit;
 }
@@ -16,20 +16,20 @@ export enum ExportReferenceType {
 }
 
 export interface IExportReferenceProps {
-  scope: IExportReferences;
-  type: ExportReferenceType;
-  name: string;
   local?: string;
-  visit?: IVisit;
+  name: string;
+  scope: IExportReferences;
   targetObjectAst?: ASTNode;
+  type: ExportReferenceType;
+  visit?: IVisit;
 }
 export function ExportReference(props: IExportReferenceProps) {
   const exposed = {
-    name: props.name,
     local: props.local,
-    type: props.type,
+    name: props.name,
     targetObjectAst: props.targetObjectAst,
-    remove: () => {},
+    type: props.type,
+    remove: () => { },
   };
   return exposed;
 }
@@ -53,7 +53,7 @@ function SingeObjectExport(props: ExportReferenceProps, scope: IExportReferences
 
   const name = declaration.id.name;
   scope.references.push(
-    ExportReference({ scope, name, targetObjectAst: node.declaration, local: name, visit: props.visit, type: type }),
+    ExportReference({ local: name, name, scope, targetObjectAst: node.declaration, type: type, visit: props.visit }),
   );
 }
 
@@ -75,12 +75,12 @@ function SingeDefaultExport(props: ExportReferenceProps, scope: IExportReference
 
   scope.references.push(
     ExportReference({
+      local: declaration.id ? declaration.id.name : undefined,
       name: 'default',
       scope,
       targetObjectAst: node.declaration,
-      local: declaration.id ? declaration.id.name : undefined,
-      visit: props.visit,
       type: type,
+      visit: props.visit,
     }),
   );
 }
@@ -91,11 +91,11 @@ export function HandleExportReferences(props: ExportReferenceProps, scope: IExpo
     if (specifier.local.name && specifier.exported.name) {
       scope.references.push(
         ExportReference({
-          scope,
-          name: specifier.exported.name,
           local: specifier.local.name,
-          visit: props.visit,
+          name: specifier.exported.name,
+          scope,
           type: ExportReferenceType.LOCAL_REFERENCE,
+          visit: props.visit,
         }),
       );
     }

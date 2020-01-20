@@ -22,6 +22,7 @@ some.sh
 .temp
 .cache
 docs/api
+.sortierignore
 
 # FuseBox Loader API built type definition
 # Which is then exported as a module from `src`

@@ -1,12 +1,12 @@
+import { ModuleResolver } from '../ModuleResolver/ModuleResolver';
 import { BundleRouter } from '../bundle_new/BundleRouter';
 import { Context } from '../core/Context';
 import { prerequisites } from '../main/prerequisite';
-import { ModuleResolver } from '../ModuleResolver/ModuleResolver';
 import { pluginAssumption } from '../plugins/core/plugin_assumption';
 import { pluginCSS } from '../plugins/core/plugin_css';
 import { pluginSass } from '../plugins/core/plugin_sass';
+import { ProductionContext, IProductionContext } from './ProductionContext';
 import { Engine } from './engine';
-import { IProductionContext, ProductionContext } from './ProductionContext';
 
 async function productionContextFlow(ctx: Context): Promise<IProductionContext> {
   prerequisites(ctx);
@@ -18,7 +18,8 @@ async function productionContextFlow(ctx: Context): Promise<IProductionContext> 
 
   const ict = ctx.ict;
 
-  const { modules, entries, bundleContext } = ModuleResolver(ctx, ctx.config.entries[0]);
+  // const { modules, entries, bundleContext } = ModuleResolver(ctx, ctx.config.entries[0]);
+  const { entries, modules } = ModuleResolver(ctx, ctx.config.entries);
   if (modules) {
     const router = BundleRouter({ ctx, entries });
     router.dispatchModules(modules);
@@ -33,6 +34,7 @@ async function productionContextFlow(ctx: Context): Promise<IProductionContext> 
 
   return ProductionContext(ctx, modules);
 }
+
 export async function bundleProd(ctx: Context) {
   const context = await productionContextFlow(ctx);
   await Engine(context).start();
