@@ -10,7 +10,8 @@ import { generate } from '../compiler/generator/generator';
 import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { STYLESHEET_EXTENSIONS, EXECUTABLE_EXTENSIONS, JS_EXTENSIONS, TS_EXTENSIONS } from '../config/extensions';
 import { statSync } from 'fs';
-export function Module() {}
+import { IModuleTree } from '../production/module/ModuleTree';
+export function Module() { }
 
 export interface IModule {
   init?: () => void;
@@ -22,12 +23,14 @@ export interface IModule {
   contents?: string;
   sourceMap?: string;
   publicPath?: string;
+  moduleTree?: IModuleTree;
   read?: () => string;
   errored?: boolean;
   parse?: () => ASTNode;
   css?: IStylesheetModuleResponse;
   captured?: boolean;
   isCached?: boolean;
+  isEntry?: boolean;
   generate?: () => void;
   transpile?: () => ITransformerResult;
   isJavaScript?: boolean;
@@ -37,6 +40,7 @@ export interface IModule {
   isCSSModule?: boolean;
   isCSSText?: boolean;
   isStylesheet?: boolean;
+  isCommonsEligible?: boolean;
   extension?: string;
   ast?: ASTNode;
   breakDependantsCache?: boolean;
@@ -56,15 +60,17 @@ export interface IModuleMeta {
   mtime: string;
 }
 
-export function createModule(props: { pkg?: IPackage; absPath?: string; ctx?: Context }): IModule {
+export function createModule(props: { pkg?: IPackage; absPath?: string; ctx?: Context; }): IModule {
   const scope: IModule = {
-    // legacy props
     init: () => {
       const ext = path.extname(props.absPath);
       scope.extension = path.extname(props.absPath);
       scope.isJavaScript = JS_EXTENSIONS.includes(ext);
       scope.isTypeScript = TS_EXTENSIONS.includes(ext);
       scope.absPath = props.absPath;
+      scope.isCommonsEligible = false;
+      scope.isEntry = false;
+
       let isCSSSourceMapRequired = true;
       const config = props.ctx.config;
       if (config.sourceMap.css === false) {
@@ -89,6 +95,7 @@ export function createModule(props: { pkg?: IPackage; absPath?: string; ctx?: Co
       scope.isCached = true;
       scope.extension = path.extname(meta.absPath);
     },
+    // legacy props
     props: {},
     storage: {},
     dependencies: [],
@@ -102,9 +109,9 @@ export function createModule(props: { pkg?: IPackage; absPath?: string; ctx?: Co
     // parse using javascript or typescript
     parse: () => {
       if (!scope.contents) throw new Error('Cannot parse without content');
-      if (['.js', '.jsx'].includes(scope.extension)) {
+      if (JS_EXTENSIONS.includes(scope.extension)) {
         scope.ast = parseJavascript(scope.contents);
-      } else if (['.ts', '.tsx'].includes(scope.extension)) {
+      } else if (TS_EXTENSIONS.includes(scope.extension)) {
         scope.ast = parseTypeScript(scope.contents, { jsx: scope.extension === '.tsx' });
       }
       return scope.ast;

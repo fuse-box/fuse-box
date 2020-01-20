@@ -1,4 +1,4 @@
-import { Module } from '../../core/Module';
+import { IModule } from '../../ModuleResolver/Module';
 import { IProductionContext } from '../ProductionContext';
 import { ExportReferences, IExportReferences } from './ExportReference';
 import { ImportReferences, IImport, IImportReferences } from './ImportReference';
@@ -16,7 +16,7 @@ export interface IModuleTree {
 }
 
 export interface IModuleTreeProps {
-  module: Module;
+  module: IModule;
   productionContext: IProductionContext;
 }
 

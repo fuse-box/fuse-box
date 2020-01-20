@@ -1,4 +1,5 @@
-import { Module } from '../../core/Module';
+import { IModule } from '../../ModuleResolver/Module';
+import { PackageType } from '../../ModuleResolver/Package';
 import { IProductionContext } from '../ProductionContext';
 import { ImportType } from '../module/ImportReference';
 import { SplitEntry, ISplitEntry } from '../module/SplitEntries';
@@ -7,7 +8,7 @@ import { SplitEntry, ISplitEntry } from '../module/SplitEntries';
  * Function to check if a module is only required thr
  * @param possibleSplitEntry
  */
-function resolveDynamicImport(possibleSplitEntry: Module): boolean {
+function resolveDynamicImport(possibleSplitEntry: IModule): boolean {
   const { moduleTree } = possibleSplitEntry;
   let isDynamic = true;
   for (const dependant of moduleTree.dependants) {
@@ -29,9 +30,9 @@ function resolveDynamicImport(possibleSplitEntry: Module): boolean {
  * @param productionContext
  * @param target
  */
-export function ResolveSplitEntry(productionContext: IProductionContext, target: Module): ISplitEntry {
-  const entryModuleId = target.moduleId;
-  const subModules: Array<Module> = [target];
+export function ResolveSplitEntry(productionContext: IProductionContext, target: IModule): ISplitEntry {
+  const entryModuleId = target.id;
+  const subModules: Array<IModule> = [target];
   const circularModules: Record<number, Record<number, boolean>> = {};
   const visited: Record<number, boolean> = {};
   const traversed: Record<number, boolean> = {
@@ -48,13 +49,13 @@ export function ResolveSplitEntry(productionContext: IProductionContext, target:
      * @param target
      * @param parentId
      */
-    traceCircularDependency: function (target: Module, parentId: number): boolean {
+    traceCircularDependency: function (target: IModule, parentId: number): boolean {
       let traced = false;
-      const { moduleId, moduleTree: { dependants } } = target;
+      const { id, moduleTree: { dependants } } = target;
 
       // prevent infinite loop
-      if (!!this.circularModules[parentId][moduleId]) {
-        return this.circularModules[parentId][moduleId];
+      if (!!this.circularModules[parentId][id]) {
+        return this.circularModules[parentId][id];
       }
 
       for (const { module: dependant } of dependants) {
@@ -64,10 +65,10 @@ export function ResolveSplitEntry(productionContext: IProductionContext, target:
          * otherwise dive in to the dependant hierarchy
          */
         traced =
-          dependant.moduleId === entryModuleId ||
-          dependant.moduleId === parentId ||
+          dependant.id === entryModuleId ||
+          dependant.id === parentId ||
           this.traceCircularDependency(dependant, parentId);
-        this.circularModules[parentId][moduleId] = traced;
+        this.circularModules[parentId][id] = traced;
         if (!traced) break;
       }
       return traced;
@@ -79,14 +80,14 @@ export function ResolveSplitEntry(productionContext: IProductionContext, target:
      *
      * @param target
      */
-    traceOrigin: function (target: Module, parentId: number): boolean {
-      const { moduleId, moduleTree: { dependants } } = target;
+    traceOrigin: function (target: IModule, parentId: number): boolean {
+      const { id, moduleTree: { dependants } } = target;
       /**
        * This check is to validate possible circular dependencies
        * It's quite complex to keep track of all falsy code
        * so we create a stack trace for it to validate against
        */
-      if (!!this.visited[moduleId]) {
+      if (!!this.visited[id]) {
         if (!(parentId in this.circularModules)) {
           this.circularModules[parentId] = {};
         }
@@ -95,19 +96,19 @@ export function ResolveSplitEntry(productionContext: IProductionContext, target:
         // this.circularModules contains a stack trace
         return result;
       }
-      this.visited[moduleId] = true;
+      this.visited[id] = true;
 
       let traced = false;
       for (const { module } of dependants) {
-        if (module.moduleId === entryModuleId) {
+        if (module.id === entryModuleId) {
           traced = true;
-        } else if (!!productionContext.splitEntries.ids[module.moduleId]) {
+        } else if (!!productionContext.splitEntries.ids[module.id]) {
           // the module is a dynamic module and not the entry, so false!
           // we flagAsCommonsEligible here!
-          target.flagAsCommonsEligible();
+          target.isCommonsEligible = true;
           traced = false;
         } else {
-          traced = this.traceOrigin(module, moduleId);
+          traced = this.traceOrigin(module, id);
         }
         if (!traced) {
           // @todo: config to flag all shared commons?
@@ -126,22 +127,22 @@ export function ResolveSplitEntry(productionContext: IProductionContext, target:
      *
      * @param target
      */
-    traverseDependencies: function (target: Module, entry: boolean = false): boolean {
-      const { moduleId, moduleTree: { importReferences: { references } } } = target;
+    traverseDependencies: function (target: IModule, entry: boolean = false): boolean {
+      const { id, moduleTree: { importReferences: { references } } } = target;
 
       // we already traversed this module, so we can skip it
       // this happens in case of circular deps
       // we return true because we want this module to be excluded
-      if (!entry && !!this.traversed[moduleId]) return true;
-      this.traversed[moduleId] = true;
+      if (!entry && !!this.traversed[id]) return true;
+      this.traversed[id] = true;
 
       // check if target is a dynamic module. If so, we want to exclude it
       const isDynamic = !entry
-        ? !!productionContext.splitEntries.ids[target.moduleId]
+        ? !!productionContext.splitEntries.ids[target.id]
         : false;
       if (!isDynamic) {
         for (const { target: reference } of references) {
-          if (this.traceOrigin(reference, moduleId)) {
+          if (this.traceOrigin(reference, id)) {
             const exclude = this.traverseDependencies(reference, false);
             if (!exclude) this.subModules.push(reference);
           }
@@ -172,8 +173,8 @@ export function CodeSplittingPhase(productionContext: IProductionContext) {
   const splitEntries = [];
   for (const possibleSplitEntry of productionContext.modules) {
     if (
-      !possibleSplitEntry.isEntry() &&
-      possibleSplitEntry.pkg.isDefaultPackage
+      !possibleSplitEntry.isEntry &&
+      possibleSplitEntry.pkg.type === PackageType.USER_PACKAGE
     ) {
       // check if the current module is only imported through
       // dynamic imports
@@ -182,7 +183,7 @@ export function CodeSplittingPhase(productionContext: IProductionContext) {
         // resolve the complete tree for this module and add it
         // to the split entries
         splitEntries.push(possibleSplitEntry);
-        productionContext.splitEntries.addId(possibleSplitEntry.moduleId);
+        productionContext.splitEntries.ids[possibleSplitEntry.id] = true;
       }
     }
   }

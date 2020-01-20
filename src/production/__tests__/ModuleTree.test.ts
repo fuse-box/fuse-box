@@ -14,7 +14,7 @@ describe('ModuleTree test', () => {
     return await env.run([WarmupPhase]);
   };
   afterEach(() => {
-    if (env) env.destroy();
+    // if (env) env.destroy();
     env = undefined;
   });
 
