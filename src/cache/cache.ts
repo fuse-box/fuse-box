@@ -1,400 +1,117 @@
+import { existsSync, statSync } from 'fs';
 import * as path from 'path';
 import { Context } from '../core/Context';
-import { IAnalysis, Module } from '../core/Module';
-import { createPackage, Package } from '../core/Package';
-import { env } from '../env';
-import { ensureDir, fastHash, fileExists, fileStat, readFile, removeFolder, writeFile } from '../utils/utils';
-import { ICacheDependencies, ICachePackage, ICachePackageResponse, ICacheTreeContents } from './Interfaces';
-
-function generateValidKey(key) {
-  return encodeURIComponent(key) + '.cache';
+import { IBundleContext } from '../ModuleResolver/BundleContext';
+import { IModule, IModuleMeta, createModule } from '../ModuleResolver/Module';
+import { ensureDir, writeFile } from '../utils/utils';
+export interface ICachePublicProps {
+  enabled: boolean;
+  FTL?: boolean;
+  root?: string;
+}
+export interface ICache {
+  write: () => void;
+  restore: (absPath: string) => { module: IModule; mrc: IModuleResolutionContext };
 }
 
-export interface IFileCacheProps {
-  ctx: Context;
+export interface IModuleResolutionContext {
+  processed: Record<number, number>;
+  modulesRequireResolution: Array<{ id: number; absPath: string }>;
+  modulesCached: Array<IModule>;
+}
+export interface ICacheMeta {
+  currentId: number;
+  modules: Record<number, IModuleMeta>;
 }
 
-export interface IModuleCacheBasics {
-  contents: string;
-  sourceMap: string;
-  weakReferences?: Array<string>;
-  breakDependantsCache?: boolean;
-  dependants?: Array<string>;
+function getMTime(absPath) {
+  return statSync(absPath).mtime.toString();
 }
 
-export interface IModuleCache {
-  meta: { [key: string]: any };
-  mtime: number;
-  absPath: string;
-  extension: string;
-  breakDependantsCache?: boolean;
-  dependants?: Array<string>;
-  weakReferences?: { [key: string]: number };
-  fuseBoxPath: string;
-  analysis: IAnalysis;
-  contents: string;
-  sourceMap: string;
-}
+export function createCache(ctx: Context, bundleContext: IBundleContext): ICache {
+  let cacheRoot = ctx.config.cache.root;
 
-const TREE_FILE_KEY = 'tree.json';
+  const metaFile = path.join(cacheRoot, 'meta.json');
+  const modulesFolder = path.join(cacheRoot, 'files');
+  ensureDir(modulesFolder);
 
-export class Cache {
-  public rootFolder: string;
-
-  private unsynced = new Map<string, any>();
-  private synced = new Map<string, any>();
-  public ctx: Context;
-
-  private packageCacheFolder: string;
-  private projectCacheFolder: string;
-  constructor(props: IFileCacheProps) {
-    const config = props.ctx.config;
-    this.ctx = props.ctx;
-
-    this.rootFolder = path.join(
-      config.cache.root,
-      env.VERSION,
-      env.isTest ? '' : fastHash(config.homeDir + config.entries.join('')),
-    );
-
-    this.packageCacheFolder = path.join(this.rootFolder, env.CACHE.PACKAGES);
-    this.projectCacheFolder = path.join(this.rootFolder, env.CACHE.PROJET_FILES);
+  let meta: ICacheMeta;
+  if (existsSync(metaFile)) {
+    meta = require(metaFile);
+    bundleContext.currentId = meta.currentId;
+  } else {
+    meta = {
+      currentId: bundleContext.currentId,
+      modules: [],
+    };
   }
 
-  public init() {
-    ensureDir(this.packageCacheFolder);
-    ensureDir(this.projectCacheFolder);
+  function flushRecord(absPath: string, id: number, mrc: IModuleResolutionContext) {
+    if (meta.modules[id]) delete meta.modules[id];
+    mrc.modulesRequireResolution.push({ id, absPath });
   }
 
-  public nukeAll() {
-    this.clearMemory();
-    this.clearTree();
-    removeFolder(this.rootFolder);
+  function verifyRecord(id: number, mrc: IModuleResolutionContext): IModule {
+    // avoid circular dependency issues
+    if (mrc.processed[id] === 1) return;
+    mrc.processed[id] = 1;
+
+    const record = meta.modules[id];
+    let target: IModule;
+    if (getMTime(record.absPath) === record.mtime) {
+      const cacheFile = path.join(modulesFolder, record.id + '.json');
+      if (existsSync(cacheFile)) {
+        const moduleCacheData = require(cacheFile);
+        const module = (target = createModule({ absPath: record.absPath, ctx: ctx }));
+        module.initFromCache(record, moduleCacheData);
+        mrc.modulesCached.push(module);
+        if (record.dependencies) {
+          for (const rid of record.dependencies) {
+            verifyRecord(rid, mrc);
+          }
+        }
+      } else flushRecord(record.absPath, id, mrc);
+    } else flushRecord(record.absPath, id, mrc);
+    return target;
   }
 
-  public nukeProjectCache() {
-    this.clearMemory();
-    this.clearTree();
-    removeFolder(this.projectCacheFolder);
-  }
+  function verityAbsPath(absPath: string, mrc: IModuleResolutionContext): IModule {
+    let recordId;
+    for (const id in meta.modules) {
+      const record = meta.modules[id];
 
-  public nukePackageCache() {
-    this.clearMemory();
-    this.clearTree();
-    removeFolder(this.packageCacheFolder);
-  }
-
-  public set(key: string, value: any) {
-    key = generateValidKey(key);
-    this.synced.delete(key);
-    this.unsynced.set(key, value);
-  }
-
-  public unset(key: string) {
-    key = generateValidKey(key);
-    this.synced.delete(key);
-    this.unsynced.delete(key);
-  }
-
-  public forceSyncOnKey(key: string) {
-    key = generateValidKey(key);
-    if (this.synced.get(key)) {
-      this.unsynced.set(key, this.synced.get(key));
-      this.synced.delete(key);
+      if (record && record.absPath === absPath) {
+        recordId = id;
+        break;
+      }
     }
+    if (recordId) return verifyRecord(recordId, mrc);
   }
-  /**
-   * get dependency tree (here we store all information about cached packages)
-   *
-   * @returns
-   * @memberof FileAdapter
-   */
-  public getTree() {
-    let tree: ICacheTreeContents = this.get<ICacheTreeContents>(TREE_FILE_KEY);
-    if (!tree) {
-      tree = {
-        packages: {},
+  //console.log(meta.modules);
+
+  return {
+    restore: (absPath: string) => {
+      const mrc: IModuleResolutionContext = {
+        processed: {},
+        modulesRequireResolution: [],
+        modulesCached: [],
       };
-      this.set(TREE_FILE_KEY, tree);
-    }
-    return tree;
-  }
 
-  public get<T>(key: string, folder?: string): T {
-    key = generateValidKey(key);
-
-    if (this.synced.has(key)) {
-      return this.synced.get(key);
-    }
-
-    if (this.unsynced.has(key)) {
-      return this.unsynced.get(key);
-    }
-    let targetFile;
-    if (folder) {
-      targetFile = path.join(folder, key);
-    } else {
-      targetFile = path.join(this.rootFolder, key);
-    }
-
-    if (fileExists(targetFile)) {
-      const contents = readFile(targetFile);
-      this.synced.set(key, JSON.parse(contents));
-      return this.synced.get(key);
-    }
-  }
-
-  public clearMemory() {
-    this.unsynced = new Map();
-    this.synced = new Map();
-  }
-
-  public async sync() {
-    const writers: Array<Promise<any>> = [];
-
-    this.unsynced.forEach((value, key) => {
-      if (/^pkg_/.test(key)) {
-        writers.push(writeFile(path.join(this.packageCacheFolder, key), JSON.stringify(value)));
-      } else if (/^prj_/.test(key)) {
-        writers.push(writeFile(path.join(this.projectCacheFolder, key), JSON.stringify(value)));
-      } else {
-        writers.push(writeFile(path.join(this.rootFolder, key), JSON.stringify(value)));
-      }
-      // it's synced now
-      this.synced.set(key, value);
-    });
-
-    await Promise.all(writers);
-    // reset unsynced
-    this.unsynced = new Map();
-  }
-
-  public clearTree() {
-    const tree = this.getTree();
-    tree.packages = {};
-  }
-
-  private getPackageKey(pkg: Package) {
-    return `pkg_${pkg.props.meta.name}-${pkg.props.meta.version}`;
-  }
-
-  public getPackage(pkg: Package, userModules?: Array<Module>): ICachePackageResponse {
-    const tree = this.getTree();
-
-    const meta = pkg.props.meta;
-    const response: ICachePackageResponse = {};
-    if (!tree.packages[meta.name]) {
-      response.abort = true;
-
-      // we don't want to retreive anything from cache if even one package is missing
-      this.clearTree();
-      return response;
-    }
-
-    const dest = tree.packages[meta.name][meta.version];
-
-    if (!dest) {
-      // same here, drop everything
-      this.clearTree();
-
-      response.abort = true;
-      return response;
-    }
-
-    // checking here if user entries e.g libary/foo.js, library/boo.js
-    // all present in the cache.
-    // If a new partial require was spotted and/or used a different entry
-
-    let moduleMismatch = false;
-
-    let modules = [...pkg.modules];
-    if (userModules) {
-      modules = modules.concat(userModules);
-    }
-    modules.forEach(item => {
-      if (!dest.modules.includes(item.props.fuseBoxPath)) {
-        moduleMismatch = true;
-      }
-    });
-
-    // retrieve cache for this package
-    if (moduleMismatch) {
-      return { abort: true };
-    }
-
-    // if the package isn't aborted (the cache is valid)
-    // we should collect all the dependencies with its cache
-    const packageCollection = {};
-
-    const collectAllSubDependencies = (list: ICacheDependencies) => {
-      list.map(item => {
-        if (!tree.packages[item.name] || !tree.packages[item.name][item.version]) {
-          response.abort = true;
-
-          this.clearTree();
-          return;
-        }
-        // check if it wasn't added before
-        // to avoid an infinite loop
-        if (!response.abort) {
-          const key = `${item.name}-${item.version}`;
-          const info = tree.packages[item.name][item.version];
-          if (!packageCollection[key]) {
-            const targetPackage = createPackage({
-              ctx: this.ctx,
-              meta: info.meta,
-            });
-            const cacheKey = this.getPackageKey(targetPackage);
-            const cache = this.get<IModuleCacheBasics>(cacheKey, this.packageCacheFolder);
-            // if one of the cached version is missing - abort
-            // cache should be reset
-            if (!cache) {
-              response.abort = true;
-              this.clearTree();
-              return;
-            }
-            targetPackage.setCache(cache);
-            packageCollection[key] = targetPackage;
-
-            const targetPackagInfo = tree.packages[item.name][item.version];
-            if (targetPackagInfo.dependencies) {
-              collectAllSubDependencies(targetPackagInfo.dependencies);
-            }
-          }
-        }
-      });
-    };
-    collectAllSubDependencies(dest.dependencies);
-    if (response.abort) {
-      return response;
-    }
-
-    const cache = this.get<IModuleCacheBasics>(this.getPackageKey(pkg), this.packageCacheFolder);
-
-    if (!cache) {
-      return { abort: true };
-    }
-    pkg.setCache(cache);
-
-    const dependants: Array<Package> = [];
-    for (const key in packageCollection) {
-      dependants.push(packageCollection[key]);
-    }
-
-    return {
-      target: {
-        moduleMismatch,
-        pkg,
-      },
-      dependants: dependants,
-    };
-  }
-
-  public getModuleCacheKey(module: Module) {
-    return `prj_${fastHash(module.props.fuseBoxPath)}`;
-  }
-
-  public saveModule(module: Module, basics: IModuleCacheBasics) {
-    const stat = fileStat(module.props.absPath);
-    const mtime = stat.mtime.getTime();
-    const obj: any = {
-      mtime,
-      analysis: module.analysis,
-      contents: basics.contents,
-      sourceMap: basics.sourceMap,
-      absPath: module.props.absPath,
-      extension: module.props.extension,
-      fuseBoxPath: module.props.fuseBoxPath,
-    };
-    if (module.weakReferences) {
-      obj.weakReferences = {};
-      for (const absPath of module.weakReferences) {
-        const refStat = fileStat(absPath);
-        obj.weakReferences[absPath] = refStat.mtime.getTime();
-      }
-    }
-    if (module.meta) {
-      obj.meta = module.meta;
-    }
-    // if (module.breakDependantsCache) {
-    //   obj.breakDependantsCache = true;
-    //   obj.dependants = module.moduleDependants.map(item => item.props.absPath);
-    // }
-
-    this.set(this.getModuleCacheKey(module), obj);
-  }
-
-  public getModuleCacheData(module: Module) {
-    return this.get<IModuleCache>(this.getModuleCacheKey(module), this.projectCacheFolder);
-  }
-
-  public restoreModule(module: Module): Module {
-    const fpath = module.props.absPath;
-    const cached = this.get<IModuleCache>(this.getModuleCacheKey(module), this.projectCacheFolder);
-
-    if (cached) {
-      const stat = fileStat(fpath);
-
-      if (stat.mtime.getTime() !== cached.mtime) {
-        this.unset(fpath);
-        return;
-      }
-
-      module.props.extension = cached.extension;
-      module.props.fuseBoxPath = cached.fuseBoxPath;
-      module.analysis = cached.analysis;
-      module.meta = cached.meta;
-      //module.weakReferences = cached.weakReferences;
-
-      if (cached.weakReferences) {
-        // check if weakReferences did't change (usually it's the internal imports in CSS modules)
-        for (const absPath in cached.weakReferences) {
-          const refStat = fileStat(absPath);
-          if (refStat.mtime.getTime() !== cached.weakReferences[absPath]) {
-            return;
-          }
-
-          module.props.ctx.weakReferences.add(absPath, module.props.absPath);
+      return { module: verityAbsPath(absPath, mrc), mrc };
+    },
+    write: async () => {
+      const cacheWriters = [];
+      for (const absPath in bundleContext.modules) {
+        const module = bundleContext.modules[absPath];
+        if (!module.isCached) {
+          meta.modules[module.id] = module.getMeta();
+          const cacheFile = path.join(modulesFolder, `${module.id}.json`);
+          const contents = JSON.stringify({ contents: module.contents, sourceMap: module.sourceMap });
+          cacheWriters.push(writeFile(cacheFile, contents));
         }
       }
-      module.setCache({
-        //breakDependantsCache: cached.breakDependantsCache,
-        //dependants: cached.dependants,
-        contents: cached.contents,
-        sourceMap: cached.sourceMap,
-      });
-      return module;
-    }
-  }
-
-  public savePackage(pkg: Package, basics: IModuleCacheBasics) {
-    const tree = this.getTree();
-    const meta = pkg.props.meta;
-    if (!tree.packages[meta.name]) {
-      tree.packages[meta.name] = {};
-    }
-    const deps = pkg.externalPackages.map(externalPackage => ({
-      name: externalPackage.props.meta.name,
-      version: externalPackage.props.meta.version,
-    }));
-    const modules = pkg.modules.map(mod => mod.props.fuseBoxPath);
-
-    const obj: ICachePackage = {
-      name: meta.name,
-      version: meta.version,
-      dependencies: deps,
-      meta: meta,
-      modules: modules,
-    };
-    tree.packages[pkg.props.meta.name][meta.version] = obj;
-
-    const cache_key = this.getPackageKey(pkg);
-    this.set(cache_key, basics);
-
-    this.forceSyncOnKey(TREE_FILE_KEY);
-  }
-}
-
-export function createCache(props: IFileCacheProps) {
-  return new Cache(props);
+      await Promise.all(cacheWriters);
+      await writeFile(metaFile, JSON.stringify(meta, null, 2));
+    },
+  };
 }

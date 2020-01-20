@@ -1,12 +1,12 @@
+import { BundleRouter } from '../bundle_new/BundleRouter';
 import { Context } from '../core/Context';
-import { assemble } from '../main/assemble';
 import { prerequisites } from '../main/prerequisite';
-import { processPlugins } from '../main/process_plugins';
+import { ModuleResolver } from '../ModuleResolver/ModuleResolver';
 import { pluginAssumption } from '../plugins/core/plugin_assumption';
 import { pluginCSS } from '../plugins/core/plugin_css';
 import { pluginSass } from '../plugins/core/plugin_sass';
-import { ProductionContext, IProductionContext } from './ProductionContext';
 import { Engine } from './engine';
+import { IProductionContext, ProductionContext } from './ProductionContext';
 
 async function productionContextFlow(ctx: Context): Promise<IProductionContext> {
   prerequisites(ctx);
@@ -16,16 +16,22 @@ async function productionContextFlow(ctx: Context): Promise<IProductionContext> 
 
   plugins.forEach(plugin => plugin && plugin(ctx));
 
-  const packages = assemble(ctx, ctx.config.entries[0]);
+  const ict = ctx.ict;
 
-  if (packages) {
-    await processPlugins({
-      ctx: ctx,
-      packages: packages,
-    });
+  const { modules, entries, bundleContext } = ModuleResolver(ctx, ctx.config.entries[0]);
+  if (modules) {
+    const router = BundleRouter({ ctx, entries });
+    router.dispatchModules(modules);
+
+    await ict.resolve();
+    //const bundles = await router.writeBundles();
+    //    await attachWebIndex(ctx, bundles);
+
+    //ict.sync('complete', { ctx, bundles });
+    // attachWatcher({ ctx });
   }
 
-  return ProductionContext(ctx, packages);
+  return ProductionContext(ctx, modules);
 }
 export async function bundleProd(ctx: Context) {
   const context = await productionContextFlow(ctx);

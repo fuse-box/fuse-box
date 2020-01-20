@@ -12,7 +12,7 @@ class Context {
       },
 
       stylesheet: { paths: [path.join(__dirname, 'src/config')] },
-      cache: { root: './.cache', enabled: false },
+      cache: { root: './.cache', enabled: true },
       watch: true,
       hmr: true,
       logging: {

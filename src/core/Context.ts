@@ -1,5 +1,5 @@
 import { CustomTransformers } from 'typescript';
-import { Cache, createCache } from '../cache/cache';
+
 import { ITransformer } from '../compiler/interfaces/ITransformer';
 import { createConfig } from '../config/config';
 import { IProductionProps } from '../config/IProductionProps';
@@ -84,11 +84,6 @@ export class Context {
       this.fatal('Cannot initialise tsconfig', [e.message]);
     }
     this.devServer = createDevServer(this);
-
-    if (this.config.cache && this.config.cache.enabled) {
-      if (this.config.cacheObject) this.cache = this.config.cacheObject;
-      else this.cache = createCache({ ctx: this });
-    }
 
     this.config.setupEnv();
   }

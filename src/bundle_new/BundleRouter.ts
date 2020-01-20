@@ -34,7 +34,10 @@ export function BundleRouter(props: IBundleRouteProps): IBundleRouter {
 
   function dispatch(module: IModule) {
     const bundle = getBundle(module);
-    ict.sync('bundle_resolve_module', { module: module });
+
+    if (!module.isCached) {
+      ict.sync('bundle_resolve_module', { module: module });
+    }
     bundle.source.modules.push(module);
   }
 
