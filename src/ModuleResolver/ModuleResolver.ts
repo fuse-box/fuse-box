@@ -17,7 +17,7 @@ export function resolve(props: {
   const config = props.ctx.config;
 
   const { bundleContext, parent, ctx } = props;
-  let typescriptPaths = parent.pkg.type == PackageType.USER_PACKAGE && props.ctx.tsConfig.typescriptPaths;
+  let typescriptPaths = parent.pkg && parent.pkg.type == PackageType.USER_PACKAGE && props.ctx.tsConfig.typescriptPaths;
   const resolved = resolveModule({
     isDev: !props.ctx.config.production,
     filePath: props.parent.absPath,
@@ -25,7 +25,7 @@ export function resolve(props: {
     alias: config.alias,
     javascriptFirst: props.parent.isJavaScript,
     typescriptPaths: typescriptPaths,
-    packageMeta: parent.pkg.meta,
+    packageMeta: parent.pkg && parent.pkg.meta,
     buildTarget: config.target,
     modules: config.modules,
     importType: props.importType,
@@ -36,6 +36,7 @@ export function resolve(props: {
     return;
   }
   let absPath;
+  let module: IModule;
   if (resolved.package) {
     absPath = resolved.package.targetAbsPath;
     let pkg = bundleContext.getPackage(resolved.package.meta);
@@ -44,22 +45,24 @@ export function resolve(props: {
       pkg = createPackage({ type: PackageType.EXTERNAL_PACKAGE, meta: resolved.package.meta });
       bundleContext.setPackage(pkg);
     }
-
-    return initModule({ absPath, bundleContext, ctx, pkg });
+    module = initModule({ absPath, bundleContext, ctx, pkg });
   } else {
-    return initModule({ absPath: resolved.absPath, bundleContext, ctx, pkg: parent.pkg });
+    module = initModule({ absPath: resolved.absPath, bundleContext, ctx, pkg: parent.pkg });
   }
+  if (module) props.parent.dependencies.push(module);
+
+  return module;
 }
 
 function initModule(props: { ctx: Context; absPath: string; pkg?: IPackage; bundleContext: IBundleContext }) {
   const { ctx, pkg, absPath, bundleContext } = props;
   let module = bundleContext.getModule(absPath);
-  if (module) {
-    return module;
-  } else {
+
+  function init(pkg, absPath, reUseId?: number) {
     const module = createModule({ pkg, ctx, absPath });
+    module.init();
     // generate next id
-    module.id = bundleContext.nextId();
+    module.id = reUseId ? reUseId : bundleContext.nextId();
     // storing for further references (and avoid recursion)
     bundleContext.setModule(module);
     // reading and parsing the contents
@@ -79,20 +82,37 @@ function initModule(props: { ctx: Context; absPath: string; pkg?: IPackage; bund
           parent: module,
           statement: source,
         });
-
         // re-writing the reference
         item.statement.callee.name = BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION;
         item.statement.arguments[0].value = resolvedModule.id;
       }
-      module.generate();
+      if (!ctx.config.production) module.generate();
     }
-
     return module;
   }
+  if (module) return module;
+
+  if (bundleContext.cache) {
+    const cached = bundleContext.tryCache(absPath);
+    if (cached) {
+      const module = cached.module;
+      const mrc = cached.mrc;
+      // letting the bundle context know of the dependencies
+      for (const cached of mrc.modulesCached) bundleContext.setModule(cached);
+      for (const item of mrc.modulesRequireResolution) {
+        init(undefined, item.absPath, item.id);
+      }
+
+      if (module) return module;
+    }
+    return init(pkg, absPath);
+  }
+  return init(pkg, absPath);
 }
 
 export interface IModuleResolver {
   modules: Array<IModule>;
+  bundleContext: IBundleContext;
   entries: Array<IModule>;
 }
 
@@ -104,5 +124,5 @@ export function ModuleResolver(ctx: Context, entryFile: string): IModuleResolver
 
   const entry = initModule({ ctx, absPath, pkg: userPackage, bundleContext });
 
-  return { modules: Object.values(bundleContext.modules), entries: [entry] };
+  return { bundleContext, modules: Object.values(bundleContext.modules), entries: [entry] };
 }

@@ -9,9 +9,12 @@ import { ITransformerResult } from '../compiler/interfaces/ITranformerResult';
 import { generate } from '../compiler/generator/generator';
 import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { STYLESHEET_EXTENSIONS, EXECUTABLE_EXTENSIONS, JS_EXTENSIONS, TS_EXTENSIONS } from '../config/extensions';
+import { statSync } from 'fs';
 export function Module() {}
 
 export interface IModule {
+  init?: () => void;
+  initFromCache?: (meta: IModuleMeta, data: { contents: string; sourceMap: string }) => void;
   id?: number;
   ctx?: Context;
   pkg?: IPackage;
@@ -24,11 +27,13 @@ export interface IModule {
   parse?: () => ASTNode;
   css?: IStylesheetModuleResponse;
   captured?: boolean;
+  isCached?: boolean;
   generate?: () => void;
   transpile?: () => ITransformerResult;
   isJavaScript?: boolean;
   isTypeScript?: boolean;
   isCSSSourceMapRequired?: boolean;
+  dependencies?: Array<IModule>;
   isCSSModule?: boolean;
   isCSSText?: boolean;
   isStylesheet?: boolean;
@@ -40,44 +45,55 @@ export interface IModule {
   props?: {
     fuseBoxPath?: string;
   };
+  getMeta?: () => any;
+}
+
+export interface IModuleMeta {
+  absPath: string;
+  id: number;
+  publicPath: string;
+  dependencies: Array<number>;
+  mtime: string;
 }
 
 export function createModule(props: { pkg?: IPackage; absPath?: string; ctx?: Context }): IModule {
-  const ext = path.extname(props.absPath);
-  const isJavaScript = JS_EXTENSIONS.includes(ext);
-  const isTypeScript = TS_EXTENSIONS.includes(ext);
-
-  let isCSSSourceMapRequired = true;
-  const config = props.ctx.config;
-  if (config.sourceMap.css === false) {
-    isCSSSourceMapRequired = false;
-  }
-  if (props.pkg.type === PackageType.USER_PACKAGE && !config.sourceMap.vendor) {
-    isCSSSourceMapRequired = false;
-  }
-
-  const isStylesheet = STYLESHEET_EXTENSIONS.includes(ext);
-  const isExecutable = EXECUTABLE_EXTENSIONS.includes(ext);
-  const fuseBoxPath = makeFuseBoxPath(props.ctx.config.homeDir, props.absPath);
-  const publicPath = props.pkg.publicName + '/' + fuseBoxPath;
-
   const scope: IModule = {
     // legacy props
-    props: {
-      fuseBoxPath,
-    },
-    storage: {},
-    publicPath,
-    isExecutable,
-    isStylesheet,
-    isCSSSourceMapRequired,
-    isJavaScript,
-    isTypeScript,
+    init: () => {
+      const ext = path.extname(props.absPath);
+      scope.extension = path.extname(props.absPath);
+      scope.isJavaScript = JS_EXTENSIONS.includes(ext);
+      scope.isTypeScript = TS_EXTENSIONS.includes(ext);
+      scope.absPath = props.absPath;
+      let isCSSSourceMapRequired = true;
+      const config = props.ctx.config;
+      if (config.sourceMap.css === false) {
+        isCSSSourceMapRequired = false;
+      }
+      if (props.pkg && props.pkg.type === PackageType.USER_PACKAGE && !config.sourceMap.vendor) {
+        isCSSSourceMapRequired = false;
+      }
 
+      scope.isStylesheet = STYLESHEET_EXTENSIONS.includes(ext);
+      scope.isExecutable = EXECUTABLE_EXTENSIONS.includes(ext);
+      scope.isCSSSourceMapRequired = isCSSSourceMapRequired;
+      scope.props.fuseBoxPath = makeFuseBoxPath(props.ctx.config.homeDir, props.absPath);
+      scope.publicPath = props.pkg && props.pkg.publicName + '/' + scope.props.fuseBoxPath;
+    },
+    initFromCache: (meta: IModuleMeta, data: { contents: string; sourceMap: string }) => {
+      scope.id = meta.id;
+      scope.publicPath = meta.publicPath;
+      scope.contents = data.contents;
+      scope.sourceMap = data.sourceMap;
+      scope.absPath = meta.absPath;
+      scope.isCached = true;
+      scope.extension = path.extname(meta.absPath);
+    },
+    props: {},
+    storage: {},
+    dependencies: [],
     ctx: props.ctx,
-    absPath: props.absPath,
     pkg: props.pkg,
-    extension: path.extname(props.absPath),
     // read the contents
     read: () => {
       scope.contents = readFile(scope.absPath);
@@ -101,6 +117,19 @@ export function createModule(props: { pkg?: IPackage; absPath?: string; ctx?: Co
       const code = generate(scope.ast, { ecmaVersion: 7 });
       scope.contents = code;
       return code;
+    },
+    getMeta: (): IModuleMeta => {
+      const dependencies = [];
+      for (const module of scope.dependencies) {
+        dependencies.push(module.id);
+      }
+      return {
+        absPath: scope.absPath,
+        id: scope.id,
+        publicPath: scope.publicPath,
+        dependencies: dependencies,
+        mtime: statSync(scope.absPath).mtime.toString(),
+      };
     },
   };
   return scope;

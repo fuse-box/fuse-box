@@ -5,7 +5,7 @@ import { ModuleResolver } from '../ModuleResolver/ModuleResolver';
 import { pluginAssumption } from '../plugins/core/plugin_assumption';
 import { pluginCSS } from '../plugins/core/plugin_css';
 import { pluginSass } from '../plugins/core/plugin_sass';
-import { attachCache } from './attach_cache';
+
 import { attachWebIndex } from './attach_webIndex';
 import { prerequisites } from './prerequisite';
 export async function bundleDev(ctx: Context) {
@@ -18,11 +18,9 @@ export async function bundleDev(ctx: Context) {
 
   plugins.forEach(plugin => plugin && plugin(ctx));
 
-  attachCache(ctx);
-
   attachHMR(ctx);
 
-  const { modules, entries } = ModuleResolver(ctx, ctx.config.entries[0]);
+  const { modules, entries, bundleContext } = ModuleResolver(ctx, ctx.config.entries[0]);
   if (modules) {
     const router = BundleRouter({ ctx, entries });
     router.dispatchModules(modules);
@@ -30,6 +28,8 @@ export async function bundleDev(ctx: Context) {
     await ict.resolve();
     const bundles = await router.writeBundles();
     await attachWebIndex(ctx, bundles);
+
+    if (bundleContext.cache) bundleContext.cache.write();
 
     ict.sync('complete', { ctx, bundles });
     // attachWatcher({ ctx });

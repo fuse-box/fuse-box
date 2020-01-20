@@ -1,6 +1,6 @@
-import * as React from "react";
-import { Details } from "../details/Details";
-import "./Application.scss";
+import * as React from 'react';
+import { Details } from '../details/Details';
+import './Application.scss';
 
 export function Application() {
   return (
@@ -8,7 +8,7 @@ export function Application() {
       <div className="top">
         <div className="logo" />
       </div>
-      <div className="welcome">FuseBox ❤️ JSX/TSX </div>
+      <div className="welcome">FuseBox ❤️ JSX/TSX oh yeah baby!</div>
 
       <Details />
     </div>
