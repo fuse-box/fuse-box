@@ -1,8 +1,8 @@
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
+import { getDynamicImport } from '../../helpers/importHelpers';
 import { ASTNode } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { ImportType } from '../../interfaces/ImportType';
-import { getDynamicImport } from '../importHelpers';
 
 export function DynamicImportTransformer(): ITransformer {
   return {
