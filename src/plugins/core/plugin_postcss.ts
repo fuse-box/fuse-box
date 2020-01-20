@@ -17,8 +17,8 @@ export function pluginPostCSS(a?: string | RegExp, b?: IPluginCommon) {
         return;
       }
 
-      if (matcher.test(module.props.absPath)) {
-        ctx.log.info('PostCSS', module.props.absPath);
+      if (matcher.test(module.absPath)) {
+        ctx.log.info('PostCSS', module.absPath);
 
         props.module.read();
         props.module.captured = true;

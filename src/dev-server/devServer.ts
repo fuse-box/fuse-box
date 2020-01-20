@@ -120,9 +120,9 @@ export function createDevServer(ctx: Context): IDevServerActions {
         const module = props.module;
         const pkg = module.pkg;
 
-        if (pkg.isDefaultPackage && pkg.entry === module) {
-          module.analysis.imports.push({ type: ImportType.REQUIRE, literal: 'fuse-box-hot-reload' });
-        }
+        // if (pkg.isDefaultPackage && pkg.entry === module) {
+        //   module.analysis.imports.push({ type: ImportType.REQUIRE, literal: 'fuse-box-hot-reload' });
+        // }
         return props;
       });
       ict.on('before_bundle_write', props => {

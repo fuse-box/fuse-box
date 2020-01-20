@@ -1,7 +1,7 @@
 import * as postcss from 'postcss';
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
 import { Context } from '../../core/Context';
-import { Module } from '../../core/Module';
+import { IModule } from '../../ModuleResolver/Module';
 import { cssDevModuleRender } from '../../stylesheet/cssDevModuleRender';
 import { IStyleSheetProcessor } from '../../stylesheet/interfaces';
 import { IPluginCommon } from '../interfaces';
@@ -11,14 +11,14 @@ export interface ICSSContextHandler {
   ctx: Context;
   processor: IStyleSheetProcessor;
   options: IStyleSheetProps;
-  module: Module;
+  module: IModule;
   shared: IPluginCommon;
 }
 export function setEmpty() {}
 
 export interface ICreateCSSModule {
   css?: string;
-  module: Module;
+  module: IModule;
   shared: IPluginCommon;
 }
 async function createCSSModule(props: ICreateCSSModule): Promise<{ json: any; css: string; map: any }> {
@@ -32,9 +32,9 @@ async function createCSSModule(props: ICreateCSSModule): Promise<{ json: any; cs
       }),
     ])
       .process(props.css, {
-        from: props.module.props.absPath,
-        to: props.module.props.absPath,
-        map: props.module.isCSSSourceMapRequired() && { inline: false },
+        from: props.module.absPath,
+        to: props.module.absPath,
+        map: props.module.isCSSSourceMapRequired && { inline: false },
       })
       .then(result => {
         return resolve({ json: targetJSON, css: result.css, map: result.map });
@@ -50,7 +50,7 @@ export function cssContextHandler(props: ICSSContextHandler) {
   }
   if (shared.asModule) {
     if (!ctx.isInstalled('postcss-modules')) {
-      ctx.fatal(`Fatal error when capturing ${props.module.props.absPath}`, [
+      ctx.fatal(`Fatal error when capturing ${props.module.absPath}`, [
         'Module "postcss-modules" is required, Please install it using the following command',
         'npm install postcss-modules --save-dev',
       ]);
@@ -78,7 +78,8 @@ export function cssContextHandler(props: ICSSContextHandler) {
         props.module.isCSSModule = true;
       } else if (shared.asText) {
         props.module.isCSSText = true;
-        props.module.notStylesheet();
+        props.module.isStylesheet = false;
+
         props.module.contents = wrapContents(JSON.stringify(data.css), props.shared.useDefault);
 
         return;
@@ -94,11 +95,11 @@ export function cssContextHandler(props: ICSSContextHandler) {
     } catch (e) {
       // prevent module from being cached
       props.module.errored = true;
-      let errMessage = e.message ? e.message : `Uknown error in file ${props.module.props.absPath}`;
+      let errMessage = e.message ? e.message : `Uknown error in file ${props.module.absPath}`;
       props.module.contents = `console.error(${JSON.stringify(errMessage)})`;
       ctx.log.error('$error in $file', {
         error: e.message,
-        file: props.module.props.absPath,
+        file: props.module.absPath,
       });
     }
   });

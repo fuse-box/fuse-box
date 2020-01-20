@@ -5,6 +5,8 @@ import { ImportType } from '../../resolver/resolver';
 import { cssResolveURL } from '../../stylesheet/cssResolveURL';
 import { parsePluginOptions } from '../pluginUtils';
 import { cssContextHandler } from './shared';
+import { resolve } from '../../ModuleResolver/ModuleResolver';
+import { IModule } from '../../ModuleResolver/Module';
 
 export interface ICSSPluginProps {
   stylesheet?: IStyleSheetProps;
@@ -14,14 +16,27 @@ export function pluginCSS(a?: ICSSPluginProps | string | RegExp, b?: ICSSPluginP
   let [opts, matcher] = parsePluginOptions<ICSSPluginProps>(a, b, {});
   if (!matcher) matcher = /\.(css)$/;
   return (ctx: Context) => {
+    let styleSheetModule: IModule;
     opts.stylesheet = createStylesheetProps({ ctx, stylesheet: opts.stylesheet || {} });
     if (!ctx.config.production && ctx.config.supportsStylesheet()) {
-      ctx.ict.on('assemble_module_init', props => {
-        const { module } = props;
-        if (module.isStylesheet()) {
-          module.analysis = { imports: [] };
-          module.analysis.imports.push({ type: ImportType.REQUIRE, literal: 'fuse-box-css' });
+      ctx.ict.on('module_init', props => {
+        const { module, bundleContext } = props;
+        if (!module.isStylesheet) return;
+        // we need to resolve it only once
+        if (styleSheetModule) {
+          module.storage.styleSheetModule = styleSheetModule;
+          return;
         }
+        // retriving the module
+        styleSheetModule = resolve({
+          bundleContext,
+          ctx,
+          importType: ImportType.REQUIRE,
+          parent: module,
+          statement: 'fuse-box-css',
+        });
+        module.storage.styleSheetModule = styleSheetModule;
+
         return props;
       });
     }
@@ -29,8 +44,8 @@ export function pluginCSS(a?: ICSSPluginProps | string | RegExp, b?: ICSSPluginP
     ctx.ict.on('bundle_resolve_module', props => {
       const { module } = props;
 
-      if (!matcher.test(module.props.absPath) || props.module.captured) return;
-      ctx.log.info('css', module.props.absPath);
+      if (!matcher.test(module.absPath) || props.module.captured) return;
+      ctx.log.info('css', module.absPath);
       module.read();
 
       props.module.captured = true;
@@ -42,7 +57,7 @@ export function pluginCSS(a?: ICSSPluginProps | string | RegExp, b?: ICSSPluginP
         processor: {
           render: async () => {
             const urlResolver = cssResolveURL({
-              filePath: module.props.absPath,
+              filePath: module.absPath,
               ctx: ctx,
               contents: module.contents,
               options: ctx.config.stylesheet,

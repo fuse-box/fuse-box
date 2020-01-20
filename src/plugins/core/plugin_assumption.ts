@@ -12,7 +12,7 @@ export function pluginAssumption() {
   return (ctx: Context) => {
     ctx.ict.on('bundle_resolve_module', props => {
       if (!props.module.captured) {
-        const ext = path.extname(props.module.props.absPath);
+        const ext = path.extname(props.module.absPath);
         if (ext === '.json') {
           // json handler
           pluginJSONHandler(props.module, {});

@@ -1,11 +1,11 @@
 import { join } from 'path';
-import { IBundleWriteResponse, BundleType } from '../bundle/Bundle';
+import { IBundleWriteResponse } from '../bundle_new/Bundle';
 import { Context } from '../core/Context';
 import { env } from '../env';
-import { ensureAbsolutePath, fileExists, readFile, joinFuseBoxPath } from '../utils/utils';
-import { htmlStrings } from './htmlStrings';
 import { FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
 import { resolveCSSResource } from '../stylesheet/cssResolveURL';
+import { ensureAbsolutePath, fileExists, joinFuseBoxPath, readFile } from '../utils/utils';
+import { htmlStrings } from './htmlStrings';
 
 export interface IWebIndexConfig {
   enabled?: boolean;
@@ -81,41 +81,42 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
       if (ctx.cache && ctx.config.cache.FTL && ctx.devServer && !ctx.config.production) {
         ftlEnabled = true;
       }
-      const sorted = bundles.sort((a, b) => a.bundle.props.priority - b.bundle.props.priority);
-      sorted.forEach(item => {
-        if (item.bundle.props.webIndexed) {
-          if (ftlEnabled && item.bundle.props.type == BundleType.PROJECT_ENTRY) {
-            scriptTags.push(htmlStrings.scriptTag('/__ftl'));
-          }
-          if (item.bundle.props.type !== BundleType.CSS) {
-            if (config.embedIndexedBundles && ctx.config.production) {
-              scriptTags.push(htmlStrings.embedScriptTag(item.bundle.contents.content.toString()));
-            } else {
-              scriptTags.push(htmlStrings.scriptTag(joinFuseBoxPath(opts.publicPath, item.stat.relBrowserPath)));
-            }
-          } else {
-            if (config.embedIndexedBundles && ctx.config.production) {
-              cssTags.push(htmlStrings.cssTagScript(item.bundle.contents.content.toString()));
-            } else {
-              cssTags.push(htmlStrings.cssTag(joinFuseBoxPath(opts.publicPath, item.stat.relBrowserPath)));
-            }
-          }
-        }
+      //const sorted = bundles.sort((a, b) => a.bundle.props.priority - b.bundle.props.priority);
+      bundles.forEach(item => {
+        scriptTags.push(htmlStrings.scriptTag(joinFuseBoxPath(opts.publicPath, item.relativePath)));
+        // if (item.bundle.props.webIndexed) {
+        //   if (ftlEnabled && item.bundle.props.type == BundleType.PROJECT_ENTRY) {
+        //     scriptTags.push(htmlStrings.scriptTag('/__ftl'));
+        //   }
+        //   if (item.bundle.props.type !== BundleType.CSS) {
+        //     if (config.embedIndexedBundles && ctx.config.production) {
+        //       scriptTags.push(htmlStrings.embedScriptTag(item.bundle.contents.content.toString()));
+        //     } else {
+        //       scriptTags.push(htmlStrings.scriptTag(joinFuseBoxPath(opts.publicPath, item.stat.relBrowserPath)));
+        //     }
+        //   } else {
+        //     if (config.embedIndexedBundles && ctx.config.production) {
+        //       cssTags.push(htmlStrings.cssTagScript(item.bundle.contents.content.toString()));
+        //     } else {
+        //       cssTags.push(htmlStrings.cssTag(joinFuseBoxPath(opts.publicPath, item.stat.relBrowserPath)));
+        //     }
+        //   }
+        // }
       });
 
       let fileContents = opts.templateContent;
 
-      const pluginResponse = await ctx.ict.send('before_webindex_write', {
-        filePath: opts.templatePath,
-        fileContents,
-        bundles,
-        scriptTags,
-        cssTags,
-      });
+      // const pluginResponse = await ctx.ict.send('before_webindex_write', {
+      //   filePath: opts.templatePath,
+      //   fileContents,
+      //   bundles,
+      //   scriptTags,
+      //   cssTags,
+      // });
 
-      if (pluginResponse && pluginResponse.fileContents) {
-        fileContents = pluginResponse.fileContents;
-      }
+      // if (pluginResponse && pluginResponse.fileContents) {
+      //   fileContents = pluginResponse.fileContents;
+      // }
 
       fileContents = fileContents.replace(/\$import\('(.+?)'\)/g, (_, relPath: string) => {
         const result = resolveCSSResource(relPath, {
