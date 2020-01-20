@@ -22,9 +22,15 @@ const fuse = fusebox({
     publicPath: '.',
     template: 'src/index.html',
   },
+  devServer: true,
 
   homeDir: __dirname,
   entry: 'src/index.ts',
 });
 
-fuse.runDev();
+fuse.runDev({
+  bundles: {
+    root: path.join(__dirname, 'dist'),
+    app: 'app.js',
+  },
+});

@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { fastHash, path2RegexPattern, ensureDir, ensureFuseBoxPath, writeFile } from '../utils/utils';
+import { IBundleType, IBundle } from '../bundle_new/Bundle';
 /**
   outputParser is an indepenent enttity that accepts a user string
   e.g "./dist" or "./dist/app.js" or "./dist/app.$hash.js"
@@ -38,12 +39,16 @@ export interface IDistWriterInitProps {
   forceDisableHash?: boolean;
 }
 
+export interface IDistWriteResponse {
+  absPath: string;
+  relativePath: string;
+}
 export function distWriter(props: IOuputParserProps) {
   const root = props.root;
 
   const self = {
     // the actual write function
-    write: async (path: string, contents: string | Buffer) => writeFile(name, contents),
+    write: async (path: string, contents: string | Buffer) => writeFile(path, contents),
     // create writer to get the information before the bundle is  written
     createWriter: (options: IDistWriterInitProps) => {
       let userString = options.userString;
@@ -62,7 +67,8 @@ export function distWriter(props: IOuputParserProps) {
         relativePath,
         write: async () => {
           ensureDir(targetFolder);
-          self.write(absPath, options.contents);
+          await self.write(absPath, options.contents);
+          return { absPath, relativePath };
         },
       };
     },

@@ -3,18 +3,18 @@ import * as postcss from 'postcss';
 import * as atImport from 'postcss-import';
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
 import { Context } from '../../core/Context';
-import { Module } from '../../core/Module';
+import { FuseBoxLogAdapter } from '../../fuse-log/FuseBoxLogAdapter';
+import { IModule } from '../../ModuleResolver/Module';
 import { readFile } from '../../utils/utils';
 import { cssHandleResources } from '../cssHandleResources';
 import { cssResolveModule } from '../cssResolveModule';
 import { alignCSSSourceMap } from '../cssSourceMap';
 import { IStylesheetModuleResponse, IStyleSheetProcessor } from '../interfaces';
-import { FuseBoxLogAdapter } from '../../fuse-log/FuseBoxLogAdapter';
 
 interface IRenderModuleProps {
   options?: IStyleSheetProps;
   ctx: Context;
-  module: Module;
+  module: IModule;
 }
 
 async function callPostCSS(
@@ -63,16 +63,16 @@ export async function renderModule(props: IRenderModuleProps): Promise<IStyleshe
       if (props.options.breakDependantsCache) {
         props.module.breakDependantsCache = true;
       }
-      props.module.addWeakReference(resolved.path);
+      //props.module.addWeakReference(resolved.path);
       return resolved.path;
     }
   }
 
-  const requireSourceMap = props.module.isCSSSourceMapRequired();
+  const requireSourceMap = props.module.isCSSSourceMapRequired;
 
   // handle root resources
   const processed = cssHandleResources(
-    { path: props.module.props.absPath, contents: props.module.contents },
+    { path: props.module.absPath, contents: props.module.contents },
     { options: props.options, ctx: props.ctx, module: props.module },
   );
   let pluginList: Array<any> = [atImport({ load: loader, resolve: resolver })];
@@ -86,8 +86,8 @@ export async function renderModule(props: IRenderModuleProps): Promise<IStyleshe
     pluginList,
     processed.contents,
     {
-      from: props.module.props.absPath,
-      to: props.module.props.absPath,
+      from: props.module.absPath,
+      to: props.module.absPath,
       map: requireSourceMap && { inline: false },
     },
     props.ctx.log,
@@ -102,7 +102,7 @@ export async function renderModule(props: IRenderModuleProps): Promise<IStyleshe
 }
 export interface IPostCSSHandlerProps {
   ctx: Context;
-  module: Module;
+  module: IModule;
   options: IStyleSheetProps;
 }
 

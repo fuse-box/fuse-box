@@ -1,12 +1,13 @@
+import { BUNDLE_RUNTIME_NAMES } from '../BundleRuntime/bundleRuntimeCore';
+import { ImportType } from '../compiler/interfaces/ImportType';
 import { Context } from '../core/Context';
-import { createPackage, PackageType, Package, IPackage } from './Package';
-import { createModule, IModule } from './Module';
+import { resolveModule } from '../resolver/resolver';
 import { ensureAbsolutePath } from '../utils/utils';
 import { createBundleContext, IBundleContext } from './BundleContext';
-import { resolveModule } from '../resolver/resolver';
-import { ImportType } from '../compiler/interfaces/ImportType';
+import { createModule, IModule } from './Module';
+import { createPackage, IPackage, PackageType } from './Package';
 
-function resolve(props: {
+export function resolve(props: {
   ctx: Context;
   parent: IModule;
   importType: ImportType;
@@ -63,42 +64,45 @@ function initModule(props: { ctx: Context; absPath: string; pkg?: IPackage; bund
     bundleContext.setModule(module);
     // reading and parsing the contents
     module.read();
-    module.parse();
-    const transformerResult = module.transpile();
-    for (const item of transformerResult.requireStatementCollection) {
-      const source = item.statement.arguments[0].value;
-      const resolvedModule = resolve({
-        bundleContext: props.bundleContext,
-        ctx: props.ctx,
-        importType: item.importType,
-        parent: module,
-        statement: source,
-      });
-      // re-writing the reference
-      item.statement.arguments[0].value = resolvedModule.id;
+
+    ctx.ict.sync('module_init', { module, bundleContext });
+
+    if (module.isExecutable) {
+      module.parse();
+      const transformerResult = module.transpile();
+      for (const item of transformerResult.requireStatementCollection) {
+        const source = item.statement.arguments[0].value;
+        const resolvedModule = resolve({
+          bundleContext: props.bundleContext,
+          ctx: props.ctx,
+          importType: item.importType,
+          parent: module,
+          statement: source,
+        });
+
+        // re-writing the reference
+        item.statement.callee.name = BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION;
+        item.statement.arguments[0].value = resolvedModule.id;
+      }
+      module.generate();
     }
 
     return module;
   }
 }
 
-export function ModuleResolver(ctx: Context, entryFile: string) {
+export interface IModuleResolver {
+  modules: Array<IModule>;
+  entries: Array<IModule>;
+}
+
+export function ModuleResolver(ctx: Context, entryFile: string): IModuleResolver {
   const bundleContext = createBundleContext(ctx);
 
   const userPackage = createPackage({ type: PackageType.USER_PACKAGE });
   const absPath = ensureAbsolutePath(entryFile, ctx.config.homeDir);
 
-  //console.log(module);
-  initModule({ ctx, absPath, pkg: userPackage, bundleContext });
+  const entry = initModule({ ctx, absPath, pkg: userPackage, bundleContext });
 
-  for (const key in bundleContext.modules) {
-    const module = bundleContext.modules[key];
-    const code = module.generate();
-    console.log('****** ' + module.id + ' --> ' + module.absPath + '******');
-
-    console.log(code);
-  }
-  for (const key in bundleContext.packages) {
-    console.log(key);
-  }
+  return { modules: Object.values(bundleContext.modules), entries: [entry] };
 }

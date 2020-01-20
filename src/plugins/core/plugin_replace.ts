@@ -11,17 +11,17 @@ export function pluginReplace(a?: IPluginReplaceProps | string | RegExp, b?: IPl
     expressions.push([safeRegex(key), opts[key]]);
   }
   return (ctx: Context) => {
-    ctx.ict.on('assemble_before_transpile', props => {
+    ctx.ict.on('module_init', props => {
       // filter out options
 
-      if (matcher && !matcher.test(props.module.props.absPath)) {
+      if (matcher && !matcher.test(props.module.absPath)) {
         return;
       }
 
       const { module } = props;
 
       ctx.log.info('pluginReplace', 'replacing in $file', {
-        file: module.props.absPath,
+        file: module.absPath,
       });
 
       module.read();

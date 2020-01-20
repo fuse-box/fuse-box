@@ -15,7 +15,7 @@ describe('Plugin replace test', () => {
     const data = pluginReplace('plugin_replace.test.ts', { $version: '1.0.0' });
 
     data(mock.ctx);
-    mock.ctx.ict.sync('assemble_before_transpile', { module: mock.module });
+    mock.ctx.ict.sync('module_init', { module: mock.module });
     expect(mock.module.contents).toEqual('1.0.0');
   });
 
@@ -28,7 +28,7 @@ describe('Plugin replace test', () => {
     const data = pluginReplace({ $version: '1.0.0' });
 
     data(mock.ctx);
-    mock.ctx.ict.sync('assemble_before_transpile', { module: mock.module });
+    mock.ctx.ict.sync('module_init', { module: mock.module });
 
     expect(mock.module.contents).toEqual('1.0.0');
   });

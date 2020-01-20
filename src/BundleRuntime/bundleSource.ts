@@ -11,6 +11,8 @@ export interface IBundleSourceProps {
   withSourcemaps?: boolean;
 }
 
+export type IBundleSource = ReturnType<typeof bundleSource>;
+
 const FuseName = BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ;
 const BundleFN = FuseName + '.' + BUNDLE_RUNTIME_NAMES.BUNDLE_FUNCTION;
 const ReqFn = FuseName + '.' + BUNDLE_RUNTIME_NAMES.REQUIRE_FUNCTION;
@@ -48,7 +50,7 @@ export function bundleSource(props: IBundleSourceProps) {
           if (module.publicPath) {
             concat.add(null, `\n// module-${module.id} ${module.publicPath}`);
           }
-          concat.add(null, module.id + ': function(exports, module){');
+          concat.add(null, module.id + `: function(${BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION}, exports, module){`);
           concat.add(
             props.withSourcemaps ? module.publicPath : null,
             module.contents,

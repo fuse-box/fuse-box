@@ -1,6 +1,6 @@
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
 import { Context } from '../../core/Context';
-import { Module } from '../../core/Module';
+import { IModule } from '../../ModuleResolver/Module';
 import { readFile } from '../../utils/utils';
 import { cssHandleResources } from '../cssHandleResources';
 import { cssResolveModule } from '../cssResolveModule';
@@ -9,7 +9,7 @@ import { IStyleSheetProcessor } from '../interfaces';
 
 export interface ILessHandlerProps {
   ctx: Context;
-  module: Module;
+  module: IModule;
   options: IStyleSheetProps;
 }
 
@@ -26,7 +26,7 @@ async function renderWithLess(less, contents, options): Promise<{ map: string; c
   });
 }
 
-export async function renderModule(props: { ctx: Context; module: Module; less: any; options: IStyleSheetProps }) {
+export async function renderModule(props: { ctx: Context; module: IModule; less: any; options: IStyleSheetProps }) {
   const Importer = {
     install: (less, manager) => {
       manager.addFileManager(
@@ -46,7 +46,7 @@ export async function renderModule(props: { ctx: Context; module: Module; less: 
                 if (props.options.breakDependantsCache) {
                   props.module.breakDependantsCache = true;
                 }
-                props.module.addWeakReference(resolved.path);
+                //props.module.addWeakReference(resolved.path);
                 const contents = readFile(resolved.path);
 
                 const processed = cssHandleResources(
@@ -65,11 +65,11 @@ export async function renderModule(props: { ctx: Context; module: Module; less: 
     },
   };
   const module = props.module;
-  const requireSourceMap = props.module.isCSSSourceMapRequired();
+  const requireSourceMap = props.module.isCSSSourceMapRequired;
 
   // handle root resources
   const processed = cssHandleResources(
-    { path: props.module.props.absPath, contents: props.module.contents },
+    { path: props.module.absPath, contents: props.module.contents },
     { options: props.options, ctx: props.ctx, module: props.module },
   );
 
@@ -87,7 +87,7 @@ export async function renderModule(props: { ctx: Context; module: Module; less: 
   const data = await renderWithLess(props.less, processed.contents, {
     ...compilerOptions,
     sourceMap: requireSourceMap && { outputSourceFiles: true },
-    filename: module.props.absPath,
+    filename: module.absPath,
     plugins: pluginList,
   });
 

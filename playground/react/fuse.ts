@@ -27,7 +27,12 @@ const { task, rm, exec } = sparky<Context>(Context);
 task('default', async ctx => {
   ctx.runServer = true;
   const fuse = ctx.getConfig();
-  await fuse.runDev();
+  await fuse.runDev({
+    bundles: {
+      root: path.join(__dirname, 'dist'),
+      app: 'app.js',
+    },
+  });
 });
 
 task('preview', async ctx => {

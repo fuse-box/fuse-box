@@ -19,8 +19,9 @@ describe('Bundle runtime core test', () => {
   const Name = BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ;
 
   describe('Target integrity', () => {
-    it('should create browser env ', () => {
+    it.only('should create browser env ', () => {
       const code = bundleRuntimeCore({ target: 'browser', isIsolated: false });
+      console.log(code);
       const result = run(code, 'window');
 
       expect(result[Name]).toBeTruthy();

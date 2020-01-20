@@ -4,6 +4,7 @@ export const BUNDLE_RUNTIME_NAMES = {
   GLOBAL_OBJ: '__fuse',
   REQUIRE_FUNCTION: 'r',
   BUNDLE_FUNCTION: 'bundle',
+  ARG_REQUIRE_FUNCTION: '__fusereq',
 };
 
 export interface IBundleRuntimeCore {
@@ -46,7 +47,7 @@ export function bundleRuntimeCore(props: IBundleRuntimeCore) {
     cached = core.c[id] = {};
     cached.exports = {};
     cached.m = { exports: cached.exports };
-    module(cached.exports, cached.m);
+    module(core.${BUNDLE_RUNTIME_NAMES.REQUIRE_FUNCTION}, cached.exports, cached.m);
     return cached.m.exports;
   }; ${isIsolated ? '\n\treturn core;' : ''}
 })();`;

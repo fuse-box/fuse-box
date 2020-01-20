@@ -1,12 +1,14 @@
 import { Context } from '../core/Context';
 import { readFile, makeFuseBoxPath } from '../utils/utils';
-import { IPackage } from './Package';
+import { IPackage, PackageType } from './Package';
 import * as path from 'path';
 import { parseTypeScript, parseJavascript } from '../compiler/parser';
 import { ASTNode } from '../compiler/interfaces/AST';
 import { newTransformCommonVisitors } from '../compiler/new_transformer';
 import { ITransformerResult } from '../compiler/interfaces/ITranformerResult';
 import { generate } from '../compiler/generator/generator';
+import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
+import { STYLESHEET_EXTENSIONS, EXECUTABLE_EXTENSIONS } from '../config/extensions';
 export function Module() {}
 
 export interface IModule {
@@ -18,13 +20,23 @@ export interface IModule {
   sourceMap?: string;
   publicPath?: string;
   read?: () => string;
+  errored?: boolean;
   parse?: () => ASTNode;
+  css?: IStylesheetModuleResponse;
+  captured?: boolean;
   generate?: () => void;
   transpile?: () => ITransformerResult;
   isJavaScript?: boolean;
   isTypeScript?: boolean;
+  isCSSSourceMapRequired?: boolean;
+  isCSSModule?: boolean;
+  isCSSText?: boolean;
+  isStylesheet?: boolean;
   extension?: string;
   ast?: ASTNode;
+  breakDependantsCache?: boolean;
+  isExecutable?: boolean;
+  storage?: Record<string, any>;
   props?: {
     fuseBoxPath?: string;
   };
@@ -34,13 +46,34 @@ export function createModule(props: { pkg?: IPackage; absPath?: string; ctx?: Co
   const ext = path.extname(props.absPath);
   const isJavaScript = ['.js', '.jsx'].includes(ext);
   const isTypeScript = ['.tsx', '.tsx'].includes(ext);
+
+  let isCSSSourceMapRequired = true;
+  const config = props.ctx.config;
+  if (config.sourceMap.css === false) {
+    isCSSSourceMapRequired = false;
+  }
+  if (props.pkg.type === PackageType.USER_PACKAGE && !config.sourceMap.vendor) {
+    isCSSSourceMapRequired = false;
+  }
+
+  const isStylesheet = STYLESHEET_EXTENSIONS.includes(ext);
+  const isExecutable = EXECUTABLE_EXTENSIONS.includes(ext);
+  const fuseBoxPath = makeFuseBoxPath(props.ctx.config.homeDir, props.absPath);
+  const publicPath = props.pkg.publicName + '/' + fuseBoxPath;
+
   const scope: IModule = {
     // legacy props
     props: {
-      fuseBoxPath: makeFuseBoxPath(props.ctx.config.homeDir, props.absPath),
+      fuseBoxPath,
     },
+    storage: {},
+    publicPath,
+    isExecutable,
+    isStylesheet,
+    isCSSSourceMapRequired,
     isJavaScript,
     isTypeScript,
+
     ctx: props.ctx,
     absPath: props.absPath,
     pkg: props.pkg,
