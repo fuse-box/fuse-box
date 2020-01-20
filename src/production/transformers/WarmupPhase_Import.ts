@@ -1,13 +1,13 @@
 import { IVisit, IVisitorMod } from '../../compiler/Visitor/Visitor';
 import { ASTType } from '../../compiler/interfaces/AST';
 import { ITransformer } from '../../compiler/interfaces/ITransformer';
-import { getDynamicImport } from '../../compiler/transformers/importHelpers';
+import { getDynamicImport } from '../../compiler/helpers/importHelpers';
 
 const NODES_OF_INTEREST = {
   [ASTType.ExportAllDeclaration]: 1,
   [ASTType.ExportNamedDeclaration]: 1,
   [ASTType.ImportDeclaration]: 1,
-  [ASTType.ImportEqualsDeclaration]: 1
+  [ASTType.ImportEqualsDeclaration]: 1,
 };
 
 export function Phase_1_ImportLink(): ITransformer {
@@ -29,10 +29,8 @@ export function Phase_1_ImportLink(): ITransformer {
       function isEligibleImportOrExport(node): boolean {
         return (
           !!NODES_OF_INTEREST[node.type] &&
-          (
-            (!!node.source && !!refs[node.source.value]) ||
-            (!!node.moduleReference && !!refs[node.moduleReference.expression.value])
-          )
+          ((!!node.source && !!refs[node.source.value]) ||
+            (!!node.moduleReference && !!refs[node.moduleReference.expression.value]))
         );
       }
 
@@ -57,8 +55,8 @@ export function Phase_1_ImportLink(): ITransformer {
           if (isEligibleImportOrExport(node) || isEligibleRequire(node)) {
             tree.importReferences.register({ module, productionContext, visit });
           }
-        }
+        },
       };
-    }
+    },
   };
 }

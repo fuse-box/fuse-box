@@ -1,5 +1,4 @@
 import * as path from 'path';
-import { Cache } from '../cache/cache';
 import { Context } from '../core/Context';
 import { IDevServerProps } from '../dev-server/devServerProps';
 import { env } from '../env';
@@ -51,6 +50,7 @@ export class PrivateConfig {
     ignorePackages?: Array<string>;
     ignoreAllExternal?: boolean;
   };
+  cache?: ICacheProps;
   useSingleBundle?: boolean;
   webWorkers?: IWebWorkerConfig;
   homeDir?: string;
@@ -64,7 +64,6 @@ export class PrivateConfig {
   json?: IJSONPluginProps;
   link?: IPluginLinkOptions;
   env?: { [key: string]: string };
-  cache?: ICacheProps;
   tsConfig?: string | IRawCompilerOptions;
   entries?: Array<string>;
   allowSyntheticDefaultImports?: boolean;
@@ -91,7 +90,6 @@ export class PrivateConfig {
 
   defaultSourceMapModulesRoot?: string;
 
-  cacheObject?: Cache;
   manifest?: IManifest;
 
   public ctx?: Context;
@@ -100,9 +98,6 @@ export class PrivateConfig {
     this.defaultSourceMapModulesRoot = '/modules';
 
     this.json = props.json === undefined ? { useDefault: false } : props.json;
-    if (props.cacheObject) {
-      this.cacheObject = props.cacheObject;
-    }
 
     this.resources = props.resources || {};
     if (!this.resources.resourcePublicRoot) {
