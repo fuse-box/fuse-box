@@ -1027,6 +1027,7 @@ export function generate(node, options) {
   const state = new State(options);
   // Travel through the AST node and generate the code
   //  console.log(node, node.type);
+
   state.generator[node.type](node, state);
   return state.output;
 }

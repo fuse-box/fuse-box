@@ -1,23 +1,23 @@
 import { createStylesheetProps } from '../../config/createStylesheetProps';
 import { Context } from '../../core/Context';
-import { Module } from '../../core/Module';
+import { IModule } from '../../ModuleResolver/Module';
+import { stylusHandler } from '../../stylesheet/stylus/stylusHandler';
 import { IPluginCommon } from '../interfaces';
 import { parsePluginOptions } from '../pluginUtils';
 import { cssContextHandler } from './shared';
-import { stylusHandler } from '../../stylesheet/stylus/stylusHandler';
 
-export function pluginStylusCapture(props: { ctx: Context; module: Module; opts: IPluginCommon }) {
+export function pluginStylusCapture(props: { ctx: Context; module: IModule; opts: IPluginCommon }) {
   const { ctx, module, opts } = props;
 
   if (!ctx.isInstalled('stylus')) {
-    ctx.fatal(`Fatal error when capturing ${module.props.absPath}`, [
+    ctx.fatal(`Fatal error when capturing ${module.absPath}`, [
       'Module "stylus" is required, Please install it using the following command',
       'npm install stylus --save-dev',
     ]);
     return;
   }
 
-  ctx.log.info('stylus', module.props.absPath);
+  ctx.log.info('stylus', module.absPath);
 
   props.module.read();
   props.module.captured = true;
@@ -49,7 +49,7 @@ export function pluginStylus(a?: IPluginCommon | string | RegExp, b?: IPluginCom
         return;
       }
 
-      if (matcher.test(module.props.absPath)) {
+      if (matcher.test(module.absPath)) {
         pluginStylusCapture({ ctx, module, opts: opts });
       }
       return props;

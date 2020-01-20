@@ -1,4 +1,6 @@
-export const EXECUTABLE_EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx', '.mjs'];
+export const JS_EXTENSIONS = ['.js', '.jsx', '.mjs'];
+export const TS_EXTENSIONS = ['.ts', '.tsx'];
+export const EXECUTABLE_EXTENSIONS = [...JS_EXTENSIONS, ...TS_EXTENSIONS];
 export const FONT_EXTENSIONS = ['.ttf', '.otf', '.woff', '.woff2', '.eot'];
 export const IMAGE_EXTENSIONS = ['.png', '.jpeg', '.jpg', '.gif', '.bmp', '.svg'];
 export const ICO_EXTENSIONS = ['.ico'];

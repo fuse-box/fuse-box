@@ -1,22 +1,22 @@
-import * as path from 'path';
+import { sourceMapsCSSURL } from '../bundle/bundleStrings';
+import { BUNDLE_RUNTIME_NAMES } from '../BundleRuntime/bundleRuntimeCore';
 import { IStyleSheetProps } from '../config/IStylesheetProps';
 import { Context } from '../core/Context';
-import { Module } from '../core/Module';
+import { IModule } from '../ModuleResolver/Module';
+import { wrapContents } from '../plugins/pluginStrings';
 import { fastHash, joinFuseBoxPath } from '../utils/utils';
 import { IStylesheetModuleResponse } from './interfaces';
-import { sourceMapsCSSURL } from '../bundle/bundleStrings';
-import { wrapContents } from '../plugins/pluginStrings';
 
 export interface ICSSModuleRender {
   ctx: Context;
-  module: Module;
+  module: IModule;
   options: IStyleSheetProps;
   data: IStylesheetModuleResponse;
   useDefault?: boolean;
 }
 export function cssDevModuleRender(props: ICSSModuleRender) {
   const { ctx, module, data } = props;
-  const filePath = module.pkg.getPublicName() + '/' + module.props.fuseBoxPath;
+  const filePath = module.publicPath;
   // let the context know
 
   let cssData = data.css;
@@ -25,7 +25,7 @@ export function cssDevModuleRender(props: ICSSModuleRender) {
     const resourceConfig = ctx.config.getResourceConfig(props.options);
 
     // generating a new name for our sourcemap
-    const name = `${fastHash(module.props.absPath)}.css.map`;
+    const name = `${fastHash(module.absPath)}.css.map`;
     // defining a public path (that browser will be able to reach)
     const publicPath = joinFuseBoxPath(resourceConfig.resourcePublicRoot, 'css', name);
 
@@ -38,15 +38,18 @@ export function cssDevModuleRender(props: ICSSModuleRender) {
 
     // figuring out where to write that css
 
-    const targetSourceMapPath = path.join(resourceConfig.resourceFolder, 'css', name);
+    //const targetSourceMapPath = path.join(resourceConfig.resourceFolder, 'css', name);
 
-    ctx.log.info('css', 'Writing css sourcemap to $file', { file: targetSourceMapPath });
-    ctx.writer.write(targetSourceMapPath, data.map);
+    // ctx.log.info('css', 'Writing css sourcemap to $file', { file: targetSourceMapPath });
+    // ctx.writer.write(targetSourceMapPath, data.map);
   }
 
-  let contents = `require("fuse-box-css")(${JSON.stringify(filePath)},${JSON.stringify(cssData)})`;
-  if (props.data.json) {
-    contents += '\n' + wrapContents(JSON.stringify(props.data.json), props.useDefault);
+  if (module.storage.styleSheetModule) {
+    const methodString = BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION + '(' + module.storage.styleSheetModule.id + ')';
+    let contents = `${methodString}(${JSON.stringify(filePath)},${JSON.stringify(cssData)})`;
+    if (props.data.json) {
+      contents += '\n' + wrapContents(JSON.stringify(props.data.json), props.useDefault);
+    }
+    module.contents = contents;
   }
-  module.contents = contents;
 }

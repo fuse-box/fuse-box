@@ -19,6 +19,8 @@ import { ContextTaskManager, createContextTaskManager } from './ContextTaskManag
 import { Package } from './Package';
 import { createWeakModuleReferences, WeakModuleReferences } from './WeakModuleReferences';
 import { createWriter, IWriterActions } from './writer';
+import { IOutputConfig, IPublicOutputConfig } from '../output/OutputConfigInterface';
+import { outputConfigConverter } from '../output/OutputConfigConverter';
 
 export class Context {
   public assembleContext: IAssembleContext;
@@ -27,6 +29,8 @@ export class Context {
   public ict: MainInterceptor;
   public tsConfig: TypescriptConfig;
   public customTransformers: CustomTransformers;
+
+  public outputConfig?: IOutputConfig;
   public log: FuseBoxLogAdapter;
   public webIndex: IWebIndexInterface;
   public taskManager: ContextTaskManager;
@@ -54,6 +58,10 @@ export class Context {
   public addTsConfigAtPath(path: TsConfigAtPath) {
     if (!this.tsConfigAtPaths) this.tsConfigAtPaths = [];
     this.tsConfigAtPaths.push(path);
+  }
+
+  public creatOutputConfig(publicConfig: IPublicOutputConfig) {
+    this.outputConfig = outputConfigConverter({ defaultRoot: env.SCRIPT_PATH, publicConfig: publicConfig });
   }
 
   public getUniqueEntryHash() {

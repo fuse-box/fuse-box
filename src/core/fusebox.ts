@@ -8,8 +8,13 @@ import { parseVersion } from '../utils/utils';
 import { createContext, createProdContext } from './Context';
 import { bundleProd, productionPhases } from '../production/bundleProd';
 import { IProductionContext } from '../production/ProductionContext';
+import { IPublicOutputConfig } from '../output/OutputConfigInterface';
 
 export interface IDevelopmentProps {}
+
+export interface IRunDevProps {
+  bundles?: IPublicOutputConfig;
+}
 
 export function fusebox(config: IPublicConfig) {
   function checkVersion(log: FuseBoxLogAdapter) {
@@ -32,9 +37,9 @@ export function fusebox(config: IPublicConfig) {
     }
   }
   return {
-    runDev: async (cb?: (handler: UserHandler) => void) => {
+    runDev: async (props: IRunDevProps) => {
       const ctx = createContext(config);
-      if (cb) cb(new UserHandler(ctx));
+      ctx.creatOutputConfig(props.bundles);
 
       checkVersion(ctx.log);
       return bundleDev(ctx).catch(e => {

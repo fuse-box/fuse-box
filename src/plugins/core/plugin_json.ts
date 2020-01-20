@@ -1,5 +1,5 @@
 import { Context } from '../../core/Context';
-import { Module } from '../../core/Module';
+import { IModule } from '../../ModuleResolver/Module';
 import { wrapContents } from '../pluginStrings';
 import { parsePluginOptions } from '../pluginUtils';
 
@@ -8,10 +8,10 @@ export interface IJSONPluginProps {
   path?: string;
 }
 
-export function pluginJSONHandler(module: Module, opts: IJSONPluginProps) {
+export function pluginJSONHandler(module: IModule, opts: IJSONPluginProps) {
   module.captured = true;
-  module.props.ctx.log.info('json', ' Captured $file with pluginJSON', {
-    file: module.props.absPath,
+  module.ctx.log.info('json', ' Captured $file with pluginJSON', {
+    file: module.absPath,
   });
   module.read();
   module.contents = wrapContents(module.contents, opts.useDefault);
@@ -20,10 +20,10 @@ export function pluginJSONHandler(module: Module, opts: IJSONPluginProps) {
 export function pluginJSON(a?: IJSONPluginProps | string | RegExp, b?: IJSONPluginProps) {
   return (ctx: Context) => {
     ctx.ict.on('bundle_resolve_module', props => {
-      if (!props.module.captured && props.module.props.extension === '.json') {
+      if (!props.module.captured && props.module.extension === '.json') {
         // filter out options
         const [opts, matcher] = parsePluginOptions<IJSONPluginProps>(a, b, ctx.config.json);
-        if (matcher && !matcher.test(props.module.props.absPath)) {
+        if (matcher && !matcher.test(props.module.absPath)) {
           return;
         }
         pluginJSONHandler(props.module, opts);

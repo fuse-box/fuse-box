@@ -1,12 +1,12 @@
 import { IStyleSheetProps } from '../config/IStylesheetProps';
 import { Context } from '../core/Context';
-import { Module } from '../core/Module';
+import { IModule } from '../ModuleResolver/Module';
 import { cssResolveURL } from './cssResolveURL';
 
 export interface ICSSHandleResourcesProps {
   options: IStyleSheetProps;
   ctx: Context;
-  module: Module;
+  module: IModule;
   url?: string;
   fileRoot?: string;
 }

@@ -13,12 +13,12 @@ export function pluginSass(a?: IPluginCommon | string | RegExp, b?: IPluginCommo
     ctx.ict.on('bundle_resolve_module', props => {
       const { module } = props;
 
-      if (props.module.captured || !matcher.test(module.props.absPath)) {
+      if (props.module.captured || !matcher.test(module.absPath)) {
         return;
       }
 
       if (!ctx.isInstalled('node-sass')) {
-        ctx.fatal(`Fatal error when capturing ${module.props.absPath}`, [
+        ctx.fatal(`Fatal error when capturing ${module.absPath}`, [
           'Module "sass" is required, Please install it using the following command',
           'npm install node-sass --save-dev',
         ]);
@@ -26,7 +26,7 @@ export function pluginSass(a?: IPluginCommon | string | RegExp, b?: IPluginCommo
         return;
       }
 
-      ctx.log.info('sass', module.props.absPath);
+      ctx.log.info('sass', module.absPath);
 
       props.module.read();
       props.module.captured = true;

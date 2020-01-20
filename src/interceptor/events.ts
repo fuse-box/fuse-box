@@ -1,11 +1,10 @@
-import { Bundle, IBundleWriteResponse } from '../bundle/Bundle';
-import { IAssembleContext } from '../core/assemble_context';
+import { Bundle } from '../bundle/Bundle';
+import { IBundleWriteResponse } from '../bundle_new/Bundle';
 import { Context } from '../core/Context';
-import { Module } from '../core/Module';
-import { Package } from '../core/Package';
 import { OnWatcherProps } from '../main/attach_watcher';
-import { Concat } from '../utils/utils';
+import { IModule } from '../ModuleResolver/Module';
 import { WatcherAction } from '../watcher/watcher';
+import { IBundleContext } from '../ModuleResolver/BundleContext';
 
 export interface ISoftReload {
   filePath: string;
@@ -15,12 +14,14 @@ export interface ISoftReload {
 }
 export interface InterceptorEvents {
   test?: { foo: string };
-  assemble_module_init?: { module: Module };
-  assemble_module_ftl_init?: { module: Module };
-  assemble_module?: { module: Module };
-  assemble_module_complete?: { module: Module };
-  assemble_before_transpile?: { module: Module };
-  assemble_after_transpile?: { module: Module };
+
+  module_init?: { module: IModule; bundleContext: IBundleContext };
+  assemble_module_init?: { module: IModule };
+  assemble_module_ftl_init?: { module: IModule };
+  assemble_module?: { module: IModule };
+  assemble_module_complete?: { module: IModule };
+  assemble_before_transpile?: { module: IModule };
+  assemble_after_transpile?: { module: IModule };
 
   before_webindex_write?: {
     filePath: string;
@@ -30,34 +31,23 @@ export interface InterceptorEvents {
     cssTags: Array<string>;
   };
 
-  assemble_package_from_project: {
-    pkg: Package;
-    userModules: Array<Module>;
-    assembleContext: IAssembleContext;
-  };
-  bundle_resolve_start: { ctx: Context; packages: Array<Package> };
-  bundle_resolve_end: { ctx: Context; packages: Array<Package> };
-  bundle_resolve_typescript_module: { module: Module };
-  bundle_resolve_js_module: { module: Module };
-  bundle_resolve_module: { module: Module };
+  bundle_resolve_start: { ctx: Context };
+  bundle_resolve_end: { ctx: Context };
+  bundle_resolve_typescript_module: { module: IModule };
+  bundle_resolve_js_module: { module: IModule };
+  bundle_resolve_module: { module: IModule };
   before_bundle_write: { bundle: Bundle };
   after_bundle_write: { bundle: Bundle };
   soft_relod: { info: ISoftReload };
 
-  // after we've done creating a full package string
-  // Concat will have content and sourceMap
-  after_dev_package_inflate: { ctx: Context; pkg: Package; concat: Concat };
-  after_dev_module_inflate: { ctx: Context; module: Module; concat: Concat };
   complete: {
     ctx: Context;
     bundles: Array<IBundleWriteResponse>;
-    packages?: Array<Package>;
   };
   rebundle_complete: {
     ctx: Context;
     watcherAction: WatcherAction;
     bundles: Array<IBundleWriteResponse>;
-    packages: Array<Package>;
     file: string;
   };
 }
