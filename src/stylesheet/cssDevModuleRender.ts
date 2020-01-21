@@ -1,5 +1,5 @@
-import { BUNDLE_RUNTIME_NAMES } from '../BundleRuntime/bundleRuntimeCore';
-import { sourceMapsCSSURL } from '../BundleRuntime/constants';
+import { BUNDLE_RUNTIME_NAMES } from '../bundleRuntime/bundleRuntimeCore';
+import { sourceMapsCSSURL } from '../bundleRuntime/constants';
 import { IStyleSheetProps } from '../config/IStylesheetProps';
 import { Context } from '../core/Context';
 import { IModule } from '../moduleResolver/Module';

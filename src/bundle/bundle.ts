@@ -1,4 +1,4 @@
-import { bundleSource, IBundleSource } from '../BundleRuntime/bundleSource';
+import { bundleSource, IBundleSource } from '../bundleRuntime/bundleSource';
 import { Context } from '../core/Context';
 import { IModule } from '../moduleResolver/Module';
 import { IOutputBundleConfigAdvanced } from '../output/OutputConfigInterface';

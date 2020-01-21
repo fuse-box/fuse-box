@@ -1,7 +1,7 @@
 import { fusebox, pluginJSON, pluginLink, sparky } from 'fuse-box';
 import { TypeChecker } from 'fuse-box-typechecker';
 // tslint:disable-next-line: no-submodule-imports
-import { BundleType } from 'fuse-box/bundle/Bundle';
+import { BundleType } from 'fuse-box/bundle/bundle;
 // tslint:disable-next-line: no-submodule-imports
 import { fastHash, fileExists, joinFuseBoxPath, path2RegexPattern } from 'fuse-box/utils/utils';
 import * as path from 'path';
