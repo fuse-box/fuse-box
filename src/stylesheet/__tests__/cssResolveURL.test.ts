@@ -1,7 +1,7 @@
-import { createContext } from '../../core/Context';
-import { cssResolveURL } from '../cssResolveURL';
-import { mockWriteFile } from '../../utils/test_utils';
 import * as path from 'path';
+import { createContext } from '../../core/Context';
+import { mockWriteFile } from '../../utils/test_utils';
+import { cssResolveURL } from '../cssResolveURL';
 
 const fileMock = mockWriteFile();
 
@@ -14,8 +14,8 @@ describe('CSS Resolve URL test', () => {
     const ctx = createContext({ homeDir: __dirname });
     const props = {
       contents: `url("./hello.png")`,
-      filePath: __filename,
       ctx: ctx,
+      filePath: __filename,
       options: {},
     };
     const res = cssResolveURL(props);
@@ -27,8 +27,8 @@ describe('CSS Resolve URL test', () => {
     const ctx = createContext({ homeDir: __dirname });
     const props = {
       contents: `url(#svgFilter)`,
-      filePath: __filename,
       ctx: ctx,
+      filePath: __filename,
       options: {},
     };
     const res = cssResolveURL(props);
@@ -40,8 +40,8 @@ describe('CSS Resolve URL test', () => {
     const ctx = createContext({ homeDir: __dirname });
     const props = {
       contents: `url('#svgFilter')`,
-      filePath: __filename,
       ctx: ctx,
+      filePath: __filename,
       options: {},
     };
     const res = cssResolveURL(props);
@@ -53,8 +53,8 @@ describe('CSS Resolve URL test', () => {
     const ctx = createContext({ homeDir: __dirname });
     const props = {
       contents: `url("#svgFilter")`,
-      filePath: __filename,
       ctx: ctx,
+      filePath: __filename,
       options: {},
     };
     const res = cssResolveURL(props);
@@ -66,8 +66,8 @@ describe('CSS Resolve URL test', () => {
     const ctx = createContext({ homeDir: __dirname });
     const props = {
       contents: `url(http://foo.com/hello.png)`,
-      filePath: __filename,
       ctx: ctx,
+      filePath: __filename,
       options: {},
     };
     const res = cssResolveURL(props);
@@ -84,8 +84,8 @@ describe('CSS Resolve URL test', () => {
       }
 
       `,
-      filePath: __filename,
       ctx: ctx,
+      filePath: __filename,
       options: {},
     };
     const res = cssResolveURL(props);
@@ -97,8 +97,8 @@ describe('CSS Resolve URL test', () => {
     const ctx = createContext({ homeDir: __dirname });
     const props = {
       contents: `url('data:image/png;base64,iVBO')`,
-      filePath: __filename,
       ctx: ctx,
+      filePath: __filename,
       options: {},
     };
     const res = cssResolveURL(props);

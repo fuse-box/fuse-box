@@ -1,4 +1,4 @@
-import { IModule } from '../module-resolver/Module';
+import { IModule } from '../moduleResolver/Module';
 import { ASTNode } from './interfaces/AST';
 import { ITransformerResult } from './interfaces/ITranformerResult';
 import { ITransformer, ITransformerVisitors } from './interfaces/ITransformer';

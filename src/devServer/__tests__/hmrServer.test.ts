@@ -1,10 +1,10 @@
 import { createContext } from '../../core/Context';
 
 let mock__ws = {
-  params: {},
+  connections: [],
   events: {},
   instances: [],
-  connections: [],
+  params: {},
   sentData: [],
 };
 jest.mock('ws', () => {
@@ -50,10 +50,10 @@ import { createHMRServer } from '../hmrServer';
 describe('HMR server test', () => {
   beforeEach(() => {
     mock__ws = {
-      params: {},
+      connections: [],
       events: {},
       instances: [],
-      connections: [],
+      params: {},
       sentData: [],
     };
   });
@@ -67,7 +67,7 @@ describe('HMR server test', () => {
   it('should create with internal server', () => {
     const ctx = createContext({ logging: { level: 'disabled' } });
     const internalServer = { foo: 'server' };
-    createHMRServer({ ctx, opts: { enabled: true }, internalServer: internalServer });
+    createHMRServer({ ctx, internalServer: internalServer, opts: { enabled: true } });
     expect(mock__ws.instances).toHaveLength(1);
     expect(mock__ws.params).toEqual({ server: { foo: 'server' } });
     expect(mock__ws.events['connection']).toBeTruthy();

@@ -1,10 +1,10 @@
 import { join } from 'path';
-import { BundleType, createBundleSet } from '../../bundle/Bundle';
+import { IBundleType } from '../../bundle/bundle';
 import { createContext } from '../../core/Context';
 import { env } from '../../env';
+import { FuseBoxLogAdapter } from '../../fuseLog/FuseBoxLogAdapter';
 import { mockWriteFile } from '../../utils/test_utils';
-import { getEssentialWebIndexParams, IWebIndexConfig, replaceWebIndexStrings } from '../webIndex';
-import { FuseBoxLogAdapter } from '../../fuse-log/FuseBoxLogAdapter';
+import { getEssentialWebIndexParams, replaceWebIndexStrings, IWebIndexConfig } from '../webIndex';
 const fileMock = mockWriteFile();
 
 const WEBINDEX_DEFAULT_TEMPLATE = `<!DOCTYPE html>
@@ -22,6 +22,27 @@ const WEBINDEX_DEFAULT_TEMPLATE = `<!DOCTYPE html>
 </html>
 
 `;
+
+/**
+ * @todo
+ * Fix this
+ */
+const createBundleSet = function(ctx) {
+  return {
+    getBundle: (bundleType: IBundleType) => {
+      return {
+        addContent: (content: string) => {
+          // void
+        },
+        generate: () => {
+          return {
+            write: () => {},
+          };
+        },
+      };
+    },
+  };
+};
 
 describe('WebIndex test', () => {
   describe('replaceWebIndexStrings', () => {
@@ -73,16 +94,17 @@ describe('WebIndex test', () => {
     async function generateCSSBundle(config?: IWebIndexConfig | boolean) {
       const ctx = createContext({ webIndex: config });
       const bundles = createBundleSet(ctx);
-      const cssBundle = bundles.getBundle(BundleType.CSS);
+      const cssBundle = bundles.getBundle(IBundleType.CSS_APP);
       cssBundle.addContent('foo');
       const response = [await cssBundle.generate().write()];
+      await ctx.webIndex.generate(response);
       await ctx.webIndex.generate(response);
     }
 
     async function generateJSBundle(config?: IWebIndexConfig | boolean) {
       const ctx = createContext({ webIndex: config });
       const bundles = createBundleSet(ctx);
-      const cssBundle = bundles.getBundle(BundleType.PROJECT_JS);
+      const cssBundle = bundles.getBundle(IBundleType.JS_APP);
       cssBundle.addContent('foo');
       const response = [await cssBundle.generate().write()];
       await ctx.webIndex.generate(response);

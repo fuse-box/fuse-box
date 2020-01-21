@@ -1,30 +1,30 @@
 import * as path from 'path';
 import { Context } from '../core/Context';
-import { IDevServerProps } from '../dev-server/devServerProps';
+import { IDevServerProps } from '../devServer/devServerProps';
 import { env } from '../env';
 import { IRawCompilerOptions } from '../interfaces/TypescriptInterfaces';
 import { IJSONPluginProps } from '../plugins/core/plugin_json';
 import { IPluginLinkOptions } from '../plugins/core/plugin_link';
 import { ensureAbsolutePath, joinFuseBoxPath } from '../utils/utils';
-import { IWatcherExternalProps } from '../watcher/watcher';
-import { IWebIndexConfig } from '../web-index/webIndex';
+// import { IWatcherExternalProps } from '../watcher/watcher';
+import { IWebIndexConfig } from '../webIndex/webIndex';
 import { ICodeSplittingConfig } from './ICodeSplittingConfig';
 import { IFuseLoggerProps } from './IFuseLoggerProps';
 import { IManifest } from './IManifest';
-import { IProductionProps } from './IProductionProps';
 import { IPublicConfig } from './IPublicConfig';
 import { IResourceConfig } from './IResourceConfig';
+import { IRunProps } from './IRunProps';
 import { IStyleSheetProps } from './IStylesheetProps';
 import { IWebWorkerConfig } from './IWebWorkerConfig';
 
 export interface IHMRExternalProps {
-  reloadEntryOnStylesheet?: boolean;
   hardReloadScripts?: boolean;
+  reloadEntryOnStylesheet?: boolean;
 }
 
 const ESSENTIAL_DEPENDENCIES = ['fuse-box-dev-import', 'tslib', 'fuse_helpers_decorate'];
 
-export type ITarget = 'browser' | 'server' | 'electron' | 'universal' | 'web-worker';
+export type ITarget = 'browser' | 'electron' | 'server' | 'universal' | 'web-worker';
 
 export interface IHMRProps {
   enabled?: boolean;
@@ -33,22 +33,23 @@ export interface IHMRProps {
 
 export interface IWatcherProps {
   enabled: boolean;
-  watcherProps?: IWatcherExternalProps;
+  // watcherProps?: IWatcherExternalProps;
+  watcherProps?: any;
 }
 
 export interface ICacheProps {
+  FTL?: boolean;
   enabled?: boolean;
   root?: string;
-  FTL?: boolean;
 }
 
 export class PrivateConfig {
   root?: string;
   target?: ITarget;
   dependencies?: {
-    include?: Array<string>;
-    ignorePackages?: Array<string>;
     ignoreAllExternal?: boolean;
+    ignorePackages?: Array<string>;
+    include?: Array<string>;
   };
   cache?: ICacheProps;
   useSingleBundle?: boolean;
@@ -64,15 +65,15 @@ export class PrivateConfig {
   json?: IJSONPluginProps;
   link?: IPluginLinkOptions;
   env?: { [key: string]: string };
-  tsConfig?: string | IRawCompilerOptions;
+  tsConfig?: IRawCompilerOptions | string;
   entries?: Array<string>;
   allowSyntheticDefaultImports?: boolean;
   webIndex?: IWebIndexConfig;
   sourceMap?: {
+    css?: boolean;
+    project?: boolean;
     sourceRoot?: string;
     vendor?: boolean;
-    project?: boolean;
-    css?: boolean;
   };
 
   plugins?: Array<(ctx: Context) => void>;
@@ -80,7 +81,7 @@ export class PrivateConfig {
 
   defaultCollectionName?: string;
 
-  production?: IProductionProps;
+  production?: IRunProps;
 
   devServer?: IDevServerProps;
 

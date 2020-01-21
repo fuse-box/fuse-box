@@ -1,4 +1,4 @@
-import { IBundleWriteResponse } from '../bundle/Bundle';
+import { IBundleWriteResponse } from '../bundle/bundle';
 import { Context } from '../core/Context';
 
 export async function attachWebIndex(ctx: Context, bundles: Array<IBundleWriteResponse>) {

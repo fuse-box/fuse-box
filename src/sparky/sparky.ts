@@ -1,5 +1,5 @@
 import { env } from '../env';
-import { createFuseLogger } from '../fuse-log/FuseBoxLogAdapter';
+import { createFuseLogger } from '../fuseLog/FuseBoxLogAdapter';
 import { ensureAbsolutePath, removeFolder } from '../utils/utils';
 import { sparkyChain } from './sparky_chain';
 

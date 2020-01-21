@@ -1,6 +1,6 @@
 import { IStyleSheetProps } from '../config/IStylesheetProps';
 import { Context } from '../core/Context';
-import { IModule } from '../module-resolver/Module';
+import { IModule } from '../moduleResolver/Module';
 import { cssResolveURL } from './cssResolveURL';
 
 export interface ICSSHandleResourcesProps {

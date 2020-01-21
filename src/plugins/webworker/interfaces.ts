@@ -1,5 +1,5 @@
 import { Context } from '../../core/Context';
-import { Module } from '../../core/Module';
+import { IModule } from '../../moduleResolver/Module';
 
 export interface IWebWorkerItem {
   absPath: string;
@@ -8,12 +8,12 @@ export interface IWebWorkerItem {
 
 export interface IWebWorkerProcessProps {
   ctx: Context;
-  module: Module;
   item?: IWebWorkerItem;
+  module: IModule;
 }
 
 export interface IWebWorkerProcessProps {
   ctx: Context;
-  module: Module;
   item?: IWebWorkerItem;
+  module: IModule;
 }

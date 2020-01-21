@@ -1,8 +1,8 @@
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
 import { createStylesheetProps } from '../../config/createStylesheetProps';
 import { Context } from '../../core/Context';
-import { IModule } from '../../module-resolver/Module';
-import { resolve } from '../../module-resolver/ModuleResolver';
+import { IModule } from '../../moduleResolver/Module';
+import { resolve } from '../../moduleResolver/ModuleResolver';
 import { ImportType } from '../../resolver/resolver';
 import { cssResolveURL } from '../../stylesheet/cssResolveURL';
 import { parsePluginOptions } from '../pluginUtils';

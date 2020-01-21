@@ -1,9 +1,10 @@
 import { IProductionContext } from './ProductionContext';
 import { CodeSplittingPhase } from './phases/CodeSplittingPhase';
+import { FinalPhase } from './phases/FinalPhase';
 import { WarmupPhase } from './phases/WarmupPhase';
 
 export function Engine(productionContext: IProductionContext) {
-  const phases = [WarmupPhase, CodeSplittingPhase];
+  const phases = [WarmupPhase, CodeSplittingPhase, FinalPhase];
 
   return {
     start: async () => {

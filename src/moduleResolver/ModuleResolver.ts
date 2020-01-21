@@ -1,4 +1,4 @@
-import { BUNDLE_RUNTIME_NAMES } from '../BundleRuntime/bundleRuntimeCore';
+import { BUNDLE_RUNTIME_NAMES } from '../bundleRuntime/bundleRuntimeCore';
 import { ImportType } from '../compiler/interfaces/ImportType';
 import { Context } from '../core/Context';
 import { resolveModule } from '../resolver/resolver';

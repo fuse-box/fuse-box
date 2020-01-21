@@ -10,7 +10,7 @@ interface IPluginMinifyHtmlLiterals {}
  * @param options
  */
 export function pluginMinifyHtmlLiterals(...options: IPluginMinifyHtmlLiterals[]) {
-  const useroptions = options;
+  // const useroptions = options;
 
   return (ctx: Context) => {
     // ctx.ict.on('bundle_resolve_module', props => {

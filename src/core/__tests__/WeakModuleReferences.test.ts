@@ -1,5 +1,5 @@
 import { createContext } from '../Context';
-import { createWeakModuleReferences, WeakModuleReferences } from '../WeakModuleReferences';
+import { WeakModuleReferences, createWeakModuleReferences } from '../WeakModuleReferences';
 
 describe('WeakModuleReferences', () => {
   function create(): WeakModuleReferences {

@@ -1,24 +1,13 @@
 import * as ts from 'typescript';
-import { IProductionProps } from '../config/IProductionProps';
 import { IPublicConfig } from '../config/IPublicConfig';
-import { FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
+import { IRunProps } from '../config/IRunProps';
+import { FuseBoxLogAdapter } from '../fuseLog/FuseBoxLogAdapter';
 import { bundleDev } from '../main/bundle_dev';
-import { IPublicOutputConfig } from '../output/OutputConfigInterface';
 import { IProductionContext } from '../production/ProductionContext';
 import { bundleProd, productionPhases } from '../production/bundleProd';
-import { UserHandler } from '../user-handler/UserHandler';
+import { UserHandler } from '../userHandler/UserHandler';
 import { parseVersion } from '../utils/utils';
-import { createContext, createProdContext } from './Context';
-
-export interface IDevelopmentProps {}
-
-export interface IRunDevProps {
-  bundles?: IPublicOutputConfig;
-}
-
-export interface IRunProdProps {
-  bundles?: IPublicOutputConfig;
-}
+import { createContext } from './Context';
 
 export function fusebox(config: IPublicConfig) {
   function checkVersion(log: FuseBoxLogAdapter) {
@@ -41,28 +30,31 @@ export function fusebox(config: IPublicConfig) {
     }
   }
   return {
-    runDev: async (props: IRunDevProps) => {
-      const ctx = createContext(config);
-      ctx.creatOutputConfig(props.bundles);
+    runDev: async (props?: IRunProps) => {
+      const ctx = createContext(config, props);
+      ctx.setDevelopment();
 
       checkVersion(ctx.log);
+
       return bundleDev(ctx).catch(e => {
         console.error(e);
       });
     },
-    runProd: (props?: IProductionProps): Promise<any> => {
-      const ctx = createProdContext(config, props);
+    runProd: (props?: IRunProps): Promise<any> => {
+      const ctx = createContext(config, props);
+      ctx.setProduction(props);
 
       if (props && props.handler) {
         props.handler(new UserHandler(ctx));
       }
       bundleProd(ctx);
+
       // return bundleProd(ctx);
       return Promise.resolve();
     },
-    runProductionContext: (phases, props?: IProductionProps): Promise<IProductionContext> => {
-      const ctx = createProdContext(config, props);
-      ctx.creatOutputConfig(props ? props.bundles : undefined);
+    runProductionContext: (phases, props?: IRunProps): Promise<IProductionContext> => {
+      const ctx = createContext(config, props);
+      ctx.setProduction(props);
       return productionPhases(ctx, phases);
     },
   };

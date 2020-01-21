@@ -1,5 +1,5 @@
 import { ITarget } from '../config/PrivateConfig';
-import { IModule } from '../module-resolver/Module';
+import { IModule } from '../moduleResolver/Module';
 import { Concat } from '../utils/utils';
 import { BUNDLE_RUNTIME_NAMES, bundleRuntimeCore, IBundleRuntimeCore } from './bundleRuntimeCore';
 
