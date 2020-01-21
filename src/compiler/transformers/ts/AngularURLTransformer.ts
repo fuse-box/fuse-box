@@ -1,10 +1,10 @@
-import { ASTNode } from '../../interfaces/AST';
-import { ImportType } from '../../interfaces/ImportType';
-import { ITransformer } from '../../interfaces/ITransformer';
-import { createRequireCallExpression } from '../../Visitor/helpers';
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
+import { createRequireCallExpression } from '../../Visitor/helpers';
+import { ASTNode } from '../../interfaces/AST';
+import { ITransformer } from '../../interfaces/ITransformer';
+import { ImportType } from '../../interfaces/ImportType';
 
-const PropKeys = { templateUrl: 'template', styleUrls: 'styles' };
+const PropKeys = { styleUrls: 'styles', templateUrl: 'template' };
 
 export function AngularURLTransformer(test: RegExp): ITransformer {
   return {
@@ -24,7 +24,8 @@ export function AngularURLTransformer(test: RegExp): ITransformer {
                   const el = value.elements[i] as ASTNode;
                   if (el.type === 'Literal') {
                     keyTransformRequired = true;
-                    const req = createRequireCallExpression([el]);
+                    const req = createRequireCallExpression([{ type: 'Literal', value: el.value }]);
+
                     // emit require statement
                     if (props.onRequireCallExpression) props.onRequireCallExpression(ImportType.REQUIRE, req);
                     value.elements[i] = req;

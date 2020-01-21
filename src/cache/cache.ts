@@ -3,6 +3,7 @@ import * as path from 'path';
 import { Context } from '../core/Context';
 import { IBundleContext } from '../module-resolver/BundleContext';
 import { createModule, IModule, IModuleMeta } from '../module-resolver/Module';
+import { Package, createPackage, IPackage } from '../module-resolver/Package';
 import { ensureDir, writeFile } from '../utils/utils';
 
 export interface ICachePublicProps {
@@ -22,12 +23,13 @@ export interface IModuleResolutionContext {
 }
 
 export interface ICacheMeta {
-  currentId: number;
+  currentId?: number;
   modules: Record<number, IModuleMeta>;
+  packages: Record<string, IPackage>;
 }
 
-function getMTime(absPath) {
-  return statSync(absPath).mtime.toString();
+export function getMTime(absPath): number {
+  return statSync(absPath).mtime.getTime();
 }
 
 export function createCache(ctx: Context, bundleContext: IBundleContext): ICache {
@@ -43,8 +45,8 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
     bundleContext.currentId = meta.currentId;
   } else {
     meta = {
-      currentId: bundleContext.currentId,
-      modules: [],
+      modules: {},
+      packages: {},
     };
   }
 
@@ -66,6 +68,21 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
         const moduleCacheData = require(cacheFile);
         const module = (target = createModule({ absPath: record.absPath, ctx: ctx }));
         module.initFromCache(record, moduleCacheData);
+
+        const cachedPackage = meta.packages[record.packageId];
+        if (cachedPackage) {
+          // restore directly from the bundle context
+          if (bundleContext.packages[cachedPackage.publicName]) {
+            module.pkg = bundleContext.packages[cachedPackage.publicName];
+          } else {
+            // restore package and assign it to module
+            const pkg = Package();
+            for (const key in cachedPackage) pkg[key] = cachedPackage[key];
+            bundleContext.packages[cachedPackage.publicName] = pkg;
+            module.pkg = pkg;
+          }
+        }
+
         mrc.modulesCached.push(module);
         if (record.dependencies) {
           for (const rid of record.dependencies) {
@@ -100,19 +117,33 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
 
       return { module: verityAbsPath(absPath, mrc), mrc };
     },
+
     write: async () => {
       const cacheWriters = [];
+      let shouldWriteMeta = false;
+      meta.currentId = bundleContext.currentId;
       for (const absPath in bundleContext.modules) {
         const module = bundleContext.modules[absPath];
-        if (!module.isCached) {
+        if (!module.isCached && !module.errored) {
+          shouldWriteMeta = true;
           meta.modules[module.id] = module.getMeta();
           const cacheFile = path.join(modulesFolder, `${module.id}.json`);
           const contents = JSON.stringify({ contents: module.contents, sourceMap: module.sourceMap });
           cacheWriters.push(writeFile(cacheFile, contents));
         }
       }
+
+      for (const packageId in bundleContext.packages) {
+        const pkg = bundleContext.packages[packageId];
+
+        if (!meta.packages[pkg.publicName]) {
+          shouldWriteMeta = true;
+          meta.packages[pkg.publicName] = pkg;
+        }
+      }
       await Promise.all(cacheWriters);
-      await writeFile(metaFile, JSON.stringify(meta, null, 2));
+
+      if (shouldWriteMeta) await writeFile(metaFile, JSON.stringify(meta, null, 2));
     },
   };
 }
