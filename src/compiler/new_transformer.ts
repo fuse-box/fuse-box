@@ -80,18 +80,18 @@ export function newTransformCommonVisitors(module: IModule): ITransformerResult 
   //const ctx = module.ctx;
   const commonVisitors: Array<ITransformerVisitors> = [];
 
-  // const userTransformers = module.props.ctx.userTransformers;
+  const userTransformers = module.ctx.userTransformers;
 
   let index = 0;
   while (index < BASE_TRANSFORMERS.length) {
     const transformer = BASE_TRANSFORMERS[index];
-    // user transformer need to be executed after the first transformers
-    // if (index === 1) {
-    //   for (const userTransformer of userTransformers) {
-    //     if (userTransformer.commonVisitors && isTransformerEligible(module, userTransformer))
-    //       commonVisitors.push(userTransformer.commonVisitors({ ctx, module, onRequireCallExpression }));
-    //   }
-    // }
+    //user transformer need to be executed after the first transformers
+    if (index === 1) {
+      for (const userTransformer of userTransformers) {
+        if (userTransformer.commonVisitors && isTransformerEligible(module, userTransformer))
+          commonVisitors.push(userTransformer.commonVisitors({ ctx, module, onRequireCallExpression }));
+      }
+    }
     if (transformer.commonVisitors && isTransformerEligible(module, transformer))
       commonVisitors.push(transformer.commonVisitors({ ctx, module: module as any, onRequireCallExpression }));
     index++;

@@ -1,6 +1,7 @@
 import { IASTScope } from '../Visitor/Visitor';
 
 export interface ASTNode {
+  raw?: string;
   type: keyof typeof ASTType;
 
   $assign_pattern?: boolean;

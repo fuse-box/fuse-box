@@ -59,6 +59,7 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
   let module = bundleContext.getModule(absPath);
 
   function init(pkg, absPath, reUseId?: number) {
+    ctx.log.verbose('init', '<dim>$absPath</dim>', { absPath });
     const module = createModule({ absPath, ctx, pkg });
     module.init();
     // generate next id
@@ -75,6 +76,7 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
       const transformerResult = module.transpile();
       for (const item of transformerResult.requireStatementCollection) {
         const source = item.statement.arguments[0].value;
+
         const resolvedModule = resolve({
           bundleContext: props.bundleContext,
           ctx: props.ctx,
@@ -82,10 +84,12 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
           parent: module,
           statement: source,
         });
+
         module.moduleSourceRefs[source] = resolvedModule;
         // re-writing the reference
         item.statement.callee.name = BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION;
         item.statement.arguments[0].value = resolvedModule.id;
+        delete item.statement.arguments[0].raw;
       }
       if (!ctx.config.production) module.generate();
     }
