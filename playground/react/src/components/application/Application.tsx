@@ -8,7 +8,7 @@ export function Application() {
       <div className="top">
         <div className="logo" />
       </div>
-      <div className="welcome">FuseBox ❤️ JSX/TSX oh yeah baby!</div>
+      <div className="welcome">FuseBox ❤️ JSX/TSX oh!!</div>
 
       <Details />
     </div>

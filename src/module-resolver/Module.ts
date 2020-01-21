@@ -1,5 +1,6 @@
 import { statSync } from 'fs';
 import * as path from 'path';
+import { getMTime } from '../cache/cache';
 import { generate } from '../compiler/generator/generator';
 import { ASTNode } from '../compiler/interfaces/AST';
 import { ITransformerResult } from '../compiler/interfaces/ITranformerResult';
@@ -7,6 +8,7 @@ import { newTransformCommonVisitors } from '../compiler/new_transformer';
 import { parseJavascript, parseTypeScript } from '../compiler/parser';
 import { EXECUTABLE_EXTENSIONS, JS_EXTENSIONS, STYLESHEET_EXTENSIONS, TS_EXTENSIONS } from '../config/extensions';
 import { Context } from '../core/Context';
+import { ProdPhasesTestEnv } from '../production/__tests__/testUtils';
 import { IModuleTree } from '../production/module/ModuleTree';
 import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { makeFuseBoxPath, readFile } from '../utils/utils';
@@ -57,7 +59,8 @@ export interface IModuleMeta {
   absPath: string;
   dependencies: Array<number>;
   id: number;
-  mtime: string;
+  mtime: number;
+  packageId?: string;
   publicPath: string;
 }
 
@@ -86,7 +89,8 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
         absPath: scope.absPath,
         dependencies: dependencies,
         id: scope.id,
-        mtime: statSync(scope.absPath).mtime.toString(),
+        mtime: getMTime(scope.absPath),
+        packageId: props.pkg !== undefined ? props.pkg.publicName : undefined,
         publicPath: scope.publicPath,
       };
     },
@@ -127,10 +131,23 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
     // parse using javascript or typescript
     parse: () => {
       if (!scope.contents) throw new Error('Cannot parse without content');
+
       if (JS_EXTENSIONS.includes(scope.extension)) {
-        scope.ast = parseJavascript(scope.contents);
+        try {
+          scope.ast = parseJavascript(scope.contents);
+          scope.errored = false;
+        } catch (e) {
+          scope.errored = true;
+          props.ctx.log.error(`Error while parsing JavaScript ${scope.absPath}\n\t ${e.stack}`);
+        }
       } else if (TS_EXTENSIONS.includes(scope.extension)) {
-        scope.ast = parseTypeScript(scope.contents, { jsx: scope.extension === '.tsx' });
+        try {
+          scope.ast = parseTypeScript(scope.contents, { jsx: scope.extension === '.tsx' });
+          scope.errored = false;
+        } catch (e) {
+          scope.errored = true;
+          props.ctx.log.error(`Error while parsing TypeScript ${scope.absPath}\n\t ${e.stack}`);
+        }
       }
       return scope.ast;
     },

@@ -1,21 +1,22 @@
+import * as path from 'path';
 import { fusebox, pluginAngular, pluginCSS, pluginSass, sparky } from '../../src';
 class Context {
   isProduction;
   runServer;
   getConfig = () =>
     fusebox({
-      target: 'browser',
       entry: 'src/entry.ts',
       modules: ['./node_modules'],
+      target: 'browser',
 
+      cache: { FTL: true, enabled: true, root: './.cache' },
+      devServer: this.runServer,
+      sourceMap: false,
+      watch: true,
       webIndex: {
         publicPath: '.',
         template: 'src/index.html',
       },
-      cache: { enabled: false, FTL: true, root: './.cache' },
-      watch: true,
-      sourceMap: false,
-      devServer: this.runServer,
 
       plugins: [
         pluginAngular('*.component.ts'),
@@ -24,14 +25,19 @@ class Context {
       ],
     });
 }
-const { task, rm, exec } = sparky<Context>(Context);
+const { exec, rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
   rm('./dist');
   ctx.runServer = true;
   const fuse = ctx.getConfig();
-  console.log('oi');
-  await fuse.runDev();
+
+  await fuse.runDev({
+    bundles: {
+      root: path.join(__dirname, 'dist'),
+      app: 'app.js',
+    },
+  });
 });
 
 task('preview', async ctx => {

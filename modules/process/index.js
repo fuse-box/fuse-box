@@ -94,10 +94,8 @@ Item.prototype.run = function() {
 };
 process.title = 'browser';
 process.browser = true;
-process.env = FuseBox.processEnv;
-if (typeof __process_env__ !== 'undefined') {
-  Object.assign(process.env, __process_env__);
-}
+process.env = {};
+
 process.argv = [];
 process.version = ''; // empty string to avoid regexp issues
 process.versions = {};
