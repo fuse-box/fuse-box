@@ -1,24 +1,26 @@
 import { existsSync, statSync } from 'fs';
 import * as path from 'path';
-import { Context } from '../core/Context';
 import { IBundleContext } from '../ModuleResolver/BundleContext';
-import { IModule, IModuleMeta, createModule } from '../ModuleResolver/Module';
+import { createModule, IModule, IModuleMeta } from '../ModuleResolver/Module';
+import { Context } from '../core/Context';
 import { ensureDir, writeFile } from '../utils/utils';
+
 export interface ICachePublicProps {
-  enabled: boolean;
   FTL?: boolean;
+  enabled: boolean;
   root?: string;
 }
 export interface ICache {
-  write: () => void;
   restore: (absPath: string) => { module: IModule; mrc: IModuleResolutionContext };
+  write: () => void;
 }
 
 export interface IModuleResolutionContext {
-  processed: Record<number, number>;
-  modulesRequireResolution: Array<{ id: number; absPath: string }>;
   modulesCached: Array<IModule>;
+  modulesRequireResolution: Array<{ id: number; absPath: string }>;
+  processed: Record<number, number>;
 }
+
 export interface ICacheMeta {
   currentId: number;
   modules: Record<number, IModuleMeta>;
@@ -48,7 +50,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
 
   function flushRecord(absPath: string, id: number, mrc: IModuleResolutionContext) {
     if (meta.modules[id]) delete meta.modules[id];
-    mrc.modulesRequireResolution.push({ id, absPath });
+    mrc.modulesRequireResolution.push({ absPath, id });
   }
 
   function verifyRecord(id: number, mrc: IModuleResolutionContext): IModule {
@@ -87,14 +89,13 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
     }
     if (recordId) return verifyRecord(recordId, mrc);
   }
-  //console.log(meta.modules);
 
   return {
     restore: (absPath: string) => {
       const mrc: IModuleResolutionContext = {
-        processed: {},
-        modulesRequireResolution: [],
         modulesCached: [],
+        modulesRequireResolution: [],
+        processed: {},
       };
 
       return { module: verityAbsPath(absPath, mrc), mrc };

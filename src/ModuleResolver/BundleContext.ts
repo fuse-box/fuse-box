@@ -1,8 +1,8 @@
-import { Context } from '../core/Context';
-import { IPackage } from './Package';
-import { IModule } from './Module';
-import { IPackageMeta } from '../resolver/resolver';
 import { createCache, ICache } from '../cache/cache';
+import { Context } from '../core/Context';
+import { IPackageMeta } from '../resolver/resolver';
+import { IModule } from './Module';
+import { IPackage } from './Package';
 
 export type IBundleContext = ReturnType<typeof createBundleContext>;
 export function createBundleContext(ctx: Context) {
@@ -13,14 +13,20 @@ export function createBundleContext(ctx: Context) {
 
   let cache: ICache;
   const scope = {
-    currentId,
-    nextId: () => ++scope.currentId,
-    modules,
     cache,
+    currentId,
+    modules,
     packages,
+    getModule: (absPath: string) => {
+      return modules[absPath];
+    },
     getPackage: (meta: IPackageMeta): IPackage => {
       const name = meta ? meta.name + '@' + meta.version : 'default';
       return packages[name];
+    },
+    nextId: () => ++scope.currentId,
+    setModule: (module: IModule) => {
+      modules[module.absPath] = module;
     },
     setPackage: (pkg: IPackage) => {
       const name = pkg.meta ? pkg.meta.name + '@' + pkg.meta.version : 'default';
@@ -30,12 +36,6 @@ export function createBundleContext(ctx: Context) {
       if (!scope.cache) return;
       const data = scope.cache.restore(absPath);
       return data;
-    },
-    getModule: (absPath: string) => {
-      return modules[absPath];
-    },
-    setModule: (module: IModule) => {
-      modules[module.absPath] = module;
     },
   };
 

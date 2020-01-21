@@ -1,5 +1,5 @@
-import { Context } from '../core/Context';
 import { IModule } from '../ModuleResolver/Module';
+import { Context } from '../core/Context';
 import { Bundle, IBundle, IBundleType, IBundleWriteResponse } from './Bundle';
 
 export interface IBundleRouter {
@@ -23,9 +23,9 @@ export function BundleRouter(props: IBundleRouteProps): IBundleRouter {
   function getBundle(module: IModule): IBundle {
     if (!mainBundle)
       mainBundle = Bundle({
-        entries: props.entries,
         bundleConfig: outputConfig.app,
         ctx: ctx,
+        entries: props.entries,
         includeAPI: true,
         type: IBundleType.JS_APP,
       });

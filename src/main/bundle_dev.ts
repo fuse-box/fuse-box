@@ -1,13 +1,13 @@
+import { ModuleResolver } from '../ModuleResolver/ModuleResolver';
 import { BundleRouter } from '../bundle_new/BundleRouter';
 import { Context } from '../core/Context';
 import { attachHMR } from '../hmr/attach_hmr';
-import { ModuleResolver } from '../ModuleResolver/ModuleResolver';
 import { pluginAssumption } from '../plugins/core/plugin_assumption';
 import { pluginCSS } from '../plugins/core/plugin_css';
 import { pluginSass } from '../plugins/core/plugin_sass';
-
 import { attachWebIndex } from './attach_webIndex';
 import { prerequisites } from './prerequisite';
+
 export async function bundleDev(ctx: Context) {
   const ict = ctx.ict;
 
@@ -20,7 +20,7 @@ export async function bundleDev(ctx: Context) {
 
   attachHMR(ctx);
 
-  const { modules, entries, bundleContext } = ModuleResolver(ctx, ctx.config.entries[0]);
+  const { bundleContext, entries, modules } = ModuleResolver(ctx, ctx.config.entries[0]);
   if (modules) {
     const router = BundleRouter({ ctx, entries });
     router.dispatchModules(modules);
@@ -31,7 +31,7 @@ export async function bundleDev(ctx: Context) {
 
     if (bundleContext.cache) bundleContext.cache.write();
 
-    ict.sync('complete', { ctx, bundles });
+    ict.sync('complete', { bundles, ctx });
     // attachWatcher({ ctx });
   }
 

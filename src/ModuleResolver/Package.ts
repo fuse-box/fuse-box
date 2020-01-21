@@ -3,10 +3,10 @@ import { IModule } from './Module';
 
 export interface IPackage {
   id?: string;
-  type?: PackageType;
   meta?: IPackageMeta;
   modules?: Record<number, IModule>;
   publicName?: string;
+  type?: PackageType;
 }
 
 export function Package(): IPackage {
@@ -21,7 +21,7 @@ export enum PackageType {
   EXTERNAL_PACKAGE,
 }
 
-export function createPackage(props: { type: PackageType; meta?: IPackageMeta }): IPackage {
+export function createPackage(props: { meta?: IPackageMeta; type: PackageType }): IPackage {
   const pkg = Package();
   pkg.type = props.type;
   pkg.meta = props.meta;
