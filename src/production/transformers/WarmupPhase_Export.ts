@@ -1,16 +1,16 @@
-import { ITransformer } from '../../compiler/interfaces/ITransformer';
 import { IVisit, IVisitorMod } from '../../compiler/Visitor/Visitor';
+import { ITransformer } from '../../compiler/interfaces/ITransformer';
 import { ExportReferenceType } from '../module/ExportReference';
 
 const NODES_OF_INTEREST = {
   ExportAllDeclaration: 1,
-  ExportNamedDeclaration: 1,
   ExportDefaultDeclaration: 1,
+  ExportNamedDeclaration: 1,
 };
 
 const OBJECT_DECLARATIONS = {
-  FunctionDeclaration: 1,
   ClassDeclaration: 1,
+  FunctionDeclaration: 1,
 };
 
 // function isObjectDefineLocally(node: ASTNode) {
@@ -23,13 +23,6 @@ export function Phase_1_ExportLink(): ITransformer {
   return {
     productionWarmupPhase: ({ module, productionContext }) => {
       return {
-        onTopLevelTraverse: (visit: IVisit) => {
-          const { node } = visit;
-          const tree = module.moduleTree;
-          if (NODES_OF_INTEREST[node.type]) {
-            tree.exportReferences.register({ productionContext: productionContext, module: module, visit: visit });
-          }
-        },
         onEachNode: (visit: IVisit): IVisitorMod => {
           const { node } = visit;
           const tree = module.moduleTree;
@@ -60,6 +53,13 @@ export function Phase_1_ExportLink(): ITransformer {
           }
 
           return;
+        },
+        onTopLevelTraverse: (visit: IVisit) => {
+          const { node } = visit;
+          const tree = module.moduleTree;
+          if (NODES_OF_INTEREST[node.type]) {
+            tree.exportReferences.register({ module: module, productionContext: productionContext, visit: visit });
+          }
         },
       };
     },

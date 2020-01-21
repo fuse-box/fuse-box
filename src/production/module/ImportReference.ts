@@ -242,7 +242,7 @@ export interface IImportReferences {
   register: (props: IImportReferencesProps) => void;
 }
 
-export function ImportReferences(productionContext: IProductionContext, module: Module): IImportReferences {
+export function ImportReferences(productionContext: IProductionContext, module: IModule): IImportReferences {
   const scope = {
     references: [],
     register: (props: IImportReferencesProps) => {
