@@ -47,11 +47,11 @@ describe('Code Splitting test', () => {
       }
     }
     return cachedModule;
-  }
+  };
 
   // cleanup after each test
   afterEach(() => {
-    if (env) env.destroy();
+    // if (env) env.destroy();
     env = undefined;
     cachedModule = undefined;
   });
@@ -75,7 +75,10 @@ describe('Code Splitting test', () => {
         export default function() {}
       `,
     });
-    const { modules, splitEntries: { entries } } = context;
+    const {
+      modules,
+      splitEntries: { entries },
+    } = context;
     expect(modules).toHaveLength(3);
     expect(entries).toHaveLength(1);
 
@@ -106,7 +109,10 @@ describe('Code Splitting test', () => {
         export default function() {}
       `,
     });
-    const { modules, splitEntries: { entries } } = context;
+    const {
+      modules,
+      splitEntries: { entries },
+    } = context;
     expect(modules).toHaveLength(3);
     expect(entries).toHaveLength(1);
 
@@ -119,15 +125,15 @@ describe('Code Splitting test', () => {
   });
 
   /**
-     * In this test case, we have one dynamic import 'bar.ts'
-     *
-     * 1.
-     * index.ts AND bar.ts import the module './test'
-     * - 'test' should not be in bar.subModules
-     * 2.
-     * bar requires 'ignored.ts' but doesn't use it
-     * - 'ignored' should not be in bar.subModules
-     */
+   * In this test case, we have one dynamic import 'bar.ts'
+   *
+   * 1.
+   * index.ts AND bar.ts import the module './test'
+   * - 'test' should not be in bar.subModules
+   * 2.
+   * bar requires 'ignored.ts' but doesn't use it
+   * - 'ignored' should not be in bar.subModules
+   */
   it('should drop imported module thats required directly somewhere else', async () => {
     const context = await test({
       'index.ts': `
@@ -155,9 +161,12 @@ describe('Code Splitting test', () => {
       `,
       'ignored.ts': `
         export const ignored = 'this module is being ignored';
-      `
+      `,
     });
-    const { modules, splitEntries: { entries } } = context;
+    const {
+      modules,
+      splitEntries: { entries },
+    } = context;
     expect(modules).toHaveLength(4);
     expect(entries).toHaveLength(1);
 
@@ -191,9 +200,12 @@ describe('Code Splitting test', () => {
       `,
       'utils.ts': `
         export default function() {}
-      `
+      `,
     });
-    const { modules, splitEntries: { entries } } = context;
+    const {
+      modules,
+      splitEntries: { entries },
+    } = context;
     expect(modules).toHaveLength(5);
     expect(entries).toHaveLength(2);
 
@@ -243,9 +255,12 @@ describe('Code Splitting test', () => {
       `,
       'ai.ts': `
         export const ai = 'ai';
-      `
+      `,
     });
-    const { modules, splitEntries: { entries } } = context;
+    const {
+      modules,
+      splitEntries: { entries },
+    } = context;
     expect(modules).toHaveLength(5);
     expect(entries).toHaveLength(1);
 
@@ -280,9 +295,12 @@ describe('Code Splitting test', () => {
       `,
       'utils.ts': `
         export default function() {}
-      `
+      `,
     });
-    const { modules, splitEntries: { entries } } = context;
+    const {
+      modules,
+      splitEntries: { entries },
+    } = context;
     expect(modules).toHaveLength(5);
     expect(entries).toHaveLength(2);
 
@@ -324,13 +342,20 @@ describe('Code Splitting test', () => {
       'three.ts': `
         import './utils';
       `,
-      'utils.ts': ``,
+      'utils.ts': `
+        console.log('empty');
+      `,
       'foo.ts': `
         import './bar';
       `,
-      'bar.ts': ``,
+      'bar.ts': `
+        console.log('empty');
+      `,
     });
-    const { modules, splitEntries: { entries } } = context;
+    const {
+      modules,
+      splitEntries: { entries },
+    } = context;
     expect(modules).toHaveLength(8);
     expect(entries).toHaveLength(3);
 
@@ -374,9 +399,14 @@ describe('Code Splitting test', () => {
       'one.ts': `
         import './utils';
       `,
-      'utils.ts': ``,
+      'utils.ts': `
+        console.log('empty');
+      `,
     });
-    const { modules, splitEntries: { entries } } = context;
+    const {
+      modules,
+      splitEntries: { entries },
+    } = context;
     expect(modules).toHaveLength(5);
     expect(entries).toHaveLength(2);
     // utils.ts
@@ -407,7 +437,10 @@ describe('Code Splitting test', () => {
         import './b';
       `,
     });
-    const { modules, splitEntries: { entries } } = context;
+    const {
+      modules,
+      splitEntries: { entries },
+    } = context;
     expect(modules).toHaveLength(4);
     // we only have 1 split
     expect(entries).toHaveLength(1);
@@ -449,7 +482,10 @@ describe('Code Splitting test', () => {
         import './b';
       `,
     });
-    const { modules, splitEntries: { entries } } = context;
+    const {
+      modules,
+      splitEntries: { entries },
+    } = context;
     expect(modules).toHaveLength(8);
     // we only have 1 split
     expect(entries).toHaveLength(1);
@@ -477,9 +513,14 @@ describe('Code Splitting test', () => {
       'three.ts': `
         import './utils';
       `,
-      'utils.ts': ``,
+      'utils.ts': `
+        console.log('emtpy');
+      `,
     });
-    const { modules, splitEntries: { entries } } = context;
+    const {
+      modules,
+      splitEntries: { entries },
+    } = context;
     expect(modules).toHaveLength(6);
     expect(entries).toHaveLength(3);
 
@@ -510,12 +551,17 @@ describe('Code Splitting test', () => {
       'three.ts': `
         import './utils';
       `,
-      'utils.ts': ``,
+      'utils.ts': `
+        console.log('emtpy');
+      `,
       'foo.ts': `
         import './utils';
-      `
+      `,
     });
-    const { modules, splitEntries: { entries } } = context;
+    const {
+      modules,
+      splitEntries: { entries },
+    } = context;
     // three.ts isn't required, so being dropped
     expect(modules).toHaveLength(6);
     // two is required normally, so shouldn't be a dynamic!
@@ -546,20 +592,31 @@ describe('Code Splitting test', () => {
 
         export default function() {};
       `,
-      'a.ts': ``,
+      'a.ts': `
+        console.log('emtpy');
+      `,
       'b.ts': `
         import './utils';
         export const b = 'b';
       `,
-      'c.ts': ``,
+      'c.ts': `
+        console.log('emtpy');
+      `,
       'd.ts': `
         import './two';
         import './utils';
       `,
-      'two.ts': ``,
-      'utils.ts': ``,
+      'two.ts': `
+        console.log('emtpy');
+      `,
+      'utils.ts': `
+        console.log('emtpy');
+      `,
     });
-    const { modules, splitEntries: { entries } } = context;
+    const {
+      modules,
+      splitEntries: { entries },
+    } = context;
     // three.ts isn't required, so being dropped
     expect(modules).toHaveLength(8);
     expect(entries).toHaveLength(1);
@@ -590,7 +647,10 @@ describe('Code Splitting test', () => {
         import './b';
       `,
     });
-    const { modules, splitEntries: { entries } } = context;
+    const {
+      modules,
+      splitEntries: { entries },
+    } = context;
     expect(modules).toHaveLength(5);
     expect(entries).toHaveLength(1);
     expect(getSplitEntry('a.ts', entries).modules).toHaveLength(4);

@@ -49,9 +49,12 @@ export function ResolveSplitEntry(productionContext: IProductionContext, target:
      * @param target
      * @param parentId
      */
-    traceCircularDependency: function (target: IModule, parentId: number): boolean {
+    traceCircularDependency: function(target: IModule, parentId: number): boolean {
       let traced = false;
-      const { id, moduleTree: { dependants } } = target;
+      const {
+        id,
+        moduleTree: { dependants },
+      } = target;
 
       // prevent infinite loop
       if (!!this.circularModules[parentId][id]) {
@@ -80,8 +83,11 @@ export function ResolveSplitEntry(productionContext: IProductionContext, target:
      *
      * @param target
      */
-    traceOrigin: function (target: IModule, parentId: number): boolean {
-      const { id, moduleTree: { dependants } } = target;
+    traceOrigin: function(target: IModule, parentId: number): boolean {
+      const {
+        id,
+        moduleTree: { dependants },
+      } = target;
       /**
        * This check is to validate possible circular dependencies
        * It's quite complex to keep track of all falsy code
@@ -127,8 +133,13 @@ export function ResolveSplitEntry(productionContext: IProductionContext, target:
      *
      * @param target
      */
-    traverseDependencies: function (target: IModule, entry: boolean = false): boolean {
-      const { id, moduleTree: { importReferences: { references } } } = target;
+    traverseDependencies: function(target: IModule, entry: boolean = false): boolean {
+      const {
+        id,
+        moduleTree: {
+          importReferences: { references },
+        },
+      } = target;
 
       // we already traversed this module, so we can skip it
       // this happens in case of circular deps
@@ -137,9 +148,7 @@ export function ResolveSplitEntry(productionContext: IProductionContext, target:
       this.traversed[id] = true;
 
       // check if target is a dynamic module. If so, we want to exclude it
-      const isDynamic = !entry
-        ? !!productionContext.splitEntries.ids[target.id]
-        : false;
+      const isDynamic = !entry ? !!productionContext.splitEntries.ids[target.id] : false;
       if (!isDynamic) {
         for (const { target: reference } of references) {
           if (this.traceOrigin(reference, id)) {
@@ -151,7 +160,7 @@ export function ResolveSplitEntry(productionContext: IProductionContext, target:
       return isDynamic;
     },
     traversed,
-    visited
+    visited,
   };
 
   splitEntry.traverseDependencies(target, true);
@@ -172,10 +181,7 @@ export function CodeSplittingPhase(productionContext: IProductionContext) {
   // loop over all modules to extract the modules that can be splitted
   const splitEntries = [];
   for (const possibleSplitEntry of productionContext.modules) {
-    if (
-      !possibleSplitEntry.isEntry &&
-      possibleSplitEntry.pkg.type === PackageType.USER_PACKAGE
-    ) {
+    if (!possibleSplitEntry.isEntry && possibleSplitEntry.pkg.type === PackageType.USER_PACKAGE) {
       // check if the current module is only imported through
       // dynamic imports
       const isDynamic = resolveDynamicImport(possibleSplitEntry);
@@ -191,8 +197,6 @@ export function CodeSplittingPhase(productionContext: IProductionContext) {
   // we needed to traverse all modules first to improve splitEntry resolvement
   // so now we can parse all dynamicModules that we found.
   for (const splitEntry of splitEntries) {
-    productionContext.splitEntries.register(
-      ResolveSplitEntry(productionContext, splitEntry)
-    );
+    productionContext.splitEntries.register(ResolveSplitEntry(productionContext, splitEntry));
   }
 }
