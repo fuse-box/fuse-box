@@ -1,8 +1,8 @@
 import { join } from 'path';
-import { IBundleType } from '../../bundle/Bundle';
-import { Context } from '../../core/Context';
+import { IBundleType } from '../../bundle/bundle';
+import { createContext } from '../../core/Context';
 import { env } from '../../env';
-import { FuseBoxLogAdapter } from '../../fuse-log/FuseBoxLogAdapter';
+import { FuseBoxLogAdapter } from '../../fuseLog/FuseBoxLogAdapter';
 import { mockWriteFile } from '../../utils/test_utils';
 import { getEssentialWebIndexParams, replaceWebIndexStrings, IWebIndexConfig } from '../webIndex';
 const fileMock = mockWriteFile();
@@ -92,7 +92,7 @@ describe('WebIndex test', () => {
     }
 
     async function generateCSSBundle(config?: IWebIndexConfig | boolean) {
-      const ctx = new Context({ webIndex: config });
+      const ctx = createContext({ webIndex: config });
       const bundles = createBundleSet(ctx);
       const cssBundle = bundles.getBundle(IBundleType.CSS_APP);
       cssBundle.addContent('foo');
@@ -102,7 +102,7 @@ describe('WebIndex test', () => {
     }
 
     async function generateJSBundle(config?: IWebIndexConfig | boolean) {
-      const ctx = new Context({ webIndex: config });
+      const ctx = createContext({ webIndex: config });
       const bundles = createBundleSet(ctx);
       const cssBundle = bundles.getBundle(IBundleType.JS_APP);
       cssBundle.addContent('foo');
@@ -111,7 +111,7 @@ describe('WebIndex test', () => {
     }
 
     it('should be disabled', () => {
-      const ctx = new Context({ webIndex: false });
+      const ctx = createContext({ webIndex: false });
       expect(ctx.webIndex.isDisabled).toBe(true);
     });
 

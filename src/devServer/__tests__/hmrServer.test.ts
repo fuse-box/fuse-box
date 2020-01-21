@@ -1,4 +1,4 @@
-import { Context } from '../../core/Context';
+import { createContext } from '../../core/Context';
 
 let mock__ws = {
   connections: [],
@@ -58,14 +58,14 @@ describe('HMR server test', () => {
     };
   });
   it('should create and bind events', () => {
-    const ctx = new Context({ logging: { level: 'disabled' } });
+    const ctx = createContext({ logging: { level: 'disabled' } });
     createHMRServer({ ctx, opts: { enabled: true } });
     expect(mock__ws.instances).toHaveLength(1);
     expect(mock__ws.events['connection']).toBeTruthy();
   });
 
   it('should create with internal server', () => {
-    const ctx = new Context({ logging: { level: 'disabled' } });
+    const ctx = createContext({ logging: { level: 'disabled' } });
     const internalServer = { foo: 'server' };
     createHMRServer({ ctx, internalServer: internalServer, opts: { enabled: true } });
     expect(mock__ws.instances).toHaveLength(1);
@@ -74,7 +74,7 @@ describe('HMR server test', () => {
   });
 
   it('should create with port', () => {
-    const ctx = new Context({ logging: { level: 'disabled' } });
+    const ctx = createContext({ logging: { level: 'disabled' } });
 
     createHMRServer({ ctx, opts: { enabled: true, port: 2222 } });
     expect(mock__ws.instances).toHaveLength(1);
@@ -83,7 +83,7 @@ describe('HMR server test', () => {
   });
 
   it('should dispatch a message', () => {
-    const ctx = new Context({ logging: { level: 'disabled' } });
+    const ctx = createContext({ logging: { level: 'disabled' } });
     const server = createHMRServer({ ctx, opts: { enabled: true } });
     const instance = mock__ws.instances[0];
     instance.triggerConnection();
@@ -95,7 +95,7 @@ describe('HMR server test', () => {
   });
 
   it('should send an a message', () => {
-    const ctx = new Context({ logging: { level: 'disabled' } });
+    const ctx = createContext({ logging: { level: 'disabled' } });
     const server = createHMRServer({ ctx, opts: { enabled: true } });
     const instance = mock__ws.instances[0];
     instance.triggerConnection();
@@ -107,7 +107,7 @@ describe('HMR server test', () => {
   });
 
   it('should close an connection', () => {
-    const ctx = new Context({ logging: { level: 'disabled' } });
+    const ctx = createContext({ logging: { level: 'disabled' } });
     createHMRServer({ ctx, opts: { enabled: true } });
     const instance = mock__ws.instances[0];
     instance.triggerConnection();

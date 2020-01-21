@@ -1,6 +1,6 @@
 import { ITypescriptTarget } from '../interfaces/TypescriptInterfaces';
 import { IPublicOutputConfig } from '../output/OutputConfigInterface';
-import { UserHandler } from '../user-handler/UserHandler';
+import { UserHandler } from '../userHandler/UserHandler';
 import { IManifest } from './IManifest';
 
 export interface IRunProps {

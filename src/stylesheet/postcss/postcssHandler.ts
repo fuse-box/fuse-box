@@ -3,7 +3,7 @@ import * as postcss from 'postcss';
 import * as atImport from 'postcss-import';
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
 import { Context } from '../../core/Context';
-import { FuseBoxLogAdapter } from '../../fuse-log/FuseBoxLogAdapter';
+import { FuseBoxLogAdapter } from '../../fuseLog/FuseBoxLogAdapter';
 import { IModule } from '../../moduleResolver/Module';
 import { readFile } from '../../utils/utils';
 import { cssHandleResources } from '../cssHandleResources';

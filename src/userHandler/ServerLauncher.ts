@@ -1,6 +1,6 @@
 import { ChildProcess, SpawnOptions, spawn } from 'child_process';
 
-import { IBundleWriteResponse } from '../bundle/Bundle';
+import { IBundleWriteResponse } from '../bundle/bundle';
 import { Context } from '../core/Context';
 
 interface handleEntryProps {

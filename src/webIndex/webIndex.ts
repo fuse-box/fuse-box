@@ -1,8 +1,8 @@
 import { join } from 'path';
-import { IBundleWriteResponse } from '../bundle/Bundle';
+import { IBundleWriteResponse } from '../bundle/bundle';
 import { Context } from '../core/Context';
 import { env } from '../env';
-import { FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
+import { FuseBoxLogAdapter } from '../fuseLog/FuseBoxLogAdapter';
 import { resolveCSSResource } from '../stylesheet/cssResolveURL';
 import { ensureAbsolutePath, fileExists, joinFuseBoxPath, readFile } from '../utils/utils';
 import { htmlStrings } from './htmlStrings';

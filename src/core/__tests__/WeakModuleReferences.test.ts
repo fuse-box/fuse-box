@@ -1,9 +1,9 @@
-import { Context } from '../Context';
+import { createContext } from '../Context';
 import { WeakModuleReferences, createWeakModuleReferences } from '../WeakModuleReferences';
 
 describe('WeakModuleReferences', () => {
   function create(): WeakModuleReferences {
-    const ctx = new Context({});
+    const ctx = createContext({});
     return createWeakModuleReferences(ctx);
   }
   it('should be 0 at start', () => {

@@ -1,15 +1,15 @@
 import { IPublicConfig } from '../../config/IPublicConfig';
 import { IRunProps } from '../../config/IRunProps';
-import { Context } from '../../core/Context';
+import { createContext } from '../../core/Context';
 import '../../utils/test_utils';
 import { createDevServerConfig } from '../devServerProps';
 
 function configure(config?: IPublicConfig) {
-  const ctx = new Context(config);
+  const ctx = createContext(config);
   return createDevServerConfig(ctx);
 }
 function configureProd(config: IPublicConfig, prodProps?: IRunProps) {
-  const ctx = new Context(config, prodProps);
+  const ctx = createContext(config, prodProps);
   return createDevServerConfig(ctx);
 }
 

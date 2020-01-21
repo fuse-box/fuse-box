@@ -1,4 +1,4 @@
-import { BundleRouter } from '../bundle/BundleRouter';
+import { BundleRouter } from '../bundle/bundleRouter';
 import { Context } from '../core/Context';
 import { prerequisites } from '../main/prerequisite';
 import { ModuleResolver } from '../moduleResolver/ModuleResolver';

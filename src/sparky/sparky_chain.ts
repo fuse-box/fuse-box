@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { env } from '../env';
-import { FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
+import { FuseBoxLogAdapter } from '../fuseLog/FuseBoxLogAdapter';
 import {
   ensureAbsolutePath,
   ensureDir,

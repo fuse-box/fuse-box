@@ -8,7 +8,7 @@ import { createGlobalContext } from '../../compiler/program/GlobalContext';
 import { transpileModule } from '../../compiler/program/transpileModule';
 import { GlobalContextTransformer } from '../../compiler/transformers/GlobalContextTransformer';
 import { IPublicConfig } from '../../config/IPublicConfig';
-import { Context } from '../../core/Context';
+import { createContext } from '../../core/Context';
 import { fusebox } from '../../core/fusebox';
 import { createModule, IModule } from '../../moduleResolver/Module';
 import { PackageType, createPackage } from '../../moduleResolver/Package';
@@ -23,7 +23,7 @@ export function testProductionWarmup(props: {
   props?: any;
   transformers: Array<ITransformer>;
 }) {
-  const ctx = new Context({
+  const ctx = createContext({
     cache: false,
     devServer: false,
     target: 'browser',

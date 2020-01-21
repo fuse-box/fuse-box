@@ -5,9 +5,9 @@ import { IPublicConfig } from '../config/IPublicConfig';
 import { IRunProps } from '../config/IRunProps';
 import { PrivateConfig } from '../config/PrivateConfig';
 import { createConfig } from '../config/config';
-import { createDevServer, IDevServerActions } from '../dev-server/devServer';
+import { createDevServer, IDevServerActions } from '../devServer/devServer';
 import { env } from '../env';
-import { FuseBoxLogAdapter, createFuseLogger } from '../fuse-log/FuseBoxLogAdapter';
+import { FuseBoxLogAdapter, createFuseLogger } from '../fuseLog/FuseBoxLogAdapter';
 import { MainInterceptor, createInterceptor } from '../interceptor/interceptor';
 import { TypescriptConfig } from '../interfaces/TypescriptInterfaces';
 import { outputConfigConverter } from '../output/OutputConfigConverter';
@@ -15,7 +15,7 @@ import { IOutputConfig, IPublicOutputConfig } from '../output/OutputConfigInterf
 import { TsConfigAtPath } from '../resolver/fileLookup';
 import { initTypescriptConfig } from '../tsconfig/configParser';
 import { ensureUserPath, fastHash } from '../utils/utils';
-import { createWebIndex, IWebIndexInterface } from '../web-index/webIndex';
+import { createWebIndex, IWebIndexInterface } from '../webIndex/webIndex';
 import { ContextTaskManager, createContextTaskManager } from './ContextTaskManager';
 import { WeakModuleReferences, createWeakModuleReferences } from './WeakModuleReferences';
 import { createWriter, IWriterActions } from './writer';
@@ -155,4 +155,8 @@ export class Context {
       return false;
     }
   }
+}
+
+export function createContext(config: IPublicConfig, props?: IRunProps): Context {
+  return new Context(config, props);
 }

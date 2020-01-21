@@ -1,4 +1,4 @@
-import { IBundleWriteResponse } from '../bundle/Bundle';
+import { IBundleWriteResponse } from '../bundle/bundle';
 import { Context } from '../core/Context';
 import { IBundleContext } from '../moduleResolver/BundleContext';
 import { IModule } from '../moduleResolver/Module';

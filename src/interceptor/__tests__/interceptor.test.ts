@@ -1,4 +1,4 @@
-import { Context } from '../../core/Context';
+import { Context, createContext } from '../../core/Context';
 
 import { IModule } from '../../moduleResolver/Module';
 import { createInterceptor } from '../interceptor';
@@ -7,7 +7,7 @@ describe('Interceptor', () => {
   let _module: IModule;
   let ctx: Context;
   beforeEach(() => {
-    ctx = new Context({});
+    ctx = createContext({});
     _module = { absPath: '/', ctx: ctx, extension: '.js' };
   });
   it('Should create an interceptor', () => {

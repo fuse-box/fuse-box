@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { ITarget } from '../../config/PrivateConfig';
-import { Context } from '../../core/Context';
+import { createContext } from '../../core/Context';
 import { createModule } from '../../moduleResolver/Module';
 import { createPackage } from '../../moduleResolver/Package';
 import { generate } from '../generator/generator';
@@ -31,7 +31,7 @@ export function testTranspile(props: ICompileModuleProps) {
     ast = parseTypeScript(contents, { jsx: true });
   }
 
-  const ctx = new Context({
+  const ctx = createContext({
     cache: false,
     devServer: false,
     env: props.env,

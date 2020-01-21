@@ -1,4 +1,4 @@
-import { BundleType, createBundle } from '../../bundle/Bundle';
+import { BundleType, createBundle } from '../../bundle/bundle';
 import { createContext } from '../../core/Context';
 import { mockModule } from '../../utils/test_utils';
 import { createExpressApp } from '../devServer';

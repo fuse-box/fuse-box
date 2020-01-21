@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Context } from '../Context';
-const ctx = new Context({
+import { createContext } from '../Context';
+const ctx = createContext({
   homeDir: path.resolve(__dirname, 'src'),
 });

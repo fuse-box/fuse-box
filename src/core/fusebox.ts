@@ -1,13 +1,13 @@
 import * as ts from 'typescript';
 import { IPublicConfig } from '../config/IPublicConfig';
 import { IRunProps } from '../config/IRunProps';
-import { FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
+import { FuseBoxLogAdapter } from '../fuseLog/FuseBoxLogAdapter';
 import { bundleDev } from '../main/bundle_dev';
 import { IProductionContext } from '../production/ProductionContext';
 import { bundleProd, productionPhases } from '../production/bundleProd';
-import { UserHandler } from '../user-handler/UserHandler';
+import { UserHandler } from '../userHandler/UserHandler';
 import { parseVersion } from '../utils/utils';
-import { Context } from './Context';
+import { createContext } from './Context';
 
 export function fusebox(config: IPublicConfig) {
   function checkVersion(log: FuseBoxLogAdapter) {
@@ -31,7 +31,7 @@ export function fusebox(config: IPublicConfig) {
   }
   return {
     runDev: async (props?: IRunProps) => {
-      const ctx = new Context(config, props);
+      const ctx = createContext(config, props);
       ctx.setDevelopment();
 
       checkVersion(ctx.log);
@@ -41,7 +41,7 @@ export function fusebox(config: IPublicConfig) {
       });
     },
     runProd: (props?: IRunProps): Promise<any> => {
-      const ctx = new Context(config, props);
+      const ctx = createContext(config, props);
       ctx.setProduction(props);
 
       if (props && props.handler) {
@@ -53,7 +53,7 @@ export function fusebox(config: IPublicConfig) {
       return Promise.resolve();
     },
     runProductionContext: (phases, props?: IRunProps): Promise<IProductionContext> => {
-      const ctx = new Context(config, props);
+      const ctx = createContext(config, props);
       ctx.setProduction(props);
       ctx.createOutputConfig(props ? props.bundles : undefined);
       return productionPhases(ctx, phases);
