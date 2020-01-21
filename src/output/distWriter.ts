@@ -1,6 +1,5 @@
 import * as path from 'path';
-import { fastHash, path2RegexPattern, ensureDir, ensureFuseBoxPath, writeFile } from '../utils/utils';
-import { IBundleType, IBundle } from '../bundle_new/Bundle';
+import { ensureDir, ensureFuseBoxPath, fastHash, writeFile } from '../utils/utils';
 /**
   outputParser is an indepenent enttity that accepts a user string
   e.g "./dist" or "./dist/app.js" or "./dist/app.$hash.js"
@@ -21,6 +20,7 @@ export interface IOuputParserProps {
   // hashes are enabled for production
   // otherwise they will be stripped from the string even specified
   hashEnabled?: boolean;
+
   // throw an error if there is a file in the user string
   // e.g. "./dist/app.js" we want to enforce a directory only
   expectDirectory?: boolean;
@@ -31,12 +31,12 @@ function stripHash(template): string {
 }
 
 export interface IDistWriterInitProps {
-  contents: string | Buffer;
-  // app.$name.js
-  userString?: string;
-  hash?: boolean;
+  contents: Buffer | string;
   // will strip out the hash
   forceDisableHash?: boolean;
+  hash?: boolean;
+  // app.$name.js
+  userString?: string;
 }
 
 export interface IDistWriteResponse {
@@ -47,8 +47,6 @@ export function distWriter(props: IOuputParserProps) {
   const root = props.root;
 
   const self = {
-    // the actual write function
-    write: async (path: string, contents: string | Buffer) => writeFile(path, contents),
     // create writer to get the information before the bundle is  written
     createWriter: (options: IDistWriterInitProps) => {
       let userString = options.userString;
@@ -72,6 +70,8 @@ export function distWriter(props: IOuputParserProps) {
         },
       };
     },
+    // the actual write function
+    write: async (path: string, contents: Buffer | string) => writeFile(path, contents),
   };
   return self;
 }

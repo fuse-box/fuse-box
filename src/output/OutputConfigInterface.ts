@@ -1,10 +1,5 @@
 export interface IPublicOutputConfig {
   /**
-   * Root is essential when making custom configuration
-   * That's how we determine relative paths for webIndex (index.html)
-   */
-  root?: string;
-  /**
    * The same as development and will be copied here unless the field is specified
    * Hashes are supported
    *
@@ -36,12 +31,17 @@ export interface IPublicOutputConfig {
    * }
    */
   app?: IOutputBundleConfig;
-  vendor?: IOutputBundleConfig;
+  cssSplitting?: boolean;
   mapping?: Array<{
     matching: string;
     target: IOutputBundleConfig;
   }>;
-  cssSplitting?: boolean;
+  /**
+   * Root is essential when making custom configuration
+   * That's how we determine relative paths for webIndex (index.html)
+   */
+  root?: string;
+  vendor?: IOutputBundleConfig;
 }
 
 /*
@@ -65,8 +65,7 @@ export interface IOutputExported {
 }
 
 export interface IOutputBundleConfigAdvanced {
-  path: string;
-  maxBundleSize?: number;
+  codeSplitting?: ICodeSplittingProps;
   exported?: IOutputExported;
   /**
    * Isolated API works only for one bundle output.
@@ -76,26 +75,27 @@ export interface IOutputBundleConfigAdvanced {
    * This is usually the case when making WebWorker bundles / browser builds for libraries
    */
   isolatedApi?: boolean;
-  codeSplitting?: ICodeSplittingProps;
+  maxBundleSize?: number;
+  path: string;
 }
 
 /**
  *  target bundle name could be a string or an advanced configuration
  *  with target and exposed objects
  */
-export type IOutputBundleConfig = string | IOutputBundleConfigAdvanced;
+export type IOutputBundleConfig = IOutputBundleConfigAdvanced | string;
 
 export interface ICodeSplittingProps {
   path?: string;
 }
 export interface IOutputConfig {
-  root?: string;
   app?: IOutputBundleConfigAdvanced;
-  vendor?: IOutputBundleConfigAdvanced;
+  codeSplitting?: ICodeSplittingProps;
+  cssSplitting?: boolean;
   mapping?: Array<{
     matching: string;
     target: IOutputBundleConfigAdvanced;
   }>;
-  codeSplitting?: ICodeSplittingProps;
-  cssSplitting?: boolean;
+  root?: string;
+  vendor?: IOutputBundleConfigAdvanced;
 }

@@ -1,4 +1,4 @@
-import { outputConfigConverter } from '../OutputConfig';
+import { outputConfigConverter } from '../OutputConfigConverter';
 
 describe('Output Config converter', () => {
   // values for those keys aren't hardcoded
@@ -52,8 +52,8 @@ describe('Output Config converter', () => {
     const res = outputConfigConverter({
       defaultRoot: __dirname,
       publicConfig: {
-        root: 'build',
         app: 'myapp.$hash.js',
+        root: 'build',
         vendor: 'external.$hash.js',
       },
     });
@@ -66,9 +66,9 @@ describe('Output Config converter', () => {
     const res = outputConfigConverter({
       defaultRoot: __dirname,
       publicConfig: {
+        app: { maxBundleSize: 10, path: 'foo.js' },
         root: 'build',
-        app: { path: 'foo.js', maxBundleSize: 10 },
-        vendor: { path: 'bar.js', maxBundleSize: 20 },
+        vendor: { maxBundleSize: 20, path: 'bar.js' },
       },
     });
     expect(res.root).toEqual('build');

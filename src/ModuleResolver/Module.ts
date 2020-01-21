@@ -1,67 +1,94 @@
-import { Context } from '../core/Context';
-import { readFile, makeFuseBoxPath } from '../utils/utils';
-import { IPackage, PackageType } from './Package';
-import * as path from 'path';
-import { parseTypeScript, parseJavascript } from '../compiler/parser';
-import { ASTNode } from '../compiler/interfaces/AST';
-import { newTransformCommonVisitors } from '../compiler/new_transformer';
-import { ITransformerResult } from '../compiler/interfaces/ITranformerResult';
-import { generate } from '../compiler/generator/generator';
-import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
-import { STYLESHEET_EXTENSIONS, EXECUTABLE_EXTENSIONS, JS_EXTENSIONS, TS_EXTENSIONS } from '../config/extensions';
 import { statSync } from 'fs';
+import * as path from 'path';
+import { generate } from '../compiler/generator/generator';
+import { ASTNode } from '../compiler/interfaces/AST';
+import { ITransformerResult } from '../compiler/interfaces/ITranformerResult';
+import { newTransformCommonVisitors } from '../compiler/new_transformer';
+import { parseJavascript, parseTypeScript } from '../compiler/parser';
+import { EXECUTABLE_EXTENSIONS, JS_EXTENSIONS, STYLESHEET_EXTENSIONS, TS_EXTENSIONS } from '../config/extensions';
+import { Context } from '../core/Context';
 import { IModuleTree } from '../production/module/ModuleTree';
-export function Module() { }
+import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
+import { makeFuseBoxPath, readFile } from '../utils/utils';
+import { PackageType, IPackage } from './Package';
+export function Module() {}
 
 export interface IModule {
-  init?: () => void;
-  initFromCache?: (meta: IModuleMeta, data: { contents: string; sourceMap: string }) => void;
-  id?: number;
-  ctx?: Context;
-  pkg?: IPackage;
   absPath?: string;
-  contents?: string;
-  sourceMap?: string;
-  publicPath?: string;
-  moduleTree?: IModuleTree;
-  read?: () => string;
-  errored?: boolean;
-  parse?: () => ASTNode;
-  css?: IStylesheetModuleResponse;
-  captured?: boolean;
-  isCached?: boolean;
-  isEntry?: boolean;
-  generate?: () => void;
-  transpile?: () => ITransformerResult;
-  isJavaScript?: boolean;
-  isTypeScript?: boolean;
-  isCSSSourceMapRequired?: boolean;
-  dependencies?: Array<IModule>;
-  isCSSModule?: boolean;
-  isCSSText?: boolean;
-  isStylesheet?: boolean;
-  isCommonsEligible?: boolean;
-  extension?: string;
   ast?: ASTNode;
   breakDependantsCache?: boolean;
+  captured?: boolean;
+  contents?: string;
+  css?: IStylesheetModuleResponse;
+  ctx?: Context;
+  dependencies?: Array<IModule>;
+  errored?: boolean;
+  extension?: string;
+  id?: number;
+  isCSSModule?: boolean;
+  isCSSSourceMapRequired?: boolean;
+  isCSSText?: boolean;
+  isCached?: boolean;
+  isCommonsEligible?: boolean;
+  isEntry?: boolean;
   isExecutable?: boolean;
+  isJavaScript?: boolean;
+  isStylesheet?: boolean;
+  isTypeScript?: boolean;
+  moduleTree?: IModuleTree;
+  pkg?: IPackage;
+  publicPath?: string;
+  sourceMap?: string;
   storage?: Record<string, any>;
   props?: {
     fuseBoxPath?: string;
   };
+  generate?: () => void;
   getMeta?: () => any;
+  init?: () => void;
+  initFromCache?: (meta: IModuleMeta, data: { contents: string; sourceMap: string }) => void;
+  parse?: () => ASTNode;
+  read?: () => string;
+  transpile?: () => ITransformerResult;
 }
 
 export interface IModuleMeta {
   absPath: string;
-  id: number;
-  publicPath: string;
   dependencies: Array<number>;
+  id: number;
   mtime: string;
+  publicPath: string;
 }
 
-export function createModule(props: { pkg?: IPackage; absPath?: string; ctx?: Context; }): IModule {
+export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPackage }): IModule {
   const scope: IModule = {
+    ctx: props.ctx,
+    dependencies: [],
+    pkg: props.pkg,
+    // legacy props
+    props: {},
+    storage: {},
+    // generate the code
+    generate: () => {
+      if (!scope.ast) throw new Error('Cannot generate code without AST');
+
+      const code = generate(scope.ast, { ecmaVersion: 7 });
+      scope.contents = code;
+      return code;
+    },
+    getMeta: (): IModuleMeta => {
+      const dependencies = [];
+      for (const module of scope.dependencies) {
+        dependencies.push(module.id);
+      }
+      return {
+        absPath: scope.absPath,
+        dependencies: dependencies,
+        id: scope.id,
+        mtime: statSync(scope.absPath).mtime.toString(),
+        publicPath: scope.publicPath,
+      };
+    },
     init: () => {
       const ext = path.extname(props.absPath);
       scope.extension = path.extname(props.absPath);
@@ -95,17 +122,6 @@ export function createModule(props: { pkg?: IPackage; absPath?: string; ctx?: Co
       scope.isCached = true;
       scope.extension = path.extname(meta.absPath);
     },
-    // legacy props
-    props: {},
-    storage: {},
-    dependencies: [],
-    ctx: props.ctx,
-    pkg: props.pkg,
-    // read the contents
-    read: () => {
-      scope.contents = readFile(scope.absPath);
-      return scope.contents;
-    },
     // parse using javascript or typescript
     parse: () => {
       if (!scope.contents) throw new Error('Cannot parse without content');
@@ -116,28 +132,12 @@ export function createModule(props: { pkg?: IPackage; absPath?: string; ctx?: Co
       }
       return scope.ast;
     },
+    // read the contents
+    read: () => {
+      scope.contents = readFile(scope.absPath);
+      return scope.contents;
+    },
     transpile: () => newTransformCommonVisitors(scope),
-    // generate the code
-    generate: () => {
-      if (!scope.ast) throw new Error('Cannot generate code without AST');
-
-      const code = generate(scope.ast, { ecmaVersion: 7 });
-      scope.contents = code;
-      return code;
-    },
-    getMeta: (): IModuleMeta => {
-      const dependencies = [];
-      for (const module of scope.dependencies) {
-        dependencies.push(module.id);
-      }
-      return {
-        absPath: scope.absPath,
-        id: scope.id,
-        publicPath: scope.publicPath,
-        dependencies: dependencies,
-        mtime: statSync(scope.absPath).mtime.toString(),
-      };
-    },
   };
   return scope;
 }

@@ -1,8 +1,8 @@
 import {
-  IPublicOutputConfig,
-  IOutputConfig,
-  IOutputBundleConfigAdvanced,
   IOutputBundleConfig,
+  IOutputBundleConfigAdvanced,
+  IOutputConfig,
+  IPublicOutputConfig,
 } from './OutputConfigInterface';
 
 const DEFAULT_APP_PATH = 'app.$hash.js';
@@ -18,8 +18,8 @@ function ensureBundleConfig(input: IOutputBundleConfig): IOutputBundleConfigAdva
 }
 
 export interface IOutputConfigProps {
-  publicConfig?: IPublicOutputConfig;
   defaultRoot?: string;
+  publicConfig?: IPublicOutputConfig;
 }
 
 export function outputConfigConverter(props: IOutputConfigProps): IOutputConfig {
@@ -46,8 +46,8 @@ export function outputConfigConverter(props: IOutputConfigProps): IOutputConfig 
     // creating default config
     config.app = { path: DEFAULT_APP_PATH };
     config.vendor = {
-      path: DEFAULT_VENDOR_PATH,
       maxBundleSize: DEFAULT_MAX_BUNDLE_SIZE, // 100kb by default
+      path: DEFAULT_VENDOR_PATH,
     };
   }
   if (!config.root) config.root = props.defaultRoot;
