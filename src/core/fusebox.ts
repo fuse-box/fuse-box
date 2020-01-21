@@ -1,61 +1,46 @@
-import * as ts from 'typescript';
 import { IPublicConfig } from '../config/IPublicConfig';
 import { IRunProps } from '../config/IRunProps';
-import { FuseBoxLogAdapter } from '../fuseLog/FuseBoxLogAdapter';
-import { bundleDev } from '../main/bundle_dev';
-import { IProductionContext } from '../production/ProductionContext';
-import { bundleProd, productionPhases } from '../production/bundleProd';
+import { bundleDev } from '../development/bundleDev';
+import { bundleProd } from '../production/bundleProd';
 import { UserHandler } from '../userHandler/UserHandler';
-import { parseVersion } from '../utils/utils';
 import { createContext } from './Context';
+import { finalizeFusebox } from './helpers/finalizeFusebox';
+import { preflightFusebox } from './helpers/preflightFusebox';
 
 export function fusebox(config: IPublicConfig) {
-  function checkVersion(log: FuseBoxLogAdapter) {
-    // process.on('uncaughtException', e => {
-    //   console.log(e);
-    // });
-
-    const nodeVersion = parseVersion(process.version)[0];
-    if (nodeVersion < 11) {
-      log.warn(
-        'You are using an older version of Node.js $version. Upgrade to at least Node.js v11 to get the maximium speed out of FuseBox',
-        { version: process.version },
-      );
-    }
-    const tsVersion = parseVersion(ts.version);
-    if (tsVersion[0] < 3) {
-      log.warn('You are using an older version of TypeScript $version. FuseBox builds might not work properly', {
-        version: tsVersion,
-      });
-    }
-  }
   return {
-    runDev: async (props?: IRunProps) => {
+    runDev: (props?: IRunProps) => {
       const ctx = createContext(config, props);
       ctx.setDevelopment();
 
-      checkVersion(ctx.log);
+      preflightFusebox(ctx);
 
-      return bundleDev(ctx).catch(e => {
-        console.error(e);
-      });
+      try {
+        bundleDev(ctx);
+      } catch (e) {
+        ctx.fatal('bundleDev ran into a fatal error', [e.stack]);
+      }
+
+      finalizeFusebox(ctx);
     },
-    runProd: (props?: IRunProps): Promise<any> => {
+
+    runProd: (props?: IRunProps) => {
       const ctx = createContext(config, props);
       ctx.setProduction(props);
+
+      preflightFusebox(ctx);
 
       if (props && props.handler) {
         props.handler(new UserHandler(ctx));
       }
-      bundleProd(ctx);
 
-      // return bundleProd(ctx);
-      return Promise.resolve();
-    },
-    runProductionContext: (phases, props?: IRunProps): Promise<IProductionContext> => {
-      const ctx = createContext(config, props);
-      ctx.setProduction(props);
-      return productionPhases(ctx, phases);
+      try {
+        bundleProd(ctx);
+      } catch (e) {
+        ctx.fatal('bundleProd ran into a fatal error', [e.stack]);
+      }
+
+      finalizeFusebox(ctx);
     },
   };
 }

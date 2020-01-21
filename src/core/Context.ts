@@ -83,7 +83,7 @@ export class Context {
     this.userTransformers.push(transformer);
   }
 
-  public setProduction(prodProps: IRunProps) {
+  public setProduction(prodProps?: IRunProps) {
     this.config.watch.enabled = false;
     this.config.hmr.enabled = false;
 

@@ -1,41 +1,47 @@
-import { ImportType } from '../module/ImportReference';
-import { Phase_1_ImportLink } from '../transformers/WarmupPhase_Import';
-import { testProductionWarmup } from './testUtils';
+import { IProductionContext } from '../ProductionContext';
+import { ImportType, IImport } from '../module/ImportReference';
+import { WarmupPhase } from '../phases/WarmupPhase';
+import { createTestEnvironment, ITestEnvironment } from './testUtils';
 
-function test(code: string) {
-  return testProductionWarmup({
-    code,
-    moduleProps: {
-      moduleSourceRefs: {
-        './foo': {
-          moduleTree: {
-            dependants: [],
-          },
-        },
-      },
-    },
-    transformers: [Phase_1_ImportLink()],
+let environment: ITestEnvironment;
+function getProductionContext(code: string): IProductionContext {
+  environment = createTestEnvironment({ entry: 'index.ts' }, {
+    'foo.ts': `
+      console.log('foo');
+    `,
+    'index.ts': code,
   });
+  environment.run([WarmupPhase]);
+  return environment.productionContext;
+};
+
+function getReferences(code: string): Array<IImport> {
+  const context = getProductionContext(code);
+  return context.modules[0].moduleTree.importReferences.references;
 }
 
 describe('Phase 1 - Imports test', () => {
+  // cleanup after each test
+  afterEach(() => {
+    if (environment) {
+      environment.cleanup();
+      environment = undefined;
+    }
+  });
+
   it(`sideEffectImport import './foo'`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       import './foo';
     `);
-    const refs = tree.importReferences.references;
-
     expect(refs).toHaveLength(1);
     expect(refs[0].source).toEqual('./foo');
     expect(refs[0].type).toEqual(ImportType.SIDE_EFFECT_IMPORT);
   });
 
   it(`sideEffectImport import './foo' should be removed`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       import './foo';
     `);
-    const refs = tree.importReferences.references;
-
     expect(refs).toHaveLength(1);
     refs[0].remove();
     expect(refs[0].removed).toBe(true);
@@ -44,11 +50,10 @@ describe('Phase 1 - Imports test', () => {
   });
 
   it(`regularImport import foo from './foo'`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       import foo from './foo';
+      console.log(foo);
     `);
-    const refs = tree.importReferences.references;
-
     expect(refs).toHaveLength(1);
     expect(refs[0].source === './foo');
     expect(refs[0].specifiers).toHaveLength(1);
@@ -57,11 +62,10 @@ describe('Phase 1 - Imports test', () => {
   });
 
   it(`regularImport import { foo, bar as baz } from './foo'`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       import { foo, bar as baz } from './foo';
+      console.log(foo, baz);
     `);
-    const refs = tree.importReferences.references;
-
     expect(refs).toHaveLength(1);
     expect(refs[0].source === './foo');
     expect(refs[0].specifiers).toHaveLength(2);
@@ -72,11 +76,10 @@ describe('Phase 1 - Imports test', () => {
   });
 
   it(`regularImport import foo, { bar } from './foo'`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       import foo, { bar } from './foo';
+      console.log(foo, bar);
     `);
-    const refs = tree.importReferences.references;
-
     expect(refs).toHaveLength(1);
     expect(refs[0].source === './foo');
     expect(refs[0].specifiers).toHaveLength(2);
@@ -87,11 +90,10 @@ describe('Phase 1 - Imports test', () => {
   });
 
   it(`regularImport import * as bar from './foo'`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       import * as bar from './foo';
+      console.log(bar);
     `);
-    const refs = tree.importReferences.references;
-
     expect(refs).toHaveLength(1);
     expect(refs[0].source === './foo');
     expect(refs[0].specifiers).toHaveLength(1);
@@ -100,50 +102,42 @@ describe('Phase 1 - Imports test', () => {
   });
 
   it(`regularImport import { bar } from './bar' should be ignored`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       import { bar } from './bar';
     `);
-    const refs = tree.importReferences.references;
-
     expect(refs).toHaveLength(0);
   });
 
   it(`regularRequire const foo = require('./foo')`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       const foo = require('./foo');
+      console.log(foo);
     `);
-    const refs = tree.importReferences.references;
-
     expect(refs).toHaveLength(1);
     expect(refs[0].source === './foo');
   });
 
   it(`sideEffectImportRequire import bar = require('./foo')`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       import bar = require('./foo');
+      console.log(bar);
     `);
-    const refs = tree.importReferences.references;
-
     expect(refs).toHaveLength(1);
     expect(refs[0].source === './foo');
   });
 
   it(`exportAllImport export * from './foo'`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       export * from './foo';
     `);
-    const refs = tree.importReferences.references;
-
     expect(refs).toHaveLength(1);
     expect(refs[0].source === './foo');
   });
 
   it(`exportSpecifierImport export { default } from './foo'`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       export { default } from './foo';
     `);
-    const refs = tree.importReferences.references;
-
     expect(refs).toHaveLength(1);
     expect(refs[0].source === './foo');
     expect(refs[0].specifiers).toHaveLength(1);
@@ -152,11 +146,9 @@ describe('Phase 1 - Imports test', () => {
   });
 
   it(`exportSpecifierImport export { foo, bar as baz } from './foo'`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       export { foo, bar as baz } from './foo';
     `);
-    const refs = tree.importReferences.references;
-
     expect(refs).toHaveLength(1);
     expect(refs[0].source === './foo');
     expect(refs[0].specifiers).toHaveLength(2);
@@ -167,94 +159,84 @@ describe('Phase 1 - Imports test', () => {
   });
 
   it(`regularRequire require('./foo')`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       require('./foo');
     `);
-    const refs = tree.importReferences.references;
     expect(refs).toHaveLength(1);
     expect(refs[0].source === './foo');
   });
 
   it(`regularRequire require() should be ignored`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       require();
     `);
-    const refs = tree.importReferences.references;
     expect(refs).toHaveLength(0);
   });
 
   it(`regularRequire require(1) should be ignored`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       require(1);
     `);
-    const refs = tree.importReferences.references;
     expect(refs).toHaveLength(0);
   });
 
   it(`regularRequire in scope () => { require('./foo') }`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       function a() {
         require('./foo');
       }
     `);
-    const refs = tree.importReferences.references;
     expect(refs).toHaveLength(1);
     expect(refs[0].source === './foo');
   });
 
   it(`dynamicImport with async await`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       async function foo(){
         await import('./foo');
       }
     `);
-    const refs = tree.importReferences.references;
     expect(refs).toHaveLength(1);
     expect(refs[0].source === './foo');
   });
 
   it(`dynamicImport import(1) should be ignored`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       async function foo(){
         await import(1);
       }
     `);
-    const refs = tree.importReferences.references;
     expect(refs).toHaveLength(0);
   });
 
   it(`dynamicImport () => import('./foo')`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       const foo = () => import('./foo');
     `);
-    const refs = tree.importReferences.references;
     expect(refs).toHaveLength(1);
     expect(refs[0].source === './foo');
   });
 
   it(`dynamicImport const foo = import('./foo')`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       const foo = import('./foo');
     `);
-    const refs = tree.importReferences.references;
     expect(refs).toHaveLength(1);
     expect(refs[0].source === './foo');
   });
 
   it(`dynamicImport const { foo } = import('./foo')`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       const { foo } = import('./foo');
     `);
-    const refs = tree.importReferences.references;
     expect(refs).toHaveLength(1);
     expect(refs[0].source === './foo');
   });
 
   it(`dynamicImport const bar = import('./bar') should be ignored`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       const bar = import('./bar');
     `);
-    const refs = tree.importReferences.references;
     expect(refs).toHaveLength(0);
   });
 });
@@ -266,34 +248,38 @@ describe('Phase 1 - Imports test', () => {
  * So make sure to refactor these tests accordingly!
  */
 describe('Phase 1 - Imports test - computed statements', () => {
+  // cleanup after each test
+  afterEach(() => {
+    if (environment) {
+      environment.cleanup();
+      environment = undefined;
+    }
+  });
   it(`regularRequire require('./foo' + b) should be ignored`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       const b = '/some-file.ts';
       require('./foo' + b);
     `);
-    const refs = tree.importReferences.references;
     expect(refs).toHaveLength(0);
   });
 
   it(`regularRequire in scope () => { require('./foo' + b) } should be ingored`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       const b = '/some-file.ts';
       function a() {
         require('./foo' + b);
       }
     `);
-    const refs = tree.importReferences.references;
     expect(refs).toHaveLength(0);
   });
 
   it(`dynamicImport import('./foo' + b) should be ignored`, () => {
-    const { tree } = test(`
+    const refs = getReferences(`
       async function foo(){
         const b = '/some-file.ts';
         await import('./foo' + b);
       }
     `);
-    const refs = tree.importReferences.references;
     expect(refs).toHaveLength(0);
   });
 });
