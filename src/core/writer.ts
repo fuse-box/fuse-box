@@ -4,24 +4,24 @@ import { ensureAbsolutePath, ensureFuseBoxPath, fastHash, writeFile } from '../u
 
 export interface IWriter {}
 export interface IWriterProps {
-  output?: string;
   isProduction?: boolean;
+  output?: string;
   root?: string;
 }
 
 export interface IWriterResponse {
-  size: number;
-  localPath: string;
   absPath: string;
+  localPath: string;
   relBrowserPath: string;
+  size: number;
   write: (content?: string) => void;
 }
 
 export interface IWriterActions {
   outputDirectory: string;
   template: string;
-  write: (target: string, content: string) => Promise<{ target: string }>;
   generate: (name: string, contents, noHash?: boolean) => IWriterResponse;
+  write: (target: string, content: string) => Promise<{ target: string }>;
 }
 
 function stripHash(template): string {
@@ -56,15 +56,6 @@ export function createWriter(props: IWriterProps): IWriterActions {
     outputDirectory,
     // generated template
     template,
-    write: async (target: string, contents: string) => {
-      if (!path.isAbsolute(target)) {
-        target = path.join(outputDirectory, target);
-      }
-      await writeFile(target, contents);
-      return {
-        target,
-      };
-    },
     // generate first, then write
     // this is done to simplify work when we need to know all the paths before the file is written
     // in case of the sourcemaps for example
@@ -89,14 +80,23 @@ export function createWriter(props: IWriterProps): IWriterActions {
       const size = Buffer.byteLength(contents, 'utf8');
 
       return {
-        size,
-        localPath,
         absPath,
+        localPath,
         relBrowserPath,
+        size,
         write: async (cnt?: string) => {
           // piping the contents to webIndex instead
           await writeFile(absPath, cnt ? cnt : contents);
         },
+      };
+    },
+    write: async (target: string, contents: string) => {
+      if (!path.isAbsolute(target)) {
+        target = path.join(outputDirectory, target);
+      }
+      await writeFile(target, contents);
+      return {
+        target,
       };
     },
   };

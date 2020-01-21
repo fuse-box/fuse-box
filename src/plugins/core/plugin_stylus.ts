@@ -1,6 +1,6 @@
 import { createStylesheetProps } from '../../config/createStylesheetProps';
 import { Context } from '../../core/Context';
-import { IModule } from '../../ModuleResolver/Module';
+import { IModule } from '../../module-resolver/Module';
 import { stylusHandler } from '../../stylesheet/stylus/stylusHandler';
 import { IPluginCommon } from '../interfaces';
 import { parsePluginOptions } from '../pluginUtils';
@@ -37,7 +37,7 @@ export function pluginStylusCapture(props: { ctx: Context; module: IModule; opts
   });
 }
 
-export function pluginStylus(a?: IPluginCommon | string | RegExp, b?: IPluginCommon) {
+export function pluginStylus(a?: IPluginCommon | RegExp | string, b?: IPluginCommon) {
   return (ctx: Context) => {
     let [opts, matcher] = parsePluginOptions<IPluginCommon>(a, b, {});
 

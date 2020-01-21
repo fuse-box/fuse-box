@@ -1,8 +1,8 @@
 import { existsSync, statSync } from 'fs';
 import * as path from 'path';
-import { IBundleContext } from '../ModuleResolver/BundleContext';
-import { createModule, IModule, IModuleMeta } from '../ModuleResolver/Module';
 import { Context } from '../core/Context';
+import { IBundleContext } from '../module-resolver/BundleContext';
+import { createModule, IModule, IModuleMeta } from '../module-resolver/Module';
 import { ensureDir, writeFile } from '../utils/utils';
 
 export interface ICachePublicProps {

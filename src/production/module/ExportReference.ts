@@ -1,6 +1,6 @@
-import { IModule } from '../../ModuleResolver/Module';
 import { IVisit } from '../../compiler/Visitor/Visitor';
 import { ASTNode } from '../../compiler/interfaces/AST';
+import { IModule } from '../../module-resolver/Module';
 import { IProductionContext } from '../ProductionContext';
 
 export interface ExportReferenceProps {
@@ -29,7 +29,7 @@ export function ExportReference(props: IExportReferenceProps) {
     name: props.name,
     targetObjectAst: props.targetObjectAst,
     type: props.type,
-    remove: () => { },
+    remove: () => {},
   };
   return exposed;
 }
@@ -101,7 +101,7 @@ export function HandleExportReferences(props: ExportReferenceProps, scope: IExpo
     }
   }
 }
-export function ExportReferences(productionContext: IProductionContext, module: Module) {
+export function ExportReferences(productionContext: IProductionContext, module: IModule) {
   const references: Array<IExportReference> = [];
 
   const scope = {

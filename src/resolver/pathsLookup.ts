@@ -3,10 +3,10 @@ import { fileLookup, ILookupResult } from './fileLookup';
 
 export type ITypescriptPaths = { [key: string]: Array<string> };
 interface IPathsLookupProps {
-  homeDir: string;
   baseURL: string;
-  isDev?: boolean;
   cachePaths?: boolean;
+  homeDir: string;
+  isDev?: boolean;
   paths?: ITypescriptPaths;
   target: string;
 }
@@ -57,7 +57,7 @@ function getPathsData(props: IPathsLookupProps): TypescriptPaths {
  * @param {IPathsLookupProps} props
  * @returns {(DirectoryListing | undefined)}
  */
-function getIndexFiles(props: IPathsLookupProps): DirectoryListing | undefined {
+function getIndexFiles(props: IPathsLookupProps): undefined | DirectoryListing {
   let indexFiles: Array<{ nameWithoutExtension: string; name: string }>;
   if (props.baseURL) {
     if (CACHED_LISTING[props.baseURL]) {
@@ -69,8 +69,8 @@ function getIndexFiles(props: IPathsLookupProps): DirectoryListing | undefined {
         if (file[0] !== '.') {
           const [nameWithoutExtension] = file.split('.');
           files.push({
-            nameWithoutExtension,
             name: file,
+            nameWithoutExtension,
           });
         }
       }
@@ -111,7 +111,7 @@ export function pathsLookup(props: IPathsLookupProps): ILookupResult {
     if (directories) {
       for (const j in directories) {
         const directory = directories[j];
-        const result = fileLookup({ isDev: props.isDev, fileDir: props.baseURL, target: directory });
+        const result = fileLookup({ fileDir: props.baseURL, isDev: props.isDev, target: directory });
         if (result && result.fileExists) {
           return result;
         }

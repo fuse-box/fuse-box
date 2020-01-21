@@ -1,9 +1,9 @@
-import { IStyleSheetProps } from '../config/IStylesheetProps';
 import * as path from 'path';
+import { IStyleSheetProps } from '../config/IStylesheetProps';
 
 export interface ICSSAutoImportProps {
-  stylesheet: IStyleSheetProps;
   contents: string;
+  stylesheet: IStyleSheetProps;
   url: string;
 }
 export function cssAutoImport(props: ICSSAutoImportProps) {

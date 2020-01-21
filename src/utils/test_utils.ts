@@ -2,13 +2,11 @@ import * as appRoot from 'app-root-path';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { IPublicConfig } from '../config/IPublicConfig';
-import { createDefaultPackage } from '../core/application';
 import { Context, createContext } from '../core/Context';
-import { createModule, IModuleProps, Module } from '../core/Module';
-import { createPackage, Package } from '../core/Package';
-import { assemble } from '../main/assemble';
 
-import { ensureFuseBoxPath, path2RegexPattern, fastHash } from './utils';
+import { createModule, IModule } from '../module-resolver/Module';
+import { PackageType, createPackage, IPackage } from '../module-resolver/Package';
+import { ensureFuseBoxPath, fastHash, path2RegexPattern } from './utils';
 
 const utils = require('./utils');
 declare global {
@@ -37,48 +35,42 @@ expect.extend({
 
 export interface IMockModuleProps {
   config?: IPublicConfig;
-  packageProps?: {
-    name?: string;
-    isDefaultPackage?: boolean;
-  };
   moduleProps?: {
     absPath?: string;
     extension?: string;
     fuseBoxPath?: string;
   };
+  packageProps?: {
+    isDefaultPackage?: boolean;
+    name?: string;
+  };
 }
 export interface IMockModuleResponse {
-  module: Module;
   ctx: Context;
-  pkg: Package;
+  module: IModule;
+  pkg: IPackage;
 }
-export function mockModule(props: IMockModuleProps): IMockModuleResponse {
+export function mockModule(props: IMockModuleProps) {
   const ctx = createContext(props.config || {});
   const moduleProps = props.moduleProps || {};
   const packageProps = props.packageProps || {};
-  const pkg = createPackage({
-    ctx: ctx,
-    meta: {
-      packageRoot: __dirname,
-      name: packageProps.name || 'default',
-    },
-  });
-  if (packageProps.isDefaultPackage) {
-    pkg.isDefaultPackage = true;
-  }
 
+  const pkg = createPackage({
+    meta: {
+      name: packageProps.name || 'default',
+      packageRoot: __dirname,
+    },
+    type: packageProps.isDefaultPackage ? PackageType.USER_PACKAGE : PackageType.EXTERNAL_PACKAGE,
+  });
+
+  const module = createModule({ absPath: moduleProps.absPath || __filename, ctx: ctx, pkg });
+  for (const key in moduleProps) {
+    module[key] = moduleProps[key];
+  }
   return {
-    module: createModule(
-      {
-        ctx: ctx,
-        absPath: moduleProps.absPath || '/',
-        extension: moduleProps.extension || '.js',
-        fuseBoxPath: moduleProps.fuseBoxPath || '/',
-      },
-      pkg,
-    ),
-    ctx: ctx,
-    pkg: pkg,
+    ctx,
+    module,
+    pkg,
   };
 }
 
@@ -88,40 +80,6 @@ export function throttle(ms: number) {
       return resolve(ms);
     }, ms);
   });
-}
-export function createAssembleHellper(folder: string) {
-  function createProjectContext(folder: string, opts?: IPublicConfig): Context {
-    opts = opts || {};
-    return createContext({
-      ...{
-        modules: [path.resolve(__dirname, 'cases/modules/')],
-        homeDir: path.resolve(__dirname, 'cases/projects/', folder),
-      },
-      ...opts,
-    });
-  }
-
-  return function withEntry(
-    opts: IPublicConfig,
-    entry: string,
-  ): {
-    ctx: Context;
-    packages: Array<Package>;
-    getDefaultPackage: () => Package;
-    getDefaultModules: () => Array<Module>;
-  } {
-    const ctx = createProjectContext(folder, opts);
-    const packages = assemble(ctx, entry);
-    return {
-      ctx,
-      packages,
-      getDefaultPackage: () => packages.find(p => p.isDefaultPackage),
-      getDefaultModules: () => {
-        const pkg = packages.find(p => p.isDefaultPackage);
-        return pkg.modules;
-      },
-    };
-  };
 }
 
 function createFiles(dir: string, files: any) {
@@ -152,22 +110,13 @@ export function createRealNodeModule(name: string, packageJSON, files: { [key: s
   return path2Module;
 }
 
-export function mockDefaultModule(ctx: Context, props?: IModuleProps) {
-  const pkg = createDefaultPackage(ctx);
-  let p = { ctx: ctx, absPath: '/', extension: '.js', fuseBoxPath: 'index.js' };
-  if (props) {
-    p = { ...p, ...props };
-  }
-  return createModule(p, pkg);
-}
-
 export function mockWriteFile() {
   const scope = {
-    written: [],
-    files: {},
-    removedFolders: [],
     ensureDir: [],
     fileReads: [],
+    files: {},
+    removedFolders: [],
+    written: [],
   };
   const originalReadFile = utils.readFile;
   let originalFunction = utils.writeFile;
@@ -178,7 +127,7 @@ export function mockWriteFile() {
 
   utils['writeFile'] = (name, contents) => {
     scope.files[name] = { contents, stat: { mtime: new Date() } };
-    scope.written.push({ name: name, contents: contents });
+    scope.written.push({ contents: contents, name: name });
   };
 
   utils['ensureDir'] = userPath => {
@@ -205,12 +154,28 @@ export function mockWriteFile() {
   };
 
   return {
+    addFile(path: string, contents) {
+      scope.files[path] = { contents, stat: { mtime: new Date() } };
+    },
+    getEnsureDir() {
+      return scope.ensureDir;
+    },
+    getFileReads() {
+      return scope.fileReads;
+    },
+    deleteFile: (path: string) => {
+      Object.keys(scope.files).forEach(key => {
+        if (key.indexOf(path) > -1) {
+          delete scope.files[key];
+        }
+      });
+    },
     findFile: (pattern): { name: string; contents: string; stat: any } => {
       const re = path2RegexPattern(pattern);
       for (const key in scope.files) {
         const item = scope.files[key];
         if (re.test(key)) {
-          return { name: key, contents: item.contents, stat: item.stat };
+          return { contents: item.contents, name: key, stat: item.stat };
         }
       }
     },
@@ -220,16 +185,10 @@ export function mockWriteFile() {
       for (const key in scope.files) {
         const item = scope.files[key];
         if (re.test(key)) {
-          found.push({ name: key, contents: item.contents, stat: item.stat });
+          found.push({ contents: item.contents, name: key, stat: item.stat });
         }
       }
       return found;
-    },
-    getFileReads() {
-      return scope.fileReads;
-    },
-    getEnsureDir() {
-      return scope.ensureDir;
     },
     findRemovedFolder: pattern => {
       const re = path2RegexPattern(pattern);
@@ -240,22 +199,19 @@ export function mockWriteFile() {
         }
       }
     },
+    flush: () => {
+      scope.fileReads = [];
+      scope.removedFolders = [];
+      scope.written = [];
+      scope.files = {};
+      scope.ensureDir = [];
+    },
+    getFileAmount: () => Object.keys(scope.files).length,
+    getFiles: () => scope.files,
     getRemovedFolders: () => {
       return scope.removedFolders;
     },
-    getFileAmount: () => Object.keys(scope.files).length,
     getWrittenFiles: (index?: number) => (index !== undefined ? scope.written[index] : scope.written),
-    getFiles: () => scope.files,
-    deleteFile: (path: string) => {
-      Object.keys(scope.files).forEach(key => {
-        if (key.indexOf(path) > -1) {
-          delete scope.files[key];
-        }
-      });
-    },
-    addFile(path: string, contents) {
-      scope.files[path] = { contents, stat: { mtime: new Date() } };
-    },
     unmock: () => {
       utils['filesStat'] = originalFileStat;
       utils['writeFile'] = originalFunction;
@@ -264,16 +220,9 @@ export function mockWriteFile() {
       utils['readFile'] = originalReadFile;
       utils['removeFolder'] = originalRemoveFolder;
     },
-    flush: () => {
-      scope.fileReads = [];
-      scope.removedFolders = [];
-      scope.written = [];
-      scope.files = {};
-      scope.ensureDir = [];
-    },
   };
 }
-export function testUtils() { }
+export function testUtils() {}
 
 expect.extend({
   toMatchJSONSnapshot(str: string) {

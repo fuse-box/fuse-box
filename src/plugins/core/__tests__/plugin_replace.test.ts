@@ -10,7 +10,7 @@ describe('Plugin replace test', () => {
     const mock = mockModule({});
 
     fileMock.addFile(__filename, '$version');
-    mock.module.props.absPath = __filename;
+    mock.module.absPath = __filename;
 
     const data = pluginReplace('plugin_replace.test.ts', { $version: '1.0.0' });
 
@@ -23,7 +23,7 @@ describe('Plugin replace test', () => {
     const mock = mockModule({});
 
     fileMock.addFile(__filename, '$version');
-    mock.module.props.absPath = __filename;
+    mock.module.absPath = __filename;
 
     const data = pluginReplace({ $version: '1.0.0' });
 

@@ -1,7 +1,7 @@
-import { ModuleResolver } from '../ModuleResolver/ModuleResolver';
-import { BundleRouter } from '../bundle_new/BundleRouter';
+import { BundleRouter } from '../bundle/BundleRouter';
 import { Context } from '../core/Context';
 import { prerequisites } from '../main/prerequisite';
+import { ModuleResolver } from '../module-resolver/ModuleResolver';
 import { pluginAssumption } from '../plugins/core/plugin_assumption';
 import { pluginCSS } from '../plugins/core/plugin_css';
 import { pluginSass } from '../plugins/core/plugin_sass';
@@ -25,11 +25,6 @@ async function productionContextFlow(ctx: Context): Promise<IProductionContext> 
     router.dispatchModules(modules);
 
     await ict.resolve();
-    //const bundles = await router.writeBundles();
-    //    await attachWebIndex(ctx, bundles);
-
-    //ict.sync('complete', { ctx, bundles });
-    // attachWatcher({ ctx });
   }
 
   return ProductionContext(ctx, modules);

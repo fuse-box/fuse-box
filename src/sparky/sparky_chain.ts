@@ -5,25 +5,25 @@ import {
   ensureAbsolutePath,
   ensureDir,
   ensureFuseBoxPath,
+  path2RegexPattern,
   readFile,
   readFileAsBuffer,
   removeFile,
   writeFile,
-  path2RegexPattern,
 } from '../utils/utils';
 import { bumpVersion, IBumpVersion } from './bumpVersion';
 import { sparky_src } from './sparky_src';
-import { tsc, TscOptions } from './tsc';
+import { TscOptions, tsc } from './tsc';
 export interface ISparkyChain {
+  bumpVersion: (mask: RegExp | string, opts: IBumpVersion) => ISparkyChain;
+  clean: () => ISparkyChain;
+  contentsOf: (mask: RegExp | string, fn: (contents: string) => string) => ISparkyChain;
+  dest: (target: string, base: string) => ISparkyChain;
+  exec: () => Promise<Array<string>>;
+  filter: (a: ((file: string) => any) | RegExp) => ISparkyChain;
   src: (glob: string) => ISparkyChain;
   tsc: (opts: TscOptions) => ISparkyChain;
-  clean: () => ISparkyChain;
-  filter: (a: RegExp | ((file: string) => any)) => ISparkyChain;
-  exec: () => Promise<Array<string>>;
   write: () => ISparkyChain;
-  bumpVersion: (mask: string | RegExp, opts: IBumpVersion) => ISparkyChain;
-  contentsOf: (mask: string | RegExp, fn: (contents: string) => string) => ISparkyChain;
-  dest: (target: string, base: string) => ISparkyChain;
 }
 export function sparkyChain(log: FuseBoxLogAdapter): ISparkyChain {
   const activities = [];
@@ -66,6 +66,47 @@ export function sparkyChain(log: FuseBoxLogAdapter): ISparkyChain {
       return chain;
     },
 
+    bumpVersion: (mask: RegExp | string, opts: IBumpVersion) => {
+      const re: RegExp = typeof mask === 'string' ? path2RegexPattern(mask) : mask;
+      activities.push(async (files: Array<string>) => {
+        const target = files.find(file => re.test(file));
+        if (target) {
+          readFiles[target] = readFiles[target] || readFile(target);
+          readFiles[target] = bumpVersion(readFiles[target], opts);
+        }
+        return files;
+      });
+      return chain;
+    },
+    clean: () => {
+      activities.push(async (files: Array<string>) => {
+        files.forEach(file => {
+          removeFile(file);
+        });
+        return files;
+      });
+      return chain;
+    },
+    // can be used to replace the contents of a file
+    contentsOf: (mask: RegExp | string, fn: (contents: string) => string) => {
+      const re: RegExp = typeof mask === 'string' ? path2RegexPattern(mask) : mask;
+      activities.push(async (files: Array<string>) => {
+        const target = files.find(file => re.test(file));
+        if (target) {
+          readFiles[target] = readFiles[target] || readFile(target);
+          readFiles[target] = fn(readFiles[target]);
+        }
+        return files;
+      });
+      return chain;
+    },
+    dest: (target: string, base: string) => {
+      newLocation = target;
+      newLocationBase = base;
+      return chain;
+    },
+    // runs all the activities (used mainly for testing)
+    exec: async () => runActivities(),
     // filters out unwanted files
     // accepts function and a regexp
     filter: input => {
@@ -83,37 +124,9 @@ export function sparkyChain(log: FuseBoxLogAdapter): ISparkyChain {
       });
       return chain;
     },
-    clean: () => {
+    tsc: (options?: TscOptions) => {
       activities.push(async (files: Array<string>) => {
-        files.forEach(file => {
-          removeFile(file);
-        });
-        return files;
-      });
-      return chain;
-    },
-    bumpVersion: (mask: string | RegExp, opts: IBumpVersion) => {
-      const re: RegExp = typeof mask === 'string' ? path2RegexPattern(mask) : mask;
-      activities.push(async (files: Array<string>) => {
-        const target = files.find(file => re.test(file));
-        if (target) {
-          readFiles[target] = readFiles[target] || readFile(target);
-          readFiles[target] = bumpVersion(readFiles[target], opts);
-        }
-        return files;
-      });
-      return chain;
-    },
-    // can be used to replace the contents of a file
-    contentsOf: (mask: string | RegExp, fn: (contents: string) => string) => {
-      const re: RegExp = typeof mask === 'string' ? path2RegexPattern(mask) : mask;
-      activities.push(async (files: Array<string>) => {
-        const target = files.find(file => re.test(file));
-        if (target) {
-          readFiles[target] = readFiles[target] || readFile(target);
-          readFiles[target] = fn(readFiles[target]);
-        }
-        return files;
+        await tsc({ files: files, ...options });
       });
       return chain;
     },
@@ -127,19 +140,6 @@ export function sparkyChain(log: FuseBoxLogAdapter): ISparkyChain {
           return files;
         });
       });
-      return chain;
-    },
-    tsc: (options?: TscOptions) => {
-      activities.push(async (files: Array<string>) => {
-        await tsc({ files: files, ...options });
-      });
-      return chain;
-    },
-    // runs all the activities (used mainly for testing)
-    exec: async () => runActivities(),
-    dest: (target: string, base: string) => {
-      newLocation = target;
-      newLocationBase = base;
       return chain;
     },
   };

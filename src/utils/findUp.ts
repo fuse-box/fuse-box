@@ -1,19 +1,23 @@
-import { join, dirname } from 'path';
 import { existsSync, statSync } from 'fs';
+import { dirname, join } from 'path';
 
 export const FIND_UP_GLOBAL_CONFIG = {
-  maxStepsBack: 10
+  maxStepsBack: 10,
 };
 
-export function findUp(start: string, target: string, boundaryArg?: {
-  boundary: string,
-  inclusive: boolean,
-}): string | null {
+export function findUp(
+  start: string,
+  target: string,
+  boundaryArg?: {
+    boundary: string;
+    inclusive: boolean;
+  },
+): null | string {
   let currentDir = start;
   try {
     const stat = statSync(start);
     currentDir = stat.isDirectory() ? start : dirname(start);
-  } catch (err) { }
+  } catch (err) {}
 
   let lastTry = false;
   let backSteps = 0;
@@ -31,7 +35,7 @@ export function findUp(start: string, target: string, boundaryArg?: {
       return targetTestPath;
     }
 
-    currentDir = join(currentDir, "../");
+    currentDir = join(currentDir, '../');
   }
 
   console.error(`Too many back steps, starting from "${start}"`);

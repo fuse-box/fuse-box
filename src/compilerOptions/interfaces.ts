@@ -1,38 +1,38 @@
 export type ITypeScriptPaths = { [key: string]: Array<string> };
 
 export interface ICompilerOptions {
-  tsConfig: string;
   baseUrl?: string;
-  paths?: ITypeScriptPaths;
-  target: string;
-  isBrowser: string;
-  isServer: string;
   emitDecoratorMetadata?: boolean;
   experimentalDecorators?: boolean;
+  isBrowser: string;
+  isServer: string;
+  paths?: ITypeScriptPaths;
+  target: string;
+  tsConfig: string;
 }
 
 export interface IPrivateCompilerOptions {
-  target: string;
+  basePath?: string;
   emitDecoratorMetadata?: boolean;
   experimentalDecorators?: boolean;
-  basePath?: string;
   paths?: ITypeScriptPaths;
+  target: string;
 }
 
 export interface IRawCompilerOptions {
+  baseUrl?: string;
   emitDecoratorMetadata?: boolean;
   experimentalDecorators?: boolean;
-  baseUrl?: string;
-  paths?: ITypeScriptPaths;
-  jsxFactory?: string;
   jsx?: string;
+  jsxFactory?: string;
+  paths?: ITypeScriptPaths;
 }
 
 export interface IRawTypescriptConfig {
   error?: any;
 
   config?: {
-    extends?: string;
     compilerOptions?: IRawCompilerOptions;
+    extends?: string;
   };
 }

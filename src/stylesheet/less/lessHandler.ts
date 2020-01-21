@@ -1,6 +1,6 @@
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
 import { Context } from '../../core/Context';
-import { IModule } from '../../ModuleResolver/Module';
+import { IModule } from '../../module-resolver/Module';
 import { readFile } from '../../utils/utils';
 import { cssHandleResources } from '../cssHandleResources';
 import { cssResolveModule } from '../cssResolveModule';
@@ -26,7 +26,7 @@ async function renderWithLess(less, contents, options): Promise<{ map: string; c
   });
 }
 
-export async function renderModule(props: { ctx: Context; module: IModule; less: any; options: IStyleSheetProps }) {
+export async function renderModule(props: { ctx: Context; less: any; module: IModule; options: IStyleSheetProps }) {
   const Importer = {
     install: (less, manager) => {
       manager.addFileManager(
@@ -37,10 +37,10 @@ export async function renderModule(props: { ctx: Context; module: IModule; less:
               const paths = [root].concat(userPaths);
               const resolved = cssResolveModule({
                 extensions: ['.less', '.css'],
+                options: props.options,
                 paths,
                 target: url,
                 tryUnderscore: true,
-                options: props.options,
               });
               if (resolved.success) {
                 if (props.options.breakDependantsCache) {
@@ -50,11 +50,11 @@ export async function renderModule(props: { ctx: Context; module: IModule; less:
                 const contents = readFile(resolved.path);
 
                 const processed = cssHandleResources(
-                  { path: resolved.path, contents: contents },
-                  { options: props.options, ctx: props.ctx, module: props.module },
+                  { contents: contents, path: resolved.path },
+                  { ctx: props.ctx, module: props.module, options: props.options },
                 );
 
-                return resolve({ contents: processed.contents, filename: resolved.path, options, environment });
+                return resolve({ contents: processed.contents, environment, filename: resolved.path, options });
               } else {
                 reject(`Cannot find module ${url} at ${root}`);
               }
@@ -69,8 +69,8 @@ export async function renderModule(props: { ctx: Context; module: IModule; less:
 
   // handle root resources
   const processed = cssHandleResources(
-    { path: props.module.absPath, contents: props.module.contents },
-    { options: props.options, ctx: props.ctx, module: props.module },
+    { contents: props.module.contents, path: props.module.absPath },
+    { ctx: props.ctx, module: props.module, options: props.options },
   );
 
   let pluginList: Array<any> = [Importer];
@@ -93,15 +93,15 @@ export async function renderModule(props: { ctx: Context; module: IModule; less:
 
   let sourceMap: string;
   if (data.map) {
-    sourceMap = alignCSSSourceMap({ module: props.module, sourceMap: data.map, ctx: props.ctx });
+    sourceMap = alignCSSSourceMap({ ctx: props.ctx, module: props.module, sourceMap: data.map });
   }
 
-  return { map: sourceMap, css: data.css };
+  return { css: data.css, map: sourceMap };
 }
 export function lessHandler(props: ILessHandlerProps): IStyleSheetProcessor {
   const { ctx, module } = props;
   const less = require('less');
   return {
-    render: async () => renderModule({ ctx, module, less, options: props.options }),
+    render: async () => renderModule({ ctx, less, module, options: props.options }),
   };
 }

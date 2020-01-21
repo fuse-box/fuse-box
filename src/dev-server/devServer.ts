@@ -1,7 +1,7 @@
 import * as express from 'express';
-import { BundleType } from '../bundle/Bundle';
+import * as proxyMiddleware from 'http-proxy-middleware';
+import * as open from 'open';
 import { Context } from '../core/Context';
-import { ImportType } from '../resolver/resolver';
 import {
   createDevServerConfig,
   IHMRServerProps,
@@ -9,11 +9,7 @@ import {
   IOpenProps,
   IProxyCollection,
 } from './devServerProps';
-import { createHMRServer, HMRServerMethods } from './hmrServer';
-import * as open from 'open';
-
-import * as proxyMiddleware from 'http-proxy-middleware';
-import { generateFTLJavaScript } from '../FTL/FasterThanLightReload';
+import { HMRServerMethods, createHMRServer } from './hmrServer';
 
 export interface IDevServerActions {
   clientSend: (name: string, payload, ws_instance?: WebSocket) => void;
@@ -27,26 +23,26 @@ interface ICreateReactAppExtraProps {
 
 export function createExpressApp(ctx: Context, props: IHTTPServerProps, extra?: ICreateReactAppExtraProps) {
   const app = express();
-  app.all('/__ftl', (req, res) => {
-    const ftlModules = ctx.assembleContext.getFTLModules();
-    const js = generateFTLJavaScript(ftlModules);
-    res.set('Content-Type', 'application/javascript; charset=UTF-8');
-    res.send(js);
-  });
+  // app.all('/__ftl', (req, res) => {
+  //   const ftlModules = ctx.assembleContext.getFTLModules();
+  //   const js = generateFTLJavaScript(ftlModules);
+  //   res.set('Content-Type', 'application/javascript; charset=UTF-8');
+  //   res.send(js);
+  // });
   if (props.express) props.express(app, express);
   function logProvider(p) {
     return {
-      log: msg => {
-        ctx.log.info('proxy', msg);
-      },
       debug: msg => {
         ctx.log.info('proxy', msg);
       },
+      error: msg => ctx.log.error(msg),
       info: msg => {
         ctx.log.info('proxy', msg);
       },
+      log: msg => {
+        ctx.log.info('proxy', msg);
+      },
       warn: msg => ctx.log.warn(msg),
-      error: msg => ctx.log.error(msg),
     };
   }
 
@@ -116,35 +112,31 @@ export function createDevServer(ctx: Context): IDevServerActions {
   if (hmrServerProps.enabled) {
     // injecting hmr dependency
     if (!isProduction) {
-      ict.on('assemble_after_transpile', props => {
-        const module = props.module;
-        const pkg = module.pkg;
-
-        // if (pkg.isDefaultPackage && pkg.entry === module) {
-        //   module.analysis.imports.push({ type: ImportType.REQUIRE, literal: 'fuse-box-hot-reload' });
-        // }
-        return props;
-      });
-      ict.on('before_bundle_write', props => {
-        const bundle = props.bundle;
-
-        if (bundle.props.type === BundleType.PROJECT_JS) {
-          const clientProps: any = {};
-
-          if (hmrServerProps.connectionURL) {
-            clientProps.connectionURL = hmrServerProps.connectionURL;
-          } else {
-            if (hmrServerProps.useCurrentURL || httpServerProps.port === hmrServerProps.port) {
-              clientProps.useCurrentURL = true;
-            } else if (hmrServerProps.port) {
-              clientProps.port = hmrServerProps.port;
-            }
-          }
-
-          bundle.addContent(`FuseBox.import("fuse-box-hot-reload").connect(${JSON.stringify(clientProps)})`);
-        }
-        return props;
-      });
+      // ict.on('assemble_after_transpile', props => {
+      //   const module = props.module;
+      //   const pkg = module.pkg;
+      //   // if (pkg.isDefaultPackage && pkg.entry === module) {
+      //   //   module.analysis.imports.push({ type: ImportType.REQUIRE, literal: 'fuse-box-hot-reload' });
+      //   // }
+      //   return props;
+      // });
+      // ict.on('before_bundle_write', props => {
+      //   const bundle = props.bundle;
+      //   if (bundle.props.type === BundleType.PROJECT_JS) {
+      //     const clientProps: any = {};
+      //     if (hmrServerProps.connectionURL) {
+      //       clientProps.connectionURL = hmrServerProps.connectionURL;
+      //     } else {
+      //       if (hmrServerProps.useCurrentURL || httpServerProps.port === hmrServerProps.port) {
+      //         clientProps.useCurrentURL = true;
+      //       } else if (hmrServerProps.port) {
+      //         clientProps.port = hmrServerProps.port;
+      //       }
+      //     }
+      //     bundle.addContent(`FuseBox.import("fuse-box-hot-reload").connect(${JSON.stringify(clientProps)})`);
+      //   }
+      //   return props;
+      // });
     }
   }
 
@@ -157,7 +149,7 @@ export function createDevServer(ctx: Context): IDevServerActions {
 
       // if the ports are the same, we mount HMR on the same server
       if (hmrServerProps.enabled && hmrServerProps.port === httpServerProps.port && !isProduction) {
-        hmrServerMethods = createHMRServer({ internalServer, ctx, opts: hmrServerProps });
+        hmrServerMethods = createHMRServer({ ctx, internalServer, opts: hmrServerProps });
       }
     }
     if (hmrServerProps.enabled && !hmrServerMethods && !isProduction) {
@@ -173,17 +165,17 @@ export function createDevServer(ctx: Context): IDevServerActions {
   });
 
   return {
+    clientSend: (name: string, payload, ws_instance?: WebSocket) => {
+      if (hmrServerMethods) {
+        hmrServerMethods.sendEvent(name, payload, ws_instance);
+      }
+    },
     onClientMessage: (fn: (name: string, payload, ws_instance?: WebSocket) => void) => {
       if (hmrServerMethods) {
         hmrServerMethods.onMessage(fn);
       } else {
         // if the server isn't ready store it here
         onMessageCallbacks.push(fn);
-      }
-    },
-    clientSend: (name: string, payload, ws_instance?: WebSocket) => {
-      if (hmrServerMethods) {
-        hmrServerMethods.sendEvent(name, payload, ws_instance);
       }
     },
   };

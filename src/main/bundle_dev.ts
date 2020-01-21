@@ -1,7 +1,7 @@
-import { ModuleResolver } from '../ModuleResolver/ModuleResolver';
-import { BundleRouter } from '../bundle_new/BundleRouter';
+import { BundleRouter } from '../bundle/BundleRouter';
 import { Context } from '../core/Context';
-import { attachHMR } from '../hmr/attach_hmr';
+import { ModuleResolver } from '../module-resolver/ModuleResolver';
+
 import { pluginAssumption } from '../plugins/core/plugin_assumption';
 import { pluginCSS } from '../plugins/core/plugin_css';
 import { pluginSass } from '../plugins/core/plugin_sass';
@@ -18,9 +18,7 @@ export async function bundleDev(ctx: Context) {
 
   plugins.forEach(plugin => plugin && plugin(ctx));
 
-  attachHMR(ctx);
-
-  const { bundleContext, entries, modules } = ModuleResolver(ctx, ctx.config.entries[0]);
+  const { bundleContext, entries, modules } = ModuleResolver(ctx, ctx.config.entries);
   if (modules) {
     const router = BundleRouter({ ctx, entries });
     router.dispatchModules(modules);

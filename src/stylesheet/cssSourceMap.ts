@@ -1,19 +1,20 @@
 import * as path from 'path';
 import { Context } from '../core/Context';
-import { IModule } from '../ModuleResolver/Module';
+import { IModule } from '../module-resolver/Module';
+import { PackageType } from '../module-resolver/Package';
 import { extractFuseBoxPath, joinFuseBoxPath } from '../utils/utils';
 export interface IAlignCSSSourceMap {
+  ctx: Context;
   module: IModule;
   sourceMap: any;
-  ctx: Context;
 }
 
 export function alignCSSSourceMap(props: IAlignCSSSourceMap): string {
-  const { ctx, sourceMap, module } = props;
+  const { ctx, module, sourceMap } = props;
 
   const json = sourceMap.file ? sourceMap : JSON.parse(sourceMap.toString());
   const rootPath = path.dirname(module.absPath);
-  const isDefault = true; //module.pkg.isDefaultPackage;
+  const isDefault = module.pkg.type === PackageType.USER_PACKAGE;
 
   if (json.sources) {
     for (let i = 0; i < json.sources.length; i++) {

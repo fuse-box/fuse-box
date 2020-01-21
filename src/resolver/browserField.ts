@@ -1,6 +1,6 @@
-import { IPackageMeta } from './resolver';
 import * as path from 'path';
 import { fileExists } from '../utils/utils';
+import { IPackageMeta } from './resolver';
 export function handleBrowserField(packageMeta: IPackageMeta, absPath: string): string {
   if (typeof packageMeta.browser !== 'object') {
     return;

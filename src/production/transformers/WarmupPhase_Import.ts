@@ -1,7 +1,7 @@
 import { IVisit, IVisitorMod } from '../../compiler/Visitor/Visitor';
+import { getDynamicImport } from '../../compiler/helpers/importHelpers';
 import { ASTType } from '../../compiler/interfaces/AST';
 import { ITransformer } from '../../compiler/interfaces/ITransformer';
-import { getDynamicImport } from '../../compiler/helpers/importHelpers';
 
 const NODES_OF_INTEREST = {
   [ASTType.ExportAllDeclaration]: 1,
@@ -46,6 +46,7 @@ export function Phase_1_ImportLink(): ITransformer {
           }
 
           const { node } = visit;
+
           if (isEligibleDynamicImport(node) || isEligibleRequire(node)) {
             tree.importReferences.register({ module, productionContext, visit });
           }

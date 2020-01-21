@@ -1,9 +1,9 @@
 import * as readline from 'readline';
-import { onExit } from '../utils/exit';
-import { FuseLog } from './fuseLog';
 import { IFuseLoggerProps } from '../config/IFuseLoggerProps';
 import { env } from '../env';
-import { ignoredPath2Regex } from '../watcher/watcher';
+import { onExit } from '../utils/exit';
+import { path2RegexPattern } from '../utils/utils';
+import { FuseLog } from './fuseLog';
 
 let prettyTime = require('pretty-time');
 
@@ -28,7 +28,7 @@ export class FuseBoxLogAdapter extends FuseLog {
 
     if (env.isTest && !process.argv.includes('--log')) this.props.level = 'disabled';
     if (props.ignoreStatementErrors) {
-      this.ignoreStatementErrors = props.ignoreStatementErrors.map(item => ignoredPath2Regex(item));
+      this.ignoreStatementErrors = props.ignoreStatementErrors.map(item => path2RegexPattern(item));
     }
 
     this._warnings = [];
@@ -201,8 +201,8 @@ export class FuseBoxLogAdapter extends FuseLog {
             `${genericError} <red><bold>Completed with $err and <yellow>$warn</yellow> ${timeFormat}</red></bold>`,
           {
             err: conj('error', this._errors.length),
-            warn: conj('warning', this._warnings.length),
             time: time,
+            warn: conj('warning', this._warnings.length),
           },
         ),
       );
@@ -221,8 +221,8 @@ export class FuseBoxLogAdapter extends FuseLog {
           this.indent +
             `<black><bold><bgYellow> WARNING </bgYellow></bold></black>  <yellow><bold>Completed with $warn ${timeFormat}</yellow></bold>`,
           {
-            warn: conj('warning', this._warnings.length),
             time: time,
+            warn: conj('warning', this._warnings.length),
           },
         ),
       );

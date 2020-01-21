@@ -2,15 +2,15 @@ import * as appRoot from 'app-root-path';
 import * as path from 'path';
 import * as ts from 'typescript';
 import { PrivateConfig } from '../config/PrivateConfig';
-import { IRawCompilerOptions, IRawTypescriptConfig, TypescriptConfig } from '../interfaces/TypescriptInterfaces';
+import { TypescriptConfig, IRawCompilerOptions, IRawTypescriptConfig } from '../interfaces/TypescriptInterfaces';
 import { ITypescriptPathsConfig } from '../resolver/resolver';
 import { fileExists, pathJoin } from '../utils/utils';
 
 export function resolveTSConfig(props: {
-  root: string;
   directory?: string;
   fileName?: string;
-}): { iterations: number; filePath?: string } {
+  root: string;
+}): { filePath?: string; iterations: number } {
   let [found, reachedLimit] = [false, false];
 
   let current = props.fileName ? path.dirname(props.fileName) : props.directory;
@@ -20,7 +20,7 @@ export function resolveTSConfig(props: {
   while (found === false && reachedLimit === false) {
     let filePath = path.join(current, 'tsconfig.json');
     if (fileExists(filePath)) {
-      return { iterations, filePath };
+      return { filePath, iterations };
     }
 
     if (props.root === current) {
@@ -62,7 +62,7 @@ export function initTypescriptConfig(
   } else if (!props.tsConfig && props.entries && props.homeDir) {
     const root = appRoot.path;
     const fileName = pathJoin(props.homeDir, props.entries[0]);
-    const result = resolveTSConfig({ root: root, fileName: fileName });
+    const result = resolveTSConfig({ fileName: fileName, root: root });
     if (result.filePath) {
       tsConfigFilePath = result.filePath;
       basePath = path.dirname(result.filePath);
@@ -135,10 +135,10 @@ export function initTypescriptConfig(
   const config = ts.convertCompilerOptionsFromJson(userOptions, basePath);
 
   return {
+    basePath,
+    compilerOptions: config.options,
+    jsonCompilerOptions: userOptions,
     tsConfigFilePath,
     typescriptPaths: typescriptPaths,
-    basePath,
-    jsonCompilerOptions: userOptions,
-    compilerOptions: config.options,
   };
 }

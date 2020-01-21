@@ -2,9 +2,9 @@ import { Server } from 'ws';
 import { Context } from '../core/Context';
 import { IHMRServerProps } from './devServerProps';
 export interface ISocketClientInterface {
+  getClient(): WebSocket;
   onMessage?: (fn: (name: string, payload) => void) => void;
   sendEvent(name: string, payload?, ws_instance?: WebSocket);
-  getClient(): WebSocket;
 }
 // keep that in mind:
 // https://github.com/elsassph/react-hmr-ts/tree/master/examples/fuse-box
@@ -21,8 +21,8 @@ export function createClient(client): ISocketClientInterface {
 }
 export type HMRServerMethods = ISocketClientInterface & {};
 export interface ICreateHMRServerProps {
-  internalServer?: any;
   ctx: Context;
+  internalServer?: any;
   opts: IHMRServerProps;
 }
 

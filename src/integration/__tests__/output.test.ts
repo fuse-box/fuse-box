@@ -1,5 +1,5 @@
-import { createFileSet, createTestBundle } from './intergrationUtils';
 import * as path from 'path';
+import { createFileSet, createTestBundle } from './intergrationUtils';
 describe('Output Integration test', () => {
   it('should write to a default dist ', async () => {
     const test = createTestBundle(

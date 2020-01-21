@@ -1,5 +1,5 @@
-import { IModule } from '../ModuleResolver/Module';
 import { Context } from '../core/Context';
+import { IModule } from '../module-resolver/Module';
 import { Bundle, IBundle, IBundleType, IBundleWriteResponse } from './Bundle';
 
 export interface IBundleRouter {

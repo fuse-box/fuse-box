@@ -1,12 +1,12 @@
 import * as path from 'path';
-import { Context } from '../../core/Context';
-import { pluginJSONHandler } from './plugin_json';
-import { pluginLinkHandler } from './plugin_link';
-import { pluginLessCapture } from './plugin_less';
 import { createStylesheetProps } from '../../config/createStylesheetProps';
 import { LINK_ASSUMPTION_EXTENSIONS, TEXT_EXTENSIONS } from '../../config/extensions';
-import { pluginStylusCapture } from './plugin_stylus';
+import { Context } from '../../core/Context';
+import { pluginJSONHandler } from './plugin_json';
+import { pluginLessCapture } from './plugin_less';
+import { pluginLinkHandler } from './plugin_link';
 import { pluginRawHandler } from './plugin_raw';
+import { pluginStylusCapture } from './plugin_stylus';
 
 export function pluginAssumption() {
   return (ctx: Context) => {
