@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Context } from '../core/Context';
-import { IModule } from '../module-resolver/Module';
-import { PackageType } from '../module-resolver/Package';
+import { IModule } from '../moduleResolver/Module';
+import { PackageType } from '../moduleResolver/Package';
 import { extractFuseBoxPath, joinFuseBoxPath } from '../utils/utils';
 export interface IAlignCSSSourceMap {
   ctx: Context;

@@ -1,6 +1,6 @@
 import { IPublicConfig } from '../../config/IPublicConfig';
 import { Context } from '../../core/Context';
-import { Module } from '../../core/Module';
+// import { IModule } from '../../moduleResolver/Module';
 import { WebWorkerProcess } from './WebWorkerProcess';
 
 // function resolveWorkerPath(module: Module, target: string) {
@@ -26,20 +26,20 @@ export function pluginWebWorker(opts?: { config?: IPublicConfig }) {
   return (ctx: Context) => {
     const webWorkers: { [key: string]: WebWorkerProcess } = {};
 
-    function registerWebWorker(workerPath: string, module: Module) {
-      if (!webWorkers[workerPath]) {
-        const workerProcess = new WebWorkerProcess({
-          ctx,
-          module,
-          item: { absPath: workerPath },
-        });
-        ctx.log.info('worker', 'registered ' + workerPath);
-        webWorkers[workerPath] = workerProcess;
-        return webWorkers[workerPath];
-      } else {
-        return webWorkers[workerPath];
-      }
-    }
+    // function registerWebWorker(workerPath: string, module: IModule) {
+    //   if (!webWorkers[workerPath]) {
+    //     const workerProcess = new WebWorkerProcess({
+    //       ctx,
+    //       item: { absPath: workerPath },
+    //       module,
+    //     });
+    //     ctx.log.info('worker', 'registered ' + workerPath);
+    //     webWorkers[workerPath] = workerProcess;
+    //     return webWorkers[workerPath];
+    //   } else {
+    //     return webWorkers[workerPath];
+    //   }
+    // }
 
     // ctx.transformerAtPath(
     //   ctx.config.homeDir, // limiting workers to home directory
@@ -101,18 +101,18 @@ export function pluginWebWorker(opts?: { config?: IPublicConfig }) {
     //   },
     // );
 
-    ctx.ict.on('assemble_module_complete', props => {
-      const { module } = props;
-      if (module.isCached && module.isExecutable()) {
-        const workers = module.getMeta('workers') as Array<string>;
-        if (workers) {
-          for (const workerPath of workers) {
-            registerWebWorker(workerPath, module);
-          }
-        }
-      }
-      return props;
-    });
+    // ctx.ict.on('assemble_module_complete', props => {
+    //   const { module } = props;
+    //   if (module.isCached && module.isExecutable()) {
+    //     const workers = module.getMeta('workers') as Array<string>;
+    //     if (workers) {
+    //       for (const workerPath of workers) {
+    //         registerWebWorker(workerPath, module);
+    //       }
+    //     }
+    //   }
+    //   return props;
+    // });
 
     ctx.ict.on('complete', props => {
       for (const webworkerPath in webWorkers) {

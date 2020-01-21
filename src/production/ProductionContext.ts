@@ -1,5 +1,5 @@
 import { Context } from '../core/Context';
-import { IModule } from '../module-resolver/Module';
+import { IModule } from '../moduleResolver/Module';
 import { ModuleTree } from './module/ModuleTree';
 import { SplitEntries, ISplitEntries } from './module/SplitEntries';
 

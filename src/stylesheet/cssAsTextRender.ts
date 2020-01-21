@@ -1,7 +1,7 @@
 import { IStyleSheetProps } from '../config/IStylesheetProps';
 import { Context } from '../core/Context';
 
-import { IModule } from '../module-resolver/Module';
+import { IModule } from '../moduleResolver/Module';
 import { wrapContents } from '../plugins/pluginStrings';
 import { IStylesheetModuleResponse } from './interfaces';
 

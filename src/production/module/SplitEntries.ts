@@ -1,4 +1,4 @@
-import { IModule } from '../../module-resolver/Module';
+import { IModule } from '../../moduleResolver/Module';
 import { IProductionContext } from '../ProductionContext';
 import { IImport } from './ImportReference';
 import { ModuleType } from './ModuleTree';
@@ -39,8 +39,8 @@ export function SplitEntries(productionContext: IProductionContext): ISplitEntri
   return {
     entries,
     ids,
-    register: function (splitEntry: ISplitEntry): void {
+    register: function(splitEntry: ISplitEntry): void {
       entries.push(splitEntry);
-    }
-  }
+    },
+  };
 }

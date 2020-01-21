@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { IBundleWriteResponse } from '../bundle/Bundle';
+import { IBundleWriteResponse } from '../bundle/bundle';
 import { Context } from '../core/Context';
 import { ElectronLauncher } from './ElectronLauncher';
 import { ServerLauncher } from './ServerLauncher';

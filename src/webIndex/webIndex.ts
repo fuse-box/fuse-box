@@ -1,8 +1,8 @@
 import { join } from 'path';
-import { IBundleWriteResponse } from '../bundle/Bundle';
+import { IBundleWriteResponse } from '../bundle/bundle';
 import { Context } from '../core/Context';
 import { env } from '../env';
-import { FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
+import { FuseBoxLogAdapter } from '../fuseLog/FuseBoxLogAdapter';
 import { resolveCSSResource } from '../stylesheet/cssResolveURL';
 import { ensureAbsolutePath, fileExists, joinFuseBoxPath, readFile } from '../utils/utils';
 import { htmlStrings } from './htmlStrings';
@@ -74,10 +74,10 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
     generate: async (bundles: Array<IBundleWriteResponse>) => {
       const scriptTags = [];
       const cssTags = [];
-      let ftlEnabled = false;
-      if (ctx.cache && ctx.config.cache.FTL && ctx.devServer && !ctx.config.production) {
-        ftlEnabled = true;
-      }
+      // let ftlEnabled = false;
+      // if (ctx.cache && ctx.config.cache.FTL && ctx.devServer && !ctx.config.production) {
+      //   ftlEnabled = true;
+      // }
       //const sorted = bundles.sort((a, b) => a.bundle.props.priority - b.bundle.props.priority);
       bundles.forEach(item => {
         scriptTags.push(htmlStrings.scriptTag(joinFuseBoxPath(opts.publicPath, item.relativePath)));

@@ -1,4 +1,3 @@
-import { statSync } from 'fs';
 import * as path from 'path';
 import { getMTime } from '../cache/cache';
 import { generate } from '../compiler/generator/generator';
@@ -8,7 +7,6 @@ import { newTransformCommonVisitors } from '../compiler/new_transformer';
 import { parseJavascript, parseTypeScript } from '../compiler/parser';
 import { EXECUTABLE_EXTENSIONS, JS_EXTENSIONS, STYLESHEET_EXTENSIONS, TS_EXTENSIONS } from '../config/extensions';
 import { Context } from '../core/Context';
-import { ProdPhasesTestEnv } from '../production/__tests__/testUtils';
 import { IModuleTree } from '../production/module/ModuleTree';
 import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { makeFuseBoxPath, readFile } from '../utils/utils';

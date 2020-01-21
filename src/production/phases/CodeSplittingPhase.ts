@@ -1,5 +1,5 @@
-import { IModule } from '../../module-resolver/Module';
-import { PackageType } from '../../module-resolver/Package';
+import { IModule } from '../../moduleResolver/Module';
+import { PackageType } from '../../moduleResolver/Package';
 import { IProductionContext } from '../ProductionContext';
 import { ImportType } from '../module/ImportReference';
 import { SplitEntry, ISplitEntry } from '../module/SplitEntries';

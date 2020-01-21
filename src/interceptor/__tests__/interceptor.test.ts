@@ -1,6 +1,6 @@
 import { Context, createContext } from '../../core/Context';
 
-import { IModule } from '../../module-resolver/Module';
+import { IModule } from '../../moduleResolver/Module';
 import { createInterceptor } from '../interceptor';
 
 describe('Interceptor', () => {

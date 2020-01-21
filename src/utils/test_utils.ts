@@ -4,8 +4,8 @@ import * as path from 'path';
 import { IPublicConfig } from '../config/IPublicConfig';
 import { Context, createContext } from '../core/Context';
 
-import { createModule, IModule } from '../module-resolver/Module';
-import { PackageType, createPackage, IPackage } from '../module-resolver/Package';
+import { createModule, IModule } from '../moduleResolver/Module';
+import { PackageType, createPackage, IPackage } from '../moduleResolver/Package';
 import { ensureFuseBoxPath, fastHash, path2RegexPattern } from './utils';
 
 const utils = require('./utils');

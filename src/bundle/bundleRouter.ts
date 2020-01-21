@@ -1,6 +1,6 @@
 import { Context } from '../core/Context';
-import { IModule } from '../module-resolver/Module';
-import { Bundle, IBundle, IBundleType, IBundleWriteResponse } from './Bundle';
+import { IModule } from '../moduleResolver/Module';
+import { Bundle, IBundle, IBundleType, IBundleWriteResponse } from './bundle';
 
 export interface IBundleRouter {
   dispatchModules: (modules: Array<IModule>) => void;
@@ -15,7 +15,7 @@ export interface IBundleRouteProps {
 export function BundleRouter(props: IBundleRouteProps): IBundleRouter {
   const { ctx } = props;
   const ict = ctx.ict;
-  const bundles: Array<IBundle> = [];
+  // const bundles: Array<IBundle> = [];
 
   const outputConfig = ctx.outputConfig;
 

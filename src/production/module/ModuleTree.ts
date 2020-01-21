@@ -1,12 +1,12 @@
-import { IModule } from '../../module-resolver/Module';
+import { IModule } from '../../moduleResolver/Module';
 import { IProductionContext } from '../ProductionContext';
 import { ExportReferences, IExportReferences } from './ExportReference';
 import { ImportReferences, IImport, IImportReferences } from './ImportReference';
 
 export enum ModuleType {
   MAIN_MODULE,
-  SPLIT_MODULE
-};
+  SPLIT_MODULE,
+}
 
 export interface IModuleTree {
   dependants: Array<IImport>;

@@ -30,13 +30,14 @@ export class WebWorkerProcess {
     ctx.log.info('worker', 'Worker process start $path', { path: this.props.item.absPath });
 
     let config: IPublicConfig = {
-      homeDir: ctx.config.homeDir,
-      target: 'web-worker',
       // share the same cache object
-      cacheObject: ctx.cache,
+      // cacheObject: ctx.cache,
       cache: ctx.config.cache && ctx.config.cache.enabled,
-      entry: this.props.item.absPath,
       devServer: false,
+      entry: this.props.item.absPath,
+      hmr: false,
+      homeDir: ctx.config.homeDir,
+      logging: { level: 'disabled' },
       plugins: [
         localCtx => {
           localCtx.ict.on('rebundle_complete', p => {
@@ -45,14 +46,14 @@ export class WebWorkerProcess {
             });
             return p;
           });
-          localCtx.ict.on('before_bundle_write', p => {
-            p.bundle.name = this.bundleName;
-            return p;
-          });
+
+          // localCtx.ict.on('before_bundle_write', p => {
+          //   p.bundle.name = this.bundleName;
+          //   return p;
+          // });
         },
       ],
-      hmr: false,
-      logging: { level: 'disabled' },
+      target: 'web-worker',
       watch: ctx.config.watch.enabled,
     };
 
