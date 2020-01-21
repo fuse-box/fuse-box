@@ -1,5 +1,5 @@
 import { Context } from '../../core/Context';
-import { IModule } from '../../ModuleResolver/Module';
+import { IModule } from '../../module-resolver/Module';
 import { wrapContents } from '../pluginStrings';
 import { parsePluginOptions } from '../pluginUtils';
 
@@ -14,7 +14,7 @@ export function pluginRawHandler(props: { ctx: Context; module: IModule; opts: I
     module.contents = wrapContents(JSON.stringify(module.contents), props.opts.useDefault);
   }
 }
-export function pluginRaw(a?: IPluginRawProps | string | RegExp, b?: IPluginRawProps) {
+export function pluginRaw(a?: IPluginRawProps | RegExp | string, b?: IPluginRawProps) {
   let [opts, matcher] = parsePluginOptions<IPluginRawProps>(a, b, {
     useDefault: false,
   });

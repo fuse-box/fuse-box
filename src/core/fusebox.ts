@@ -3,16 +3,20 @@ import { IProductionProps } from '../config/IProductionProps';
 import { IPublicConfig } from '../config/IPublicConfig';
 import { FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
 import { bundleDev } from '../main/bundle_dev';
+import { IPublicOutputConfig } from '../output/OutputConfigInterface';
+import { IProductionContext } from '../production/ProductionContext';
+import { bundleProd, productionPhases } from '../production/bundleProd';
 import { UserHandler } from '../user-handler/UserHandler';
 import { parseVersion } from '../utils/utils';
 import { createContext, createProdContext } from './Context';
-import { bundleProd, productionPhases } from '../production/bundleProd';
-import { IProductionContext } from '../production/ProductionContext';
-import { IPublicOutputConfig } from '../output/OutputConfigInterface';
 
 export interface IDevelopmentProps {}
 
 export interface IRunDevProps {
+  bundles?: IPublicOutputConfig;
+}
+
+export interface IRunProdProps {
   bundles?: IPublicOutputConfig;
 }
 
@@ -46,10 +50,6 @@ export function fusebox(config: IPublicConfig) {
         console.error(e);
       });
     },
-    runProductionContext: (phases, props?: IProductionProps): Promise<IProductionContext> => {
-      const ctx = createProdContext(config, props);
-      return productionPhases(ctx, phases);
-    },
     runProd: (props?: IProductionProps): Promise<any> => {
       const ctx = createProdContext(config, props);
 
@@ -59,6 +59,11 @@ export function fusebox(config: IPublicConfig) {
       bundleProd(ctx);
       // return bundleProd(ctx);
       return Promise.resolve();
+    },
+    runProductionContext: (phases, props?: IProductionProps): Promise<IProductionContext> => {
+      const ctx = createProdContext(config, props);
+      ctx.creatOutputConfig(props ? props.bundles : undefined);
+      return productionPhases(ctx, phases);
     },
   };
 }

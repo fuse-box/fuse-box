@@ -1,5 +1,5 @@
-import { IModule } from '../../ModuleResolver/Module';
 import { Context } from '../../core/Context';
+import { IModule } from '../../module-resolver/Module';
 import { IProductionContext } from '../../production/ProductionContext';
 import { IVisit, IVisitorMod } from '../Visitor/Visitor';
 import { ASTNode } from './AST';

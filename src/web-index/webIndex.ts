@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { IBundleWriteResponse } from '../bundle_new/Bundle';
+import { IBundleWriteResponse } from '../bundle/Bundle';
 import { Context } from '../core/Context';
 import { env } from '../env';
 import { FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
@@ -8,19 +8,19 @@ import { ensureAbsolutePath, fileExists, joinFuseBoxPath, readFile } from '../ut
 import { htmlStrings } from './htmlStrings';
 
 export interface IWebIndexConfig {
+  distFileName?: string;
+  embedIndexedBundles?: boolean;
   enabled?: boolean;
+  publicPath?: string;
   target?: string;
   template?: string;
-  distFileName?: string;
-  publicPath?: string;
-  embedIndexedBundles?: boolean;
 }
 
 export interface IWebIndexInterface {
   isDisabled?: boolean;
   addBundleContent?: (content: string) => void;
-  resolve?: (userPath: string) => string;
   generate?: (bundles: Array<IBundleWriteResponse>) => void;
+  resolve?: (userPath: string) => string;
 }
 
 export function replaceWebIndexStrings(str: string, keys: Record<string, string>) {
@@ -71,9 +71,6 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
   const opts = getEssentialWebIndexParams(config, ctx.log);
 
   return {
-    resolve: (userPath: string) => {
-      return joinFuseBoxPath(opts.publicPath, userPath);
-    },
     generate: async (bundles: Array<IBundleWriteResponse>) => {
       const scriptTags = [];
       const cssTags = [];
@@ -143,6 +140,9 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
         name: opts.distFileName,
       });
       await ctx.writer.write(opts.distFileName, fileContents);
+    },
+    resolve: (userPath: string) => {
+      return joinFuseBoxPath(opts.publicPath, userPath);
     },
   };
 }

@@ -5,7 +5,7 @@ import { IPluginCommon } from '../interfaces';
 import { parsePluginOptions } from '../pluginUtils';
 import { cssContextHandler } from './shared';
 
-export function pluginSass(a?: IPluginCommon | string | RegExp, b?: IPluginCommon) {
+export function pluginSass(a?: IPluginCommon | RegExp | string, b?: IPluginCommon) {
   let [opts, matcher] = parsePluginOptions<IPluginCommon>(a, b, {});
   return (ctx: Context) => {
     opts.stylesheet = createStylesheetProps({ ctx, stylesheet: opts.stylesheet || {} });

@@ -1,12 +1,12 @@
 import { ITarget } from '../config/PrivateConfig';
-import { IBundleRuntimeCore, bundleRuntimeCore, BUNDLE_RUNTIME_NAMES } from './bundleRuntimeCore';
-import { IModule } from '../ModuleResolver/Module';
+import { IModule } from '../module-resolver/Module';
 import { Concat } from '../utils/utils';
+import { BUNDLE_RUNTIME_NAMES, bundleRuntimeCore, IBundleRuntimeCore } from './bundleRuntimeCore';
 
 export interface IBundleSourceProps {
   core?: IBundleRuntimeCore;
-  target: ITarget;
   isIsolated?: boolean;
+  target: ITarget;
 
   withSourcemaps?: boolean;
 }
@@ -25,12 +25,12 @@ export function bundleSource(props: IBundleSourceProps) {
   let injection: string;
   let expose: Array<{ name: string; moduleId: number }>;
   const scope = {
-    modules,
     entries,
     expose,
     // user injection
     // for example inject some code after the bundle is ready
     injection,
+    modules,
     generate: () => {
       const concat = new Concat(props.withSourcemaps, '', '\n');
       // start the wrapper for the entire bundle if required

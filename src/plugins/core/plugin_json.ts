@@ -1,11 +1,11 @@
 import { Context } from '../../core/Context';
-import { IModule } from '../../ModuleResolver/Module';
+import { IModule } from '../../module-resolver/Module';
 import { wrapContents } from '../pluginStrings';
 import { parsePluginOptions } from '../pluginUtils';
 
 export interface IJSONPluginProps {
-  useDefault?: boolean;
   path?: string;
+  useDefault?: boolean;
 }
 
 export function pluginJSONHandler(module: IModule, opts: IJSONPluginProps) {
@@ -17,7 +17,7 @@ export function pluginJSONHandler(module: IModule, opts: IJSONPluginProps) {
   module.contents = wrapContents(module.contents, opts.useDefault);
 }
 
-export function pluginJSON(a?: IJSONPluginProps | string | RegExp, b?: IJSONPluginProps) {
+export function pluginJSON(a?: IJSONPluginProps | RegExp | string, b?: IJSONPluginProps) {
   return (ctx: Context) => {
     ctx.ict.on('bundle_resolve_module', props => {
       if (!props.module.captured && props.module.extension === '.json') {

@@ -1,15 +1,15 @@
 import { ITarget } from '../config/PrivateConfig';
 
 export const BUNDLE_RUNTIME_NAMES = {
+  ARG_REQUIRE_FUNCTION: '__fusereq',
+  BUNDLE_FUNCTION: 'bundle',
   GLOBAL_OBJ: '__fuse',
   REQUIRE_FUNCTION: 'r',
-  BUNDLE_FUNCTION: 'bundle',
-  ARG_REQUIRE_FUNCTION: '__fusereq',
 };
 
 export interface IBundleRuntimeCore {
-  target: ITarget;
   isIsolated?: boolean;
+  target: ITarget;
 }
 export function bundleRuntimeCore(props: IBundleRuntimeCore) {
   const { target } = props;

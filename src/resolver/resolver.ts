@@ -1,8 +1,8 @@
 import { ITarget } from '../config/PrivateConfig';
 import { makeFuseBoxPath, path2Regex } from '../utils/utils';
 import { handleBrowserField } from './browserField';
-import { fileLookup, ILookupResult, TsConfigAtPath } from './fileLookup';
-import { INodeModuleLookup, isNodeModule, nodeModuleLookup } from './nodeModuleLookup';
+import { TsConfigAtPath, fileLookup, ILookupResult } from './fileLookup';
+import { isNodeModule, nodeModuleLookup, INodeModuleLookup } from './nodeModuleLookup';
 import { pathsLookup } from './pathsLookup';
 import { isElectronPolyfill, isServerPolyfill } from './polyfills';
 export enum ImportType {
@@ -18,48 +18,48 @@ export interface ITypescriptPathsConfig {
 }
 export interface IResolverProps {
   buildTarget?: ITarget;
+  cache?: boolean;
+  filePath?: string;
+  homeDir?: string;
+  importType?: ImportType;
+  isDev?: boolean;
+  javascriptFirst?: boolean;
+  modules?: Array<string>;
+  packageMeta?: IPackageMeta;
   // user string
   target: string;
-  isDev?: boolean;
-  cache?: boolean;
-  homeDir?: string;
-  filePath?: string;
-  packageMeta?: IPackageMeta;
-  modules?: Array<string>;
-  importType?: ImportType;
-  javascriptFirst?: boolean;
+  typescriptPaths?: ITypescriptPathsConfig;
   alias?: {
     [key: string]: string;
   };
-  typescriptPaths?: ITypescriptPathsConfig;
 }
 
 export interface IPackageMeta {
-  name: string;
-  fusebox?: {
-    system?: boolean;
-    dev?: boolean;
-    polyfill?: boolean;
-  };
+  // https://github.com/defunctzombie/package-browser-field-spec
+  browser?: string | { [key: string]: string | boolean };
   entryAbsPath?: string;
   entryFuseBoxPath?: string;
-  version?: string;
-  packageRoot?: string;
+  name: string;
   // rare case where a package with the same version is located in multiple sub modules
   packageAltRoots?: Array<string>;
   packageJSONLocation?: string;
-  // https://github.com/defunctzombie/package-browser-field-spec
-  browser?: { [key: string]: string | boolean } | string;
+  packageRoot?: string;
+  version?: string;
+  fusebox?: {
+    dev?: boolean;
+    polyfill?: boolean;
+    system?: boolean;
+  };
 }
 
 export interface IResolver {
   error?: string;
-  // skip bundling
-  skip?: boolean;
-  // external e.g. http://something.com/main.css
-  isExternal?: boolean;
   // e.g ".css" ".js"
   extension?: string;
+  // external e.g. http://something.com/main.css
+  isExternal?: boolean;
+  // skip bundling
+  skip?: boolean;
 
   // this is resolved one from the main project and passed later as IResolverProps.package
   package?: INodeModuleLookup;
@@ -98,10 +98,10 @@ function replaceAliases(
     const value = props.alias[key];
     if (regex.test(target)) {
       target = target.replace(regex, value);
-      return { target, forceReplacement: true };
+      return { forceReplacement: true, target };
     }
   }
-  return { target, forceReplacement };
+  return { forceReplacement, target };
 }
 
 export function resolveModule(props: IResolverProps): IResolver {
@@ -132,10 +132,10 @@ export function resolveModule(props: IResolverProps): IResolver {
   // in this cases it should always send a forceStatement
   if (props.typescriptPaths) {
     lookupResult = pathsLookup({
-      isDev: props.isDev,
       baseURL: props.typescriptPaths.baseURL,
       cachePaths: props.cache,
       homeDir: props.homeDir,
+      isDev: props.isDev,
       paths: props.typescriptPaths.paths,
       target: target,
     });
@@ -177,10 +177,10 @@ export function resolveModule(props: IResolverProps): IResolver {
       };
     } else {
       lookupResult = fileLookup({
-        isDev: props.isDev,
         filePath: props.filePath,
-        target: target,
+        isDev: props.isDev,
         javascriptFirst: props.javascriptFirst,
+        target: target,
       });
     }
   }
@@ -239,11 +239,11 @@ export function resolveModule(props: IResolverProps): IResolver {
   }
   lookupResult.tsConfigAtPath;
   return {
-    tsConfigAtPath: lookupResult.tsConfigAtPath,
-    monorepoModulesPath: lookupResult.monorepoModulesPaths,
-    extension,
     absPath,
-    fuseBoxPath,
+    extension,
     forcedStatement,
+    fuseBoxPath,
+    monorepoModulesPath: lookupResult.monorepoModulesPaths,
+    tsConfigAtPath: lookupResult.tsConfigAtPath,
   };
 }

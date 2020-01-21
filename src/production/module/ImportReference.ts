@@ -1,8 +1,8 @@
-import { IModule } from '../../ModuleResolver/Module';
 import { IVisit } from '../../compiler/Visitor/Visitor';
 import { getDynamicImport } from '../../compiler/helpers/importHelpers';
 import { ASTNode } from '../../compiler/interfaces/AST';
 import { ASTType } from '../../compiler/interfaces/AST';
+import { IModule } from '../../module-resolver/Module';
 import { IProductionContext } from '../ProductionContext';
 
 export enum ImportType {
@@ -46,7 +46,7 @@ function Import(props: IImportProps): IImport {
   const target = props.module.moduleSourceRefs[props.source];
   const importReference = {
     module: props.module,
-    remove: function () {
+    remove: function() {
       importReference.removed = true;
       // @todo finish this
       if (props.visit.property && props.visit.parent) {
@@ -106,7 +106,7 @@ function ImportSpecifier(visit: IVisit, specifier: ASTNode): IImportSpecifier {
   const importSpecifier = {
     local,
     name,
-    remove: function () {
+    remove: function() {
       importSpecifier.removed = true;
       // @todo finish this
       if (visit.node.specifiers instanceof Array) {

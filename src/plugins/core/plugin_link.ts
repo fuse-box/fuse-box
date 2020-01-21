@@ -1,13 +1,13 @@
 import * as path from 'path';
 import { Context } from '../../core/Context';
-import { IModule } from '../../ModuleResolver/Module';
+import { IModule } from '../../module-resolver/Module';
 import { defineResourceGroup } from '../../stylesheet/cssResolveURL';
 import { fastHash, fileExists, joinFuseBoxPath, path2RegexPattern } from '../../utils/utils';
 import { wrapContents } from '../pluginStrings';
 
 export interface IPluginLinkOptions {
-  useDefault?: boolean;
   resourcePublicRoot?: string;
+  useDefault?: boolean;
 }
 
 export function pluginLinkHandler(module: IModule, options?: IPluginLinkOptions) {
@@ -45,7 +45,7 @@ export function pluginLinkHandler(module: IModule, options?: IPluginLinkOptions)
   );
 }
 
-export function pluginLink(target: string | RegExp, options?: IPluginLinkOptions) {
+export function pluginLink(target: RegExp | string, options?: IPluginLinkOptions) {
   let matcher: RegExp;
   if (typeof target === 'string') {
     matcher = path2RegexPattern(target);

@@ -1,11 +1,11 @@
 import * as appRoot from 'app-root-path';
 import * as path from 'path';
+import { findUp } from '../utils/findUp';
 import { fileExists, makeFuseBoxPath } from '../utils/utils';
 import { handleBrowserField } from './browserField';
 import { fileLookup } from './fileLookup';
 import { IPackageMeta, IResolverProps } from './resolver';
 import { getFolderEntryPointFromPackageJSON, isBrowserEntry } from './shared';
-import { findUp } from '../utils/findUp';
 
 const PROJECT_NODE_MODULES = path.join(appRoot.path, 'node_modules');
 
@@ -16,7 +16,7 @@ export interface IModuleParsed {
   target?: string;
 }
 
-export function isNodeModule(path: string): IModuleParsed | undefined {
+export function isNodeModule(path: string): undefined | IModuleParsed {
   const matched = path.match(NODE_MODULE_REGEX);
   if (!matched) {
     return;
@@ -97,12 +97,12 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
 }
 export interface INodeModuleLookup {
   error?: string;
+  forcedStatement?: string;
+  isEntry?: boolean;
+  meta?: IPackageMeta;
   targetAbsPath?: string;
   targetExtension?: string;
   targetFuseBoxPath?: string;
-  isEntry?: boolean;
-  forcedStatement?: string;
-  meta?: IPackageMeta;
 }
 
 export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): INodeModuleLookup {
@@ -139,7 +139,7 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
 
   // extract target if required
   if (parsed.target) {
-    const parsedLookup = fileLookup({ target: parsed.target, fileDir: folder });
+    const parsedLookup = fileLookup({ fileDir: folder, target: parsed.target });
     if (!parsedLookup) {
       return { error: `Failed to resolve ${props.target} in ${parsed.name}` };
     }
@@ -161,9 +161,9 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
       result.forcedStatement = `${parsed.name}/${result.targetFuseBoxPath}`;
     }
   } else {
-    const entryFile = getFolderEntryPointFromPackageJSON({ json: json, isBrowserBuild: isBrowser });
+    const entryFile = getFolderEntryPointFromPackageJSON({ isBrowserBuild: isBrowser, json: json });
 
-    const entryLookup = fileLookup({ target: entryFile, fileDir: folder });
+    const entryLookup = fileLookup({ fileDir: folder, target: entryFile });
 
     if (!entryLookup.fileExists) {
       return {

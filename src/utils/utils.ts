@@ -166,7 +166,7 @@ export function findReplace(str: string, re: RegExp, fn: (args) => string) {
   });
 }
 
-export function path2RegexPattern(input: undefined | string | RegExp): RegExp {
+export function path2RegexPattern(input: undefined | RegExp | string): RegExp {
   if (!input) {
     return;
   }
@@ -175,6 +175,9 @@ export function path2RegexPattern(input: undefined | string | RegExp): RegExp {
     let r = '';
     for (let i = 0; i < input.length; i++) {
       switch (input[i]) {
+        case '*':
+          r += '.*';
+          break;
         case '.':
           r += '\\.';
           break;
@@ -183,9 +186,6 @@ export function path2RegexPattern(input: undefined | string | RegExp): RegExp {
           break;
         case '\\': // window paths
           r += '(\\/|\\\\)';
-          break;
-        case '*':
-          r += '.*';
           break;
         default:
           r += input[i];
@@ -208,9 +208,9 @@ export function ensureUserPath(userPath: string, root?: string) {
 }
 
 export type Concat = {
-  add(fileName: string | null, content: string | Buffer, sourceMap?: string): void;
   content: Buffer;
   sourceMap: string;
+  add(fileName: null | string, content: Buffer | string, sourceMap?: string): void;
 };
 export type ConcatModule = {
   new (generateSourceMap: boolean, outputFileName: string, seperator: string): Concat;
@@ -228,7 +228,7 @@ export function ensureAbsolutePath(userPath: string, root: string) {
   return userPath;
 }
 
-export function getPathRelativeToConfig(props: { fileName?: string; dirName: string; ensureDirExist?: boolean }) {
+export function getPathRelativeToConfig(props: { dirName: string; ensureDirExist?: boolean; fileName?: string }) {
   let target = props.fileName ? path.dirname(props.fileName) : props.dirName;
   const fileName = props.fileName && path.basename(props.fileName);
   if (!path.isAbsolute(target)) {

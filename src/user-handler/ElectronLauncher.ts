@@ -1,6 +1,6 @@
+import { spawn } from 'child_process';
 import { IBundleWriteResponse } from '../bundle/Bundle';
 import { Context } from '../core/Context';
-import { spawn } from 'child_process';
 import { onExit } from '../utils/exit';
 
 export class ElectronLauncher {
@@ -14,11 +14,11 @@ export class ElectronLauncher {
     this.kill();
     const firstBundle = this.response[0];
 
-    this.node = spawn(this.electronPath, [firstBundle.stat.absPath], {
-      stdio: 'inherit',
-    });
-    onExit('ElectronLauncher', () => {
-      this.kill();
-    });
+    // this.node = spawn(this.electronPath, [firstBundle.stat.absPath], {
+    //   stdio: 'inherit',
+    // });
+    // onExit('ElectronLauncher', () => {
+    //   this.kill();
+    // });
   }
 }

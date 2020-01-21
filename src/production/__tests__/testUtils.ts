@@ -1,5 +1,5 @@
 import * as appRoot from 'app-root-path';
-import { unlink, unlinkSync, writeFileSync } from 'fs';
+import { writeFileSync } from 'fs';
 import * as fsExtra from 'fs-extra';
 import * as path from 'path';
 import { ASTNode } from '../../compiler/interfaces/AST';
@@ -9,9 +9,9 @@ import { transpileModule } from '../../compiler/program/transpileModule';
 import { GlobalContextTransformer } from '../../compiler/transformers/GlobalContextTransformer';
 import { IPublicConfig } from '../../config/IPublicConfig';
 import { createContext } from '../../core/Context';
-import { createModule } from '../../core/Module';
-import { createPackage } from '../../core/Package';
 import { fusebox } from '../../core/fusebox';
+import { createModule, IModule } from '../../module-resolver/Module';
+import { PackageType, createPackage } from '../../module-resolver/Package';
 import { ensureDir, fastHash } from '../../utils/utils';
 import { ProductionContext, IProductionContext } from '../ProductionContext';
 import { ModuleTree } from '../module/ModuleTree';
@@ -29,28 +29,24 @@ export function testProductionWarmup(props: {
     target: 'browser',
   });
 
-  const pkg = createPackage({ ctx: ctx, meta: {} as any });
+  const pkg = createPackage({ type: PackageType.USER_PACKAGE });
 
-  const module = Object.assign(
-    createModule(
-      {
-        absPath: __filename,
-        ctx: ctx,
-        extension: '.ts',
-        fuseBoxPath: 'file.ts',
-      },
+  const module: IModule = Object.assign(
+    createModule({
+      //absPath: __filename,
+      ctx: ctx,
       pkg,
-    ),
+    }),
     props.moduleProps || {},
   );
 
-  pkg.modules.push(module);
-
   module.contents = props.code;
-  module.parse();
-  module.moduleId = 1;
+  module.extension = '.ts';
+  module.id = 1;
 
-  const productionContext = ProductionContext(ctx, [pkg]);
+  module.parse();
+
+  const productionContext = ProductionContext(ctx, [module]);
 
   const tree = (module.moduleTree = ModuleTree({ module, productionContext }));
 
@@ -60,6 +56,7 @@ export function testProductionWarmup(props: {
       tranformers.push(t.productionWarmupPhase({ ctx: ctx, module: module, productionContext: productionContext }));
     }
   }
+
   transpileModule({
     ast: module.ast as ASTNode,
     globalContext: createGlobalContext(),

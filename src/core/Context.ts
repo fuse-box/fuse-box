@@ -1,30 +1,28 @@
 import { CustomTransformers } from 'typescript';
 
 import { ITransformer } from '../compiler/interfaces/ITransformer';
-import { createConfig } from '../config/config';
 import { IProductionProps } from '../config/IProductionProps';
 import { IPublicConfig } from '../config/IPublicConfig';
 import { PrivateConfig } from '../config/PrivateConfig';
+import { createConfig } from '../config/config';
 import { createDevServer, IDevServerActions } from '../dev-server/devServer';
 import { env } from '../env';
-import { createFuseLogger, FuseBoxLogAdapter } from '../fuse-log/FuseBoxLogAdapter';
-import { createInterceptor, MainInterceptor } from '../interceptor/interceptor';
+import { FuseBoxLogAdapter, createFuseLogger } from '../fuse-log/FuseBoxLogAdapter';
+import { MainInterceptor, createInterceptor } from '../interceptor/interceptor';
 import { TypescriptConfig } from '../interfaces/TypescriptInterfaces';
 import { TsConfigAtPath } from '../resolver/fileLookup';
 import { initTypescriptConfig } from '../tsconfig/configParser';
 import { ensureUserPath, fastHash } from '../utils/utils';
 import { createWebIndex, IWebIndexInterface } from '../web-index/webIndex';
-import { assembleContext, IAssembleContext } from './assemble_context';
+
 import { ContextTaskManager, createContextTaskManager } from './ContextTaskManager';
-import { Package } from './Package';
-import { createWeakModuleReferences, WeakModuleReferences } from './WeakModuleReferences';
-import { createWriter, IWriterActions } from './writer';
-import { IOutputConfig, IPublicOutputConfig } from '../output/OutputConfigInterface';
+
 import { outputConfigConverter } from '../output/OutputConfigConverter';
+import { IOutputConfig, IPublicOutputConfig } from '../output/OutputConfigInterface';
+import { WeakModuleReferences, createWeakModuleReferences } from './WeakModuleReferences';
+import { createWriter, IWriterActions } from './writer';
 
 export class Context {
-  public assembleContext: IAssembleContext;
-  public packages: Array<Package>;
   public interceptor: MainInterceptor;
   public ict: MainInterceptor;
   public tsConfig: TypescriptConfig;
@@ -47,7 +45,7 @@ export class Context {
     this.config.ctx = this;
     this.log = createFuseLogger(this.config.logging);
     this.weakReferences = createWeakModuleReferences(this);
-    this.assembleContext = assembleContext(this);
+
     this.ict = createInterceptor();
 
     this.webIndex = createWebIndex(this);
@@ -75,8 +73,8 @@ export class Context {
   public setDevelopment() {
     this.writer = createWriter({
       isProduction: false,
-      root: env.SCRIPT_PATH,
       output: this.config.output,
+      root: env.SCRIPT_PATH,
     });
     try {
       this.tsConfig = initTypescriptConfig(this.config);
@@ -106,9 +104,10 @@ export class Context {
     this.config.production = prodProps;
     this.writer = createWriter({
       isProduction: true,
-      root: env.SCRIPT_PATH,
       output: this.config.output,
+      root: env.SCRIPT_PATH,
     });
+
     try {
       this.tsConfig = initTypescriptConfig(this.config);
     } catch (e) {

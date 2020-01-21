@@ -1,9 +1,9 @@
 import { Context } from '../../core/Context';
-import { parsePluginOptions } from '../pluginUtils';
 import { safeRegex } from '../../utils/utils';
+import { parsePluginOptions } from '../pluginUtils';
 
 export type IPluginReplaceProps = { [key: string]: any };
-export function pluginReplace(a?: IPluginReplaceProps | string | RegExp, b?: IPluginReplaceProps) {
+export function pluginReplace(a?: IPluginReplaceProps | RegExp | string, b?: IPluginReplaceProps) {
   const [opts, matcher] = parsePluginOptions<IPluginReplaceProps>(a, b, {});
 
   const expressions = [];

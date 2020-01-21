@@ -1,10 +1,10 @@
 import { IPublicConfig } from '../../config/IPublicConfig';
 
-import { testUtils, mockWriteFile } from '../../utils/test_utils';
-import * as path from 'path';
-import { env } from '../../env';
 import * as fs from 'fs';
+import * as path from 'path';
 import { Context } from '../../core/Context';
+import { env } from '../../env';
+import { mockWriteFile, testUtils } from '../../utils/test_utils';
 import { matchAll } from '../../utils/utils';
 
 export function createFileSet(directory, files: { [key: string]: string }) {
@@ -37,11 +37,11 @@ export class IntegrationHelper {
   }
 
   public extractScripts(contents: string) {
-    const data: { jsPaths: Array<string>; cssPaths: Array<string>; jsRaw: Array<string>; cssRaw: Array<string> } = {
-      jsPaths: [],
+    const data: { cssPaths: Array<string>; cssRaw: Array<string>; jsPaths: Array<string>; jsRaw: Array<string> } = {
       cssPaths: [],
-      jsRaw: [],
       cssRaw: [],
+      jsPaths: [],
+      jsRaw: [],
     };
     matchAll(/<script.*src=\"(.*?)\"/gim, contents, matches => {
       data.jsPaths.push(matches[1]);
@@ -87,5 +87,5 @@ export function createTestBundle(config: IPublicConfig, files: { [key: string]: 
 
   const { fusebox } = require('../../core/fusebox');
   const fuse = fusebox(config);
-  return { fuse, mock, helper: helper };
+  return { fuse, helper: helper, mock };
 }

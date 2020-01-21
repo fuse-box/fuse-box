@@ -31,10 +31,7 @@ const SERVER_POLYFILL = new Set<string>([
   'string_decoder',
 ]);
 
-const ELECTRON_POLYFILL = new Set<string>([
-  'electron',
-  ...SERVER_POLYFILL
-]);
+const ELECTRON_POLYFILL = new Set<string>(['electron', ...SERVER_POLYFILL]);
 export function isServerPolyfill(name: string) {
   return SERVER_POLYFILL.has(name);
 }

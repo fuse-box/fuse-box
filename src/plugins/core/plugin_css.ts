@@ -1,18 +1,18 @@
-import { createStylesheetProps } from '../../config/createStylesheetProps';
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
+import { createStylesheetProps } from '../../config/createStylesheetProps';
 import { Context } from '../../core/Context';
+import { IModule } from '../../module-resolver/Module';
+import { resolve } from '../../module-resolver/ModuleResolver';
 import { ImportType } from '../../resolver/resolver';
 import { cssResolveURL } from '../../stylesheet/cssResolveURL';
 import { parsePluginOptions } from '../pluginUtils';
 import { cssContextHandler } from './shared';
-import { resolve } from '../../ModuleResolver/ModuleResolver';
-import { IModule } from '../../ModuleResolver/Module';
 
 export interface ICSSPluginProps {
-  stylesheet?: IStyleSheetProps;
   asText?: boolean;
+  stylesheet?: IStyleSheetProps;
 }
-export function pluginCSS(a?: ICSSPluginProps | string | RegExp, b?: ICSSPluginProps) {
+export function pluginCSS(a?: ICSSPluginProps | RegExp | string, b?: ICSSPluginProps) {
   let [opts, matcher] = parsePluginOptions<ICSSPluginProps>(a, b, {});
   if (!matcher) matcher = /\.(css)$/;
   return (ctx: Context) => {
@@ -20,7 +20,7 @@ export function pluginCSS(a?: ICSSPluginProps | string | RegExp, b?: ICSSPluginP
     opts.stylesheet = createStylesheetProps({ ctx, stylesheet: opts.stylesheet || {} });
     if (!ctx.config.production && ctx.config.supportsStylesheet()) {
       ctx.ict.on('module_init', props => {
-        const { module, bundleContext } = props;
+        const { bundleContext, module } = props;
         if (!module.isStylesheet) return;
         // we need to resolve it only once
         if (styleSheetModule) {
@@ -57,9 +57,9 @@ export function pluginCSS(a?: ICSSPluginProps | string | RegExp, b?: ICSSPluginP
         processor: {
           render: async () => {
             const urlResolver = cssResolveURL({
-              filePath: module.absPath,
-              ctx: ctx,
               contents: module.contents,
+              ctx: ctx,
+              filePath: module.absPath,
               options: ctx.config.stylesheet,
             });
             return { css: urlResolver.contents };

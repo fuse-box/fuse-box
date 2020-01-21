@@ -1,6 +1,6 @@
 import { createStylesheetProps } from '../../config/createStylesheetProps';
 import { Context } from '../../core/Context';
-import { IModule } from '../../ModuleResolver/Module';
+import { IModule } from '../../module-resolver/Module';
 import { lessHandler } from '../../stylesheet/less/lessHandler';
 import { IPluginCommon } from '../interfaces';
 import { parsePluginOptions } from '../pluginUtils';
@@ -36,7 +36,7 @@ export function pluginLessCapture(props: { ctx: Context; module: IModule; opts: 
   });
 }
 
-export function pluginLess(a?: IPluginCommon | string | RegExp, b?: IPluginCommon) {
+export function pluginLess(a?: IPluginCommon | RegExp | string, b?: IPluginCommon) {
   return (ctx: Context) => {
     let [opts, matcher] = parsePluginOptions<IPluginCommon>(a, b, {});
     if (!matcher) matcher = /\.(less)$/;

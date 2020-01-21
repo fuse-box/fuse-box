@@ -4,17 +4,17 @@ import * as atImport from 'postcss-import';
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
 import { Context } from '../../core/Context';
 import { FuseBoxLogAdapter } from '../../fuse-log/FuseBoxLogAdapter';
-import { IModule } from '../../ModuleResolver/Module';
+import { IModule } from '../../module-resolver/Module';
 import { readFile } from '../../utils/utils';
 import { cssHandleResources } from '../cssHandleResources';
 import { cssResolveModule } from '../cssResolveModule';
 import { alignCSSSourceMap } from '../cssSourceMap';
-import { IStylesheetModuleResponse, IStyleSheetProcessor } from '../interfaces';
+import { IStyleSheetProcessor, IStylesheetModuleResponse } from '../interfaces';
 
 interface IRenderModuleProps {
-  options?: IStyleSheetProps;
   ctx: Context;
   module: IModule;
+  options?: IStyleSheetProps;
 }
 
 async function callPostCSS(
@@ -34,13 +34,13 @@ async function callPostCSS(
 export async function renderModule(props: IRenderModuleProps): Promise<IStylesheetModuleResponse> {
   function loader(url, opts) {
     const data = cssHandleResources(
-      { path: url, contents: readFile(url) },
+      { contents: readFile(url), path: url },
       {
-        options: props.options,
-        fileRoot: path.dirname(url),
         ctx: props.ctx,
-        url: url,
+        fileRoot: path.dirname(url),
         module: props.module,
+        options: props.options,
+        url: url,
       },
     );
     return data.contents;
@@ -53,10 +53,10 @@ export async function renderModule(props: IRenderModuleProps): Promise<IStyleshe
 
     const resolved = cssResolveModule({
       extensions: ['.css', '.scss', '.sass'],
+      options: props.options,
       paths,
       target: url,
       tryUnderscore: true,
-      options: props.options,
     });
 
     if (resolved.success) {
@@ -72,8 +72,8 @@ export async function renderModule(props: IRenderModuleProps): Promise<IStyleshe
 
   // handle root resources
   const processed = cssHandleResources(
-    { path: props.module.absPath, contents: props.module.contents },
-    { options: props.options, ctx: props.ctx, module: props.module },
+    { contents: props.module.contents, path: props.module.absPath },
+    { ctx: props.ctx, module: props.module, options: props.options },
   );
   let pluginList: Array<any> = [atImport({ load: loader, resolve: resolver })];
   if (props.options.postCSS) {
@@ -95,10 +95,10 @@ export async function renderModule(props: IRenderModuleProps): Promise<IStyleshe
 
   let sourceMap: string;
   if (data.map) {
-    sourceMap = alignCSSSourceMap({ module: props.module, sourceMap: data.map, ctx: props.ctx });
+    sourceMap = alignCSSSourceMap({ ctx: props.ctx, module: props.module, sourceMap: data.map });
   }
 
-  return { map: sourceMap, css: data.css && data.css.toString() };
+  return { css: data.css && data.css.toString(), map: sourceMap };
 }
 export interface IPostCSSHandlerProps {
   ctx: Context;

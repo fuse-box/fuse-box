@@ -35,6 +35,7 @@ export interface IModule {
   isJavaScript?: boolean;
   isStylesheet?: boolean;
   isTypeScript?: boolean;
+  moduleSourceRefs?: Record<string, IModule>;
   moduleTree?: IModuleTree;
   pkg?: IPackage;
   publicPath?: string;
@@ -96,6 +97,7 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
       scope.isTypeScript = TS_EXTENSIONS.includes(ext);
       scope.absPath = props.absPath;
       scope.isCommonsEligible = false;
+      scope.moduleSourceRefs = {};
       scope.isEntry = false;
 
       let isCSSSourceMapRequired = true;

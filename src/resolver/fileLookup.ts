@@ -1,17 +1,17 @@
-import * as path from 'path';
 import * as fs from 'fs';
-import { getFolderEntryPointFromPackageJSON } from './shared';
+import * as path from 'path';
 import { TypescriptConfig } from '../interfaces/TypescriptInterfaces';
 import { initTypescriptConfig } from '../tsconfig/configParser';
 import { fileExists } from '../utils/utils';
+import { getFolderEntryPointFromPackageJSON } from './shared';
 
 export interface ILookupProps {
-  typescriptFirst?: boolean;
-  javascriptFirst?: boolean;
-  isDev?: boolean;
   fileDir?: string;
   filePath?: string;
+  isDev?: boolean;
+  javascriptFirst?: boolean;
   target: string;
+  typescriptFirst?: boolean;
 }
 
 export interface TsConfigAtPath {
@@ -20,13 +20,13 @@ export interface TsConfigAtPath {
 }
 
 export interface ILookupResult {
-  isDirectoryIndex?: boolean;
-  fileExists: boolean;
   absPath: string;
+  customIndex?: boolean;
   extension?: string;
+  fileExists: boolean;
+  isDirectoryIndex?: boolean;
   monorepoModulesPaths?: string;
   tsConfigAtPath?: TsConfigAtPath;
-  customIndex?: boolean;
 }
 
 const JS_INDEXES = ['index.js', 'index.jsx'];
@@ -71,8 +71,8 @@ export function fileLookup(props: ILookupProps): ILookupResult {
 
     if (stat.isFile()) {
       return {
-        extension: path.extname(resolved),
         absPath: resolved,
+        extension: path.extname(resolved),
         fileExists: fileExists(resolved),
       };
     }
@@ -129,13 +129,13 @@ export function fileLookup(props: ILookupProps): ILookupResult {
 
         const entryFile = path.join(resolved, entry);
         return {
-          customIndex: true,
-          monorepoModulesPaths,
-          tsConfigAtPath,
-          isDirectoryIndex: true,
           absPath: entryFile,
+          customIndex: true,
           extension: path.extname(entryFile),
           fileExists: fileExists(entryFile),
+          isDirectoryIndex: true,
+          monorepoModulesPaths,
+          tsConfigAtPath,
         };
       }
 
@@ -149,10 +149,10 @@ export function fileLookup(props: ILookupProps): ILookupResult {
       const directoryIndex = tryIndexes(resolved, indexes);
       if (directoryIndex) {
         return {
-          isDirectoryIndex: true,
           absPath: directoryIndex,
           extension: path.extname(directoryIndex),
           fileExists: true,
+          isDirectoryIndex: true,
         };
       }
     }
@@ -164,15 +164,15 @@ export function fileLookup(props: ILookupProps): ILookupResult {
     const targetFile = tryExtensions(resolved, ['.json']);
     if (targetFile) {
       return {
-        customIndex: true, // it still needs to be re-written because FuseBox client API won't find it
         absPath: targetFile,
+        customIndex: true, // it still needs to be re-written because FuseBox client API won't find it
         extension: path.extname(targetFile),
         fileExists: true,
       };
     }
   }
   return {
-    fileExists: false,
     absPath: resolved,
+    fileExists: false,
   };
 }

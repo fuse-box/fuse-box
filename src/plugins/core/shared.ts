@@ -1,7 +1,7 @@
 import * as postcss from 'postcss';
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
 import { Context } from '../../core/Context';
-import { IModule } from '../../ModuleResolver/Module';
+import { IModule } from '../../module-resolver/Module';
 import { cssDevModuleRender } from '../../stylesheet/cssDevModuleRender';
 import { IStyleSheetProcessor } from '../../stylesheet/interfaces';
 import { IPluginCommon } from '../interfaces';
@@ -9,9 +9,9 @@ import { wrapContents } from '../pluginStrings';
 
 export interface ICSSContextHandler {
   ctx: Context;
-  processor: IStyleSheetProcessor;
-  options: IStyleSheetProps;
   module: IModule;
+  options: IStyleSheetProps;
+  processor: IStyleSheetProcessor;
   shared: IPluginCommon;
 }
 export function setEmpty() {}
@@ -33,11 +33,11 @@ async function createCSSModule(props: ICreateCSSModule): Promise<{ json: any; cs
     ])
       .process(props.css, {
         from: props.module.absPath,
-        to: props.module.absPath,
         map: props.module.isCSSSourceMapRequired && { inline: false },
+        to: props.module.absPath,
       })
       .then(result => {
-        return resolve({ json: targetJSON, css: result.css, map: result.map });
+        return resolve({ css: result.css, json: targetJSON, map: result.map });
       });
   });
 }
@@ -63,10 +63,10 @@ export function cssContextHandler(props: ICSSContextHandler) {
       props.module.errored = false;
       const data = await processor.render();
       const rendererProps = {
-        data,
         ctx,
-        options: props.options,
+        data,
         module: props.module,
+        options: props.options,
         useDefault: props.shared.useDefault,
       };
 

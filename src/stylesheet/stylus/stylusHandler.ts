@@ -1,6 +1,6 @@
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
 import { Context } from '../../core/Context';
-import { IModule } from '../../ModuleResolver/Module';
+import { IModule } from '../../module-resolver/Module';
 import { replaceCSSMacros } from '../cssResolveModule';
 import { resolveCSSResource } from '../cssResolveURL';
 import { alignCSSSourceMap } from '../cssSourceMap';
@@ -49,7 +49,7 @@ async function renderModule(props: IPostCSSHandlerProps) {
 
   let sourceMap: string;
   if (data.map) {
-    sourceMap = alignCSSSourceMap({ module: props.module, sourceMap: data.map, ctx: props.ctx });
+    sourceMap = alignCSSSourceMap({ ctx: props.ctx, module: props.module, sourceMap: data.map });
   }
   return { css: data.css, map: sourceMap };
 }

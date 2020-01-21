@@ -82,6 +82,7 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
           parent: module,
           statement: source,
         });
+        module.moduleSourceRefs[source] = resolvedModule;
         // re-writing the reference
         item.statement.callee.name = BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION;
         item.statement.arguments[0].value = resolvedModule.id;
@@ -121,9 +122,8 @@ export function ModuleResolver(ctx: Context, entryFiles: Array<string>): IModule
   const bundleContext = createBundleContext(ctx);
 
   const userPackage = createPackage({ type: PackageType.USER_PACKAGE });
-  for (const entry in entryFiles) {
+  for (const entry of entryFiles) {
     const absPath = ensureAbsolutePath(entry, ctx.config.homeDir);
-    console.log(absPath);
     const entryModule = initModule({ absPath, bundleContext, ctx, pkg: userPackage });
     entryModule.isEntry = true;
     entries.push(entryModule);
