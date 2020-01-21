@@ -1,9 +1,9 @@
 import { existsSync, statSync } from 'fs';
 import * as path from 'path';
 import { Context } from '../core/Context';
-import { IBundleContext } from '../module-resolver/BundleContext';
-import { createModule, IModule, IModuleMeta } from '../module-resolver/Module';
-import { Package, createPackage, IPackage } from '../module-resolver/Package';
+import { IBundleContext } from '../moduleResolver/BundleContext';
+import { createModule, IModule, IModuleMeta } from '../moduleResolver/Module';
+import { Package, createPackage, IPackage } from '../moduleResolver/Package';
 import { ensureDir, writeFile } from '../utils/utils';
 
 export interface ICachePublicProps {

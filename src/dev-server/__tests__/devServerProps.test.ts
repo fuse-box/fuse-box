@@ -1,14 +1,15 @@
 import { IPublicConfig } from '../../config/IPublicConfig';
-import { createContext, createProdContext } from '../../core/Context';
+import { IRunProps } from '../../config/IRunProps';
+import { Context } from '../../core/Context';
 import '../../utils/test_utils';
 import { createDevServerConfig } from '../devServerProps';
-import { IProductionProps } from '../../config/IProductionProps';
+
 function configure(config?: IPublicConfig) {
-  const ctx = createContext(config);
+  const ctx = new Context(config);
   return createDevServerConfig(ctx);
 }
-function configureProd(config: IPublicConfig, prodProps?: IProductionProps) {
-  const ctx = createProdContext(config, prodProps);
+function configureProd(config: IPublicConfig, prodProps?: IRunProps) {
+  const ctx = new Context(config, prodProps);
   return createDevServerConfig(ctx);
 }
 
@@ -90,7 +91,7 @@ describe('devServerProps test', () => {
   });
 
   it('should http disabled but hmr enabled', () => {
-    const data = configure({ devServer: { httpServer: false, hmrServer: { port: 2 } } });
+    const data = configure({ devServer: { hmrServer: { port: 2 }, httpServer: false } });
     expect(data.httpServer['enabled']).toEqual(false);
     expect(data.hmrServer['port']).toEqual(2);
   });
@@ -106,7 +107,7 @@ describe('devServerProps test', () => {
   });
 
   it('should have it disabled when server', () => {
-    const data = configure({ target: 'server', devServer: true });
+    const data = configure({ devServer: true, target: 'server' });
     expect(data.hmrServer['enabled']).toEqual(false);
   });
 

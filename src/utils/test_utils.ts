@@ -2,10 +2,10 @@ import * as appRoot from 'app-root-path';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { IPublicConfig } from '../config/IPublicConfig';
-import { Context, createContext } from '../core/Context';
+import { Context } from '../core/Context';
 
-import { createModule, IModule } from '../module-resolver/Module';
-import { PackageType, createPackage, IPackage } from '../module-resolver/Package';
+import { createModule, IModule } from '../moduleResolver/Module';
+import { PackageType, createPackage, IPackage } from '../moduleResolver/Package';
 import { ensureFuseBoxPath, fastHash, path2RegexPattern } from './utils';
 
 const utils = require('./utils');
@@ -51,7 +51,7 @@ export interface IMockModuleResponse {
   pkg: IPackage;
 }
 export function mockModule(props: IMockModuleProps) {
-  const ctx = createContext(props.config || {});
+  const ctx = new Context(props.config || {});
   const moduleProps = props.moduleProps || {};
   const packageProps = props.packageProps || {};
 

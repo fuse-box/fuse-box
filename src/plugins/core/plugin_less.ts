@@ -1,6 +1,6 @@
 import { createStylesheetProps } from '../../config/createStylesheetProps';
 import { Context } from '../../core/Context';
-import { IModule } from '../../module-resolver/Module';
+import { IModule } from '../../moduleResolver/Module';
 import { lessHandler } from '../../stylesheet/less/lessHandler';
 import { IPluginCommon } from '../interfaces';
 import { parsePluginOptions } from '../pluginUtils';

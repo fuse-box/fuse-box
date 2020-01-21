@@ -11,6 +11,7 @@ import { IProductionContext } from '../ProductionContext';
  */
 
 export function FinalPhase(productionContext: IProductionContext) {
+  console.log(productionContext.splitEntries);
   for (const module of productionContext.modules) {
     if (module.isExecutable) {
       module.transpile();

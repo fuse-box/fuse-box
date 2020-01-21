@@ -1,6 +1,6 @@
 import { BundleRouter } from '../bundle/BundleRouter';
 import { Context } from '../core/Context';
-import { ModuleResolver } from '../module-resolver/ModuleResolver';
+import { ModuleResolver } from '../moduleResolver/ModuleResolver';
 
 import { pluginAssumption } from '../plugins/core/plugin_assumption';
 import { pluginCSS } from '../plugins/core/plugin_css';

@@ -8,10 +8,10 @@ import { createGlobalContext } from '../../compiler/program/GlobalContext';
 import { transpileModule } from '../../compiler/program/transpileModule';
 import { GlobalContextTransformer } from '../../compiler/transformers/GlobalContextTransformer';
 import { IPublicConfig } from '../../config/IPublicConfig';
-import { createContext } from '../../core/Context';
+import { Context } from '../../core/Context';
 import { fusebox } from '../../core/fusebox';
-import { createModule, IModule } from '../../module-resolver/Module';
-import { PackageType, createPackage } from '../../module-resolver/Package';
+import { createModule, IModule } from '../../moduleResolver/Module';
+import { PackageType, createPackage } from '../../moduleResolver/Package';
 import { ensureDir, fastHash } from '../../utils/utils';
 import { ProductionContext, IProductionContext } from '../ProductionContext';
 import { ModuleTree } from '../module/ModuleTree';
@@ -23,7 +23,7 @@ export function testProductionWarmup(props: {
   props?: any;
   transformers: Array<ITransformer>;
 }) {
-  const ctx = createContext({
+  const ctx = new Context({
     cache: false,
     devServer: false,
     target: 'browser',

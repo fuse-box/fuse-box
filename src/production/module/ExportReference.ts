@@ -1,6 +1,6 @@
 import { IVisit } from '../../compiler/Visitor/Visitor';
 import { ASTNode } from '../../compiler/interfaces/AST';
-import { IModule } from '../../module-resolver/Module';
+import { IModule } from '../../moduleResolver/Module';
 import { IProductionContext } from '../ProductionContext';
 
 export interface ExportReferenceProps {

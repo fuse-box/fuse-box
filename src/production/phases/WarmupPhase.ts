@@ -3,7 +3,7 @@ import { ITransformer } from '../../compiler/interfaces/ITransformer';
 import { createGlobalContext } from '../../compiler/program/GlobalContext';
 import { transpileModule } from '../../compiler/program/transpileModule';
 import { BASE_TRANSFORMERS, isTransformerEligible } from '../../compiler/transformer';
-import { IModule } from '../../module-resolver/Module';
+import { IModule } from '../../moduleResolver/Module';
 import { IProductionContext } from '../ProductionContext';
 import { PRODUCTION_TRANSFORMERS } from '../transformers/collection';
 

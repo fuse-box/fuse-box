@@ -1,3 +1,5 @@
+import * as path from 'path';
+
 import { fusebox, sparky } from '../../src';
 
 class Context {
@@ -18,10 +20,17 @@ class Context {
     });
   }
 }
-const { task } = sparky<Context>(Context);
+const { rm, task } = sparky<Context>(Context);
 
 task('default', async ctx => {
-  ctx.runServer = true;
+  rm('./dist');
+  ctx.runServer = false;
+  ctx.isProduction = true;
   const fuse = ctx.getConfig();
-  await fuse.runProd();
+  await fuse.runProd({
+    bundles: {
+      root: path.join(__dirname, 'dist'),
+      app: 'app.js',
+    },
+  });
 });

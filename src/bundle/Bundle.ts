@@ -1,6 +1,6 @@
 import { bundleSource, IBundleSource } from '../BundleRuntime/bundleSource';
 import { Context } from '../core/Context';
-import { IModule } from '../module-resolver/Module';
+import { IModule } from '../moduleResolver/Module';
 import { IOutputBundleConfigAdvanced } from '../output/OutputConfigInterface';
 import { distWriter } from '../output/distWriter';
 

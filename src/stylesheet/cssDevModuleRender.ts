@@ -2,7 +2,7 @@ import { BUNDLE_RUNTIME_NAMES } from '../BundleRuntime/bundleRuntimeCore';
 import { sourceMapsCSSURL } from '../BundleRuntime/constants';
 import { IStyleSheetProps } from '../config/IStylesheetProps';
 import { Context } from '../core/Context';
-import { IModule } from '../module-resolver/Module';
+import { IModule } from '../moduleResolver/Module';
 import { wrapContents } from '../plugins/pluginStrings';
 import { fastHash, joinFuseBoxPath } from '../utils/utils';
 import { IStylesheetModuleResponse } from './interfaces';

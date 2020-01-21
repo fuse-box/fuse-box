@@ -1,8 +1,8 @@
 import { CustomTransformers } from 'typescript';
 
 import { ITransformer } from '../compiler/interfaces/ITransformer';
-import { IProductionProps } from '../config/IProductionProps';
 import { IPublicConfig } from '../config/IPublicConfig';
+import { IRunProps } from '../config/IRunProps';
 import { PrivateConfig } from '../config/PrivateConfig';
 import { createConfig } from '../config/config';
 import { createDevServer, IDevServerActions } from '../dev-server/devServer';
@@ -10,15 +10,13 @@ import { env } from '../env';
 import { FuseBoxLogAdapter, createFuseLogger } from '../fuse-log/FuseBoxLogAdapter';
 import { MainInterceptor, createInterceptor } from '../interceptor/interceptor';
 import { TypescriptConfig } from '../interfaces/TypescriptInterfaces';
+import { outputConfigConverter } from '../output/OutputConfigConverter';
+import { IOutputConfig, IPublicOutputConfig } from '../output/OutputConfigInterface';
 import { TsConfigAtPath } from '../resolver/fileLookup';
 import { initTypescriptConfig } from '../tsconfig/configParser';
 import { ensureUserPath, fastHash } from '../utils/utils';
 import { createWebIndex, IWebIndexInterface } from '../web-index/webIndex';
-
 import { ContextTaskManager, createContextTaskManager } from './ContextTaskManager';
-
-import { outputConfigConverter } from '../output/OutputConfigConverter';
-import { IOutputConfig, IPublicOutputConfig } from '../output/OutputConfigInterface';
 import { WeakModuleReferences, createWeakModuleReferences } from './WeakModuleReferences';
 import { createWriter, IWriterActions } from './writer';
 
@@ -36,12 +34,17 @@ export class Context {
   public cache: Cache;
   public devServer?: IDevServerActions;
   public weakReferences: WeakModuleReferences;
+  public config: PrivateConfig;
 
   //public productionApiWrapper: ProductionAPIWrapper;
   public tsConfigAtPaths?: Array<TsConfigAtPath>;
   private _uniqueEntryHash: string;
 
-  constructor(public config: PrivateConfig) {
+  constructor(config: IPublicConfig, props?: IRunProps) {
+    this.config = createConfig(config);
+    // @todo: do we want to setup a default?
+    this.createOutputConfig((props && props.bundles) || { app: 'app.js' });
+
     this.config.ctx = this;
     this.log = createFuseLogger(this.config.logging);
     this.weakReferences = createWeakModuleReferences(this);
@@ -58,7 +61,7 @@ export class Context {
     this.tsConfigAtPaths.push(path);
   }
 
-  public creatOutputConfig(publicConfig: IPublicOutputConfig) {
+  public createOutputConfig(publicConfig: IPublicOutputConfig) {
     this.outputConfig = outputConfigConverter({ defaultRoot: env.SCRIPT_PATH, publicConfig: publicConfig });
   }
 
@@ -91,7 +94,7 @@ export class Context {
     this.userTransformers.push(transformer);
   }
 
-  public setProduction(prodProps: IProductionProps) {
+  public setProduction(prodProps: IRunProps) {
     this.config.watch.enabled = false;
     this.config.hmr.enabled = false;
 
@@ -152,16 +155,4 @@ export class Context {
       return false;
     }
   }
-}
-
-export function createContext(cfg?: IPublicConfig) {
-  const context = new Context(createConfig(cfg));
-  context.setDevelopment();
-  return context;
-}
-
-export function createProdContext(cfg: IPublicConfig, prodProps: IProductionProps) {
-  const context = new Context(createConfig(cfg));
-  context.setProduction(prodProps);
-  return context;
 }
