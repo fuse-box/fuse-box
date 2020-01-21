@@ -55,7 +55,6 @@ export function fusebox(config: IPublicConfig) {
     runProductionContext: (phases, props?: IRunProps): Promise<IProductionContext> => {
       const ctx = createContext(config, props);
       ctx.setProduction(props);
-      ctx.createOutputConfig(props ? props.bundles : undefined);
       return productionPhases(ctx, phases);
     },
   };
