@@ -74,10 +74,10 @@ export function createWebIndex(ctx: Context): IWebIndexInterface {
     generate: async (bundles: Array<IBundleWriteResponse>) => {
       const scriptTags = [];
       const cssTags = [];
-      let ftlEnabled = false;
-      if (ctx.cache && ctx.config.cache.FTL && ctx.devServer && !ctx.config.production) {
-        ftlEnabled = true;
-      }
+      // let ftlEnabled = false;
+      // if (ctx.cache && ctx.config.cache.FTL && ctx.devServer && !ctx.config.production) {
+      //   ftlEnabled = true;
+      // }
       //const sorted = bundles.sort((a, b) => a.bundle.props.priority - b.bundle.props.priority);
       bundles.forEach(item => {
         scriptTags.push(htmlStrings.scriptTag(joinFuseBoxPath(opts.publicPath, item.relativePath)));

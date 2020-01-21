@@ -3,7 +3,8 @@ import * as path from 'path';
 import { Context } from '../core/Context';
 import { IBundleContext } from '../moduleResolver/BundleContext';
 import { createModule, IModule, IModuleMeta } from '../moduleResolver/Module';
-import { Package, createPackage, IPackage } from '../moduleResolver/Package';
+// import { Package, createPackage, IPackage } from '../moduleResolver/Package';
+import { Package, IPackage } from '../moduleResolver/Package';
 import { ensureDir, writeFile } from '../utils/utils';
 
 export interface ICachePublicProps {

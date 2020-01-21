@@ -1,4 +1,5 @@
-import { ChildProcess, SpawnOptions, spawn } from 'child_process';
+// import { ChildProcess, SpawnOptions, spawn } from 'child_process';
+import { ChildProcess, SpawnOptions } from 'child_process';
 
 import { IBundleWriteResponse } from '../bundle/bundle';
 import { Context } from '../core/Context';
@@ -18,14 +19,14 @@ export class ServerLauncher {
   }
   public handleEntry(props?: handleEntryProps) {
     this.kill();
-    const nodeArgs = (props && props.nodeArgs) || [];
-    const scriptArgs = (props && props.scriptArgs) || [];
-    const options = (props && props.options) || {};
-    const env = {
-      ...process.env,
-      ...this.ctx.config.env,
-      ...options.env,
-    };
+    // const nodeArgs = (props && props.nodeArgs) || [];
+    // const scriptArgs = (props && props.scriptArgs) || [];
+    // const options = (props && props.options) || {};
+    // const env = {
+    //   ...process.env,
+    //   ...this.ctx.config.env,
+    //   ...options.env,
+    // };
 
     // const serverEntry = this.response.find(item => item.bundle.props.type == BundleType.SERVER_ENTRY);
     // if (!serverEntry) {

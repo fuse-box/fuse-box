@@ -1,4 +1,3 @@
-import { Module } from '../core/Module';
 import { IModule } from '../moduleResolver/Module';
 import { ASTNode } from './interfaces/AST';
 import { ITransformerResult } from './interfaces/ITranformerResult';

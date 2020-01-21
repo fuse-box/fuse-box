@@ -4,7 +4,7 @@ import { IDevServerProps } from '../devServer/devServerProps';
 import { IRawCompilerOptions } from '../interfaces/TypescriptInterfaces';
 import { IJSONPluginProps } from '../plugins/core/plugin_json';
 import { IPluginLinkOptions } from '../plugins/core/plugin_link';
-import { IWatcherExternalProps } from '../watcher/watcher';
+// import { IWatcherExternalProps } from '../watcher/watcher';
 import { IWebIndexConfig } from '../webIndex/webIndex';
 import { ICodeSplittingConfig } from './ICodeSplittingConfig';
 import { IFuseLoggerProps } from './IFuseLoggerProps';
@@ -30,7 +30,8 @@ export interface IPublicConfig {
 
   codeSplitting?: ICodeSplittingConfig;
 
-  watch?: IWatcherExternalProps | boolean;
+  // watch?: IWatcherExternalProps | boolean;
+  watch?: any | boolean;
 
   resources?: IResourceConfig;
 

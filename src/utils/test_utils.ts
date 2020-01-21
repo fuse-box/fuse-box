@@ -2,7 +2,7 @@ import * as appRoot from 'app-root-path';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { IPublicConfig } from '../config/IPublicConfig';
-import { createContext } from '../core/Context';
+import { Context, createContext } from '../core/Context';
 
 import { createModule, IModule } from '../moduleResolver/Module';
 import { PackageType, createPackage, IPackage } from '../moduleResolver/Package';

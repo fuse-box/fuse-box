@@ -6,7 +6,7 @@ import { IRawCompilerOptions } from '../interfaces/TypescriptInterfaces';
 import { IJSONPluginProps } from '../plugins/core/plugin_json';
 import { IPluginLinkOptions } from '../plugins/core/plugin_link';
 import { ensureAbsolutePath, joinFuseBoxPath } from '../utils/utils';
-import { IWatcherExternalProps } from '../watcher/watcher';
+// import { IWatcherExternalProps } from '../watcher/watcher';
 import { IWebIndexConfig } from '../webIndex/webIndex';
 import { ICodeSplittingConfig } from './ICodeSplittingConfig';
 import { IFuseLoggerProps } from './IFuseLoggerProps';
@@ -33,7 +33,8 @@ export interface IHMRProps {
 
 export interface IWatcherProps {
   enabled: boolean;
-  watcherProps?: IWatcherExternalProps;
+  // watcherProps?: IWatcherExternalProps;
+  watcherProps?: any;
 }
 
 export interface ICacheProps {

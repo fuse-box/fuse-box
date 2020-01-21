@@ -15,7 +15,7 @@ export interface IBundleRouteProps {
 export function BundleRouter(props: IBundleRouteProps): IBundleRouter {
   const { ctx } = props;
   const ict = ctx.ict;
-  const bundles: Array<IBundle> = [];
+  // const bundles: Array<IBundle> = [];
 
   const outputConfig = ctx.outputConfig;
 
