@@ -1,13 +1,12 @@
 import { BUNDLE_RUNTIME_NAMES } from '../../../BundleRuntime/bundleRuntimeCore';
 import { IVisit } from '../../Visitor/Visitor';
-import { createEsModuleDefaultInterop, createRequireStatement } from '../../Visitor/helpers';
+import { ES_MODULE_EXPRESSION, createEsModuleDefaultInterop, createRequireStatement } from '../../Visitor/helpers';
 import { generateVariableFromSource } from '../../helpers/astHelpers';
 import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { ImportType } from '../../interfaces/ImportType';
 import { GlobalContext } from '../../program/GlobalContext';
 import { IProgramProps } from '../../program/transpileModule';
-import { ES_MODULE_EXPRESSION } from './ESModuleStatement';
 
 function injectEsModuleStatementIntoBody(props: IProgramProps) {
   const body = props.ast.body as Array<ASTNode>;

@@ -198,6 +198,29 @@ const _CallExpression = {
   NewExpression: 1,
 };
 
+export const ES_MODULE_EXPRESSION: ASTNode = {
+  expression: {
+    left: {
+      computed: false,
+      object: {
+        name: 'exports',
+        type: 'Identifier',
+      },
+      property: {
+        name: '__esModule',
+        type: 'Identifier',
+      },
+      type: 'MemberExpression',
+    },
+    operator: '=',
+    right: {
+      type: 'Literal',
+      value: true,
+    },
+    type: 'AssignmentExpression',
+  },
+  type: 'ExpressionStatement',
+};
 export function createEsModuleDefaultInterop(props: {
   helperObjectName: string;
   helperObjectProperty: string;

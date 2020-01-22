@@ -1,11 +1,15 @@
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
-import { createExports, createVariableDeclaration, isDefinedLocally } from '../../Visitor/helpers';
+import {
+  ES_MODULE_EXPRESSION,
+  createExports,
+  createVariableDeclaration,
+  isDefinedLocally,
+} from '../../Visitor/helpers';
 import { generateVariableFromSource } from '../../helpers/astHelpers';
 import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { ImportType } from '../../interfaces/ImportType';
 import { GlobalContext } from '../../program/GlobalContext';
-import { ES_MODULE_EXPRESSION } from './ESModuleStatement';
 
 const IGNORED_DECLARATIONS = {
   [ASTType.InterfaceDeclaration]: 1,
