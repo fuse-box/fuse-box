@@ -5,6 +5,7 @@ class Context {
   runServer;
   getConfig = () =>
     fusebox({
+      //compilerOptions: { tsConfig: 'sdfsd.json' },
       entry: 'src/entry.ts',
       modules: ['./node_modules'],
       target: 'browser',
