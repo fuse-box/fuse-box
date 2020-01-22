@@ -31,8 +31,9 @@ export const PolyfillEssentialConfig = {
 export function BundlePolyfillTransformer(): ITransformer {
   return {
     commonVisitors: props => {
-      const isBrowser = props.ctx.config.target === 'browser';
-      const isWebWorker = props.ctx.config.target === 'web-worker';
+      const compilerOptions = props.compilerOptions;
+      const isBrowser = compilerOptions.buildTarget === 'browser';
+      const isWebWorker = compilerOptions.buildTarget === 'web-worker';
       if (!(isBrowser || isWebWorker)) return;
 
       const VariablesInserted = {};

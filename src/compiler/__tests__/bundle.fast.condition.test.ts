@@ -1,15 +1,17 @@
+import { ITarget } from '../../config/PrivateConfig';
 import { initCommonTransform } from '../testUtils';
 import { BrowserProcessTransformer } from '../transformers/bundle/BrowserProcessTransformer';
 import { BundleFastConditionUnwrapper } from '../transformers/bundle/BundleFastConditionTransformer';
 import { RequireStatementInterceptor } from '../transformers/bundle/RequireStatementInterceptor';
 
-const testTranspile = (props: { code: string; NODE_ENV?: string; target?: string }) => {
+const testTranspile = (props: { NODE_ENV?: string; code: string; target?: ITarget }) => {
   return initCommonTransform({
-    props: {
-      ctx: { config: { env: { NODE_ENV: props.NODE_ENV || 'development' }, target: props.target || 'browser' } },
+    code: props.code,
+    compilerOptions: {
+      buildTarget: props.target || 'browser',
+      processEnv: { NODE_ENV: props.NODE_ENV || 'development' },
     },
     transformers: [BundleFastConditionUnwrapper(), BrowserProcessTransformer(), RequireStatementInterceptor()],
-    code: props.code,
   });
 };
 
@@ -36,12 +38,12 @@ describe('Browser fast condition', () => {
     it('should unwrap isBrowser', () => {
       const res = testTranspile({
         NODE_ENV: 'production',
-        target: 'browser',
         code: `
         if ( FuseBox.isBrowser){
           console.log("isBrowser")
         }
       `,
+        target: 'browser',
       });
       expect(res.code).toMatchSnapshot();
     });
@@ -49,12 +51,12 @@ describe('Browser fast condition', () => {
     it('should unwrap isServer', () => {
       const res = testTranspile({
         NODE_ENV: 'production',
-        target: 'server',
         code: `
         if ( FuseBox.isServer){
           console.log("isServer")
         }
       `,
+        target: 'server',
       });
 
       expect(res.code).toMatchSnapshot();

@@ -1,13 +1,15 @@
 import { initCommonTransform } from '../testUtils';
 import { ExportTransformer } from '../transformers/shared/ExportTransformer';
+import { ImportTransformer } from '../transformers/shared/ImportTransformer';
 import { ClassConstructorPropertyTransformer } from '../transformers/ts/ClassConstructorPropertyTransformer';
 import { CommonTSfeaturesTransformer } from '../transformers/ts/CommonTSfeaturesTransformer';
 import { DecoratorTransformer } from '../transformers/ts/decorators/DecoratorTransformer';
-import { ImportTransformer } from '../transformers/shared/ImportTransformer';
 
 describe('Class constructor properties', () => {
   const testTranspile = (props: { code: string; jsx?: boolean }) => {
     return initCommonTransform({
+      code: props.code,
+      compilerOptions: { experimentalDecorators: true },
       jsx: props.jsx,
       transformers: [
         DecoratorTransformer(),
@@ -16,7 +18,6 @@ describe('Class constructor properties', () => {
         ImportTransformer(),
         ExportTransformer(),
       ],
-      code: props.code,
     });
   };
 
@@ -43,7 +44,6 @@ describe('Class constructor properties', () => {
 
   it('should handle class expression', () => {
     const result = testTranspile({
-      jsx: false,
       code: `
       export const exception = <Ex extends new (...args: any[]) => any>(constructor: Ex) => {
         return class extends constructor {
@@ -52,6 +52,7 @@ describe('Class constructor properties', () => {
       };
 
         `,
+      jsx: false,
     });
 
     expect(result.code).toMatchSnapshot();
@@ -462,7 +463,6 @@ describe('Class constructor properties', () => {
 
     it('should static prop with class assigned to a const 2 (with return)', () => {
       const result = testTranspile({
-        jsx: false,
         code: `
 
         export const exception = <Ex extends new (...args: any[]) => any>(constructor: Ex) => {
@@ -473,6 +473,7 @@ describe('Class constructor properties', () => {
 
 
         `,
+        jsx: false,
       });
 
       expect(result.code).toMatchSnapshot();
@@ -480,7 +481,6 @@ describe('Class constructor properties', () => {
 
     it('should static prop with class assigned to a const 2 (with return combo)', () => {
       const result = testTranspile({
-        jsx: false,
         code: `
 
         export const exception = <Ex extends new (...args: any[]) => any>(constructor: Ex) => {
@@ -492,6 +492,7 @@ describe('Class constructor properties', () => {
 
 
         `,
+        jsx: false,
       });
 
       expect(result.code).toMatchSnapshot();
@@ -499,7 +500,6 @@ describe('Class constructor properties', () => {
 
     it('static props in export default class with decorators', () => {
       const result = testTranspile({
-        jsx: false,
         code: `
         @Injectable()
         export default class ApiService {
@@ -507,6 +507,7 @@ describe('Class constructor properties', () => {
           static bar = () => {}
         }
         `,
+        jsx: false,
       });
       expect(result.code).toMatchSnapshot();
     });

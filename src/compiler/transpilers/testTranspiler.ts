@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { ICompilerOptions } from '../../compilerOptions/interfaces';
 import { ITarget } from '../../config/PrivateConfig';
 import { createContext } from '../../core/Context';
 import { createModule } from '../../moduleResolver/Module';
@@ -10,11 +11,11 @@ import { transformCommonVisitors } from '../transformer';
 
 export interface ICompileModuleProps {
   code?: string;
-  emitDecoratorMetadata?: boolean;
+
+  compilerOptions: ICompilerOptions;
   fileName?: string;
   target?: ITarget;
   useMeriyah?: boolean;
-  env?: { [key: string]: string };
 }
 
 export function testTranspile(props: ICompileModuleProps) {
@@ -34,13 +35,7 @@ export function testTranspile(props: ICompileModuleProps) {
   const ctx = createContext({
     cache: false,
     devServer: false,
-    env: props.env,
-    target: props.target || 'browser',
   });
-
-  if (props.emitDecoratorMetadata) {
-    ctx.tsConfig.compilerOptions.emitDecoratorMetadata = props.emitDecoratorMetadata;
-  }
 
   const pkg = createPackage({ meta: {} as any });
   const module = createModule({
@@ -48,9 +43,10 @@ export function testTranspile(props: ICompileModuleProps) {
     ctx,
     pkg,
   });
+  module.props.fuseBoxPath = __filename;
   module.ast = ast as ASTNode;
 
-  transformCommonVisitors(module);
+  transformCommonVisitors(module, props.compilerOptions);
 
   const res = generate(ast, {});
 

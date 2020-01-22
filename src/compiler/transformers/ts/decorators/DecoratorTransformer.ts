@@ -1,8 +1,9 @@
-import { ASTNode } from '../../../interfaces/AST';
-import { ImportType } from '../../../interfaces/ImportType';
-import { ITransformer } from '../../../interfaces/ITransformer';
-import { createRequireStatement, isValidMethodDefinition } from '../../../Visitor/helpers';
 import { IVisit, IVisitorMod } from '../../../Visitor/Visitor';
+import { createRequireStatement, isValidMethodDefinition } from '../../../Visitor/helpers';
+import { ASTNode } from '../../../interfaces/AST';
+import { ITransformer } from '../../../interfaces/ITransformer';
+import { ImportType } from '../../../interfaces/ImportType';
+import { getParamTypes, getPropertyMetadata } from './Metadata';
 import {
   collectDecorators,
   createClassDecorators,
@@ -11,11 +12,10 @@ import {
   createPropertyDecorator,
   IClassDecorator,
 } from './decorator_helpers';
-import { getParamTypes, getPropertyMetadata } from './Metadata';
 
 export interface IDecoratorTransformerOpts {
-  helperModule?: string;
   emitDecoratorMetadata?: boolean;
+  helperModule?: string;
 }
 
 export function DecoratorTransformer(): ITransformer {
@@ -24,7 +24,11 @@ export function DecoratorTransformer(): ITransformer {
     target: { type: 'ts' },
     commonVisitors: props => {
       let helperInserted = false;
-      const emitDecoratorMetadata = props.ctx ? props.ctx.tsConfig.compilerOptions.emitDecoratorMetadata : false;
+
+      const compilerOptions = props.compilerOptions;
+      if (!compilerOptions.experimentalDecorators) return;
+
+      const emitDecoratorMetadata = compilerOptions.emitDecoratorMetadata;
 
       return {
         onEachNode: (visit: IVisit): IVisitorMod => {
@@ -68,9 +72,9 @@ export function DecoratorTransformer(): ITransformer {
               }
 
               classDecorator = createClassDecorators({
-                helperModule: helperModule,
                 className: className,
                 decorators: expressions,
+                helperModule: helperModule,
               });
               //statements.push(classDecorator.expressionStatement);
 
@@ -88,16 +92,16 @@ export function DecoratorTransformer(): ITransformer {
                 if (params && params.length) {
                   let constructorDecorators: Array<ASTNode> = [];
                   collectDecorators({
+                    expressions: constructorDecorators,
                     helperModule: helperModule,
                     params,
-                    expressions: constructorDecorators,
                   });
                   if (constructorDecorators.length) {
                     if (!classDecoratorArrayExpression) {
                       classDecorator = createClassDecorators({
-                        helperModule: helperModule,
                         className: className,
                         decorators: [],
+                        helperModule: helperModule,
                       });
                       //statements.push(classDecorator.expressionStatement);
                       classDecoratorArrayExpression = classDecorator.arrayExpression;
@@ -121,10 +125,10 @@ export function DecoratorTransformer(): ITransformer {
 
                   statements.push(
                     createPropertyDecorator({
-                      helperModule: helperModule,
                       className: className,
-                      propertyName: item.key.name,
                       decorators: expressions,
+                      helperModule: helperModule,
+                      propertyName: item.key.name,
                     }),
                   );
                 }
@@ -143,7 +147,7 @@ export function DecoratorTransformer(): ITransformer {
                     }
 
                     if (params && params.length) {
-                      collectDecorators({ helperModule: helperModule, params, expressions });
+                      collectDecorators({ expressions, helperModule: helperModule, params });
                       if (expressions.length) {
                         // method decorators metadata
                         if (emitDecoratorMetadata) {
@@ -154,9 +158,9 @@ export function DecoratorTransformer(): ITransformer {
                         }
                         statements.push(
                           createMethodPropertyDecorator({
-                            isStatic: item.static,
-                            helperModule: helperModule,
                             className: className,
+                            helperModule: helperModule,
+                            isStatic: item.static,
                             methodName: item.key.name,
 
                             elements: expressions,

@@ -1,14 +1,14 @@
 import { ImportType } from '../interfaces/ImportType';
 import { initCommonTransform } from '../testUtils';
+import { ExportTransformer } from '../transformers/shared/ExportTransformer';
 import { ImportTransformer } from '../transformers/shared/ImportTransformer';
 import { CommonTSfeaturesTransformer } from '../transformers/ts/CommonTSfeaturesTransformer';
-import { ExportTransformer } from '../transformers/shared/ExportTransformer';
 
 const testTranspile = (props: { code: string; jsx?: boolean }) => {
   return initCommonTransform({
+    code: props.code,
     jsx: props.jsx,
     transformers: [ImportTransformer(), ExportTransformer(), CommonTSfeaturesTransformer()],
-    code: props.code,
   });
 };
 
@@ -468,9 +468,9 @@ describe('Es exports tests', () => {
         {
           importType: ImportType.FROM,
           statement: {
-            type: 'CallExpression',
-            callee: { type: 'Identifier', name: 'require' },
             arguments: [{ type: 'Literal', value: './foo' }],
+            callee: { name: 'require', type: 'Identifier' },
+            type: 'CallExpression',
           },
         },
       ]);

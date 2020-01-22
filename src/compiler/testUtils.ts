@@ -1,8 +1,9 @@
+import { ICompilerOptions } from '../compilerOptions/interfaces';
 import { generate } from './generator/generator';
 import { ASTNode } from './interfaces/AST';
-import { ImportType } from './interfaces/ImportType';
 import { ITransformer } from './interfaces/ITransformer';
 import { ITransformerRequireStatementCollection } from './interfaces/ITransformerRequireStatements';
+import { ImportType } from './interfaces/ImportType';
 import { parseTypeScript } from './parser';
 import { createGlobalContext } from './program/GlobalContext';
 import { transpileModule } from './program/transpileModule';
@@ -14,10 +15,11 @@ function cleanupForTest(node) {
   delete node.range;
 }
 export function initCommonTransform(props: {
-  jsx?: boolean;
   code: string;
-  transformers: Array<ITransformer>;
+  compilerOptions?: ICompilerOptions;
+  jsx?: boolean;
   props?: any;
+  transformers: Array<ITransformer>;
 }) {
   const requireStatementCollection: ITransformerRequireStatementCollection = [];
   function onRequireCallExpression(importType: ImportType, statement: ASTNode) {
@@ -31,12 +33,13 @@ export function initCommonTransform(props: {
       requireStatementCollection.push({ importType, statement });
     }
   }
+  const compilerOptions = props.compilerOptions || {};
 
   const ast = parseTypeScript(props.code, { jsx: props.jsx });
   const tranformers = [GlobalContextTransformer().commonVisitors(props.props)];
   for (const t of props.transformers) {
     if (t.commonVisitors) {
-      tranformers.push(t.commonVisitors({ ...props.props, onRequireCallExpression }));
+      tranformers.push(t.commonVisitors({ ...props.props, compilerOptions, onRequireCallExpression }));
     }
   }
   transpileModule({

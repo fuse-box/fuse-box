@@ -1,7 +1,7 @@
 import { BUNDLE_RUNTIME_NAMES } from '../bundleRuntime/bundleRuntimeCore';
 import { ImportType } from '../compiler/interfaces/ImportType';
 import { Context } from '../core/Context';
-import { resolveModule } from '../resolver/resolver';
+import { resolveModule, ITypescriptPathsConfig } from '../resolver/resolver';
 import { ensureAbsolutePath } from '../utils/utils';
 import { createBundleContext, IBundleContext } from './BundleContext';
 import { createModule, IModule } from './Module';
@@ -17,7 +17,11 @@ export function resolve(props: {
   const config = props.ctx.config;
 
   const { bundleContext, ctx, parent } = props;
-  let typescriptPaths = parent.pkg && parent.pkg.type == PackageType.USER_PACKAGE && props.ctx.tsConfig.typescriptPaths;
+  let typescriptPaths: ITypescriptPathsConfig;
+  const compilerOptions = props.ctx.compilerOptions;
+  if (parent.pkg && parent.pkg.type === PackageType.USER_PACKAGE) {
+    if (compilerOptions.baseUrl) typescriptPaths = { baseURL: compilerOptions.baseUrl, paths: compilerOptions.paths };
+  }
   const resolved = resolveModule({
     alias: config.alias,
     buildTarget: config.target,
@@ -60,8 +64,10 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
 
   function init(pkg, absPath, reUseId?: number) {
     ctx.log.verbose('init', '<dim>$absPath</dim>', { absPath });
+
     const module = createModule({ absPath, ctx, pkg });
     module.init();
+
     // generate next id
     module.id = reUseId ? reUseId : bundleContext.nextId();
     // storing for further references (and avoid recursion)
@@ -104,6 +110,7 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
       const mrc = cached.mrc;
       // letting the bundle context know of the dependencies
       for (const cached of mrc.modulesCached) bundleContext.setModule(cached);
+
       for (const item of mrc.modulesRequireResolution) {
         init(undefined, item.absPath, item.id);
       }
@@ -129,6 +136,7 @@ export function ModuleResolver(ctx: Context, entryFiles: Array<string>): IModule
   for (const entry of entryFiles) {
     const absPath = ensureAbsolutePath(entry, ctx.config.homeDir);
     const entryModule = initModule({ absPath, bundleContext, ctx, pkg: userPackage });
+
     entryModule.isEntry = true;
     entries.push(entryModule);
   }

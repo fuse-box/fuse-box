@@ -2,6 +2,7 @@ import { ASTNode } from '../interfaces/AST';
 import { astTransformer } from './astTransformer';
 import { isLocalIdentifier } from './helpers';
 import { scopeTracker } from './scopeTracker';
+import { IProgramProps } from '../program/transpileModule';
 
 export interface IVisitProps {
   parent?: any;
@@ -35,7 +36,7 @@ export interface IVisitorMod {
   insertAfterThisNode?: ASTNode | Array<ASTNode>;
   prependToBody?: Array<ASTNode>;
   appendToBody?: Array<ASTNode>;
-  onComplete?: () => void;
+  onComplete?: (props: IProgramProps) => void;
   ignoreChildren?: boolean;
   removeNode?: boolean;
 }
@@ -157,7 +158,6 @@ function _visit(
 
 export function TopLevelVisit(props: IFastVisit) {
   const transformer = astTransformer();
-
   if (props.ast.body instanceof Array) {
     let id = 0;
     while (id < props.ast.body.length) {
@@ -175,6 +175,7 @@ export function TopLevelVisit(props: IFastVisit) {
       }
       const response = props.fn(visit);
       if (response) {
+        if (response.prependToBody) transformer.prependToBody(visit, response.prependToBody);
         if (response.onComplete) {
           props.globalContext.completeCallbacks.push(response.onComplete);
         }

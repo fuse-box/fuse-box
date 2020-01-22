@@ -3,8 +3,9 @@ import { getMTime } from '../cache/cache';
 import { generate } from '../compiler/generator/generator';
 import { ASTNode } from '../compiler/interfaces/AST';
 import { ITransformerResult } from '../compiler/interfaces/ITranformerResult';
-import { newTransformCommonVisitors } from '../compiler/new_transformer';
+
 import { parseJavascript, parseTypeScript } from '../compiler/parser';
+import { transformCommonVisitors } from '../compiler/transformer';
 import { EXECUTABLE_EXTENSIONS, JS_EXTENSIONS, STYLESHEET_EXTENSIONS, TS_EXTENSIONS } from '../config/extensions';
 import { Context } from '../core/Context';
 import { IModuleTree } from '../production/module/ModuleTree';
@@ -154,7 +155,7 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
       scope.contents = readFile(scope.absPath);
       return scope.contents;
     },
-    transpile: () => newTransformCommonVisitors(scope),
+    transpile: () => transformCommonVisitors(scope, props.ctx.compilerOptions),
   };
   return scope;
 }
