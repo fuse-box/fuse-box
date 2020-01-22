@@ -1,15 +1,21 @@
 import { ImportType } from '../interfaces/ImportType';
 
+import { ITarget } from '../../config/PrivateConfig';
 import { initCommonTransform } from '../testUtils';
 import { BrowserProcessTransformer } from '../transformers/bundle/BrowserProcessTransformer';
 
-const testTranspile = (props: { code: string; target?: string; env?: any }) => {
+const testTranspile = (props: { code: string; env?: any; target?: ITarget }) => {
   return initCommonTransform({
+    compilerOptions: {
+      buildTarget: props.target || 'browser',
+      processEnv: props.env || {},
+    },
     props: {
       ctx: { config: { env: props.env || {}, target: props.target || 'browser' } },
     },
-    transformers: [BrowserProcessTransformer()],
+
     code: props.code,
+    transformers: [BrowserProcessTransformer()],
   });
 };
 
@@ -17,22 +23,22 @@ describe('Process transform test', () => {
   describe('process.env.***', () => {
     it('should replace process.env.NODE_ENV', () => {
       const result = testTranspile({
-        target: 'browser',
-        env: { NODE_ENV: 'development' },
         code: `
           console.log(process.env.NODE_ENV);
       `,
+        env: { NODE_ENV: 'development' },
+        target: 'browser',
       });
       expect(result.code).toMatchSnapshot();
     });
 
     it('should replace with undefined if value not found', () => {
       const result = testTranspile({
-        target: 'browser',
-        env: {},
         code: `
           console.log(process.env.NODE_ENV);
       `,
+        env: {},
+        target: 'browser',
       });
       expect(result.code).toMatchSnapshot();
     });
@@ -110,8 +116,8 @@ describe('Process transform test', () => {
     it('should transform process.env', () => {
       const result = testTranspile({
         code: `console.log(process.env);`,
-        target: 'browser',
         env: { foo: 'bar' },
+        target: 'browser',
       });
       expect(result.code).toMatchSnapshot();
     });
@@ -122,8 +128,8 @@ describe('Process transform test', () => {
         alert(process.env)
         console.log(process.env);
         `,
-        target: 'browser',
         env: { foo: 'bar' },
+        target: 'browser',
       });
       expect(result.code).toMatchSnapshot();
     });
@@ -139,9 +145,9 @@ describe('Process transform test', () => {
         {
           importType: ImportType.REQUIRE,
           statement: {
-            type: 'CallExpression',
-            callee: { type: 'Identifier', name: 'require' },
             arguments: [{ type: 'Literal', value: 'process' }],
+            callee: { name: 'require', type: 'Identifier' },
+            type: 'CallExpression',
           },
         },
       ]);

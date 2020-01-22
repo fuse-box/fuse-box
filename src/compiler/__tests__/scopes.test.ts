@@ -2,14 +2,10 @@ import { initCommonTransform } from '../testUtils';
 import { ExportTransformer } from '../transformers/shared/ExportTransformer';
 import { ImportTransformer } from '../transformers/shared/ImportTransformer';
 
-const testTranspile = (props: { code: string; target?: string; fileName?: string }) => {
+const testTranspile = (props: { code: string; fileName?: string; target?: string }) => {
   return initCommonTransform({
-    props: {
-      module: { props: { fuseBoxPath: props.fileName || '/test/file.js' } },
-      ctx: { config: { target: props.target || 'browser' } },
-    },
-    transformers: [ImportTransformer(), ExportTransformer()],
     code: props.code,
+    transformers: [ImportTransformer(), ExportTransformer()],
   });
 };
 

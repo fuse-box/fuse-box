@@ -4,23 +4,33 @@ The following is a full list of all the configurations, including any defaults.
 
 ## Key
 
-* `?` - The property is optional
-* `=` - A sub config item is expanded
-
+- `?` - The property is optional
+- `=` - A sub config item is expanded
 
 ```ts
 export interface IPublicConfig {
 	root?: string;
 	target?: ITarget = 'browser' | 'server' | 'electron' | 'universal' | 'web-worker'; //default: 'browser'
-	useSingleBundle?: boolean;
 	dependencies?: {
 		include?: Array<string>;
 		ignorePackages?: Array<string>;
 		ignoreAllExternal?: boolean;
 	};
 	homeDir?: string; //default: fuse.ts directory
-	output?: string;
-	modules?: Array<string>;
+  modules?: Array<string>;
+  compilerOptions?:  ICompilerOptions = {
+    baseUrl?: string;
+    buildTarget?: ITarget;
+    emitDecoratorMetadata?: boolean;
+    esModuleInterop?: boolean;
+    esModuleStatement?: boolean;
+    experimentalDecorators?: boolean;
+    jsxFactory?: string;
+    paths?: ITypeScriptPaths;
+    processEnv?: Record<string, string>;
+    tsConfig?: string;
+  }
+
 	logging?: IFuseLoggerProps = {
 		level?: 'succinct' | 'verbose' | 'disabled';
 		ignoreStatementErrors?: Array<string>;
@@ -28,12 +38,6 @@ export interface IPublicConfig {
 	webWorkers?: IWebWorkerConfig = {
 		enabled?: boolean;
 		config?: IPublicConfig = { recursive include tree };
-	};
-
-	codeSplitting?: ICodeSplittingConfig = {
-		scriptRoot?: string;
-		maxPathLength?: number;
-		useHash?: boolean;
 	};
 
 	watch?: boolean | IWatcherExternalProps = {
@@ -82,7 +86,6 @@ export interface IPublicConfig {
 	};
 	tsConfig?: string | IRawCompilerOptions = { very large. check out tsconfig };
 	entry?: string | Array<string>;
-	allowSyntheticDefaultImports?: boolean;
 	webIndex?: boolean | IWebIndexConfig = {
 		enabled?: boolean;
 		target?: string;
@@ -91,13 +94,6 @@ export interface IPublicConfig {
 		publicPath?: string;
 		embedIndexedBundles?: boolean;
 	};
-	turboMode?:
-		| {
-				maxWorkers?: number;
-				workerPortsRange?: { start: number; end: number };
-				workerPorts?: Array<number>;
-			}
-		| boolean;
 	sourceMap?:
 		| {
 				sourceRoot?: string;
@@ -138,12 +134,10 @@ export interface IPublicConfig {
 			connectionURL?: string;
 		};
 	};
-
-	cacheObject?: Cache;
 }
 ```
 
--------
+---
 
 ## Relevant Doc Links
 
@@ -180,7 +174,6 @@ devServer?: boolean | undefined | IDevServerProps = {
 
 <br>
 
-
 ### [**logging**](../logging.md) - What's written to console
 
 ```
@@ -189,6 +182,7 @@ logging?: IFuseLoggerProps = {
 	ignoreStatementErrors?: Array<string>;
 };
 ```
+
 <br>
 
 ### [**cache**](../cache.md) - How much work is reused, where it's stored
@@ -200,13 +194,15 @@ cache?: boolean | ICacheProps = {
 	FTL?: boolean;
 };
 ```
+
 <br>
 
-
 ### [**tsconfig**](../monorepo.md) - How paths are resolved
+
 ```
 tsConfig?: string | IRawCompilerOptions = { very large. check out tsconfig };
 ```
+
 <br>
 
 ### [**resources**](../resource_links.md) - How assets (png, ttf, etc) are copied to dist
@@ -217,8 +213,8 @@ resources?: IResourceConfig = {
 	resourceFolder?: string; //default: "{YOUR_DIST_FOLDER}/resources"
 }
 ```
-<br>
 
+<br>
 
 ### [**hmr**](../hmr.md) - Hot module reloading options
 
@@ -228,8 +224,8 @@ hmr?: boolean | IHMRExternalProps = {
 	hardReloadScripts?: boolean;
 };
 ```
-<br>
 
+<br>
 
 ### [**stylesheet**](../stylesheet.md) - How stylesheet files (css, sass, etc) are imported and processed
 
@@ -261,7 +257,6 @@ watch?: boolean | IWatcherExternalProps = {
 };
 ```
 
-
 <br>
 
 ### [**webIndex**](../webIndex.md) - How the final html file is generated
@@ -276,8 +271,6 @@ webIndex?: boolean | IWebIndexConfig = {
 	embedIndexedBundles?: boolean;
 };
 ```
-
-
 
 <br>
 

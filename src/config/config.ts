@@ -22,13 +22,6 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
   if (props.modules) {
     config.modules = config.modules.concat(props.modules).map(item => ensureAbsolutePath(item, env.SCRIPT_PATH));
   }
-  // make sure we have node_modules if that exists relatively to the script path (fuse.js)
-  // const relativeNodeModulePath = pathJoin(env.SCRIPT_PATH, 'node_modules');
-  // if (fileExists(relativeNodeModulePath)) {
-  //   if (!config.modules.find(i => i === relativeNodeModulePath)) {
-  //     config.modules.push(relativeNodeModulePath);
-  //   }
-  // }
 
   if (props.output) {
     config.output = props.output;
@@ -36,21 +29,9 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
   if (props.alias) {
     config.alias = props.alias;
   }
-  if (props.tsConfig) {
-    if (typeof props.tsConfig === 'string') {
-      config.tsConfig = ensureAbsolutePath(props.tsConfig, env.SCRIPT_PATH);
-    } else {
-      config.tsConfig = props.tsConfig;
-    }
-  }
 
   if (props.target) {
     config.target = props.target;
-  }
-  // allow them by default
-  config.allowSyntheticDefaultImports = true;
-  if (props.allowSyntheticDefaultImports !== undefined) {
-    config.allowSyntheticDefaultImports = props.allowSyntheticDefaultImports;
   }
   config.webIndex = {
     enabled: false,
@@ -64,9 +45,9 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
 
   config.sourceMap = {
     css: true,
-    vendor: false,
     project: true,
     sourceRoot: '/',
+    vendor: false,
   };
 
   if (props.sourceMap !== undefined) {
@@ -99,6 +80,10 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
     config.logging = { level: 'succinct' };
   }
 
+  if (props.compilerOptions) {
+    config.compilerOptions = props.compilerOptions;
+  }
+
   config.webWorkers = { enabled: true };
   if (props.webWorkers) {
     if (typeof props.webWorkers === 'boolean') config.webWorkers.enabled = props.webWorkers;
@@ -123,8 +108,8 @@ export function createConfig(props: IPublicConfig): PrivateConfig {
 
   // cache ************************************************************************************************
   config.cache = {
-    enabled: false,
     FTL: config.target !== 'server' && config.webIndex.enabled,
+    enabled: false,
     root: path.join(env.APP_ROOT, 'node_modules/.fusebox'),
   };
 

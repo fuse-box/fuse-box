@@ -5,6 +5,9 @@ import { JSXTransformer } from '../transformers/shared/JSXTransformer';
 const testTranspile = (props: { code: string; jsx?: boolean }) => {
   return initCommonTransform({
     code: props.code,
+    compilerOptions: {
+      jsxFactory: 'React.createElement',
+    },
     jsx: true,
     props: { module: { props: { extension: '.tsx' } } },
     transformers: [JSXTransformer(), ImportTransformer()],
