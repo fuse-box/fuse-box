@@ -1,9 +1,18 @@
-import { testTranspile } from '../transpilers/testTranspiler';
 import * as prettier from 'prettier';
+import { testTranspile } from '../transpilers/testTranspiler';
 
 let file;
 
-const code = testTranspile({ fileName: __dirname + '/sample1.tsx', emitDecoratorMetadata: true });
+const code = testTranspile({
+  compilerOptions: {
+    esModuleInterop: true,
+    esModuleStatement: true,
+    experimentalDecorators: true,
+    jsxFactory: 'React.createElement',
+  },
+  fileName: __dirname + '/sample1.tsx',
+});
+console.log('here');
 //console.log(code);
 const res = prettier.format(code, {});
 console.log(res);

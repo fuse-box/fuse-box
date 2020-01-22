@@ -1,14 +1,25 @@
+import { BUNDLE_RUNTIME_NAMES } from '../../../BundleRuntime/bundleRuntimeCore';
 import { IVisit } from '../../Visitor/Visitor';
-import { createRequireStatement } from '../../Visitor/helpers';
+import { createEsModuleDefaultInterop, createRequireStatement } from '../../Visitor/helpers';
 import { generateVariableFromSource } from '../../helpers/astHelpers';
-import { ASTType } from '../../interfaces/AST';
+import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
 import { ImportType } from '../../interfaces/ImportType';
 import { GlobalContext } from '../../program/GlobalContext';
+import { IProgramProps } from '../../program/transpileModule';
+import { ES_MODULE_EXPRESSION } from './ESModuleStatement';
 
+function injectEsModuleStatementIntoBody(props: IProgramProps) {
+  const body = props.ast.body as Array<ASTNode>;
+  body.splice(0, 0, ES_MODULE_EXPRESSION);
+}
 export function ImportTransformer(): ITransformer {
   return {
     commonVisitors: props => {
+      const compilerOptions = props.compilerOptions;
+      const esModuleInterop = compilerOptions.esModuleInterop;
+      let injectEsModuleStatement = compilerOptions.esModuleStatement;
+      let esModuleStatementInjected = !injectEsModuleStatement;
       return {
         onTopLevelTraverse: (visit: IVisit) => {
           const node = visit.node;
@@ -21,22 +32,32 @@ export function ImportTransformer(): ITransformer {
             }
             return { replaceWith: reqStatement.statement };
           }
-          if (node.type === 'ImportDeclaration') {
+          let injectDefaultInterop;
+          if (node.type === ASTType.ImportDeclaration) {
             // converts "./foo/bar.hello.js" to foo_bar_hello_js_1 (1:1 like typescript does)
             const variable = generateVariableFromSource(node.source.value, global.getNextIndex());
 
             node.specifiers.forEach(specifier => {
-              if (specifier.type === 'ImportSpecifier') {
+              if (specifier.type === ASTType.ImportSpecifier) {
                 global.identifierReplacement[specifier.local.name] = {
                   first: variable,
                   second: specifier.imported.name,
                 };
-              } else if (specifier.type === 'ImportDefaultSpecifier') {
-                global.identifierReplacement[specifier.local.name] = {
-                  first: variable,
-                  second: 'default',
-                };
-              } else if (specifier.type === 'ImportNamespaceSpecifier') {
+              } else if (specifier.type === ASTType.ImportDefaultSpecifier) {
+                let replacement;
+                if (esModuleInterop) {
+                  injectDefaultInterop = `default_${global.getNextIndex()}`;
+                  replacement = {
+                    first: injectDefaultInterop,
+                  };
+                } else {
+                  replacement = {
+                    first: variable,
+                    second: 'default',
+                  };
+                }
+                global.identifierReplacement[specifier.local.name] = replacement;
+              } else if (specifier.type === ASTType.ImportNamespaceSpecifier) {
                 // only if we have more than one specifier
                 // for instance
                 // i=mport MySuperClass, * as everything from "module-name";
@@ -54,7 +75,7 @@ export function ImportTransformer(): ITransformer {
             });
 
             return {
-              onComplete: () => {
+              onComplete: (programProps: IProgramProps) => {
                 const reqStatement = createRequireStatement(node.source.value, node.specifiers.length && variable);
                 // when everything is finished we need to check if those variables have been used at all
                 // they were all unused we need remove the require/import statement at all
@@ -71,6 +92,10 @@ export function ImportTransformer(): ITransformer {
                     }
                     parent[property].splice(index, 1, reqStatement.statement);
                   }
+                  if (!esModuleStatementInjected) {
+                    esModuleStatementInjected = true;
+                    injectEsModuleStatementIntoBody(programProps);
+                  }
                   return;
                 }
 
@@ -86,7 +111,24 @@ export function ImportTransformer(): ITransformer {
                 if (atLeastOneInUse) {
                   const index = parent[property].indexOf(node);
                   if (index > -1) {
-                    parent[property].splice(index, 1, reqStatement.statement);
+                    let statements = [reqStatement.statement];
+                    if (injectDefaultInterop) {
+                      statements.push(
+                        createEsModuleDefaultInterop({
+                          helperObjectName: BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ,
+                          helperObjectProperty: BUNDLE_RUNTIME_NAMES.INTEROP_REQUIRE_DEFAULT_FUNCTION,
+                          targetIdentifierName: variable,
+                          variableName: injectDefaultInterop,
+                        }),
+                      );
+                    }
+
+                    parent[property].splice(index, 1, ...statements);
+
+                    if (!esModuleStatementInjected) {
+                      esModuleStatementInjected = true;
+                      injectEsModuleStatementIntoBody(programProps);
+                    }
                     if (props.onRequireCallExpression) {
                       props.onRequireCallExpression(ImportType.FROM, reqStatement.reqStatement);
                     }

@@ -1,17 +1,17 @@
 import { ASTNode, ASTType } from '../interfaces/AST';
 
 const _isLocalIdentifierRulesExceptionNodes = {
-  ImportSpecifier: 1,
-  ImportDeclaration: 1,
-  ImportNamespaceSpecifier: 1,
-  [ASTType.TypeReference]: 1,
-  FunctionDeclaration: 1,
   ArrayPattern: 1,
   ClassDeclaration: 1,
+  FunctionDeclaration: 1,
   FunctionExpression: 1,
-  RestElement: 1,
+  ImportDeclaration: 1,
   //ArrowFunctionExpression: 1,
   ImportDefaultSpecifier: 1,
+  ImportNamespaceSpecifier: 1,
+  ImportSpecifier: 1,
+  RestElement: 1,
+  [ASTType.TypeReference]: 1,
 };
 export function isLocalIdentifier(node: ASTNode, parent: ASTNode, propertyName: string) {
   if (node.type === 'Identifier') {
@@ -43,7 +43,7 @@ export function isDefinedLocally(node: ASTNode): Array<{ init: boolean; name: st
     if (node.declarations) {
       for (const decl of node.declarations) {
         if (decl.type === 'VariableDeclarator' && decl.id && decl.id.type === 'Identifier') {
-          defined.push({ name: decl.id.name, init: !!decl.init });
+          defined.push({ init: !!decl.init, name: decl.id.name });
         }
       }
       return defined;
@@ -53,61 +53,61 @@ export function isDefinedLocally(node: ASTNode): Array<{ init: boolean; name: st
 
 export function createMemberExpression(obj: string, target: string): ASTNode {
   return {
-    type: 'MemberExpression',
+    computed: false,
     object: {
-      type: 'Identifier',
       name: obj,
+      type: 'Identifier',
     },
     property: {
-      type: 'Identifier',
       name: target,
+      type: 'Identifier',
     },
-    computed: false,
+    type: 'MemberExpression',
   };
 }
 
 export function createExpressionStatement(left: ASTNode, right: ASTNode): ASTNode {
   return {
-    type: 'ExpressionStatement',
     expression: {
-      type: 'AssignmentExpression',
       left: left,
       operator: '=',
       right: right,
+      type: 'AssignmentExpression',
     },
+    type: 'ExpressionStatement',
   };
 }
 export function defineVariable(name: string, right: ASTNode): ASTNode {
   return {
-    type: 'VariableDeclaration',
-    kind: 'var',
     declarations: [
       {
-        type: 'VariableDeclarator',
-        init: right,
         id: {
-          type: 'Identifier',
           name: name,
+          type: 'Identifier',
         },
+        init: right,
+        type: 'VariableDeclarator',
       },
     ],
+    kind: 'var',
+    type: 'VariableDeclaration',
   };
 }
 
 export function createVariableDeclaration(name: string, node: ASTNode): ASTNode {
   return {
-    type: 'VariableDeclaration',
-    kind: 'let',
     declarations: [
       {
-        type: 'VariableDeclarator',
-        init: node,
         id: {
-          type: 'Identifier',
           name: name,
+          type: 'Identifier',
         },
+        init: node,
+        type: 'VariableDeclarator',
       },
     ],
+    kind: 'let',
+    type: 'VariableDeclaration',
   };
 }
 
@@ -116,47 +116,47 @@ export function createLiteral(value): ASTNode {
 }
 export function createExports(exportsKey: string, exportsVariableName: string, property: ASTNode): ASTNode {
   return {
-    type: 'ExpressionStatement',
     expression: {
-      type: 'AssignmentExpression',
-      operator: '=',
       left: {
-        type: 'MemberExpression',
-        object: {
-          type: 'Identifier',
-          name: exportsKey,
-        },
         computed: false,
-        property: {
+        object: {
+          name: exportsKey,
           type: 'Identifier',
-          name: exportsVariableName,
         },
+        property: {
+          name: exportsVariableName,
+          type: 'Identifier',
+        },
+        type: 'MemberExpression',
       },
+      operator: '=',
       right: property,
+      type: 'AssignmentExpression',
     },
+    type: 'ExpressionStatement',
   };
 }
 
 export function createRequireStatement(source: string, local?: string): { reqStatement: ASTNode; statement: ASTNode } {
   const reqStatement: ASTNode = {
-    type: 'CallExpression',
-    callee: {
-      type: 'Identifier',
-      name: 'require',
-    },
     arguments: [
       {
         type: 'Literal',
         value: source,
       },
     ],
+    callee: {
+      name: 'require',
+      type: 'Identifier',
+    },
+    type: 'CallExpression',
   };
   if (!local) {
     return {
       reqStatement,
       statement: {
-        type: 'ExpressionStatement',
         expression: reqStatement,
+        type: 'ExpressionStatement',
       },
     };
   }
@@ -170,8 +170,8 @@ export function createRequireStatement(source: string, local?: string): { reqSta
           type: 'VariableDeclarator',
 
           id: {
-            type: 'Identifier',
             name: local,
+            type: 'Identifier',
           },
           init: reqStatement,
         },
@@ -198,36 +198,78 @@ const _CallExpression = {
   NewExpression: 1,
 };
 
+export function createEsModuleDefaultInterop(props: {
+  helperObjectName: string;
+  helperObjectProperty: string;
+  targetIdentifierName: string;
+  variableName: string;
+}): ASTNode {
+  return {
+    declarations: [
+      {
+        id: {
+          name: props.variableName,
+          type: 'Identifier',
+        },
+        init: {
+          arguments: [
+            {
+              name: props.targetIdentifierName,
+              type: 'Identifier',
+            },
+          ],
+          callee: {
+            computed: false,
+            object: {
+              name: props.helperObjectName,
+              type: 'Identifier',
+            },
+            property: {
+              name: props.helperObjectProperty,
+              type: 'Identifier',
+            },
+            type: 'MemberExpression',
+          },
+          type: 'CallExpression',
+        },
+        type: 'VariableDeclarator',
+      },
+    ],
+    kind: 'var',
+    type: 'VariableDeclaration',
+  };
+}
+
 export function createRequireCallExpression(elements: Array<ASTNode>): ASTNode {
   return {
-    type: 'CallExpression',
-    callee: {
-      type: 'Identifier',
-      name: 'require',
-    },
     arguments: elements,
+    callee: {
+      name: 'require',
+      type: 'Identifier',
+    },
+    type: 'CallExpression',
   };
 }
 export function createASTFromObject(obj: { [key: string]: any }): ASTNode {
   const properties: Array<ASTNode> = [];
   const parent: ASTNode = {
-    type: 'ObjectExpression',
     properties,
+    type: 'ObjectExpression',
   };
   for (const key in obj) {
     properties.push({
-      type: 'Property',
+      computed: false,
       key: {
-        type: 'Identifier',
         name: key,
+        type: 'Identifier',
       },
+      kind: 'init',
+      shorthand: false,
+      type: 'Property',
       value: {
         type: 'Literal',
         value: obj[key],
       },
-      kind: 'init',
-      computed: false,
-      shorthand: false,
     });
   }
   return parent;

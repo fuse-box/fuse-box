@@ -4,13 +4,18 @@ export const BUNDLE_RUNTIME_NAMES = {
   ARG_REQUIRE_FUNCTION: '__fusereq',
   BUNDLE_FUNCTION: 'bundle',
   GLOBAL_OBJ: '__fuse',
+  INTEROP_REQUIRE_DEFAULT_FUNCTION: 'dt',
   REQUIRE_FUNCTION: 'r',
 };
 
 export interface IBundleRuntimeCore {
+  interopRequireDefault?: boolean;
   isIsolated?: boolean;
   target: ITarget;
 }
+
+const INTEROP_DEFAULT = BUNDLE_RUNTIME_NAMES.INTEROP_REQUIRE_DEFAULT_FUNCTION;
+
 export function bundleRuntimeCore(props: IBundleRuntimeCore) {
   const { target } = props;
   const isIsolated = props.target === 'web-worker' || props.isIsolated;
@@ -26,9 +31,14 @@ export function bundleRuntimeCore(props: IBundleRuntimeCore) {
     coreVariable = `var core = global.${BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ} = global.${BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ} || {};`;
   }
 
+  let optional = '';
+  if (props.interopRequireDefault) {
+    optional += `\ncore.${INTEROP_DEFAULT} = function (x) { return x !== undefined && x.default !== undefined ? x.default : x; }`;
+  }
+
   const CODE = `${isIsolated ? `var ${BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ} = ` : ''}(function() {
   ${coreVariable}
-  var modules = core.modules = core.modules || {};
+  var modules = core.modules = core.modules || {}; ${optional}
   core.${BUNDLE_RUNTIME_NAMES.BUNDLE_FUNCTION} = function(collection, fn) {
     for (var num in collection) {
       modules[num] = collection[num];

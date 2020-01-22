@@ -1,6 +1,6 @@
+import { FastVisit, TopLevelVisit } from '../Visitor/Visitor';
 import { ASTNode } from '../interfaces/AST';
 import { ITranformerCallback, ITransformerVisitors } from '../interfaces/ITransformer';
-import { FastVisit, TopLevelVisit } from '../Visitor/Visitor';
 
 export type ITransformerList = Array<ITransformerVisitors | undefined>;
 export interface IProgramProps {
@@ -50,7 +50,7 @@ export function transpileModule(props: IProgramProps) {
   });
   if (props.globalContext.completeCallbacks.length) {
     for (const cb of props.globalContext.completeCallbacks) {
-      cb();
+      cb(props);
     }
   }
 }

@@ -40,7 +40,11 @@ export function Bundle(props: IBundleProps): IBundle {
   const target = ctx.config.target;
 
   const bundleWriter = distWriter({ hashEnabled: isProduction, root: outputConfig.root });
-  const apiCore = props.includeAPI && { isIsolated: bundleConfig.isolatedApi, target };
+  const apiCore = props.includeAPI && {
+    interopRequireDefault: ctx.compilerOptions.esModuleInterop,
+    isIsolated: bundleConfig.isolatedApi,
+    target,
+  };
   const source = bundleSource({ core: apiCore, isIsolated: bundleConfig.isolatedApi, target });
   source.entries = props.entries;
 

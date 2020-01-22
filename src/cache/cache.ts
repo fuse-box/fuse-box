@@ -63,7 +63,7 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
 
     const record = meta.modules[id];
     let target: IModule;
-    if (getMTime(record.absPath) === record.mtime) {
+    if (existsSync(record.absPath) && getMTime(record.absPath) === record.mtime) {
       const cacheFile = path.join(modulesFolder, record.id + '.json');
       if (existsSync(cacheFile)) {
         const moduleCacheData = require(cacheFile);
