@@ -1,16 +1,18 @@
+import { ITarget } from '../../config/PrivateConfig';
 import { initCommonTransform } from '../testUtils';
 import { BrowserProcessTransformer } from '../transformers/bundle/BrowserProcessTransformer';
 import { BundleFastConditionUnwrapper } from '../transformers/bundle/BundleFastConditionTransformer';
 import { RequireStatementInterceptor } from '../transformers/bundle/RequireStatementInterceptor';
 
 describe('Browser process transformer test', () => {
-  const testTranspile = (props: { code: string; NODE_ENV?: string; target?: string }) => {
+  const testTranspile = (props: { NODE_ENV?: string; code: string; target?: ITarget }) => {
     return initCommonTransform({
-      props: {
-        ctx: { config: { env: { NODE_ENV: props.NODE_ENV || 'development' }, target: props.target || 'browser' } },
+      code: props.code,
+      compilerOptions: {
+        buildTarget: props.target || 'browser',
+        processEnv: { NODE_ENV: props.NODE_ENV || 'development' },
       },
       transformers: [BrowserProcessTransformer(), BundleFastConditionUnwrapper(), RequireStatementInterceptor()],
-      code: props.code,
     });
   };
   it('should unwrap dev', () => {

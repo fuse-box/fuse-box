@@ -18,9 +18,10 @@ export type IBrowserProcessTransform = BrowserProcessTransformProps & ITransform
 export function BrowserProcessTransformer(): ITransformer {
   return {
     commonVisitors: props => {
-      if (props.ctx.config.target !== 'browser') return;
+      const compilerOptions = props.compilerOptions;
+      if (compilerOptions.buildTarget !== 'browser') return;
 
-      const env = props.ctx.config.env;
+      const env = compilerOptions.processEnv;
 
       let globalEnvInserted = false;
       let entireEnvInserted = false;

@@ -1,12 +1,11 @@
 import * as path from 'path';
+import { ICompilerOptions } from '../compilerOptions/interfaces';
 import { Context } from '../core/Context';
 import { IDevServerProps } from '../devServer/devServerProps';
 import { env } from '../env';
-import { IRawCompilerOptions } from '../interfaces/TypescriptInterfaces';
 import { IJSONPluginProps } from '../plugins/core/plugin_json';
 import { IPluginLinkOptions } from '../plugins/core/plugin_link';
 import { ensureAbsolutePath, joinFuseBoxPath } from '../utils/utils';
-// import { IWatcherExternalProps } from '../watcher/watcher';
 import { IWebIndexConfig } from '../webIndex/webIndex';
 import { ICodeSplittingConfig } from './ICodeSplittingConfig';
 import { IFuseLoggerProps } from './IFuseLoggerProps';
@@ -52,12 +51,11 @@ export class PrivateConfig {
     include?: Array<string>;
   };
   cache?: ICacheProps;
-  useSingleBundle?: boolean;
   webWorkers?: IWebWorkerConfig;
   homeDir?: string;
   resources?: IResourceConfig;
-  output?: string;
   modules?: Array<string>;
+  compilerOptions?: ICompilerOptions;
   logging?: IFuseLoggerProps;
   watch?: IWatcherProps;
   hmr?: IHMRProps;
@@ -65,7 +63,6 @@ export class PrivateConfig {
   json?: IJSONPluginProps;
   link?: IPluginLinkOptions;
   env?: { [key: string]: string };
-  tsConfig?: IRawCompilerOptions | string;
   entries?: Array<string>;
   allowSyntheticDefaultImports?: boolean;
   webIndex?: IWebIndexConfig;
@@ -114,22 +111,22 @@ export class PrivateConfig {
       }
     }
     // define default settings for code splitting
-    this.codeSplitting = props.codeSplitting || {};
-    this.codeSplitting.useHash = typeof this.codeSplitting.useHash === undefined ? true : this.codeSplitting.useHash;
-    this.codeSplitting.maxPathLength =
-      typeof this.codeSplitting.maxPathLength === 'number' ? this.codeSplitting.maxPathLength : 20;
+    // this.codeSplitting = props.codeSplitting || {};
+    // this.codeSplitting.useHash = typeof this.codeSplitting.useHash === undefined ? true : this.codeSplitting.useHash;
+    // this.codeSplitting.maxPathLength =
+    //   typeof this.codeSplitting.maxPathLength === 'number' ? this.codeSplitting.maxPathLength : 20;
 
-    if (!this.codeSplitting.scriptRoot) {
-      if (this.isServer()) {
-        this.codeSplitting.scriptRoot = './';
-      } else {
-        if (this.webIndex && this.webIndex.publicPath) {
-          this.codeSplitting.scriptRoot = this.webIndex.publicPath;
-        } else {
-          this.codeSplitting.scriptRoot = '/';
-        }
-      }
-    }
+    // if (!this.codeSplitting.scriptRoot) {
+    //   if (this.isServer()) {
+    //     this.codeSplitting.scriptRoot = './';
+    //   } else {
+    //     if (this.webIndex && this.webIndex.publicPath) {
+    //       this.codeSplitting.scriptRoot = this.webIndex.publicPath;
+    //     } else {
+    //       this.codeSplitting.scriptRoot = '/';
+    //     }
+    //   }
+    // }
 
     this.watch = {
       enabled: !env.isTest,
@@ -165,8 +162,6 @@ export class PrivateConfig {
     }
     // Plugin Link
     this.link = props.link ? props.link : {};
-
-    if (props.useSingleBundle !== undefined) this.useSingleBundle = props.useSingleBundle;
   }
 
   public isEssentialDependency(name: string) {

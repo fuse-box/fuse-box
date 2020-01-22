@@ -1,12 +1,10 @@
-import { ICache } from '../cache/cache';
+// import { IWatcherExternalProps } from '../watcher/watcher';
+import { ICompilerOptions } from '../compilerOptions/interfaces';
 import { Context } from '../core/Context';
 import { IDevServerProps } from '../devServer/devServerProps';
-import { IRawCompilerOptions } from '../interfaces/TypescriptInterfaces';
 import { IJSONPluginProps } from '../plugins/core/plugin_json';
 import { IPluginLinkOptions } from '../plugins/core/plugin_link';
-// import { IWatcherExternalProps } from '../watcher/watcher';
 import { IWebIndexConfig } from '../webIndex/webIndex';
-import { ICodeSplittingConfig } from './ICodeSplittingConfig';
 import { IFuseLoggerProps } from './IFuseLoggerProps';
 import { IResourceConfig } from './IResourceConfig';
 import { IStyleSheetProps } from './IStylesheetProps';
@@ -14,13 +12,12 @@ import { IWebWorkerConfig } from './IWebWorkerConfig';
 import { ICacheProps, IHMRExternalProps, ITarget } from './PrivateConfig';
 
 export interface IPublicConfig {
+  compilerOptions?: ICompilerOptions;
   homeDir?: string;
   logging?: IFuseLoggerProps;
   modules?: Array<string>;
-  output?: string;
   root?: string;
   target?: ITarget;
-  useSingleBundle?: boolean;
   webWorkers?: IWebWorkerConfig;
   dependencies?: {
     ignoreAllExternal?: boolean;
@@ -28,9 +25,6 @@ export interface IPublicConfig {
     include?: Array<string>;
   };
 
-  codeSplitting?: ICodeSplittingConfig;
-
-  // watch?: IWatcherExternalProps | boolean;
   watch?: any | boolean;
 
   resources?: IResourceConfig;
@@ -47,7 +41,6 @@ export interface IPublicConfig {
    */
   env?: { [key: string]: string };
 
-  allowSyntheticDefaultImports?: boolean;
   cache?: ICacheProps | boolean;
   entry?: Array<string> | string;
   hmr?: IHMRExternalProps | boolean;
@@ -61,14 +54,7 @@ export interface IPublicConfig {
         vendor?: boolean;
       };
   stylesheet?: IStyleSheetProps;
-  tsConfig?: IRawCompilerOptions | string;
-  turboMode?:
-    | boolean
-    | {
-        maxWorkers?: number;
-        workerPorts?: Array<number>;
-        workerPortsRange?: { end: number; start: number };
-      };
+
   webIndex?: IWebIndexConfig | boolean;
   alias?: { [key: string]: string };
 
@@ -76,6 +62,4 @@ export interface IPublicConfig {
   defaultCollectionName?: string;
 
   devServer?: undefined | IDevServerProps | boolean;
-
-  cacheObject?: ICache;
 }

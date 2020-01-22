@@ -9,7 +9,4 @@ export function prerequisites(ctx: Context) {
     mode: ctx.config.production ? 'production' : 'development',
     version: env.VERSION,
   });
-  if (!ctx.tsConfig.tsConfigFilePath) {
-    ctx.log.info('tsconfig', 'tsconfig.json was not found. Using internal defaults.');
-  }
 }

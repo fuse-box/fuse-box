@@ -1,20 +1,21 @@
-import { ASTNode } from '../../interfaces/AST';
-import { computeBoolean } from '../../static_compute/computeBoolean';
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
+import { ASTNode } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
+import { computeBoolean } from '../../static_compute/computeBoolean';
 
 export interface IBundleFastConditionTransformer {
-  env: { [key: string]: any };
-  isServer?: boolean;
   isBrowser?: boolean;
+  isServer?: boolean;
+  env: { [key: string]: any };
 }
 
 export function BundleFastConditionUnwrapper(): ITransformer {
   return {
     commonVisitors: props => {
-      const env = props.ctx.config.env;
-      const isBrowser = props.ctx.config.target === 'browser';
-      const isServer = props.ctx.config.target === 'server';
+      const compilerOptions = props.compilerOptions;
+      const env = compilerOptions.processEnv;
+      const isBrowser = compilerOptions.buildTarget === 'browser';
+      const isServer = compilerOptions.buildTarget === 'server';
 
       return {
         onEachNode: (visit: IVisit): IVisitorMod => {

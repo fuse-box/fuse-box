@@ -3,14 +3,10 @@ import { initCommonTransform } from '../testUtils';
 import { RequireStatementInterceptor } from '../transformers/bundle/RequireStatementInterceptor';
 import { ImportTransformer } from '../transformers/shared/ImportTransformer';
 
-const testTranspile = (props: { code: string; target?: string; fileName?: string }) => {
+const testTranspile = (props: { code: string; fileName?: string; target?: string }) => {
   return initCommonTransform({
-    props: {
-      module: { props: { fuseBoxPath: props.fileName || '/test/file.js' } },
-      ctx: { config: { target: props.target || 'browser' } },
-    },
-    transformers: [RequireStatementInterceptor(), ImportTransformer()],
     code: props.code,
+    transformers: [RequireStatementInterceptor(), ImportTransformer()],
   });
 };
 
@@ -26,10 +22,10 @@ describe('Require statement intercepto', () => {
       {
         importType: ImportType.REQUIRE,
         statement: {
-          type: 'CallExpression',
-          callee: { type: 'Identifier', name: 'require' },
           arguments: [{ type: 'Literal', value: './a' }],
+          callee: { name: 'require', type: 'Identifier' },
           optional: false,
+          type: 'CallExpression',
         },
       },
     ]);
@@ -46,19 +42,19 @@ describe('Require statement intercepto', () => {
       {
         importType: ImportType.REQUIRE,
         statement: {
-          type: 'CallExpression',
           optional: false,
+          type: 'CallExpression',
 
-          callee: { type: 'Identifier', name: 'require' },
           arguments: [{ type: 'Literal', value: './a' }],
+          callee: { name: 'require', type: 'Identifier' },
         },
       },
       {
         importType: ImportType.FROM,
         statement: {
-          type: 'CallExpression',
-          callee: { type: 'Identifier', name: 'require' },
           arguments: [{ type: 'Literal', value: './hey' }],
+          callee: { name: 'require', type: 'Identifier' },
+          type: 'CallExpression',
         },
       },
     ]);

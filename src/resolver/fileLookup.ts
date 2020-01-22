@@ -119,12 +119,12 @@ export function fileLookup(props: ILookupProps): ILookupResult {
             monorepoModulesPaths = _monoModules;
           }
 
-          const _tsConfig = path.resolve(resolved, 'tsconfig.json');
-          if (fileExists(_tsConfig)) {
-            const props: any = { tsConfig: _tsConfig };
-            const _tsConfigObject = initTypescriptConfig(props);
-            tsConfigAtPath = { absPath: resolved, tsConfig: _tsConfigObject };
-          }
+          // const _tsConfig = path.resolve(resolved, 'tsconfig.json');
+          // if (fileExists(_tsConfig)) {
+          //   const props: any = { tsConfig: _tsConfig };
+          //   const _tsConfigObject = initTypescriptConfig(props);
+          //   tsConfigAtPath = { absPath: resolved, tsConfig: _tsConfigObject };
+          // }
         }
 
         const entryFile = path.join(resolved, entry);

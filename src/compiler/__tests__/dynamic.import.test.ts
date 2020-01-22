@@ -2,14 +2,11 @@ import { initCommonTransform } from '../testUtils';
 import { DynamicImportTransformer } from '../transformers/shared/DynamicImportTransformer';
 
 describe('Dynamic import test', () => {
-  const testTranspile = (props: { code: string; jsx?: boolean; emitDecoratorMetadata?: boolean }) => {
+  const testTranspile = (props: { code: string; emitDecoratorMetadata?: boolean; jsx?: boolean }) => {
     return initCommonTransform({
-      jsx: props.jsx,
-      props: {
-        ctx: { tsConfig: { compilerOptions: { emitDecoratorMetadata: props.emitDecoratorMetadata } } },
-      },
-      transformers: [DynamicImportTransformer()],
       code: props.code,
+      jsx: props.jsx,
+      transformers: [DynamicImportTransformer()],
     });
   };
 

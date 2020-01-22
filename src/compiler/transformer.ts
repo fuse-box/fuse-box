@@ -1,3 +1,4 @@
+import { ICompilerOptions } from '../compilerOptions/interfaces';
 import { IModule } from '../moduleResolver/Module';
 import { ASTNode } from './interfaces/AST';
 import { ITransformerResult } from './interfaces/ITranformerResult';
@@ -66,7 +67,8 @@ export function isTransformerEligible(module: IModule, transformer: ITransformer
   return true;
 }
 
-export function transformCommonVisitors(module: IModule): ITransformerResult {
+export function transformCommonVisitors(module: IModule, compilerOptions?: ICompilerOptions): ITransformerResult {
+  compilerOptions = compilerOptions || {};
   const requireStatementCollection: ITransformerRequireStatementCollection = [];
   function onRequireCallExpression(importType: ImportType, statement: ASTNode) {
     // making sure we have haven't emitted the same property twice
@@ -82,17 +84,18 @@ export function transformCommonVisitors(module: IModule): ITransformerResult {
   const userTransformers = module.ctx.userTransformers;
 
   let index = 0;
+  const visitorProps = { compilerOptions, ctx, module, onRequireCallExpression };
   while (index < BASE_TRANSFORMERS.length) {
     const transformer = BASE_TRANSFORMERS[index];
     // user transformer need to be executed after the first transformers
     if (index === 1) {
       for (const userTransformer of userTransformers) {
         if (userTransformer.commonVisitors && isTransformerEligible(module, userTransformer))
-          commonVisitors.push(userTransformer.commonVisitors({ ctx, module, onRequireCallExpression }));
+          commonVisitors.push(userTransformer.commonVisitors(visitorProps));
       }
     }
     if (transformer.commonVisitors && isTransformerEligible(module, transformer))
-      commonVisitors.push(transformer.commonVisitors({ ctx, module, onRequireCallExpression }));
+      commonVisitors.push(transformer.commonVisitors(visitorProps));
     index++;
   }
 

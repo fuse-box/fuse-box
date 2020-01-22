@@ -1,5 +1,10 @@
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
-import { createExports, createVariableDeclaration, isDefinedLocally } from '../../Visitor/helpers';
+import {
+  ES_MODULE_EXPRESSION,
+  createExports,
+  createVariableDeclaration,
+  isDefinedLocally,
+} from '../../Visitor/helpers';
 import { generateVariableFromSource } from '../../helpers/astHelpers';
 import { ASTNode, ASTType } from '../../interfaces/AST';
 import { ITransformer } from '../../interfaces/ITransformer';
@@ -36,6 +41,9 @@ export function ExportTransformer(): ITransformer {
   return {
     commonVisitors: props => {
       const definedLocallyProcessed: Record<string, number> = {};
+      const compilerOptions = props.compilerOptions;
+      let injectEsModuleStatement = compilerOptions.esModuleStatement === true;
+      let esModuleStatementInjected = !injectEsModuleStatement;
       return {
         onEachNode: (visit: IVisit) => {
           const global = visit.globalContext as GlobalContext;
@@ -73,6 +81,11 @@ export function ExportTransformer(): ITransformer {
                 response.insertAfterThisNode = newNodes;
               }
               if (response.insertAfterThisNode || response.appendToBody) {
+                // make sure exports.__eModule is injected
+                if (!esModuleStatementInjected) {
+                  esModuleStatementInjected = true;
+                  response.prependToBody = [ES_MODULE_EXPRESSION];
+                }
                 return response;
               }
             }
@@ -122,7 +135,7 @@ export function ExportTransformer(): ITransformer {
               if (props.onRequireCallExpression) {
                 props.onRequireCallExpression(ImportType.FROM, reqExpression);
               }
-              return {
+              const response: IVisitorMod = {
                 replaceWith: {
                   arguments: [
                     {
@@ -146,6 +159,13 @@ export function ExportTransformer(): ITransformer {
                   type: 'CallExpression',
                 },
               };
+
+              // make sure exports.__eModule is injected
+              if (!esModuleStatementInjected) {
+                esModuleStatementInjected = true;
+                response.prependToBody = [ES_MODULE_EXPRESSION];
+              }
+              return response;
             }
 
             // export { foo } from "./bar"
@@ -198,7 +218,13 @@ export function ExportTransformer(): ITransformer {
                 );
               }
             }
-            return { replaceWith: exportedNodes };
+            const response: IVisitorMod = { replaceWith: exportedNodes };
+            // make sure exports.__eModule is injected
+            if (!esModuleStatementInjected) {
+              esModuleStatementInjected = true;
+              response.prependToBody = [ES_MODULE_EXPRESSION];
+            }
+            return response;
           }
 
           /**
@@ -232,7 +258,7 @@ export function ExportTransformer(): ITransformer {
                  * }
                  */
                 let statement: ASTNode = considerDecorators(node);
-                return {
+                const response: IVisitorMod = {
                   replaceWith: [
                     statement,
                     createExports(global.namespace, 'default', {
@@ -241,10 +267,22 @@ export function ExportTransformer(): ITransformer {
                     }),
                   ],
                 };
+                // make sure exports.__eModule is injected
+                if (!esModuleStatementInjected) {
+                  esModuleStatementInjected = true;
+                  response.prependToBody = [ES_MODULE_EXPRESSION];
+                }
+                return response;
               }
-              return {
+              const response: IVisitorMod = {
                 replaceWith: createExports(global.namespace, 'default', node.declaration),
               };
+              // make sure exports.__eModule is injected
+              if (!esModuleStatementInjected) {
+                esModuleStatementInjected = true;
+                response.prependToBody = [ES_MODULE_EXPRESSION];
+              }
+              return response;
             }
           }
 
@@ -291,7 +329,13 @@ export function ExportTransformer(): ITransformer {
                   exportAfterDeclaration[specifier.local.name].targets.push(specifier.exported.name);
                 }
               }
-              return { replaceWith: newNodes };
+              const response: IVisitorMod = { replaceWith: newNodes };
+              // make sure exports.__eModule is injected
+              if (!esModuleStatementInjected) {
+                esModuleStatementInjected = true;
+                response.prependToBody = [ES_MODULE_EXPRESSION];
+              }
+              return response;
             }
             /**
              * ************************************************************************
@@ -340,7 +384,14 @@ export function ExportTransformer(): ITransformer {
                       }
                     }
                   }
-                  return { replaceWith: newNodes };
+                  const response: IVisitorMod = { replaceWith: newNodes };
+
+                  // make sure exports.__eModule is injected
+                  if (!esModuleStatementInjected) {
+                    esModuleStatementInjected = true;
+                    response.prependToBody = [ES_MODULE_EXPRESSION];
+                  }
+                  return response;
                 }
               }
             }

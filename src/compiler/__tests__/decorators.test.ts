@@ -6,11 +6,14 @@ import { CommonTSfeaturesTransformer } from '../transformers/ts/CommonTSfeatures
 import { DecoratorTransformer } from '../transformers/ts/decorators/DecoratorTransformer';
 
 describe('Decorators test', () => {
-  const testTranspile = (props: { code: string; jsx?: boolean; emitDecoratorMetadata?: boolean }) => {
+  const testTranspile = (props: { code: string; emitDecoratorMetadata?: boolean; jsx?: boolean }) => {
     return initCommonTransform({
       jsx: props.jsx,
-      props: {
-        ctx: { tsConfig: { compilerOptions: { emitDecoratorMetadata: props.emitDecoratorMetadata } } },
+
+      code: props.code,
+      compilerOptions: {
+        emitDecoratorMetadata: props.emitDecoratorMetadata,
+        experimentalDecorators: true,
       },
       transformers: [
         DecoratorTransformer(),
@@ -19,7 +22,6 @@ describe('Decorators test', () => {
         ImportTransformer(),
         ExportTransformer(),
       ],
-      code: props.code,
     });
   };
 
@@ -228,7 +230,6 @@ describe('Decorators test', () => {
     describe('Constructor metadata', () => {
       it('should handle normal properties', () => {
         const res = testTranspile({
-          emitDecoratorMetadata: true,
           code: `
           @a
           @b()
@@ -236,13 +237,13 @@ describe('Decorators test', () => {
             constructor(env: Env, bar: Runkari) {}
           }
     `,
+          emitDecoratorMetadata: true,
         });
         expect(res.code).toMatchSnapshot();
       });
 
       it('should handle properties with visibility', () => {
         const res = testTranspile({
-          emitDecoratorMetadata: true,
           code: `
           @a
           @b()
@@ -250,6 +251,7 @@ describe('Decorators test', () => {
             constructor(public env: Env, bar) {}
           }
     `,
+          emitDecoratorMetadata: true,
         });
 
         expect(res.code).toMatchSnapshot();
@@ -257,7 +259,6 @@ describe('Decorators test', () => {
 
       it('should respect imports', () => {
         const res = testTranspile({
-          emitDecoratorMetadata: true,
           code: `
           import Env from "./some-data";
           @a
@@ -266,6 +267,7 @@ describe('Decorators test', () => {
             constructor(public env: Env, bar) {}
           }
     `,
+          emitDecoratorMetadata: true,
         });
 
         expect(res.code).toMatchSnapshot();
@@ -273,7 +275,6 @@ describe('Decorators test', () => {
 
       it('should handle overload gracefully', () => {
         const res = testTranspile({
-          emitDecoratorMetadata: true,
           code: `
           import Env from "./some-data";
           @a
@@ -283,13 +284,13 @@ describe('Decorators test', () => {
             constructor(public env: Env, bar) {}
           }
     `,
+          emitDecoratorMetadata: true,
         });
         expect(res.code).toMatchSnapshot();
       });
 
       it('should work ok without any props', () => {
         const res = testTranspile({
-          emitDecoratorMetadata: true,
           code: `
           @a
           @b()
@@ -297,13 +298,13 @@ describe('Decorators test', () => {
             constructor() {}
           }
     `,
+          emitDecoratorMetadata: true,
         });
         expect(res.code).toMatchSnapshot();
       });
 
       it('should work ok without constructor', () => {
         const res = testTranspile({
-          emitDecoratorMetadata: true,
           code: `
           @a
           @b()
@@ -311,6 +312,7 @@ describe('Decorators test', () => {
 
           }
     `,
+          emitDecoratorMetadata: true,
         });
 
         expect(res.code).toMatchSnapshot();
@@ -320,7 +322,6 @@ describe('Decorators test', () => {
     describe('Paramater decorators', () => {
       it('should add 1', () => {
         const res = testTranspile({
-          emitDecoratorMetadata: true,
           code: `
           export class HomeComponent {
             @hey
@@ -328,13 +329,13 @@ describe('Decorators test', () => {
           }
 
     `,
+          emitDecoratorMetadata: true,
         });
         expect(res.code).toMatchSnapshot();
       });
 
       it('should add 2 decorators', () => {
         const res = testTranspile({
-          emitDecoratorMetadata: true,
           code: `
           export class HomeComponent {
             @hey
@@ -343,6 +344,7 @@ describe('Decorators test', () => {
           }
 
     `,
+          emitDecoratorMetadata: true,
         });
         expect(res.code).toMatchSnapshot();
       });
@@ -351,7 +353,6 @@ describe('Decorators test', () => {
     describe('method params meta', () => {
       it('should handle 1', () => {
         const res = testTranspile({
-          emitDecoratorMetadata: true,
           code: `
           class Application {
             @hey
@@ -359,13 +360,13 @@ describe('Decorators test', () => {
             name(@kukka @sukka kakka: string) {}
           }
     `,
+          emitDecoratorMetadata: true,
         });
         expect(res.code).toMatchSnapshot();
       });
 
       it('should handle with return type', () => {
         const res = testTranspile({
-          emitDecoratorMetadata: true,
           code: `
           class Application {
             @hey
@@ -373,6 +374,7 @@ describe('Decorators test', () => {
             name(@kukka @sukka kakka: string) : HelloSomeObject {}
           }
     `,
+          emitDecoratorMetadata: true,
         });
 
         expect(res.code).toMatchSnapshot();
@@ -380,13 +382,13 @@ describe('Decorators test', () => {
 
       it('should handle 2', () => {
         const res = testTranspile({
-          emitDecoratorMetadata: true,
           code: `
           class Application {
             @oi
             name(some: string): HelloSomeObject {}
           }
     `,
+          emitDecoratorMetadata: true,
         });
 
         expect(res.code).toMatchSnapshot();
@@ -397,24 +399,24 @@ describe('Decorators test', () => {
   describe('Cosntructor decorators', () => {
     it('should not create decorators', () => {
       const res = testTranspile({
-        emitDecoratorMetadata: true,
         code: `
         class Application {
           constructor(hey : string){}
         }
   `,
+        emitDecoratorMetadata: true,
       });
       expect(res.code).toMatchSnapshot();
     });
 
     it('should create decorator wrapper', () => {
       const res = testTranspile({
-        emitDecoratorMetadata: true,
         code: `
         class Application {
           constructor(@oi hey, name : string){}
         }
   `,
+        emitDecoratorMetadata: true,
       });
 
       expect(res.code).toMatchSnapshot();
@@ -422,37 +424,37 @@ describe('Decorators test', () => {
 
     it('should create decorator def with 2 decorators', () => {
       const res = testTranspile({
-        emitDecoratorMetadata: true,
         code: `
         class Application {
           constructor(@oi @foo hey, name : string){}
         }
   `,
+        emitDecoratorMetadata: true,
       });
       expect(res.code).toMatchSnapshot();
     });
 
     it('should create decorators on 3 properties', () => {
       const res = testTranspile({
-        emitDecoratorMetadata: true,
         code: `
         class Application {
           constructor(@oi @foo hey, @hey name : string){}
         }
   `,
+        emitDecoratorMetadata: true,
       });
       expect(res.code).toMatchSnapshot();
     });
 
     it('should create a parent property decorator + constructor props all in one wrapper', () => {
       const res = testTranspile({
-        emitDecoratorMetadata: true,
         code: `
         @Injectable({})
         class Application {
           constructor(@oi hey : number){}
         }
   `,
+        emitDecoratorMetadata: true,
       });
       expect(res.code).toMatchSnapshot();
     });

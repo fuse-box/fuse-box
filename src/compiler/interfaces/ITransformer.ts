@@ -1,3 +1,4 @@
+import { ICompilerOptions } from '../../compilerOptions/interfaces';
 import { Context } from '../../core/Context';
 import { IModule } from '../../moduleResolver/Module';
 import { IProductionContext } from '../../production/ProductionContext';
@@ -13,6 +14,7 @@ export interface ITransformerVisitors {
 }
 
 export interface ITransformerCommon {
+  compilerOptions: ICompilerOptions;
   ctx: Context;
   module: IModule;
   onRequireCallExpression?: (importType: ImportType, node: ASTNode) => void;

@@ -1,16 +1,22 @@
+import { ITarget } from '../../config/PrivateConfig';
 import { ImportType } from '../interfaces/ImportType';
-import { PolyfillEssentialConfig, BundlePolyfillTransformer } from '../transformers/bundle/BundlePolyfillTransformer';
 import { initCommonTransform } from '../testUtils';
+import { BundlePolyfillTransformer, PolyfillEssentialConfig } from '../transformers/bundle/BundlePolyfillTransformer';
 import { RequireStatementInterceptor } from '../transformers/bundle/RequireStatementInterceptor';
 
-const testTranspile = (props: { code: string; target?: string; fileName?: string }) => {
+const testTranspile = (props: { code: string; fileName?: string; target?: ITarget }) => {
   return initCommonTransform({
     props: {
-      module: { props: { fuseBoxPath: props.fileName || '/test/file.js' } },
       ctx: { config: { target: props.target || 'browser' } },
+      module: { props: { fuseBoxPath: props.fileName || '/test/file.js' } },
     },
-    transformers: [BundlePolyfillTransformer(), RequireStatementInterceptor()],
+
+    compilerOptions: {
+      buildTarget: props.target || 'browser',
+    },
+
     code: props.code,
+    transformers: [BundlePolyfillTransformer(), RequireStatementInterceptor()],
   });
 };
 
@@ -69,9 +75,9 @@ describe('Bundle polyfill transform test', () => {
             {
               importType: ImportType.REQUIRE,
               statement: {
-                type: 'CallExpression',
-                callee: { type: 'Identifier', name: 'require' },
                 arguments: [{ type: 'Literal', value: moduleName }],
+                callee: { name: 'require', type: 'Identifier' },
+                type: 'CallExpression',
               },
             },
           ]);
