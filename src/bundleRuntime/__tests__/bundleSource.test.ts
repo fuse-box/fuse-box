@@ -198,4 +198,44 @@ describe('Bundle source test', () => {
       expect(serverExports['FooLib']).toEqual({ Foo: 'bar' });
     });
   });
+
+  describe('Source maps', () => {
+    it('should write source maps', () => {
+      const target = 'server';
+      const source = bundleSource({ target: target });
+
+      const sourceMapObject = {
+        mappings: ';;;AAEAA,QAAQC,IAAIC,WAAKC;AAEjBH,QAAQC,IAAI;;AAEZD,QAAQC,IAAI',
+        names: ['console', 'log', 'foo_1', 'oi_2'],
+        sources: ['first.js'],
+        sourcesContent: ['console.log(foo)'],
+        version: 3,
+      };
+      const sourceMapObject2 = {
+        mappings: ';;;AAEAA,QAAQC,IAAIC,WAAKC;AAEjBH,QAAQC,IAAI;;AAEZD,QAAQC,IAAI',
+        names: ['console', 'log', 'foo_1', 'oi_2'],
+        sources: ['second/index.js'],
+        sourcesContent: ['console.log(foo)'],
+        version: 3,
+      };
+      source.modules = [
+        {
+          contents: `exports.Foo = "bar"`,
+          id: 1,
+          isSourceMapRequired: true,
+          sourceMap: JSON.stringify(sourceMapObject),
+        },
+        {
+          contents: `exports.Foo = "bar"`,
+          id: 1,
+          isSourceMapRequired: true,
+          sourceMap: JSON.stringify(sourceMapObject2),
+        },
+      ];
+      source.expose = [{ moduleId: 1, name: 'FooLib' }];
+      const result = source.generate();
+
+      expect(result.sourceMap).toMatchSnapshot();
+    });
+  });
 });

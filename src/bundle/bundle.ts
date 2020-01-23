@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { bundleSource, IBundleSource } from '../bundleRuntime/bundleSource';
 import { Context } from '../core/Context';
 import { IModule } from '../moduleResolver/Module';
@@ -48,21 +49,30 @@ export function Bundle(props: IBundleProps): IBundle {
   const source = bundleSource({ core: apiCore, isIsolated: bundleConfig.isolatedApi, target });
   source.entries = props.entries;
 
-  const scope: IBundle = {
+  const self: IBundle = {
     source,
     type: props.type,
     generate: async () => {
       const data = source.generate();
-      const writer = bundleWriter.createWriter({
-        contents: data.content.toString(),
-        hash: isProduction,
-        userString: bundleConfig.path,
-      });
-      const result = await writer.write();
 
-      const bundleResponse = { absPath: result.absPath, bundle: scope, relativePath: result.relativePath };
+      const options = { contents: data.content.toString(), hash: isProduction, userString: bundleConfig.path };
+      const config = bundleWriter.createWriter(options);
+
+      let contents = options.contents;
+      if (source.containsMaps) {
+        // writing source maps
+        const sourceMapName = path.basename(config.relativePath) + '.map';
+        contents = options.contents + `\n//# sourceMappingURL=${sourceMapName}`;
+        const targetDir = path.dirname(config.absPath);
+        const sourceMapFile = path.join(targetDir, sourceMapName);
+        await bundleWriter.write(sourceMapFile, data.sourceMap);
+      }
+
+      await bundleWriter.write(config.absPath, contents);
+
+      const bundleResponse = { absPath: config.absPath, bundle: self, relativePath: config.relativePath };
       return [bundleResponse];
     },
   };
-  return scope;
+  return self;
 }

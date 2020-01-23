@@ -80,9 +80,9 @@ describe('Code Splitting test', () => {
 
     const barModule = getSplitEntry('bar.ts', entries);
     expect(barModule.modules).toHaveLength(1);
-    expect(barModule.modules[0].publicPath).toEqual('default/bar.js');
+    expect(barModule.modules[0].publicPath).toContain('src/bar.ts');
     expect(barModule.references).toHaveLength(1);
-    expect(barModule.references[0].module.publicPath).toEqual('default/index.js');
+    expect(barModule.references[0].module.publicPath).toContain('src/index.ts');
   });
 
   /**
@@ -114,10 +114,10 @@ describe('Code Splitting test', () => {
 
     const barModule = getSplitEntry('bar.ts', entries);
     expect(barModule.modules).toHaveLength(2);
-    expect(barModule.modules[0].publicPath).toEqual('default/bar.js');
-    expect(barModule.modules[1].publicPath).toEqual('default/foo.js');
+    expect(barModule.modules[0].publicPath).toContain('src/bar.ts');
+    expect(barModule.modules[1].publicPath).toContain('src/foo.ts');
     expect(barModule.references).toHaveLength(1);
-    expect(barModule.references[0].module.publicPath).toEqual('default/index.js');
+    expect(barModule.references[0].module.publicPath).toContain('src/index.ts');
   });
 
   /**
@@ -168,7 +168,7 @@ describe('Code Splitting test', () => {
 
     const barModule = getSplitEntry('bar.ts', entries);
     expect(barModule.modules).toHaveLength(1);
-    expect(barModule.modules[0].publicPath).toEqual('default/bar.js');
+    expect(barModule.modules[0].publicPath).toContain('src/bar.ts');
   });
 
   /**
@@ -207,17 +207,17 @@ describe('Code Splitting test', () => {
 
     const barModule = getSplitEntry('bar.ts', entries);
     expect(barModule.modules).toHaveLength(2);
-    expect(barModule.modules[0].publicPath).toEqual('default/bar.js');
-    expect(barModule.modules[1].publicPath).toEqual('default/foo.js');
+    expect(barModule.modules[0].publicPath).toContain('src/bar.ts');
+    expect(barModule.modules[1].publicPath).toContain('src/foo.ts');
     expect(barModule.references).toHaveLength(1);
-    expect(barModule.references[0].module.publicPath).toEqual('default/index.js');
+    expect(barModule.references[0].module.publicPath).toContain('src/index.ts');
 
     const oiModule = getSplitEntry('oi.ts', entries);
     expect(oiModule.modules).toHaveLength(2);
-    expect(oiModule.modules[0].publicPath).toEqual('default/oi.js');
-    expect(oiModule.modules[1].publicPath).toEqual('default/utils.js');
+    expect(oiModule.modules[0].publicPath).toContain('src/oi.ts');
+    expect(oiModule.modules[1].publicPath).toContain('src/utils.ts');
     expect(oiModule.references).toHaveLength(1);
-    expect(oiModule.references[0].module.publicPath).toEqual('default/index.js');
+    expect(oiModule.references[0].module.publicPath).toContain('src/index.ts');
   });
 
   /**
@@ -262,7 +262,7 @@ describe('Code Splitting test', () => {
 
     const barModule = getSplitEntry('bar.ts', entries);
     expect(barModule.modules).toHaveLength(1);
-    expect(barModule.modules[0].publicPath).toEqual('default/bar.js');
+    expect(barModule.modules[0].publicPath).toContain('src/bar.ts');
   });
 
   /**
@@ -302,17 +302,17 @@ describe('Code Splitting test', () => {
 
     const barModule = getSplitEntry('bar.ts', entries);
     expect(barModule.modules).toHaveLength(2);
-    expect(barModule.modules[0].publicPath).toEqual('default/bar.js');
-    expect(barModule.modules[1].publicPath).toEqual('default/foo.js');
+    expect(barModule.modules[0].publicPath).toContain('src/bar.ts');
+    expect(barModule.modules[1].publicPath).toContain('src/foo.ts');
     expect(barModule.references).toHaveLength(1);
-    expect(barModule.references[0].module.publicPath).toEqual('default/index.js');
+    expect(barModule.references[0].module.publicPath).toContain('src/index.ts');
 
     const oiModule = getSplitEntry('oi.ts', entries);
     expect(oiModule.modules).toHaveLength(2);
-    expect(oiModule.modules[0].publicPath).toEqual('default/oi.js');
-    expect(oiModule.modules[1].publicPath).toEqual('default/utils.js');
+    expect(oiModule.modules[0].publicPath).toContain('src/oi.ts');
+    expect(oiModule.modules[1].publicPath).toContain('src/utils.ts');
     expect(oiModule.references).toHaveLength(1);
-    expect(oiModule.references[0].module.publicPath).toEqual('default/foo.js');
+    expect(oiModule.references[0].module.publicPath).toContain('src/foo.ts');
   });
 
   /**
@@ -356,15 +356,15 @@ describe('Code Splitting test', () => {
     expect(entries).toHaveLength(3);
 
     const oneModule = getSplitEntry('one.ts', entries);
-    expect(oneModule.entry.publicPath).toEqual('default/one.js');
+    expect(oneModule.entry.publicPath).toContain('src/one.ts');
     expect(oneModule.modules).toHaveLength(2);
 
     const twoModule = getSplitEntry('two.ts', entries);
-    expect(twoModule.entry.publicPath).toEqual('default/two.js');
+    expect(twoModule.entry.publicPath).toContain('src/two.ts');
     expect(twoModule.modules).toHaveLength(1);
 
     const threeModule = getSplitEntry('three.ts', entries);
-    expect(threeModule.entry.publicPath).toEqual('default/three.js');
+    expect(threeModule.entry.publicPath).toContain('src/three.ts');
     expect(threeModule.modules).toHaveLength(2);
 
     expect(modules[7].isCommonsEligible).toBe(true);

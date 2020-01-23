@@ -61,31 +61,3 @@ export class IntegrationHelper {
     return data;
   }
 }
-export function createTestBundle(config: IPublicConfig, files: { [key: string]: string }) {
-  testUtils();
-
-  const mock = mockWriteFile();
-
-  // adding development api to the mock
-  const devApiPath = path.join(env.FUSE_MODULES, 'fuse-loader/index.js');
-  const devApiContents = fs.readFileSync(devApiPath).toString();
-  mock.addFile(devApiPath, devApiContents);
-
-  for (const key in files) mock.addFile(key, files[key]);
-
-  config.logging = { level: 'disabled' };
-  config.watch = false;
-  config.cache = false;
-  config.devServer = false;
-  if (!config.plugins) {
-    config.plugins = [];
-  }
-  let helper = new IntegrationHelper(mock);
-  config.plugins.push(ctx => {
-    helper.ctx = ctx;
-  });
-
-  const { fusebox } = require('../../core/fusebox');
-  const fuse = fusebox(config);
-  return { fuse, helper: helper, mock };
-}

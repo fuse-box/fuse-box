@@ -25,14 +25,16 @@ export function bundleSource(props: IBundleSourceProps) {
   let injection: string;
   let expose: Array<{ name: string; moduleId: number }>;
   const scope = {
+    containsMaps: false,
     entries,
     expose,
+
     // user injection
     // for example inject some code after the bundle is ready
     injection,
     modules,
     generate: () => {
-      const concat = new Concat(props.withSourcemaps, '', '\n');
+      const concat = new Concat(true, '', '\n');
       // start the wrapper for the entire bundle if required
       if (isIsolated) concat.add(null, `(function(){`);
 
@@ -47,15 +49,14 @@ export function bundleSource(props: IBundleSourceProps) {
         const module = scope.modules[index];
         const isLast = index + 1 === totalAmount;
         if (module.contents) {
-          if (module.publicPath) {
-            concat.add(null, `\n// module-${module.id} ${module.publicPath}`);
-          }
+          concat.add(null, `\n// ${module.publicPath} @${module.id}`);
+
           concat.add(null, module.id + `: function(${BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION}, exports, module){`);
-          concat.add(
-            props.withSourcemaps ? module.publicPath : null,
-            module.contents,
-            props.withSourcemaps ? module.sourceMap : undefined,
-          );
+          if (module.isSourceMapRequired && module.sourceMap) {
+            scope.containsMaps = true;
+          }
+
+          concat.add(null, module.contents, module.isSourceMapRequired ? module.sourceMap : undefined);
           concat.add(null, '}' + (isLast ? '' : ','));
         }
         index++;

@@ -19,5 +19,5 @@ export function parseTypeScript(code: string, props?: IParserOptions): ASTNode {
 export function parseJavascript(code: string, props?: IParserOptions): ASTNode {
   props = props || {};
 
-  return meriyah.parse(code, { jsx: props.jsx, module: true }) as any;
+  return meriyah.parse(code, { jsx: props.jsx, loc: props.locations, module: true }) as any;
 }

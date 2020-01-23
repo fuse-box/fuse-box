@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Bundle source test Source maps should write source maps 1`] = `"{\\"version\\":3,\\"sources\\":[\\"first.js\\",\\"second/index.js\\"],\\"names\\":[\\"console\\",\\"log\\",\\"foo_1\\",\\"oi_2\\"],\\"mappings\\":\\";;;;;;;AAEAA,QAAQC,IAAIC,WAAKC;AAEjBH,QAAQC,IAAI;;AAEZD,QAAQC,IAAI;;ACJZD,QAAQC,IAAIC,WAAKC;AAEjBH,QAAQC,IAAI;;AAEZD,QAAQC,IAAI\\",\\"file\\":\\"\\",\\"sourcesContent\\":[\\"console.log(foo)\\",\\"console.log(foo)\\"]}"`;
