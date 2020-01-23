@@ -12,12 +12,12 @@ import { FuseBoxLogAdapter, createFuseLogger } from '../fuseLog/FuseBoxLogAdapte
 import { MainInterceptor, createInterceptor } from '../interceptor/interceptor';
 import { outputConfigConverter } from '../output/OutputConfigConverter';
 import { IOutputConfig, IPublicOutputConfig } from '../output/OutputConfigInterface';
+import { distWriter, IDistWriter } from '../output/distWriter';
 import { TsConfigAtPath } from '../resolver/fileLookup';
-import { ensureUserPath, fastHash } from '../utils/utils';
+import { ensureUserPath } from '../utils/utils';
 import { createWebIndex, IWebIndexInterface } from '../webIndex/webIndex';
 import { ContextTaskManager, createContextTaskManager } from './ContextTaskManager';
 import { WeakModuleReferences, createWeakModuleReferences } from './WeakModuleReferences';
-import { createWriter, IWriterActions } from './writer';
 
 export class Context {
   public interceptor: MainInterceptor;
@@ -29,20 +29,18 @@ export class Context {
   public log: FuseBoxLogAdapter;
   public webIndex: IWebIndexInterface;
   public taskManager: ContextTaskManager;
-  public writer: IWriterActions;
+
   public cache: Cache;
   public devServer?: IDevServerActions;
   public weakReferences: WeakModuleReferences;
   public config: PrivateConfig;
-
+  public writer: IDistWriter;
   //public productionApiWrapper: ProductionAPIWrapper;
   public tsConfigAtPaths?: Array<TsConfigAtPath>;
-  private _uniqueEntryHash: string;
 
   constructor(config: IPublicConfig, props?: IRunProps) {
     this.config = createConfig(config);
     // @todo: do we want to setup a default?
-    this.createOutputConfig((props && props.bundles) || { app: 'app.js' });
 
     this.config.ctx = this;
     this.log = createFuseLogger(this.config.logging);
@@ -62,15 +60,12 @@ export class Context {
 
   public createOutputConfig(publicConfig: IPublicOutputConfig) {
     this.outputConfig = outputConfigConverter({ defaultRoot: env.SCRIPT_PATH, publicConfig: publicConfig });
+
+    this.writer = distWriter({ hashEnabled: !!this.config.production, root: this.outputConfig.root });
   }
 
-  public setDevelopment() {
-    this.writer = createWriter({
-      isProduction: false,
-      output: this.config.output,
-      root: env.SCRIPT_PATH,
-    });
-
+  public setDevelopment(runProps?: IRunProps) {
+    this.createOutputConfig((runProps && runProps.bundles) || { app: 'app.js' });
     this.devServer = createDevServer(this);
 
     this.config.setupEnv();
@@ -83,33 +78,28 @@ export class Context {
     this.userTransformers.push(transformer);
   }
 
-  public setProduction(prodProps?: IRunProps) {
+  public setProduction(runProps?: IRunProps) {
     this.config.watch.enabled = false;
     this.config.hmr.enabled = false;
 
-    prodProps = prodProps || {};
-    if (prodProps.screwIE === undefined) prodProps.screwIE = true;
+    runProps = runProps || {};
+    if (runProps.screwIE === undefined) runProps.screwIE = true;
 
-    if (prodProps.uglify === undefined) {
-      prodProps.uglify = true;
+    if (runProps.uglify === undefined) {
+      runProps.uglify = true;
     }
-    this.config.production = prodProps;
-    this.writer = createWriter({
-      isProduction: true,
-      output: this.config.output,
-      root: env.SCRIPT_PATH,
-    });
-
+    this.config.production = runProps;
+    this.createOutputConfig((runProps && runProps.bundles) || { app: 'app.js' });
     this.devServer = createDevServer(this);
     this.config.setupEnv();
     this.compilerOptions = createCompilerOptions(this);
 
     this.config.manifest = { enabled: false };
-    if (prodProps.manifest) {
-      if (typeof prodProps.manifest === 'boolean') {
-        this.config.manifest.enabled = prodProps.manifest;
+    if (runProps.manifest) {
+      if (typeof runProps.manifest === 'boolean') {
+        this.config.manifest.enabled = runProps.manifest;
       } else {
-        this.config.manifest = prodProps.manifest;
+        this.config.manifest = runProps.manifest;
         if (this.config.manifest.enabled === undefined) {
           this.config.manifest.enabled = true;
         }
@@ -138,4 +128,16 @@ export class Context {
 
 export function createContext(config: IPublicConfig, props?: IRunProps): Context {
   return new Context(config, props);
+}
+
+// temporary fix
+export function createEnvContext(props: {
+  config: IPublicConfig;
+  runProps?: IRunProps;
+  type: 'development' | 'production';
+}): Context {
+  const ctx = new Context(props.config, props.runProps);
+  if (props.type === 'development') ctx.setDevelopment(props.runProps);
+  if (props.type === 'production') ctx.setProduction(props.runProps);
+  return ctx;
 }

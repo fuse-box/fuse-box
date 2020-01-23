@@ -2,45 +2,30 @@ import { IPublicConfig } from '../config/IPublicConfig';
 import { IRunProps } from '../config/IRunProps';
 import { bundleDev } from '../development/bundleDev';
 import { bundleProd } from '../production/bundleProd';
-import { UserHandler } from '../userHandler/UserHandler';
-import { createContext } from './Context';
+import { createEnvContext } from './Context';
 import { finalizeFusebox } from './helpers/finalizeFusebox';
 import { preflightFusebox } from './helpers/preflightFusebox';
 
 export function fusebox(config: IPublicConfig) {
-  return {
-    runDev: (props?: IRunProps) => {
-      const ctx = createContext(config, props);
-      ctx.setDevelopment();
-
-      preflightFusebox(ctx);
-
-      try {
+  function execute(props: { config: IPublicConfig; runProps: IRunProps; type: 'development' | 'production' }) {
+    const ctx = createEnvContext(props);
+    preflightFusebox(ctx);
+    try {
+      if (props.type === 'development') {
         bundleDev(ctx);
-      } catch (e) {
-        ctx.fatal('bundleDev ran into a fatal error', [e.stack]);
-      }
-
-      finalizeFusebox(ctx);
+      } else bundleProd(ctx);
+    } catch (e) {
+      ctx.fatal('Error', [e.stack]);
+    }
+    finalizeFusebox(ctx);
+  }
+  return {
+    runDev: (runProps?: IRunProps) => {
+      execute({ config, runProps, type: 'development' });
     },
 
-    runProd: (props?: IRunProps) => {
-      const ctx = createContext(config, props);
-      ctx.setProduction(props);
-
-      preflightFusebox(ctx);
-
-      if (props && props.handler) {
-        props.handler(new UserHandler(ctx));
-      }
-
-      try {
-        bundleProd(ctx);
-      } catch (e) {
-        ctx.fatal('bundleProd ran into a fatal error', [e.stack]);
-      }
-
-      finalizeFusebox(ctx);
+    runProd: (runProps?: IRunProps) => {
+      execute({ config, runProps, type: 'production' });
     },
   };
 }

@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { Context } from '../core/Context';
+
 export type IDevServerProxy = {
   [key: string]: {
     target?: string;

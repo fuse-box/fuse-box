@@ -28,7 +28,7 @@ describe('css source map test', () => {
 
     const res = alignCSSSourceMap({ ctx, module, sourceMap: mockSources(['foo.scss']) });
 
-    expect(JSON.parse(res)).toEqual({ sources: ['/foo.scss'] });
+    expect(JSON.parse(res)).toEqual({ sources: ['src/stylesheet/__tests__/foo.scss'] });
   });
 
   it('should parse node_module', () => {
@@ -43,6 +43,6 @@ describe('css source map test', () => {
     pkg.meta.packageRoot = path.join(env.APP_ROOT, 'node_modules/foobar');
     const res = alignCSSSourceMap({ ctx, module, sourceMap: mockSources(['foo.scss']) });
 
-    expect(JSON.parse(res)).toEqual({ sources: ['/modules/foobar/foo.scss'] });
+    expect(JSON.parse(res)).toEqual({ sources: ['node_modules/foobar/foo.scss'] });
   });
 });

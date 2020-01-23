@@ -47,6 +47,7 @@ export function distWriter(props: IOuputParserProps) {
   const root = props.root;
 
   const self = {
+    outputDirectory: props.root,
     // create writer to get the information before the bundle is  written
     createWriter: (options: IDistWriterInitProps) => {
       let userString = options.userString;
@@ -55,23 +56,18 @@ export function distWriter(props: IOuputParserProps) {
       if (options.hash && !options.forceDisableHash) hash = fastHash(options.contents.toString());
       if (options.forceDisableHash) userString = stripHash(userString);
       if (hash) userString.replace(/\$hash/, hash);
-
       const absPath = path.join(root, userString);
-      const targetFolder = path.dirname(absPath);
-
       const relativePath = ensureFuseBoxPath(path.relative(root, absPath));
       return {
         absPath,
         relativePath,
-        write: async () => {
-          ensureDir(targetFolder);
-          await self.write(absPath, options.contents);
-          return { absPath, relativePath };
-        },
       };
     },
     // the actual write function
-    write: async (path: string, contents: Buffer | string) => writeFile(path, contents),
+    write: async (target: string, contents: Buffer | string) => {
+      ensureDir(path.dirname(target));
+      writeFile(target, contents);
+    },
   };
   return self;
 }

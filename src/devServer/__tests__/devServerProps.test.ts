@@ -1,15 +1,19 @@
+import * as path from 'path';
 import { IPublicConfig } from '../../config/IPublicConfig';
 import { IRunProps } from '../../config/IRunProps';
 import { createContext } from '../../core/Context';
 import '../../utils/test_utils';
 import { createDevServerConfig } from '../devServerProps';
-
 function configure(config?: IPublicConfig) {
   const ctx = createContext(config);
+
+  ctx.createOutputConfig({ root: path.join(__dirname, 'dist') });
   return createDevServerConfig(ctx);
 }
 function configureProd(config: IPublicConfig, prodProps?: IRunProps) {
   const ctx = createContext(config, prodProps);
+  ctx.createOutputConfig(config);
+  ctx.config.production = prodProps;
   return createDevServerConfig(ctx);
 }
 
