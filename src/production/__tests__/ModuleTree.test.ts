@@ -1,27 +1,28 @@
 import { IProductionContext } from '../ProductionContext';
 import { WarmupPhase } from '../phases/WarmupPhase';
-import { ProdPhasesTestEnv, prodPhasesEnv } from './testUtils';
+import { createTestEnvironment, ITestEnvironment } from './testUtils';
 
 describe('ModuleTree test', () => {
-  let env: ProdPhasesTestEnv;
-  const test = async (files: Record<string, string>): Promise<IProductionContext> => {
-    env = prodPhasesEnv(
-      {
-        entry: 'index.ts',
-      },
-      files,
-    );
-    return await env.run([WarmupPhase]);
+  let environment: ITestEnvironment;
+
+  const getProductionContext = (files: Record<string, string>): IProductionContext => {
+    environment = createTestEnvironment({ entry: 'index.ts' }, files);
+    const context = environment.run([WarmupPhase]);
+    return context;
   };
+
+  // cleanup after each test
   afterEach(() => {
-    // if (env) env.destroy();
-    env = undefined;
+    if (environment) {
+      environment.cleanup();
+      environment = undefined;
+    }
   });
 
-  it('should have dependant', async () => {
-    const context = await test({
-      'index.ts': `import "./foo"`,
+  it('should have dependant', () => {
+    const context = getProductionContext({
       'foo.ts': 'export function foo(){}',
+      'index.ts': `import "./foo"`,
     });
     const { modules } = context;
     expect(modules).toHaveLength(2);

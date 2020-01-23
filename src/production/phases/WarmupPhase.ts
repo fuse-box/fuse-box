@@ -7,7 +7,7 @@ import { IModule } from '../../moduleResolver/Module';
 import { IProductionContext } from '../ProductionContext';
 import { PRODUCTION_TRANSFORMERS } from '../transformers/collection';
 
-function launchPhaseOne(productionContext: IProductionContext, module: IModule) {
+function runWarmupPhase(productionContext: IProductionContext, module: IModule) {
   const ctx = productionContext.ctx;
 
   const List: Array<ITransformer> = [
@@ -37,10 +37,8 @@ export function WarmupPhase(productionContext: IProductionContext) {
     if (module.isExecutable) {
       // flush the AST. We only need to do it once on warmup phase
       // laters on we will be working with the same AST
-
       module.parse();
-
-      launchPhaseOne(productionContext, module);
+      runWarmupPhase(productionContext, module);
     }
   }
 }

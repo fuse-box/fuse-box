@@ -1,4 +1,4 @@
-import { BUNDLE_RUNTIME_NAMES } from '../../../BundleRuntime/bundleRuntimeCore';
+import { BUNDLE_RUNTIME_NAMES } from '../../../bundleRuntime/bundleRuntimeCore';
 import { IVisit } from '../../Visitor/Visitor';
 import { ES_MODULE_EXPRESSION, createEsModuleDefaultInterop, createRequireStatement } from '../../Visitor/helpers';
 import { generateVariableFromSource } from '../../helpers/astHelpers';

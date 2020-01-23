@@ -2,7 +2,7 @@ import { IModule } from '../../moduleResolver/Module';
 import { PackageType } from '../../moduleResolver/Package';
 import { IProductionContext } from '../ProductionContext';
 import { ImportType } from '../module/ImportReference';
-import { SplitEntry, ISplitEntry } from '../module/SplitEntries';
+import { createSplitEntry, ISplitEntry } from '../module/SplitEntries';
 
 /**
  * Function to check if a module is only required thr
@@ -30,7 +30,7 @@ function resolveDynamicImport(possibleSplitEntry: IModule): boolean {
  * @param productionContext
  * @param target
  */
-export function ResolveSplitEntry(productionContext: IProductionContext, target: IModule): ISplitEntry {
+export function resolveSplitEntry(productionContext: IProductionContext, target: IModule): ISplitEntry {
   const entryModuleId = target.id;
   const subModules: Array<IModule> = [target];
   const circularModules: Record<number, Record<number, boolean>> = {};
@@ -49,7 +49,7 @@ export function ResolveSplitEntry(productionContext: IProductionContext, target:
      * @param target
      * @param parentId
      */
-    traceCircularDependency: function(target: IModule, parentId: number): boolean {
+    traceCircularDependency: function (target: IModule, parentId: number): boolean {
       let traced = false;
       const {
         id,
@@ -83,7 +83,7 @@ export function ResolveSplitEntry(productionContext: IProductionContext, target:
      *
      * @param target
      */
-    traceOrigin: function(target: IModule, parentId: number): boolean {
+    traceOrigin: function (target: IModule, parentId: number): boolean {
       const {
         id,
         moduleTree: { dependants },
@@ -133,7 +133,7 @@ export function ResolveSplitEntry(productionContext: IProductionContext, target:
      *
      * @param target
      */
-    traverseDependencies: function(target: IModule, entry: boolean = false): boolean {
+    traverseDependencies: function (target: IModule, entry: boolean = false): boolean {
       const {
         id,
         moduleTree: {
@@ -165,7 +165,7 @@ export function ResolveSplitEntry(productionContext: IProductionContext, target:
 
   splitEntry.traverseDependencies(target, true);
 
-  return SplitEntry({
+  return createSplitEntry({
     module: target,
     productionContext,
     subModules: splitEntry.subModules,
@@ -197,6 +197,6 @@ export function CodeSplittingPhase(productionContext: IProductionContext) {
   // we needed to traverse all modules first to improve splitEntry resolvement
   // so now we can parse all dynamicModules that we found.
   for (const splitEntry of splitEntries) {
-    productionContext.splitEntries.register(ResolveSplitEntry(productionContext, splitEntry));
+    productionContext.splitEntries.register(resolveSplitEntry(productionContext, splitEntry));
   }
 }

@@ -149,7 +149,7 @@ export function resolveModule(props: IResolverProps): IResolver {
     props.packageMeta && isBrowserBuild && props.packageMeta.browser && typeof props.packageMeta.browser === 'object';
   // continue looking for the file
   if (!lookupResult) {
-    let moduleParsed = isNodeModule(target);
+    let moduleParsed = target && isNodeModule(target);
     if (moduleParsed) {
       // first check if we need to bundle it at all;
       if (!isUniversalBuild && isServerBuild && isServerPolyfill(moduleParsed.name)) {

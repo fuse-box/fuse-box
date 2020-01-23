@@ -1,4 +1,6 @@
 import { BUNDLE_RUNTIME_NAMES } from '../bundleRuntime/bundleRuntimeCore';
+import { ASTNode } from '../compiler/interfaces/AST';
+import { ITransformerRequireStatement } from '../compiler/interfaces/ITransformerRequireStatements';
 import { ImportType } from '../compiler/interfaces/ImportType';
 import { Context } from '../core/Context';
 import { resolveModule, ITypescriptPathsConfig } from '../resolver/resolver';
@@ -6,6 +8,52 @@ import { ensureAbsolutePath } from '../utils/utils';
 import { createBundleContext, IBundleContext } from './BundleContext';
 import { createModule, IModule } from './Module';
 import { PackageType, createPackage, IPackage } from './Package';
+
+export function createRuntimeRequireStatement(props: {
+  ctx: Context,
+  item: ITransformerRequireStatement,
+  module: IModule
+}): ASTNode {
+  let requireModuleId: number | string = 'error';
+  const { ctx, item, module } = props;
+  const log = ctx.log;
+
+  // no value.. import() or require();
+  if (!item.statement.arguments[0]) {
+    log.warn(`Empty require detected in ${module.publicPath}`, item.statement);
+  }
+
+  if (item.statement.arguments.length === 1) {
+    /**
+     * regular import rewrite
+     * require('./x');
+     */
+    const source = item.statement.arguments[0].value;
+    // we're importing some weird stuff... require(1) ie.
+    if (typeof source !== 'string') {
+      log.warn(`Invalid require detected in ${module.publicPath}`, item.statement);
+    } else if (module.moduleSourceRefs[source]) {
+      requireModuleId = module.moduleSourceRefs[source].id;
+    } else {
+      log.warn(`Unresolved require detected in ${module.publicPath}`, item.statement);
+    }
+  } else {
+    /**
+     * computed statement import
+     * require('./x' + b);
+     */
+    log.warn(`Unsupported require detected in ${module.publicPath}`, item.statement);
+    requireModuleId = 'unsupported'
+  }
+
+  item.statement.callee.name = BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION;
+  item.statement.arguments = [{
+    type: 'Literal',
+    value: requireModuleId,
+  }];
+
+  return item.statement;
+}
 
 export function resolve(props: {
   bundleContext: IBundleContext;
@@ -80,22 +128,32 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
     if (module.isExecutable) {
       module.parse();
       const transformerResult = module.transpile();
+
       for (const item of transformerResult.requireStatementCollection) {
-        const source = item.statement.arguments[0].value;
-
-        const resolvedModule = resolve({
-          bundleContext: props.bundleContext,
-          ctx: props.ctx,
-          importType: item.importType,
-          parent: module,
-          statement: source,
-        });
-
-        module.moduleSourceRefs[source] = resolvedModule;
-        // re-writing the reference
-        item.statement.callee.name = BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION;
-        item.statement.arguments[0].value = resolvedModule.id;
-        delete item.statement.arguments[0].raw;
+        if (
+          item.statement.arguments.length === 1 &&
+          typeof item.statement.arguments[0].value === 'string'
+        ) {
+          /**
+           * @todo
+           * improve this resolvement
+           */
+          const source = item.statement.arguments[0].value;
+          const resolvedModule = resolve({
+            bundleContext,
+            ctx,
+            importType: item.importType,
+            parent: module,
+            statement: source,
+          });
+          if (resolvedModule) {
+            module.moduleSourceRefs[source] = resolvedModule;
+          }
+          item.statement = createRuntimeRequireStatement({ ctx, item, module });
+        } else {
+          // other possible options
+          continue;
+        }
       }
       if (!ctx.config.production) module.generate();
     }
@@ -131,8 +189,8 @@ export interface IModuleResolver {
 export function ModuleResolver(ctx: Context, entryFiles: Array<string>): IModuleResolver {
   const entries = [];
   const bundleContext = createBundleContext(ctx);
-
   const userPackage = createPackage({ type: PackageType.USER_PACKAGE });
+
   for (const entry of entryFiles) {
     const absPath = ensureAbsolutePath(entry, ctx.config.homeDir);
     const entryModule = initModule({ absPath, bundleContext, ctx, pkg: userPackage });

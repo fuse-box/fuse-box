@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { TypescriptConfig } from '../interfaces/TypescriptInterfaces';
-import { initTypescriptConfig } from '../tsconfig/configParser';
+// import { initTypescriptConfig } from '../tsconfig/configParser';
 import { fileExists } from '../utils/utils';
 import { getFolderEntryPointFromPackageJSON } from './shared';
 

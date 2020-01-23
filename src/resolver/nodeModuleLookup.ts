@@ -18,9 +18,8 @@ export interface IModuleParsed {
 
 export function isNodeModule(path: string): undefined | IModuleParsed {
   const matched = path.match(NODE_MODULE_REGEX);
-  if (!matched) {
-    return;
-  }
+  if (!matched) return;
+
   let [name, b, c] = [matched[2], matched[4], matched[6]];
 
   const result: IModuleParsed = { name };

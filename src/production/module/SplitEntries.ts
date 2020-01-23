@@ -15,7 +15,7 @@ export interface ISplitEntryProps {
   subModules: Array<IModule>;
 }
 
-export function SplitEntry(props: ISplitEntryProps): ISplitEntry {
+export function createSplitEntry(props: ISplitEntryProps): ISplitEntry {
   const { module, subModules } = props;
   module.moduleTree.moduleType = ModuleType.SPLIT_MODULE;
 
@@ -32,14 +32,14 @@ export interface ISplitEntries {
   register: (splitEntry: ISplitEntry) => void;
 }
 
-export function SplitEntries(productionContext: IProductionContext): ISplitEntries {
+export function createSplitEntries(): ISplitEntries {
   const entries: Array<ISplitEntry> = [];
   const ids: Record<number, boolean> = {};
 
   return {
     entries,
     ids,
-    register: function(splitEntry: ISplitEntry): void {
+    register: function (splitEntry: ISplitEntry): void {
       entries.push(splitEntry);
     },
   };

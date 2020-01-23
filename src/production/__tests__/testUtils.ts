@@ -2,114 +2,106 @@ import * as appRoot from 'app-root-path';
 import { writeFileSync } from 'fs';
 import * as fsExtra from 'fs-extra';
 import * as path from 'path';
+
+import { IPublicConfig } from '../../config/IPublicConfig';
+import { Context, createContext } from '../../core/Context';
+// import { fusebox } from '../../core/fusebox';
 import { ASTNode } from '../../compiler/interfaces/AST';
 import { ITransformer } from '../../compiler/interfaces/ITransformer';
 import { createGlobalContext } from '../../compiler/program/GlobalContext';
 import { transpileModule } from '../../compiler/program/transpileModule';
 import { GlobalContextTransformer } from '../../compiler/transformers/GlobalContextTransformer';
-import { IPublicConfig } from '../../config/IPublicConfig';
-import { createContext } from '../../core/Context';
-import { fusebox } from '../../core/fusebox';
-import { createModule, IModule } from '../../moduleResolver/Module';
-import { PackageType, createPackage } from '../../moduleResolver/Package';
+import { IModule } from '../../moduleResolver/Module';
 import { ensureDir, fastHash } from '../../utils/utils';
-import { ProductionContext, IProductionContext } from '../ProductionContext';
-import { ModuleTree } from '../module/ModuleTree';
+import { createProductionContext, IProductionContext } from '../ProductionContext';
+import { Engine } from '../engine';
 
-export function testProductionWarmup(props: {
-  code: string;
-  jsx?: boolean;
-  moduleProps?: any;
-  props?: any;
-  transformers: Array<ITransformer>;
-}) {
-  const ctx = createContext({
+export interface ITestEnvironment {
+  context: Context;
+  productionContext: IProductionContext;
+  sourceDir: string;
+  cleanup: () => void;
+  run: (phases: Array<(IProductionContext) => void>) => IProductionContext;
+}
+
+export function createTestEnvironment(customConfig: Record<string, string>, files: Record<string, string>) {
+  // setup folder structure
+  const sourceFolder = fastHash(Math.random() + '-' + new Date().getTime());
+  const rootDir = path.join(appRoot.path, '.tmp', sourceFolder);
+  const sourceDir = path.join(rootDir, 'src');
+  const config: IPublicConfig = {
     cache: false,
     devServer: false,
+    homeDir: sourceDir,
     target: 'browser',
-  });
+    watch: false,
+    ...customConfig
+  };
 
-  const pkg = createPackage({ type: PackageType.USER_PACKAGE });
+  // create the source folders and files
+  ensureDir(sourceDir);
+  for (const filename in files) {
+    const filePath = path.join(sourceDir, filename);
+    writeFileSync(filePath, files[filename]);
+  }
 
-  const module: IModule = Object.assign(
-    createModule({
-      //absPath: __filename,
-      ctx: ctx,
-      pkg,
-    }),
-    props.moduleProps || {},
-  );
+  const context = createContext(config);
+  context.setProduction();
+  const productionContext = createProductionContext(context);
 
-  module.contents = props.code;
-  module.extension = '.ts';
-  module.id = 1;
+  return {
+    context,
+    productionContext,
+    sourceDir,
+    cleanup: () => {
+      fsExtra.removeSync(rootDir);
+    },
+    run: (phases): IProductionContext => {
+      Engine(productionContext).start(phases);
+      return productionContext;
+    },
+  }
+}
 
-  module.parse();
-
-  const productionContext = ProductionContext(ctx, [module]);
-
-  const tree = (module.moduleTree = ModuleTree({ module, productionContext }));
-
-  const tranformers = [GlobalContextTransformer().commonVisitors(props.props)];
-  for (const t of props.transformers) {
-    if (t.productionWarmupPhase) {
-      tranformers.push(t.productionWarmupPhase({ ctx: ctx, module: module, productionContext: productionContext }));
+/**
+ * Left for reference
+ * Is not used atm!
+ */
+export function customWarmupPhase(
+  productionContext: IProductionContext,
+  module: IModule,
+  transformers: Array<ITransformer>
+) {
+  const customTransformers = [GlobalContextTransformer().commonVisitors()];
+  for (const transformer of transformers) {
+    if (transformer.productionWarmupPhase) {
+      customTransformers.push(transformer.productionWarmupPhase({
+        ctx: productionContext.ctx,
+        module,
+        productionContext,
+      }));
     }
   }
 
   transpileModule({
     ast: module.ast as ASTNode,
     globalContext: createGlobalContext(),
-    transformers: tranformers,
+    transformers: customTransformers,
   });
-
-  return { module, productionContext, tree };
 }
 
-function createFileSet(directory, files: Record<string, string>) {
-  const newSet = {};
-  for (const key in files) {
-    newSet[path.join(directory, key)] = files[key];
-  }
-
-  return newSet;
-}
-
-export class ProdPhasesTestEnv {
-  private rootDir: string;
-  private homeDir: string;
-  constructor(public config: IPublicConfig) {
-    config.cache = false;
-    config.target = 'browser';
-    config.watch = false;
-    config.devServer = false;
-  }
-  initFileStructure(files: Record<string, string>) {
-    const folder = fastHash(Math.random() + '-' + new Date().getTime());
-    this.rootDir = path.join(appRoot.path, '.tmp', folder);
-    this.homeDir = path.join(this.rootDir, 'src');
-    this.config.homeDir = this.homeDir;
-    ensureDir(this.homeDir);
-    for (const key in files) {
-      const filePath = path.join(this.homeDir, key);
-      writeFileSync(filePath, files[key]);
-    }
-  }
-
-  public async run(phases): Promise<IProductionContext> {
-    const fuse = fusebox(this.config);
-    const context = await fuse.runProductionContext(phases);
-    return context;
-  }
-
-  public destroy() {
-    fsExtra.removeSync(this.rootDir);
-  }
-}
-
-export function prodPhasesEnv(config: IPublicConfig, files: Record<string, string>): ProdPhasesTestEnv {
-  const env = new ProdPhasesTestEnv(config);
-  env.initFileStructure(files);
-
-  return env;
-}
+// function getProductionContext(code: string): IProductionContext {
+//   const environment = createTestEnvironment({ entry: 'index.ts' }, {
+//     'foo.ts': `
+//       console.log('foo');
+//     `,
+//     'index.ts': code,
+//   });
+//   const CustomPhase = () => customWarmupPhase(
+//     environment.productionContext,
+//     environment.productionContext.modules[0],
+//     [Phase_1_ExportLink()]
+//   );
+//   environment.run([CustomPhase]);
+//   return environment.productionContext;
+// };
