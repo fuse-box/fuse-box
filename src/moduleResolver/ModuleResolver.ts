@@ -111,6 +111,8 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
   let module = bundleContext.getModule(absPath);
 
   function init(pkg, absPath, reUseId?: number) {
+    if (bundleContext.modules[absPath]) return bundleContext.modules[absPath];
+
     ctx.log.verbose('init', '<dim>$absPath</dim>', { absPath });
 
     const module = createModule({ absPath, ctx, pkg });
@@ -170,7 +172,8 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
       for (const cached of mrc.modulesCached) bundleContext.setModule(cached);
 
       for (const item of mrc.modulesRequireResolution) {
-        init(undefined, item.absPath, item.id);
+        delete bundleContext.modules[item.absPath];
+        init(item.pkg, item.absPath, item.id);
       }
 
       if (module) return module;
@@ -190,7 +193,7 @@ export function ModuleResolver(ctx: Context, entryFiles: Array<string>): IModule
   const entries = [];
   const bundleContext = createBundleContext(ctx);
   const userPackage = createPackage({ type: PackageType.USER_PACKAGE });
-
+  bundleContext.setPackage(userPackage);
   for (const entry of entryFiles) {
     const absPath = ensureAbsolutePath(entry, ctx.config.homeDir);
     const entryModule = initModule({ absPath, bundleContext, ctx, pkg: userPackage });

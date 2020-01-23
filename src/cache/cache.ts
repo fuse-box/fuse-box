@@ -19,7 +19,7 @@ export interface ICache {
 
 export interface IModuleResolutionContext {
   modulesCached: Array<IModule>;
-  modulesRequireResolution: Array<{ id: number; absPath: string }>;
+  modulesRequireResolution: Array<{ id: number; absPath: string; pkg?: IPackage }>;
   processed: Record<number, number>;
 }
 
@@ -52,8 +52,15 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
   }
 
   function flushRecord(absPath: string, id: number, mrc: IModuleResolutionContext) {
-    if (meta.modules[id]) delete meta.modules[id];
-    mrc.modulesRequireResolution.push({ absPath, id });
+    const cachedModule = meta.modules[id];
+
+    let pkg: IPackage;
+    if (cachedModule) {
+      pkg = meta.packages[cachedModule.packageId];
+      delete meta.modules[id];
+    }
+
+    mrc.modulesRequireResolution.push({ absPath, id, pkg });
   }
 
   function verifyRecord(id: number, mrc: IModuleResolutionContext): IModule {
@@ -123,16 +130,6 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
       const cacheWriters = [];
       let shouldWriteMeta = false;
       meta.currentId = bundleContext.currentId;
-      for (const absPath in bundleContext.modules) {
-        const module = bundleContext.modules[absPath];
-        if (!module.isCached && !module.errored) {
-          shouldWriteMeta = true;
-          meta.modules[module.id] = module.getMeta();
-          const cacheFile = path.join(modulesFolder, `${module.id}.json`);
-          const contents = JSON.stringify({ contents: module.contents, sourceMap: module.sourceMap });
-          cacheWriters.push(writeFile(cacheFile, contents));
-        }
-      }
 
       for (const packageId in bundleContext.packages) {
         const pkg = bundleContext.packages[packageId];
@@ -142,6 +139,19 @@ export function createCache(ctx: Context, bundleContext: IBundleContext): ICache
           meta.packages[pkg.publicName] = pkg;
         }
       }
+
+      for (const absPath in bundleContext.modules) {
+        const module = bundleContext.modules[absPath];
+
+        if (!module.isCached && !module.errored) {
+          shouldWriteMeta = true;
+          meta.modules[module.id] = module.getMeta();
+          const cacheFile = path.join(modulesFolder, `${module.id}.json`);
+          const contents = JSON.stringify({ contents: module.contents, sourceMap: module.sourceMap });
+          cacheWriters.push(writeFile(cacheFile, contents));
+        }
+      }
+
       await Promise.all(cacheWriters);
 
       if (shouldWriteMeta) await writeFile(metaFile, JSON.stringify(meta, null, 2));
