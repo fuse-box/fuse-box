@@ -65,6 +65,7 @@ export function distWriter(props: IOuputParserProps) {
     },
     // the actual write function
     write: async (target: string, contents: Buffer | string) => {
+      if (!path.isAbsolute(target)) target = path.join(self.outputDirectory, target);
       ensureDir(path.dirname(target));
       writeFile(target, contents);
     },
