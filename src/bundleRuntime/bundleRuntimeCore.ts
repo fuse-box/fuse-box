@@ -22,44 +22,44 @@ export function bundleRuntimeCore(props: IBundleRuntimeCore) {
   let coreVariable;
   // web-worker cannot share anything with bundle, hence it gets an isolated mode
   if (isIsolated) {
-    coreVariable = `var core = {}`;
+    coreVariable = `var f = {};`;
   } else if (target === 'browser' || target === 'electron') {
     // storing directly to browser window object
-    coreVariable = `var core = window.${BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ} = window.${BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ} || {};`;
+    coreVariable = `var f = window.${BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ} = window.${BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ} || {};`;
   } else if (target === 'server') {
     // storing to global object
-    coreVariable = `var core = global.${BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ} = global.${BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ} || {};`;
+    coreVariable = `var f = global.${BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ} = global.${BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ} || {};`;
   }
 
   let optional = '';
   if (props.interopRequireDefault) {
-    optional += `\ncore.${INTEROP_DEFAULT} = function (x) { return x !== undefined && x.default !== undefined ? x.default : x; }`;
+    optional += `f.${INTEROP_DEFAULT} = function (x) { return x !== undefined && x.default !== undefined ? x.default : x; };`;
   }
 
   const CODE = `${isIsolated ? `var ${BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ} = ` : ''}(function() {
   ${coreVariable}
-  var modules = core.modules = core.modules || {}; ${optional}
-  core.${BUNDLE_RUNTIME_NAMES.BUNDLE_FUNCTION} = function(collection, fn) {
+  var modules = f.modules = f.modules || {}; ${optional}
+  f.${BUNDLE_RUNTIME_NAMES.BUNDLE_FUNCTION} = function(collection, fn) {
     for (var num in collection) {
       modules[num] = collection[num];
     }
     fn ? fn() : void 0;
   };
-  core.c = {};
-  core.${BUNDLE_RUNTIME_NAMES.REQUIRE_FUNCTION} = function(id) {
-    var cached = core.c[id];
+  f.c = {};
+  f.${BUNDLE_RUNTIME_NAMES.REQUIRE_FUNCTION} = function(id) {
+    var cached = f.c[id];
     if (cached) return cached.m.exports;
     var module = modules[id];
     if (!module) {
-      // code splitting here
       return;
     }
-    cached = core.c[id] = {};
+    cached = f.c[id] = {};
     cached.exports = {};
     cached.m = { exports: cached.exports };
-    module(core.${BUNDLE_RUNTIME_NAMES.REQUIRE_FUNCTION}, cached.exports, cached.m);
+    module(f.${BUNDLE_RUNTIME_NAMES.REQUIRE_FUNCTION}, cached.exports, cached.m);
     return cached.m.exports;
-  }; ${isIsolated ? '\n\treturn core;' : ''}
+  }; ${isIsolated ? '\n\treturn f;' : ''}
 })();`;
-  return CODE;
+
+  return CODE.replace(/(\n|\t)/g, '').replace(/\s+/g, ' ');
 }
