@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { createContext } from '../../core/Context';
+import { distWriter } from '../../output/distWriter';
 import { mockWriteFile } from '../../utils/test_utils';
 import { cssResolveURL } from '../cssResolveURL';
 
@@ -12,6 +13,7 @@ describe('CSS Resolve URL test', () => {
   it('should resolve image 1', () => {
     fileMock.addFile(path.join(__dirname, 'hello.png'), '');
     const ctx = createContext({ homeDir: __dirname });
+    ctx.writer = distWriter({ root: __dirname });
     const props = {
       contents: `url("./hello.png")`,
       ctx: ctx,
@@ -101,6 +103,7 @@ describe('CSS Resolve URL test', () => {
       filePath: __filename,
       options: {},
     };
+
     const res = cssResolveURL(props);
     expect(res.contents).toEqual(`url('data:image/png;base64,iVBO')`);
   });
