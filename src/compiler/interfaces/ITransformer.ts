@@ -31,7 +31,6 @@ export interface ITransformer {
     test?: RegExp;
     type?: 'js' | 'js_ts' | 'ts';
   };
-  commonVisitors?: (props: ITransformerCommon) => ITransformerVisitors;
-
-  productionWarmupPhase?: (props: ITransformerProduction) => ITransformerVisitors;
+  commonVisitors?: (props?: ITransformerCommon) => ITransformerVisitors;
+  productionWarmupPhase?: (props?: ITransformerProduction) => ITransformerVisitors;
 }

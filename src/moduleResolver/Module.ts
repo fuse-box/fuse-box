@@ -12,7 +12,8 @@ import { IModuleTree } from '../production/module/ModuleTree';
 import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { makeFuseBoxPath, readFile } from '../utils/utils';
 import { PackageType, IPackage } from './Package';
-export function Module() {}
+
+export function Module() { }
 
 export interface IModule {
   absPath?: string;
@@ -152,7 +153,15 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
     },
     // read the contents
     read: () => {
-      scope.contents = readFile(scope.absPath);
+      try {
+        scope.contents = readFile(scope.absPath);
+      } catch (e) {
+        if (scope.absPath.lastIndexOf(path.join(props.ctx.config.homeDir, 'node_modules'), 0) === 0) {
+          props.ctx.log.warn(`Did you forget to run 'npm install'?`);
+        }
+        props.ctx.log.error(`Module not found ${scope.absPath.replace(props.ctx.config.homeDir, '')}`, e.message);
+        throw e;
+      }
       return scope.contents;
     },
     transpile: () => transformCommonVisitors(scope, props.ctx.compilerOptions),

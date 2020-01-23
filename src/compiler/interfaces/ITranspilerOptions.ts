@@ -1,4 +1,4 @@
-import { ICompilerOptions } from "./ICompilerOptions";
+import { ICompilerOptions } from '../../compilerOptions/interfaces';
 
 export interface ITranspilerOptions {
   code: string;

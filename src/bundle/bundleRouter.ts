@@ -1,9 +1,10 @@
 import { Context } from '../core/Context';
 import { IModule } from '../moduleResolver/Module';
+import { IProductionContext } from '../production/ProductionContext';
 import { Bundle, IBundle, IBundleType, IBundleWriteResponse } from './bundle';
 
 export interface IBundleRouter {
-  dispatchModules: (modules: Array<IModule>) => void;
+  dispatchModules: (modules: Array<IModule>, productionContext?: IProductionContext) => void;
   writeBundles: () => Promise<Array<IBundleWriteResponse>>;
 }
 
@@ -42,8 +43,12 @@ export function BundleRouter(props: IBundleRouteProps): IBundleRouter {
   }
 
   const scope: IBundleRouter = {
-    dispatchModules: (modules: Array<IModule>) => {
-      for (const module of modules) dispatch(module);
+    dispatchModules: (modules: Array<IModule>, productionContext?: IProductionContext) => {
+      // console.log(productionContext.splitEntries);
+      for (const module of modules) {
+        // console.log(module.id);
+        dispatch(module);
+      }
     },
     writeBundles: async () => {
       return await mainBundle.generate();

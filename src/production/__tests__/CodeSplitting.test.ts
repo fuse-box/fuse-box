@@ -10,21 +10,15 @@ import { IProductionContext } from '../ProductionContext';
 import { ISplitEntry } from '../module/SplitEntries';
 import { CodeSplittingPhase } from '../phases/CodeSplittingPhase';
 import { WarmupPhase } from '../phases/WarmupPhase';
-import { ProdPhasesTestEnv, prodPhasesEnv } from './testUtils';
+import { createTestEnvironment, ITestEnvironment } from './testUtils';
 
 describe('Code Splitting test', () => {
-  let env: ProdPhasesTestEnv;
+  let environment: ITestEnvironment;
   let cachedModule: ISplitEntry;
-  let homeDir: string;
 
-  const test = async (files: Record<string, string>): Promise<IProductionContext> => {
-    env = prodPhasesEnv({ entry: 'index.ts' }, files);
-    const context = await env.run([WarmupPhase, CodeSplittingPhase]);
-    // we set the homedir globally for this test
-    homeDir = context.ctx.config.homeDir;
-    homeDir += !context.ctx.config.homeDir.endsWith(path.sep) ? path.sep : '';
-
-    // return the 'test'productionContext
+  const getProductionContext = (files: Record<string, string>): IProductionContext => {
+    environment = createTestEnvironment({ entry: 'index.ts' }, files);
+    const context = environment.run([WarmupPhase, CodeSplittingPhase]);
     return context;
   };
 
@@ -34,13 +28,13 @@ describe('Code Splitting test', () => {
    * @param fileName
    * @param entries
    */
-  const getSplitEntry = (fileName: string, entries: Array<ISplitEntry>) => {
-    if (!!cachedModule && cachedModule.entry.absPath === homeDir + fileName) {
+  const getSplitEntry = (fileName: string, entries: Array<ISplitEntry>): ISplitEntry => {
+    if (!!cachedModule && cachedModule.entry.absPath === path.join(environment.sourceDir + fileName)) {
       return cachedModule;
     }
     cachedModule = undefined;
     for (const entry of entries) {
-      const moduleFileName = entry.entry.absPath.replace(homeDir, '');
+      const moduleFileName = entry.entry.absPath.replace(environment.sourceDir + path.sep, '');
       if (fileName === moduleFileName) {
         cachedModule = entry;
         break;
@@ -51,8 +45,10 @@ describe('Code Splitting test', () => {
 
   // cleanup after each test
   afterEach(() => {
-    // if (env) env.destroy();
-    env = undefined;
+    if (environment) {
+      environment.cleanup();
+      environment = undefined;
+    }
     cachedModule = undefined;
   });
 
@@ -60,19 +56,19 @@ describe('Code Splitting test', () => {
    * This test is to ensure we have a splitted module
    * 'bar' is dynamically required, so we would have 1 splitEntry
    */
-  it('should have splitEntry', async () => {
-    const context = await test({
+  it('should have splitEntry', () => {
+    const context = getProductionContext({
+      'bar.ts': `
+        export default function() {}
+      `,
+      'foo.ts': `
+        export default function() {}
+      `,
       'index.ts': `
         import './foo';
         async function load() {
           const dynamicFunc = await import('./bar');
         }
-      `,
-      'foo.ts': `
-        export default function() {}
-      `,
-      'bar.ts': `
-        export default function() {}
       `,
     });
     const {
@@ -94,19 +90,19 @@ describe('Code Splitting test', () => {
    * and modules required by that entry should end up in the
    * subModules of the splitted module
    */
-  it('should have splitEntry with submodules', async () => {
-    const context = await test({
-      'index.ts': `
-        async function load() {
-          const dynamicFunc = await import('./bar');
-        }
-      `,
+  it('should have splitEntry with submodules', () => {
+    const context = getProductionContext({
       'bar.ts': `
         import './foo';
         export default function() {}
       `,
       'foo.ts': `
         export default function() {}
+      `,
+      'index.ts': `
+        async function load() {
+          const dynamicFunc = await import('./bar');
+        }
       `,
     });
     const {
@@ -134,8 +130,21 @@ describe('Code Splitting test', () => {
    * bar requires 'ignored.ts' but doesn't use it
    * - 'ignored' should not be in bar.subModules
    */
-  it('should drop imported module thats required directly somewhere else', async () => {
-    const context = await test({
+  it('should drop imported module thats required directly somewhere else', () => {
+    const context = getProductionContext({
+      'bar.ts': `
+        import { test } from './test';
+        import { ignored } from './ignored';
+        export default function() {};
+
+        console.log(test);
+      `,
+      'foo.ts': `
+        export function foo() {}
+      `,
+      'ignored.ts': `
+        export const ignored = 'this module is being ignored';
+      `,
       'index.ts': `
         import './foo';
         import { test } from './test';
@@ -146,21 +155,8 @@ describe('Code Splitting test', () => {
 
         console.log(test);
       `,
-      'foo.ts': `
-        export function foo() {}
-      `,
-      'bar.ts': `
-        import { test } from './test';
-        import { ignored } from './ignored';
-        export default function() {};
-
-        console.log(test);
-      `,
       'test.ts': `
         export const test = 'test';
-      `,
-      'ignored.ts': `
-        export const ignored = 'this module is being ignored';
       `,
     });
     const {
@@ -179,20 +175,20 @@ describe('Code Splitting test', () => {
    * In this test case we make sure we can have multiple
    * splitEntries and each entry has it's own isolated submodules
    */
-  it('should have multiple splitEntries with submodules', async () => {
-    const context = await test({
-      'index.ts': `
-        async function load() {
-          const bar = await import('./bar');
-          const oi = await import('./oi');
-        }
-      `,
+  it('should have multiple splitEntries with submodules', () => {
+    const context = getProductionContext({
       'bar.ts': `
         import './foo';
         export default function() {}
       `,
       'foo.ts': `
         export default function() {}
+      `,
+      'index.ts': `
+        async function load() {
+          const bar = await import('./bar');
+          const oi = await import('./oi');
+        }
       `,
       'oi.ts': `
         import './utils';
@@ -229,8 +225,19 @@ describe('Code Splitting test', () => {
    * but also required by a module outside of the split is being dropped
    * from the subModules of the splitEntry
    */
-  it('should drop imported module thats required directly somewhere else', async () => {
-    const context = await test({
+  it('should drop imported module thats required directly somewhere else', () => {
+    const context = getProductionContext({
+      'ai.ts': `
+        export const ai = 'ai';
+      `,
+      'bar.ts': `
+        import { oi } from './oi';
+        console.log(oi);
+        export default function() {};
+      `,
+      'foo.ts': `
+        export default function() {};
+      `,
       'index.ts': `
         import './foo';
         import { oi } from './oi';
@@ -242,19 +249,8 @@ describe('Code Splitting test', () => {
         console.log(oi);
         console.log(ai);
       `,
-      'foo.ts': `
-        export default function() {};
-      `,
-      'bar.ts': `
-        import { oi } from './oi';
-        console.log(oi);
-        export default function() {};
-      `,
       'oi.ts': `
         export const oi = 'oi!';
-      `,
-      'ai.ts': `
-        export const ai = 'ai';
       `,
     });
     const {
@@ -272,13 +268,8 @@ describe('Code Splitting test', () => {
   /**
    * Another test to test multiple split entries.
    */
-  it('should have multiple splitEntries with submodules', async () => {
-    const context = await test({
-      'index.ts': `
-        async function load() {
-          const bar = await import('./bar');
-        }
-      `,
+  it('should have multiple splitEntries with submodules', () => {
+    const context = getProductionContext({
       'bar.ts': `
         import './foo';
         export default function() {}
@@ -288,6 +279,11 @@ describe('Code Splitting test', () => {
           const oi = await import('./oi');
         }
         export default function() {}
+      `,
+      'index.ts': `
+        async function load() {
+          const bar = await import('./bar');
+        }
       `,
       'oi.ts': `
         import './utils';
@@ -323,32 +319,32 @@ describe('Code Splitting test', () => {
    * This is a test where we test that a dynamic imported module can ALSO
    * dynamically import modules and those will have their own splitEntry
    */
-  it('should work with dynamic in dynamic in dynamic', async () => {
-    const context = await test({
-      'index.ts': `
-        import './entry1';
+  it('should work with dynamic in dynamic in dynamic', () => {
+    const context = getProductionContext({
+      'bar.ts': `
+        console.log('empty');
       `,
       'entry1.ts': `
         import('./one');
+      `,
+      'foo.ts': `
+        import './bar';
+      `,
+      'index.ts': `
+        import './entry1';
       `,
       'one.ts': `
         import './foo';
         import('./two');
       `,
+      'three.ts': `
+        import './utils';
+      `,
       'two.ts': `
         import('./three');
         import './bar';
       `,
-      'three.ts': `
-        import './utils';
-      `,
       'utils.ts': `
-        console.log('empty');
-      `,
-      'foo.ts': `
-        import './bar';
-      `,
-      'bar.ts': `
         console.log('empty');
       `,
     });
@@ -379,22 +375,22 @@ describe('Code Splitting test', () => {
    * of splittedModules it should be flagged as commons, so we can create
    * another isolated splitted module
    */
-  it('should have flag commons correctly', async () => {
-    const context = await test({
+  it('should have flag commons correctly', () => {
+    const context = getProductionContext({
+      'bar.ts': `
+        import './utils';
+        import './foo';
+        export default function() {}
+      `,
+      'foo.ts': `
+        export default function() {}
+      `,
       'index.ts': `
         import './foo';
         async function load() {
           await import('./bar');
           await import('./one');
         }
-      `,
-      'foo.ts': `
-        export default function() {}
-      `,
-      'bar.ts': `
-        import './utils';
-        import './foo';
-        export default function() {}
       `,
       'one.ts': `
         import './utils';
@@ -419,13 +415,8 @@ describe('Code Splitting test', () => {
    * If there's an circular dependency, we prevent entering
    * a loop of death and prevent duplicate subModules
    */
-  it('should detect circular dependency', async () => {
-    const context = await test({
-      'index.ts': `
-        async function load() {
-          const dynamicFunc = await import('./a');
-        }
-      `,
+  it('should detect circular dependency', () => {
+    const context = getProductionContext({
       'a.ts': `
         import './b';
         export default function() {};
@@ -435,6 +426,11 @@ describe('Code Splitting test', () => {
       `,
       'c.ts': `
         import './b';
+      `,
+      'index.ts': `
+        async function load() {
+          const dynamicFunc = await import('./a');
+        }
       `,
     });
     const {
@@ -452,13 +448,8 @@ describe('Code Splitting test', () => {
    * This test is to ensure that a 'deep' circular dependency
    * is resolved too.
    */
-  it('should detect deep circular dependency', async () => {
-    const context = await test({
-      'index.ts': `
-        async function load() {
-          const dynamicFunc = await import('./a');
-        }
-      `,
+  it('should detect deep circular dependency', () => {
+    const context = getProductionContext({
       'a.ts': `
         import './b';
         export default function() {};
@@ -481,6 +472,11 @@ describe('Code Splitting test', () => {
       'g.ts': `
         import './b';
       `,
+      'index.ts': `
+        async function load() {
+          const dynamicFunc = await import('./a');
+        }
+      `,
     });
     const {
       modules,
@@ -496,22 +492,22 @@ describe('Code Splitting test', () => {
   /**
    * Another dynamic in dynamic test
    */
-  it('should detect dynamic in dynamic', async () => {
-    const context = await test({
-      'index.ts': `
-        import './entry1';
-      `,
+  it('should detect dynamic in dynamic', () => {
+    const context = getProductionContext({
       'entry1.ts': `
         import('./one');
+      `,
+      'index.ts': `
+        import './entry1';
       `,
       'one.ts': `
         import('./two');
       `,
-      'two.ts': `
-        import('./three');
-      `,
       'three.ts': `
         import './utils';
+      `,
+      'two.ts': `
+        import('./three');
       `,
       'utils.ts': `
         console.log('emtpy');
@@ -532,30 +528,30 @@ describe('Code Splitting test', () => {
   /**
    * A weird badly written code base shouldn't fail
    */
-  it('should handle funky setups', async () => {
-    const context = await test({
-      'index.ts': `
-        import './entry1';
-      `,
+  it('should handle funky setups', () => {
+    const context = getProductionContext({
       'entry1.ts': `
         import('./one');
         import('./two');
+      `,
+      'foo.ts': `
+        import './utils';
+      `,
+      'index.ts': `
+        import './entry1';
       `,
       'one.ts': `
         import './two';
         import './utils';
       `,
-      'two.ts': `
-        import './foo';
-      `,
       'three.ts': `
         import './utils';
       `,
+      'two.ts': `
+        import './foo';
+      `,
       'utils.ts': `
         console.log('emtpy');
-      `,
-      'foo.ts': `
-        import './utils';
       `,
     });
     const {
@@ -575,23 +571,8 @@ describe('Code Splitting test', () => {
    * We support all types of imports for modules in the splitEntry
    * With this test we ensure that that works ;)
    */
-  it('should handle all type import types; require, import and export from', async () => {
-    const context = await test({
-      'index.ts': `
-        import a, { b } from './entry1';
-        console.log(a, b);
-      `,
-      'entry1.ts': `
-        import { c } from './c';
-        import('./d');
-        const a = require('./a');
-        export { b } from './b';
-
-        console.log(c);
-        console.log(a);
-
-        export default function() {};
-      `,
+  it('should handle all type import types; require, import and export from', () => {
+    const context = getProductionContext({
       'a.ts': `
         console.log('emtpy');
       `,
@@ -605,6 +586,21 @@ describe('Code Splitting test', () => {
       'd.ts': `
         import './two';
         import './utils';
+      `,
+      'entry1.ts': `
+        import { c } from './c';
+        import('./d');
+        const a = require('./a');
+        export { b } from './b';
+
+        console.log(c);
+        console.log(a);
+
+        export default function() {};
+      `,
+      'index.ts': `
+        import a, { b } from './entry1';
+        console.log(a, b);
       `,
       'two.ts': `
         console.log('emtpy');
@@ -628,11 +624,8 @@ describe('Code Splitting test', () => {
    * We support circular dependencies without erroring
    * We should also be able to support multiple circular dependencies
    */
-  it('should handle multiple circular dependencies', async () => {
-    const context = await test({
-      'index.ts': `
-        import('./a');
-      `,
+  it('should handle multiple circular dependencies', () => {
+    const context = getProductionContext({
       'a.ts': `
         import './b';
       `,
@@ -645,6 +638,9 @@ describe('Code Splitting test', () => {
       `,
       'd.ts': `
         import './b';
+      `,
+      'index.ts': `
+        import('./a');
       `,
     });
     const {
