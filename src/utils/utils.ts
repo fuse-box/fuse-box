@@ -1,9 +1,9 @@
+import * as appRoot from 'app-root-path';
 import * as fs from 'fs';
 import * as fsExtra from 'fs-extra';
+import * as offsetLinesModule from 'offset-sourcemap-lines';
 import * as path from 'path';
 import { env } from '../env';
-
-import * as offsetLinesModule from 'offset-sourcemap-lines';
 const CACHED_PATHS = new Map<string, RegExp>();
 let prettyTime = require('pretty-time');
 
@@ -23,6 +23,10 @@ export function matchAll(regex: RegExp, str: string, cb: (matches) => void) {
   while ((matches = regex.exec(str))) {
     cb(matches);
   }
+}
+
+export function makePublicPath(target: string) {
+  return ensureFuseBoxPath(path.relative(appRoot.path, target));
 }
 
 export function removeFolder(userPath) {
