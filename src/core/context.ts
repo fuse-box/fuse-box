@@ -60,7 +60,7 @@ export function createContext(props: ICreateContextProps): Context {
     defaultRoot: path.join(props.scriptRoot || env.SCRIPT_PATH, 'dist'),
     publicConfig: runProps.bundles,
   });
-  self.writer = distWriter({ hashEnabled: props.envType === EnvironmentType.PRODUCTION, root: self.outputConfig.root });
+  self.writer = distWriter({ hashEnabled: props.envType === EnvironmentType.PRODUCTION, root: self.outputConfig.distRoot });
   // configuration must be iniialised after the dist writer
   self.config = createConfig({
     ctx: self,

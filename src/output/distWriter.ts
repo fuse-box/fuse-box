@@ -55,7 +55,7 @@ export function distWriter(props: IOuputParserProps) {
 
       if (options.hash && !options.forceDisableHash) hash = fastHash(options.contents.toString());
       if (options.forceDisableHash) userString = stripHash(userString);
-      if (hash) userString.replace(/\$hash/, hash);
+      if (hash) userString = userString.replace(/\$hash/g, hash);
       const absPath = path.join(root, userString);
       const relativePath = ensureFuseBoxPath(path.relative(root, absPath));
       return {

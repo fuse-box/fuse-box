@@ -1,12 +1,8 @@
-import { BundleRouter } from '../../bundle/bundleRouter';
+import { createBundleRouter } from '../../bundle/bundleRouter';
 import { createRuntimeRequireStatement } from '../../moduleResolver/moduleResolver';
 import { IProductionContext } from '../ProductionContext';
 
-/**
- * @todo:
- * - fix bundle router to understand splitEntry
- */
-export async function FinalPhase(productionContext: IProductionContext) {
+export async function BundlePhase(productionContext: IProductionContext) {
   const { ctx, entries, modules } = productionContext;
 
   await ctx.ict.resolve();
@@ -22,14 +18,12 @@ export async function FinalPhase(productionContext: IProductionContext) {
   }
 
   if (modules) {
-    const router = BundleRouter({ ctx, entries });
-    router.dispatchModules(modules, productionContext);
-    /**
-     * @todo
-     * look into bundle_dev.ts
-     */
-    // const bundles = await router.writeBundles();
-    await router.writeBundles();
-    // console.log(bundles);
+    const router = createBundleRouter({ ctx, entries });
+    router.generateBundles(modules);
+    if (productionContext.splitEntries.entries.length > 0) {
+      router.generateSplitBundles(productionContext.splitEntries.entries);
+    }
+    const bundles = await router.writeBundles();
+    console.log(bundles);
   }
 }

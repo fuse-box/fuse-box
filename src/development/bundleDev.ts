@@ -1,4 +1,4 @@
-import { BundleRouter } from '../bundle/bundleRouter';
+import { createBundleRouter } from '../bundle/bundleRouter';
 import { Context } from '../core/context';
 import { ModuleResolver } from '../moduleResolver/moduleResolver';
 
@@ -9,8 +9,8 @@ export async function bundleDev(ctx: Context) {
 
   const { bundleContext, entries, modules } = ModuleResolver(ctx, ctx.config.entries);
   if (modules) {
-    const router = BundleRouter({ ctx, entries });
-    router.dispatchModules(modules);
+    const router = createBundleRouter({ ctx, entries });
+    router.generateBundles(modules);
 
     await ict.resolve();
     const bundles = await router.writeBundles();

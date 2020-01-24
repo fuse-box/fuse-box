@@ -38,6 +38,7 @@ export function resolveSplitEntry(productionContext: IProductionContext, target:
   const traversed: Record<number, boolean> = {
     [entryModuleId]: true,
   };
+  target.isSplit = true;
 
   const splitEntry = {
     circularModules,
@@ -49,7 +50,7 @@ export function resolveSplitEntry(productionContext: IProductionContext, target:
      * @param target
      * @param parentId
      */
-    traceCircularDependency: function(target: IModule, parentId: number): boolean {
+    traceCircularDependency: function (target: IModule, parentId: number): boolean {
       let traced = false;
       const {
         id,
@@ -83,7 +84,7 @@ export function resolveSplitEntry(productionContext: IProductionContext, target:
      *
      * @param target
      */
-    traceOrigin: function(target: IModule, parentId: number): boolean {
+    traceOrigin: function (target: IModule, parentId: number): boolean {
       const {
         id,
         moduleTree: { dependants },
@@ -111,8 +112,12 @@ export function resolveSplitEntry(productionContext: IProductionContext, target:
         } else if (!!productionContext.splitEntries.ids[module.id]) {
           // the module is a dynamic module and not the entry, so false!
           // we flagAsCommonsEligible here!
-          target.isCommonsEligible = true;
-          traced = false;
+          // target.isCommonsEligible = true;
+          // traced = false;
+
+          // if we return false, it will be excluded and added to the mainBundle
+          // for now, we include this bundle in both dynamic entries
+          traced = true;
         } else {
           traced = this.traceOrigin(module, id);
         }
@@ -133,7 +138,7 @@ export function resolveSplitEntry(productionContext: IProductionContext, target:
      *
      * @param target
      */
-    traverseDependencies: function(target: IModule, entry: boolean = false): boolean {
+    traverseDependencies: function (target: IModule, entry: boolean = false): boolean {
       const {
         id,
         moduleTree: {
@@ -153,6 +158,7 @@ export function resolveSplitEntry(productionContext: IProductionContext, target:
         for (const { target: reference } of references) {
           if (this.traceOrigin(reference, id)) {
             const exclude = this.traverseDependencies(reference, false);
+            reference.isSplit = true;
             if (!exclude) this.subModules.push(reference);
           }
         }

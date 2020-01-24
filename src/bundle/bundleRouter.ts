@@ -1,10 +1,12 @@
 import { Context } from '../core/context';
 import { IModule } from '../moduleResolver/module';
-import { IProductionContext } from '../production/ProductionContext';
-import { Bundle, IBundle, IBundleType, IBundleWriteResponse } from './bundle';
+import { PackageType } from '../moduleResolver/package';
+import { ISplitEntry } from '../production/module/SplitEntries';
+import { createBundle, IBundle, IBundleType, IBundleWriteResponse } from './bundle';
 
 export interface IBundleRouter {
-  dispatchModules: (modules: Array<IModule>, productionContext?: IProductionContext) => void;
+  generateBundles: (modules: Array<IModule>) => void;
+  generateSplitBundles: (entries: Array<ISplitEntry>) => void;
   writeBundles: () => Promise<Array<IBundleWriteResponse>>;
 }
 
@@ -13,46 +15,91 @@ export interface IBundleRouteProps {
   entries: Array<IModule>;
 }
 
-export function BundleRouter(props: IBundleRouteProps): IBundleRouter {
-  const { ctx } = props;
+export function createBundleRouter(props: IBundleRouteProps) {
+  const { ctx, entries } = props;
   const ict = ctx.ict;
-  // const bundles: Array<IBundle> = [];
-
   const outputConfig = ctx.outputConfig;
-
+  const hasVendorConfig = !!outputConfig.vendor;
+  const bundles: Array<IBundle> = [];
   let mainBundle: IBundle;
-  function getBundle(module: IModule): IBundle {
-    if (!mainBundle)
-      mainBundle = Bundle({
-        bundleConfig: outputConfig.app,
-        ctx: ctx,
-        entries: props.entries,
-        includeAPI: true,
-        type: IBundleType.JS_APP,
-      });
-    return mainBundle;
+  let vendorBundle: IBundle;
+
+  function createMainBundle() {
+    mainBundle = createBundle({
+      bundleConfig: outputConfig.app,
+      ctx: ctx,
+      entries,
+      includeAPI: true,
+      priority: 2,
+      type: IBundleType.JS_APP,
+    });
+    bundles.push(mainBundle);
   }
 
-  function dispatch(module: IModule) {
-    const bundle = getBundle(module);
+  function createVendorBundle() {
+    vendorBundle = createBundle({
+      bundleConfig: outputConfig.vendor,
+      ctx: ctx,
+      includeAPI: false,
+      priority: 1,
+      type: IBundleType.JS_VENDOR,
+    });
+    bundles.push(vendorBundle);
+  }
 
+  function dispatch(bundle: IBundle, module: IModule) {
     if (!module.isCached) {
       ict.sync('bundle_resolve_module', { module: module });
     }
     bundle.source.modules.push(module);
   }
 
-  const scope: IBundleRouter = {
-    dispatchModules: (modules: Array<IModule>, productionContext?: IProductionContext) => {
-      // console.log(productionContext.splitEntries);
+  const self: IBundleRouter = {
+    generateBundles: (modules: Array<IModule>) => {
       for (const module of modules) {
-        // console.log(module.id);
-        dispatch(module);
+        // we skip this module
+        if (module.isSplit) {
+          continue;
+        } else if (module.pkg.type === PackageType.EXTERNAL_PACKAGE && hasVendorConfig) {
+          if (!vendorBundle) createVendorBundle();
+          dispatch(vendorBundle, module);
+        } else {
+          if (!mainBundle) createMainBundle();
+          dispatch(mainBundle, module);
+        }
+      }
+    },
+    generateSplitBundles: (entries: Array<ISplitEntry>) => {
+      for (const splitEntry of entries) {
+        const splitBundle = createBundle({
+          bundleConfig: {
+            path: outputConfig.codeSplitting.path,
+          },
+          ctx: ctx,
+          includeAPI: false,
+          type: IBundleType.JS_SPLIT,
+          webIndexed: false,
+        });
+        for (const module of splitEntry.modules) {
+          dispatch(splitBundle, module);
+        }
+        bundles.push(splitBundle);
       }
     },
     writeBundles: async () => {
-      return await mainBundle.generate();
-    },
+      let output = [];
+      await Promise.all(
+        bundles.map(bundle => bundle.generate())
+      ).then(bundleOutputs => {
+        for (const response of bundleOutputs) {
+          output = output.concat(response);
+        }
+      }).catch(e => {
+        console.log('do something with ', e);
+      });
+      return output;
+    }
   };
-  return scope;
+
+  return self;
 }

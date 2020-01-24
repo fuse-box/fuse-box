@@ -32,15 +32,15 @@ export interface IPublicOutputConfig {
    */
   app?: IOutputBundleConfig;
   cssSplitting?: boolean;
+  /**
+   * distRoot is essential when making custom configuration
+   * That's how we determine relative paths for webIndex (index.html)
+   */
+  distRoot?: string;
   mapping?: Array<{
     matching: string;
     target: IOutputBundleConfig;
   }>;
-  /**
-   * Root is essential when making custom configuration
-   * That's how we determine relative paths for webIndex (index.html)
-   */
-  root?: string;
   vendor?: IOutputBundleConfig;
 }
 
@@ -92,10 +92,10 @@ export interface IOutputConfig {
   app?: IOutputBundleConfigAdvanced;
   codeSplitting?: ICodeSplittingProps;
   cssSplitting?: boolean;
+  distRoot?: string;
   mapping?: Array<{
     matching: string;
     target: IOutputBundleConfigAdvanced;
   }>;
-  root?: string;
   vendor?: IOutputBundleConfigAdvanced;
 }

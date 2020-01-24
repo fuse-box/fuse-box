@@ -12,8 +12,9 @@ import { IModuleTree } from '../production/module/ModuleTree';
 import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { makePublicPath, readFile } from '../utils/utils';
 import { PackageType, IPackage } from './package';
+import { env } from '../env';
 
-export function Module() {}
+export function Module() { }
 
 export interface IModule {
   absPath?: string;
@@ -36,6 +37,7 @@ export interface IModule {
   isExecutable?: boolean;
   isJavaScript?: boolean;
   isSourceMapRequired?: boolean;
+  isSplit?: boolean;
   isStylesheet?: boolean;
   isTypeScript?: boolean;
   moduleSourceRefs?: Record<string, IModule>;
@@ -128,6 +130,7 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
       self.isCommonsEligible = false;
       self.moduleSourceRefs = {};
       self.isEntry = false;
+      self.isSplit = false;
 
       let isCSSSourceMapRequired = true;
       const config = props.ctx.config;
@@ -194,7 +197,7 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
       try {
         self.contents = readFile(self.absPath);
       } catch (e) {
-        if (self.absPath.lastIndexOf(path.join(props.ctx.config.homeDir, 'node_modules'), 0) === 0) {
+        if (self.absPath.lastIndexOf(path.join(env.SCRIPT_PATH, 'node_modules'), 0) === 0) {
           props.ctx.log.warn(`Did you forget to run 'npm install'?`);
         }
         props.ctx.log.error(`Module not found ${self.absPath.replace(props.ctx.config.homeDir, '')}`, e.message);

@@ -7,8 +7,10 @@ import { distWriter } from '../output/distWriter';
 
 export interface IBundle {
   name?: string;
+  priority?: number;
   source?: IBundleSource;
   type?: IBundleType;
+  webIndexed: boolean;
   generate?: () => Promise<Array<IBundleWriteResponse>>;
 }
 
@@ -25,7 +27,9 @@ export interface IBundleProps {
   ctx: Context;
   entries?: Array<IModule>;
   includeAPI?: boolean;
+  priority?: number;
   type?: IBundleType;
+  webIndexed?: boolean;
 }
 
 export interface IBundleWriteResponse {
@@ -34,13 +38,13 @@ export interface IBundleWriteResponse {
   relativePath: string;
 }
 
-export function Bundle(props: IBundleProps): IBundle {
-  const { bundleConfig, ctx } = props;
+export function createBundle(props: IBundleProps): IBundle {
+  const { bundleConfig, ctx, priority, webIndexed = true } = props;
   const outputConfig = ctx.outputConfig;
   const isProduction = ctx.config.isProduction;
   const target = ctx.config.target;
 
-  const bundleWriter = distWriter({ hashEnabled: isProduction, root: outputConfig.root });
+  const bundleWriter = distWriter({ hashEnabled: isProduction, root: outputConfig.distRoot });
   const apiCore = props.includeAPI && {
     interopRequireDefault: ctx.compilerOptions.esModuleInterop,
     isIsolated: bundleConfig.isolatedApi,
@@ -50,8 +54,10 @@ export function Bundle(props: IBundleProps): IBundle {
   source.entries = props.entries;
 
   const self: IBundle = {
+    priority,
     source,
     type: props.type,
+    webIndexed,
     generate: async () => {
       const data = source.generate();
 
