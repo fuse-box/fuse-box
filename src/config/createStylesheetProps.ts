@@ -1,4 +1,4 @@
-import { Context } from '../core/Context';
+import { Context } from '../core/context';
 import { env } from '../env';
 import { ensureAbsolutePath, path2RegexPattern } from '../utils/utils';
 import { IStyleSheetAutoImportCapture, IStyleSheetProps } from './IStylesheetProps';

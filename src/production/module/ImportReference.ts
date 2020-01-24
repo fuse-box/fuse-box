@@ -2,7 +2,7 @@ import { IVisit } from '../../compiler/Visitor/Visitor';
 import { getDynamicImport } from '../../compiler/helpers/importHelpers';
 import { ASTNode } from '../../compiler/interfaces/AST';
 import { ASTType } from '../../compiler/interfaces/AST';
-import { IModule } from '../../moduleResolver/Module';
+import { IModule } from '../../moduleResolver/module';
 import { IProductionContext } from '../ProductionContext';
 
 export enum ImportType {

@@ -1,5 +1,5 @@
-import { Context } from '../../core/Context';
-import { IModule } from '../../moduleResolver/Module';
+import { Context } from '../../core/context';
+import { IModule } from '../../moduleResolver/module';
 
 export interface IWebWorkerItem {
   absPath: string;

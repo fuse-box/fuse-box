@@ -1,5 +1,5 @@
 import { createStylesheetProps } from '../../config/createStylesheetProps';
-import { Context } from '../../core/Context';
+import { Context } from '../../core/context';
 import { postCSSHandler } from '../../stylesheet/postcss/postcssHandler';
 import { IPluginCommon } from '../interfaces';
 import { parsePluginOptions } from '../pluginUtils';

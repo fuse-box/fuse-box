@@ -1,8 +1,8 @@
 import { createCache, ICache } from '../cache/cache';
-import { Context } from '../core/Context';
+import { Context } from '../core/context';
 import { IPackageMeta } from '../resolver/resolver';
-import { IModule } from './Module';
-import { IPackage } from './Package';
+import { IModule } from './module';
+import { IPackage } from './package';
 
 export type IBundleContext = ReturnType<typeof createBundleContext>;
 export function createBundleContext(ctx: Context) {

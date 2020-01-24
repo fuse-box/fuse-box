@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { bundleSource, IBundleSource } from '../bundleRuntime/bundleSource';
-import { Context } from '../core/Context';
-import { IModule } from '../moduleResolver/Module';
+import { Context } from '../core/context';
+import { IModule } from '../moduleResolver/module';
 import { IOutputBundleConfigAdvanced } from '../output/OutputConfigInterface';
 import { distWriter } from '../output/distWriter';
 
@@ -37,7 +37,7 @@ export interface IBundleWriteResponse {
 export function Bundle(props: IBundleProps): IBundle {
   const { bundleConfig, ctx } = props;
   const outputConfig = ctx.outputConfig;
-  const isProduction = !!ctx.config.production;
+  const isProduction = ctx.config.isProduction;
   const target = ctx.config.target;
 
   const bundleWriter = distWriter({ hashEnabled: isProduction, root: outputConfig.root });

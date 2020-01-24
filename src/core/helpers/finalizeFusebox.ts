@@ -1,4 +1,4 @@
-import { Context } from '../Context';
+import { Context } from '../context';
 
 export function finalizeFusebox(ctx: Context) {
   const log = ctx.log;

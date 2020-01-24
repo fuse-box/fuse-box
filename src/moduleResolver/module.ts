@@ -7,11 +7,11 @@ import { ITransformerResult } from '../compiler/interfaces/ITranformerResult';
 import { parseJavascript, parseTypeScript } from '../compiler/parser';
 import { transformCommonVisitors } from '../compiler/transformer';
 import { EXECUTABLE_EXTENSIONS, JS_EXTENSIONS, STYLESHEET_EXTENSIONS, TS_EXTENSIONS } from '../config/extensions';
-import { Context } from '../core/Context';
+import { Context } from '../core/context';
 import { IModuleTree } from '../production/module/ModuleTree';
 import { IStylesheetModuleResponse } from '../stylesheet/interfaces';
 import { makePublicPath, readFile } from '../utils/utils';
-import { PackageType, IPackage } from './Package';
+import { PackageType, IPackage } from './package';
 
 export function Module() {}
 
@@ -87,7 +87,7 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
         });
         genOptions.sourceMap = sourceMap;
       }
-      if (self.ctx.config.production) {
+      if (self.ctx.config.isProduction) {
         genOptions.indent = '';
         genOptions.lineEnd = '';
       }

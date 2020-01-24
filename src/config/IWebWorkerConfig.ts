@@ -1,6 +1,6 @@
-import { IPublicConfig } from './IPublicConfig';
+import { IPublicConfig } from './IConfig';
 
 export interface IWebWorkerConfig {
-  enabled?: boolean;
   config?: IPublicConfig;
+  enabled?: boolean;
 }

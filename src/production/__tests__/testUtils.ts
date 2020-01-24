@@ -3,15 +3,16 @@ import { writeFileSync } from 'fs';
 import * as fsExtra from 'fs-extra';
 import * as path from 'path';
 
-import { IPublicConfig } from '../../config/IPublicConfig';
-import { Context, createContext } from '../../core/Context';
+import { IPublicConfig } from '../../config/IConfig';
+import { Context, createContext } from '../../core/context';
 // import { fusebox } from '../../core/fusebox';
 import { ASTNode } from '../../compiler/interfaces/AST';
 import { ITransformer } from '../../compiler/interfaces/ITransformer';
 import { createGlobalContext } from '../../compiler/program/GlobalContext';
 import { transpileModule } from '../../compiler/program/transpileModule';
 import { GlobalContextTransformer } from '../../compiler/transformers/GlobalContextTransformer';
-import { IModule } from '../../moduleResolver/Module';
+import { EnvironmentType } from '../../config/EnvironmentType';
+import { IModule } from '../../moduleResolver/module';
 import { ensureDir, fastHash } from '../../utils/utils';
 import { createProductionContext, IProductionContext } from '../ProductionContext';
 import { Engine } from '../engine';
@@ -29,13 +30,16 @@ export function createTestEnvironment(customConfig: Record<string, string>, file
   const sourceFolder = fastHash(Math.random() + '-' + new Date().getTime());
   const rootDir = path.join(appRoot.path, '.tmp', sourceFolder);
   const sourceDir = path.join(rootDir, 'src');
+  if (customConfig.entry) {
+    customConfig.entry = path.join(sourceDir, customConfig.entry);
+  }
   const config: IPublicConfig = {
     cache: false,
     devServer: false,
     homeDir: sourceDir,
     target: 'browser',
-    watch: false,
-    ...customConfig
+    watcher: false,
+    ...customConfig,
   };
 
   // create the source folders and files
@@ -45,8 +49,8 @@ export function createTestEnvironment(customConfig: Record<string, string>, file
     writeFileSync(filePath, files[filename]);
   }
 
-  const context = createContext(config);
-  context.setProduction();
+  const context = createContext({ envType: EnvironmentType.TEST, publicConfig: config });
+
   const productionContext = createProductionContext(context);
 
   return {
@@ -60,7 +64,7 @@ export function createTestEnvironment(customConfig: Record<string, string>, file
       Engine(productionContext).start(phases);
       return productionContext;
     },
-  }
+  };
 }
 
 /**
@@ -70,16 +74,18 @@ export function createTestEnvironment(customConfig: Record<string, string>, file
 export function customWarmupPhase(
   productionContext: IProductionContext,
   module: IModule,
-  transformers: Array<ITransformer>
+  transformers: Array<ITransformer>,
 ) {
   const customTransformers = [GlobalContextTransformer().commonVisitors()];
   for (const transformer of transformers) {
     if (transformer.productionWarmupPhase) {
-      customTransformers.push(transformer.productionWarmupPhase({
-        ctx: productionContext.ctx,
-        module,
-        productionContext,
-      }));
+      customTransformers.push(
+        transformer.productionWarmupPhase({
+          ctx: productionContext.ctx,
+          module,
+          productionContext,
+        }),
+      );
     }
   }
 

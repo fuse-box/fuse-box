@@ -5,7 +5,7 @@ import { fileExists, makeFuseBoxPath } from '../utils/utils';
 import { handleBrowserField } from './browserField';
 import { fileLookup } from './fileLookup';
 import { IPackageMeta, IResolverProps } from './resolver';
-import { getFolderEntryPointFromPackageJSON, isBrowserEntry } from './shared';
+import { getFolderEntryPointFromPackageJSON } from './shared';
 
 const PROJECT_NODE_MODULES = path.join(appRoot.path, 'node_modules');
 
@@ -96,7 +96,6 @@ export function findTargetFolder(props: IResolverProps, parsed: IModuleParsed): 
 }
 export interface INodeModuleLookup {
   error?: string;
-  forcedStatement?: string;
   isEntry?: boolean;
   meta?: IPackageMeta;
   targetAbsPath?: string;
@@ -155,10 +154,6 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
 
     result.isEntry = false;
     result.targetFuseBoxPath = makeFuseBoxPath(folder, result.targetAbsPath);
-
-    if (parsedLookup.customIndex) {
-      result.forcedStatement = `${parsed.name}/${result.targetFuseBoxPath}`;
-    }
   } else {
     const entryFile = getFolderEntryPointFromPackageJSON({ isBrowserBuild: isBrowser, json: json });
 
@@ -177,9 +172,6 @@ export function nodeModuleLookup(props: IResolverProps, parsed: IModuleParsed): 
 
     result.targetAbsPath = pkg.entryAbsPath;
     result.targetFuseBoxPath = pkg.entryFuseBoxPath;
-    if (isBrowserEntry(json, isBrowser)) {
-      result.forcedStatement = `${parsed.name}/${result.targetFuseBoxPath}`;
-    }
 
     if (isBrowser && json.browser && typeof json.browser === 'object') {
       const override = handleBrowserField(pkg, entryLookup.absPath);

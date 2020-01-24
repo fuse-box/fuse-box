@@ -1,6 +1,6 @@
 import { ICompilerOptions } from '../../compilerOptions/interfaces';
-import { Context } from '../../core/Context';
-import { IModule } from '../../moduleResolver/Module';
+import { Context } from '../../core/context';
+import { IModule } from '../../moduleResolver/module';
 import { IProductionContext } from '../../production/ProductionContext';
 import { IVisit, IVisitorMod } from '../Visitor/Visitor';
 import { ASTNode } from './AST';

@@ -1,14 +1,15 @@
 import { createStylesheetProps } from '../../config/createStylesheetProps';
-import { Context } from '../../core/Context';
-import { IModule } from '../../moduleResolver/Module';
+import { Context } from '../../core/context';
+import { IModule } from '../../moduleResolver/module';
 import { lessHandler } from '../../stylesheet/less/lessHandler';
+import { isNodeModuleInstalled } from '../../utils/utils';
 import { IPluginCommon } from '../interfaces';
 import { parsePluginOptions } from '../pluginUtils';
 import { cssContextHandler } from './shared';
 
 export function pluginLessCapture(props: { ctx: Context; module: IModule; opts: IPluginCommon }) {
   const { ctx, module, opts } = props;
-  if (!ctx.isInstalled('less')) {
+  if (!isNodeModuleInstalled('less')) {
     ctx.fatal(`Fatal error when capturing ${module.absPath}`, [
       'Module "less" is required, Please install it using the following command',
       'npm install less --save-dev',

@@ -1,9 +1,10 @@
 import * as postcss from 'postcss';
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
-import { Context } from '../../core/Context';
-import { IModule } from '../../moduleResolver/Module';
+import { Context } from '../../core/context';
+import { IModule } from '../../moduleResolver/module';
 import { cssDevModuleRender } from '../../stylesheet/cssDevModuleRender';
 import { IStyleSheetProcessor } from '../../stylesheet/interfaces';
+import { isNodeModuleInstalled } from '../../utils/utils';
 import { IPluginCommon } from '../interfaces';
 import { wrapContents } from '../pluginStrings';
 
@@ -49,7 +50,7 @@ export function cssContextHandler(props: ICSSContextHandler) {
     return;
   }
   if (shared.asModule) {
-    if (!ctx.isInstalled('postcss-modules')) {
+    if (!isNodeModuleInstalled('postcss-modules')) {
       ctx.fatal(`Fatal error when capturing ${props.module.absPath}`, [
         'Module "postcss-modules" is required, Please install it using the following command',
         'npm install postcss-modules --save-dev',
@@ -84,7 +85,7 @@ export function cssContextHandler(props: ICSSContextHandler) {
 
         return;
       }
-      if (ctx.config.production) {
+      if (ctx.config.isProduction) {
         props.module.css = data;
         if (shared.asModule && data.json) {
           props.module.contents = wrapContents(JSON.stringify(data.json), props.shared.useDefault);

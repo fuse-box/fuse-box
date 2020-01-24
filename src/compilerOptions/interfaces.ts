@@ -1,4 +1,4 @@
-import { ITarget } from '../config/PrivateConfig';
+import { ITarget } from '../config/ITarget';
 
 export type ITypeScriptPaths = { [key: string]: Array<string> };
 

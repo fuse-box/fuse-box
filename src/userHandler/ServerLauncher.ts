@@ -2,7 +2,7 @@
 import { ChildProcess, SpawnOptions } from 'child_process';
 
 import { IBundleWriteResponse } from '../bundle/bundle';
-import { Context } from '../core/Context';
+import { Context } from '../core/context';
 
 interface handleEntryProps {
   nodeArgs: Array<string>;
