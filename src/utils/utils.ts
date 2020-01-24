@@ -245,6 +245,14 @@ export function getPathRelativeToConfig(props: { dirName: string; ensureDirExist
   return fileName ? path.join(target, fileName) : target;
 }
 
+export function isNodeModuleInstalled(name) {
+  try {
+    return require(name);
+  } catch (e) {
+    return false;
+  }
+}
+
 export function ensureFuseBoxPath(input: string) {
   return input.replace(/\\/g, '/').replace(/\/$/, '');
 }

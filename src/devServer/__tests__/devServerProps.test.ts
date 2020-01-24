@@ -1,19 +1,21 @@
-import * as path from 'path';
-import { IPublicConfig } from '../../config/IPublicConfig';
+import { EnvironmentType } from '../../config/EnvironmentType';
+import { IPublicConfig } from '../../config/IConfig';
 import { IRunProps } from '../../config/IRunProps';
-import { createContext } from '../../core/Context';
+import { createContext } from '../../core/context';
 import '../../utils/test_utils';
 import { createDevServerConfig } from '../devServerProps';
 function configure(config?: IPublicConfig) {
-  const ctx = createContext(config);
-
-  ctx.createOutputConfig({ root: path.join(__dirname, 'dist') });
+  config.watcher = false;
+  config.hmr = false;
+  config.entry = __filename;
+  const ctx = createContext({ envType: EnvironmentType.DEVELOPMENT, publicConfig: config, scriptRoot: __dirname });
   return createDevServerConfig(ctx);
 }
 function configureProd(config: IPublicConfig, prodProps?: IRunProps) {
-  const ctx = createContext(config, prodProps);
-  ctx.createOutputConfig(config);
-  ctx.config.production = prodProps;
+  config.watcher = false;
+  config.entry = __filename;
+  config.hmr = false;
+  const ctx = createContext({ envType: EnvironmentType.PRODUCTION, publicConfig: config, scriptRoot: __dirname });
   return createDevServerConfig(ctx);
 }
 
@@ -117,6 +119,7 @@ describe('devServerProps test', () => {
 
   it('should have it disabled when production', () => {
     const data = configureProd({ devServer: false }, {});
+
     expect(data.hmrServer['enabled']).toEqual(false);
   });
 });

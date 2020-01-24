@@ -1,5 +1,5 @@
 import { BundleRouter } from '../../bundle/bundleRouter';
-import { createRuntimeRequireStatement } from '../../moduleResolver/ModuleResolver';
+import { createRuntimeRequireStatement } from '../../moduleResolver/moduleResolver';
 import { IProductionContext } from '../ProductionContext';
 
 /**

@@ -1,4 +1,4 @@
-import { Context } from '../../core/Context';
+import { Context } from '../../core/context';
 import { wrapContents } from '../pluginStrings';
 import { parsePluginOptions } from '../pluginUtils';
 

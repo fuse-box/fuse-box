@@ -1,7 +1,7 @@
 import * as appRoot from 'app-root-path';
 import * as path from 'path';
 import * as ts from 'typescript';
-import { Context } from '../core/Context';
+import { Context } from '../core/context';
 import { env } from '../env';
 import { ensureAbsolutePath } from '../utils/utils';
 import { findTsConfig } from './findTSConfig';
@@ -24,12 +24,12 @@ export function createCompilerOptions(ctx: Context): ICompilerOptions {
     }
     tsConfigPath = ensureAbsolutePath(options.tsConfig, env.SCRIPT_PATH);
   } else {
-    const fileName = path.join(ctx.config.homeDir, ctx.config.entries[0]);
+    const fileName = ctx.config.entries[0];
     tsConfigPath = findTsConfig({ fileName: fileName, root: appRoot.path });
   }
 
   let baseURL = options.baseUrl;
-  let tsConfigDirectory = ctx.config.homeDir;
+  let tsConfigDirectory;
   if (tsConfigPath) {
     const data: IRawTypescriptConfig = ts.readConfigFile(tsConfigPath, ts.sys.readFile);
     tsConfigDirectory = path.dirname(tsConfigPath);

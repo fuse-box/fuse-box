@@ -1,6 +1,6 @@
-import { Context } from '../core/Context';
-import { IModule } from '../moduleResolver/Module';
-import { ModuleResolver } from '../moduleResolver/ModuleResolver';
+import { Context } from '../core/context';
+import { IModule } from '../moduleResolver/module';
+import { ModuleResolver } from '../moduleResolver/moduleResolver';
 import { ModuleTree } from './module/ModuleTree';
 import { createSplitEntries, ISplitEntries } from './module/SplitEntries';
 
@@ -17,7 +17,7 @@ export function createProductionContext(ctx): IProductionContext {
     ctx,
     entries,
     modules,
-    splitEntries: createSplitEntries()
+    splitEntries: createSplitEntries(),
   };
 
   for (const module of modules) {

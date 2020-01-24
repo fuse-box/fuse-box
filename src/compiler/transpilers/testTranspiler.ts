@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import { ICompilerOptions } from '../../compilerOptions/interfaces';
-import { ITarget } from '../../config/PrivateConfig';
-import { createContext } from '../../core/Context';
-import { createModule } from '../../moduleResolver/Module';
-import { createPackage } from '../../moduleResolver/Package';
+import { ITarget } from '../../config/ITarget';
+import { createModule } from '../../moduleResolver/module';
+import { createPackage } from '../../moduleResolver/package';
+import { createTestContext } from '../../utils/test_utils';
 import { generate } from '../generator/generator';
 import { ASTNode } from '../interfaces/AST';
 import { parseJavascript, parseTypeScript } from '../parser';
@@ -32,7 +32,7 @@ export function testTranspile(props: ICompileModuleProps) {
     ast = parseTypeScript(contents, { jsx: true });
   }
 
-  const ctx = createContext({
+  const ctx = createTestContext({
     cache: false,
     devServer: false,
   });

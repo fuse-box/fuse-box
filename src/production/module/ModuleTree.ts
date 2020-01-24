@@ -1,4 +1,4 @@
-import { IModule } from '../../moduleResolver/Module';
+import { IModule } from '../../moduleResolver/module';
 import { IProductionContext } from '../ProductionContext';
 import { ExportReferences, IExportReferences } from './ExportReference';
 import { ImportReferences, IImport, IImportReferences } from './ImportReference';

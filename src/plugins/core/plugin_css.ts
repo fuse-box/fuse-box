@@ -1,8 +1,8 @@
 import { IStyleSheetProps } from '../../config/IStylesheetProps';
 import { createStylesheetProps } from '../../config/createStylesheetProps';
-import { Context } from '../../core/Context';
-import { IModule } from '../../moduleResolver/Module';
-import { resolve } from '../../moduleResolver/ModuleResolver';
+import { Context } from '../../core/context';
+import { IModule } from '../../moduleResolver/module';
+import { resolve } from '../../moduleResolver/moduleResolver';
 import { ImportType } from '../../resolver/resolver';
 import { cssResolveURL } from '../../stylesheet/cssResolveURL';
 import { parsePluginOptions } from '../pluginUtils';
@@ -18,7 +18,7 @@ export function pluginCSS(a?: ICSSPluginProps | RegExp | string, b?: ICSSPluginP
   return (ctx: Context) => {
     let styleSheetModule: IModule;
     opts.stylesheet = createStylesheetProps({ ctx, stylesheet: opts.stylesheet || {} });
-    if (!ctx.config.production && ctx.config.supportsStylesheet()) {
+    if (!ctx.config.isProduction && ctx.config.supportsStylesheet()) {
       ctx.ict.on('module_init', props => {
         const { bundleContext, module } = props;
         if (!module.isStylesheet) return;

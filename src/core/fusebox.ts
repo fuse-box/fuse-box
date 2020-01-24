@@ -1,31 +1,29 @@
-import { IPublicConfig } from '../config/IPublicConfig';
+import { IPublicConfig } from '../config/IConfig';
 import { IRunProps } from '../config/IRunProps';
 import { bundleDev } from '../development/bundleDev';
 import { bundleProd } from '../production/bundleProd';
-import { createEnvContext } from './Context';
+
+import { EnvironmentType } from '../config/EnvironmentType';
+import { createContext, ICreateContextProps } from './context';
 import { finalizeFusebox } from './helpers/finalizeFusebox';
 import { preflightFusebox } from './helpers/preflightFusebox';
 
-export function fusebox(config: IPublicConfig) {
-  function execute(props: { config: IPublicConfig; runProps: IRunProps; type: 'development' | 'production' }) {
-    const ctx = createEnvContext(props);
+export function fusebox(publicConfig: IPublicConfig) {
+  function execute(props: ICreateContextProps) {
+    const ctx = createContext(props);
     preflightFusebox(ctx);
-    try {
-      if (props.type === 'development') {
+    switch (props.envType) {
+      case EnvironmentType.DEVELOPMENT:
         bundleDev(ctx);
-      } else bundleProd(ctx);
-    } catch (e) {
-      ctx.fatal('Error', [e.stack]);
+        break;
+      case EnvironmentType.PRODUCTION:
+        bundleProd(ctx);
+        break;
     }
     finalizeFusebox(ctx);
   }
   return {
-    runDev: (runProps?: IRunProps) => {
-      execute({ config, runProps, type: 'development' });
-    },
-
-    runProd: (runProps?: IRunProps) => {
-      execute({ config, runProps, type: 'production' });
-    },
+    runDev: (runProps?: IRunProps) => execute({ envType: EnvironmentType.DEVELOPMENT, publicConfig, runProps }),
+    runProd: (runProps?: IRunProps) => execute({ envType: EnvironmentType.PRODUCTION, publicConfig, runProps }),
   };
 }

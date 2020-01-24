@@ -10,10 +10,10 @@ class Context {
       modules: ['./node_modules'],
       target: 'browser',
 
-      cache: { FTL: true, enabled: true, root: './.cache' },
+      cache: { enabled: true, root: './.cache' },
       devServer: this.runServer,
-      sourceMap: false,
-      watch: true,
+      sourceMap: true,
+      watcher: true,
       webIndex: {
         publicPath: '.',
         template: 'src/index.html',

@@ -1,5 +1,5 @@
-import { ITarget } from '../config/PrivateConfig';
-import { makeFuseBoxPath, path2Regex } from '../utils/utils';
+import { ITarget } from '../config/ITarget';
+import { path2Regex } from '../utils/utils';
 import { handleBrowserField } from './browserField';
 import { TsConfigAtPath, fileLookup, ILookupResult } from './fileLookup';
 import { isNodeModule, nodeModuleLookup, INodeModuleLookup } from './nodeModuleLookup';
@@ -66,11 +66,6 @@ export interface IResolver {
 
   // resolved absolute path
   absPath?: string;
-  // make sure that it's a public path. E.g "components/MyComponent.jsx"
-  // tsx and ts needs to be replaced with js and jsx
-  fuseBoxPath?: string;
-
-  forcedStatement?: string;
   // a resolver might return an additional path where to look for modules
   monorepoModulesPath?: string;
 
@@ -112,11 +107,8 @@ export function resolveModule(props: IResolverProps): IResolver {
   const isBrowserBuild = props.buildTarget === 'browser';
   const isServerBuild = props.buildTarget === 'server';
   const isElectronBuild = props.buildTarget === 'electron';
-  const isUniversalBuild = props.buildTarget === 'universal';
-  let target = props.target;
 
-  let forcedStatement: string;
-  let forceReplacement = false;
+  let target = props.target;
 
   let lookupResult: ILookupResult;
 
@@ -124,7 +116,6 @@ export function resolveModule(props: IResolverProps): IResolver {
   // props.target will be updated
   if (props.alias) {
     const res = replaceAliases(props);
-    forceReplacement = res.forceReplacement;
     target = res.target;
   }
 
@@ -139,10 +130,6 @@ export function resolveModule(props: IResolverProps): IResolver {
       paths: props.typescriptPaths.paths,
       target: target,
     });
-
-    if (lookupResult) {
-      forceReplacement = true;
-    }
   }
 
   const browserFieldLookup =
@@ -152,17 +139,15 @@ export function resolveModule(props: IResolverProps): IResolver {
     let moduleParsed = target && isNodeModule(target);
     if (moduleParsed) {
       // first check if we need to bundle it at all;
-      if (!isUniversalBuild && isServerBuild && isServerPolyfill(moduleParsed.name)) {
+      if (isServerBuild && isServerPolyfill(moduleParsed.name)) {
         return { skip: true };
       }
-      if (!isUniversalBuild && isElectronBuild && isElectronPolyfill(moduleParsed.name)) {
+      if (isElectronBuild && isElectronPolyfill(moduleParsed.name)) {
         return { skip: true };
       }
       if (browserFieldLookup) {
         if (props.packageMeta.browser[moduleParsed.name] === false) {
-          forcedStatement = 'fuse-empty-package';
-          moduleParsed = { name: forcedStatement };
-          forceReplacement = true;
+          moduleParsed = { name: 'fuse-empty-package' };
         }
       }
       const pkg = nodeModuleLookup(props, moduleParsed);
@@ -170,9 +155,8 @@ export function resolveModule(props: IResolverProps): IResolver {
       if (pkg.error) {
         return { error: pkg.error };
       }
-      const aliasForced = forceReplacement && target;
+
       return {
-        forcedStatement: forcedStatement ? forcedStatement : pkg.forcedStatement ? pkg.forcedStatement : aliasForced,
         package: pkg,
       };
     } else {
@@ -194,55 +178,17 @@ export function resolveModule(props: IResolverProps): IResolver {
       // a match should direct according to the specs
       const override = handleBrowserField(props.packageMeta, lookupResult.absPath);
       if (override) {
-        forceReplacement = true;
         lookupResult.absPath = override;
       }
     }
   }
 
-  if (lookupResult.customIndex) {
-    forceReplacement = true;
-  }
-  if (props.importType && props.importType === ImportType.DYNAMIC) {
-    forceReplacement = true;
-  }
-
   const extension = lookupResult.extension;
   const absPath = lookupResult.absPath;
 
-  let fuseBoxPath: string;
-  if (props.packageMeta) {
-    if (props.packageMeta.packageAltRoots) {
-      if (absPath.includes(props.packageMeta.packageRoot)) {
-        fuseBoxPath = makeFuseBoxPath(props.packageMeta.packageRoot, absPath);
-      } else {
-        for (const root of props.packageMeta.packageAltRoots) {
-          if (absPath.includes(root)) {
-            fuseBoxPath = makeFuseBoxPath(root, absPath);
-            break;
-          }
-        }
-      }
-    } else {
-      fuseBoxPath = makeFuseBoxPath(props.packageMeta.packageRoot, absPath);
-    }
-  } else {
-    fuseBoxPath = makeFuseBoxPath(props.homeDir, absPath);
-  }
-
-  if (forceReplacement) {
-    if (props.packageMeta) {
-      forcedStatement = `${props.packageMeta.name}/${fuseBoxPath}`;
-    } else {
-      forcedStatement = `~/${fuseBoxPath}`;
-    }
-  }
-  lookupResult.tsConfigAtPath;
   return {
     absPath,
     extension,
-    forcedStatement,
-    fuseBoxPath,
     monorepoModulesPath: lookupResult.monorepoModulesPaths,
     tsConfigAtPath: lookupResult.tsConfigAtPath,
   };

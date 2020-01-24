@@ -1,6 +1,6 @@
 import { ImportType } from '../interfaces/ImportType';
 
-import { ITarget } from '../../config/PrivateConfig';
+import { ITarget } from '../../config/ITarget';
 import { initCommonTransform } from '../testUtils';
 import { BrowserProcessTransformer } from '../transformers/bundle/BrowserProcessTransformer';
 

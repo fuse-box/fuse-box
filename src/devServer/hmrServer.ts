@@ -1,5 +1,5 @@
 import { Server } from 'ws';
-import { Context } from '../core/Context';
+import { Context } from '../core/context';
 import { IHMRServerProps } from './devServerProps';
 export interface ISocketClientInterface {
   getClient(): WebSocket;

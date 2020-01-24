@@ -1,7 +1,7 @@
 import * as express from 'express';
 import * as proxyMiddleware from 'http-proxy-middleware';
 import * as open from 'open';
-import { Context } from '../core/Context';
+import { Context } from '../core/context';
 import {
   createDevServerConfig,
   IHMRServerProps,
@@ -91,7 +91,7 @@ export function createDevServer(ctx: Context): IDevServerActions {
   const httpServerProps: IHTTPServerProps = props.httpServer as IHTTPServerProps;
   const hmrServerProps: IHMRServerProps = props.hmrServer as IHMRServerProps;
 
-  const isProduction = !!ctx.config.production;
+  const isProduction = !!ctx.config.isProduction;
 
   let openProps: IOpenProps;
   if (props.open) {

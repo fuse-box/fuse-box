@@ -1,7 +1,8 @@
 import { createStylesheetProps } from '../../config/createStylesheetProps';
-import { Context } from '../../core/Context';
-import { IModule } from '../../moduleResolver/Module';
+import { Context } from '../../core/context';
+import { IModule } from '../../moduleResolver/module';
 import { stylusHandler } from '../../stylesheet/stylus/stylusHandler';
+import { isNodeModuleInstalled } from '../../utils/utils';
 import { IPluginCommon } from '../interfaces';
 import { parsePluginOptions } from '../pluginUtils';
 import { cssContextHandler } from './shared';
@@ -9,7 +10,7 @@ import { cssContextHandler } from './shared';
 export function pluginStylusCapture(props: { ctx: Context; module: IModule; opts: IPluginCommon }) {
   const { ctx, module, opts } = props;
 
-  if (!ctx.isInstalled('stylus')) {
+  if (!isNodeModuleInstalled('stylus')) {
     ctx.fatal(`Fatal error when capturing ${module.absPath}`, [
       'Module "stylus" is required, Please install it using the following command',
       'npm install stylus --save-dev',

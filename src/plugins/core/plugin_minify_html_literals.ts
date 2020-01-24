@@ -1,4 +1,4 @@
-import { Context } from '../../core/Context';
+import { Context } from '../../core/context';
 
 /**
  * See https://github.com/asyncLiz/minify-html-literals after source input

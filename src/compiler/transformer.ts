@@ -1,5 +1,5 @@
 import { ICompilerOptions } from '../compilerOptions/interfaces';
-import { IModule } from '../moduleResolver/Module';
+import { IModule } from '../moduleResolver/module';
 import { ASTNode } from './interfaces/AST';
 import { ITransformerResult } from './interfaces/ITranformerResult';
 import { ITransformer, ITransformerVisitors } from './interfaces/ITransformer';

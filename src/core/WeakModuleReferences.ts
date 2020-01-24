@@ -1,4 +1,4 @@
-import { Context } from './Context';
+import { Context } from './context';
 
 /**
  * This module is used to store "weak" references for non-js modules

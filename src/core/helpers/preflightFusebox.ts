@@ -4,7 +4,7 @@ import { pluginAssumption } from '../../plugins/core/plugin_assumption';
 import { pluginCSS } from '../../plugins/core/plugin_css';
 import { pluginSass } from '../../plugins/core/plugin_sass';
 import { parseVersion } from '../../utils/utils';
-import { Context } from "../Context";
+import { Context } from '../context';
 import ts = require('typescript');
 
 export function preflightFusebox(ctx: Context) {
@@ -14,9 +14,8 @@ export function preflightFusebox(ctx: Context) {
 
   log.fuseHeader({
     // cacheFolder: ctx.cache && ctx.cache.rootFolder,
-    FTL: ctx.cache && ctx.config.cache.FTL,
     entry: ctx.config.entries[0],
-    mode: ctx.config.production ? 'production' : 'development',
+    mode: ctx.config.isProduction ? 'production' : 'development',
     version: env.VERSION,
   });
 
@@ -25,7 +24,6 @@ export function preflightFusebox(ctx: Context) {
   const plugins = [...ctx.config.plugins, pluginAssumption(), pluginCSS(), pluginSass()];
   plugins.forEach(plugin => plugin && plugin(ctx));
 }
-
 
 function checkVersion(log: FuseBoxLogAdapter) {
   const nodeVersion = parseVersion(process.version)[0];

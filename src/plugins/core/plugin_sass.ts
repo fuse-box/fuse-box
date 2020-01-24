@@ -1,6 +1,7 @@
 import { createStylesheetProps } from '../../config/createStylesheetProps';
-import { Context } from '../../core/Context';
+import { Context } from '../../core/context';
 import { sassHandler } from '../../stylesheet/sassHandler';
+import { isNodeModuleInstalled } from '../../utils/utils';
 import { IPluginCommon } from '../interfaces';
 import { parsePluginOptions } from '../pluginUtils';
 import { cssContextHandler } from './shared';
@@ -17,7 +18,7 @@ export function pluginSass(a?: IPluginCommon | RegExp | string, b?: IPluginCommo
         return;
       }
 
-      if (!ctx.isInstalled('node-sass')) {
+      if (!isNodeModuleInstalled('node-sass')) {
         ctx.fatal(`Fatal error when capturing ${module.absPath}`, [
           'Module "sass" is required, Please install it using the following command',
           'npm install node-sass --save-dev',

@@ -1,5 +1,5 @@
-import { IPublicConfig } from '../../config/IPublicConfig';
-import { Context } from '../../core/Context';
+import { IPublicConfig } from '../../config/IConfig';
+import { Context } from '../../core/context';
 // import { IModule } from '../../moduleResolver/Module';
 import { WebWorkerProcess } from './WebWorkerProcess';
 

@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { Context } from '../../core/Context';
-import { IModule } from '../../moduleResolver/Module';
+import { Context } from '../../core/context';
+import { IModule } from '../../moduleResolver/module';
 import { defineResourceGroup } from '../../stylesheet/cssResolveURL';
 import { fastHash, fileExists, joinFuseBoxPath, path2RegexPattern } from '../../utils/utils';
 import { wrapContents } from '../pluginStrings';
