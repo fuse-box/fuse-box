@@ -1,8 +1,8 @@
 import { BUNDLE_RUNTIME_NAMES } from '../bundleRuntime/bundleRuntimeCore';
 import { sourceMapsCSSURL } from '../bundleRuntime/constants';
 import { IStyleSheetProps } from '../config/IStylesheetProps';
-import { Context } from '../core/Context';
-import { IModule } from '../moduleResolver/Module';
+import { Context } from '../core/context';
+import { IModule } from '../moduleResolver/module';
 import { wrapContents } from '../plugins/pluginStrings';
 import { fastHash, joinFuseBoxPath } from '../utils/utils';
 import { IStylesheetModuleResponse } from './interfaces';

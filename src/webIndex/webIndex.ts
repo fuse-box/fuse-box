@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { IBundleWriteResponse } from '../bundle/bundle';
-import { Context } from '../core/Context';
+import { Context } from '../core/context';
 import { env } from '../env';
 import { FuseBoxLogAdapter } from '../fuseLog/FuseBoxLogAdapter';
 import { resolveCSSResource } from '../stylesheet/cssResolveURL';
@@ -23,7 +23,7 @@ export interface IWebIndexInterface {
   resolve?: (userPath: string) => string;
 }
 
-export function replaceWebIndexStrings(str: string, keys: Record<string, string>) {
+export function replaceWebIndexStrings(str: string, keys: Record<string, any>) {
   return str.replace(/\$([a-z_-]+)/gi, (_var, name) => {
     return keys[name] !== undefined ? (typeof keys[name] === 'object' ? JSON.stringify(keys[name]) : keys[name]) : '';
   });

@@ -10,7 +10,7 @@ The following is a full list of all the configurations, including any defaults.
 ```ts
 export interface IPublicConfig {
 	root?: string;
-	target?: ITarget = 'browser' | 'server' | 'electron' | 'universal' | 'web-worker'; //default: 'browser'
+	target?: ITarget = 'browser' | 'server' | 'electron' | 'web-worker'; //default: 'browser'
 	dependencies?: {
 		include?: Array<string>;
 		ignorePackages?: Array<string>;

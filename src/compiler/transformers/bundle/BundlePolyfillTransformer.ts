@@ -1,5 +1,6 @@
 import * as path from 'path';
-import { ITarget } from '../../../config/PrivateConfig';
+
+import { ITarget } from '../../../config/ITarget';
 import { ensureFuseBoxPath } from '../../../utils/utils';
 import { IVisit, IVisitorMod } from '../../Visitor/Visitor';
 import { createRequireStatement } from '../../Visitor/helpers';

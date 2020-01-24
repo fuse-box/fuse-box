@@ -1,5 +1,5 @@
 import { BundleType, createBundle } from '../../bundle/bundle';
-import { createContext } from '../../core/Context';
+import { createContext } from '../../core/context';
 import { mockModule } from '../../utils/test_utils';
 import { createExpressApp } from '../devServer';
 

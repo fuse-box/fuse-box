@@ -1,6 +1,6 @@
 import { BundleRouter } from '../bundle/bundleRouter';
-import { Context } from '../core/Context';
-import { ModuleResolver } from '../moduleResolver/ModuleResolver';
+import { Context } from '../core/context';
+import { ModuleResolver } from '../moduleResolver/moduleResolver';
 
 import { attachWebIndex } from './attachWebIndex';
 

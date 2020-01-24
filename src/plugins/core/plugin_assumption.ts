@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { createStylesheetProps } from '../../config/createStylesheetProps';
 import { LINK_ASSUMPTION_EXTENSIONS, TEXT_EXTENSIONS } from '../../config/extensions';
-import { Context } from '../../core/Context';
+import { Context } from '../../core/context';
 import { pluginJSONHandler } from './plugin_json';
 import { pluginLessCapture } from './plugin_less';
 import { pluginLinkHandler } from './plugin_link';

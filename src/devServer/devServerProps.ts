@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Context } from '../core/Context';
+import { Context } from '../core/context';
 
 export type IDevServerProxy = {
   [key: string]: {
@@ -42,7 +42,7 @@ export interface IDevServerProps {
 }
 
 export function createDevServerConfig(ctx: Context): IDevServerProps {
-  const isProduction = ctx.config.production;
+  const isProduction = ctx.config.isProduction;
   const iServer = ctx.config.target === 'server';
   let props = ctx.config.devServer;
   let enabled = false;

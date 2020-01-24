@@ -1,4 +1,4 @@
-import { ITarget } from '../../config/PrivateConfig';
+import { ITarget } from '../../config/ITarget';
 import { ImportType } from '../interfaces/ImportType';
 import { initCommonTransform } from '../testUtils';
 import { BundlePolyfillTransformer, PolyfillEssentialConfig } from '../transformers/bundle/BundlePolyfillTransformer';

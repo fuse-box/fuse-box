@@ -1,7 +1,7 @@
 import { IBundleWriteResponse } from '../bundle/bundle';
-import { Context } from '../core/Context';
-import { IBundleContext } from '../moduleResolver/BundleContext';
-import { IModule } from '../moduleResolver/Module';
+import { Context } from '../core/context';
+import { IBundleContext } from '../moduleResolver/bundleContext';
+import { IModule } from '../moduleResolver/module';
 
 export interface InterceptorEvents {
   bundle_resolve_module: { module: IModule };

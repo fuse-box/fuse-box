@@ -1,5 +1,5 @@
-import { IModule } from '../../moduleResolver/Module';
-import { PackageType } from '../../moduleResolver/Package';
+import { IModule } from '../../moduleResolver/module';
+import { PackageType } from '../../moduleResolver/package';
 import { IProductionContext } from '../ProductionContext';
 import { ImportType } from '../module/ImportReference';
 import { createSplitEntry, ISplitEntry } from '../module/SplitEntries';
@@ -49,7 +49,7 @@ export function resolveSplitEntry(productionContext: IProductionContext, target:
      * @param target
      * @param parentId
      */
-    traceCircularDependency: function (target: IModule, parentId: number): boolean {
+    traceCircularDependency: function(target: IModule, parentId: number): boolean {
       let traced = false;
       const {
         id,
@@ -83,7 +83,7 @@ export function resolveSplitEntry(productionContext: IProductionContext, target:
      *
      * @param target
      */
-    traceOrigin: function (target: IModule, parentId: number): boolean {
+    traceOrigin: function(target: IModule, parentId: number): boolean {
       const {
         id,
         moduleTree: { dependants },
@@ -133,7 +133,7 @@ export function resolveSplitEntry(productionContext: IProductionContext, target:
      *
      * @param target
      */
-    traverseDependencies: function (target: IModule, entry: boolean = false): boolean {
+    traverseDependencies: function(target: IModule, entry: boolean = false): boolean {
       const {
         id,
         moduleTree: {

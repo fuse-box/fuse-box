@@ -1,4 +1,4 @@
-import { Context } from '../../core/Context';
+import { Context } from '../../core/context';
 import { safeRegex } from '../../utils/utils';
 import { parsePluginOptions } from '../pluginUtils';
 

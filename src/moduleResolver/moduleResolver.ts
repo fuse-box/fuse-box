@@ -2,17 +2,16 @@ import { BUNDLE_RUNTIME_NAMES } from '../bundleRuntime/bundleRuntimeCore';
 import { ASTNode } from '../compiler/interfaces/AST';
 import { ITransformerRequireStatement } from '../compiler/interfaces/ITransformerRequireStatements';
 import { ImportType } from '../compiler/interfaces/ImportType';
-import { Context } from '../core/Context';
+import { Context } from '../core/context';
 import { resolveModule, ITypescriptPathsConfig } from '../resolver/resolver';
-import { ensureAbsolutePath } from '../utils/utils';
-import { createBundleContext, IBundleContext } from './BundleContext';
-import { createModule, IModule } from './Module';
-import { PackageType, createPackage, IPackage } from './Package';
+import { createBundleContext, IBundleContext } from './bundleContext';
+import { createModule, IModule } from './module';
+import { PackageType, createPackage, IPackage } from './package';
 
 export function createRuntimeRequireStatement(props: {
-  ctx: Context,
-  item: ITransformerRequireStatement,
-  module: IModule
+  ctx: Context;
+  item: ITransformerRequireStatement;
+  module: IModule;
 }): ASTNode {
   let requireModuleId: number | string = 'error';
   const { ctx, item, module } = props;
@@ -43,14 +42,16 @@ export function createRuntimeRequireStatement(props: {
      * require('./x' + b);
      */
     log.warn(`Unsupported require detected in ${module.publicPath}`, item.statement);
-    requireModuleId = 'unsupported'
+    requireModuleId = 'unsupported';
   }
 
   item.statement.callee.name = BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION;
-  item.statement.arguments = [{
-    type: 'Literal',
-    value: requireModuleId,
-  }];
+  item.statement.arguments = [
+    {
+      type: 'Literal',
+      value: requireModuleId,
+    },
+  ];
 
   return item.statement;
 }
@@ -76,7 +77,7 @@ export function resolve(props: {
     filePath: props.parent.absPath,
     homeDir: config.homeDir,
     importType: props.importType,
-    isDev: !props.ctx.config.production,
+    isDev: props.ctx.config.isDevelopment,
     javascriptFirst: props.parent.isJavaScript,
     modules: config.modules,
     packageMeta: parent.pkg && parent.pkg.meta,
@@ -132,10 +133,7 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
       const transformerResult = module.transpile();
 
       for (const item of transformerResult.requireStatementCollection) {
-        if (
-          item.statement.arguments.length === 1 &&
-          typeof item.statement.arguments[0].value === 'string'
-        ) {
+        if (item.statement.arguments.length === 1 && typeof item.statement.arguments[0].value === 'string') {
           /**
            * @todo
            * improve this resolvement
@@ -157,7 +155,7 @@ function initModule(props: { absPath: string; bundleContext: IBundleContext; ctx
           continue;
         }
       }
-      if (!ctx.config.production) module.generate();
+      if (ctx.config.isDevelopment) module.generate();
     }
     return module;
   }
@@ -194,10 +192,8 @@ export function ModuleResolver(ctx: Context, entryFiles: Array<string>): IModule
   const bundleContext = createBundleContext(ctx);
   const userPackage = createPackage({ type: PackageType.USER_PACKAGE });
   bundleContext.setPackage(userPackage);
-  for (const entry of entryFiles) {
-    const absPath = ensureAbsolutePath(entry, ctx.config.homeDir);
+  for (const absPath of entryFiles) {
     const entryModule = initModule({ absPath, bundleContext, ctx, pkg: userPackage });
-
     entryModule.isEntry = true;
     entries.push(entryModule);
   }

@@ -1,10 +1,10 @@
 import { existsSync, statSync } from 'fs';
 import * as path from 'path';
-import { Context } from '../core/Context';
-import { IBundleContext } from '../moduleResolver/BundleContext';
-import { createModule, IModule, IModuleMeta } from '../moduleResolver/Module';
+import { Context } from '../core/context';
+import { IBundleContext } from '../moduleResolver/bundleContext';
+import { createModule, IModule, IModuleMeta } from '../moduleResolver/module';
 // import { Package, createPackage, IPackage } from '../moduleResolver/Package';
-import { Package, IPackage } from '../moduleResolver/Package';
+import { Package, IPackage } from '../moduleResolver/package';
 import { ensureDir, writeFile } from '../utils/utils';
 
 export interface ICachePublicProps {

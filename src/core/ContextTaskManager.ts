@@ -1,5 +1,5 @@
 import { copyFile } from '../utils/utils';
-import { Context } from './Context';
+import { Context } from './context';
 
 export class ContextTaskManager {
   private copyFilesTask: { [key: string]: string };

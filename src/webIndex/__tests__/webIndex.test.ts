@@ -1,8 +1,7 @@
 import { join } from 'path';
-import { createContext } from '../../core/Context';
 import { env } from '../../env';
 import { FuseBoxLogAdapter } from '../../fuseLog/FuseBoxLogAdapter';
-import { mockWriteFile } from '../../utils/test_utils';
+import { createTestContext, mockWriteFile } from '../../utils/test_utils';
 import { getEssentialWebIndexParams, replaceWebIndexStrings } from '../webIndex';
 const fileMock = mockWriteFile();
 
@@ -66,7 +65,7 @@ describe('WebIndex test', () => {
     });
 
     it('should be disabled', () => {
-      const ctx = createContext({ webIndex: false });
+      const ctx = createTestContext({ webIndex: false });
       expect(ctx.webIndex.isDisabled).toBe(true);
     });
 

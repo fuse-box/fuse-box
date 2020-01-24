@@ -1,11 +1,11 @@
 import * as appRoot from 'app-root-path';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { IPublicConfig } from '../config/IPublicConfig';
-import { Context, createContext } from '../core/Context';
-
-import { createModule, IModule } from '../moduleResolver/Module';
-import { PackageType, createPackage, IPackage } from '../moduleResolver/Package';
+import { EnvironmentType } from '../config/EnvironmentType';
+import { IPublicConfig } from '../config/IConfig';
+import { Context, createContext } from '../core/context';
+import { createModule, IModule } from '../moduleResolver/module';
+import { PackageType, createPackage, IPackage } from '../moduleResolver/package';
 import { ensureFuseBoxPath, fastHash, path2RegexPattern } from './utils';
 
 const utils = require('./utils');
@@ -51,7 +51,7 @@ export interface IMockModuleResponse {
   pkg: IPackage;
 }
 export function mockModule(props: IMockModuleProps) {
-  const ctx = createContext(props.config || {});
+  const ctx = createTestContext(props.config || {});
   const moduleProps = props.moduleProps || {};
   const packageProps = props.packageProps || {};
 
@@ -108,6 +108,14 @@ export function createRealNodeModule(name: string, packageJSON, files: { [key: s
 
   createFiles(path2Module, files);
   return path2Module;
+}
+
+export function createTestContext(config?: IPublicConfig, type?: EnvironmentType) {
+  config = config || {};
+  config.watcher = false;
+  config.hmr = false;
+  config.entry ? config.entry : (config.entry = __filename);
+  return createContext({ envType: EnvironmentType.DEVELOPMENT, publicConfig: config, scriptRoot: __dirname });
 }
 
 export function mockWriteFile() {

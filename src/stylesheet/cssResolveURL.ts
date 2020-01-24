@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { IStyleSheetProps } from '../config/IStylesheetProps';
 import { FONT_EXTENSIONS, IMAGE_EXTENSIONS } from '../config/extensions';
-import { Context } from '../core/Context';
+import { Context } from '../core/context';
 import { fastHash, fileExists, joinFuseBoxPath } from '../utils/utils';
 import { replaceCSSMacros } from './cssResolveModule';
 

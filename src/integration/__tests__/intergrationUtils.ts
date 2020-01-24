@@ -1,8 +1,8 @@
-import { IPublicConfig } from '../../config/IPublicConfig';
+import { IPublicConfig } from '../../config/IConfig';
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { Context } from '../../core/Context';
+import { Context } from '../../core/context';
 import { env } from '../../env';
 import { mockWriteFile, testUtils } from '../../utils/test_utils';
 import { matchAll } from '../../utils/utils';

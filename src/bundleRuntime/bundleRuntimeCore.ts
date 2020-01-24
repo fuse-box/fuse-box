@@ -1,4 +1,4 @@
-import { ITarget } from '../config/PrivateConfig';
+import { ITarget } from '../config/ITarget';
 
 export const BUNDLE_RUNTIME_NAMES = {
   ARG_REQUIRE_FUNCTION: '__fusereq',
