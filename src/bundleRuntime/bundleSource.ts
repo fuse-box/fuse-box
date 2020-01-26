@@ -1,3 +1,4 @@
+import { ICodeSplittingMap } from '../bundle/bundleRouter';
 import { ITarget } from '../config/ITarget';
 import { IModule } from '../moduleResolver/module';
 import { Concat } from '../utils/utils';
@@ -10,27 +11,31 @@ export interface IBundleSourceProps {
   withSourcemaps?: boolean;
 }
 
-export type IBundleSource = ReturnType<typeof bundleSource>;
+export type BundleSource = {
+  codeSplittingMap: ICodeSplittingMap;
+  containsMaps: boolean;
+  entries: Array<IModule>;
+  expose: Array<{ name: string; moduleId: number }>;
+  injection: string;
+  modules: Array<IModule>;
+  generate: () => Concat;
+};
 
 const FuseName = BUNDLE_RUNTIME_NAMES.GLOBAL_OBJ;
 const BundleFN = FuseName + '.' + BUNDLE_RUNTIME_NAMES.BUNDLE_FUNCTION;
 const ReqFn = FuseName + '.' + BUNDLE_RUNTIME_NAMES.REQUIRE_FUNCTION;
 
-export function bundleSource(props: IBundleSourceProps) {
+export function createBundleSource(props: IBundleSourceProps): BundleSource {
   const isIsolated = props.target === 'web-worker' || props.isIsolated;
-
-  const modules: Array<IModule> = [];
-  let entries: Array<IModule> = [];
-  let injection: string;
-  let expose: Array<{ name: string; moduleId: number }>;
   const scope = {
+    codeSplittingMap: null,
     containsMaps: false,
-    entries,
-    expose,
+    entries: [],
+    expose: null,
     // user injection
     // for example inject some code after the bundle is ready
-    injection,
-    modules,
+    injection: null,
+    modules: [],
     generate: () => {
       const concat = new Concat(true, '', '\n');
       // start the wrapper for the entire bundle if required

@@ -1,25 +1,27 @@
 import * as path from 'path';
-import { bundleSource, IBundleSource } from '../bundleRuntime/bundleSource';
+import { BundleSource, createBundleSource } from '../bundleRuntime/bundleSource';
 import { Context } from '../core/context';
 import { IModule } from '../moduleResolver/module';
 import { IOutputBundleConfigAdvanced } from '../output/OutputConfigInterface';
 import { distWriter, IWriterConfig } from '../output/distWriter';
 import { Concat } from '../utils/utils';
+import { ICodeSplittingMap } from './bundleRouter';
 
 export interface Bundle {
   config: IWriterConfig;
   contents: string;
   data: Concat;
   priority: number;
-  source: IBundleSource;
-  type: IBundleType;
+  source: BundleSource;
+  type: BundleType;
   webIndexed: boolean;
+  addCodeSplittingMap?: (map: ICodeSplittingMap) => void;
   createSourceMap: () => Promise<void>;
   generate: () => Promise<Array<IBundleWriteResponse>>;
   prepare: () => IWriterConfig;
 }
 
-export enum IBundleType {
+export enum BundleType {
   JS_APP,
   JS_VENDOR,
   JS_SPLIT,
@@ -34,7 +36,7 @@ export interface IBundleProps {
   fileName?: string;
   includeAPI?: boolean;
   priority?: number;
-  type?: IBundleType;
+  type?: BundleType;
   webIndexed?: boolean;
 }
 
@@ -56,7 +58,7 @@ export function createBundle(props: IBundleProps): Bundle {
     isIsolated: bundleConfig.isolatedApi,
     target,
   };
-  const source = bundleSource({ core: apiCore, isIsolated: bundleConfig.isolatedApi, target });
+  const source = createBundleSource({ core: apiCore, isIsolated: bundleConfig.isolatedApi, target });
   source.entries = props.entries;
 
   const self: Bundle = {
@@ -67,6 +69,9 @@ export function createBundle(props: IBundleProps): Bundle {
     source,
     type,
     webIndexed,
+    addCodeSplittingMap: (map: ICodeSplittingMap) => {
+      self.source.codeSplittingMap = map;
+    },
     createSourceMap: async () => {
       const sourceMapName = path.basename(self.config.relativePath) + '.map';
       self.contents += `\n//# sourceMappingURL=${sourceMapName}`;
