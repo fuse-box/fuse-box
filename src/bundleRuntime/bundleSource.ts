@@ -7,7 +7,6 @@ export interface IBundleSourceProps {
   core?: IBundleRuntimeCore;
   isIsolated?: boolean;
   target: ITarget;
-
   withSourcemaps?: boolean;
 }
 
@@ -28,7 +27,6 @@ export function bundleSource(props: IBundleSourceProps) {
     containsMaps: false,
     entries,
     expose,
-
     // user injection
     // for example inject some code after the bundle is ready
     injection,

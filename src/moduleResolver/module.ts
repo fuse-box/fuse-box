@@ -14,7 +14,7 @@ import { makePublicPath, readFile } from '../utils/utils';
 import { PackageType, IPackage } from './package';
 import { env } from '../env';
 
-export function Module() { }
+export function Module() {}
 
 export interface IModule {
   absPath?: string;
@@ -170,7 +170,9 @@ export function createModule(props: { absPath?: string; ctx?: Context; pkg?: IPa
 
       if (JS_EXTENSIONS.includes(self.extension)) {
         try {
+          // @todo: fix jsx properly
           self.ast = parseJavascript(self.contents, {
+            jsx: true,
             locations: self.isSourceMapRequired,
           });
           self.errored = false;

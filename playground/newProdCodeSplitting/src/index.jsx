@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { alsoNotSoStaticFunc } from './static/alsoNotSoStatic';
 import { notSoStaticFunc } from './static/notSoStatic';
 import { staticFunc } from './static/static';
@@ -11,3 +12,6 @@ notSoStaticFunc();
 alsoNotSoStaticFunc();
 
 path();
+
+const test = () => <div>hello</div>;
+console.log(test);

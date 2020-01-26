@@ -3,15 +3,20 @@ import { bundleSource, IBundleSource } from '../bundleRuntime/bundleSource';
 import { Context } from '../core/context';
 import { IModule } from '../moduleResolver/module';
 import { IOutputBundleConfigAdvanced } from '../output/OutputConfigInterface';
-import { distWriter } from '../output/distWriter';
+import { distWriter, IWriterConfig } from '../output/distWriter';
+import { Concat } from '../utils/utils';
 
-export interface IBundle {
-  name?: string;
-  priority?: number;
-  source?: IBundleSource;
-  type?: IBundleType;
+export interface Bundle {
+  config: IWriterConfig;
+  contents: string;
+  data: Concat;
+  priority: number;
+  source: IBundleSource;
+  type: IBundleType;
   webIndexed: boolean;
-  generate?: () => Promise<Array<IBundleWriteResponse>>;
+  createSourceMap: () => Promise<void>;
+  generate: () => Promise<Array<IBundleWriteResponse>>;
+  prepare: () => IWriterConfig;
 }
 
 export enum IBundleType {
@@ -26,6 +31,7 @@ export interface IBundleProps {
   bundleConfig?: IOutputBundleConfigAdvanced;
   ctx: Context;
   entries?: Array<IModule>;
+  fileName?: string;
   includeAPI?: boolean;
   priority?: number;
   type?: IBundleType;
@@ -34,12 +40,12 @@ export interface IBundleProps {
 
 export interface IBundleWriteResponse {
   absPath: string;
-  bundle?: IBundle;
+  bundle?: Bundle;
   relativePath: string;
 }
 
-export function createBundle(props: IBundleProps): IBundle {
-  const { bundleConfig, ctx, priority, webIndexed = true } = props;
+export function createBundle(props: IBundleProps): Bundle {
+  const { bundleConfig, ctx, priority, type, webIndexed = true } = props;
   const outputConfig = ctx.outputConfig;
   const isProduction = ctx.config.isProduction;
   const target = ctx.config.target;
@@ -53,31 +59,47 @@ export function createBundle(props: IBundleProps): IBundle {
   const source = bundleSource({ core: apiCore, isIsolated: bundleConfig.isolatedApi, target });
   source.entries = props.entries;
 
-  const self: IBundle = {
+  const self: Bundle = {
+    config: null,
+    contents: null,
+    data: null,
     priority,
     source,
-    type: props.type,
+    type,
     webIndexed,
+    createSourceMap: async () => {
+      const sourceMapName = path.basename(self.config.relativePath) + '.map';
+      self.contents += `\n//# sourceMappingURL=${sourceMapName}`;
+      const targetDir = path.dirname(self.config.absPath);
+      const sourceMapFile = path.join(targetDir, sourceMapName);
+      await bundleWriter.write(sourceMapFile, self.data.sourceMap);
+    },
     generate: async () => {
-      const data = source.generate();
-
-      const options = { contents: data.content.toString(), hash: isProduction, userString: bundleConfig.path };
-      const config = bundleWriter.createWriter(options);
-
-      let contents = options.contents;
-      if (source.containsMaps) {
-        // writing source maps
-        const sourceMapName = path.basename(config.relativePath) + '.map';
-        contents = options.contents + `\n//# sourceMappingURL=${sourceMapName}`;
-        const targetDir = path.dirname(config.absPath);
-        const sourceMapFile = path.join(targetDir, sourceMapName);
-        await bundleWriter.write(sourceMapFile, data.sourceMap);
+      if (!self.config) {
+        self.prepare();
       }
-
-      await bundleWriter.write(config.absPath, contents);
-
-      const bundleResponse = { absPath: config.absPath, bundle: self, relativePath: config.relativePath };
-      return [bundleResponse];
+      // writing source maps
+      if (source.containsMaps) self.createSourceMap();
+      // write the bundle to fs
+      await bundleWriter.write(self.config.absPath, self.contents);
+      return [
+        {
+          absPath: self.config.absPath,
+          // bundle: self,
+          relativePath: self.config.relativePath,
+        },
+      ];
+    },
+    prepare: (): IWriterConfig => {
+      self.data = source.generate();
+      self.contents = self.data.content.toString();
+      self.config = bundleWriter.createWriter({
+        contents: self.contents,
+        fileName: props.fileName,
+        hash: isProduction,
+        userString: bundleConfig.path,
+      });
+      return self.config;
     },
   };
   return self;

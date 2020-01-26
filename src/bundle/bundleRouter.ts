@@ -1,8 +1,10 @@
+import * as path from 'path';
 import { Context } from '../core/context';
 import { IModule } from '../moduleResolver/module';
 import { PackageType } from '../moduleResolver/package';
 import { ISplitEntry } from '../production/module/SplitEntries';
-import { createBundle, IBundle, IBundleType, IBundleWriteResponse } from './bundle';
+import { beautifyBundleName } from '../utils/utils';
+import { Bundle, createBundle, IBundleType, IBundleWriteResponse } from './bundle';
 
 export interface IBundleRouter {
   generateBundles: (modules: Array<IModule>) => void;
@@ -20,9 +22,20 @@ export function createBundleRouter(props: IBundleRouteProps) {
   const ict = ctx.ict;
   const outputConfig = ctx.outputConfig;
   const hasVendorConfig = !!outputConfig.vendor;
-  const bundles: Array<IBundle> = [];
-  let mainBundle: IBundle;
-  let vendorBundle: IBundle;
+  const bundles: Array<Bundle> = [];
+  const splitFileNames: Array<string> = [];
+  let mainBundle: Bundle;
+  let vendorBundle: Bundle;
+
+  function generateSplitFileName(relativePath: string): string {
+    const paths = relativePath.split(path.sep).reverse();
+    let fileName = beautifyBundleName(paths.shift());
+    while (splitFileNames[fileName]) {
+      fileName = beautifyBundleName(paths.shift() + path.sep + fileName);
+    }
+    splitFileNames.push(fileName);
+    return fileName;
+  }
 
   function createMainBundle() {
     mainBundle = createBundle({
@@ -47,7 +60,7 @@ export function createBundleRouter(props: IBundleRouteProps) {
     bundles.push(vendorBundle);
   }
 
-  function dispatch(bundle: IBundle, module: IModule) {
+  function dispatch(bundle: Bundle, module: IModule) {
     if (!module.isCached) {
       ict.sync('bundle_resolve_module', { module: module });
     }
@@ -70,35 +83,47 @@ export function createBundleRouter(props: IBundleRouteProps) {
       }
     },
     generateSplitBundles: (entries: Array<ISplitEntry>) => {
+      const codeSplittingMapping = {
+        entries: {},
+        resolveConfig: {},
+      };
       for (const splitEntry of entries) {
+        const { entry, modules } = splitEntry;
+        const fileName = generateSplitFileName(entry.publicPath);
+        // @todo: improve the codeSplitting config
         const splitBundle = createBundle({
           bundleConfig: {
             path: outputConfig.codeSplitting.path,
           },
-          ctx: ctx,
+          ctx,
+          fileName,
           includeAPI: false,
           type: IBundleType.JS_SPLIT,
           webIndexed: false,
         });
-        for (const module of splitEntry.modules) {
+        for (const module of modules) {
           dispatch(splitBundle, module);
         }
+        const bundleConfig = splitBundle.prepare();
+        codeSplittingMapping.entries[entry.id] = {
+          b: bundleConfig.relativePath,
+        };
         bundles.push(splitBundle);
       }
     },
     writeBundles: async () => {
       let output = [];
-      await Promise.all(
-        bundles.map(bundle => bundle.generate())
-      ).then(bundleOutputs => {
-        for (const response of bundleOutputs) {
-          output = output.concat(response);
-        }
-      }).catch(e => {
-        console.log('do something with ', e);
-      });
+      await Promise.all(bundles.map(bundle => bundle.generate()))
+        .then(bundleOutputs => {
+          for (const response of bundleOutputs) {
+            output = output.concat(response);
+          }
+        })
+        .catch(e => {
+          console.log('do something with ', e);
+        });
       return output;
-    }
+    },
   };
 
   return self;
