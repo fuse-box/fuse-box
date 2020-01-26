@@ -1,3 +1,4 @@
+import { ICodeSplittingMap } from '../bundle/bundleRouter';
 import { ITarget } from '../config/ITarget';
 
 export const BUNDLE_RUNTIME_NAMES = {
@@ -9,6 +10,7 @@ export const BUNDLE_RUNTIME_NAMES = {
 };
 
 export interface IBundleRuntimeCore {
+  codeSplittingMap?: ICodeSplittingMap;
   interopRequireDefault?: boolean;
   isIsolated?: boolean;
   target: ITarget;

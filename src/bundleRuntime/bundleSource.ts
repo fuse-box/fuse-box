@@ -12,11 +12,11 @@ export interface IBundleSourceProps {
 }
 
 export type BundleSource = {
-  codeSplittingMap: ICodeSplittingMap;
+  codeSplittingMap?: ICodeSplittingMap;
   containsMaps: boolean;
   entries: Array<IModule>;
-  expose: Array<{ name: string; moduleId: number }>;
-  injection: string;
+  expose?: Array<{ name: string; moduleId: number }>;
+  injection?: string;
   modules: Array<IModule>;
   generate: () => Concat;
 };
@@ -27,7 +27,7 @@ const ReqFn = FuseName + '.' + BUNDLE_RUNTIME_NAMES.REQUIRE_FUNCTION;
 
 export function createBundleSource(props: IBundleSourceProps): BundleSource {
   const isIsolated = props.target === 'web-worker' || props.isIsolated;
-  const scope = {
+  const self = {
     codeSplittingMap: null,
     containsMaps: false,
     entries: [],
@@ -37,26 +37,29 @@ export function createBundleSource(props: IBundleSourceProps): BundleSource {
     injection: null,
     modules: [],
     generate: () => {
+      const core = props.core;
       const concat = new Concat(true, '', '\n');
+      if (core && self.codeSplittingMap) core.codeSplittingMap = self.codeSplittingMap;
+
       // start the wrapper for the entire bundle if required
       if (isIsolated) concat.add(null, `(function(){`);
 
       // adding core api if required
-      if (props.core) concat.add(null, bundleRuntimeCore(props.core));
+      if (core) concat.add(null, bundleRuntimeCore(core));
 
       concat.add(null, BundleFN + '({');
 
       let index = 0;
-      const totalAmount = scope.modules.length;
+      const totalAmount = self.modules.length;
       while (index < totalAmount) {
-        const module = scope.modules[index];
+        const module = self.modules[index];
         const isLast = index + 1 === totalAmount;
         if (module.contents) {
           concat.add(null, `\n// ${module.publicPath} @${module.id}`);
 
           concat.add(null, module.id + `: function(${BUNDLE_RUNTIME_NAMES.ARG_REQUIRE_FUNCTION}, exports, module){`);
           if (module.isSourceMapRequired && module.sourceMap) {
-            scope.containsMaps = true;
+            self.containsMaps = true;
           }
 
           concat.add(null, module.contents, module.isSourceMapRequired ? module.sourceMap : undefined);
@@ -68,21 +71,21 @@ export function createBundleSource(props: IBundleSourceProps): BundleSource {
       let injectionCode = [];
       // add entries
       // e.g __fuse.r(1)
-      if (scope.entries) {
-        for (const entry of scope.entries) {
+      if (self.entries) {
+        for (const entry of self.entries) {
           injectionCode.push(ReqFn + '(' + entry.id + ')');
         }
       }
 
       // add exposed variables
       // for example on nodejs that will be "exports" on browser "window"
-      if (scope.expose) {
+      if (self.expose) {
         let exposedGlobal;
         if (props.target === 'browser' || props.target === 'electron') exposedGlobal = 'window';
         else if (props.target === 'server') exposedGlobal = 'exports';
         // we cannot expose on web-worker target
         if (exposedGlobal) {
-          for (const item of scope.expose) {
+          for (const item of self.expose) {
             injectionCode.push(`${exposedGlobal}[${JSON.stringify(item.name)}] = ${ReqFn + '(' + item.moduleId + ')'}`);
           }
         }
@@ -97,5 +100,5 @@ export function createBundleSource(props: IBundleSourceProps): BundleSource {
       return concat;
     },
   };
-  return scope;
+  return self;
 }

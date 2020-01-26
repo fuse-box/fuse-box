@@ -18,7 +18,7 @@ export interface IBundleRouteProps {
 }
 
 export type ICodeSplittingMap = {
-  entries: Record<number, { bundlePath: string }>;
+  entries: Record<number, { b: string }>;
 };
 
 export function createBundleRouter(props: IBundleRouteProps) {
@@ -28,7 +28,7 @@ export function createBundleRouter(props: IBundleRouteProps) {
   const hasVendorConfig = !!outputConfig.vendor;
   const bundles: Array<Bundle> = [];
   const splitFileNames: Array<string> = [];
-  const codeSplittingMapping = {
+  const codeSplittingMap: ICodeSplittingMap = {
     entries: {},
     // resolveConfig: {},
   };
@@ -107,16 +107,16 @@ export function createBundleRouter(props: IBundleRouteProps) {
           dispatch(splitBundle, module);
         }
         const bundleConfig = splitBundle.prepare();
-        codeSplittingMapping.entries[entry.id] = {
-          bundlePath: bundleConfig.relativePath,
+        codeSplittingMap.entries[entry.id] = {
+          b: bundleConfig.relativePath,
         };
         bundles.push(splitBundle);
       }
     },
     writeBundles: async () => {
       let output = [];
-      if (Object.keys(codeSplittingMapping.entries).length > 0) {
-        mainBundle.addCodeSplittingMap(codeSplittingMapping);
+      if (Object.keys(codeSplittingMap.entries).length > 0) {
+        mainBundle.addCodeSplittingMap(codeSplittingMap);
       }
       await Promise.all([mainBundle.generate(), vendorBundle.generate(), ...bundles.map(bundle => bundle.generate())])
         .then(bundleResponses => {
