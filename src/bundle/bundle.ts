@@ -10,6 +10,7 @@ export interface Bundle {
   config: IWriterConfig;
   contents: string;
   data: Concat;
+  entries?: Array<IModule>;
   priority: number;
   source: BundleSource;
   type: BundleType;
@@ -30,7 +31,6 @@ export enum BundleType {
 export interface IBundleProps {
   bundleConfig?: IOutputBundleConfigAdvanced;
   ctx: Context;
-  entries?: Array<IModule>;
   fileName?: string;
   priority?: number;
   type?: BundleType;
@@ -52,7 +52,6 @@ export function createBundle(props: IBundleProps): Bundle {
   const bundleWriter = distWriter({ hashEnabled: isProduction, root: outputConfig.distRoot });
 
   const source = createBundleSource({ isProduction: props.ctx.config.isProduction, target });
-  source.entries = props.entries;
 
   const self: Bundle = {
     config: null,
@@ -72,6 +71,7 @@ export function createBundle(props: IBundleProps): Bundle {
     generate: async (opts?: { runtimeCore?: string }) => {
       opts = opts || {};
       if (!self.config) self.config = self.prepare();
+      if (self.entries) source.entries = self.entries;
       self.data = source.generate({ isIsolated: bundleConfig.isolatedApi, runtimeCore: opts.runtimeCore });
       self.contents = self.data.content.toString();
       // writing source maps

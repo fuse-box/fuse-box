@@ -45,7 +45,6 @@ export function createBundleRouter(props: IBundleRouteProps) {
     mainBundle = createBundle({
       bundleConfig: outputConfig.app,
       ctx: ctx,
-      entries,
       priority: 2,
       type: BundleType.JS_APP,
     });
@@ -124,16 +123,24 @@ export function createBundleRouter(props: IBundleRouteProps) {
       let apiInserted = false;
 
       const writers = [];
+      let lastWebIndexed: Bundle;
+
       while (index < bundleAmount) {
         const bundle = bundles[index];
-        if (bundle.webIndexed && !apiInserted) {
-          apiInserted = true;
-          writers.push(bundle.generate({ runtimeCore: createRuntimeCore() }));
-        } else writers.push(bundle.generate());
+        let writerProps = {};
+        if (bundle.webIndexed) {
+          lastWebIndexed = bundle;
+          if (!apiInserted) {
+            apiInserted = true;
+            writerProps = { runtimeCore: createRuntimeCore() };
+          }
+        }
+        writers.push(() => bundle.generate(writerProps));
         index++;
       }
+      if (lastWebIndexed) lastWebIndexed.entries = props.entries;
 
-      return await Promise.all(writers);
+      return await Promise.all(writers.map(wr => wr()));
     },
   };
 

@@ -1,9 +1,8 @@
-import { ICodeSplittingMap } from '../bundle/bundleRouter';
 import { getMTime } from '../cache/cache';
 import { ITarget } from '../config/ITarget';
 import { IModule } from '../moduleResolver/module';
 import { Concat, fastHash } from '../utils/utils';
-import { BUNDLE_RUNTIME_NAMES } from './bundleRuntimeCore';
+import { BUNDLE_RUNTIME_NAMES, ICodeSplittingMap } from './bundleRuntimeCore';
 
 export interface IBundleSourceProps {
   isProduction?: boolean;
