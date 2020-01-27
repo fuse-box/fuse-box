@@ -138,7 +138,7 @@ export function createBundleRouter(props: IBundleRouteProps) {
         writers.push(() => bundle.generate(writerProps));
         index++;
       }
-      if (lastWebIndexed) lastWebIndexed.entries = props.entries;
+      if (lastWebIndexed) lastWebIndexed.entries = entries;
 
       return await Promise.all(writers.map(wr => wr()));
     },

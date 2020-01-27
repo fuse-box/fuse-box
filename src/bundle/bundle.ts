@@ -70,7 +70,7 @@ export function createBundle(props: IBundleProps): Bundle {
     },
     generate: async (opts?: { runtimeCore?: string }) => {
       opts = opts || {};
-      if (!self.config) self.config = self.prepare();
+      if (!self.config) self.prepare();
       if (self.entries) source.entries = self.entries;
       self.data = source.generate({ isIsolated: bundleConfig.isolatedApi, runtimeCore: opts.runtimeCore });
       self.contents = self.data.content.toString();

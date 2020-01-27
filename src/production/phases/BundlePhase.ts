@@ -25,7 +25,11 @@ export async function BundlePhase(productionContext: IProductionContext) {
       router.generateSplitBundles(productionContext.splitEntries.entries);
     }
     const bundles = await router.writeBundles();
-    await attachWebIndex(ctx, bundles);
+
+    if (ctx.config.webIndex) {
+      await attachWebIndex(ctx, bundles);
+    }
+
     ctx.ict.sync('complete', { bundles, ctx });
   }
 }

@@ -6,7 +6,7 @@ class Context {
   getFusebox = () =>
     fusebox({
       cache: false,
-      devServer: true,
+      devServer: !this.isProduction,
       entry: ['src/index.jsx', 'src/secondEntry.js'],
       logging: {
         level: 'succinct',
@@ -33,8 +33,8 @@ task('dist', ctx => {
 
 task('default', ctx => {
   rm('./dist');
-  ctx.runServer = false;
-  ctx.isProduction = true;
+  ctx.runServer = true;
+  ctx.isProduction = false;
   const fuse = ctx.getFusebox();
   fuse.runDev({
     bundles: {

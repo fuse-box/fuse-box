@@ -50,7 +50,7 @@ export function resolveSplitEntry(productionContext: IProductionContext, target:
      * @param target
      * @param parentId
      */
-    traceCircularDependency: function (target: IModule, parentId: number): boolean {
+    traceCircularDependency: function(target: IModule, parentId: number): boolean {
       let traced = false;
       const {
         id,
@@ -84,7 +84,7 @@ export function resolveSplitEntry(productionContext: IProductionContext, target:
      *
      * @param target
      */
-    traceOrigin: function (target: IModule, parentId: number): boolean {
+    traceOrigin: function(target: IModule, parentId: number): boolean {
       const {
         id,
         moduleTree: { dependants },
@@ -113,11 +113,11 @@ export function resolveSplitEntry(productionContext: IProductionContext, target:
           // the module is a dynamic module and not the entry, so false!
           // we flagAsCommonsEligible here!
           // target.isCommonsEligible = true;
-          // traced = false;
 
           // if we return false, it will be excluded and added to the mainBundle
-          // for now, we include this bundle in both dynamic entries
-          traced = true;
+          traced = false;
+          // if we return true, it will be included in every splitBundle
+          // traced = true;
         } else {
           traced = this.traceOrigin(module, id);
         }
@@ -138,7 +138,7 @@ export function resolveSplitEntry(productionContext: IProductionContext, target:
      *
      * @param target
      */
-    traverseDependencies: function (target: IModule, entry: boolean = false): boolean {
+    traverseDependencies: function(target: IModule, entry: boolean = false): boolean {
       const {
         id,
         moduleTree: {

@@ -358,13 +358,13 @@ describe('Code Splitting test', () => {
     // we're not splitting commons atm
     const oneModule = getSplitEntry('one.ts', entries);
     expect(oneModule.entry.publicPath).toContain('src/one.ts');
-    expect(oneModule.modules).toHaveLength(3);
-    // expect(oneModule.modules).toHaveLength(2);
+    // expect(oneModule.modules).toHaveLength(3);
+    expect(oneModule.modules).toHaveLength(2);
 
     const twoModule = getSplitEntry('two.ts', entries);
     expect(twoModule.entry.publicPath).toContain('src/two.ts');
-    expect(twoModule.modules).toHaveLength(2);
-    // expect(twoModule.modules).toHaveLength(1);
+    // expect(twoModule.modules).toHaveLength(2);
+    expect(twoModule.modules).toHaveLength(1);
 
     const threeModule = getSplitEntry('three.ts', entries);
     expect(threeModule.entry.publicPath).toContain('src/three.ts');
